@@ -13,7 +13,7 @@ memcached_return memcached_response(memcached_st *ptr,
   size_t send_length;
 
   memset(buffer, 0, buffer_length);
-  send_length= read(ptr->fd, buffer, buffer_length);
+  send_length= read(ptr->hosts[0].fd, buffer, buffer_length);
 
   if (send_length)
     switch(buffer[0])

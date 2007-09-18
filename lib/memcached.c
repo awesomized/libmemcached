@@ -19,7 +19,6 @@ memcached_st *memcached_init(memcached_st *ptr)
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
-  ptr->fd= -1;
 
   return ptr;
 }
@@ -50,7 +49,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   else
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "flush_all\r\n");
-  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed flush_all TCP\n");
 
@@ -71,7 +70,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "verbosity %u\r\n", verbosity);
 
-  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed verbosity\n");
 
@@ -92,20 +91,21 @@ memcached_return memcached_quit(memcached_st *ptr, char *hostname, unsigned port
 
 void memcached_deinit(memcached_st *ptr)
 {
+  unsigned int x;
   memcached_host_st *host_ptr;
 
-  if (ptr->fd > 0)
-    close(ptr->fd);
-
-  for (host_ptr= ptr->hosts; host_ptr;)
+  if (ptr->hosts)
   {
-    memcached_host_st *temp;
+    for (x= 0; x < ptr->number_of_hosts; x++)
+    {
+      if (ptr->hosts[x].fd > 0)
+        close(ptr->hosts[x].fd);
 
-    temp= host_ptr;
-    host_ptr= host_ptr->next;
-    if (temp->hostname)
-      free(temp->hostname);
-    free(temp);
+      if (ptr->hosts[x].hostname)
+        free(ptr->hosts[x].hostname);
+    }
+
+    free(ptr->hosts);
   }
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)

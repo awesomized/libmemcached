@@ -19,7 +19,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   if (*error != MEMCACHED_SUCCESS)
     return NULL;
 
-  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed fetch on %.*s TCP\n", key_length+1, key);
     *error= MEMCACHED_WRITE_FAILURE;
@@ -79,7 +79,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
         need_to_read= *value_length - need_to_copy;
 
-        read_length= read(ptr->fd, pos_ptr, need_to_read);
+        read_length= read(ptr->hosts[0].fd, pos_ptr, need_to_read);
         if (read_length != need_to_read)
         {
           free(value);

@@ -142,7 +142,7 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
     send_length= snprintf(buffer, HUGE_STRING_LEN, 
                           "stats\r\n");
 
-  if ((send(memc.fd, buffer, send_length, 0) == -1))
+  if ((send(memc.hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed on stats\n");
 

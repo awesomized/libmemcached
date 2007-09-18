@@ -1,3 +1,4 @@
+#include <brian.h>
 /*
  * Summary: interface for memcached server
  * Description: main include file for libmemcached
@@ -66,7 +67,6 @@ struct memcached_host_st {
   char *hostname;
   unsigned int port;
   int fd;
-  memcached_host_st *next;
 };
 
 struct memcached_stat_st {
@@ -100,9 +100,9 @@ struct memcached_stat_st {
 
 struct memcached_st {
   memcached_allocated is_allocated;
-  int fd;
-  char connected;
   memcached_host_st *hosts;
+  unsigned int number_of_hosts;
+  char connected;
 };
 
 /* Public API */

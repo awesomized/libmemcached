@@ -15,7 +15,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   else
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "delete %.*s\r\n", key_length, key);
-  if ((write(ptr->fd, buffer, send_length) == -1))
+  if ((write(ptr->hosts[0].fd, buffer, send_length) == -1))
   {
     fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
 

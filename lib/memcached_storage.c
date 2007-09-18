@@ -28,7 +28,7 @@ static memcached_return memcached_send(memcached_st *ptr,
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %u %u %u\r\n", verb,
                         key_length, key, flags, expiration, value_length);
-  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
 
@@ -38,14 +38,14 @@ static memcached_return memcached_send(memcached_st *ptr,
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%.*s\r\n", 
                         value_length, value);
-  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
 
     return MEMCACHED_WRITE_FAILURE;
   }
   
-  send_length= read(ptr->fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
+  send_length= read(ptr->hosts[0].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
 
   if (send_length && buffer[0] == 'S')  /* STORED */
     return MEMCACHED_SUCCESS;
