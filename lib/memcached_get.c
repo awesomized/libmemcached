@@ -11,6 +11,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   *error= memcached_connect(ptr);
 
+  if (*error != MEMCACHED_SUCCESS)
+    return NULL;
+
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         key_length, key);
   if (*error != MEMCACHED_SUCCESS)

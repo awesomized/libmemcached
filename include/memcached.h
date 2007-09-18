@@ -22,6 +22,7 @@
 #include <limits.h>
 #include <assert.h>
 #include <time.h>
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +30,7 @@ extern "C" {
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
+typedef struct memcached_host_st memcached_host_st;
 
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
@@ -59,6 +61,12 @@ typedef enum {
   MEMCACHED_NOT_ALLOCATED= 0,
   MEMCACHED_ALLOCATED= 1,
 } memcached_allocated;
+
+struct memcached_host_st {
+  char *hostname;
+  unsigned int port;
+  memcached_host_st *next;
+};
 
 struct memcached_stat_st {
   unsigned int pid;
@@ -93,6 +101,7 @@ struct memcached_st {
   memcached_allocated is_allocated;
   int fd;
   char connected;
+  memcached_host_st *hosts;
 };
 
 /* Public API */
@@ -128,7 +137,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     size_t *value_length, 
                     uint16_t *flags,
                     memcached_return *error);
-void memcached_server_add(memcached_st *ptr, char *server_name, unsigned int port);
+memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 
 /* These are all private, do not use. */

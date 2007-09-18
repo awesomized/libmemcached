@@ -7,4 +7,5 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_response.c \
 			  memcached_get.c \
 			  memcached_storage.c \
+			  memcached_delete.c \
 			  memcached_stats.c

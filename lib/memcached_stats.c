@@ -132,6 +132,9 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
 
   rc= memcached_connect(&memc);
 
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+
   if (args)
     send_length= snprintf(buffer, HUGE_STRING_LEN, 
                           "stats %s\r\n", args);
@@ -163,13 +166,11 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
       for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++);
       key= string_ptr;
       key[(size_t)(end_ptr-string_ptr)]= 0;
-      printf("Key %s\n", key);
 
       string_ptr= end_ptr + 1;
       for (end_ptr= string_ptr; *end_ptr != '\r'; end_ptr++);
       value= string_ptr;
       value[(size_t)(end_ptr-string_ptr)]= 0;
-      printf("Value %s\n", value);
       string_ptr= end_ptr + 2;
       set_data(stat, key, value);
     }

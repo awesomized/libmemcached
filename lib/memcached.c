@@ -24,36 +24,6 @@ memcached_st *memcached_init(memcached_st *ptr)
   return ptr;
 }
 
-void memcached_server_add(memcached_st *ptr, char *server_name, unsigned int port)
-{
-}
-
-
-memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
-                                  time_t expiration)
-{
-  size_t send_length;
-  memcached_return rc;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
-  rc= memcached_connect(ptr);
-
-  if (expiration)
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s %u\r\n", key_length, key, expiration);
-  else
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s\r\n", key_length, key);
-  if ((write(ptr->fd, buffer, send_length) == -1))
-  {
-    fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
-
-    return MEMCACHED_WRITE_FAILURE;
-  }
-
-  return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
-}
-
 memcached_return memcached_increment(memcached_st *ptr, char *key, size_t key_length,
                                      unsigned int count)
 {
@@ -107,8 +77,21 @@ memcached_return memcached_quit(memcached_st *ptr)
 
 void memcached_deinit(memcached_st *ptr)
 {
-  if (ptr->fd == -1)
+  memcached_host_st *host_ptr;
+
+  if (ptr->fd > 0)
     close(ptr->fd);
+
+  for (host_ptr= ptr->hosts; host_ptr;)
+  {
+    memcached_host_st *temp;
+
+    temp= host_ptr;
+    host_ptr= host_ptr->next;
+    if (temp->hostname)
+      free(temp->hostname);
+    free(temp);
+  }
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);

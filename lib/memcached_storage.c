@@ -22,6 +22,9 @@ static memcached_return memcached_send(memcached_st *ptr,
 
   rc= memcached_connect(ptr);
 
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %u %u %u\r\n", verb,
                         key_length, key, flags, expiration, value_length);
