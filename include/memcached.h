@@ -10,7 +10,17 @@
 #ifndef __MEMCACHED_H__
 #define __MEMCACHED_H__
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <limits.h>
+#include <assert.h>
 #include <time.h>
 
 #ifdef __cplusplus
@@ -22,6 +32,7 @@ typedef struct memcached_stat_st memcached_stat_st;
 
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
+#define HUGE_STRING_LEN 8196
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -52,11 +63,15 @@ typedef enum {
 struct memcached_stat_st {
   unsigned int pid;
   unsigned int uptime;
+  unsigned int threads;
   time_t time;
-  char *version;
-  unsigned rusage_user_seconds;
+  char version[8];
+  unsigned int pointer_size;
+  unsigned int rusage_user;
+  unsigned int rusage_system;
+  unsigned int rusage_user_seconds;
   unsigned int rusage_user_microseconds;
-  unsigned rusage_system_seconds;
+  unsigned int rusage_system_seconds;
   unsigned int rusage_system_microseconds;
   unsigned int curr_items;
   unsigned int total_items;
@@ -102,7 +117,9 @@ memcached_return memcached_increment(memcached_st *ptr, char *key, size_t key_le
                                      unsigned int count);
 memcached_return memcached_decrement(memcached_st *ptr, char *key, size_t key_length,
                                      unsigned int count);
-memcached_return memcached_stat(memcached_st *ptr, memcached_stat_st *stat);
+memcached_stat_st **memcached_stat(memcached_st *ptr, memcached_return *error);
+memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
+                                         char *hostname, unsigned int port);
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 char *memcached_version(memcached_st *ptr, memcached_return *error);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
@@ -112,9 +129,13 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     uint16_t *flags,
                     memcached_return *error);
 void memcached_server_add(memcached_st *ptr, char *server_name, unsigned int port);
-static memcached_return memcached_response(memcached_st *ptr, 
-                                           char *buffer, size_t buffer_length);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
+
+/* These are all private, do not use. */
+memcached_return memcached_connect(memcached_st *ptr);
+memcached_return memcached_response(memcached_st *ptr, 
+                                    char *buffer, 
+                                    size_t buffer_length);
 
 #ifdef __cplusplus
 }

@@ -167,6 +167,15 @@ void get_test2(void)
   memcached_deinit(memc);
 }
 
+void stats_hostname_test(void)
+{
+  memcached_return rc;
+  memcached_stat_st stat;
+  rc= memcached_stat_hostname(&stat, NULL,
+                              "localhost", 
+                              MEMCACHED_DEFAULT_PORT);
+}
+
 int main(void)
 {
   /* Clean the server before beginning testing */
@@ -182,6 +191,7 @@ int main(void)
   flush_test();
   get_test();
   get_test2();
+  stats_hostname_test();
 
   /* Clean up whatever we might have left */
   flush_test();
