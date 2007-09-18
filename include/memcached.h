@@ -65,6 +65,7 @@ typedef enum {
 struct memcached_host_st {
   char *hostname;
   unsigned int port;
+  int fd;
   memcached_host_st *next;
 };
 
@@ -130,9 +131,8 @@ memcached_stat_st **memcached_stat(memcached_st *ptr, memcached_return *error);
 memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
                                          char *hostname, unsigned int port);
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
-char *memcached_version(memcached_st *ptr, memcached_return *error);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
-memcached_return memcached_quit(memcached_st *ptr);
+memcached_return memcached_quit(memcached_st *ptr, char *hostname, unsigned port);
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     size_t *value_length, 
                     uint16_t *flags,

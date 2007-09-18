@@ -60,17 +60,32 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
 }
 
-char *memcached_version(memcached_st *ptr, memcached_return *error)
-{
-  return MEMCACHED_SUCCESS;
-}
-
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
 {
-  return MEMCACHED_SUCCESS;
+  size_t send_length;
+  memcached_return rc;
+  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+  rc= memcached_connect(ptr);
+
+  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                        "verbosity %u\r\n", verbosity);
+
+  if ((send(ptr->fd, buffer, send_length, 0) == -1))
+  {
+    fprintf(stderr, "failed verbosity\n");
+
+    return MEMCACHED_WRITE_FAILURE;
+  }
+
+  return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
 }
 
-memcached_return memcached_quit(memcached_st *ptr)
+/*
+  When this is implemented you will be able to remove single hosts
+  from your current pool of hosts.
+*/
+memcached_return memcached_quit(memcached_st *ptr, char *hostname, unsigned port)
 {
   return MEMCACHED_SUCCESS;
 }
