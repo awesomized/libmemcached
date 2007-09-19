@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include <memcached.h>
+#include "client_options.h"
 
 static int opt_verbose;
 static char *opt_servers;
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
     
     rc= memcached_set(memc, ptr, strlen(ptr),
                       mptr, sbuf.st_size,
-                      expire, flags);
+                      expires, flags);
 
     munmap(mptr, sbuf.st_size);
     close(fd);
