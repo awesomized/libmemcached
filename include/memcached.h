@@ -1,4 +1,3 @@
-#include <brian.h>
 /*
  * Summary: interface for memcached server
  * Description: main include file for libmemcached
@@ -36,6 +35,8 @@ typedef struct memcached_host_st memcached_host_st;
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define HUGE_STRING_LEN 8196
+
+#define WATCHPOINT printf("WATCHPOINT %s:%d\n", __FILE__, __LINE__);fflush(stdout);
 
 typedef enum {
   MEMCACHED_SUCCESS,
