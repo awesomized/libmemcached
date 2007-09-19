@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
 
   memc= memcached_init(NULL);
 
-  for (x= 1; x <= argc; x++)
+  for (x= 1; x < argc; x++)
   {
-    string= memcached_get(memc, argv[1], strlen(argv[1]),
+    string= memcached_get(memc, argv[x], strlen(argv[x]),
                           &string_length, &flags, &rc);
     if (string)
     {
