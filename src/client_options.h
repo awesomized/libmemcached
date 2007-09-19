@@ -1,8 +1,7 @@
 typedef enum {
-  OPT_SERVERS= 1,
+  OPT_SERVERS= 257,
   OPT_VERSION,
   OPT_HELP,
-  OPT_VERBOSE,
-  OPT_DEBUG,
   OPT_FLAG,
+  OPT_EXPIRE
 } memcached_options;

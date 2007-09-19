@@ -28,14 +28,13 @@ int main(int argc, char *argv[])
   size_t string_length;
   uint16_t  flags;
   memcached_return rc;
-  unsigned int x;
 
   static struct option long_options[] =
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {"verbose", no_argument, &opt_verbose, 1},
+      {"debug", no_argument, &opt_verbose, 2},
       {"servers", required_argument, NULL, OPT_SERVERS},
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
       {0, 0, 0, 0},
@@ -69,14 +68,11 @@ int main(int argc, char *argv[])
     }
   }
 
-  memc = malloc(sizeof(struct memcached_st));
-  memcached_init(memc);
+  memc= memcached_init(NULL);
   memc= parse_opt_servers(memc, opt_servers);
-  memc= memcached_init(memc);
-
-  for (x= 1; x < argc; x++)
-  {
-    string= memcached_get(memc, argv[x], strlen(argv[x]),
+  
+  while (optind < argc) {
+    string= memcached_get(memc, argv[optind], strlen(argv[optind]),
                           &string_length, &flags, &rc);
     if (rc == MEMCACHED_SUCCESS) {
       if (opt_displayflag) {
@@ -89,6 +85,8 @@ int main(int argc, char *argv[])
 	}
       }
     }
+
+    optind++;
   }
 
   memcached_deinit(memc);
