@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
   memc= memcached_init(NULL);
   memc= parse_opt_servers(memc, opt_servers);
 
-  while (optind < argc) {
+  while (optind <= argc) {
     char *mptr;
     struct stat sbuf;
     int fd;

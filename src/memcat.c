@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   memc= memcached_init(NULL);
   memc= parse_opt_servers(memc, opt_servers);
   
-  while (optind < argc) {
+  while (optind <= argc) {
     string= memcached_get(memc, argv[optind], strlen(argv[optind]),
                           &string_length, &flags, &rc);
     if (rc == MEMCACHED_SUCCESS) {
