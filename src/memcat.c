@@ -78,10 +78,16 @@ int main(int argc, char *argv[])
   {
     string= memcached_get(memc, argv[x], strlen(argv[x]),
                           &string_length, &flags, &rc);
-    if (string) 
-    {
-      printf("%.*s\n", string_length, string);
-      free(string);
+    if (rc == MEMCACHED_SUCCESS) {
+      if (opt_displayflag) {
+	printf("%d\n", flags);
+      } else {
+	if (string) 
+	{
+	  printf("%.*s\n", string_length, string);
+	  free(string);
+	}
+      }
     }
   }
 
