@@ -8,6 +8,19 @@ static int opt_verbose;
 static int opt_displayflag;
 static char *opt_servers;
 
+struct memcached_st *parse_opt_servers (struct memcached_st *m,
+					char *opt_servers)
+{
+  char *s, *hostname;
+  unsigned int portnum;
+  while (s = strsep(&opt_servers, ",")) {
+    hostname = strsep(&s, ":");
+    portnum = atoi(s);
+    memcached_server_add(m, hostname, portnum);
+  }
+  return m;
+}
+
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
@@ -56,8 +69,10 @@ int main(int argc, char *argv[])
     }
   }
 
-  /* todo, turn opt_servers into something to pass to memcached_init */
-  memc= memcached_init(NULL);
+  memc = malloc(sizeof(struct memcached_st));
+  memcached_init(memc);
+  memc= parse_opt_servers(memc, opt_servers);
+  memc= memcached_init(memc);
 
   for (x= 1; x < argc; x++)
   {
