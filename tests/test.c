@@ -1,4 +1,3 @@
-#include <brian.h>
 /*
   Sample test application.
 */
