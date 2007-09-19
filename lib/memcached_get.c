@@ -8,18 +8,21 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   size_t send_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *string_ptr;
+  unsigned int server_key;
 
   *error= memcached_connect(ptr);
 
   if (*error != MEMCACHED_SUCCESS)
     return NULL;
 
+  server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
+
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         key_length, key);
   if (*error != MEMCACHED_SUCCESS)
     return NULL;
 
-  if ((send(ptr->hosts[0].fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed fetch on %.*s TCP\n", key_length+1, key);
     *error= MEMCACHED_WRITE_FAILURE;
@@ -27,7 +30,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   }
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
-  *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
+  *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
   if (*error == MEMCACHED_SUCCESS)
   {
@@ -79,7 +82,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
         need_to_read= *value_length - need_to_copy;
 
-        read_length= read(ptr->hosts[0].fd, pos_ptr, need_to_read);
+        read_length= read(ptr->hosts[server_key].fd, pos_ptr, need_to_read);
         if (read_length != need_to_read)
         {
           free(value);

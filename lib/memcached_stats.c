@@ -115,22 +115,16 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   }
 }
 
-memcached_stat_st **memcached_stat(memcached_st *ptr, memcached_return *error)
+static memcached_return memcached_stats_fetch(memcached_st *ptr,
+                                              memcached_stat_st *stat,
+                                              char *args,
+                                              unsigned int server_key)
 {
-  return NULL;
-}
-
-memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
-                                         char *hostname, unsigned int port)
-{
-  size_t send_length;
   memcached_return rc;
   char buffer[HUGE_STRING_LEN];
-  memcached_st memc;
+  size_t send_length;
 
-  memcached_init(&memc);
-
-  rc= memcached_connect(&memc);
+  rc= memcached_connect(ptr);
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
@@ -142,15 +136,14 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
     send_length= snprintf(buffer, HUGE_STRING_LEN, 
                           "stats\r\n");
 
-  if ((send(memc.hosts[0].fd, buffer, send_length, 0) == -1))
+  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
   {
     fprintf(stderr, "failed on stats\n");
 
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
+    return MEMCACHED_WRITE_FAILURE;
   }
 
-  rc= memcached_response(&memc, buffer, HUGE_STRING_LEN);
+  rc= memcached_response(ptr, buffer, HUGE_STRING_LEN, 0);
 
   if (rc == MEMCACHED_SUCCESS)
   {
@@ -176,7 +169,60 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
     }
   }
 
-error:
+  return rc;
+}
+
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error)
+{
+  unsigned int x;
+  memcached_return rc;
+  memcached_stat_st *stats;
+  rc= memcached_connect(ptr);
+
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    *error= rc;
+    return NULL;
+  }
+
+  stats= (memcached_stat_st *)malloc(sizeof(memcached_st)*(ptr->number_of_hosts+1));
+  if (stats)
+  {
+    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return NULL;
+  }
+  memset(stats, 0, sizeof(memcached_st)*(ptr->number_of_hosts+1));
+
+  for (x= 0; x < ptr->number_of_hosts; x++)
+  {
+    rc= memcached_stats_fetch(ptr, stats+x, args, x);
+    if (rc != MEMCACHED_SUCCESS)
+      rc= MEMCACHED_SOME_ERRORS;
+  }
+
+  *error= x == 0 ? MEMCACHED_SUCCESS : rc;
+  return stats;
+}
+
+memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
+                                         char *hostname, unsigned int port)
+{
+  size_t send_length;
+  memcached_return rc;
+  char buffer[HUGE_STRING_LEN];
+  memcached_st memc;
+
+  memcached_init(&memc);
+
+  memcached_server_add(&memc, hostname, port);
+
+  rc= memcached_connect(&memc);
+
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+
+  rc= memcached_stats_fetch(&memc, stat, args, 0);
+
   memcached_deinit(&memc);
 
   return rc;

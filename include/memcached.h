@@ -56,6 +56,7 @@ typedef enum {
   MEMCACHED_NOTFOUND,
   MEMCACHED_MEMORY_ALLOCATION_FAILURE,
   MEMCACHED_PARTIAL_READ,
+  MEMCACHED_SOME_ERRORS,
 } memcached_return;
 
 typedef enum {
@@ -123,11 +124,15 @@ memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_leng
                                    uint16_t  flags);
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration);
-memcached_return memcached_increment(memcached_st *ptr, char *key, size_t key_length,
-                                     unsigned int count);
-memcached_return memcached_decrement(memcached_st *ptr, char *key, size_t key_length,
-                                     unsigned int count);
-memcached_stat_st **memcached_stat(memcached_st *ptr, memcached_return *error);
+memcached_return memcached_increment(memcached_st *ptr, 
+                                     char *key, size_t key_length,
+                                     unsigned int offset,
+                                     unsigned int *value);
+memcached_return memcached_decrement(memcached_st *ptr, 
+                                     char *key, size_t key_length,
+                                     unsigned int offset,
+                                     unsigned int *value);
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
 memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
                                          char *hostname, unsigned int port);
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
@@ -143,8 +148,9 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 /* These are all private, do not use. */
 memcached_return memcached_connect(memcached_st *ptr);
 memcached_return memcached_response(memcached_st *ptr, 
-                                    char *buffer, 
-                                    size_t buffer_length);
+                                    char *buffer, size_t buffer_length,
+                                    unsigned int server_key);
+unsigned int memcached_generate_hash(char *key, size_t key_length);
 
 #ifdef __cplusplus
 }

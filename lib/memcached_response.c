@@ -8,12 +8,13 @@
 #include <memcached.h>
 
 memcached_return memcached_response(memcached_st *ptr, 
-                                    char *buffer, size_t buffer_length)
+                                    char *buffer, size_t buffer_length,
+                                    unsigned int server_key)
 {
   size_t send_length;
 
   memset(buffer, 0, buffer_length);
-  send_length= read(ptr->hosts[0].fd, buffer, buffer_length);
+  send_length= read(ptr->hosts[server_key].fd, buffer, buffer_length);
 
   if (send_length)
     switch(buffer[0])

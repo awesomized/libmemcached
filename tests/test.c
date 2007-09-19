@@ -27,7 +27,6 @@ void allocation_test(void)
 void set_test(void)
 {
   memcached_st *memc;
-  char *foo;
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
@@ -38,7 +37,6 @@ void set_test(void)
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
   assert(rc == MEMCACHED_SUCCESS);
-  assert(foo);
   
   memcached_deinit(memc);
 }
@@ -46,7 +44,6 @@ void set_test(void)
 void add_test(void)
 {
   memcached_st *memc;
-  char *foo;
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
@@ -57,7 +54,6 @@ void add_test(void)
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
   assert(rc == MEMCACHED_NOTSTORED);
-  assert(foo);
   
   memcached_deinit(memc);
 }
@@ -65,7 +61,6 @@ void add_test(void)
 void replace_test(void)
 {
   memcached_st *memc;
-  char *foo;
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
@@ -76,7 +71,6 @@ void replace_test(void)
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
   assert(rc == MEMCACHED_SUCCESS);
-  assert(foo);
   
   memcached_deinit(memc);
 }
@@ -84,7 +78,6 @@ void replace_test(void)
 void delete_test(void)
 {
   memcached_st *memc;
-  char *foo;
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
@@ -95,11 +88,9 @@ void delete_test(void)
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
   assert(rc == MEMCACHED_SUCCESS);
-  assert(foo);
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
   assert(rc == MEMCACHED_SUCCESS);
-  assert(foo);
   
   memcached_deinit(memc);
 }
@@ -141,7 +132,6 @@ void get_test(void)
 void get_test2(void)
 {
   memcached_st *memc;
-  char *foo;
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
@@ -176,6 +166,62 @@ void stats_hostname_test(void)
                               MEMCACHED_DEFAULT_PORT);
 }
 
+void increment_test(void)
+{
+  memcached_st *memc;
+  unsigned int new_number;
+  memcached_return rc;
+  char *key= "number";
+  char *value= "0";
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_increment(memc, key, strlen(key),
+                          1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 1);
+
+  rc= memcached_increment(memc, key, strlen(key),
+                          1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 2);
+
+  memcached_deinit(memc);
+}
+
+void decrement_test(void)
+{
+  memcached_st *memc;
+  unsigned int new_number;
+  memcached_return rc;
+  char *key= "number";
+  char *value= "3";
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_decrement(memc, key, strlen(key),
+                          1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 2);
+
+  rc= memcached_decrement(memc, key, strlen(key),
+                          1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 1);
+
+  memcached_deinit(memc);
+}
+
 int main(void)
 {
   /* Clean the server before beginning testing */
@@ -192,6 +238,9 @@ int main(void)
   get_test();
   get_test2();
   stats_hostname_test();
+
+  increment_test();
+  decrement_test();
 
   /* Clean up whatever we might have left */
   flush_test();

@@ -8,4 +8,9 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_get.c \
 			  memcached_storage.c \
 			  memcached_delete.c \
+			  memcached_hash.c \
+			  memcached_auto.c \
+			  memcached_verbosity.c \
+			  memcached_quit.c \
+			  memcached_flush.c \
 			  memcached_stats.c
