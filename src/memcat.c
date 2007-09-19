@@ -1,25 +1,69 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 #include <memcached.h>
+#include "client_options.h"
+
+static int opt_verbose;
+static int opt_displayflag;
+static char *opt_servers;
 
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
   char *string;
-  unsigned int x;
   size_t string_length;
   uint16_t  flags;
   memcached_return rc;
+  unsigned int x;
 
-  if (argc == 1)
-    return 0;
+  static struct option long_options[] =
+    {
+      {"version", no_argument, NULL, OPT_VERSION},
+      {"help", no_argument, NULL, OPT_HELP},
+      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {"servers", required_argument, NULL, OPT_SERVERS},
+      {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+      {0, 0, 0, 0},
+    };
+  int option_index = 0;
+  int option_rv;
 
+  while (1) 
+  {
+    option_rv = getopt_long(argc, argv, "", long_options, &option_index);
+    if (option_rv == -1) break;
+    switch (option_rv) {
+    case 0:
+      break;
+    case OPT_VERSION: /* --version */
+      printf("memcache tools, memcat, v1.0\n");
+      exit(0);
+      break;
+    case OPT_HELP: /* --help */
+      printf("useful help messages go here\n");
+      exit(0);
+      break;
+    case OPT_SERVERS: /* --servers */
+      opt_servers = strdup(optarg);
+      break;
+    case '?':
+      /* getopt_long already printed an error message. */
+      exit(1);
+    default:
+      abort();
+    }
+  }
+
+  /* todo, turn opt_servers into something to pass to memcached_init */
   memc= memcached_init(NULL);
 
   for (x= 1; x < argc; x++)
   {
     string= memcached_get(memc, argv[x], strlen(argv[x]),
                           &string_length, &flags, &rc);
-    if (string)
+    if (string) 
     {
       printf("%.*s\n", string_length, string);
       free(string);
