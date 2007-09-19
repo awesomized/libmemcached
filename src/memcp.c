@@ -115,10 +115,22 @@ int main(int argc, char *argv[])
     {
       ptr= argv[optind];
     }
-    
-    rc= memcached_set(memc, ptr, strlen(ptr),
-                      mptr, sbuf.st_size,
-                      expires, flags);
+
+    if (opt_replace == 0) {
+      rc= memcached_set(memc, ptr, strlen(ptr),
+			mptr, sbuf.st_size,
+			expires, flags);
+    } else if (opt_replace == 1) {
+      rc= memcached_add(memc, ptr, strlen(ptr),
+			mptr, sbuf.st_size,
+			expires, flags);
+    } else if (opt_replace == 2) {
+      rc= memcached_replace(memc, ptr, strlen(ptr),
+			    mptr, sbuf.st_size,
+			    expires, flags);
+    } else {
+      abort();
+    }
 
     munmap(mptr, sbuf.st_size);
     close(fd);
