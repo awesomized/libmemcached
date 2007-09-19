@@ -2,16 +2,9 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <memcached.h>
-
 #include "client_options.h"
-#include "utilities.h"
-
-
-/* Prototypes */
-void options_parse(int argc, char *argv[]);
 
 static int opt_verbose;
-static int opt_displayflag;
 static char *opt_servers;
 
 int main(int argc, char *argv[])
@@ -19,42 +12,8 @@ int main(int argc, char *argv[])
   memcached_st *memc;
   char *string;
   size_t string_length;
-  uint16_t  flags;
+  time_t expires = 0;
   memcached_return rc;
-
-  memc= memcached_init(NULL);
-
-  options_parse(argc, argv);
-
-  parse_opt_servers(memc, opt_servers);
-
-  while (optind <= argc) 
-  {
-    string= memcached_get(memc, argv[argc], strlen(argv[argc]),
-                          &string_length, &flags, &rc);
-    if (rc == MEMCACHED_SUCCESS) 
-    {
-      if (opt_displayflag) 
-	printf("%d\n", flags);
-      else 
-      {
-        printf("%.*s\n", string_length, string);
-        free(string);
-      }
-    }
-    optind++;
-  }
-
-  memcached_deinit(memc);
-
-  return 0;
-};
-
-
-void options_parse(int argc, char *argv[])
-{
-  int option_index = 0;
-  int option_rv;
 
   static struct option long_options[] =
     {
@@ -63,9 +22,11 @@ void options_parse(int argc, char *argv[])
       {"verbose", no_argument, &opt_verbose, 1},
       {"debug", no_argument, &opt_verbose, 2},
       {"servers", required_argument, NULL, OPT_SERVERS},
-      {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+      {"expire", required_argument, NULL, OPT_EXPIRE},
       {0, 0, 0, 0},
     };
+  int option_index = 0;
+  int option_rv;
 
   while (1) 
   {
@@ -75,7 +36,7 @@ void options_parse(int argc, char *argv[])
     case 0:
       break;
     case OPT_VERSION: /* --version */
-      printf("memcache tools, memcat, v1.0\n");
+      printf("memcache tools, memrm, v1.0\n");
       exit(0);
       break;
     case OPT_HELP: /* --help */
@@ -83,7 +44,10 @@ void options_parse(int argc, char *argv[])
       exit(0);
       break;
     case OPT_SERVERS: /* --servers */
-      opt_servers= optarg;
+      opt_servers = optarg;
+      break;
+    case OPT_EXPIRE: /* --expire */
+      expires = (time_t)strtol(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
@@ -92,4 +56,17 @@ void options_parse(int argc, char *argv[])
       abort();
     }
   }
-}
+
+  memc= memcached_init(NULL);
+  parse_opt_servers(memc, opt_servers);
+  
+  while (optind <= argc) 
+  {
+    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
+    optind++;
+  }
+
+  memcached_deinit(memc);
+
+  return 0;
+};

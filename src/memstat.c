@@ -64,7 +64,7 @@ void options_parse(int argc, char *argv[])
       exit(0);
       break;
     case OPT_SERVERS: /* --servers */
-      opt_servers = strdup(optarg);
+      opt_servers = optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */

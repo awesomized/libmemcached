@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -6,87 +8,128 @@
 #include <fcntl.h>
 
 #include <memcached.h>
+#include "client_options.h"
+
+/* Prototypes */
+void options_parse(int argc, char *argv[]);
+
+static int opt_verbose;
+static char *opt_servers;
+static int opt_replace;
+uint16_t opt_flags= 0;
+time_t opt_expires= 0;
 
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
   char *string;
-  unsigned int x;
   size_t string_length;
-  uint16_t  flags;
   memcached_return rc;
 
-  if (argc < 3)
-    return 0;
+  options_parse(argc, argv);
 
   memc= memcached_init(NULL);
+  parse_opt_servers(memc, opt_servers);
 
-  /* Get the server name */
-  {
-    char *ptr;
-    char *hostname;
-    size_t hostname_length;
-    unsigned int port;
-
-    ptr= index(argv[argc-1], ':');
-
-    if (ptr)
-    {
-      hostname_length= ptr - argv[argc-1];
-      hostname= (char *)malloc(hostname_length+1);
-      memset(hostname, 0, hostname_length+1);
-      memcpy(hostname, argv[argc-1], hostname_length);
-
-      ptr++;
-
-      port= strtol(ptr, (char **)NULL, 10);
-
-      memcached_server_add(memc, hostname, port);
-      free(hostname);
-    }
-    else
-    {
-      memcached_server_add(memc, argv[argc -1], 0);
-    }
-  }
-
-  for (x= 1; x < argc-1; x++)
+  while (optind <= argc) 
   {
     char *mptr;
     struct stat sbuf;
     int fd;
     char *ptr;
 
-    fd= open(argv[x], O_RDONLY);
+    fd= open(argv[optind], O_RDONLY);
 
     if (fd == -1)
     {
-      fprintf(stderr, "Failed opening %s\n", argv[x]);
-      exit(1);
+      fprintf(stderr, "Failed opening %s\n", argv[optind]);
+      continue;
     }
 
     (void)fstat(fd, &sbuf);
     mptr= mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-    ptr= rindex(argv[x], '/');
+    ptr= rindex(argv[optind], '/');
     if (ptr)
-    {
       ptr++;
-    }
     else
-    {
-      ptr= argv[x];
-    }
-    
-    rc= memcached_set(memc, ptr, strlen(ptr),
-                      mptr, sbuf.st_size,
-                      (time_t)0, (uint16_t)0);
+      ptr= argv[optind];
+
+    if (opt_replace == 0)
+      rc= memcached_set(memc, ptr, strlen(ptr),
+			mptr, sbuf.st_size,
+			opt_expires, opt_flags);
+    else if (opt_replace == 1)
+      rc= memcached_add(memc, ptr, strlen(ptr),
+			mptr, sbuf.st_size,
+			opt_expires, opt_flags);
+    else if (opt_replace == 2)
+      rc= memcached_replace(memc, ptr, strlen(ptr),
+			    mptr, sbuf.st_size,
+			    opt_expires, opt_flags);
+    else
+      abort();
 
     munmap(mptr, sbuf.st_size);
     close(fd);
+    optind++;
   }
 
   memcached_deinit(memc);
 
   return 0;
 };
+
+void options_parse(int argc, char *argv[])
+{
+  int option_index= 0;
+  int option_rv;
+
+  static struct option long_options[] =
+    {
+      {"version", no_argument, NULL, OPT_VERSION},
+      {"help", no_argument, NULL, OPT_HELP},
+      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {"servers", required_argument, NULL, OPT_SERVERS},
+      {"flag", required_argument, NULL, OPT_FLAG},
+      {"expire", required_argument, NULL, OPT_EXPIRE},
+      {"set",  no_argument, &opt_replace, OPT_SET},
+      {"add",  no_argument, &opt_replace, OPT_ADD},
+      {"replace",  no_argument, &opt_replace, OPT_REPLACE},
+      {0, 0, 0, 0},
+    };
+
+  while (1) 
+  {
+    option_rv= getopt_long(argc, argv, "", long_options, &option_index);
+
+    if (option_rv == -1) break;
+
+    switch (option_rv) {
+    case 0:
+      if (long_options[option_index].name)
+      break;
+    case OPT_VERSION: /* --version */
+      printf("memcache tools, memcp, v1.0\n");
+      exit(0);
+    case OPT_HELP: /* --help */
+      printf("useful help messages go here\n");
+      exit(0);
+    case OPT_SERVERS: /* --servers */
+      opt_servers= optarg;
+      break;
+    case OPT_FLAG: /* --flag */
+      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 10);
+      break;
+    case OPT_EXPIRE: /* --expire */
+      opt_expires= (time_t)strtol(optarg, (char **)NULL, 10);
+      break;
+    case '?':
+      /* getopt_long already printed an error message. */
+      exit(1);
+    default:
+      abort();
+    }
+  }
+}

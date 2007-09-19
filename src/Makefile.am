@@ -1,7 +1,7 @@
 INCLUDES = -I$(top_builddir)/include
 LDADDS = ../lib/libmemcached.la
 
-bin_PROGRAMS = memcat memcp memstat
+bin_PROGRAMS = memcat memcp memstat memrm
 
 noinst_includes= client_options.h utilities.h
 
@@ -13,3 +13,6 @@ memcp_LDADD = $(LDADDS)
 
 memstat_SOURCES = memstat.c utilities.c
 memstat_LDADD = $(LDADDS)
+
+memrm_SOURCES = memrm.c utilities.c
+memrm_LDADD = $(LDADDS)
