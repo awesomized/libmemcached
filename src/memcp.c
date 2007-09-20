@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include <memcached.h>
 #include "client_options.h"
@@ -39,15 +40,20 @@ int main(int argc, char *argv[])
     char *ptr;
 
     fd= open(argv[optind], O_RDONLY);
-
-    if (fd == -1)
-    {
-      fprintf(stderr, "Failed opening %s\n", argv[optind]);
+    if (fd < 0) {
+      fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
+      optind++;
       continue;
     }
 
     (void)fstat(fd, &sbuf);
     mptr= mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (mptr == MAP_FAILED) {
+      fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
+      close(fd);
+      optind++;
+      continue;
+    }
 
     ptr= rindex(argv[optind], '/');
     if (ptr)
@@ -77,6 +83,11 @@ int main(int argc, char *argv[])
 			    opt_expires, opt_flags);
     else
       abort();
+
+    if (rc != MEMCACHED_SUCCESS) {
+      fprintf(stderr, "memcp: %s: memcache error %s\n", 
+	      ptr, memcached_strerror(memc, rc));
+    }
 
     munmap(mptr, sbuf.st_size);
     close(fd);

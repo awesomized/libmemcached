@@ -49,6 +49,11 @@ int main(int argc, char *argv[])
         free(string);
       }
     }
+    else
+    {
+      fprintf(stderr, "memcat: %s: memcache error %s\n", 
+	      argv[argc], memcached_strerror(memc, rc));
+    }
     optind++;
   }
 

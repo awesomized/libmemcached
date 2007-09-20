@@ -1,4 +1,4 @@
-#include <memached.h>
+#include <memcached.h>
 
 char *memcached_strerror(memcached_st *ptr, memcached_return rc)
 {

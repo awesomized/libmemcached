@@ -3,6 +3,7 @@ LIBS =
 
 lib_LTLIBRARIES = libmemcached.la
 libmemcached_la_SOURCES = memcached.c \
+                          memcached_strerror.c \
 			  memcached_connect.c \
 			  memcached_response.c \
 			  memcached_get.c \

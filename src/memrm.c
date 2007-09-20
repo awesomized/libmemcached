@@ -66,6 +66,12 @@ int main(int argc, char *argv[])
       printf("key: %s\nexpires: %ld\n", argv[optind], expires);
     }
     rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
+
+    if (rc != MEMCACHED_SUCCESS) {
+      fprintf(stderr, "memrm: %s: memcache error %s\n", 
+	      argv[optind], memcached_strerror(memc, rc));
+    }
+
     optind++;
   }
 
