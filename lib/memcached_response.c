@@ -43,8 +43,15 @@ memcached_return memcached_response(memcached_st *ptr,
         else
           return MEMCACHED_UNKNOWN_READ_FAILURE;
       }
-    case 'E': /* PROTOCOL ERROR */
-      return MEMCACHED_PROTOCOL_ERROR;
+    case 'E': /* PROTOCOL ERROR or END */
+      {
+        if (buffer[1] == 'N')
+          return MEMCACHED_NOTFOUND;
+        else if (buffer[1] == 'R')
+          return MEMCACHED_PROTOCOL_ERROR;
+        else
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
     case 'C': /* CLIENT ERROR */
       return MEMCACHED_CLIENT_ERROR;
     default:

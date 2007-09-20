@@ -133,7 +133,6 @@ void get_test(void)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
-  printf("RC %u\n", rc);
   assert(rc == MEMCACHED_NOTFOUND);
   assert(string_length ==  0);
   assert(!string);

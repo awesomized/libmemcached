@@ -32,8 +32,9 @@ void memcached_deinit(memcached_st *ptr)
   {
     for (x= 0; x < ptr->number_of_hosts; x++)
     {
-      if (ptr->hosts[x].fd == -1)
+      if (ptr->hosts[x].fd > 0)
         close(ptr->hosts[x].fd);
+
       free(ptr->hosts[x].hostname);
     }
 
