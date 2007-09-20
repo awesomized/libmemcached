@@ -30,21 +30,21 @@ int main(int argc, char *argv[])
 
   while (optind <= argc) 
   {
-    string= memcached_get(memc, argv[argc], strlen(argv[argc]),
+    string= memcached_get(memc, argv[optind], strlen(argv[optind]),
                           &string_length, &flags, &rc);
     if (rc == MEMCACHED_SUCCESS) 
     {
       if (opt_displayflag)
       {
 	if (opt_verbose)
-	  printf("key: %.*s\nflags: ", argv[argc]);
+	  printf("key: %.*s\nflags: ", argv[optind]);
 	printf("%d\n", flags);
       }
       else 
       {
 	if (opt_verbose)
 	  printf("key: %.*s\nflags: %d\nlength: %d\nvalue: ",
-		 argv[argc], flags, string_length);
+		 argv[optind], flags, string_length);
         printf("%.*s\n", string_length, string);
         free(string);
       }
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     else
     {
       fprintf(stderr, "memcat: %s: memcache error %s\n", 
-	      argv[argc], memcached_strerror(memc, rc));
+	      argv[optind], memcached_strerror(memc, rc));
     }
     optind++;
   }
