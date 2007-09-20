@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
   
   while (optind <= argc) 
   {
+    if (opt_verbose) {
+      printf("key: %s\nexpires: %ld\n", argv[optind], expires);
+    }
     rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
     optind++;
   }

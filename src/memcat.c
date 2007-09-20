@@ -34,10 +34,17 @@ int main(int argc, char *argv[])
                           &string_length, &flags, &rc);
     if (rc == MEMCACHED_SUCCESS) 
     {
-      if (opt_displayflag) 
+      if (opt_displayflag)
+      {
+	if (opt_verbose)
+	  printf("key: %.*s\nflags: ", argv[argc]);
 	printf("%d\n", flags);
+      }
       else 
       {
+	if (opt_verbose)
+	  printf("key: %.*s\nflags: %d\nlength: %d\nvalue: ",
+		 argv[argc], flags, string_length);
         printf("%.*s\n", string_length, string);
         free(string);
       }

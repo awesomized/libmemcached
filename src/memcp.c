@@ -55,6 +55,14 @@ int main(int argc, char *argv[])
     else
       ptr= argv[optind];
 
+    if (opt_verbose) {
+      static char *opstr[] = { "set", "add", "replace" };
+      printf("op: %s\nsource file: %s\nlength: %d\n"
+	     "key: %s\nflags: %d\n expires: %ld\n",
+	     opstr[opt_replace], argv[optind], sbuf.st_size,
+	     ptr, opt_flags, opt_expires);
+    }
+
     if (opt_replace == 0)
       rc= memcached_set(memc, ptr, strlen(ptr),
 			mptr, sbuf.st_size,
