@@ -30,20 +30,20 @@ int main(int argc, char *argv[])
 
   while (1) 
   {
-    option_rv = getopt_long(argc, argv, "", long_options, &option_index);
+    option_rv = getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
     switch (option_rv) {
     case 0:
       break;
-    case OPT_VERSION: /* --version */
+    case OPT_VERSION: /* --version or -V */
       printf("memcache tools, memrm, v1.0\n");
       exit(0);
       break;
-    case OPT_HELP: /* --help */
+    case OPT_HELP: /* --help or -h */
       printf("useful help messages go here\n");
       exit(0);
       break;
-    case OPT_SERVERS: /* --servers */
+    case OPT_SERVERS: /* --servers or -s */
       opt_servers = optarg;
       break;
     case OPT_EXPIRE: /* --expire */
