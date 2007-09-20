@@ -9,9 +9,11 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
     hostname= "localhost"; 
 
 
-  ptr->hosts= (memcached_host_st *)realloc(ptr->hosts, sizeof(memcached_host_st) * (size_t)ptr->number_of_hosts);
+  ptr->hosts= (memcached_host_st *)realloc(ptr->hosts, sizeof(memcached_host_st) * (ptr->number_of_hosts+1));
+  memset(ptr->hosts, 0, sizeof(memcached_host_st) * (size_t)ptr->number_of_hosts);
   ptr->hosts[ptr->number_of_hosts].hostname=
-    (char *)malloc(sizeof(char) * strlen(hostname));
+    (char *)malloc(sizeof(char) * (strlen(hostname) + 1));
+  memset(ptr->hosts[ptr->number_of_hosts].hostname, 0, sizeof(char) * (strlen(hostname) + 1));
   memcpy(ptr->hosts[ptr->number_of_hosts].hostname, hostname, strlen(hostname));
   ptr->hosts[ptr->number_of_hosts].port= port;
   ptr->hosts[ptr->number_of_hosts].fd= -1;

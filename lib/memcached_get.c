@@ -10,6 +10,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   char *string_ptr;
   unsigned int server_key;
 
+  *value_length= 0;
   *error= memcached_connect(ptr);
 
   if (*error != MEMCACHED_SUCCESS)

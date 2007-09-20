@@ -23,6 +23,17 @@ void allocation_test(void)
   memcached_deinit(memc);
 }
 
+void connection_test(void)
+{
+  memcached_return rc;
+  memcached_st *memc;
+  memc= memcached_init(NULL);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(memc);
+  memcached_deinit(memc);
+}
+
 void set_test(void)
 {
   memcached_st *memc;
@@ -122,6 +133,8 @@ void get_test(void)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
+  printf("RC %u\n", rc);
+  assert(rc == MEMCACHED_NOTFOUND);
   assert(string_length ==  0);
   assert(!string);
 
@@ -228,6 +241,7 @@ int main(void)
 
   init_test();
   allocation_test();
+  connection_test();
   set_test();
   add_test();
   replace_test();
