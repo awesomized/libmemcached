@@ -40,7 +40,8 @@ int main(int argc, char *argv[])
     char *ptr;
 
     fd= open(argv[optind], O_RDONLY);
-    if (fd < 0) {
+    if (fd < 0)
+    {
       fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
       optind++;
       continue;
@@ -48,7 +49,8 @@ int main(int argc, char *argv[])
 
     (void)fstat(fd, &sbuf);
     mptr= mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (mptr == MAP_FAILED) {
+    if (mptr == MAP_FAILED)
+    {
       fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
       close(fd);
       optind++;
@@ -61,10 +63,11 @@ int main(int argc, char *argv[])
     else
       ptr= argv[optind];
 
-    if (opt_verbose) {
-      static char *opstr[] = { "set", "add", "replace" };
-      printf("op: %s\nsource file: %s\nlength: %d\n"
-	     "key: %s\nflags: %d\n expires: %ld\n",
+    if (opt_verbose)
+    {
+      static char *opstr[]= { "set", "add", "replace" };
+      printf("op: %s\nsource file: %s\nlength: %zu\n"
+	     "key: %s\nflags: %x\n expires: %ld\n",
 	     opstr[opt_replace], argv[optind], sbuf.st_size,
 	     ptr, opt_flags, opt_expires);
     }
@@ -84,7 +87,8 @@ int main(int argc, char *argv[])
     else
       abort();
 
-    if (rc != MEMCACHED_SUCCESS) {
+    if (rc != MEMCACHED_SUCCESS)
+    {
       fprintf(stderr, "memcp: %s: memcache error %s\n", 
 	      ptr, memcached_strerror(memc, rc));
     }
@@ -97,14 +101,14 @@ int main(int argc, char *argv[])
   memcached_deinit(memc);
 
   return 0;
-};
+}
 
 void options_parse(int argc, char *argv[])
 {
   int option_index= 0;
   int option_rv;
 
-  static struct option long_options[] =
+  static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
@@ -125,7 +129,8 @@ void options_parse(int argc, char *argv[])
 
     if (option_rv == -1) break;
 
-    switch (option_rv) {
+    switch (option_rv)
+    {
     case 0:
       break;
     case OPT_VERSION: /* --version or -V */
@@ -138,7 +143,7 @@ void options_parse(int argc, char *argv[])
       opt_servers= optarg;
       break;
     case OPT_FLAG: /* --flag */
-      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 10);
+      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 16);
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expires= (time_t)strtol(optarg, (char **)NULL, 10);

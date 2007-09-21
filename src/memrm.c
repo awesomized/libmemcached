@@ -12,10 +12,10 @@ int main(int argc, char *argv[])
   memcached_st *memc;
   char *string;
   size_t string_length;
-  time_t expires = 0;
+  time_t expires= 0;
   memcached_return rc;
 
-  static struct option long_options[] =
+  static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
@@ -25,14 +25,15 @@ int main(int argc, char *argv[])
       {"expire", required_argument, NULL, OPT_EXPIRE},
       {0, 0, 0, 0},
     };
-  int option_index = 0;
+  int option_index= 0;
   int option_rv;
 
   while (1) 
   {
-    option_rv = getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
-    switch (option_rv) {
+    switch (option_rv)
+    {
     case 0:
       break;
     case OPT_VERSION: /* --version or -V */
@@ -44,10 +45,10 @@ int main(int argc, char *argv[])
       exit(0);
       break;
     case OPT_SERVERS: /* --servers or -s */
-      opt_servers = optarg;
+      opt_servers= optarg;
       break;
     case OPT_EXPIRE: /* --expire */
-      expires = (time_t)strtol(optarg, (char **)NULL, 10);
+      expires= (time_t)strtol(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
@@ -62,15 +63,14 @@ int main(int argc, char *argv[])
   
   while (optind <= argc) 
   {
-    if (opt_verbose) {
+    if (opt_verbose)
       printf("key: %s\nexpires: %ld\n", argv[optind], expires);
-    }
-    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
 
-    if (rc != MEMCACHED_SUCCESS) {
+    rc= memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
+
+    if (rc != MEMCACHED_SUCCESS)
       fprintf(stderr, "memrm: %s: memcache error %s\n", 
 	      argv[optind], memcached_strerror(memc, rc));
-    }
 
     optind++;
   }
@@ -78,4 +78,4 @@ int main(int argc, char *argv[])
   memcached_deinit(memc);
 
   return 0;
-};
+}

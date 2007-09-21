@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 void options_parse(int argc, char *argv[])
 {
-  static struct option long_options[] =
+  static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
@@ -45,14 +45,15 @@ void options_parse(int argc, char *argv[])
       {0, 0, 0, 0},
     };
 
-  int option_index = 0;
+  int option_index= 0;
   int option_rv;
 
   while (1) 
   {
-    option_rv = getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
-    switch (option_rv) {
+    switch (option_rv)
+    {
     case 0:
       break;
     case OPT_VERSION: /* --version or -V */
@@ -64,7 +65,7 @@ void options_parse(int argc, char *argv[])
       exit(0);
       break;
     case OPT_SERVERS: /* --servers or -s */
-      opt_servers = optarg;
+      opt_servers= optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */

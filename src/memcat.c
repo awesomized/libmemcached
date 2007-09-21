@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
   memcached_st *memc;
   char *string;
   size_t string_length;
-  uint16_t  flags;
+  uint16_t flags;
   memcached_return rc;
 
   memc= memcached_init(NULL);
@@ -37,13 +37,13 @@ int main(int argc, char *argv[])
       if (opt_displayflag)
       {
 	if (opt_verbose)
-	  printf("key: %.*s\nflags: ", argv[optind]);
-	printf("%d\n", flags);
+	  printf("key: %s\nflags: ", argv[optind]);
+	printf("%x\n", flags);
       }
       else 
       {
 	if (opt_verbose)
-	  printf("key: %.*s\nflags: %d\nlength: %d\nvalue: ",
+	  printf("key: %s\nflags: %x\nlength: %zu\nvalue: ",
 		 argv[optind], flags, string_length);
         printf("%.*s\n", string_length, string);
         free(string);
@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
 
 void options_parse(int argc, char *argv[])
 {
-  int option_index = 0;
+  int option_index= 0;
   int option_rv;
 
-  static struct option long_options[] =
+  static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
@@ -81,9 +81,10 @@ void options_parse(int argc, char *argv[])
 
   while (1) 
   {
-    option_rv = getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
-    switch (option_rv) {
+    switch (option_rv)
+    {
     case 0:
       break;
     case OPT_VERSION: /* --version or -V */
