@@ -24,10 +24,18 @@ static memcached_return memcached_auto(memcached_st *ptr,
                         offset);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
-  if ((sent_length= write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
+  sent_length= write(ptr->hosts[server_key].fd, buffer, send_length);
+  if (sent_length == -1)
+  {
+    fprintf(stderr, "error %s: write: %m\n", __FUNCTION__);
     return MEMCACHED_WRITE_FAILURE;
+  }
   if (sent_length != send_length)
+  {
+    fprintf(stderr, "error %s: short write %d %d: %m\n",
+	    __FUNCTION__, sent_length, send_length);
     return MEMCACHED_WRITE_FAILURE;
+  }
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   send_length= read(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);

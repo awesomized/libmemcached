@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
   rc = memcached_flush(memc, opt_expire);
   if (rc != MEMCACHED_SUCCESS) 
   {
-    fprintf(stderr, "memflush: %s: memcache error %s\n", 
-	    argv[optind], memcached_strerror(memc, rc));
+    fprintf(stderr, "memflush: memcache error %s\n", 
+	    memcached_strerror(memc, rc));
   }
 
   memcached_deinit(memc);
