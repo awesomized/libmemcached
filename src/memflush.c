@@ -16,32 +16,24 @@ int main(int argc, char *argv[])
 {
   memcached_st *memc;
   memcached_return rc;
-  WATCHPOINT;
+
   options_parse(argc, argv);
-  WATCHPOINT;
 
   memc= memcached_init(NULL);
-  WATCHPOINT;
 
   if (opt_servers)
     parse_opt_servers(memc, opt_servers);
-  WATCHPOINT;
   
   rc = memcached_flush(memc, opt_expire);
-  WATCHPOINT;
-
   if (rc != MEMCACHED_SUCCESS) 
   {
     fprintf(stderr, "memflush: %s: memcache error %s\n", 
 	    argv[optind], memcached_strerror(memc, rc));
   }
-  WATCHPOINT;
 
   memcached_deinit(memc);
-  WATCHPOINT;
 
   free(opt_servers);
-  WATCHPOINT;
 
   return 0;
 }
