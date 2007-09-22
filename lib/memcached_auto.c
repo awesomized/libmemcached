@@ -23,7 +23,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                         key_length, key,
                         offset);
 
-  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
+  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
   {
     fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
 

@@ -19,7 +19,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   {
     memcached_return rc;
 
-    if ((send(ptr->hosts[x].fd, buffer, send_length, 0) == -1))
+    if ((write(ptr->hosts[x].fd, buffer, send_length) == -1))
     {
       fprintf(stderr, "failed verbosity\n");
 

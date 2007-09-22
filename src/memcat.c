@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 
   options_parse(argc, argv);
 
-  parse_opt_servers(memc, opt_servers);
+  if (opt_servers)
+    parse_opt_servers(memc, opt_servers);
 
   while (optind <= argc) 
   {
@@ -37,13 +38,13 @@ int main(int argc, char *argv[])
       if (opt_displayflag)
       {
 	if (opt_verbose)
-	  printf("key: %.*s\nflags: ", argv[optind]);
-	printf("%d\n", flags);
+	  printf("key: %s\nflags: ", argv[optind]);
+	printf("%u\n", flags);
       }
       else 
       {
 	if (opt_verbose)
-	  printf("key: %.*s\nflags: %d\nlength: %d\nvalue: ",
+	  printf("key: %s\nflags: %u\nlength: %uz\nvalue: ",
 		 argv[optind], flags, string_length);
         printf("%.*s\n", string_length, string);
         free(string);
@@ -72,8 +73,8 @@ void options_parse(int argc, char *argv[])
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, 1},
-      {"debug", no_argument, &opt_verbose, 2},
+      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {"servers", required_argument, NULL, OPT_SERVERS},
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
       {0, 0, 0, 0},

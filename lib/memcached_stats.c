@@ -136,7 +136,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
     send_length= snprintf(buffer, HUGE_STRING_LEN, 
                           "stats\r\n");
 
-  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
+  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
   {
     fprintf(stderr, "failed on stats\n");
 

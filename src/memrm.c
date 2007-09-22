@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, 1},
-      {"debug", no_argument, &opt_verbose, 2},
+      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {"servers", required_argument, NULL, OPT_SERVERS},
       {"expire", required_argument, NULL, OPT_EXPIRE},
       {0, 0, 0, 0},
@@ -62,12 +62,12 @@ int main(int argc, char *argv[])
   
   while (optind <= argc) 
   {
-    if (opt_verbose) {
-      printf("key: %s\nexpires: %ld\n", argv[optind], expires);
-    }
+    if (opt_verbose) 
+      printf("key: %s\nexpires: %llu\n", argv[optind], expires);
     rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), expires);
 
-    if (rc != MEMCACHED_SUCCESS) {
+    if (rc != MEMCACHED_SUCCESS) 
+    {
       fprintf(stderr, "memrm: %s: memcache error %s\n", 
 	      argv[optind], memcached_strerror(memc, rc));
     }
