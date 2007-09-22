@@ -5,7 +5,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     uint16_t *flags,
                     memcached_return *error)
 {
-  size_t send_length;
+  size_t send_length, sent_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *string_ptr;
   unsigned int server_key;
@@ -20,11 +20,16 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         (int)key_length, key);
-  if (*error != MEMCACHED_SUCCESS)
-    return NULL;
 
-  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    return MEMCACHED_WRITE_FAILURE;
+
+  if ((sent_length = write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
   {
+    *error= MEMCACHED_WRITE_FAILURE;
+    return NULL;
+  }
+  if (sent_length != send_length) {
     *error= MEMCACHED_WRITE_FAILURE;
     return NULL;
   }
