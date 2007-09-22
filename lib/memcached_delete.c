@@ -17,16 +17,14 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s %u\r\n", key_length, key, expiration);
+                          "delete %.*s %llu\r\n", (int)key_length, key, 
+                          (unsigned long long)expiration);
   else
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s\r\n", key_length, key);
-  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
-  {
-    fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
+                          "delete %.*s\r\n", (int)key_length, key);
 
+  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
     return MEMCACHED_WRITE_FAILURE;
-  }
 
   return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 }

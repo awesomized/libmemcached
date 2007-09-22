@@ -207,9 +207,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
                                          char *hostname, unsigned int port)
 {
-  size_t send_length;
   memcached_return rc;
-  char buffer[HUGE_STRING_LEN];
   memcached_st memc;
 
   memcached_init(&memc);

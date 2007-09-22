@@ -1,8 +1,5 @@
 #include <memcached.h>
 
-static char **cleanup_list= NULL;
-static char cleanup_list_length= 0;
-
 void parse_opt_servers(memcached_st *memc,
                        char *server_strings)
 {
@@ -52,26 +49,4 @@ void parse_opt_servers(memcached_st *memc,
       memcached_server_add(memc, buffer, 0);
     }
   }
-}
-
-void cleanup(void)
-{
-  unsigned int x;
-  for (x= 0; x < cleanup_list_length; x++)
-    free(cleanup_list[x]);
-
-  free(cleanup_list);
-}
-
-char *strdup_cleanup(const char *str)
-{
-  char *ptr;
-
-  ptr= strdup(str);
-
-  cleanup_list= (char **)realloc(cleanup_list, sizeof(char *) * (cleanup_list_length+1));
-  cleanup_list[cleanup_list_length]= ptr;
-  cleanup_list_length++;
-
-  return ptr;
 }

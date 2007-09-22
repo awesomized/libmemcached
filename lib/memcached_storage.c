@@ -32,32 +32,19 @@ static memcached_return memcached_send(memcached_st *ptr,
   server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                        "%s %.*s %u %u %u\r\n", verb,
-                        key_length, key, flags, expiration, value_length);
+                        "%s %.*s %x %llu %zu\r\n", verb,
+                        (int)key_length, key, flags, 
+                        (unsigned long long)expiration, value_length);
   if ((sent_length= write(ptr->hosts[server_key].fd, buffer, write_length)) == -1)
-  {
-    fprintf(stderr, "failed %s on %.*s: %s\n", verb, key_length+1, key, strerror(errno));
-
     return MEMCACHED_WRITE_FAILURE;
-  }
   assert(write_length == sent_length);
 
-  WATCHPOINT;
-  printf("About to push %.*s\n", value_length, value);
-  WATCHPOINT;
   if ((sent_length= write(ptr->hosts[server_key].fd, value, value_length)) == -1)
-  {
-    fprintf(stderr, "failed %s on %.*s: %s\n", verb, key_length+1, key, strerror(errno));
-
     return MEMCACHED_WRITE_FAILURE;
-  }
   assert(value_length == sent_length);
-  if ((sent_length= write(ptr->hosts[server_key].fd, "\r\n", 2)) == -1)
-  {
-    fprintf(stderr, "failed %s on %.*s: %s\n", verb, key_length+1, key, strerror(errno));
 
+  if ((sent_length= write(ptr->hosts[server_key].fd, "\r\n", 2)) == -1)
     return MEMCACHED_WRITE_FAILURE;
-  }
   assert(2 == sent_length);
 
   sent_length= read(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);

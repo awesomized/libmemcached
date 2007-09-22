@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/include
+INCLUDES = -I$(top_builddir)/include -Wall
 LDADDS = ../lib/libmemcached.la
 
 bin_PROGRAMS = memcat memcp memstat memrm

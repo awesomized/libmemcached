@@ -41,6 +41,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
   case MEMCACHED_PARTIAL_READ:
     return "PARTIAL READ";
   case MEMCACHED_SOME_ERRORS:
-    return "SOME ERRORS WERE REPORTED ";
+    return "SOME ERRORS WERE REPORTED";
   };
+
+  return "COMPLETELY UNKNOWN ERROR, SOMEONE FORGOT TO UPDATE ERROR MESSAGES";
 }

@@ -9,25 +9,26 @@
 
 #include <memcached.h>
 #include "client_options.h"
+#include "utilities.h"
 
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
 
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
-static int opt_method= 0;
-uint16_t opt_flags= 0;
-time_t opt_expires= 0;
+static int opt_method= OPT_SET;
+static uint16_t opt_flags= 0;
+static time_t opt_expires= 0;
 
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
-  char *string;
-  size_t string_length;
   memcached_return rc;
+
   options_parse(argc, argv);
 
   memc= memcached_init(NULL);
+
   if (opt_servers)
     parse_opt_servers(memc, opt_servers);
   else
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
     char *file_buffer_ptr;
 
     fd= open(argv[optind], O_RDONLY);
-    if (fd < 0) 
+    if (fd < 0)
     {
       fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
       optind++;
@@ -61,9 +62,9 @@ int main(int argc, char *argv[])
     {
       static char *opstr[] = { "set", "add", "replace" };
       printf("op: %s\nsource file: %s\nlength: %zu\n"
-	     "key: %s\nflags: %u\n expires: %llu\n",
-	     opstr[opt_method], argv[optind], sbuf.st_size,
-	     ptr, opt_flags, opt_expires);
+	     "key: %s\nflags: %x\n expires: %llu\n",
+	     opstr[opt_method], argv[optind], (size_t)sbuf.st_size,
+	     ptr, opt_flags, (unsigned long long)opt_expires);
     }
 
     if ((file_buffer_ptr= (char *)malloc(sizeof(char) * sbuf.st_size)) == NULL)
@@ -104,17 +105,17 @@ int main(int argc, char *argv[])
 
   memcached_deinit(memc);
 
-  cleanup();
+  free(opt_servers);
 
   return 0;
-};
+}
 
 void options_parse(int argc, char *argv[])
 {
   int option_index= 0;
   int option_rv;
 
-  static struct option long_options[] =
+  static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
       {"help", no_argument, NULL, OPT_HELP},
@@ -135,7 +136,8 @@ void options_parse(int argc, char *argv[])
 
     if (option_rv == -1) break;
 
-    switch (option_rv) {
+    switch (option_rv)
+    {
     case 0:
       break;
     case OPT_VERSION: /* --version or -V */
@@ -145,13 +147,13 @@ void options_parse(int argc, char *argv[])
       printf("useful help messages go here\n");
       exit(0);
     case OPT_SERVERS: /* --servers or -s */
-      opt_servers= strdup_cleanup(optarg);
+      opt_servers= strdup(optarg);
       break;
     case OPT_FLAG: /* --flag */
-      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 10);
+      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 16);
       break;
     case OPT_EXPIRE: /* --expire */
-      opt_expires= (time_t)strtol(optarg, (char **)NULL, 10);
+      opt_expires= (time_t)strtoll(optarg, (char **)NULL, 10);
       break;
     case OPT_SET:
       opt_method= OPT_SET;

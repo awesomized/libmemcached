@@ -26,7 +26,6 @@ memcached_st *memcached_init(memcached_st *ptr)
 void memcached_deinit(memcached_st *ptr)
 {
   unsigned int x;
-  memcached_host_st *host_ptr;
 
   if (ptr->hosts)
   {

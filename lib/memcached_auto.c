@@ -20,15 +20,11 @@ static memcached_return memcached_auto(memcached_st *ptr,
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %u\r\n", verb, 
-                        key_length, key,
+                        (int)key_length, key,
                         offset);
 
   if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
-  {
-    fprintf(stderr, "failed set on %.*s TCP\n", key_length+1, key);
-
     return MEMCACHED_WRITE_FAILURE;
-  }
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   send_length= read(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);

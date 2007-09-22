@@ -19,13 +19,12 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
-                        key_length, key);
+                        (int)key_length, key);
   if (*error != MEMCACHED_SUCCESS)
     return NULL;
 
   if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
   {
-    fprintf(stderr, "failed fetch on %.*s TCP\n", key_length+1, key);
     *error= MEMCACHED_WRITE_FAILURE;
     return NULL;
   }

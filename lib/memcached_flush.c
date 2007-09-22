@@ -16,16 +16,12 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   {
     if (expiration)
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                            "flush_all %u\r\n", expiration);
+                            "flush_all %llu\r\n", (unsigned long long)expiration);
     else
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                             "flush_all\r\n");
     if ((write(ptr->hosts[x].fd, buffer, send_length) == -1))
-    {
-      fprintf(stderr, "failed flush_all TCP\n");
-
       return MEMCACHED_WRITE_FAILURE;
-    }
 
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
 

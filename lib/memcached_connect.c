@@ -26,7 +26,6 @@ memcached_return memcached_connect(memcached_st *ptr)
   unsigned int x;
   struct sockaddr_in localAddr, servAddr;
   struct hostent *h;
-  memcached_host_st *host_ptr;
 
   if (ptr->connected)
     return MEMCACHED_SUCCESS;
@@ -44,10 +43,7 @@ memcached_return memcached_connect(memcached_st *ptr)
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
     if ((h= gethostbyname(ptr->hosts[x].hostname)) == NULL)
-    {
-      fprintf(stderr, "unknown host '%s'\n", ptr->hosts[x].hostname);
       return MEMCACHED_HOST_LOCKUP_FAILURE;
-    }
 
     servAddr.sin_family= h->h_addrtype;
     memcpy((char *) &servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
@@ -55,10 +51,7 @@ memcached_return memcached_connect(memcached_st *ptr)
 
     /* Create the socket */
     if ((ptr->hosts[0].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-      fprintf(stderr, "cannot open socket");
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
-    }
 
 
     /* bind any port number */
@@ -67,19 +60,11 @@ memcached_return memcached_connect(memcached_st *ptr)
     localAddr.sin_port = htons(0);
 
     if (bind(ptr->hosts[0].fd, (struct sockaddr *) &localAddr, sizeof(localAddr)) < 0)
-    {
-      fprintf(stderr, "cannot bind port TCP %u\n", ptr->hosts[x].port);
       return(MEMCACHED_CONNECTION_BIND_FAILURE);
-    }
 
     /* connect to server */
     if (connect(ptr->hosts[0].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
-    {
-      fprintf(stderr, "cannot connect to host '%s' (%u)  (error: %s)\n", ptr->hosts[x].hostname, 
-              ptr->hosts[x].port,
-              strerror(errno));
       return MEMCACHED_HOST_LOCKUP_FAILURE;
-    }
   }
 
   ptr->connected= 1;

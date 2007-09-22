@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/include
+INCLUDES = -I$(top_builddir)/include -Wall
 LIBS =
 
 lib_LTLIBRARIES = libmemcached.la
