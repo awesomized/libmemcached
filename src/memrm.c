@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   if (opt_servers)
     parse_opt_servers(memc, opt_servers);
   
-  while (optind <= argc) 
+  while (optind < argc) 
   {
     if (opt_verbose) 
       printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
