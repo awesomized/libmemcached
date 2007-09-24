@@ -21,8 +21,6 @@ int main(int argc, char *argv[])
 
   memc= memcached_init(NULL);
 
-  parse_opt_servers(memc, opt_servers);
-
   if (opt_servers)
     parse_opt_servers(memc, opt_servers);
   
