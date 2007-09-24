@@ -35,6 +35,7 @@ typedef struct memcached_host_st memcached_host_st;
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define HUGE_STRING_LEN 8196
+#define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
 
 #define WATCHPOINT printf("WATCHPOINT %s:%d\n", __FILE__, __LINE__);fflush(stdout);
 
@@ -104,6 +105,7 @@ struct memcached_st {
   memcached_allocated is_allocated;
   memcached_host_st *hosts;
   unsigned int number_of_hosts;
+  unsigned int cursor_server;
   char connected;
 };
 
@@ -138,12 +140,19 @@ memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args,
                                          char *hostname, unsigned int port);
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
-memcached_return memcached_quit(memcached_st *ptr, char *hostname, unsigned port);
+void memcached_quit(memcached_st *ptr);
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     size_t *value_length, 
                     uint16_t *flags,
                     memcached_return *error);
-memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port);
+memcached_return memcached_mget(memcached_st *ptr, 
+                                char **keys, size_t *key_length, 
+                                unsigned int number_of_keys);
+char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
+                      size_t *value_length, uint16_t *flags, 
+                      memcached_return *error);
+memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
+                                      unsigned int port);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 
 /* These are all private, do not use. */

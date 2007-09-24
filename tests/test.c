@@ -160,6 +160,8 @@ void get_test2(void)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
+  assert(string);
+  assert(rc == MEMCACHED_SUCCESS);
   assert(string_length == strlen(value));
   assert(!memcmp(string, value, string_length));
 
@@ -233,11 +235,86 @@ void decrement_test(void)
   memcached_deinit(memc);
 }
 
+void quit_test(void)
+{
+  memcached_st *memc;
+  memcached_return rc;
+  char *key= "fudge";
+  char *value= "sanford and sun";
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)10, (uint16_t)3);
+  assert(rc == MEMCACHED_SUCCESS);
+  memcached_quit(memc);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)50, (uint16_t)9);
+  assert(rc == MEMCACHED_SUCCESS);
+  
+  memcached_deinit(memc);
+}
+
+void mget_test(void)
+{
+  memcached_st *memc;
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  unsigned int x;
+  uint16_t flags;
+
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  while (return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                      &return_value_length, &flags, &rc))
+  {
+    assert(return_value);
+  }
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  x= 0;
+  while (return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                      &return_value_length, &flags, &rc))
+  {
+    assert(return_value);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(key_length[x] == return_value_length);
+    assert(!memcmp(return_value, keys[x], return_value_length));
+    x++;
+  }
+
+  memcached_deinit(memc);
+}
+
+
 int main(void)
 {
   /* Clean the server before beginning testing */
   flush_test();
-
   init_test();
   allocation_test();
   connection_test();
@@ -253,6 +330,8 @@ int main(void)
 
   increment_test();
   decrement_test();
+  quit_test();
+  mget_test();
 
   /* Clean up whatever we might have left */
   flush_test();

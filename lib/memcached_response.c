@@ -12,9 +12,24 @@ memcached_return memcached_response(memcached_st *ptr,
                                     unsigned int server_key)
 {
   size_t send_length;
+  char *buffer_ptr;
 
   memset(buffer, 0, buffer_length);
-  send_length= read(ptr->hosts[server_key].fd, buffer, buffer_length);
+
+  buffer_ptr= buffer;
+  while (1)
+  {
+    unsigned int read_length;
+    read_length= read(ptr->hosts[server_key].fd, buffer_ptr, 1);
+
+    if (read_length != 1)
+      return  MEMCACHED_UNKNOWN_READ_FAILURE;
+
+    if (*buffer_ptr == '\n')
+      break;
+    else
+      buffer_ptr++;
+  }
 
   if (send_length)
     switch(buffer[0])

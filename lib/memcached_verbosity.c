@@ -20,7 +20,10 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
     memcached_return rc;
 
     if ((write(ptr->hosts[x].fd, buffer, send_length) == -1))
-      return MEMCACHED_WRITE_FAILURE;
+    {
+      continue;
+      return MEMCACHED_SOME_ERRORS;
+    }
 
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
 
