@@ -170,6 +170,40 @@ void get_test2(void)
   memcached_deinit(memc);
 }
 
+void get_test3(void)
+{
+  memcached_st *memc;
+  memcached_return rc;
+  char *key= "foo";
+  char *value;
+  size_t value_length= 8191;
+  char *string;
+  size_t string_length;
+  uint16_t flags;
+  int i;
+
+  value = (char*) malloc(value_length);
+  for (i=0; i<value_length; i++)
+    value[i] = (char) (i % 127);
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, value_length,
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(string_length == value_length);
+  assert(!memcmp(string, value, string_length));
+
+  free(string);
+
+  memcached_deinit(memc);
+}
+
 void stats_hostname_test(void)
 {
   memcached_return rc;
@@ -326,6 +360,7 @@ int main(void)
   flush_test();
   get_test();
   get_test2();
+  get_test3();
   stats_hostname_test();
 
   increment_test();

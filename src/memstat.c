@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
   memc= memcached_init(NULL);
   options_parse(argc, argv);
 
-  parse_opt_servers(memc, opt_servers);
+  if (opt_servers)
+    parse_opt_servers(memc, opt_servers);
 
   memcached_deinit(memc);
 
