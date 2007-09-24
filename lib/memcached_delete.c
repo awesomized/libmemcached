@@ -3,7 +3,7 @@
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration)
 {
-  size_t send_length;
+  size_t send_length, sent_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
@@ -23,7 +23,12 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "delete %.*s\r\n", (int)key_length, key);
 
-  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    return MEMCACHED_WRITE_FAILURE;
+
+  sent_length= write(ptr->hosts[server_key].fd, buffer, send_length);
+
+  if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;
 
   return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);

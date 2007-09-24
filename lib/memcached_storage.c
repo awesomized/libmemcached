@@ -35,6 +35,8 @@ static memcached_return memcached_send(memcached_st *ptr,
                         "%s %.*s %x %llu %zu\r\n", verb,
                         (int)key_length, key, flags, 
                         (unsigned long long)expiration, value_length);
+  if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    return MEMCACHED_WRITE_FAILURE;
   if ((sent_length= write(ptr->hosts[server_key].fd, buffer, write_length)) == -1)
     return MEMCACHED_WRITE_FAILURE;
   assert(write_length == sent_length);

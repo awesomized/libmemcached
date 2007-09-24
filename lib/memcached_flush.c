@@ -3,7 +3,7 @@
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
 {
   unsigned int x;
-  size_t send_length;
+  size_t send_length, sent_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
@@ -20,7 +20,13 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     else
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                             "flush_all\r\n");
-    if ((write(ptr->hosts[x].fd, buffer, send_length) == -1))
+
+    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+      return MEMCACHED_WRITE_FAILURE;
+
+    sent_length= write(ptr->hosts[x].fd, buffer, send_length);
+
+    if (sent_length == -1 || sent_length != send_length)
       return MEMCACHED_WRITE_FAILURE;
 
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);

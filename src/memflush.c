@@ -21,24 +21,14 @@ int main(int argc, char *argv[])
 
   memc= memcached_init(NULL);
 
-  parse_opt_servers(memc, opt_servers);
-
   if (opt_servers)
     parse_opt_servers(memc, opt_servers);
   
-  while (optind <= argc) 
+  rc = memcached_flush(memc, opt_expire);
+  if (rc != MEMCACHED_SUCCESS) 
   {
-    if (opt_verbose) 
-      printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
-    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
-
-    if (rc != MEMCACHED_SUCCESS) 
-    {
-      fprintf(stderr, "memrm: %s: memcache error %s\n", 
-	      argv[optind], memcached_strerror(memc, rc));
-    }
-
-    optind++;
+    fprintf(stderr, "memflush: memcache error %s\n", 
+	    memcached_strerror(memc, rc));
   }
 
   memcached_deinit(memc);
@@ -79,7 +69,7 @@ void options_parse(int argc, char *argv[])
       opt_verbose = OPT_DEBUG;
       break;
     case OPT_VERSION: /* --version or -V */
-      printf("memcache tools, memrm, v1.0\n");
+      printf("memcache tools, memflush, v1.0\n");
       exit(0);
       break;
     case OPT_HELP: /* --help or -h */

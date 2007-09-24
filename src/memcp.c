@@ -62,8 +62,8 @@ int main(int argc, char *argv[])
     {
       static char *opstr[] = { "set", "add", "replace" };
       printf("op: %s\nsource file: %s\nlength: %zu\n"
-	     "key: %s\nflags: %x\n expires: %llu\n",
-	     opstr[opt_method], argv[optind], (size_t)sbuf.st_size,
+	     "key: %s\nflags: %x\nexpires: %llu\n",
+	     opstr[opt_method - OPT_SET], argv[optind], (size_t)sbuf.st_size,
 	     ptr, opt_flags, (unsigned long long)opt_expires);
     }
 
@@ -139,6 +139,12 @@ void options_parse(int argc, char *argv[])
     switch (option_rv)
     {
     case 0:
+      break;
+    case OPT_VERBOSE: /* --verbose or -v */
+      opt_verbose = OPT_VERBOSE;
+      break;
+    case OPT_DEBUG: /* --debug or -d */
+      opt_verbose = OPT_DEBUG;
       break;
     case OPT_VERSION: /* --version or -V */
       printf("memcache tools, memcp, v1.0\n");

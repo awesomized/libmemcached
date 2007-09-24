@@ -90,6 +90,12 @@ void options_parse(int argc, char *argv[])
     {
     case 0:
       break;
+    case OPT_VERBOSE: /* --verbose or -v */
+      opt_verbose = OPT_VERBOSE;
+      break;
+    case OPT_DEBUG: /* --debug or -d */
+      opt_verbose = OPT_DEBUG;
+      break;
     case OPT_VERSION: /* --version or -V */
       printf("memcache tools, memcat, v1.0\n");
       exit(0);
