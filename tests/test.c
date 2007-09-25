@@ -344,6 +344,22 @@ void mget_test(void)
   memcached_deinit(memc);
 }
 
+void get_stats_keys(void)
+{
+ char **list;
+ char **ptr;
+ memcached_stat_st stat;
+ memcached_return rc;
+
+ list= memcached_stat_get_keys(&stat, &rc);
+ assert(rc == MEMCACHED_SUCCESS);
+ for (ptr= list; *ptr; ptr++)
+   printf("Found key %s\n", *ptr);
+
+ free(list);
+
+}
+
 
 int main(void)
 {
@@ -367,6 +383,7 @@ int main(void)
   decrement_test();
   quit_test();
   mget_test();
+  get_stats_keys();
 
   /* Clean up whatever we might have left */
   flush_test();

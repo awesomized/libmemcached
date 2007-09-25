@@ -3,7 +3,7 @@
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
 {
   unsigned int x;
-  size_t send_length, sent_length;
+  size_t send_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 

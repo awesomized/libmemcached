@@ -161,6 +161,9 @@ memcached_return memcached_response(memcached_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
 unsigned int memcached_generate_hash(char *key, size_t key_length);
+memcached_return memcached_stat_get_value(memcached_stat_st *stat, char *key, 
+                                          char *value, size_t value_length);
+char ** memcached_stat_get_keys(memcached_stat_st *stat, memcached_return *error);
 
 #ifdef __cplusplus
 }

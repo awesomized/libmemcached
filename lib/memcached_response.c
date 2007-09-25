@@ -15,6 +15,7 @@ memcached_return memcached_response(memcached_st *ptr,
   char *buffer_ptr;
 
   memset(buffer, 0, buffer_length);
+  send_length= 0;
 
   buffer_ptr= buffer;
   while (1)
@@ -31,47 +32,48 @@ memcached_return memcached_response(memcached_st *ptr,
       buffer_ptr++;
   }
 
-  if (send_length)
-    switch(buffer[0])
+  switch(buffer[0])
+  {
+  case 'V': /* VALUE */
+    return MEMCACHED_SUCCESS;
+  case 'O': /* OK */
+    return MEMCACHED_SUCCESS;
+  case 'S': /* STORED STATS SERVER_ERROR */
     {
-    case 'V': /* VALUE */
-      return MEMCACHED_SUCCESS;
-    case 'O': /* OK */
-      return MEMCACHED_SUCCESS;
-    case 'S': /* STORED STATS SERVER_ERROR */
-      {
-        if (buffer[1] == 'T') /* STORED STATS */
-          return MEMCACHED_SUCCESS;
-        else if (buffer[1] == 'E')
-          return MEMCACHED_SERVER_ERROR;
-        else
-          return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
-    case 'D': /* DELETED */
-      return MEMCACHED_SUCCESS;
-    case 'N': /* NOT_FOUND */
-      {
-        if (buffer[4] == 'F')
-          return MEMCACHED_NOTFOUND;
-        else if (buffer[4] == 'S')
-          return MEMCACHED_NOTSTORED;
-        else
-          return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
-    case 'E': /* PROTOCOL ERROR or END */
-      {
-        if (buffer[1] == 'N')
-          return MEMCACHED_NOTFOUND;
-        else if (buffer[1] == 'R')
-          return MEMCACHED_PROTOCOL_ERROR;
-        else
-          return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
-    case 'C': /* CLIENT ERROR */
-      return MEMCACHED_CLIENT_ERROR;
-    default:
-      return MEMCACHED_UNKNOWN_READ_FAILURE;
+      if (buffer[1] == 'T') /* STORED STATS */
+        return MEMCACHED_SUCCESS;
+      else if (buffer[1] == 'E')
+        return MEMCACHED_SERVER_ERROR;
+      else
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
+  case 'D': /* DELETED */
+    return MEMCACHED_SUCCESS;
+  case 'N': /* NOT_FOUND */
+    {
+      if (buffer[4] == 'F')
+        return MEMCACHED_NOTFOUND;
+      else if (buffer[4] == 'S')
+        return MEMCACHED_NOTSTORED;
+      else
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+    }
+  case 'E': /* PROTOCOL ERROR or END */
+    {
+      if (buffer[1] == 'N')
+        return MEMCACHED_NOTFOUND;
+      else if (buffer[1] == 'R')
+        return MEMCACHED_PROTOCOL_ERROR;
+      else
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+    }
+  case 'C': /* CLIENT ERROR */
+    return MEMCACHED_CLIENT_ERROR;
+  default:
+    return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-  return MEMCACHED_READ_FAILURE;
+    return MEMCACHED_READ_FAILURE;
+  }
+
+  return MEMCACHED_SUCCESS;
 }
