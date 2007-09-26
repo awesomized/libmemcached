@@ -30,10 +30,12 @@ extern "C" {
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
+typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_host_st memcached_host_st;
 
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
+#define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
 
@@ -101,6 +103,13 @@ struct memcached_stat_st {
   unsigned int limit_maxbytes;
 };
 
+struct memcached_string_st {
+  char *string;
+  char *end;
+  size_t current_size;
+  size_t block_size;
+};
+
 struct memcached_st {
   memcached_allocated is_allocated;
   memcached_host_st *hosts;
@@ -164,6 +173,21 @@ unsigned int memcached_generate_hash(char *key, size_t key_length);
 memcached_return memcached_stat_get_value(memcached_stat_st *stat, char *key, 
                                           char *value, size_t value_length);
 char ** memcached_stat_get_keys(memcached_stat_st *stat, memcached_return *error);
+
+/* String Struct */
+#define memcached_string_length(A, B) (size_t)(B->end - B->string)
+#define memcached_string_size(A, B) B->current_size
+#define memcached_string_value(A, B) B->string
+
+memcached_string_st *memcached_string_init(memcached_st *ptr, size_t initial_size);
+memcached_return memcached_string_append_character(memcached_st *ptr, 
+                                                   memcached_string_st *string, 
+                                                   char character);
+memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st *string,
+                                         char *value, size_t length);
+size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove);
+memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string);
+void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
 
 #ifdef __cplusplus
 }

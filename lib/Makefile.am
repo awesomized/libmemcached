@@ -14,4 +14,5 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_verbosity.c \
 			  memcached_quit.c \
 			  memcached_flush.c \
+			  memcached_string.c \
 			  memcached_stats.c

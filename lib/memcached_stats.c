@@ -385,7 +385,15 @@ char ** memcached_stat_get_keys(memcached_stat_st *stat, memcached_return *error
 {
   char **list= (char **)malloc(sizeof(memcached_stat_keys));
 
+  if (!list)
+  {
+    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return NULL;
+  }
+
   memcpy(list, memcached_stat_keys, sizeof(memcached_stat_keys));
+
+  *error= MEMCACHED_SUCCESS;
 
   return list;
 }

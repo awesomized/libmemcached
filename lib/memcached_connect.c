@@ -2,6 +2,9 @@
 
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port)
 {
+  memcached_host_st *new_host_list;
+  char *new_hostname;
+
   if (!port)
     port= MEMCACHED_DEFAULT_PORT; 
 
@@ -9,11 +12,23 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
     hostname= "localhost"; 
 
 
-  ptr->hosts= (memcached_host_st *)realloc(ptr->hosts, sizeof(memcached_host_st) * (ptr->number_of_hosts+1));
-  ptr->hosts[ptr->number_of_hosts].hostname=
+  new_host_list= (memcached_host_st *)realloc(ptr->hosts, sizeof(memcached_host_st) * (ptr->number_of_hosts+1));
+  memset((new_host_list + (sizeof(memcached_host_st) * ptr->number_of_hosts)) - sizeof(memcached_host_st), 
+         0, sizeof(memcached_host_st));
+  
+  if (!new_host_list)
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+  ptr->hosts= new_host_list;
+
+  new_hostname=
     (char *)malloc(sizeof(char) * (strlen(hostname)+1));
-  memset(ptr->hosts[ptr->number_of_hosts].hostname, 0, strlen(hostname)+1);
-  memcpy(ptr->hosts[ptr->number_of_hosts].hostname, hostname, strlen(hostname));
+  if (!new_hostname)
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+  memset(new_hostname, 0, strlen(hostname)+1);
+  memcpy(new_hostname, hostname, strlen(hostname));
+  ptr->hosts[ptr->number_of_hosts].hostname= new_hostname;
   ptr->hosts[ptr->number_of_hosts].port= port;
   ptr->hosts[ptr->number_of_hosts].fd= -1;
   ptr->number_of_hosts++;

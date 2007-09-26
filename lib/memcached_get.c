@@ -117,9 +117,9 @@ memcached_return memcached_mget(memcached_st *ptr,
                                 unsigned int number_of_keys)
 {
   char buffer[HUGE_STRING_LEN];
-  char *buffer_ptr;
   unsigned int x;
   memcached_return rc;
+  memcached_string_st **cursor_key_exec;
 
   ptr->cursor_server= 0;
   memset(buffer, 0, HUGE_STRING_LEN);
@@ -129,33 +129,59 @@ memcached_return memcached_mget(memcached_st *ptr,
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  memcpy(buffer, "get", strlen("get"));
-  buffer_ptr= buffer;
-  buffer_ptr+=strlen("get");
+  cursor_key_exec= (memcached_string_st **)malloc(sizeof(memcached_string_st *) * ptr->number_of_hosts);
+  memset(cursor_key_exec, 0, sizeof(memcached_string_st *) * ptr->number_of_hosts);
+
 
   for (x= 0; x < number_of_keys; x++)
   {
-    *buffer_ptr= ' ';
-    buffer_ptr++;
-    memcpy(buffer_ptr, keys[x], key_length[x]);
-    buffer_ptr+= key_length[x];
+    unsigned int server_key;
+
+    server_key= memcached_generate_hash(keys[x], key_length[x]) % ptr->number_of_hosts;
+
+    if (cursor_key_exec[server_key])
+    {
+      memcached_string_st *string= cursor_key_exec[server_key];
+
+      memcached_string_append_character(ptr, string, ' ');
+      memcached_string_append(ptr, string, keys[x], key_length[x]);
+    }
+    else
+    {
+      memcached_string_st *string= memcached_string_init(ptr, SMALL_STRING_LEN);
+
+      if (!string)
+        assert(0);
+
+      memcached_string_append(ptr, string, "get ", 4);
+      memcached_string_append(ptr, string, keys[x], key_length[x]);
+
+      cursor_key_exec[server_key]= string;
+    }
   }
 
-  memcpy(buffer_ptr, "\r\n", 2);
-  buffer_ptr+=2;
 
   /*
-    This must be fixed. Right now we hit every server, and send keys
-    to all servers. We should fix this quickly.
+    Should we muddle on if some servers are dead?
   */
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    if ((write(ptr->hosts[x].fd, buffer, (size_t)(buffer_ptr - buffer)) == -1))
+    if (cursor_key_exec[x])
     {
-      memcached_quit(ptr);
-      rc= MEMCACHED_SOME_ERRORS;
+      memcached_string_st *string= cursor_key_exec[x];
+      memcached_string_append(ptr, string, "\r\n", 2);
+
+      if ((write(ptr->hosts[x].fd, string->string, 
+                 memcached_string_length(ptr, string)) == -1))
+      {
+        memcached_quit(ptr);
+        rc= MEMCACHED_SOME_ERRORS;
+      }
+      memcached_string_free(ptr, string);
     }
   }
+
+  free(cursor_key_exec);
 
   return rc;
 }
