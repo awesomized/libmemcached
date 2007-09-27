@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <memcached.h>
 
 void parse_opt_servers(memcached_st *memc,
@@ -29,9 +30,8 @@ void parse_opt_servers(memcached_st *memc,
     }
     else
     {
-      size_t length= strlen(server_strings);
+      size_t length= strlen(begin_ptr);
       memcpy(buffer, begin_ptr, length);
-      string= server_strings+length;
       begin_ptr= end_ptr;
     }
 
@@ -47,5 +47,8 @@ void parse_opt_servers(memcached_st *memc,
     }
 
     memcached_server_add(memc, buffer, port);
+
+    if (isspace(*begin_ptr))
+      begin_ptr++;
   }
 }
