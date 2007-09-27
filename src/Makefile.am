@@ -3,7 +3,7 @@ LDADDS = ../lib/libmemcached.la
 
 bin_PROGRAMS = memcat memcp memstat memrm memflush
 
-noinst_includes= client_options.h utilities.h
+noinst_HEADERS = client_options.h utilities.h
 
 memcat_SOURCES = memcat.c utilities.c
 memcat_LDADD = $(LDADDS)

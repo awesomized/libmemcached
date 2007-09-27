@@ -1,6 +1,8 @@
 INCLUDES = -I$(top_builddir)/include
 LDADDS = ../lib/libmemcached.la
 
+EXTRA_DIST = output.res output2.res
+
 LIBS = 
 
 noinst_PROGRAMS = testapp
