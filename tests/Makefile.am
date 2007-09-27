@@ -9,10 +9,21 @@ testapp_SOURCES = test.c
 testapp_LDADD = $(LDADDS)
 
 record:
-	./testapp output.txt > output.res
+	./testapp > output.res
+
+record-extended:
+	./testapp extended > output2.res
+
 test: testapp
-	./testapp output.txt > output.cmp
+	./testapp > output.cmp
 	diff output.res output.cmp
 
+test-extended: testapp
+	./testapp extended > output.cmp
+	diff output2.res output.cmp
+
 valgrind:
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp output.txt
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
+
+valgrind-extended:
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp extended

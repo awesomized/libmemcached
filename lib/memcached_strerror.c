@@ -42,6 +42,12 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "PARTIAL READ";
   case MEMCACHED_SOME_ERRORS:
     return "SOME ERRORS WERE REPORTED";
+  case MEMCACHED_NO_SERVERS:
+    return "NO SERVERS DEFINED";
+  case MEMCACHED_MAXIMUM_RETURN:
+    return "Gibberish returned!";
+  default:
+    return "Gibberish returned!";
   };
 
   return "COMPLETELY UNKNOWN ERROR, SOMEONE FORGOT TO UPDATE ERROR MESSAGES";

@@ -13,9 +13,13 @@ void memcached_quit(memcached_st *ptr)
   {
     for (x= 0; x < ptr->number_of_hosts; x++)
     {
-      if (ptr->hosts[x].fd > 0)
+      if (ptr->hosts[x].fd != -1)
+      {
         close(ptr->hosts[x].fd);
+        ptr->hosts[x].fd= -1;
+      }
     }
   }
+
   ptr->connected= 0;
 }

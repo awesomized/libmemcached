@@ -31,15 +31,13 @@ extern "C" {
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_string_st memcached_string_st;
-typedef struct memcached_host_st memcached_host_st;
+typedef struct memcached_server_st memcached_server_st;
 
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
-
-#define WATCHPOINT printf("WATCHPOINT %s:%d\n", __FILE__, __LINE__);fflush(stdout);
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -61,6 +59,8 @@ typedef enum {
   MEMCACHED_MEMORY_ALLOCATION_FAILURE,
   MEMCACHED_PARTIAL_READ,
   MEMCACHED_SOME_ERRORS,
+  MEMCACHED_NO_SERVERS,
+  MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
 typedef enum {
@@ -68,7 +68,7 @@ typedef enum {
   MEMCACHED_ALLOCATED= 1,
 } memcached_allocated;
 
-struct memcached_host_st {
+struct memcached_server_st {
   char *hostname;
   unsigned int port;
   int fd;
@@ -112,7 +112,7 @@ struct memcached_string_st {
 
 struct memcached_st {
   memcached_allocated is_allocated;
-  memcached_host_st *hosts;
+  memcached_server_st *hosts;
   unsigned int number_of_hosts;
   unsigned int cursor_server;
   char connected;
@@ -122,6 +122,25 @@ struct memcached_st {
 memcached_st *memcached_init(memcached_st *ptr);
 void memcached_deinit(memcached_st *ptr);
 
+memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
+                                  time_t expiration);
+memcached_return memcached_increment(memcached_st *ptr, 
+                                     char *key, size_t key_length,
+                                     unsigned int offset,
+                                     unsigned int *value);
+memcached_return memcached_decrement(memcached_st *ptr, 
+                                     char *key, size_t key_length,
+                                     unsigned int offset,
+                                     unsigned int *value);
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
+memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args, 
+                                           char *hostname, unsigned int port);
+memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
+memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
+void memcached_quit(memcached_st *ptr);
+char *memcached_strerror(memcached_st *ptr, memcached_return rc);
+
+/* All of the functions for adding data to the server */
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
                                char *value, size_t value_length, 
                                time_t expiration,
@@ -134,22 +153,8 @@ memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_leng
                                    char *value, size_t value_length, 
                                    time_t expiration,
                                    uint16_t  flags);
-memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
-                                  time_t expiration);
-memcached_return memcached_increment(memcached_st *ptr, 
-                                     char *key, size_t key_length,
-                                     unsigned int offset,
-                                     unsigned int *value);
-memcached_return memcached_decrement(memcached_st *ptr, 
-                                     char *key, size_t key_length,
-                                     unsigned int offset,
-                                     unsigned int *value);
-memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
-memcached_return memcached_stat_hostname(memcached_stat_st *stat, char *args, 
-                                         char *hostname, unsigned int port);
-memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
-memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
-void memcached_quit(memcached_st *ptr);
+
+/* Get functions */
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     size_t *value_length, 
                     uint16_t *flags,
@@ -160,9 +165,15 @@ memcached_return memcached_mget(memcached_st *ptr,
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                       size_t *value_length, uint16_t *flags, 
                       memcached_return *error);
+
+/* Server Public functions */
+#define memcached_server_count(A) A->number_of_hosts
+#define memcached_server_name(A,B) B.hostname
+#define memcached_server_port(A,B) B.port
+#define memcached_server_list(A) A->hosts
+
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
                                       unsigned int port);
-char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 
 /* These are all private, do not use. */
 memcached_return memcached_connect(memcached_st *ptr);
@@ -170,9 +181,11 @@ memcached_return memcached_response(memcached_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
 unsigned int memcached_generate_hash(char *key, size_t key_length);
-memcached_return memcached_stat_get_value(memcached_stat_st *stat, char *key, 
-                                          char *value, size_t value_length);
-char ** memcached_stat_get_keys(memcached_stat_st *stat, memcached_return *error);
+char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
+                               char *key, memcached_return *error);
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
+                                memcached_return *error);
+
 
 /* String Struct */
 #define memcached_string_length(A, B) (size_t)(B->end - B->string)
@@ -188,6 +201,11 @@ memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st 
 size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string);
 void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
+
+/* Some personal debugging functions */
+#define WATCHPOINT printf("WATCHPOINT %s:%d\n", __FILE__, __LINE__);fflush(stdout);
+#define WATCHPOINT_ERROR(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
+
 
 #ifdef __cplusplus
 }

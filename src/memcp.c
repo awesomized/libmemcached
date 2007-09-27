@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
       fprintf(stderr, "memcp: %s: memcache error %s\n", 
 	      ptr, memcached_strerror(memc, rc));
 
-    WATCHPOINT;
     free(file_buffer_ptr);
     close(fd);
     optind++;

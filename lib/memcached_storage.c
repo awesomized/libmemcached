@@ -22,10 +22,10 @@ static memcached_return memcached_send(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  rc= memcached_connect(ptr);
   assert(value);
   assert(value_length);
 
+  rc= memcached_connect(ptr);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 

@@ -28,8 +28,24 @@ void connection_test(void)
   memcached_return rc;
   memcached_st *memc;
   memc= memcached_init(NULL);
+  assert(memc);
   rc= memcached_server_add(memc, "localhost", 0);
   assert(rc == MEMCACHED_SUCCESS);
+  assert(memc);
+  memcached_deinit(memc);
+}
+
+void error_test(void)
+{
+  memcached_st *memc;
+  memc= memcached_init(NULL);
+  memcached_return rc;
+
+  for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
+  {
+    printf("Error %d -> %s\n", rc, memcached_strerror(memc, rc));
+  }
+
   assert(memc);
   memcached_deinit(memc);
 }
@@ -43,6 +59,8 @@ void set_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -60,6 +78,8 @@ void add_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -77,6 +97,8 @@ void replace_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_replace(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -94,6 +116,8 @@ void delete_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -112,6 +136,8 @@ void flush_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
@@ -129,6 +155,8 @@ void get_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
   
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -152,6 +180,9 @@ void get_test2(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -188,6 +219,9 @@ void get_test3(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_set(memc, key, strlen(key), 
                     value, value_length,
                     (time_t)0, (uint16_t)0);
@@ -205,13 +239,13 @@ void get_test3(void)
   memcached_deinit(memc);
 }
 
-void stats_hostname_test(void)
+void stats_servername_test(void)
 {
   memcached_return rc;
   memcached_stat_st stat;
-  rc= memcached_stat_hostname(&stat, NULL,
-                              "localhost", 
-                              MEMCACHED_DEFAULT_PORT);
+  rc= memcached_stat_servername(&stat, NULL,
+                                 "localhost", 
+                                 MEMCACHED_DEFAULT_PORT);
 }
 
 void increment_test(void)
@@ -224,6 +258,9 @@ void increment_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -252,6 +289,9 @@ void decrement_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -279,6 +319,9 @@ void quit_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)10, (uint16_t)3);
@@ -309,15 +352,22 @@ void mget_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /* We need to empty the server before continueing test */
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
   rc= memcached_mget(memc, keys, key_length, 3);
   assert(rc == MEMCACHED_SUCCESS);
 
-  while (return_value= memcached_fetch(memc, return_key, &return_key_length, 
-                      &return_value_length, &flags, &rc))
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                      &return_value_length, &flags, &rc)) != NULL)
   {
     assert(return_value);
   }
+  assert(!return_value);
   assert(return_value_length == 0);
   assert(rc == MEMCACHED_NOTFOUND);
 
@@ -351,26 +401,101 @@ void get_stats_keys(void)
 {
  char **list;
  char **ptr;
+ memcached_st *memc;
  memcached_stat_st stat;
  memcached_return rc;
 
- list= memcached_stat_get_keys(&stat, &rc);
+ memc= memcached_init(NULL);
+ assert(memc);
+
+ list= memcached_stat_get_keys(memc, &stat, &rc);
  assert(rc == MEMCACHED_SUCCESS);
  for (ptr= list; *ptr; ptr++)
    printf("Found key %s\n", *ptr);
 
  free(list);
+ memcached_deinit(memc);
+}
 
+void get_stats(void)
+{
+ unsigned int x;
+ char **list;
+ char **ptr;
+ memcached_return rc;
+ memcached_st *memc;
+ memcached_stat_st *stat;
+
+ memc= memcached_init(NULL);
+ assert(memc);
+ rc= memcached_server_add(memc, "localhost", 0);
+ assert(rc == MEMCACHED_SUCCESS);
+
+ stat= memcached_stat(memc, NULL, &rc);
+ assert(rc == MEMCACHED_SUCCESS);
+
+ assert(rc == MEMCACHED_SUCCESS);
+ assert(stat);
+
+ for (x= 0; x < memcached_server_count(memc); x++)
+ {
+   list= memcached_stat_get_keys(memc, &stat[x], &rc);
+   assert(rc == MEMCACHED_SUCCESS);
+   for (ptr= list; *ptr; ptr++)
+     printf("Found key %s\n", *ptr);
+
+   free(list);
+ }
+
+ free(stat);
+ memcached_deinit(memc);
+}
+
+void get_stats_multiple(void)
+{
+ unsigned int x;
+ char **list;
+ char **ptr;
+ memcached_return rc;
+ memcached_st *memc;
+ memcached_stat_st *stat;
+
+ memc= memcached_init(NULL);
+ assert(memc);
+ rc= memcached_server_add(memc, "localhost", 0);
+ assert(rc == MEMCACHED_SUCCESS);
+ rc= memcached_server_add(memc, "localhost", 5555);
+ assert(rc == MEMCACHED_SUCCESS);
+
+ stat= memcached_stat(memc, NULL, &rc);
+ assert(rc == MEMCACHED_SUCCESS);
+
+ assert(rc == MEMCACHED_SUCCESS);
+ assert(stat);
+
+ for (x= 0; x < memcached_server_count(memc); x++)
+ {
+   list= memcached_stat_get_keys(memc, &stat[x], &rc);
+   assert(rc == MEMCACHED_SUCCESS);
+   for (ptr= list; *ptr; ptr++)
+     printf("Found key %s\n", *ptr);
+
+   free(list);
+ }
+
+ free(stat);
+ memcached_deinit(memc);
 }
 
 
-int main(void)
+int main(int argc, char argvp[])
 {
   /* Clean the server before beginning testing */
   flush_test();
   init_test();
   allocation_test();
   connection_test();
+  error_test();
   set_test();
   add_test();
   replace_test();
@@ -380,12 +505,19 @@ int main(void)
   get_test();
   get_test2();
   get_test3();
-  stats_hostname_test();
+  stats_servername_test();
 
   increment_test();
   decrement_test();
   quit_test();
-//  mget_test();
+  mget_test();
+  get_stats();
+
+  /* The multiple tests */
+  if (argc == 2)
+  {
+    get_stats_multiple();
+  }
   get_stats_keys();
 
   /* Clean up whatever we might have left */

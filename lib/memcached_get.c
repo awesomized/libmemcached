@@ -176,6 +176,7 @@ memcached_return memcached_mget(memcached_st *ptr,
     {
       memcached_string_st *string= memcached_string_init(ptr, SMALL_STRING_LEN);
 
+      /* We need to figure out the correct way to error in case of this failure */
       if (!string)
         assert(0);
 
@@ -227,6 +228,8 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     
     if (*error == MEMCACHED_NOTFOUND)
       ptr->cursor_server++;
+    else if (*error != MEMCACHED_SUCCESS)
+      return NULL;
     else
       return value_check;
   }
