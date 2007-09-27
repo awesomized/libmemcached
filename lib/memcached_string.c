@@ -2,7 +2,7 @@
 
 memcached_return memcached_string_check(memcached_string_st *string, size_t need)
 {
-  if (need > (string->current_size - (string->end - string->string)))
+  if (need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
     size_t current_offset= string->end - string->string;
     char *new_value;
@@ -18,7 +18,7 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
     string->current_size+= string->block_size;
 
     /* We zero the block structure we just realloced */
-    memset((string + string->current_size) - string->block_size , 0, 
+    memset((string->string + string->current_size) - string->block_size , 0, 
            sizeof(char) * string->block_size);
   }
 

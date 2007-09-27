@@ -9,6 +9,13 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *string_ptr;
+  char *end_ptr;
+
+  assert(value_length);
+  assert(flags);
+  assert(error);
+
+  end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
   *value_length= 0;
 
@@ -17,7 +24,7 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
 
   if (*error == MEMCACHED_SUCCESS)
   {
-    char *end_ptr;
+    char *next_ptr;
 
     string_ptr= buffer;
     string_ptr+= 6; /* "VALUE " */
@@ -26,27 +33,45 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     if (load_key)
     {
       memset(key, 0, MEMCACHED_MAX_KEY);
-      for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++)
+      for (; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++)
       {
-        *key= *end_ptr;
+        *key= *string_ptr;
         key++;
       }
     }
     else /* Skip characters */
-      for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++);
+      for (; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
 
-    /* Flags fetch */
-    string_ptr= end_ptr + 1;
-    for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++);
-    *flags= (uint16_t)strtol(string_ptr, &end_ptr, 10);
+    if (end_ptr == string_ptr)
+        goto read_error;
 
-    /* Length fetch */
-    string_ptr= end_ptr + 1;
-    for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++);
-    *value_length= strtoll(string_ptr, &end_ptr, 10);
+    /* Flags fetch move past space */
+    string_ptr++;
+    if (end_ptr == string_ptr)
+        goto read_error;
+
+    for (next_ptr= string_ptr; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
+    *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
+
+    if (end_ptr == string_ptr)
+        goto read_error;
+
+    /* Length fetch move past space*/
+    string_ptr++;
+    if (end_ptr == string_ptr)
+        goto read_error;
+
+    for (next_ptr= string_ptr; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
+    *value_length= (size_t)strtoll(next_ptr, &string_ptr, 10);
+
+    if (end_ptr == string_ptr)
+        goto read_error;
 
     /* Skip past the \r\n */
-    string_ptr= end_ptr +2;
+    string_ptr+= 2;
+
+    if (end_ptr < string_ptr)
+        goto read_error;
 
     if (*value_length)
     {
@@ -65,18 +90,19 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
 
       read_length= read(ptr->hosts[server_key].fd, value, (*value_length)+2);
 
-      if ((read_length -2) != *value_length)
+      if (read_length != (size_t)(*value_length + 2))
       {
         free(value);
-        *error= MEMCACHED_PARTIAL_READ;
-
-        return NULL;
+        goto read_error;
       }
 
       return value;
     }
   }
 
+  return NULL;
+read_error:
+  *error= MEMCACHED_PARTIAL_READ;
   return NULL;
 }
 
@@ -178,6 +204,7 @@ memcached_return memcached_mget(memcached_st *ptr,
         rc= MEMCACHED_SOME_ERRORS;
       }
       memcached_string_free(ptr, string);
+      cursor_key_exec[x]= NULL; /* Remove warning */
     }
   }
 

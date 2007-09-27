@@ -13,8 +13,9 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
 
 
   new_host_list= (memcached_host_st *)realloc(ptr->hosts, sizeof(memcached_host_st) * (ptr->number_of_hosts+1));
-  memset((new_host_list + (sizeof(memcached_host_st) * ptr->number_of_hosts)) - sizeof(memcached_host_st), 
-         0, sizeof(memcached_host_st));
+  if (!new_host_list)
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  memset(&new_host_list[ptr->number_of_hosts], 0, sizeof(memcached_host_st));
   
   if (!new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
