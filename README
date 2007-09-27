@@ -1,0 +1,17 @@
+Hi!
+
+So what is this? Its a library in C for connectinng to memcached servers
+(http://danga.com/memcached/). It is also a collection of utilities designed
+to work with memcached.
+
+memcat - Copy the value of a key to standard output
+memflush - Flush the contents of your servers.
+memrm - Remove a key(s) from the serrver.
+memstat - Dump the stats of your servers to standard output
+
+This code is still in Alpha. More tests have currently been done on the 
+library code then on the utilities.
+
+Cheers,
+  -Brian Aker
+   Seattle, WA.
