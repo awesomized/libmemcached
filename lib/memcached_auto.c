@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 static memcached_return memcached_auto(memcached_st *ptr, 
                                        char *verb,
@@ -56,7 +56,13 @@ memcached_return memcached_increment(memcached_st *ptr,
                                      unsigned int offset,
                                      unsigned int *value)
 {
-  return memcached_auto(ptr, "incr", key, key_length, offset, value);
+  memcached_return rc;
+
+  LIBMEMCACHED_MEMCACHED_INCREMENT_START();
+  rc= memcached_auto(ptr, "incr", key, key_length, offset, value);
+  LIBMEMCACHED_MEMCACHED_INCREMENT_END();
+
+  return rc;
 }
 
 memcached_return memcached_decrement(memcached_st *ptr, 
@@ -64,5 +70,11 @@ memcached_return memcached_decrement(memcached_st *ptr,
                                      unsigned int offset,
                                      unsigned int *value)
 {
-  return memcached_auto(ptr, "decr", key, key_length, offset, value);
+  memcached_return rc;
+
+  LIBMEMCACHED_MEMCACHED_DECREMENT_START();
+  rc= memcached_auto(ptr, "decr", key, key_length, offset, value);
+  LIBMEMCACHED_MEMCACHED_DECREMENT_END();
+
+  return rc;
 }

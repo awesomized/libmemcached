@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 /*
   This closes all connections (forces flush of input as well).

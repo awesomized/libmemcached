@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration)
@@ -7,6 +7,8 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
+
+  LIBMEMCACHED_MEMCACHED_DELETE_START();
 
   rc= memcached_connect(ptr);
 
@@ -31,5 +33,8 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;
 
-  return memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  LIBMEMCACHED_MEMCACHED_DELETE_END();
+
+  return rc;
 }

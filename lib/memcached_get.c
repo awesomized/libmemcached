@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                                    size_t *value_length, 
@@ -128,6 +128,8 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   size_t send_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
+  char *value;
+  LIBMEMCACHED_MEMCACHED_GET_START();
 
   *value_length= 0;
   *error= memcached_connect(ptr);
@@ -148,8 +150,11 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
     return NULL;
   }
 
-  return memcached_value_fetch(ptr, key, &key_length, value_length, flags,
+  value= memcached_value_fetch(ptr, key, &key_length, value_length, flags,
                                error, 0, server_key);
+  LIBMEMCACHED_MEMCACHED_GET_END();
+
+  return value;
 }
 
 memcached_return memcached_mget(memcached_st *ptr, 
@@ -160,6 +165,7 @@ memcached_return memcached_mget(memcached_st *ptr,
   unsigned int x;
   memcached_return rc;
   memcached_string_st **cursor_key_exec;
+  LIBMEMCACHED_MEMCACHED_MGET_START();
 
   ptr->cursor_server= 0;
   memset(buffer, 0, HUGE_STRING_LEN);
@@ -225,6 +231,7 @@ memcached_return memcached_mget(memcached_st *ptr,
 
   free(cursor_key_exec);
 
+  LIBMEMCACHED_MEMCACHED_MGET_END();
   return rc;
 }
 

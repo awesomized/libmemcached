@@ -7,7 +7,7 @@
 
 */
 
-#include <memcached.h>
+#include "common.h"
 
 static memcached_return memcached_send(memcached_st *ptr, 
                                        char *key, size_t key_length, 
@@ -64,8 +64,12 @@ memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length,
                                time_t expiration,
                                uint16_t  flags)
 {
-  return  memcached_send(ptr, key, key_length, value, value_length,
+  memcached_return rc;
+  LIBMEMCACHED_MEMCACHED_SET_START();
+  rc= memcached_send(ptr, key, key_length, value, value_length,
                          expiration, flags, "set");
+  LIBMEMCACHED_MEMCACHED_SET_END();
+  return rc;
 }
 
 memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
@@ -73,8 +77,12 @@ memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
                                time_t expiration,
                                uint16_t  flags)
 {
-  return  memcached_send(ptr, key, key_length, value, value_length,
+  memcached_return rc;
+  LIBMEMCACHED_MEMCACHED_ADD_START();
+  rc= memcached_send(ptr, key, key_length, value, value_length,
                          expiration, flags, "add");
+  LIBMEMCACHED_MEMCACHED_ADD_END();
+  return rc;
 }
 
 memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_length,
@@ -82,6 +90,10 @@ memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_leng
                                    time_t expiration,
                                    uint16_t  flags)
 {
-  return  memcached_send(ptr, key, key_length, value, value_length,
+  memcached_return rc;
+  LIBMEMCACHED_MEMCACHED_REPLACE_START();
+  rc= memcached_send(ptr, key, key_length, value, value_length,
                          expiration, flags, "replace");
+  LIBMEMCACHED_MEMCACHED_REPLACE_END();
+  return rc;
 }

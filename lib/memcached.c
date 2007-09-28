@@ -1,7 +1,7 @@
 /*
   Memcached library
 */
-#include <memcached.h>
+#include "common.h"
 
 memcached_st *memcached_init(memcached_st *ptr)
 {

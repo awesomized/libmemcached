@@ -1,5 +1,27 @@
-INCLUDES = -I$(top_builddir)/include
+EXTRA_DIST = libmemcached_probes.d
+
+INCLUDES = -I$(top_builddir)/include -I$(top_builddir)
 LIBS =
+
+DTRACE =                @DTRACE@
+DTRACEFLAGS =           @DTRACEFLAGS@
+DTRACEFILES = memcached.o \
+              memcached_strerror.o \
+              memcached_connect.o \
+              memcached_response.o \
+              memcached_get.o \
+              memcached_storage.o \
+              memcached_delete.o \
+              memcached_hash.o \
+              memcached_auto.o \
+              memcached_verbosity.o \
+              memcached_quit.o \
+              memcached_flush.o \
+              memcached_string.o \
+              memcached_stats.o
+
+noinst_HEADERS = libmemcached_probes.h \
+                 common.h
 
 lib_LTLIBRARIES = libmemcached.la
 libmemcached_la_SOURCES = memcached.c \
@@ -16,3 +38,17 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_flush.c \
 			  memcached_string.c \
 			  memcached_stats.c
+libmemcached_la_LIBADD =
+
+if HAVE_DTRACE
+  libmemcached_la_LIBADD += libmemcached_probes.o
+endif
+
+libmemcached_probes.h: libmemcached_probes.d
+	$(DTRACE) $(DTRACEFLAGS) -h -s libmemcached_probes.d
+	mv libmemcached_probes.h libmemcached_probes.h.bak
+	sed "s/#include <unistd.h>//g" libmemcached_probes.h.bak > libmemcached_probes.h
+	rm libmemcached_probes.h.bak
+
+libmemcached_probes.o:
+	$(DTRACE) $(DTRACEFLAGS) -G -s libmemcached_probes.d $(DTRACEFILES)

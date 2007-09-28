@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
 {
@@ -6,6 +6,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   size_t send_length, sent_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+  LIBMEMCACHED_MEMCACHED_FLUSH_START();
 
   rc= memcached_connect(ptr);
 
@@ -36,5 +37,6 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
       rc= MEMCACHED_SOME_ERRORS;
   }
 
+  LIBMEMCACHED_MEMCACHED_FLUSH_END();
   return rc;
 }

@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 unsigned int memcached_generate_hash(char *key, size_t key_length)
 {

@@ -5,7 +5,7 @@
   from an issued command.
 */
 
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,

@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   free(opt_servers);
 
   return 0;
-};
+}
 
 
 void options_parse(int argc, char *argv[])

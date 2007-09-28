@@ -1,12 +1,14 @@
 AC_INIT(src/memcat.c)
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(libmemcached_config.h)
 AM_INIT_AUTOMAKE("libmemcached", 0.2 )
 
 AC_PROG_CC
 AC_PROG_LIBTOOL
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
+
+sinclude(config/dtrace.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"

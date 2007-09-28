@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
 {

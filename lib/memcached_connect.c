@@ -1,9 +1,10 @@
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port)
 {
   memcached_server_st *new_host_list;
   char *new_hostname;
+  LIBMEMCACHED_MEMCACHED_SERVER_ADD_START();
 
   if (!port)
     port= MEMCACHED_DEFAULT_PORT; 
@@ -34,6 +35,8 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
   ptr->hosts[ptr->number_of_hosts].fd= -1;
   ptr->number_of_hosts++;
 
+  LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
+
   return MEMCACHED_SUCCESS;
 }
 
@@ -42,6 +45,8 @@ memcached_return memcached_connect(memcached_st *ptr)
   unsigned int x;
   struct sockaddr_in localAddr, servAddr;
   struct hostent *h;
+
+  LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
   if (ptr->connected == ptr->number_of_hosts)
     return MEMCACHED_SUCCESS;
@@ -82,6 +87,7 @@ memcached_return memcached_connect(memcached_st *ptr)
       ptr->connected++;
     }
   }
+  LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
   return MEMCACHED_SUCCESS;
 }

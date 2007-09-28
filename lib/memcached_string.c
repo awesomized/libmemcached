@@ -1,4 +1,4 @@
-#include <memcached.h>
+#include "common.h"
 
 memcached_return memcached_string_check(memcached_string_st *string, size_t need)
 {

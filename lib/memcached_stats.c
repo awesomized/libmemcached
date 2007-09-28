@@ -1,7 +1,7 @@
 /*
 */
 
-#include <memcached.h>
+#include "common.h"
 
 static char *memcached_stat_keys[] = {
   "pid",
@@ -337,6 +337,8 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
                                 memcached_return *error)
 {
   char **list= (char **)malloc(sizeof(memcached_stat_keys));
+
+  memset(list, 0, sizeof(memcached_stat_keys));
 
   if (!list)
   {
