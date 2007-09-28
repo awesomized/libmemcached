@@ -15,7 +15,7 @@ valgrind-extended:
 
 
 rpm: all dist
-	cp $(DISTVNAME).tar$(SUFFIX) /usr/src/redhat/SOURCES
-	rpm -ba support/libmemcached.spec
-	cp /usr/src/redhat/RPMS/i386/$(DISTVNAME)*.i386.rpm .
-	cp /usr/src/redhat/SRPMS/$(DISTVNAME)*.src.rpm .
+	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
+	rpmbuild -ba support/libmemcached.spec
+	cp /home/brian/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
+	cp /home/brian/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
