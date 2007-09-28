@@ -21,7 +21,7 @@ memcached_return memcached_response(memcached_st *ptr,
   while (1)
   {
     unsigned int read_length;
-    read_length= read(ptr->hosts[server_key].fd, buffer_ptr, 1);
+    read_length= recv(ptr->hosts[server_key].fd, buffer_ptr, 1, 0);
 
     if (read_length != 1)
       return  MEMCACHED_UNKNOWN_READ_FAILURE;
@@ -72,7 +72,6 @@ memcached_return memcached_response(memcached_st *ptr,
   default:
     return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-    return MEMCACHED_READ_FAILURE;
   }
 
   return MEMCACHED_SUCCESS;

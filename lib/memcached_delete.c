@@ -26,7 +26,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  sent_length= write(ptr->hosts[server_key].fd, buffer, send_length);
+  sent_length= send(ptr->hosts[server_key].fd, buffer, send_length, 0);
 
   if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;

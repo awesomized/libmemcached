@@ -25,7 +25,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
       return MEMCACHED_WRITE_FAILURE;
 
-    sent_length= write(ptr->hosts[x].fd, buffer, send_length);
+    sent_length= send(ptr->hosts[x].fd, buffer, send_length, 0);
 
     if (sent_length == -1 || sent_length != send_length)
       return MEMCACHED_WRITE_FAILURE;

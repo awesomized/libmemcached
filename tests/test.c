@@ -29,7 +29,7 @@ void connection_test(void)
   memcached_st *memc;
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   assert(memc);
   memcached_deinit(memc);
@@ -59,7 +59,7 @@ void set_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
@@ -78,7 +78,7 @@ void add_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
@@ -97,7 +97,7 @@ void replace_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_replace(memc, key, strlen(key), 
                     value, strlen(value),
@@ -116,7 +116,7 @@ void delete_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
@@ -136,7 +136,7 @@ void flush_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
@@ -155,7 +155,7 @@ void get_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
   
   string= memcached_get(memc, key, strlen(key),
@@ -180,7 +180,7 @@ void get_test2(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
@@ -211,15 +211,17 @@ void get_test3(void)
   char *string;
   size_t string_length;
   uint16_t flags;
-  int i;
+  int x;
 
-  value = (char*) malloc(value_length);
-  for (i=0; i<value_length; i++)
-    value[i] = (char) (i % 127);
+  value = (char*)malloc(value_length);
+  assert(value);
+
+  for (x= 0; x < value_length; x++)
+    value[x] = (char) (x % 127);
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
@@ -230,6 +232,8 @@ void get_test3(void)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string);
   assert(string_length == value_length);
   assert(!memcmp(string, value, string_length));
 
@@ -244,7 +248,7 @@ void stats_servername_test(void)
   memcached_return rc;
   memcached_stat_st stat;
   rc= memcached_stat_servername(&stat, NULL,
-                                 "localhost", 
+                                 "zim.tangent.org", 
                                  MEMCACHED_DEFAULT_PORT);
 }
 
@@ -258,7 +262,7 @@ void increment_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
@@ -289,7 +293,7 @@ void decrement_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
@@ -319,7 +323,7 @@ void quit_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
@@ -352,7 +356,7 @@ void mget_test(void)
 
   memc= memcached_init(NULL);
   assert(memc);
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add(memc, "zim.tangent.org", 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   /* We need to empty the server before continueing test */
@@ -428,7 +432,7 @@ void get_stats(void)
 
  memc= memcached_init(NULL);
  assert(memc);
- rc= memcached_server_add(memc, "localhost", 0);
+ rc= memcached_server_add(memc, "zim.tangent.org", 0);
  assert(rc == MEMCACHED_SUCCESS);
 
  stat= memcached_stat(memc, NULL, &rc);
@@ -462,9 +466,9 @@ void get_stats_multiple(void)
 
  memc= memcached_init(NULL);
  assert(memc);
- rc= memcached_server_add(memc, "localhost", 0);
+ rc= memcached_server_add(memc, "zim.tangent.org", 0);
  assert(rc == MEMCACHED_SUCCESS);
- rc= memcached_server_add(memc, "localhost", 5555);
+ rc= memcached_server_add(memc, "zim.tangent.org", 5555);
  assert(rc == MEMCACHED_SUCCESS);
 
  stat= memcached_stat(memc, NULL, &rc);

@@ -49,6 +49,4 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
   default:
     return "Gibberish returned!";
   };
-
-  return "COMPLETELY UNKNOWN ERROR, SOMEONE FORGOT TO UPDATE ERROR MESSAGES";
 }

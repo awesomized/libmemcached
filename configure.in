@@ -8,6 +8,17 @@ AC_PROG_LIBTOOL
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
 
+# We only support GCC and Sun's forte at the moment
+if test "$GCC" = "yes"
+then
+  CFLAGS="-Wall"
+  CXXFLAGS="$CXXFLAGS -fno-implicit-templates -fno-exceptions -fno-rtti"
+else
+  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"
+  LDFLAGS="-lsocket -lnsl"
+  DTRACEFLAGS="-64"
+fi
+
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_CHECK_HEADERS(limits.h syslimits.h)

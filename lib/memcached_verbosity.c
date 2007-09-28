@@ -21,7 +21,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   {
     memcached_return rc;
 
-    if ((write(ptr->hosts[x].fd, buffer, send_length) == -1))
+    if ((send(ptr->hosts[x].fd, buffer, send_length, 0) == -1))
     {
       continue;
       return MEMCACHED_SOME_ERRORS;

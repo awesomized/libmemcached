@@ -49,7 +49,6 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     string_ptr++;
     if (end_ptr == string_ptr)
         goto read_error;
-
     for (next_ptr= string_ptr; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
     *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
 
@@ -76,10 +75,14 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     if (*value_length)
     {
       size_t read_length;
+      size_t partial_length;
+      size_t to_read;
       char *value;
+      char *value_ptr;
 
       /* We add two bytes so that we can walk the \r\n */
       value= (char *)malloc(((*value_length) +2) * sizeof(char));
+      memset(value, 0, ((*value_length) +2) * sizeof(char));
 
       if (!value)
       {
@@ -88,7 +91,18 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
         return NULL;
       }
 
-      read_length= read(ptr->hosts[server_key].fd, value, (*value_length)+2);
+      value_ptr= value;
+      read_length= 0;
+      to_read= (*value_length) + 2;
+      /* This is overkill */
+      while ((partial_length= recv(ptr->hosts[server_key].fd, value_ptr, to_read, 0)) > 0)
+      {
+        value_ptr+= partial_length;
+        read_length+= partial_length;
+        to_read-= partial_length;
+        if (read_length == (size_t)(*value_length + 2))
+          break;
+      }
 
       if (read_length != (size_t)(*value_length + 2))
       {
@@ -128,7 +142,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   if (*error != MEMCACHED_SUCCESS)
     return NULL;
 
-  if ((write(ptr->hosts[server_key].fd, buffer, send_length) == -1))
+  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
   {
     *error= MEMCACHED_WRITE_FAILURE;
     return NULL;
@@ -198,8 +212,8 @@ memcached_return memcached_mget(memcached_st *ptr,
       memcached_string_st *string= cursor_key_exec[x];
       memcached_string_append(ptr, string, "\r\n", 2);
 
-      if ((write(ptr->hosts[x].fd, string->string, 
-                 memcached_string_length(ptr, string)) == -1))
+      if ((send(ptr->hosts[x].fd, string->string, 
+                 memcached_string_length(ptr, string), 0) == -1))
       {
         memcached_quit(ptr);
         rc= MEMCACHED_SOME_ERRORS;

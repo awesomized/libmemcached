@@ -24,7 +24,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                         offset);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
-  sent_length= write(ptr->hosts[server_key].fd, buffer, send_length);
+  sent_length= send(ptr->hosts[server_key].fd, buffer, send_length, 0);
 
   if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;

@@ -37,19 +37,19 @@ static memcached_return memcached_send(memcached_st *ptr,
                         (unsigned long long)expiration, value_length);
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
-  if ((sent_length= write(ptr->hosts[server_key].fd, buffer, write_length)) == -1)
+  if ((sent_length= send(ptr->hosts[server_key].fd, buffer, write_length, 0)) == -1)
     return MEMCACHED_WRITE_FAILURE;
   assert(write_length == sent_length);
 
-  if ((sent_length= write(ptr->hosts[server_key].fd, value, value_length)) == -1)
+  if ((sent_length= send(ptr->hosts[server_key].fd, value, value_length, 0)) == -1)
     return MEMCACHED_WRITE_FAILURE;
   assert(value_length == sent_length);
 
-  if ((sent_length= write(ptr->hosts[server_key].fd, "\r\n", 2)) == -1)
+  if ((sent_length= send(ptr->hosts[server_key].fd, "\r\n", 2, 0)) == -1)
     return MEMCACHED_WRITE_FAILURE;
   assert(2 == sent_length);
 
-  sent_length= read(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
+  sent_length= recv(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 0);
 
   if (sent_length && buffer[0] == 'S')  /* STORED */
     return MEMCACHED_SUCCESS;

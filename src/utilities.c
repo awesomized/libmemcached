@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <strings.h>
 #include <memcached.h>
 
 void parse_opt_servers(memcached_st *memc,

@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <strings.h>
 
 #include <memcached.h>
 #include "client_options.h"
