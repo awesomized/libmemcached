@@ -15,11 +15,11 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
   assert(flags);
   assert(error);
 
+  memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
   *value_length= 0;
 
-  memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
   if (*error == MEMCACHED_SUCCESS)

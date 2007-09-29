@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #include <getopt.h>
 
 #include <memcached.h>
@@ -21,6 +22,14 @@ static const char ALPHANUMERICS[]=
 
 /* Types */
 typedef struct pairs_st pairs_st;
+typedef struct conclusions_st conclusions_st;
+
+struct conclusions_st {
+  long int load_time;
+  long int read_time;
+  unsigned int rows_loaded;
+  unsigned int rows_read;
+};
 
 struct pairs_st {
   char *key;
@@ -34,9 +43,10 @@ void options_parse(int argc, char *argv[]);
 static pairs_st *pairs_generate(void);
 static void pairs_free(pairs_st *pairs);
 static void get_random_string(char *buffer, size_t size);
+void conclusions_print(conclusions_st *conclusion);
 
 static int opt_verbose= 0;
-static int opt_default_pairs= 100;
+static unsigned int opt_default_pairs= 100;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
 
@@ -45,7 +55,11 @@ int main(int argc, char *argv[])
   unsigned int x;
   memcached_return rc;
   memcached_st *memc;
+  struct timeval start_time, end_time;
   pairs_st *pairs;
+  conclusions_st conclusion;
+
+  memset(&conclusion, 0, sizeof(conclusions_st));
 
   srandom(time(NULL));
   memc= memcached_init(NULL);
@@ -59,20 +73,23 @@ int main(int argc, char *argv[])
   pairs= pairs_generate();
 
 
+  gettimeofday(&start_time, NULL);
   for (x= 0; x < opt_default_pairs; x++)
   {
-    printf("Key(%u) %.10s \t%.10s\n", x, pairs[x].key, pairs[x].value);
     rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
                       pairs[x].value, pairs[x].value_length,
                       0, 0);
     if (rc != MEMCACHED_SUCCESS)
       fprintf(stderr, "Failured on insert of %.*s\n", 
               (unsigned int)pairs[x].key_length, pairs[x].key);
+    conclusion.rows_loaded++;
   }
+  gettimeofday(&end_time, NULL);
+  conclusion.load_time= timedif(end_time, start_time);
 
+  gettimeofday(&start_time, NULL);
   for (x= 0; x < opt_default_pairs; x++)
   {
-    printf("Key(%u) %.10s \n", x, pairs[x].key);
     char *value;
     size_t value_length;
     uint16_t flags;
@@ -81,19 +98,22 @@ int main(int argc, char *argv[])
                          &value_length,
                          &flags, &rc);
 
-    WATCHPOINT_ERROR(rc);
     if (rc != MEMCACHED_SUCCESS)
       fprintf(stderr, "Failured on read of %.*s\n", 
               (unsigned int)pairs[x].key_length, pairs[x].key);
-    printf("\t%.10s\n", value);
+    conclusion.rows_read++;
     free(value);
   }
+  gettimeofday(&end_time, NULL);
+  conclusion.read_time= timedif(end_time, start_time);
 
   pairs_free(pairs);
 
   free(opt_servers);
 
   memcached_deinit(memc);
+
+  conclusions_print(&conclusion);
 
   return 0;
 }
@@ -194,6 +214,16 @@ static pairs_st *pairs_generate(void)
 error:
     fprintf(stderr, "Memory Allocation failure in pairs_generate.\n");
     exit(0);
+}
+
+void conclusions_print(conclusions_st *conclusion)
+{
+  printf("\tLoaded %u rows\n", conclusion->rows_loaded);
+  printf("\tRead %u rows\n", conclusion->rows_read);
+  printf("\tTook %ld.%03ld seconds to load data\n", conclusion->load_time / 1000, 
+         conclusion->load_time % 1000);
+  printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000, 
+         conclusion->read_time % 1000);
 }
 
 static void get_random_string(char *buffer, size_t size)
