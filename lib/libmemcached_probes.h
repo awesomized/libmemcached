@@ -13,8 +13,6 @@ extern "C" {
 
 #if _DTRACE_VERSION
 
-#warning "Trying to BUILD WITH DTRACE!!!!"
-
 #define	LIBMEMCACHED_MEMCACHED_ADD_END() \
 	__dtrace_libmemcached___memcached_add_end()
 #define	LIBMEMCACHED_MEMCACHED_ADD_END_ENABLED() \

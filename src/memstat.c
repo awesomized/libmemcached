@@ -35,6 +35,13 @@ int main(int argc, char *argv[])
     parse_opt_servers(memc, opt_servers);
     stat= memcached_stat(memc, NULL, &rc);
 
+    if (rc != MEMCACHED_SUCCESS || rc != MEMCACHED_SOME_ERRORS);
+    {
+      printf("Failure to communicate with servers (%s)\n",
+              memcached_strerror(memc, rc));
+      exit(1);
+    }
+
     server_list= memcached_server_list(memc);
 
     printf("Listing %u Server\n\n", memcached_server_count(memc));
@@ -44,6 +51,7 @@ int main(int argc, char *argv[])
       char **ptr;
 
       list= memcached_stat_get_keys(memc, &stat[x], &rc);
+      assert(list);
       assert(rc == MEMCACHED_SUCCESS);
 
       printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
