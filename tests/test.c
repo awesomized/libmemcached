@@ -541,7 +541,6 @@ int main(int argc, char *argv[])
 {
   /* Clean the server before beginning testing */
   flush_test();
-#ifdef CRAP
   init_test();
   allocation_test();
   connection_test();
@@ -555,7 +554,6 @@ int main(int argc, char *argv[])
   get_test();
   get_test2();
   get_test3();
-#endif
   get_test4();
   stats_servername_test();
 
