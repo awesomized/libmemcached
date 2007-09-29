@@ -2,11 +2,10 @@
 
 unsigned int memcached_generate_hash(char *key, size_t key_length)
 {
-  unsigned int x = key_length;
-  char *ptr = key;
-  unsigned int value = 0;
+  char *ptr= key;
+  unsigned int value= 0;
 
-  while (x--) 
+  while (--key_length) 
   {
     value += *ptr++;
     value += (value << 10);
