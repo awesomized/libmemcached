@@ -129,6 +129,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
   char *value;
+  memcached_return rc;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
   *value_length= 0;
@@ -152,6 +153,14 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   value= memcached_value_fetch(ptr, key, &key_length, value_length, flags,
                                error, 0, server_key);
+  /* We need to read END */
+  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  if (rc != MEMCACHED_NOTFOUND)
+  {
+    free(value);
+    *value_length= 0;
+    *error= MEMCACHED_PROTOCOL_ERROR;
+  }
   LIBMEMCACHED_MEMCACHED_GET_END();
 
   return value;

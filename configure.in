@@ -13,8 +13,7 @@ sinclude(config/dtrace.m4)
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
 then
-  CFLAGS="-Wall"
-  CXXFLAGS="$CXXFLAGS -fno-implicit-templates -fno-exceptions -fno-rtti"
+  CFLAGS="-Wall -ggdb"
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"
   LDFLAGS="-lsocket -lnsl"

@@ -70,6 +70,25 @@ int main(int argc, char *argv[])
               (unsigned int)pairs[x].key_length, pairs[x].key);
   }
 
+  for (x= 0; x < opt_default_pairs; x++)
+  {
+    printf("Key(%u) %.10s \n", x, pairs[x].key);
+    char *value;
+    size_t value_length;
+    uint16_t flags;
+
+    value= memcached_get(memc, pairs[x].key, pairs[x].key_length,
+                         &value_length,
+                         &flags, &rc);
+
+    WATCHPOINT_ERROR(rc);
+    if (rc != MEMCACHED_SUCCESS)
+      fprintf(stderr, "Failured on read of %.*s\n", 
+              (unsigned int)pairs[x].key_length, pairs[x].key);
+    printf("\t%.10s\n", value);
+    free(value);
+  }
+
   pairs_free(pairs);
 
   free(opt_servers);

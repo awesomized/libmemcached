@@ -243,6 +243,51 @@ void get_test3(void)
   memcached_deinit(memc);
 }
 
+void get_test4(void)
+{
+  memcached_st *memc;
+  memcached_return rc;
+  char *key= "foo";
+  char *value;
+  size_t value_length= 8191;
+  char *string;
+  size_t string_length;
+  uint16_t flags;
+  int x;
+
+  value = (char*)malloc(value_length);
+  assert(value);
+
+  for (x= 0; x < value_length; x++)
+    value[x] = (char) (x % 127);
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, value_length,
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  for (x= 0; x < 10; x++)
+  {
+    string= memcached_get(memc, key, strlen(key),
+                          &string_length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(string);
+    assert(string_length == value_length);
+    assert(!memcmp(string, value, string_length));
+    free(string);
+  }
+
+  free(value);
+
+  memcached_deinit(memc);
+}
+
 void stats_servername_test(void)
 {
   memcached_return rc;
@@ -387,8 +432,8 @@ void mget_test(void)
   assert(rc == MEMCACHED_SUCCESS);
 
   x= 0;
-  while (return_value= memcached_fetch(memc, return_key, &return_key_length, 
-                      &return_value_length, &flags, &rc))
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                        &return_value_length, &flags, &rc)))
   {
     assert(return_value);
     assert(rc == MEMCACHED_SUCCESS);
@@ -492,10 +537,11 @@ void get_stats_multiple(void)
 }
 
 
-int main(int argc, char argvp[])
+int main(int argc, char *argv[])
 {
   /* Clean the server before beginning testing */
   flush_test();
+#ifdef CRAP
   init_test();
   allocation_test();
   connection_test();
@@ -509,6 +555,8 @@ int main(int argc, char argvp[])
   get_test();
   get_test2();
   get_test3();
+#endif
+  get_test4();
   stats_servername_test();
 
   increment_test();
