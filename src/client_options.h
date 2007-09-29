@@ -9,4 +9,5 @@ typedef enum {
   OPT_SET,
   OPT_REPLACE,
   OPT_ADD,
+  OPT_SLAP_DEFAULT_PAIRS,
 } memcached_options;

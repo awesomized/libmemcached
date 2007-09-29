@@ -89,6 +89,7 @@ void options_parse(int argc, char *argv[])
       {"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {"servers", required_argument, NULL, OPT_SERVERS},
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+      {"default-pairs", required_argument, NULL, OPT_SLAP_DEFAULT_PAIRS},
       {0, 0, 0, 0},
     };
 
@@ -119,6 +120,9 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
+      break;
+    case OPT_SLAP_DEFAULT_PAIRS:
+      opt_default_pairs= strtol(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
