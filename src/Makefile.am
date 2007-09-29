@@ -20,5 +20,5 @@ memrm_LDADD = $(LDADDS)
 memflush_SOURCES = memflush.c utilities.c
 memflush_LDADD = $(LDADDS)
 
-memslap_SOURCES = memslap.c utilities.c
+memslap_SOURCES = memslap.c utilities.c generator.c
 memslap_LDADD = $(LDADDS)

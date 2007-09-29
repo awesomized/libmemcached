@@ -12,16 +12,10 @@
 
 #include "client_options.h"
 #include "utilities.h"
+#include "generator.h"
 
-
-/* Use this for string generation */
-static const char ALPHANUMERICS[]=
-  "0123456789ABCDEFGHIJKLMNOPQRSTWXYZabcdefghijklmnopqrstuvwxyz";
-
-#define ALPHANUMERICS_SIZE (sizeof(ALPHANUMERICS)-1)
 
 /* Types */
-typedef struct pairs_st pairs_st;
 typedef struct conclusions_st conclusions_st;
 
 struct conclusions_st {
@@ -31,18 +25,8 @@ struct conclusions_st {
   unsigned int rows_read;
 };
 
-struct pairs_st {
-  char *key;
-  size_t key_length;
-  char *value;
-  size_t value_length;
-};
-
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
-static pairs_st *pairs_generate(void);
-static void pairs_free(pairs_st *pairs);
-static void get_random_string(char *buffer, size_t size);
 void conclusions_print(conclusions_st *conclusion);
 
 static int opt_verbose= 0;
@@ -70,7 +54,7 @@ int main(int argc, char *argv[])
 
   parse_opt_servers(memc, opt_servers);
 
-  pairs= pairs_generate();
+  pairs= pairs_generate(opt_default_pairs);
 
 
   gettimeofday(&start_time, NULL);
@@ -172,50 +156,6 @@ void options_parse(int argc, char *argv[])
   }
 }
 
-static void pairs_free(pairs_st *pairs)
-{
-  unsigned int x;
-
-  for (x= 0; x < opt_default_pairs; x++)
-  {
-    free(pairs[x].key);
-    free(pairs[x].value);
-  }
-
-  free(pairs);
-}
-
-static pairs_st *pairs_generate(void)
-{
-  unsigned int x;
-  pairs_st *pairs;
-
-  pairs= (pairs_st*)malloc(sizeof(pairs_st) * opt_default_pairs);
-
-  if (!pairs)
-    goto error;
-
-  for (x= 0; x < opt_default_pairs; x++)
-  {
-    pairs[x].key= (char *)malloc(sizeof(char) * 100);
-    if (!pairs[x].key)
-      goto error;
-    get_random_string(pairs[x].key, 100);
-    pairs[x].key_length= 100;
-
-    pairs[x].value= (char *)malloc(sizeof(char) * 400);
-    if (!pairs[x].value)
-      goto error;
-    get_random_string(pairs[x].value, 400);
-    pairs[x].value_length= 400;
-  }
-
-  return pairs;
-error:
-    fprintf(stderr, "Memory Allocation failure in pairs_generate.\n");
-    exit(0);
-}
-
 void conclusions_print(conclusions_st *conclusion)
 {
   printf("\tLoaded %u rows\n", conclusion->rows_loaded);
@@ -224,13 +164,4 @@ void conclusions_print(conclusions_st *conclusion)
          conclusion->load_time % 1000);
   printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000, 
          conclusion->read_time % 1000);
-}
-
-static void get_random_string(char *buffer, size_t size)
-{
-  char *buffer_ptr= buffer;
-
-  while (--size)
-    *buffer_ptr++= ALPHANUMERICS[random() % ALPHANUMERICS_SIZE];
-  *buffer_ptr++= ALPHANUMERICS[random() % ALPHANUMERICS_SIZE];
 }
