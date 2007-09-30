@@ -25,15 +25,22 @@ int main(int argc, char *argv[])
 {
   memcached_st *memc;
   memcached_return rc;
+  memcached_server_st *servers;
 
   options_parse(argc, argv);
 
   memc= memcached_init(NULL);
 
+  if (!opt_servers)
+    return 0;
+
   if (opt_servers)
-    parse_opt_servers(memc, opt_servers);
+    servers= parse_opt_servers(opt_servers);
   else
-    parse_opt_servers(memc, argv[--argc]);
+    servers= parse_opt_servers(argv[--argc]);
+
+  memcached_server_push(memc, servers);
+  memcached_server_list_free(servers);
 
   while (optind < argc) 
   {

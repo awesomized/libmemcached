@@ -21,13 +21,18 @@ int main(int argc, char *argv[])
   size_t string_length;
   uint16_t flags;
   memcached_return rc;
-
-  memc= memcached_init(NULL);
+  memcached_server_st *servers;
 
   options_parse(argc, argv);
 
-  if (opt_servers)
-    parse_opt_servers(memc, opt_servers);
+  if (!opt_servers)
+    return 0;
+
+  memc= memcached_init(NULL);
+
+  servers= parse_opt_servers(opt_servers);
+  memcached_server_push(memc, servers);
+  memcached_server_list_free(servers);
 
   while (optind < argc) 
   {

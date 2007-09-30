@@ -16,13 +16,18 @@ int main(int argc, char *argv[])
 {
   memcached_st *memc;
   memcached_return rc;
+  memcached_server_st *servers;
 
   options_parse(argc, argv);
 
+  if (!opt_servers)
+    return 0;
+
   memc= memcached_init(NULL);
 
-  if (opt_servers)
-    parse_opt_servers(memc, opt_servers);
+  servers= parse_opt_servers(opt_servers);
+  memcached_server_push(memc, servers);
+  memcached_server_list_free(servers);
   
   rc = memcached_flush(memc, opt_expire);
   if (rc != MEMCACHED_SUCCESS) 

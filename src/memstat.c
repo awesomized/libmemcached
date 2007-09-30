@@ -20,58 +20,62 @@ static char *opt_servers= NULL;
 
 int main(int argc, char *argv[])
 {
+  unsigned int x;
+  memcached_return rc;
   memcached_st *memc;
+  memcached_stat_st *stat;
+  memcached_server_st *servers;
+  memcached_server_st *server_list;
 
-  memc= memcached_init(NULL);
   options_parse(argc, argv);
 
-  if (opt_servers)
+  if (!opt_servers)
+    return 0;
+
+  memc= memcached_init(NULL);
+
+  servers= parse_opt_servers(opt_servers);
+  memcached_server_push(memc, servers);
+  memcached_server_list_free(servers);
+
+  stat= memcached_stat(memc, NULL, &rc);
+
+  if (rc != MEMCACHED_SUCCESS || rc != MEMCACHED_SOME_ERRORS);
   {
-    unsigned int x;
-    memcached_return rc;
-    memcached_stat_st *stat;
-    memcached_server_st *server_list;
-
-    parse_opt_servers(memc, opt_servers);
-    stat= memcached_stat(memc, NULL, &rc);
-
-    if (rc != MEMCACHED_SUCCESS || rc != MEMCACHED_SOME_ERRORS);
-    {
-      printf("Failure to communicate with servers (%s)\n",
-              memcached_strerror(memc, rc));
-      exit(1);
-    }
-
-    server_list= memcached_server_list(memc);
-
-    printf("Listing %u Server\n\n", memcached_server_count(memc));
-    for (x= 0; x < memcached_server_count(memc); x++)
-    {
-      char **list;
-      char **ptr;
-
-      list= memcached_stat_get_keys(memc, &stat[x], &rc);
-      assert(list);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
-             memcached_server_port(memc, server_list[x]));
-      for (ptr= list; *ptr; ptr++)
-      {
-        memcached_return rc;
-        char *value= memcached_stat_get_value(memc, &stat[x], *ptr, &rc);
-
-        printf("\t %s: %s\n", *ptr, value);
-        free(value);
-      }
-
-      free(list);
-      printf("\n");
-    }
-
-    free(stat);
-    free(opt_servers);
+    printf("Failure to communicate with servers (%s)\n",
+	   memcached_strerror(memc, rc));
+    exit(1);
   }
+
+  server_list= memcached_server_list(memc);
+
+  printf("Listing %u Server\n\n", memcached_server_count(memc));
+  for (x= 0; x < memcached_server_count(memc); x++)
+  {
+    char **list;
+    char **ptr;
+
+    list= memcached_stat_get_keys(memc, &stat[x], &rc);
+    assert(list);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
+	   memcached_server_port(memc, server_list[x]));
+    for (ptr= list; *ptr; ptr++)
+    {
+      memcached_return rc;
+      char *value= memcached_stat_get_value(memc, &stat[x], *ptr, &rc);
+
+      printf("\t %s: %s\n", *ptr, value);
+      free(value);
+    }
+
+    free(list);
+    printf("\n");
+  }
+
+  free(stat);
+  free(opt_servers);
 
   memcached_deinit(memc);
 
@@ -81,15 +85,15 @@ int main(int argc, char *argv[])
 void options_parse(int argc, char *argv[])
 {
   static struct option long_options[]=
-    {
-      {"version", no_argument, NULL, OPT_VERSION},
-      {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-      {"servers", required_argument, NULL, OPT_SERVERS},
-      {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-      {0, 0, 0, 0},
-    };
+  {
+    {"version", no_argument, NULL, OPT_VERSION},
+    {"help", no_argument, NULL, OPT_HELP},
+    {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+    {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+    {"servers", required_argument, NULL, OPT_SERVERS},
+    {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+    {0, 0, 0, 0},
+  };
 
   int option_index= 0;
   int option_rv;

@@ -13,4 +13,3 @@ struct pairs_st {
 
 pairs_st *pairs_generate(unsigned long long number_of);
 void pairs_free(pairs_st *pairs);
-static void get_random_string(char *buffer, size_t size);

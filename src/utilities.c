@@ -2,16 +2,16 @@
 #include <strings.h>
 #include <memcached.h>
 
-void parse_opt_servers(memcached_st *memc,
-                       char *server_strings)
+memcached_server_st *parse_opt_servers(char *server_strings)
 {
   char *string;
   unsigned int port;
   char *begin_ptr;
   char *end_ptr;
+  memcached_server_st *servers= NULL;
+  memcached_return rc;
 
   assert(server_strings);
-  assert(memc);
 
   end_ptr= server_strings + strlen(server_strings);
 
@@ -47,11 +47,13 @@ void parse_opt_servers(memcached_st *memc,
       port= strtol(ptr, (char **)NULL, 10);
     }
 
-    memcached_server_add(memc, buffer, port);
+    servers= memcached_server_list_append(servers, buffer, port, &rc);
 
     if (isspace(*begin_ptr))
       begin_ptr++;
   }
+
+  return servers;
 }
 
 long int timedif(struct timeval a, struct timeval b)

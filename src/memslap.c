@@ -34,9 +34,9 @@ typedef enum {
 } run_action;
 
 struct thread_context_st {
-  unsigned int x;
   pairs_st *pairs;
   run_action action;
+  memcached_server_st *servers;
 };
 
 struct conclusions_st {
@@ -49,67 +49,61 @@ struct conclusions_st {
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
-void scheduler(conclusions_st *conclusion);
+void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
 
 static int opt_verbose= 0;
 static unsigned int opt_default_pairs= 100;
-static unsigned int opt_concurrency= 1;
+static unsigned int opt_concurrency= 10;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
 
 int main(int argc, char *argv[])
 {
-  unsigned int x;
-  memcached_return rc;
-  memcached_st *memc;
-  pairs_st *pairs;
   conclusions_st conclusion;
+  memcached_server_st *servers;
 
   memset(&conclusion, 0, sizeof(conclusions_st));
 
   srandom(time(NULL));
-  memc= memcached_init(NULL);
   options_parse(argc, argv);
 
   if (!opt_servers)
     exit(0);
 
-  parse_opt_servers(memc, opt_servers);
-
-  pairs= pairs_generate(opt_default_pairs);
+  servers= parse_opt_servers(opt_servers);
 
   pthread_mutex_init(&counter_mutex, NULL);
   pthread_cond_init(&count_threshhold, NULL);
   pthread_mutex_init(&sleeper_mutex, NULL);
   pthread_cond_init(&sleep_threshhold, NULL);
 
-  scheduler(&conclusion);
-
-  pairs_free(pairs);
+  scheduler(servers, &conclusion);
 
   free(opt_servers);
-
-  memcached_deinit(memc);
 
   (void)pthread_mutex_init(&counter_mutex, NULL);
   (void)pthread_cond_init(&count_threshhold, NULL);
   (void)pthread_mutex_init(&sleeper_mutex, NULL);
   (void)pthread_cond_init(&sleep_threshhold, NULL);
   conclusions_print(&conclusion);
+  memcached_server_list_free(servers);
 
   return 0;
 }
 
-void scheduler(conclusions_st *conclusion)
+void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 {
   unsigned int x;
   struct timeval start_time, end_time;
   pthread_t mainthread;            /* Thread descriptor */
   pthread_attr_t attr;          /* Thread attributes */
+  pairs_st *pairs;
 
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr,
                               PTHREAD_CREATE_DETACHED);
+
+  pairs= pairs_generate(opt_default_pairs);
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -122,6 +116,10 @@ void scheduler(conclusions_st *conclusion)
   {
     thread_context_st *context;
     context= (thread_context_st *)malloc(sizeof(thread_context_st));
+
+    context->servers= servers;
+    context->pairs= pairs;
+    context->action= AC_SET;
 
     /* now you create the thread */
     if (pthread_create(&mainthread, &attr, run_task,
@@ -161,6 +159,7 @@ void scheduler(conclusions_st *conclusion)
 
   conclusion->load_time= timedif(end_time, start_time);
   conclusion->read_time= timedif(end_time, start_time);
+  pairs_free(pairs);
 }
 
 void options_parse(int argc, char *argv[])
@@ -231,6 +230,13 @@ void *run_task(void *p)
 {
   unsigned int x;
   thread_context_st *context= (thread_context_st *)p;
+  memcached_return rc;
+  memcached_st *memc;
+  pairs_st *pairs= context->pairs;
+
+  memc= memcached_init(NULL);
+  
+  memcached_server_push(memc, context->servers);
 
   pthread_mutex_lock(&sleeper_mutex);
   while (master_wakeup)
@@ -240,7 +246,6 @@ void *run_task(void *p)
   pthread_mutex_unlock(&sleeper_mutex);
 
   /* Do Stuff */
-
   switch (context->action)
   {
   case AC_SET:
@@ -252,7 +257,6 @@ void *run_task(void *p)
       if (rc != MEMCACHED_SUCCESS)
         fprintf(stderr, "Failured on insert of %.*s\n", 
                 (unsigned int)pairs[x].key_length, pairs[x].key);
-      conclusion->rows_loaded++;
   }
     break;
   case AC_GET:
@@ -269,7 +273,6 @@ void *run_task(void *p)
       if (rc != MEMCACHED_SUCCESS)
         fprintf(stderr, "Failured on read of %.*s\n", 
                 (unsigned int)pairs[x].key_length, pairs[x].key);
-      conclusion->rows_read++;
       free(value);
     }
     break;
@@ -279,6 +282,9 @@ void *run_task(void *p)
   thread_counter--;
   pthread_cond_signal(&count_threshhold);
   pthread_mutex_unlock(&counter_mutex);
+  memcached_deinit(memc);
 
   free(context);
+
+  return NULL;
 }
