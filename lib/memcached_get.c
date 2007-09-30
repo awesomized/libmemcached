@@ -113,6 +113,8 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
       return value;
     }
   }
+  else if (*error == MEMCACHED_END)
+    *error= MEMCACHED_NOTFOUND;
 
   return NULL;
 read_error:
@@ -129,41 +131,57 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
   char *value;
-  memcached_return rc;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
   *value_length= 0;
   *error= memcached_connect(ptr);
 
   if (*error != MEMCACHED_SUCCESS)
-    return NULL;
+    goto error;
 
   server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         (int)key_length, key);
-  if (*error != MEMCACHED_SUCCESS)
-    return NULL;
-
   if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
   {
     *error= MEMCACHED_WRITE_FAILURE;
-    return NULL;
+    goto error;
   }
 
   value= memcached_value_fetch(ptr, key, &key_length, value_length, flags,
                                error, 0, server_key);
-  /* We need to read END */
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
-  if (rc != MEMCACHED_NOTFOUND)
+  if (*error == MEMCACHED_END && *value_length == 0)
   {
-    free(value);
-    *value_length= 0;
-    *error= MEMCACHED_PROTOCOL_ERROR;
+    *error= MEMCACHED_NOTFOUND;
+    goto error;
   }
+  else if (*error == MEMCACHED_SUCCESS)
+  {
+    memcached_return rc;
+    /* We need to read END */
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+
+    if (rc != MEMCACHED_END)
+    {
+      *error= MEMCACHED_PROTOCOL_ERROR;
+      goto error;
+    }
+  }
+  else 
+      goto error;
+
   LIBMEMCACHED_MEMCACHED_GET_END();
 
   return value;
+
+error:
+  free(value);
+  *value_length= 0;
+
+  LIBMEMCACHED_MEMCACHED_GET_END();
+
+    return NULL;
 }
 
 memcached_return memcached_mget(memcached_st *ptr, 

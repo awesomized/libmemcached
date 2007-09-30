@@ -25,19 +25,10 @@ memcached_st *memcached_init(memcached_st *ptr)
 
 void memcached_deinit(memcached_st *ptr)
 {
-  unsigned int x;
-
   if (ptr->hosts)
   {
-    for (x= 0; x < ptr->number_of_hosts; x++)
-    {
-      if (ptr->hosts[x].fd > 0)
-        close(ptr->hosts[x].fd);
-
-      free(ptr->hosts[x].hostname);
-    }
-
-    free(ptr->hosts);
+    memcached_server_list_free(ptr->hosts);
+    ptr->hosts= NULL;
   }
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)

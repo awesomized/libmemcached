@@ -36,5 +36,8 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
   LIBMEMCACHED_MEMCACHED_DELETE_END();
 
+  if (rc == MEMCACHED_DELETED)
+    rc= MEMCACHED_SUCCESS;
+
   return rc;
 }

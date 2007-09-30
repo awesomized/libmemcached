@@ -536,6 +536,78 @@ void get_stats_multiple(void)
  memcached_deinit(memc);
 }
 
+void add_host_test(void)
+{
+  unsigned int x;
+  memcached_st *memc;
+  memcached_server_st *servers;
+  memcached_return rc;
+  char servername[]= "0.example.com";
+
+  memc= memcached_init(NULL);
+  assert(memc);
+  rc= memcached_server_add(memc, "localhost", 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  servers= memcached_server_list_append(NULL, servername, 400, &rc);
+  assert(servers);
+  assert(1 == memcached_server_list_count(servers));
+
+  for (x= 2; x < 20; x++)
+  {
+    char buffer[SMALL_STRING_LEN];
+
+    snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
+    servers= memcached_server_list_append(servers, buffer, 401, 
+                                     &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(x == memcached_server_list_count(servers));
+  }
+
+  rc= memcached_server_push(memc, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+  rc= memcached_server_push(memc, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_server_list_free(servers);
+  memcached_deinit(memc);
+}
+
+void add_host_test1(void)
+{
+  unsigned int x;
+  memcached_st *memc;
+  memcached_server_st *servers;
+  memcached_return rc;
+  char servername[]= "0.example.com";
+
+  memc= memcached_init(NULL);
+  assert(memc);
+
+  servers= memcached_server_list_append(NULL, servername, 400, &rc);
+  assert(servers);
+  assert(1 == memcached_server_list_count(servers));
+
+  for (x= 2; x < 20; x++)
+  {
+    char buffer[SMALL_STRING_LEN];
+
+    snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
+    servers= memcached_server_list_append(servers, buffer, 401, 
+                                     &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(x == memcached_server_list_count(servers));
+  }
+
+  rc= memcached_server_push(memc, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+  rc= memcached_server_push(memc, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_server_list_free(servers);
+  memcached_deinit(memc);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -562,6 +634,7 @@ int main(int argc, char *argv[])
   quit_test();
   mget_test();
   get_stats();
+  add_host_test();
 
   /* The multiple tests */
   if (argc == 2)

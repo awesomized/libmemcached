@@ -44,6 +44,12 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "SOME ERRORS WERE REPORTED";
   case MEMCACHED_NO_SERVERS:
     return "NO SERVERS DEFINED";
+  case MEMCACHED_END:
+    return "SERVER END";
+  case MEMCACHED_DELETED:
+    return "SERVER DELETE";
+  case MEMCACHED_VALUE:
+    return "SERVER VALUE";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

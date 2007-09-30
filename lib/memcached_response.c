@@ -48,7 +48,7 @@ memcached_return memcached_response(memcached_st *ptr,
         return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
   case 'D': /* DELETED */
-    return MEMCACHED_SUCCESS;
+    return MEMCACHED_DELETED;
   case 'N': /* NOT_FOUND */
     {
       if (buffer[4] == 'F')
@@ -61,7 +61,7 @@ memcached_return memcached_response(memcached_st *ptr,
   case 'E': /* PROTOCOL ERROR or END */
     {
       if (buffer[1] == 'N')
-        return MEMCACHED_NOTFOUND;
+        return MEMCACHED_END;
       else if (buffer[1] == 'R')
         return MEMCACHED_PROTOCOL_ERROR;
       else

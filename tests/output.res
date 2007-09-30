@@ -18,6 +18,9 @@ Error 16 -> MEMORY ALLOCATION FAILURE
 Error 17 -> PARTIAL READ
 Error 18 -> SOME ERRORS WERE REPORTED
 Error 19 -> NO SERVERS DEFINED
+Error 20 -> SERVER END
+Error 21 -> SERVER DELETE
+Error 22 -> SERVER VALUE
 Found key pid
 Found key uptime
 Found key time

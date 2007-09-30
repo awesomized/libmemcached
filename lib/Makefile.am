@@ -37,6 +37,7 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_quit.c \
 			  memcached_flush.c \
 			  memcached_string.c \
+			  memcached_hosts.c \
 			  memcached_stats.c
 libmemcached_la_LIBADD =
 
