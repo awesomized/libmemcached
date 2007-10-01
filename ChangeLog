@@ -1,3 +1,6 @@
+0.4
+  * memstat was broken (bad if/else on connect)
+
 0.3 Mon Oct  1 06:37:52 PDT 2007
   * Jeff Fisher <guppy@techmonkeys.org> provided a spec file
   * Added "make rpm" around dist file

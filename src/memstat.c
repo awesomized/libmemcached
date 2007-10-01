@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   stat= memcached_stat(memc, NULL, &rc);
 
-  if (rc != MEMCACHED_SUCCESS || rc != MEMCACHED_SOME_ERRORS);
+  if (rc != MEMCACHED_SUCCESS && rc == MEMCACHED_SOME_ERRORS)
   {
     printf("Failure to communicate with servers (%s)\n",
 	   memcached_strerror(memc, rc));
