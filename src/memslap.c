@@ -14,6 +14,14 @@
 #include "client_options.h"
 #include "utilities.h"
 #include "generator.h"
+#include "execute.h"
+
+#define DEFAULT_INITIAL_LOAD 10000
+#define DEFAULT_EXECUTE_NUMBER 10000
+#define DEFAULT_CONCURRENCY 1
+
+#define PROGRAM_NAME "memslap"
+#define PROGRAM_DESCRIPTION "Generates a load against a memcached custer of servers."
 
 /* Global Thread counter */
 unsigned int thread_counter;
@@ -29,13 +37,17 @@ void *run_task(void *p);
 typedef struct conclusions_st conclusions_st;
 typedef struct thread_context_st thread_context_st;
 typedef enum {
-  AC_SET,
-  AC_GET,
-} run_action;
+  SET_TEST,
+  GET_TEST,
+} test_type;
 
 struct thread_context_st {
-  pairs_st *pairs;
-  run_action action;
+  unsigned int key_count;
+  pairs_st *initial_pairs;
+  unsigned int initial_number;
+  pairs_st *execute_pairs;
+  unsigned int execute_number;
+  test_type test;
   memcached_server_st *servers;
 };
 
@@ -50,12 +62,16 @@ struct conclusions_st {
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
+pairs_st *load_initial_data(memcached_server_st *servers, unsigned int number_of, 
+                            unsigned int *actual_loaded);
 
 static int opt_verbose= 0;
-static unsigned int opt_default_pairs= 100;
-static unsigned int opt_concurrency= 10;
+static unsigned int opt_execute_number= 0;
+static unsigned int opt_initial_load= 0;
+static unsigned int opt_concurrency= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
+test_type opt_test= SET_TEST;
 
 int main(int argc, char *argv[])
 {
@@ -94,16 +110,19 @@ int main(int argc, char *argv[])
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 {
   unsigned int x;
+  unsigned int actual_loaded;
+
   struct timeval start_time, end_time;
   pthread_t mainthread;            /* Thread descriptor */
   pthread_attr_t attr;          /* Thread attributes */
-  pairs_st *pairs;
+  pairs_st *pairs= NULL;
 
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr,
                               PTHREAD_CREATE_DETACHED);
 
-  pairs= pairs_generate(opt_default_pairs);
+  if (opt_initial_load)
+    pairs= load_initial_data(servers, opt_initial_load, &actual_loaded);
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -118,8 +137,16 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
     context= (thread_context_st *)malloc(sizeof(thread_context_st));
 
     context->servers= servers;
-    context->pairs= pairs;
-    context->action= AC_SET;
+    context->test= opt_test;
+
+    context->initial_pairs= pairs;
+    context->initial_number= actual_loaded;
+
+    if (opt_test == SET_TEST)
+    {
+      context->execute_pairs= pairs_generate(opt_execute_number);
+      context->execute_number= opt_execute_number;
+    }
 
     /* now you create the thread */
     if (pthread_create(&mainthread, &attr, run_task,
@@ -164,15 +191,23 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
 void options_parse(int argc, char *argv[])
 {
+  memcached_programs_help_st help_options[]=
+  {
+    {0},
+  };
+
   static struct option long_options[]=
     {
-      {"version", no_argument, NULL, OPT_VERSION},
-      {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"concurrency", required_argument, NULL, OPT_SLAP_CONCURRENCY},
       {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-      {"servers", required_argument, NULL, OPT_SERVERS},
+      {"execute-number", required_argument, NULL, OPT_SLAP_EXECUTE_NUMBER},
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-      {"default-pairs", required_argument, NULL, OPT_SLAP_DEFAULT_PAIRS},
+      {"help", no_argument, NULL, OPT_HELP},
+      {"initial-load", required_argument, NULL, OPT_SLAP_INITIAL_LOAD}, /* Number to load initially */
+      {"servers", required_argument, NULL, OPT_SERVERS},
+      {"test", required_argument, NULL, OPT_SLAP_TEST},
+      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {"version", no_argument, NULL, OPT_VERSION},
       {0, 0, 0, 0},
     };
 
@@ -194,18 +229,32 @@ void options_parse(int argc, char *argv[])
       opt_verbose = OPT_DEBUG;
       break;
     case OPT_VERSION: /* --version or -V */
-      printf("memcache tools, memcat, v1.0\n");
-      exit(0);
+      version_command(PROGRAM_NAME);
       break;
     case OPT_HELP: /* --help or -h */
-      printf("useful help messages go here\n");
-      exit(0);
+      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
-    case OPT_SLAP_DEFAULT_PAIRS:
-      opt_default_pairs= strtol(optarg, (char **)NULL, 10);
+    case OPT_SLAP_TEST:
+      if (!strcmp(optarg, "get"))
+        opt_test= GET_TEST ;
+      else if (!strcmp(optarg, "set"))
+        opt_test= SET_TEST;
+      else 
+      {
+        fprintf(stderr, "Your test, %s, is not a known test\n", optarg);
+        exit(1);
+      }
+      break;
+    case OPT_SLAP_CONCURRENCY:
+      opt_concurrency= strtol(optarg, (char **)NULL, 10);
+    case OPT_SLAP_EXECUTE_NUMBER:
+      opt_execute_number= strtol(optarg, (char **)NULL, 10);
+      break;
+    case OPT_SLAP_INITIAL_LOAD:
+      opt_initial_load= strtol(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
@@ -214,25 +263,36 @@ void options_parse(int argc, char *argv[])
       abort();
     }
   }
+
+  if (opt_test == GET_TEST && opt_initial_load == 0)
+    opt_initial_load= DEFAULT_INITIAL_LOAD;
+
+  if (opt_execute_number == 0)
+    opt_execute_number= DEFAULT_EXECUTE_NUMBER;
+
+  if (opt_concurrency == 0)
+    opt_concurrency= DEFAULT_CONCURRENCY;
 }
 
 void conclusions_print(conclusions_st *conclusion)
 {
+  printf("\tThreads connecting to servers %u\n", opt_concurrency);
+#ifdef NOT_FINISHED
   printf("\tLoaded %u rows\n", conclusion->rows_loaded);
   printf("\tRead %u rows\n", conclusion->rows_read);
-  printf("\tTook %ld.%03ld seconds to load data\n", conclusion->load_time / 1000, 
-         conclusion->load_time % 1000);
-  printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000, 
-         conclusion->read_time % 1000);
+#endif
+  if (opt_test == SET_TEST)
+    printf("\tTook %ld.%03ld seconds to load data\n", conclusion->load_time / 1000, 
+           conclusion->load_time % 1000);
+  else
+    printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000, 
+           conclusion->read_time % 1000);
 }
 
 void *run_task(void *p)
 {
-  unsigned int x;
   thread_context_st *context= (thread_context_st *)p;
-  memcached_return rc;
   memcached_st *memc;
-  pairs_st *pairs= context->pairs;
 
   memc= memcached_init(NULL);
   
@@ -246,35 +306,13 @@ void *run_task(void *p)
   pthread_mutex_unlock(&sleeper_mutex);
 
   /* Do Stuff */
-  switch (context->action)
+  switch (context->test)
   {
-  case AC_SET:
-    for (x= 0; x < opt_default_pairs; x++)
-    {
-      rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
-                        pairs[x].value, pairs[x].value_length,
-                        0, 0);
-      if (rc != MEMCACHED_SUCCESS)
-        fprintf(stderr, "Failured on insert of %.*s\n", 
-                (unsigned int)pairs[x].key_length, pairs[x].key);
-  }
+  case SET_TEST:
+    execute_set(memc, context->execute_pairs, context->execute_number);
     break;
-  case AC_GET:
-    for (x= 0; x < opt_default_pairs; x++)
-    {
-      char *value;
-      size_t value_length;
-      uint16_t flags;
-
-      value= memcached_get(memc, pairs[x].key, pairs[x].key_length,
-                           &value_length,
-                           &flags, &rc);
-
-      if (rc != MEMCACHED_SUCCESS)
-        fprintf(stderr, "Failured on read of %.*s\n", 
-                (unsigned int)pairs[x].key_length, pairs[x].key);
-      free(value);
-    }
+  case GET_TEST:
+    execute_get(memc, context->initial_pairs, context->initial_number);
     break;
   }
 
@@ -287,4 +325,21 @@ void *run_task(void *p)
   free(context);
 
   return NULL;
+}
+
+pairs_st *load_initial_data(memcached_server_st *servers, unsigned int number_of, 
+                            unsigned int *actual_loaded)
+{
+  memcached_st *memc;
+  pairs_st *pairs;
+
+  memc= memcached_init(NULL);
+  memcached_server_push(memc, servers);
+
+  pairs= pairs_generate(number_of);
+  *actual_loaded= execute_set(memc, pairs, number_of);
+
+  memcached_deinit(memc);
+
+  return pairs;
 }

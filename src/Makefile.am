@@ -3,7 +3,10 @@ LDADDS = ../lib/libmemcached.la
 
 bin_PROGRAMS = memcat memcp memstat memrm memflush memslap
 
-noinst_HEADERS = client_options.h utilities.h
+noinst_HEADERS = client_options.h \
+		utilities.h \
+		generator.h \
+		execute.h 
 
 memcat_SOURCES = memcat.c utilities.c
 memcat_LDADD = $(LDADDS)
@@ -20,5 +23,5 @@ memrm_LDADD = $(LDADDS)
 memflush_SOURCES = memflush.c utilities.c
 memflush_LDADD = $(LDADDS)
 
-memslap_SOURCES = memslap.c utilities.c generator.c
+memslap_SOURCES = memslap.c utilities.c generator.c execute.c
 memslap_LDADD = $(LDADDS) -lpthread

@@ -6,6 +6,9 @@
 #include "client_options.h"
 #include "utilities.h"
 
+#define PROGRAM_NAME "memcat"
+#define PROGRAM_DESCRIPTION "Cat a set of key values to stdout."
+
 
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
@@ -76,6 +79,11 @@ void options_parse(int argc, char *argv[])
   int option_index= 0;
   int option_rv;
 
+  memcached_programs_help_st help_options[]=
+  {
+    {0},
+  };
+
   static struct option long_options[]=
     {
       {"version", no_argument, NULL, OPT_VERSION},
@@ -102,12 +110,10 @@ void options_parse(int argc, char *argv[])
       opt_verbose = OPT_DEBUG;
       break;
     case OPT_VERSION: /* --version or -V */
-      printf("memcache tools, memcat, v1.0\n");
-      exit(0);
+      version_command(PROGRAM_NAME);
       break;
     case OPT_HELP: /* --help or -h */
-      printf("useful help messages go here\n");
-      exit(0);
+      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
