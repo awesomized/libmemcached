@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
   options_parse(argc, argv);
 
-  memc= memcached_init(NULL);
+  memc= memcached_create(NULL);
 
   if (!opt_servers)
     return 0;
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     optind++;
   }
 
-  memcached_deinit(memc);
+  memcached_free(memc);
 
   free(opt_servers);
 

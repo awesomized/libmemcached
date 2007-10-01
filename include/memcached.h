@@ -122,8 +122,8 @@ struct memcached_st {
 };
 
 /* Public API */
-memcached_st *memcached_init(memcached_st *ptr);
-void memcached_deinit(memcached_st *ptr);
+memcached_st *memcached_create(memcached_st *ptr);
+void memcached_free(memcached_st *ptr);
 
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration);
@@ -202,7 +202,7 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
 #define memcached_string_size(A, B) B->current_size
 #define memcached_string_value(A, B) B->string
 
-memcached_string_st *memcached_string_init(memcached_st *ptr, size_t initial_size);
+memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size);
 memcached_return memcached_string_append_character(memcached_st *ptr, 
                                                    memcached_string_st *string, 
                                                    char character);

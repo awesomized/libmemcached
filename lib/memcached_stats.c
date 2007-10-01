@@ -313,7 +313,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args,
   memcached_return rc;
   memcached_st memc;
 
-  memcached_init(&memc);
+  memcached_create(&memc);
 
   memcached_server_add(&memc, hostname, port);
 
@@ -324,7 +324,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args,
 
   rc= memcached_stats_fetch(&memc, stat, args, 0);
 
-  memcached_deinit(&memc);
+  memcached_free(&memc);
 
   return rc;
 }

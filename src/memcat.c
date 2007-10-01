@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   if (!opt_servers)
     return 0;
 
-  memc= memcached_init(NULL);
+  memc= memcached_create(NULL);
 
   servers= parse_opt_servers(opt_servers);
   memcached_server_push(memc, servers);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     optind++;
   }
 
-  memcached_deinit(memc);
+  memcached_free(memc);
 
   free(opt_servers);
 

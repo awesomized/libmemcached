@@ -3,7 +3,7 @@
 */
 #include "common.h"
 
-memcached_st *memcached_init(memcached_st *ptr)
+memcached_st *memcached_create(memcached_st *ptr)
 {
   if (!ptr)
   {
@@ -23,7 +23,7 @@ memcached_st *memcached_init(memcached_st *ptr)
   return ptr;
 }
 
-void memcached_deinit(memcached_st *ptr)
+void memcached_free(memcached_st *ptr)
 {
   if (ptr->hosts)
   {

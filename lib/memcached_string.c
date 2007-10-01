@@ -25,7 +25,7 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
   return MEMCACHED_SUCCESS;
 }
 
-memcached_string_st *memcached_string_init(memcached_st *ptr, size_t initial_size)
+memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size)
 {
   memcached_string_st *string;
 

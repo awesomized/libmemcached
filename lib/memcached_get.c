@@ -221,7 +221,7 @@ memcached_return memcached_mget(memcached_st *ptr,
     }
     else
     {
-      memcached_string_st *string= memcached_string_init(ptr, SMALL_STRING_LEN);
+      memcached_string_st *string= memcached_string_create(ptr, SMALL_STRING_LEN);
 
       /* We need to figure out the correct way to error in case of this failure */
       if (!string)

@@ -62,12 +62,12 @@ struct conclusions_st {
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
-pairs_st *load_initial_data(memcached_server_st *servers, unsigned int number_of, 
+pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_of, 
                             unsigned int *actual_loaded);
 
 static int opt_verbose= 0;
 static unsigned int opt_execute_number= 0;
-static unsigned int opt_initial_load= 0;
+static unsigned int opt_createial_load= 0;
 static unsigned int opt_concurrency= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
@@ -97,10 +97,10 @@ int main(int argc, char *argv[])
 
   free(opt_servers);
 
-  (void)pthread_mutex_init(&counter_mutex, NULL);
-  (void)pthread_cond_init(&count_threshhold, NULL);
-  (void)pthread_mutex_init(&sleeper_mutex, NULL);
-  (void)pthread_cond_init(&sleep_threshhold, NULL);
+  (void)pthread_mutex_destroy(&counter_mutex);
+  (void)pthread_cond_destroy(&count_threshhold);
+  (void)pthread_mutex_destroy(&sleeper_mutex);
+  (void)pthread_cond_destroy(&sleep_threshhold);
   conclusions_print(&conclusion);
   memcached_server_list_free(servers);
 
@@ -121,8 +121,8 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   pthread_attr_setdetachstate(&attr,
                               PTHREAD_CREATE_DETACHED);
 
-  if (opt_initial_load)
-    pairs= load_initial_data(servers, opt_initial_load, &actual_loaded);
+  if (opt_createial_load)
+    pairs= load_createial_data(servers, opt_createial_load, &actual_loaded);
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -254,7 +254,7 @@ void options_parse(int argc, char *argv[])
       opt_execute_number= strtol(optarg, (char **)NULL, 10);
       break;
     case OPT_SLAP_INITIAL_LOAD:
-      opt_initial_load= strtol(optarg, (char **)NULL, 10);
+      opt_createial_load= strtol(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
@@ -264,8 +264,8 @@ void options_parse(int argc, char *argv[])
     }
   }
 
-  if (opt_test == GET_TEST && opt_initial_load == 0)
-    opt_initial_load= DEFAULT_INITIAL_LOAD;
+  if (opt_test == GET_TEST && opt_createial_load == 0)
+    opt_createial_load= DEFAULT_INITIAL_LOAD;
 
   if (opt_execute_number == 0)
     opt_execute_number= DEFAULT_EXECUTE_NUMBER;
@@ -294,7 +294,7 @@ void *run_task(void *p)
   thread_context_st *context= (thread_context_st *)p;
   memcached_st *memc;
 
-  memc= memcached_init(NULL);
+  memc= memcached_create(NULL);
   
   memcached_server_push(memc, context->servers);
 
@@ -320,26 +320,26 @@ void *run_task(void *p)
   thread_counter--;
   pthread_cond_signal(&count_threshhold);
   pthread_mutex_unlock(&counter_mutex);
-  memcached_deinit(memc);
+  memcached_free(memc);
 
   free(context);
 
   return NULL;
 }
 
-pairs_st *load_initial_data(memcached_server_st *servers, unsigned int number_of, 
+pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_of, 
                             unsigned int *actual_loaded)
 {
   memcached_st *memc;
   pairs_st *pairs;
 
-  memc= memcached_init(NULL);
+  memc= memcached_create(NULL);
   memcached_server_push(memc, servers);
 
   pairs= pairs_generate(number_of);
   *actual_loaded= execute_set(memc, pairs, number_of);
 
-  memcached_deinit(memc);
+  memcached_free(memc);
 
   return pairs;
 }
