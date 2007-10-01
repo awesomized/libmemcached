@@ -322,6 +322,8 @@ void *run_task(void *p)
   pthread_mutex_unlock(&counter_mutex);
   memcached_free(memc);
 
+  if (context->execute_pairs)
+    pairs_free(context->execute_pairs);
   free(context);
 
   return NULL;
