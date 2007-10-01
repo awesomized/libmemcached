@@ -1,10 +1,14 @@
-0.3
+0.3 Mon Oct  1 06:37:52 PDT 2007
   * Jeff Fisher <guppy@techmonkeys.org> provided a spec file
+  * Added "make rpm" around dist file
   * Added support for Solaris
-  * Fixed read to be recv and write to be send
   * Added support for DTrace
+  * Fixed read to be recv and write to be send
   * Bug fix where memstat would core if no server was found
   * Added memslap tool (load generator)
+  * Numerous bug fixes in library
+  * Added calls to library for creating host lists (see
+    text cases to understand how to use this).
 
 0.2 Thu Sep 27 03:46:57 PDT 2007
   * First public version

@@ -1,6 +1,6 @@
 Summary: memcached C library and command line tools
 Name: libmemcached
-Version: 0.2
+Version: 0.3
 Release: 1
 License: BSD
 Group: System Environment/Libraries
@@ -22,6 +22,7 @@ memcat - Copy the value of a key to standard output
 memflush - Flush the contents of your servers.
 memrm - Remove a key(s) from the serrver.
 memstat - Dump the stats of your servers to standard output
+memslap - Generate testing loads on a memcached cluster
 
 %prep
 %setup -q
@@ -44,6 +45,7 @@ memstat - Dump the stats of your servers to standard output
 %{_bindir}/memflush
 %{_bindir}/memrm
 %{_bindir}/memstat
+%{_bindir}/memslap
 %{_includedir}/libmemcached/memcached.h
 %{_libdir}/libmemcached.a
 %{_libdir}/libmemcached.la
@@ -52,5 +54,8 @@ memstat - Dump the stats of your servers to standard output
 %{_libdir}/libmemcached.so.0.0.0
 
 %changelog
+* Mon Oct  1 2007 Brian Aker <brian@tangent.org> - 0.3-1
+- Added memslap
+
 * Fri Sep 28 2007 Jeff Fisher <guppy@techmonkeys.org> - 0.2-1
 - Initial package
