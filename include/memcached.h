@@ -39,7 +39,7 @@ typedef struct memcached_server_st memcached_server_st;
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
 //#define MEMCACHED_MAX_BUFFER 8196
-#define MEMCACHED_MAX_BUFFER 30
+#define MEMCACHED_MAX_BUFFER 8196
 
 typedef enum {
   MEMCACHED_SUCCESS,
