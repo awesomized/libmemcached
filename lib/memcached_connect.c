@@ -1,5 +1,7 @@
 #include "common.h"
 
+#include <fcntl.h>
+
 memcached_return memcached_connect(memcached_st *ptr)
 {
   unsigned int x;
@@ -18,6 +20,8 @@ memcached_return memcached_connect(memcached_st *ptr)
   {
     if (ptr->hosts[x].fd == -1)
     {
+      int flags;
+      
       if ((h= gethostbyname(ptr->hosts[x].hostname)) == NULL)
         return MEMCACHED_HOST_LOCKUP_FAILURE;
 
@@ -35,8 +39,12 @@ memcached_return memcached_connect(memcached_st *ptr)
       localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
       localAddr.sin_port = htons(0);
 
-      if (bind(ptr->hosts[0].fd, (struct sockaddr *) &localAddr, sizeof(localAddr)) < 0)
-        return(MEMCACHED_CONNECTION_BIND_FAILURE);
+#ifdef NOT_YET
+      /* For the moment, not getting a nonblocking mode will note be fatal */
+      flags= fcntl(ptr->hosts[0].fd, F_GETFL, 0);
+      if (flags != -1)
+        (void)fcntl(ptr->hosts[0].fd, F_SETFL, flags | O_NONBLOCK);
+#endif
 
       /* connect to server */
       if (connect(ptr->hosts[0].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
