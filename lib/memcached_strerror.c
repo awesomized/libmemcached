@@ -34,6 +34,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "CONNECTION DATA DOES NOT EXIST";
   case MEMCACHED_NOTSTORED:
     return "NOT STORED";
+  case MEMCACHED_STORED:
+    return "STORED";
   case MEMCACHED_NOTFOUND:
     return "NOT FOUND";
   case MEMCACHED_MEMORY_ALLOCATION_FAILURE:

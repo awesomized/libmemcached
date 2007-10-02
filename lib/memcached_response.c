@@ -6,6 +6,7 @@
 */
 
 #include "common.h"
+#include "memcached_io.h"
 
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
@@ -42,10 +43,12 @@ memcached_return memcached_response(memcached_st *ptr,
     return MEMCACHED_SUCCESS;
   case 'S': /* STORED STATS SERVER_ERROR */
     {
-      if (buffer[1] == 'T') /* STORED STATS */
+      if (buffer[2] == 'A') /* STORED STATS */
         return MEMCACHED_SUCCESS;
       else if (buffer[1] == 'E')
         return MEMCACHED_SERVER_ERROR;
+      else if (buffer[1] == 'T')
+        return MEMCACHED_STORED;
       else
         return MEMCACHED_UNKNOWN_READ_FAILURE;
     }

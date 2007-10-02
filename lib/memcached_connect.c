@@ -31,7 +31,10 @@ memcached_return memcached_connect(memcached_st *ptr)
 
       /* Create the socket */
       if ((ptr->hosts[0].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
+      {
+        ptr->my_errno= errno;
         return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+      }
 
 
       /* bind any port number */
@@ -39,18 +42,32 @@ memcached_return memcached_connect(memcached_st *ptr)
       localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
       localAddr.sin_port = htons(0);
 
-#ifdef NOT_YET
       /* For the moment, not getting a nonblocking mode will note be fatal */
-      flags= fcntl(ptr->hosts[0].fd, F_GETFL, 0);
-      if (flags != -1)
-        (void)fcntl(ptr->hosts[0].fd, F_SETFL, flags | O_NONBLOCK);
-#endif
+      if (ptr->flags & MEM_NO_BLOCK)
+      {
+        flags= fcntl(ptr->hosts[0].fd, F_GETFL, 0);
+        if (flags != -1)
+          (void)fcntl(ptr->hosts[0].fd, F_SETFL, flags | O_NONBLOCK);
+      }
 
       /* connect to server */
+test_connect:
       if (connect(ptr->hosts[0].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
+      {
+        switch (errno) {
+          /* We are spinning waiting on connect */
+        case EINPROGRESS:
+        case EINTR:
+          goto test_connect;
+        case EISCONN: /* We were spinning waiting on connect */
+          break;
+        default:
+        ptr->my_errno= errno;
         return MEMCACHED_HOST_LOCKUP_FAILURE;
+      }
 
       ptr->connected++;
+      }
     }
   }
   LIBMEMCACHED_MEMCACHED_CONNECT_END();

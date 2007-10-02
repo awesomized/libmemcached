@@ -57,6 +57,7 @@ typedef enum {
   MEMCACHED_DATA_EXISTS,
   MEMCACHED_DATA_DOES_NOT_EXIST,
   MEMCACHED_NOTSTORED,
+  MEMCACHED_STORED,
   MEMCACHED_NOTFOUND,
   MEMCACHED_MEMORY_ALLOCATION_FAILURE,
   MEMCACHED_PARTIAL_READ,
@@ -67,6 +68,10 @@ typedef enum {
   MEMCACHED_VALUE,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
+
+typedef enum {
+  MEMCACHED_BEHAVIOR_NO_BLOCK,
+} memcached_behavior;
 
 typedef enum {
   MEMCACHED_NOT_ALLOCATED= 0,
@@ -108,6 +113,8 @@ struct memcached_stat_st {
   unsigned int limit_maxbytes;
 };
 
+#define MEM_NO_BLOCK     (1 << 0)
+
 struct memcached_string_st {
   char *string;
   char *end;
@@ -127,6 +134,10 @@ struct memcached_st {
   size_t write_buffer_offset;
   size_t write_between_flush;
   char connected;
+  int my_errno;
+  unsigned int stack_responses;
+  unsigned long long flags;
+  memcached_return warning; /* Future Use */
 };
 
 /* Public API */
@@ -150,6 +161,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
+memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag);
 
 /* All of the functions for adding data to the server */
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
@@ -225,6 +237,7 @@ void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
 #define WATCHPOINT_ERROR(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
 #define WATCHPOINT_STRING(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) printf("WATCHPOINT %s:%d %d\n", __FILE__, __LINE__, A);fflush(stdout);
+#define WATCHPOINT_ERRNO(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, strerror(A));A= 0;fflush(stdout);
 
 
 #ifdef __cplusplus

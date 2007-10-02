@@ -30,8 +30,16 @@ static memcached_return memcached_auto(memcached_st *ptr,
     return MEMCACHED_WRITE_FAILURE;
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
-  send_length= read(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE);
 
+  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+
+  /* 
+    So why recheck responce? Because the protocol is brain dead :)
+    The number returned might end up equaling one of the string 
+    values. Less chance of a mistake with memcmp() so we will 
+    use it. We still called memcached_response() though since it
+    worked its magic for non-blocking IO.
+  */
   if (!memcmp(buffer, "ERROR\r\n", MEMCACHED_DEFAULT_COMMAND_SIZE))
   {
     *value= 0;

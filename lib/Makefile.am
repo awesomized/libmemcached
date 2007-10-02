@@ -27,6 +27,7 @@ noinst_HEADERS = libmemcached_probes.h \
 lib_LTLIBRARIES = libmemcached.la
 libmemcached_la_SOURCES = memcached.c \
 			  memcached_auto.c \
+			  memcached_behavior.c \
 			  memcached_connect.c \
 			  memcached_delete.c \
 			  memcached_flush.c \
