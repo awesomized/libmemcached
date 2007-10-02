@@ -8,8 +8,12 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
                           char *buffer, size_t length)
 {
   size_t x;
+  char *buffer_ptr;
 
-  for (x= 0; x < length; x++)
+  buffer_ptr= buffer;
+
+  for (x= 0, buffer_ptr= buffer; 
+       x < length; x++)
   {
     if (!ptr->read_buffer_length)
     {
@@ -23,7 +27,8 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
       if (ptr->read_buffer_length == 0)
         return x;
     }
-    buffer[x]= *ptr->read_ptr;
+    *buffer_ptr= *ptr->read_ptr;
+    buffer_ptr++;
     ptr->read_ptr++;
     ptr->read_buffer_length--;
   }
