@@ -8,6 +8,7 @@
 */
 
 #include "common.h"
+#include "memcached_io.h"
 
 static memcached_return memcached_send(memcached_st *ptr, 
                                        char *key, size_t key_length, 
@@ -31,6 +32,8 @@ static memcached_return memcached_send(memcached_st *ptr,
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
+  assert(ptr->write_buffer_offset == 0);
+
   server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -38,18 +41,44 @@ static memcached_return memcached_send(memcached_st *ptr,
                         (int)key_length, key, flags, 
                         (unsigned long long)expiration, value_length);
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-    return MEMCACHED_WRITE_FAILURE;
-  if ((sent_length= send(ptr->hosts[server_key].fd, buffer, write_length, 0)) == -1)
-    return MEMCACHED_WRITE_FAILURE;
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
+
+  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length)) == -1)
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
   assert(write_length == sent_length);
 
-  if ((sent_length= send(ptr->hosts[server_key].fd, value, value_length, 0)) == -1)
+  /* 
+    We have to flush after sending the command. Memcached is not smart enough
+    to just keep reading from the socket :(
+  */
+  if ((sent_length= memcached_io_flush(ptr, server_key)) == -1)
     return MEMCACHED_WRITE_FAILURE;
+
+  if ((sent_length= memcached_io_write(ptr, server_key, value, value_length)) == -1)
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
   assert(value_length == sent_length);
 
-  if ((sent_length= send(ptr->hosts[server_key].fd, "\r\n", 2, 0)) == -1)
-    return MEMCACHED_WRITE_FAILURE;
+  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2)) == -1)
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
+
   assert(2 == sent_length);
+
+  if ((sent_length= memcached_io_flush(ptr, server_key)) == -1)
+    return MEMCACHED_WRITE_FAILURE;
+
+  //assert(sent_length == write_length + value_length + 2);
 
   sent_length= recv(ptr->hosts[server_key].fd, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 0);
 
@@ -57,8 +86,18 @@ static memcached_return memcached_send(memcached_st *ptr,
     return MEMCACHED_SUCCESS;
   else if (write_length && buffer[0] == 'N')  /* NOT_STORED */
     return MEMCACHED_NOTSTORED;
+  else if (write_length && buffer[0] == 'E')  /* ERROR */
+  {
+    printf("BUFFER :%s:\n", buffer);
+    return MEMCACHED_PROTOCOL_ERROR;
+  }
   else
     return MEMCACHED_READ_FAILURE;
+
+error:
+  memcached_io_reset(ptr, server_key);
+
+  return rc;
 }
 
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 

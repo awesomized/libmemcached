@@ -26,18 +26,26 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
                           "delete %.*s\r\n", (int)key_length, key);
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-    return MEMCACHED_WRITE_FAILURE;
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
 
   sent_length= send(ptr->hosts[server_key].fd, buffer, send_length, 0);
 
   if (sent_length == -1 || sent_length != send_length)
-    return MEMCACHED_WRITE_FAILURE;
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
 
   rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
-  LIBMEMCACHED_MEMCACHED_DELETE_END();
 
   if (rc == MEMCACHED_DELETED)
     rc= MEMCACHED_SUCCESS;
 
+  LIBMEMCACHED_MEMCACHED_DELETE_END();
+
+error:
   return rc;
 }

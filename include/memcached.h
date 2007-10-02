@@ -38,6 +38,8 @@ typedef struct memcached_server_st memcached_server_st;
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
+//#define MEMCACHED_MAX_BUFFER 8196
+#define MEMCACHED_MAX_BUFFER 30
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -118,6 +120,9 @@ struct memcached_st {
   memcached_server_st *hosts;
   unsigned int number_of_hosts;
   unsigned int cursor_server;
+  char write_buffer[MEMCACHED_MAX_BUFFER];
+  size_t write_buffer_offset;
+  size_t write_between_flush;
   char connected;
 };
 

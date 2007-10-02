@@ -1,4 +1,5 @@
 0.4
+  * Added buffered IO to write calls for keys
   * memstat was broken (bad if/else on connect)
 
 0.3 Mon Oct  1 06:37:52 PDT 2007
