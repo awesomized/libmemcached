@@ -17,10 +17,29 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
   {
     if (!ptr->read_buffer_length)
     {
-      ptr->read_buffer_length= recv(ptr->hosts[server_key].fd, 
-                                    ptr->read_buffer, 
-                                    MEMCACHED_MAX_BUFFER, 0);
-      ptr->read_ptr= ptr->read_buffer;
+      if (length > 1)
+      {
+
+        size_t data_read;
+        data_read= recv(ptr->hosts[server_key].fd, 
+                        buffer_ptr, 
+                        length - x, 0);
+        if (data_read == -1)
+          return -1;
+        if (data_read == 0)
+          return x;
+
+        data_read+= x;
+
+        return data_read;
+      }
+      else
+      {
+        ptr->read_buffer_length= recv(ptr->hosts[server_key].fd, 
+                                      ptr->read_buffer, 
+                                      MEMCACHED_MAX_BUFFER, 0);
+        ptr->read_ptr= ptr->read_buffer;
+      }
 
       if (ptr->read_buffer_length == -1)
         return -1;
