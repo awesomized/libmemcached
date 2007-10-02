@@ -120,6 +120,9 @@ struct memcached_st {
   memcached_server_st *hosts;
   unsigned int number_of_hosts;
   unsigned int cursor_server;
+  char read_buffer[MEMCACHED_MAX_BUFFER];
+  size_t read_buffer_length;
+  char *read_ptr;
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
   size_t write_between_flush;

@@ -4,9 +4,31 @@
 
 #include <memcached.h>
 
-ssize_t memcached_io_read(memcached_st *ptr, char *buf, size_t length)
+ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
+                          char *buffer, size_t length)
 {
-  return -1;
+  size_t x;
+
+  for (x= 0; x < length; x++)
+  {
+    if (!ptr->read_buffer_length)
+    {
+      ptr->read_buffer_length= recv(ptr->hosts[server_key].fd, 
+                                    ptr->read_buffer, 
+                                    MEMCACHED_MAX_BUFFER, 0);
+      ptr->read_ptr= ptr->read_buffer;
+
+      if (ptr->read_buffer_length == -1)
+        return -1;
+      if (ptr->read_buffer_length == 0)
+        return x;
+    }
+    buffer[x]= *ptr->read_ptr;
+    ptr->read_ptr++;
+    ptr->read_buffer_length--;
+  }
+
+  return length;
 }
 
 ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,

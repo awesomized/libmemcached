@@ -1,4 +1,5 @@
 #include "common.h"
+#include "memcached_io.h"
 
 static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                                    size_t *value_length, 
@@ -75,7 +76,6 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     if (*value_length)
     {
       size_t read_length;
-      size_t partial_length;
       size_t to_read;
       char *value;
       char *value_ptr;
@@ -94,15 +94,9 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
       value_ptr= value;
       read_length= 0;
       to_read= (*value_length) + 2;
-      /* This is overkill */
-      while ((partial_length= recv(ptr->hosts[server_key].fd, value_ptr, to_read, 0)) > 0)
-      {
-        value_ptr+= partial_length;
-        read_length+= partial_length;
-        to_read-= partial_length;
-        if (read_length == (size_t)(*value_length + 2))
-          break;
-      }
+
+      read_length= memcached_io_read(ptr, server_key,
+                                     value_ptr, to_read);
 
       if (read_length != (size_t)(*value_length + 2))
       {
