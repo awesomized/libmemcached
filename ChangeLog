@@ -1,7 +1,10 @@
-0.4
+0.4 Wed Oct  3 10:28:50 PDT 2007
   * Added buffered IO to write calls for keys
   * Added buffered IO for reads
   * memstat was broken (bad if/else on connect)
+  * New non-blocking IO (not default yet). Mucho faster
+  * Refactor of test system.
+  * memslap crash solved
 
 0.3 Mon Oct  1 06:37:52 PDT 2007
   * Jeff Fisher <guppy@techmonkeys.org> provided a spec file

@@ -1,6 +1,6 @@
 Summary: memcached C library and command line tools
 Name: libmemcached
-Version: 0.3
+Version: 0.4
 Release: 1
 License: BSD
 Group: System Environment/Libraries
@@ -54,6 +54,9 @@ memslap - Generate testing loads on a memcached cluster
 %{_libdir}/libmemcached.so.0.0.0
 
 %changelog
+* Wed Oct  3 2007 Brian Aker <brian@tangent.org> - 0.4-1
+- See Changelog
+
 * Mon Oct  1 2007 Brian Aker <brian@tangent.org> - 0.3-1
 - Added memslap
 
