@@ -23,6 +23,9 @@ void pairs_free(pairs_st *pairs)
 {
   unsigned int x;
 
+  if (!pairs)
+    return;
+
   /* We free until we hit the null pair we stores during creation */
   for (x= 0; pairs[x].key; x++)
   {
