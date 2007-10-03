@@ -27,6 +27,7 @@ void memcached_free(memcached_st *ptr)
 {
   if (ptr->hosts)
   {
+    memcached_quit(ptr);
     memcached_server_list_free(ptr->hosts);
     ptr->hosts= NULL;
   }

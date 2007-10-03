@@ -3,6 +3,7 @@
 */
 
 #include <memcached.h>
+#include <memcached_io.h>
 
 #include <libmemcached_config.h>
 

@@ -10,12 +10,21 @@
 #include "common.h"
 #include "memcached_io.h"
 
+typedef enum {
+  SET_OP,
+  REPLACE_OP,
+  ADD_OP,
+} memcached_storage_action;
+
+/* Inline this */
+#define storage_op_string(A) A == SET_OP ? "set" : ( A == REPLACE_OP ? "replace" : "add")
+
 static memcached_return memcached_send(memcached_st *ptr, 
                                        char *key, size_t key_length, 
                                        char *value, size_t value_length, 
                                        time_t expiration,
                                        uint16_t  flags,
-                                       char *verb)
+                                       memcached_storage_action verb)
 {
   size_t write_length;
   ssize_t sent_length;
@@ -38,16 +47,10 @@ static memcached_return memcached_send(memcached_st *ptr,
   server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                        "%s %.*s %x %llu %zu\r\n", verb,
+                        "%s %.*s %x %llu %zu\r\n", storage_op_string(verb),
                         (int)key_length, key, flags, 
                         (unsigned long long)expiration, value_length);
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
-
-  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -57,25 +60,33 @@ static memcached_return memcached_send(memcached_st *ptr,
     We have to flush after sending the command. Memcached is not smart enough
     to just keep reading from the socket :(
   */
-  if ((sent_length= memcached_io_flush(ptr, server_key)) == -1)
-    return MEMCACHED_WRITE_FAILURE;
-
-  if ((sent_length= memcached_io_write(ptr, server_key, value, value_length)) == -1)
+  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length, 1)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
   }
 
-  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2)) == -1)
+  if ((sent_length= memcached_io_write(ptr, server_key, value, value_length, 0)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
   }
 
-  if ((sent_length= memcached_io_flush(ptr, server_key)) == -1)
-    return MEMCACHED_WRITE_FAILURE;
+  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, 1)) == -1)
+  {
+    rc= MEMCACHED_WRITE_FAILURE;
+    goto error;
+  }
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  if ((ptr->flags & MEM_NO_BLOCK) && verb == SET_OP)
+  {
+    rc= MEMCACHED_SUCCESS;
+    ptr->stack_responses++;
+  }
+  else
+  {
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  }
 
   if (rc == MEMCACHED_STORED)
     return MEMCACHED_SUCCESS;
@@ -96,7 +107,7 @@ memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length,
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_SET_START();
   rc= memcached_send(ptr, key, key_length, value, value_length,
-                         expiration, flags, "set");
+                         expiration, flags, SET_OP);
   LIBMEMCACHED_MEMCACHED_SET_END();
   return rc;
 }
@@ -109,7 +120,7 @@ memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_ADD_START();
   rc= memcached_send(ptr, key, key_length, value, value_length,
-                         expiration, flags, "add");
+                         expiration, flags, ADD_OP);
   LIBMEMCACHED_MEMCACHED_ADD_END();
   return rc;
 }
@@ -122,7 +133,7 @@ memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_leng
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_REPLACE_START();
   rc= memcached_send(ptr, key, key_length, value, value_length,
-                         expiration, flags, "replace");
+                         expiration, flags, REPLACE_OP);
   LIBMEMCACHED_MEMCACHED_REPLACE_END();
   return rc;
 }

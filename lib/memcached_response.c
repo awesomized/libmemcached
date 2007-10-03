@@ -12,28 +12,33 @@ memcached_return memcached_response(memcached_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key)
 {
+  unsigned int x;
   size_t send_length;
   char *buffer_ptr;
 
   memset(buffer, 0, buffer_length);
   send_length= 0;
 
-  buffer_ptr= buffer;
-  while (1)
+  for (x= 0; x <= ptr->stack_responses; x++)
   {
-    unsigned int read_length;
+    buffer_ptr= buffer;
+    while (1)
+    {
+      unsigned int read_length;
 
-    read_length= memcached_io_read(ptr, server_key,
-                                   buffer_ptr, 1);
+      read_length= memcached_io_read(ptr, server_key,
+                                     buffer_ptr, 1);
 
-    if (read_length != 1)
-      return  MEMCACHED_UNKNOWN_READ_FAILURE;
+      if (read_length != 1)
+        return  MEMCACHED_UNKNOWN_READ_FAILURE;
 
-    if (*buffer_ptr == '\n')
-      break;
-    else
-      buffer_ptr++;
+      if (*buffer_ptr == '\n')
+        break;
+      else
+        buffer_ptr++;
+    }
   }
+  ptr->stack_responses= 0;
 
   switch(buffer[0])
   {

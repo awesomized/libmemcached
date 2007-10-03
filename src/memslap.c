@@ -66,6 +66,7 @@ pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_
                             unsigned int *actual_loaded);
 
 static int opt_verbose= 0;
+static int opt_non_blocking_io= 0;
 static unsigned int opt_execute_number= 0;
 static unsigned int opt_createial_load= 0;
 static unsigned int opt_concurrency= 0;
@@ -204,6 +205,7 @@ void options_parse(int argc, char *argv[])
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
       {"help", no_argument, NULL, OPT_HELP},
       {"initial-load", required_argument, NULL, OPT_SLAP_INITIAL_LOAD}, /* Number to load initially */
+      {"non-blocking", no_argument, &opt_non_blocking_io, OPT_SLAP_NON_BLOCK},
       {"servers", required_argument, NULL, OPT_SERVERS},
       {"test", required_argument, NULL, OPT_SLAP_TEST},
       {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
@@ -295,6 +297,8 @@ void *run_task(void *p)
   memcached_st *memc;
 
   memc= memcached_create(NULL);
+  if (opt_non_blocking_io)
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
   
   memcached_server_push(memc, context->servers);
 
@@ -336,6 +340,8 @@ pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_
   pairs_st *pairs;
 
   memc= memcached_create(NULL);
+  /* We always used non-blocking IO for load since it is faster */
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
   memcached_server_push(memc, servers);
 
   pairs= pairs_generate(number_of);

@@ -13,4 +13,5 @@ typedef enum {
   OPT_SLAP_INITIAL_LOAD,
   OPT_SLAP_TEST,
   OPT_SLAP_CONCURRENCY,
+  OPT_SLAP_NON_BLOCK,
 } memcached_options;

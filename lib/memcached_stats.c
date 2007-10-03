@@ -240,7 +240,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  sent_length= send(ptr->hosts[server_key].fd, buffer, send_length, 0);
+  sent_length= memcached_io_write(ptr, server_key, buffer, send_length, 1);
 
   if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;

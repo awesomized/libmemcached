@@ -26,11 +26,13 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
       return MEMCACHED_WRITE_FAILURE;
 
-    sent_length= send(ptr->hosts[x].fd, buffer, send_length, 0);
+    sent_length= memcached_io_write(ptr, x, buffer, send_length, 1);
 
     if (sent_length == -1 || sent_length != send_length)
       return MEMCACHED_WRITE_FAILURE;
 
+    if (ptr->flags & MEM_NO_BLOCK)
+      WATCHPOINT;
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
 
     if (rc != MEMCACHED_SUCCESS)

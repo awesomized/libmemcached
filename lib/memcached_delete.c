@@ -31,7 +31,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
     goto error;
   }
 
-  sent_length= send(ptr->hosts[server_key].fd, buffer, send_length, 0);
+  sent_length= memcached_io_write(ptr, server_key, buffer, send_length, 1);
 
   if (sent_length == -1 || sent_length != send_length)
   {

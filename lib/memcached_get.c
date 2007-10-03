@@ -137,7 +137,8 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         (int)key_length, key);
-  if ((send(ptr->hosts[server_key].fd, buffer, send_length, 0) == -1))
+
+  if ((memcached_io_write(ptr, server_key, buffer, send_length, 1)) == -1)
   {
     *error= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -239,8 +240,8 @@ memcached_return memcached_mget(memcached_st *ptr,
       memcached_string_st *string= cursor_key_exec[x];
       memcached_string_append(ptr, string, "\r\n", 2);
 
-      if ((send(ptr->hosts[x].fd, string->string, 
-                 memcached_string_length(ptr, string), 0) == -1))
+      if ((memcached_io_write(ptr, x, string->string, 
+                              memcached_string_length(ptr, string), 1)) == -1)
       {
         memcached_quit(ptr);
         rc= MEMCACHED_SOME_ERRORS;

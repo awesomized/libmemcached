@@ -147,12 +147,7 @@ void memcached_server_list_free(memcached_server_st *ptr)
   unsigned int x;
 
   for (x= 0; ptr[x].hostname; x++)
-  {
-    if (ptr[x].fd > 0)
-      close(ptr[x].fd);
-
     free(ptr[x].hostname);
-  }
 
   free(ptr);
 }

@@ -71,6 +71,7 @@ typedef enum {
 
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
+  MEMCACHED_BEHAVIOR_BLOCK,
 } memcached_behavior;
 
 typedef enum {
@@ -132,7 +133,6 @@ struct memcached_st {
   char *read_ptr;
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
-  size_t write_between_flush;
   char connected;
   int my_errno;
   unsigned int stack_responses;
@@ -161,7 +161,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
-memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag);
+memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, void *data);
 
 /* All of the functions for adding data to the server */
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
@@ -233,11 +233,11 @@ memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *
 void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
 
 /* Some personal debugging functions */
-#define WATCHPOINT printf("WATCHPOINT %s:%d\n", __FILE__, __LINE__);fflush(stdout);
-#define WATCHPOINT_ERROR(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
-#define WATCHPOINT_STRING(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, A);fflush(stdout);
-#define WATCHPOINT_NUMBER(A) printf("WATCHPOINT %s:%d %d\n", __FILE__, __LINE__, A);fflush(stdout);
-#define WATCHPOINT_ERRNO(A) printf("WATCHPOINT %s:%d %s\n", __FILE__, __LINE__, strerror(A));A= 0;fflush(stdout);
+#define WATCHPOINT printf("\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
+#define WATCHPOINT_ERROR(A) printf("\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
+#define WATCHPOINT_STRING(A) printf("\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, A);fflush(stdout);
+#define WATCHPOINT_NUMBER(A) printf("\nWATCHPOINT %s:%d %d\n", __FILE__, __LINE__, A);fflush(stdout);
+#define WATCHPOINT_ERRNO(A) printf("\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, strerror(A));A= 0;fflush(stdout);
 
 
 #ifdef __cplusplus
