@@ -626,6 +626,21 @@ int main(int argc, char *argv[])
     memcached_free(memc);
   }
 
+  fprintf(stderr, "\nTCP Nodelay tests\n\n");
+  for (x= 0; tests[x].function_name; x++)
+  {
+    memcached_st *memc;
+    memc= memcached_create(NULL);
+    assert(memc);
+    fprintf(stderr, "Testing %s", tests[x].function_name);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+    tests[x].function(memc);
+    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+    assert(memc);
+    memcached_free(memc);
+  }
+
 
   /* The multiple tests */
   if (argc == 2)

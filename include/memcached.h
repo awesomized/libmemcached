@@ -72,6 +72,8 @@ typedef enum {
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
   MEMCACHED_BEHAVIOR_BLOCK,
+  MEMCACHED_BEHAVIOR_TCP_NODELAY,
+  MEMCACHED_BEHAVIOR_TCP_DELAY,
 } memcached_behavior;
 
 typedef enum {
@@ -115,6 +117,8 @@ struct memcached_stat_st {
 };
 
 #define MEM_NO_BLOCK     (1 << 0)
+#define MEM_TCP_NODELAY  (1 << 1)
+#define MEM_REUSE_MEMORY (1 << 2)
 
 struct memcached_string_st {
   char *string;

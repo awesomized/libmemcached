@@ -1,1 +1,1 @@
-EXTRA_DIST = libmemcached.spec
+EXTRA_DIST = libmemcached.spec set_benchmark.sh

@@ -62,11 +62,14 @@ struct conclusions_st {
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
-pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_of, 
+pairs_st *load_create_data(memcached_server_st *servers, unsigned int number_of, 
                             unsigned int *actual_loaded);
+void flush_all(memcached_server_st *servers);
 
 static int opt_verbose= 0;
+static int opt_flush= 0;
 static int opt_non_blocking_io= 0;
+static int opt_tcp_nodelay= 0;
 static unsigned int opt_execute_number= 0;
 static unsigned int opt_createial_load= 0;
 static unsigned int opt_concurrency= 0;
@@ -122,8 +125,10 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   pthread_attr_setdetachstate(&attr,
                               PTHREAD_CREATE_DETACHED);
 
+  if (opt_flush)
+    flush_all(servers);
   if (opt_createial_load)
-    pairs= load_createial_data(servers, opt_createial_load, &actual_loaded);
+    pairs= load_create_data(servers, opt_createial_load, &actual_loaded);
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -203,10 +208,12 @@ void options_parse(int argc, char *argv[])
       {"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {"execute-number", required_argument, NULL, OPT_SLAP_EXECUTE_NUMBER},
       {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+      {"flush", no_argument, &opt_flush, OPT_FLUSH},
       {"help", no_argument, NULL, OPT_HELP},
       {"initial-load", required_argument, NULL, OPT_SLAP_INITIAL_LOAD}, /* Number to load initially */
       {"non-blocking", no_argument, &opt_non_blocking_io, OPT_SLAP_NON_BLOCK},
       {"servers", required_argument, NULL, OPT_SERVERS},
+      {"tcp-nodelay", no_argument, &opt_tcp_nodelay, OPT_SLAP_TCP_NODELAY},
       {"test", required_argument, NULL, OPT_SLAP_TEST},
       {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {"version", no_argument, NULL, OPT_VERSION},
@@ -299,6 +306,8 @@ void *run_task(void *p)
   memc= memcached_create(NULL);
   if (opt_non_blocking_io)
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
+  if (opt_tcp_nodelay)
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL );
   
   memcached_server_push(memc, context->servers);
 
@@ -333,7 +342,20 @@ void *run_task(void *p)
   return NULL;
 }
 
-pairs_st *load_createial_data(memcached_server_st *servers, unsigned int number_of, 
+void flush_all(memcached_server_st *servers)
+{
+  memcached_st *memc;
+
+  memc= memcached_create(NULL);
+
+  memcached_server_push(memc, servers);
+
+  memcached_flush(memc, 0);
+
+  memcached_free(memc);
+}
+
+pairs_st *load_create_data(memcached_server_st *servers, unsigned int number_of, 
                             unsigned int *actual_loaded)
 {
   memcached_st *memc;

@@ -14,4 +14,6 @@ typedef enum {
   OPT_SLAP_TEST,
   OPT_SLAP_CONCURRENCY,
   OPT_SLAP_NON_BLOCK,
+  OPT_SLAP_TCP_NODELAY,
+  OPT_FLUSH,
 } memcached_options;

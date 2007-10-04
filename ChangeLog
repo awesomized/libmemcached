@@ -1,3 +1,12 @@
+0.5
+ * Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C
+   library as well. (Eric Hodel drbrain@segment7.net)
+  * Added support script for set_benchmark
+  * Updated memslap to allow testing of TCP_NODELAY
+  * Updated memslap to support --flush (aka dump memcache servers before
+    testing)
+  * Fixed bug in multiple hosts not being activated
+
 0.4 Wed Oct  3 10:28:50 PDT 2007
   * Added buffered IO to write calls for keys
   * Added buffered IO for reads

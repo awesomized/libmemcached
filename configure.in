@@ -1,7 +1,7 @@
 AC_INIT(src/memcat.c)
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(include/libmemcached_config.h)
-AM_INIT_AUTOMAKE("libmemcached", 0.4)
+AM_INIT_AUTOMAKE("libmemcached", 0.5)
 
 AC_PROG_CC
 AC_PROG_LIBTOOL

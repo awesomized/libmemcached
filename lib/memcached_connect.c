@@ -1,6 +1,9 @@
 #include "common.h"
 
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
 
 memcached_return memcached_connect(memcached_st *ptr)
 {
@@ -20,8 +23,6 @@ memcached_return memcached_connect(memcached_st *ptr)
   {
     if (ptr->hosts[x].fd == -1)
     {
-      int flags;
-      
       if ((h= gethostbyname(ptr->hosts[x].hostname)) == NULL)
         return MEMCACHED_HOST_LOCKUP_FAILURE;
 
@@ -30,7 +31,7 @@ memcached_return memcached_connect(memcached_st *ptr)
       servAddr.sin_port = htons(ptr->hosts[x].port);
 
       /* Create the socket */
-      if ((ptr->hosts[0].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
+      if ((ptr->hosts[x].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
       {
         ptr->my_errno= errno;
         return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
@@ -45,14 +46,24 @@ memcached_return memcached_connect(memcached_st *ptr)
       /* For the moment, not getting a nonblocking mode will note be fatal */
       if (ptr->flags & MEM_NO_BLOCK)
       {
-        flags= fcntl(ptr->hosts[0].fd, F_GETFL, 0);
+        int flags;
+      
+        flags= fcntl(ptr->hosts[x].fd, F_GETFL, 0);
         if (flags != -1)
-          (void)fcntl(ptr->hosts[0].fd, F_SETFL, flags | O_NONBLOCK);
+          (void)fcntl(ptr->hosts[x].fd, F_SETFL, flags | O_NONBLOCK);
+      }
+
+      if (ptr->flags & MEM_TCP_NODELAY)
+      {
+        int flag= 1;
+
+        setsockopt(ptr->hosts[x].fd, IPPROTO_TCP, TCP_NODELAY, 
+                   &flag, (socklen_t)sizeof(int));
       }
 
       /* connect to server */
 test_connect:
-      if (connect(ptr->hosts[0].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
+      if (connect(ptr->hosts[x].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
       {
         switch (errno) {
           /* We are spinning waiting on connect */
