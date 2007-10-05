@@ -136,7 +136,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   if (*error != MEMCACHED_SUCCESS)
     goto error;
 
-  server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
+  server_key= memcached_generate_hash(ptr, key, key_length);
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         (int)key_length, key);
@@ -208,7 +208,7 @@ memcached_return memcached_mget(memcached_st *ptr,
   {
     unsigned int server_key;
 
-    server_key= memcached_generate_hash(keys[x], key_length[x]) % ptr->number_of_hosts;
+    server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
     if (cursor_key_exec[server_key])
     {

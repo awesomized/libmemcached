@@ -44,7 +44,7 @@ static memcached_return memcached_send(memcached_st *ptr,
   /* Leaveing this assert in since only a library fubar could blow this */
   assert(ptr->write_buffer_offset == 0);
 
-  server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
+  server_key= memcached_generate_hash(ptr, key, key_length);
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %x %llu %zu\r\n", storage_op_string(verb),

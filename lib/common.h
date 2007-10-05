@@ -18,15 +18,16 @@
 
 #include "libmemcached_probes.h"
 
-void md5_signature(const unsigned char *key, unsigned int length, char *result);
+#define MEM_NO_BLOCK     (1 << 0)
+#define MEM_TCP_NODELAY  (1 << 1)
+#define MEM_REUSE_MEMORY (1 << 2)
+#define MEM_USE_MD5      (1 << 3)
+
+void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
 memcached_return memcached_connect(memcached_st *ptr);
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
-unsigned int memcached_generate_hash(char *key, size_t key_length);
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
-                               char *key, memcached_return *error);
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
-                                memcached_return *error);
+unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
 
 #endif /* __COMMON_H__ */

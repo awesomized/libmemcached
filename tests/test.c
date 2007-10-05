@@ -588,6 +588,25 @@ int main(int argc, char *argv[])
     memcached_free(memc);
   }
 
+  fprintf(stderr, "\nMD5 Hashing\n\n");
+  for (x= 0; tests[x].function_name; x++)
+  {
+    memcached_st *memc;
+    memcached_return rc;
+    memc= memcached_create(NULL);
+    assert(memc);
+
+    rc= memcached_server_push(memc, servers);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    fprintf(stderr, "Testing %s", tests[x].function_name);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+    tests[x].function(memc);
+    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+    assert(memc);
+    memcached_free(memc);
+  }
+
   /* Clean up whatever we might have left */
   {
     memcached_st *memc;

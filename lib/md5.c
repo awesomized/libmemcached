@@ -47,9 +47,12 @@ typedef struct {
   unsigned char buffer[64];                         /* input buffer */
 } MD5_CTX;
 
-static void MD5Init PROTO_LIST ((MD5_CTX *));
-static void MD5Update PROTO_LIST ((MD5_CTX *, unsigned char *, unsigned int));
-static void MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
+static void MD5Init (MD5_CTX *context);      /* context */
+static void MD5Update ( MD5_CTX *context,                                        /* context */
+                        unsigned char *input,                                /* input block */
+                        unsigned int inputLen);                     /* length of input block */
+static void MD5Final ( unsigned char digest[16],                         /* message digest */
+                       MD5_CTX *context);                              /* context */
 
 /* Constants for MD5Transform routine. */
 
@@ -71,13 +74,14 @@ static void MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
 #define S44 21
 
 
-static void MD5Transform PROTO_LIST ((UINT4 [4], unsigned char [64]));
-static void Encode PROTO_LIST
-  ((unsigned char *, UINT4 *, unsigned int));
-static void Decode PROTO_LIST
-  ((UINT4 *, unsigned char *, unsigned int));
-static void MD5_memcpy PROTO_LIST ((POINTER, POINTER, unsigned int));
-static void MD5_memset PROTO_LIST ((POINTER, int, unsigned int));
+static void MD5Transform (UINT4 state[4],
+                          unsigned char block[64]);
+static void Encode (unsigned char *output,
+                    UINT4 *input,
+                    unsigned int len);
+static void Decode(UINT4 *output, unsigned char *input, unsigned int len);
+static void MD5_memcpy(unsigned char *, unsigned char *, unsigned int);
+static void MD5_memset(unsigned char *, int, unsigned int);
 
 static unsigned char PADDING[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -123,24 +127,15 @@ Rotation is separate from addition to prevent recomputation.
 
 /* 
   Just a simple method for getting the signature
-  result must be == 32
+  result must be == 16
 */
-void md5_signature(const unsigned char *key, unsigned int length, char *result)
+void md5_signature(unsigned char *key, unsigned int length, unsigned char *result)
 {
-    const char *hex = "0123456789abcdef";
     MD5_CTX my_md5;
-    unsigned char hash[16];
-    char *r, i;
 
     MD5Init(&my_md5);
-    (void)MD5Update(&my_md5, buf, length);
-    MD5Final(hash, &my_md5);
-
-    for (i = 0, r = result; i < 16; i++) 
-    {
-	*r++ = hex[hash[i] >> 4];
-	*r++ = hex[hash[i] & 0xF];
-    }
+    (void)MD5Update(&my_md5, key, length);
+    MD5Final(result, &my_md5);
 }
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.

@@ -15,7 +15,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  server_key= memcached_generate_hash(key, key_length) % ptr->number_of_hosts;
+  server_key= memcached_generate_hash(ptr, key, key_length);
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 

@@ -2,7 +2,7 @@
   Basic socket buffered IO
 */
 
-#include <memcached.h>
+#include "common.h"
 #include "memcached_io.h"
 #include <sys/select.h>
 

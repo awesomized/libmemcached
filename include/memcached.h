@@ -74,6 +74,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_BLOCK,
   MEMCACHED_BEHAVIOR_TCP_NODELAY,
   MEMCACHED_BEHAVIOR_TCP_DELAY,
+  MEMCACHED_BEHAVIOR_MD5_HASHING,
 } memcached_behavior;
 
 typedef enum {
@@ -115,10 +116,6 @@ struct memcached_stat_st {
   unsigned long long bytes_written;
   unsigned int limit_maxbytes;
 };
-
-#define MEM_NO_BLOCK     (1 << 0)
-#define MEM_TCP_NODELAY  (1 << 1)
-#define MEM_REUSE_MEMORY (1 << 2)
 
 struct memcached_string_st {
   char *string;
@@ -224,6 +221,11 @@ memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st 
 size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string);
 void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
+
+char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
+                               char *key, memcached_return *error);
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
+                                memcached_return *error);
 
 /* Some personal debugging functions */
 #define WATCHPOINT printf("\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
