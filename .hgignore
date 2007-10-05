@@ -1,0 +1,17 @@
+# Exact paths to config junk
+^aclocal.m4$
+^configure$
+^config/(config.guess|config.sub|depcomp|install-sh|ltmain.sh|missing)$
+^config.(log|status)$
+^libtool$
+^autom4te.cache$
+^include/(libmemcached_config.h(.in)?|stamp-h1)$
+
+# Build artifacts
+^lib/libmemcached.la$
+^src/mem(cat|cp|flush|rm|slap|stat)$
+^tests/testapp$
+
+Makefile(.in)?$
+.(deps|libs)$
+\.l?o$
