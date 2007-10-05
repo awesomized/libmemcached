@@ -35,6 +35,7 @@ libmemcached_la_SOURCES = memcached.c \
 			  memcached_hash.c \
 			  memcached_hosts.c \
 			  memcached_io.c \
+			  md5.c \
 			  memcached_quit.c \
 			  memcached_parse.c \
 			  memcached_response.c \

@@ -31,8 +31,6 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     if (sent_length == -1 || sent_length != send_length)
       return MEMCACHED_WRITE_FAILURE;
 
-    if (ptr->flags & MEM_NO_BLOCK)
-      WATCHPOINT;
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
 
     if (rc != MEMCACHED_SUCCESS)

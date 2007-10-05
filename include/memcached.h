@@ -210,18 +210,6 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 memcached_server_st *memcached_servers_parse(char *server_strings);
 
-/* These are all private, do not use. */
-memcached_return memcached_connect(memcached_st *ptr);
-memcached_return memcached_response(memcached_st *ptr, 
-                                    char *buffer, size_t buffer_length,
-                                    unsigned int server_key);
-unsigned int memcached_generate_hash(char *key, size_t key_length);
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
-                               char *key, memcached_return *error);
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
-                                memcached_return *error);
-
-
 /* String Struct */
 #define memcached_string_length(A, B) (size_t)(B->end - B->string)
 #define memcached_string_size(A, B) B->current_size
