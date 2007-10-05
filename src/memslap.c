@@ -88,9 +88,16 @@ int main(int argc, char *argv[])
   options_parse(argc, argv);
 
   if (!opt_servers)
-    exit(0);
+  {
+    char *temp;
 
-  servers= parse_opt_servers(opt_servers);
+    if ((temp= getenv("MEMCACHED_SERVERS")))
+      opt_servers= strdup(temp);
+    else
+      exit(1);
+  }
+
+  servers= memcached_servers_parse(opt_servers);
 
   pthread_mutex_init(&counter_mutex, NULL);
   pthread_cond_init(&count_threshhold, NULL);

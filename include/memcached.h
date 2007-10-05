@@ -208,6 +208,7 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 void memcached_server_list_free(memcached_server_st *ptr);
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
+memcached_server_st *memcached_servers_parse(char *server_strings);
 
 /* These are all private, do not use. */
 memcached_return memcached_connect(memcached_st *ptr);

@@ -34,10 +34,13 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     if (load_key)
     {
       memset(key, 0, MEMCACHED_MAX_KEY);
+      *key_length= 0;
+
       for (; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++)
       {
         *key= *string_ptr;
         key++;
+        (*key_length)++;
       }
     }
     else /* Skip characters */

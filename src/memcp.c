@@ -35,12 +35,19 @@ int main(int argc, char *argv[])
   memc= memcached_create(NULL);
 
   if (!opt_servers)
-    return 0;
+  {
+    char *temp;
+
+    if ((temp= getenv("MEMCACHED_SERVERS")))
+      opt_servers= strdup(temp);
+    else
+      exit(1);
+  }
 
   if (opt_servers)
-    servers= parse_opt_servers(opt_servers);
+    servers= memcached_servers_parse(opt_servers);
   else
-    servers= parse_opt_servers(argv[--argc]);
+    servers= memcached_servers_parse(argv[--argc]);
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);

@@ -29,11 +29,19 @@ int main(int argc, char *argv[])
   options_parse(argc, argv);
 
   if (!opt_servers)
-    return 0;
+  {
+    char *temp;
+
+    if ((temp= getenv("MEMCACHED_SERVERS")))
+      opt_servers= strdup(temp);
+    else
+      exit(1);
+  }
 
   memc= memcached_create(NULL);
 
-  servers= parse_opt_servers(opt_servers);
+  servers= memcached_servers_parse(opt_servers);
+
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
@@ -58,7 +66,7 @@ int main(int argc, char *argv[])
         free(string);
       }
     }
-    else
+    else if (rc != MEMCACHED_NOTFOUND)
     {
       fprintf(stderr, "memcat: %s: memcache error %s\n", 
               argv[optind], memcached_strerror(memc, rc));
