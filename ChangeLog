@@ -8,6 +8,7 @@
   * Fixed bug in multiple hosts not being activated
   * Added environmental variable MEMCACHED_SERVERS which can be used to 
     set the servers list.
+  * fixed memcached_stat method (and now memstat works)
 
 0.4 Wed Oct  3 10:28:50 PDT 2007
   * Added buffered IO to write calls for keys

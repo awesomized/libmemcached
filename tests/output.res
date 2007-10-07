@@ -23,6 +23,7 @@ Error 20 -> NO SERVERS DEFINED
 Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
+Error 24 -> STAT VALUE
 Found key pid
 Found key uptime
 Found key time
@@ -125,6 +126,7 @@ Error 20 -> NO SERVERS DEFINED
 Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
+Error 24 -> STAT VALUE
 Found key pid
 Found key uptime
 Found key time
@@ -227,6 +229,7 @@ Error 20 -> NO SERVERS DEFINED
 Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
+Error 24 -> STAT VALUE
 Found key pid
 Found key uptime
 Found key time
@@ -329,6 +332,7 @@ Error 20 -> NO SERVERS DEFINED
 Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
+Error 24 -> STAT VALUE
 Found key pid
 Found key uptime
 Found key time

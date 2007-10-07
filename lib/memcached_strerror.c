@@ -52,6 +52,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "SERVER DELETE";
   case MEMCACHED_VALUE:
     return "SERVER VALUE";
+  case MEMCACHED_STAT:
+    return "STAT VALUE";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

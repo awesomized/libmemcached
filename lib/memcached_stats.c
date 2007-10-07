@@ -222,7 +222,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
                                               unsigned int server_key)
 {
   memcached_return rc;
-  char buffer[HUGE_STRING_LEN];
+  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   size_t send_length, sent_length;
 
   rc= memcached_connect(ptr);
@@ -231,10 +231,10 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
     return rc;
 
   if (args)
-    send_length= snprintf(buffer, HUGE_STRING_LEN, 
+    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "stats %s\r\n", args);
   else
-    send_length= snprintf(buffer, HUGE_STRING_LEN, 
+    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "stats\r\n");
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
@@ -245,19 +245,17 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
   if (sent_length == -1 || sent_length != send_length)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_response(ptr, buffer, HUGE_STRING_LEN, 0);
-
-  if (rc == MEMCACHED_SUCCESS)
+  while (1)
   {
-    char *string_ptr, *end_ptr;
-    char *key, *value;
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 0);
 
-    string_ptr= buffer;
-    while (1)
+    if (rc == MEMCACHED_STAT)
     {
-      if (memcmp(string_ptr, "STAT ", 5))
-        break;
-      string_ptr+= 5;
+      char *string_ptr, *end_ptr;
+      char *key, *value;
+
+      string_ptr= buffer;
+      string_ptr+= 5; /* Move past STAT */
       for (end_ptr= string_ptr; *end_ptr != ' '; end_ptr++);
       key= string_ptr;
       key[(size_t)(end_ptr-string_ptr)]= 0;
@@ -269,9 +267,14 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
       string_ptr= end_ptr + 2;
       set_data(stat, key, value);
     }
+    else
+      break;
   }
 
-  return rc;
+  if (rc == MEMCACHED_END)
+    return MEMCACHED_SUCCESS;
+  else
+    return rc;
 }
 
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error)

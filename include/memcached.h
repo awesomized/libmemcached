@@ -66,6 +66,7 @@ typedef enum {
   MEMCACHED_END,
   MEMCACHED_DELETED,
   MEMCACHED_VALUE,
+  MEMCACHED_STAT,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 

@@ -49,7 +49,7 @@ memcached_return memcached_response(memcached_st *ptr,
   case 'S': /* STORED STATS SERVER_ERROR */
     {
       if (buffer[2] == 'A') /* STORED STATS */
-        return MEMCACHED_SUCCESS;
+        return MEMCACHED_STAT;
       else if (buffer[1] == 'E')
         return MEMCACHED_SERVER_ERROR;
       else if (buffer[1] == 'T')
