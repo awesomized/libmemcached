@@ -309,12 +309,13 @@ void *run_task(void *p)
 {
   thread_context_st *context= (thread_context_st *)p;
   memcached_st *memc;
+  unsigned int value= 1;
 
   memc= memcached_create(NULL);
   if (opt_non_blocking_io)
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &value);
   if (opt_tcp_nodelay)
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL );
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &value);
   
   memcached_server_push(memc, context->servers);
 

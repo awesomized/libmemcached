@@ -1,4 +1,4 @@
-servers localhost:5555,localhost
+servers localhost
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE

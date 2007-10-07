@@ -18,10 +18,12 @@
 
 #include "libmemcached_probes.h"
 
-#define MEM_NO_BLOCK     (1 << 0)
-#define MEM_TCP_NODELAY  (1 << 1)
-#define MEM_REUSE_MEMORY (1 << 2)
-#define MEM_USE_MD5      (1 << 3)
+typedef enum {
+  MEM_NO_BLOCK= (1 << 0),
+  MEM_TCP_NODELAY= (1 << 1),
+  MEM_REUSE_MEMORY= (1 << 2),
+  MEM_USE_MD5= (1 << 3),
+} memcached_flags;
 
 void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
 memcached_return memcached_connect(memcached_st *ptr);

@@ -452,6 +452,31 @@ void add_host_test(memcached_st *memc)
   memcached_server_list_free(servers);
 }
 
+/* We don't test the behavior itself, we test the switches */
+void behavior_test(memcached_st *memc)
+{
+  unsigned long long value;
+  unsigned int set= 1;
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
+  assert(value == 1);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
+  assert(value == 1);
+
+  set= 0;
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
+  assert(value == 0);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
+  assert(value == 0);
+}
+
 void add_host_test1(memcached_st *memc)
 {
   unsigned int x;
@@ -528,6 +553,7 @@ int main(int argc, char *argv[])
     {"get_stats", 0, get_stats },
     {"add_host_test", 0, add_host_test },
     {"get_stats_keys", 0, get_stats_keys },
+    {"behavior_test", 0, get_stats_keys },
     {0, 0, 0}
   };
 

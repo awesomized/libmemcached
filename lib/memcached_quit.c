@@ -18,8 +18,6 @@ void memcached_quit(memcached_st *ptr)
     {
       if (ptr->hosts[x].fd != -1)
       {
-        char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
         if (ptr->flags & MEM_NO_BLOCK)
           memcached_io_write(ptr, x, "quit\r\n", 6, 1);
         close(ptr->hosts[x].fd);
