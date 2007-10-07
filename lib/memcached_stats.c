@@ -225,7 +225,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   size_t send_length, sent_length;
 
-  rc= memcached_connect(ptr);
+  rc= memcached_connect(ptr, server_key);
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
@@ -247,7 +247,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
 
   while (1)
   {
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 0);
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
     if (rc == MEMCACHED_STAT)
     {
@@ -283,13 +283,6 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   memcached_return rc;
   memcached_stat_st *stats;
 
-  rc= memcached_connect(ptr);
-  if (rc != MEMCACHED_SUCCESS)
-  {
-    *error= rc;
-    return NULL;
-  }
-
   stats= (memcached_stat_st *)malloc(sizeof(memcached_st)*(ptr->number_of_hosts+1));
   if (!stats)
   {
@@ -299,10 +292,12 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   }
   memset(stats, 0, sizeof(memcached_st)*(ptr->number_of_hosts+1));
 
+  rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    rc= memcached_stats_fetch(ptr, stats+x, args, x);
-    if (rc != MEMCACHED_SUCCESS)
+    memcached_return temp_return;
+    temp_return= memcached_stats_fetch(ptr, stats+x, args, x);
+    if (temp_return != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
   }
 
@@ -319,11 +314,6 @@ memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args,
   memcached_create(&memc);
 
   memcached_server_add(&memc, hostname, port);
-
-  rc= memcached_connect(&memc);
-
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
 
   rc= memcached_stats_fetch(&memc, stat, args, 0);
 

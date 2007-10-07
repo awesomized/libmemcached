@@ -130,13 +130,13 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   char *value;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
+  server_key= memcached_generate_hash(ptr, key, key_length);
+
   *value_length= 0;
-  *error= memcached_connect(ptr);
+  *error= memcached_connect(ptr, server_key);
 
   if (*error != MEMCACHED_SUCCESS)
     goto error;
-
-  server_key= memcached_generate_hash(ptr, key, key_length);
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
                         (int)key_length, key);
@@ -195,11 +195,6 @@ memcached_return memcached_mget(memcached_st *ptr,
   ptr->cursor_server= 0;
   memset(buffer, 0, HUGE_STRING_LEN);
 
-  rc= memcached_connect(ptr);
-
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
-
   cursor_key_exec= (memcached_string_st **)malloc(sizeof(memcached_string_st *) * ptr->number_of_hosts);
   memset(cursor_key_exec, 0, sizeof(memcached_string_st *) * ptr->number_of_hosts);
 
@@ -240,6 +235,9 @@ memcached_return memcached_mget(memcached_st *ptr,
   {
     if (cursor_key_exec[x])
     {
+      /* We need to doo something about non-connnected hosts in the future */
+      rc= memcached_connect(ptr, x);
+
       memcached_string_st *string= cursor_key_exec[x];
       memcached_string_append(ptr, string, "\r\n", 2);
 

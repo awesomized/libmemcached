@@ -37,14 +37,14 @@ static memcached_return memcached_send(memcached_st *ptr,
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
 
-  rc= memcached_connect(ptr);
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
-
   /* Leaveing this assert in since only a library fubar could blow this */
   assert(ptr->write_buffer_offset == 0);
 
   server_key= memcached_generate_hash(ptr, key, key_length);
+
+  rc= memcached_connect(ptr, server_key);
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %x %llu %zu\r\n", storage_op_string(verb),

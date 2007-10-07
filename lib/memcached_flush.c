@@ -8,7 +8,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
 
-  rc= memcached_connect(ptr);
+  rc= memcached_connect(ptr, 0);
 
   if (rc != MEMCACHED_SUCCESS)
     rc= MEMCACHED_SOME_ERRORS;

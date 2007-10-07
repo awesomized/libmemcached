@@ -10,12 +10,11 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
-  rc= memcached_connect(ptr);
+  server_key= memcached_generate_hash(ptr, key, key_length);
 
-  if (rc != MEMCACHED_SUCCESS)
+  if ((rc= memcached_connect(ptr, server_key)) != MEMCACHED_SUCCESS)
     return rc;
 
-  server_key= memcached_generate_hash(ptr, key, key_length);
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 

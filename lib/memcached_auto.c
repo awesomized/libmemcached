@@ -11,12 +11,10 @@ static memcached_return memcached_auto(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  rc= memcached_connect(ptr);
-
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
-
   server_key= memcached_generate_hash(ptr, key, key_length);
+
+  if ((rc= memcached_connect(ptr, server_key)) != MEMCACHED_SUCCESS)
+    return rc;
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %u\r\n", verb, 

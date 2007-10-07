@@ -5,12 +5,77 @@
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 
-memcached_return memcached_connect(memcached_st *ptr)
+memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_key)
 {
-  unsigned int x;
   struct sockaddr_in localAddr, servAddr;
   struct hostent *h;
 
+  if (ptr->hosts[server_key].fd == -1)
+  {
+    if ((h= gethostbyname(ptr->hosts[server_key].hostname)) == NULL)
+      return MEMCACHED_HOST_LOCKUP_FAILURE;
+
+    servAddr.sin_family= h->h_addrtype;
+    memcpy((char *) &servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
+    servAddr.sin_port = htons(ptr->hosts[server_key].port);
+
+    /* Create the socket */
+    if ((ptr->hosts[server_key].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+      ptr->my_errno= errno;
+      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    }
+
+
+    /* bind any port number */
+    localAddr.sin_family = AF_INET;
+    localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    localAddr.sin_port = htons(0);
+
+    /* For the moment, not getting a nonblocking mode will note be fatal */
+    if (ptr->flags & MEM_NO_BLOCK)
+    {
+      int flags;
+
+      flags= fcntl(ptr->hosts[server_key].fd, F_GETFL, 0);
+      if (flags != -1)
+        (void)fcntl(ptr->hosts[server_key].fd, F_SETFL, flags | O_NONBLOCK);
+    }
+
+    if (ptr->flags & MEM_TCP_NODELAY)
+    {
+      int flag= 1;
+
+      setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, TCP_NODELAY, 
+                 &flag, (socklen_t)sizeof(int));
+    }
+
+    /* connect to server */
+test_connect:
+    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
+    {
+      switch (errno) {
+        /* We are spinning waiting on connect */
+      case EINPROGRESS:
+      case EINTR:
+        goto test_connect;
+      case EISCONN: /* We were spinning waiting on connect */
+        break;
+      default:
+        ptr->my_errno= errno;
+        return MEMCACHED_HOST_LOCKUP_FAILURE;
+      }
+      ptr->connected++;
+    }
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
+
+memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
+{
+  memcached_return rc;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
   if (ptr->connected == ptr->number_of_hosts)
@@ -19,69 +84,17 @@ memcached_return memcached_connect(memcached_st *ptr)
   if (!ptr->hosts)
     return MEMCACHED_NO_SERVERS;
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  /* We need to clean up the multi startup piece */
+  if (server_key)
+    rc= memcached_real_connect(ptr, server_key);
+  else
   {
-    if (ptr->hosts[x].fd == -1)
-    {
-      if ((h= gethostbyname(ptr->hosts[x].hostname)) == NULL)
-        return MEMCACHED_HOST_LOCKUP_FAILURE;
+    unsigned int x;
 
-      servAddr.sin_family= h->h_addrtype;
-      memcpy((char *) &servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
-      servAddr.sin_port = htons(ptr->hosts[x].port);
-
-      /* Create the socket */
-      if ((ptr->hosts[x].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
-      {
-        ptr->my_errno= errno;
-        return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
-      }
-
-
-      /* bind any port number */
-      localAddr.sin_family = AF_INET;
-      localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-      localAddr.sin_port = htons(0);
-
-      /* For the moment, not getting a nonblocking mode will note be fatal */
-      if (ptr->flags & MEM_NO_BLOCK)
-      {
-        int flags;
-      
-        flags= fcntl(ptr->hosts[x].fd, F_GETFL, 0);
-        if (flags != -1)
-          (void)fcntl(ptr->hosts[x].fd, F_SETFL, flags | O_NONBLOCK);
-      }
-
-      if (ptr->flags & MEM_TCP_NODELAY)
-      {
-        int flag= 1;
-
-        setsockopt(ptr->hosts[x].fd, IPPROTO_TCP, TCP_NODELAY, 
-                   &flag, (socklen_t)sizeof(int));
-      }
-
-      /* connect to server */
-test_connect:
-      if (connect(ptr->hosts[x].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
-      {
-        switch (errno) {
-          /* We are spinning waiting on connect */
-        case EINPROGRESS:
-        case EINTR:
-          goto test_connect;
-        case EISCONN: /* We were spinning waiting on connect */
-          break;
-        default:
-        ptr->my_errno= errno;
-        return MEMCACHED_HOST_LOCKUP_FAILURE;
-      }
-
-      ptr->connected++;
-      }
-    }
+    for (x= 0; x < ptr->number_of_hosts; x++)
+      rc= memcached_real_connect(ptr, x);
   }
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
-  return MEMCACHED_SUCCESS;
+  return rc;
 }

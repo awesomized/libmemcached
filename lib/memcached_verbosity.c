@@ -7,7 +7,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  rc= memcached_connect(ptr);
+  rc= memcached_connect(ptr, 0);
 
   if (rc != MEMCACHED_SUCCESS)
     rc= MEMCACHED_SOME_ERRORS;

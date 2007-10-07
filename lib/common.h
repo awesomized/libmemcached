@@ -26,7 +26,7 @@ typedef enum {
 } memcached_flags;
 
 void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
-memcached_return memcached_connect(memcached_st *ptr);
+memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key);
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
