@@ -466,6 +466,10 @@ void behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
   assert(value == 1);
 
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_MD5_HASHING);
+  assert(value == 1);
+
   set= 0;
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
@@ -474,6 +478,10 @@ void behavior_test(memcached_st *memc)
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
+  assert(value == 0);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_MD5_HASHING);
   assert(value == 0);
 }
 

@@ -23,6 +23,7 @@ typedef enum {
   MEM_TCP_NODELAY= (1 << 1),
   MEM_REUSE_MEMORY= (1 << 2),
   MEM_USE_MD5= (1 << 3),
+  MEM_USE_KETAMA= (1 << 4),
 } memcached_flags;
 
 void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
