@@ -1,13 +1,10 @@
 - Write a shell application (?)
-- Stats output looks to be buggy
 - Fix version in command line tools
 - Write test cases for all command line tools (!!!)
-- Fix env to be used for command line tools
 - Write some sort of "default" options bit for tools
-- Write Asyncronous IO interface to current library for writes 
-  (or extend?... would mean pthreads...)
 - Write man() pages
 - More examples using libraries
 - Doxygen?
-- Move IO in library over to being buffered
 - Make a "make deb"... or accept patch...
+- implement more connection/hash algo
+- implement compression
