@@ -1,0 +1,3 @@
+MEMSLAP="../src/memslap"
+
+$MEMSLAP --help

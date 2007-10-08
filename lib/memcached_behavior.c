@@ -9,31 +9,35 @@
   We quit all connections so we can reset the sockets.
 */
 
+void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, void *data)
+{
+  unsigned int *truefalse= (unsigned int *)data;
+
+  memcached_quit(ptr);
+  if (truefalse)
+    ptr->flags|= temp_flag;
+  else
+    ptr->flags+= temp_flag;
+}
+
 memcached_return memcached_behavior_set(memcached_st *ptr, 
                                         memcached_behavior flag, 
                                         void *data)
 {
-  memcached_flags temp_flag;
-
   switch (flag)
   {
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
-    temp_flag= MEM_NO_BLOCK;
+    set_behavior_flag(ptr, MEM_NO_BLOCK, data);
+    break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
-    temp_flag= MEM_TCP_NODELAY;
+    set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
+    break;
   case MEMCACHED_BEHAVIOR_MD5_HASHING:
-    temp_flag= MEM_USE_MD5;
+    set_behavior_flag(ptr, MEM_USE_MD5, data);
+    break;
   case MEMCACHED_BEHAVIOR_KETAMA:
-    temp_flag= MEM_USE_KETAMA;
-    {
-      unsigned int *truefalse= (unsigned int *)data;
-      memcached_quit(ptr);
-      if (truefalse)
-        ptr->flags|= temp_flag;
-      else
-        ptr->flags+= temp_flag;
-      break;
-    }
+    set_behavior_flag(ptr, MEM_USE_KETAMA, data);
+    break;
   }
 
   return MEMCACHED_SUCCESS;
