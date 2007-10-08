@@ -21,7 +21,13 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
   else
     return_value= internal_generate_hash(key, key_length);
 
-  return return_value % ptr->number_of_hosts;
+  if (ptr->flags & MEM_USE_KETAMA)
+  {
+    assert(0);
+    return 0;
+  }
+  else
+    return return_value % ptr->number_of_hosts;
 }
 
 static unsigned int internal_generate_hash(char *key, size_t key_length)

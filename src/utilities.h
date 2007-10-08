@@ -1,5 +1,6 @@
 #include <memcached.h>
 #include <getopt.h>
+#include "client_options.h"
 
 typedef struct memcached_programs_help_st memcached_programs_help_st;
 

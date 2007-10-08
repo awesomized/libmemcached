@@ -3,7 +3,6 @@
 #include <getopt.h>
 #include <memcached.h>
 
-#include "client_options.h"
 #include "utilities.h"
 
 #define PROGRAM_NAME "memcat"

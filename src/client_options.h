@@ -1,3 +1,8 @@
+#ifndef __CLIENT_OPTIONS_H__
+#define __CLIENT_OPTIONS_H__
+
+typedef struct memcached_help_text_st memcached_help_text_st;
+
 typedef enum {
   OPT_SERVERS= 's',
   OPT_VERSION= 'V',
@@ -17,3 +22,5 @@ typedef enum {
   OPT_SLAP_TCP_NODELAY,
   OPT_FLUSH,
 } memcached_options;
+
+#endif /* CLIENT_OPTIONS */

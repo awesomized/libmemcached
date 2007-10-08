@@ -10,6 +10,7 @@
     set the servers list.
   * fixed memcached_stat method (and now memstat works)
   * server connect now happens on demand.
+  * Help for all command line applications
 
 0.4 Wed Oct  3 10:28:50 PDT 2007
   * Added buffered IO to write calls for keys
