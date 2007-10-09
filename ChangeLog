@@ -1,4 +1,4 @@
-0.5
+0.5 Tue Oct  9 00:22:25 PDT 2007
  * Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C
    library as well. (Eric Hodel drbrain@segment7.net)
   * Added support script for set_benchmark
