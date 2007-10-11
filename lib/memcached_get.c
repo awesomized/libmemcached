@@ -96,6 +96,13 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
 
       value_ptr= value;
       read_length= 0;
+      /* 
+        We read the \r\n into the string since not doing so is more 
+        cycles then the waster of memory to do so.
+
+        We are null terminating through, which will most likely make
+        some people lazy about using the return length.
+      */
       to_read= (*value_length) + 2;
 
       read_length= memcached_io_read(ptr, server_key,
@@ -106,6 +113,9 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
         free(value);
         goto read_error;
       }
+
+      value[*value_length]= 0;
+      value[(*value_length) + 1]= 0;
 
       return value;
     }
