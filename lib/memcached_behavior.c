@@ -52,17 +52,22 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   {
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     temp_flag= MEM_NO_BLOCK;
+    break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;
+    break;
   case MEMCACHED_BEHAVIOR_MD5_HASHING:
     temp_flag= MEM_USE_MD5;
+    break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;
-    if (ptr->flags & temp_flag)
-      return 1;
-    else
-      return 0;
+    break;
   }
+
+  if (ptr->flags & temp_flag)
+    return 1;
+  else
+    return 0;
 
   return MEMCACHED_SUCCESS;
 }

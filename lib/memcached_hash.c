@@ -5,7 +5,7 @@ static unsigned int internal_generate_hash(char *key, size_t key_length);
 
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
-  unsigned int return_value;
+  unsigned int hash;
 
   if (ptr->flags & MEM_USE_MD5)
   {
@@ -13,21 +13,18 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
 
     md5_signature((unsigned char*)key, (unsigned int)key_length, results);
 
-    return_value= (unsigned int)(( results[3] << 24 )
+    hash= (unsigned int)(( results[3] << 24 )
 				 | ( results[2] << 16 )
 				 | ( results[1] <<  8 )
 				 |   results[0] );
   }
   else
-    return_value= internal_generate_hash(key, key_length);
+    hash= internal_generate_hash(key, key_length);
 
   if (ptr->flags & MEM_USE_KETAMA)
-  {
     assert(0);
-    return 0;
-  }
   else
-    return return_value % ptr->number_of_hosts;
+    return hash % ptr->number_of_hosts;
 }
 
 static unsigned int internal_generate_hash(char *key, size_t key_length)
