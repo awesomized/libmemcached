@@ -15,13 +15,17 @@ memcached_return memcached_response(memcached_st *ptr,
   unsigned int x;
   size_t send_length;
   char *buffer_ptr;
+  unsigned int max_messages;
+
 
   memset(buffer, 0, buffer_length);
   send_length= 0;
 
-  for (x= 0; x <= ptr->stack_responses; x++)
+  max_messages= memcached_server_response_count(ptr, server_key);
+  for (x= 0; x <=  max_messages; x++)
   {
     buffer_ptr= buffer;
+
     while (1)
     {
       unsigned int read_length;
@@ -37,8 +41,10 @@ memcached_return memcached_response(memcached_st *ptr,
       else
         buffer_ptr++;
     }
+
+    if (memcached_server_response_count(ptr, server_key))
+      memcached_server_response_decrement(ptr, server_key);
   }
-  ptr->stack_responses= 0;
 
   switch(buffer[0])
   {

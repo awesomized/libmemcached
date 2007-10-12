@@ -32,5 +32,6 @@ memcached_return memcached_response(memcached_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
+void memcached_quit_server(memcached_st *ptr, unsigned int server_key);
 
 #endif /* __COMMON_H__ */

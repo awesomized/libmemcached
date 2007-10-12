@@ -67,6 +67,7 @@ typedef enum {
   MEMCACHED_DELETED,
   MEMCACHED_VALUE,
   MEMCACHED_STAT,
+  MEMCACHED_ERRNO,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
@@ -86,6 +87,7 @@ struct memcached_server_st {
   char *hostname;
   unsigned int port;
   int fd;
+  unsigned int stack_responses;
 };
 
 struct memcached_stat_st {
@@ -136,7 +138,6 @@ struct memcached_st {
   size_t write_buffer_offset;
   char connected;
   int my_errno;
-  unsigned int stack_responses;
   unsigned long long flags;
   memcached_return warning; /* Future Use */
 };
@@ -196,6 +197,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 #define memcached_server_name(A,B) B.hostname
 #define memcached_server_port(A,B) B.port
 #define memcached_server_list(A) A->hosts
+#define memcached_server_response_increment(A,B) A->hosts[B].stack_responses++
+#define memcached_server_response_decrement(A,B) A->hosts[B].stack_responses--
+#define memcached_server_response_count(A,B) A->hosts[B].stack_responses
 
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
                                       unsigned int port);

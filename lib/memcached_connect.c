@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <netdb.h>
 
 memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_key)
 {
@@ -13,7 +14,10 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
   if (ptr->hosts[server_key].fd == -1)
   {
     if ((h= gethostbyname(ptr->hosts[server_key].hostname)) == NULL)
+    {
+      ptr->my_errno= h_errno;
       return MEMCACHED_HOST_LOCKUP_FAILURE;
+    }
 
     servAddr.sin_family= h->h_addrtype;
     memcpy((char *) &servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
@@ -56,6 +60,7 @@ test_connect:
     {
       switch (errno) {
         /* We are spinning waiting on connect */
+      case EALREADY:
       case EINPROGRESS:
       case EINTR:
         goto test_connect;
@@ -63,7 +68,7 @@ test_connect:
         break;
       default:
         ptr->my_errno= errno;
-        return MEMCACHED_HOST_LOCKUP_FAILURE;
+        return MEMCACHED_ERRNO;
       }
       ptr->connected++;
     }

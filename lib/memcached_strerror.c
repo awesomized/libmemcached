@@ -54,6 +54,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "SERVER VALUE";
   case MEMCACHED_STAT:
     return "STAT VALUE";
+  case MEMCACHED_ERRNO:
+    return "UNKOWN ERROR SEE MY_ERRNO";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

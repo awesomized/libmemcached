@@ -37,7 +37,12 @@ static memcached_return memcached_send(memcached_st *ptr,
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
 
-  /* Leaveing this assert in since only a library fubar could blow this */
+  /* Leaving this assert in since only a library fubar could blow this */
+  if (ptr->write_buffer_offset != 0)
+  {
+    WATCHPOINT_NUMBER(ptr->write_buffer_offset);
+  }
+    
   assert(ptr->write_buffer_offset == 0);
 
   server_key= memcached_generate_hash(ptr, key, key_length);
@@ -74,6 +79,7 @@ static memcached_return memcached_send(memcached_st *ptr,
 
   if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, 1)) == -1)
   {
+    memcached_quit_server(ptr, server_key);
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
   }
@@ -81,7 +87,7 @@ static memcached_return memcached_send(memcached_st *ptr,
   if ((ptr->flags & MEM_NO_BLOCK) && verb == SET_OP)
   {
     rc= MEMCACHED_SUCCESS;
-    ptr->stack_responses++;
+    memcached_server_response_increment(ptr, server_key);
   }
   else
   {

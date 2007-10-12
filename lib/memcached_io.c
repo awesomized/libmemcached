@@ -107,7 +107,10 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
   }
 
   if (with_flush)
-    memcached_io_flush(ptr, server_key);
+  {
+    if (memcached_io_flush(ptr, server_key) == -1)
+      return -1;
+  }
 
   return length;
 }
@@ -115,30 +118,67 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
 {
   size_t sent_length;
+  char *write_ptr= ptr->write_buffer;
+  size_t write_length= ptr->write_buffer_offset;
+  unsigned int loop= 1;
 
   if (ptr->write_buffer_offset == 0)
     return 0;
 
-  if (ptr->flags & MEM_NO_BLOCK)
+  while (write_length)
   {
-    struct timeval local_tv;
-    fd_set set;
+    if (ptr->flags & MEM_NO_BLOCK)
+    {
 
-    local_tv.tv_sec= 0;
-    local_tv.tv_usec= 300;
+      while (1)
+      {
+        struct timeval local_tv;
+        fd_set set;
+        int select_return;
 
-    FD_ZERO(&set);
-    FD_SET(ptr->hosts[server_key].fd, &set);
+        local_tv.tv_sec= 0;
+        local_tv.tv_usec= 300 * loop;
 
-    select(1, NULL, &set, NULL, &local_tv);
+        FD_ZERO(&set);
+        FD_SET(ptr->hosts[server_key].fd, &set);
+
+        select_return= select(1, NULL, &set, NULL, &local_tv);
+
+        if (select_return == -1)
+        {
+          ptr->my_errno= errno;
+          return -1;
+        }
+        else if (!select_return)
+          break;
+      }
+    }
+
+    sent_length= 0;
+    if ((sent_length= send(ptr->hosts[server_key].fd, write_ptr, 
+                           write_length, 0)) == -1)
+    {
+      switch (errno)
+      {
+      case ENOBUFS:
+      case EAGAIN:
+        if (loop < 10)
+        {
+          loop++;
+          break;
+        }
+        /* Yes, we want to fall through */
+      default:
+        ptr->my_errno= errno;
+        return -1;
+      }
+    }
+    else
+    {
+      write_ptr+= sent_length;
+      write_length-= sent_length;
+    }
   }
-  if ((sent_length= send(ptr->hosts[server_key].fd, ptr->write_buffer, 
-                         ptr->write_buffer_offset, 0)) == -1)
-  {
-    return -1;
-  }
-
-  assert(sent_length == ptr->write_buffer_offset);
 
   ptr->write_buffer_offset= 0;
 

@@ -391,6 +391,7 @@ void get_stats_keys(memcached_st *memc)
  assert(rc == MEMCACHED_SUCCESS);
  for (ptr= list; *ptr; ptr++)
    printf("Found key %s\n", *ptr);
+ fflush(stdout);
 
  free(list);
 }
@@ -485,6 +486,48 @@ void behavior_test(memcached_st *memc)
   assert(value == 0);
 }
 
+/* Test case provided by Cal Haldenbrand */
+void user_supplied_bug1(memcached_st *memc)
+{
+  unsigned int setter= 1;
+  unsigned int x;
+
+  long total= 0;
+  int size= 0;
+  srand(time(NULL));
+  char key[10];
+  char *randomstuff = (char *)malloc(6 * 1024); 
+  memset(randomstuff, 0, 6 * 1024);
+
+  memcached_return rc;
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+
+
+  /* add key */
+  for (x= 0 ; total < 20 * 1024576 ; x++ )
+  {
+    unsigned int j= 0;
+
+    size= (rand() % ( 5 * 1024 ) ) + 400;
+    memset(randomstuff, 0, 6 * 1024);
+    assert(size < 6 * 1024); /* Being safe here */
+
+    for (j= 0 ; j < size ;j++) 
+      randomstuff[j] = (char) (rand() % 26) + 97;
+
+    total += size;
+    sprintf(key, "%d", x);
+    rc = memcached_set(memc, key, strlen(key), 
+                       randomstuff, strlen(randomstuff), 10, 0);
+    /* If we fail, lets try again */
+    if (rc != MEMCACHED_SUCCESS)
+      rc = memcached_set(memc, key, strlen(key), 
+                         randomstuff, strlen(randomstuff), 10, 0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+}
 void add_host_test1(memcached_st *memc)
 {
   unsigned int x;
@@ -533,6 +576,7 @@ int main(int argc, char *argv[])
     server_list= "localhost";
 
   printf("servers %s\n", server_list);
+  srandom(time(NULL));
 
   servers= memcached_servers_parse(server_list);
   assert(servers);
@@ -562,6 +606,11 @@ int main(int argc, char *argv[])
     {"add_host_test", 0, add_host_test },
     {"get_stats_keys", 0, get_stats_keys },
     {"behavior_test", 0, get_stats_keys },
+    {0, 0, 0}
+  };
+
+  test_st user_tests[] ={
+    {"user_supplied_bug1", 0, user_supplied_bug1 },
     {0, 0, 0}
   };
 
@@ -641,6 +690,24 @@ int main(int argc, char *argv[])
     memcached_free(memc);
   }
 
+  fprintf(stderr, "\nUser Supplied tests\n\n");
+  for (x= 0; user_tests[x].function_name; x++)
+  {
+    memcached_st *memc;
+    memcached_return rc;
+    memc= memcached_create(NULL);
+    assert(memc);
+
+    rc= memcached_server_push(memc, servers);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    fprintf(stderr, "Testing %s", user_tests[x].function_name);
+    user_tests[x].function(memc);
+    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+    assert(memc);
+    memcached_free(memc);
+  }
+
   /* Clean up whatever we might have left */
   {
     memcached_st *memc;
@@ -649,5 +716,8 @@ int main(int argc, char *argv[])
     flush_test(memc);
     memcached_free(memc);
   }
+
+  fprintf(stderr, "All tests completed successfully\n\n");
+
   return 0;
 }
