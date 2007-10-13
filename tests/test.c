@@ -572,11 +572,15 @@ int main(int argc, char *argv[])
 {
   unsigned int x;
   char *server_list;
+  char *test_to_run= NULL;
   char *wildcard= NULL;
   memcached_server_st *servers;
 
-  if (argc == 2)
-    wildcard= argv[1];
+  if (argc > 2)
+    test_to_run= argv[1];
+
+  if (argc == 3)
+    wildcard= argv[2];
 
   if (!(server_list= getenv("MEMCACHED_SERVERS")))
     server_list= "localhost";
@@ -630,126 +634,141 @@ int main(int argc, char *argv[])
     {0, 0, 0}
   };
 
-  fprintf(stderr, "\nBlock tests\n\n");
-  for (x= 0; tests[x].function_name; x++)
+  if ((test_to_run && !strcmp(test_to_run, "block")) || !test_to_run)
   {
-    if (wildcard)
-      if (strcmp(wildcard, tests[x].function_name))
-        continue;
-
-    memcached_st *memc;
-    memcached_return rc;
-    memc= memcached_create(NULL);
-    assert(memc);
-
-    rc= memcached_server_push(memc, servers);
-    assert(rc == MEMCACHED_SUCCESS);
-
-    unsigned int loop;
-    for (loop= 0; loop < memcached_server_list_count(servers); loop++)
+    fprintf(stderr, "\nBlock tests\n\n");
+    for (x= 0; tests[x].function_name; x++)
     {
-      assert(memc->hosts[loop].stack_responses == 0);
-      assert(memc->hosts[loop].fd == -1);
-      assert(memc->hosts[loop].cursor_active == 0);
+      if (wildcard)
+        if (strcmp(wildcard, tests[x].function_name))
+          continue;
+
+      memcached_st *memc;
+      memcached_return rc;
+      memc= memcached_create(NULL);
+      assert(memc);
+
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
+
+      unsigned int loop;
+      for (loop= 0; loop < memcached_server_list_count(servers); loop++)
+      {
+        assert(memc->hosts[loop].stack_responses == 0);
+        assert(memc->hosts[loop].fd == -1);
+        assert(memc->hosts[loop].cursor_active == 0);
+      }
+
+      fprintf(stderr, "Testing %s", tests[x].function_name);
+      tests[x].function(memc);
+      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      assert(memc);
+      memcached_free(memc);
     }
-
-    fprintf(stderr, "Testing %s", tests[x].function_name);
-    tests[x].function(memc);
-    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
-    assert(memc);
-    memcached_free(memc);
   }
 
-  fprintf(stderr, "\nNonblock tests\n\n");
-  for (x= 0; tests[x].function_name; x++)
+  if ((test_to_run && !strcmp(test_to_run, "nonblock")) || !test_to_run)
   {
-    if (wildcard)
-      if (strcmp(wildcard, tests[x].function_name))
-        continue;
+    fprintf(stderr, "\nNonblock tests\n\n");
+    for (x= 0; tests[x].function_name; x++)
+    {
+      if (wildcard)
+        if (strcmp(wildcard, tests[x].function_name))
+          continue;
 
-    memcached_st *memc;
-    memcached_return rc;
-    memc= memcached_create(NULL);
-    assert(memc);
+      memcached_st *memc;
+      memcached_return rc;
+      memc= memcached_create(NULL);
+      assert(memc);
 
-    rc= memcached_server_push(memc, servers);
-    assert(rc == MEMCACHED_SUCCESS);
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
 
-    fprintf(stderr, "Testing %s", tests[x].function_name);
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
-    tests[x].function(memc);
-    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
-    assert(memc);
-    memcached_free(memc);
+      fprintf(stderr, "Testing %s", tests[x].function_name);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+      tests[x].function(memc);
+      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      assert(memc);
+      memcached_free(memc);
+    }
   }
 
-  fprintf(stderr, "\nTCP Nodelay tests\n\n");
-  for (x= 0; tests[x].function_name; x++)
+  if ((test_to_run && !strcmp(test_to_run, "nodelay")) || !test_to_run)
   {
-    if (wildcard)
-      if (strcmp(wildcard, tests[x].function_name))
-        continue;
+    fprintf(stderr, "\nTCP Nodelay tests\n\n");
+    for (x= 0; tests[x].function_name; x++)
+    {
+      if (wildcard)
+        if (strcmp(wildcard, tests[x].function_name))
+          continue;
 
-    memcached_st *memc;
-    memcached_return rc;
-    memc= memcached_create(NULL);
-    assert(memc);
+      memcached_st *memc;
+      memcached_return rc;
+      memc= memcached_create(NULL);
+      assert(memc);
 
-    rc= memcached_server_push(memc, servers);
-    assert(rc == MEMCACHED_SUCCESS);
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
 
-    fprintf(stderr, "Testing %s", tests[x].function_name);
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
-    tests[x].function(memc);
-    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
-    assert(memc);
-    memcached_free(memc);
+      fprintf(stderr, "Testing %s", tests[x].function_name);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+      tests[x].function(memc);
+      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      assert(memc);
+      memcached_free(memc);
+    }
   }
 
-  fprintf(stderr, "\nMD5 Hashing\n\n");
-  for (x= 0; tests[x].function_name; x++)
+  if ((test_to_run && !strcmp(test_to_run, "md5")) || !test_to_run)
   {
-    if (wildcard)
-      if (strcmp(wildcard, tests[x].function_name))
-        continue;
+    fprintf(stderr, "\nMD5 Hashing\n\n");
+    for (x= 0; tests[x].function_name; x++)
+    {
+      if (wildcard)
+        if (strcmp(wildcard, tests[x].function_name))
+          continue;
 
-    memcached_st *memc;
-    memcached_return rc;
-    memc= memcached_create(NULL);
-    assert(memc);
+      memcached_st *memc;
+      memcached_return rc;
+      memc= memcached_create(NULL);
+      assert(memc);
 
-    rc= memcached_server_push(memc, servers);
-    assert(rc == MEMCACHED_SUCCESS);
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
 
-    fprintf(stderr, "Testing %s", tests[x].function_name);
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
-    tests[x].function(memc);
-    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
-    assert(memc);
-    memcached_free(memc);
+      fprintf(stderr, "Testing %s", tests[x].function_name);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+      tests[x].function(memc);
+      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      assert(memc);
+      memcached_free(memc);
+    }
   }
 
-  fprintf(stderr, "\nUser Supplied tests\n\n");
-  for (x= 0; user_tests[x].function_name; x++)
+  if ((test_to_run && !strcmp(test_to_run, "user")) || !test_to_run)
   {
-    if (wildcard)
-      if (strcmp(wildcard, tests[x].function_name))
-        continue;
+    fprintf(stderr, "\nUser Supplied tests\n\n");
+    for (x= 0; user_tests[x].function_name; x++)
+    {
+      if (wildcard)
+        if (strcmp(wildcard, tests[x].function_name))
+          continue;
 
-    memcached_st *memc;
-    memcached_return rc;
-    memc= memcached_create(NULL);
-    assert(memc);
+      memcached_st *memc;
+      memcached_return rc;
+      memc= memcached_create(NULL);
+      assert(memc);
 
-    rc= memcached_server_push(memc, servers);
-    assert(rc == MEMCACHED_SUCCESS);
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
 
-    fprintf(stderr, "Testing %s", user_tests[x].function_name);
-    user_tests[x].function(memc);
-    fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
-    assert(memc);
-    memcached_free(memc);
+      fprintf(stderr, "Testing %s", user_tests[x].function_name);
+      user_tests[x].function(memc);
+      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      assert(memc);
+      memcached_free(memc);
+    }
   }
 
   /* Clean up whatever we might have left */

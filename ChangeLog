@@ -1,5 +1,8 @@
 0.6
   * get value returns are now null terminated (request by Cal Heldenbrand) 
+  * Fixed for more hosts then two.
+  * Rewrite of the read/write IO systems to handle different sorts of host
+    failures.
 
 0.5 Tue Oct  9 00:22:25 PDT 2007
  * Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C
