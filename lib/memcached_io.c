@@ -154,8 +154,12 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
     }
 
     sent_length= 0;
+#ifdef orig
     if ((sent_length= send(ptr->hosts[server_key].fd, write_ptr, 
                            write_length, 0)) == -1)
+#endif
+      if ((sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
+                              write_length)) == -1)
     {
       switch (errno)
       {

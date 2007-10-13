@@ -26,6 +26,7 @@ static memcached_return memcached_send(memcached_st *ptr,
                                        uint16_t  flags,
                                        memcached_storage_action verb)
 {
+  char to_write;
   size_t write_length;
   ssize_t sent_length;
   memcached_return rc;
@@ -36,13 +37,11 @@ static memcached_return memcached_send(memcached_st *ptr,
   assert(value_length);
 
   /* Leaving this assert in since only a library fubar could blow this */
-  if (ptr->write_buffer_offset != 0)
-  {
-    WATCHPOINT_NUMBER(ptr->write_buffer_offset);
-  }
+#ifdef NOT_DONE
+  if (!(ptr->flags & MEM_NO_BLOCK) && ptr->write_buffer_offset != 0)
+    assert(0);
+#endif
     
-  assert(ptr->write_buffer_offset == 0);
-
   server_key= memcached_generate_hash(ptr, key, key_length);
 
   rc= memcached_connect(ptr, server_key);
@@ -75,7 +74,12 @@ static memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, 1)) == -1)
+  if ((ptr->flags & MEM_NO_BLOCK) && verb == SET_OP)
+    to_write= 0;
+  else
+    to_write= 1;
+
+  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, to_write)) == -1)
   {
     memcached_quit_server(ptr, server_key);
     rc= MEMCACHED_WRITE_FAILURE;
