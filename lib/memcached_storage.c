@@ -65,7 +65,7 @@ static memcached_return memcached_send(memcached_st *ptr,
     We have to flush after sending the command. Memcached is not smart enough
     to just keep reading from the socket :(
   */
-  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length, 1)) == -1)
+  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length, 0)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
