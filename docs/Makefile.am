@@ -1,5 +1,27 @@
 INCLUDES = include
 
+EXTRA_dist = libmemcached.pod\
+	memcached_flush.pod\
+	memcached_stats.pod\
+	memrm.pod\
+	libmemcached_examples.pod\
+	memcached_get.pod\
+	memcached_strerror.pod\
+	memslap.pod\
+	memcached_auto.pod\
+	memcached_quit.pod\
+	memcached_verbosity.pod\
+	memstat.pod\
+	memcached_behavior.pod\
+	memcached_server_st.pod\
+	memcat.pod\
+	memcached_create.pod\
+	memcached_servers.pod\
+	memcp.pod\
+	memcached_delete.pod\
+	memcached_set.pod\
+	memflush.pod
+
 man_MANS = libmemcached.3\
   	libmemcached_examples.3\
 	memcat.1\
