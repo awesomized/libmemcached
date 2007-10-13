@@ -88,6 +88,7 @@ struct memcached_server_st {
   unsigned int port;
   int fd;
   unsigned int stack_responses;
+  unsigned int cursor_active;
 };
 
 struct memcached_stat_st {

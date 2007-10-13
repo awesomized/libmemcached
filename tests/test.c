@@ -208,6 +208,8 @@ void get_test3(memcached_st *memc)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
+  WATCHPOINT_ERRNO(memc->my_errno);
+  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_SUCCESS);
   assert(string);
   assert(string_length == value_length);
@@ -570,7 +572,11 @@ int main(int argc, char *argv[])
 {
   unsigned int x;
   char *server_list;
+  char *wildcard= NULL;
   memcached_server_st *servers;
+
+  if (argc == 2)
+    wildcard= argv[1];
 
   if (!(server_list= getenv("MEMCACHED_SERVERS")))
     server_list= "localhost";
@@ -580,6 +586,16 @@ int main(int argc, char *argv[])
 
   servers= memcached_servers_parse(server_list);
   assert(servers);
+
+  for (x= 0; x < memcached_server_list_count(servers); x++)
+  {
+    printf("\t%s : %u\n", servers[x].hostname, servers[x].port);
+    assert(servers[x].stack_responses == 0);
+    assert(servers[x].fd == -1);
+    assert(servers[x].cursor_active == 0);
+  }
+
+  printf("\n");
 
   /* Clean the server before beginning testing */
   test_st tests[] ={
@@ -617,6 +633,10 @@ int main(int argc, char *argv[])
   fprintf(stderr, "\nBlock tests\n\n");
   for (x= 0; tests[x].function_name; x++)
   {
+    if (wildcard)
+      if (strcmp(wildcard, tests[x].function_name))
+        continue;
+
     memcached_st *memc;
     memcached_return rc;
     memc= memcached_create(NULL);
@@ -624,6 +644,14 @@ int main(int argc, char *argv[])
 
     rc= memcached_server_push(memc, servers);
     assert(rc == MEMCACHED_SUCCESS);
+
+    unsigned int loop;
+    for (loop= 0; loop < memcached_server_list_count(servers); loop++)
+    {
+      assert(memc->hosts[loop].stack_responses == 0);
+      assert(memc->hosts[loop].fd == -1);
+      assert(memc->hosts[loop].cursor_active == 0);
+    }
 
     fprintf(stderr, "Testing %s", tests[x].function_name);
     tests[x].function(memc);
@@ -635,6 +663,10 @@ int main(int argc, char *argv[])
   fprintf(stderr, "\nNonblock tests\n\n");
   for (x= 0; tests[x].function_name; x++)
   {
+    if (wildcard)
+      if (strcmp(wildcard, tests[x].function_name))
+        continue;
+
     memcached_st *memc;
     memcached_return rc;
     memc= memcached_create(NULL);
@@ -654,6 +686,10 @@ int main(int argc, char *argv[])
   fprintf(stderr, "\nTCP Nodelay tests\n\n");
   for (x= 0; tests[x].function_name; x++)
   {
+    if (wildcard)
+      if (strcmp(wildcard, tests[x].function_name))
+        continue;
+
     memcached_st *memc;
     memcached_return rc;
     memc= memcached_create(NULL);
@@ -674,6 +710,10 @@ int main(int argc, char *argv[])
   fprintf(stderr, "\nMD5 Hashing\n\n");
   for (x= 0; tests[x].function_name; x++)
   {
+    if (wildcard)
+      if (strcmp(wildcard, tests[x].function_name))
+        continue;
+
     memcached_st *memc;
     memcached_return rc;
     memc= memcached_create(NULL);
@@ -693,6 +733,10 @@ int main(int argc, char *argv[])
   fprintf(stderr, "\nUser Supplied tests\n\n");
   for (x= 0; user_tests[x].function_name; x++)
   {
+    if (wildcard)
+      if (strcmp(wildcard, tests[x].function_name))
+        continue;
+
     memcached_st *memc;
     memcached_return rc;
     memc= memcached_create(NULL);

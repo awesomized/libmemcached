@@ -13,6 +13,9 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
 
   if (ptr->hosts[server_key].fd == -1)
   {
+    /* Old connection junk still is in the structure */
+    assert(ptr->hosts[server_key].stack_responses == 0);
+
     if ((h= gethostbyname(ptr->hosts[server_key].hostname)) == NULL)
     {
       ptr->my_errno= h_errno;
@@ -72,6 +75,7 @@ test_connect:
       }
       ptr->connected++;
     }
+    assert(ptr->hosts[server_key].stack_responses == 0);
   }
 
   return MEMCACHED_SUCCESS;

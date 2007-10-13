@@ -24,6 +24,7 @@ memcached_return memcached_response(memcached_st *ptr,
   max_messages= memcached_server_response_count(ptr, server_key);
   for (x= 0; x <=  max_messages; x++)
   {
+    size_t total_length= 0;
     buffer_ptr= buffer;
 
     while (1)
@@ -40,6 +41,9 @@ memcached_return memcached_response(memcached_st *ptr,
         break;
       else
         buffer_ptr++;
+
+      total_length++;
+      assert(total_length < buffer_length);
     }
 
     if (memcached_server_response_count(ptr, server_key))

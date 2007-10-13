@@ -9,53 +9,44 @@
 ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
                           char *buffer, size_t length)
 {
-  size_t x;
   char *buffer_ptr;
 
   buffer_ptr= buffer;
 
-  for (x= 0, buffer_ptr= buffer; 
-       x < length; x++)
+  while (length)
   {
     if (!ptr->read_buffer_length)
     {
-      if (length > 1)
+      size_t data_read;
+
+      while (1)
       {
-
-        size_t data_read;
-        data_read= recv(ptr->hosts[server_key].fd, 
-                        buffer_ptr, 
-                        length - x, 0);
-        if (data_read == -1)
-        {
-          return -1;
-        }
-        if (data_read == 0)
-          return x;
-
-        data_read+= x;
-
-        return data_read;
-      }
-      else
-      {
-        size_t data_read;
-try_again:
-
         if (ptr->flags & MEM_NO_BLOCK)
         {
-          struct timeval local_tv;
-          fd_set set;
+          while (1)
+          {
+            int select_return;
+            struct timeval local_tv;
+            fd_set set;
 
-          memset(&local_tv, 0, sizeof(struct timeval));
+            memset(&local_tv, 0, sizeof(struct timeval));
 
-          local_tv.tv_sec= 0;
-          local_tv.tv_usec= 300;
+            local_tv.tv_sec= 0;
+            local_tv.tv_usec= 300;
 
-          FD_ZERO(&set);
-          FD_SET(ptr->hosts[server_key].fd, &set);
+            FD_ZERO(&set);
+            FD_SET(ptr->hosts[server_key].fd, &set);
 
-          select(1, &set, NULL, NULL, &local_tv);
+            select_return= select(1, &set, NULL, NULL, &local_tv);
+
+            if (select_return == -1)
+            {
+              ptr->my_errno= errno;
+              return -1;
+            }
+            else if (!select_return)
+              break;
+          }
         }
 
         data_read= recv(ptr->hosts[server_key].fd, 
@@ -63,26 +54,34 @@ try_again:
                         MEMCACHED_MAX_BUFFER, 0);
         if (data_read == -1)
         {
-          if (errno == EAGAIN)
-            goto try_again;
-          return -1;
+          switch (errno)
+          {
+          case EAGAIN:
+            break;
+          default:
+            {
+              ptr->my_errno= errno;
+              return -1;
+            }
+          }
         }
-        ptr->read_buffer_length= data_read;
-        ptr->read_ptr= ptr->read_buffer;
+        else if (data_read)
+          break;
+        /* If zero, just keep looping */
       }
 
-      if (ptr->read_buffer_length == -1)
-        return -1;
-      if (ptr->read_buffer_length == 0)
-        return x;
+      ptr->read_buffer_length= data_read;
+      ptr->read_ptr= ptr->read_buffer;
     }
+
     *buffer_ptr= *ptr->read_ptr;
-    buffer_ptr++;
+    length--;
     ptr->read_ptr++;
     ptr->read_buffer_length--;
+    buffer_ptr++;
   }
 
-  return length;
+  return (size_t)(buffer_ptr - buffer);
 }
 
 ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,

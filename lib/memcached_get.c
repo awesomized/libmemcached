@@ -85,14 +85,13 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
 
       /* We add two bytes so that we can walk the \r\n */
       value= (char *)malloc(((*value_length) +2) * sizeof(char));
-      memset(value, 0, ((*value_length) +2) * sizeof(char));
-
       if (!value)
       {
         *value_length= 0;
         *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
         return NULL;
       }
+      memset(value, 0, ((*value_length) +2) * sizeof(char));
 
       value_ptr= value;
       read_length= 0;
@@ -164,6 +163,8 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
     *error= MEMCACHED_NOTFOUND;
     goto error;
   }
+  else if (*error == MEMCACHED_END)
+    assert(0); /* If this happens we have somehow messed up the fetch */
   else if (*error == MEMCACHED_SUCCESS)
   {
     memcached_return rc;
@@ -259,7 +260,10 @@ memcached_return memcached_mget(memcached_st *ptr,
       }
       memcached_string_free(ptr, string);
       cursor_key_exec[x]= NULL; /* Remove warning */
+      ptr->hosts[x].cursor_active= 1;
     }
+    else
+      ptr->hosts[x].cursor_active= 0;
   }
 
   free(cursor_key_exec);
@@ -277,16 +281,28 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
+    if (!ptr->hosts[ptr->cursor_server].cursor_active)
+    {
+      ptr->cursor_server++;
+      continue;
+    }
+
     value_check= memcached_value_fetch(ptr, key, key_length, value_length, flags,
                                        error, 1, ptr->cursor_server);
     
     if (*error == MEMCACHED_NOTFOUND)
       ptr->cursor_server++;
+    else if (*error == MEMCACHED_END && *value_length == 0)
+      return NULL;
+    else if (*error == MEMCACHED_END)
+      assert(0); /* If this happens we have somehow messed up the fetch */
     else if (*error != MEMCACHED_SUCCESS)
       return NULL;
     else
       return value_check;
+
   }
 
+  *value_length= 0;
   return NULL;
 }
