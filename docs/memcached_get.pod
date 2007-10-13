@@ -1,0 +1,67 @@
+=head1 NAME
+
+memcached_get, memcached_mget, memcached_fetch
+
+=head1 LIBRARY
+
+C Client Library for memcached (libmemcached, -lmemcached)
+
+=head1 SYNOPSIS
+
+#include <memcached.h>
+char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
+    size_t *value_length, 
+    uint16_t *flags,
+    memcached_return *error);
+memcached_return memcached_mget(memcached_st *ptr, 
+    char **keys, size_t *key_length, 
+    unsigned int number_of_keys);
+char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
+    size_t *value_length, uint16_t *flags, 
+    memcached_return *error);
+
+=head1 DESCRIPTION
+
+
+memcached_get() is used to fetch an individual value from the server. You
+must pass in a key and its length to fetch the object. You must supply
+three pointer variables which will give you the state of the returned
+object.  A uint16_t pointer to contain whatever flags you stored with the value,
+a size_t pointer which will be filled with size of of the object, and a
+memcached_return pointer to hold any error. The object will be returned
+upon success and NULL will be returned on failure. 
+
+memcached_mget() is used to select multiple keys at once. For multiple key
+operations it is always faster to use this function. This function always
+works asyncronously. memcached_fetch() is then used to retrieve any keys
+found. No error is given on keys that are not found.
+
+memcached_fetch() is used to fetch an individual value from the server. 
+memcached_mget() must always be called before using this method.  You
+must pass in a key and its length to fetch the object. You must supply
+three pointer variables which will give you the state of the returned
+object.  A uint16_t pointer to contain whatever flags you stored with the value,
+a size_t pointer which will be filled with size of of the object, and a
+memcached_return pointer to hold any error. The object will be returned
+upon success and NULL will be returned on failure. 
+
+=head1 RETURN
+
+All objects returned must be freed by the calling application.
+memcached_get() and memcached_fetch() will return NULL on error. You must
+look at the value of error() to determine what the actual error was.
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemcached(3) memcached_strerror(3)
+
+=cut
+

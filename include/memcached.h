@@ -198,18 +198,16 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 #define memcached_server_name(A,B) B.hostname
 #define memcached_server_port(A,B) B.port
 #define memcached_server_list(A) A->hosts
-#define memcached_server_response_increment(A,B) A->hosts[B].stack_responses++
-#define memcached_server_response_decrement(A,B) A->hosts[B].stack_responses--
 #define memcached_server_response_count(A,B) A->hosts[B].stack_responses
 
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
                                       unsigned int port);
+void memcached_server_list_free(memcached_server_st *ptr);
+memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
                                              char *hostname, unsigned int port, 
                                              memcached_return *error);
-void memcached_server_list_free(memcached_server_st *ptr);
-memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 memcached_server_st *memcached_servers_parse(char *server_strings);
 

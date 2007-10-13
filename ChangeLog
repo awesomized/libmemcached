@@ -3,6 +3,7 @@
   * Fixed for more hosts then two.
   * Rewrite of the read/write IO systems to handle different sorts of host
     failures.
+  * Added man pages for all functions and tools
 
 0.5 Tue Oct  9 00:22:25 PDT 2007
  * Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C

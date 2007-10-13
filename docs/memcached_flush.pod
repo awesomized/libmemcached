@@ -1,0 +1,41 @@
+=head1 NAME
+
+memcached_flush
+
+=head1 LIBRARY
+
+C Client Library for memcached (libmemcached, -lmemcached)
+
+=head1 SYNOPSIS
+
+#include <memcached.h>
+memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
+
+=head1 DESCRIPTION
+
+
+memcached_flush() is used to wipe clean the contents of memcached servers.
+It will either do this immediatly or expire the content based on the
+expiration time passed to the method (a value of zero causes an immediate
+flush). The operation is not atomic to multiple servers, just atomic to a
+single server. Aka it will flush the servers in the order that they were
+added.
+
+=head1 RETURN
+
+memcached_flush() returns memcached_return. The value on success will be MEMCACHED_SUCCESS. For all errors check with memcached_strerror().
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemcached(3) memcached_strerror(3)
+
+=cut
+

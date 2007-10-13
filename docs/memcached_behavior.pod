@@ -1,0 +1,65 @@
+=head1 NAME
+
+memcached_behavior_get memcached_behavior_set
+
+=head1 LIBRARY
+
+C Client Library for memcached (libmemcached, -lmemcached)
+
+=head1 SYNOPSIS
+
+#include <memcached.h>
+
+unsigned long long memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
+memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, void *data);
+
+=head1 DESCRIPTION
+
+
+libmemcached(3) behavior can be modified by use memcached_behavior_set().
+Default behavior is the library strives to be quick and accurate. Some
+behavior, like , while being faster can also result in not entirely accurate
+behavior (for instance memcached_set will always respond with
+MEMCACHED_SUCCES).
+
+memcached_behavior_get() takes a behavior flag and returns whether or not
+that behavior is currently enabled in the client.
+
+memcached_behavior_set() changes the value of a particular option of the
+client. It takes both a flag (listed below) and a value. For simple on or
+off options you just need to pass in a value of 1.
+
+=item  MEMCACHED_BEHAVIOR_NO_BLOCK,
+
+Causes libmemcached(3) to use asycronous IO. This is the fastest transport
+available.
+
+=item MEMCACHED_BEHAVIOR_TCP_NODELAY,
+
+Turns on the no-delay feature for connecting sockets (may be faster in some
+setups).
+
+=item MEMCACHED_BEHAVIOR_MD5_HASHING,
+
+Makes the default hashing algorithm for keys use RSA's MD5.
+
+=head1 RETURN
+
+memcached_behavior_get() returns either the current value of the get, or 0
+or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set()
+returns whether or not the behavior was enabled.
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemcached(3) memcached_strerror(3)
+
+=cut
+

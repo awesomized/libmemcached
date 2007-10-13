@@ -1,0 +1,35 @@
+=head1 NAME
+
+memcp - Copies files to a collection of memcached servers
+
+=head1 SYNOPSIS
+
+memcp [options] file file <servers>
+
+=head1 DESCRIPTION
+
+memcp operates similar to the standard unix cp command. Files will be stored
+in the collection of memcached servers specified. Key names will be based on
+the name of the file (which does not include its directory path).
+
+You can specify servers via the --servers option or memcat will use the
+environmental variable MEMCACHED_SERVERS. If you specify neither of these
+memcp will expect that the final value in the list passed to it is the name
+of a server(s).
+
+For a full list of its operations run the tool with the --help option.
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemcached(3)
+
+=cut
+

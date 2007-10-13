@@ -15,3 +15,7 @@
 Makefile(.in)?$
 .(deps|libs)$
 \.l?o$
+
+# Generated man files
+\.1$
+\.3$

@@ -1,0 +1,58 @@
+=head1 NAME
+
+memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push
+
+=head1 LIBRARY
+
+C Client Library for memcached (libmemcached, -lmemcached)
+
+=head1 SYNOPSIS
+
+#include <memcached.h>
+
+unsigned int memcached_server_count(memcached_st *ptr);
+memcached_server_st *memcached_server_list(memcached_st *ptr);
+memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port);
+memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
+
+=head1 DESCRIPTION
+
+
+libmemcached(3) performs operations on a list of hosts. The order of these
+hosts determine routing to keys. Functions are provided to add keys to
+memcached_st structures. To manipulate lists of servers see server_st(3).
+
+memcached_server_count() provides you a count of the current number of
+servers being used by a memcached_st structure.
+
+memcached_server_list() is used to provide an array of all connected hosts.
+You are responsible for freeing this list (aka it is not a pointer to the
+currently used structure).
+
+memcached_server_add() pushes a single server into the memcached_st
+structure. This server will be placed at the end. Duplicate servers are
+allowed, so duplication is not checked.
+
+memcached_server_push() pushes an array of memcached_server_st into the memcached_st
+structure. These servers will be placed at the end. Duplicate servers are
+allowed, so duplication is not checked. A copy is made of structure so the
+list provided (and any operations on the list) are not saved.
+
+=head1 RETURN
+
+Varies, see particular functions.
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemcached(3) memcached_strerror(3)
+
+=cut
+

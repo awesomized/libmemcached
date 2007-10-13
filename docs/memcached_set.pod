@@ -1,0 +1,68 @@
+=head1 NAME
+
+memcached_set, memcached_add, memcached_replace
+
+=head1 LIBRARY
+
+C Client Library for memcached (libmemcached, -lmemcached)
+
+=head1 SYNOPSIS
+
+#include <memcached.h>
+memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
+    char *value, size_t value_length, 
+    time_t expiration,
+    uint16_t  flags);
+memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
+    char *value, size_t value_length, 
+    time_t expiration,
+    uint16_t  flags);
+memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_length,
+    char *value, size_t value_length, 
+    time_t expiration,
+    uint16_t  flags);
+
+=head1 DESCRIPTION
+
+memcached_set() , memcached_add(), and memcached_replace() are all used to
+store information on the server. All methods take a key, and its length to
+store the object. Keys are currently limited to 250 charcterss by the
+memcached server. You must also supply a value and a length. Optionally you
+may support an expiration time for the object and a 16 byte value (it is
+meant to be used as a bitmap).
+
+memcached_set() will write an object to the server. If an object already
+exists it will overwrite what is in the server. If the object does not exist
+it will be written. If you are using the non-blocking mode this function
+will always return true unless a network error occurs. 
+
+memcached_replace() replaces an object on the server. If the object is not
+found on the server an error occurs.
+
+memcached_add() adds an object to the server. If the object is found on the
+server an error occurs, otherwise the value is stored.
+
+memcached_set() with non-blocking IO is the fastest way to store data on the
+server.
+
+=head1 RETURN
+
+All methods return a memcached_return value. On success the value will be
+MEMCACHED_SUCCESS (see memcached_strerror() for more information on this).
+For memcached_replace() and memcached_add() MEMCACHED_NOTSTORED is a
+legitmate error in the case of a collision.
+
+=head1 HOME
+
+To find out more information please check: http://tangent.org/552/libmemcached.html
+
+=head1 AUTHOR
+
+Brian Aker, brian@tangent.org
+
+=head1 SEE ALSO
+
+memcached(1) libmemached(3) memcached_strerror(3)
+
+=cut
+
