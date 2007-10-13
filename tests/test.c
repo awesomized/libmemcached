@@ -6,6 +6,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+
+long int timedif(struct timeval a, struct timeval b)
+{
+  register int us, s;
+
+  us = a.tv_usec - b.tv_usec;
+  us /= 1000;
+  s = a.tv_sec - b.tv_sec;
+  s *= 1000;
+  return s + us;
+}
 
 void init_test(memcached_st *not_used)
 {
@@ -645,6 +657,8 @@ int main(int argc, char *argv[])
 
       memcached_st *memc;
       memcached_return rc;
+      struct timeval start_time, end_time;
+
       memc= memcached_create(NULL);
       assert(memc);
 
@@ -660,8 +674,12 @@ int main(int argc, char *argv[])
       }
 
       fprintf(stderr, "Testing %s", tests[x].function_name);
+      gettimeofday(&start_time, NULL);
       tests[x].function(memc);
-      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }
@@ -678,6 +696,8 @@ int main(int argc, char *argv[])
 
       memcached_st *memc;
       memcached_return rc;
+      struct timeval start_time, end_time;
+
       memc= memcached_create(NULL);
       assert(memc);
 
@@ -686,8 +706,12 @@ int main(int argc, char *argv[])
 
       fprintf(stderr, "Testing %s", tests[x].function_name);
       memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+      gettimeofday(&start_time, NULL);
       tests[x].function(memc);
-      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }
@@ -704,6 +728,8 @@ int main(int argc, char *argv[])
 
       memcached_st *memc;
       memcached_return rc;
+      struct timeval start_time, end_time;
+
       memc= memcached_create(NULL);
       assert(memc);
 
@@ -713,8 +739,12 @@ int main(int argc, char *argv[])
       fprintf(stderr, "Testing %s", tests[x].function_name);
       memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
       memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+      gettimeofday(&start_time, NULL);
       tests[x].function(memc);
-      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }
@@ -731,6 +761,8 @@ int main(int argc, char *argv[])
 
       memcached_st *memc;
       memcached_return rc;
+      struct timeval start_time, end_time;
+
       memc= memcached_create(NULL);
       assert(memc);
 
@@ -739,8 +771,12 @@ int main(int argc, char *argv[])
 
       fprintf(stderr, "Testing %s", tests[x].function_name);
       memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+      gettimeofday(&start_time, NULL);
       tests[x].function(memc);
-      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }
@@ -757,6 +793,8 @@ int main(int argc, char *argv[])
 
       memcached_st *memc;
       memcached_return rc;
+      struct timeval start_time, end_time;
+
       memc= memcached_create(NULL);
       assert(memc);
 
@@ -764,8 +802,12 @@ int main(int argc, char *argv[])
       assert(rc == MEMCACHED_SUCCESS);
 
       fprintf(stderr, "Testing %s", user_tests[x].function_name);
+      gettimeofday(&start_time, NULL);
       user_tests[x].function(memc);
-      fprintf(stderr, "\t\t\t\t\t[ ok ]\n");
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }

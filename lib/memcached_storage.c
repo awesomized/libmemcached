@@ -35,8 +35,6 @@ static memcached_return memcached_send(memcached_st *ptr,
   assert(value);
   assert(value_length);
 
-  memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
-
   /* Leaving this assert in since only a library fubar could blow this */
   if (ptr->write_buffer_offset != 0)
   {
