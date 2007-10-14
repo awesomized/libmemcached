@@ -101,6 +101,7 @@ void delete_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
+  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_SUCCESS);
 }
 
