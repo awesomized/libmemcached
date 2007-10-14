@@ -3,6 +3,7 @@
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration)
 {
+  char to_write;
   size_t send_length, sent_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -30,18 +31,29 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
     goto error;
   }
 
-  sent_length= memcached_io_write(ptr, server_key, buffer, send_length, 1);
+  if ((ptr->flags & MEM_NO_BLOCK))
+    to_write= 0;
+  else
+    to_write= 1;
 
-  if (sent_length == -1 || sent_length != send_length)
+  if ((sent_length= memcached_io_write(ptr, server_key, buffer, send_length, to_write)) == -1)
   {
+    memcached_quit_server(ptr, server_key);
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
   }
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
-
-  if (rc == MEMCACHED_DELETED)
+  if ((ptr->flags & MEM_NO_BLOCK))
+  {
     rc= MEMCACHED_SUCCESS;
+    memcached_server_response_increment(ptr, server_key);
+  }
+  else
+  {
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+    if (rc == MEMCACHED_DELETED)
+      rc= MEMCACHED_SUCCESS;
+  }
 
   LIBMEMCACHED_MEMCACHED_DELETE_END();
 
