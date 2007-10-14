@@ -8,20 +8,26 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
 =head1 SYNOPSIS
 
-#include <memcached.h>
-char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
-    size_t *value_length, 
-    uint16_t *flags,
-    memcached_return *error);
-memcached_return memcached_mget(memcached_st *ptr, 
-    char **keys, size_t *key_length, 
-    unsigned int number_of_keys);
-char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
-    size_t *value_length, uint16_t *flags, 
-    memcached_return *error);
+  #include <memcached.h>
+
+  char *memcached_get (memcached_st *ptr,
+                       char *key, size_t key_length,
+                       size_t *value_length, 
+                       uint16_t *flags,
+                       memcached_return *error);
+
+  memcached_return
+    memcached_mget (memcached_st *ptr, 
+                    char **keys, size_t *key_length, 
+                    unsigned int number_of_keys);
+
+  char *memcached_fetch (memcached_st *ptr,
+                         char *key, size_t *key_length, 
+                         size_t *value_length,
+                         uint16_t *flags, 
+                         memcached_return *error);
 
 =head1 DESCRIPTION
-
 
 memcached_get() is used to fetch an individual value from the server. You
 must pass in a key and its length to fetch the object. You must supply
@@ -33,7 +39,7 @@ upon success and NULL will be returned on failure.
 
 memcached_mget() is used to select multiple keys at once. For multiple key
 operations it is always faster to use this function. This function always
-works asyncronously. memcached_fetch() is then used to retrieve any keys
+works asynchronously. memcached_fetch() is then used to retrieve any keys
 found. No error is given on keys that are not found.
 
 memcached_fetch() is used to fetch an individual value from the server. 
@@ -49,15 +55,16 @@ upon success and NULL will be returned on failure.
 
 All objects returned must be freed by the calling application.
 memcached_get() and memcached_fetch() will return NULL on error. You must
-look at the value of error() to determine what the actual error was.
+look at the value of error to determine what the actual error was.
 
 =head1 HOME
 
-To find out more information please check: http://tangent.org/552/libmemcached.html
+To find out more information please check:
+L<http://tangent.org/552/libmemcached.html>
 
 =head1 AUTHOR
 
-Brian Aker, brian@tangent.org
+Brian Aker, E<lt>brian@tangent.orgE<gt>
 
 =head1 SEE ALSO
 
