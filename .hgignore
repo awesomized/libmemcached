@@ -1,4 +1,5 @@
 # Exact paths to config junk
+^INSTALL$
 ^aclocal.m4$
 ^configure$
 ^config/(config.guess|config.sub|depcomp|install-sh|ltmain.sh|missing)$
