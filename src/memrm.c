@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <memcached.h>
+#include <string.h>
 #include "client_options.h"
 #include "utilities.h"
 

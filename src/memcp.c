@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <sys/types.h>
@@ -7,6 +9,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <strings.h>
+#include <string.h>
+#include <assert.h>
 
 #include <memcached.h>
 #include "client_options.h"

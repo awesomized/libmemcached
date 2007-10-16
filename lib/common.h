@@ -5,6 +5,22 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <limits.h>
+#include <assert.h>
+#include <time.h>
+#include <errno.h>
+
+
 #include <memcached.h>
 #include <memcached_io.h>
 
