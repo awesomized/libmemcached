@@ -200,21 +200,6 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 memcached_server_st *memcached_servers_parse(char *server_strings);
 
-/* String Struct */
-#define memcached_string_length(A, B) (size_t)(B->end - B->string)
-#define memcached_string_size(A, B) B->current_size
-#define memcached_string_value(A, B) B->string
-
-memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size);
-memcached_return memcached_string_append_character(memcached_st *ptr, 
-                                                   memcached_string_st *string, 
-                                                   char character);
-memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st *string,
-                                         char *value, size_t length);
-size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove);
-memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string);
-void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
-
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
                                char *key, memcached_return *error);
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 

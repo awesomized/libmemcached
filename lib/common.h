@@ -53,4 +53,20 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key);
 #define memcached_server_response_increment(A,B) A->hosts[B].stack_responses++
 #define memcached_server_response_decrement(A,B) A->hosts[B].stack_responses--
 
+/* String Struct */
+#define memcached_string_length(A, B) (size_t)(B->end - B->string)
+#define memcached_string_size(A, B) B->current_size
+#define memcached_string_value(A, B) B->string
+
+memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size);
+memcached_return memcached_string_append_character(memcached_st *ptr, 
+                                                   memcached_string_st *string, 
+                                                   char character);
+memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st *string,
+                                         char *value, size_t length);
+size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove);
+memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string);
+void memcached_string_free(memcached_st *ptr, memcached_string_st *string);
+
+
 #endif /* __COMMON_H__ */
