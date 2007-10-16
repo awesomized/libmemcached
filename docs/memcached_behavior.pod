@@ -32,7 +32,8 @@ that behavior is currently enabled in the client.
 
 memcached_behavior_set() changes the value of a particular option of the
 client. It takes both a flag (listed below) and a value. For simple on or
-off options you just need to pass in a value of 1.
+off options you just need to pass in a value of 1. Calls to 
+memcached_behavior_set() will flush and reset all connections.
 
 =over 4
 

@@ -28,7 +28,7 @@ typedef struct memcached_server_st memcached_server_st;
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
 //#define MEMCACHED_MAX_BUFFER 8196
-#define MEMCACHED_MAX_BUFFER HUGE_STRING_LEN*4
+#define MEMCACHED_MAX_BUFFER HUGE_STRING_LEN*2
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -65,6 +65,8 @@ typedef enum {
   MEMCACHED_BEHAVIOR_TCP_NODELAY,
   MEMCACHED_BEHAVIOR_MD5_HASHING,
   MEMCACHED_BEHAVIOR_KETAMA,
+  MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE,
+  MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE,
 } memcached_behavior;
 
 typedef enum {
@@ -129,6 +131,8 @@ struct memcached_st {
   char connected;
   int my_errno;
   unsigned long long flags;
+  int send_size;
+  int recv_size;
   memcached_return warning; /* Future Use */
 };
 

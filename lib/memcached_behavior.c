@@ -38,6 +38,20 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
+  case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
+    {
+      ptr->send_size= (*((int *)data));
+      memcached_quit(ptr);
+      break;
+    }
+  case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
+    {
+      ptr->recv_size= (*((int *)data));
+      memcached_quit(ptr);
+      break;
+    }
+
+
   }
 
   return MEMCACHED_SUCCESS;
@@ -46,7 +60,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 unsigned long long memcached_behavior_get(memcached_st *ptr, 
                                           memcached_behavior flag)
 {
-  memcached_flags temp_flag;
+  memcached_flags temp_flag= 0;
 
   switch (flag)
   {
@@ -62,8 +76,39 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;
     break;
+  case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
+    {
+      int sock_size;
+      socklen_t sock_length= sizeof(int);
+
+      /* We just try the first host, and if it is down we return zero */
+      if ((memcached_connect(ptr, 0)) != MEMCACHED_SUCCESS)
+        return 0;
+
+      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET, 
+                     SO_SNDBUF, &sock_size, &sock_length))
+        return 0; /* Zero means error */
+
+      return sock_size;
+    }
+  case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
+    {
+      int sock_size;
+      socklen_t sock_length= sizeof(int);
+
+      /* We just try the first host, and if it is down we return zero */
+      if ((memcached_connect(ptr, 0)) != MEMCACHED_SUCCESS)
+        return 0;
+
+      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET, 
+                     SO_RCVBUF, &sock_size, &sock_length))
+        return 0; /* Zero means error */
+
+      return sock_size;
+    }
   }
 
+  assert(temp_flag); /* Programming mistake if it gets this far */
   if (ptr->flags & temp_flag)
     return 1;
   else

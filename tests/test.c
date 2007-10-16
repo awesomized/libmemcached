@@ -102,7 +102,6 @@ void delete_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
-  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_SUCCESS);
 }
 
@@ -222,8 +221,6 @@ void get_test3(memcached_st *memc)
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
-  WATCHPOINT_ERRNO(memc->my_errno);
-  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_SUCCESS);
   assert(string);
   assert(string_length == value_length);
@@ -500,6 +497,12 @@ void behavior_test(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, &set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_MD5_HASHING);
   assert(value == 0);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
+  assert(value > 0);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
+  assert(value > 0);
 }
 
 /* Test case provided by Cal Haldenbrand */

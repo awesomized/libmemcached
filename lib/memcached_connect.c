@@ -33,7 +33,6 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
 
-
     /* bind any port number */
     localAddr.sin_family = AF_INET;
     localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -55,6 +54,18 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
 
       setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, TCP_NODELAY, 
                  &flag, (socklen_t)sizeof(int));
+    }
+
+    if (ptr->send_size)
+    {
+      setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
+                 &ptr->send_size, (socklen_t)sizeof(int));
+    }
+
+    if (ptr->recv_size)
+    {
+      setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
+                 &ptr->recv_size, (socklen_t)sizeof(int));
     }
 
     /* connect to server */
