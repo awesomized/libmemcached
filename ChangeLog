@@ -1,9 +1,12 @@
 0.6
   * get value returns are now null terminated (request by Cal Heldenbrand) 
-  * Fixed for more hosts then two.
+  * Fixed connections for more hosts then two.
   * Rewrite of the read/write IO systems to handle different sorts of host
     failures.
   * Added man pages for all functions and tools
+  * Raised buffer size for readinng/writing to 16K
+  * You can now optionally set the socket size for recv/send via 
+    memached_behavior_set/get.
 
 0.5 Tue Oct  9 00:22:25 PDT 2007
  * Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C
