@@ -43,8 +43,11 @@ int main(int argc, char *argv[])
   rc = memcached_flush(memc, opt_expire);
   if (rc != MEMCACHED_SUCCESS) 
   {
-    fprintf(stderr, "memflush: memcache error %s\n", 
+    fprintf(stderr, "memflush: memcache error %s", 
 	    memcached_strerror(memc, rc));
+    if (memc->my_errno)
+      fprintf(stderr, " system error %s", strerror(memc->my_errno));
+    fprintf(stderr, "\n");
   }
 
   memcached_free(memc);

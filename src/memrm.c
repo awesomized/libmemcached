@@ -48,8 +48,11 @@ int main(int argc, char *argv[])
 
     if (rc != MEMCACHED_SUCCESS) 
     {
-      fprintf(stderr, "memrm: %s: memcache error %s\n", 
+      fprintf(stderr, "memrm: %s: memcache error %s", 
 	      argv[optind], memcached_strerror(memc, rc));
+      if (memc->my_errno)
+	fprintf(stderr, " system error %s", strerror(memc->my_errno));
+      fprintf(stderr, "\n");
     }
 
     optind++;
