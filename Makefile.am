@@ -1,5 +1,6 @@
 INCLUDES = include
 SUBDIRS = docs include lib src tests support
+EXTRA_dist = README.FIRST
 
 test: all
 	cd tests; make test; cd ..
