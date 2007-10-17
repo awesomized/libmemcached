@@ -1,4 +1,4 @@
-0.6
+0.6 Wed Oct 17 08:41:35 PDT 2007
   * get value returns are now null terminated (request by Cal Heldenbrand) 
   * Fixed connections for more hosts then two.
   * Rewrite of the read/write IO systems to handle different sorts of host
