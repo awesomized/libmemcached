@@ -1,6 +1,6 @@
 INCLUDES = include
 
-EXTRA_dist = libmemcached.pod\
+EXTRA_DIST = libmemcached.pod\
 	memcached_flush.pod\
 	memcached_stats.pod\
 	memrm.pod\
@@ -170,3 +170,6 @@ memrm.1: memrm.pod
 memflush.1: memflush.pod
 	pod2man -c "libmemcached" -r "" -s 1 memflush.pod > memflush.1
 
+clean:
+	rm *.1
+	rm *.3
