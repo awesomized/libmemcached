@@ -116,8 +116,13 @@ int main(int argc, char *argv[])
                         opt_expires, opt_flags);
 
     if (rc != MEMCACHED_SUCCESS)
-      fprintf(stderr, "memcp: %s: memcache error %s\n", 
+    {
+      fprintf(stderr, "memcp: %s: memcache error %s", 
 	      ptr, memcached_strerror(memc, rc));
+      if (memc->my_errno)
+	fprintf(stderr, " system error %s", strerror(memc->my_errno));
+      fprintf(stderr, "\n");
+    }
 
     free(file_buffer_ptr);
     close(fd);
