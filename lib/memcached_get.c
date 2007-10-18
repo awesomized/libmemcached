@@ -36,7 +36,7 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
       memset(key, 0, MEMCACHED_MAX_KEY);
       *key_length= 0;
 
-      for (; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++)
+      for (; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++)
       {
         *key= *string_ptr;
         key++;
@@ -44,7 +44,7 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
       }
     }
     else /* Skip characters */
-      for (; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
+      for (; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
 
     if (end_ptr == string_ptr)
         goto read_error;
@@ -53,7 +53,7 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     string_ptr++;
     if (end_ptr == string_ptr)
         goto read_error;
-    for (next_ptr= string_ptr; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
+    for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
     *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)
@@ -64,7 +64,7 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
     if (end_ptr == string_ptr)
         goto read_error;
 
-    for (next_ptr= string_ptr; end_ptr == string_ptr || *string_ptr != ' '; string_ptr++);
+    for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
     *value_length= (size_t)strtoll(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)

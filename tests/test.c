@@ -513,13 +513,14 @@ void user_supplied_bug1(memcached_st *memc)
 
   unsigned long long total= 0;
   int size= 0;
-  srand(time(NULL));
   char key[10];
   char randomstuff[6 * 1024]; 
   memcached_return rc;
 
   memset(randomstuff, 0, 6 * 1024);
 
+  /* We just keep looking at the same values over and over */
+  srandom(10);
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
@@ -556,7 +557,6 @@ void user_supplied_bug2(memcached_st *memc)
   unsigned int setter;
   unsigned int x;
   unsigned long long total;
-
 
   setter= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
