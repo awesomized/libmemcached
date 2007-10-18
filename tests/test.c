@@ -511,7 +511,7 @@ void user_supplied_bug1(memcached_st *memc)
   unsigned int setter= 1;
   unsigned int x;
 
-  long total= 0;
+  unsigned long long total= 0;
   int size= 0;
   srand(time(NULL));
   char key[10];
@@ -547,6 +547,56 @@ void user_supplied_bug1(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS);
   }
 }
+
+/* Test case provided by Cal Haldenbrand */
+void user_supplied_bug2(memcached_st *memc)
+{
+  int errors;
+  unsigned int setter;
+  unsigned int x;
+  unsigned long long total;
+
+
+  setter= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+#ifdef NOT_YET
+  setter = 20 * 1024576;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, &setter);
+  setter = 20 * 1024576;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, &setter);
+  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
+  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
+#endif
+
+  for (x= 0, errors= 0, total= 0 ; total < 20 * 1024576 ; x++)
+  {
+    memcached_return rc;
+    char buffer[SMALL_STRING_LEN];
+    uint16_t flags;
+    size_t val_len;
+    char *getval;
+
+    snprintf(buffer, SMALL_STRING_LEN, "%u", x);
+    getval= memcached_get(memc, buffer, strlen(buffer),
+                           &val_len, &flags, &rc);		
+    if (rc != MEMCACHED_SUCCESS) 
+    {
+      WATCHPOINT_ERROR(rc);
+      errors++;
+      if ( errors == 10 )
+      {
+        fprintf(stderr, "last: %s:  len %zu  flags: %u\n", buffer, val_len, flags);
+        assert(0);
+      }
+      continue;
+    }
+    total+= val_len;
+    errors= 0;
+    free(getval);
+  }
+}
+
 void add_host_test1(memcached_st *memc)
 {
   unsigned int x;
@@ -648,6 +698,7 @@ int main(int argc, char *argv[])
 
   test_st user_tests[] ={
     {"user_supplied_bug1", 0, user_supplied_bug1 },
+    {"user_supplied_bug2", 0, user_supplied_bug1 },
     {0, 0, 0}
   };
 
