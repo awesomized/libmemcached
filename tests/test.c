@@ -515,10 +515,11 @@ void user_supplied_bug1(memcached_st *memc)
   int size= 0;
   srand(time(NULL));
   char key[10];
-  char *randomstuff = (char *)malloc(6 * 1024); 
+  char randomstuff[6 * 1024]; 
+  memcached_return rc;
+
   memset(randomstuff, 0, 6 * 1024);
 
-  memcached_return rc;
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
@@ -879,6 +880,8 @@ int main(int argc, char *argv[])
   }
 
   fprintf(stderr, "All tests completed successfully\n\n");
+
+  memcached_server_list_free(servers);
 
   return 0;
 }

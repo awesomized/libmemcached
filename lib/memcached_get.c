@@ -133,8 +133,8 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     uint16_t *flags,
                     memcached_return *error)
 {
-  size_t send_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+  char *buf_ptr= buffer;
   unsigned int server_key;
   char *value;
   LIBMEMCACHED_MEMCACHED_GET_START();
@@ -147,10 +147,14 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   if (*error != MEMCACHED_SUCCESS)
     goto error;
 
-  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "get %.*s\r\n", 
-                        (int)key_length, key);
+  memcpy(buf_ptr, "get ", 4);
+  buf_ptr+= 4;
+  memcpy(buf_ptr, key, key_length);
+  buf_ptr+= key_length;
+  memcpy(buf_ptr, "\r\n", 2);
+  buf_ptr+= 2;
 
-  if ((memcached_io_write(ptr, server_key, buffer, send_length, 1)) == -1)
+  if ((memcached_io_write(ptr, server_key, buffer, (size_t)(buf_ptr - buffer), 1)) == -1)
   {
     *error= MEMCACHED_WRITE_FAILURE;
     goto error;
