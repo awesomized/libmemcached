@@ -5,6 +5,58 @@
 #include "common.h"
 #include "memcached_io.h"
 #include <sys/select.h>
+#include <poll.h>
+
+int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_write)
+{
+  struct pollfd fds[1];
+  short flags= 0;
+
+  if (read_or_write)
+    flags= POLLOUT |  POLLERR;
+  else
+    flags= POLLIN | POLLERR;
+
+  memset(&fds, 0, sizeof(struct pollfd));
+  fds[0].fd= ptr->hosts[server_key].fd;
+  fds[0].events= flags;
+
+  if (poll(fds, 1, -1) < 0)
+    return MEMCACHED_FAILURE;
+
+  return MEMCACHED_SUCCESS;
+#ifdef OLD
+  while (1)
+  {
+    int select_return;
+    struct timeval local_tv;
+    fd_set set;
+
+    memset(&local_tv, 0, sizeof(struct timeval));
+
+    local_tv.tv_sec= 0;
+    local_tv.tv_usec= 300;
+
+    FD_ZERO(&set);
+    FD_SET(ptr->hosts[server_key].fd, &set);
+
+    if (read_or_write)
+      select_return= select(1, &set, NULL, NULL, &local_tv);
+    else
+      select_return= select(1, NULL, &set, NULL, &local_tv);
+
+    if (select_return == -1)
+    {
+      ptr->my_errno= errno;
+      return MEMCACHED_FAILURE;
+    }
+    else if (!select_return)
+      break;
+  }
+
+  return MEMCACHED_SUCCESS;
+#endif
+}
 
 ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
                           char *buffer, size_t length)
@@ -23,30 +75,11 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
       {
         if (ptr->flags & MEM_NO_BLOCK)
         {
-          while (1)
-          {
-            int select_return;
-            struct timeval local_tv;
-            fd_set set;
+          memcached_return rc;
 
-            memset(&local_tv, 0, sizeof(struct timeval));
-
-            local_tv.tv_sec= 0;
-            local_tv.tv_usec= 300;
-
-            FD_ZERO(&set);
-            FD_SET(ptr->hosts[server_key].fd, &set);
-
-            select_return= select(1, &set, NULL, NULL, &local_tv);
-
-            if (select_return == -1)
-            {
-              ptr->my_errno= errno;
-              return -1;
-            }
-            else if (!select_return)
-              break;
-          }
+          rc= io_wait(ptr, server_key, 0);
+          if (rc != MEMCACHED_SUCCESS)
+            return -1;
         }
 
         data_read= recv(ptr->hosts[server_key].fd, 
@@ -128,29 +161,11 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
   {
     if (ptr->flags & MEM_NO_BLOCK)
     {
+      memcached_return rc;
 
-      while (1)
-      {
-        struct timeval local_tv;
-        fd_set set;
-        int select_return;
-
-        local_tv.tv_sec= 0;
-        local_tv.tv_usec= 300 * loop;
-
-        FD_ZERO(&set);
-        FD_SET(ptr->hosts[server_key].fd, &set);
-
-        select_return= select(1, NULL, &set, NULL, &local_tv);
-
-        if (select_return == -1)
-        {
-          ptr->my_errno= errno;
-          return -1;
-        }
-        else if (!select_return)
-          break;
-      }
+      rc= io_wait(ptr, server_key, 1);
+      if (rc != MEMCACHED_SUCCESS)
+        return -1;
     }
 
     sent_length= 0;
