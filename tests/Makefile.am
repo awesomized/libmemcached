@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/include
+INCLUDES = -I$(top_builddir)/include -I$(top_builddir)/lib
 LDADDS = ../lib/libmemcached.la
 
 EXTRA_DIST = output.res output2.res\

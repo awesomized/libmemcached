@@ -6,19 +6,23 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
   {
     size_t current_offset= string->end - string->string;
     char *new_value;
+    size_t adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / string->block_size;
 
-    new_value= (char *)realloc(string->string, sizeof(char) * string->block_size);
+    adjust++;
 
-    if (!new_value)
+    new_value= (char *)realloc(string->string, 
+                               sizeof(char) * ((adjust * string->block_size) + string->current_size));
+
+    if (new_value == NULL)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
     string->string= new_value;
     string->end= string->string + current_offset;
 
-    string->current_size+= string->block_size;
+    string->current_size+= (string->block_size * adjust);
 
     /* We zero the block structure we just realloced */
-    memset((string->string + string->current_size) - string->block_size , 0, 
+    memset((string->string + current_offset), 0, 
            sizeof(char) * string->block_size);
   }
 
@@ -27,15 +31,25 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
 
 memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size)
 {
+  memcached_return rc;
   memcached_string_st *string;
 
   /* Saving malloc calls :) */
-  string= (memcached_string_st *)malloc(sizeof(memcached_string_st) + (sizeof(char) * initial_size));
+  string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
   if (!string)
     return NULL;
+  string->end= string->string;
   memset(string, 0, sizeof(memcached_string_st));
   string->block_size= initial_size;
-  memcached_string_check(string, initial_size);
+
+  rc=  memcached_string_check(string, initial_size);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    free(string);
+    return NULL;
+  }
+
+  assert(string->string == string->end);
 
   return string;
 }
@@ -44,7 +58,13 @@ memcached_return memcached_string_append_character(memcached_st *ptr,
                                                    memcached_string_st *string, 
                                                    char character)
 {
-  memcached_string_check(string, 1);
+  memcached_return rc;
+
+  rc=  memcached_string_check(string, 1);
+
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+
   *string->end= ' ';
   string->end++;
 
@@ -54,24 +74,21 @@ memcached_return memcached_string_append_character(memcached_st *ptr,
 memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st *string,
                                          char *value, size_t length)
 {
-  memcached_string_check(string, length);
+  memcached_return rc;
+
+  rc= memcached_string_check(string, length);
+
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+  
+  assert(string->string);
+  assert(string->end >= string->string && string->end <= string->string + string->current_size);
+
   memcpy(string->end, value, length);
   string->end+= length;
 
   return MEMCACHED_SUCCESS;
 }
-
-#ifdef CRAP
-size_t memcached_string_length(memcached_st *ptr, memcached_string_st *string)
-{
-  return (size_t)(string->end - string->string);
-}
-
-size_t memcached_string_size(memcached_st *ptr, memcached_string_st *string)
-{
-  return string->current_size;
-}
-#endif
 
 size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove)
 {

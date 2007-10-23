@@ -12,14 +12,11 @@ static char *memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_len
   char *string_ptr;
   char *end_ptr;
 
-  assert(value_length);
-  assert(flags);
-  assert(error);
-
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
   *value_length= 0;
+  *flags= 0;
 
   *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
@@ -224,8 +221,15 @@ memcached_return memcached_mget(memcached_st *ptr,
     {
       memcached_string_st *string= cursor_key_exec[server_key];
 
-      memcached_string_append_character(ptr, string, ' ');
-      memcached_string_append(ptr, string, keys[x], key_length[x]);
+      rc= memcached_string_append_character(ptr, string, ' ');
+
+      if (rc != MEMCACHED_SUCCESS)
+        assert(0);
+
+      rc= memcached_string_append(ptr, string, keys[x], key_length[x]);
+
+      if (rc != MEMCACHED_SUCCESS)
+        assert(0);
     }
     else
     {
@@ -235,8 +239,13 @@ memcached_return memcached_mget(memcached_st *ptr,
       if (!string)
         assert(0);
 
-      memcached_string_append(ptr, string, "get ", 4);
-      memcached_string_append(ptr, string, keys[x], key_length[x]);
+      rc= memcached_string_append(ptr, string, "get ", 4);
+      if (rc != MEMCACHED_SUCCESS)
+        assert(0);
+
+      rc= memcached_string_append(ptr, string, keys[x], key_length[x]);
+      if (rc != MEMCACHED_SUCCESS)
+        assert(0);
 
       cursor_key_exec[server_key]= string;
     }
@@ -254,7 +263,10 @@ memcached_return memcached_mget(memcached_st *ptr,
       rc= memcached_connect(ptr, x);
 
       memcached_string_st *string= cursor_key_exec[x];
-      memcached_string_append(ptr, string, "\r\n", 2);
+
+      rc= memcached_string_append(ptr, string, "\r\n", 2);
+      if (rc != MEMCACHED_SUCCESS)
+        assert(0);
 
       if ((memcached_io_write(ptr, x, string->string, 
                               memcached_string_length(ptr, string), 1)) == -1)

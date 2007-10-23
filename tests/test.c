@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include "../lib/common.h"
 
 long int timedif(struct timeval a, struct timeval b)
 {
@@ -572,30 +573,158 @@ void user_supplied_bug2(memcached_st *memc)
 
   for (x= 0, errors= 0, total= 0 ; total < 20 * 1024576 ; x++)
   {
-    memcached_return rc;
+    memcached_return rc= MEMCACHED_SUCCESS;
     char buffer[SMALL_STRING_LEN];
-    uint16_t flags;
-    size_t val_len;
+    uint16_t flags= 0;
+    size_t val_len= 0;
     char *getval;
+
+    memset(buffer, 0, SMALL_STRING_LEN);
 
     snprintf(buffer, SMALL_STRING_LEN, "%u", x);
     getval= memcached_get(memc, buffer, strlen(buffer),
                            &val_len, &flags, &rc);		
     if (rc != MEMCACHED_SUCCESS) 
     {
-      WATCHPOINT_ERROR(rc);
-      errors++;
-      if ( errors == 10 )
-      {
-        fprintf(stderr, "last: %s:  len %zu  flags: %u\n", buffer, val_len, flags);
+      if (rc == MEMCACHED_NOTFOUND)
+        errors++;
+      else
         assert(0);
-      }
+
       continue;
     }
     total+= val_len;
     errors= 0;
     free(getval);
   }
+}
+
+#define KEY_COUNT 2000 // * 1024576
+void user_supplied_bug3(memcached_st *memc)
+{
+  memcached_return rc;
+  unsigned int setter;
+  unsigned int x;
+  char **keys;
+  size_t key_lengths[KEY_COUNT];
+
+  setter= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+#ifdef NOT_YET
+  setter = 20 * 1024576;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, &setter);
+  setter = 20 * 1024576;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, &setter);
+  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
+  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
+#endif
+
+  keys= (char **)malloc(sizeof(char *) * KEY_COUNT);
+  assert(keys);
+  memset(keys, 0, (sizeof(char *) * KEY_COUNT));
+  for (x= 0; x < KEY_COUNT; x++)
+  {
+    char buffer[20];
+
+    snprintf(buffer, 30, "%u", x);
+    keys[x]= strdup(buffer);
+    key_lengths[x]= strlen(keys[x]);
+  }
+
+  rc= memcached_mget(memc, keys, key_lengths, KEY_COUNT);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /* Turn this into a help function */
+  {
+    char *return_key;
+    size_t return_key_length;
+    char *return_value;
+    size_t return_value_length;
+    uint16_t flags;
+
+    while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                          &return_value_length, &flags, &rc)))
+    {
+      assert(return_value);
+      assert(rc == MEMCACHED_SUCCESS);
+      free(return_value);
+    }
+  }
+
+  for (x= 0; x < KEY_COUNT; x++)
+    free(keys[x]);
+  free(keys);
+}
+
+void string_alloc_null(memcached_st *memc)
+{
+  memcached_string_st *string;
+
+  string= memcached_string_create(memc, 0);
+  assert(string);
+  memcached_string_free(memc, string);
+}
+
+void string_alloc_with_size(memcached_st *memc)
+{
+  memcached_string_st *string;
+
+  string= memcached_string_create(memc, 1024);
+  assert(string);
+  memcached_string_free(memc, string);
+}
+
+void string_alloc_with_size_toobig(memcached_st *memc)
+{
+  memcached_string_st *string;
+
+  string= memcached_string_create(memc, 1024*100000000000);
+  assert(string == NULL);
+}
+
+void string_alloc_append(memcached_st *memc)
+{
+  unsigned int x;
+  char buffer[SMALL_STRING_LEN];
+  memcached_string_st *string;
+
+  /* Ring the bell! */
+  memset(buffer, 6, SMALL_STRING_LEN);
+
+  string= memcached_string_create(memc, 100);
+  assert(string);
+
+  for (x= 0; x < 1024; x++)
+  {
+    memcached_return rc;
+    rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+  memcached_string_free(memc, string);
+}
+
+void string_alloc_append_toobig(memcached_st *memc)
+{
+  memcached_return rc;
+  unsigned int x;
+  char buffer[SMALL_STRING_LEN];
+  memcached_string_st *string;
+
+  /* Ring the bell! */
+  memset(buffer, 6, SMALL_STRING_LEN);
+
+  string= memcached_string_create(memc, 100);
+  assert(string);
+
+  for (x= 0; x < 1024; x++)
+  {
+    rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+  rc= memcached_string_append(memc, string, buffer, 1024*100000000000);
+  assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
+  memcached_string_free(memc, string);
 }
 
 void add_host_test1(memcached_st *memc)
@@ -681,7 +810,7 @@ int main(int argc, char *argv[])
     {"add", 0, add_test },
     {"replace", 0, replace_test },
     {"delete", 1, delete_test },
-    {"get", 0, get_test },
+    {"get", 1, get_test },
     {"get2", 0, get_test2 },
     {"get3", 0, get_test3 },
     {"get4", 0, get_test4 },
@@ -697,9 +826,19 @@ int main(int argc, char *argv[])
     {0, 0, 0}
   };
 
+  test_st string_tests[] ={
+    {"string alloc with null", 0, string_alloc_null },
+    {"string alloc with 1K", 0, string_alloc_with_size },
+    {"string alloc with malloc failure", 0, string_alloc_with_size_toobig },
+    {"string append", 0, string_alloc_append },
+    {"string append failure (too big)", 0, string_alloc_append_toobig },
+    {0, 0, 0}
+  };
+
   test_st user_tests[] ={
     {"user_supplied_bug1", 0, user_supplied_bug1 },
     {"user_supplied_bug2", 0, user_supplied_bug2 },
+  //  {"user_supplied_bug3", 0, user_supplied_bug3 },
     {0, 0, 0}
   };
 
@@ -718,6 +857,9 @@ int main(int argc, char *argv[])
 
       memc= memcached_create(NULL);
       assert(memc);
+
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
 
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
@@ -758,6 +900,9 @@ int main(int argc, char *argv[])
       memc= memcached_create(NULL);
       assert(memc);
 
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
+
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
 
@@ -789,6 +934,9 @@ int main(int argc, char *argv[])
 
       memc= memcached_create(NULL);
       assert(memc);
+
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
 
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
@@ -823,6 +971,9 @@ int main(int argc, char *argv[])
       memc= memcached_create(NULL);
       assert(memc);
 
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
+
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
 
@@ -839,13 +990,13 @@ int main(int argc, char *argv[])
     }
   }
 
-  if ((test_to_run && !strcmp(test_to_run, "user")) || !test_to_run)
+  if ((test_to_run && !strcmp(test_to_run, "string")) || !test_to_run)
   {
-    fprintf(stderr, "\nUser Supplied tests\n\n");
-    for (x= 0; user_tests[x].function_name; x++)
+    fprintf(stderr, "\nString tests (internal API)\n\n");
+    for (x= 0; string_tests[x].function_name; x++)
     {
       if (wildcard)
-        if (strcmp(wildcard, tests[x].function_name))
+        if (strcmp(wildcard, string_tests[x].function_name))
           continue;
 
       memcached_st *memc;
@@ -854,6 +1005,43 @@ int main(int argc, char *argv[])
 
       memc= memcached_create(NULL);
       assert(memc);
+
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
+
+      rc= memcached_server_push(memc, servers);
+      assert(rc == MEMCACHED_SUCCESS);
+
+      fprintf(stderr, "Testing %s", string_tests[x].function_name);
+      gettimeofday(&start_time, NULL);
+      string_tests[x].function(memc);
+      gettimeofday(&end_time, NULL);
+      long int load_time= timedif(end_time, start_time);
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+              load_time % 1000);
+      assert(memc);
+      memcached_free(memc);
+    }
+  }
+
+  if ((test_to_run && !strcmp(test_to_run, "user")) || !test_to_run)
+  {
+    fprintf(stderr, "\nUser Supplied tests\n\n");
+    for (x= 0; user_tests[x].function_name; x++)
+    {
+      if (wildcard)
+        if (strcmp(wildcard, user_tests[x].function_name))
+          continue;
+
+      memcached_st *memc;
+      memcached_return rc;
+      struct timeval start_time, end_time;
+
+      memc= memcached_create(NULL);
+      assert(memc);
+
+      if (tests[x].requires_flush)
+        memcached_flush(memc, 0);
 
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
