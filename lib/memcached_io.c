@@ -25,37 +25,6 @@ int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_write)
     return MEMCACHED_FAILURE;
 
   return MEMCACHED_SUCCESS;
-#ifdef OLD
-  while (1)
-  {
-    int select_return;
-    struct timeval local_tv;
-    fd_set set;
-
-    memset(&local_tv, 0, sizeof(struct timeval));
-
-    local_tv.tv_sec= 0;
-    local_tv.tv_usec= 300;
-
-    FD_ZERO(&set);
-    FD_SET(ptr->hosts[server_key].fd, &set);
-
-    if (read_or_write)
-      select_return= select(1, &set, NULL, NULL, &local_tv);
-    else
-      select_return= select(1, NULL, &set, NULL, &local_tv);
-
-    if (select_return == -1)
-    {
-      ptr->my_errno= errno;
-      return MEMCACHED_FAILURE;
-    }
-    else if (!select_return)
-      break;
-  }
-
-  return MEMCACHED_SUCCESS;
-#endif
 }
 
 ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
@@ -169,12 +138,8 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
     }
 
     sent_length= 0;
-#ifdef orig
-    if ((sent_length= send(ptr->hosts[server_key].fd, write_ptr, 
-                           write_length, 0)) == -1)
-#endif
-      if ((sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
-                              write_length)) == -1)
+    if ((sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
+                            write_length)) == -1)
     {
       switch (errno)
       {

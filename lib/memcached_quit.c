@@ -13,8 +13,11 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key)
 {
   if (ptr->hosts[server_key].fd != -1)
   {
-    if (ptr->flags & MEM_NO_BLOCK)
-      memcached_io_write(ptr, server_key, "quit\r\n", 6, 1);
+    if (ptr->flags & MEM_NO_BLOCK && ptr->hosts[server_key].stack_responses)
+      memcached_io_flush(ptr, server_key);
+
+    memcached_io_write(ptr, server_key, "quit\r\n", 6, 1);
+
     close(ptr->hosts[server_key].fd);
     ptr->hosts[server_key].fd= -1;
     ptr->hosts[server_key].stack_responses= 0;

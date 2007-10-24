@@ -122,6 +122,9 @@ void get_test(memcached_st *memc)
   size_t string_length;
   uint16_t flags;
 
+  rc= memcached_delete(memc, key, strlen(key), (time_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND);
+
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
 
@@ -599,7 +602,8 @@ void user_supplied_bug2(memcached_st *memc)
   }
 }
 
-#define KEY_COUNT 2000 // * 1024576
+/* Do a large mget() over all the keys we think exist */
+#define KEY_COUNT 3000 // * 1024576
 void user_supplied_bug3(memcached_st *memc)
 {
   memcached_return rc;
@@ -625,7 +629,7 @@ void user_supplied_bug3(memcached_st *memc)
   memset(keys, 0, (sizeof(char *) * KEY_COUNT));
   for (x= 0; x < KEY_COUNT; x++)
   {
-    char buffer[20];
+    char buffer[30];
 
     snprintf(buffer, 30, "%u", x);
     keys[x]= strdup(buffer);
@@ -773,7 +777,7 @@ int main(int argc, char *argv[])
   char *wildcard= NULL;
   memcached_server_st *servers;
 
-  if (argc > 2)
+  if (argc > 1)
     test_to_run= argv[1];
 
   if (argc == 3)
@@ -838,7 +842,7 @@ int main(int argc, char *argv[])
   test_st user_tests[] ={
     {"user_supplied_bug1", 0, user_supplied_bug1 },
     {"user_supplied_bug2", 0, user_supplied_bug2 },
-    {"user_supplied_bug3", 0, user_supplied_bug3 },
+//    {"user_supplied_bug3", 0, user_supplied_bug3 },
     {0, 0, 0}
   };
 
