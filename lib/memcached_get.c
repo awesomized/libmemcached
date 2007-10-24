@@ -201,14 +201,14 @@ memcached_return memcached_mget(memcached_st *ptr,
   char buffer[HUGE_STRING_LEN];
   unsigned int x;
   memcached_return rc;
-  memcached_string_st **cursor_key_exec;
+  char *cursor_key_exec;
   LIBMEMCACHED_MEMCACHED_MGET_START();
 
   ptr->cursor_server= 0;
   memset(buffer, 0, HUGE_STRING_LEN);
 
-  cursor_key_exec= (memcached_string_st **)malloc(sizeof(memcached_string_st *) * ptr->number_of_hosts);
-  memset(cursor_key_exec, 0, sizeof(memcached_string_st *) * ptr->number_of_hosts);
+  cursor_key_exec= (char *)malloc(sizeof(char) * ptr->number_of_hosts);
+  memset(cursor_key_exec, 0, sizeof(char) * ptr->number_of_hosts);
 
 
   for (x= 0; x < number_of_keys; x++)
@@ -217,38 +217,32 @@ memcached_return memcached_mget(memcached_st *ptr,
 
     server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
-    if (cursor_key_exec[server_key])
+    if (cursor_key_exec[server_key] == 0)
     {
-      memcached_string_st *string= cursor_key_exec[server_key];
+      rc= memcached_connect(ptr, server_key);
 
-      rc= memcached_string_append_character(ptr, string, ' ');
-
-      if (rc != MEMCACHED_SUCCESS)
-        assert(0);
-
-      rc= memcached_string_append(ptr, string, keys[x], key_length[x]);
-
-      if (rc != MEMCACHED_SUCCESS)
-        assert(0);
+      if ((memcached_io_write(ptr, server_key, "get ", 4, 0)) == -1)
+      {
+        memcached_quit(ptr);
+        rc= MEMCACHED_SOME_ERRORS;
+        break;
+      }
     }
-    else
+
+    if ((memcached_io_write(ptr, server_key, keys[x], key_length[x], 0)) == -1)
     {
-      memcached_string_st *string= memcached_string_create(ptr, SMALL_STRING_LEN);
-
-      /* We need to figure out the correct way to error in case of this failure */
-      if (!string)
-        assert(0);
-
-      rc= memcached_string_append(ptr, string, "get ", 4);
-      if (rc != MEMCACHED_SUCCESS)
-        assert(0);
-
-      rc= memcached_string_append(ptr, string, keys[x], key_length[x]);
-      if (rc != MEMCACHED_SUCCESS)
-        assert(0);
-
-      cursor_key_exec[server_key]= string;
+      memcached_quit(ptr);
+      rc= MEMCACHED_SOME_ERRORS;
+      break;
     }
+
+    if ((memcached_io_write(ptr, server_key, " ", 1, 0)) == -1)
+    {
+      memcached_quit(ptr);
+      rc= MEMCACHED_SOME_ERRORS;
+      break;
+    }
+    cursor_key_exec[server_key]= 1;
   }
 
 
@@ -260,22 +254,13 @@ memcached_return memcached_mget(memcached_st *ptr,
     if (cursor_key_exec[x])
     {
       /* We need to doo something about non-connnected hosts in the future */
-      rc= memcached_connect(ptr, x);
-
-      memcached_string_st *string= cursor_key_exec[x];
-
-      rc= memcached_string_append(ptr, string, "\r\n", 2);
-      if (rc != MEMCACHED_SUCCESS)
-        assert(0);
-
-      if ((memcached_io_write(ptr, x, string->string, 
-                              memcached_string_length(ptr, string), 1)) == -1)
+      if ((memcached_io_write(ptr, x, "\r\n", 2, 1)) == -1)
       {
         memcached_quit(ptr);
         rc= MEMCACHED_SOME_ERRORS;
+        break;
       }
-      memcached_string_free(ptr, string);
-      cursor_key_exec[x]= NULL; /* Remove warning */
+
       ptr->hosts[x].cursor_active= 1;
     }
     else
