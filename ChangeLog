@@ -6,6 +6,7 @@
     building strings as it goes.
   * Propper flush now for making sure we get all IO sent even when in
     non-block mode.
+  * Added --enable-debug rule for configure
 
 
 0.6 Wed Oct 17 08:41:35 PDT 2007
