@@ -33,13 +33,13 @@ static memcached_return memcached_send(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  assert(value);
-  assert(value_length);
+  WATCHPOINT_ASSERT(value);
+  WATCHPOINT_ASSERT(value_length);
 
-  /* Leaving this assert in since only a library fubar could blow this */
+  /* Leaving this WATCHPOINT_ASSERT in since only a library fubar could blow this */
 #ifdef NOT_DONE
   if (!(ptr->flags & MEM_NO_BLOCK) && ptr->write_buffer_offset != 0)
-    assert(0);
+    WATCHPOINT_ASSERT(0);
 #endif
     
   server_key= memcached_generate_hash(ptr, key, key_length);

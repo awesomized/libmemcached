@@ -102,7 +102,7 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 
       sent_length= memcached_io_flush(ptr, server_key);
 
-      assert(sent_length == MEMCACHED_MAX_BUFFER);
+      WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
       ptr->write_buffer_offset= 0;
     }
   }

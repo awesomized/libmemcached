@@ -108,7 +108,7 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     }
   }
 
-  assert(temp_flag); /* Programming mistake if it gets this far */
+  WATCHPOINT_ASSERT(temp_flag); /* Programming mistake if it gets this far */
   if (ptr->flags & temp_flag)
     return 1;
   else

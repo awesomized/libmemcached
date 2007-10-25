@@ -43,7 +43,7 @@ memcached_return memcached_response(memcached_st *ptr,
         buffer_ptr++;
 
       total_length++;
-      assert(total_length < buffer_length);
+      WATCHPOINT_ASSERT(total_length < buffer_length);
     }
 
     if (memcached_server_response_count(ptr, server_key))

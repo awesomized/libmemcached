@@ -168,7 +168,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
     goto error;
   }
   else if (*error == MEMCACHED_END)
-    assert(0); /* If this happens we have somehow messed up the fetch */
+  {
+    WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
+  }
   else if (*error == MEMCACHED_SUCCESS)
   {
     memcached_return rc;
@@ -298,7 +300,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     else if (*error == MEMCACHED_END && *value_length == 0)
       return NULL;
     else if (*error == MEMCACHED_END)
-      assert(0); /* If this happens we have somehow messed up the fetch */
+    {
+      WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
+    }
     else if (*error != MEMCACHED_SUCCESS)
       return NULL;
     else

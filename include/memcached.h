@@ -217,12 +217,22 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
 #define WATCHPOINT_STRING(A) printf("\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) printf("\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
 #define WATCHPOINT_ERRNO(A) printf("\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
+#define WATCHPOINT_ASSERT(A) assert((A));
 #else
+/*
+#define WATCHPOINT { 1; };
+#define WATCHPOINT_ERROR(A) { 1; };
+#define WATCHPOINT_STRING(A) { 1; };
+#define WATCHPOINT_NUMBER(A) { 1; };
+#define WATCHPOINT_ERRNO(A) { 1; };
+#define WATCHPOINT_ASSERT(A) { 1; };
+*/
 #define WATCHPOINT
-#define WATCHPOINT_ERROR(A) 
+#define WATCHPOINT_ERROR(A)
 #define WATCHPOINT_STRING(A)
 #define WATCHPOINT_NUMBER(A)
 #define WATCHPOINT_ERRNO(A)
+#define WATCHPOINT_ASSERT(A)
 #endif
 
 

@@ -22,7 +22,10 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
     hash= internal_generate_hash(key, key_length);
 
   if (ptr->flags & MEM_USE_KETAMA)
-    assert(0);
+  {
+    WATCHPOINT_ASSERT(0);
+    return 0;
+  }
   else
     return hash % ptr->number_of_hosts;
 }
