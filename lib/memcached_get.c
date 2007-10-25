@@ -125,6 +125,9 @@ read_error:
   return NULL;
 }
 
+/* 
+  What happens if no servers exist?
+*/
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length, 
                     size_t *value_length, 
                     uint16_t *flags,
@@ -133,7 +136,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *buf_ptr= buffer;
   unsigned int server_key;
-  char *value;
+  char *value= NULL;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
   server_key= memcached_generate_hash(ptr, key, key_length);
@@ -198,18 +201,17 @@ memcached_return memcached_mget(memcached_st *ptr,
                                 char **keys, size_t *key_length, 
                                 unsigned int number_of_keys)
 {
-  char buffer[HUGE_STRING_LEN];
   unsigned int x;
-  memcached_return rc;
+  memcached_return rc= MEMCACHED_NOTFOUND;
   char *cursor_key_exec;
   LIBMEMCACHED_MEMCACHED_MGET_START();
-
   ptr->cursor_server= 0;
-  memset(buffer, 0, HUGE_STRING_LEN);
+
+  if (number_of_keys == 0)
+    return MEMCACHED_NOTFOUND;
 
   cursor_key_exec= (char *)malloc(sizeof(char) * ptr->number_of_hosts);
   memset(cursor_key_exec, 0, sizeof(char) * ptr->number_of_hosts);
-
 
   for (x= 0; x < number_of_keys; x++)
   {

@@ -76,15 +76,20 @@ memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st 
 {
   memcached_return rc;
 
+  WATCHPOINT;
   rc= memcached_string_check(string, length);
+  WATCHPOINT;
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
   
+  WATCHPOINT;
   assert(string->string);
   assert(string->end >= string->string && string->end <= string->string + string->current_size);
 
+  WATCHPOINT;
   memcpy(string->end, value, length);
+  WATCHPOINT;
   string->end+= length;
 
   return MEMCACHED_SUCCESS;

@@ -641,7 +641,7 @@ void user_supplied_bug3(memcached_st *memc)
 
   /* Turn this into a help function */
   {
-    char *return_key;
+    char return_key[MEMCACHED_MAX_KEY];
     size_t return_key_length;
     char *return_value;
     size_t return_value_length;
@@ -683,7 +683,7 @@ void string_alloc_with_size_toobig(memcached_st *memc)
 {
   memcached_string_st *string;
 
-  string= memcached_string_create(memc, 1024*100000000000);
+  string= memcached_string_create(memc, UINT64_MAX);
   assert(string == NULL);
 }
 
@@ -726,7 +726,9 @@ void string_alloc_append_toobig(memcached_st *memc)
     rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
     assert(rc == MEMCACHED_SUCCESS);
   }
-  rc= memcached_string_append(memc, string, buffer, 1024*100000000000);
+  WATCHPOINT;
+  rc= memcached_string_append(memc, string, buffer, UINT64_MAX);
+  WATCHPOINT;
   assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
   memcached_string_free(memc, string);
 }

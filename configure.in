@@ -8,12 +8,18 @@ AC_PROG_LIBTOOL
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
 
+sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
 then
-  CFLAGS="-Wall -ggdb"
+  if test "$ENABLE_DEBUG" = "yes"
+  then
+    CFLAGS="-Wall -ggdb"
+  else
+    CFLAGS="-Wall -O3"
+  fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"
   LDFLAGS="-lsocket -lnsl"

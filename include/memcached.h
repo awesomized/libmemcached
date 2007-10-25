@@ -211,11 +211,19 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
                                 memcached_return *error);
 
 /* Some personal debugging functions */
+#ifdef HAVE_DEBUG
 #define WATCHPOINT printf("\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
 #define WATCHPOINT_ERROR(A) printf("\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
 #define WATCHPOINT_STRING(A) printf("\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) printf("\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
 #define WATCHPOINT_ERRNO(A) printf("\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
+#else
+#define WATCHPOINT
+#define WATCHPOINT_ERROR(A) 
+#define WATCHPOINT_STRING(A)
+#define WATCHPOINT_NUMBER(A)
+#define WATCHPOINT_ERRNO(A)
+#endif
 
 
 #ifdef __cplusplus

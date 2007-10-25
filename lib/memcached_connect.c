@@ -95,7 +95,7 @@ test_connect:
 
 memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
 {
-  memcached_return rc;
+  memcached_return rc= MEMCACHED_NO_SERVERS;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
   if (ptr->connected == ptr->number_of_hosts)
@@ -112,7 +112,15 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
     unsigned int x;
 
     for (x= 0; x < ptr->number_of_hosts; x++)
-      rc= memcached_real_connect(ptr, x);
+    {
+      memcached_return possible_rc;
+
+      possible_rc= memcached_real_connect(ptr, x);
+      rc= MEMCACHED_SUCCESS;
+
+      if (possible_rc != MEMCACHED_SUCCESS)
+        rc= MEMCACHED_SOME_ERRORS;
+    }
   }
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
