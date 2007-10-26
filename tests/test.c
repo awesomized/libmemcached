@@ -726,9 +726,7 @@ void string_alloc_append_toobig(memcached_st *memc)
     rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
     assert(rc == MEMCACHED_SUCCESS);
   }
-  WATCHPOINT;
   rc= memcached_string_append(memc, string, buffer, UINT64_MAX);
-  WATCHPOINT;
   assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
   memcached_string_free(memc, string);
 }
@@ -763,24 +761,49 @@ void add_host_test1(memcached_st *memc)
   memcached_server_list_free(servers);
 }
 
+void pre_nonblock(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+}
+
+void pre_md5(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+}
+
+void pre_nodelay(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+}
+
+typedef struct collection_st collection_st;
 typedef struct test_st test_st;
 
 struct test_st {
-  char *function_name;
+  char *name;
   unsigned int requires_flush;
   void (*function)(memcached_st *memc);
+};
+
+struct collection_st {
+  char *name;
+  void (*pre)(memcached_st *memc);
+  void (*post)(memcached_st *memc);
+  test_st *tests;
 };
 
 int main(int argc, char *argv[])
 {
   unsigned int x;
   char *server_list;
-  char *test_to_run= NULL;
+  char *collection_to_run= NULL;
   char *wildcard= NULL;
   memcached_server_st *servers;
 
+
   if (argc > 1)
-    test_to_run= argv[1];
+    collection_to_run= argv[1];
 
   if (argc == 3)
     wildcard= argv[2];
@@ -848,14 +871,39 @@ int main(int argc, char *argv[])
     {0, 0, 0}
   };
 
-  if ((test_to_run && !strcmp(test_to_run, "block")) || !test_to_run)
+
+  collection_st collection[] ={
+    {"block", 0, 0, tests},
+    {"nonblock", pre_nonblock, 0, tests},
+    {"nodelay", pre_nodelay, 0, tests},
+    {"md5", pre_md5, 0, tests},
+    {"string", 0, 0, string_tests},
+    {"user", 0, 0, user_tests},
+    {0, 0, 0, 0}
+  };
+
+  /*
+  unsigned int next;
+  for (next= 0; collection[next].name; next++)
+*/
+  collection_st *next;
+  for (next= collection; next->name; next++)
   {
-    fprintf(stderr, "\nBlock tests\n\n");
-    for (x= 0; tests[x].function_name; x++)
+    test_st *run;
+
+    run= next->tests;
+
+    if (collection_to_run && strcmp(collection_to_run, next->name))
+      continue;
+
+    fprintf(stderr, "\n%s\n\n", next->name);
+
+    for (x= 0; run->name; run++)
     {
-      if (wildcard)
-        if (strcmp(wildcard, tests[x].function_name))
-          continue;
+      if (wildcard && strcmp(wildcard, run->name))
+        continue;
+
+      fprintf(stderr, "Testing %s", run->name);
 
       memcached_st *memc;
       memcached_return rc;
@@ -864,7 +912,7 @@ int main(int argc, char *argv[])
       memc= memcached_create(NULL);
       assert(memc);
 
-      if (tests[x].requires_flush)
+      if (run->requires_flush)
         memcached_flush(memc, 0);
 
       rc= memcached_server_push(memc, servers);
@@ -878,187 +926,19 @@ int main(int argc, char *argv[])
         assert(memc->hosts[loop].cursor_active == 0);
       }
 
-      fprintf(stderr, "Testing %s", tests[x].function_name);
+      if (next->pre)
+        next->pre(memc);
+
       gettimeofday(&start_time, NULL);
-      tests[x].function(memc);
+      run->function(memc);
       gettimeofday(&end_time, NULL);
       long int load_time= timedif(end_time, start_time);
       fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
               load_time % 1000);
-      assert(memc);
-      memcached_free(memc);
-    }
-  }
 
-  if ((test_to_run && !strcmp(test_to_run, "nonblock")) || !test_to_run)
-  {
-    fprintf(stderr, "\nNonblock tests\n\n");
-    for (x= 0; tests[x].function_name; x++)
-    {
-      if (wildcard)
-        if (strcmp(wildcard, tests[x].function_name))
-          continue;
+      if (next->post)
+        next->post(memc);
 
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
-      memc= memcached_create(NULL);
-      assert(memc);
-
-      if (tests[x].requires_flush)
-        memcached_flush(memc, 0);
-
-      rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      fprintf(stderr, "Testing %s", tests[x].function_name);
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
-      gettimeofday(&start_time, NULL);
-      tests[x].function(memc);
-      gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
-      assert(memc);
-      memcached_free(memc);
-    }
-  }
-
-  if ((test_to_run && !strcmp(test_to_run, "nodelay")) || !test_to_run)
-  {
-    fprintf(stderr, "\nTCP Nodelay tests\n\n");
-    for (x= 0; tests[x].function_name; x++)
-    {
-      if (wildcard)
-        if (strcmp(wildcard, tests[x].function_name))
-          continue;
-
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
-      memc= memcached_create(NULL);
-      assert(memc);
-
-      if (tests[x].requires_flush)
-        memcached_flush(memc, 0);
-
-      rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      fprintf(stderr, "Testing %s", tests[x].function_name);
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
-      gettimeofday(&start_time, NULL);
-      tests[x].function(memc);
-      gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
-      assert(memc);
-      memcached_free(memc);
-    }
-  }
-
-  if ((test_to_run && !strcmp(test_to_run, "md5")) || !test_to_run)
-  {
-    fprintf(stderr, "\nMD5 Hashing\n\n");
-    for (x= 0; tests[x].function_name; x++)
-    {
-      if (wildcard)
-        if (strcmp(wildcard, tests[x].function_name))
-          continue;
-
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
-      memc= memcached_create(NULL);
-      assert(memc);
-
-      if (tests[x].requires_flush)
-        memcached_flush(memc, 0);
-
-      rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      fprintf(stderr, "Testing %s", tests[x].function_name);
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
-      gettimeofday(&start_time, NULL);
-      tests[x].function(memc);
-      gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
-      assert(memc);
-      memcached_free(memc);
-    }
-  }
-
-  if ((test_to_run && !strcmp(test_to_run, "string")) || !test_to_run)
-  {
-    fprintf(stderr, "\nString tests (internal API)\n\n");
-    for (x= 0; string_tests[x].function_name; x++)
-    {
-      if (wildcard)
-        if (strcmp(wildcard, string_tests[x].function_name))
-          continue;
-
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
-      memc= memcached_create(NULL);
-      assert(memc);
-
-      if (tests[x].requires_flush)
-        memcached_flush(memc, 0);
-
-      rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      fprintf(stderr, "Testing %s", string_tests[x].function_name);
-      gettimeofday(&start_time, NULL);
-      string_tests[x].function(memc);
-      gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
-      assert(memc);
-      memcached_free(memc);
-    }
-  }
-
-  if ((test_to_run && !strcmp(test_to_run, "user")) || !test_to_run)
-  {
-    fprintf(stderr, "\nUser Supplied tests\n\n");
-    for (x= 0; user_tests[x].function_name; x++)
-    {
-      if (wildcard)
-        if (strcmp(wildcard, user_tests[x].function_name))
-          continue;
-
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
-      memc= memcached_create(NULL);
-      assert(memc);
-
-      if (tests[x].requires_flush)
-        memcached_flush(memc, 0);
-
-      rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
-
-      fprintf(stderr, "Testing %s", user_tests[x].function_name);
-      gettimeofday(&start_time, NULL);
-      user_tests[x].function(memc);
-      gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
       assert(memc);
       memcached_free(memc);
     }

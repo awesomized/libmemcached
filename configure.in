@@ -16,7 +16,7 @@ if test "$GCC" = "yes"
 then
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-Wall -ggdb"
+    CFLAGS="-Wall -ggdb -DHAVE_DEBUG"
   else
     CFLAGS="-Wall -O3"
   fi
