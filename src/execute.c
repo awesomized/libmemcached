@@ -38,7 +38,7 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
   unsigned int retrieved;
 
 
-  for (x= 0; x < number_of; x++)
+  for (retrieved= 0,x= 0; x < number_of; x++)
   {
     char *value;
     size_t value_length;
