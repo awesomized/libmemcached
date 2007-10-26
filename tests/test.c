@@ -867,7 +867,7 @@ int main(int argc, char *argv[])
   test_st user_tests[] ={
     {"user_supplied_bug1", 0, user_supplied_bug1 },
     {"user_supplied_bug2", 0, user_supplied_bug2 },
-//    {"user_supplied_bug3", 0, user_supplied_bug3 },
+    {"user_supplied_bug3", 0, user_supplied_bug3 },
     {0, 0, 0}
   };
 
