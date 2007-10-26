@@ -6,12 +6,19 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
   {
     size_t current_offset= string->end - string->string;
     char *new_value;
-    size_t adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / string->block_size;
+    size_t adjust;
+    size_t new_size;
 
+    /* This is the block multiplier. To keep it larger and surive division errors we must round it up */
+    adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / string->block_size;
     adjust++;
 
-    new_value= (char *)realloc(string->string, 
-                               sizeof(char) * ((adjust * string->block_size) + string->current_size));
+    new_size= sizeof(char) * (size_t)((adjust * string->block_size) + string->current_size);
+    /* Test for overflow */
+    if (new_size < need)
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+    new_value= (char *)realloc(string->string, new_size);
 
     if (new_value == NULL)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -80,9 +87,10 @@ memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st 
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
-  
+
+  WATCHPOINT_ASSERT(length <= string->current_size);
   WATCHPOINT_ASSERT(string->string);
-  WATCHPOINT_ASSERT(string->end >= string->string && string->end <= string->string + string->current_size);
+  WATCHPOINT_ASSERT(string->end >= string->string);
 
   memcpy(string->end, value, length);
   string->end+= length;
