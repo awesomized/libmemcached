@@ -11,10 +11,6 @@ test-extended: all
 valgrind:
 	cd tests; make valgrind; cd ..
 
-valgrind-extended:
-	cd tests; make valgrind-extended; cd ..
-
-
 rpm: all dist
 	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
 	rpmbuild -ba support/libmemcached.spec

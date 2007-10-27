@@ -882,10 +882,6 @@ int main(int argc, char *argv[])
     {0, 0, 0, 0}
   };
 
-  /*
-  unsigned int next;
-  for (next= 0; collection[next].name; next++)
-*/
   collection_st *next;
   for (next= collection; next->name; next++)
   {

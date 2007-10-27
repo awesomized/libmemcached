@@ -7,7 +7,7 @@
 #include <sys/select.h>
 #include <poll.h>
 
-int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_write)
+static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_write)
 {
   struct pollfd fds[1];
   short flags= 0;

@@ -51,6 +51,3 @@ test-extended: testapp
 
 valgrind:
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
-
-valgrind-extended:
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp extended

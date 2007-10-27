@@ -3,7 +3,7 @@ Hi!
 If you are getting this code from http://hg.tangent.org/libmemcached then
 continue reading. Otherwise these directions are not for you (well maybe...).
 
-To obtain code from http://hg.tangent.org/libmemached you will need to issue
+To obtain code from http://hg.tangent.org/libmemcached you will need to issue
 the following command:
 
 hg clone http://hg.tangent.org/libmemcached
