@@ -51,9 +51,9 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
             return -1;
         }
 
-        data_read= recv(ptr->hosts[server_key].fd, 
+        data_read= read(ptr->hosts[server_key].fd, 
                         ptr->read_buffer, 
-                        MEMCACHED_MAX_BUFFER, 0);
+                        MEMCACHED_MAX_BUFFER);
         if (data_read == -1)
         {
           switch (errno)
@@ -119,6 +119,7 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
 {
   size_t sent_length;
+  size_t return_length;
   char *write_ptr= ptr->write_buffer;
   size_t write_length= ptr->write_buffer_offset;
   unsigned int loop= 1;
@@ -126,6 +127,7 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
   if (ptr->write_buffer_offset == 0)
     return 0;
 
+  return_length= 0;
   while (write_length)
   {
     if (ptr->flags & MEM_NO_BLOCK)
@@ -138,14 +140,16 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
     }
 
     sent_length= 0;
-    if ((sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
-                            write_length)) == -1)
+    if ((ssize_t)(sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
+                                     write_length)) == -1)
     {
       switch (errno)
       {
       case ENOBUFS:
       case EAGAIN:
-        if (loop < 10)
+        WATCHPOINT;
+        continue;
+        if (loop < 100)
         {
           loop++;
           break;
@@ -156,16 +160,17 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
         return -1;
       }
     }
-    else
-    {
-      write_ptr+= sent_length;
-      write_length-= sent_length;
-    }
+
+    write_ptr+= sent_length;
+    write_length-= sent_length;
+    return_length+= sent_length;
   }
 
+  WATCHPOINT_ASSERT(write_length == 0);
+  WATCHPOINT_ASSERT(return_length == ptr->write_buffer_offset);
   ptr->write_buffer_offset= 0;
 
-  return sent_length;
+  return return_length;
 }
 
 /* 
