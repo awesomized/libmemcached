@@ -54,7 +54,7 @@ Brian Aker, E<lt>brian@tangent.orgE<gt>
 
 =head1 SEE ALSO
 
-memcached(1) libmemcached_examples(3) libmemcached(1) memcat(1) memcp(1) memflush(1) memrm(1) memslap(1) memstat(1) memcached_fetch(3) memcached_replace(3) memcached_server_list_free(3) libmemcached_examples(3) memcached_free(3) memcached_server_add(3) memcached_server_push(3) memcached_add(3) memcached_get(3) memcached_server_count(3) memcached_servers_parse(3) memcached_create(3) memcached_increment(3) memcached_server_list(3) memcached_set(3) memcached_decrement(3) memcached_mget(3) memcached_server_list_append(3) memcached_strerror(3) memcached_delete(3) memcached_quit(3) memcached_server_list_count(3) memcached_verbosity(3)
+memcached(1) libmemcached_examples(3) libmemcached(1) memcat(1) memcp(1) memflush(1) memrm(1) memslap(1) memstat(1) memcached_fetch(3) memcached_replace(3) memcached_server_list_free(3) libmemcached_examples(3) memcached_clone(3) memcached_free(3) memcached_server_add(3) memcached_server_push(3) memcached_add(3) memcached_get(3) memcached_server_count(3) memcached_servers_parse(3) memcached_create(3) memcached_increment(3) memcached_server_list(3) memcached_set(3) memcached_decrement(3) memcached_mget(3) memcached_server_list_append(3) memcached_strerror(3) memcached_delete(3) memcached_quit(3) memcached_server_list_count(3) memcached_verbosity(3)
 
 =cut
 

@@ -14,12 +14,19 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   void memcached_free (memcached_st *ptr);
 
+  memcached_st *memcached_clone(memcached_st *clone, memcached_st *source);
+
 =head1 DESCRIPTION
 
 memcached_create() is used to create a C<memcached_st> structure that will then
 be used by other libmemcached(3) functions to communicate with the server. You
 should either pass a statically declared C<memcached_st> to memcached_create() or
 a NULL. If a NULL passed in then a structure is allocated for you.
+
+memcached_clone() is similar to memcached_create(3) but it copies the
+defaults and list of servers from the source C<memcached_st>. If you pass a null as
+the argument for the source to clone, it is the same as a call to memcached_create().
+If the clone argument is NULL a C<memcached_st> will be allocated for you. 
 
 To clean up memory associated with a C<memcached_st> structure you should pass
 it to memcached_free() when you are finished using it. memcached_free() is
@@ -29,6 +36,9 @@ the structure.
 =head1 RETURN
 
 memcached_create() returns a pointer to the memcached_st that was created
+(or initialized). On an allocation failure, it returns NULL.
+
+memcached_clone() returns a pointer to the memcached_st that was created
 (or initialized). On an allocation failure, it returns NULL.
 
 =head1 HOME

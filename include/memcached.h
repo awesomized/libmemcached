@@ -140,6 +140,7 @@ struct memcached_st {
 /* Public API */
 memcached_st *memcached_create(memcached_st *ptr);
 void memcached_free(memcached_st *ptr);
+memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
 
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration);

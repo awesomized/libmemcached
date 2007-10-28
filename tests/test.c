@@ -37,6 +37,43 @@ void allocation_test(memcached_st *not_used)
   memcached_free(memc);
 }
 
+void clone_test(memcached_st *memc)
+{
+  /* All null? */
+  {
+    memcached_st *clone;
+    clone= memcached_clone(NULL, NULL);
+    assert(clone);
+    memcached_free(clone);
+  }
+
+  /* Can we init from null? */
+  {
+    memcached_st *clone;
+    clone= memcached_clone(NULL, memc);
+    assert(clone);
+    memcached_free(clone);
+  }
+
+  /* Can we init from struct? */
+  {
+    memcached_st declared_clone;
+    memcached_st *clone;
+    clone= memcached_clone(&declared_clone, NULL);
+    assert(clone);
+    memcached_free(clone);
+  }
+
+  /* Can we init from struct? */
+  {
+    memcached_st declared_clone;
+    memcached_st *clone;
+    clone= memcached_clone(&declared_clone, memc);
+    assert(clone);
+    memcached_free(clone);
+  }
+}
+
 void connection_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -832,6 +869,7 @@ int main(int argc, char *argv[])
     {"flush", 0, flush_test },
     {"init", 0, init_test },
     {"allocation", 0, allocation_test },
+    {"clone_test", 0, clone_test },
     {"error", 0, error_test },
     {"set", 0, set_test },
     {"set2", 0, set_test2 },

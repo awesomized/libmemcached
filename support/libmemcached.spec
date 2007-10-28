@@ -63,6 +63,7 @@ memslap - Generate testing loads on a memcached cluster
 %{_mandir}/man3/memcached_add.3.gz
 %{_mandir}/man3/memcached_behavior_get.3.gz
 %{_mandir}/man3/memcached_behavior_set.3.gz
+%{_mandir}/man3/memcached_clone.3.gz
 %{_mandir}/man3/memcached_create.3.gz
 %{_mandir}/man3/memcached_decrement.3.gz
 %{_mandir}/man3/memcached_delete.3.gz
