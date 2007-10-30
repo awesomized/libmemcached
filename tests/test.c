@@ -609,9 +609,11 @@ void user_supplied_bug2(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, &setter);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
-#endif
 
   for (x= 0, errors= 0, total= 0 ; total < 20 * 1024576 ; x++)
+#endif
+
+  for (x= 0, errors= 0, total= 0 ; total < 24576 ; x++)
   {
     memcached_return rc= MEMCACHED_SUCCESS;
     char buffer[SMALL_STRING_LEN];
