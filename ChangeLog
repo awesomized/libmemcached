@@ -1,4 +1,4 @@
-0.7
+0.7 Tue Oct 30 09:24:05 PDT 2007
   * Poved to poll() from select()
   * Fixes in internal string class for allocation of large numbers of
     strings.

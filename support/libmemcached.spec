@@ -18,11 +18,12 @@ usage, and provide full access to server side methods.
 
 It also implements several command line tools:
 
-memcat - Copy the value of a key to standard output
+memcat - Copy the value of a key to standard output.
 memflush - Flush the contents of your servers.
 memrm - Remove a key(s) from the serrver.
-memstat - Dump the stats of your servers to standard output
-memslap - Generate testing loads on a memcached cluster
+memstat - Dump the stats of your servers to standard output.
+memslap - Generate testing loads on a memcached cluster.
+memcp - Copy files to memcached servers.
 
 %prep
 %setup -q
