@@ -810,6 +810,11 @@ void pre_md5(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
 }
 
+void pre_crc(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CRC_HASHING, NULL);
+}
+
 void pre_nodelay(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
@@ -917,6 +922,7 @@ int main(int argc, char *argv[])
     {"nonblock", pre_nonblock, 0, tests},
     {"nodelay", pre_nodelay, 0, tests},
     {"md5", pre_md5, 0, tests},
+    {"crc", pre_crc, 0, tests},
     {"string", 0, 0, string_tests},
     {"user", 0, 0, user_tests},
     {0, 0, 0, 0}

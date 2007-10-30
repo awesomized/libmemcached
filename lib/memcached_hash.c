@@ -2,22 +2,16 @@
 
 /* Prototypes */
 static unsigned int internal_generate_hash(char *key, size_t key_length);
+static uint32_t internal_generate_md5(char *key, size_t key_length);
 
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
-  unsigned int hash;
+  uint32_t hash;
 
   if (ptr->flags & MEM_USE_MD5)
-  {
-    unsigned char results[16];
-
-    md5_signature((unsigned char*)key, (unsigned int)key_length, results);
-
-    hash= (unsigned int)(( results[3] << 24 )
-				 | ( results[2] << 16 )
-				 | ( results[1] <<  8 )
-				 |   results[0] );
-  }
+    hash= internal_generate_md5(key, key_length);
+  else if (ptr->flags & MEM_USE_CRC)
+    hash= hash_crc32(key, key_length);
   else
     hash= internal_generate_hash(key, key_length);
 
@@ -30,7 +24,7 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
     return hash % ptr->number_of_hosts;
 }
 
-static unsigned int internal_generate_hash(char *key, size_t key_length)
+static uint32_t internal_generate_hash(char *key, size_t key_length)
 {
   char *ptr= key;
   unsigned int value= 0;
@@ -46,4 +40,16 @@ static unsigned int internal_generate_hash(char *key, size_t key_length)
   value += (value << 15); 
 
   return value == 0 ? 1 : value;
+}
+
+static uint32_t internal_generate_md5(char *key, size_t key_length)
+{
+  unsigned char results[16];
+
+  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
+
+  return (uint32_t)(( results[3] << 24 )
+                    | ( results[2] << 16 )
+                    | ( results[1] <<  8 )
+                    |   results[0] );
 }

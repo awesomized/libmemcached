@@ -35,6 +35,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_MD5_HASHING:
     set_behavior_flag(ptr, MEM_USE_MD5, data);
     break;
+  case MEMCACHED_BEHAVIOR_CRC_HASHING:
+    set_behavior_flag(ptr, MEM_USE_CRC, data);
+    break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
@@ -72,6 +75,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_MD5_HASHING:
     temp_flag= MEM_USE_MD5;
+    break;
+  case MEMCACHED_BEHAVIOR_CRC_HASHING:
+    temp_flag= MEM_USE_CRC;
     break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;

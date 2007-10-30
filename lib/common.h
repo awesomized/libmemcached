@@ -40,9 +40,14 @@ typedef enum {
   MEM_REUSE_MEMORY= (1 << 2),
   MEM_USE_MD5= (1 << 3),
   MEM_USE_KETAMA= (1 << 4),
+  MEM_USE_CRC= (1 << 5),
 } memcached_flags;
 
+/* Hashing algo */
 void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
+uint32_t hash_crc32(const char *data,
+                    size_t data_len);
+
 memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key);
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
