@@ -56,6 +56,10 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "STAT VALUE";
   case MEMCACHED_ERRNO:
     return "SYSTEM ERROR";
+  case MEMCACHED_FAIL_UNIX_SOCKET:
+    return "COULD NOT OPEN UNIX SOCKET";
+  case MEMCACHED_NOT_SUPPORTED:
+    return "ACTION NOT SUPPORTED";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

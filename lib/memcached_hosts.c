@@ -1,13 +1,20 @@
 #include <memcached.h>
 #include "common.h"
 
-static void host_reset(memcached_server_st *host, char *new_hostname, unsigned int port)
+/* Protoypes (static) */
+static memcached_return server_add(memcached_st *ptr, char *hostname, 
+                                   unsigned int port,
+                                   memcached_connection type);
+
+static void host_reset(memcached_server_st *host, char *new_hostname, unsigned int port,
+                       memcached_connection type)
 {
   host->stack_responses= 0;
   host->cursor_active= 0;
   host->hostname= new_hostname;
   host->port= port;
   host->fd= -1;
+  host->type= type;
 }
 
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
@@ -37,24 +44,41 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
     ptr->hosts[ptr->number_of_hosts].fd= list[x].fd;
     ptr->hosts[ptr->number_of_hosts].stack_responses= list[x].stack_responses;
     ptr->hosts[ptr->number_of_hosts].cursor_active= list[x].cursor_active;
+    ptr->hosts[ptr->number_of_hosts].type= list[x].type;
     ptr->number_of_hosts++;
   }
-  host_reset(&ptr->hosts[ptr->number_of_hosts], NULL, 0);
+  host_reset(&ptr->hosts[ptr->number_of_hosts], NULL, 0,
+             MEMCACHED_CONNECTION_UNKNOWN);
 
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return memcached_server_add_unix_socket(memcached_st *ptr, char *filename)
+{
+  if (!filename)
+    return MEMCACHED_FAILURE;
+
+  return server_add(ptr, filename, 0, MEMCACHED_CONNECTION_UNIX_SOCKET);
+}
+
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port)
 {
-  memcached_server_st *new_host_list;
-  char *new_hostname;
-  LIBMEMCACHED_MEMCACHED_SERVER_ADD_START();
-
   if (!port)
     port= MEMCACHED_DEFAULT_PORT; 
 
   if (!hostname)
     hostname= "localhost"; 
+
+  return server_add(ptr, hostname, port, MEMCACHED_CONNECTION_TCP);
+}
+
+static memcached_return server_add(memcached_st *ptr, char *hostname, 
+                                   unsigned int port,
+                                   memcached_connection type)
+{
+  memcached_server_st *new_host_list;
+  char *new_hostname;
+  LIBMEMCACHED_MEMCACHED_SERVER_ADD_START();
 
 
   if (ptr->number_of_hosts)
@@ -63,7 +87,8 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
                                                   sizeof(memcached_server_st) * (ptr->number_of_hosts+1));
     if (!new_host_list)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    host_reset(&new_host_list[ptr->number_of_hosts], NULL, 0);
+    host_reset(&new_host_list[ptr->number_of_hosts], NULL, 0, 
+               MEMCACHED_CONNECTION_UNKNOWN);
   }
   else
   {
@@ -71,8 +96,8 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
       (memcached_server_st *)malloc(sizeof(memcached_server_st) * 2);
     if (!new_host_list)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    host_reset(&new_host_list[0], NULL, 0);
-    host_reset(&new_host_list[1], NULL, 0);
+    host_reset(&new_host_list[0], NULL, 0, MEMCACHED_CONNECTION_UNKNOWN);
+    host_reset(&new_host_list[1], NULL, 0, MEMCACHED_CONNECTION_UNKNOWN);
   }
 
   ptr->hosts= new_host_list;
@@ -85,7 +110,7 @@ memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigne
 
   memset(new_hostname, 0, strlen(hostname)+1);
   memcpy(new_hostname, hostname, strlen(hostname));
-  host_reset(&ptr->hosts[ptr->number_of_hosts], new_hostname, port);
+  host_reset(&ptr->hosts[ptr->number_of_hosts], new_hostname, port, type);
   ptr->number_of_hosts++;
 
   LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
@@ -115,7 +140,7 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
     new_host_list= (memcached_server_st *)realloc(ptr, sizeof(memcached_server_st) * count);
     if (!new_host_list)
       goto error;
-    host_reset(&new_host_list[count-1], NULL, 0);
+    host_reset(&new_host_list[count-1], NULL, 0, MEMCACHED_CONNECTION_UNKNOWN);
   }
   else
   {
@@ -123,8 +148,8 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
     new_host_list= (memcached_server_st *)malloc(sizeof(memcached_server_st) * count);
     if (!new_host_list)
       goto error;
-    host_reset(&new_host_list[0], NULL, 0);
-    host_reset(&new_host_list[1], NULL, 0);
+    host_reset(&new_host_list[0], NULL, 0, MEMCACHED_CONNECTION_UNKNOWN);
+    host_reset(&new_host_list[1], NULL, 0, MEMCACHED_CONNECTION_UNKNOWN);
   }
 
   new_hostname= strdup(hostname);
@@ -132,7 +157,7 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
   if (!new_hostname)
     goto error;
 
-  host_reset(&new_host_list[count-2], new_hostname, port);
+  host_reset(&new_host_list[count-2], new_hostname, port, MEMCACHED_CONNECTION_TCP);
 
   *error= MEMCACHED_SUCCESS;
   return new_host_list;

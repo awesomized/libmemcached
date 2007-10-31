@@ -58,6 +58,8 @@ typedef enum {
   MEMCACHED_VALUE,
   MEMCACHED_STAT,
   MEMCACHED_ERRNO,
+  MEMCACHED_FAIL_UNIX_SOCKET,
+  MEMCACHED_NOT_SUPPORTED,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
@@ -72,6 +74,13 @@ typedef enum {
 } memcached_behavior;
 
 typedef enum {
+  MEMCACHED_CONNECTION_UNKNOWN,
+  MEMCACHED_CONNECTION_TCP,
+  MEMCACHED_CONNECTION_UDP,
+  MEMCACHED_CONNECTION_UNIX_SOCKET,
+} memcached_connection;
+
+typedef enum {
   MEMCACHED_NOT_ALLOCATED= 0,
   MEMCACHED_ALLOCATED= 1,
 } memcached_allocated;
@@ -82,6 +91,7 @@ struct memcached_server_st {
   int fd;
   unsigned int stack_responses;
   unsigned int cursor_active;
+  memcached_connection type;
 };
 
 struct memcached_stat_st {
@@ -196,6 +206,8 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 #define memcached_server_list(A) A->hosts
 #define memcached_server_response_count(A,B) A->hosts[B].stack_responses
 
+memcached_return memcached_server_add_unix_socket(memcached_st *ptr, 
+                                                  char *filename);
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
                                       unsigned int port);
 void memcached_server_list_free(memcached_server_st *ptr);

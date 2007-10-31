@@ -1,5 +1,6 @@
 0.8
   * Adding support for CRC hash method 
+  * Adding support for UNIX sockets
 
 0.7 Tue Oct 30 09:24:05 PDT 2007
   * Poved to poll() from select()

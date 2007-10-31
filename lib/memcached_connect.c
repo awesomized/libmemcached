@@ -3,12 +3,53 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <netinet/tcp.h>
 #include <netdb.h>
 
-memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_key)
+static memcached_return unix_socket_connect(memcached_st *ptr, unsigned int server_key)
 {
-  struct sockaddr_in localAddr, servAddr;
+  struct sockaddr_un servAddr;
+  socklen_t addrlen;
+
+  if (ptr->hosts[server_key].fd == -1)
+  {
+    if ((ptr->hosts[server_key].fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    {
+      ptr->my_errno= errno;
+      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    }
+
+    memset(&servAddr, 0, sizeof (struct sockaddr_un));
+    servAddr.sun_family= AF_UNIX;
+    strcpy(servAddr.sun_path, ptr->hosts[server_key].hostname);
+
+    addrlen= strlen(servAddr.sun_path) + sizeof(servAddr.sun_family);
+
+test_connect:
+    if (connect(ptr->hosts[server_key].fd, (struct sockaddr_un *)&servAddr, sizeof(servAddr)) < 0)
+    {
+      switch (errno) {
+        /* We are spinning waiting on connect */
+      case EALREADY:
+      case EINPROGRESS:
+      case EINTR:
+        goto test_connect;
+      case EISCONN: /* We were spinning waiting on connect */
+        break;
+      default:
+        ptr->my_errno= errno;
+        return MEMCACHED_ERRNO;
+      }
+      ptr->connected++;
+    }
+  }
+  return MEMCACHED_SUCCESS;
+}
+
+static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
+{
+  struct sockaddr_in servAddr;
   struct hostent *h;
 
   if (ptr->hosts[server_key].fd == -1)
@@ -32,11 +73,6 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
       ptr->my_errno= errno;
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
-
-    /* bind any port number */
-    localAddr.sin_family = AF_INET;
-    localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    localAddr.sin_port = htons(0);
 
     /* For the moment, not getting a nonblocking mode will note be fatal */
     if (ptr->flags & MEM_NO_BLOCK)
@@ -70,7 +106,7 @@ memcached_return memcached_real_connect(memcached_st *ptr, unsigned int server_k
 
     /* connect to server */
 test_connect:
-    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
+    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
     {
       switch (errno) {
         /* We are spinning waiting on connect */
@@ -106,7 +142,7 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
 
   /* We need to clean up the multi startup piece */
   if (server_key)
-    rc= memcached_real_connect(ptr, server_key);
+    rc= tcp_connect(ptr, server_key);
   else
   {
     unsigned int x;
@@ -115,7 +151,22 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
     {
       memcached_return possible_rc;
 
-      possible_rc= memcached_real_connect(ptr, x);
+      possible_rc= MEMCACHED_NOT_SUPPORTED; /* Remove warning */
+
+      switch (ptr->hosts[x].type)
+      {
+      case MEMCACHED_CONNECTION_UNKNOWN:
+      case MEMCACHED_CONNECTION_UDP:
+        WATCHPOINT_ASSERT(0);
+        possible_rc= MEMCACHED_NOT_SUPPORTED;
+        break;
+      case MEMCACHED_CONNECTION_TCP:
+        possible_rc= tcp_connect(ptr, x);
+        break;
+      case MEMCACHED_CONNECTION_UNIX_SOCKET:
+        possible_rc= unix_socket_connect(ptr, x);
+        break;
+      }
       rc= MEMCACHED_SUCCESS;
 
       if (possible_rc != MEMCACHED_SUCCESS)

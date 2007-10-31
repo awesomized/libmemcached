@@ -21,6 +21,11 @@ C Client Library for memcached (libmemcached, -lmemcached)
                           unsigned int port);
 
   memcached_return
+    memcached_server_add_unix_socket (memcached_st *ptr,
+                                      char *hostname,
+                                      unsigned int port);
+
+  memcached_return
     memcached_server_push (memcached_st *ptr,
                            memcached_server_st *list);
 
@@ -41,6 +46,10 @@ currently used structure).
 memcached_server_add() pushes a single server into the C<memcached_st>
 structure. This server will be placed at the end. Duplicate servers are
 allowed, so duplication is not checked.
+
+memcached_server_add_unix_socket() pushes a single UNIX socket into the 
+C<memcached_st> structure. This UNIX socket will be placed at the end. 
+Duplicate servers are allowed, so duplication is not checked.
 
 memcached_server_push() pushes an array of C<memcached_server_st> into
 the C<memcached_st> structure. These servers will be placed at the

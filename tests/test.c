@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <time.h>
 #include "../lib/common.h"
 
@@ -800,25 +803,50 @@ void add_host_test1(memcached_st *memc)
   memcached_server_list_free(servers);
 }
 
-void pre_nonblock(memcached_st *memc)
+memcached_return pre_nonblock(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+
+  return MEMCACHED_SUCCESS;
 }
 
-void pre_md5(memcached_st *memc)
+memcached_return pre_md5(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+
+  return MEMCACHED_SUCCESS;
 }
 
-void pre_crc(memcached_st *memc)
+memcached_return pre_crc(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CRC_HASHING, NULL);
+
+  return MEMCACHED_SUCCESS;
 }
 
-void pre_nodelay(memcached_st *memc)
+memcached_return pre_unix_socket(memcached_st *memc)
+{
+  memcached_return rc;
+  struct stat buf;
+
+  memcached_server_list_free(memc->hosts);
+  memc->hosts= NULL;
+  memc->number_of_hosts= 0;
+
+  if (stat("/tmp/memcached.socket", &buf))
+    return MEMCACHED_FAILURE;
+
+  rc= memcached_server_add_unix_socket(memc, "/tmp/memcached.socket");
+
+  return rc;
+}
+
+memcached_return pre_nodelay(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+
+  return MEMCACHED_SUCCESS;
 }
 
 typedef struct collection_st collection_st;
@@ -832,8 +860,8 @@ struct test_st {
 
 struct collection_st {
   char *name;
-  void (*pre)(memcached_st *memc);
-  void (*post)(memcached_st *memc);
+  memcached_return (*pre)(memcached_st *memc);
+  memcached_return (*post)(memcached_st *memc);
   test_st *tests;
 };
 
@@ -923,6 +951,7 @@ int main(int argc, char *argv[])
     {"nodelay", pre_nodelay, 0, tests},
     {"md5", pre_md5, 0, tests},
     {"crc", pre_crc, 0, tests},
+    {"unix_socket", pre_unix_socket, 0, tests},
     {"string", 0, 0, string_tests},
     {"user", 0, 0, user_tests},
     {0, 0, 0, 0}
@@ -969,7 +998,16 @@ int main(int argc, char *argv[])
       }
 
       if (next->pre)
-        next->pre(memc);
+      {
+        memcached_return rc;
+        rc= next->pre(memc);
+
+        if (rc != MEMCACHED_SUCCESS)
+        {
+          fprintf(stderr, "\t\t\t\t\t [ skipping ]\n");
+          goto error;
+        }
+      }
 
       gettimeofday(&start_time, NULL);
       run->function(memc);
@@ -979,9 +1017,10 @@ int main(int argc, char *argv[])
               load_time % 1000);
 
       if (next->post)
-        next->post(memc);
+        (void)next->post(memc);
 
       assert(memc);
+error:
       memcached_free(memc);
     }
   }

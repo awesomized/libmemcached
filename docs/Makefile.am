@@ -120,6 +120,9 @@ memcached_server_list.3: memcached_servers.pod
 memcached_server_add.3: memcached_servers.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_servers.pod > memcached_server_add.3
 
+memcached_server_add_unix_socket.3: memcached_servers.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_servers.pod > memcached_server_add_unix_socket.3
+
 memcached_server_push.3: memcached_servers.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_servers.pod > memcached_server_push.3
 
