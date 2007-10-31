@@ -1,19 +1,33 @@
 #include "common.h"
 
+/* Defines */
+static uint64_t FNV_64_INIT= 0xcbf29ce484222325L;
+static uint64_t FNV_64_PRIME= 0x100000001b3L;
+
+static uint32_t FNV_32_INIT= 2166136261L;
+static uint32_t FNV_32_PRIME= 16777619;
+
 /* Prototypes */
 static unsigned int internal_generate_hash(char *key, size_t key_length);
+static uint32_t internal_generate_md5(char *key, size_t key_length);
 static uint32_t internal_generate_md5(char *key, size_t key_length);
 
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
   uint32_t hash;
 
-  if (ptr->flags & MEM_USE_MD5)
-    hash= internal_generate_md5(key, key_length);
-  else if (ptr->flags & MEM_USE_CRC)
-    hash= hash_crc32(key, key_length);
-  else
+  switch (ptr->hash)
+  {
+  case MEMCACHED_HASH_DEFAULT:
     hash= internal_generate_hash(key, key_length);
+    break;
+  case MEMCACHED_HASH_MD5:
+    hash= internal_generate_md5(key, key_length);
+    break;
+  case MEMCACHED_HASH_CRC:
+    hash= hash_crc32(key, key_length);
+    break;
+  }
 
   if (ptr->flags & MEM_USE_KETAMA)
   {

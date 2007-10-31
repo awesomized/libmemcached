@@ -524,9 +524,10 @@ void behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
   assert(value == 1);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, &set);
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_MD5_HASHING);
-  assert(value == 1);
+  set= MEMCACHED_HASH_MD5;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  assert(value == MEMCACHED_HASH_MD5);
 
   set= 0;
 
@@ -538,9 +539,15 @@ void behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
   assert(value == 0);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, &set);
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_MD5_HASHING);
-  assert(value == 0);
+  set= MEMCACHED_HASH_DEFAULT;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  assert(value == MEMCACHED_HASH_DEFAULT);
+
+  set= MEMCACHED_HASH_CRC;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  assert(value == MEMCACHED_HASH_CRC);
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   assert(value > 0);
@@ -812,14 +819,16 @@ memcached_return pre_nonblock(memcached_st *memc)
 
 memcached_return pre_md5(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_MD5_HASHING, NULL);
+  memcached_hash value= MEMCACHED_HASH_MD5;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_crc(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CRC_HASHING, NULL);
+  memcached_hash value= MEMCACHED_HASH_CRC;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
 
   return MEMCACHED_SUCCESS;
 }

@@ -66,12 +66,17 @@ typedef enum {
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
   MEMCACHED_BEHAVIOR_TCP_NODELAY,
-  MEMCACHED_BEHAVIOR_MD5_HASHING,
-  MEMCACHED_BEHAVIOR_CRC_HASHING,
+  MEMCACHED_BEHAVIOR_HASH,
   MEMCACHED_BEHAVIOR_KETAMA,
   MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE,
   MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE,
 } memcached_behavior;
+
+typedef enum {
+  MEMCACHED_HASH_DEFAULT= 0,
+  MEMCACHED_HASH_MD5,
+  MEMCACHED_HASH_CRC,
+} memcached_hash;
 
 typedef enum {
   MEMCACHED_CONNECTION_UNKNOWN,
@@ -145,6 +150,7 @@ struct memcached_st {
   unsigned long long flags;
   int send_size;
   int recv_size;
+  memcached_hash hash;
   memcached_return warning; /* Future Use */
 };
 
