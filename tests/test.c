@@ -833,6 +833,46 @@ memcached_return pre_crc(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return pre_hash_fnv1_64(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_FNV1_64;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return pre_hash_fnv1a_64(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_FNV1A_64;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return pre_hash_fnv1_32(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_FNV1_32;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return pre_hash_fnv1a_32(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_FNV1A_32;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return pre_hash_ketama(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_KETAMA;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return pre_unix_socket(memcached_st *memc)
 {
   memcached_return rc;
@@ -960,6 +1000,11 @@ int main(int argc, char *argv[])
     {"nodelay", pre_nodelay, 0, tests},
     {"md5", pre_md5, 0, tests},
     {"crc", pre_crc, 0, tests},
+    {"fnv1_64", pre_hash_fnv1_64, 0, tests},
+    {"fnv1a_64", pre_hash_fnv1a_64, 0, tests},
+    {"fnv1_32", pre_hash_fnv1_32, 0, tests},
+    {"fnv1a_32", pre_hash_fnv1a_32, 0, tests},
+    {"ketama", pre_hash_ketama, 0, tests},
     {"unix_socket", pre_unix_socket, 0, tests},
     {"unix_socket_nodelay", pre_nodelay, 0, tests},
     {"string", 0, 0, string_tests},

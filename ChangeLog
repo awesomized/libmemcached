@@ -1,6 +1,7 @@
 0.8
   * Adding support for CRC hash method 
   * Adding support for UNIX sockets
+  * Added additional HASHing methods of FNV1_64,FNV1A_64, FNV1_32, FNV1A_32
 
 0.7 Tue Oct 30 09:24:05 PDT 2007
   * Poved to poll() from select()

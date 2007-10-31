@@ -11,10 +11,12 @@ static uint32_t FNV_32_PRIME= 16777619;
 static unsigned int internal_generate_hash(char *key, size_t key_length);
 static uint32_t internal_generate_md5(char *key, size_t key_length);
 static uint32_t internal_generate_md5(char *key, size_t key_length);
+static uint32_t internal_generate_ketama_md5(char *key, size_t key_length);
 
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
   uint32_t hash;
+  unsigned int x;
 
   switch (ptr->hash)
   {
@@ -25,10 +27,58 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
     hash= internal_generate_md5(key, key_length);
     break;
   case MEMCACHED_HASH_CRC:
-    hash= hash_crc32(key, key_length);
+    hash= ((hash_crc32(key, key_length) >> 16) & 0x7fff);
     break;
+    /* FNV hash'es lifted from Dustin Sallings work */
+  case MEMCACHED_HASH_FNV1_64: 
+    {
+      /* Thanks to pierre@demartines.com for the pointer */
+      hash = FNV_64_INIT;
+      for (x= 0; x < key_length; x++) 
+      {
+        hash *= FNV_64_PRIME;
+        hash ^= key[x];
+      }
+    }
+    break;
+  case MEMCACHED_HASH_FNV1A_64: 
+    {
+      hash= FNV_64_INIT;
+      for (x= 0; x < key_length; x++) 
+      {
+        hash ^= key[x];
+        hash *= FNV_64_PRIME;
+      }
+    }
+    break;
+  case MEMCACHED_HASH_FNV1_32: 
+    {
+      hash= FNV_32_INIT;
+      for (x= 0; x < key_length; x++) 
+      {
+        hash *= FNV_32_PRIME;
+        hash ^= key[x];
+      }
+    }
+    break;
+  case MEMCACHED_HASH_FNV1A_32: 
+    {
+      hash= FNV_32_INIT;
+      for (x= 0; x < key_length; x++) 
+      {
+        hash ^= key[x];
+        hash *= FNV_32_PRIME;
+      }
+    }
+    break;
+    case MEMCACHED_HASH_KETAMA: 
+    {
+      hash= internal_generate_ketama_md5(key, key_length);
+      break;
+    }
   }
 
+  WATCHPOINT_ASSERT(hash);
   if (ptr->flags & MEM_USE_KETAMA)
   {
     WATCHPOINT_ASSERT(0);
@@ -66,4 +116,16 @@ static uint32_t internal_generate_md5(char *key, size_t key_length)
                     | ( results[2] << 16 )
                     | ( results[1] <<  8 )
                     |   results[0] );
+}
+
+static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
+{
+  unsigned char results[16];
+
+  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
+
+  return ((uint32_t) (results[3] & 0xFF) << 24)
+    | ((uint32_t) (results[2] & 0xFF) << 16)
+    | ((uint32_t) (results[1] & 0xFF) << 8)
+    | (results[0] & 0xFF);
 }
