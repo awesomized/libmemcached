@@ -952,6 +952,7 @@ int main(int argc, char *argv[])
     {"md5", pre_md5, 0, tests},
     {"crc", pre_crc, 0, tests},
     {"unix_socket", pre_unix_socket, 0, tests},
+    {"unix_socket_nodelay", pre_nodelay, 0, tests},
     {"string", 0, 0, string_tests},
     {"user", 0, 0, user_tests},
     {0, 0, 0, 0}
