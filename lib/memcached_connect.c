@@ -16,7 +16,7 @@ static memcached_return unix_socket_connect(memcached_st *ptr, unsigned int serv
   {
     if ((ptr->hosts[server_key].fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
-      ptr->my_errno= errno;
+      ptr->cached_errno= errno;
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
 
@@ -27,7 +27,7 @@ static memcached_return unix_socket_connect(memcached_st *ptr, unsigned int serv
     addrlen= strlen(servAddr.sun_path) + sizeof(servAddr.sun_family);
 
 test_connect:
-    if (connect(ptr->hosts[server_key].fd, (struct sockaddr_un *)&servAddr, sizeof(servAddr)) < 0)
+    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
     {
       switch (errno) {
         /* We are spinning waiting on connect */
@@ -38,7 +38,7 @@ test_connect:
       case EISCONN: /* We were spinning waiting on connect */
         break;
       default:
-        ptr->my_errno= errno;
+        ptr->cached_errno= errno;
         return MEMCACHED_ERRNO;
       }
       ptr->connected++;
@@ -59,7 +59,7 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
 
     if ((h= gethostbyname(ptr->hosts[server_key].hostname)) == NULL)
     {
-      ptr->my_errno= h_errno;
+      ptr->cached_errno= h_errno;
       return MEMCACHED_HOST_LOCKUP_FAILURE;
     }
 
@@ -70,7 +70,7 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
     /* Create the socket */
     if ((ptr->hosts[server_key].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-      ptr->my_errno= errno;
+      ptr->cached_errno= errno;
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
 
@@ -117,7 +117,7 @@ test_connect:
       case EISCONN: /* We were spinning waiting on connect */
         break;
       default:
-        ptr->my_errno= errno;
+        ptr->cached_errno= errno;
         return MEMCACHED_ERRNO;
       }
       ptr->connected++;

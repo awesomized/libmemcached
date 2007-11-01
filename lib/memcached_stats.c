@@ -345,3 +345,8 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
 
   return list;
 }
+
+void memcached_stat_free(memcached_st *ptr, memcached_stat_st *stat)
+{
+  free(stat);
+}

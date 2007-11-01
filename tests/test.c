@@ -477,7 +477,7 @@ void get_stats(memcached_st *memc)
    free(list);
  }
 
- free(stat);
+ memcached_stat_free(NULL, stat);
 }
 
 void add_host_test(memcached_st *memc)

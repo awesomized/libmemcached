@@ -62,7 +62,7 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
             break;
           default:
             {
-              ptr->my_errno= errno;
+              ptr->cached_errno= errno;
               return -1;
             }
           }
@@ -156,7 +156,7 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
         }
         /* Yes, we want to fall through */
       default:
-        ptr->my_errno= errno;
+        ptr->cached_errno= errno;
         return -1;
       }
     }

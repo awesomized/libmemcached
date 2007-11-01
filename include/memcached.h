@@ -28,7 +28,6 @@ typedef struct memcached_server_st memcached_server_st;
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
-//#define MEMCACHED_MAX_BUFFER 8196
 #define MEMCACHED_MAX_BUFFER HUGE_STRING_LEN
 
 typedef enum {
@@ -151,7 +150,7 @@ struct memcached_st {
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
   char connected;
-  int my_errno;
+  int cached_errno;
   unsigned long long flags;
   int send_size;
   int recv_size;
@@ -174,6 +173,7 @@ memcached_return memcached_decrement(memcached_st *ptr,
                                      char *key, size_t key_length,
                                      unsigned int offset,
                                      unsigned int *value);
+void memcached_stat_free(memcached_st *, memcached_stat_st *);
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
 memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args, 
                                            char *hostname, unsigned int port);

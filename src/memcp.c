@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
     {
       fprintf(stderr, "memcp: %s: memcache error %s", 
 	      ptr, memcached_strerror(memc, rc));
-      if (memc->my_errno)
-	fprintf(stderr, " system error %s", strerror(memc->my_errno));
+      if (memc->cached_errno)
+	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
       fprintf(stderr, "\n");
     }
 
