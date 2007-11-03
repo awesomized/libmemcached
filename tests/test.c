@@ -710,6 +710,26 @@ void user_supplied_bug3(memcached_st *memc)
   free(keys);
 }
 
+void result_static(memcached_st *memc)
+{
+  memcached_result_st result;
+  memcached_result_st *result_ptr;
+
+  result_ptr= memcached_result_create(memc, &result);
+  assert(result.is_allocated == MEMCACHED_NOT_ALLOCATED);
+  assert(result_ptr);
+  memcached_result_free(&result);
+}
+
+void result_alloc(memcached_st *memc)
+{
+  memcached_result_st *result;
+
+  result= memcached_result_create(memc, NULL);
+  assert(result);
+  memcached_result_free(result);
+}
+
 void string_static_null(memcached_st *memc)
 {
   memcached_string_st string;
@@ -718,7 +738,7 @@ void string_static_null(memcached_st *memc)
   string_ptr= memcached_string_create(memc, &string, 0);
   assert(string.is_allocated == MEMCACHED_NOT_ALLOCATED);
   assert(string_ptr);
-  memcached_string_free(memc, &string);
+  memcached_string_free(&string);
 }
 
 void string_alloc_null(memcached_st *memc)
@@ -727,7 +747,7 @@ void string_alloc_null(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 0);
   assert(string);
-  memcached_string_free(memc, string);
+  memcached_string_free(string);
 }
 
 void string_alloc_with_size(memcached_st *memc)
@@ -736,7 +756,7 @@ void string_alloc_with_size(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 1024);
   assert(string);
-  memcached_string_free(memc, string);
+  memcached_string_free(string);
 }
 
 void string_alloc_with_size_toobig(memcached_st *memc)
@@ -762,10 +782,10 @@ void string_alloc_append(memcached_st *memc)
   for (x= 0; x < 1024; x++)
   {
     memcached_return rc;
-    rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
+    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
     assert(rc == MEMCACHED_SUCCESS);
   }
-  memcached_string_free(memc, string);
+  memcached_string_free(string);
 }
 
 void string_alloc_append_toobig(memcached_st *memc)
@@ -783,12 +803,12 @@ void string_alloc_append_toobig(memcached_st *memc)
 
   for (x= 0; x < 1024; x++)
   {
-    rc= memcached_string_append(memc, string, buffer, SMALL_STRING_LEN);
+    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
     assert(rc == MEMCACHED_SUCCESS);
   }
-  rc= memcached_string_append(memc, string, buffer, INT64_MAX);
+  rc= memcached_string_append(string, buffer, INT64_MAX);
   assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
-  memcached_string_free(memc, string);
+  memcached_string_free(string);
 }
 
 void add_host_test1(memcached_st *memc)
@@ -998,6 +1018,12 @@ int main(int argc, char *argv[])
     {0, 0, 0}
   };
 
+  test_st result_tests[] ={
+    {"result static", 0, result_static},
+    {"result alloc", 0, result_alloc},
+    {0, 0, 0}
+  };
+
   test_st user_tests[] ={
     {"user_supplied_bug1", 0, user_supplied_bug1 },
     {"user_supplied_bug2", 0, user_supplied_bug2 },
@@ -1020,6 +1046,7 @@ int main(int argc, char *argv[])
     {"unix_socket", pre_unix_socket, 0, tests},
     {"unix_socket_nodelay", pre_nodelay, 0, tests},
     {"string", 0, 0, string_tests},
+    {"result", 0, 0, result_tests},
     {"user", 0, 0, user_tests},
     {0, 0, 0, 0}
   };

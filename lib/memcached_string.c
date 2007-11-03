@@ -2,7 +2,7 @@
 
 memcached_return memcached_string_check(memcached_string_st *string, size_t need)
 {
-  if (need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
+  if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
     size_t current_offset= string->end - string->string;
     char *new_value;
@@ -54,8 +54,8 @@ memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string
     memset(string, 0, sizeof(memcached_string_st));
     string->is_allocated= MEMCACHED_ALLOCATED;
   }
-  string->end= string->string;
-  string->block_size= initial_size;
+  string->block_size= MEMCACHED_BLOCK_SIZE;
+  string->root= ptr;
 
   rc=  memcached_string_check(string, initial_size);
   if (rc != MEMCACHED_SUCCESS)
@@ -69,8 +69,7 @@ memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string
   return string;
 }
 
-memcached_return memcached_string_append_character(memcached_st *ptr, 
-                                                   memcached_string_st *string, 
+memcached_return memcached_string_append_character(memcached_string_st *string, 
                                                    char character)
 {
   memcached_return rc;
@@ -86,7 +85,7 @@ memcached_return memcached_string_append_character(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st *string,
+memcached_return memcached_string_append(memcached_string_st *string,
                                          char *value, size_t length)
 {
   memcached_return rc;
@@ -106,7 +105,7 @@ memcached_return memcached_string_append(memcached_st *ptr, memcached_string_st 
   return MEMCACHED_SUCCESS;
 }
 
-size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string, size_t remove)
+size_t memcached_string_backspace(memcached_string_st *string, size_t remove)
 {
   if (string->end - string->string  > remove)
   {
@@ -122,16 +121,29 @@ size_t memcached_string_backspace(memcached_st *ptr, memcached_string_st *string
   return remove;
 }
 
-memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *string)
+char *memcached_string_c_copy(memcached_string_st *string)
+{
+  char *c_ptr;
+  c_ptr= (char *)malloc(memcached_string_length(string) * sizeof(char));
+  if (!c_ptr)
+    return NULL;
+
+  memcpy(c_ptr, memcached_string_value(string), memcached_string_length(string));
+
+  return c_ptr;
+}
+
+memcached_return memcached_string_reset(memcached_string_st *string)
 {
   string->end= string->string;
   
   return MEMCACHED_SUCCESS;
 }
 
-void memcached_string_free(memcached_st *ptr, memcached_string_st *string)
+void memcached_string_free(memcached_string_st *string)
 {
-  free(string->string);
+  if (string->string)
+    free(string->string);
   if (string->is_allocated == MEMCACHED_ALLOCATED)
     free(string);
 }

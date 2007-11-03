@@ -5,6 +5,7 @@
 
 memcached_st *memcached_create(memcached_st *ptr)
 {
+  memcached_string_st *string_ptr;
   if (!ptr)
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
@@ -19,6 +20,8 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
+  string_ptr= memcached_string_create(ptr, &ptr->result_buffer, 0);
+  WATCHPOINT_ASSERT(string_ptr);
 
   return ptr;
 }
@@ -32,12 +35,19 @@ void memcached_free(memcached_st *ptr)
     ptr->hosts= NULL;
   }
 
+  memcached_string_free(&ptr->result_buffer);
+
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);
   else
     memset(ptr, 0, sizeof(memcached_st));
 }
 
+/*
+  clone is the destination, while ptr is the structure to clone.
+  If ptr is NULL the call is the same as if a memcached_create() was
+  called.
+*/
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
 {
   memcached_return rc;

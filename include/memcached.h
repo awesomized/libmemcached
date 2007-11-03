@@ -91,8 +91,8 @@ typedef enum {
 } memcached_connection;
 
 typedef enum {
-  MEMCACHED_NOT_ALLOCATED= 0,
-  MEMCACHED_ALLOCATED= 1,
+  MEMCACHED_NOT_ALLOCATED,
+  MEMCACHED_ALLOCATED,
 } memcached_allocated;
 
 struct memcached_server_st {
@@ -134,6 +134,7 @@ struct memcached_stat_st {
 };
 
 struct memcached_string_st {
+  memcached_st *root;
   memcached_allocated is_allocated;
   char *string;
   char *end;
@@ -142,8 +143,10 @@ struct memcached_string_st {
 };
 
 struct memcached_result_st {
+  memcached_allocated is_allocated;
+  memcached_st *root;
   memcached_string_st key;
-  memcached_string_st result;
+  memcached_string_st value;
   uint16_t flags;
   uint64_t cas;
 };
@@ -245,6 +248,14 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat,
                                char *key, memcached_return *error);
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
                                 memcached_return *error);
+
+/* Result Struct */
+#define memcache_result_key_value(A) memcached_string_value(A->key)
+#define memcache_result_key_length(A) memcached_string_length(A->key)
+#define memcache_result_result_value(A) memcached_string_value(A->value)
+#define memcache_result_result_length(A) memcached_string_length(A->value)
+#define memcache_result_flags(A) A->flags
+#define memcache_result_cas(A) A->cas
 
 /* Some personal debugging functions */
 #ifdef HAVE_DEBUG
