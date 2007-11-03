@@ -63,7 +63,9 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key);
 #define memcached_string_size(A, B) B->current_size
 #define memcached_string_value(A, B) B->string
 
-memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size);
+memcached_string_st *memcached_string_create(memcached_st *ptr, 
+                                             memcached_string_st *string, 
+                                             size_t initial_size);
 memcached_return memcached_string_append_character(memcached_st *ptr, 
                                                    memcached_string_st *string, 
                                                    char character);

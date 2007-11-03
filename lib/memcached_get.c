@@ -313,3 +313,40 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   *value_length= 0;
   return NULL;
 }
+
+#ifdef NOT_YET
+char *memcached_fetch_result(memcached_st *ptr, memcached_result_st *result,
+                    memcached_return *error)
+{
+  char *value_check;
+
+  while (ptr->cursor_server < ptr->number_of_hosts)
+  {
+    if (!ptr->hosts[ptr->cursor_server].cursor_active)
+    {
+      ptr->cursor_server++;
+      continue;
+    }
+
+    value_check= memcached_value_fetch(ptr, key, key_length, value_length, flags,
+                                       error, 1, ptr->cursor_server);
+    
+    if (*error == MEMCACHED_NOTFOUND)
+      ptr->cursor_server++;
+    else if (*error == MEMCACHED_END && *value_length == 0)
+      return NULL;
+    else if (*error == MEMCACHED_END)
+    {
+      WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
+    }
+    else if (*error != MEMCACHED_SUCCESS)
+      return NULL;
+    else
+      return value_check;
+
+  }
+
+  *value_length= 0;
+  return NULL;
+}
+#endif

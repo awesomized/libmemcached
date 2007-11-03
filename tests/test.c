@@ -710,11 +710,22 @@ void user_supplied_bug3(memcached_st *memc)
   free(keys);
 }
 
+void string_static_null(memcached_st *memc)
+{
+  memcached_string_st string;
+  memcached_string_st *string_ptr;
+
+  string_ptr= memcached_string_create(memc, &string, 0);
+  assert(string.is_allocated == MEMCACHED_NOT_ALLOCATED);
+  assert(string_ptr);
+  memcached_string_free(memc, &string);
+}
+
 void string_alloc_null(memcached_st *memc)
 {
   memcached_string_st *string;
 
-  string= memcached_string_create(memc, 0);
+  string= memcached_string_create(memc, NULL, 0);
   assert(string);
   memcached_string_free(memc, string);
 }
@@ -723,7 +734,7 @@ void string_alloc_with_size(memcached_st *memc)
 {
   memcached_string_st *string;
 
-  string= memcached_string_create(memc, 1024);
+  string= memcached_string_create(memc, NULL, 1024);
   assert(string);
   memcached_string_free(memc, string);
 }
@@ -732,7 +743,7 @@ void string_alloc_with_size_toobig(memcached_st *memc)
 {
   memcached_string_st *string;
 
-  string= memcached_string_create(memc, INT64_MAX);
+  string= memcached_string_create(memc, NULL, INT64_MAX);
   assert(string == NULL);
 }
 
@@ -745,7 +756,7 @@ void string_alloc_append(memcached_st *memc)
   /* Ring the bell! */
   memset(buffer, 6, SMALL_STRING_LEN);
 
-  string= memcached_string_create(memc, 100);
+  string= memcached_string_create(memc, NULL, 100);
   assert(string);
 
   for (x= 0; x < 1024; x++)
@@ -767,7 +778,7 @@ void string_alloc_append_toobig(memcached_st *memc)
   /* Ring the bell! */
   memset(buffer, 6, SMALL_STRING_LEN);
 
-  string= memcached_string_create(memc, 100);
+  string= memcached_string_create(memc, NULL, 100);
   assert(string);
 
   for (x= 0; x < 1024; x++)
@@ -978,6 +989,7 @@ int main(int argc, char *argv[])
   };
 
   test_st string_tests[] ={
+    {"string static with null", 0, string_static_null },
     {"string alloc with null", 0, string_alloc_null },
     {"string alloc with 1K", 0, string_alloc_with_size },
     {"string alloc with malloc failure", 0, string_alloc_with_size_toobig },

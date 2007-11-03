@@ -36,17 +36,25 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
   return MEMCACHED_SUCCESS;
 }
 
-memcached_string_st *memcached_string_create(memcached_st *ptr, size_t initial_size)
+memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string_st *string, size_t initial_size)
 {
   memcached_return rc;
-  memcached_string_st *string;
 
   /* Saving malloc calls :) */
-  string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
-  if (!string)
-    return NULL;
+  if (string)
+  {
+    memset(string, 0, sizeof(memcached_string_st));
+    string->is_allocated= MEMCACHED_NOT_ALLOCATED;
+  }
+  else
+  {
+    string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
+    if (!string)
+      return NULL;
+    memset(string, 0, sizeof(memcached_string_st));
+    string->is_allocated= MEMCACHED_ALLOCATED;
+  }
   string->end= string->string;
-  memset(string, 0, sizeof(memcached_string_st));
   string->block_size= initial_size;
 
   rc=  memcached_string_check(string, initial_size);
@@ -124,5 +132,6 @@ memcached_return memcached_string_reset(memcached_st *ptr, memcached_string_st *
 void memcached_string_free(memcached_st *ptr, memcached_string_st *string)
 {
   free(string->string);
-  free(string);
+  if (string->is_allocated == MEMCACHED_ALLOCATED)
+    free(string);
 }

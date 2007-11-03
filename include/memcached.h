@@ -20,6 +20,7 @@ extern "C" {
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
+typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
 
@@ -133,10 +134,18 @@ struct memcached_stat_st {
 };
 
 struct memcached_string_st {
+  memcached_allocated is_allocated;
   char *string;
   char *end;
   size_t current_size;
   size_t block_size;
+};
+
+struct memcached_result_st {
+  memcached_string_st key;
+  memcached_string_st result;
+  uint16_t flags;
+  uint64_t cas;
 };
 
 struct memcached_st {
@@ -154,6 +163,7 @@ struct memcached_st {
   unsigned long long flags;
   int send_size;
   int recv_size;
+  memcached_string_st result_buffer;
   memcached_hash hash;
   memcached_return warning; /* Future Use */
 };
@@ -209,6 +219,7 @@ memcached_return memcached_mget(memcached_st *ptr,
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                       size_t *value_length, uint16_t *flags, 
                       memcached_return *error);
+memcached_result_st *memcached_fetch_object(memcached_st *ptr, memcached_return *error);
 
 /* Server Public functions */
 #define memcached_server_count(A) A->number_of_hosts
