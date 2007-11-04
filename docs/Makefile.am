@@ -99,6 +99,9 @@ memcached_flush.3: memcached_flush.pod
 memcached_get.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_get.3
 
+memcached_fetch_result.3: memcached_get.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_fetch_result.3
+
 memcached_mget.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_mget.3
 
@@ -158,6 +161,33 @@ memcached_stat_get_value.3: memcached_stats.pod
 
 memcached_stat_get_keys.3: memcached_stats.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_stats.pod > memcached_stat_get_keys.3
+
+memcached_result_st.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_st.3
+
+memcached_result_create.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_create.3
+
+memcached_result_free.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_free.3
+
+memcached_result_key_value.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_key_value.3
+
+memcached_result_key_length.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_key_length.3
+
+memcached_result_value.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_value.3
+
+memcached_result_length.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_length.3
+
+memcached_result_flags.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_flags.3
+
+memcached_result_cas.3: memcached_result_st.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_result_st.pod > memcached_result_cas.3
 
 memcp.1: memcp.pod
 	pod2man -c "libmemcached" -r "" -s 1 memcp.pod > memcp.1

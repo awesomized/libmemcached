@@ -96,3 +96,15 @@ memcached_return memcached_response(memcached_st *ptr,
 
   return MEMCACHED_SUCCESS;
 }
+
+char *memcached_result_value(memcached_result_st *ptr)
+{
+  memcached_string_st *sptr= &ptr->value;
+  return memcached_string_value(sptr);
+}
+
+size_t memcached_result_length(memcached_result_st *ptr)
+{
+  memcached_string_st *sptr= &ptr->value;
+  return memcached_string_length(sptr);
+}

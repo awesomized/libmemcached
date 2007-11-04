@@ -384,6 +384,110 @@ void quit_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
 }
 
+void mget_result_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  unsigned int x;
+
+  memcached_result_st results_obj;
+  memcached_result_st *results;
+
+  results= memcached_result_create(memc, &results_obj);
+  assert(results);
+  assert(&results_obj == results);
+
+  /* We need to empty the server before continueing test */
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  while ((results= memcached_fetch_result(memc, &results_obj, &rc)) != NULL)
+  {
+    assert(results);
+  }
+  while ((results= memcached_fetch_result(memc, &results_obj, &rc)) != NULL)
+  assert(!results);
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
+  {
+    assert(results);
+    assert(&results_obj == results);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcached_result_key_length(results) == memcached_result_length(results));
+    assert(!memcmp(memcached_result_key_value(results), 
+                   memcached_result_value(results), 
+                   memcached_result_length(results)));
+  }
+
+  WATCHPOINT;
+  memcached_result_free(&results_obj);
+  WATCHPOINT;
+}
+
+void mget_result_alloc_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  unsigned int x;
+
+  memcached_result_st *results;
+
+  /* We need to empty the server before continueing test */
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  while ((results= memcached_fetch_result(memc, NULL, &rc)) != NULL)
+  {
+    assert(results);
+  }
+  assert(!results);
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  x= 0;
+  while ((results= memcached_fetch_result(memc, NULL, &rc)))
+  {
+    assert(results);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcached_result_key_length(results) == memcached_result_length(results));
+    assert(!memcmp(memcached_result_key_value(results), 
+                   memcached_result_value(results), 
+                   memcached_result_length(results)));
+    memcached_result_free(results);
+    x++;
+  }
+}
+
 void mget_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -1000,7 +1104,9 @@ int main(int argc, char *argv[])
     {"increment", 0, increment_test },
     {"decrement", 0, decrement_test },
     {"quit", 0, quit_test },
-    {"mget", 0, mget_test },
+    {"mget", 1, mget_test },
+    {"mget_result", 1, mget_result_test },
+    {"mget_result_alloc", 1, mget_result_alloc_test },
     {"get_stats", 0, get_stats },
     {"add_host_test", 0, add_host_test },
     {"get_stats_keys", 0, get_stats_keys },

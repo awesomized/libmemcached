@@ -145,7 +145,8 @@ struct memcached_string_st {
 struct memcached_result_st {
   memcached_allocated is_allocated;
   memcached_st *root;
-  memcached_string_st key;
+  char key[MEMCACHED_MAX_KEY];
+  size_t key_length;
   memcached_string_st value;
   uint16_t flags;
   uint64_t cas;
@@ -222,7 +223,9 @@ memcached_return memcached_mget(memcached_st *ptr,
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                       size_t *value_length, uint16_t *flags, 
                       memcached_return *error);
-memcached_result_st *memcached_fetch_object(memcached_st *ptr, memcached_return *error);
+memcached_result_st *memcached_fetch_result(memcached_st *ptr, 
+                                            memcached_result_st *result,
+                                            memcached_return *error);
 
 /* Server Public functions */
 #define memcached_server_count(A) A->number_of_hosts
@@ -250,12 +253,21 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat,
                                 memcached_return *error);
 
 /* Result Struct */
-#define memcache_result_key_value(A) memcached_string_value(A->key)
-#define memcache_result_key_length(A) memcached_string_length(A->key)
-#define memcache_result_result_value(A) memcached_string_value(A->value)
-#define memcache_result_result_length(A) memcached_string_length(A->value)
-#define memcache_result_flags(A) A->flags
-#define memcache_result_cas(A) A->cas
+void memcached_result_free(memcached_result_st *result);
+memcached_result_st *memcached_result_create(memcached_st *ptr, 
+                                             memcached_result_st *result);
+#define memcached_result_key_value(A) A->key
+#define memcached_result_key_length(A) A->key_length
+#ifdef FIX
+#define memcached_result_value(A) memcached_string_value(A->value)
+#define memcached_result_length(A) memcached_string_length(A->value)
+#else
+char *memcached_result_value(memcached_result_st *ptr);
+size_t memcached_result_length(memcached_result_st *ptr);
+#endif
+#define memcached_result_flags(A) A->flags
+#define memcached_result_cas(A) A->cas
+
 
 /* Some personal debugging functions */
 #ifdef HAVE_DEBUG

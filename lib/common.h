@@ -79,17 +79,5 @@ size_t memcached_string_backspace(memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_string_st *string);
 void memcached_string_free(memcached_string_st *string);
 
-/* Result Struct */
-#define memcache_result_key_value(A) memcached_string_value(A->key)
-#define memcache_result_key_length(A) memcached_string_length(A->key)
-#define memcache_result_result_value(A) memcached_string_value(A->value)
-#define memcache_result_result_length(A) memcached_string_length(A->value)
-#define memcache_result_flags(A) A->flags
-#define memcache_result_cas(A) A->cas
-
-memcached_result_st *memcached_result_create(memcached_st *ptr, 
-                                             memcached_result_st *result);
-void memcached_result_free(memcached_result_st *result);
-
 
 #endif /* __COMMON_H__ */

@@ -310,6 +310,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     else if (*error == MEMCACHED_END)
     {
       WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
+      return NULL;
     }
     else if (*error != MEMCACHED_SUCCESS)
       return NULL;
@@ -322,11 +323,12 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   return NULL;
 }
 
-#ifdef NOT_YET
-char *memcached_fetch_result(memcached_st *ptr, memcached_result_st *result,
-                    memcached_return *error)
+memcached_result_st *memcached_fetch_result(memcached_st *ptr, 
+                                            memcached_result_st *result,
+                                            memcached_return *error)
 {
-  char *value_check;
+  if (result == NULL)
+    result= memcached_result_create(ptr, NULL);
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
@@ -336,25 +338,26 @@ char *memcached_fetch_result(memcached_st *ptr, memcached_result_st *result,
       continue;
     }
 
-    value_check= memcached_value_fetch(ptr, key, key_length, value_length, flags,
-                                       error, 1, ptr->cursor_server);
+    *error= memcached_value_fetch(ptr, result->key, &result->key_length, 
+                                       &result->value, 
+                                       &result->flags,
+                                       1, ptr->cursor_server);
     
     if (*error == MEMCACHED_NOTFOUND)
       ptr->cursor_server++;
-    else if (*error == MEMCACHED_END && *value_length == 0)
+    else if (*error == MEMCACHED_END && memcached_string_length((memcached_string_st *)(&result->value)) == 0)
       return NULL;
     else if (*error == MEMCACHED_END)
     {
       WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
+      return NULL;
     }
     else if (*error != MEMCACHED_SUCCESS)
       return NULL;
     else
-      return value_check;
+      return result;
 
   }
 
-  *value_length= 0;
   return NULL;
 }
-#endif

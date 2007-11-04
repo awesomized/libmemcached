@@ -10,6 +10,11 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
+  memcached_result_st *
+  memcached_fetch_result(memcached_st *ptr, 
+		       memcached_result_st *result,
+		       memcached_return *error);
+
   char *memcached_get (memcached_st *ptr,
                        char *key, size_t key_length,
                        size_t *value_length, 
@@ -50,6 +55,12 @@ object.  A uint16_t pointer to contain whatever flags you stored with the value,
 a size_t pointer which will be filled with size of of the object, and a
 memcached_return pointer to hold any error. The object will be returned
 upon success and NULL will be returned on failure. 
+
+memcached_fetch_result() is used to return a memcached_result_st(3) structure 
+from a memcached server. The result object is forward compatible with changes
+to the server. For more information please refer to the memcached_result_st(3) 
+help. This function will dynamically allocate a result structure for you
+if you do not pass one to the function.
 
 =head1 RETURN
 
