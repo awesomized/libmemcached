@@ -269,10 +269,14 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define memcached_result_cas(A) A->cas
 
 
+#ifndef __WATCHPOINT_H__
+#define __WATCHPOINT_H__
 /* Some personal debugging functions */
 #ifdef HAVE_DEBUG
 #define WATCHPOINT fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
+#ifdef __MEMCACHED_H__
 #define WATCHPOINT_ERROR(A) fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
+#endif
 #define WATCHPOINT_STRING(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
 #define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
@@ -287,12 +291,16 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT_ASSERT(A) { 1; };
 */
 #define WATCHPOINT
+#ifdef __MEMCACHED_H__
 #define WATCHPOINT_ERROR(A)
+#endif
 #define WATCHPOINT_STRING(A)
 #define WATCHPOINT_NUMBER(A)
 #define WATCHPOINT_ERRNO(A)
 #define WATCHPOINT_ASSERT(A)
 #endif
+
+#endif /* __WATCHPOINT_H__ */
 
 
 #ifdef __cplusplus

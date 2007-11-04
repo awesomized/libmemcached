@@ -17,7 +17,7 @@ LIBS =
 
 noinst_PROGRAMS = testapp
 
-testapp_SOURCES = test.c
+testapp_SOURCES = test.c function.c
 testapp_LDADD = $(LDADDS)
 
 record:
