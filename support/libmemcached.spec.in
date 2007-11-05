@@ -1,6 +1,6 @@
 Summary: memcached C library and command line tools
-Name: libmemcached
-Version: 0.8
+Name: @PACKAGE@
+Version: @VERSION@
 Release: 1
 License: BSD
 Group: System Environment/Libraries
@@ -93,6 +93,9 @@ memcp - Copy files to memcached servers.
 %{_mandir}/man3/memcached_verbosity.3.gz
 
 %changelog
+* Mon Nov  5 2007 Brian Aker <brian@tangent.org> - 0.8-1
+- Automated version number
+
 * Wed Oct  3 2007 Brian Aker <brian@tangent.org> - 0.4-1
 - See Changelog
 
