@@ -40,7 +40,15 @@ contain its own structure (that is, if you want to share these among
 threads you must provide your own locking). No global variables are
 used in this library.
 
+If you are working with GNU autotools you will want to add the following to
+your configure.ac to properly include libmemcached in your application. 
+
+PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
+AC_SUBST(DEPS_CFLAGS)
+AC_SUBST(DEPS_LIBS)
+
 Some features of the library must be enabled through memcached_behavior_set(). 
+
 Hope you enjoy it!
 
 =head1 HOME

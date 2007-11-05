@@ -1,8 +1,8 @@
-0.8
+0.8 Mon Nov  5 10:40:41 PST 2007
   * Adding support for CRC hash method 
   * Adding support for UNIX sockets
   * Added additional HASHing methods of FNV1_64,FNV1A_64, FNV1_32, FNV1A_32
-  * Added pkgconfig support
+  * Added pkgconfig support (PKG_CHECK_MODULES)
   * Fixed conflict with defined type in MySQL
   * Added memcached_result_st structure and functions to manipulate it.
 

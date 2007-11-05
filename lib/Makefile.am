@@ -47,7 +47,7 @@ libmemcached_la_SOURCES = crc.c \
                           memcached_strerror.c \
 			  memcached_verbosity.c 
 libmemcached_la_LIBADD =
-libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) -release $(MEMCACHED_RELEASE)
+libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
 
 if HAVE_DTRACE
   libmemcached_la_LIBADD += libmemcached_probes.o

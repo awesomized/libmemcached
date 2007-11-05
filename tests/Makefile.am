@@ -15,6 +15,7 @@ EXTRA_DIST = output.res output2.res\
 
 LIBS = 
 
+noinst_HEADERS = test.h
 noinst_PROGRAMS = testapp
 
 testapp_SOURCES = test.c function.c

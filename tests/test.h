@@ -1,6 +1,9 @@
 /*
   Structures for generic tests.
 */
+#include <memcached.h>
+#include "../lib/common.h"
+
 typedef struct collection_st collection_st;
 typedef struct test_st test_st;
 

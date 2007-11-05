@@ -51,8 +51,9 @@ memcp - Copy files to memcached servers.
 %{_libdir}/libmemcached.a
 %{_libdir}/libmemcached.la
 %{_libdir}/libmemcached.so
-%{_libdir}/libmemcached.so.0
-%{_libdir}/libmemcached.so.0.0.0
+%{_libdir}/libmemcached.so.1
+%{_libdir}/libmemcached.so.1.0.0
+%{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
 %{_mandir}/man1/memflush.1.gz
