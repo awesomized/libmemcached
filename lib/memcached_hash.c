@@ -1,10 +1,10 @@
 #include "common.h"
 
 /* Defines */
-static uint64_t FNV_64_INIT= 0xcbf29ce484222325L;
-static uint64_t FNV_64_PRIME= 0x100000001b3L;
+static uint64_t FNV_64_INIT= 0xcbf29ce484222325LL;
+static uint64_t FNV_64_PRIME= 0x100000001b3LL;
 
-static uint32_t FNV_32_INIT= 2166136261L;
+static uint32_t FNV_32_INIT= 2166136261UL;
 static uint32_t FNV_32_PRIME= 16777619;
 
 /* Prototypes */
