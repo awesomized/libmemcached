@@ -36,7 +36,7 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
 
   while (length)
   {
-    if (!ptr->read_buffer_length)
+    if (!ptr->hosts[server_key].read_buffer_length)
     {
       size_t data_read;
 
@@ -52,7 +52,7 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
         }
 
         data_read= read(ptr->hosts[server_key].fd, 
-                        ptr->read_buffer, 
+                        ptr->hosts[server_key].read_buffer, 
                         MEMCACHED_MAX_BUFFER);
         if (data_read == -1)
         {
@@ -72,14 +72,14 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
         /* If zero, just keep looping */
       }
 
-      ptr->read_buffer_length= data_read;
-      ptr->read_ptr= ptr->read_buffer;
+      ptr->hosts[server_key].read_buffer_length= data_read;
+      ptr->hosts[server_key].read_ptr= ptr->hosts[server_key].read_buffer;
     }
 
-    *buffer_ptr= *ptr->read_ptr;
+    *buffer_ptr= *ptr->hosts[server_key].read_ptr;
     length--;
-    ptr->read_ptr++;
-    ptr->read_buffer_length--;
+    ptr->hosts[server_key].read_ptr++;
+    ptr->hosts[server_key].read_buffer_length--;
     buffer_ptr++;
   }
 
@@ -93,17 +93,17 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 
   for (x= 0; x < length; x++)
   {
-    ptr->write_buffer[ptr->write_buffer_offset]= buffer[x];
-    ptr->write_buffer_offset++;
+    ptr->hosts[server_key].write_buffer[ptr->hosts[server_key].write_buffer_offset]= buffer[x];
+    ptr->hosts[server_key].write_buffer_offset++;
 
-    if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)
+    if (ptr->hosts[server_key].write_buffer_offset == MEMCACHED_MAX_BUFFER)
     {
       size_t sent_length;
 
       sent_length= memcached_io_flush(ptr, server_key);
 
       WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
-      ptr->write_buffer_offset= 0;
+      ptr->hosts[server_key].write_buffer_offset= 0;
     }
   }
 
@@ -120,11 +120,11 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
 {
   size_t sent_length;
   size_t return_length;
-  char *write_ptr= ptr->write_buffer;
-  size_t write_length= ptr->write_buffer_offset;
+  char *write_ptr= ptr->hosts[server_key].write_buffer;
+  size_t write_length= ptr->hosts[server_key].write_buffer_offset;
   unsigned int loop= 1;
 
-  if (ptr->write_buffer_offset == 0)
+  if (ptr->hosts[server_key].write_buffer_offset == 0)
     return 0;
 
   return_length= 0;
@@ -167,8 +167,8 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
-  WATCHPOINT_ASSERT(return_length == ptr->write_buffer_offset);
-  ptr->write_buffer_offset= 0;
+  WATCHPOINT_ASSERT(return_length == ptr->hosts[server_key].write_buffer_offset);
+  ptr->hosts[server_key].write_buffer_offset= 0;
 
   return return_length;
 }
@@ -178,6 +178,6 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
 */
 void memcached_io_reset(memcached_st *ptr, unsigned int server_key)
 {
-  ptr->write_buffer_offset= 0;
+  ptr->hosts[server_key].write_buffer_offset= 0;
   memcached_quit(ptr);
 }

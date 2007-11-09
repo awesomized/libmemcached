@@ -101,6 +101,11 @@ struct memcached_server_st {
   int fd;
   unsigned int stack_responses;
   unsigned int cursor_active;
+  char write_buffer[MEMCACHED_MAX_BUFFER];
+  size_t write_buffer_offset;
+  char read_buffer[MEMCACHED_MAX_BUFFER];
+  size_t read_buffer_length;
+  char *read_ptr;
   memcached_connection type;
 };
 
@@ -157,11 +162,6 @@ struct memcached_st {
   memcached_server_st *hosts;
   unsigned int number_of_hosts;
   unsigned int cursor_server;
-  char read_buffer[MEMCACHED_MAX_BUFFER];
-  size_t read_buffer_length;
-  char *read_ptr;
-  char write_buffer[MEMCACHED_MAX_BUFFER];
-  size_t write_buffer_offset;
   char connected;
   int cached_errno;
   unsigned long long flags;

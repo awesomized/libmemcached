@@ -15,6 +15,9 @@ static void host_reset(memcached_server_st *host, char *new_hostname, unsigned i
   host->port= port;
   host->fd= -1;
   host->type= type;
+  host->write_buffer_offset= 0;
+  host->read_buffer_length= 0;
+  host->read_ptr= host->read_buffer;
 }
 
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
