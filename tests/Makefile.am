@@ -18,7 +18,7 @@ LIBS =
 noinst_HEADERS = test.h
 noinst_PROGRAMS = testapp
 
-testapp_SOURCES = test.c function.c
+testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c
 testapp_LDADD = $(LDADDS)
 
 record:

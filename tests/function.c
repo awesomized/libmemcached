@@ -12,8 +12,15 @@
 #include <unistd.h>
 #include <time.h>
 #include "../lib/common.h"
+#include "../src/generator.h"
+#include "../src/execute.h"
 
 #include "test.h"
+
+#define GLOBAL_COUNT 100000
+static pairs_st *global_pairs;
+static char *global_keys[GLOBAL_COUNT];
+static size_t global_keys_length[GLOBAL_COUNT];
 
 void init_test(memcached_st *not_used)
 {
@@ -426,9 +433,7 @@ void mget_result_test(memcached_st *memc)
                    memcached_result_length(results)));
   }
 
-  WATCHPOINT;
   memcached_result_free(&results_obj);
-  WATCHPOINT;
 }
 
 void mget_result_alloc_test(memcached_st *memc)
@@ -906,6 +911,95 @@ void string_alloc_append_toobig(memcached_st *memc)
   memcached_string_free(string);
 }
 
+void generate_data(memcached_st *memc)
+{
+  unsigned long long x;
+  global_pairs= pairs_generate(GLOBAL_COUNT);
+  execute_set(memc, global_pairs, GLOBAL_COUNT);
+
+  for (x= 0; x < GLOBAL_COUNT; x++)
+  {
+    global_keys[x]= global_pairs[x].key; 
+    global_keys_length[x]=  global_pairs[x].key_length;
+  }
+}
+
+void get_read(memcached_st *memc)
+{
+  unsigned int x;
+  memcached_return rc;
+
+  {
+    char *return_value;
+    size_t return_value_length;
+    uint16_t flags;
+
+    for (x= 0; x < GLOBAL_COUNT; x++)
+    {
+      return_value= memcached_get(memc, global_keys[x], global_keys_length[x],
+                                  &return_value_length, &flags, &rc);
+      /*
+      assert(return_value);
+      assert(rc == MEMCACHED_SUCCESS);
+    */
+      if (rc == MEMCACHED_SUCCESS && return_value)
+        free(return_value);
+    }
+  }
+}
+
+void mget_read(memcached_st *memc)
+{
+  memcached_return rc;
+
+  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* Turn this into a help function */
+  {
+    char return_key[MEMCACHED_MAX_KEY];
+    size_t return_key_length;
+    char *return_value;
+    size_t return_value_length;
+    uint16_t flags;
+
+    while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
+                                          &return_value_length, &flags, &rc)))
+    {
+      assert(return_value);
+      assert(rc == MEMCACHED_SUCCESS);
+      free(return_value);
+    }
+  }
+}
+
+void mget_read_result(memcached_st *memc)
+{
+  memcached_return rc;
+
+  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* Turn this into a help function */
+  {
+    memcached_result_st results_obj;
+    memcached_result_st *results;
+
+    results= memcached_result_create(memc, &results_obj);
+
+    while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
+    {
+      assert(results);
+      assert(rc == MEMCACHED_SUCCESS);
+    }
+
+    memcached_result_free(&results_obj);
+  }
+}
+
+void free_data(memcached_st *memc)
+{
+  pairs_free(global_pairs);
+}
+
 void add_host_test1(memcached_st *memc)
 {
   unsigned int x;
@@ -1079,6 +1173,14 @@ test_st user_tests[] ={
   {0, 0, 0}
 };
 
+test_st generate_tests[] ={
+  {"generate_data", 0, generate_data },
+  {"get_read", 0, get_read },
+  {"mget_read", 0, mget_read },
+  {"mget_read_result", 0, mget_read_result },
+  {0, 0, 0}
+};
+
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
@@ -1096,6 +1198,7 @@ collection_st collection[] ={
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"user", 0, 0, user_tests},
+  {"generate", 0, 0, generate_tests},
   {0, 0, 0, 0}
 };
 
