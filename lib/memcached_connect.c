@@ -134,10 +134,10 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
   memcached_return rc= MEMCACHED_NO_SERVERS;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
-  if (ptr->connected == ptr->number_of_hosts)
+  if (ptr->connected == ptr->number_of_hosts && ptr->number_of_hosts)
     return MEMCACHED_SUCCESS;
 
-  if (!ptr->hosts)
+  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   /* We need to clean up the multi startup piece */

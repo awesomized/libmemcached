@@ -10,6 +10,9 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
 
   rc= memcached_connect(ptr, 0);
 
+  if (rc == MEMCACHED_NO_SERVERS)
+    return rc;
+
   if (rc != MEMCACHED_SUCCESS)
     rc= MEMCACHED_SOME_ERRORS;
 

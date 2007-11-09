@@ -11,6 +11,11 @@
 
 void memcached_quit_server(memcached_st *ptr, unsigned int server_key)
 {
+  if (ptr->hosts == NULL || 
+      ptr->number_of_hosts == 0 ||
+      server_key > ptr->number_of_hosts)
+    return;
+
   if (ptr->hosts[server_key].fd != -1)
   {
     if (ptr->flags & MEM_NO_BLOCK && ptr->hosts[server_key].stack_responses)
@@ -31,7 +36,7 @@ void memcached_quit(memcached_st *ptr)
 {
   unsigned int x;
 
-  if (ptr->hosts)
+  if (ptr->hosts && ptr->number_of_hosts)
   {
     for (x= 0; x < ptr->number_of_hosts; x++)
       memcached_quit_server(ptr, x);

@@ -17,6 +17,8 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
   uint64_t hash= 1; /* Just here to remove compile warning */
   unsigned int x;
 
+  WATCHPOINT_ASSERT(ptr->number_of_hosts);
+
   switch (ptr->hash)
   {
   case MEMCACHED_HASH_DEFAULT:

@@ -143,6 +143,12 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   memcached_string_st *result_buffer;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
+  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+  {
+    *error= MEMCACHED_NO_SERVERS;
+    return NULL;
+  }
+
   server_key= memcached_generate_hash(ptr, key, key_length);
   result_buffer= &ptr->result_buffer;
 
@@ -217,6 +223,9 @@ memcached_return memcached_mget(memcached_st *ptr,
 
   if (number_of_keys == 0)
     return MEMCACHED_NOTFOUND;
+
+  if (ptr->number_of_hosts == 0)
+    return MEMCACHED_NO_SERVERS;
 
   cursor_key_exec= (char *)malloc(sizeof(char) * ptr->number_of_hosts);
   memset(cursor_key_exec, 0, sizeof(char) * ptr->number_of_hosts);

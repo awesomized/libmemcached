@@ -41,12 +41,16 @@ static memcached_return memcached_send(memcached_st *ptr,
   if (!(ptr->flags & MEM_NO_BLOCK) && ptr->write_buffer_offset != 0)
     WATCHPOINT_ASSERT(0);
 #endif
+
+  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+    return MEMCACHED_NO_SERVERS;
     
   server_key= memcached_generate_hash(ptr, key, key_length);
 
   rc= memcached_connect(ptr, server_key);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
+
 
   write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %x %llu %zu\r\n", storage_op_string(verb),

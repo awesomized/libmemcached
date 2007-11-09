@@ -870,6 +870,74 @@ uint8_t user_supplied_bug3(memcached_st *memc)
   return 0;
 }
 
+/* Make sure we behave properly if server list has no values */
+uint8_t user_supplied_bug4(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  unsigned int x;
+  uint16_t flags;
+
+  /* Here we free everything before running a bunch of mget tests */
+  {
+    memcached_server_list_free(memc->hosts);
+    memc->hosts= NULL;
+    memc->number_of_hosts= 0;
+  }
+
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
+
+  /* We need to empty the server before continueing test */
+  rc= memcached_flush(memc, 0);
+  WATCHPOINT_ERROR(rc);
+  assert(rc == MEMCACHED_NO_SERVERS);
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_NO_SERVERS);
+
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                      &return_value_length, &flags, &rc)) != NULL)
+  {
+    assert(return_value);
+  }
+  assert(!return_value);
+  assert(return_value_length == 0);
+  assert(rc == MEMCACHED_NO_SERVERS);
+
+  WATCHPOINT;
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_NO_SERVERS);
+  }
+
+  WATCHPOINT;
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_NO_SERVERS);
+  WATCHPOINT;
+
+  x= 0;
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                        &return_value_length, &flags, &rc)))
+  {
+    WATCHPOINT;
+    assert(return_value);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(return_key_length == return_value_length);
+    assert(!memcmp(return_value, return_key, return_value_length));
+    free(return_value);
+    x++;
+  }
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1258,6 +1326,7 @@ test_st user_tests[] ={
   {"user_supplied_bug1", 0, user_supplied_bug1 },
   {"user_supplied_bug2", 0, user_supplied_bug2 },
   {"user_supplied_bug3", 0, user_supplied_bug3 },
+  {"user_supplied_bug4", 0, user_supplied_bug4 },
   {0, 0, 0}
 };
 
