@@ -13,6 +13,10 @@ memslap - Load generation utility (benchmark!)
 This code is still in Alpha. More tests have currently been done on the 
 library code then on the utilities.
 
+Want to contribute? If you write more then three good patches, then I will
+just ask you to commit directly to the tree. I am happy to have additional
+people work on this project.
+
 Cheers,
   -Brian Aker
    Seattle, WA.
