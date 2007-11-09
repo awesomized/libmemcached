@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
   char *wildcard= NULL;
   memcached_server_st *servers;
   collection_st *collection;
+  uint8_t failed;
 
   collection= gets_collections();
 
@@ -113,11 +114,15 @@ int main(int argc, char *argv[])
       }
 
       gettimeofday(&start_time, NULL);
-      run->function(memc);
+      failed= run->function(memc);
       gettimeofday(&end_time, NULL);
       long int load_time= timedif(end_time, start_time);
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-              load_time % 1000);
+      if (failed)
+        fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ failed ]\n", load_time / 1000, 
+                load_time % 1000);
+      else
+        fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
+                load_time % 1000);
 
       if (next->post)
         (void)next->post(memc);

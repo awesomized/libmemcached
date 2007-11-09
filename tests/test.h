@@ -10,7 +10,7 @@ typedef struct test_st test_st;
 struct test_st {
   char *name;
   unsigned int requires_flush;
-  void (*function)(memcached_st *memc);
+  uint8_t (*function)(memcached_st *memc);
 };
 
 struct collection_st {
