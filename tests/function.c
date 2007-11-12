@@ -354,7 +354,7 @@ uint8_t stats_servername_test(memcached_st *memc)
 
 uint8_t increment_test(memcached_st *memc)
 {
-  unsigned int new_number;
+  uint64_t new_number;
   memcached_return rc;
   char *key= "number";
   char *value= "0";
@@ -379,7 +379,7 @@ uint8_t increment_test(memcached_st *memc)
 
 uint8_t decrement_test(memcached_st *memc)
 {
-  unsigned int new_number;
+  uint64_t new_number;
   memcached_return rc;
   char *key= "number";
   char *value= "3";

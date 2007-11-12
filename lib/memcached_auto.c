@@ -4,7 +4,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                                        char *verb,
                                        char *key, size_t key_length,
                                        unsigned int offset,
-                                       unsigned int *value)
+                                       uint64_t *value)
 {
   size_t send_length, sent_length;
   memcached_return rc;
@@ -53,7 +53,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   }
   else
   {
-    *value= strtol(buffer, (char **)NULL, 10);
+    *value= (uint64_t)strtoll(buffer, (char **)NULL, 10);
     rc= MEMCACHED_SUCCESS;
   }
 
@@ -63,7 +63,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
 memcached_return memcached_increment(memcached_st *ptr, 
                                      char *key, size_t key_length,
                                      unsigned int offset,
-                                     unsigned int *value)
+                                     uint64_t *value)
 {
   memcached_return rc;
 
@@ -77,7 +77,7 @@ memcached_return memcached_increment(memcached_st *ptr,
 memcached_return memcached_decrement(memcached_st *ptr, 
                                      char *key, size_t key_length,
                                      unsigned int offset,
-                                     unsigned int *value)
+                                     uint64_t *value)
 {
   memcached_return rc;
 

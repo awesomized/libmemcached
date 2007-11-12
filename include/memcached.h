@@ -182,11 +182,11 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
 memcached_return memcached_increment(memcached_st *ptr, 
                                      char *key, size_t key_length,
                                      unsigned int offset,
-                                     unsigned int *value);
+                                     uint64_t *value);
 memcached_return memcached_decrement(memcached_st *ptr, 
                                      char *key, size_t key_length,
                                      unsigned int offset,
-                                     unsigned int *value);
+                                     uint64_t *value);
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
 memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args, 
