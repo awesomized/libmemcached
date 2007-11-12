@@ -143,6 +143,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   memcached_string_st *result_buffer;
   LIBMEMCACHED_MEMCACHED_GET_START();
 
+  if (key_length == 0)
+    return MEMCACHED_NO_KEY_PROVIDED;
+
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
   {
     *error= MEMCACHED_NO_SERVERS;

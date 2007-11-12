@@ -60,6 +60,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "COULD NOT OPEN UNIX SOCKET";
   case MEMCACHED_NOT_SUPPORTED:
     return "ACTION NOT SUPPORTED";
+  case MEMCACHED_NO_KEY_PROVIDED:
+    return "A KEY LENGTH OF ZERO WAS PROVIDED";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

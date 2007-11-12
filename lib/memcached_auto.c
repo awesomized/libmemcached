@@ -11,6 +11,9 @@ static memcached_return memcached_auto(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
+  if (key_length == 0)
+    return MEMCACHED_NO_KEY_PROVIDED;
+
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 

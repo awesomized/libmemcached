@@ -11,6 +11,9 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
+  if (key_length == 0)
+    return MEMCACHED_NO_KEY_PROVIDED;
+
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 

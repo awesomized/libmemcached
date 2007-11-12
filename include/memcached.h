@@ -60,6 +60,7 @@ typedef enum {
   MEMCACHED_ERRNO,
   MEMCACHED_FAIL_UNIX_SOCKET,
   MEMCACHED_NOT_SUPPORTED,
+  MEMCACHED_NO_KEY_PROVIDED,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 

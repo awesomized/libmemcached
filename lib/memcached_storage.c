@@ -36,6 +36,9 @@ static memcached_return memcached_send(memcached_st *ptr,
   WATCHPOINT_ASSERT(value);
   WATCHPOINT_ASSERT(value_length);
 
+  if (key_length == 0)
+    return MEMCACHED_NO_KEY_PROVIDED;
+
   /* Leaving this WATCHPOINT_ASSERT in since only a library fubar could blow this */
 #ifdef NOT_DONE
   if (!(ptr->flags & MEM_NO_BLOCK) && ptr->write_buffer_offset != 0)

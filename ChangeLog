@@ -3,6 +3,7 @@
   * different buffers are now kept for different connections to
     speed up async efforts
   * Modified increment/decrement functions to return uint64_t values
+  * Fixed bug in cases where zero length keys were provided
 
 0.8 Mon Nov  5 10:40:41 PST 2007
   * Adding support for CRC hash method 
