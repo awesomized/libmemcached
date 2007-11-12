@@ -893,7 +893,6 @@ uint8_t user_supplied_bug4(memcached_st *memc)
 
   /* We need to empty the server before continueing test */
   rc= memcached_flush(memc, 0);
-  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_NO_SERVERS);
 
   rc= memcached_mget(memc, keys, key_length, 3);
@@ -908,7 +907,6 @@ uint8_t user_supplied_bug4(memcached_st *memc)
   assert(return_value_length == 0);
   assert(rc == MEMCACHED_NO_SERVERS);
 
-  WATCHPOINT;
   for (x= 0; x < 3; x++)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
@@ -917,16 +915,13 @@ uint8_t user_supplied_bug4(memcached_st *memc)
     assert(rc == MEMCACHED_NO_SERVERS);
   }
 
-  WATCHPOINT;
   rc= memcached_mget(memc, keys, key_length, 3);
   assert(rc == MEMCACHED_NO_SERVERS);
-  WATCHPOINT;
 
   x= 0;
   while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
                                         &return_value_length, &flags, &rc)))
   {
-    WATCHPOINT;
     assert(return_value);
     assert(rc == MEMCACHED_SUCCESS);
     assert(return_key_length == return_value_length);

@@ -29,6 +29,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -135,6 +136,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -241,6 +243,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -347,6 +350,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -453,6 +457,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -559,6 +564,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -665,6 +671,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -771,6 +778,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -877,6 +885,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -983,6 +992,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
@@ -1089,6 +1099,7 @@ Error 24 -> STAT VALUE
 Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
+Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Found key pid
 Found key uptime
 Found key time
