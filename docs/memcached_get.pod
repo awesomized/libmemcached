@@ -22,9 +22,9 @@ C Client Library for memcached (libmemcached, -lmemcached)
                        memcached_return *error);
 
   memcached_return
-    memcached_mget (memcached_st *ptr, 
-                    char **keys, size_t *key_length, 
-                    unsigned int number_of_keys);
+  memcached_mget (memcached_st *ptr, 
+                  char **keys, size_t *key_length, 
+                  unsigned int number_of_keys);
 
   char *memcached_fetch (memcached_st *ptr,
                          char *key, size_t *key_length, 
@@ -45,7 +45,12 @@ upon success and NULL will be returned on failure.
 memcached_mget() is used to select multiple keys at once. For multiple key
 operations it is always faster to use this function. This function always
 works asynchronously. memcached_fetch() is then used to retrieve any keys
-found. No error is given on keys that are not found.
+found. No error is given on keys that are not found. You must call either
+memcached_fetch() or memcached_fetch_result() after a successful call to
+memcached_mget(). You should continue to call these functions until they
+return NULL (aka no more values). If you need to quit in the middle of a
+memcached_get() call, execute a memcached_quit(). After you do this, you can
+issue new queries against the server.
 
 memcached_fetch() is used to fetch an individual value from the server. 
 memcached_mget() must always be called before using this method.  You
