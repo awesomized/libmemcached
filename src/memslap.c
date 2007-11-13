@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <assert.h>
 #include <sys/time.h>
 #include <getopt.h>
 #include <pthread.h>
@@ -313,6 +314,7 @@ void *run_task(void *p)
   unsigned int value= 1;
 
   memc= memcached_create(NULL);
+  WATCHPOINT_ASSERT(memc);
   if (opt_non_blocking_io)
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &value);
   if (opt_tcp_nodelay)
@@ -338,15 +340,16 @@ void *run_task(void *p)
     break;
   }
 
-  pthread_mutex_lock(&counter_mutex);
-  thread_counter--;
-  pthread_cond_signal(&count_threshhold);
-  pthread_mutex_unlock(&counter_mutex);
   memcached_free(memc);
 
   if (context->execute_pairs)
     pairs_free(context->execute_pairs);
   free(context);
+
+  pthread_mutex_lock(&counter_mutex);
+  thread_counter--;
+  pthread_cond_signal(&count_threshhold);
+  pthread_mutex_unlock(&counter_mutex);
 
   return NULL;
 }
