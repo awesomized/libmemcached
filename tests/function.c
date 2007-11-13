@@ -992,6 +992,65 @@ uint8_t user_supplied_bug5(memcached_st *memc)
   return 0;
 }
 
+uint8_t user_supplied_bug6(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"036790384900", "036790384902", "036790384904", "036790384906"};
+  size_t key_length[]=  {strlen("036790384900"), strlen("036790384902"), strlen("036790384904"), strlen("036790384906")};
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *value;
+  size_t value_length;
+  uint16_t flags;
+  unsigned int count;
+  unsigned int x;
+  char insert_data[VALUE_SIZE_BUG5];
+
+  for (x= 0; x < VALUE_SIZE_BUG5; x++)
+    insert_data[x]= rand();
+
+  memcached_flush(memc, 0);
+  value= memcached_get(memc, keys[0], key_length[0],
+                        &value_length, &flags, &rc);		
+  assert(value == NULL);
+  rc= memcached_mget(memc, keys, key_length, 4);
+
+  count= 0;
+  while ((value= memcached_fetch(memc, return_key, &return_key_length, 
+                                        &value_length, &flags, &rc)))
+    count++;
+  assert(count == 0);
+
+  for (x= 0; x < 4; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      insert_data, VALUE_SIZE_BUG5,
+                      (time_t)0, (uint16_t)0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  for (x= 0; x < 10; x++)
+  {
+    value= memcached_get(memc, keys[0], key_length[0],
+                         &value_length, &flags, &rc);		
+    assert(value);
+    free(value);
+
+    rc= memcached_mget(memc, keys, key_length, 4);
+    count= 3;
+    /* We test for purge of partial complete fetches */
+    for (count= 3; count; count--)
+    {
+      value= memcached_fetch(memc, return_key, &return_key_length, 
+                             &value_length, &flags, &rc);
+      free(value);
+      assert(rc == MEMCACHED_SUCCESS);
+    }
+  }
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1382,6 +1441,7 @@ test_st user_tests[] ={
   {"user_supplied_bug3", 0, user_supplied_bug3 },
   {"user_supplied_bug4", 0, user_supplied_bug4 },
   {"user_supplied_bug5", 1, user_supplied_bug5 },
+  {"user_supplied_bug6", 1, user_supplied_bug6 },
   {0, 0, 0}
 };
 
