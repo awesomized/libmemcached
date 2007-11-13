@@ -3,7 +3,7 @@
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
 {
   unsigned int x;
-  size_t send_length, sent_length;
+  size_t send_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
@@ -29,10 +29,9 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
       return MEMCACHED_WRITE_FAILURE;
 
-    sent_length= memcached_io_write(ptr, x, buffer, send_length, 1);
-
-    if (sent_length == -1 || sent_length != send_length)
-      return MEMCACHED_WRITE_FAILURE;
+    rc= memcached_do(ptr, x, buffer, send_length, 1);
+    if (rc != MEMCACHED_SUCCESS)
+      goto error;
 
     rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
 
@@ -40,6 +39,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
       rc= MEMCACHED_SOME_ERRORS;
   }
 
+error:
   LIBMEMCACHED_MEMCACHED_FLUSH_END();
   return rc;
 }

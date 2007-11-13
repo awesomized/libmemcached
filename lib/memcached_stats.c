@@ -223,7 +223,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
 {
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  size_t send_length, sent_length;
+  size_t send_length;
 
   rc= memcached_connect(ptr, server_key);
 
@@ -240,10 +240,9 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  sent_length= memcached_io_write(ptr, server_key, buffer, send_length, 1);
-
-  if (sent_length == -1 || sent_length != send_length)
-    return MEMCACHED_WRITE_FAILURE;
+  rc= memcached_do(ptr, server_key, buffer, send_length, 1);
+  if (rc != MEMCACHED_SUCCESS)
+      goto error;
 
   while (1)
   {
@@ -271,6 +270,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
       break;
   }
 
+error:
   if (rc == MEMCACHED_END)
     return MEMCACHED_SUCCESS;
   else

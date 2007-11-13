@@ -78,6 +78,8 @@ memcached_return memcached_string_append(memcached_string_st *string,
 size_t memcached_string_backspace(memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_string_st *string);
 void memcached_string_free(memcached_string_st *string);
+memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *commmand, 
+                              size_t command_length, char with_flush);
 
 
 #endif /* __COMMON_H__ */

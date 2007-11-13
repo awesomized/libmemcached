@@ -144,7 +144,10 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   LIBMEMCACHED_MEMCACHED_GET_START();
 
   if (key_length == 0)
-    return MEMCACHED_NO_KEY_PROVIDED;
+  {
+    *error= MEMCACHED_NO_KEY_PROVIDED;
+    return NULL;
+  }
 
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
   {
@@ -156,11 +159,6 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   result_buffer= &ptr->result_buffer;
 
   *value_length= 0;
-  *error= memcached_connect(ptr, server_key);
-
-  if (*error != MEMCACHED_SUCCESS)
-    goto error;
-
   memcpy(buf_ptr, "get ", 4);
   buf_ptr+= 4;
   memcpy(buf_ptr, key, key_length);
@@ -168,11 +166,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   memcpy(buf_ptr, "\r\n", 2);
   buf_ptr+= 2;
 
-  if ((memcached_io_write(ptr, server_key, buffer, (size_t)(buf_ptr - buffer), 1)) == -1)
-  {
-    *error= MEMCACHED_WRITE_FAILURE;
+  *error= memcached_do(ptr, server_key, buffer, (size_t)(buf_ptr - buffer), 1);
+  if (*error != MEMCACHED_SUCCESS)
     goto error;
-  }
 
   *error= memcached_value_fetch(ptr, key, &key_length, result_buffer, 
                                 flags, 0, server_key);

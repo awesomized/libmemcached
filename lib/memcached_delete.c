@@ -4,7 +4,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
                                   time_t expiration)
 {
   char to_write;
-  size_t send_length, sent_length;
+  size_t send_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
@@ -18,10 +18,6 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, key, key_length);
-
-  if ((rc= memcached_connect(ptr, server_key)) != MEMCACHED_SUCCESS)
-    return rc;
-
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -42,12 +38,9 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   else
     to_write= 1;
 
-  if ((sent_length= memcached_io_write(ptr, server_key, buffer, send_length, to_write)) == -1)
-  {
-    memcached_quit_server(ptr, server_key);
-    rc= MEMCACHED_WRITE_FAILURE;
+  rc= memcached_do(ptr, server_key, buffer, send_length, to_write);
+  if (rc != MEMCACHED_SUCCESS)
     goto error;
-  }
 
   if ((ptr->flags & MEM_NO_BLOCK))
   {
@@ -61,8 +54,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
       rc= MEMCACHED_SUCCESS;
   }
 
-  LIBMEMCACHED_MEMCACHED_DELETE_END();
-
 error:
+  LIBMEMCACHED_MEMCACHED_DELETE_END();
   return rc;
 }

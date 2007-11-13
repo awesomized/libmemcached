@@ -6,7 +6,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                                        unsigned int offset,
                                        uint64_t *value)
 {
-  size_t send_length, sent_length;
+  size_t send_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
@@ -19,19 +19,16 @@ static memcached_return memcached_auto(memcached_st *ptr,
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
-  if ((rc= memcached_connect(ptr, server_key)) != MEMCACHED_SUCCESS)
-    return rc;
-
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "%s %.*s %u\r\n", verb, 
                         (int)key_length, key,
                         offset);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
-  sent_length= memcached_io_write(ptr, server_key, buffer, send_length, 1);
 
-  if (sent_length == -1 || sent_length != send_length)
-    return MEMCACHED_WRITE_FAILURE;
+  rc= memcached_do(ptr, server_key, buffer, send_length, 1);
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
 
   memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
 

@@ -7,29 +7,25 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  rc= memcached_connect(ptr, 0);
-
-  if (rc != MEMCACHED_SUCCESS)
-    rc= MEMCACHED_SOME_ERRORS;
-
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "verbosity %u\r\n", verbosity);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
+  rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    memcached_return rc;
+    memcached_return rrc;
 
-    if ((memcached_io_write(ptr, x, buffer, send_length, 1)) == -1)
+    rrc= memcached_do(ptr, x, buffer, send_length, 1);
+    if (rrc != MEMCACHED_SUCCESS)
     {
+      rc= MEMCACHED_SOME_ERRORS;
       continue;
-      return MEMCACHED_SOME_ERRORS;
     }
 
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
-
-    if (rc != MEMCACHED_SUCCESS)
+    rrc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
+    if (rrc != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
   }
 
