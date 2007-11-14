@@ -30,6 +30,7 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key)
     ptr->hosts[server_key].write_buffer_offset= 0;
     ptr->hosts[server_key].read_buffer_length= 0;
     ptr->hosts[server_key].read_ptr= ptr->hosts[server_key].read_buffer;
+    ptr->hosts[server_key].write_ptr= ptr->hosts[server_key].write_buffer;
   }
 
   ptr->connected--;

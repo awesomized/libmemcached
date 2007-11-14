@@ -15,6 +15,7 @@ static void host_reset(memcached_server_st *host, char *new_hostname, unsigned i
   host->fd= -1;
   host->type= type;
   host->read_ptr= host->read_buffer;
+  host->write_ptr= host->write_buffer;
 }
 
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
@@ -123,7 +124,6 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   if (!new_hostname)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-  memset(new_hostname, 0, strlen(hostname)+1);
   memcpy(new_hostname, hostname, strlen(hostname));
   host_reset(&ptr->hosts[ptr->number_of_hosts], new_hostname, port, type);
   ptr->number_of_hosts++;

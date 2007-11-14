@@ -18,7 +18,6 @@ memcached_return memcached_response(memcached_st *ptr,
   unsigned int max_messages;
 
 
-  memset(buffer, 0, buffer_length);
   send_length= 0;
 
   max_messages= memcached_server_response_count(ptr, server_key);

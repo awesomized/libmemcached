@@ -105,6 +105,7 @@ struct memcached_server_st {
   unsigned int cursor_active;
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
+  char *write_ptr;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   size_t read_buffer_length;
   char *read_ptr;

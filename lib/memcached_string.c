@@ -27,10 +27,6 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
     string->end= string->string + current_offset;
 
     string->current_size+= (string->block_size * adjust);
-
-    /* We zero the block structure we just realloced */
-    memset((string->string + current_offset), 0, 
-           sizeof(char) * string->block_size);
   }
 
   return MEMCACHED_SUCCESS;

@@ -152,9 +152,6 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat,
   char buffer[SMALL_STRING_LEN];
   *error= MEMCACHED_SUCCESS;
 
-
-  memset(buffer, 0, SMALL_STRING_LEN);
-
   if (!memcmp("pid", key, strlen("pid")))
     snprintf(buffer, SMALL_STRING_LEN,"%u", stat->pid);
   else if (!memcmp("uptime", key, strlen("uptime")))

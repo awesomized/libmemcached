@@ -16,7 +16,6 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   if (rc != MEMCACHED_SUCCESS)
     rc= MEMCACHED_SOME_ERRORS;
 
-  memset(buffer, 0, MEMCACHED_DEFAULT_COMMAND_SIZE);
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
     if (expiration)

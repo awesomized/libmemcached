@@ -29,16 +29,17 @@ memcached_server_st *memcached_servers_parse(char *server_strings)
     char *ptr;
     port= 0;
 
-    memset(buffer, 0, HUGE_STRING_LEN);
     if (string)
     {
       memcpy(buffer, begin_ptr, string - begin_ptr);
+      buffer[(unsigned int)(string - begin_ptr)]= 0;
       begin_ptr= string+1;
     }
     else
     {
       size_t length= strlen(begin_ptr);
       memcpy(buffer, begin_ptr, length);
+      buffer[length]= 0;
       begin_ptr= end_ptr;
     }
 
