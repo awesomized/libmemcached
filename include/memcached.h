@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <netinet/in.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,6 +108,7 @@ struct memcached_server_st {
   char read_buffer[MEMCACHED_MAX_BUFFER];
   size_t read_buffer_length;
   char *read_ptr;
+  struct sockaddr_in servAddr;
   memcached_connection type;
 };
 
@@ -235,6 +237,9 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 #define memcached_server_list(A) A->hosts
 #define memcached_server_response_count(A,B) A->hosts[B].stack_responses
 
+memcached_return memcached_server_add_udp(memcached_st *ptr, 
+                                          char *hostname,
+                                          unsigned int port);
 memcached_return memcached_server_add_unix_socket(memcached_st *ptr, 
                                                   char *filename);
 memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 

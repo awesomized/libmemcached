@@ -7,6 +7,22 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 
+static memcached_return set_hostinfo(memcached_server_st *server)
+{
+  struct hostent *h;
+
+  if ((h= gethostbyname(server->hostname)) == NULL)
+  {
+    return MEMCACHED_HOST_LOCKUP_FAILURE;
+  }
+
+  server->servAddr.sin_family= h->h_addrtype;
+  memcpy((char *) &server->servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
+  server->servAddr.sin_port = htons(server->port);
+
+  return MEMCACHED_SUCCESS;
+}
+
 static memcached_return unix_socket_connect(memcached_st *ptr, unsigned int server_key)
 {
   struct sockaddr_un servAddr;
@@ -22,12 +38,14 @@ static memcached_return unix_socket_connect(memcached_st *ptr, unsigned int serv
 
     memset(&servAddr, 0, sizeof (struct sockaddr_un));
     servAddr.sun_family= AF_UNIX;
-    strcpy(servAddr.sun_path, ptr->hosts[server_key].hostname);
+    strcpy(servAddr.sun_path, ptr->hosts[server_key].hostname); /* Copy filename */
 
     addrlen= strlen(servAddr.sun_path) + sizeof(servAddr.sun_family);
 
 test_connect:
-    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
+    if (connect(ptr->hosts[server_key].fd, 
+                (struct sockaddr *)&servAddr,
+                sizeof(servAddr)) < 0)
     {
       switch (errno) {
         /* We are spinning waiting on connect */
@@ -47,25 +65,48 @@ test_connect:
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
+static memcached_return udp_connect(memcached_st *ptr, unsigned int server_key)
 {
-  struct sockaddr_in servAddr;
-  struct hostent *h;
-
   if (ptr->hosts[server_key].fd == -1)
   {
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
 
-    if ((h= gethostbyname(ptr->hosts[server_key].hostname)) == NULL)
+    if (ptr->hosts[server_key].servAddr.sin_family == 0)
     {
-      ptr->cached_errno= h_errno;
-      return MEMCACHED_HOST_LOCKUP_FAILURE;
+      memcached_return rc;
+
+      rc= set_hostinfo(&ptr->hosts[server_key]);
+      if (rc != MEMCACHED_SUCCESS)
+        return rc;
     }
 
-    servAddr.sin_family= h->h_addrtype;
-    memcpy((char *) &servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
-    servAddr.sin_port = htons(ptr->hosts[server_key].port);
+    /* Create the socket */
+    if ((ptr->hosts[server_key].fd= socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+      ptr->cached_errno= errno;
+      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    }
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
+static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
+{
+  if (ptr->hosts[server_key].fd == -1)
+  {
+    /* Old connection junk still is in the structure */
+    WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
+
+    if (ptr->hosts[server_key].servAddr.sin_family == 0)
+    {
+      memcached_return rc;
+
+      rc= set_hostinfo(&ptr->hosts[server_key]);
+      if (rc != MEMCACHED_SUCCESS)
+        return rc;
+    }
 
     /* Create the socket */
     if ((ptr->hosts[server_key].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -106,7 +147,9 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
 
     /* connect to server */
 test_connect:
-    if (connect(ptr->hosts[server_key].fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
+    if (connect(ptr->hosts[server_key].fd, 
+                (struct sockaddr *)&ptr->hosts[server_key].servAddr, 
+                sizeof(struct sockaddr)) < 0)
     {
       switch (errno) {
         /* We are spinning waiting on connect */
@@ -142,7 +185,25 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
 
   /* We need to clean up the multi startup piece */
   if (server_key)
+  {
     rc= tcp_connect(ptr, server_key);
+    switch (ptr->hosts[server_key].type)
+    {
+    case MEMCACHED_CONNECTION_UNKNOWN:
+      WATCHPOINT_ASSERT(0);
+      rc= MEMCACHED_NOT_SUPPORTED;
+      break;
+    case MEMCACHED_CONNECTION_UDP:
+      rc= udp_connect(ptr, server_key);
+      break;
+    case MEMCACHED_CONNECTION_TCP:
+      rc= tcp_connect(ptr, server_key);
+      break;
+    case MEMCACHED_CONNECTION_UNIX_SOCKET:
+      rc= unix_socket_connect(ptr, server_key);
+      break;
+    }
+  }
   else
   {
     unsigned int x;
@@ -156,9 +217,11 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
       switch (ptr->hosts[x].type)
       {
       case MEMCACHED_CONNECTION_UNKNOWN:
-      case MEMCACHED_CONNECTION_UDP:
         WATCHPOINT_ASSERT(0);
         possible_rc= MEMCACHED_NOT_SUPPORTED;
+        break;
+      case MEMCACHED_CONNECTION_UDP:
+        possible_rc= udp_connect(ptr, x);
         break;
       case MEMCACHED_CONNECTION_TCP:
         possible_rc= tcp_connect(ptr, x);

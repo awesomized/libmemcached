@@ -140,24 +140,38 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
     }
 
     sent_length= 0;
-    if ((ssize_t)(sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
-                                     write_length)) == -1)
+    if (ptr->hosts[server_key].type == MEMCACHED_CONNECTION_UDP)
     {
-      switch (errno)
+
+      sent_length= sendto(ptr->hosts[server_key].fd, write_ptr, write_length,
+                          0, 0, 0);
+      /*
+      rc = sendto(sd, argv[i], strlen(argv[i])+1, 0,
+                  (struct sockaddr *) &remoteServAddr,
+                  sizeof(remoteServAddr));
+                */
+    }
+    else
+    {
+      if ((ssize_t)(sent_length= write(ptr->hosts[server_key].fd, write_ptr, 
+                                       write_length)) == -1)
       {
-      case ENOBUFS:
-      case EAGAIN:
-        WATCHPOINT;
-        continue;
-        if (loop < 100)
+        switch (errno)
         {
-          loop++;
-          break;
+        case ENOBUFS:
+        case EAGAIN:
+          WATCHPOINT;
+          continue;
+          if (loop < 100)
+          {
+            loop++;
+            break;
+          }
+          /* Yes, we want to fall through */
+        default:
+          ptr->cached_errno= errno;
+          return -1;
         }
-        /* Yes, we want to fall through */
-      default:
-        ptr->cached_errno= errno;
-        return -1;
       }
     }
 

@@ -20,3 +20,6 @@ Makefile(.in)?$
 # Generated man files
 \.1$
 \.3$
+
+# Merged files
+\.orig$

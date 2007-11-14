@@ -9,14 +9,11 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
 static void host_reset(memcached_server_st *host, char *new_hostname, unsigned int port,
                        memcached_connection type)
 {
-  host->stack_responses= 0;
-  host->cursor_active= 0;
+  memset(host,  0, sizeof(memcached_server_st));
   host->hostname= new_hostname;
   host->port= port;
   host->fd= -1;
   host->type= type;
-  host->write_buffer_offset= 0;
-  host->read_buffer_length= 0;
   host->read_ptr= host->read_buffer;
 }
 
@@ -64,7 +61,22 @@ memcached_return memcached_server_add_unix_socket(memcached_st *ptr, char *filen
   return server_add(ptr, filename, 0, MEMCACHED_CONNECTION_UNIX_SOCKET);
 }
 
-memcached_return memcached_server_add(memcached_st *ptr, char *hostname, unsigned int port)
+memcached_return memcached_server_add_udp(memcached_st *ptr, 
+                                          char *hostname,
+                                          unsigned int port)
+{
+  if (!port)
+    port= MEMCACHED_DEFAULT_PORT; 
+
+  if (!hostname)
+    hostname= "localhost"; 
+
+  return server_add(ptr, hostname, port, MEMCACHED_CONNECTION_UDP);
+}
+
+memcached_return memcached_server_add(memcached_st *ptr, 
+                                      char *hostname, 
+                                      unsigned int port)
 {
   if (!port)
     port= MEMCACHED_DEFAULT_PORT; 

@@ -1379,6 +1379,22 @@ memcached_return pre_unix_socket(memcached_st *memc)
   return rc;
 }
 
+memcached_return pre_udp(memcached_st *memc)
+{
+  memcached_return rc;
+
+  memcached_server_list_free(memc->hosts);
+  memc->hosts= NULL;
+  memc->number_of_hosts= 0;
+
+  if (0)
+    return MEMCACHED_FAILURE;
+
+  rc= memcached_server_add_udp(memc, "localhost", MEMCACHED_DEFAULT_PORT);
+
+  return rc;
+}
+
 memcached_return pre_nodelay(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
@@ -1467,6 +1483,7 @@ collection_st collection[] ={
   {"ketama", pre_hash_ketama, 0, tests},
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
+//  {"udp", pre_udp, 0, tests},
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"user", 0, 0, user_tests},
