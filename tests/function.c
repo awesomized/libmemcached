@@ -1051,6 +1051,51 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   return 0;
 }
 
+/* Test flag store/retrieve */
+uint8_t user_supplied_bug7(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys= "036790384900";
+  size_t key_length=  strlen("036790384900");
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *value;
+  size_t value_length;
+  uint16_t flags;
+  unsigned int x;
+  char insert_data[VALUE_SIZE_BUG5];
+
+  for (x= 0; x < VALUE_SIZE_BUG5; x++)
+    insert_data[x]= rand();
+
+  memcached_flush(memc, 0);
+
+  flags= 245;
+  rc= memcached_set(memc, keys, key_length, 
+                    insert_data, VALUE_SIZE_BUG5,
+                    (time_t)0, flags);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  flags= 0;
+  value= memcached_get(memc, keys, key_length,
+                        &value_length, &flags, &rc);		
+  assert(flags == 245);
+  assert(value);
+  free(value);
+
+  rc= memcached_mget(memc, &keys, &key_length, 1);
+
+  flags= 0;
+  value= memcached_fetch(memc, return_key, &return_key_length, 
+                         &value_length, &flags, &rc);
+  assert(flags == 245);
+  assert(value);
+  free(value);
+
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1458,6 +1503,7 @@ test_st user_tests[] ={
   {"user_supplied_bug4", 0, user_supplied_bug4 },
   {"user_supplied_bug5", 1, user_supplied_bug5 },
   {"user_supplied_bug6", 1, user_supplied_bug6 },
+  {"user_supplied_bug7", 1, user_supplied_bug7 },
   {0, 0, 0}
 };
 
