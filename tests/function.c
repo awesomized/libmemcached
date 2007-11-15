@@ -152,6 +152,51 @@ uint8_t append_test(memcached_st *memc)
   return 0;
 }
 
+uint8_t append_binary_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "numbers";
+  unsigned int *store_ptr;
+  unsigned int store_list[] = { 23, 56, 499, 98, 32847, 0 };
+  char *value;
+  size_t value_length;
+  uint16_t flags;
+  unsigned int x;
+
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, 
+                    key, strlen(key), 
+                    NULL, 0,
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  for (x= 0; store_list[x] ; x++)
+  {
+    rc= memcached_append(memc, 
+                         key, strlen(key), 
+                         (char *)&store_list[x], sizeof(unsigned int),
+                         (time_t)0, (uint16_t)0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  value= memcached_get(memc, key, strlen(key),
+                       &value_length, &flags, &rc);
+  assert((value_length == (sizeof(unsigned int) * x)));
+  assert(rc == MEMCACHED_SUCCESS);
+
+  store_ptr= store_list;
+  x= 0;
+  while (*store_ptr)
+  {
+    assert(*store_ptr == store_list[x++]);
+    store_ptr++;
+  }
+
+  return 0;
+}
+
 uint8_t cas_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -1619,6 +1664,7 @@ test_st version_1_2_3[] ={
   {"append", 0, append_test },
   {"prepend", 0, prepend_test },
 //  {"cas", 0, cas_test },
+  {"append_binary", 0, append_binary_test },
   {0, 0, 0}
 };
 

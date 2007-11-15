@@ -56,8 +56,8 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  WATCHPOINT_ASSERT(value);
-  WATCHPOINT_ASSERT(value_length);
+  WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
+  WATCHPOINT_ASSERT(!(value && value_length == 0));
 
   if (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
