@@ -6,6 +6,7 @@ memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *
   memcached_return rc;
   ssize_t sent_length;
 
+  WATCHPOINT_ASSERT(command_length);
   WATCHPOINT_ASSERT(command);
 
   if (ptr->hosts[server_key].cursor_active)

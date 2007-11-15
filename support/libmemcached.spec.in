@@ -52,7 +52,7 @@ memcp - Copy files to memcached servers.
 %{_libdir}/libmemcached.la
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcached.so.1
-%{_libdir}/libmemcached.so.1.0.0
+%{_libdir}/libmemcached.so.1.0.1
 %{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
@@ -63,6 +63,7 @@ memcp - Copy files to memcached servers.
 %{_mandir}/man3/libmemcached.3.gz
 %{_mandir}/man3/libmemcached_examples.3.gz
 %{_mandir}/man3/memcached_add.3.gz
+%{_mandir}/man3/memcached_append.3.gz
 %{_mandir}/man3/memcached_behavior_get.3.gz
 %{_mandir}/man3/memcached_behavior_set.3.gz
 %{_mandir}/man3/memcached_clone.3.gz
@@ -70,10 +71,12 @@ memcp - Copy files to memcached servers.
 %{_mandir}/man3/memcached_decrement.3.gz
 %{_mandir}/man3/memcached_delete.3.gz
 %{_mandir}/man3/memcached_fetch.3.gz
+%{_mandir}/man3/memcached_fetch_result.3.gz
 %{_mandir}/man3/memcached_free.3.gz
 %{_mandir}/man3/memcached_get.3.gz
 %{_mandir}/man3/memcached_increment.3.gz
 %{_mandir}/man3/memcached_mget.3.gz
+%{_mandir}/man3/memcached_prepend.3.gz
 %{_mandir}/man3/memcached_quit.3.gz
 %{_mandir}/man3/memcached_replace.3.gz
 %{_mandir}/man3/memcached_server_add.3.gz

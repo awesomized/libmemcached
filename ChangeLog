@@ -1,4 +1,4 @@
-0.9
+0.9 Thu Nov 15 07:44:00 PST 2007
   * fix for when no servers are definied.
   * different buffers are now kept for different connections to
     speed up async efforts
@@ -6,6 +6,10 @@
   * Fixed bug in cases where zero length keys were provided
   * Thread cleanup issue in memslap
   * No hostname lookup on reconnect
+  * Fix for flag settings (was doing hex by accident!)
+  * Support for 1.2.4 server additions "prepend" and "append" added.
+  * Added memcached_version()... not sure if I will make this public 
+    or not.
 
 0.8 Mon Nov  5 10:40:41 PST 2007
   * Adding support for CRC hash method 

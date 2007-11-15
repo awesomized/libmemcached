@@ -117,6 +117,113 @@ uint8_t set_test(memcached_st *memc)
   return 0;
 }
 
+uint8_t append_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "fig";
+  char *value= "we";
+  size_t value_length;
+  uint16_t flags;
+
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_append(memc, key, strlen(key), 
+                       " the", strlen(" the"),
+                       (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_append(memc, key, strlen(key), 
+                       " people", strlen(" people"),
+                       (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_get(memc, key, strlen(key),
+                       &value_length, &flags, &rc);
+  assert(!memcmp(value, "we the people", strlen("we the people")));
+  assert(strlen("we the people") == value_length);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
+uint8_t cas_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "fun";
+  size_t key_length= strlen("fun");
+  char *value= "we the people";
+  size_t value_length= strlen("we the people");
+  memcached_result_st results_obj;
+  memcached_result_st *results;
+
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_mget(memc, &key, &key_length, 1);
+
+  results= memcached_result_create(memc, &results_obj);
+
+  results= memcached_fetch_result(memc, &results_obj, &rc);
+  assert(results);
+  assert(rc == MEMCACHED_SUCCESS);
+  WATCHPOINT_NUMBER(memcached_result_cas(results));
+  WATCHPOINT_ASSERT(memcached_result_cas(results));
+
+  assert(!memcmp(value, "we the people", strlen("we the people")));
+  assert(strlen("we the people") == value_length);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_result_free(&results_obj);
+
+  return 0;
+}
+
+uint8_t prepend_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "fig";
+  char *value= "people";
+  size_t value_length;
+  uint16_t flags;
+
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_prepend(memc, key, strlen(key), 
+                       "the ", strlen("the "),
+                       (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_prepend(memc, key, strlen(key), 
+                       "we ", strlen("we "),
+                       (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_get(memc, key, strlen(key),
+                       &value_length, &flags, &rc);
+  assert(!memcmp(value, "we the people", strlen("we the people")));
+  assert(strlen("we the people") == value_length);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
 uint8_t add_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -1407,6 +1514,18 @@ memcached_return pre_hash_ketama(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return check_for_1_2_3(memcached_st *memc)
+{
+  memcached_version(memc);
+
+  if (memc->hosts[0].major_version >= 1 &&
+      memc->hosts[0].minor_version >= 2 &&
+      memc->hosts[0].micro_version >= 4)
+    return MEMCACHED_SUCCESS;
+
+  return MEMCACHED_FAILURE;
+}
+
 memcached_return pre_unix_socket(memcached_st *memc)
 {
   memcached_return rc;
@@ -1496,6 +1615,13 @@ test_st result_tests[] ={
   {0, 0, 0}
 };
 
+test_st version_1_2_3[] ={
+  {"append", 0, append_test },
+  {"prepend", 0, prepend_test },
+//  {"cas", 0, cas_test },
+  {0, 0, 0}
+};
+
 test_st user_tests[] ={
   {"user_supplied_bug1", 0, user_supplied_bug1 },
   {"user_supplied_bug2", 0, user_supplied_bug2 },
@@ -1530,10 +1656,12 @@ collection_st collection[] ={
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
 //  {"udp", pre_udp, 0, tests},
+  {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
+  {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {0, 0, 0, 0}
 };
 

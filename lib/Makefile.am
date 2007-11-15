@@ -46,7 +46,9 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_string.c \
 			  memcached_stats.c \
                           memcached_strerror.c \
-			  memcached_verbosity.c 
+			  memcached_verbosity.c \
+			  memcached_version.c 
+
 libmemcached_la_LIBADD =
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
 

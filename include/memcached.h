@@ -25,6 +25,7 @@ typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
 
+#define MEMCACHED_VERSION_STRING 12
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define SMALL_STRING_LEN 1024
@@ -111,6 +112,9 @@ struct memcached_server_st {
   char *read_ptr;
   struct sockaddr_in servAddr;
   memcached_connection type;
+  uint8_t major_version;
+  uint8_t minor_version;
+  uint8_t micro_version;
 };
 
 struct memcached_stat_st {
@@ -118,7 +122,7 @@ struct memcached_stat_st {
   unsigned int uptime;
   unsigned int threads;
   time_t time;
-  char version[8];
+  char version[MEMCACHED_VERSION_STRING];
   unsigned int pointer_size;
   unsigned int rusage_user;
   unsigned int rusage_system;
@@ -215,6 +219,22 @@ memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_leng
                                    char *value, size_t value_length, 
                                    time_t expiration,
                                    uint16_t  flags);
+memcached_return memcached_append(memcached_st *ptr, 
+                                  char *key, size_t key_length,
+                                  char *value, size_t value_length, 
+                                  time_t expiration,
+                                  uint16_t flags);
+memcached_return memcached_prepend(memcached_st *ptr, 
+                                   char *key, size_t key_length,
+                                   char *value, size_t value_length, 
+                                   time_t expiration,
+                                   uint16_t flags);
+memcached_return memcached_cas(memcached_st *ptr, 
+                               char *key, size_t key_length,
+                               char *value, size_t value_length, 
+                               time_t expiration,
+                               uint16_t flags,
+                               uint64_t cas);
 
 /* Get functions */
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length,

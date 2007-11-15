@@ -51,7 +51,7 @@ memcached_return memcached_response(memcached_st *ptr,
 
   switch(buffer[0])
   {
-  case 'V': /* VALUE */
+  case 'V': /* VALUE || VERSION */
     return MEMCACHED_SUCCESS;
   case 'O': /* OK */
     return MEMCACHED_SUCCESS;
