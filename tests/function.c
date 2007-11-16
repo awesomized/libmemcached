@@ -186,7 +186,7 @@ uint8_t append_binary_test(memcached_st *memc)
   assert((value_length == (sizeof(unsigned int) * x)));
   assert(rc == MEMCACHED_SUCCESS);
 
-  store_ptr= store_list;
+  store_ptr= (unsigned int *)value;
   x= 0;
   while (*store_ptr)
   {

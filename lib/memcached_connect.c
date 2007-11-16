@@ -72,13 +72,15 @@ static memcached_return udp_connect(memcached_st *ptr, unsigned int server_key)
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
 
-    if (ptr->hosts[server_key].servAddr.sin_family == 0)
+    if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED)
     {
       memcached_return rc;
 
       rc= set_hostinfo(&ptr->hosts[server_key]);
       if (rc != MEMCACHED_SUCCESS)
         return rc;
+
+      ptr->hosts[server_key].sockaddr_inited= MEMCACHED_ALLOCATED;
     }
 
     /* Create the socket */

@@ -110,6 +110,7 @@ struct memcached_server_st {
   char read_buffer[MEMCACHED_MAX_BUFFER];
   size_t read_buffer_length;
   char *read_ptr;
+  memcached_allocated sockaddr_inited;
   struct sockaddr_in servAddr;
   memcached_connection type;
   uint8_t major_version;
@@ -189,11 +190,11 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
                                   time_t expiration);
 memcached_return memcached_increment(memcached_st *ptr, 
                                      char *key, size_t key_length,
-                                     unsigned int offset,
+                                     uint32_t offset,
                                      uint64_t *value);
 memcached_return memcached_decrement(memcached_st *ptr, 
                                      char *key, size_t key_length,
-                                     unsigned int offset,
+                                     uint32_t offset,
                                      uint64_t *value);
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);

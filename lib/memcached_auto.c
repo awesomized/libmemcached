@@ -60,7 +60,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
 
 memcached_return memcached_increment(memcached_st *ptr, 
                                      char *key, size_t key_length,
-                                     unsigned int offset,
+                                     uint32_t offset,
                                      uint64_t *value)
 {
   memcached_return rc;
@@ -74,7 +74,7 @@ memcached_return memcached_increment(memcached_st *ptr,
 
 memcached_return memcached_decrement(memcached_st *ptr, 
                                      char *key, size_t key_length,
-                                     unsigned int offset,
+                                     uint32_t offset,
                                      uint64_t *value)
 {
   memcached_return rc;
