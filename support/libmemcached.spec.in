@@ -66,6 +66,7 @@ memcp - Copy files to memcached servers.
 %{_mandir}/man3/memcached_append.3.gz
 %{_mandir}/man3/memcached_behavior_get.3.gz
 %{_mandir}/man3/memcached_behavior_set.3.gz
+%{_mandir}/man3/memcached_cas.3.gz
 %{_mandir}/man3/memcached_clone.3.gz
 %{_mandir}/man3/memcached_create.3.gz
 %{_mandir}/man3/memcached_decrement.3.gz

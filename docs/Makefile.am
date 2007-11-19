@@ -34,6 +34,7 @@ man_MANS = libmemcached.3\
 	memcached_append.3\
 	memcached_behavior_get.3\
 	memcached_behavior_set.3\
+	memcached_cas.3\
 	memcached_clone.3\
 	memcached_create.3\
 	memcached_decrement.3\
@@ -80,6 +81,9 @@ memcached_clone.3: memcached_create.pod
 
 memcached_set.3: memcached_set.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_set.pod > memcached_set.3
+
+memcached_cas.3: memcached_set.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_set.pod > memcached_cas.3
 
 memcached_replace.3: memcached_set.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_set.pod > memcached_replace.3

@@ -197,6 +197,50 @@ uint8_t append_binary_test(memcached_st *memc)
   return 0;
 }
 
+uint8_t cas2_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  char *value= "we the people";
+  size_t value_length= strlen("we the people");
+  unsigned int x;
+  memcached_result_st results_obj;
+  memcached_result_st *results;
+  unsigned int set= 1;
+
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
+
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+
+  results= memcached_result_create(memc, &results_obj);
+
+  results= memcached_fetch_result(memc, &results_obj, &rc);
+  assert(results);
+  assert(results->cas);
+  assert(rc == MEMCACHED_SUCCESS);
+  WATCHPOINT_ASSERT(memcached_result_cas(results));
+
+  assert(!memcmp(value, "we the people", strlen("we the people")));
+  assert(strlen("we the people") == value_length);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_result_free(&results_obj);
+
+  return 0;
+}
+
 uint8_t cas_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -206,9 +250,12 @@ uint8_t cas_test(memcached_st *memc)
   size_t value_length= strlen("we the people");
   memcached_result_st results_obj;
   memcached_result_st *results;
+  unsigned int set= 1;
 
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
@@ -222,7 +269,6 @@ uint8_t cas_test(memcached_st *memc)
   results= memcached_fetch_result(memc, &results_obj, &rc);
   assert(results);
   assert(rc == MEMCACHED_SUCCESS);
-  WATCHPOINT_NUMBER(memcached_result_cas(results));
   WATCHPOINT_ASSERT(memcached_result_cas(results));
 
   assert(!memcmp(value, "we the people", strlen("we the people")));
@@ -1663,7 +1709,8 @@ test_st result_tests[] ={
 test_st version_1_2_3[] ={
   {"append", 0, append_test },
   {"prepend", 0, prepend_test },
-//  {"cas", 0, cas_test },
+  {"cas", 0, cas_test },
+  {"cas2", 0, cas2_test },
   {"append_binary", 0, append_binary_test },
   {0, 0, 0}
 };

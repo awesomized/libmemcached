@@ -4,6 +4,7 @@
 static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                                               memcached_string_st *value,
                                               uint16_t *flags,
+                                              uint64_t *cas,
                                               char load_key,
                                               unsigned int server_key)
 {
@@ -67,8 +68,19 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     if (end_ptr == string_ptr)
         goto read_error;
 
-    /* Skip past the \r\n */
-    string_ptr+= 2;
+    /* Skip spaces */
+    if (*string_ptr == '\r')
+    {
+      /* Skip past the \r\n */
+      string_ptr+= 2;
+    }
+    else
+    {
+      string_ptr++;
+      for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
+      if (cas)
+        *cas= (size_t)strtoll(next_ptr, &string_ptr, 10);
+    }
 
     if (end_ptr < string_ptr)
         goto read_error;
@@ -169,7 +181,7 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
     goto error;
 
   *error= memcached_value_fetch(ptr, key, &key_length, result_buffer, 
-                                flags, 0, server_key);
+                                flags, NULL, 0, server_key);
   *value_length= memcached_string_length(result_buffer);
   if (*error == MEMCACHED_END && *value_length == 0)
   {
@@ -214,6 +226,9 @@ memcached_return memcached_mget(memcached_st *ptr,
 {
   unsigned int x;
   memcached_return rc= MEMCACHED_NOTFOUND;
+  char *get_command= "get ";
+  uint8_t get_command_length= 4
+
   LIBMEMCACHED_MEMCACHED_MGET_START();
   ptr->cursor_server= 0;
 
@@ -222,6 +237,12 @@ memcached_return memcached_mget(memcached_st *ptr,
 
   if (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
+
+  if (ptr->flags & MEM_SUPPORT_CAS)
+  {
+    get_command= "gets ";
+    get_command_length= 5;
+  }
 
   for (x= 0; x < number_of_keys; x++)
   {
@@ -233,7 +254,7 @@ memcached_return memcached_mget(memcached_st *ptr,
     {
       rc= memcached_connect(ptr, server_key);
 
-      if ((memcached_io_write(ptr, server_key, "get ", 4, 0)) == -1)
+      if ((memcached_io_write(ptr, server_key, get_command, get_command_length, 0)) == -1)
       {
         memcached_quit_server(ptr, server_key);
         rc= MEMCACHED_SOME_ERRORS;
@@ -297,7 +318,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     }
 
     *error = memcached_value_fetch(ptr, key, key_length, result_buffer, 
-                                   flags, 1, ptr->cursor_server);
+                                   flags, NULL, 1, ptr->cursor_server);
     *value_length= memcached_string_length(result_buffer);
     
     if (*error == MEMCACHED_NOTFOUND)
@@ -345,9 +366,11 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
       continue;
     }
 
+    result->cas= 0; /* We do this so we do not send in any junk */
     *error= memcached_value_fetch(ptr, result->key, &result->key_length, 
                                        &result->value, 
                                        &result->flags,
+                                       &result->cas,
                                        1, ptr->cursor_server);
     
     if (*error == MEMCACHED_NOTFOUND)

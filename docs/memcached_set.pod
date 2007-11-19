@@ -44,6 +44,13 @@ C Client Library for memcached (libmemcached, -lmemcached)
                       char *value, size_t value_length, 
                       time_t expiration,
                       uint16_t flags)
+  memcached_return 
+    memcached_cas(memcached_st *ptr, 
+                  char *key, size_t key_length,
+                  char *value, size_t value_length, 
+                  time_t expiration,
+                  uint16_t flags,
+                  uint64_t cas);
 
 =head1 DESCRIPTION
 
@@ -71,8 +78,15 @@ stored. Currently expiration and key are not used in the server.
 memcached_append() places a segment of data at the end of the last piece of 
 data stored. Currently expiration and key are not used in the server.
 
-memcached_set() with non-blocking IO is the fastest way to store data on the
-server.
+memcached_cas() overwrites data in the server as long as the "cas" value is 
+still the same in the server. You can get the cas value of a result by 
+calling memcached_result_cas() on a memcached_result_st(3) structure. At the point 
+that this note was written cas is still buggy in memached. Turning on support
+for it in libmemcached(3) is optional. Please see memcached_set() for 
+information on how to do this.
+
+If you are looking for performance, memcached_set() with non-blocking IO is 
+the fastest way to store data on the server.
 
 =head1 RETURN
 

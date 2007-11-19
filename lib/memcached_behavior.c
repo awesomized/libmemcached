@@ -26,6 +26,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 {
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
+    set_behavior_flag(ptr, MEM_SUPPORT_CAS, data);
+    break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     set_behavior_flag(ptr, MEM_NO_BLOCK, data);
     break;
@@ -67,6 +70,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
 
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
+    temp_flag= MEM_SUPPORT_CAS;
+    break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     temp_flag= MEM_USE_CACHE_LOOKUPS;
     break;

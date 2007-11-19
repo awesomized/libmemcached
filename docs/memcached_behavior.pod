@@ -55,6 +55,10 @@ Makes the default hashing algorithm for keys use MD5. The value can be set to ei
 
 Memcached can cache named lookups so that DNS lookups are made only once.
 
+=item MEMCACHED_BEHAVIOR_SUPPORT_CAS
+
+Support CAS operations (this is not enabled by default at this point in the server since it imposes a slight performance penalty).
+
 =back
 
 =head1 RETURN

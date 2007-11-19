@@ -44,6 +44,7 @@ typedef enum {
   MEM_USE_KETAMA= (1 << 4),
   MEM_USE_CRC= (1 << 5),
   MEM_USE_CACHE_LOOKUPS= (1 << 6),
+  MEM_SUPPORT_CAS= (1 << 7),
 } memcached_flags;
 
 /* Hashing algo */
