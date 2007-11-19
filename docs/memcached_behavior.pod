@@ -47,9 +47,10 @@ available.
 Turns on the no-delay feature for connecting sockets (may be faster in some
 environments).
 
-=item MEMCACHED_BEHAVIOR_MD5_HASHING
+=item MEMCACHED_BEHAVIOR_HASH
 
-Makes the default hashing algorithm for keys use MD5.
+Makes the default hashing algorithm for keys use MD5. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_KETAMA. The behavior for all hashes but MEMCACHED_HASH_DEFAULT is identitical to the Java driver written by Dustin Sallings.
+
 
 =back
 
