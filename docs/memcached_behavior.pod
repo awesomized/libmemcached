@@ -51,6 +51,9 @@ environments).
 
 Makes the default hashing algorithm for keys use MD5. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_KETAMA. The behavior for all hashes but MEMCACHED_HASH_DEFAULT is identitical to the Java driver written by Dustin Sallings.
 
+=item MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
+
+Memcached can cache named lookups so that DNS lookups are made only once.
 
 =back
 

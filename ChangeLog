@@ -1,5 +1,7 @@
 0.10
   * Added append binary test.
+  * Added MEMCACHED_BEHAVIOR_CACHE_LOOKUPS behavior so that you can save on
+    multiple DNS lookups.
 
 0.9 Thu Nov 15 07:44:00 PST 2007
   * fix for when no servers are definied.

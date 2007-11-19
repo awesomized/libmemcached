@@ -72,7 +72,12 @@ static memcached_return udp_connect(memcached_st *ptr, unsigned int server_key)
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
 
-    if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED)
+    /*
+      If we have not allocated the hosts object.
+      Or if the cache has not been set.
+    */
+    if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
+        (!(ptr->flags & MEM_USE_CACHE_LOOKUPS)))
     {
       memcached_return rc;
 

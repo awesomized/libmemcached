@@ -35,6 +35,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_HASH:
     ptr->hash= *(memcached_hash *)(data);
     break;
+  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
+    set_behavior_flag(ptr, MEM_USE_CACHE_LOOKUPS, data);
+    break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
@@ -64,6 +67,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
 
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
+    temp_flag= MEM_USE_CACHE_LOOKUPS;
+    break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     temp_flag= MEM_NO_BLOCK;
     break;
