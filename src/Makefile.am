@@ -1,7 +1,7 @@
 INCLUDES = -I$(top_builddir)/include
 LDADDS = ../lib/libmemcached.la
 
-bin_PROGRAMS = memcat memcp memstat memrm memflush memslap
+bin_PROGRAMS = memcat memcp memstat memrm memflush memslap memerror
 
 noinst_HEADERS = client_options.h \
 		utilities.h \
@@ -22,6 +22,9 @@ memrm_LDADD = $(LDADDS)
 
 memflush_SOURCES = memflush.c utilities.c
 memflush_LDADD = $(LDADDS)
+
+memerror_SOURCES = memerror.c utilities.c
+memerror_LDADD = $(LDADDS)
 
 memslap_SOURCES = memslap.c utilities.c generator.c execute.c
 memslap_LDADD = $(LDADDS) -lpthread

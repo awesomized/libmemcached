@@ -24,6 +24,7 @@ memrm - Remove a key(s) from the serrver.
 memstat - Dump the stats of your servers to standard output.
 memslap - Generate testing loads on a memcached cluster.
 memcp - Copy files to memcached servers.
+memerror - Creates human readable messages from libmemecached error codes.
 
 %prep
 %setup -q
@@ -43,6 +44,7 @@ memcp - Copy files to memcached servers.
 %files
 %{_bindir}/memcat
 %{_bindir}/memcp
+%{_bindir}/memerror
 %{_bindir}/memflush
 %{_bindir}/memrm
 %{_bindir}/memstat

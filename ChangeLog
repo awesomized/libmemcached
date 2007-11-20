@@ -4,6 +4,8 @@
     multiple DNS lookups.
   * Added CAS support, though this is optional and must be enabled during
     runtime.
+  * Added the utility memerror to create human readable error strings
+    from memcached errors (aka convert ints to strings)
 
 0.9 Thu Nov 15 07:44:00 PST 2007
   * fix for when no servers are definied.

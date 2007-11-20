@@ -4,6 +4,7 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_flush.pod\
 	memcached_stats.pod\
 	memrm.pod\
+	memerror.pod\
 	libmemcached_examples.pod\
 	memcached_get.pod\
 	memcached_strerror.pod\
@@ -26,6 +27,7 @@ man_MANS = libmemcached.3\
 	libmemcached_examples.3\
 	memcat.1\
 	memcp.1\
+	memerror.1\
 	memflush.1\
 	memrm.1\
 	memslap.1\
@@ -216,6 +218,9 @@ memstat.1: memstat.pod
 
 memrm.1: memrm.pod
 	pod2man -c "libmemcached" -r "" -s 1 memrm.pod > memrm.1
+
+memerror.1: memerror.pod
+	pod2man -c "libmemcached" -r "" -s 1 memerror.pod > memerror.1
 
 memflush.1: memflush.pod
 	pod2man -c "libmemcached" -r "" -s 1 memflush.pod > memflush.1
