@@ -13,7 +13,9 @@ static memcached_return set_hostinfo(memcached_server_st *server)
 
   if ((h= gethostbyname(server->hostname)) == NULL)
   {
-    return MEMCACHED_HOST_LOCKUP_FAILURE;
+    WATCHPOINT_STRING(server->hostname);
+    WATCHPOINT_STRING(hstrerror(h_errno));
+    return MEMCACHED_HOST_LOOKUP_FAILURE;
   }
 
   server->servAddr.sin_family= h->h_addrtype;
@@ -210,6 +212,9 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
       rc= unix_socket_connect(ptr, server_key);
       break;
     }
+
+    if (rc != MEMCACHED_SUCCESS)
+      WATCHPOINT_ERROR(rc);
   }
   else
   {
@@ -240,7 +245,10 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
       rc= MEMCACHED_SUCCESS;
 
       if (possible_rc != MEMCACHED_SUCCESS)
+      {
+        WATCHPOINT_ERROR(possible_rc);
         rc= MEMCACHED_SOME_ERRORS;
+      }
     }
   }
   LIBMEMCACHED_MEMCACHED_CONNECT_END();

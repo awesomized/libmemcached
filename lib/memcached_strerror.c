@@ -8,7 +8,7 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "SUCCESS";
   case MEMCACHED_FAILURE:
     return "FAILURE";
-  case MEMCACHED_HOST_LOCKUP_FAILURE:
+  case MEMCACHED_HOST_LOOKUP_FAILURE:
     return "HOSTNAME LOOKUP FAILURE";
   case MEMCACHED_CONNECTION_FAILURE:
     return "CONNECTION FAILURE";

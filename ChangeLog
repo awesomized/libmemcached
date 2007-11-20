@@ -6,6 +6,8 @@
     runtime.
   * Added the utility memerror to create human readable error strings
     from memcached errors (aka convert ints to strings)
+  * Fixed type in MEMCACHED_HOST_LOOKUP_FAILURE
+  * Fixed bug where hostname might not be null terminated
 
 0.9 Thu Nov 15 07:44:00 PST 2007
   * fix for when no servers are definied.

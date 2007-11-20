@@ -125,6 +125,7 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   memcpy(new_hostname, hostname, strlen(hostname));
+  new_hostname[strlen(hostname)]= 0;
   host_reset(&ptr->hosts[ptr->number_of_hosts], new_hostname, port, type);
   ptr->number_of_hosts++;
 
