@@ -10,16 +10,31 @@
 static memcached_return set_hostinfo(memcached_server_st *server)
 {
   struct hostent *h;
+#ifdef HAVE_GETHOSTBYNAME_R
+  struct hostent h_static;
+  char buffer[SMALL_STRING_LEN];
+  int tmp_error;
 
+  if (gethostbyname_r(server->hostname,
+                      &h_static, buffer, SMALL_STRING_LEN, 
+                      &h, &tmp_error))
+  {
+    WATCHPOINT_STRING(server->hostname);
+    WATCHPOINT_STRING(hstrerror(tmp_error));
+    return MEMCACHED_HOST_LOOKUP_FAILURE;
+  }
+#else
   if ((h= gethostbyname(server->hostname)) == NULL)
   {
     WATCHPOINT_STRING(server->hostname);
     WATCHPOINT_STRING(hstrerror(h_errno));
     return MEMCACHED_HOST_LOOKUP_FAILURE;
   }
+#endif
 
   server->servAddr.sin_family= h->h_addrtype;
   memcpy((char *) &server->servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
+
   server->servAddr.sin_port = htons(server->port);
 
   return MEMCACHED_SUCCESS;

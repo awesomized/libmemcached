@@ -68,5 +68,5 @@ fi
 
 AC_C_CONST
 AC_TYPE_SIZE_T
-AC_CHECK_HEADERS(limits.h syslimits.h)
+AC_CHECK_FUNC(gethostbyname_r, AC_DEFINE([HAVE_GETHOSTBYNAME_R], [], [Looking for gethostbyname_r]))
 AC_OUTPUT(Makefile src/Makefile tests/Makefile docs/Makefile lib/Makefile include/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)
