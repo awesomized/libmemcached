@@ -1605,6 +1605,24 @@ memcached_return pre_hash_ketama(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return enable_cas(memcached_st *memc)
+{
+  unsigned int set= 1;
+
+  memcached_version(memc);
+
+  if (memc->hosts[0].major_version >= 1 &&
+      memc->hosts[0].minor_version >= 2 &&
+      memc->hosts[0].micro_version >= 4)
+  {
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
+
+    return MEMCACHED_SUCCESS;
+  }
+
+  return MEMCACHED_FAILURE;
+}
+
 memcached_return check_for_1_2_3(memcached_st *memc)
 {
   memcached_version(memc);
@@ -1748,6 +1766,7 @@ collection_st collection[] ={
   {"ketama", pre_hash_ketama, 0, tests},
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
+  {"gets", enable_cas, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
