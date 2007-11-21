@@ -58,6 +58,7 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
+%{_mandir}/man1/memerror.1.gz
 %{_mandir}/man1/memflush.1.gz
 %{_mandir}/man1/memrm.1.gz
 %{_mandir}/man1/memslap.1.gz

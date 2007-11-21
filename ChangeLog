@@ -10,6 +10,7 @@
   * Fixed bug where hostname might not be null terminated
   * Moved to using gethostbyname_r() on Linux to solve thread safety issue
   * Added -rpath support for pkg-config
+  * Documentation fix for hash setting using memcached_behavior_set()
 
 0.9 Thu Nov 15 07:44:00 PST 2007
   * fix for when no servers are definied.
