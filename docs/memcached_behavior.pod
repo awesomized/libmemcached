@@ -59,6 +59,11 @@ Memcached can cache named lookups so that DNS lookups are made only once.
 
 Support CAS operations (this is not enabled by default at this point in the server since it imposes a slight performance penalty).
 
+=item MEMCACHED_BEHAVIOR_POLL_TIMEOUT
+
+Modify the timeout value that is used by poll(). The default value is -1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.
+
+
 =back
 
 =head1 RETURN

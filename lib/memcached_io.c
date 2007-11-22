@@ -11,7 +11,10 @@ static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_
 {
   struct pollfd fds[1];
   short flags= 0;
+  struct timespec timer;
 
+  timer.tv_sec= 1;
+  timer.tv_nsec= 0;
   if (read_or_write)
     flags= POLLOUT |  POLLERR;
   else
@@ -21,7 +24,7 @@ static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_
   fds[0].fd= ptr->hosts[server_key].fd;
   fds[0].events= flags;
 
-  if (poll(fds, 1, -1) < 0)
+  if (poll(fds, 1, ptr->poll_timeout) < 0)
     return MEMCACHED_FAILURE;
 
   return MEMCACHED_SUCCESS;

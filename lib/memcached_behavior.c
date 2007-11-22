@@ -44,6 +44,13 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
+  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
+    {
+      unsigned int timeout= (*((unsigned int *)data));
+
+      ptr->poll_timeout= timeout;
+      break;
+    }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       ptr->send_size= (*((int *)data));
@@ -87,6 +94,10 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;
     break;
+  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
+    {
+      return (unsigned long long)ptr->poll_timeout;
+    }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       int sock_size;

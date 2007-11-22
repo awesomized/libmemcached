@@ -75,6 +75,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE,
   MEMCACHED_BEHAVIOR_CACHE_LOOKUPS,
   MEMCACHED_BEHAVIOR_SUPPORT_CAS,
+  MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
 } memcached_behavior;
 
 typedef enum {
@@ -178,6 +179,7 @@ struct memcached_st {
   unsigned long long flags;
   int send_size;
   int recv_size;
+  int32_t poll_timeout;
   memcached_string_st result_buffer;
   memcached_hash hash;
   memcached_return warning; /* Future Use */

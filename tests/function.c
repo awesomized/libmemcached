@@ -1676,6 +1676,21 @@ memcached_return pre_nodelay(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return poll_timeout(memcached_st *memc)
+{
+  int32_t timeout;
+
+  timeout= 100;
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+
+  timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+
+  assert(timeout == 100);
+
+  return MEMCACHED_SUCCESS;
+}
+
 
 /* Clean the server before beginning testing */
 test_st tests[] ={
@@ -1766,6 +1781,7 @@ collection_st collection[] ={
   {"ketama", pre_hash_ketama, 0, tests},
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
+  {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},

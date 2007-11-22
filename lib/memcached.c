@@ -22,6 +22,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   }
   string_ptr= memcached_string_create(ptr, &ptr->result_buffer, 0);
   WATCHPOINT_ASSERT(string_ptr);
+  ptr->poll_timeout= -1;
 
   return ptr;
 }
@@ -73,6 +74,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->number_of_hosts= ptr->number_of_hosts;
   new_clone->send_size= ptr->send_size;
   new_clone->recv_size= ptr->recv_size;
+  new_clone->poll_timeout= ptr->poll_timeout;
 
   return new_clone;
 }
