@@ -51,6 +51,14 @@ Some features of the library must be enabled through memcached_behavior_set().
 
 Hope you enjoy it!
 
+=head1 THREADS AND PROCESSES
+
+When using threads or forked processes it is important to keep an instance
+of C<memcached_st> per process or thread. Without creating your own locking
+structures you can no share a single C<memcached_st>. You can though call
+memcached_close(3) on a C<memcached_st> and then use the resulting cloned
+structure.
+
 =head1 HOME
 
 To find out more information please check:
