@@ -257,11 +257,11 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_return *error);
 
 /* Server Public functions */
-#define memcached_server_count(A) A->number_of_hosts
-#define memcached_server_name(A,B) B.hostname
-#define memcached_server_port(A,B) B.port
-#define memcached_server_list(A) A->hosts
-#define memcached_server_response_count(A,B) A->hosts[B].stack_responses
+#define memcached_server_count(A) (A)->number_of_hosts
+#define memcached_server_name(A,B) (B).hostname
+#define memcached_server_port(A,B) (B).port
+#define memcached_server_list(A) (A)->hosts
+#define memcached_server_response_count(A,B) (A)->hosts[B].stack_responses
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
                                           char *hostname,

@@ -380,16 +380,16 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     }
     else if (*error == MEMCACHED_END && memcached_string_length((memcached_string_st *)(&result->value)) == 0)
     {
-      return NULL;
+      goto error;
     }
     else if (*error == MEMCACHED_END)
     {
       WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
-      return NULL;
+      goto error;
     }
     else if (*error != MEMCACHED_SUCCESS)
     {
-      return NULL;
+      goto error;
     }
     else
     {
@@ -397,6 +397,9 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     }
 
   }
+
+error:
+  memcached_result_free(result);
 
   return NULL;
 }
