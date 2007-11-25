@@ -8,13 +8,8 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
 
-  rc= memcached_connect(ptr, 0);
-
-  if (rc == MEMCACHED_NO_SERVERS)
-    return rc;
-
-  if (rc != MEMCACHED_SUCCESS)
-    rc= MEMCACHED_SOME_ERRORS;
+  if (ptr->number_of_hosts == 0)
+    return MEMCACHED_NO_SERVERS;
 
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
@@ -25,20 +20,12 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                             "flush_all\r\n");
 
-    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-      return MEMCACHED_WRITE_FAILURE;
-
     rc= memcached_do(ptr, x, buffer, send_length, 1);
-    if (rc != MEMCACHED_SUCCESS)
-      goto error;
 
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
-
-    if (rc != MEMCACHED_SUCCESS)
-      rc= MEMCACHED_SOME_ERRORS;
+    if (rc == MEMCACHED_SUCCESS)
+      (void)memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
   }
 
-error:
   LIBMEMCACHED_MEMCACHED_FLUSH_END();
-  return rc;
+  return MEMCACHED_SUCCESS;
 }

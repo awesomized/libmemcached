@@ -16,6 +16,7 @@ static void host_reset(memcached_server_st *host, char *new_hostname, unsigned i
   host->type= type;
   host->read_ptr= host->read_buffer;
   host->write_ptr= host->write_buffer;
+  host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
 }
 
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)

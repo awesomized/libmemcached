@@ -62,12 +62,6 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
-  /* Leaving this WATCHPOINT_ASSERT in since only a library fubar could blow this */
-#ifdef NOT_DONE
-  if (!(ptr->flags & MEM_NO_BLOCK) && ptr->write_buffer_offset != 0)
-    WATCHPOINT_ASSERT(0);
-#endif
-
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
     

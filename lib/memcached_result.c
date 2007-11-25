@@ -34,8 +34,13 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
 
 void memcached_result_free(memcached_result_st *ptr)
 {
+  if (ptr == NULL)
+    return;
+
   memcached_string_free(&ptr->value);
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);
+  else
+    ptr->is_allocated= MEMCACHED_USED;
 }

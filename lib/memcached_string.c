@@ -70,6 +70,8 @@ memcached_return memcached_string_append_character(memcached_string_st *string,
 {
   memcached_return rc;
 
+  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
+
   rc=  memcached_string_check(string, 1);
 
   if (rc != MEMCACHED_SUCCESS)
@@ -85,6 +87,8 @@ memcached_return memcached_string_append(memcached_string_st *string,
                                          char *value, size_t length)
 {
   memcached_return rc;
+
+  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
 
   rc= memcached_string_check(string, length);
 
@@ -103,6 +107,8 @@ memcached_return memcached_string_append(memcached_string_st *string,
 
 size_t memcached_string_backspace(memcached_string_st *string, size_t remove)
 {
+  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
+
   if (string->end - string->string  > remove)
   {
     size_t difference;
@@ -120,6 +126,9 @@ size_t memcached_string_backspace(memcached_string_st *string, size_t remove)
 char *memcached_string_c_copy(memcached_string_st *string)
 {
   char *c_ptr;
+
+  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
+
   c_ptr= (char *)malloc(memcached_string_length(string) * sizeof(char));
   if (!c_ptr)
     return NULL;
@@ -131,15 +140,22 @@ char *memcached_string_c_copy(memcached_string_st *string)
 
 memcached_return memcached_string_reset(memcached_string_st *string)
 {
+  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
   string->end= string->string;
   
   return MEMCACHED_SUCCESS;
 }
 
-void memcached_string_free(memcached_string_st *string)
+void memcached_string_free(memcached_string_st *ptr)
 {
-  if (string->string)
-    free(string->string);
-  if (string->is_allocated == MEMCACHED_ALLOCATED)
-    free(string);
+  if (ptr == NULL)
+    return;
+
+  if (ptr->string)
+    free(ptr->string);
+
+  if (ptr->is_allocated == MEMCACHED_ALLOCATED)
+    free(ptr);
+  else
+    ptr->is_allocated= MEMCACHED_USED;
 }

@@ -358,6 +358,8 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   if (result == NULL)
     result= memcached_result_create(ptr, NULL);
 
+  WATCHPOINT_ASSERT(result->value.is_allocated != MEMCACHED_USED);
+
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
     if (!ptr->hosts[ptr->cursor_server].cursor_active)
@@ -395,11 +397,10 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     {
       return result;
     }
-
   }
 
 error:
-  memcached_result_free(result);
+  memcached_string_reset(&result->value);
 
   return NULL;
 }

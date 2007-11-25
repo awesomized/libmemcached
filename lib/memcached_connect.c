@@ -123,13 +123,15 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
 
-    if (ptr->hosts[server_key].servAddr.sin_family == 0)
+    if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
+        (!(ptr->flags & MEM_USE_CACHE_LOOKUPS)))
     {
       memcached_return rc;
 
       rc= set_hostinfo(&ptr->hosts[server_key]);
       if (rc != MEMCACHED_SUCCESS)
         return rc;
+      ptr->hosts[server_key].sockaddr_inited= MEMCACHED_ALLOCATED;
     }
 
     /* Create the socket */
@@ -208,64 +210,26 @@ memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key)
     return MEMCACHED_NO_SERVERS;
 
   /* We need to clean up the multi startup piece */
-  if (server_key)
+  switch (ptr->hosts[server_key].type)
   {
+  case MEMCACHED_CONNECTION_UNKNOWN:
+    WATCHPOINT_ASSERT(0);
+    rc= MEMCACHED_NOT_SUPPORTED;
+    break;
+  case MEMCACHED_CONNECTION_UDP:
+    rc= udp_connect(ptr, server_key);
+    break;
+  case MEMCACHED_CONNECTION_TCP:
     rc= tcp_connect(ptr, server_key);
-    switch (ptr->hosts[server_key].type)
-    {
-    case MEMCACHED_CONNECTION_UNKNOWN:
-      WATCHPOINT_ASSERT(0);
-      rc= MEMCACHED_NOT_SUPPORTED;
-      break;
-    case MEMCACHED_CONNECTION_UDP:
-      rc= udp_connect(ptr, server_key);
-      break;
-    case MEMCACHED_CONNECTION_TCP:
-      rc= tcp_connect(ptr, server_key);
-      break;
-    case MEMCACHED_CONNECTION_UNIX_SOCKET:
-      rc= unix_socket_connect(ptr, server_key);
-      break;
-    }
-
-    if (rc != MEMCACHED_SUCCESS)
-      WATCHPOINT_ERROR(rc);
+    break;
+  case MEMCACHED_CONNECTION_UNIX_SOCKET:
+    rc= unix_socket_connect(ptr, server_key);
+    break;
   }
-  else
-  {
-    unsigned int x;
 
-    for (x= 0; x < ptr->number_of_hosts; x++)
-    {
-      memcached_return possible_rc;
+  if (rc != MEMCACHED_SUCCESS)
+    WATCHPOINT_ERROR(rc);
 
-      possible_rc= MEMCACHED_NOT_SUPPORTED; /* Remove warning */
-
-      switch (ptr->hosts[x].type)
-      {
-      case MEMCACHED_CONNECTION_UNKNOWN:
-        WATCHPOINT_ASSERT(0);
-        possible_rc= MEMCACHED_NOT_SUPPORTED;
-        break;
-      case MEMCACHED_CONNECTION_UDP:
-        possible_rc= udp_connect(ptr, x);
-        break;
-      case MEMCACHED_CONNECTION_TCP:
-        possible_rc= tcp_connect(ptr, x);
-        break;
-      case MEMCACHED_CONNECTION_UNIX_SOCKET:
-        possible_rc= unix_socket_connect(ptr, x);
-        break;
-      }
-      rc= MEMCACHED_SUCCESS;
-
-      if (possible_rc != MEMCACHED_SUCCESS)
-      {
-        WATCHPOINT_ERROR(possible_rc);
-        rc= MEMCACHED_SOME_ERRORS;
-      }
-    }
-  }
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
   return rc;

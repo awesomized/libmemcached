@@ -41,7 +41,7 @@ void memcached_free(memcached_st *ptr)
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);
   else
-    memset(ptr, 0, sizeof(memcached_st));
+    ptr->is_allocated= MEMCACHED_USED;
 }
 
 /*

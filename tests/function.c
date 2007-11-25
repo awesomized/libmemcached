@@ -645,6 +645,7 @@ uint8_t mget_result_test(memcached_st *memc)
   {
     assert(results);
   }
+
   while ((results= memcached_fetch_result(memc, &results_obj, &rc)) != NULL)
   assert(!results);
   assert(rc == MEMCACHED_NOTFOUND);

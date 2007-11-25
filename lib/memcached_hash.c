@@ -86,7 +86,13 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
     return 0;
   }
   else
-    return hash % ptr->number_of_hosts;
+  {
+    unsigned int server_key;
+
+    server_key= hash % ptr->number_of_hosts;
+
+    return server_key;
+  }
 }
 
 static uint64_t internal_generate_hash(char *key, size_t key_length)

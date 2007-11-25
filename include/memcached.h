@@ -99,6 +99,7 @@ typedef enum {
 typedef enum {
   MEMCACHED_NOT_ALLOCATED,
   MEMCACHED_ALLOCATED,
+  MEMCACHED_USED,
 } memcached_allocated;
 
 struct memcached_server_st {
