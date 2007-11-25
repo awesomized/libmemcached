@@ -34,7 +34,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     {
       *key_length= 0;
 
-      for (; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++)
+      for (; isalnum(*string_ptr); string_ptr++)
       {
         *key= *string_ptr;
         key++;
@@ -42,7 +42,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
       }
     }
     else /* Skip characters */
-      for (; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
+      for (; isalnum(*string_ptr); string_ptr++);
 
     if (end_ptr == string_ptr)
         goto read_error;
@@ -51,7 +51,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     string_ptr++;
     if (end_ptr == string_ptr)
         goto read_error;
-    for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
+    for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
     *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)
@@ -62,7 +62,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     if (end_ptr == string_ptr)
         goto read_error;
 
-    for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
+    for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
     value_length= (size_t)strtoll(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)
@@ -77,7 +77,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     else
     {
       string_ptr++;
-      for (next_ptr= string_ptr; end_ptr > string_ptr && *string_ptr != ' '; string_ptr++);
+      for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
       if (cas)
         *cas= (size_t)strtoll(next_ptr, &string_ptr, 10);
     }
@@ -209,15 +209,14 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   LIBMEMCACHED_MEMCACHED_GET_END();
 
-
-  return  memcached_string_c_copy(result_buffer);
+  return memcached_string_c_copy(result_buffer);
 
 error:
   *value_length= 0;
 
   LIBMEMCACHED_MEMCACHED_GET_END();
 
-    return NULL;
+  return NULL;
 }
 
 memcached_return memcached_mget(memcached_st *ptr, 
@@ -382,16 +381,16 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     }
     else if (*error == MEMCACHED_END && memcached_string_length((memcached_string_st *)(&result->value)) == 0)
     {
-      goto error;
+      break;
     }
     else if (*error == MEMCACHED_END)
     {
       WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
-      goto error;
+      break;
     }
     else if (*error != MEMCACHED_SUCCESS)
     {
-      goto error;
+      break;
     }
     else
     {
@@ -399,8 +398,11 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     }
   }
 
-error:
-  memcached_string_reset(&result->value);
+  /* An error has occurred */
+  if (result->is_allocated == MEMCACHED_ALLOCATED)
+    memcached_result_free(result);
+  else
+    memcached_string_reset(&result->value);
 
   return NULL;
 }

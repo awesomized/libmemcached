@@ -148,6 +148,7 @@ uint8_t append_test(memcached_st *memc)
   assert(!memcmp(value, "we the people", strlen("we the people")));
   assert(strlen("we the people") == value_length);
   assert(rc == MEMCACHED_SUCCESS);
+  free(value);
 
   return 0;
 }
@@ -188,11 +189,12 @@ uint8_t append_binary_test(memcached_st *memc)
 
   store_ptr= (unsigned int *)value;
   x= 0;
-  while (*store_ptr)
+  while ((size_t)store_ptr < (size_t)(value + value_length))
   {
     assert(*store_ptr == store_list[x++]);
     store_ptr++;
   }
+  free(value);
 
   return 0;
 }
@@ -311,6 +313,7 @@ uint8_t prepend_test(memcached_st *memc)
   assert(!memcmp(value, "we the people", strlen("we the people")));
   assert(strlen("we the people") == value_length);
   assert(rc == MEMCACHED_SUCCESS);
+  free(value);
 
   return 0;
 }
@@ -1412,6 +1415,13 @@ uint8_t string_alloc_append_toobig(memcached_st *memc)
   return 0;
 }
 
+uint8_t cleanup_pairs(memcached_st *memc)
+{
+  pairs_free(global_pairs);
+
+  return 0;
+}
+
 uint8_t generate_data(memcached_st *memc)
 {
   unsigned long long x;
@@ -1765,6 +1775,7 @@ test_st generate_tests[] ={
   {"get_read", 0, get_read },
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
+  {"cleanup", 0, cleanup_pairs },
   {0, 0, 0}
 };
 

@@ -4,6 +4,7 @@
     value was returned.
   * Bug fixed in memcached_connect() which would cause servers that 
     did not need to be enabled to be enabled (performance issue).
+  * Rewrote bounds checking code for get calls
 
 0.10 Tue Nov 20 23:22:31 PST 2007
   * Added append binary test.

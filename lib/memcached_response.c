@@ -44,6 +44,8 @@ memcached_return memcached_response(memcached_st *ptr,
       total_length++;
       WATCHPOINT_ASSERT(total_length < buffer_length);
     }
+    buffer_ptr++;
+    *buffer_ptr= 0;
 
     if (memcached_server_response_count(ptr, server_key))
       memcached_server_response_decrement(ptr, server_key);

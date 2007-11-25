@@ -120,6 +120,7 @@ struct memcached_server_st {
   uint8_t major_version;
   uint8_t minor_version;
   uint8_t micro_version;
+  uint16_t count;
 };
 
 struct memcached_stat_st {
