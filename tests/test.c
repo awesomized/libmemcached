@@ -14,7 +14,7 @@
 #include "test.h"
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
-#define TEST_SERVERS 1
+#define TEST_SERVERS 2
 
 long int timedif(struct timeval a, struct timeval b)
 {
@@ -54,14 +54,17 @@ void server_shutdown(char *server_string)
 {
   unsigned int x;
 
-  for (x= 0; x < TEST_SERVERS; x++)
-  {
-    char buffer[1024]; /* Nothing special for number */
-    sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
-    system(buffer);
-  }
   if (server_string)
+  {
+    for (x= 0; x < TEST_SERVERS; x++)
+    {
+      char buffer[1024]; /* Nothing special for number */
+      sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
+      system(buffer);
+    }
+
     free(server_string);
+  }
 }
 
 int main(int argc, char *argv[])
@@ -123,25 +126,28 @@ int main(int argc, char *argv[])
 
     for (x= 0; run->name; run++)
     {
+      unsigned int loop;
+      memcached_st *memc;
+      memcached_return rc;
+      struct timeval start_time, end_time;
+
       if (wildcard && strcmp(wildcard, run->name))
         continue;
 
       fprintf(stderr, "Testing %s", run->name);
 
-      memcached_st *memc;
-      memcached_return rc;
-      struct timeval start_time, end_time;
-
       memc= memcached_create(NULL);
       assert(memc);
-
-      if (run->requires_flush)
-        memcached_flush(memc, 0);
 
       rc= memcached_server_push(memc, servers);
       assert(rc == MEMCACHED_SUCCESS);
 
-      unsigned int loop;
+      if (run->requires_flush)
+      {
+        memcached_flush(memc, 0);
+        memcached_quit(memc);
+      }
+
       for (loop= 0; loop < memcached_server_list_count(servers); loop++)
       {
         assert(memc->hosts[loop].stack_responses == 0);
@@ -152,7 +158,9 @@ int main(int argc, char *argv[])
       if (next->pre)
       {
         memcached_return rc;
+        WATCHPOINT_STRING(next->name);
         rc= next->pre(memc);
+        WATCHPOINT;
 
         if (rc != MEMCACHED_SUCCESS)
         {

@@ -7,16 +7,16 @@ memcached_return memcached_version(memcached_st *ptr)
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *response_ptr;
+  char *command= "version\r\n";
 
-  send_length= strlen("version\r\n");
-  memcpy(buffer, "version\r\n", send_length);
+  send_length= strlen(command);
 
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
     memcached_return rrc;
 
-    rrc= memcached_do(ptr, x, buffer, send_length, 1);
+    rrc= memcached_do(ptr, x, command, send_length, 1);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
