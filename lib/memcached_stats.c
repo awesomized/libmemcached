@@ -153,14 +153,10 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat,
     snprintf(buffer, SMALL_STRING_LEN,"%s", stat->version);
   else if (!memcmp("pointer_size", key, strlen("pointer_size")))
     snprintf(buffer, SMALL_STRING_LEN,"%u", stat->pointer_size);
-  else if (!memcmp("rusage_user_seconds", key, strlen("rusage_user_seconds")))
-    snprintf(buffer, SMALL_STRING_LEN,"%u", stat->rusage_user_seconds);
-  else if (!memcmp("rusage_user_microseconds", key, strlen("rusage_user_microseconds")))
-    snprintf(buffer, SMALL_STRING_LEN,"%u", stat->rusage_user_microseconds);
-  else if (!memcmp("rusage_system_seconds", key, strlen("rusage_system_seconds")))
-    snprintf(buffer, SMALL_STRING_LEN,"%u", stat->rusage_system_seconds);
-  else if (!memcmp("rusage_system_microseconds", key, strlen("rusage_system_microseconds")))
-    snprintf(buffer, SMALL_STRING_LEN,"%u", stat->rusage_system_microseconds);
+  else if (!memcmp("rusage_user", key, strlen("rusage_user")))
+    snprintf(buffer, SMALL_STRING_LEN,"%u.%u", stat->rusage_user_seconds, stat->rusage_user_microseconds);
+  else if (!memcmp("rusage_system", key, strlen("rusage_system")))
+    snprintf(buffer, SMALL_STRING_LEN,"%u.%u", stat->rusage_system_seconds, stat->rusage_system_microseconds);
   else if (!memcmp("curr_items", key, strlen("curr_items")))
     snprintf(buffer, SMALL_STRING_LEN,"%u", stat->curr_items);
   else if (!memcmp("total_items", key, strlen("total_items")))
