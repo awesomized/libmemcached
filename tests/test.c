@@ -14,7 +14,7 @@
 #include "test.h"
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
-#define TEST_SERVERS 2
+#define TEST_SERVERS 3
 
 long int timedif(struct timeval a, struct timeval b)
 {
@@ -158,9 +158,7 @@ int main(int argc, char *argv[])
       if (next->pre)
       {
         memcached_return rc;
-        WATCHPOINT_STRING(next->name);
         rc= next->pre(memc);
-        WATCHPOINT;
 
         if (rc != MEMCACHED_SUCCESS)
         {

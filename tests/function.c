@@ -820,10 +820,9 @@ uint8_t get_stats(memcached_st *memc)
 
  for (x= 0; x < memcached_server_count(memc); x++)
  {
-   list= memcached_stat_get_keys(memc, &stat[x], &rc);
+   list= memcached_stat_get_keys(memc, stat+x, &rc);
    assert(rc == MEMCACHED_SUCCESS);
-   for (ptr= list; *ptr; ptr++)
-     printf("Found key %s\n", *ptr);
+   for (ptr= list; *ptr; ptr++);
 
    free(list);
  }

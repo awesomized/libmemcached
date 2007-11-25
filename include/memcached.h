@@ -124,32 +124,30 @@ struct memcached_server_st {
 };
 
 struct memcached_stat_st {
-  unsigned int pid;
-  unsigned int uptime;
-  unsigned int threads;
-  time_t time;
+  uint32_t pid;
+  uint32_t uptime;
+  uint32_t threads;
+  uint32_t time;
+  uint32_t pointer_size;
+  uint32_t rusage_user_seconds;
+  uint32_t rusage_user_microseconds;
+  uint32_t rusage_system_seconds;
+  uint32_t rusage_system_microseconds;
+  uint32_t curr_items;
+  uint32_t total_items;
+  uint32_t limit_maxbytes;
+  uint32_t curr_connections;
+  uint32_t total_connections;
+  uint32_t connection_structures;
+  uint64_t bytes;
+  uint64_t cmd_get;
+  uint64_t cmd_set;
+  uint64_t get_hits;
+  uint64_t get_misses;
+  uint64_t evictions;
+  uint64_t bytes_read;
+  uint64_t bytes_written;
   char version[MEMCACHED_VERSION_STRING];
-  unsigned int pointer_size;
-  unsigned int rusage_user;
-  unsigned int rusage_system;
-  unsigned int rusage_user_seconds;
-  unsigned int rusage_user_microseconds;
-  unsigned int rusage_system_seconds;
-  unsigned int rusage_system_microseconds;
-  unsigned int curr_items;
-  unsigned int total_items;
-  unsigned long long bytes;
-  unsigned int curr_connections;
-  unsigned int total_connections;
-  unsigned int connection_structures;
-  unsigned long long cmd_get;
-  unsigned long long cmd_set;
-  unsigned long long get_hits;
-  unsigned long long get_misses;
-  unsigned long long evictions;
-  unsigned long long bytes_read;
-  unsigned long long bytes_written;
-  unsigned int limit_maxbytes;
 };
 
 struct memcached_string_st {
