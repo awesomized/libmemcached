@@ -5,7 +5,6 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
                                               memcached_string_st *value,
                                               uint16_t *flags,
                                               uint64_t *cas,
-                                              char load_key,
                                               unsigned int server_key)
 {
   memcached_return rc;
@@ -30,7 +29,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     string_ptr+= 6; /* "VALUE " */
 
     /* We load the key */
-    if (load_key)
+    if (key)
     {
       *key_length= 0;
 
@@ -180,8 +179,8 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
   if (*error != MEMCACHED_SUCCESS)
     goto error;
 
-  *error= memcached_value_fetch(ptr, key, &key_length, result_buffer, 
-                                flags, NULL, 0, server_key);
+  *error= memcached_value_fetch(ptr, NULL, NULL, result_buffer, 
+                                flags, NULL, server_key);
   *value_length= memcached_string_length(result_buffer);
   if (*error == MEMCACHED_END && *value_length == 0)
   {
@@ -317,7 +316,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     }
 
     *error = memcached_value_fetch(ptr, key, key_length, result_buffer, 
-                                   flags, NULL, 1, ptr->cursor_server);
+                                   flags, NULL, ptr->cursor_server);
     *value_length= memcached_string_length(result_buffer);
     
     if (*error == MEMCACHED_NOTFOUND)
@@ -372,7 +371,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                        &result->value, 
                                        &result->flags,
                                        &result->cas,
-                                       1, ptr->cursor_server);
+                                       ptr->cursor_server);
     
     if (*error == MEMCACHED_NOTFOUND)
     {
