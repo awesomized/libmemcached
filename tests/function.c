@@ -542,13 +542,14 @@ uint8_t get_test4(memcached_st *memc)
   return 0;
 }
 
+/* Do not copy the style of this code, I just access hosts to testthis function */
 uint8_t stats_servername_test(memcached_st *memc)
 {
   memcached_return rc;
   memcached_stat_st stat;
   rc= memcached_stat_servername(&stat, NULL,
-                                 "localhost", 
-                                 MEMCACHED_DEFAULT_PORT);
+                                 memc->hosts[0].hostname, 
+                                 memc->hosts[0].port);
 
   return 0;
 }

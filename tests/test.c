@@ -13,6 +13,9 @@
 
 #include "test.h"
 
+#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
+#define TEST_SERVERS 1
+
 long int timedif(struct timeval a, struct timeval b)
 {
   register int us, s;
@@ -22,6 +25,43 @@ long int timedif(struct timeval a, struct timeval b)
   s = a.tv_sec - b.tv_sec;
   s *= 1000;
   return s + us;
+}
+
+char *server_startup()
+{
+  unsigned int x;
+  char server_string_buffer[8096];
+  char *end_ptr;
+
+  end_ptr= server_string_buffer;
+
+  for (x= 0; x < TEST_SERVERS; x++)
+  {
+    char buffer[1024]; /* Nothing special for number */
+    int count;
+
+    sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -p %u", x, x+ TEST_PORT_BASE);
+    system(buffer);
+    count= sprintf(end_ptr, "localhost:%u,", x + TEST_PORT_BASE);
+    end_ptr+= count;
+  }
+  *end_ptr= 0;
+
+  return strdup(server_string_buffer);
+}
+
+void server_shutdown(char *server_string)
+{
+  unsigned int x;
+
+  for (x= 0; x < TEST_SERVERS; x++)
+  {
+    char buffer[1024]; /* Nothing special for number */
+    sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
+    system(buffer);
+  }
+  if (server_string)
+    free(server_string);
 }
 
 int main(int argc, char *argv[])
@@ -43,14 +83,22 @@ int main(int argc, char *argv[])
   if (argc == 3)
     wildcard= argv[2];
 
-  if (!(server_list= getenv("MEMCACHED_SERVERS")))
-    server_list= "localhost";
+  if ((server_list= getenv("MEMCACHED_SERVERS")))
+  {
+    printf("servers %s\n", server_list);
+    servers= memcached_servers_parse(server_list);
+    server_list= NULL;
+  }
+  else
+  {
+    server_list= server_startup();
+    printf("servers %s\n", server_list);
+    servers= memcached_servers_parse(server_list);
+  }
+  assert(servers);
 
-  printf("servers %s\n", server_list);
   srandom(time(NULL));
 
-  servers= memcached_servers_parse(server_list);
-  assert(servers);
 
   for (x= 0; x < memcached_server_list_count(servers); x++)
   {
@@ -136,6 +184,8 @@ error:
   fprintf(stderr, "All tests completed successfully\n\n");
 
   memcached_server_list_free(servers);
+
+  server_shutdown(server_list);
 
   return 0;
 }
