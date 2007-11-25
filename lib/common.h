@@ -51,6 +51,7 @@ typedef enum {
 void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
+uint32_t hsieh_hash(char *key, size_t key_length);
 
 memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key);
 memcached_return memcached_response(memcached_st *ptr, 

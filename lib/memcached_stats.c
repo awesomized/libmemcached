@@ -93,27 +93,27 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   }
   else if (!memcmp("connection_structures", key, strlen("connection_structures")))
   {
-    //stat->connection_structures= strtol(value, (char **)NULL, 10);
+    stat->connection_structures= strtol(value, (char **)NULL, 10);
   }
   else if (!memcmp("cmd_get", key, strlen("cmd_get")))
   {
-    //stat->cmd_get= strtoll(value, (char **)NULL, 10);
+    stat->cmd_get= strtoll(value, (char **)NULL, 10);
   }
   else if (!memcmp("cmd_set", key, strlen("cmd_set")))
   {
-    //stat->cmd_set= strtoll(value, (char **)NULL, 10);
+    stat->cmd_set= strtoll(value, (char **)NULL, 10);
   }
   else if (!memcmp("get_hits", key, strlen("get_hits")))
   {
-    //stat->get_hits= strtoll(value, (char **)NULL, 10);
+    stat->get_hits= strtoll(value, (char **)NULL, 10);
   }
   else if (!memcmp("get_misses", key, strlen("get_misses")))
   {
-    //stat->get_misses= (uint64_t)strtoll(value, (char **)NULL, 10);
+    stat->get_misses= (uint64_t)strtoll(value, (char **)NULL, 10);
   }
   else if (!memcmp("evictions", key, strlen("evictions")))
   {
-    //stat->evictions= (uint64_t)strtoll(value, (char **)NULL, 10);
+    stat->evictions= (uint64_t)strtoll(value, (char **)NULL, 10);
   }
   else if (!memcmp("bytes_read", key, strlen("bytes_read")))
   {
@@ -125,7 +125,7 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   }
   else if (!memcmp("limit_maxbytes", key, strlen("limit_maxbytes")))
   {
-    //stat->limit_maxbytes= strtol(value, (char **)NULL, 10);
+    stat->limit_maxbytes= strtol(value, (char **)NULL, 10);
   }
   else if (!memcmp("threads", key, strlen("threads")))
   {

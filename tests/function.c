@@ -1576,6 +1576,14 @@ memcached_return pre_crc(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return pre_hsieh(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_HSIEH;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return pre_hash_fnv1_64(memcached_st *memc)
 {
   memcached_hash value= MEMCACHED_HASH_FNV1_64;
@@ -1786,6 +1794,7 @@ collection_st collection[] ={
   {"nodelay", pre_nodelay, 0, tests},
   {"md5", pre_md5, 0, tests},
   {"crc", pre_crc, 0, tests},
+  {"hsieh", pre_hsieh, 0, tests},
   {"fnv1_64", pre_hash_fnv1_64, 0, tests},
   {"fnv1a_64", pre_hash_fnv1a_64, 0, tests},
   {"fnv1_32", pre_hash_fnv1_32, 0, tests},
@@ -1801,6 +1810,7 @@ collection_st collection[] ={
   {"result", 0, 0, result_tests},
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
+  {"generate_hsieh", pre_hsieh, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {0, 0, 0, 0}
 };

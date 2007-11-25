@@ -77,6 +77,11 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
       hash= internal_generate_ketama_md5(key, key_length);
       break;
     }
+    case MEMCACHED_HASH_HSIEH:
+    {
+      hash= hsieh_hash(key, key_length);
+      break;
+    }
   }
 
   WATCHPOINT_ASSERT(hash);
