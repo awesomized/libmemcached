@@ -14,7 +14,7 @@
 #include "test.h"
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
-#define TEST_SERVERS 3
+#define TEST_SERVERS 5
 
 long int timedif(struct timeval a, struct timeval b)
 {
