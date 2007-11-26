@@ -7,11 +7,17 @@
 ^libtool$
 ^autom4te.cache$
 ^include/(libmemcached_config.h(.in)?|stamp-h1)$
+^stamp-h1$
 
 # Build artifacts
 ^lib/libmemcached.la$
-^src/mem(cat|cp|flush|rm|slap|stat)$
+^src/mem(cat|cp|flush|rm|slap|stat|error)$
 ^tests/testapp$
+.(deps|libs)/*$
+.cmp$
+autom4te.cache/*$
+.(gz|cmp|tar|rpm|srpm)$
+
 
 Makefile(.in)?$
 .(deps|libs)$

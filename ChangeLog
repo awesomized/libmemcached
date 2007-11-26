@@ -1,4 +1,4 @@
-0.11 
+0.11 Mon Nov 26 01:05:52 PST 2007
   * Added option to memcache_behavior_set() so that poll() can be timed out.
   * Fixed memory leak in case of using memcached_fetch_result() where no
     value was returned.
