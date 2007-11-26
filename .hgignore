@@ -17,6 +17,8 @@
 .cmp$
 autom4te.cache/*$
 .(gz|cmp|tar|rpm|srpm)$
+support/libmemcached.pc$
+support/libmemcached.spec$
 
 
 Makefile(.in)?$
