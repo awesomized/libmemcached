@@ -10,7 +10,7 @@ static void host_reset(memcached_server_st *host, char *hostname, unsigned int p
                        memcached_connection type)
 {
   memset(host,  0, sizeof(memcached_server_st));
-  host->hostname= strdup(hostname);
+  memcpy(host->hostname, hostname, strlen(hostname));
   host->port= port;
   host->fd= -1;
   host->type= type;
@@ -41,7 +41,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
                                    
   for (x= 0; x < count; x++)
   {
-    WATCHPOINT_ASSERT(list[x].hostname);
+    WATCHPOINT_ASSERT(list[x].hostname[0] == 0);
     host_reset(&ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
                list[x].port, list[x].type);
     ptr->number_of_hosts++;
@@ -159,9 +159,6 @@ void memcached_server_list_free(memcached_server_st *ptr)
 
   if (ptr == NULL)
     return;
-
-  for (x= 0; x < ptr[0].count; x++)
-    free(ptr[x].hostname);
 
   free(ptr);
 }

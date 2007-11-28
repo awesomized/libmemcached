@@ -4,6 +4,7 @@ Version: @VERSION@
 Release: 1
 License: BSD
 Group: System Environment/Libraries
+BuildRequires: gcc-c++
 URL: http://tangent.org/552/libmemcached.html
 
 Packager: Jeff Fisher <guppy@techmonkeys.org>

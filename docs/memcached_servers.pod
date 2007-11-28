@@ -49,7 +49,8 @@ allowed, so duplication is not checked.
 
 memcached_server_add_unix_socket() pushes a single UNIX socket into the 
 C<memcached_st> structure. This UNIX socket will be placed at the end. 
-Duplicate servers are allowed, so duplication is not checked.
+Duplicate servers are allowed, so duplication is not checked. The length
+of the filename must be one character less then MEMCACHED_MAX_HOST_LENGTH.
 
 memcached_server_push() pushes an array of C<memcached_server_st> into
 the C<memcached_st> structure. These servers will be placed at the
