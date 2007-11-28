@@ -1253,6 +1253,36 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   return 0;
 }
 
+uint8_t user_supplied_bug8(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_st *mine;
+  memcached_st *clone;
+
+  memcached_server_st *servers;
+  char *server_list= "memcache1.memcache.bk.sapo.pt:11211, memcache1.memcache.bk.sapo.pt:11212, memcache1.memcache.bk.sapo.pt:11213, memcache1.memcache.bk.sapo.pt:11214, memcache2.memcache.bk.sapo.pt:11211, memcache2.memcache.bk.sapo.pt:11212, memcache2.memcache.bk.sapo.pt:11213, memcache2.memcache.bk.sapo.pt:11214";
+
+  servers= memcached_servers_parse(server_list);
+  assert(servers);
+
+  mine= memcached_create(NULL);
+  rc= memcached_server_push(mine, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+  memcached_server_list_free(servers);
+
+  assert(mine);
+  clone= memcached_clone(NULL, mine);
+
+  memcached_quit(mine);
+  memcached_quit(clone);
+
+
+  memcached_free(mine);
+  memcached_free(clone);
+
+  return 0;
+}
+
 /* Test flag store/retrieve */
 uint8_t user_supplied_bug7(memcached_st *memc)
 {
@@ -1775,6 +1805,7 @@ test_st user_tests[] ={
   {"user_supplied_bug5", 1, user_supplied_bug5 },
   {"user_supplied_bug6", 1, user_supplied_bug6 },
   {"user_supplied_bug7", 1, user_supplied_bug7 },
+  {"user_supplied_bug8", 1, user_supplied_bug8 },
   {0, 0, 0}
 };
 

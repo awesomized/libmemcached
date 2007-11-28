@@ -41,7 +41,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
                                    
   for (x= 0; x < count; x++)
   {
-    WATCHPOINT_ASSERT(list[x].hostname[0] == 0);
+    WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
     host_reset(&ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
                list[x].port, list[x].type);
     ptr->number_of_hosts++;
@@ -146,7 +146,6 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 
 unsigned int memcached_server_list_count(memcached_server_st *ptr)
 {
-
   if (ptr == NULL)
     return 0;
 
@@ -155,8 +154,6 @@ unsigned int memcached_server_list_count(memcached_server_st *ptr)
 
 void memcached_server_list_free(memcached_server_st *ptr)
 {
-  unsigned int x;
-
   if (ptr == NULL)
     return;
 
