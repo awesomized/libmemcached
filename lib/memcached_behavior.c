@@ -35,6 +35,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
     break;
+  case MEMCACHED_BEHAVIOR_DISTRIBUTION:
+    ptr->distribution= *(memcached_server_distribution *)(data);
+    break;
   case MEMCACHED_BEHAVIOR_HASH:
     ptr->hash= *(memcached_hash *)(data);
     break;
@@ -89,6 +92,8 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;
     break;
+  case MEMCACHED_BEHAVIOR_DISTRIBUTION:
+    return ptr->distribution;
   case MEMCACHED_BEHAVIOR_HASH:
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA:

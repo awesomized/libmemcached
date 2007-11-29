@@ -1655,6 +1655,14 @@ memcached_return pre_hash_ketama(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return enable_consistent(memcached_st *memc)
+{
+  memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return enable_cas(memcached_st *memc)
 {
   unsigned int set= 1;
@@ -1836,6 +1844,7 @@ collection_st collection[] ={
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
+  {"consistent", enable_consistent, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},

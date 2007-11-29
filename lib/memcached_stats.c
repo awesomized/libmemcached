@@ -265,7 +265,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
     free(stats);
     return NULL;
   }
-  memset(stats, 0, sizeof(memcached_st)*(ptr->number_of_hosts));
+  memset(stats, 0, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
 
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
