@@ -6,6 +6,34 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
                                    unsigned int port,
                                    memcached_connection type);
 
+#define MEMCACHED_WHEEL_SIZE 1024
+#define MEMCACHED_STRIDE 4
+static void rebalance_wheel(memcached_st *ptr)
+{
+  unsigned int x;
+  unsigned int y;
+  unsigned int latch;
+  unsigned int range;
+
+  range= (MEMCACHED_WHEEL_SIZE / ptr->number_of_hosts);
+
+  /* Seed the Wheel */
+  memset(ptr->wheel, 0, sizeof(unsigned int) * MEMCACHED_WHEEL_SIZE);
+
+  for (latch= y= x= 0; x < MEMCACHED_WHEEL_SIZE; x++, latch++)
+  {
+    if (latch == MEMCACHED_STRIDE)
+    {
+      y++;
+      if (y == ptr->number_of_hosts)
+        y= 0;
+      latch= 0;
+    }
+
+    ptr->wheel[x]= y;
+  }
+}
+
 static void host_reset(memcached_server_st *host, char *hostname, unsigned int port,
                        memcached_connection type)
 {
@@ -47,6 +75,8 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
     ptr->number_of_hosts++;
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
+
+  rebalance_wheel(ptr);
 
   return MEMCACHED_SUCCESS;
 }
@@ -103,6 +133,8 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   host_reset(&ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
   ptr->hosts[0].count++;
+
+  rebalance_wheel(ptr);
 
   LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
 

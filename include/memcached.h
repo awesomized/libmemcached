@@ -33,6 +33,8 @@ typedef struct memcached_server_st memcached_server_st;
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
 #define MEMCACHED_MAX_BUFFER HUGE_STRING_LEN
 #define MEMCACHED_MAX_HOST_LENGTH 64
+#define MEMCACHED_WHEEL_SIZE 1024
+#define MEMCACHED_STRIDE 4
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -66,6 +68,11 @@ typedef enum {
   MEMCACHED_NO_KEY_PROVIDED,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
+
+typedef enum {
+  MEMCACHED_DISTRIBUTION_MODULUS,
+  MEMCACHED_DISTRIBUTION_CONSISTENT,
+} memcached_server_distribution;
 
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
@@ -184,6 +191,8 @@ struct memcached_st {
   int32_t poll_timeout;
   memcached_string_st result_buffer;
   memcached_hash hash;
+  memcached_server_distribution distribution;
+  unsigned int wheel[MEMCACHED_WHEEL_SIZE];
   memcached_return warning; /* Future Use */
 };
 

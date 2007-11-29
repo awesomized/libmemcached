@@ -85,18 +85,18 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
   }
 
   WATCHPOINT_ASSERT(hash);
-  if (ptr->flags & MEM_USE_KETAMA)
+
+  if (ptr->distribution == MEMCACHED_DISTRIBUTION_MODULUS)
   {
-    WATCHPOINT_ASSERT(0);
-    return 0;
+    return hash % ptr->number_of_hosts;
   }
   else
   {
     unsigned int server_key;
 
-    server_key= hash % ptr->number_of_hosts;
+    server_key= hash % MEMCACHED_WHEEL_SIZE;
 
-    return server_key;
+    return ptr->wheel[server_key];
   }
 }
 
