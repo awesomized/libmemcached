@@ -152,7 +152,7 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
     {
       sent_length= sendto(ptr->hosts[server_key].fd, 
                           write_ptr, write_length, 0, 
-                          (struct sockaddr *)&ptr->hosts[server_key].servAddr, 
+                          (struct sockaddr *)&ptr->hosts[server_key].address_info->ai_addr, 
                           sizeof(struct sockaddr));
     }
     else

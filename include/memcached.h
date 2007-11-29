@@ -70,7 +70,7 @@ typedef enum {
 } memcached_return;
 
 typedef enum {
-  MEMCACHED_DISTRIBUTION_MODULUS,
+  MEMCACHED_DISTRIBUTION_MODULO,
   MEMCACHED_DISTRIBUTION_CONSISTENT,
 } memcached_server_distribution;
 
@@ -124,7 +124,7 @@ struct memcached_server_st {
   size_t read_buffer_length;
   char *read_ptr;
   memcached_allocated sockaddr_inited;
-  struct sockaddr_in servAddr;
+  struct addrinfo *address_info;
   memcached_connection type;
   uint8_t major_version;
   uint8_t minor_version;

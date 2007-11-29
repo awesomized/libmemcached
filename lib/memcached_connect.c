@@ -6,36 +6,33 @@
 #include <sys/un.h>
 #include <netinet/tcp.h>
 #include <netdb.h>
+#include <netinet/in.h>
 
 static memcached_return set_hostinfo(memcached_server_st *server)
 {
-  struct hostent *h;
-#ifdef HAVE_GETHOSTBYNAME_R
-  struct hostent h_static;
-  char buffer[SMALL_STRING_LEN];
-  int tmp_error;
+  struct addrinfo *ai;
+  struct addrinfo hints;
+  int e;
+  char str_port[NI_MAXSERV];
 
-  if (gethostbyname_r(server->hostname,
-                      &h_static, buffer, SMALL_STRING_LEN, 
-                      &h, &tmp_error))
+  sprintf(str_port, "%u", server->port);
+
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family= AF_INET;
+  hints.ai_socktype= SOCK_STREAM;
+  hints.ai_protocol= 0;
+
+  e= getaddrinfo(server->hostname, str_port, &hints, &ai);
+  if (e != 0)
   {
     WATCHPOINT_STRING(server->hostname);
-    WATCHPOINT_STRING(hstrerror(tmp_error));
+    WATCHPOINT_STRING(gai_strerror(e));
     return MEMCACHED_HOST_LOOKUP_FAILURE;
   }
-#else
-  if ((h= gethostbyname(server->hostname)) == NULL)
-  {
-    WATCHPOINT_STRING(server->hostname);
-    WATCHPOINT_STRING(hstrerror(h_errno));
-    return MEMCACHED_HOST_LOOKUP_FAILURE;
-  }
-#endif
 
-  server->servAddr.sin_family= h->h_addrtype;
-  memcpy((char *) &server->servAddr.sin_addr.s_addr, h->h_addr_list[0], h->h_length);
-
-  server->servAddr.sin_port = htons(server->port);
+  if (server->address_info)
+    freeaddrinfo(server->address_info);
+  server->address_info= ai;
 
   return MEMCACHED_SUCCESS;
 }
@@ -73,6 +70,7 @@ test_connect:
       case EISCONN: /* We were spinning waiting on connect */
         break;
       default:
+        WATCHPOINT_ERRNO(errno);
         ptr->cached_errno= errno;
         return MEMCACHED_ERRNO;
       }
@@ -122,6 +120,7 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
   {
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
+    struct addrinfo *use;
 
     if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
         (!(ptr->flags & MEM_USE_CACHE_LOOKUPS)))
@@ -133,9 +132,12 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
         return rc;
       ptr->hosts[server_key].sockaddr_inited= MEMCACHED_ALLOCATED;
     }
+    use= ptr->hosts[server_key].address_info;
 
     /* Create the socket */
-    if ((ptr->hosts[server_key].fd= socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((ptr->hosts[server_key].fd= socket(use->ai_family, 
+                                           use->ai_socktype, 
+                                           use->ai_protocol)) < 0)
     {
       ptr->cached_errno= errno;
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
@@ -174,8 +176,8 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
     /* connect to server */
 test_connect:
     if (connect(ptr->hosts[server_key].fd, 
-                (struct sockaddr *)&ptr->hosts[server_key].servAddr, 
-                sizeof(struct sockaddr)) < 0)
+                use->ai_addr, 
+                use->ai_addrlen) < 0)
     {
       switch (errno) {
         /* We are spinning waiting on connect */
@@ -187,6 +189,7 @@ test_connect:
         break;
       default:
         ptr->cached_errno= errno;
+        WATCHPOINT_ERRNO(ptr->cached_errno);
         return MEMCACHED_ERRNO;
       }
       ptr->connected++;

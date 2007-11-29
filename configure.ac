@@ -6,7 +6,7 @@ MEMCACHED_LIBRARY_NAME=libmemcached
 
 #release versioning
 MEMCACHED_MAJOR_VERSION=0
-MEMCACHED_MINOR_VERSION=11
+MEMCACHED_MINOR_VERSION=12
 MEMCACHED_MICRO_VERSION=0
 
 #API version
@@ -68,5 +68,4 @@ fi
 
 AC_C_CONST
 AC_TYPE_SIZE_T
-AC_CHECK_FUNC(gethostbyname_r, AC_DEFINE([HAVE_GETHOSTBYNAME_R], [], [Looking for gethostbyname_r]))
 AC_OUTPUT(Makefile src/Makefile tests/Makefile docs/Makefile lib/Makefile include/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)

@@ -186,8 +186,14 @@ unsigned int memcached_server_list_count(memcached_server_st *ptr)
 
 void memcached_server_list_free(memcached_server_st *ptr)
 {
+  unsigned int x;
+
   if (ptr == NULL)
     return;
+
+  for (x= 0; x < ptr->count; x++)
+    if (ptr[x].address_info)
+      freeaddrinfo(ptr[x].address_info);
 
   free(ptr);
 }

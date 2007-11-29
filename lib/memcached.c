@@ -23,20 +23,16 @@ memcached_st *memcached_create(memcached_st *ptr)
   string_ptr= memcached_string_create(ptr, &ptr->result_buffer, 0);
   WATCHPOINT_ASSERT(string_ptr);
   ptr->poll_timeout= -1;
-  ptr->distribution= MEMCACHED_DISTRIBUTION_MODULUS;
+  ptr->distribution= MEMCACHED_DISTRIBUTION_MODULO;
 
   return ptr;
 }
 
 void memcached_free(memcached_st *ptr)
 {
-  if (ptr->hosts)
-  {
-    memcached_quit(ptr);
-    memcached_server_list_free(ptr->hosts);
-    ptr->hosts= NULL;
-  }
-
+  /* If we have anything open, lets close it now */
+  memcached_quit(ptr);
+  memcached_server_list_free(ptr->hosts);
   memcached_string_free(&ptr->result_buffer);
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
@@ -57,6 +53,12 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
 
   if (ptr == NULL)
     return memcached_create(clone);
+
+  if (ptr->is_allocated == MEMCACHED_USED)
+  {
+    WATCHPOINT_ASSERT(0);
+    return NULL;
+  }
   
   new_clone= memcached_create(clone);
 
