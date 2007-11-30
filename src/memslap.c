@@ -150,6 +150,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   {
     thread_context_st *context;
     context= (thread_context_st *)malloc(sizeof(thread_context_st));
+    memset(context, 0, sizeof(thread_context_st));
 
     context->servers= servers;
     context->test= opt_test;
