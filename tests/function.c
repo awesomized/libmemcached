@@ -1225,13 +1225,16 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   value= memcached_get(memc, keys[0], key_length[0],
                         &value_length, &flags, &rc);		
   assert(value == NULL);
+  assert(rc == MEMCACHED_NOTFOUND);
   rc= memcached_mget(memc, keys, key_length, 4);
+  assert(rc == MEMCACHED_SUCCESS);
 
   count= 0;
   while ((value= memcached_fetch(memc, return_key, &return_key_length, 
                                         &value_length, &flags, &rc)))
     count++;
   assert(count == 0);
+  assert(rc == MEMCACHED_NOTFOUND);
 
   for (x= 0; x < 4; x++)
   {
@@ -1249,12 +1252,15 @@ uint8_t user_supplied_bug6(memcached_st *memc)
     free(value);
 
     rc= memcached_mget(memc, keys, key_length, 4);
+    assert(rc == MEMCACHED_SUCCESS);
     count= 3;
     /* We test for purge of partial complete fetches */
     for (count= 3; count; count--)
     {
       value= memcached_fetch(memc, return_key, &return_key_length, 
                              &value_length, &flags, &rc);
+      memcmp(value, insert_data, value_length);
+      assert(value_length);
       free(value);
       assert(rc == MEMCACHED_SUCCESS);
     }

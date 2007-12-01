@@ -62,6 +62,9 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
+  if (ptr->number_of_hosts == 0)
+    return MEMCACHED_NO_SERVERS;
+
   server_key= memcached_generate_hash(ptr, key, key_length);
 
   if (cas)
