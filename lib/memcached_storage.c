@@ -62,15 +62,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
-  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
-    return MEMCACHED_NO_SERVERS;
-    
   server_key= memcached_generate_hash(ptr, key, key_length);
-
-  rc= memcached_connect(ptr, server_key);
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
-
 
   if (cas)
     write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -90,15 +82,9 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  /* 
-    We have to flush after sending the command. Memcached is not smart enough
-    to just keep reading from the socket :(
-  */
-  if ((sent_length= memcached_io_write(ptr, server_key, buffer, write_length, 0)) == -1)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
+  rc=  memcached_do(ptr, server_key, buffer, write_length, 0);
+  if (rc != MEMCACHED_SUCCESS)
     goto error;
-  }
 
   if ((sent_length= memcached_io_write(ptr, server_key, value, value_length, 0)) == -1)
   {
@@ -118,7 +104,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  if ((ptr->flags & MEM_NO_BLOCK) && verb == SET_OP)
+  if (to_write == 0)
   {
     rc= MEMCACHED_SUCCESS;
     memcached_server_response_increment(ptr, server_key);

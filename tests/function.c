@@ -319,12 +319,21 @@ uint8_t prepend_test(memcached_st *memc)
   return 0;
 }
 
+/* 
+  Set the value, then quit to make sure it is flushed.
+  Come back in and test that add fails.
+*/
 uint8_t add_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
 
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint16_t)0);
+  assert(rc == MEMCACHED_SUCCESS);
+  memcached_quit(memc);
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
@@ -1760,7 +1769,7 @@ test_st tests[] ={
   {"set", 0, set_test },
   {"set2", 0, set_test2 },
   {"set3", 0, set_test3 },
-  {"add", 0, add_test },
+  {"add", 1, add_test },
   {"replace", 0, replace_test },
   {"delete", 1, delete_test },
   {"get", 1, get_test },

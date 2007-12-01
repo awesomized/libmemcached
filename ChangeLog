@@ -2,6 +2,10 @@
   * Updates for consistent hashing
   * IPV6 support
   * Static allocation for hostname (performance)
+  * Fixed bug where in non-block mode all data might not have been sent on
+    close().
+  * Refactor of memcached_get() to use common code.
+
 
 0.11 Mon Nov 26 01:05:52 PST 2007
   * Added option to memcache_behavior_set() so that poll() can be timed out.

@@ -194,6 +194,7 @@ struct memcached_st {
   memcached_hash hash;
   memcached_server_distribution distribution;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
+  uint8_t replicas;
   memcached_return warning; /* Future Use */
 };
 
@@ -322,6 +323,7 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT_ERROR(A) fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
 #endif
 #define WATCHPOINT_STRING(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
+#define WATCHPOINT_STRING_LENGTH(A,B) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %.*s\n", __FILE__, __LINE__,__func__,(int)B,A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
 #define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
 #define WATCHPOINT_ASSERT(A) assert((A));
@@ -330,6 +332,7 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT { 1; };
 #define WATCHPOINT_ERROR(A) { 1; };
 #define WATCHPOINT_STRING(A) { 1; };
+#define WATCHPOINT_STRING_LENGTH(A,B) { 1; };
 #define WATCHPOINT_NUMBER(A) { 1; };
 #define WATCHPOINT_ERRNO(A) { 1; };
 #define WATCHPOINT_ASSERT(A) { 1; };

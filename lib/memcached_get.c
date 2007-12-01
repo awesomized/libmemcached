@@ -146,76 +146,32 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     uint16_t *flags,
                     memcached_return *error)
 {
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  char *buf_ptr= buffer;
-  unsigned int server_key;
-  memcached_string_st *result_buffer;
-  LIBMEMCACHED_MEMCACHED_GET_START();
+  char *value;
+  char *dummy_value;
+  size_t dummy_length;
+  uint16_t dummy_flags;
+  memcached_return dummy_error;
 
-  if (key_length == 0)
-  {
-    *error= MEMCACHED_NO_KEY_PROVIDED;
+  /* Request the key */
+  *error= memcached_mget(ptr, &key, &key_length, 1);
+
+  value= memcached_fetch(ptr, NULL, NULL, 
+                         value_length, flags, error);
+
+  if (value == NULL)
     return NULL;
-  }
 
-  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
-  {
-    *error= MEMCACHED_NO_SERVERS;
-    return NULL;
-  }
+  /* We do a second read to clean the cursor */
+  dummy_value= memcached_fetch(ptr, NULL, NULL, 
+                               &dummy_length, &dummy_flags, 
+                               &dummy_error);
 
-  server_key= memcached_generate_hash(ptr, key, key_length);
-  result_buffer= &ptr->result_buffer;
+  /* Something is really wrong if this happens */
+  WATCHPOINT_ASSERT(dummy_value == NULL);
+  if (dummy_value)
+    free(dummy_value);
 
-  *value_length= 0;
-  memcpy(buf_ptr, "get ", 4);
-  buf_ptr+= 4;
-  memcpy(buf_ptr, key, key_length);
-  buf_ptr+= key_length;
-  memcpy(buf_ptr, "\r\n", 2);
-  buf_ptr+= 2;
-
-  *error= memcached_do(ptr, server_key, buffer, (size_t)(buf_ptr - buffer), 1);
-  if (*error != MEMCACHED_SUCCESS)
-    goto error;
-
-  *error= memcached_value_fetch(ptr, NULL, NULL, result_buffer, 
-                                flags, NULL, server_key);
-  *value_length= memcached_string_length(result_buffer);
-  if (*error == MEMCACHED_END && *value_length == 0)
-  {
-    *error= MEMCACHED_NOTFOUND;
-    goto error;
-  }
-  else if (*error == MEMCACHED_END)
-  {
-    WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
-  }
-  else if (*error == MEMCACHED_SUCCESS)
-  {
-    memcached_return rc;
-    /* We need to read END */
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
-
-    if (rc != MEMCACHED_END)
-    {
-      *error= MEMCACHED_PROTOCOL_ERROR;
-      goto error;
-    }
-  }
-  else 
-      goto error;
-
-  LIBMEMCACHED_MEMCACHED_GET_END();
-
-  return memcached_string_c_copy(result_buffer);
-
-error:
-  *value_length= 0;
-
-  LIBMEMCACHED_MEMCACHED_GET_END();
-
-  return NULL;
+  return value;
 }
 
 memcached_return memcached_mget(memcached_st *ptr, 

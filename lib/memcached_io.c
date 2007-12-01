@@ -124,6 +124,32 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
   return length;
 }
 
+memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
+{
+  struct pollfd fds[1];
+  short flags= 0;
+  struct timespec timer;
+  memcached_return rc;
+
+  timer.tv_sec= 1;
+  timer.tv_nsec= 0;
+  flags= POLLHUP |  POLLERR;
+
+  memset(&fds, 0, sizeof(struct pollfd));
+  fds[0].fd= ptr->hosts[server_key].fd;
+  fds[0].events= flags;
+  fds[0].revents= flags;
+
+  if (poll(fds, 1, ptr->poll_timeout) < 0)
+    rc= MEMCACHED_FAILURE;
+  else
+    rc= MEMCACHED_SUCCESS;
+
+  close(ptr->hosts[server_key].fd);
+
+  return rc;
+}
+
 ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
 {
   size_t sent_length;

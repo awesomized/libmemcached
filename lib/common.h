@@ -19,6 +19,10 @@
 #include <assert.h>
 #include <time.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/un.h>
+#include <netinet/tcp.h>
+
 
 
 #include <memcached.h>
@@ -35,6 +39,11 @@
 #include "libmemcached_probes.h"
 
 #define MEMCACHED_BLOCK_SIZE 1024
+
+typedef enum {
+  MEM_NO_FLUSH,
+  MEM_FLUSH,
+} memcached_flush_action;
 
 typedef enum {
   MEM_NO_BLOCK= (1 << 0),

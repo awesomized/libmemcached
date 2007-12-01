@@ -1,13 +1,5 @@
 #include "common.h"
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-#include <netinet/in.h>
-
 static memcached_return set_hostinfo(memcached_server_st *server)
 {
   struct addrinfo *ai;
@@ -140,10 +132,11 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
                                            use->ai_protocol)) < 0)
     {
       ptr->cached_errno= errno;
+      WATCHPOINT_ERRNO(errno);
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
 
-    /* For the moment, not getting a nonblocking mode will note be fatal */
+    /* For the moment, not getting a nonblocking mode will not be fatal */
     if (ptr->flags & MEM_NO_BLOCK)
     {
       int flags;
