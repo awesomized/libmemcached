@@ -34,6 +34,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -107,6 +108,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -180,6 +182,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -253,6 +256,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -326,6 +330,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -399,6 +404,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -472,6 +478,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -545,6 +552,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -618,6 +626,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -691,6 +700,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -764,6 +774,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -837,6 +848,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -910,6 +922,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -983,6 +996,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time
@@ -1056,6 +1070,7 @@ Error 25 -> SYSTEM ERROR
 Error 26 -> COULD NOT OPEN UNIX SOCKET
 Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
+Error 29 -> FETCH WAS NOT COMPLETED
 Found key pid
 Found key uptime
 Found key time

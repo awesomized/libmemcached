@@ -5,6 +5,8 @@
   * Fixed bug where in non-block mode all data might not have been sent on
     close().
   * Refactor of memcached_get() to use common code.
+  * Change in value fetch, MEMCACHED_END is now returned when keys are no
+    longer in the pipe.
 
 
 0.11 Mon Nov 26 01:05:52 PST 2007

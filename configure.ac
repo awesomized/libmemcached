@@ -1,6 +1,7 @@
 AC_INIT(src/memcat.c)
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(include/libmemcached_config.h)
+AC_CANONICAL_SYSTEM
 
 MEMCACHED_LIBRARY_NAME=libmemcached
 
@@ -14,7 +15,7 @@ MEMCACHED_API_VERSION=1.0
 AC_SUBST(MEMCACHED_API_VERSION)
 
 #shared library versioning
-MEMCACHED_LIBRARY_VERSION=1:1:0
+MEMCACHED_LIBRARY_VERSION=1:2:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |

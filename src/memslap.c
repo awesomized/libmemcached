@@ -50,7 +50,7 @@ struct thread_context_st {
   pairs_st *execute_pairs;
   unsigned int execute_number;
   test_type test;
-  memcached_server_st *servers;
+  memcached_st *memc;
 };
 
 struct conclusions_st {
@@ -64,9 +64,9 @@ struct conclusions_st {
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
-pairs_st *load_create_data(memcached_server_st *servers, unsigned int number_of, 
-                            unsigned int *actual_loaded);
-void flush_all(memcached_server_st *servers);
+pairs_st *load_create_data(memcached_st *memc, unsigned int number_of, 
+                           unsigned int *actual_loaded);
+void flush_all(memcached_st *memc);
 
 static int opt_verbose= 0;
 static int opt_flush= 0;
@@ -124,6 +124,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 {
   unsigned int x;
   unsigned int actual_loaded;
+  memcached_st *memc;
 
   struct timeval start_time, end_time;
   pthread_t mainthread;            /* Thread descriptor */
@@ -134,10 +135,23 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   pthread_attr_setdetachstate(&attr,
                               PTHREAD_CREATE_DETACHED);
 
+  memc= memcached_create(NULL);
+  memcached_server_push(memc, servers);
+
   if (opt_flush)
-    flush_all(servers);
+    flush_all(memc);
   if (opt_createial_load)
-    pairs= load_create_data(servers, opt_createial_load, &actual_loaded);
+    pairs= load_create_data(memc, opt_createial_load, &actual_loaded);
+
+  /* We set this after we have loaded */
+  {
+    unsigned int value= 1;
+    if (opt_non_blocking_io)
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &value);
+    if (opt_tcp_nodelay)
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &value);
+  }
+
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -152,7 +166,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
     context= (thread_context_st *)malloc(sizeof(thread_context_st));
     memset(context, 0, sizeof(thread_context_st));
 
-    context->servers= servers;
+    context->memc= memcached_clone(NULL, memc);
     context->test= opt_test;
 
     context->initial_pairs= pairs;
@@ -312,16 +326,8 @@ void *run_task(void *p)
 {
   thread_context_st *context= (thread_context_st *)p;
   memcached_st *memc;
-  unsigned int value= 1;
 
-  memc= memcached_create(NULL);
-  WATCHPOINT_ASSERT(memc);
-  if (opt_non_blocking_io)
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &value);
-  if (opt_tcp_nodelay)
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &value);
-  
-  memcached_server_push(memc, context->servers);
+  memc= context->memc;
 
   pthread_mutex_lock(&sleeper_mutex);
   while (master_wakeup)
@@ -355,34 +361,25 @@ void *run_task(void *p)
   return NULL;
 }
 
-void flush_all(memcached_server_st *servers)
+void flush_all(memcached_st *memc)
 {
-  memcached_st *memc;
-
-  memc= memcached_create(NULL);
-
-  memcached_server_push(memc, servers);
-
   memcached_flush(memc, 0);
-
-  memcached_free(memc);
 }
 
-pairs_st *load_create_data(memcached_server_st *servers, unsigned int number_of, 
-                            unsigned int *actual_loaded)
+pairs_st *load_create_data(memcached_st *memc, unsigned int number_of, 
+                           unsigned int *actual_loaded)
 {
-  memcached_st *memc;
+  memcached_st *clone;
   pairs_st *pairs;
 
-  memc= memcached_create(NULL);
+  clone= memcached_clone(NULL, memc);
   /* We always used non-blocking IO for load since it is faster */
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
-  memcached_server_push(memc, servers);
+  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
 
   pairs= pairs_generate(number_of);
-  *actual_loaded= execute_set(memc, pairs, number_of);
+  *actual_loaded= execute_set(clone, pairs, number_of);
 
-  memcached_free(memc);
+  memcached_free(clone);
 
   return pairs;
 }

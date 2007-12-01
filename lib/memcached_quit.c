@@ -20,7 +20,7 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key)
   {
     memcached_return rc;
     rc= memcached_do(ptr, server_key, "quit\r\n", 6, 1);
-    WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS);
+    WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
 
     memcached_io_close(ptr, server_key);
     ptr->hosts[server_key].fd= -1;

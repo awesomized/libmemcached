@@ -11,10 +11,7 @@ static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_
 {
   struct pollfd fds[1];
   short flags= 0;
-  struct timespec timer;
 
-  timer.tv_sec= 1;
-  timer.tv_nsec= 0;
   if (read_or_write)
     flags= POLLOUT |  POLLERR;
   else
@@ -126,24 +123,24 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 
 memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
 {
-  struct pollfd fds[1];
-  short flags= 0;
-  struct timespec timer;
   memcached_return rc;
 
-  timer.tv_sec= 1;
-  timer.tv_nsec= 0;
-  flags= POLLHUP |  POLLERR;
+  rc= MEMCACHED_SUCCESS;
+  if (ptr->flags & MEM_NO_BLOCK)
+  {
+    struct pollfd fds[1];
+    short flags= 0;
 
-  memset(&fds, 0, sizeof(struct pollfd));
-  fds[0].fd= ptr->hosts[server_key].fd;
-  fds[0].events= flags;
-  fds[0].revents= flags;
+    flags= POLLHUP |  POLLERR;
 
-  if (poll(fds, 1, ptr->poll_timeout) < 0)
-    rc= MEMCACHED_FAILURE;
-  else
-    rc= MEMCACHED_SUCCESS;
+    memset(&fds, 0, sizeof(struct pollfd));
+    fds[0].fd= ptr->hosts[server_key].fd;
+    fds[0].events= flags;
+    fds[0].revents= 0;
+
+    if (poll(fds, 1, ptr->poll_timeout == -1 ? 100 : ptr->poll_timeout) < 0)
+      rc= MEMCACHED_FAILURE;
+  }
 
   close(ptr->hosts[server_key].fd);
 

@@ -14,11 +14,13 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
 
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
-  *flags= 0;
+  if (flags)
+    *flags= 0;
 
   memcached_string_reset(value);
 
   rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+
 
   if (rc == MEMCACHED_SUCCESS)
   {
@@ -51,7 +53,8 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     if (end_ptr == string_ptr)
         goto read_error;
     for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-    *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
+    if (flags)
+      *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)
         goto read_error;
@@ -129,8 +132,6 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
       return MEMCACHED_SUCCESS;
     }
   }
-  else if (rc == MEMCACHED_END)
-    rc= MEMCACHED_NOTFOUND;
 
   return rc;
 
@@ -157,6 +158,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 
   value= memcached_fetch(ptr, NULL, NULL, 
                          value_length, flags, error);
+
+  if (*error == MEMCACHED_END)
+    *error= MEMCACHED_NOTFOUND;
 
   if (value == NULL)
     return NULL;
@@ -198,6 +202,8 @@ memcached_return memcached_mget(memcached_st *ptr,
     get_command_length= 5;
   }
 
+  memcached_finish(ptr);
+
   for (x= 0; x < number_of_keys; x++)
   {
     unsigned int server_key;
@@ -219,7 +225,7 @@ memcached_return memcached_mget(memcached_st *ptr,
 
     if ((memcached_io_write(ptr, server_key, keys[x], key_length[x], 0)) == -1)
     {
-      ptr->hosts[server_key].cursor_active = 0;
+      ptr->hosts[server_key].cursor_active= 0;
       memcached_quit_server(ptr, server_key);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
@@ -227,13 +233,12 @@ memcached_return memcached_mget(memcached_st *ptr,
 
     if ((memcached_io_write(ptr, server_key, " ", 1, 0)) == -1)
     {
-      ptr->hosts[server_key].cursor_active = 0;
+      ptr->hosts[server_key].cursor_active= 0;
       memcached_quit_server(ptr, server_key);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
   }
-
 
   /*
     Should we muddle on if some servers are dead?
@@ -275,32 +280,19 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
                                    flags, NULL, ptr->cursor_server);
     *value_length= memcached_string_length(result_buffer);
     
-    if (*error == MEMCACHED_NOTFOUND)
+    if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      ptr->hosts[ptr->cursor_server].cursor_active = 0;
+      ptr->hosts[ptr->cursor_server].cursor_active= 0;
       ptr->cursor_server++;
+      continue;
     }
-    else if (*error == MEMCACHED_END && *value_length == 0)
-    {
-      return NULL;
-    }
-    else if (*error == MEMCACHED_END)
-    {
-      WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
-      *value_length= 0;
-      return NULL;
-    }
-    else if (*error != MEMCACHED_SUCCESS)
-    {
-      return NULL;
-    }
-    else
-    {
+    else if (*error == MEMCACHED_SUCCESS)
       return  memcached_string_c_copy(result_buffer);
-    }
-
+    else
+      return NULL;
   }
 
+  ptr->cursor_server= 0;
   *value_length= 0;
   return NULL;
 }
@@ -329,28 +321,16 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                        &result->cas,
                                        ptr->cursor_server);
     
-    if (*error == MEMCACHED_NOTFOUND)
+    if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      ptr->hosts[ptr->cursor_server].cursor_active = 0;
+      ptr->hosts[ptr->cursor_server].cursor_active= 0;
       ptr->cursor_server++;
+      continue;
     }
-    else if (*error == MEMCACHED_END && memcached_string_length((memcached_string_st *)(&result->value)) == 0)
-    {
-      break;
-    }
-    else if (*error == MEMCACHED_END)
-    {
-      WATCHPOINT_ASSERT(0); /* If this happens we have somehow messed up the fetch */
-      break;
-    }
-    else if (*error != MEMCACHED_SUCCESS)
-    {
-      break;
-    }
-    else
-    {
+    else if (*error == MEMCACHED_SUCCESS)
       return result;
-    }
+    else
+      return NULL;
   }
 
   /* An error has occurred */
@@ -359,5 +339,37 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   else
     memcached_string_reset(&result->value);
 
+  ptr->cursor_server= 0;
   return NULL;
+}
+
+memcached_return memcached_finish_server(memcached_st *ptr, unsigned int server_key)
+{
+  memcached_return rc;
+  memcached_string_st *result_buffer;
+
+  result_buffer= &ptr->result_buffer;
+
+  rc= MEMCACHED_SUCCESS;
+  while (rc == MEMCACHED_SUCCESS)
+  {
+    rc= memcached_value_fetch(ptr, NULL, NULL, result_buffer, 
+                               NULL, NULL, server_key);
+  }
+  ptr->hosts[server_key].cursor_active= 0;
+
+  return rc;
+}
+
+void memcached_finish(memcached_st *ptr)
+{
+  unsigned int x;
+
+  for (x= 0; x < ptr->number_of_hosts; x++)
+  {
+    if (ptr->hosts[x].cursor_active)
+      (void)memcached_finish_server(ptr, x);
+  }
+
+  ptr->cursor_server= 0;
 }

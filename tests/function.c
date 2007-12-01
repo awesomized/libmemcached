@@ -112,7 +112,6 @@ uint8_t set_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint16_t)0);
-  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -662,7 +661,7 @@ uint8_t mget_result_test(memcached_st *memc)
 
   while ((results= memcached_fetch_result(memc, &results_obj, &rc)) != NULL)
   assert(!results);
-  assert(rc == MEMCACHED_NOTFOUND);
+  assert(rc == MEMCACHED_END);
 
   for (x= 0; x < 3; x++)
   {
@@ -712,7 +711,7 @@ uint8_t mget_result_alloc_test(memcached_st *memc)
     assert(results);
   }
   assert(!results);
-  assert(rc == MEMCACHED_NOTFOUND);
+  assert(rc == MEMCACHED_END);
 
   for (x= 0; x < 3; x++)
   {
@@ -768,7 +767,7 @@ uint8_t mget_test(memcached_st *memc)
   }
   assert(!return_value);
   assert(return_value_length == 0);
-  assert(rc == MEMCACHED_NOTFOUND);
+  assert(rc == MEMCACHED_END);
 
   for (x= 0; x < 3; x++)
   {
@@ -1234,7 +1233,7 @@ uint8_t user_supplied_bug6(memcached_st *memc)
                                         &value_length, &flags, &rc)))
     count++;
   assert(count == 0);
-  assert(rc == MEMCACHED_NOTFOUND);
+  assert(rc == MEMCACHED_END);
 
   for (x= 0; x < 4; x++)
   {
@@ -1244,7 +1243,7 @@ uint8_t user_supplied_bug6(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS);
   }
 
-  for (x= 0; x < 10; x++)
+  for (x= 0; x < 2; x++)
   {
     value= memcached_get(memc, keys[0], key_length[0],
                          &value_length, &flags, &rc);		
@@ -1259,10 +1258,10 @@ uint8_t user_supplied_bug6(memcached_st *memc)
     {
       value= memcached_fetch(memc, return_key, &return_key_length, 
                              &value_length, &flags, &rc);
-      memcmp(value, insert_data, value_length);
+      assert(rc == MEMCACHED_SUCCESS);
+      assert(!(memcmp(value, insert_data, value_length)));
       assert(value_length);
       free(value);
-      assert(rc == MEMCACHED_SUCCESS);
     }
   }
 

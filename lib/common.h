@@ -93,6 +93,8 @@ void memcached_string_free(memcached_string_st *string);
 memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *commmand, 
                               size_t command_length, char with_flush);
 memcached_return memcached_version(memcached_st *ptr);
+memcached_return memcached_finish_server(memcached_st *ptr, unsigned int server_key);
+void memcached_finish(memcached_st *ptr);
 
 
 

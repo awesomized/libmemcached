@@ -10,7 +10,11 @@ memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *
   WATCHPOINT_ASSERT(command);
 
   if (ptr->hosts[server_key].cursor_active)
-    memcached_quit_server(ptr, server_key);
+  {
+    memcached_return rc;
+    rc= memcached_finish_server(ptr, server_key);
+    ptr->hosts[server_key].cursor_active= 0;
+  }
 
   if ((rc= memcached_connect(ptr, server_key)) != MEMCACHED_SUCCESS)
     return rc;
