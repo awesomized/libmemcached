@@ -1672,7 +1672,16 @@ memcached_return pre_hash_ketama(memcached_st *memc)
 memcached_return enable_consistent(memcached_st *memc)
 {
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
+  memcached_hash hash;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, &value);
+  pre_hsieh(memc);
+
+  value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
+  assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
+
+  hash= (memcached_hash)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  assert(hash == MEMCACHED_HASH_HSIEH);
+
 
   return MEMCACHED_SUCCESS;
 }
@@ -1866,6 +1875,8 @@ collection_st collection[] ={
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", pre_hsieh, 0, generate_tests},
+  {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
+  {"generate_md5", pre_md5, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {0, 0, 0, 0}
 };

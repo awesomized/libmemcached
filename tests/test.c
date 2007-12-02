@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
+#include <fnmatch.h>
 
 #include "test.h"
 
@@ -119,7 +120,7 @@ int main(int argc, char *argv[])
     test_st *run;
 
     run= next->tests;
-    if (collection_to_run && strcmp(collection_to_run, next->name))
+    if (collection_to_run && fnmatch(collection_to_run, next->name, FNM_CASEFOLD))
       continue;
 
     fprintf(stderr, "\n%s\n\n", next->name);
@@ -131,7 +132,7 @@ int main(int argc, char *argv[])
       memcached_return rc;
       struct timeval start_time, end_time;
 
-      if (wildcard && strcmp(wildcard, run->name))
+      if (wildcard && fnmatch(wildcard, run->name, FNM_CASEFOLD))
         continue;
 
       fprintf(stderr, "Testing %s", run->name);
