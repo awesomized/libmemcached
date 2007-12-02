@@ -212,7 +212,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
       return NULL;
   }
 
-  /* An error has occurred */
+  /* We have completed reading data */
   if (result->is_allocated == MEMCACHED_ALLOCATED)
     memcached_result_free(result);
   else

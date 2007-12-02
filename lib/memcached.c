@@ -77,7 +77,6 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
 
 
   new_clone->flags= ptr->flags;
-  new_clone->number_of_hosts= ptr->number_of_hosts;
   new_clone->send_size= ptr->send_size;
   new_clone->recv_size= ptr->recv_size;
   new_clone->poll_timeout= ptr->poll_timeout;
