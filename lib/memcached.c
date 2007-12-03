@@ -48,7 +48,7 @@ void memcached_free(memcached_st *ptr)
 */
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
 {
-  memcached_return rc;
+  memcached_return rc= MEMCACHED_SUCCESS;
   memcached_st *new_clone;
 
   if (ptr == NULL)

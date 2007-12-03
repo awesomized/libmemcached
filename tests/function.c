@@ -1343,6 +1343,49 @@ uint8_t user_supplied_bug7(memcached_st *memc)
   return 0;
 }
 
+uint8_t user_supplied_bug9(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"UDATA:edevil@sapo.pt", "fudge&*@#", "for^#@&$not"};
+  size_t key_length[3];
+  unsigned int x;
+  uint16_t flags;
+  unsigned count= 0;
+
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
+
+
+  key_length[0]= strlen("UDATA:edevil@sapo.pt");
+  key_length[1]= strlen("fudge&*@#");
+  key_length[2]= strlen("for^#@&$not");
+
+
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint16_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /* We need to empty the server before continueing test */
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                      &return_value_length, &flags, &rc)) != NULL)
+  {
+    assert(return_value);
+    count++;
+  }
+  assert(count == 3);
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1838,6 +1881,7 @@ test_st user_tests[] ={
   {"user_supplied_bug6", 1, user_supplied_bug6 },
   {"user_supplied_bug7", 1, user_supplied_bug7 },
   {"user_supplied_bug8", 1, user_supplied_bug8 },
+  {"user_supplied_bug9", 1, user_supplied_bug9 },
   {0, 0, 0}
 };
 

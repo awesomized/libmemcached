@@ -35,7 +35,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
     {
       *key_length= 0;
 
-      for (; isalnum(*string_ptr); string_ptr++)
+      for (; isgraph(*string_ptr); string_ptr++)
       {
         *key= *string_ptr;
         key++;
@@ -43,7 +43,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
       }
     }
     else /* Skip characters */
-      for (; isalnum(*string_ptr); string_ptr++);
+      for (; isgraph(*string_ptr); string_ptr++);
 
     if (end_ptr == string_ptr)
         goto read_error;
