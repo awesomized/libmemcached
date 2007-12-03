@@ -55,6 +55,10 @@ memcached_return memcached_mget(memcached_st *ptr,
 
   memcached_finish(ptr);
 
+  /* 
+    If a server fails we warn about errors and start all over with sending keys
+    to the server.
+  */
   for (x= 0; x < number_of_keys; x++)
   {
     unsigned int server_key;
@@ -67,7 +71,6 @@ memcached_return memcached_mget(memcached_st *ptr,
 
       if ((memcached_io_write(ptr, server_key, get_command, get_command_length, 0)) == -1)
       {
-        memcached_quit_server(ptr, server_key);
         rc= MEMCACHED_SOME_ERRORS;
         continue;
       }
@@ -77,7 +80,6 @@ memcached_return memcached_mget(memcached_st *ptr,
     if ((memcached_io_write(ptr, server_key, keys[x], key_length[x], 0)) == -1)
     {
       ptr->hosts[server_key].cursor_active= 0;
-      memcached_quit_server(ptr, server_key);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -85,7 +87,6 @@ memcached_return memcached_mget(memcached_st *ptr,
     if ((memcached_io_write(ptr, server_key, " ", 1, 0)) == -1)
     {
       ptr->hosts[server_key].cursor_active= 0;
-      memcached_quit_server(ptr, server_key);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -101,7 +102,6 @@ memcached_return memcached_mget(memcached_st *ptr,
       /* We need to doo something about non-connnected hosts in the future */
       if ((memcached_io_write(ptr, x, "\r\n", 2, 1)) == -1)
       {
-        memcached_quit_server(ptr, x);
         rc= MEMCACHED_SOME_ERRORS;
       }
     }

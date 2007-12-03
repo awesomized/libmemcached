@@ -102,7 +102,6 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, to_write)) == -1)
   {
-    memcached_quit_server(ptr, server_key);
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
   }

@@ -67,7 +67,7 @@ memcached_return memcached_response(memcached_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     unsigned int server_key);
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
-void memcached_quit_server(memcached_st *ptr, unsigned int server_key);
+void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t io_death);
 
 #define memcached_server_response_increment(A,B) A->hosts[B].stack_responses++
 #define memcached_server_response_decrement(A,B) A->hosts[B].stack_responses--

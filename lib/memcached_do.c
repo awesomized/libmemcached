@@ -18,10 +18,7 @@ memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *
   sent_length= memcached_io_write(ptr, server_key, command, command_length, with_flush);
 
   if (sent_length == -1 || sent_length != command_length)
-  {
-    memcached_quit_server(ptr, server_key);
     rc= MEMCACHED_WRITE_FAILURE;
-  }
 
   return rc;
 }

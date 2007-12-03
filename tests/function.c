@@ -1386,6 +1386,41 @@ uint8_t user_supplied_bug9(memcached_st *memc)
   return 0;
 }
 
+uint8_t user_supplied_bug10(memcached_st *memc)
+{
+  char *key= "foo";
+  char *value;
+  size_t value_length= 512;
+  unsigned int x;
+  int key_len= 3;
+  memcached_return rc;
+  unsigned int set= 1;
+  memcached_st *mclone= memcached_clone(NULL, memc);
+
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+
+  value = (char*)malloc(value_length * sizeof(char));
+
+  for (x= 0; x < value_length; x++)
+    value[x]= (char) (x % 127);
+
+  for (x= 1; x <= 100000; ++x)
+  {
+    rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE);
+
+    if (rc == MEMCACHED_WRITE_FAILURE)
+      x--;
+  }
+
+  free(value);
+  memcached_free(mclone);
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1882,6 +1917,7 @@ test_st user_tests[] ={
   {"user_supplied_bug7", 1, user_supplied_bug7 },
   {"user_supplied_bug8", 1, user_supplied_bug8 },
   {"user_supplied_bug9", 1, user_supplied_bug9 },
+  {"user_supplied_bug10", 1, user_supplied_bug10 },
   {0, 0, 0}
 };
 

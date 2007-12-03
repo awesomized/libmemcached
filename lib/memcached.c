@@ -22,7 +22,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   }
   string_ptr= memcached_string_create(ptr, &ptr->result_buffer, 0);
   WATCHPOINT_ASSERT(string_ptr);
-  ptr->poll_timeout= -1;
+  ptr->poll_timeout= MEMCACHED_DEFAILT_TIMEOUT;
   ptr->distribution= MEMCACHED_DISTRIBUTION_MODULO;
 
   return ptr;

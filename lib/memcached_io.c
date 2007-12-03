@@ -11,6 +11,8 @@ static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_
 {
   struct pollfd fds[1];
   short flags= 0;
+  int error;
+  int latch= 0;
 
   if (read_or_write)
     flags= POLLOUT |  POLLERR;
@@ -21,10 +23,30 @@ static int io_wait(memcached_st *ptr, unsigned int server_key, unsigned read_or_
   fds[0].fd= ptr->hosts[server_key].fd;
   fds[0].events= flags;
 
-  if (poll(fds, 1, ptr->poll_timeout) < 0)
-    return MEMCACHED_FAILURE;
+  while (latch == 0)
+  {
+    error= poll(fds, 1, ptr->poll_timeout);
 
-  return MEMCACHED_SUCCESS;
+    if (error == 1)
+      return MEMCACHED_SUCCESS;
+    else if (error == -1)
+    {
+      memcached_quit_server(ptr, server_key, 1);
+      return MEMCACHED_FAILURE;
+    }
+    else if (error)
+    {
+      /* This is impossible */
+      WATCHPOINT_ASSERT(0);
+      return MEMCACHED_FAILURE;
+    }
+    else
+      latch++;
+  }
+
+  memcached_quit_server(ptr, server_key, 1);
+
+  return MEMCACHED_FAILURE; /* Timeout occurred */
 }
 
 ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
@@ -62,6 +84,7 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
             break;
           default:
             {
+              memcached_quit_server(ptr, server_key, 1);
               ptr->cached_errno= errno;
               return -1;
             }
@@ -105,6 +128,8 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
       size_t sent_length;
 
       sent_length= memcached_io_flush(ptr, server_key);
+      if (sent_length == -1)
+        return -1;
 
       WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
       ptr->hosts[server_key].write_ptr= ptr->hosts[server_key].write_buffer;
@@ -128,6 +153,7 @@ memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
   rc= MEMCACHED_SUCCESS;
   if (ptr->flags & MEM_NO_BLOCK)
   {
+    int error;
     struct pollfd fds[1];
     short flags= 0;
 
@@ -138,8 +164,15 @@ memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
     fds[0].events= flags;
     fds[0].revents= 0;
 
-    if (poll(fds, 1, ptr->poll_timeout == -1 ? 100 : ptr->poll_timeout) < 0)
-      rc= MEMCACHED_FAILURE;
+    error= poll(fds, 1, ptr->poll_timeout == -1 ? 100 : ptr->poll_timeout);
+
+    if (error == -1)
+    {
+      memcached_quit_server(ptr, server_key, 1);
+      return MEMCACHED_FAILURE;
+    }
+    else if (error == 0)
+      return MEMCACHED_FAILURE; /* Timeout occurred */
   }
 
   close(ptr->hosts[server_key].fd);
@@ -196,6 +229,7 @@ ssize_t memcached_io_flush(memcached_st *ptr, unsigned int server_key)
           }
           /* Yes, we want to fall through */
         default:
+          memcached_quit_server(ptr, server_key, 1);
           ptr->cached_errno= errno;
           return -1;
         }
