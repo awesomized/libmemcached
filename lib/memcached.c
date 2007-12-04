@@ -81,6 +81,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->recv_size= ptr->recv_size;
   new_clone->poll_timeout= ptr->poll_timeout;
   new_clone->distribution= ptr->distribution;
+  new_clone->hash= ptr->hash;
 
   return new_clone;
 }
