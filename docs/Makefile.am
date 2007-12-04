@@ -45,8 +45,10 @@ man_MANS = libmemcached.3\
 	memcached_fetch_result.3\
 	memcached_free.3\
 	memcached_get.3\
+	memcached_get_by_key.3\
 	memcached_increment.3\
 	memcached_mget.3\
+	memcached_mget_by_key.3\
 	memcached_prepend.3\
 	memcached_replace.3\
 	memcached_server_add.3\
@@ -114,11 +116,17 @@ memcached_flush.3: memcached_flush.pod
 memcached_get.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_get.3
 
+memcached_get_by_key.3: memcached_get.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_get_by_key.3
+
 memcached_fetch_result.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_fetch_result.3
 
 memcached_mget.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_mget.3
+
+memcached_mget_by_key.3: memcached_get.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_mget_by_key.3
 
 memcached_fetch.3: memcached_get.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_get.pod > memcached_fetch.3

@@ -25,6 +25,19 @@ C Client Library for memcached (libmemcached, -lmemcached)
   memcached_mget (memcached_st *ptr, 
                   char **keys, size_t *key_length, 
                   unsigned int number_of_keys);
+  char *
+  memcached_get_by_key(memcached_st *ptr, 
+                       char *master_key, size_t master_key_length, 
+                       char *key, size_t key_length, 
+                       size_t *value_length, 
+                       uint16_t *flags,
+                       memcached_return *error);
+
+  memcached_return 
+  memcached_mget_by_key(memcached_st *ptr, 
+                        char *master_key, size_t master_key_length,
+                        char **keys, size_t *key_length, 
+                        unsigned int number_of_keys);
 
   char *memcached_fetch (memcached_st *ptr,
                          char *key, size_t *key_length, 
@@ -66,6 +79,11 @@ from a memcached server. The result object is forward compatible with changes
 to the server. For more information please refer to the memcached_result_st(3) 
 help. This function will dynamically allocate a result structure for you
 if you do not pass one to the function.
+
+memcached_get_by_key() and memcached_mget_by_key() behave in a similar nature
+as memcached_get() and memcached_mget(). The difference is that they take
+a master key that is used for determining which server an object was stored
+if key partitioning was used for storage.
 
 =head1 RETURN
 
