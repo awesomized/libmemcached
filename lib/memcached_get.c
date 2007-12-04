@@ -9,10 +9,24 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     uint16_t *flags,
                     memcached_return *error)
 {
+  return memcached_get_by_key(ptr, NULL, 0, key, key_length, value_length, 
+                              flags, error);
+}
+
+char *memcached_get_by_key(memcached_st *ptr, 
+                           char *master_key, size_t master_key_length, 
+                           char *key, size_t key_length, 
+                           size_t *value_length, 
+                           uint16_t *flags,
+                           memcached_return *error)
+{
   char *value;
 
   /* Request the key */
-  *error= memcached_mget(ptr, &key, &key_length, 1);
+  *error= memcached_mget_by_key(ptr, 
+                                master_key, 
+                                master_key_length, 
+                                &key, &key_length, 1);
 
   value= memcached_fetch(ptr, NULL, NULL, 
                          value_length, flags, error);
@@ -33,10 +47,19 @@ memcached_return memcached_mget(memcached_st *ptr,
                                 char **keys, size_t *key_length, 
                                 unsigned int number_of_keys)
 {
+  return memcached_mget_by_key(ptr, NULL, 0, keys, key_length, number_of_keys);
+}
+
+memcached_return memcached_mget_by_key(memcached_st *ptr, 
+                                       char *master_key, size_t master_key_length,
+                                       char **keys, size_t *key_length, 
+                                       unsigned int number_of_keys)
+{
   unsigned int x;
   memcached_return rc= MEMCACHED_NOTFOUND;
   char *get_command= "get ";
-  uint8_t get_command_length= 4
+  uint8_t get_command_length= 4;
+  unsigned int master_server_key= 0;
 
   LIBMEMCACHED_MEMCACHED_MGET_START();
   ptr->cursor_server= 0;
@@ -55,6 +78,9 @@ memcached_return memcached_mget(memcached_st *ptr,
 
   memcached_finish(ptr);
 
+  if (master_key && master_key_length)
+    master_server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+
   /* 
     If a server fails we warn about errors and start all over with sending keys
     to the server.
@@ -63,7 +89,10 @@ memcached_return memcached_mget(memcached_st *ptr,
   {
     unsigned int server_key;
 
-    server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
+    if (master_server_key)
+      server_key= master_server_key;
+    else
+      server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
     if (ptr->hosts[server_key].cursor_active == 0)
     {

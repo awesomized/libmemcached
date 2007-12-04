@@ -8,6 +8,8 @@
   * Change in value fetch, MEMCACHED_END is now returned when keys are no
     longer in the pipe.
   * Fixed bug where key could be out of range of characters
+  * Added _by_key() methods to allow partitioning of values to particular
+    servers.
 
 0.11 Mon Nov 26 01:05:52 PST 2007
   * Added option to memcache_behavior_set() so that poll() can be timed out.
