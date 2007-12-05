@@ -1379,6 +1379,7 @@ uint8_t user_supplied_bug9(memcached_st *memc)
                       &return_value_length, &flags, &rc)) != NULL)
   {
     assert(return_value);
+    free(return_value);
     count++;
   }
   assert(count == 3);
