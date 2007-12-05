@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 {
   unsigned int x;
-  unsigned int actual_loaded;
+  unsigned int actual_loaded= 0; /* Fix warning */
   memcached_st *memc;
 
   struct timeval start_time, end_time;

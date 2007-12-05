@@ -52,6 +52,55 @@ C Client Library for memcached (libmemcached, -lmemcached)
                   uint16_t flags,
                   uint64_t cas);
 
+  memcached_return 
+    memcached_set_by_key(memcached_st *ptr, 
+                         char *master_key, size_t master_key_length, 
+                         char *key, size_t key_length, 
+                         char *value, size_t value_length, 
+                         time_t expiration,
+                         uint16_t flags);
+
+  memcached_return 
+    memcached_add_by_key(memcached_st *ptr, 
+                         char *master_key, size_t master_key_length,
+                         char *key, size_t key_length,
+                         char *value, size_t value_length, 
+                         time_t expiration,
+                         uint16_t flags);
+
+  memcached_return 
+    memcached_replace_by_key(memcached_st *ptr, 
+                             char *master_key, size_t master_key_length,
+                             char *key, size_t key_length,
+                             char *value, size_t value_length, 
+                             time_t expiration,
+                             uint16_t flags);
+
+  memcached_return 
+    memcached_prepend_by_key(memcached_st *ptr, 
+                             char *master_key, size_t master_key_length,
+                             char *key, size_t key_length,
+                             char *value, size_t value_length, 
+                             time_t expiration,
+                             uint16_t flags);
+
+  memcached_return 
+    memcached_append_by_key(memcached_st *ptr, 
+                            char *master_key, size_t master_key_length,
+                            char *key, size_t key_length,
+                            char *value, size_t value_length, 
+                            time_t expiration,
+                            uint16_t flags);
+
+  memcached_return 
+    memcached_cas_by_key(memcached_st *ptr, 
+                         char *master_key, size_t master_key_length,
+                         char *key, size_t key_length,
+                         char *value, size_t value_length, 
+                         time_t expiration,
+                         uint16_t flags,
+                         uint64_t cas);
+
 =head1 DESCRIPTION
 
 memcached_set(), memcached_add(), and memcached_replace() are all used to
@@ -84,6 +133,12 @@ calling memcached_result_cas() on a memcached_result_st(3) structure. At the poi
 that this note was written cas is still buggy in memached. Turning on support
 for it in libmemcached(3) is optional. Please see memcached_set() for 
 information on how to do this.
+
+memcached_set_by_key(), memcached_add_by_key(), memcached_replace_by_key(), 
+memcached_prepend_by_key(), memcached_append_by_key_by_key(), 
+memcached_cas_by_key() methods all behave in a similar method as the non key 
+methods. The difference is that they use their master_key parameter to map
+objects to particular servers.
 
 If you are looking for performance, memcached_set() with non-blocking IO is 
 the fastest way to store data on the server.

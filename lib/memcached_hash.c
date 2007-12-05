@@ -86,7 +86,7 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
 
   WATCHPOINT_ASSERT(hash);
 
-  if (ptr->distribution == MEMCACHED_DISTRIBUTION_MODULO)
+  if (ptr->distribution == MEMCACHED_DISTRIBUTION_MODULA)
   {
     return hash % ptr->number_of_hosts;
   }

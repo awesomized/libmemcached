@@ -54,7 +54,7 @@ Makes the default hashing algorithm for keys use MD5. The value can be set to ei
 =item MEMCACHED_BEHAVIOR_DISTRIBUTION
 
 Using this you can enable different means of distributing values to servers.
-The default method is MEMCACHED_DISTRIBUTION_MODULO. You can enable
+The default method is MEMCACHED_DISTRIBUTION_MODULA. You can enable
 consistent hashing by setting MEMCACHED_DISTRIBUTION_CONSISTENT. 
 Consistent hashing delivers better distribution and allows servers to be 
 added to the cluster with minimal cache losses. 

@@ -32,9 +32,16 @@ record:
 record-extended:
 	./testapp extended > output2.res
 
-test: testapp
+test: testapp library_test
+	echo "Tests completed"
+
+library_test:
 	./testapp > output.cmp
 	diff output.res output.cmp
+
+clients:
+	memcached -d -P /tmp/Xumemc.pid -p 12555
+	export MEMCACHED_SERVERS="localhost:12555"
 	sh t/memcat.test > r/memcat.cmp
 	diff r/memcat.res r/memcat.cmp
 	sh t/memcp.test > r/memcp.cmp
@@ -45,10 +52,8 @@ test: testapp
 	diff r/memslap.res r/memslap.cmp
 	sh t/memstat.test > r/memstat.cmp
 	diff r/memstat.res r/memstat.cmp
-
-test-extended: testapp
-	./testapp extended > output.cmp
-	diff output2.res output.cmp
+	cat /tmp/Xumemc.pid | xargs kill
+	rm /tmp/Xumemc.pid
 
 valgrind:
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp

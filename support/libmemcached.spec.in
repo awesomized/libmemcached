@@ -67,10 +67,13 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/libmemcached.3.gz
 %{_mandir}/man3/libmemcached_examples.3.gz
 %{_mandir}/man3/memcached_add.3.gz
+%{_mandir}/man3/memcached_add_by_key.3.gz
 %{_mandir}/man3/memcached_append.3.gz
+%{_mandir}/man3/memcached_append_by_key.3.gz
 %{_mandir}/man3/memcached_behavior_get.3.gz
 %{_mandir}/man3/memcached_behavior_set.3.gz
 %{_mandir}/man3/memcached_cas.3.gz
+%{_mandir}/man3/memcached_cas_by_key.3.gz
 %{_mandir}/man3/memcached_clone.3.gz
 %{_mandir}/man3/memcached_create.3.gz
 %{_mandir}/man3/memcached_decrement.3.gz
@@ -84,6 +87,7 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/memcached_mget.3.gz
 %{_mandir}/man3/memcached_mget_by_key.3.gz
 %{_mandir}/man3/memcached_prepend.3.gz
+%{_mandir}/man3/memcached_prepend_by_key.3.gz
 %{_mandir}/man3/memcached_quit.3.gz
 %{_mandir}/man3/memcached_replace.3.gz
 %{_mandir}/man3/memcached_server_add.3.gz
@@ -95,6 +99,7 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/memcached_server_push.3.gz
 %{_mandir}/man3/memcached_servers_parse.3.gz
 %{_mandir}/man3/memcached_set.3.gz
+%{_mandir}/man3/memcached_set_by_key.3.gz
 %{_mandir}/man3/memcached_stat.3.gz
 %{_mandir}/man3/memcached_stat_get_keys.3.gz
 %{_mandir}/man3/memcached_stat_get_value.3.gz
