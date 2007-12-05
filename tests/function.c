@@ -1422,6 +1422,48 @@ uint8_t user_supplied_bug10(memcached_st *memc)
   return 0;
 }
 
+/*
+  We are looking failures in the async protocol
+*/
+uint8_t user_supplied_bug11(memcached_st *memc)
+{
+  char *key= "foo";
+  char *value;
+  size_t value_length= 512;
+  unsigned int x;
+  int key_len= 3;
+  memcached_return rc;
+  unsigned int set= 1;
+  int32_t timeout;
+  memcached_st *mclone= memcached_clone(NULL, memc);
+
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  timeout= -1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+
+  timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+
+  assert(timeout == -1);
+
+  value = (char*)malloc(value_length * sizeof(char));
+
+  for (x= 0; x < value_length; x++)
+    value[x]= (char) (x % 127);
+
+  for (x= 1; x <= 100000; ++x)
+  {
+    rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  free(value);
+  memcached_free(mclone);
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -1919,6 +1961,7 @@ test_st user_tests[] ={
   {"user_supplied_bug8", 1, user_supplied_bug8 },
   {"user_supplied_bug9", 1, user_supplied_bug9 },
   {"user_supplied_bug10", 1, user_supplied_bug10 },
+  {"user_supplied_bug11", 1, user_supplied_bug11 },
   {0, 0, 0}
 };
 
