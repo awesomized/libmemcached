@@ -1387,6 +1387,7 @@ uint8_t user_supplied_bug9(memcached_st *memc)
   return 0;
 }
 
+/* We are testing with aggressive timeout to get failures */
 uint8_t user_supplied_bug10(memcached_st *memc)
 {
   char *key= "foo";
@@ -1397,9 +1398,12 @@ uint8_t user_supplied_bug10(memcached_st *memc)
   memcached_return rc;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
+  int32_t timeout;
 
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  timeout= 2;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
 
   value = (char*)malloc(value_length * sizeof(char));
 
