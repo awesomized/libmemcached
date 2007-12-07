@@ -35,7 +35,7 @@ typedef struct memcached_server_st memcached_server_st;
 #define MEMCACHED_MAX_HOST_LENGTH 64
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
-#define MEMCACHED_DEFAULT_TIMEOUT 800
+#define MEMCACHED_DEFAULT_TIMEOUT 2000
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -353,6 +353,10 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
                                       time_t expiration,
                                       uint16_t flags,
                                       uint64_t cas);
+memcached_return memcached_delete_by_key(memcached_st *ptr, 
+                                         char *master_key, size_t master_key_length,
+                                         char *key, size_t key_length,
+                                         time_t expiration);
 
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);

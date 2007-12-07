@@ -3,6 +3,15 @@
 memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
                                   time_t expiration)
 {
+  return memcached_delete_by_key(ptr, key, key_length,
+                                 key, key_length, expiration);
+}
+
+memcached_return memcached_delete_by_key(memcached_st *ptr, 
+                                         char *master_key, size_t master_key_length,
+                                         char *key, size_t key_length,
+                                         time_t expiration)
+{
   char to_write;
   size_t send_length;
   memcached_return rc;
@@ -17,7 +26,7 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  server_key= memcached_generate_hash(ptr, key, key_length);
+  server_key= memcached_generate_hash(ptr, master_key, master_key_length);
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
