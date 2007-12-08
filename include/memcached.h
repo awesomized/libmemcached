@@ -68,6 +68,7 @@ typedef enum {
   MEMCACHED_NOT_SUPPORTED,
   MEMCACHED_NO_KEY_PROVIDED,
   MEMCACHED_FETCH_NOTFINISHED,
+  MEMCACHED_TIMEOUT,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
@@ -382,6 +383,7 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
 #ifdef __MEMCACHED_H__
 #define WATCHPOINT_ERROR(A) fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
+#define WATCHPOINT_IFERROR(A) if(A != MEMCACHED_SUCCESS)fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
 #endif
 #define WATCHPOINT_STRING(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
 #define WATCHPOINT_STRING_LENGTH(A,B) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %.*s\n", __FILE__, __LINE__,__func__,(int)B,A);fflush(stdout);
@@ -389,18 +391,10 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
 #define WATCHPOINT_ASSERT(A) assert((A));
 #else
-/*
-#define WATCHPOINT { 1; };
-#define WATCHPOINT_ERROR(A) { 1; };
-#define WATCHPOINT_STRING(A) { 1; };
-#define WATCHPOINT_STRING_LENGTH(A,B) { 1; };
-#define WATCHPOINT_NUMBER(A) { 1; };
-#define WATCHPOINT_ERRNO(A) { 1; };
-#define WATCHPOINT_ASSERT(A) { 1; };
-*/
 #define WATCHPOINT
 #ifdef __MEMCACHED_H__
 #define WATCHPOINT_ERROR(A)
+#define WATCHPOINT_IFERROR(A)
 #endif
 #define WATCHPOINT_STRING(A)
 #define WATCHPOINT_NUMBER(A)

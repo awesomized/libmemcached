@@ -41,11 +41,6 @@
 #define MEMCACHED_BLOCK_SIZE 1024
 
 typedef enum {
-  MEM_NO_FLUSH,
-  MEM_FLUSH,
-} memcached_flush_action;
-
-typedef enum {
   MEM_NO_BLOCK= (1 << 0),
   MEM_TCP_NODELAY= (1 << 1),
   MEM_REUSE_MEMORY= (1 << 2),

@@ -1459,7 +1459,8 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   {
     rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
-    assert(rc == MEMCACHED_SUCCESS);
+    WATCHPOINT_IFERROR(rc);
+    //assert(rc == MEMCACHED_SUCCESS);
   }
 
   free(value);
