@@ -39,7 +39,7 @@ memcached_server_st(3).
 memcached_server_count() provides you a count of the current number of
 servers being used by a C<memcached_st> structure.
 
-memcached_server_list() is used to provide an array of all connected hosts.
+memcached_server_list() is used to provide an array of all defined hosts.
 You are responsible for freeing this list (aka it is not a pointer to the
 currently used structure).
 
