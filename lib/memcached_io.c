@@ -44,8 +44,34 @@ static memcached_return io_wait(memcached_st *ptr, unsigned int server_key,
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
   memcached_quit_server(ptr, server_key, 1);
+
   return MEMCACHED_FAILURE;
 
+}
+
+void memcached_io_preread(memcached_st *ptr)
+{
+  unsigned int x;
+
+  return;
+
+  for (x= 0; x < ptr->number_of_hosts; x++)
+  {
+    if (ptr->hosts[x].cursor_active &&
+        ptr->hosts[x].read_data_length < MEMCACHED_MAX_BUFFER )
+    {
+      size_t data_read;
+
+      data_read= read(ptr->hosts[x].fd,
+                      ptr->hosts[x].read_ptr + ptr->hosts[x].read_data_length,
+                      MEMCACHED_MAX_BUFFER - ptr->hosts[x].read_data_length);
+      if (data_read == -1)
+        continue;
+
+      ptr->hosts[x].read_buffer_length+= data_read;
+      ptr->hosts[x].read_data_length+= data_read;
+    }
+  }
 }
 
 ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
@@ -73,6 +99,7 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
           case EAGAIN:
             {
               memcached_return rc;
+
               rc= io_wait(ptr, server_key, MEM_READ);
 
               if (rc == MEMCACHED_SUCCESS)
@@ -94,15 +121,31 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
         /* If zero, just keep looping */
       }
 
+      ptr->hosts[server_key].read_data_length= data_read;
       ptr->hosts[server_key].read_buffer_length= data_read;
       ptr->hosts[server_key].read_ptr= ptr->hosts[server_key].read_buffer;
     }
 
-    *buffer_ptr= *ptr->hosts[server_key].read_ptr;
-    length--;
-    ptr->hosts[server_key].read_ptr++;
-    ptr->hosts[server_key].read_buffer_length--;
-    buffer_ptr++;
+    if (length > 1)
+    {
+      size_t difference;
+
+      difference= (length > ptr->hosts[server_key].read_buffer_length) ? ptr->hosts[server_key].read_buffer_length : length;
+
+      memcpy(buffer_ptr, ptr->hosts[server_key].read_ptr, difference);
+      length -= difference;
+      ptr->hosts[server_key].read_ptr+= difference;
+      ptr->hosts[server_key].read_buffer_length-= difference;
+      buffer_ptr+= difference;
+    }
+    else
+    {
+      *buffer_ptr= *ptr->hosts[server_key].read_ptr;
+      length--;
+      ptr->hosts[server_key].read_ptr++;
+      ptr->hosts[server_key].read_buffer_length--;
+      buffer_ptr++;
+    }
   }
 
   return (size_t)(buffer_ptr - buffer);

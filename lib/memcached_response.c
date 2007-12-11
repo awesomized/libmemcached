@@ -42,7 +42,7 @@ memcached_return memcached_response(memcached_st *ptr,
         buffer_ptr++;
 
       total_length++;
-      WATCHPOINT_ASSERT(total_length < buffer_length);
+      WATCHPOINT_ASSERT(total_length <= buffer_length);
 
       if (total_length >= buffer_length)
         return MEMCACHED_PROTOCOL_ERROR;

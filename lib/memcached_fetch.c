@@ -147,6 +147,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   memcached_string_st *result_buffer;
   result_buffer= &ptr->result_buffer;
 
+  if (ptr->flags & MEM_NO_BLOCK)
+    memcached_io_preread(ptr);
+
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
     if (!ptr->hosts[ptr->cursor_server].cursor_active)
@@ -184,6 +187,9 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     result= memcached_result_create(ptr, NULL);
 
   WATCHPOINT_ASSERT(result->value.is_allocated != MEMCACHED_USED);
+
+  if (ptr->flags & MEM_NO_BLOCK)
+    memcached_io_preread(ptr);
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {

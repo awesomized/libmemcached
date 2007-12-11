@@ -40,7 +40,9 @@ memcached_behavior_set() will flush and reset all connections.
 =item MEMCACHED_BEHAVIOR_NO_BLOCK
 
 Causes libmemcached(3) to use asychronous IO. This is the fastest transport
-available.
+available for storage functions. For read operations it is currently 
+similar in performance to the non-blocking method (this is being
+looked into).
 
 =item MEMCACHED_BEHAVIOR_TCP_NODELAY
 

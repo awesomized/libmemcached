@@ -24,7 +24,7 @@ matched based on server order as supplied by you). It implements both
 a modula and consistent method of object distribution.
 
 There are multiple implemented routing and hashing methods. See the
-memcached_behavior page.
+memcached_behavior_set() manpage.
 
 All operations are performed against a C<memcached_st> structure.
 These structures can either be dynamically allocated or statically
