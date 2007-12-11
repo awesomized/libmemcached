@@ -15,7 +15,7 @@ MEMCACHED_API_VERSION=1.0
 AC_SUBST(MEMCACHED_API_VERSION)
 
 #shared library versioning
-MEMCACHED_LIBRARY_VERSION=1:2:0
+MEMCACHED_LIBRARY_VERSION=2:2:1
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
