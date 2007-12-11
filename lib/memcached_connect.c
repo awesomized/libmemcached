@@ -143,7 +143,13 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
 
       flags= fcntl(ptr->hosts[server_key].fd, F_GETFL, 0);
       if (flags != -1)
+      {
         (void)fcntl(ptr->hosts[server_key].fd, F_SETFL, flags | O_NONBLOCK);
+
+        flags= 1;
+        setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, SO_LINGER, 
+                   &flags, (socklen_t)sizeof(int));
+      }
     }
 
     if (ptr->flags & MEM_TCP_NODELAY)

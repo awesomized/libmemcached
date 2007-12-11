@@ -150,36 +150,9 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 
 memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
 {
-  memcached_return rc;
-
-  rc= MEMCACHED_SUCCESS;
-  if (ptr->flags & MEM_NO_BLOCK)
-  {
-    int error;
-    struct pollfd fds[1];
-    short flags= 0;
-
-    flags= POLLHUP |  POLLERR;
-
-    memset(&fds, 0, sizeof(struct pollfd));
-    fds[0].fd= ptr->hosts[server_key].fd;
-    fds[0].events= flags;
-    fds[0].revents= 0;
-
-    error= poll(fds, 1, ptr->poll_timeout == -1 ? 100 : ptr->poll_timeout);
-
-    if (error == -1)
-    {
-      memcached_quit_server(ptr, server_key, 1);
-      return MEMCACHED_FAILURE;
-    }
-    else if (error == 0)
-      return MEMCACHED_FAILURE; /* Timeout occurred */
-  }
-
   close(ptr->hosts[server_key].fd);
 
-  return rc;
+  return MEMCACHED_SUCCESS;
 }
 
 static ssize_t io_flush(memcached_st *ptr, unsigned int server_key, 
