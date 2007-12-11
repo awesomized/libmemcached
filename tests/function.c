@@ -341,6 +341,16 @@ uint8_t add_test(memcached_st *memc)
   return 0;
 }
 
+uint8_t add_wrapper(memcached_st *memc)
+{
+  unsigned int x;
+
+  for (x= 0; x < 10000; x++)
+    add_test(memc);
+
+  return 0;
+}
+
 uint8_t replace_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -1930,6 +1940,11 @@ test_st tests[] ={
   {0, 0, 0}
 };
 
+test_st async_tests[] ={
+  {"add", 1, add_wrapper },
+  {0, 0, 0}
+};
+
 test_st string_tests[] ={
   {"string static with null", 0, string_static_null },
   {"string alloc with null", 0, string_alloc_null },
@@ -2001,6 +2016,7 @@ collection_st collection[] ={
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
+  {"async", pre_nonblock, 0, async_tests},
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", pre_hsieh, 0, generate_tests},

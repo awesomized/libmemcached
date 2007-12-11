@@ -150,19 +150,6 @@ ssize_t memcached_io_write(memcached_st *ptr, unsigned int server_key,
 
 memcached_return memcached_io_close(memcached_st *ptr, unsigned int server_key)
 {
-  if (ptr->flags & MEM_NO_BLOCK && 0)
-  {
-    int sock_size;
-    int error;
-    socklen_t sock_length;
-
-    error= getsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, SO_LINGER,
-                      &sock_size, &sock_length);
-
-    WATCHPOINT_NUMBER(error);
-    WATCHPOINT_NUMBER(sock_size);
-  }
-
   close(ptr->hosts[server_key].fd);
 
   return MEMCACHED_SUCCESS;

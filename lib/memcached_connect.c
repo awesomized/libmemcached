@@ -136,25 +136,13 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
 
-    /* For the moment, not getting a nonblocking mode will not be fatal */
-    if (ptr->flags & MEM_NO_BLOCK)
-    {
-      int flags;
-
-      flags= fcntl(ptr->hosts[server_key].fd, F_GETFL, 0);
-      if (flags != -1)
-      {
-        (void)fcntl(ptr->hosts[server_key].fd, F_SETFL, flags | O_NONBLOCK);
-      }
-    }
-
     if (ptr->flags & MEM_NO_BLOCK)
     {
       int error;
       struct linger linger;
 
       linger.l_onoff= 1; 
-      linger.l_linger= 400; 
+      linger.l_linger= 65536; 
       error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_LINGER, 
                         &linger, (socklen_t)sizeof(struct linger));
       WATCHPOINT_ASSERT(error == 0);
@@ -187,6 +175,19 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
                         &ptr->recv_size, (socklen_t)sizeof(int));
       WATCHPOINT_ASSERT(error == 0);
     }
+
+    /* For the moment, not getting a nonblocking mode will not be fatal */
+    if (ptr->flags & MEM_NO_BLOCK)
+    {
+      int flags;
+
+      flags= fcntl(ptr->hosts[server_key].fd, F_GETFL, 0);
+      if (flags != -1)
+      {
+        (void)fcntl(ptr->hosts[server_key].fd, F_SETFL, flags | O_NONBLOCK);
+      }
+    }
+
 
     /* connect to server */
 test_connect:
