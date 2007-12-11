@@ -145,31 +145,47 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
       if (flags != -1)
       {
         (void)fcntl(ptr->hosts[server_key].fd, F_SETFL, flags | O_NONBLOCK);
-
-        flags= 1;
-        setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, SO_LINGER, 
-                   &flags, (socklen_t)sizeof(int));
       }
+    }
+
+    if (ptr->flags & MEM_NO_BLOCK)
+    {
+      int error;
+      struct linger linger;
+
+      linger.l_onoff= 1; 
+      linger.l_linger= 400; 
+      error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_LINGER, 
+                        &linger, (socklen_t)sizeof(struct linger));
+      WATCHPOINT_ASSERT(error == 0);
     }
 
     if (ptr->flags & MEM_TCP_NODELAY)
     {
       int flag= 1;
+      int error;
 
-      setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, TCP_NODELAY, 
-                 &flag, (socklen_t)sizeof(int));
+      error= setsockopt(ptr->hosts[server_key].fd, IPPROTO_TCP, TCP_NODELAY, 
+                        &flag, (socklen_t)sizeof(int));
+      WATCHPOINT_ASSERT(error == 0);
     }
 
     if (ptr->send_size)
     {
-      setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
-                 &ptr->send_size, (socklen_t)sizeof(int));
+      int error;
+
+      error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
+                        &ptr->send_size, (socklen_t)sizeof(int));
+      WATCHPOINT_ASSERT(error == 0);
     }
 
     if (ptr->recv_size)
     {
-      setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
-                 &ptr->recv_size, (socklen_t)sizeof(int));
+      int error;
+
+      error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDBUF, 
+                        &ptr->recv_size, (socklen_t)sizeof(int));
+      WATCHPOINT_ASSERT(error == 0);
     }
 
     /* connect to server */
@@ -193,6 +209,7 @@ test_connect:
       }
       ptr->connected++;
     }
+
     WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
   }
 
