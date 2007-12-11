@@ -35,7 +35,7 @@ typedef struct memcached_server_st memcached_server_st;
 #define MEMCACHED_MAX_HOST_LENGTH 64
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
-#define MEMCACHED_DEFAULT_TIMEOUT 65556
+#define MEMCACHED_DEFAULT_TIMEOUT INT16_MAX
 
 typedef enum {
   MEMCACHED_SUCCESS,

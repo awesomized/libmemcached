@@ -142,7 +142,7 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
       struct linger linger;
 
       linger.l_onoff= 1; 
-      linger.l_linger= 65536; 
+      linger.l_linger= MEMCACHED_DEFAULT_TIMEOUT; 
       error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_LINGER, 
                         &linger, (socklen_t)sizeof(struct linger));
       WATCHPOINT_ASSERT(error == 0);
