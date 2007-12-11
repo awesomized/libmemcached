@@ -27,8 +27,6 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t i
 
       memcached_io_close(ptr, server_key);
     }
-    else
-      WATCHPOINT_ASSERT(0);
 
     ptr->hosts[server_key].fd= -1;
     ptr->hosts[server_key].stack_responses= 0;

@@ -37,7 +37,6 @@ static memcached_return io_wait(memcached_st *ptr, unsigned int server_key,
     return MEMCACHED_SUCCESS;
   else if (error == 0)
   {
-    WATCHPOINT_NUMBER(read_or_write);
     return MEMCACHED_TIMEOUT;
   }
 
