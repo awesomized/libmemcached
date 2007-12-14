@@ -140,11 +140,23 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
     {
       int error;
       struct linger linger;
+      struct timeval waittime;
+
+      waittime.tv_sec= 10;
+      waittime.tv_usec= 0;
 
       linger.l_onoff= 1; 
       linger.l_linger= MEMCACHED_DEFAULT_TIMEOUT; 
       error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_LINGER, 
                         &linger, (socklen_t)sizeof(struct linger));
+      WATCHPOINT_ASSERT(error == 0);
+
+      error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_SNDTIMEO, 
+                        &waittime, (socklen_t)sizeof(struct timeval));
+      WATCHPOINT_ASSERT(error == 0);
+
+      error= setsockopt(ptr->hosts[server_key].fd, SOL_SOCKET, SO_RCVTIMEO, 
+                        &waittime, (socklen_t)sizeof(struct timeval));
       WATCHPOINT_ASSERT(error == 0);
     }
 
