@@ -42,7 +42,7 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
   {
     char *value;
     size_t value_length;
-    uint16_t flags;
+    uint32_t flags;
     unsigned int fetch_key;
 
     fetch_key= random() % number_of;

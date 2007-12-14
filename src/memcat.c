@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   memcached_st *memc;
   char *string;
   size_t string_length;
-  uint16_t flags;
+  uint32_t flags;
   memcached_return rc;
   memcached_server_st *servers;
 

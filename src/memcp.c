@@ -25,7 +25,7 @@ void options_parse(int argc, char *argv[]);
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
 static int opt_method= OPT_SET;
-static uint16_t opt_flags= 0;
+static uint32_t opt_flags= 0;
 static time_t opt_expires= 0;
 
 int main(int argc, char *argv[])
@@ -187,7 +187,7 @@ void options_parse(int argc, char *argv[])
       opt_servers= strdup(optarg);
       break;
     case OPT_FLAG: /* --flag */
-      opt_flags= (uint16_t)strtol(optarg, (char **)NULL, 16);
+      opt_flags= (uint32_t)strtol(optarg, (char **)NULL, 16);
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expires= (time_t)strtoll(optarg, (char **)NULL, 10);
