@@ -23,6 +23,8 @@ testapp_LDADD = $(LDADDS)
 
 record:
 	./testapp > output.res
+
+client-record:
 	sh t/memcat.test > r/memcat.res
 	sh t/memcp.test > r/memcp.res
 	sh t/memrm.test > r/memrm.res
