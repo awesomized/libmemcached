@@ -111,7 +111,7 @@ uint8_t set_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -123,24 +123,24 @@ uint8_t append_test(memcached_st *memc)
   char *key= "fig";
   char *value= "we";
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
 
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_append(memc, key, strlen(key), 
                        " the", strlen(" the"),
-                       (time_t)0, (uint16_t)0);
+                       (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_append(memc, key, strlen(key), 
                        " people", strlen(" people"),
-                       (time_t)0, (uint16_t)0);
+                       (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   value= memcached_get(memc, key, strlen(key),
@@ -161,7 +161,7 @@ uint8_t append_binary_test(memcached_st *memc)
   unsigned int store_list[] = { 23, 56, 499, 98, 32847, 0 };
   char *value;
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
   unsigned int x;
 
   rc= memcached_flush(memc, 0);
@@ -170,7 +170,7 @@ uint8_t append_binary_test(memcached_st *memc)
   rc= memcached_set(memc, 
                     key, strlen(key), 
                     NULL, 0,
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   for (x= 0; store_list[x] ; x++)
@@ -178,7 +178,7 @@ uint8_t append_binary_test(memcached_st *memc)
     rc= memcached_append(memc, 
                          key, strlen(key), 
                          (char *)&store_list[x], sizeof(unsigned int),
-                         (time_t)0, (uint16_t)0);
+                         (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -220,7 +220,7 @@ uint8_t cas2_test(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -261,7 +261,7 @@ uint8_t cas_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_mget(memc, &key, &key_length, 1);
@@ -288,24 +288,24 @@ uint8_t prepend_test(memcached_st *memc)
   char *key= "fig";
   char *value= "people";
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
 
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_prepend(memc, key, strlen(key), 
                        "the ", strlen("the "),
-                       (time_t)0, (uint16_t)0);
+                       (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_prepend(memc, key, strlen(key), 
                        "we ", strlen("we "),
-                       (time_t)0, (uint16_t)0);
+                       (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   value= memcached_get(memc, key, strlen(key),
@@ -330,12 +330,12 @@ uint8_t add_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
   memcached_quit(memc);
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_NOTSTORED);
 
   return 0;
@@ -359,7 +359,7 @@ uint8_t replace_test(memcached_st *memc)
 
   rc= memcached_replace(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -373,7 +373,7 @@ uint8_t delete_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
@@ -398,7 +398,7 @@ uint8_t get_test(memcached_st *memc)
   char *key= "foo";
   char *string;
   size_t string_length;
-  uint16_t flags;
+  uint32_t flags;
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND);
@@ -420,11 +420,11 @@ uint8_t get_test2(memcached_st *memc)
   char *value= "when we sanitize";
   char *string;
   size_t string_length;
-  uint16_t flags;
+  uint32_t flags;
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   string= memcached_get(memc, key, strlen(key),
@@ -452,7 +452,7 @@ uint8_t set_test2(memcached_st *memc)
   {
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
-                      (time_t)0, (uint16_t)0);
+                      (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -477,7 +477,7 @@ uint8_t set_test3(memcached_st *memc)
   {
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
-                      (time_t)0, (uint16_t)0);
+                      (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -494,7 +494,7 @@ uint8_t get_test3(memcached_st *memc)
   size_t value_length= 8191;
   char *string;
   size_t string_length;
-  uint16_t flags;
+  uint32_t flags;
   int x;
 
   value = (char*)malloc(value_length);
@@ -505,7 +505,7 @@ uint8_t get_test3(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, value_length,
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   string= memcached_get(memc, key, strlen(key),
@@ -530,7 +530,7 @@ uint8_t get_test4(memcached_st *memc)
   size_t value_length= 8191;
   char *string;
   size_t string_length;
-  uint16_t flags;
+  uint32_t flags;
   int x;
 
   value = (char*)malloc(value_length);
@@ -541,7 +541,7 @@ uint8_t get_test4(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, value_length,
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   for (x= 0; x < 10; x++)
@@ -582,7 +582,7 @@ uint8_t increment_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_increment(memc, key, strlen(key),
@@ -607,7 +607,7 @@ uint8_t decrement_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)0, (uint16_t)0);
+                    (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
   rc= memcached_decrement(memc, key, strlen(key),
@@ -631,13 +631,13 @@ uint8_t quit_test(memcached_st *memc)
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)10, (uint16_t)3);
+                    (time_t)10, (uint32_t)3);
   assert(rc == MEMCACHED_SUCCESS);
   memcached_quit(memc);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
-                    (time_t)50, (uint16_t)9);
+                    (time_t)50, (uint32_t)9);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -677,7 +677,7 @@ uint8_t mget_result_test(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -727,7 +727,7 @@ uint8_t mget_result_alloc_test(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -756,7 +756,7 @@ uint8_t mget_test(memcached_st *memc)
   char *keys[]= {"fudge", "son", "food"};
   size_t key_length[]= {5, 3, 4};
   unsigned int x;
-  uint16_t flags;
+  uint32_t flags;
 
   char return_key[MEMCACHED_MAX_KEY];
   size_t return_key_length;
@@ -783,7 +783,7 @@ uint8_t mget_test(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -1004,7 +1004,7 @@ uint8_t user_supplied_bug2(memcached_st *memc)
   {
     memcached_return rc= MEMCACHED_SUCCESS;
     char buffer[SMALL_STRING_LEN];
-    uint16_t flags= 0;
+    uint32_t flags= 0;
     size_t val_len= 0;
     char *getval;
 
@@ -1073,7 +1073,7 @@ uint8_t user_supplied_bug3(memcached_st *memc)
     size_t return_key_length;
     char *return_value;
     size_t return_value_length;
-    uint16_t flags;
+    uint32_t flags;
 
     while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
                                           &return_value_length, &flags, &rc)))
@@ -1098,7 +1098,7 @@ uint8_t user_supplied_bug4(memcached_st *memc)
   char *keys[]= {"fudge", "son", "food"};
   size_t key_length[]= {5, 3, 4};
   unsigned int x;
-  uint16_t flags;
+  uint32_t flags;
 
   /* Here we free everything before running a bunch of mget tests */
   {
@@ -1132,7 +1132,7 @@ uint8_t user_supplied_bug4(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_NO_SERVERS);
   }
 
@@ -1164,7 +1164,7 @@ uint8_t user_supplied_bug5(memcached_st *memc)
   size_t return_key_length;
   char *value;
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
   unsigned int count;
   unsigned int x;
   char insert_data[VALUE_SIZE_BUG5];
@@ -1188,7 +1188,7 @@ uint8_t user_supplied_bug5(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       insert_data, VALUE_SIZE_BUG5,
-                      (time_t)0, (uint16_t)0);
+                      (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -1222,7 +1222,7 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   size_t return_key_length;
   char *value;
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
   unsigned int count;
   unsigned int x;
   char insert_data[VALUE_SIZE_BUG5];
@@ -1249,7 +1249,7 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       insert_data, VALUE_SIZE_BUG5,
-                      (time_t)0, (uint16_t)0);
+                      (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -1318,7 +1318,7 @@ uint8_t user_supplied_bug7(memcached_st *memc)
   size_t return_key_length;
   char *value;
   size_t value_length;
-  uint16_t flags;
+  uint32_t flags;
   unsigned int x;
   char insert_data[VALUE_SIZE_BUG5];
 
@@ -1359,7 +1359,7 @@ uint8_t user_supplied_bug9(memcached_st *memc)
   char *keys[]= {"UDATA:edevil@sapo.pt", "fudge&*@#", "for^#@&$not"};
   size_t key_length[3];
   unsigned int x;
-  uint16_t flags;
+  uint32_t flags;
   unsigned count= 0;
 
   char return_key[MEMCACHED_MAX_KEY];
@@ -1377,7 +1377,7 @@ uint8_t user_supplied_bug9(memcached_st *memc)
   {
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
-                      (time_t)50, (uint16_t)9);
+                      (time_t)50, (uint32_t)9);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -1626,7 +1626,7 @@ uint8_t get_read(memcached_st *memc)
   {
     char *return_value;
     size_t return_value_length;
-    uint16_t flags;
+    uint32_t flags;
 
     for (x= 0; x < GLOBAL_COUNT; x++)
     {
@@ -1656,7 +1656,7 @@ uint8_t mget_read(memcached_st *memc)
     size_t return_key_length;
     char *return_value;
     size_t return_value_length;
-    uint16_t flags;
+    uint32_t flags;
 
     while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
                                           &return_value_length, &flags, &rc)))

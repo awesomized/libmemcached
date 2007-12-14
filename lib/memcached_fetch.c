@@ -3,7 +3,7 @@
 
 static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                                               memcached_string_st *value,
-                                              uint16_t *flags,
+                                              uint32_t *flags,
                                               uint64_t *cas,
                                               unsigned int server_key)
 {
@@ -54,7 +54,7 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
         goto read_error;
     for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
     if (flags)
-      *flags= (uint16_t)strtol(next_ptr, &string_ptr, 10);
+      *flags= (uint32_t)strtol(next_ptr, &string_ptr, 10);
 
     if (end_ptr == string_ptr)
         goto read_error;
@@ -141,7 +141,7 @@ read_error:
 
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                     size_t *value_length, 
-                    uint16_t *flags,
+                    uint32_t *flags,
                     memcached_return *error)
 {
   memcached_string_st *result_buffer;

@@ -6,7 +6,7 @@
 */
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length, 
                     size_t *value_length, 
-                    uint16_t *flags,
+                    uint32_t *flags,
                     memcached_return *error)
 {
   return memcached_get_by_key(ptr, NULL, 0, key, key_length, value_length, 
@@ -17,7 +17,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                            char *master_key, size_t master_key_length, 
                            char *key, size_t key_length, 
                            size_t *value_length, 
-                           uint16_t *flags,
+                           uint32_t *flags,
                            memcached_return *error)
 {
   char *value;
