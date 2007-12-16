@@ -11,7 +11,7 @@
 #define __MEMCACHED_H__
 
 #include <stdlib.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 
@@ -181,6 +181,7 @@ struct memcached_result_st {
   memcached_string_st value;
   uint32_t flags;
   uint64_t cas;
+  /* Add result callback function */
 };
 
 struct memcached_st {

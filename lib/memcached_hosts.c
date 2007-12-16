@@ -38,7 +38,7 @@ static void host_reset(memcached_server_st *host, char *hostname, unsigned int p
                        memcached_connection type)
 {
   memset(host,  0, sizeof(memcached_server_st));
-  memcpy(host->hostname, hostname, strlen(hostname));
+  strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
   host->port= port;
   host->fd= -1;
   host->type= type;
