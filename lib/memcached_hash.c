@@ -29,6 +29,8 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
     break;
   case MEMCACHED_HASH_CRC:
     hash= ((hash_crc32(key, key_length) >> 16) & 0x7fff);
+    if (hash == 0)
+      hash= 1;
     break;
     /* FNV hash'es lifted from Dustin Sallings work */
   case MEMCACHED_HASH_FNV1_64: 
