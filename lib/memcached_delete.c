@@ -54,7 +54,6 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
   if ((ptr->flags & MEM_NO_BLOCK))
   {
     rc= MEMCACHED_SUCCESS;
-    memcached_server_response_increment(ptr, server_key);
   }
   else
   {

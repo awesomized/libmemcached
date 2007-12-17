@@ -19,6 +19,8 @@ memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *
 
   if (sent_length == -1 || sent_length != command_length)
     rc= MEMCACHED_WRITE_FAILURE;
+  else
+    memcached_server_response_increment(ptr, server_key);
 
   return rc;
 }

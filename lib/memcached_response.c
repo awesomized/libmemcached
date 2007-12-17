@@ -21,7 +21,7 @@ memcached_return memcached_response(memcached_st *ptr,
   send_length= 0;
 
   max_messages= memcached_server_response_count(ptr, server_key);
-  for (x= 0; x <=  max_messages; x++)
+  for (x= 0; x <  max_messages; x++)
   {
     size_t total_length= 0;
     buffer_ptr= buffer;
@@ -50,26 +50,47 @@ memcached_return memcached_response(memcached_st *ptr,
     buffer_ptr++;
     *buffer_ptr= 0;
 
-    if (memcached_server_response_count(ptr, server_key))
-      memcached_server_response_decrement(ptr, server_key);
+    memcached_server_response_decrement(ptr, server_key);
   }
 
   switch(buffer[0])
   {
   case 'V': /* VALUE || VERSION */
-    return MEMCACHED_SUCCESS;
+    if (buffer[1] == 'A') /* VALUE */
+    {
+      /* We add back in one because we will need to search for END */
+      memcached_server_response_increment(ptr, server_key);
+      return MEMCACHED_SUCCESS;
+    }
+    else if (buffer[1] == 'E') /* VERSION */
+    {
+      return MEMCACHED_SUCCESS;
+    }
+    else
+    {
+      WATCHPOINT_STRING(buffer);
+      WATCHPOINT_ASSERT(0);
+      return MEMCACHED_UNKNOWN_READ_FAILURE;
+    }
   case 'O': /* OK */
     return MEMCACHED_SUCCESS;
   case 'S': /* STORED STATS SERVER_ERROR */
     {
       if (buffer[2] == 'A') /* STORED STATS */
+      {
+        memcached_server_response_increment(ptr, server_key);
         return MEMCACHED_STAT;
+      }
       else if (buffer[1] == 'E')
         return MEMCACHED_SERVER_ERROR;
       else if (buffer[1] == 'T')
         return MEMCACHED_STORED;
       else
+      {
+        WATCHPOINT_STRING(buffer);
+        WATCHPOINT_ASSERT(0);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
     }
   case 'D': /* DELETED */
     return MEMCACHED_DELETED;

@@ -21,7 +21,6 @@ static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size
 
   rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
-
   if (rc == MEMCACHED_SUCCESS)
   {
     char *next_ptr;

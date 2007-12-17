@@ -103,7 +103,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
         rc= MEMCACHED_SOME_ERRORS;
         continue;
       }
-      ptr->hosts[server_key].cursor_active= 1;
+      ptr->hosts[server_key].cursor_active++;
     }
 
     if ((memcached_io_write(ptr, server_key, keys[x], key_length[x], 0)) == -1)
@@ -126,13 +126,14 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   */
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    if (ptr->hosts[x].cursor_active == 1)
+    if (ptr->hosts[x].cursor_active)
     {
       /* We need to doo something about non-connnected hosts in the future */
       if ((memcached_io_write(ptr, x, "\r\n", 2, 1)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;
       }
+      memcached_server_response_increment(ptr, x);
     }
   }
 

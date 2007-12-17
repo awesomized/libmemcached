@@ -199,8 +199,10 @@ struct memcached_st {
   memcached_hash hash;
   memcached_server_distribution distribution;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
+#ifdef NOT_USED /* Future Use */
   uint8_t replicas;
-  memcached_return warning; /* Future Use */
+  memcached_return warning;
+#endif
 };
 
 /* Public API */
