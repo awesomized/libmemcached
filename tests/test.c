@@ -107,7 +107,6 @@ int main(int argc, char *argv[])
   for (x= 0; x < memcached_server_list_count(servers); x++)
   {
     printf("\t%s : %u\n", servers[x].hostname, servers[x].port);
-    assert(servers[x].stack_responses == 0);
     assert(servers[x].fd == -1);
     assert(servers[x].cursor_active == 0);
   }
@@ -151,7 +150,6 @@ int main(int argc, char *argv[])
 
       for (loop= 0; loop < memcached_server_list_count(servers); loop++)
       {
-        assert(memc->hosts[loop].stack_responses == 0);
         assert(memc->hosts[loop].fd == -1);
         assert(memc->hosts[loop].cursor_active == 0);
       }

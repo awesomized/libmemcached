@@ -221,7 +221,7 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
 
   while (1)
   {
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
 
     if (rc == MEMCACHED_STAT)
     {

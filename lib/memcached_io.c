@@ -57,7 +57,7 @@ void memcached_io_preread(memcached_st *ptr)
 
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    if (ptr->hosts[x].cursor_active &&
+    if (memcached_server_response_count(ptr, x) &&
         ptr->hosts[x].read_data_length < MEMCACHED_MAX_BUFFER )
     {
       size_t data_read;

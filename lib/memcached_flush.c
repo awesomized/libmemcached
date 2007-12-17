@@ -23,7 +23,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
     rc= memcached_do(ptr, x, buffer, send_length, 1);
 
     if (rc == MEMCACHED_SUCCESS)
-      (void)memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
+      (void)memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, x);
   }
 
   LIBMEMCACHED_MEMCACHED_FLUSH_END();

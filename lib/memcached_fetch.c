@@ -1,135 +1,126 @@
 #include "common.h"
 #include "memcached_io.h"
 
-static memcached_return memcached_value_fetch(memcached_st *ptr, char *key, size_t *key_length, 
-                                              memcached_string_st *value,
-                                              uint32_t *flags,
-                                              uint64_t *cas,
-                                              unsigned int server_key)
+memcached_return value_fetch(memcached_st *ptr,
+                             char *buffer,
+                             memcached_result_st *result,
+                             unsigned int server_key)
 {
   memcached_return rc;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *string_ptr;
   char *end_ptr;
+  char *next_ptr;
+  size_t value_length;
 
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
-  if (flags)
-    *flags= 0;
+  result->key_length= 0;
+  result->flags= 0;
+  memcached_string_reset(&result->value);
 
-  memcached_string_reset(value);
+  string_ptr= buffer;
+  string_ptr+= 6; /* "VALUE " */
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
 
-  if (rc == MEMCACHED_SUCCESS)
+  /* We load the key */
   {
-    char *next_ptr;
-    size_t value_length;
+    char *key;
 
-    string_ptr= buffer;
-    string_ptr+= 6; /* "VALUE " */
+    key= result->key;
+    result->key_length= 0;
 
-    /* We load the key */
-    if (key)
+    for (; isgraph(*string_ptr); string_ptr++)
     {
-      *key_length= 0;
-
-      for (; isgraph(*string_ptr); string_ptr++)
-      {
-        *key= *string_ptr;
-        key++;
-        (*key_length)++;
-      }
+      *key= *string_ptr;
+      key++;
+      result->key_length++;
     }
-    else /* Skip characters */
-      for (; isgraph(*string_ptr); string_ptr++);
+  }
 
-    if (end_ptr == string_ptr)
-        goto read_error;
+  if (end_ptr == string_ptr)
+    goto read_error;
 
-    /* Flags fetch move past space */
+  /* Flags fetch move past space */
+  string_ptr++;
+  if (end_ptr == string_ptr)
+    goto read_error;
+  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
+  result->flags= (uint32_t)strtol(next_ptr, &string_ptr, 10);
+
+  if (end_ptr == string_ptr)
+    goto read_error;
+
+  /* Length fetch move past space*/
+  string_ptr++;
+  if (end_ptr == string_ptr)
+    goto read_error;
+
+  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
+  value_length= (size_t)strtoll(next_ptr, &string_ptr, 10);
+
+  if (end_ptr == string_ptr)
+    goto read_error;
+
+  /* Skip spaces */
+  if (*string_ptr == '\r')
+  {
+    /* Skip past the \r\n */
+    string_ptr+= 2;
+    result->cas= 0;
+  }
+  else
+  {
     string_ptr++;
-    if (end_ptr == string_ptr)
-        goto read_error;
     for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-    if (flags)
-      *flags= (uint32_t)strtol(next_ptr, &string_ptr, 10);
+    result->cas= (size_t)strtoll(next_ptr, &string_ptr, 10);
+  }
 
-    if (end_ptr == string_ptr)
-        goto read_error;
+  if (end_ptr < string_ptr)
+    goto read_error;
 
-    /* Length fetch move past space*/
-    string_ptr++;
-    if (end_ptr == string_ptr)
-        goto read_error;
+  if (value_length)
+  {
+    size_t read_length;
+    size_t to_read;
+    char *value_ptr;
 
-    for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-    value_length= (size_t)strtoll(next_ptr, &string_ptr, 10);
-
-    if (end_ptr == string_ptr)
-        goto read_error;
-
-    /* Skip spaces */
-    if (*string_ptr == '\r')
+    /* We add two bytes so that we can walk the \r\n */
+    rc= memcached_string_check(&result->value, value_length+2);
+    if (rc != MEMCACHED_SUCCESS)
     {
-      /* Skip past the \r\n */
-      string_ptr+= 2;
-    }
-    else
-    {
-      string_ptr++;
-      for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-      if (cas)
-        *cas= (size_t)strtoll(next_ptr, &string_ptr, 10);
+      value_length= 0;
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     }
 
-    if (end_ptr < string_ptr)
-        goto read_error;
+    value_ptr= memcached_string_value(&result->value);
+    read_length= 0;
+    /* 
+      We read the \r\n into the string since not doing so is more 
+      cycles then the waster of memory to do so.
 
-    if (value_length)
+      We are null terminating through, which will most likely make
+      some people lazy about using the return length.
+    */
+    to_read= (value_length) + 2;
+
+    read_length= memcached_io_read(ptr, server_key,
+                                   value_ptr, to_read);
+
+    if (read_length != (size_t)(value_length + 2))
     {
-      size_t read_length;
-      size_t to_read;
-      char *value_ptr;
-
-      /* We add two bytes so that we can walk the \r\n */
-      rc= memcached_string_check(value, value_length+2);
-      if (rc != MEMCACHED_SUCCESS)
-      {
-        value_length= 0;
-        return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-      }
-
-      value_ptr= memcached_string_value(value);
-      read_length= 0;
-      /* 
-        We read the \r\n into the string since not doing so is more 
-        cycles then the waster of memory to do so.
-
-        We are null terminating through, which will most likely make
-        some people lazy about using the return length.
-      */
-      to_read= (value_length) + 2;
-
-      read_length= memcached_io_read(ptr, server_key,
-                                     value_ptr, to_read);
-
-      if (read_length != (size_t)(value_length + 2))
-      {
-        goto read_error;
-      }
-
-      /* This next bit blows the API, but this is internal....*/
-      {
-        char *char_ptr;
-        char_ptr= memcached_string_value(value);;
-        char_ptr[value_length]= 0;
-        char_ptr[value_length + 1]= 0;
-        memcached_string_set_length(value, value_length);
-      }
-
-      return MEMCACHED_SUCCESS;
+      goto read_error;
     }
+
+    /* This next bit blows the API, but this is internal....*/
+    {
+      char *char_ptr;
+      char_ptr= memcached_string_value(&result->value);;
+      char_ptr[value_length]= 0;
+      char_ptr[value_length + 1]= 0;
+      memcached_string_set_length(&result->value, value_length);
+    }
+
+    return MEMCACHED_SUCCESS;
   }
 
   return rc;
@@ -143,34 +134,44 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
                     uint32_t *flags,
                     memcached_return *error)
 {
-  memcached_string_st *result_buffer;
-  result_buffer= &ptr->result_buffer;
-
-  if (ptr->flags & MEM_NO_BLOCK)
-    memcached_io_preread(ptr);
+  memcached_result_st *result_buffer= &ptr->result;
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
-    if (!ptr->hosts[ptr->cursor_server].cursor_active)
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+    if (memcached_server_response_count(ptr, ptr->cursor_server) == 0)
     {
       ptr->cursor_server++;
       continue;
     }
 
-    *error = memcached_value_fetch(ptr, key, key_length, result_buffer, 
-                                   flags, NULL, ptr->cursor_server);
-    *value_length= memcached_string_length(result_buffer);
-    
+  *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer, ptr->cursor_server);
+
     if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      ptr->hosts[ptr->cursor_server].cursor_active= 0;
+      memcached_server_response_reset(ptr, ptr->cursor_server);
       ptr->cursor_server++;
       continue;
     }
     else if (*error == MEMCACHED_SUCCESS)
-      return  memcached_string_c_copy(result_buffer);
+    {
+      *value_length= memcached_string_length(&result_buffer->value);
+    
+      if (key)
+      {
+        strncpy(key, result_buffer->key, result_buffer->key_length);
+        *key_length= result_buffer->key_length;
+      }
+      *flags= result_buffer->flags;
+
+      return  memcached_string_c_copy(&result_buffer->value);
+    }
     else
+    {
+      *value_length= 0;
       return NULL;
+    }
   }
 
   ptr->cursor_server= 0;
@@ -192,22 +193,19 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
-    if (!ptr->hosts[ptr->cursor_server].cursor_active)
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+    if (memcached_server_response_count(ptr, ptr->cursor_server) == 0)
     {
       ptr->cursor_server++;
       continue;
     }
 
-    result->cas= 0; /* We do this so we do not send in any junk */
-    *error= memcached_value_fetch(ptr, result->key, &result->key_length, 
-                                       &result->value, 
-                                       &result->flags,
-                                       &result->cas,
-                                       ptr->cursor_server);
+    *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result, ptr->cursor_server);
     
     if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      ptr->hosts[ptr->cursor_server].cursor_active= 0;
+      memcached_server_response_reset(ptr, ptr->cursor_server);
       ptr->cursor_server++;
       continue;
     }
@@ -225,35 +223,4 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 
   ptr->cursor_server= 0;
   return NULL;
-}
-
-memcached_return memcached_finish_server(memcached_st *ptr, unsigned int server_key)
-{
-  memcached_return rc;
-  memcached_string_st *result_buffer;
-
-  result_buffer= &ptr->result_buffer;
-
-  rc= MEMCACHED_SUCCESS;
-  while (rc == MEMCACHED_SUCCESS)
-  {
-    rc= memcached_value_fetch(ptr, NULL, NULL, result_buffer, 
-                               NULL, NULL, server_key);
-  }
-  ptr->hosts[server_key].cursor_active= 0;
-
-  return rc;
-}
-
-void memcached_finish(memcached_st *ptr)
-{
-  unsigned int x;
-
-  for (x= 0; x < ptr->number_of_hosts; x++)
-  {
-    if (ptr->hosts[x].cursor_active)
-      (void)memcached_finish_server(ptr, x);
-  }
-
-  ptr->cursor_server= 0;
 }

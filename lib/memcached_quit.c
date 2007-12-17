@@ -29,12 +29,11 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t i
     }
 
     ptr->hosts[server_key].fd= -1;
-    ptr->hosts[server_key].stack_responses= 0;
-    ptr->hosts[server_key].cursor_active= 0;
     ptr->hosts[server_key].write_buffer_offset= 0;
     ptr->hosts[server_key].read_buffer_length= 0;
     ptr->hosts[server_key].read_ptr= ptr->hosts[server_key].read_buffer;
     ptr->hosts[server_key].write_ptr= ptr->hosts[server_key].write_buffer;
+    memcached_server_response_reset(ptr, server_key);
   }
 
   ptr->connected--;
@@ -43,6 +42,7 @@ void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t i
 void memcached_quit(memcached_st *ptr)
 {
   unsigned int x;
+
   if (ptr->hosts == NULL || 
       ptr->number_of_hosts == 0)
     return;

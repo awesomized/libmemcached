@@ -57,7 +57,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
     if (rc == MEMCACHED_DELETED)
       rc= MEMCACHED_SUCCESS;
   }

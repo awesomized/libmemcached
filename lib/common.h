@@ -60,18 +60,20 @@ uint32_t hsieh_hash(char *key, size_t key_length);
 memcached_return memcached_connect(memcached_st *ptr, unsigned int server_key);
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
+                                    memcached_result_st *result,
                                     unsigned int server_key);
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
 void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t io_death);
 
-#define memcached_server_response_increment(A,B) A->hosts[B].stack_responses++
-#define memcached_server_response_decrement(A,B) A->hosts[B].stack_responses--
+#define memcached_server_response_increment(A,B) A->hosts[B].cursor_active++
+#define memcached_server_response_decrement(A,B) A->hosts[B].cursor_active--
+#define memcached_server_response_reset(A,B) A->hosts[B].cursor_active=0
 
 /* String Struct */
-#define memcached_string_length(A) (size_t)(A->end - A->string)
-#define memcached_string_set_length(A, B) A->end= A->string + B
-#define memcached_string_size(A) A->current_size
-#define memcached_string_value(A) A->string
+#define memcached_string_length(A) (size_t)((A)->end - (A)->string)
+#define memcached_string_set_length(A, B) (A)->end= (A)->string + B
+#define memcached_string_size(A) (A)->current_size
+#define memcached_string_value(A) (A)->string
 
 memcached_string_st *memcached_string_create(memcached_st *ptr, 
                                              memcached_string_st *string, 
@@ -88,9 +90,10 @@ void memcached_string_free(memcached_string_st *string);
 memcached_return memcached_do(memcached_st *ptr, unsigned int server_key, char *commmand, 
                               size_t command_length, char with_flush);
 memcached_return memcached_version(memcached_st *ptr);
-memcached_return memcached_finish_server(memcached_st *ptr, unsigned int server_key);
-void memcached_finish(memcached_st *ptr);
-
+memcached_return value_fetch(memcached_st *ptr,
+                             char *buffer,
+                             memcached_result_st *result,
+                             unsigned int server_key);
 
 
 #endif /* __COMMON_H__ */

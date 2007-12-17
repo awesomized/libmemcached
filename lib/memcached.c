@@ -5,7 +5,7 @@
 
 memcached_st *memcached_create(memcached_st *ptr)
 {
-  memcached_string_st *string_ptr;
+  memcached_result_st *result_ptr;
   if (!ptr)
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
@@ -20,8 +20,8 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
-  string_ptr= memcached_string_create(ptr, &ptr->result_buffer, 0);
-  WATCHPOINT_ASSERT(string_ptr);
+  result_ptr= memcached_result_create(ptr, &ptr->result);
+  WATCHPOINT_ASSERT(result_ptr);
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   ptr->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
@@ -33,7 +33,7 @@ void memcached_free(memcached_st *ptr)
   /* If we have anything open, lets close it now */
   memcached_quit(ptr);
   memcached_server_list_free(ptr->hosts);
-  memcached_string_free(&ptr->result_buffer);
+  memcached_result_free(&ptr->result);
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);

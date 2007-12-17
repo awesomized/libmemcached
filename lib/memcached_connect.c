@@ -77,7 +77,7 @@ static memcached_return udp_connect(memcached_st *ptr, unsigned int server_key)
   if (ptr->hosts[server_key].fd == -1)
   {
     /* Old connection junk still is in the structure */
-    WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
+    WATCHPOINT_ASSERT(ptr->hosts[server_key].cursor_active == 0);
 
     /*
       If we have not allocated the hosts object.
@@ -111,7 +111,7 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
   if (ptr->hosts[server_key].fd == -1)
   {
     /* Old connection junk still is in the structure */
-    WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
+    WATCHPOINT_ASSERT(ptr->hosts[server_key].cursor_active == 0);
     struct addrinfo *use;
 
     if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
@@ -223,7 +223,7 @@ test_connect:
       ptr->connected++;
     }
 
-    WATCHPOINT_ASSERT(ptr->hosts[server_key].stack_responses == 0);
+    WATCHPOINT_ASSERT(ptr->hosts[server_key].cursor_active == 0);
   }
 
   return MEMCACHED_SUCCESS;

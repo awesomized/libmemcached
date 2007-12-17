@@ -10,6 +10,7 @@
 
 memcached_return memcached_response(memcached_st *ptr, 
                                     char *buffer, size_t buffer_length,
+                                    memcached_result_st *result,
                                     unsigned int server_key)
 {
   unsigned int x;
@@ -19,6 +20,10 @@ memcached_return memcached_response(memcached_st *ptr,
 
 
   send_length= 0;
+
+  /* We may have old commands in the buffer not set, first purge */
+  if (ptr->flags & MEM_NO_BLOCK)
+    (void)memcached_io_write(ptr, server_key, NULL, 0, 1);
 
   max_messages= memcached_server_response_count(ptr, server_key);
   for (x= 0; x <  max_messages; x++)
@@ -58,9 +63,16 @@ memcached_return memcached_response(memcached_st *ptr,
   case 'V': /* VALUE || VERSION */
     if (buffer[1] == 'A') /* VALUE */
     {
+      memcached_return rc;
+
       /* We add back in one because we will need to search for END */
       memcached_server_response_increment(ptr, server_key);
-      return MEMCACHED_SUCCESS;
+      if (result)
+        rc= value_fetch(ptr, buffer, result, server_key);
+      else
+        rc= value_fetch(ptr, buffer, &ptr->result, server_key);
+
+      return rc;
     }
     else if (buffer[1] == 'E') /* VERSION */
     {

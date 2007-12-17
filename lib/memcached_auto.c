@@ -30,7 +30,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
 
   /* 
     So why recheck responce? Because the protocol is brain dead :)

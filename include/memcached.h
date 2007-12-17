@@ -119,7 +119,6 @@ struct memcached_server_st {
   char hostname[MEMCACHED_MAX_HOST_LENGTH];
   unsigned int port;
   int fd;
-  unsigned int stack_responses;
   unsigned int cursor_active;
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
@@ -195,7 +194,7 @@ struct memcached_st {
   int send_size;
   int recv_size;
   int32_t poll_timeout;
-  memcached_string_st result_buffer;
+  memcached_result_st result;
   memcached_hash hash;
   memcached_server_distribution distribution;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
@@ -281,7 +280,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 #define memcached_server_name(A,B) (B).hostname
 #define memcached_server_port(A,B) (B).port
 #define memcached_server_list(A) (A)->hosts
-#define memcached_server_response_count(A,B) (A)->hosts[B].stack_responses
+#define memcached_server_response_count(A,B) (A)->hosts[B].cursor_active
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
                                           char *hostname,
@@ -367,17 +366,17 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 void memcached_result_free(memcached_result_st *result);
 memcached_result_st *memcached_result_create(memcached_st *ptr, 
                                              memcached_result_st *result);
-#define memcached_result_key_value(A) A->key
-#define memcached_result_key_length(A) A->key_length
+#define memcached_result_key_value(A) (A)->key
+#define memcached_result_key_length(A) (A)->key_length
 #ifdef FIX
-#define memcached_result_value(A) memcached_string_value(A->value)
-#define memcached_result_length(A) memcached_string_length(A->value)
+#define memcached_result_value(A) memcached_string_value((A)->value)
+#define memcached_result_length(A) memcached_string_length((A)->value)
 #else
 char *memcached_result_value(memcached_result_st *ptr);
 size_t memcached_result_length(memcached_result_st *ptr);
 #endif
-#define memcached_result_flags(A) A->flags
-#define memcached_result_cas(A) A->cas
+#define memcached_result_flags(A) (A)->flags
+#define memcached_result_cas(A) (A)->cas
 
 
 #ifndef __WATCHPOINT_H__

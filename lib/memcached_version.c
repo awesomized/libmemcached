@@ -23,7 +23,7 @@ memcached_return memcached_version(memcached_st *ptr)
       continue;
     }
 
-    rrc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, x);
+    rrc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, x);
     if (rrc != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
 

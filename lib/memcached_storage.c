@@ -110,7 +110,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if (to_write == 0)
     rc= MEMCACHED_SUCCESS;
   else
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, server_key);
+    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
 
   if (rc == MEMCACHED_STORED)
     return MEMCACHED_SUCCESS;
