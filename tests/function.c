@@ -15,6 +15,14 @@
 #include "../src/generator.h"
 #include "../src/execute.h"
 
+#ifndef INT64_MAX
+#define INT64_MAX LONG_MAX
+#endif
+#ifndef INT32_MAX
+#define INT32_MAX INT_MAX
+#endif
+
+
 #include "test.h"
 
 #define GLOBAL_COUNT 100000
@@ -1099,6 +1107,10 @@ uint8_t user_supplied_bug4(memcached_st *memc)
   size_t key_length[]= {5, 3, 4};
   unsigned int x;
   uint32_t flags;
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
 
   /* Here we free everything before running a bunch of mget tests */
   {
@@ -1107,10 +1119,6 @@ uint8_t user_supplied_bug4(memcached_st *memc)
     memc->number_of_hosts= 0;
   }
 
-  char return_key[MEMCACHED_MAX_KEY];
-  size_t return_key_length;
-  char *return_value;
-  size_t return_value_length;
 
   /* We need to empty the server before continueing test */
   rc= memcached_flush(memc, 0);

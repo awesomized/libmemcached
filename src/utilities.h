@@ -1,6 +1,18 @@
 #include <memcached.h>
 #include <getopt.h>
 #include "client_options.h"
+#include "libmemcached_config.h"
+
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
 
 typedef struct memcached_programs_help_st memcached_programs_help_st;
 

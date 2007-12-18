@@ -70,4 +70,5 @@ fi
 AC_C_CONST
 AC_HEADER_TIME
 AC_TYPE_SIZE_T
+AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_OUTPUT(Makefile src/Makefile tests/Makefile docs/Makefile lib/Makefile include/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)

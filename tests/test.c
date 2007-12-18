@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
   char *wildcard= NULL;
   memcached_server_st *servers;
   collection_st *collection;
+  collection_st *next;
   uint8_t failed;
 
   collection= gets_collections();
@@ -113,7 +114,6 @@ int main(int argc, char *argv[])
 
   printf("\n");
 
-  collection_st *next;
   for (next= collection; next->name; next++)
   {
     test_st *run;
@@ -130,6 +130,7 @@ int main(int argc, char *argv[])
       memcached_st *memc;
       memcached_return rc;
       struct timeval start_time, end_time;
+      long int load_time;
 
       if (wildcard && fnmatch(wildcard, run->name, 0))
         continue;
@@ -169,7 +170,7 @@ int main(int argc, char *argv[])
       gettimeofday(&start_time, NULL);
       failed= run->function(memc);
       gettimeofday(&end_time, NULL);
-      long int load_time= timedif(end_time, start_time);
+      load_time= timedif(end_time, start_time);
       if (failed)
         fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ failed ]\n", load_time / 1000, 
                 load_time % 1000);

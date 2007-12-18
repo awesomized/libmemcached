@@ -110,9 +110,10 @@ static memcached_return tcp_connect(memcached_st *ptr, unsigned int server_key)
 {
   if (ptr->hosts[server_key].fd == -1)
   {
+    struct addrinfo *use;
+
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->hosts[server_key].cursor_active == 0);
-    struct addrinfo *use;
 
     if (ptr->hosts[server_key].sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
         (!(ptr->flags & MEM_USE_CACHE_LOOKUPS)))
