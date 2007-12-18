@@ -148,8 +148,8 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
   unsigned int count;
   memcached_server_st *new_host_list;
 
-  if (!hostname)
-    return ptr;
+  if (hostname == NULL || error == NULL)
+    return NULL;
 
   if (!port)
     port= MEMCACHED_DEFAULT_PORT; 

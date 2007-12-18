@@ -40,6 +40,23 @@ uint8_t init_test(memcached_st *not_used)
   return 0;
 }
 
+uint8_t server_list_null_test(memcached_st *ptr)
+{
+  memcached_server_st *server_list;
+  memcached_return rc;
+
+  server_list= memcached_server_list_append(NULL, NULL, 0, NULL);
+  assert(server_list == NULL);
+
+  server_list= memcached_server_list_append(NULL, "localhost", 0, NULL);
+  assert(server_list == NULL);
+
+  server_list= memcached_server_list_append(NULL, NULL, 0, &rc);
+  assert(server_list == NULL);
+
+  return 0;
+}
+
 uint8_t allocation_test(memcached_st *not_used)
 {
   memcached_st *memc;
@@ -1944,6 +1961,7 @@ test_st tests[] ={
   {"flush", 0, flush_test },
   {"init", 0, init_test },
   {"allocation", 0, allocation_test },
+  {"server_list_null_test", 0, server_list_null_test},
   {"clone_test", 0, clone_test },
   {"error", 0, error_test },
   {"set", 0, set_test },
