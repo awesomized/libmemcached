@@ -120,6 +120,9 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
     {
       rc= memcached_connect(ptr, server_key);
 
+      if (rc != MEMCACHED_SUCCESS)
+        continue;
+
       if ((memcached_io_write(ptr, server_key, get_command, get_command_length, 0)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;

@@ -362,6 +362,17 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
                                          char *key, size_t key_length,
                                          time_t expiration);
 
+memcached_return memcached_mdelete(memcached_st *ptr, 
+                                   char **key, size_t *key_length,
+                                   unsigned int number_of_keys,
+                                   time_t expiration);
+
+memcached_return memcached_mdelete_by_key(memcached_st *ptr, 
+                                          char *master_key, size_t master_key_length,
+                                          char **key, size_t *key_length,
+                                          unsigned int number_of_keys,
+                                          time_t expiration);
+
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);
 memcached_result_st *memcached_result_create(memcached_st *ptr, 

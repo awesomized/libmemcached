@@ -1703,6 +1703,28 @@ uint8_t mget_read_result(memcached_st *memc)
   return 0;
 }
 
+uint8_t delete_generate(memcached_st *memc)
+{
+  unsigned int x;
+
+  for (x= 0; x < GLOBAL_COUNT; x++)
+  {
+    (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
+  }
+
+  return 0;
+}
+
+uint8_t mdelete_generate(memcached_st *memc)
+{
+  memcached_return rc;
+
+  rc= memcached_mdelete(memc, global_keys, global_keys_length, GLOBAL_COUNT, 0);
+
+  return 0;
+}
+
+
 uint8_t free_data(memcached_st *memc)
 {
   pairs_free(global_pairs);
@@ -1998,6 +2020,8 @@ test_st generate_tests[] ={
   {"get_read", 0, get_read },
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
+  {"mdelete_generate", 0, mdelete_generate },
+  {"delete_generate", 0, delete_generate },
   {"cleanup", 0, cleanup_pairs },
   {0, 0, 0}
 };
