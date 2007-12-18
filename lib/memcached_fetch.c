@@ -35,6 +35,7 @@ memcached_return value_fetch(memcached_st *ptr,
       key++;
       result->key_length++;
     }
+    result->key[result->key_length]= 0;
   }
 
   if (end_ptr == string_ptr)
