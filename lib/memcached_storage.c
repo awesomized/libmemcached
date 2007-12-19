@@ -20,7 +20,7 @@ typedef enum {
 } memcached_storage_action;
 
 /* Inline this */
-char *storage_op_string(memcached_storage_action verb)
+static char *storage_op_string(memcached_storage_action verb)
 {
   switch (verb)
   {

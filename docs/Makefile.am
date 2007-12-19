@@ -262,5 +262,10 @@ memflush.1: memflush.pod
 	pod2man -c "libmemcached" -r "" -s 1 memflush.pod > memflush.1
 
 clean:
-	rm *.1
-	rm *.3
+	rm -f *.1
+	rm -f *.3
+
+distclean:
+	rm -f *.1
+	rm -f *.3
+	rm -f Makefile
