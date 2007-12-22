@@ -8,6 +8,8 @@
   * If memcached_server_list_append is passed NULLs instead of pointers it
     returns NULL.  
   * Added memcached_fetch_execute() method
+  * Found a bug where memcached_fetch() was not null terminating the result
+    value.
 
 0.12 Tue Dec 11 15:20:55 PST 2007
   * Updates for consistent hashing

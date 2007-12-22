@@ -129,11 +129,12 @@ char *memcached_string_c_copy(memcached_string_st *string)
 
   WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
 
-  c_ptr= (char *)malloc(memcached_string_length(string) * sizeof(char));
+  c_ptr= (char *)malloc((memcached_string_length(string)+1) * sizeof(char));
   if (!c_ptr)
     return NULL;
 
   memcpy(c_ptr, memcached_string_value(string), memcached_string_length(string));
+  c_ptr[memcached_string_length(string)]= 0;
 
   return c_ptr;
 }
