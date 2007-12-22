@@ -6,7 +6,7 @@ memcached_return value_fetch(memcached_st *ptr,
                              memcached_result_st *result,
                              unsigned int server_key)
 {
-  memcached_return rc;
+  memcached_return rc= MEMCACHED_SUCCESS;
   char *string_ptr;
   char *end_ptr;
   char *next_ptr;

@@ -777,6 +777,47 @@ uint8_t mget_result_alloc_test(memcached_st *memc)
   return 0;
 }
 
+/* Count the results */
+unsigned int callback_counter(memcached_st *ptr, memcached_result_st *result, void *context)
+{
+  unsigned int *counter= (unsigned int *)context;
+
+  *counter= *counter + 1;
+
+  return 0;
+}
+
+uint8_t mget_result_function(memcached_st *memc)
+{
+  memcached_return rc;
+  char *keys[]= {"fudge", "son", "food"};
+  size_t key_length[]= {5, 3, 4};
+  unsigned int x;
+  unsigned int counter;
+  unsigned int (*callbacks[1])(memcached_st *, memcached_result_st *, void *);
+
+  /* We need to empty the server before continueing test */
+  rc= memcached_flush(memc, 0);
+  for (x= 0; x < 3; x++)
+  {
+    rc= memcached_set(memc, keys[x], key_length[x], 
+                      keys[x], key_length[x],
+                      (time_t)50, (uint32_t)9);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  rc= memcached_mget(memc, keys, key_length, 3);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  callbacks[0]= &callback_counter;
+  counter= 0;
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1); 
+
+  assert(counter == 3);
+
+  return 0;
+}
+
 uint8_t mget_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -1645,6 +1686,7 @@ uint8_t generate_data(memcached_st *memc)
   return 0;
 }
 
+#ifdef NOT_DONE
 uint8_t mset_data(memcached_st *memc)
 {
   unsigned long long x;
@@ -1660,6 +1702,7 @@ uint8_t mset_data(memcached_st *memc)
 
   return 0;
 }
+#endif
 
 uint8_t get_read(memcached_st *memc)
 {
@@ -1734,6 +1777,22 @@ uint8_t mget_read_result(memcached_st *memc)
 
     memcached_result_free(&results_obj);
   }
+
+  return 0;
+}
+
+uint8_t mget_read_function(memcached_st *memc)
+{
+  memcached_return rc;
+  unsigned int counter;
+  unsigned int (*callbacks[1])(memcached_st *, memcached_result_st *, void *);
+
+  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  callbacks[0]= &callback_counter;
+  counter= 0;
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1); 
 
   return 0;
 }
@@ -1999,6 +2058,7 @@ test_st tests[] ={
   {"mget", 1, mget_test },
   {"mget_result", 1, mget_result_test },
   {"mget_result_alloc", 1, mget_result_alloc_test },
+  {"mget_result_function", 1, mget_result_function },
   {"get_stats", 0, get_stats },
   {"add_host_test", 0, add_host_test },
   {"get_stats_keys", 0, get_stats_keys },
@@ -2058,6 +2118,7 @@ test_st generate_tests[] ={
   {"generate_data", 0, generate_data },
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
+  {"mget_read_function", 0, mget_read_function },
   {"mdelete_generate", 0, mdelete_generate },
   {"cleanup", 0, cleanup_pairs },
   {0, 0, 0}

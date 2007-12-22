@@ -6,7 +6,8 @@
   * Added multi delete functions.
   * All get key returns have C style null termination
   * If memcached_server_list_append is passed NULLs instead of pointers it
-    returns NULL.
+    returns NULL.  
+  * Added memcached_fetch_execute() method
 
 0.12 Tue Dec 11 15:20:55 PST 2007
   * Updates for consistent hashing
