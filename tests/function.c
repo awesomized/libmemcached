@@ -2139,17 +2139,17 @@ test_st user_tests[] ={
 };
 
 test_st generate_tests[] ={
-  {"generate_data", 0, generate_data },
+  {"generate_data", 1, generate_data },
   {"get_read", 0, get_read },
   {"delete_generate", 0, delete_generate },
-  {"generate_buffer_data", 0, generate_buffer_data },
+  {"generate_buffer_data", 1, generate_buffer_data },
   {"delete_buffer", 0, delete_buffer_generate},
-  {"generate_data", 0, generate_data },
+  {"generate_data", 1, generate_data },
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
   {"mget_read_function", 0, mget_read_function },
   {"mdelete_generate", 0, mdelete_generate },
-  {"cleanup", 0, cleanup_pairs },
+  {"cleanup", 1, cleanup_pairs },
   {0, 0, 0}
 };
 
