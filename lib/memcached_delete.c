@@ -42,18 +42,15 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     goto error;
   }
 
-  if ((ptr->flags & MEM_NO_BLOCK))
-    to_write= 0;
-  else
-    to_write= 1;
+  to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
 
   rc= memcached_do(ptr, server_key, buffer, send_length, to_write);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
-  if ((ptr->flags & MEM_NO_BLOCK))
+  if ((ptr->flags & MEM_BUFFER_REQUESTS))
   {
-    rc= MEMCACHED_SUCCESS;
+    rc= MEMCACHED_BUFFERED;
   }
   else
   {
@@ -118,18 +115,5 @@ memcached_return memcached_mdelete_by_key(memcached_st *ptr,
     (void)memcached_do(ptr, server_key, buffer, send_length, 0);
   }
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
-  {
-    if (memcached_server_response_count(ptr, x))
-    {
-      /* We need to do something about non-connnected hosts in the future */
-      if ((memcached_io_write(ptr, x, NULL, 0, 1)) == -1)
-      {
-        rc= MEMCACHED_SOME_ERRORS;
-      }
-    }
-  }
-
-  LIBMEMCACHED_MEMCACHED_DELETE_END();
-  return rc;
+  return MEMCACHED_BUFFERED;
 }

@@ -10,6 +10,9 @@
   * Added memcached_fetch_execute() method
   * Found a bug where memcached_fetch() was not null terminating the result
     value.
+  * memcached_behavior() now has the ability to set "buffering" so that
+    data is not automatically flushed.
+  * Behavior change, buffered commands now return MEMCACHED_BUFFERED
 
 0.12 Tue Dec 11 15:20:55 PST 2007
   * Updates for consistent hashing

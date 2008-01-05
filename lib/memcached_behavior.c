@@ -31,6 +31,8 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     set_behavior_flag(ptr, MEM_NO_BLOCK, data);
+  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
+    set_behavior_flag(ptr, MEM_BUFFER_REQUESTS, data);
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
@@ -88,6 +90,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     temp_flag= MEM_NO_BLOCK;
+    break;
+  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
+    temp_flag= MEM_BUFFER_REQUESTS;
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;

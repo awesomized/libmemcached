@@ -1686,6 +1686,17 @@ uint8_t generate_data(memcached_st *memc)
   return 0;
 }
 
+uint8_t generate_buffer_data(memcached_st *memc)
+{
+  int latch= 0;
+
+  latch= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, &latch);
+  generate_data(memc);
+
+  return 0;
+}
+
 #ifdef NOT_DONE
 uint8_t mset_data(memcached_st *memc)
 {
@@ -1800,6 +1811,22 @@ uint8_t mget_read_function(memcached_st *memc)
 uint8_t delete_generate(memcached_st *memc)
 {
   unsigned int x;
+
+  for (x= 0; x < GLOBAL_COUNT; x++)
+  {
+    (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
+  }
+
+  return 0;
+}
+
+uint8_t delete_buffer_generate(memcached_st *memc)
+{
+  int latch= 0;
+  unsigned int x;
+
+  latch= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, &latch);
 
   for (x= 0; x < GLOBAL_COUNT; x++)
   {
@@ -2115,6 +2142,8 @@ test_st generate_tests[] ={
   {"generate_data", 0, generate_data },
   {"get_read", 0, get_read },
   {"delete_generate", 0, delete_generate },
+  {"generate_buffer_data", 0, generate_buffer_data },
+  {"delete_buffer", 0, delete_buffer_generate},
   {"generate_data", 0, generate_data },
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },

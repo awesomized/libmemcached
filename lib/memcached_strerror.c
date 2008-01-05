@@ -64,6 +64,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "FETCH WAS NOT COMPLETED";
   case MEMCACHED_NO_KEY_PROVIDED:
     return "A KEY LENGTH OF ZERO WAS PROVIDED";
+  case MEMCACHED_BUFFERED:
+    return "ACTION QUEUED";
   case MEMCACHED_TIMEOUT:
     return "A TIMEOUT OCCURRED";
   case MEMCACHED_MAXIMUM_RETURN:

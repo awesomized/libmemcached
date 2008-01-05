@@ -96,7 +96,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  if ((ptr->flags & MEM_NO_BLOCK) && verb == SET_OP)
+  if ((ptr->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP)
     to_write= 0;
   else
     to_write= 1;
@@ -108,9 +108,9 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   }
 
   if (to_write == 0)
-    rc= MEMCACHED_SUCCESS;
-  else
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+    return MEMCACHED_BUFFERED;
+
+  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
 
   if (rc == MEMCACHED_STORED)
     return MEMCACHED_SUCCESS;
