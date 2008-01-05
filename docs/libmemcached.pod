@@ -54,6 +54,37 @@ Some features of the library must be enabled through memcached_behavior_set().
 
 Hope you enjoy it!
 
+=head1 CONSTANTS
+
+A number of constants have been provided for in the library.
+
+=over 4
+
+=item MEMCACHED_DEFAULT_PORT
+
+The default port used by memcached(3).
+
+=item MEMCACHED_MAX_KEY
+
+Default maximum size of a key (which includes the null pointer). Master keys
+have no limit, this only applies to keys used for storage.
+
+=item MEMCACHED_MAX_KEY
+
+Default size of key (which includes the null pointer).
+
+=item MEMCACHED_STRIDE
+
+This is the "stride" used in the consistent hash used between replicas.
+
+=item MEMCACHED_MAX_HOST_LENGTH
+
+Maximum allowed size of the hostname.
+
+=back
+
+
+
 =head1 THREADS AND PROCESSES
 
 When using threads or forked processes it is important to keep an instance

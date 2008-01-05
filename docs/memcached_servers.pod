@@ -22,8 +22,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_return
     memcached_server_add_unix_socket (memcached_st *ptr,
-                                      char *hostname,
-                                      unsigned int port);
+                                      char *socket);
 
   memcached_return
     memcached_server_push (memcached_st *ptr,
