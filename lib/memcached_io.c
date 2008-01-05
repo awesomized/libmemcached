@@ -118,7 +118,9 @@ ssize_t memcached_io_read(memcached_st *ptr, unsigned  int server_key,
         }
         else if (data_read)
           break;
-        /* If zero, just keep looping */
+        /* If zero, just keep looping unless testing, then assert() */
+        else
+          WATCHPOINT_ASSERT(0);
       }
 
       ptr->hosts[server_key].read_data_length= data_read;

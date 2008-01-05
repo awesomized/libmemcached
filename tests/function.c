@@ -139,7 +139,7 @@ uint8_t set_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   return 0;
 }
@@ -358,7 +358,7 @@ uint8_t add_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   memcached_quit(memc);
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
@@ -401,10 +401,10 @@ uint8_t delete_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   return 0;
 }
@@ -428,7 +428,7 @@ uint8_t get_test(memcached_st *memc)
   uint32_t flags;
 
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
-  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND);
+  assert(rc == MEMCACHED_BUFFERED || rc == MEMCACHED_NOTFOUND);
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -452,7 +452,7 @@ uint8_t get_test2(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -480,7 +480,7 @@ uint8_t set_test2(memcached_st *memc)
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
                       (time_t)0, (uint32_t)0);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   return 0;
@@ -505,7 +505,7 @@ uint8_t set_test3(memcached_st *memc)
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
                       (time_t)0, (uint32_t)0);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   free(value);
@@ -533,7 +533,7 @@ uint8_t get_test3(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, value_length,
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -569,7 +569,7 @@ uint8_t get_test4(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, value_length,
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   for (x= 0; x < 10; x++)
   {
@@ -610,7 +610,7 @@ uint8_t increment_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   rc= memcached_increment(memc, key, strlen(key),
                           1, &new_number);
@@ -635,7 +635,7 @@ uint8_t decrement_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   rc= memcached_decrement(memc, key, strlen(key),
                           1, &new_number);
@@ -659,13 +659,13 @@ uint8_t quit_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)10, (uint32_t)3);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   memcached_quit(memc);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)50, (uint32_t)9);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   return 0;
 }
@@ -705,7 +705,7 @@ uint8_t mget_result_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   rc= memcached_mget(memc, keys, key_length, 3);
@@ -755,7 +755,7 @@ uint8_t mget_result_alloc_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   rc= memcached_mget(memc, keys, key_length, 3);
@@ -803,7 +803,7 @@ uint8_t mget_result_function(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   rc= memcached_mget(memc, keys, key_length, 3);
@@ -852,7 +852,7 @@ uint8_t mget_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x], 
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   rc= memcached_mget(memc, keys, key_length, 3);
@@ -1037,10 +1037,10 @@ uint8_t user_supplied_bug1(memcached_st *memc)
     rc = memcached_set(memc, key, strlen(key), 
                        randomstuff, strlen(randomstuff), 10, 0);
     /* If we fail, lets try again */
-    if (rc != MEMCACHED_SUCCESS)
+    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
       rc = memcached_set(memc, key, strlen(key), 
                          randomstuff, strlen(randomstuff), 10, 0);
-    assert(rc == MEMCACHED_SUCCESS);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   return 0;
@@ -1492,7 +1492,7 @@ uint8_t user_supplied_bug10(memcached_st *memc)
   {
     rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
-    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE || rc == MEMCACHED_BUFFERED);
 
     if (rc == MEMCACHED_WRITE_FAILURE)
       x--;
@@ -1538,7 +1538,6 @@ uint8_t user_supplied_bug11(memcached_st *memc)
     rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
     WATCHPOINT_IFERROR(rc);
-    //assert(rc == MEMCACHED_SUCCESS);
   }
 
   free(value);
