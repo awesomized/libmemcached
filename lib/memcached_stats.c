@@ -32,28 +32,33 @@ static char *memcached_stat_keys[] = {
 
 static void set_data(memcached_stat_st *stat, char *key, char *value)
 {
-  if (!memcmp("pid", key, strlen("pid")))
+
+  if(strlen(key) < 1) 
+  {
+    fprintf(stderr, "Invalid key %s\n", key);
+  }
+  else if (!strcmp("pid", key))
   {
     stat->pid= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("uptime", key, strlen("uptime")))
+  else if (!strcmp("uptime", key))
   {
     stat->uptime= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("time", key, strlen("time")))
+  else if (!strcmp("time", key))
   {
     stat->time= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("version", key, strlen("version")))
+  else if (!strcmp("version", key))
   {
     memcpy(stat->version, value, strlen(value));
     stat->version[strlen(value)]= 0;
   }
-  else if (!memcmp("pointer_size", key, strlen("pointer_size")))
+  else if (!strcmp("pointer_size", key))
   {
     stat->pointer_size= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("rusage_user", key, strlen("rusage_user")))
+  else if (!strcmp("rusage_user", key))
   {
     char *walk_ptr;
     for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++);
@@ -62,7 +67,7 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
     stat->rusage_user_seconds= strtol(value, (char **)NULL, 10);
     stat->rusage_user_microseconds= strtol(walk_ptr, (char **)NULL, 10);
   }
-  else if (!memcmp("rusage_system", key, strlen("rusage_system")))
+  else if (!strcmp("rusage_system", key))
   {
     char *walk_ptr;
     for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++);
@@ -71,63 +76,63 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
     stat->rusage_system_seconds= strtol(value, (char **)NULL, 10);
     stat->rusage_system_microseconds= strtol(walk_ptr, (char **)NULL, 10);
   }
-  else if (!memcmp("curr_items", key, strlen("curr_items")))
+  else if (!strcmp("curr_items", key))
   {
     stat->curr_items= strtol(value, (char **)NULL, 10); 
   }
-  else if (!memcmp("total_items", key, strlen("total_items")))
+  else if (!strcmp("total_items", key))
   {
     stat->total_items= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("bytes", key, strlen("bytes")))
+  else if (!strcmp("bytes", key))
   {
-    //stat->bytes= strtoll(value, (char **)NULL, 10);
+    stat->bytes= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("curr_connections", key, strlen("curr_connections")))
+  else if (!strcmp("curr_connections", key))
   {
-    //stat->curr_connections= strtoll(value, (char **)NULL, 10);
+    stat->curr_connections= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("total_connections", key, strlen("total_connections")))
+  else if (!strcmp("total_connections", key))
   {
-    //stat->total_connections= strtoll(value, (char **)NULL, 10);
+    stat->total_connections= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("connection_structures", key, strlen("connection_structures")))
+  else if (!strcmp("connection_structures", key))
   {
     stat->connection_structures= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("cmd_get", key, strlen("cmd_get")))
+  else if (!strcmp("cmd_get", key))
   {
     stat->cmd_get= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("cmd_set", key, strlen("cmd_set")))
+  else if (!strcmp("cmd_set", key))
   {
     stat->cmd_set= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("get_hits", key, strlen("get_hits")))
+  else if (!strcmp("get_hits", key))
   {
     stat->get_hits= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("get_misses", key, strlen("get_misses")))
+  else if (!strcmp("get_misses", key))
   {
     stat->get_misses= (uint64_t)strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("evictions", key, strlen("evictions")))
+  else if (!strcmp("evictions", key))
   {
     stat->evictions= (uint64_t)strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("bytes_read", key, strlen("bytes_read")))
+  else if (!strcmp("bytes_read", key))
   {
     stat->bytes_read= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("bytes_written", key, strlen("bytes_written")))
+  else if (!strcmp("bytes_written", key))
   {
     stat->bytes_written= strtoll(value, (char **)NULL, 10);
   }
-  else if (!memcmp("limit_maxbytes", key, strlen("limit_maxbytes")))
+  else if (!strcmp("limit_maxbytes", key))
   {
     stat->limit_maxbytes= strtol(value, (char **)NULL, 10);
   }
-  else if (!memcmp("threads", key, strlen("threads")))
+  else if (!strcmp("threads", key))
   {
     stat->threads= strtol(key, (char **)NULL, 10);
   }
