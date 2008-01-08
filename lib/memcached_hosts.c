@@ -13,9 +13,6 @@ static void rebalance_wheel(memcached_st *ptr)
   unsigned int x;
   unsigned int y;
   unsigned int latch;
-  unsigned int range;
-
-  range= (MEMCACHED_WHEEL_SIZE / ptr->number_of_hosts);
 
   /* Seed the Wheel */
   memset(ptr->wheel, 0, sizeof(unsigned int) * MEMCACHED_WHEEL_SIZE);
