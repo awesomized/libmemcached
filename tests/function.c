@@ -29,8 +29,6 @@
 static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
-static char *global_values[GLOBAL_COUNT];
-static size_t global_values_length[GLOBAL_COUNT];
 
 uint8_t init_test(memcached_st *not_used)
 {
@@ -363,6 +361,7 @@ uint8_t add_test(memcached_st *memc)
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
+  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_NOTSTORED);
 
   return 0;
@@ -1835,16 +1834,6 @@ uint8_t delete_buffer_generate(memcached_st *memc)
   return 0;
 }
 
-uint8_t mdelete_generate(memcached_st *memc)
-{
-  memcached_return rc;
-
-  rc= memcached_mdelete(memc, global_keys, global_keys_length, GLOBAL_COUNT, 0);
-
-  return 0;
-}
-
-
 uint8_t free_data(memcached_st *memc)
 {
   pairs_free(global_pairs);
@@ -2147,7 +2136,6 @@ test_st generate_tests[] ={
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
   {"mget_read_function", 0, mget_read_function },
-  {"mdelete_generate", 0, mdelete_generate },
   {"cleanup", 1, cleanup_pairs },
   {0, 0, 0}
 };

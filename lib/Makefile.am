@@ -41,7 +41,6 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_hosts.c \
 			  memcached_io.c \
 			  md5.c \
-			  memcached_multistorage.c \
 			  memcached_quit.c \
 			  memcached_parse.c \
 			  memcached_response.c \
