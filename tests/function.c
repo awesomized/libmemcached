@@ -1480,7 +1480,7 @@ uint8_t user_supplied_bug10(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
   timeout= 2;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
 
   value = (char*)malloc(value_length * sizeof(char));
 
@@ -1521,7 +1521,7 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
   timeout= -1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
 
   timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
