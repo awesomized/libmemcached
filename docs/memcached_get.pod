@@ -92,7 +92,9 @@ result sets to the list of functions you provide. It passes to the function
 a memcached_st that can be cloned for use in called the cluster (it can not 
 be used directly). It also passed a result set which does not need to be freed.
 Finally it passes a "context". This is just a pointer to a memory reference
-you supply the calling function. 
+you supply the calling function. Currently only one value is being passed
+to each function call. In the future there will be an option to allow this
+to be an array.
 
 memcached_get_by_key() and memcached_mget_by_key() behave in a similar nature
 as memcached_get() and memcached_mget(). The difference is that they take
