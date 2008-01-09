@@ -36,6 +36,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -111,6 +112,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -186,6 +188,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -261,6 +264,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -336,6 +340,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -411,6 +416,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -486,6 +492,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -561,6 +568,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -636,6 +644,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -711,6 +720,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -786,6 +796,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -861,6 +872,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -936,6 +948,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -1011,6 +1024,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time
@@ -1086,6 +1100,7 @@ Error 27 -> ACTION NOT SUPPORTED
 Error 28 -> A KEY LENGTH OF ZERO WAS PROVIDED
 Error 29 -> FETCH WAS NOT COMPLETED
 Error 30 -> A TIMEOUT OCCURRED
+Error 31 -> ACTION QUEUED
 Found key pid
 Found key uptime
 Found key time

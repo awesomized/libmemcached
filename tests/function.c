@@ -361,7 +361,6 @@ uint8_t add_test(memcached_st *memc)
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  WATCHPOINT_ERROR(rc);
   assert(rc == MEMCACHED_NOTSTORED);
 
   return 0;
@@ -1535,8 +1534,6 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   for (x= 1; x <= 100000; ++x)
   {
     rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
-
-    WATCHPOINT_IFERROR(rc);
   }
 
   free(value);
