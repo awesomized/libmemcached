@@ -9,6 +9,7 @@
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
+static char *opt_hash= NULL;
 
 #define PROGRAM_NAME "memrm"
 #define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
   }
 
   memc= memcached_create(NULL);
+  process_hash_option(memc, opt_hash);
 
   servers= memcached_servers_parse(opt_servers);
   memcached_server_push(memc, servers);
@@ -60,7 +62,10 @@ int main(int argc, char *argv[])
 
   memcached_free(memc);
 
-  free(opt_servers);
+  if (opt_servers)
+    free(opt_servers);
+  if (opt_hash)
+    free(opt_hash);
 
   return 0;
 }
@@ -81,6 +86,7 @@ void options_parse(int argc, char *argv[])
     {"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {"servers", required_argument, NULL, OPT_SERVERS},
     {"expire", required_argument, NULL, OPT_EXPIRE},
+    {"hash", required_argument, NULL, OPT_HASH},
     {0, 0, 0, 0},
   };
   int option_index= 0;
@@ -111,6 +117,9 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
+      break;
+    case OPT_HASH:
+      opt_hash= strdup(optarg);
       break;
     case '?':
       /* getopt_long already printed an error message. */

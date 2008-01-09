@@ -1,3 +1,4 @@
+  * Patch from Marc Rossi to add --hash option for memcp, memrm, and memcat.
   * Toru Maesaka patch for stats mismatch
   * Fix for when CRC return 0
   * Fixed uint16_t issues around flags. Turns out the documentation on the
