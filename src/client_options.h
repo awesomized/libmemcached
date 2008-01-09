@@ -21,6 +21,7 @@ typedef enum {
   OPT_SLAP_NON_BLOCK,
   OPT_SLAP_TCP_NODELAY,
   OPT_FLUSH,
+  OPT_HASH,
 } memcached_options;
 
 #endif /* CLIENT_OPTIONS */

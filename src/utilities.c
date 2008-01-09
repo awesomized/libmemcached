@@ -42,9 +42,11 @@ char *lookup_help(memcached_options option)
   case OPT_SLAP_NON_BLOCK: return("Set TCP up to use non-blocking IO.");
   case OPT_SLAP_TCP_NODELAY: return("Set TCP socket up to use nodelay.");
   case OPT_FLUSH: return("Flush servers before running tests.");
+  case OPT_HASH: return("Select hash type.");
   };
 
-  return "forgot to document this one :)";
+  WATCHPOINT_ASSERT(0);
+  return "forgot to document this function :)";
 }
 
 void help_command(char *command_name, char *description,
@@ -70,3 +72,38 @@ void help_command(char *command_name, char *description,
   printf("\n");
   exit(0);
 }
+
+void process_hash_option(memcached_st *memc, char *opt_hash)
+{
+  unsigned int set;
+  memcached_return rc;
+
+  if (opt_hash == NULL)
+    return;
+
+  if (!strcasecmp(opt_hash, "CRC"))
+    set= MEMCACHED_HASH_CRC;
+  else if (!strcasecmp(opt_hash, "FNV1_64"))
+    set= MEMCACHED_HASH_FNV1_64;
+  else if (!strcasecmp(opt_hash, "FNV1A_64"))
+    set= MEMCACHED_HASH_FNV1A_64;
+  else if (!strcasecmp(opt_hash, "FNV1_32"))
+    set= MEMCACHED_HASH_FNV1_32;
+  else if (!strcasecmp(opt_hash, "FNV1A_32"))
+    set= MEMCACHED_HASH_FNV1A_32;
+  else if (!strcasecmp(opt_hash, "KETAMA"))
+    set= MEMCACHED_HASH_KETAMA;
+  else
+  {
+    fprintf(stderr, "hash: type not recognized %s\n", opt_hash);
+    exit(1);
+  }
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    fprintf(stderr, "hash: memcache error %s\n", memcached_strerror(memc, rc));
+    exit(1);
+  }
+}
+
