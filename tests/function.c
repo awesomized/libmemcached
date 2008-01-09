@@ -1523,7 +1523,7 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   timeout= -1;
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
 
-  timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+  timeout= (int32_t)memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
   assert(timeout == -1);
 

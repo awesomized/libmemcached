@@ -51,7 +51,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
-      unsigned int timeout= (*((unsigned int *)data));
+      int32_t timeout= (*((int32_t *)data));
 
       ptr->poll_timeout= timeout;
       break;
