@@ -10,7 +10,6 @@ static memcached_return set_hostinfo(memcached_server_st *server)
   sprintf(str_port, "%u", server->port);
 
   memset(&hints, 0, sizeof(hints));
-  hints.ai_family= AF_INET;
   hints.ai_socktype= SOCK_STREAM;
   hints.ai_protocol= 0;
 
@@ -219,6 +218,8 @@ test_connect:
       default:
         ptr->cached_errno= errno;
         WATCHPOINT_ERRNO(ptr->cached_errno);
+        close(ptr->hosts[server_key].fd);
+        ptr->hosts[server_key].fd= -1;
         return MEMCACHED_ERRNO;
       }
       ptr->connected++;
