@@ -82,6 +82,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->poll_timeout= ptr->poll_timeout;
   new_clone->distribution= ptr->distribution;
   new_clone->hash= ptr->hash;
+  new_clone->user_data= ptr->user_data;
 
   return new_clone;
 }

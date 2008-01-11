@@ -73,7 +73,13 @@ Support CAS operations (this is not enabled by default at this point in the serv
 
 Modify the timeout value that is used by poll(). The default value is -1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.
 
-=item MEMCACHED_BUFFERED
+=item MEMCACHED_BEHAVIOR_USER_DATA
+
+This allows you to store a pointer to a specifc piece of data. This can be
+retrieved from inside of memcached_fetch_exectue(). Cloning a memcached_st
+will copy the pointer to the clone.
+
+=item MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
 
 Enabling buffered IO causes commands to "buffer" instead of being sent. Any
 action that gets data causes this buffer to be be sent to the remote

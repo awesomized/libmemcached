@@ -90,6 +90,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
   MEMCACHED_BEHAVIOR_DISTRIBUTION,
   MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,
+  MEMCACHED_BEHAVIOR_USER_DATA,
 } memcached_behavior;
 
 typedef enum {
@@ -199,6 +200,7 @@ struct memcached_st {
   memcached_result_st result;
   memcached_hash hash;
   memcached_server_distribution distribution;
+  void *user_data;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
 #ifdef NOT_USED /* Future Use */
   uint8_t replicas;

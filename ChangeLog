@@ -1,4 +1,5 @@
 0.13
+  * MEMCACHED_BEHAVIOR_USER_DATA added to store user pointer.
   * Fix for failure to connect to invalidate socket.
   * Patch from Marc Rossi to add --hash option for memcp, memrm, and memcat.
   * Kevin's patch for fixing EOF issues during a read.
