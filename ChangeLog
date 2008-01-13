@@ -1,4 +1,4 @@
-0.13
+0.13 Sun Jan 13 06:51:50 PST 2008
   * MEMCACHED_BEHAVIOR_USER_DATA added to store user pointer.
   * Fix for failure to connect to invalidate socket.
   * Patch from Marc Rossi to add --hash option for memcp, memrm, and memcat.
