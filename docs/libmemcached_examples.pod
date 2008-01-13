@@ -64,7 +64,7 @@ structures.
   {
     rc= memcached_set(memc, key, strlen(key), 
     value, value_length,
-    (time_t)0, (uint16_t)0);
+    (time_t)0, (uint32_t)0);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
@@ -78,7 +78,7 @@ It is best practice to always look at the return value of any operation.
   char *keys[]= {"fudge", "son", "food"};
   size_t key_length[]= {5, 3, 4};
   unsigned int x;
-  uint16_t flags;
+  uint32_t flags;
 
   char return_key[MEMCACHED_MAX_KEY];
   size_t return_key_length;

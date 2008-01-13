@@ -1,3 +1,5 @@
+  * Updated docs for uint16_t changes in previous release
+
 0.13 Sun Jan 13 06:51:50 PST 2008
   * MEMCACHED_BEHAVIOR_USER_DATA added to store user pointer.
   * Fix for failure to connect to invalidate socket.

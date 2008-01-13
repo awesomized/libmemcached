@@ -27,7 +27,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   size_t memcached_result_length(memcached_result_st *ptr);
 
-  uint16_t memcached_result_flags(memcached_result_st *result)
+  uint32_t memcached_result_flags(memcached_result_st *result)
 
   uint64_t memcached_result_cas(memcached_result_st *result);
 
