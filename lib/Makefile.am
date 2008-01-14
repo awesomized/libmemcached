@@ -24,7 +24,8 @@ noinst_HEADERS = libmemcached_probes.h \
 		 memcached_io.h \
                  common.h
 
-lib_LTLIBRARIES = libmemcached.la
+lib_LTLIBRARIES = libmemcached.la libmemcachedPlus.la
+
 libmemcached_la_SOURCES = crc.c \
 			  hsieh_hash.c \
 			  memcached.c \
@@ -54,6 +55,10 @@ libmemcached_la_SOURCES = crc.c \
 
 libmemcached_la_LIBADD =
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
+
+libmemcachedPlus_la_SOURCES = memcachedplus.cpp
+libmemcachedPlus_la_LIBADD =
+libmemcachedPlus_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
 
 if HAVE_DTRACE
   libmemcached_la_LIBADD += libmemcached_probes.o

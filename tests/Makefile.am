@@ -16,10 +16,13 @@ EXTRA_DIST = output.res output2.res\
 LIBS = 
 
 noinst_HEADERS = test.h
-noinst_PROGRAMS = testapp
+noinst_PROGRAMS = testapp testplus
 
 testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c
 testapp_LDADD = $(LDADDS)
+
+testplus_SOURCES = test.c plus.cpp
+testplus_LDADD = $(LDADDS) ../lib/libmemcachedPlus.la
 
 record:
 	./testapp > output.res

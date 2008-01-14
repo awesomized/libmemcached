@@ -1,6 +1,10 @@
 /*
   Structures for generic tests.
 */
+#ifdef	__cplusplus
+extern "C" {
+
+#endif
 #include <memcached.h>
 #include "../lib/common.h"
 
@@ -22,3 +26,7 @@ struct collection_st {
 
 /* How we make all of this work :) */
 collection_st *gets_collections(void);
+
+#ifdef	__cplusplus
+}
+#endif
