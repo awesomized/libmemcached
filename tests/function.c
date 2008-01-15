@@ -881,7 +881,7 @@ uint8_t get_stats_keys(memcached_st *memc)
  list= memcached_stat_get_keys(memc, &stat, &rc);
  assert(rc == MEMCACHED_SUCCESS);
  for (ptr= list; *ptr; ptr++)
-   printf("Found key %s\n", *ptr);
+   assert(*ptr);
  fflush(stdout);
 
  free(list);
@@ -993,6 +993,15 @@ uint8_t behavior_test(memcached_st *memc)
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
   assert(value > 0);
+
+  {
+    int x= 5;
+    int *test_ptr;
+
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USER_DATA, &x);
+    test_ptr= (int *)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_USER_DATA);
+    assert(*test_ptr == x);
+  }
 
   return 0;
 }
