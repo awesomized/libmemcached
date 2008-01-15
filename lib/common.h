@@ -50,6 +50,10 @@
 #include "libmemcached_probes.h"
 
 #define MEMCACHED_BLOCK_SIZE 1024
+#define MEMCACHED_DEFAULT_COMMAND_SIZE 350
+#define SMALL_STRING_LEN 1024
+#define HUGE_STRING_LEN 8196
+
 
 typedef enum {
   MEM_NO_BLOCK= (1 << 0),

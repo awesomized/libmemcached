@@ -88,8 +88,8 @@ if you do not pass one to the function.
 memcached_fetch_execute() is a callback function for result sets. Instead
 of returning the results to you for processing, it passes each of the
 result sets to the list of functions you provide. It passes to the function
-a memcached_st that can be cloned for use in called the cluster (it can not 
-be used directly). It also passed a result set which does not need to be freed.
+a memcached_st that can be cloned for use in the called function (it can not 
+be used directly). It also passes a result set which does not need to be freed.
 Finally it passes a "context". This is just a pointer to a memory reference
 you supply the calling function. Currently only one value is being passed
 to each function call. In the future there will be an option to allow this

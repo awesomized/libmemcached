@@ -26,14 +26,12 @@ typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
 
 /* These are Private and should not be used by applications */
-#define SMALL_STRING_LEN 1024
-#define HUGE_STRING_LEN 8196
+#define MEMCACHED_VERSION_STRING_LENGTH 12
 
-#define MEMCACHED_VERSION_STRING 12
+/* Public defines */
 #define MEMCACHED_DEFAULT_PORT 11211
-#define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
-#define MEMCACHED_MAX_BUFFER HUGE_STRING_LEN
+#define MEMCACHED_MAX_BUFFER 8196
 #define MEMCACHED_MAX_HOST_LENGTH 64
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
@@ -165,7 +163,7 @@ struct memcached_stat_st {
   uint64_t evictions;
   uint64_t bytes_read;
   uint64_t bytes_written;
-  char version[MEMCACHED_VERSION_STRING];
+  char version[MEMCACHED_VERSION_STRING_LENGTH];
 };
 
 struct memcached_string_st {
