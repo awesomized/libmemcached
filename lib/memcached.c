@@ -35,6 +35,9 @@ void memcached_free(memcached_st *ptr)
   memcached_server_list_free(ptr->hosts);
   memcached_result_free(&ptr->result);
 
+  if (ptr->on_cleanup)
+    ptr->on_cleanup(ptr);
+
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
     free(ptr);
   else
@@ -52,7 +55,14 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   memcached_st *new_clone;
 
   if (ptr == NULL)
-    return memcached_create(clone);
+  {
+    new_clone= memcached_create(clone);
+
+    if (ptr->on_clone)
+      ptr->on_clone(NULL, new_clone);
+
+    return new_clone;
+  }
 
   if (ptr->is_allocated == MEMCACHED_USED)
   {
@@ -83,6 +93,9 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->distribution= ptr->distribution;
   new_clone->hash= ptr->hash;
   new_clone->user_data= ptr->user_data;
+
+  if (ptr->on_clone)
+    ptr->on_clone(ptr, new_clone);
 
   return new_clone;
 }
