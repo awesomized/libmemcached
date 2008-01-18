@@ -77,7 +77,8 @@ Modify the timeout value that is used by poll(). The default value is -1. An sig
 
 This allows you to store a pointer to a specifc piece of data. This can be
 retrieved from inside of memcached_fetch_exectue(). Cloning a memcached_st
-will copy the pointer to the clone.
+will copy the pointer to the clone. This was deprecated in 0.14 in favor
+of memcached_callback_set(3). This will be removed in 0.15.
 
 =item MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
 

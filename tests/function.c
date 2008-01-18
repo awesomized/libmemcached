@@ -949,6 +949,55 @@ uint8_t add_host_test(memcached_st *memc)
   return 0;
 }
 
+memcached_return clone_test_callback(memcached_st *parent, memcached_st *clone)
+{
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return cleanup_test_callback(memcached_st *ptr)
+{
+  return MEMCACHED_SUCCESS;
+}
+
+uint8_t callback_test(memcached_st *memc)
+{
+  /* Test User Data */
+  {
+    int x= 5;
+    int *test_ptr;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_USER_DATA, &x);
+    assert(rc == MEMCACHED_SUCCESS);
+    test_ptr= (int *)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    assert(*test_ptr == x);
+  }
+
+  /* Test Clone Callback */
+  {
+    clone_func temp_function;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, clone_test_callback);
+    assert(rc == MEMCACHED_SUCCESS);
+    temp_function= (clone_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    assert(temp_function == clone_test_callback);
+  }
+
+  /* Test Cleanup Callback */
+  {
+    cleanup_func temp_function;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, cleanup_test_callback);
+    assert(rc == MEMCACHED_SUCCESS);
+    temp_function= (cleanup_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    assert(temp_function == cleanup_test_callback);
+  }
+
+  return 0;
+}
+
 /* We don't test the behavior itself, we test the switches */
 uint8_t behavior_test(memcached_st *memc)
 {
@@ -2084,6 +2133,7 @@ test_st tests[] ={
   {"add_host_test", 0, add_host_test },
   {"get_stats_keys", 0, get_stats_keys },
   {"behavior_test", 0, get_stats_keys },
+  {"callback_test", 0, get_stats_keys },
   {0, 0, 0}
 };
 

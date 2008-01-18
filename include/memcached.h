@@ -19,12 +19,6 @@
 extern "C" {
 #endif
 
-typedef struct memcached_st memcached_st;
-typedef struct memcached_stat_st memcached_stat_st;
-typedef struct memcached_result_st memcached_result_st;
-typedef struct memcached_string_st memcached_string_st;
-typedef struct memcached_server_st memcached_server_st;
-
 /* These are Private and should not be used by applications */
 #define MEMCACHED_VERSION_STRING_LENGTH 12
 
@@ -73,6 +67,15 @@ typedef enum {
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
+typedef struct memcached_st memcached_st;
+typedef struct memcached_stat_st memcached_stat_st;
+typedef struct memcached_result_st memcached_result_st;
+typedef struct memcached_string_st memcached_string_st;
+typedef struct memcached_server_st memcached_server_st;
+typedef memcached_return (*clone_func)(memcached_st *parent, memcached_st *clone);
+typedef memcached_return (*cleanup_func)(memcached_st *ptr);
+
+
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
   MEMCACHED_DISTRIBUTION_CONSISTENT,
@@ -92,6 +95,12 @@ typedef enum {
   MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,
   MEMCACHED_BEHAVIOR_USER_DATA,
 } memcached_behavior;
+
+typedef enum {
+  MEMCACHED_CALLBACK_USER_DATA,
+  MEMCACHED_CALLBACK_CLEANUP_FUNCTION,
+  MEMCACHED_CALLBACK_CLONE_FUNCTION,
+} memcached_callback;
 
 typedef enum {
   MEMCACHED_HASH_DEFAULT= 0,
@@ -202,6 +211,8 @@ struct memcached_st {
   memcached_server_distribution distribution;
   void *user_data;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
+  clone_func on_clone;
+  cleanup_func on_cleanup;
 #ifdef NOT_USED /* Future Use */
   uint8_t replicas;
   memcached_return warning;
@@ -382,6 +393,13 @@ memcached_return memcached_fetch_execute(memcached_st *ptr,
                                              void *context,
                                              unsigned int number_of_callbacks
                                              );
+
+memcached_return memcached_callback_set(memcached_st *ptr, 
+                                        memcached_callback flag, 
+                                        void *data);
+void *memcached_callback_get(memcached_st *ptr, 
+                             memcached_callback flag,
+                             memcached_return *error);
 
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);

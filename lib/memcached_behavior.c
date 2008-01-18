@@ -108,7 +108,8 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     temp_flag= MEM_USE_KETAMA;
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
-    return (unsigned long long)ptr->user_data;
+    return 0;
+    //return (unsigned long long)ptr->user_data;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
       return (unsigned long long)ptr->poll_timeout;

@@ -14,6 +14,7 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_verbosity.pod\
 	memstat.pod\
 	memcached_behavior.pod\
+	memcached_callback.pod\
 	memcached_server_st.pod\
 	memcat.pod\
 	memcached_create.pod\
@@ -38,6 +39,8 @@ man_MANS = libmemcached.3\
 	memcached_append_by_key.3\
 	memcached_behavior_get.3\
 	memcached_behavior_set.3\
+	memcached_callback_get.3\
+	memcached_callback_set.3\
 	memcached_cas.3\
 	memcached_cas_by_key.3\
 	memcached_clone.3\
@@ -204,6 +207,12 @@ memcached_behavior_get.3: memcached_behavior.pod
 
 memcached_behavior_set.3: memcached_behavior.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_behavior.pod > memcached_behavior_set.3
+
+memcached_callback_get.3: memcached_callback.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_callback.pod > memcached_callback_get.3
+
+memcached_callback_set.3: memcached_callback.pod
+	pod2man -c "libmemcached" -r "" -s 3 memcached_callback.pod > memcached_callback_set.3
 
 memcached_stat.3: memcached_stats.pod
 	pod2man -c "libmemcached" -r "" -s 3 memcached_stats.pod > memcached_stat.3
