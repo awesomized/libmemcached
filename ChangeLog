@@ -1,3 +1,6 @@
+
+  * Problem configuring (PKG_CHECK_MODULES) fixed by removal of "rpath" in 
+    support/libmemcached.pc.in (Thanks to Ross McFarland).
   * Added memcached_callback_get()/set()
   * First prototype of C++ interface
   * Updated docs for uint16_t changes in previous release
