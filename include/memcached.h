@@ -385,17 +385,6 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
                                          char *key, size_t key_length,
                                          time_t expiration);
 
-memcached_return memcached_mdelete(memcached_st *ptr, 
-                                   char **key, size_t *key_length,
-                                   unsigned int number_of_keys,
-                                   time_t expiration);
-
-memcached_return memcached_mdelete_by_key(memcached_st *ptr, 
-                                          char *master_key, size_t master_key_length,
-                                          char **key, size_t *key_length,
-                                          unsigned int number_of_keys,
-                                          time_t expiration);
-
 memcached_return memcached_fetch_execute(memcached_st *ptr, 
                                              unsigned int (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
                                              void *context,
