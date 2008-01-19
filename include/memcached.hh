@@ -3,6 +3,7 @@
 #endif
 
 #include <memcached.h>
+#include <string.h>
 #include <stdio.h>
 
 class Memcached
@@ -11,13 +12,35 @@ class Memcached
 
 public:
 
- Memcached();
- Memcached(memcached_st *clone);
+  Memcached()
+  {
+    memcached_create(&memc);
+  }
+
+  Memcached(memcached_st *clone)
+  {
+    WATCHPOINT;
+    memcached_clone(&memc, clone);
+    WATCHPOINT;
+  }
+
+  char *get(char *key, size_t *value_length)
+  {
+    uint32_t flags;
+    memcached_return rc;
+
+    return memcached_get(&memc, key, strlen(key),
+                         value_length, &flags, &rc);
+  }
+
+  memcached_return set(char *key, char *value, size_t value_length)
+  {
+    return memcached_set(&memc, key, strlen(key), 
+                         value, value_length, 
+                         (time_t)0, (uint32_t)0);
+  }
  ~Memcached()
  {
    memcached_free(&memc);
  }
-
- char *get(char *key, size_t *value_length);
- memcached_return set(char *key, char *value, size_t value_length);
 };
