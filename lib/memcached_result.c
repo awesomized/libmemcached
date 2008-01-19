@@ -17,8 +17,12 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   }
   else
   {
-    ptr= (memcached_result_st *)malloc(sizeof(memcached_result_st));
-    if (!ptr)
+    if (memc->call_malloc)
+      ptr= (memcached_result_st *)memc->call_malloc(ptr->root, sizeof(memcached_result_st));
+    else
+      ptr= (memcached_result_st *)malloc(sizeof(memcached_result_st));
+
+    if (ptr == NULL)
       return NULL;
     memset(ptr, 0, sizeof(memcached_result_st));
     ptr->is_allocated= MEMCACHED_ALLOCATED;

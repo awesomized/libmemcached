@@ -1043,15 +1043,6 @@ uint8_t behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
   assert(value > 0);
 
-  {
-    int x= 5;
-    int *test_ptr;
-
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USER_DATA, &x);
-    test_ptr= (int *)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_USER_DATA);
-    assert(*test_ptr == x);
-  }
-
   return 0;
 }
 
@@ -1998,6 +1989,55 @@ memcached_return pre_hash_ketama(memcached_st *memc)
 
   return MEMCACHED_SUCCESS;
 }
+void my_free(memcached_st *ptr, void *mem)
+{
+  free(mem);
+}
+
+void *my_malloc(memcached_st *ptr, const size_t size)
+{
+  return malloc(size);
+}
+
+void *my_realloc(memcached_st *ptr, void *mem, const size_t size)
+{
+  return realloc(mem, size);
+}
+
+memcached_return set_memory_alloc(memcached_st *memc)
+{
+  {
+    memcached_malloc_function test_ptr;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, &my_malloc);
+    assert(rc == MEMCACHED_SUCCESS);
+    test_ptr= (memcached_malloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    assert(test_ptr == (memcached_malloc_function)my_malloc);
+  }
+
+  {
+    memcached_realloc_function test_ptr;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, &my_realloc);
+    assert(rc == MEMCACHED_SUCCESS);
+    test_ptr= (memcached_realloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    assert(test_ptr == my_realloc);
+  }
+
+  {
+    memcached_free_function test_ptr;
+    memcached_return rc;
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, my_free);
+    assert(rc == MEMCACHED_SUCCESS);
+    test_ptr= (memcached_free_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    assert(test_ptr == my_free);
+  }
+
+  return MEMCACHED_SUCCESS;
+}
 
 memcached_return enable_consistent(memcached_st *memc)
 {
@@ -2214,6 +2254,7 @@ collection_st collection[] ={
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
+  {"memory_allocators", set_memory_alloc, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},

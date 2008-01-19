@@ -6,7 +6,8 @@
 memcached_st *memcached_create(memcached_st *ptr)
 {
   memcached_result_st *result_ptr;
-  if (!ptr)
+
+  if (ptr == NULL)
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
 
@@ -32,14 +33,19 @@ void memcached_free(memcached_st *ptr)
 {
   /* If we have anything open, lets close it now */
   memcached_quit(ptr);
-  memcached_server_list_free(ptr->hosts);
+  server_list_free(ptr, ptr->hosts);
   memcached_result_free(&ptr->result);
 
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
-    free(ptr);
+  {
+    if (ptr->call_free)
+      ptr->call_free(ptr, ptr);
+    else
+      free(ptr);
+  }
   else
     ptr->is_allocated= MEMCACHED_USED;
 }
@@ -93,6 +99,12 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->distribution= ptr->distribution;
   new_clone->hash= ptr->hash;
   new_clone->user_data= ptr->user_data;
+
+  new_clone->on_clone= ptr->on_clone;
+  new_clone->on_cleanup= ptr->on_cleanup;
+  new_clone->call_free= ptr->call_free;
+  new_clone->call_malloc= ptr->call_malloc;
+  new_clone->call_realloc= ptr->call_realloc;
 
   if (ptr->on_clone)
     ptr->on_clone(ptr, new_clone);

@@ -18,7 +18,10 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
     if (new_size < need)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-    new_value= (char *)realloc(string->string, new_size);
+    if (string->root->call_realloc)
+      new_value= (char *)string->root->call_realloc(string->root, string->string, new_size);
+    else
+      new_value= (char *)realloc(string->string, new_size);
 
     if (new_value == NULL)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -44,8 +47,12 @@ memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string
   }
   else
   {
-    string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
-    if (!string)
+    if (ptr->call_malloc)
+      string= (memcached_string_st *)ptr->call_malloc(ptr, sizeof(memcached_string_st));
+    else
+      string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
+
+    if (string == NULL)
       return NULL;
     memset(string, 0, sizeof(memcached_string_st));
     string->is_allocated= MEMCACHED_ALLOCATED;
@@ -56,7 +63,11 @@ memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string
   rc=  memcached_string_check(string, initial_size);
   if (rc != MEMCACHED_SUCCESS)
   {
-    free(string);
+    if (ptr->call_free)
+      ptr->call_free(ptr, string);
+    else
+      free(string);
+
     return NULL;
   }
 
@@ -129,8 +140,12 @@ char *memcached_string_c_copy(memcached_string_st *string)
 
   WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
 
-  c_ptr= (char *)malloc((memcached_string_length(string)+1) * sizeof(char));
-  if (!c_ptr)
+  if (string->root->call_malloc)
+    c_ptr= (char *)string->root->call_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char));
+  else
+    c_ptr= (char *)malloc((memcached_string_length(string)+1) * sizeof(char));
+
+  if (c_ptr == NULL)
     return NULL;
 
   memcpy(c_ptr, memcached_string_value(string), memcached_string_length(string));
@@ -153,10 +168,20 @@ void memcached_string_free(memcached_string_st *ptr)
     return;
 
   if (ptr->string)
-    free(ptr->string);
+  {
+    if (ptr->root->call_free)
+      ptr->root->call_free(ptr->root, ptr->string);
+    else
+      free(ptr->string);
+  }
 
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
-    free(ptr);
+  {
+    if (ptr->root->call_free)
+      ptr->root->call_free(ptr->root, ptr);
+    else
+      free(ptr);
+  }
   else
     ptr->is_allocated= MEMCACHED_USED;
 }

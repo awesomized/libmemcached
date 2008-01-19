@@ -110,6 +110,7 @@ memcached_return value_fetch(memcached_st *ptr,
                              char *buffer,
                              memcached_result_st *result,
                              unsigned int server_key);
+void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
 
 #endif /* __COMMON_H__ */
