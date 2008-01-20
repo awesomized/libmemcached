@@ -32,7 +32,7 @@ extern "C" {
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
 /* string value */
-#define MEMCACHED_VERSION_STRING "0.14"
+#define LIBMEMCACHED_VERSION_STRING "0.14"
 /* binary values */
 #define MEMCACHED_MAJOR_VERSION 0
 #define MEMCACHED_MAJOR_VERSION 14

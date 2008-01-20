@@ -893,7 +893,7 @@ uint8_t version_string_test
 {
   const char *version_string;
   version_string= memcached_lib_version();
-  assert(!strcmp(version_string, MEMCACHE_VERSION_STRING));
+  assert(!strcmp(version_string, LIBMEMCACHE_VERSION_STRING));
   return 0;
 }
 
