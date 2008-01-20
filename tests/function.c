@@ -889,11 +889,11 @@ uint8_t get_stats_keys(memcached_st *memc)
  return 0;
 }
 
-uint8_t version_string_test
+uint8_t version_string_test(void)
 {
   const char *version_string;
   version_string= memcached_lib_version();
-  assert(!strcmp(version_string, LIBMEMCACHE_VERSION_STRING));
+  assert(!strcmp(version_string, LIBMEMCACHED_VERSION_STRING));
   return 0;
 }
 

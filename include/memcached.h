@@ -33,10 +33,6 @@ extern "C" {
 
 /* string value */
 #define LIBMEMCACHED_VERSION_STRING "0.14"
-/* binary values */
-#define MEMCACHED_MAJOR_VERSION 0
-#define MEMCACHED_MAJOR_VERSION 14
-#define MEMCACHED_MICRO_VERSION 0
 
 typedef enum {
   MEMCACHED_SUCCESS,
