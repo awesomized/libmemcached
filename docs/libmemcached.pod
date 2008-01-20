@@ -81,6 +81,23 @@ This is the "stride" used in the consistent hash used between replicas.
 
 Maximum allowed size of the hostname.
 
+=item MEMCACHED_VERSION_STRING
+
+String value of libmemcached version such as "1.23.4"
+
+=item MEMCACHED_MAJOR_VERSION
+
+Major version value. Such as 1.23.4, would be 1 
+
+=item MEMCACHED_MINOR_VERSION
+
+Major version value. Such as 1.23.4, would be 23 
+
+=item MEMCACHED_MICRO_VERSION
+
+Major version value. Such as 1.23.4, would be 4 
+
+
 =back
 
 

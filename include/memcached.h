@@ -31,6 +31,13 @@ extern "C" {
 #define MEMCACHED_STRIDE 4
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
+/* string value */
+#define MEMCACHED_VERSION_STRING "0.14"
+/* binary values */
+#define MEMCACHED_MAJOR_VERSION 0
+#define MEMCACHED_MAJOR_VERSION 14
+#define MEMCACHED_MICRO_VERSION 0
+
 typedef enum {
   MEMCACHED_SUCCESS,
   MEMCACHED_FAILURE,
@@ -220,6 +227,8 @@ struct memcached_st {
 };
 
 /* Public API */
+const char * memcached_lib_version(void);
+
 memcached_st *memcached_create(memcached_st *ptr);
 void memcached_free(memcached_st *ptr);
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
