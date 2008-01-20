@@ -975,23 +975,23 @@ uint8_t callback_test(memcached_st *memc)
 
   /* Test Clone Callback */
   {
-    clone_func temp_function;
+    memcached_clone_func temp_function;
     memcached_return rc;
 
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, clone_test_callback);
     assert(rc == MEMCACHED_SUCCESS);
-    temp_function= (clone_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    temp_function= (memcached_clone_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
     assert(temp_function == clone_test_callback);
   }
 
   /* Test Cleanup Callback */
   {
-    cleanup_func temp_function;
+    memcached_cleanup_func temp_function;
     memcached_return rc;
 
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, cleanup_test_callback);
     assert(rc == MEMCACHED_SUCCESS);
-    temp_function= (cleanup_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    temp_function= (memcached_cleanup_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
     assert(temp_function == cleanup_test_callback);
   }
 

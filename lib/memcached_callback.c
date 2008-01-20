@@ -20,13 +20,13 @@ memcached_return memcached_callback_set(memcached_st *ptr,
     }
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
     {
-      cleanup_func func= (cleanup_func)data;
+      memcached_cleanup_func func= (memcached_cleanup_func)data;
       ptr->on_cleanup= func;
       break;
     }
   case MEMCACHED_CALLBACK_CLONE_FUNCTION:
     {
-      clone_func func= (clone_func)data;
+      memcached_clone_func func= (memcached_clone_func)data;
       ptr->on_clone= func;
       break;
     }
