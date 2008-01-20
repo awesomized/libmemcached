@@ -44,6 +44,23 @@ static void host_reset(memcached_server_st *host, char *hostname, unsigned int p
   host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
 }
 
+void server_list_free(memcached_st *ptr, memcached_server_st *servers)
+{
+  unsigned int x;
+
+  if (servers == NULL)
+    return;
+
+  for (x= 0; x < servers->count; x++)
+    if (servers[x].address_info)
+      freeaddrinfo(servers[x].address_info);
+
+  if (ptr && ptr->call_free)
+    ptr->call_free(ptr, servers);
+  else
+    free(servers);
+}
+
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
 {
   unsigned int x;
@@ -55,9 +72,14 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
 
   count= list[0].count;
 
-  new_host_list= 
-    (memcached_server_st *)realloc(ptr->hosts, 
-                                   sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
+  if (ptr->call_realloc)
+    new_host_list= 
+      (memcached_server_st *)ptr->call_realloc(ptr, ptr->hosts, 
+                                               sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
+  else
+    new_host_list= 
+      (memcached_server_st *)realloc(ptr->hosts, 
+                                     sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
 
   if (!new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -120,9 +142,13 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   LIBMEMCACHED_MEMCACHED_SERVER_ADD_START();
 
 
-  new_host_list= (memcached_server_st *)realloc(ptr->hosts, 
-                                                sizeof(memcached_server_st) * (ptr->number_of_hosts+1));
-  if (!new_host_list)
+  if (ptr->call_realloc)
+    new_host_list= (memcached_server_st *)ptr->call_realloc(ptr, ptr->hosts, 
+                                                            sizeof(memcached_server_st) * (ptr->number_of_hosts+1));
+  else
+    new_host_list= (memcached_server_st *)realloc(ptr->hosts, 
+                                                  sizeof(memcached_server_st) * (ptr->number_of_hosts+1));
+  if (new_host_list == NULL)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   ptr->hosts= new_host_list;
@@ -183,14 +209,5 @@ unsigned int memcached_server_list_count(memcached_server_st *ptr)
 
 void memcached_server_list_free(memcached_server_st *ptr)
 {
-  unsigned int x;
-
-  if (ptr == NULL)
-    return;
-
-  for (x= 0; x < ptr->count; x++)
-    if (ptr[x].address_info)
-      freeaddrinfo(ptr[x].address_info);
-
-  free(ptr);
+  server_list_free(NULL, ptr);
 }

@@ -79,9 +79,11 @@ typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
-typedef memcached_return (*clone_func)(memcached_st *parent, memcached_st *clone);
-typedef memcached_return (*cleanup_func)(memcached_st *ptr);
-
+typedef memcached_return (*memcached_clone_func)(memcached_st *parent, memcached_st *clone);
+typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
+typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
+typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
+typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
 
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
@@ -107,6 +109,9 @@ typedef enum {
   MEMCACHED_CALLBACK_USER_DATA,
   MEMCACHED_CALLBACK_CLEANUP_FUNCTION,
   MEMCACHED_CALLBACK_CLONE_FUNCTION,
+  MEMCACHED_CALLBACK_MALLOC_FUNCTION,
+  MEMCACHED_CALLBACK_REALLOC_FUNCTION,
+  MEMCACHED_CALLBACK_FREE_FUNCTION,
 } memcached_callback;
 
 typedef enum {
@@ -218,8 +223,11 @@ struct memcached_st {
   memcached_server_distribution distribution;
   void *user_data;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
-  clone_func on_clone;
-  cleanup_func on_cleanup;
+  memcached_clone_func on_clone;
+  memcached_cleanup_func on_cleanup;
+  memcached_free_function call_free;
+  memcached_malloc_function call_malloc;
+  memcached_realloc_function call_realloc;
 #ifdef NOT_USED /* Future Use */
   uint8_t replicas;
   memcached_return warning;
@@ -385,17 +393,6 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
                                          char *master_key, size_t master_key_length,
                                          char *key, size_t key_length,
                                          time_t expiration);
-
-memcached_return memcached_mdelete(memcached_st *ptr, 
-                                   char **key, size_t *key_length,
-                                   unsigned int number_of_keys,
-                                   time_t expiration);
-
-memcached_return memcached_mdelete_by_key(memcached_st *ptr, 
-                                          char *master_key, size_t master_key_length,
-                                          char **key, size_t *key_length,
-                                          unsigned int number_of_keys,
-                                          time_t expiration);
 
 memcached_return memcached_fetch_execute(memcached_st *ptr, 
                                              unsigned int (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
