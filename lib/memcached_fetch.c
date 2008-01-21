@@ -1,10 +1,9 @@
 #include "common.h"
 #include "memcached_io.h"
 
-memcached_return value_fetch(memcached_st *ptr,
+memcached_return value_fetch(memcached_server_st *ptr,
                              char *buffer,
-                             memcached_result_st *result,
-                             unsigned int server_key)
+                             memcached_result_st *result)
 {
   memcached_return rc= MEMCACHED_SUCCESS;
   char *string_ptr;
@@ -104,8 +103,7 @@ memcached_return value_fetch(memcached_st *ptr,
     */
     to_read= (value_length) + 2;
 
-    read_length= memcached_io_read(ptr, server_key,
-                                   value_ptr, to_read);
+    read_length= memcached_io_read(ptr, value_ptr, to_read);
 
     if (read_length != (size_t)(value_length + 2))
     {
@@ -141,17 +139,17 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-    if (memcached_server_response_count(ptr, ptr->cursor_server) == 0)
+    if (memcached_server_response_count(&ptr->hosts[ptr->cursor_server]) == 0)
     {
       ptr->cursor_server++;
       continue;
     }
 
-  *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer, ptr->cursor_server);
+  *error= memcached_response(&ptr->hosts[ptr->cursor_server], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
 
     if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      memcached_server_response_reset(ptr, ptr->cursor_server);
+      memcached_server_response_reset(&ptr->hosts[ptr->cursor_server]);
       ptr->cursor_server++;
       continue;
     }
@@ -164,7 +162,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
         strncpy(key, result_buffer->key, result_buffer->key_length);
         *key_length= result_buffer->key_length;
       }
-      *flags= result_buffer->flags;
+
+      if (result_buffer->flags)
+        *flags= result_buffer->flags;
 
       return  memcached_string_c_copy(&result_buffer->value);
     }
@@ -189,24 +189,26 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 
   WATCHPOINT_ASSERT(result->value.is_allocated != MEMCACHED_USED);
 
+#ifdef UNUSED
   if (ptr->flags & MEM_NO_BLOCK)
     memcached_io_preread(ptr);
+#endif
 
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-    if (memcached_server_response_count(ptr, ptr->cursor_server) == 0)
+    if (memcached_server_response_count(&ptr->hosts[ptr->cursor_server]) == 0)
     {
       ptr->cursor_server++;
       continue;
     }
 
-    *error= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result, ptr->cursor_server);
+    *error= memcached_response(&ptr->hosts[ptr->cursor_server], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result);
     
     if (*error == MEMCACHED_END) /* END means that we move on to the next */
     {
-      memcached_server_response_reset(ptr, ptr->cursor_server);
+      memcached_server_response_reset(&ptr->hosts[ptr->cursor_server]);
       ptr->cursor_server++;
       continue;
     }

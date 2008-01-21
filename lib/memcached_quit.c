@@ -9,34 +9,25 @@
   will force data to be completed.
 */
 
-void memcached_quit_server(memcached_st *ptr, unsigned int server_key, uint8_t io_death)
+void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
 {
-  if (server_key > ptr->number_of_hosts)
-  {
-    WATCHPOINT_ASSERT(0);
-    return;
-  }
-
-  if (ptr->hosts[server_key].fd != -1)
+  if (ptr->fd != -1)
   {
     if (io_death == 0)
     {
       memcached_return rc;
-      rc= memcached_do(ptr, server_key, "quit\r\n", 6, 1);
+      rc= memcached_do(ptr, "quit\r\n", 6, 1);
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
 
-      memcached_io_close(ptr, server_key);
+      memcached_io_close(ptr);
     }
 
-    ptr->hosts[server_key].fd= -1;
-    ptr->hosts[server_key].write_buffer_offset= 0;
-    ptr->hosts[server_key].read_buffer_length= 0;
-    ptr->hosts[server_key].read_ptr= ptr->hosts[server_key].read_buffer;
-    ptr->hosts[server_key].write_ptr= ptr->hosts[server_key].write_buffer;
-    memcached_server_response_reset(ptr, server_key);
+    ptr->fd= -1;
+    ptr->write_buffer_offset= 0;
+    ptr->read_buffer_length= 0;
+    ptr->read_ptr= ptr->read_buffer;
+    memcached_server_response_reset(ptr);
   }
-
-  ptr->connected--;
 }
 
 void memcached_quit(memcached_st *ptr)
@@ -50,8 +41,6 @@ void memcached_quit(memcached_st *ptr)
   if (ptr->hosts && ptr->number_of_hosts)
   {
     for (x= 0; x < ptr->number_of_hosts; x++)
-      memcached_quit_server(ptr, x, 0);
+      memcached_quit_server(&ptr->hosts[x], 0);
   }
-
-  ptr->connected= 0;
 }

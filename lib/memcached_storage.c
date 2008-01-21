@@ -86,11 +86,11 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  rc=  memcached_do(ptr, server_key, buffer, write_length, 0);
+  rc=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
-  if ((sent_length= memcached_io_write(ptr, server_key, value, value_length, 0)) == -1)
+  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], value, value_length, 0)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -101,7 +101,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   else
     to_write= 1;
 
-  if ((sent_length= memcached_io_write(ptr, server_key, "\r\n", 2, to_write)) == -1)
+  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -110,7 +110,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if (to_write == 0)
     return MEMCACHED_BUFFERED;
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
   if (rc == MEMCACHED_STORED)
     return MEMCACHED_SUCCESS;
@@ -118,7 +118,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     return rc;
 
 error:
-  memcached_io_reset(ptr, server_key);
+  memcached_io_reset(&ptr->hosts[server_key]);
 
   return rc;
 }

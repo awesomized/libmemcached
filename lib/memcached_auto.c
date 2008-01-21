@@ -26,25 +26,25 @@ static memcached_return memcached_auto(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(ptr, server_key, buffer, send_length, 1);
+  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
   /* 
     So why recheck responce? Because the protocol is brain dead :)
     The number returned might end up equaling one of the string 
-    values. Less chance of a mistake with memcmp() so we will 
+    values. Less chance of a mistake with strncmp() so we will 
     use it. We still called memcached_response() though since it
     worked its magic for non-blocking IO.
   */
-  if (!memcmp(buffer, "ERROR\r\n", MEMCACHED_DEFAULT_COMMAND_SIZE))
+  if (!strncmp(buffer, "ERROR\r\n", 7))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
   }
-  else if (!memcmp(buffer, "NOT_FOUND\r\n", MEMCACHED_DEFAULT_COMMAND_SIZE))
+  else if (!strncmp(buffer, "NOT_FOUND\r\n", 11))
   {
     *value= 0;
     rc= MEMCACHED_NOTFOUND;

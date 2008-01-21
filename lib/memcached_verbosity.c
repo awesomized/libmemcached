@@ -17,14 +17,14 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   {
     memcached_return rrc;
 
-    rrc= memcached_do(ptr, x, buffer, send_length, 1);
+    rrc= memcached_do(&ptr->hosts[x], buffer, send_length, 1);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
 
-    rrc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, x);
+    rrc= memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rrc != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
   }

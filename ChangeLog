@@ -1,4 +1,8 @@
 
+  * For for bug found by Evan Weaver where increment() was not returning
+    propper error of value was not found.
+  * Fix for bad null pointer on flag by Toru Maesaka.
+  * Refactor of all IO to just pass in the active server
   * Problem configuring (PKG_CHECK_MODULES) fixed by removal of "rpath" in 
     support/libmemcached.pc.in (Thanks to Ross McFarland).
   * Added memcached_callback_get()/set()

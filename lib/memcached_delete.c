@@ -44,7 +44,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
   to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
 
-  rc= memcached_do(ptr, server_key, buffer, send_length, to_write);
+  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, to_write);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
@@ -54,7 +54,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+    rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rc == MEMCACHED_DELETED)
       rc= MEMCACHED_SUCCESS;
   }

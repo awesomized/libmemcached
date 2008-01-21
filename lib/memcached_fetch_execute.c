@@ -14,17 +14,17 @@ memcached_return memcached_fetch_execute(memcached_st *ptr,
 
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-    if (memcached_server_response_count(ptr, ptr->cursor_server) == 0)
+    if (memcached_server_response_count(&ptr->hosts[ptr->cursor_server]) == 0)
     {
       ptr->cursor_server++;
       continue;
     }
 
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result, ptr->cursor_server);
+    rc= memcached_response(&ptr->hosts[ptr->cursor_server], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result);
 
     if (rc == MEMCACHED_END) /* END means that we move on to the next */
     {
-      memcached_server_response_reset(ptr, ptr->cursor_server);
+      memcached_server_response_reset(&ptr->hosts[ptr->cursor_server]);
       ptr->cursor_server++;
       continue;
     }

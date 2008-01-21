@@ -230,13 +230,13 @@ static memcached_return memcached_stats_fetch(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(ptr, server_key, buffer, send_length, 1);
+  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
   if (rc != MEMCACHED_SUCCESS)
       goto error;
 
   while (1)
   {
-    rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+    rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
     if (rc == MEMCACHED_STAT)
     {
