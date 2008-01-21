@@ -35,9 +35,40 @@ public:
 
   memcached_return set(char *key, char *value, size_t value_length)
   {
-    return memcached_set(&memc, key, strlen(key), 
-                         value, value_length, 
+    return memcached_set(&memc, key, strlen(key),
+                         value, value_length,
                          (time_t)0, (uint32_t)0);
+  }
+
+  memcached_return add(char *key, char *value, size_t value_length)
+  {
+    return memcached_add(&memc, key, strlen(key),
+                 value, value_length,
+                 (time_t)0, (uint32_t)0);
+  }
+
+  memcached_return replace(char *key, char *value, size_t value_length)
+  {
+    return memcached_replace(&memc, key, strlen(key),
+                     value, value_length,
+                     (time_t)0, (uint32_t)0);
+  }
+
+  memcached_return prepend(char *key, char *value, size_t value_length)
+  {
+    return memcached_prepend(&memc, key, strlen(key),
+                    value, value_length,
+                    (time_t)0,
+                    (uint32_t)0);
+  }
+
+
+  memcached_return  append(char *key, char *value, size_t value_length)
+  {
+    return memcached_append(&memc, key, strlen(key),
+                    value, value_length,
+                    (time_t)0,
+                    (uint32_t)0);
   }
  ~Memcached()
  {
