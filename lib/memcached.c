@@ -60,7 +60,6 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   memcached_return rc= MEMCACHED_SUCCESS;
   memcached_st *new_clone;
 
-  WATCHPOINT;
   if (ptr == NULL)
     return memcached_create(clone);
 
@@ -70,7 +69,6 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
     return NULL;
   }
   
-  WATCHPOINT;
   new_clone= memcached_create(clone);
   
   if (new_clone == NULL)

@@ -234,7 +234,6 @@ static ssize_t io_flush(memcached_server_st *ptr,
       if ((ssize_t)(sent_length= write(ptr->fd, local_write_ptr, 
                                        write_length)) == -1)
       {
-        WATCHPOINT_STRING("Error in write occurred");
         switch (errno)
         {
         case ENOBUFS:

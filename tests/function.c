@@ -889,11 +889,14 @@ uint8_t get_stats_keys(memcached_st *memc)
  return 0;
 }
 
-uint8_t version_string_test(void)
+uint8_t version_string_test(memcached_st *memc)
 {
   const char *version_string;
+
   version_string= memcached_lib_version();
+
   assert(!strcmp(version_string, LIBMEMCACHED_VERSION_STRING));
+
   return 0;
 }
 
@@ -1599,6 +1602,43 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   return 0;
 }
 
+/*
+  Bug found where incr was not returning MEMCACHED_NOTFOUND when object did not exist.
+*/
+uint8_t user_supplied_bug12(memcached_st *memc)
+{
+  memcached_return rc;
+  uint32_t flags;
+  size_t value_length;
+  char *value;
+  uint64_t number_value;
+
+  value= memcached_get(memc, "autoincrement", strlen("autoincrement"),
+                        &value_length, &flags, &rc);		
+  assert(value == NULL);
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
+                          1, &number_value);
+
+  assert(value == NULL);
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  rc= memcached_set(memc, "autoincrement", strlen("autoincrement"), "1", 1, 0, 0);
+
+  value= memcached_get(memc, "autoincrement", strlen("autoincrement"),
+                        &value_length, &flags, &rc);		
+  assert(value);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
+                          1, &number_value);
+  assert(number_value == 2);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -2228,6 +2268,7 @@ test_st user_tests[] ={
   {"user_supplied_bug9", 1, user_supplied_bug9 },
   {"user_supplied_bug10", 1, user_supplied_bug10 },
   {"user_supplied_bug11", 1, user_supplied_bug11 },
+  {"user_supplied_bug12", 1, user_supplied_bug12 },
   {0, 0, 0}
 };
 
