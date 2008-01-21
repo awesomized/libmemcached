@@ -889,6 +889,14 @@ uint8_t get_stats_keys(memcached_st *memc)
  return 0;
 }
 
+uint8_t version_string_test(void)
+{
+  const char *version_string;
+  version_string= memcached_lib_version();
+  assert(!strcmp(version_string, LIBMEMCACHED_VERSION_STRING));
+  return 0;
+}
+
 uint8_t get_stats(memcached_st *memc)
 {
  unsigned int x;
@@ -2174,6 +2182,7 @@ test_st tests[] ={
   {"get_stats_keys", 0, get_stats_keys },
   {"behavior_test", 0, get_stats_keys },
   {"callback_test", 0, get_stats_keys },
+  {"version_string_test", 0, version_string_test},
   {0, 0, 0}
 };
 

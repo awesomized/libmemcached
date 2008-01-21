@@ -1,5 +1,10 @@
 #include "common.h"
 
+const char * memcached_lib_version(void) 
+{
+  return LIBMEMCACHED_VERSION_STRING;
+}
+
 memcached_return memcached_version(memcached_st *ptr)
 {
   unsigned int x;
