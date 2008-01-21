@@ -162,7 +162,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
         strncpy(key, result_buffer->key, result_buffer->key_length);
         *key_length= result_buffer->key_length;
       }
-      *flags= result_buffer->flags;
+
+      if (result_buffer->flags)
+        *flags= result_buffer->flags;
 
       return  memcached_string_c_copy(&result_buffer->value);
     }

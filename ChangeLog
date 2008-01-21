@@ -1,4 +1,5 @@
 
+  * Fix for bad null pointer on flag by Toru Maesaka.
   * Refactor of all IO to just pass in the active server
   * Problem configuring (PKG_CHECK_MODULES) fixed by removal of "rpath" in 
     support/libmemcached.pc.in (Thanks to Ross McFarland).
