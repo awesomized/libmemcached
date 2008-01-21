@@ -18,7 +18,7 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   else
   {
     if (memc->call_malloc)
-      ptr= (memcached_result_st *)memc->call_malloc(ptr->root, sizeof(memcached_result_st));
+      ptr= (memcached_result_st *)memc->call_malloc(memc, sizeof(memcached_result_st));
     else
       ptr= (memcached_result_st *)malloc(sizeof(memcached_result_st));
 

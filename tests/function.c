@@ -2037,6 +2037,7 @@ memcached_return pre_hash_ketama(memcached_st *memc)
 
   return MEMCACHED_SUCCESS;
 }
+
 void my_free(memcached_st *ptr, void *mem)
 {
   free(mem);
@@ -2060,8 +2061,9 @@ memcached_return set_memory_alloc(memcached_st *memc)
 
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, &my_malloc);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_malloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
-    assert(test_ptr == (memcached_malloc_function)my_malloc);
+    test_ptr= (memcached_malloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(test_ptr == my_malloc);
   }
 
   {
@@ -2070,7 +2072,8 @@ memcached_return set_memory_alloc(memcached_st *memc)
 
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, &my_realloc);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_realloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    test_ptr= (memcached_realloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
     assert(test_ptr == my_realloc);
   }
 
@@ -2080,7 +2083,8 @@ memcached_return set_memory_alloc(memcached_st *memc)
 
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, my_free);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_free_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_USER_DATA, &rc);
+    test_ptr= (memcached_free_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
     assert(test_ptr == my_free);
   }
 
