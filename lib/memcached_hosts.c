@@ -31,16 +31,17 @@ static void rebalance_wheel(memcached_st *ptr)
   }
 }
 
-static void host_reset(memcached_server_st *host, char *hostname, unsigned int port,
+static void host_reset(memcached_st *ptr, memcached_server_st *host, 
+                       char *hostname, unsigned int port,
                        memcached_connection type)
 {
   memset(host,  0, sizeof(memcached_server_st));
   strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
+  host->root= ptr ? ptr : NULL;
   host->port= port;
   host->fd= -1;
   host->type= type;
   host->read_ptr= host->read_buffer;
-  host->write_ptr= host->write_buffer;
   host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
 }
 
@@ -89,7 +90,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   for (x= 0; x < count; x++)
   {
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
-    host_reset(&ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
+    host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
                list[x].port, list[x].type);
     ptr->number_of_hosts++;
   }
@@ -153,7 +154,7 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
 
   ptr->hosts= new_host_list;
 
-  host_reset(&ptr->hosts[ptr->number_of_hosts], hostname, port, type);
+  host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
   ptr->hosts[0].count++;
 
@@ -191,7 +192,9 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
     return NULL;
   }
 
-  host_reset(&new_host_list[count-1], hostname, port, MEMCACHED_CONNECTION_TCP);
+  host_reset(NULL, &new_host_list[count-1], hostname, port, MEMCACHED_CONNECTION_TCP);
+
+  /* Backwards compatibility hack */
   new_host_list[0].count++;
 
 

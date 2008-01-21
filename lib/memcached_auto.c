@@ -26,11 +26,11 @@ static memcached_return memcached_auto(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(ptr, server_key, buffer, send_length, 1);
+  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  rc= memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, server_key);
+  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
   /* 
     So why recheck responce? Because the protocol is brain dead :)

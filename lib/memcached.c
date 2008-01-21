@@ -61,14 +61,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   memcached_st *new_clone;
 
   if (ptr == NULL)
-  {
-    new_clone= memcached_create(clone);
-
-    if (ptr->on_clone)
-      ptr->on_clone(NULL, new_clone);
-
-    return new_clone;
-  }
+    return memcached_create(clone);
 
   if (ptr->is_allocated == MEMCACHED_USED)
   {

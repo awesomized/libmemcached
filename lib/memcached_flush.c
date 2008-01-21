@@ -20,10 +20,10 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                             "flush_all\r\n");
 
-    rc= memcached_do(ptr, x, buffer, send_length, 1);
+    rc= memcached_do(&ptr->hosts[x], buffer, send_length, 1);
 
     if (rc == MEMCACHED_SUCCESS)
-      (void)memcached_response(ptr, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL, x);
+      (void)memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
   }
 
   LIBMEMCACHED_MEMCACHED_FLUSH_END();

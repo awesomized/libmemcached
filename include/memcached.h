@@ -136,10 +136,10 @@ struct memcached_server_st {
   char hostname[MEMCACHED_MAX_HOST_LENGTH];
   unsigned int port;
   int fd;
+  int cached_errno;
   unsigned int cursor_active;
   char write_buffer[MEMCACHED_MAX_BUFFER];
   size_t write_buffer_offset;
-  char *write_ptr;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   size_t read_data_length;
   size_t read_buffer_length;
@@ -151,6 +151,7 @@ struct memcached_server_st {
   uint8_t minor_version;
   uint8_t micro_version;
   uint16_t count;
+  memcached_st *root;
 };
 
 struct memcached_stat_st {
@@ -205,9 +206,8 @@ struct memcached_st {
   memcached_server_st *hosts;
   unsigned int number_of_hosts;
   unsigned int cursor_server;
-  char connected;
   int cached_errno;
-  unsigned long long flags;
+  uint32_t flags;
   int send_size;
   int recv_size;
   int32_t poll_timeout;
@@ -303,7 +303,8 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 #define memcached_server_name(A,B) (B).hostname
 #define memcached_server_port(A,B) (B).port
 #define memcached_server_list(A) (A)->hosts
-#define memcached_server_response_count(A,B) (A)->hosts[B].cursor_active
+#define memcached_server_response_count(A) (A)->cursor_active
+
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
                                           char *hostname,
