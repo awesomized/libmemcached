@@ -1630,6 +1630,7 @@ uint8_t user_supplied_bug12(memcached_st *memc)
                         &value_length, &flags, &rc);		
   assert(value);
   assert(rc == MEMCACHED_SUCCESS);
+  free(value);
 
   rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
                           1, &number_value);
