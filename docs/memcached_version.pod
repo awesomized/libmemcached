@@ -1,6 +1,8 @@
 =head1 NAME
 
-memcached_flush
+memcached_lib_version
+
+memcached_version
 
 =head1 LIBRARY
 
