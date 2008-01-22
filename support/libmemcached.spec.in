@@ -51,6 +51,7 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_bindir}/memstat
 %{_bindir}/memslap
 %{_includedir}/libmemcached/memcached.h
+%{_includedir}/libmemcached/memcached.hh
 %{_libdir}/libmemcached.a
 %{_libdir}/libmemcached.la
 %{_libdir}/libmemcached.so
@@ -111,6 +112,8 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/memcached_stat_servername.3.gz
 %{_mandir}/man3/memcached_strerror.3.gz
 %{_mandir}/man3/memcached_verbosity.3.gz
+%{_mandir}/man3/memcached_lib_version.3.gz
+%{_mandir}/man3/memcached_version.3.gz
 
 %changelog
 * Mon Nov  5 2007 Brian Aker <brian@tangent.org> - 0.8-1

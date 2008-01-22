@@ -2,7 +2,6 @@
   C++ interface test
 */
 #include <assert.h>
-#include <memcached.h>
 #include <memcached.hh>
 #include <stdio.h>
 #include <stdlib.h>
