@@ -174,7 +174,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
     if (opt_test == SET_TEST)
     {
-      context->execute_pairs= pairs_generate(opt_execute_number);
+      context->execute_pairs= pairs_generate(opt_execute_number, 400);
       context->execute_number= opt_execute_number;
     }
 
@@ -376,7 +376,7 @@ pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
   /* We always used non-blocking IO for load since it is faster */
   memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
 
-  pairs= pairs_generate(number_of);
+  pairs= pairs_generate(number_of, 400);
   *actual_loaded= execute_set(clone, pairs, number_of);
 
   memcached_free(clone);

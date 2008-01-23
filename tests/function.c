@@ -26,6 +26,9 @@
 #include "test.h"
 
 #define GLOBAL_COUNT 100000
+#define GLOBAL2_COUNT 1000
+static uint32_t global_count;
+
 static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
@@ -1764,17 +1767,39 @@ uint8_t cleanup_pairs(memcached_st *memc)
   return 0;
 }
 
-uint8_t generate_data(memcached_st *memc)
+uint8_t generate_pairs(memcached_st *memc)
 {
   unsigned long long x;
-  global_pairs= pairs_generate(GLOBAL_COUNT);
-  execute_set(memc, global_pairs, GLOBAL_COUNT);
+  global_pairs= pairs_generate(GLOBAL_COUNT, 400);
+  global_count= GLOBAL_COUNT;
 
-  for (x= 0; x < GLOBAL_COUNT; x++)
+  for (x= 0; x < global_count; x++)
   {
     global_keys[x]= global_pairs[x].key; 
     global_keys_length[x]=  global_pairs[x].key_length;
   }
+
+  return 0;
+}
+
+uint8_t generate_large_pairs(memcached_st *memc)
+{
+  unsigned long long x;
+  global_pairs= pairs_generate(GLOBAL2_COUNT, MEMCACHED_MAX_BUFFER+10);
+  global_count= GLOBAL2_COUNT;
+
+  for (x= 0; x < global_count; x++)
+  {
+    global_keys[x]= global_pairs[x].key; 
+    global_keys_length[x]=  global_pairs[x].key_length;
+  }
+
+  return 0;
+}
+
+uint8_t generate_data(memcached_st *memc)
+{
+  execute_set(memc, global_pairs, global_count);
 
   return 0;
 }
@@ -1790,24 +1815,6 @@ uint8_t generate_buffer_data(memcached_st *memc)
   return 0;
 }
 
-#ifdef NOT_DONE
-uint8_t mset_data(memcached_st *memc)
-{
-  unsigned long long x;
-  global_pairs= pairs_generate(GLOBAL_COUNT);
-
-  (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
-
-  for (x= 0; x < GLOBAL_COUNT; x++)
-  {
-    global_keys[x]= global_pairs[x].key; 
-    global_keys_length[x]=  global_pairs[x].key_length;
-  }
-
-  return 0;
-}
-#endif
-
 uint8_t get_read(memcached_st *memc)
 {
   unsigned int x;
@@ -1818,7 +1825,7 @@ uint8_t get_read(memcached_st *memc)
     size_t return_value_length;
     uint32_t flags;
 
-    for (x= 0; x < GLOBAL_COUNT; x++)
+    for (x= 0; x < global_count; x++)
     {
       return_value= memcached_get(memc, global_keys[x], global_keys_length[x],
                                   &return_value_length, &flags, &rc);
@@ -1838,7 +1845,7 @@ uint8_t mget_read(memcached_st *memc)
 {
   memcached_return rc;
 
-  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   assert(rc == MEMCACHED_SUCCESS);
   /* Turn this into a help function */
   {
@@ -1864,7 +1871,7 @@ uint8_t mget_read_result(memcached_st *memc)
 {
   memcached_return rc;
 
-  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   assert(rc == MEMCACHED_SUCCESS);
   /* Turn this into a help function */
   {
@@ -1891,7 +1898,7 @@ uint8_t mget_read_function(memcached_st *memc)
   unsigned int counter;
   unsigned int (*callbacks[1])(memcached_st *, memcached_result_st *, void *);
 
-  rc= memcached_mget(memc, global_keys, global_keys_length, GLOBAL_COUNT);
+  rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   assert(rc == MEMCACHED_SUCCESS);
 
   callbacks[0]= &callback_counter;
@@ -1905,7 +1912,7 @@ uint8_t delete_generate(memcached_st *memc)
 {
   unsigned int x;
 
-  for (x= 0; x < GLOBAL_COUNT; x++)
+  for (x= 0; x < global_count; x++)
   {
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
@@ -1921,7 +1928,7 @@ uint8_t delete_buffer_generate(memcached_st *memc)
   latch= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, &latch);
 
-  for (x= 0; x < GLOBAL_COUNT; x++)
+  for (x= 0; x < global_count; x++)
   {
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
@@ -2278,6 +2285,7 @@ test_st user_tests[] ={
 };
 
 test_st generate_tests[] ={
+  {"generate_pairs", 1, generate_pairs },
   {"generate_data", 1, generate_data },
   {"get_read", 0, get_read },
   {"delete_generate", 0, delete_generate },
@@ -2287,6 +2295,10 @@ test_st generate_tests[] ={
   {"mget_read", 0, mget_read },
   {"mget_read_result", 0, mget_read_result },
   {"mget_read_function", 0, mget_read_function },
+  {"cleanup", 1, cleanup_pairs },
+  {"generate_large_pairs", 1, generate_large_pairs },
+  {"generate_data", 1, generate_data },
+  {"generate_buffer_data", 1, generate_buffer_data },
   {"cleanup", 1, cleanup_pairs },
   {0, 0, 0}
 };

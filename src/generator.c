@@ -36,7 +36,7 @@ void pairs_free(pairs_st *pairs)
   free(pairs);
 }
 
-pairs_st *pairs_generate(unsigned long long number_of)
+pairs_st *pairs_generate(unsigned long long number_of, size_t value_length)
 {
   unsigned int x;
   pairs_st *pairs;
@@ -56,11 +56,11 @@ pairs_st *pairs_generate(unsigned long long number_of)
     get_random_string(pairs[x].key, 100);
     pairs[x].key_length= 100;
 
-    pairs[x].value= (char *)malloc(sizeof(char) * 400);
+    pairs[x].value= (char *)malloc(sizeof(char) * value_length);
     if (!pairs[x].value)
       goto error;
-    get_random_string(pairs[x].value, 400);
-    pairs[x].value_length= 400;
+    get_random_string(pairs[x].value, value_length);
+    pairs[x].value_length= value_length;
   }
 
   return pairs;
