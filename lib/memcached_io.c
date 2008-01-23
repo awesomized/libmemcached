@@ -166,22 +166,33 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 {
   unsigned long long x;
 
-  for (x= 0; x < length; x++)
+  if (length < (MEMCACHED_MAX_BUFFER - ptr->write_buffer_offset ))
   {
-    ptr->write_buffer[ptr->write_buffer_offset]= buffer[x];
-    ptr->write_buffer_offset++;
-    WATCHPOINT_ASSERT(ptr->write_buffer_offset <= MEMCACHED_MAX_BUFFER);
+    char *write_ptr;
 
-    if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)
+    write_ptr= ptr->write_buffer + ptr->write_buffer_offset;
+    memcpy(write_ptr, buffer, length);
+    ptr->write_buffer_offset+= length;
+  }
+  else
+  {
+    for (x= 0; x < length; x++)
     {
-      memcached_return rc;
-      ssize_t sent_length;
+      ptr->write_buffer[ptr->write_buffer_offset]= buffer[x];
+      ptr->write_buffer_offset++;
+      WATCHPOINT_ASSERT(ptr->write_buffer_offset <= MEMCACHED_MAX_BUFFER);
 
-      sent_length= io_flush(ptr, &rc);
-      if (sent_length == -1)
-        return -1;
+      if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)
+      {
+        memcached_return rc;
+        ssize_t sent_length;
 
-      WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
+        sent_length= io_flush(ptr, &rc);
+        if (sent_length == -1)
+          return -1;
+
+        WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
+      }
     }
   }
 
