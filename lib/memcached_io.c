@@ -93,8 +93,11 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
         data_read= read(ptr->fd, 
                         ptr->read_buffer, 
                         MEMCACHED_MAX_BUFFER);
-        if (data_read == -1)
+        if (data_read)
+          break;
+        else if (data_read == -1)
         {
+          ptr->cached_errno= errno;
           switch (errno)
           {
           case EAGAIN:
@@ -105,21 +108,15 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
 
               if (rc == MEMCACHED_SUCCESS)
                 continue;
-
-              memcached_quit_server(ptr, 1);
-              return -1;
             }
+          /* fall trough */
           default:
             {
               memcached_quit_server(ptr, 1);
-              ptr->cached_errno= errno;
               return -1;
             }
           }
         }
-        else if (data_read)
-          break;
-        /* If zero, just keep looping unless testing, then assert() */
         else
         {
           WATCHPOINT_ASSERT(0);
@@ -148,10 +145,10 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
     else
     {
       *buffer_ptr= *ptr->read_ptr;
-      length--;
       ptr->read_ptr++;
       ptr->read_buffer_length--;
       buffer_ptr++;
+      break;
     }
 
     if (found_eof)
@@ -164,35 +161,34 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
 ssize_t memcached_io_write(memcached_server_st *ptr,
                            char *buffer, size_t length, char with_flush)
 {
-  unsigned long long x;
+  size_t original_length;
 
-  if (length < (MEMCACHED_MAX_BUFFER - ptr->write_buffer_offset ))
+  original_length= length;
+
+  while (length)
   {
     char *write_ptr;
+    size_t should_write;
 
+    should_write= MEMCACHED_MAX_BUFFER - ptr->write_buffer_offset;
     write_ptr= ptr->write_buffer + ptr->write_buffer_offset;
-    memcpy(write_ptr, buffer, length);
-    ptr->write_buffer_offset+= length;
-  }
-  else
-  {
-    for (x= 0; x < length; x++)
+
+    should_write= (should_write < length) ? should_write : length;
+
+    memcpy(write_ptr, buffer, should_write);
+    ptr->write_buffer_offset+= should_write;
+    length-= should_write;
+
+    if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)
     {
-      ptr->write_buffer[ptr->write_buffer_offset]= buffer[x];
-      ptr->write_buffer_offset++;
-      WATCHPOINT_ASSERT(ptr->write_buffer_offset <= MEMCACHED_MAX_BUFFER);
+      memcached_return rc;
+      ssize_t sent_length;
 
-      if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)
-      {
-        memcached_return rc;
-        ssize_t sent_length;
+      sent_length= io_flush(ptr, &rc);
+      if (sent_length == -1)
+        return -1;
 
-        sent_length= io_flush(ptr, &rc);
-        if (sent_length == -1)
-          return -1;
-
-        WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
-      }
+      WATCHPOINT_ASSERT(sent_length == MEMCACHED_MAX_BUFFER);
     }
   }
 
@@ -203,7 +199,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
       return -1;
   }
 
-  return length;
+  return original_length;
 }
 
 memcached_return memcached_io_close(memcached_server_st *ptr)

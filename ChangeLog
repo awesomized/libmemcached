@@ -1,3 +1,5 @@
+  * Slight performance increase in both read() and write().
+
 0.14 Tue Jan 22 06:21:49 PST 2008
   * For for bug found by Evan Weaver where increment() was not returning
     propper error of value was not found.
