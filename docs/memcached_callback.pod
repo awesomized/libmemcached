@@ -47,7 +47,7 @@ point of its execution all connections have been closed.
 =item MEMCACHED_CALLBACK_USER_DATA
 
 This allows you to store a pointer to a specifc piece of data. This can be
-retrieved from inside of memcached_fetch_exectue(). Cloning a memcached_st
+retrieved from inside of memcached_fetch_execute(). Cloning a memcached_st
 will copy the pointer to the clone.
 
 =item  MEMCACHED_CALLBACK_MALLOC_FUNCTION,
