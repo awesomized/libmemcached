@@ -162,8 +162,10 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
                            char *buffer, size_t length, char with_flush)
 {
   size_t original_length;
+  char* buffer_ptr;
 
   original_length= length;
+  buffer_ptr= buffer;
 
   while (length)
   {
@@ -175,8 +177,9 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 
     should_write= (should_write < length) ? should_write : length;
 
-    memcpy(write_ptr, buffer, should_write);
+    memcpy(write_ptr, buffer_ptr, should_write);
     ptr->write_buffer_offset+= should_write;
+    buffer_ptr+= should_write;
     length-= should_write;
 
     if (ptr->write_buffer_offset == MEMCACHED_MAX_BUFFER)

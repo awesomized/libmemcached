@@ -1147,7 +1147,10 @@ uint8_t user_supplied_bug2(memcached_st *memc)
       if (rc == MEMCACHED_NOTFOUND)
         errors++;
       else
+      {
+        WATCHPOINT_ERROR(rc);
         assert(0);
+      }
 
       continue;
     }
@@ -1639,6 +1642,41 @@ uint8_t user_supplied_bug12(memcached_st *memc)
                           1, &number_value);
   assert(number_value == 2);
   assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
+/*
+  Bug found where command total one more than MEMCACHED_MAX_BUFFER
+  set key34567890 0 0 8169 \r\n is sent followed by buffer of size 8169, followed by 8169
+ */
+uint8_t user_supplied_bug13(memcached_st *memc)
+{
+  char key[] = "key34567890";
+  char *overflow;
+  memcached_return rc;
+  size_t overflowSize;
+
+  char commandFirst[]= "set key34567890 0 0 ";
+  char commandLast[] = " \r\n"; /* first line of command sent to server */
+  size_t commandLength;
+  size_t testSize;
+
+  commandLength = strlen(commandFirst) + strlen(commandLast) + 4; /* 4 is number of characters in size, probably 8196 */
+
+  overflowSize = MEMCACHED_MAX_BUFFER - commandLength;
+
+  for (testSize= overflowSize - 1; testSize < overflowSize + 1; testSize++)
+  {
+    overflow= malloc(testSize);
+    assert(overflow != NULL);
+
+    memset(overflow, 'x', testSize);
+    rc= memcached_set(memc, key, strlen(key),
+                      overflow, testSize, 0, 0);
+    assert(rc == MEMCACHED_SUCCESS);
+    free(overflow);
+  }
 
   return 0;
 }
@@ -2281,6 +2319,7 @@ test_st user_tests[] ={
   {"user_supplied_bug10", 1, user_supplied_bug10 },
   {"user_supplied_bug11", 1, user_supplied_bug11 },
   {"user_supplied_bug12", 1, user_supplied_bug12 },
+  {"user_supplied_bug13", 1, user_supplied_bug13 },
   {0, 0, 0}
 };
 
