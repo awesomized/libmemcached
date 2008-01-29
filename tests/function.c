@@ -1681,6 +1681,57 @@ uint8_t user_supplied_bug13(memcached_st *memc)
   return 0;
 }
 
+
+/*
+  Test values of many different sizes
+  Bug found where command total one more than MEMCACHED_MAX_BUFFER
+  set key34567890 0 0 8169 \r\n
+  is sent
+  followed by buffer of size 8169, followed by 8169
+ */
+uint8_t user_supplied_bug14(memcached_st *memc)
+{
+  int setter= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_return rc;
+  char *key= "foo";
+  char *value;
+  size_t value_length= 18000;
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+  unsigned int x;
+  size_t current_length;
+
+  value = (char*)malloc(value_length);
+  assert(value);
+
+  for (x= 0; x < value_length; x++)
+    value[x] = (char) (x % 127);
+
+  for (current_length = 0; current_length < value_length; current_length++)
+  {
+    rc= memcached_set(memc, key, strlen(key), 
+                      value, current_length,
+                      (time_t)0, (uint32_t)0);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+    string= memcached_get(memc, key, strlen(key),
+                          &string_length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(string);
+    assert(string_length == current_length);
+    assert(!memcmp(string, value, string_length));
+
+    free(string);
+  }
+
+  free(value);
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -2320,6 +2371,7 @@ test_st user_tests[] ={
   {"user_supplied_bug11", 1, user_supplied_bug11 },
   {"user_supplied_bug12", 1, user_supplied_bug12 },
   {"user_supplied_bug13", 1, user_supplied_bug13 },
+  {"user_supplied_bug14", 1, user_supplied_bug14 },
   {0, 0, 0}
 };
 
