@@ -86,14 +86,14 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
     uint8_t found_eof= 0;
     if (!ptr->read_buffer_length)
     {
-      size_t data_read;
+      ssize_t data_read;
 
       while (1)
       {
         data_read= read(ptr->fd, 
                         ptr->read_buffer, 
                         MEMCACHED_MAX_BUFFER);
-        if (data_read)
+        if (data_read > 0)
           break;
         else if (data_read == -1)
         {

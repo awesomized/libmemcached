@@ -392,6 +392,12 @@ uint8_t replace_test(memcached_st *memc)
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
+  char *original= "first we insert some data";
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    original, strlen(original),
+                    (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   rc= memcached_replace(memc, key, strlen(key), 
                     value, strlen(value),
@@ -2312,7 +2318,7 @@ test_st tests[] ={
   {"set2", 0, set_test2 },
   {"set3", 0, set_test3 },
   {"add", 1, add_test },
-  {"replace", 0, replace_test },
+  {"replace", 1, replace_test },
   {"delete", 1, delete_test },
   {"get", 1, get_test },
   {"get2", 0, get_test2 },
