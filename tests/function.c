@@ -1700,8 +1700,7 @@ uint8_t user_supplied_bug13(memcached_st *memc)
   Test values of many different sizes
   Bug found where command total one more than MEMCACHED_MAX_BUFFER
   set key34567890 0 0 8169 \r\n
-  is sent
-  followed by buffer of size 8169, followed by 8169
+  is sent followed by buffer of size 8169, followed by 8169
  */
 uint8_t user_supplied_bug14(memcached_st *memc)
 {
@@ -1723,7 +1722,7 @@ uint8_t user_supplied_bug14(memcached_st *memc)
   for (x= 0; x < value_length; x++)
     value[x] = (char) (x % 127);
 
-  for (current_length = 0; current_length < value_length; current_length++)
+  for (current_length= 1; current_length < value_length; current_length++)
   {
     rc= memcached_set(memc, key, strlen(key), 
                       value, current_length,
