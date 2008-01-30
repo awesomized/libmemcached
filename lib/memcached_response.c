@@ -32,9 +32,10 @@ memcached_return memcached_response(memcached_server_st *ptr,
 
     while (1)
     {
-      unsigned int read_length;
+      ssize_t read_length;
 
       read_length= memcached_io_read(ptr, buffer_ptr, 1);
+      WATCHPOINT_ASSERT(isgraph(*buffer_ptr) || isspace(*buffer_ptr));
 
       if (read_length != 1)
         return  MEMCACHED_UNKNOWN_READ_FAILURE;

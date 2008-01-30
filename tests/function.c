@@ -355,6 +355,9 @@ uint8_t add_test(memcached_st *memc)
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
+  unsigned long long setting_value;
+
+  setting_value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
@@ -364,7 +367,12 @@ uint8_t add_test(memcached_st *memc)
   rc= memcached_add(memc, key, strlen(key), 
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_NOTSTORED);
+
+  /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
+  if (setting_value)
+    assert(rc == MEMCACHED_NOTSTORED || MEMCACHED_STORED);
+  else
+    assert(rc == MEMCACHED_NOTSTORED);
 
   return 0;
 }
@@ -384,6 +392,12 @@ uint8_t replace_test(memcached_st *memc)
   memcached_return rc;
   char *key= "foo";
   char *value= "when we sanitize";
+  char *original= "first we insert some data";
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    original, strlen(original),
+                    (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   rc= memcached_replace(memc, key, strlen(key), 
                     value, strlen(value),
@@ -1147,7 +1161,10 @@ uint8_t user_supplied_bug2(memcached_st *memc)
       if (rc == MEMCACHED_NOTFOUND)
         errors++;
       else
+      {
+        WATCHPOINT_ERROR(rc);
         assert(0);
+      }
 
       continue;
     }
@@ -1639,6 +1656,91 @@ uint8_t user_supplied_bug12(memcached_st *memc)
                           1, &number_value);
   assert(number_value == 2);
   assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
+/*
+  Bug found where command total one more than MEMCACHED_MAX_BUFFER
+  set key34567890 0 0 8169 \r\n is sent followed by buffer of size 8169, followed by 8169
+ */
+uint8_t user_supplied_bug13(memcached_st *memc)
+{
+  char key[] = "key34567890";
+  char *overflow;
+  memcached_return rc;
+  size_t overflowSize;
+
+  char commandFirst[]= "set key34567890 0 0 ";
+  char commandLast[] = " \r\n"; /* first line of command sent to server */
+  size_t commandLength;
+  size_t testSize;
+
+  commandLength = strlen(commandFirst) + strlen(commandLast) + 4; /* 4 is number of characters in size, probably 8196 */
+
+  overflowSize = MEMCACHED_MAX_BUFFER - commandLength;
+
+  for (testSize= overflowSize - 1; testSize < overflowSize + 1; testSize++)
+  {
+    overflow= malloc(testSize);
+    assert(overflow != NULL);
+
+    memset(overflow, 'x', testSize);
+    rc= memcached_set(memc, key, strlen(key),
+                      overflow, testSize, 0, 0);
+    assert(rc == MEMCACHED_SUCCESS);
+    free(overflow);
+  }
+
+  return 0;
+}
+
+
+/*
+  Test values of many different sizes
+  Bug found where command total one more than MEMCACHED_MAX_BUFFER
+  set key34567890 0 0 8169 \r\n
+  is sent followed by buffer of size 8169, followed by 8169
+ */
+uint8_t user_supplied_bug14(memcached_st *memc)
+{
+  int setter= 1;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_return rc;
+  char *key= "foo";
+  char *value;
+  size_t value_length= 18000;
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+  unsigned int x;
+  size_t current_length;
+
+  value = (char*)malloc(value_length);
+  assert(value);
+
+  for (x= 0; x < value_length; x++)
+    value[x] = (char) (x % 127);
+
+  for (current_length= 1; current_length < value_length; current_length++)
+  {
+    rc= memcached_set(memc, key, strlen(key), 
+                      value, current_length,
+                      (time_t)0, (uint32_t)0);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+    string= memcached_get(memc, key, strlen(key),
+                          &string_length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(string);
+    assert(string_length == current_length);
+    assert(!memcmp(string, value, string_length));
+
+    free(string);
+  }
+
+  free(value);
 
   return 0;
 }
@@ -2215,7 +2317,7 @@ test_st tests[] ={
   {"set2", 0, set_test2 },
   {"set3", 0, set_test3 },
   {"add", 1, add_test },
-  {"replace", 0, replace_test },
+  {"replace", 1, replace_test },
   {"delete", 1, delete_test },
   {"get", 1, get_test },
   {"get2", 0, get_test2 },
@@ -2281,6 +2383,8 @@ test_st user_tests[] ={
   {"user_supplied_bug10", 1, user_supplied_bug10 },
   {"user_supplied_bug11", 1, user_supplied_bug11 },
   {"user_supplied_bug12", 1, user_supplied_bug12 },
+  {"user_supplied_bug13", 1, user_supplied_bug13 },
+  {"user_supplied_bug14", 1, user_supplied_bug14 },
   {0, 0, 0}
 };
 

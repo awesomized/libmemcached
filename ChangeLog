@@ -1,3 +1,6 @@
+0.15 Tue Jan 29 14:55:44 PST 2008
+  * More work on the C++ API.
+  * Bug fixes around block corner cases.
   * Slight performance increase in both read() and write().
 
 0.14 Tue Jan 22 06:21:49 PST 2008
