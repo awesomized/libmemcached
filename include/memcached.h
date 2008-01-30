@@ -32,7 +32,7 @@ extern "C" {
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
 /* string value */
-#define LIBMEMCACHED_VERSION_STRING "0.14"
+#define LIBMEMCACHED_VERSION_STRING "0.15"
 
 typedef enum {
   MEMCACHED_SUCCESS,
