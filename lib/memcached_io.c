@@ -213,7 +213,7 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
 }
 
 static ssize_t io_flush(memcached_server_st *ptr,
-                                  memcached_return *error)
+                        memcached_return *error)
 {
   size_t sent_length;
   size_t return_length;
@@ -229,15 +229,39 @@ static ssize_t io_flush(memcached_server_st *ptr,
   if (write_length == MEMCACHED_MAX_BUFFER)
     WATCHPOINT_ASSERT(ptr->write_buffer == local_write_ptr);
   WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));
+
   return_length= 0;
   while (write_length)
   {
+    WATCHPOINT_ASSERT(write_length > 0);
     sent_length= 0;
     if (ptr->type == MEMCACHED_CONNECTION_UDP)
     {
-      sent_length= sendto(ptr->fd, local_write_ptr, write_length, 0, 
-                          (struct sockaddr *)&ptr->address_info->ai_addr, 
-                          sizeof(struct sockaddr));
+      struct addrinfo *ai;
+
+      ai= ptr->address_info;
+
+      /* Crappy test code */
+      char buffer[HUGE_STRING_LEN + 8];
+      memset(buffer, 0, HUGE_STRING_LEN + 8);
+      memcpy (buffer+8, local_write_ptr, write_length);
+      buffer[0]= 0;
+      buffer[1]= 0;
+      buffer[2]= 0;
+      buffer[3]= 0;
+      buffer[4]= 0;
+      buffer[5]= 1;
+      buffer[6]= 0;
+      buffer[7]= 0;
+      sent_length= sendto(ptr->fd, buffer, write_length + 8, 0, 
+                          (struct sockaddr *)ai->ai_addr, 
+                          ai->ai_addrlen);
+      if (sent_length == -1)
+      {
+        WATCHPOINT_ERRNO(errno);
+        WATCHPOINT_ASSERT(0);
+      }
+      sent_length-= 8; /* We remove the header */
     }
     else
     {

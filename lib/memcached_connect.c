@@ -10,9 +10,18 @@ static memcached_return set_hostinfo(memcached_server_st *server)
   sprintf(str_port, "%u", server->port);
 
   memset(&hints, 0, sizeof(hints));
+
   hints.ai_family= AF_INET;
-  hints.ai_socktype= SOCK_STREAM;
-  hints.ai_protocol= IPPROTO_TCP;
+  if (server->type == MEMCACHED_CONNECTION_UDP)
+  {
+    hints.ai_protocol= IPPROTO_UDP;
+    hints.ai_socktype= SOCK_DGRAM;
+  }
+  else
+  {
+    hints.ai_socktype= SOCK_STREAM;
+    hints.ai_protocol= IPPROTO_TCP;
+  }
 
   e= getaddrinfo(server->hostname, str_port, &hints, &ai);
   if (e != 0)
@@ -71,41 +80,7 @@ test_connect:
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return udp_connect(memcached_server_st *ptr)
-{
-  if (ptr->fd == -1)
-  {
-    /* Old connection junk still is in the structure */
-    WATCHPOINT_ASSERT(ptr->cursor_active == 0);
-
-    /*
-      If we have not allocated the hosts object.
-      Or if the cache has not been set.
-    */
-    if (ptr->sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
-        (!(ptr->root->flags & MEM_USE_CACHE_LOOKUPS)))
-    {
-      memcached_return rc;
-
-      rc= set_hostinfo(ptr);
-      if (rc != MEMCACHED_SUCCESS)
-        return rc;
-
-      ptr->sockaddr_inited= MEMCACHED_ALLOCATED;
-    }
-
-    /* Create the socket */
-    if ((ptr->fd= socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
-      ptr->cached_errno= errno;
-      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
-    }
-  }
-
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return tcp_connect(memcached_server_st *ptr)
+static memcached_return network_connect(memcached_server_st *ptr)
 {
   if (ptr->fd == -1)
   {
@@ -135,6 +110,9 @@ static memcached_return tcp_connect(memcached_server_st *ptr)
       WATCHPOINT_ERRNO(errno);
       return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
     }
+
+    if (ptr->type == MEMCACHED_CONNECTION_UDP)
+      return MEMCACHED_SUCCESS;
 
     if (ptr->root->flags & MEM_NO_BLOCK)
     {
@@ -245,10 +223,8 @@ memcached_return memcached_connect(memcached_server_st *ptr)
     rc= MEMCACHED_NOT_SUPPORTED;
     break;
   case MEMCACHED_CONNECTION_UDP:
-    rc= udp_connect(ptr);
-    break;
   case MEMCACHED_CONNECTION_TCP:
-    rc= tcp_connect(ptr);
+    rc= network_connect(ptr);
     break;
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     rc= unix_socket_connect(ptr);

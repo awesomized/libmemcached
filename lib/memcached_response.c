@@ -19,6 +19,16 @@ memcached_return memcached_response(memcached_server_st *ptr,
 
 
   send_length= 0;
+  /* UDP at the moment is odd...*/
+  if (ptr->type == MEMCACHED_CONNECTION_UDP)
+  {
+    char buffer[8];
+    ssize_t read_length;
+
+    return MEMCACHED_SUCCESS;
+
+    read_length= memcached_io_read(ptr, buffer, 8);
+  }
 
   /* We may have old commands in the buffer not set, first purge */
   if (ptr->root->flags & MEM_NO_BLOCK)
@@ -29,6 +39,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
   {
     size_t total_length= 0;
     buffer_ptr= buffer;
+
 
     while (1)
     {
