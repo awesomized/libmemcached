@@ -15,14 +15,17 @@ EXTRA_DIST = output.res output2.res\
 
 LIBS = 
 
-noinst_HEADERS = test.h
-noinst_PROGRAMS = testapp testplus
+noinst_HEADERS = test.h server.h
+noinst_PROGRAMS = testapp testplus udptest
 
-testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c
+testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c server.c
 testapp_LDADD = $(LDADDS)
 
-testplus_SOURCES = test.c plus.cpp
+testplus_SOURCES = test.c plus.cpp server.c
 testplus_LDADD = $(LDADDS) ../lib/libmemcached.la
+
+udptest_SOURCES = test.c udp.c server.c
+udptest_LDADD = $(LDADDS) ../lib/libmemcached.la
 
 record:
 	./testapp > output.res

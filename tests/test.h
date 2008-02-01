@@ -8,6 +8,7 @@ extern "C" {
 #include <memcached.h>
 #include "../lib/common.h"
 
+typedef struct world_st world_st;
 typedef struct collection_st collection_st;
 typedef struct test_st test_st;
 
@@ -24,8 +25,14 @@ struct collection_st {
   test_st *tests;
 };
 
+struct world_st {
+  collection_st *collections;
+  void *(*create)(void);
+  void (*destroy)(void *collection_object);
+};
+
 /* How we make all of this work :) */
-collection_st *gets_collections(void);
+void get_world(world_st *world);
 
 #ifdef	__cplusplus
 }

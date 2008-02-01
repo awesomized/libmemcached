@@ -11,11 +11,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <fnmatch.h>
+#include "server.h"
 
 #include "test.h"
-
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
-#define TEST_SERVERS 5
 
 long int timedif(struct timeval a, struct timeval b)
 {
@@ -28,91 +26,34 @@ long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
-char *server_startup()
-{
-  unsigned int x;
-  char server_string_buffer[8096];
-  char *end_ptr;
-
-  end_ptr= server_string_buffer;
-
-  for (x= 0; x < TEST_SERVERS; x++)
-  {
-    char buffer[1024]; /* Nothing special for number */
-    int count;
-
-    sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -p %u", x, x+ TEST_PORT_BASE);
-    system(buffer);
-    count= sprintf(end_ptr, "localhost:%u,", x + TEST_PORT_BASE);
-    end_ptr+= count;
-  }
-  *end_ptr= 0;
-
-  return strdup(server_string_buffer);
-}
-
-void server_shutdown(char *server_string)
-{
-  unsigned int x;
-
-  if (server_string)
-  {
-    for (x= 0; x < TEST_SERVERS; x++)
-    {
-      char buffer[1024]; /* Nothing special for number */
-      sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
-      system(buffer);
-    }
-
-    free(server_string);
-  }
-}
-
 int main(int argc, char *argv[])
 {
   unsigned int x;
-  char *server_list;
   char *collection_to_run= NULL;
   char *wildcard= NULL;
+  server_startup_st *startup_ptr;
   memcached_server_st *servers;
+  world_st world;
   collection_st *collection;
   collection_st *next;
   uint8_t failed;
+  void *world_ptr;
 
-  collection= gets_collections();
+  memset(&world, 0, sizeof(world_st));
+  get_world(&world);
+  collection= world.collections;
 
+  if (world.create)
+    world_ptr= world.create();
+
+  startup_ptr= (server_startup_st *)world_ptr;
+  servers= (memcached_server_st *)startup_ptr->servers;
 
   if (argc > 1)
     collection_to_run= argv[1];
 
   if (argc == 3)
     wildcard= argv[2];
-
-  if ((server_list= getenv("MEMCACHED_SERVERS")))
-  {
-    printf("servers %s\n", server_list);
-    servers= memcached_servers_parse(server_list);
-    server_list= NULL;
-  }
-  else
-  {
-    server_list= server_startup();
-    printf("servers %s\n", server_list);
-    servers= memcached_servers_parse(server_list);
-  }
-  assert(servers);
-
-  srandom(time(NULL));
-
-
-  for (x= 0; x < memcached_server_list_count(servers); x++)
-  {
-    printf("\t%s : %u\n", servers[x].hostname, servers[x].port);
-    assert(servers[x].fd == -1);
-    assert(servers[x].cursor_active == 0);
-  }
-
-  printf("\n");
 
   for (next= collection; next->name; next++)
   {
@@ -189,9 +130,8 @@ error:
 
   fprintf(stderr, "All tests completed successfully\n\n");
 
-  memcached_server_list_free(servers);
-
-  server_shutdown(server_list);
+  if (world.destroy)
+    world.destroy(world_ptr);
 
   return 0;
 }

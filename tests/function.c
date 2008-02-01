@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
+#include "server.h"
 #include "../lib/common.h"
 #include "../src/generator.h"
 #include "../src/execute.h"
@@ -2440,7 +2441,34 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-collection_st *gets_collections(void)
+#define SERVERS_TO_CREATE 5
+
+void *world_create(void)
 {
-  return collection;
+  server_startup_st *construct;
+
+  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
+  memset(construct, 0, sizeof(server_startup_st));
+  construct->count= SERVERS_TO_CREATE;
+  construct->udp= 0;
+  server_startup(construct);
+
+  return construct;
+}
+
+void world_destroy(void *p)
+{
+  server_startup_st *construct= (server_startup_st *)p;
+  memcached_server_st *servers= (memcached_server_st *)construct->servers;
+  memcached_server_list_free(servers);
+
+  server_shutdown(construct);
+  free(construct);
+}
+
+void get_world(world_st *world)
+{
+  world->collections= collection;
+  world->create= world_create;
+  world->destroy= world_destroy;
 }
