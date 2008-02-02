@@ -195,7 +195,6 @@ test_connect:
         break;
       default:
         ptr->cached_errno= errno;
-        WATCHPOINT_ASSERT(errno == ECONNREFUSED);
         WATCHPOINT_ERRNO(ptr->cached_errno);
         close(ptr->fd);
         ptr->fd= -1;
