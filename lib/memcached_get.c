@@ -43,6 +43,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   (void)memcached_fetch(ptr, NULL, NULL, 
                         &dummy_length, &dummy_flags, 
                         &dummy_error);
+  WATCHPOINT_ASSERT(dummy_length == 0);
 
   return value;
 }
