@@ -16,16 +16,19 @@ EXTRA_DIST = output.res output2.res\
 LIBS = 
 
 noinst_HEADERS = test.h server.h
-noinst_PROGRAMS = testapp testplus udptest
+noinst_PROGRAMS = testapp testplus udptest atomsmasher
 
 testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c server.c
 testapp_LDADD = $(LDADDS)
 
 testplus_SOURCES = test.c plus.cpp server.c
-testplus_LDADD = $(LDADDS) ../lib/libmemcached.la
+testplus_LDADD = $(LDADDS)
 
 udptest_SOURCES = test.c udp.c server.c
-udptest_LDADD = $(LDADDS) ../lib/libmemcached.la
+udptest_LDADD = $(LDADDS)
+
+atomsmasher_SOURCES = test.c atomsmasher.c server.c ../src/generator.c ../src/execute.c
+atomsmasher_LDADD = $(LDADDS)
 
 record:
 	./testapp > output.res
