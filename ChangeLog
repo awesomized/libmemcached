@@ -1,5 +1,6 @@
 0.16
   * Work on the UDP protocol
+  * Added get_by_key, set_by_key tests for C++ API
   
 0.15 Tue Jan 29 14:55:44 PST 2008
   * More work on the C++ API.

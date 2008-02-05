@@ -33,12 +33,12 @@ public:
                          value_length, &flags, &rc);
   }
 
-  char *get_by_key(char *key, char *master_key, size_t *value_length)
+  char *get_by_key(char *master_key, char *key, size_t *value_length)
   {
     uint32_t flags;
     memcached_return rc;
 
-    return memcached_get_by_key(&memc, key, strlen(key), master_key, strlen(master_key),
+    return memcached_get_by_key(&memc, master_key, strlen(master_key), key, strlen(key),
                                 value_length, &flags, &rc);
   }
 
