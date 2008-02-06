@@ -49,7 +49,10 @@ memcached_return memcached_response(memcached_server_st *ptr,
       WATCHPOINT_ASSERT(isgraph(*buffer_ptr) || isspace(*buffer_ptr));
 
       if (read_length != 1)
+      {
+        memcached_io_reset(ptr);
         return  MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
 
       if (*buffer_ptr == '\n')
         break;
@@ -60,7 +63,10 @@ memcached_return memcached_response(memcached_server_st *ptr,
       WATCHPOINT_ASSERT(total_length <= buffer_length);
 
       if (total_length >= buffer_length)
+      {
+        memcached_io_reset(ptr);
         return MEMCACHED_PROTOCOL_ERROR;
+      }
     }
     buffer_ptr++;
     *buffer_ptr= 0;
@@ -92,6 +98,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
     {
       WATCHPOINT_STRING(buffer);
       WATCHPOINT_ASSERT(0);
+      memcached_io_reset(ptr);
       return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
   case 'O': /* OK */
@@ -111,6 +118,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
       {
         WATCHPOINT_STRING(buffer);
         WATCHPOINT_ASSERT(0);
+        memcached_io_reset(ptr);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
       }
     }
@@ -123,20 +131,31 @@ memcached_return memcached_response(memcached_server_st *ptr,
       else if (buffer[4] == 'S')
         return MEMCACHED_NOTSTORED;
       else
+      {
+        memcached_io_reset(ptr);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
     }
   case 'E': /* PROTOCOL ERROR or END */
     {
       if (buffer[1] == 'N')
         return MEMCACHED_END;
       else if (buffer[1] == 'R')
+      {
+        memcached_io_reset(ptr);
         return MEMCACHED_PROTOCOL_ERROR;
+      }
       else
+      {
+        memcached_io_reset(ptr);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
     }
   case 'C': /* CLIENT ERROR */
+    memcached_io_reset(ptr);
     return MEMCACHED_CLIENT_ERROR;
   default:
+    memcached_io_reset(ptr);
     return MEMCACHED_UNKNOWN_READ_FAILURE;
 
   }

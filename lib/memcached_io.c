@@ -309,6 +309,5 @@ static ssize_t io_flush(memcached_server_st *ptr,
 */
 void memcached_io_reset(memcached_server_st *ptr)
 {
-  ptr->write_buffer_offset= 0;
   memcached_quit_server(ptr, 0);
 }

@@ -117,6 +117,8 @@ memcached_return value_fetch(memcached_server_st *ptr,
   return MEMCACHED_SUCCESS;
 
 read_error:
+  memcached_io_reset(ptr);
+
   return MEMCACHED_PARTIAL_READ;
 }
 
