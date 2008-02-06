@@ -169,7 +169,7 @@ struct memcached_stat_st {
   uint32_t rusage_system_microseconds;
   uint32_t curr_items;
   uint32_t total_items;
-  uint32_t limit_maxbytes;
+  uint64_t limit_maxbytes;
   uint32_t curr_connections;
   uint32_t total_connections;
   uint32_t connection_structures;
