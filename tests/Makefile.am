@@ -16,7 +16,7 @@ EXTRA_DIST = output.res output2.res\
 LIBS = 
 
 noinst_HEADERS = test.h server.h
-noinst_PROGRAMS = testapp testplus udptest atomsmasher
+noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
 
 testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c server.c
 testapp_LDADD = $(LDADDS)
@@ -29,6 +29,9 @@ udptest_LDADD = $(LDADDS)
 
 atomsmasher_SOURCES = test.c atomsmasher.c server.c ../src/generator.c ../src/execute.c
 atomsmasher_LDADD = $(LDADDS)
+
+startservers_SOURCES = start.c server.c
+startservers_LDADD = $(LDADDS)
 
 record:
 	./testapp > output.res

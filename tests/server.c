@@ -25,7 +25,6 @@ void server_startup(server_startup_st *construct)
   }
   else
   {
-    WATCHPOINT;
     {
       char server_string_buffer[8096];
       char *end_ptr;
@@ -35,12 +34,14 @@ void server_startup(server_startup_st *construct)
       {
         char buffer[1024]; /* Nothing special for number */
         int count;
+        int status;
 
         if (construct->udp)
-          sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -U %u", x, x+ TEST_PORT_BASE);
+          sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -U %u", x, x+ TEST_PORT_BASE);
         else
-          sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -p %u", x, x+ TEST_PORT_BASE);
-        system(buffer);
+          sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -p %u", x, x+ TEST_PORT_BASE);
+        status= system(buffer);
+        WATCHPOINT_ASSERT(status == 0);
         count= sprintf(end_ptr, "localhost:%u,", x + TEST_PORT_BASE);
         end_ptr+= count;
       }
