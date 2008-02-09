@@ -31,7 +31,10 @@ int main(int argc, char *argv[])
     if ((temp= getenv("MEMCACHED_SERVERS")))
       opt_servers= strdup(temp);
     else
+    {
+      fprintf(stderr, "No Servers provided\n");
       exit(1);
+    }
   }
 
   memc= memcached_create(NULL);
