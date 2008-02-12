@@ -26,10 +26,10 @@
 #define PROGRAM_DESCRIPTION "Generates a load against a memcached custer of servers."
 
 /* Global Thread counter */
-unsigned int thread_counter;
+volatile unsigned int thread_counter;
 pthread_mutex_t counter_mutex;
 pthread_cond_t count_threshhold;
-unsigned int master_wakeup;
+volatile unsigned int master_wakeup;
 pthread_mutex_t sleeper_mutex;
 pthread_cond_t sleep_threshhold;
 

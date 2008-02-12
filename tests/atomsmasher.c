@@ -26,8 +26,11 @@
 
 #include "test.h"
 
+/* Number of items generated for tests */
 #define GLOBAL_COUNT 100000
-#define TEST_COUNTER 100000
+
+/* Number of times to run the test loop */
+#define TEST_COUNTER 500000
 static uint32_t global_count;
 
 static pairs_st *global_pairs;
@@ -60,44 +63,50 @@ uint8_t drizzle(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
+  char *return_value;
+  size_t return_value_length;
+  uint32_t flags;
 
+infinite:
+  for (x= 0; x < TEST_COUNTER; x++)
   {
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
+    uint32_t test_bit;
+    uint8_t which;
 
-    for (x= 0; x < TEST_COUNTER; x++)
+    test_bit= random() % GLOBAL_COUNT;
+    which= random() % 2;
+
+    if (which == 0)
     {
-      uint32_t test_bit;
-      uint8_t which;
-
-      test_bit= random() % GLOBAL_COUNT;
-      which= random() % 2;
-
-      if (which == 0)
-      {
-        return_value= memcached_get(memc, global_keys[test_bit], global_keys_length[test_bit],
-                                    &return_value_length, &flags, &rc);
-        if (rc == MEMCACHED_SUCCESS && return_value)
-          free(return_value);
-        else
-          WATCHPOINT_ERROR(rc);
-      } 
+      return_value= memcached_get(memc, global_keys[test_bit], global_keys_length[test_bit],
+                                  &return_value_length, &flags, &rc);
+      if (rc == MEMCACHED_SUCCESS && return_value)
+        free(return_value);
+      else if (rc == MEMCACHED_NOTFOUND)
+        continue;
       else
       {
-        rc= memcached_set(memc, global_pairs[test_bit].key, 
-                          global_pairs[test_bit].key_length,
-                          global_pairs[test_bit].value, 
-                          global_pairs[test_bit].value_length,
-                          0, 0);
-        if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
-        {
-          WATCHPOINT_ERROR(rc);
-          WATCHPOINT_ASSERT(0);
-        }
+        WATCHPOINT_ERROR(rc);
+        WATCHPOINT_ASSERT(rc);
+      }
+    } 
+    else
+    {
+      rc= memcached_set(memc, global_pairs[test_bit].key, 
+                        global_pairs[test_bit].key_length,
+                        global_pairs[test_bit].value, 
+                        global_pairs[test_bit].value_length,
+                        0, 0);
+      if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
+      {
+        WATCHPOINT_ERROR(rc);
+        WATCHPOINT_ASSERT(0);
       }
     }
   }
+
+  if (getenv("MEMCACHED_ATOM_BURIN_IN"))
+    goto infinite;
 
   return 0;
 }
@@ -142,19 +151,20 @@ memcached_return enable_consistent(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
-test_st generate_tests[] ={
+test_st smash_tests[] ={
   {"generate_pairs", 1, generate_pairs },
+  {"drizzle", 1, drizzle },
   {"cleanup", 1, cleanup_pairs },
   {0, 0, 0}
 };
 
 
 collection_st collection[] ={
-  {"generate", 0, 0, generate_tests},
-  {"generate_hsieh", pre_hsieh, 0, generate_tests},
-  {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
-  {"generate_md5", pre_md5, 0, generate_tests},
-  {"generate_nonblock", pre_nonblock, 0, generate_tests},
+  {"smash", 0, 0, smash_tests},
+  {"smash_hsieh", pre_hsieh, 0, smash_tests},
+  {"smash_hsieh_consistent", enable_consistent, 0, smash_tests},
+  {"smash_md5", pre_md5, 0, smash_tests},
+  {"smash_nonblock", pre_nonblock, 0, smash_tests},
   {0, 0, 0, 0}
 };
 
