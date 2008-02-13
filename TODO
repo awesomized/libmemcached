@@ -7,3 +7,5 @@
 - Make a "make deb"... or accept patch...
 - implement more connection/hash algo
 - implement compression
+- Finish UDP protocol
+- Revisit get() code (look for performance enhancements)

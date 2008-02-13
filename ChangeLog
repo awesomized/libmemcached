@@ -1,3 +1,6 @@
+0.17
+  * More error messages on command line tools.
+
 0.16
   * Work on the UDP protocol
   * Added get_by_key, set_by_key tests for C++ API
