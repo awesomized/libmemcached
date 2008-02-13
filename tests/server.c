@@ -25,7 +25,6 @@ void server_startup(server_startup_st *construct)
   }
   else
   {
-    WATCHPOINT;
     {
       char server_string_buffer[8096];
       char *end_ptr;

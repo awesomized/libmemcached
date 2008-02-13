@@ -61,6 +61,28 @@ uint8_t server_list_null_test(memcached_st *ptr)
   return 0;
 }
 
+uint8_t server_sort_test(memcached_st *ptr)
+{
+  memcached_server_st *server_list;
+  memcached_return rc;
+
+  server_list= memcached_server_list_append(NULL, "arg", 0, &rc);
+  assert(server_list);
+
+  server_list= memcached_server_list_append(server_list, "localhost", 0, &rc);
+  assert(server_list);
+
+  server_list= memcached_server_list_append(server_list, "c", 0, &rc);
+  assert(server_list);
+
+  server_list= memcached_server_list_append(server_list, "abba", 0, &rc);
+  assert(server_list);
+
+  free(server_list);
+
+  return 0;
+}
+
 uint8_t allocation_test(memcached_st *not_used)
 {
   memcached_st *memc;
@@ -2312,6 +2334,7 @@ test_st tests[] ={
   {"init", 0, init_test },
   {"allocation", 0, allocation_test },
   {"server_list_null_test", 0, server_list_null_test},
+  {"server_sort", 0, server_sort_test},
   {"clone_test", 0, clone_test },
   {"error", 0, error_test },
   {"set", 0, set_test },
