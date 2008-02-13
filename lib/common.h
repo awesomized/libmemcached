@@ -21,7 +21,7 @@
 #include <fcntl.h>
 #include <sys/un.h>
 #include <netinet/tcp.h>
-#include "libmemcached_config.h"
+#include <libmemcached_config.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -110,5 +110,13 @@ memcached_return value_fetch(memcached_server_st *ptr,
                              memcached_result_st *result);
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
+memcached_return key_proof(char **keys, size_t *key_length, 
+                           unsigned int number_of_keys);
+
+#ifdef HAVE_DEBUG
+#define key_test(A,B,C) key_proof(A,B,C)
+#else
+#define key_test(A,B,C) MEMCACHED_SUCCESS
+#endif
 
 #endif /* __COMMON_H__ */

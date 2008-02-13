@@ -68,6 +68,8 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc)
     return "ACTION QUEUED";
   case MEMCACHED_TIMEOUT:
     return "A TIMEOUT OCCURRED";
+  case MEMCACHED_BAD_KEY_PROVIDED:
+    return "A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

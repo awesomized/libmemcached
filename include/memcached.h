@@ -67,6 +67,7 @@ typedef enum {
   MEMCACHED_FETCH_NOTFINISHED,
   MEMCACHED_TIMEOUT,
   MEMCACHED_BUFFERED,
+  MEMCACHED_BAD_KEY_PROVIDED,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 

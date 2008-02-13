@@ -457,6 +457,25 @@ uint8_t flush_test(memcached_st *memc)
   return 0;
 }
 
+uint8_t bad_key_test(memcached_st *memc)
+{
+#ifdef HAVE_DEBUG
+  memcached_return rc;
+  char *key= "foo bad";
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+  assert(string_length ==  0);
+  assert(!string);
+#endif
+
+  return 0;
+}
+
 uint8_t get_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -2361,6 +2380,7 @@ test_st tests[] ={
   {"behavior_test", 0, get_stats_keys },
   {"callback_test", 0, get_stats_keys },
   {"version_string_test", 0, version_string_test},
+  {"bad_key", 1, bad_key_test },
   {0, 0, 0}
 };
 

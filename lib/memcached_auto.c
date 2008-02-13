@@ -17,6 +17,9 @@ static memcached_return memcached_auto(memcached_st *ptr,
   if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
+  if (key_test(&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
+    return MEMCACHED_BAD_KEY_PROVIDED;
+
   server_key= memcached_generate_hash(ptr, key, key_length);
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
