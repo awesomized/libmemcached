@@ -63,8 +63,12 @@ uint8_t server_list_null_test(memcached_st *ptr)
 
 uint8_t server_sort_test(memcached_st *ptr)
 {
+  unsigned int setting;
   memcached_server_st *server_list;
   memcached_return rc;
+
+  setting= 1;
+  memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_SORT_HOSTS, &setting);
 
   server_list= memcached_server_list_append(NULL, "arg", 0, &rc);
   assert(server_list);

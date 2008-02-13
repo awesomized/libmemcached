@@ -5,7 +5,8 @@
   * Added Atom Smasher test (scale baby, scale!)
   * Servers are now sorted, meaning that servers are now ordered so that
     clients with the same lists, will have same distribution. (Idea from
-    Ross McFarland).
+    Ross McFarland). MEMCACHED_BEHAVIOR_SORT_HOSTS was added to enable
+    this support.
   * Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations 
     when the library is compiled with --enable-debug. This additional code
     will test for bad keys.

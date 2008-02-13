@@ -49,6 +49,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
+    break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     ptr->user_data= data;
     break;
@@ -106,6 +109,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;
+    break;
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    temp_flag= MEM_USE_SORT_HOSTS;
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return 0;

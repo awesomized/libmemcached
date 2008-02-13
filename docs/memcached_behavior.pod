@@ -88,6 +88,11 @@ action that gets data causes this buffer to be be sent to the remote
 connection. Quiting the connection or closing down the connection will also
 cause the buffered data to be pushed to the remote connection. 
 
+=item MEMCACHED_BEHAVIOR_SORT_HOSTS
+
+Enabling this will cause hosts that are added to be placed in the host list in 
+sorted order. This will defeat consisten hashing.
+
 =back
 
 =head1 RETURN
