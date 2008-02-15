@@ -145,6 +145,11 @@ memcached_return memcached_response(memcached_server_st *ptr,
         memcached_io_reset(ptr);
         return MEMCACHED_PROTOCOL_ERROR;
       }
+      else if (buffer[1] == 'X')
+      {
+        memcached_io_reset(ptr);
+        return MEMCACHED_DATA_EXISTS;
+      }
       else
       {
         memcached_io_reset(ptr);

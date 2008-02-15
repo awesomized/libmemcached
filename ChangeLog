@@ -10,6 +10,7 @@
   * Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations.
     MEMCACHED_BEHAVIOR_VERIFY_KEY was added to enable this feature.
   * More error messages on command line tools.
+  * Fixed bugs in memcached_cas() operator.
   
 0.15 Tue Jan 29 14:55:44 PST 2008
   * More work on the C++ API.

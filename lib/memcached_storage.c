@@ -206,7 +206,7 @@ memcached_return memcached_cas(memcached_st *ptr,
   memcached_return rc;
   rc= memcached_send(ptr, key, key_length, 
                      key, key_length, value, value_length,
-                     expiration, flags, cas, APPEND_OP);
+                     expiration, flags, cas, CAS_OP);
   return rc;
 }
 
@@ -297,6 +297,6 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
   memcached_return rc;
   rc= memcached_send(ptr, key, key_length, 
                      key, key_length, value, value_length,
-                     expiration, flags, cas, APPEND_OP);
+                     expiration, flags, cas, CAS_OP);
   return rc;
 }

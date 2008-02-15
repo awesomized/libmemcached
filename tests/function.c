@@ -332,6 +332,19 @@ uint8_t cas_test(memcached_st *memc)
   assert(strlen("we the people") == value_length);
   assert(rc == MEMCACHED_SUCCESS);
 
+  rc= memcached_cas(memc, key, key_length,
+                    "change the value", strlen("change the value"), 
+                    0, 0, memcached_result_cas(results));
+
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_cas(memc, key, key_length,
+                    "change the value", strlen("change the value"), 
+                    0, 0, 23);
+
+  assert(rc == MEMCACHED_DATA_EXISTS);
+
+
   memcached_result_free(&results_obj);
 
   return 0;
