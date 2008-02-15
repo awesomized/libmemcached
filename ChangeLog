@@ -1,6 +1,3 @@
-0.17
-  * More error messages on command line tools.
-
 0.16
   * Work on the UDP protocol
   * Added get_by_key, set_by_key tests for C++ API
@@ -10,9 +7,9 @@
     clients with the same lists, will have same distribution. (Idea from
     Ross McFarland). MEMCACHED_BEHAVIOR_SORT_HOSTS was added to enable
     this support.
-  * Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations 
-    when the library is compiled with --enable-debug. This additional code
-    will test for bad keys.
+  * Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations.
+    MEMCACHED_BEHAVIOR_VERIFY_KEY was added to enable this feature.
+  * More error messages on command line tools.
   
 0.15 Tue Jan 29 14:55:44 PST 2008
   * More work on the C++ API.

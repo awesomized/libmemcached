@@ -463,19 +463,34 @@ uint8_t flush_test(memcached_st *memc)
 
 uint8_t bad_key_test(memcached_st *memc)
 {
-#ifdef HAVE_DEBUG
   memcached_return rc;
   char *key= "foo bad";
   char *string;
   size_t string_length;
   uint32_t flags;
+  memcached_st *clone;
+  unsigned int set= 1;
 
-  string= memcached_get(memc, key, strlen(key),
+  clone= memcached_clone(NULL, memc);
+  assert(clone);
+
+  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, &set);
+
+  string= memcached_get(clone, key, strlen(key),
                         &string_length, &flags, &rc);
   assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
   assert(string_length ==  0);
   assert(!string);
-#endif
+
+  set= 0;
+  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, &set);
+  string= memcached_get(clone, key, strlen(key),
+                        &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_NOTFOUND);
+  assert(string_length ==  0);
+  assert(!string);
+
+  memcached_free(clone);
 
   return 0;
 }

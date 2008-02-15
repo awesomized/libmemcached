@@ -66,6 +66,7 @@ typedef enum {
   MEM_SUPPORT_CAS= (1 << 7),
   MEM_BUFFER_REQUESTS= (1 << 8),
   MEM_USE_SORT_HOSTS= (1 << 9),
+  MEM_VERIFY_KEY= (1 << 10),
 } memcached_flags;
 
 /* Hashing algo */
@@ -111,13 +112,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
                              memcached_result_st *result);
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
-memcached_return key_proof(char **keys, size_t *key_length, 
-                           unsigned int number_of_keys);
-
-#ifdef HAVE_DEBUG
-#define key_test(A,B,C) key_proof(A,B,C)
-#else
-#define key_test(A,B,C) MEMCACHED_SUCCESS
-#endif
+memcached_return memcachd_key_test(char **keys, size_t *key_length, 
+                                   unsigned int number_of_keys);
 
 #endif /* __COMMON_H__ */

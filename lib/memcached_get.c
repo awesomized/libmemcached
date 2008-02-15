@@ -75,7 +75,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   if (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  if (key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED)
+  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   if (ptr->flags & MEM_SUPPORT_CAS)

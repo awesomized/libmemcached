@@ -11,7 +11,7 @@
 
 void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, void *data)
 {
-  unsigned int *truefalse= (unsigned int *)data;
+  unsigned int truefalse= *(unsigned int *)data;
 
   memcached_quit(ptr);
   if (truefalse)
@@ -45,6 +45,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     set_behavior_flag(ptr, MEM_USE_CACHE_LOOKUPS, data);
+    break;
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    set_behavior_flag(ptr, MEM_VERIFY_KEY, data);
     break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
@@ -103,6 +106,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;
     break;
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    temp_flag= MEM_VERIFY_KEY;
+    break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_HASH:
@@ -115,7 +121,6 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return 0;
-    //return (unsigned long long)ptr->user_data;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
       return (unsigned long long)ptr->poll_timeout;
