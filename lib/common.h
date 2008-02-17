@@ -21,7 +21,6 @@
 #include <fcntl.h>
 #include <sys/un.h>
 #include <netinet/tcp.h>
-#include <libmemcached_config.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
