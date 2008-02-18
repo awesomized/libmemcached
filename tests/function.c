@@ -569,6 +569,7 @@ uint8_t set_test2(memcached_st *memc)
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
                       (time_t)0, (uint32_t)0);
+    WATCHPOINT_ERROR(rc);
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 

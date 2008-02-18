@@ -11,6 +11,7 @@
     MEMCACHED_BEHAVIOR_VERIFY_KEY was added to enable this feature.
   * More error messages on command line tools.
   * Fixed bugs in memcached_cas() operator.
+  * Fix to loop through interfaces
   
 0.15 Tue Jan 29 14:55:44 PST 2008
   * More work on the C++ API.
