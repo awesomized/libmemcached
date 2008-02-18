@@ -11,7 +11,12 @@
 
 void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, void *data)
 {
-  unsigned int truefalse= *(unsigned int *)data;
+  uint8_t truefalse;
+
+  if (data)
+    truefalse= *(unsigned int *)data;
+  else
+    truefalse= 0;
 
   if (truefalse)
     ptr->flags|= temp_flag;
