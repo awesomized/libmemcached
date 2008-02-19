@@ -98,6 +98,11 @@ are valid keys.
 Enabling this will cause hosts that are added to be placed in the host list in 
 sorted order. This will defeat consisten hashing.
 
+=item MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
+
+In non-blocking mode this changes the value of the timeout during socket
+connection.
+
 =back
 
 =head1 RETURN

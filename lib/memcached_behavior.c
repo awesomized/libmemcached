@@ -73,6 +73,13 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       ptr->poll_timeout= timeout;
       break;
     }
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    {
+      int32_t timeout= (*((int32_t *)data));
+
+      ptr->connect_timeout= timeout;
+      break;
+    }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       ptr->send_size= (*((int *)data));
@@ -132,6 +139,10 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
       return (unsigned long long)ptr->poll_timeout;
+    }
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    {
+      return (unsigned long long)ptr->connect_timeout;
     }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {

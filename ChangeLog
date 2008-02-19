@@ -1,3 +1,7 @@
+0.17
+  * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
+    non-block mode.
+
 0.16
   * Work on the UDP protocol
   * Added get_by_key, set_by_key tests for C++ API

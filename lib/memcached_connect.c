@@ -135,9 +135,49 @@ test_connect:
                 sizeof(servAddr)) < 0)
     {
       switch (errno) {
+      case EINPROGRESS:
+        {
+        struct timeval tm = { ptr->root->connect_timeout, 0 };
+        socklen_t len= sizeof(int);
+        fd_set wset;
+        int error=0, value;
+
+        FD_ZERO(&wset);
+        FD_SET(ptr->fd, &wset);
+
+        select(ptr->fd+1, NULL, &wset, NULL, &tm);
+        if (FD_ISSET(ptr->fd, &wset) != 0)
+        {
+          if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &value, &len) == 0)
+          {
+            if (value)
+            {
+              error= 1;
+            }
+          }
+          else
+          {
+            error= 1;
+          }
+        }
+        else
+        {
+          error= 1;
+        }
+
+        if (error)
+        {
+          ptr->cached_errno= errno;
+          WATCHPOINT_ERRNO(ptr->cached_errno);
+          close(ptr->fd);
+          ptr->fd= -1;
+          return MEMCACHED_ERRNO;
+        }
+
+        break;
+        }
         /* We are spinning waiting on connect */
       case EALREADY:
-      case EINPROGRESS:
       case EINTR:
         goto test_connect;
       case EISCONN: /* We were spinning waiting on connect */
