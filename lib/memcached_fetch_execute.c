@@ -1,7 +1,7 @@
 #include "common.h"
 
 memcached_return memcached_fetch_execute(memcached_st *ptr, 
-                                             unsigned int (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
+                                             memcached_execute_function *callback,
                                              void *context,
                                              unsigned int number_of_callbacks
                                              )

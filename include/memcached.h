@@ -81,6 +81,7 @@ typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
 typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
 typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
 typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
+typedef unsigned int (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
 
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
