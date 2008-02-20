@@ -16,9 +16,23 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
     if (io_death == 0)
     {
       memcached_return rc;
+      ssize_t read_length;
+      char buffer[MEMCACHED_MAX_BUFFER];
+
       rc= memcached_do(ptr, "quit\r\n", 6, 1);
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
 
+      /* read until socket is closed, or there is an error
+       * closing the socket before all data is read
+       * results in server throwing away all data which is
+       * not read
+       */
+      while ((read_length=
+	      memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer)))
+	     > 0)
+	{
+	  ;
+	}
       memcached_io_close(ptr);
     }
 
