@@ -46,7 +46,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                          memcached_return *error);
   memcached_return 
   memcached_fetch_execute(memcached_st *ptr, 
-                          unsigned int (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
+                          memcached_return (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
                           void *context,
                           unsigned int number_of_callbacks);
 

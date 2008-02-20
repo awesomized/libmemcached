@@ -81,7 +81,8 @@ typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
 typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
 typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
 typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
-typedef unsigned int (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
+typedef memcached_return (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
+typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcached_server_st *server, void *context);
 
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
@@ -409,6 +410,11 @@ memcached_return memcached_callback_set(memcached_st *ptr,
 void *memcached_callback_get(memcached_st *ptr, 
                              memcached_callback flag,
                              memcached_return *error);
+
+memcached_return memcached_server_cursor(memcached_st *ptr, 
+                                         memcached_server_function *callback,
+                                         void *context,
+                                         unsigned int number_of_callbacks);
 
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);

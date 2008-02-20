@@ -474,6 +474,24 @@ uint8_t flush_test(memcached_st *memc)
   return 0;
 }
 
+memcached_return server_function(memcached_st *ptr, memcached_server_st *server, void *context)
+{
+  /* Do Nothing */
+
+  return MEMCACHED_SUCCESS;
+}
+
+uint8_t memcached_server_cursor_test(memcached_st *memc)
+{
+  char *context= "foo bad";
+  memcached_server_function callbacks[1];
+
+  callbacks[0]= server_function;
+  memcached_server_cursor(memc, callbacks, context,  1);
+
+  return 0;
+}
+
 uint8_t bad_key_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -569,7 +587,6 @@ uint8_t set_test2(memcached_st *memc)
     rc= memcached_set(memc, key, strlen(key), 
                       value, value_length,
                       (time_t)0, (uint32_t)0);
-    WATCHPOINT_ERROR(rc);
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
@@ -884,7 +901,7 @@ uint8_t mget_result_function(memcached_st *memc)
   size_t key_length[]= {5, 3, 4};
   unsigned int x;
   unsigned int counter;
-  unsigned int (*callbacks[1])(memcached_st *, memcached_result_st *, void *);
+  memcached_execute_function callbacks[1];
 
   /* We need to empty the server before continueing test */
   rc= memcached_flush(memc, 0);
@@ -2414,6 +2431,7 @@ test_st tests[] ={
   {"callback_test", 0, get_stats_keys },
   {"version_string_test", 0, version_string_test},
   {"bad_key", 1, bad_key_test },
+  {"memcached_server_cursor", 1, memcached_server_cursor_test },
   {0, 0, 0}
 };
 

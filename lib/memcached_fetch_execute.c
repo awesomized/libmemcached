@@ -34,11 +34,11 @@ memcached_return memcached_fetch_execute(memcached_st *ptr,
 
       for (x= 0; x < number_of_callbacks; x++)
       {
-        unsigned int iferror;
+        memcached_return iferror;
 
         iferror= (*callback[x])(ptr, result, context);
 
-        if (iferror)
+        if (iferror != MEMCACHED_SUCCESS)
           continue;
       }
     }
