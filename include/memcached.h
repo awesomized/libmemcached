@@ -101,7 +101,6 @@ typedef enum {
   MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
   MEMCACHED_BEHAVIOR_DISTRIBUTION,
   MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,
-  MEMCACHED_BEHAVIOR_USER_DATA,
   MEMCACHED_BEHAVIOR_SORT_HOSTS,
   MEMCACHED_BEHAVIOR_VERIFY_KEY,
   MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT,
@@ -262,7 +261,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
-memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, void *data);
+memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
 unsigned long long memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 
 /* All of the functions for adding data to the server */

@@ -119,7 +119,6 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
         }
         else
         {
-          WATCHPOINT_ASSERT(0);
           found_eof= 1;
           break;
         }
