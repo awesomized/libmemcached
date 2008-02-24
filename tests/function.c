@@ -1814,7 +1814,7 @@ uint8_t user_supplied_bug14(memcached_st *memc)
   for (x= 0; x < value_length; x++)
     value[x] = (char) (x % 127);
 
-  for (current_length= 1; current_length < value_length; current_length++)
+  for (current_length= 0; current_length < value_length; current_length++)
   {
     rc= memcached_set(memc, key, strlen(key), 
                       value, current_length,

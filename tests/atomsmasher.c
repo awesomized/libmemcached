@@ -151,10 +151,55 @@ memcached_return enable_consistent(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+/* 
+  Set the value, then quit to make sure it is flushed.
+  Come back in and test that add fails.
+*/
+uint8_t add_test(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "foo";
+  char *value= "when we sanitize";
+  unsigned long long setting_value;
+
+  setting_value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  memcached_quit(memc);
+  rc= memcached_add(memc, key, strlen(key), 
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+
+  /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
+  if (setting_value)
+    assert(rc == MEMCACHED_NOTSTORED || MEMCACHED_STORED);
+  else
+    assert(rc == MEMCACHED_NOTSTORED);
+
+  return 0;
+}
+
+/*
+ * repeating add_tests many times
+ * may show a problem in timing
+ */
+uint8_t many_adds(memcached_st *memc)
+{
+  unsigned int i;
+  for (i = 0; i < TEST_COUNTER; i++){
+    add_test(memc);
+  }
+  return 0;
+}
+
 test_st smash_tests[] ={
   {"generate_pairs", 1, generate_pairs },
   {"drizzle", 1, drizzle },
   {"cleanup", 1, cleanup_pairs },
+  {"many_adds", 1, many_adds },
   {0, 0, 0}
 };
 
