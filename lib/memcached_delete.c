@@ -20,10 +20,10 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
-  if (key_length == 0)
+  unlikely (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
-  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+  unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
