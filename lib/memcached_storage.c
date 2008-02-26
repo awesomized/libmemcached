@@ -53,9 +53,10 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   char to_write;
   size_t write_length;
   ssize_t sent_length;
-  memcached_return rc;
+  memcached_return rc[MEMCACHED_MAX_REPLICAS];
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
+  uint8_t replicas= 0;
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
   WATCHPOINT_ASSERT(!(value && value_length == 0));
@@ -84,46 +85,56 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                            (unsigned long long)expiration, value_length);
 
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
-
-  rc=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
-  if (rc != MEMCACHED_SUCCESS)
-    goto error;
-
-  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], value, value_length, 0)) == -1)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
+    return MEMCACHED_WRITE_FAILURE;
 
   if ((ptr->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP)
     to_write= 0;
   else
     to_write= 1;
 
-  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
+  do
   {
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
+    rc[replicas]=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
+
+    if (rc[replicas] != MEMCACHED_SUCCESS)
+      goto error;
+
+    if ((sent_length= memcached_io_write(&ptr->hosts[server_key], value, value_length, 0)) == -1)
+    {
+      rc[replicas]= MEMCACHED_WRITE_FAILURE;
+      goto error;
+    }
+
+    if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
+    {
+      rc[replicas]= MEMCACHED_WRITE_FAILURE;
+      goto error;
+    }
+
+    if (to_write == 0)
+      return MEMCACHED_BUFFERED;
+    else
+      rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+    /* On error we just jump to the next potential server */
+error:
+    if (replicas > 1 && ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
+    {
+      if (server_key == (ptr->number_of_hosts - 1))
+        server_key= 0;
+      else
+        server_key++;
+    }
+  } while ((++replicas) < ptr->number_of_replicas);
+
+  /* As long as one object gets stored, we count this as a success */
+  while (replicas--)
+  {
+    if (rc[replicas] == MEMCACHED_STORED)
+      return MEMCACHED_SUCCESS;
   }
 
-  if (to_write == 0)
-    return MEMCACHED_BUFFERED;
-
-  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-  if (rc == MEMCACHED_STORED)
-    return MEMCACHED_SUCCESS;
-  else 
-    return rc;
-
-error:
-  memcached_io_reset(&ptr->hosts[server_key]);
-
-  return rc;
+  return rc[0];
 }
 
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 

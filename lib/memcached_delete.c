@@ -14,11 +14,10 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 {
   char to_write;
   size_t send_length;
-  memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
-
-  LIBMEMCACHED_MEMCACHED_DELETE_START();
+  uint8_t replicas= 0;
+  memcached_return rc[MEMCACHED_MAX_REPLICAS];
 
   if (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
@@ -38,28 +37,48 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
   {
-    rc= MEMCACHED_WRITE_FAILURE;
+    rc[replicas]= MEMCACHED_WRITE_FAILURE;
     goto error;
   }
 
   to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
 
-  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, to_write);
-  if (rc != MEMCACHED_SUCCESS)
-    goto error;
-
-  if ((ptr->flags & MEM_BUFFER_REQUESTS))
+  do
   {
-    rc= MEMCACHED_BUFFERED;
-  }
-  else
-  {
-    rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-    if (rc == MEMCACHED_DELETED)
-      rc= MEMCACHED_SUCCESS;
-  }
+    rc[replicas]= memcached_do(&ptr->hosts[server_key], buffer, send_length, to_write);
+    if (rc[replicas] != MEMCACHED_SUCCESS)
+      goto error;
 
+    if ((ptr->flags & MEM_BUFFER_REQUESTS))
+    {
+      rc[replicas]= MEMCACHED_BUFFERED;
+    }
+    else
+    {
+      rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+      if (rc[replicas] == MEMCACHED_DELETED)
+        rc[replicas]= MEMCACHED_SUCCESS;
+    }
+
+    /* On error we just jump to the next potential server */
 error:
-  LIBMEMCACHED_MEMCACHED_DELETE_END();
-  return rc;
+    if (replicas > 1 && ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
+    {
+      if (server_key == (ptr->number_of_hosts - 1))
+        server_key= 0;
+      else
+        server_key++;
+    }
+  } while ((++replicas) < ptr->number_of_replicas);
+
+  /* As long as one object gets stored, we count this as a success */
+  while (replicas--)
+  {
+    if (rc[replicas] == MEMCACHED_DELETED)
+      return MEMCACHED_SUCCESS;
+    else if (rc[replicas] == MEMCACHED_DELETED)
+      rc[replicas]= MEMCACHED_BUFFERED;
+  }
+
+  return rc[0];
 }

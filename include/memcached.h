@@ -29,6 +29,7 @@ extern "C" {
 #define MEMCACHED_MAX_HOST_LENGTH 64
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
+#define MEMCACHED_MAX_REPLICAS 4
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
 /* string value */
@@ -105,6 +106,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_SORT_HOSTS,
   MEMCACHED_BEHAVIOR_VERIFY_KEY,
   MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT,
+  MEMCACHED_BEHAVIOR_REPLICAS,
 } memcached_behavior;
 
 typedef enum {
@@ -231,8 +233,8 @@ struct memcached_st {
   memcached_free_function call_free;
   memcached_malloc_function call_malloc;
   memcached_realloc_function call_realloc;
+  uint8_t number_of_replicas;
 #ifdef NOT_USED /* Future Use */
-  uint8_t replicas;
   memcached_return warning;
 #endif
 };
