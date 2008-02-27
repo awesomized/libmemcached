@@ -2310,6 +2310,14 @@ memcached_return enable_consistent(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return enable_replication(memcached_st *memc)
+{
+  uint64_t value;
+  value= 2;
+  enable_consistent(memc);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_REPLICAS, &value);
+}
+
 memcached_return enable_cas(memcached_st *memc)
 {
   unsigned int set= 1;
@@ -2520,6 +2528,7 @@ collection_st collection[] ={
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
+  {"replication", enable_consistent, 0, tests},
   {"memory_allocators", set_memory_alloc, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
