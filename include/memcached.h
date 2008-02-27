@@ -262,7 +262,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
-unsigned long long memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
+uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 
 /* All of the functions for adding data to the server */
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
