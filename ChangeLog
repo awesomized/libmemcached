@@ -1,3 +1,29 @@
+0.17 Wed Feb 27 03:33:29 PST 2008
+  * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
+    non-block mode.
+  * Incompatible change in memcached_behavior_set() api. We now use a
+    uint64_t, instead of a pointer.
+  * Fix for storage of values for zero.
+  * memcached_server_cursor() function added to API for cycling through servers.
+
+0.16 Mon Feb 18 00:30:25 PST 2008
+  * Work on the UDP protocol
+  * Added get_by_key, set_by_key tests for C++ API
+  * Fix for limit_maxbytes to be 64bit in stats
+  * Added Atom Smasher test (scale baby, scale!)
+  * Servers are now sorted, meaning that servers are now ordered so that
+    clients with the same lists, will have same distribution. (Idea from
+    Ross McFarland). MEMCACHED_BEHAVIOR_SORT_HOSTS was added to enable
+    this support.
+  * Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations.
+    MEMCACHED_BEHAVIOR_VERIFY_KEY was added to enable this feature.
+  * More error messages on command line tools.
+  * Fixed bugs in memcached_cas() operator.
+  * Fix to loop through interfaces
+  
+0.15 Tue Jan 29 14:55:44 PST 2008
+  * More work on the C++ API.
+  * Bug fixes around block corner cases.
   * Slight performance increase in both read() and write().
 
 0.14 Tue Jan 22 06:21:49 PST 2008

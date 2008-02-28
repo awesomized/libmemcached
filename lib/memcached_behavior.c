@@ -9,20 +9,17 @@
   We quit all connections so we can reset the sockets.
 */
 
-void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, void *data)
+void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint64_t data)
 {
-  unsigned int *truefalse= (unsigned int *)data;
-
-  memcached_quit(ptr);
-  if (truefalse)
+  if (data)
     ptr->flags|= temp_flag;
   else
-    ptr->flags+= temp_flag;
+    ptr->flags&= ~temp_flag;
 }
 
 memcached_return memcached_behavior_set(memcached_st *ptr, 
                                         memcached_behavior flag, 
-                                        void *data)
+                                        uint64_t data)
 {
   switch (flag)
   {
@@ -31,43 +28,57 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     set_behavior_flag(ptr, MEM_NO_BLOCK, data);
+    memcached_quit(ptr);
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     set_behavior_flag(ptr, MEM_BUFFER_REQUESTS, data);
+    memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
+    memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
-    ptr->distribution= *(memcached_server_distribution *)(data);
+    ptr->distribution= (memcached_server_distribution)data;
     break;
   case MEMCACHED_BEHAVIOR_HASH:
-    ptr->hash= *(memcached_hash *)(data);
+    ptr->hash= (memcached_hash)(data);
     break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     set_behavior_flag(ptr, MEM_USE_CACHE_LOOKUPS, data);
+    memcached_quit(ptr);
+    break;
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    set_behavior_flag(ptr, MEM_VERIFY_KEY, data);
     break;
   case MEMCACHED_BEHAVIOR_KETAMA:
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
-  case MEMCACHED_BEHAVIOR_USER_DATA:
-    ptr->user_data= data;
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
     break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
-      int32_t timeout= (*((int32_t *)data));
+      int32_t timeout= (int32_t)data;
 
       ptr->poll_timeout= timeout;
       break;
     }
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    {
+      int32_t timeout= (int32_t)data;
+
+      ptr->connect_timeout= timeout;
+      break;
+    }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
-      ptr->send_size= (*((int *)data));
+      ptr->send_size= data;
       memcached_quit(ptr);
       break;
     }
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     {
-      ptr->recv_size= (*((int *)data));
+      ptr->recv_size= data;
       memcached_quit(ptr);
       break;
     }
@@ -78,8 +89,8 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-unsigned long long memcached_behavior_get(memcached_st *ptr, 
-                                          memcached_behavior flag)
+uint64_t memcached_behavior_get(memcached_st *ptr, 
+                                memcached_behavior flag)
 {
   memcached_flags temp_flag= 0;
 
@@ -100,6 +111,9 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;
     break;
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    temp_flag= MEM_VERIFY_KEY;
+    break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_HASH:
@@ -107,12 +121,16 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     temp_flag= MEM_USE_KETAMA;
     break;
-  case MEMCACHED_BEHAVIOR_USER_DATA:
-    return 0;
-    //return (unsigned long long)ptr->user_data;
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    temp_flag= MEM_USE_SORT_HOSTS;
+    break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
       return (unsigned long long)ptr->poll_timeout;
+    }
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    {
+      return (unsigned long long)ptr->connect_timeout;
     }
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {

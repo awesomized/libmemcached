@@ -1,0 +1,20 @@
+#include "common.h"
+
+memcached_return memcachd_key_test(char **keys, size_t *key_length, 
+                                   unsigned int number_of_keys)
+{
+  int x;
+
+  for (x= 0; x < number_of_keys; x++)
+  {
+    int y;
+    for (y= 0; y < key_length[x]; y++)
+    {
+      if ((isgraph(keys[x][y])) == 0)
+        return MEMCACHED_BAD_KEY_PROVIDED;
+    }
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+

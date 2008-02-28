@@ -21,7 +21,6 @@
 #include <fcntl.h>
 #include <sys/un.h>
 #include <netinet/tcp.h>
-#include "libmemcached_config.h"
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -40,6 +39,19 @@
 #include "memcached_io.h"
 
 #include <libmemcached_config.h>
+
+#if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
+#define __builtin_expect(x, expected_value) (x)
+
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
+#else
+
+#define likely(x)       if((x))
+#define unlikely(x)     if((x))
+
+#endif
 
 #ifdef HAVE_DTRACE
 #define _DTRACE_VERSION 1
@@ -65,6 +77,8 @@ typedef enum {
   MEM_USE_CACHE_LOOKUPS= (1 << 6),
   MEM_SUPPORT_CAS= (1 << 7),
   MEM_BUFFER_REQUESTS= (1 << 8),
+  MEM_USE_SORT_HOSTS= (1 << 9),
+  MEM_VERIFY_KEY= (1 << 10),
 } memcached_flags;
 
 /* Hashing algo */
@@ -110,5 +124,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
                              memcached_result_st *result);
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
+memcached_return memcachd_key_test(char **keys, size_t *key_length, 
+                                   unsigned int number_of_keys);
 
 #endif /* __COMMON_H__ */

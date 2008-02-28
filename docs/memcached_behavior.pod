@@ -10,14 +10,14 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  unsigned long long
+  uint64_t
     memcached_behavior_get (memcached_st *ptr,
                             memcached_behavior flag);
 
   memcached_return
     memcached_behavior_set (memcached_st *ptr,
                             memcached_behavior flag,
-                            void *data);
+                            uint64_t data);
 
 =head1 DESCRIPTION
 
@@ -77,6 +77,7 @@ Modify the timeout value that is used by poll(). The default value is -1. An sig
 
 This allows you to store a pointer to a specifc piece of data. This can be
 retrieved from inside of memcached_fetch_execute(). Cloning a memcached_st
+
 will copy the pointer to the clone. This was deprecated in 0.14 in favor
 of memcached_callback_set(3). This will be removed in 0.15.
 
@@ -87,6 +88,21 @@ action that gets data causes this buffer to be be sent to the remote
 connection. Quiting the connection or closing down the connection will also
 cause the buffered data to be pushed to the remote connection. 
 
+=item MEMCACHED_BEHAVIOR_VERIFY_KEY
+
+Enabling this will cause libmemcached(3) to test all keys to verify that they 
+are valid keys.
+
+=item MEMCACHED_BEHAVIOR_SORT_HOSTS
+
+Enabling this will cause hosts that are added to be placed in the host list in 
+sorted order. This will defeat consisten hashing.
+
+=item MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
+
+In non-blocking mode this changes the value of the timeout during socket
+connection.
+
 =back
 
 =head1 RETURN
@@ -94,6 +110,11 @@ cause the buffered data to be pushed to the remote connection.
 memcached_behavior_get() returns either the current value of the get, or 0
 or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set()
 returns whether or not the behavior was enabled.
+
+=head1 NOTES
+
+memcached_behavior_set() in version .17 was changed from taking a pointer
+to data value, to taking a uin64_t. 
 
 =head1 HOME
 

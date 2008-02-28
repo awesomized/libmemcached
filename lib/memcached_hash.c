@@ -19,6 +19,9 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
 
   WATCHPOINT_ASSERT(ptr->number_of_hosts);
 
+  if (ptr->number_of_hosts == 1)
+    return 0;
+
   switch (ptr->hash)
   {
   case MEMCACHED_HASH_DEFAULT:

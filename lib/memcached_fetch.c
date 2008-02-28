@@ -10,6 +10,9 @@ memcached_return value_fetch(memcached_server_st *ptr,
   char *end_ptr;
   char *next_ptr;
   size_t value_length;
+  size_t read_length;
+  size_t to_read;
+  char *value_ptr;
 
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
@@ -78,53 +81,44 @@ memcached_return value_fetch(memcached_server_st *ptr,
   if (end_ptr < string_ptr)
     goto read_error;
 
-  if (value_length)
+  /* We add two bytes so that we can walk the \r\n */
+  rc= memcached_string_check(&result->value, value_length+2);
+  if (rc != MEMCACHED_SUCCESS)
   {
-    size_t read_length;
-    size_t to_read;
-    char *value_ptr;
-
-    /* We add two bytes so that we can walk the \r\n */
-    rc= memcached_string_check(&result->value, value_length+2);
-    if (rc != MEMCACHED_SUCCESS)
-    {
-      value_length= 0;
-      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    }
-
-    value_ptr= memcached_string_value(&result->value);
-    read_length= 0;
-    /* 
-      We read the \r\n into the string since not doing so is more 
-      cycles then the waster of memory to do so.
-
-      We are null terminating through, which will most likely make
-      some people lazy about using the return length.
-    */
-    to_read= (value_length) + 2;
-
-    read_length= memcached_io_read(ptr, value_ptr, to_read);
-
-    if (read_length != (size_t)(value_length + 2))
-    {
-      goto read_error;
-    }
-
-    /* This next bit blows the API, but this is internal....*/
-    {
-      char *char_ptr;
-      char_ptr= memcached_string_value(&result->value);;
-      char_ptr[value_length]= 0;
-      char_ptr[value_length + 1]= 0;
-      memcached_string_set_length(&result->value, value_length);
-    }
-
-    return MEMCACHED_SUCCESS;
+    value_length= 0;
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
-  return rc;
+  value_ptr= memcached_string_value(&result->value);
+  read_length= 0;
+  /* 
+    We read the \r\n into the string since not doing so is more 
+    cycles then the waster of memory to do so.
+
+    We are null terminating through, which will most likely make
+    some people lazy about using the return length.
+  */
+  to_read= (value_length) + 2;
+  read_length= memcached_io_read(ptr, value_ptr, to_read);
+  if (read_length != (size_t)(value_length + 2))
+  {
+    goto read_error;
+  }
+
+/* This next bit blows the API, but this is internal....*/
+  {
+    char *char_ptr;
+    char_ptr= memcached_string_value(&result->value);;
+    char_ptr[value_length]= 0;
+    char_ptr[value_length + 1]= 0;
+    memcached_string_set_length(&result->value, value_length);
+  }
+
+  return MEMCACHED_SUCCESS;
 
 read_error:
+  memcached_io_reset(ptr);
+
   return MEMCACHED_PARTIAL_READ;
 }
 

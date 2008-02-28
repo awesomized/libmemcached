@@ -26,10 +26,10 @@
 #define PROGRAM_DESCRIPTION "Generates a load against a memcached custer of servers."
 
 /* Global Thread counter */
-unsigned int thread_counter;
+volatile unsigned int thread_counter;
 pthread_mutex_t counter_mutex;
 pthread_cond_t count_threshhold;
-unsigned int master_wakeup;
+volatile unsigned int master_wakeup;
 pthread_mutex_t sleeper_mutex;
 pthread_cond_t sleep_threshhold;
 
@@ -96,7 +96,10 @@ int main(int argc, char *argv[])
     if ((temp= getenv("MEMCACHED_SERVERS")))
       opt_servers= strdup(temp);
     else
+    {
+      fprintf(stderr, "No Servers provided\n");
       exit(1);
+    }
   }
 
   servers= memcached_servers_parse(opt_servers);
@@ -147,9 +150,9 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   {
     unsigned int value= 1;
     if (opt_non_blocking_io)
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &value);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, value);
     if (opt_tcp_nodelay)
-      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &value);
+      memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, value);
   }
 
 
@@ -374,7 +377,7 @@ pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
 
   clone= memcached_clone(NULL, memc);
   /* We always used non-blocking IO for load since it is faster */
-  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL );
+  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   pairs= pairs_generate(number_of, 400);
   *actual_loaded= execute_set(clone, pairs, number_of);

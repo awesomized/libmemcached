@@ -32,7 +32,7 @@ extern "C" {
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
 /* string value */
-#define LIBMEMCACHED_VERSION_STRING "0.14"
+#define LIBMEMCACHED_VERSION_STRING "0.17"
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -67,6 +67,7 @@ typedef enum {
   MEMCACHED_FETCH_NOTFINISHED,
   MEMCACHED_TIMEOUT,
   MEMCACHED_BUFFERED,
+  MEMCACHED_BAD_KEY_PROVIDED,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
 } memcached_return;
 
@@ -80,6 +81,8 @@ typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
 typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
 typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
 typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
+typedef memcached_return (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
+typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcached_server_st *server, void *context);
 
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
@@ -98,7 +101,9 @@ typedef enum {
   MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
   MEMCACHED_BEHAVIOR_DISTRIBUTION,
   MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,
-  MEMCACHED_BEHAVIOR_USER_DATA,
+  MEMCACHED_BEHAVIOR_SORT_HOSTS,
+  MEMCACHED_BEHAVIOR_VERIFY_KEY,
+  MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT,
 } memcached_behavior;
 
 typedef enum {
@@ -169,7 +174,7 @@ struct memcached_stat_st {
   uint32_t rusage_system_microseconds;
   uint32_t curr_items;
   uint32_t total_items;
-  uint32_t limit_maxbytes;
+  uint64_t limit_maxbytes;
   uint32_t curr_connections;
   uint32_t total_connections;
   uint32_t connection_structures;
@@ -214,6 +219,7 @@ struct memcached_st {
   int send_size;
   int recv_size;
   int32_t poll_timeout;
+  int32_t connect_timeout;
   memcached_result_st result;
   memcached_hash hash;
   memcached_server_distribution distribution;
@@ -255,8 +261,8 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
-memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, void *data);
-unsigned long long memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
+memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
+uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 
 /* All of the functions for adding data to the server */
 memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
@@ -404,6 +410,11 @@ void *memcached_callback_get(memcached_st *ptr,
                              memcached_callback flag,
                              memcached_return *error);
 
+memcached_return memcached_server_cursor(memcached_st *ptr, 
+                                         memcached_server_function *callback,
+                                         void *context,
+                                         unsigned int number_of_callbacks);
+
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);
 memcached_result_st *memcached_result_create(memcached_st *ptr, 
@@ -433,7 +444,7 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define WATCHPOINT_STRING(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
 #define WATCHPOINT_STRING_LENGTH(A,B) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %.*s\n", __FILE__, __LINE__,__func__,(int)B,A);fflush(stdout);
 #define WATCHPOINT_NUMBER(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
-#define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));A= 0;fflush(stdout);
+#define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));fflush(stdout);
 #define WATCHPOINT_ASSERT(A) assert((A));
 #else
 #define WATCHPOINT

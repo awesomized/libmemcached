@@ -22,6 +22,14 @@ autom4te.cache/*$
 .(gz|cmp|tar|rpm|srpm)$
 support/libmemcached.pc$
 support/libmemcached.spec$
+docs/pod2htmd.tmp
+docs/pod2htmi.tmp
+lib/memcachedplus.loT
+tests/atomsmasher
+tests/startservers
+tests/stopservers
+tests/udptest
+
 
 
 Makefile(.in)?$

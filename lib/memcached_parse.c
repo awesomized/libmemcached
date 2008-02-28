@@ -6,7 +6,7 @@
 */
 
 #include <memcached.h>
-#include <common.h>
+#include "common.h"
 
 memcached_server_st *memcached_servers_parse(char *server_strings)
 {

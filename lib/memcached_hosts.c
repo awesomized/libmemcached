@@ -31,6 +31,25 @@ static void rebalance_wheel(memcached_st *ptr)
   }
 }
 
+static int compare_servers(const void *p1, const void *p2)
+{
+  int return_value;
+  memcached_server_st *a= (memcached_server_st *)p1;
+  memcached_server_st *b= (memcached_server_st *)p2;
+
+  return_value= strcmp(a->hostname, b->hostname);
+
+  if (return_value == 0)
+  {
+    if (a->port > b->port)
+      return_value++;
+    else
+      return_value--;
+  }
+
+  return return_value;
+}
+
 static void host_reset(memcached_st *ptr, memcached_server_st *host, 
                        char *hostname, unsigned int port,
                        memcached_connection type)
@@ -96,6 +115,9 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
 
+  if (ptr->number_of_hosts > 1)
+    qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
+
   rebalance_wheel(ptr);
 
   return MEMCACHED_SUCCESS;
@@ -158,6 +180,9 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   ptr->number_of_hosts++;
   ptr->hosts[0].count++;
 
+  if (ptr->number_of_hosts > 1)
+    qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
+
   rebalance_wheel(ptr);
 
   LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
@@ -196,6 +221,13 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 
   /* Backwards compatibility hack */
   new_host_list[0].count++;
+
+  count= new_host_list[0].count;
+
+  if (new_host_list[0].count > 1)
+    qsort(new_host_list, count, sizeof(memcached_server_st), compare_servers);
+
+  new_host_list[0].count= count;
 
 
   *error= MEMCACHED_SUCCESS;

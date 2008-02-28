@@ -43,6 +43,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   (void)memcached_fetch(ptr, NULL, NULL, 
                         &dummy_length, &dummy_flags, 
                         &dummy_error);
+  WATCHPOINT_ASSERT(dummy_length == 0);
 
   return value;
 }
@@ -73,6 +74,9 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
 
   if (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
+
+  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
+    return MEMCACHED_BAD_KEY_PROVIDED;
 
   if (ptr->flags & MEM_SUPPORT_CAS)
   {
