@@ -40,6 +40,19 @@
 
 #include <libmemcached_config.h>
 
+#if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
+#define __builtin_expect(x, expected_value) (x)
+
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
+#else
+
+#define likely(x)       if((x))
+#define unlikely(x)     if((x))
+
+#endif
+
 #ifdef HAVE_DTRACE
 #define _DTRACE_VERSION 1
 #else

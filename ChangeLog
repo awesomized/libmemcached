@@ -3,6 +3,8 @@
 0.17
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
     non-block mode.
+  * Incompatible change in memcached_behavior_set() api. We now use a
+    uint64_t, instead of a pointer.
 
 0.16 Mon Feb 18 00:30:25 PST 2008
   * Work on the UDP protocol

@@ -61,10 +61,10 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
   WATCHPOINT_ASSERT(!(value && value_length == 0));
 
-  if (key_length == 0)
+  unlikely (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
-  if (ptr->number_of_hosts == 0)
+  unlikely (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
