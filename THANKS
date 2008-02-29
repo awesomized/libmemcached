@@ -8,3 +8,4 @@ Tim Bunce - Perl Driver work and feedback on API
 Kevin Dalley - Bug Fixes
 Patrick Galbraith - work on C++ interface
 Ross McFarland - Idea for sorting servers.
+Marcelo Fernandez - TCP/IP timeout pieces

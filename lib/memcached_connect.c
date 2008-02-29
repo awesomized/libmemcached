@@ -1,4 +1,5 @@
 #include "common.h"
+#include <poll.h>
 
 static memcached_return set_hostinfo(memcached_server_st *server)
 {
@@ -136,47 +137,6 @@ test_connect:
     {
       switch (errno) {
       case EINPROGRESS:
-        {
-        struct timeval tm = { ptr->root->connect_timeout, 0 };
-        socklen_t len= sizeof(int);
-        fd_set wset;
-        int error=0, value;
-
-        FD_ZERO(&wset);
-        FD_SET(ptr->fd, &wset);
-
-        select(ptr->fd+1, NULL, &wset, NULL, &tm);
-        if (FD_ISSET(ptr->fd, &wset) != 0)
-        {
-          if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &value, &len) == 0)
-          {
-            if (value)
-            {
-              error= 1;
-            }
-          }
-          else
-          {
-            error= 1;
-          }
-        }
-        else
-        {
-          error= 1;
-        }
-
-        if (error)
-        {
-          ptr->cached_errno= errno;
-          WATCHPOINT_ERRNO(ptr->cached_errno);
-          close(ptr->fd);
-          ptr->fd= -1;
-          return MEMCACHED_ERRNO;
-        }
-
-        break;
-        }
-        /* We are spinning waiting on connect */
       case EALREADY:
       case EINTR:
         goto test_connect;
@@ -237,6 +197,27 @@ test_connect:
           /* We are spinning waiting on connect */
         case EALREADY:
         case EINPROGRESS:
+          {
+            struct pollfd fds[1];
+            int error;
+
+            memset(&fds, 0, sizeof(struct pollfd));
+            fds[0].fd= ptr->fd;
+            fds[0].events= POLLOUT |  POLLERR;
+            error= poll(fds, 1, ptr->root->connect_timeout);
+
+            if (error != 1)
+            {
+              ptr->cached_errno= errno;
+              WATCHPOINT_ERRNO(ptr->cached_errno);
+              close(ptr->fd);
+              ptr->fd= -1;
+              return MEMCACHED_ERRNO;
+            }
+
+            break;
+          }
+        /* We are spinning waiting on connect */
         case EINTR:
           goto test_connect;
         case EISCONN: /* We were spinning waiting on connect */
