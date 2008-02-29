@@ -12,7 +12,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
                                          char *key, size_t key_length,
                                          time_t expiration)
 {
-  char to_write;
+  char to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
   size_t send_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
@@ -41,8 +41,6 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     goto error;
   }
 
-  to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
-
   do
   {
     rc[replicas]= memcached_do(&ptr->hosts[server_key], buffer, send_length, to_write);
@@ -62,7 +60,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
     /* On error we just jump to the next potential server */
 error:
-    if (replicas > 1 && ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
+    if (ptr->number_of_replicas > 1)
     {
       if (server_key == (ptr->number_of_hosts - 1))
         server_key= 0;

@@ -84,7 +84,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
     /* On error we just jump to the next potential server */
 error:
-    if (replicas > 1 && ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
+    if (ptr->number_of_replicas > 1)
     {
       if (server_key == (ptr->number_of_hosts - 1))
         server_key= 0;
