@@ -91,6 +91,8 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   do
   {
+    char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
     rc[replicas]=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
 
     if (rc[replicas] != MEMCACHED_SUCCESS)
@@ -111,7 +113,8 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     if (to_write == 0)
       return MEMCACHED_BUFFERED;
     else
-      rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+      rc[replicas]= memcached_response(&ptr->hosts[server_key],
+                                       response_buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
     /* On error we just jump to the next potential server */
 error:
