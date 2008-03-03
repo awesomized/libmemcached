@@ -23,6 +23,7 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_delete.pod\
 	memcached_set.pod\
 	memcached_version.pod\
+	memcached_result_st.pod\
 	memflush.pod
 
 man_MANS = libmemcached.3\
