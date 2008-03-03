@@ -118,7 +118,6 @@ memcached_return memcached_string_reset(memcached_string_st *string);
 void memcached_string_free(memcached_string_st *string);
 memcached_return memcached_do(memcached_server_st *ptr, char *commmand, 
                               size_t command_length, uint8_t with_flush);
-memcached_return memcached_version(memcached_st *ptr);
 memcached_return value_fetch(memcached_server_st *ptr,
                              char *buffer,
                              memcached_result_st *result);

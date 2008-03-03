@@ -259,6 +259,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args,
                                            char *hostname, unsigned int port);
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
+memcached_return memcached_version(memcached_st *ptr);
 void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
