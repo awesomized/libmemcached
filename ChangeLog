@@ -1,3 +1,5 @@
+  * Replication support has been added to the library.
+
 0.17 Wed Feb 27 03:33:29 PST 2008
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
     non-block mode.

@@ -7,9 +7,10 @@ static memcached_return memcached_auto(memcached_st *ptr,
                                        uint64_t *value)
 {
   size_t send_length;
-  memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
+  uint8_t replicas= 0;
+  memcached_return rc[MEMCACHED_MAX_REPLICAS];
 
   unlikely (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
@@ -29,36 +30,55 @@ static memcached_return memcached_auto(memcached_st *ptr,
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
-  if (rc != MEMCACHED_SUCCESS)
-    return rc;
-
-  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-  /* 
-    So why recheck responce? Because the protocol is brain dead :)
-    The number returned might end up equaling one of the string 
-    values. Less chance of a mistake with strncmp() so we will 
-    use it. We still called memcached_response() though since it
-    worked its magic for non-blocking IO.
-  */
-  if (!strncmp(buffer, "ERROR\r\n", 7))
+  do 
   {
-    *value= 0;
-    rc= MEMCACHED_PROTOCOL_ERROR;
-  }
-  else if (!strncmp(buffer, "NOT_FOUND\r\n", 11))
+    rc[replicas]= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
+    if (rc[replicas] != MEMCACHED_SUCCESS)
+      goto error;
+
+    rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+    /* 
+      So why recheck responce? Because the protocol is brain dead :)
+      The number returned might end up equaling one of the string 
+      values. Less chance of a mistake with strncmp() so we will 
+      use it. We still called memcached_response() though since it
+      worked its magic for non-blocking IO.
+    */
+    if (!strncmp(buffer, "ERROR\r\n", 7))
+    {
+      *value= 0;
+      rc[replicas]= MEMCACHED_PROTOCOL_ERROR;
+    }
+    else if (!strncmp(buffer, "NOT_FOUND\r\n", 11))
+    {
+      *value= 0;
+      rc[replicas]= MEMCACHED_NOTFOUND;
+    }
+    else
+    {
+      *value= (uint64_t)strtoll(buffer, (char **)NULL, 10);
+      rc[replicas]= MEMCACHED_SUCCESS;
+    }
+    /* On error we just jump to the next potential server */
+error:
+    if (ptr->number_of_replicas > 1)
+    {
+      if (server_key == (ptr->number_of_hosts - 1))
+        server_key= 0;
+      else
+        server_key++;
+    }
+  } while ((++replicas) < ptr->number_of_replicas);
+
+  /* As long as one object gets stored, we count this as a success */
+  while (replicas--)
   {
-    *value= 0;
-    rc= MEMCACHED_NOTFOUND;
-  }
-  else
-  {
-    *value= (uint64_t)strtoll(buffer, (char **)NULL, 10);
-    rc= MEMCACHED_SUCCESS;
+    if (rc[replicas] == MEMCACHED_STORED)
+      return MEMCACHED_SUCCESS;
   }
 
-  return rc;
+  return rc[0];
 }
 
 memcached_return memcached_increment(memcached_st *ptr, 

@@ -23,6 +23,16 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 {
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_REPLICAS:
+    {
+      uint8_t number_of_replicas= (uint8_t)data;
+
+      if (number_of_replicas > ptr->number_of_hosts || number_of_replicas == 0 || number_of_replicas > MEMCACHED_MAX_REPLICAS)
+        return MEMCACHED_FAILURE;
+      else
+        ptr->number_of_replicas= number_of_replicas;
+      break;
+    }
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     set_behavior_flag(ptr, MEM_SUPPORT_CAS, data);
     break;
@@ -96,6 +106,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_REPLICAS:
+    return (unsigned long long)ptr->number_of_replicas;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     temp_flag= MEM_SUPPORT_CAS;
     break;

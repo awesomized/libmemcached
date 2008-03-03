@@ -37,6 +37,12 @@ memcached_behavior_set() will flush and reset all connections.
 
 =over 4
 
+=item MEMCACHED_BEHAVIOR_REPLICAS
+
+By default libmemcached(3) stores data in just one node of the cluster. Setting this value
+to a number will cause that number of copies to be kept. The value must be greater then 
+zero, and must be at most the same value as the number of hosts in the cluster.
+
 =item MEMCACHED_BEHAVIOR_NO_BLOCK
 
 Causes libmemcached(3) to use asychronous IO. This is the fastest transport

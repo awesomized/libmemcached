@@ -25,6 +25,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   WATCHPOINT_ASSERT(result_ptr);
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   ptr->distribution= MEMCACHED_DISTRIBUTION_MODULA;
+  ptr->number_of_replicas= 1;
 
   return ptr;
 }
