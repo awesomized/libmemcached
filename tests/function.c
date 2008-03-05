@@ -1837,6 +1837,46 @@ uint8_t user_supplied_bug14(memcached_st *memc)
   return 0;
 }
 
+/*
+  Look for zero length value problems
+  */
+uint8_t user_supplied_bug15(memcached_st *memc)
+{
+  uint32_t x;
+  memcached_return rc;
+  char *key= "mykey";
+  char *value;
+  size_t length;
+  uint32_t flags;
+
+  for (x= 0; x < 2; x++)
+  {
+    rc= memcached_set(memc, key, strlen(key), 
+                      NULL, 0,
+                      (time_t)0, (uint32_t)0);
+
+    assert(rc == MEMCACHED_SUCCESS);
+
+    value= memcached_get(memc, key, strlen(key),
+                         &length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(value == NULL);
+    assert(length == 0);
+    assert(flags == 0);
+
+    value= memcached_get(memc, key, strlen(key),
+                         &length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(value == NULL);
+    assert(length == 0);
+    assert(flags == 0);
+  }
+
+  return 0;
+}
+
 uint8_t result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -2480,6 +2520,7 @@ test_st user_tests[] ={
   {"user_supplied_bug12", 1, user_supplied_bug12 },
   {"user_supplied_bug13", 1, user_supplied_bug13 },
   {"user_supplied_bug14", 1, user_supplied_bug14 },
+  {"user_supplied_bug15", 1, user_supplied_bug15 },
   {0, 0, 0}
 };
 

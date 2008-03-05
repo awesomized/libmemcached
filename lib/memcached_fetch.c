@@ -159,6 +159,8 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
       if (result_buffer->flags)
         *flags= result_buffer->flags;
+      else
+        *flags= 0;
 
       return  memcached_string_c_copy(&result_buffer->value);
     }

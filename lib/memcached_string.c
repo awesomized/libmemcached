@@ -140,6 +140,9 @@ char *memcached_string_c_copy(memcached_string_st *string)
 
   WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
 
+  if (memcached_string_length(string) == 0)
+    return NULL;
+
   if (string->root->call_malloc)
     c_ptr= (char *)string->root->call_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char));
   else
