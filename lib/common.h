@@ -73,9 +73,10 @@ void md5_signature(unsigned char *key, unsigned int length, unsigned char *resul
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
 uint32_t hsieh_hash(char *key, size_t key_length);
+uint32_t murmur_hash(char *key, size_t key_length);
 
 memcached_return memcached_connect(memcached_server_st *ptr);
-memcached_return memcached_response(memcached_server_st *ptr, 
+memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
@@ -91,19 +92,19 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 #define memcached_string_size(A) (A)->current_size
 #define memcached_string_value(A) (A)->string
 
-memcached_string_st *memcached_string_create(memcached_st *ptr, 
-                                             memcached_string_st *string, 
+memcached_string_st *memcached_string_create(memcached_st *ptr,
+                                             memcached_string_st *string,
                                              size_t initial_size);
 memcached_return memcached_string_check(memcached_string_st *string, size_t need);
 char *memcached_string_c_copy(memcached_string_st *string);
-memcached_return memcached_string_append_character(memcached_string_st *string, 
+memcached_return memcached_string_append_character(memcached_string_st *string,
                                                    char character);
 memcached_return memcached_string_append(memcached_string_st *string,
                                          char *value, size_t length);
 size_t memcached_string_backspace(memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_string_st *string);
 void memcached_string_free(memcached_string_st *string);
-memcached_return memcached_do(memcached_server_st *ptr, char *commmand, 
+memcached_return memcached_do(memcached_server_st *ptr, char *commmand,
                               size_t command_length, uint8_t with_flush);
 memcached_return memcached_version(memcached_st *ptr);
 memcached_return value_fetch(memcached_server_st *ptr,
@@ -111,7 +112,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
                              memcached_result_st *result);
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
-memcached_return memcachd_key_test(char **keys, size_t *key_length, 
+memcached_return memcachd_key_test(char **keys, size_t *key_length,
                                    unsigned int number_of_keys);
 
 #endif /* __COMMON_H__ */

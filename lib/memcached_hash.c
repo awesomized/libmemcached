@@ -90,6 +90,11 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
       hash= hsieh_hash(key, key_length);
       break;
     }
+    case MEMCACHED_HASH_MURMUR:
+    {
+      hash= murmur_hash(key, key_length);
+      break;
+    }
   }
 
   WATCHPOINT_ASSERT(hash);

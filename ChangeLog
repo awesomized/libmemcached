@@ -2,6 +2,7 @@
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
     non-block mode.
   * Fix plus tests for non-zero value objects and flags.
+  * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.
 
 0.16 Mon Feb 18 00:30:25 PST 2008
   * Work on the UDP protocol

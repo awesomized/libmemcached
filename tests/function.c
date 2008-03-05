@@ -2216,6 +2216,14 @@ memcached_return pre_nonblock(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return pre_murmur(memcached_st *memc)
+{
+  memcached_hash value= MEMCACHED_HASH_MURMUR;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return pre_md5(memcached_st *memc)
 {
   memcached_hash value= MEMCACHED_HASH_MD5;
@@ -2572,6 +2580,7 @@ collection_st collection[] ={
   {"generate_hsieh", pre_hsieh, 0, generate_tests},
   {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
   {"generate_md5", pre_md5, 0, generate_tests},
+  {"generate_murmur", pre_murmur, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {0, 0, 0, 0}
 };

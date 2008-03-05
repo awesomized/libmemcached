@@ -126,6 +126,7 @@ typedef enum {
   MEMCACHED_HASH_FNV1A_32,
   MEMCACHED_HASH_KETAMA,
   MEMCACHED_HASH_HSIEH,
+  MEMCACHED_HASH_MURMUR,
 } memcached_hash;
 
 typedef enum {
