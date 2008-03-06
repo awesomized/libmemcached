@@ -61,6 +61,8 @@ static void host_reset(memcached_st *ptr, memcached_server_st *host,
   host->fd= -1;
   host->type= type;
   host->read_ptr= host->read_buffer;
+  if (ptr)
+    host->next_retry= ptr->retry_timeout;
   host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
 }
 

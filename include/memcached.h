@@ -105,6 +105,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_SORT_HOSTS,
   MEMCACHED_BEHAVIOR_VERIFY_KEY,
   MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT,
+  MEMCACHED_BEHAVIOR_RETRY_TIMEOUT,
 } memcached_behavior;
 
 typedef enum {
@@ -161,6 +162,7 @@ struct memcached_server_st {
   uint8_t minor_version;
   uint8_t micro_version;
   uint16_t count;
+  time_t next_retry;
   memcached_st *root;
 };
 
@@ -222,6 +224,7 @@ struct memcached_st {
   int recv_size;
   int32_t poll_timeout;
   int32_t connect_timeout;
+  int32_t retry_timeout;
   memcached_result_st result;
   memcached_hash hash;
   memcached_server_distribution distribution;

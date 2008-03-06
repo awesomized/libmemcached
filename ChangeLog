@@ -3,6 +3,8 @@
     non-block mode.
   * Fix plus tests for non-zero value objects and flags.
   * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.
+  * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping
+    on timeout.
 
 0.16 Mon Feb 18 00:30:25 PST 2008
   * Work on the UDP protocol

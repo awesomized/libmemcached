@@ -246,6 +246,13 @@ test_connect:
           WATCHPOINT_ERRNO(ptr->cached_errno);
           close(ptr->fd);
           ptr->fd= -1;
+          if (ptr->root->retry_timeout)
+          {
+            struct timeval next_time;
+
+            gettimeofday(&next_time, NULL);
+            ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+          }
         }
       }
       else
@@ -269,6 +276,14 @@ memcached_return memcached_connect(memcached_server_st *ptr)
   memcached_return rc= MEMCACHED_NO_SERVERS;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
+  if (ptr->root->retry_timeout)
+  {
+    struct timeval next_time;
+
+    gettimeofday(&next_time, NULL);
+    if (next_time.tv_sec < ptr->next_retry)
+      return MEMCACHED_TIMEOUT;
+  }
   /* We need to clean up the multi startup piece */
   switch (ptr->type)
   {
