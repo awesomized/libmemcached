@@ -75,7 +75,7 @@ void help_command(char *command_name, char *description,
 
 void process_hash_option(memcached_st *memc, char *opt_hash)
 {
-  unsigned int set;
+  uint64_t set;
   memcached_return rc;
 
   if (opt_hash == NULL)
@@ -99,7 +99,7 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
     exit(1);
   }
 
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, set);
   if (rc != MEMCACHED_SUCCESS)
   {
     fprintf(stderr, "hash: memcache error %s\n", memcached_strerror(memc, rc));

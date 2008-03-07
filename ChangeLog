@@ -1,10 +1,16 @@
-0.17
-  * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
-    non-block mode.
+0.18
   * Fix plus tests for non-zero value objects and flags.
   * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.
   * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping
     on timeout.
+
+0.17 Wed Feb 27 03:33:29 PST 2008
+  * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
+    non-block mode.
+  * Incompatible change in memcached_behavior_set() api. We now use a 
+    uint64_t, instead of a pointer.
+  * Fix for storage of values for zero.
+  * memcached_server_cursor() function added to API for cycling through servers.
 
 0.16 Mon Feb 18 00:30:25 PST 2008
   * Work on the UDP protocol
