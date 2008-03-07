@@ -102,7 +102,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     int flags;
 
     flags= fcntl(ptr->fd, F_GETFL, 0);
-    if (flags != -1)
+    unlikely (flags != -1)
     {
       (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
     }

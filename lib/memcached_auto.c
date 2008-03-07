@@ -11,10 +11,10 @@ static memcached_return memcached_auto(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  if (key_length == 0)
+  unlikely (key_length == 0)
     return MEMCACHED_NO_KEY_PROVIDED;
 
-  if (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+  unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
@@ -26,7 +26,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                         "%s %.*s %u\r\n", verb, 
                         (int)key_length, key,
                         offset);
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
   rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);

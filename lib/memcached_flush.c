@@ -8,7 +8,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
 
-  if (ptr->number_of_hosts == 0)
+  unlikely (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   for (x= 0; x < ptr->number_of_hosts; x++)

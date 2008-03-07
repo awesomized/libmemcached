@@ -45,6 +45,8 @@ int main(int argc, char *argv[])
 
   if (world.create)
     world_ptr= world.create();
+  else 
+    world_ptr= NULL;
 
   startup_ptr= (server_startup_st *)world_ptr;
   servers= (memcached_server_st *)startup_ptr->servers;

@@ -9,7 +9,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                         "verbosity %u\r\n", verbosity);
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
   rc= MEMCACHED_SUCCESS;
