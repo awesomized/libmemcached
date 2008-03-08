@@ -35,11 +35,8 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                           "delete %.*s\r\n", (int)key_length, key);
 
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-  {
-    rc[replicas]= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
+  unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    return MEMCACHED_WRITE_FAILURE;
 
   do
   {
@@ -53,9 +50,9 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     }
     else
     {
-      rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-      if (rc[replicas] == MEMCACHED_DELETED)
-        rc[replicas]= MEMCACHED_SUCCESS;
+      char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+      rc[replicas]= memcached_response(&ptr->hosts[server_key], response_buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     }
 
     /* On error we just jump to the next potential server */
@@ -74,8 +71,8 @@ error:
   {
     if (rc[replicas] == MEMCACHED_DELETED)
       return MEMCACHED_SUCCESS;
-    else if (rc[replicas] == MEMCACHED_DELETED)
-      rc[replicas]= MEMCACHED_BUFFERED;
+    else if (rc[replicas] == MEMCACHED_BUFFERED)
+      return MEMCACHED_BUFFERED;
   }
 
   return rc[0];

@@ -50,22 +50,22 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   do
   {
+    char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
     if (memcached_server_response_count(&ptr->hosts[server_key]))
     {
-      char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
       if (ptr->flags & MEM_NO_BLOCK)
         (void)memcached_io_write(&ptr->hosts[server_key], NULL, 0, 1);
 
       while(memcached_server_response_count(&ptr->hosts[server_key]))
-        (void)memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
+        (void)memcached_response(&ptr->hosts[server_key], response_buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
     }
 
     rc[replicas]= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
     if (rc[replicas] != MEMCACHED_SUCCESS)
       goto error;
 
-    rc[replicas]= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
+    rc[replicas]= memcached_response(&ptr->hosts[server_key], response_buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
 
     /* On no key found, we check the replica */
     if (rc[replicas] == MEMCACHED_END) /* END means that we move on to the next */
@@ -79,6 +79,7 @@ char *memcached_get_by_key(memcached_st *ptr,
       if (result_buffer->flags)
         *flags= result_buffer->flags;
 
+      *error= MEMCACHED_SUCCESS;
       return  memcached_string_c_copy(&result_buffer->value);
     }
 
