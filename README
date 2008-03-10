@@ -10,8 +10,8 @@ memrm - Remove a key(s) from the serrver.
 memstat - Dump the stats of your servers to standard output
 memslap - Load generation utility (benchmark!)
 
-This code is still in Alpha. More tests have currently been done on the 
-library code then on the utilities.
+The utilities are alpha quality at this point. The library is in production
+in many locations (upwards to 600 nodes).
 
 Want to contribute? If you write more then three good patches, then I will
 just ask you to commit directly to the tree. I am happy to have additional
