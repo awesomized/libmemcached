@@ -31,7 +31,8 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_result.h \
 		    memcached_server.h \
 		    memcached_string.h \
-		    memcached_types.h
+		    memcached_types.h \
+		    memcached_watchpoint.h
 
 lib_LTLIBRARIES = libmemcached.la
 

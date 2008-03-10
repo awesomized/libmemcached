@@ -57,9 +57,9 @@ if test "$GCC" = "yes"
 then
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-Wall -ggdb -DHAVE_DEBUG"
+    CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG"
   else
-    CFLAGS="-Wall -O3"
+    CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL "
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"

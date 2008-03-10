@@ -17,6 +17,7 @@
 
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
+#include <libmemcached/memcached_watchpoint.h>
 #include <libmemcached/memcached_server.h>
 #include <libmemcached/memcached_string.h>
 #include <libmemcached/memcached_result.h>
@@ -267,34 +268,6 @@ memcached_return memcached_server_cursor(memcached_st *ptr,
                                          memcached_server_function *callback,
                                          void *context,
                                          unsigned int number_of_callbacks);
-
-#ifndef __WATCHPOINT_H__
-#define __WATCHPOINT_H__
-/* Some personal debugging functions */
-#ifdef HAVE_DEBUG
-#define WATCHPOINT fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
-#ifdef __MEMCACHED_H__
-#define WATCHPOINT_ERROR(A) fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
-#define WATCHPOINT_IFERROR(A) if(A != MEMCACHED_SUCCESS)fprintf(stderr, "\nWATCHPOINT %s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, A));fflush(stdout);
-#endif
-#define WATCHPOINT_STRING(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__,A);fflush(stdout);
-#define WATCHPOINT_STRING_LENGTH(A,B) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %.*s\n", __FILE__, __LINE__,__func__,(int)B,A);fflush(stdout);
-#define WATCHPOINT_NUMBER(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout);
-#define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));fflush(stdout);
-#define WATCHPOINT_ASSERT(A) assert((A));
-#else
-#define WATCHPOINT
-#ifdef __MEMCACHED_H__
-#define WATCHPOINT_ERROR(A)
-#define WATCHPOINT_IFERROR(A)
-#endif
-#define WATCHPOINT_STRING(A)
-#define WATCHPOINT_NUMBER(A)
-#define WATCHPOINT_ERRNO(A)
-#define WATCHPOINT_ASSERT(A)
-#endif
-
-#endif /* __WATCHPOINT_H__ */
 
 
 #ifdef __cplusplus

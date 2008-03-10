@@ -1,4 +1,3 @@
-#include <memcached.h>
 #include "common.h"
 
 /* Protoypes (static) */

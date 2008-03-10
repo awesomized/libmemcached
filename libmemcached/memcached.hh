@@ -19,9 +19,7 @@ public:
 
   Memcached(memcached_st *clone)
   {
-    WATCHPOINT;
     memcached_clone(&memc, clone);
-    WATCHPOINT;
   }
 
   char *get(char *key, size_t *value_length)
