@@ -6,7 +6,7 @@
 ^config.(log|status)$
 ^libtool$
 ^autom4te.cache$
-^include/(libmemcached_config.h(.in)?|stamp-h1)$
+^libmemcached/(libmemcached_config.h(.in)?|stamp-h1)$
 ^libmemcached/libmemcached_config.h.in$
 ^stamp-h1$
 ^lib/libmemcachedPlus.la$
@@ -14,8 +14,8 @@
 
 
 # Build artifacts
-^lib/libmemcached.la$
-^src/mem(cat|cp|flush|rm|slap|stat|error)$
+^libmemcached/libmemcached.la$
+^clients/mem(cat|cp|flush|rm|slap|stat|error)$
 ^tests/testapp$
 .(deps|libs)/*$
 .cmp$
@@ -25,7 +25,7 @@ support/libmemcached.pc$
 support/libmemcached.spec$
 docs/pod2htmd.tmp
 docs/pod2htmi.tmp
-lib/memcachedplus.loT
+libmemcached/memcachedplus.loT
 tests/atomsmasher
 tests/startservers
 tests/stopservers

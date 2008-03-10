@@ -100,23 +100,9 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
 /* String Struct */
-#define memcached_string_length(A) (size_t)((A)->end - (A)->string)
-#define memcached_string_set_length(A, B) (A)->end= (A)->string + B
-#define memcached_string_size(A) (A)->current_size
-#define memcached_string_value(A) (A)->string
-
 memcached_string_st *memcached_string_create(memcached_st *ptr,
                                              memcached_string_st *string,
                                              size_t initial_size);
-memcached_return memcached_string_check(memcached_string_st *string, size_t need);
-char *memcached_string_c_copy(memcached_string_st *string);
-memcached_return memcached_string_append_character(memcached_string_st *string,
-                                                   char character);
-memcached_return memcached_string_append(memcached_string_st *string,
-                                         char *value, size_t length);
-size_t memcached_string_backspace(memcached_string_st *string, size_t remove);
-memcached_return memcached_string_reset(memcached_string_st *string);
-void memcached_string_free(memcached_string_st *string);
 memcached_return memcached_do(memcached_server_st *ptr, char *commmand,
                               size_t command_length, uint8_t with_flush);
 memcached_return memcached_version(memcached_st *ptr);

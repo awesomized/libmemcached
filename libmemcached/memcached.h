@@ -15,6 +15,12 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
+#include <libmemcached/memcached_constants.h>
+#include <libmemcached/memcached_types.h>
+#include <libmemcached/memcached_server.h>
+#include <libmemcached/memcached_string.h>
+#include <libmemcached/memcached_result.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,138 +39,6 @@ extern "C" {
 
 /* string value */
 #define LIBMEMCACHED_VERSION_STRING "0.17"
-
-typedef enum {
-  MEMCACHED_SUCCESS,
-  MEMCACHED_FAILURE,
-  MEMCACHED_HOST_LOOKUP_FAILURE,
-  MEMCACHED_CONNECTION_FAILURE,
-  MEMCACHED_CONNECTION_BIND_FAILURE,
-  MEMCACHED_WRITE_FAILURE,
-  MEMCACHED_READ_FAILURE,
-  MEMCACHED_UNKNOWN_READ_FAILURE,
-  MEMCACHED_PROTOCOL_ERROR,
-  MEMCACHED_CLIENT_ERROR,
-  MEMCACHED_SERVER_ERROR,
-  MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE,
-  MEMCACHED_DATA_EXISTS,
-  MEMCACHED_DATA_DOES_NOT_EXIST,
-  MEMCACHED_NOTSTORED,
-  MEMCACHED_STORED,
-  MEMCACHED_NOTFOUND,
-  MEMCACHED_MEMORY_ALLOCATION_FAILURE,
-  MEMCACHED_PARTIAL_READ,
-  MEMCACHED_SOME_ERRORS,
-  MEMCACHED_NO_SERVERS,
-  MEMCACHED_END,
-  MEMCACHED_DELETED,
-  MEMCACHED_VALUE,
-  MEMCACHED_STAT,
-  MEMCACHED_ERRNO,
-  MEMCACHED_FAIL_UNIX_SOCKET,
-  MEMCACHED_NOT_SUPPORTED,
-  MEMCACHED_NO_KEY_PROVIDED,
-  MEMCACHED_FETCH_NOTFINISHED,
-  MEMCACHED_TIMEOUT,
-  MEMCACHED_BUFFERED,
-  MEMCACHED_BAD_KEY_PROVIDED,
-  MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
-} memcached_return;
-
-typedef struct memcached_st memcached_st;
-typedef struct memcached_stat_st memcached_stat_st;
-typedef struct memcached_result_st memcached_result_st;
-typedef struct memcached_string_st memcached_string_st;
-typedef struct memcached_server_st memcached_server_st;
-typedef memcached_return (*memcached_clone_func)(memcached_st *parent, memcached_st *clone);
-typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
-typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
-typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
-typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
-typedef memcached_return (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
-typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcached_server_st *server, void *context);
-
-typedef enum {
-  MEMCACHED_DISTRIBUTION_MODULA,
-  MEMCACHED_DISTRIBUTION_CONSISTENT,
-} memcached_server_distribution;
-
-typedef enum {
-  MEMCACHED_BEHAVIOR_NO_BLOCK,
-  MEMCACHED_BEHAVIOR_TCP_NODELAY,
-  MEMCACHED_BEHAVIOR_HASH,
-  MEMCACHED_BEHAVIOR_KETAMA,
-  MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE,
-  MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE,
-  MEMCACHED_BEHAVIOR_CACHE_LOOKUPS,
-  MEMCACHED_BEHAVIOR_SUPPORT_CAS,
-  MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
-  MEMCACHED_BEHAVIOR_DISTRIBUTION,
-  MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,
-  MEMCACHED_BEHAVIOR_USER_DATA,
-  MEMCACHED_BEHAVIOR_SORT_HOSTS,
-  MEMCACHED_BEHAVIOR_VERIFY_KEY,
-  MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT,
-  MEMCACHED_BEHAVIOR_RETRY_TIMEOUT,
-} memcached_behavior;
-
-typedef enum {
-  MEMCACHED_CALLBACK_USER_DATA,
-  MEMCACHED_CALLBACK_CLEANUP_FUNCTION,
-  MEMCACHED_CALLBACK_CLONE_FUNCTION,
-  MEMCACHED_CALLBACK_MALLOC_FUNCTION,
-  MEMCACHED_CALLBACK_REALLOC_FUNCTION,
-  MEMCACHED_CALLBACK_FREE_FUNCTION,
-} memcached_callback;
-
-typedef enum {
-  MEMCACHED_HASH_DEFAULT= 0,
-  MEMCACHED_HASH_MD5,
-  MEMCACHED_HASH_CRC,
-  MEMCACHED_HASH_FNV1_64,
-  MEMCACHED_HASH_FNV1A_64,
-  MEMCACHED_HASH_FNV1_32,
-  MEMCACHED_HASH_FNV1A_32,
-  MEMCACHED_HASH_KETAMA,
-  MEMCACHED_HASH_HSIEH,
-  MEMCACHED_HASH_MURMUR,
-} memcached_hash;
-
-typedef enum {
-  MEMCACHED_CONNECTION_UNKNOWN,
-  MEMCACHED_CONNECTION_TCP,
-  MEMCACHED_CONNECTION_UDP,
-  MEMCACHED_CONNECTION_UNIX_SOCKET,
-} memcached_connection;
-
-typedef enum {
-  MEMCACHED_NOT_ALLOCATED,
-  MEMCACHED_ALLOCATED,
-  MEMCACHED_USED,
-} memcached_allocated;
-
-struct memcached_server_st {
-  char hostname[MEMCACHED_MAX_HOST_LENGTH];
-  unsigned int port;
-  int fd;
-  int cached_errno;
-  unsigned int cursor_active;
-  char write_buffer[MEMCACHED_MAX_BUFFER];
-  size_t write_buffer_offset;
-  char read_buffer[MEMCACHED_MAX_BUFFER];
-  size_t read_data_length;
-  size_t read_buffer_length;
-  char *read_ptr;
-  memcached_allocated sockaddr_inited;
-  struct addrinfo *address_info;
-  memcached_connection type;
-  uint8_t major_version;
-  uint8_t minor_version;
-  uint8_t micro_version;
-  uint16_t count;
-  time_t next_retry;
-  memcached_st *root;
-};
 
 struct memcached_stat_st {
   uint32_t pid;
@@ -191,26 +65,6 @@ struct memcached_stat_st {
   uint64_t bytes_read;
   uint64_t bytes_written;
   char version[MEMCACHED_VERSION_STRING_LENGTH];
-};
-
-struct memcached_string_st {
-  memcached_st *root;
-  memcached_allocated is_allocated;
-  char *string;
-  char *end;
-  size_t current_size;
-  size_t block_size;
-};
-
-struct memcached_result_st {
-  memcached_allocated is_allocated;
-  memcached_st *root;
-  char key[MEMCACHED_MAX_KEY];
-  size_t key_length;
-  memcached_string_st value;
-  uint32_t flags;
-  uint64_t cas;
-  /* Add result callback function */
 };
 
 struct memcached_st {
@@ -315,12 +169,6 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_return *error);
 
 /* Server Public functions */
-#define memcached_server_count(A) (A)->number_of_hosts
-#define memcached_server_name(A,B) (B).hostname
-#define memcached_server_port(A,B) (B).port
-#define memcached_server_list(A) (A)->hosts
-#define memcached_server_response_count(A) (A)->cursor_active
-
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
                                           char *hostname,
@@ -419,23 +267,6 @@ memcached_return memcached_server_cursor(memcached_st *ptr,
                                          memcached_server_function *callback,
                                          void *context,
                                          unsigned int number_of_callbacks);
-
-/* Result Struct */
-void memcached_result_free(memcached_result_st *result);
-memcached_result_st *memcached_result_create(memcached_st *ptr, 
-                                             memcached_result_st *result);
-#define memcached_result_key_value(A) (A)->key
-#define memcached_result_key_length(A) (A)->key_length
-#ifdef FIX
-#define memcached_result_value(A) memcached_string_value((A)->value)
-#define memcached_result_length(A) memcached_string_length((A)->value)
-#else
-char *memcached_result_value(memcached_result_st *ptr);
-size_t memcached_result_length(memcached_result_st *ptr);
-#endif
-#define memcached_result_flags(A) (A)->flags
-#define memcached_result_cas(A) (A)->cas
-
 
 #ifndef __WATCHPOINT_H__
 #define __WATCHPOINT_H__

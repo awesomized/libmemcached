@@ -24,7 +24,14 @@ noinst_HEADERS = libmemcached_probes.h \
 		 memcached_io.h \
                  common.h
 
-pkginclude_HEADERS= memcached.h memcached.hh
+pkginclude_HEADERS= memcached.h \
+		    memcached.hh \
+		    libmemcached_config.h \
+		    memcached_constants.h \ 
+		    memcached_result.h \
+		    memcached_server.h \
+		    memcached_string.h \
+		    memcached_types.h
 
 lib_LTLIBRARIES = libmemcached.la
 
