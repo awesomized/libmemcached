@@ -1,5 +1,5 @@
 INCLUDES = 
-SUBDIRS = docs libmemcached tests support
+SUBDIRS = docs libmemcached tests support clients
 EXTRA_dist = README.FIRST
 
 test: all
