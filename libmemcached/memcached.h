@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
+#include <libmemcached/libmemcached_config.h>
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
 #include <libmemcached/memcached_watchpoint.h>
