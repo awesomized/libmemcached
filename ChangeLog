@@ -4,6 +4,7 @@
   * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping
     on timeout.
   * gcc branch prediction optimizations
+  * Refactored entire tree to make include files cleaner
 
 0.17 Wed Feb 27 03:33:29 PST 2008
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
