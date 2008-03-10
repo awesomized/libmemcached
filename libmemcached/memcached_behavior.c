@@ -9,24 +9,17 @@
   We quit all connections so we can reset the sockets.
 */
 
-void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, void *data)
+void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint64_t data)
 {
-  uint8_t truefalse;
-
   if (data)
-    truefalse= *(unsigned int *)data;
-  else
-    truefalse= 0;
-
-  if (truefalse)
     ptr->flags|= temp_flag;
   else
-    ptr->flags+= temp_flag;
+    ptr->flags&= ~temp_flag;
 }
 
 memcached_return memcached_behavior_set(memcached_st *ptr, 
                                         memcached_behavior flag, 
-                                        void *data)
+                                        uint64_t data)
 {
   switch (flag)
   {
@@ -45,10 +38,10 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
-    ptr->distribution= *(memcached_server_distribution *)(data);
+    ptr->distribution= (memcached_server_distribution)(data);
     break;
   case MEMCACHED_BEHAVIOR_HASH:
-    ptr->hash= *(memcached_hash *)(data);
+    ptr->hash= (memcached_hash)(data);
     break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     set_behavior_flag(ptr, MEM_USE_CACHE_LOOKUPS, data);
@@ -67,38 +60,22 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     ptr->user_data= data;
     break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
-    {
-      int32_t timeout= (*((int32_t *)data));
-
-      ptr->poll_timeout= timeout;
-      break;
-    }
+    ptr->poll_timeout= (int32_t)data;
+    break;
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
-    {
-      int32_t timeout= (*((int32_t *)data));
-
-      ptr->connect_timeout= timeout;
-      break;
-    }
+    ptr->connect_timeout= (int32_t)data;
+    break;
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
-    {
-      ptr->retry_timeout= (int32_t)data;
-      break;
-    }
+    ptr->retry_timeout= (int32_t)data;
+    break;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
-    {
-      ptr->send_size= (*((int *)data));
-      memcached_quit(ptr);
-      break;
-    }
+    ptr->send_size= (int32_t)data;
+    memcached_quit(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
-    {
-      ptr->recv_size= (*((int *)data));
-      memcached_quit(ptr);
-      break;
-    }
-
-
+    ptr->recv_size= (int32_t)data;
+    memcached_quit(ptr);
+    break;
   }
 
   return MEMCACHED_SUCCESS;
