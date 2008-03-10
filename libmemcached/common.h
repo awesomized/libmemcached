@@ -99,10 +99,6 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
-/* String Struct */
-memcached_string_st *memcached_string_create(memcached_st *ptr,
-                                             memcached_string_st *string,
-                                             size_t initial_size);
 memcached_return memcached_do(memcached_server_st *ptr, char *commmand,
                               size_t command_length, uint8_t with_flush);
 memcached_return memcached_version(memcached_st *ptr);

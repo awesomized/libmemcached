@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../libmemcached/common.h"
 #include "../clients/generator.h"
 #include "../clients/execute.h"
 

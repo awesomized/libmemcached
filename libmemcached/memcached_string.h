@@ -27,6 +27,9 @@ struct memcached_string_st {
 #define memcached_string_size(A) (A)->current_size
 #define memcached_string_value(A) (A)->string
 
+memcached_string_st *memcached_string_create(memcached_st *ptr,
+                                             memcached_string_st *string,
+                                             size_t initial_size);
 memcached_return memcached_string_check(memcached_string_st *string, size_t need);
 char *memcached_string_c_copy(memcached_string_st *string);
 memcached_return memcached_string_append_character(memcached_string_st *string,
