@@ -1,18 +1,17 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <getopt.h>
-#include <memcached.h>
 #include <string.h>
+#include <getopt.h>
+#include <libmemcached/memcached.h>
 #include "client_options.h"
 #include "utilities.h"
 
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
-static char *opt_hash= NULL;
 
-#define PROGRAM_NAME "memrm"
-#define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
+#define PROGRAM_NAME "memflush"
+#define PROGRAM_DESCRIPTION "Erase all data in a server of memcached servers."
 
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
@@ -39,36 +38,24 @@ int main(int argc, char *argv[])
   }
 
   memc= memcached_create(NULL);
-  process_hash_option(memc, opt_hash);
 
   servers= memcached_servers_parse(opt_servers);
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
   
-  while (optind < argc) 
+  rc = memcached_flush(memc, opt_expire);
+  if (rc != MEMCACHED_SUCCESS) 
   {
-    if (opt_verbose) 
-      printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
-    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
-
-    if (rc != MEMCACHED_SUCCESS) 
-    {
-      fprintf(stderr, "memrm: %s: memcache error %s", 
-	      argv[optind], memcached_strerror(memc, rc));
-      if (memc->cached_errno)
-	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
-      fprintf(stderr, "\n");
-    }
-
-    optind++;
+    fprintf(stderr, "memflush: memcache error %s", 
+	    memcached_strerror(memc, rc));
+    if (memc->cached_errno)
+      fprintf(stderr, " system error %s", strerror(memc->cached_errno));
+    fprintf(stderr, "\n");
   }
 
   memcached_free(memc);
 
-  if (opt_servers)
-    free(opt_servers);
-  if (opt_hash)
-    free(opt_hash);
+  free(opt_servers);
 
   return 0;
 }
@@ -89,7 +76,6 @@ void options_parse(int argc, char *argv[])
     {"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {"servers", required_argument, NULL, OPT_SERVERS},
     {"expire", required_argument, NULL, OPT_EXPIRE},
-    {"hash", required_argument, NULL, OPT_HASH},
     {0, 0, 0, 0},
   };
   int option_index= 0;
@@ -120,9 +106,6 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
-      break;
-    case OPT_HASH:
-      opt_hash= strdup(optarg);
       break;
     case '?':
       /* getopt_long already printed an error message. */

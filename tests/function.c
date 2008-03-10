@@ -2,7 +2,7 @@
   Sample test application.
 */
 #include <assert.h>
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,9 +12,9 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../lib/common.h"
-#include "../src/generator.h"
-#include "../src/execute.h"
+#include "../libmemcached/common.h"
+#include "../clients/generator.h"
+#include "../clients/execute.h"
 
 #ifndef INT64_MAX
 #define INT64_MAX LONG_MAX

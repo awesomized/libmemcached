@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 
 #include "utilities.h"
 

@@ -7,6 +7,7 @@
 ^libtool$
 ^autom4te.cache$
 ^include/(libmemcached_config.h(.in)?|stamp-h1)$
+^libmemcached/libmemcached_config.h.in$
 ^stamp-h1$
 ^lib/libmemcachedPlus.la$
 ^tests/testplus$

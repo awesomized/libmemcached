@@ -81,6 +81,7 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   if (opt_hash == NULL)
     return;
 
+  set= MEMCACHED_HASH_DEFAULT; /* Just here to solve warning */
   if (!strcasecmp(opt_hash, "CRC"))
     set= MEMCACHED_HASH_CRC;
   else if (!strcasecmp(opt_hash, "FNV1_64"))

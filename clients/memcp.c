@@ -12,7 +12,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include <memcached.h>
+#include <libmemcached/memcached.h>
+
 #include "client_options.h"
 #include "utilities.h"
 

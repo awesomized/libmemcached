@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 #include <unistd.h>
 #include "server.h"
 

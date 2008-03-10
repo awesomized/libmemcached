@@ -1,6 +1,6 @@
 EXTRA_DIST = libmemcached_probes.d
 
-INCLUDES = -I$(top_builddir)/include -I$(top_builddir)
+INCLUDES = -I$(top_builddir)
 LIBS =
 
 DTRACE =                @DTRACE@
@@ -23,6 +23,8 @@ DTRACEFILES = memcached.o \
 noinst_HEADERS = libmemcached_probes.h \
 		 memcached_io.h \
                  common.h
+
+pkginclude_HEADERS= memcached.h memcached.hh
 
 lib_LTLIBRARIES = libmemcached.la
 

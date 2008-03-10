@@ -1,36 +1,27 @@
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <string.h>
-#include <assert.h>
+#include <unistd.h>
 #include <getopt.h>
-
-#include <memcached.h>
-
+#include <libmemcached/memcached.h>
+#include <string.h>
 #include "client_options.h"
 #include "utilities.h"
 
-#define PROGRAM_NAME "memstat"
-#define PROGRAM_DESCRIPTION "Output the state of a memcached cluster."
+static int opt_verbose= 0;
+static time_t opt_expire= 0;
+static char *opt_servers= NULL;
+static char *opt_hash= NULL;
+
+#define PROGRAM_NAME "memrm"
+#define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
 
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
 
-static int opt_verbose= 0;
-static int opt_displayflag= 0;
-static char *opt_servers= NULL;
-
 int main(int argc, char *argv[])
 {
-  unsigned int x;
-  memcached_return rc;
   memcached_st *memc;
-  memcached_stat_st *stat;
+  memcached_return rc;
   memcached_server_st *servers;
-  memcached_server_st *server_list;
 
   options_parse(argc, argv);
 
@@ -48,54 +39,40 @@ int main(int argc, char *argv[])
   }
 
   memc= memcached_create(NULL);
+  process_hash_option(memc, opt_hash);
 
   servers= memcached_servers_parse(opt_servers);
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
-
-  stat= memcached_stat(memc, NULL, &rc);
-
-  if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
+  
+  while (optind < argc) 
   {
-    printf("Failure to communicate with servers (%s)\n",
-	   memcached_strerror(memc, rc));
-    exit(1);
-  }
+    if (opt_verbose) 
+      printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
+    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
 
-  server_list= memcached_server_list(memc);
-
-  printf("Listing %u Server\n\n", memcached_server_count(memc));
-  for (x= 0; x < memcached_server_count(memc); x++)
-  {
-    char **list;
-    char **ptr;
-
-    list= memcached_stat_get_keys(memc, &stat[x], &rc);
-    assert(list);
-    assert(rc == MEMCACHED_SUCCESS);
-
-    printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
-	   memcached_server_port(memc, server_list[x]));
-    for (ptr= list; *ptr; ptr++)
+    if (rc != MEMCACHED_SUCCESS) 
     {
-      memcached_return rc;
-      char *value= memcached_stat_get_value(memc, &stat[x], *ptr, &rc);
-
-      printf("\t %s: %s\n", *ptr, value);
-      free(value);
+      fprintf(stderr, "memrm: %s: memcache error %s", 
+	      argv[optind], memcached_strerror(memc, rc));
+      if (memc->cached_errno)
+	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
+      fprintf(stderr, "\n");
     }
 
-    free(list);
-    printf("\n");
+    optind++;
   }
-
-  free(stat);
-  free(opt_servers);
 
   memcached_free(memc);
 
+  if (opt_servers)
+    free(opt_servers);
+  if (opt_hash)
+    free(opt_hash);
+
   return 0;
 }
+
 
 void options_parse(int argc, char *argv[])
 {
@@ -111,10 +88,10 @@ void options_parse(int argc, char *argv[])
     {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
     {"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {"servers", required_argument, NULL, OPT_SERVERS},
-    {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+    {"expire", required_argument, NULL, OPT_EXPIRE},
+    {"hash", required_argument, NULL, OPT_HASH},
     {0, 0, 0, 0},
   };
-
   int option_index= 0;
   int option_rv;
 
@@ -140,6 +117,12 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
+      break;
+    case OPT_EXPIRE: /* --expire */
+      opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
+      break;
+    case OPT_HASH:
+      opt_hash= strdup(optarg);
       break;
     case '?':
       /* getopt_long already printed an error message. */

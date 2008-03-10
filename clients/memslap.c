@@ -11,7 +11,7 @@
 #include <getopt.h>
 #include <pthread.h>
 
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 
 #include "client_options.h"
 #include "utilities.h"
