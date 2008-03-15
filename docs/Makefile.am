@@ -283,6 +283,32 @@ memerror.1: memerror.pod
 memflush.1: memflush.pod
 	pod2man -c "libmemcached" -r "" -s 1 memflush.pod > memflush.1
 
+test: 
+	podchecker libmemcached.pod
+	podchecker memcached_flush.pod
+	podchecker memcached_stats.pod
+	podchecker memrm.pod
+	podchecker memerror.pod
+	podchecker libmemcached_examples.pod
+	podchecker memcached_get.pod
+	podchecker memcached_strerror.pod
+	podchecker memslap.pod
+	podchecker memcached_auto.pod
+	podchecker memcached_quit.pod
+	podchecker memcached_verbosity.pod
+	podchecker memstat.pod
+	podchecker memcached_behavior.pod
+	podchecker memcached_callback.pod
+	podchecker memcached_server_st.pod
+	podchecker memcat.pod
+	podchecker memcached_create.pod
+	podchecker memcached_servers.pod
+	podchecker memcp.pod
+	podchecker memcached_delete.pod
+	podchecker memcached_set.pod
+	podchecker memcached_version.pod
+	podchecker memflush.pod
+
 
 clean:
 	rm -f *.1
