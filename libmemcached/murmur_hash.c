@@ -11,28 +11,25 @@ uint32_t murmur_hash(char *key, size_t length)
   const uint32_t m= 0x5bd1e995;
   const int r= 16;
   uint32_t h= length * m;
+  uint32_t k = 0;
 
   while(length >= 4)
   {
-    uint32_t k = *(uint32_t*)key;
+    k = *(uint32_t*)key;
     MIX(h,k,m);
 
     key += 4;
     length -= 4;
   }
 
-  if (length)
+  switch(length)
   {
-    uint32_t k= 0;
-
-    switch(length)
-    {
-    case 3: k += key[2] << 16;
-    case 2: k += key[1] << 8;
-    case 1: k += key[0];
-    };
-    MIX(h,k,m);
-  }
+  case 3: k += key[2] << 16;
+  case 2: k += key[1] << 8;
+  case 1: k += key[0];
+          MIX(h,k,m);
+  default:
+  };
 
   h *= m;
   h ^= h >> 10;
