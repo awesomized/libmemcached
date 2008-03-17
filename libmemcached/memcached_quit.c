@@ -33,8 +33,8 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
 	{
 	  ;
 	}
-      memcached_io_close(ptr);
     }
+    memcached_io_close(ptr);
 
     ptr->fd= -1;
     ptr->write_buffer_offset= 0;
