@@ -1,10 +1,11 @@
-0.18
+0.18 Sun Mar 16 21:57:55 PDT 2008
   * Fix plus tests for non-zero value objects and flags.
   * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.
   * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping
     on timeout.
   * gcc branch prediction optimizations
   * Refactored entire tree to make include files cleaner
+  * Fixed leaked socket.
 
 0.17 Wed Feb 27 03:33:29 PST 2008
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
