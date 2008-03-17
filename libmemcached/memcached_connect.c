@@ -210,6 +210,7 @@ test_connect:
             {
               ptr->cached_errno= errno;
               WATCHPOINT_ERRNO(ptr->cached_errno);
+              WATCHPOINT_NUMBER(ptr->root->connect_timeout);
               close(ptr->fd);
               ptr->fd= -1;
               return MEMCACHED_ERRNO;

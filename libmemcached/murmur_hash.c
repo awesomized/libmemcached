@@ -28,7 +28,6 @@ uint32_t murmur_hash(char *key, size_t length)
   case 2: k += key[1] << 8;
   case 1: k += key[0];
           MIX(h,k,m);
-  default:
   };
 
   h *= m;

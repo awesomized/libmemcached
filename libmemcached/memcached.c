@@ -24,6 +24,8 @@ memcached_st *memcached_create(memcached_st *ptr)
   result_ptr= memcached_result_create(ptr, &ptr->result);
   WATCHPOINT_ASSERT(result_ptr);
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
+  ptr->connect_timeout= MEMCACHED_DEFAULT_TIMEOUT;
+  ptr->retry_timeout= 0;
   ptr->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
   return ptr;
@@ -89,6 +91,8 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->send_size= ptr->send_size;
   new_clone->recv_size= ptr->recv_size;
   new_clone->poll_timeout= ptr->poll_timeout;
+  new_clone->connect_timeout= ptr->connect_timeout;
+  new_clone->retry_timeout= ptr->retry_timeout;
   new_clone->distribution= ptr->distribution;
   new_clone->hash= ptr->hash;
   new_clone->user_data= ptr->user_data;
