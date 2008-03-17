@@ -1821,7 +1821,8 @@ uint8_t user_supplied_bug14(memcached_st *memc)
                           &string_length, &flags, &rc);
 
     assert(rc == MEMCACHED_SUCCESS);
-    assert(string);
+    if (current_length > 0)
+      assert(string);
     assert(string_length == current_length);
     assert(!memcmp(string, value, string_length));
 

@@ -109,7 +109,7 @@ connection.
 
 memcached_behavior_get() returns either the current value of the get, or 0
 or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set()
-returns whether or not the behavior was enabled.
+returns failure or success.
 
 =head1 NOTES
 

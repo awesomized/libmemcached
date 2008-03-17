@@ -56,9 +56,6 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
     break;
-  case MEMCACHED_BEHAVIOR_USER_DATA:
-    ptr->user_data= data;
-    break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     ptr->poll_timeout= (int32_t)data;
     break;
@@ -76,13 +73,15 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     ptr->recv_size= (int32_t)data;
     memcached_quit(ptr);
     break;
+  case MEMCACHED_BEHAVIOR_USER_DATA:
+    return MEMCACHED_FAILURE;
   }
 
   return MEMCACHED_SUCCESS;
 }
 
-unsigned long long memcached_behavior_get(memcached_st *ptr, 
-                                          memcached_behavior flag)
+uint64_t memcached_behavior_get(memcached_st *ptr, 
+                                memcached_behavior flag)
 {
   memcached_flags temp_flag= 0;
 
@@ -116,8 +115,6 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     temp_flag= MEM_USE_SORT_HOSTS;
     break;
-  case MEMCACHED_BEHAVIOR_USER_DATA:
-    return 0;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
       return (unsigned long long)ptr->poll_timeout;
@@ -162,6 +159,8 @@ unsigned long long memcached_behavior_get(memcached_st *ptr,
 
       return sock_size;
     }
+  case MEMCACHED_BEHAVIOR_USER_DATA:
+    return MEMCACHED_FAILURE;
   }
 
   WATCHPOINT_ASSERT(temp_flag); /* Programming mistake if it gets this far */
