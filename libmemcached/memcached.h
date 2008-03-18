@@ -40,7 +40,7 @@ extern "C" {
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
 
 /* string value */
-#define LIBMEMCACHED_VERSION_STRING "0.18"
+#define LIBMEMCACHED_VERSION_STRING "0.19"
 
 struct memcached_stat_st {
   uint32_t pid;
