@@ -36,6 +36,23 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   return ptr;
 }
 
+void memcached_result_reset(memcached_result_st *ptr)
+{
+  ptr->key_length= 0;
+  memcached_string_reset(&ptr->value);
+  ptr->flags= 0;
+  ptr->cas= 0;
+  ptr->expiration= 0;
+}
+
+/*
+  NOTE turn into macro
+*/
+memcached_return memcached_result_set_value(memcached_result_st *ptr, char *value, size_t length)
+{
+  return memcached_string_append(&ptr->value, value, length);
+}
+
 void memcached_result_free(memcached_result_st *ptr)
 {
   if (ptr == NULL)

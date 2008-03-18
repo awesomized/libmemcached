@@ -522,6 +522,50 @@ uint8_t bad_key_test(memcached_st *memc)
   return 0;
 }
 
+#define READ_THROUGH_VALUE "set for me"
+memcached_return read_through_trigger(memcached_st *memc,  
+                                      char *key, size_t key_length, 
+                                      memcached_result_st *result)
+{
+  
+  return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
+}
+
+uint8_t read_through(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "foo";
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_NOTFOUND);
+  assert(string_length ==  0);
+  assert(!string);
+
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, read_through_trigger);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string_length ==  strlen(READ_THROUGH_VALUE));
+  assert(!strcmp(READ_THROUGH_VALUE, string));
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string_length ==  strlen(READ_THROUGH_VALUE));
+  assert(!strcmp(READ_THROUGH_VALUE, string));
+
+  return 0;
+}
+
 uint8_t get_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -2467,6 +2511,7 @@ test_st tests[] ={
   {"version_string_test", 0, version_string_test},
   {"bad_key", 1, bad_key_test },
   {"memcached_server_cursor", 1, memcached_server_cursor_test },
+  {"read_through", 1, read_through },
   {0, 0, 0}
 };
 

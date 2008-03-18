@@ -21,11 +21,13 @@ struct memcached_result_st {
   memcached_string_st value;
   uint32_t flags;
   uint64_t cas;
+  time_t expiration;
   /* Add result callback function */
 };
 
 /* Result Struct */
 void memcached_result_free(memcached_result_st *result);
+void memcached_result_reset(memcached_result_st *ptr);
 memcached_result_st *memcached_result_create(memcached_st *ptr, 
                                              memcached_result_st *result);
 #define memcached_result_key_value(A) (A)->key
@@ -39,6 +41,9 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #endif
 #define memcached_result_flags(A) (A)->flags
 #define memcached_result_cas(A) (A)->cas
+memcached_return memcached_result_set_value(memcached_result_st *ptr, char *value, size_t length);
+void memcached_result_set_flags(A,B) (A)->flags= B
+void memcached_result_set_expiration(A) (A)->expiration
 
 #ifdef __cplusplus
 }

@@ -16,9 +16,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
 
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
-  result->key_length= 0;
-  result->flags= 0;
-  memcached_string_reset(&result->value);
+  memcached_result_reset(result);
 
   string_ptr= buffer;
   string_ptr+= 6; /* "VALUE " */
@@ -69,7 +67,6 @@ memcached_return value_fetch(memcached_server_st *ptr,
   {
     /* Skip past the \r\n */
     string_ptr+= 2;
-    result->cas= 0;
   }
   else
   {

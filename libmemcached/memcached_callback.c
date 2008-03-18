@@ -48,6 +48,12 @@ memcached_return memcached_callback_set(memcached_st *ptr,
       ptr->call_free= func;
       break;
     }
+  case MEMCACHED_CALLBACK_GET_FAILURE:
+    {
+      memcached_trigger_key func= (memcached_trigger_key)data;
+      ptr->get_key_failure= func;
+      break;
+    }
   default:
     return MEMCACHED_FAILURE;
   }
@@ -94,6 +100,11 @@ void *memcached_callback_get(memcached_st *ptr,
     {
       *error= ptr->call_free ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
       return (void *)ptr->call_free;
+    }
+  case MEMCACHED_CALLBACK_GET_FAILURE:
+    {
+      *error= ptr->get_key_failure ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
+      return (void *)ptr->get_key_failure;
     }
   default:
       WATCHPOINT_ASSERT(0);

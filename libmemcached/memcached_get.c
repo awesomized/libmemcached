@@ -38,7 +38,46 @@ char *memcached_get_by_key(memcached_st *ptr,
     *error= MEMCACHED_NOTFOUND;
 
   if (value == NULL)
+  {
+    if (ptr->get_key_failure)
+    {
+      memcached_return rc;
+
+      memcached_result_reset(&ptr->result);
+      rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
+      
+      /* On all failure drop to returning NULL */
+      if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
+      {
+        uint8_t latch; /* We use latch to track the state of the original socket */
+
+        if (rc == MEMCACHED_BUFFERED)
+        {
+          latch= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS);
+          if (latch == 0)
+            memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
+        }
+
+        rc= memcached_set(ptr, key, key_length, 
+                          memcached_result_value(&ptr->result),
+                          memcached_result_length(&ptr->result),
+                          0, memcached_result_flags(&ptr->result));
+
+        if (rc == MEMCACHED_BUFFERED && latch == 0)
+          memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0);
+
+        if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
+        {
+          *error= rc;
+          *value_length= memcached_result_length(&ptr->result);
+          *flags= memcached_result_flags(&ptr->result);
+          return memcached_string_c_copy(&ptr->result.value);
+        }
+      }
+    }
+
     return NULL;
+  }
 
   (void)memcached_fetch(ptr, NULL, NULL, 
                         &dummy_length, &dummy_flags, 

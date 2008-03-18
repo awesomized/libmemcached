@@ -1,5 +1,6 @@
 #include "common.h"
 #include <poll.h>
+#include <sys/time.h>
 
 static memcached_return set_hostinfo(memcached_server_st *server)
 {

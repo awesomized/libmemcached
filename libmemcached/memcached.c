@@ -102,6 +102,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->call_free= ptr->call_free;
   new_clone->call_malloc= ptr->call_malloc;
   new_clone->call_realloc= ptr->call_realloc;
+  new_clone->get_key_failure= ptr->get_key_failure;
 
   if (ptr->on_clone)
     ptr->on_clone(ptr, new_clone);
