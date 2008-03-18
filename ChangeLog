@@ -1,3 +1,8 @@
+0.19
+  * Read through cached support.
+  * Fixed for cas by key operation.
+
+
 0.18 Sun Mar 16 21:57:55 PDT 2008
   * Fix plus tests for non-zero value objects and flags.
   * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.

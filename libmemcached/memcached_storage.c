@@ -295,7 +295,7 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
                                       uint64_t cas)
 {
   memcached_return rc;
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, cas, CAS_OP);
   return rc;
