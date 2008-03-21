@@ -179,10 +179,11 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
 
   host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
-  ptr->hosts[0].count++;
 
   if (ptr->number_of_hosts > 1)
     qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
+
+  ptr->hosts[0].count= ptr->number_of_hosts;
 
   rebalance_wheel(ptr);
 
@@ -220,14 +221,11 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 
   host_reset(NULL, &new_host_list[count-1], hostname, port, MEMCACHED_CONNECTION_TCP);
 
-  /* Backwards compatibility hack */
-  new_host_list[0].count++;
-
-  count= new_host_list[0].count;
-
+  /* We alway sort lists by default */
   if (new_host_list[0].count > 1)
     qsort(new_host_list, count, sizeof(memcached_server_st), compare_servers);
 
+  /* Backwards compatibility hack */
   new_host_list[0].count= count;
 
 

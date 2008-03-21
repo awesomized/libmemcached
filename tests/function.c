@@ -87,6 +87,8 @@ uint8_t server_sort_test(memcached_st *ptr)
   {
     test_ports[x]= random() % 64000;
     rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    assert(local_memc->number_of_hosts == x+1);
+    assert(local_memc->hosts[0].count == x+1);
     assert(rc == MEMCACHED_SUCCESS);
   }
 
