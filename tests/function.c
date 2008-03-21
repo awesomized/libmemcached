@@ -59,26 +59,42 @@ uint8_t server_list_null_test(memcached_st *ptr)
   return 0;
 }
 
+#define TEST_PORT_COUNT 7
+uint32_t test_ports[TEST_PORT_COUNT];
+
+memcached_return server_display_function(memcached_st *ptr, memcached_server_st *server, void *context)
+{
+  /* Do Nothing */
+  uint32_t *bigger= (uint32_t *)context;
+  assert(*bigger <= server->port);
+
+  return MEMCACHED_SUCCESS;
+}
+
 uint8_t server_sort_test(memcached_st *ptr)
 {
-  memcached_server_st *server_list;
+  uint8_t x;
+  uint32_t bigger= 0; /* Prime the value for the assert in server_display_function */
   memcached_return rc;
+  memcached_server_function callbacks[1];
+  memcached_st *local_memc;
 
-  memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
+  local_memc= memcached_create(NULL);
+  assert(local_memc);
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
 
-  server_list= memcached_server_list_append(NULL, "arg", 0, &rc);
-  assert(server_list);
+  for (x= 0; x < TEST_PORT_COUNT; x++)
+  {
+    test_ports[x]= random() % 64000;
+    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
 
-  server_list= memcached_server_list_append(server_list, "localhost", 0, &rc);
-  assert(server_list);
+  callbacks[0]= server_display_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
 
-  server_list= memcached_server_list_append(server_list, "c", 0, &rc);
-  assert(server_list);
 
-  server_list= memcached_server_list_append(server_list, "abba", 0, &rc);
-  assert(server_list);
-
-  free(server_list);
+  memcached_free(local_memc);
 
   return 0;
 }

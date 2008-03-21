@@ -30,15 +30,6 @@ extern "C" {
 /* These are Private and should not be used by applications */
 #define MEMCACHED_VERSION_STRING_LENGTH 12
 
-/* Public defines */
-#define MEMCACHED_DEFAULT_PORT 11211
-#define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
-#define MEMCACHED_MAX_BUFFER 8196
-#define MEMCACHED_MAX_HOST_LENGTH 64
-#define MEMCACHED_WHEEL_SIZE 1024
-#define MEMCACHED_STRIDE 4
-#define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
-
 /* string value */
 #define LIBMEMCACHED_VERSION_STRING "0.19"
 
