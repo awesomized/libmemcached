@@ -2,6 +2,7 @@
   * Read through cached support.
   * Fixed for cas by key operation.
   * Fix for memcached_server_st list structures to have correct count.
+  * Added callback MEMCACHED_CALLBACK_DELETE_TRIGGER
 
 
 0.18 Sun Mar 16 21:57:55 PDT 2008

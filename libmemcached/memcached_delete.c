@@ -59,6 +59,9 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
       rc= MEMCACHED_SUCCESS;
   }
 
+  if (rc == MEMCACHED_SUCCESS && ptr->delete_trigger)
+    ptr->delete_trigger(ptr, key, key_length);
+
 error:
   LIBMEMCACHED_MEMCACHED_DELETE_END();
   return rc;

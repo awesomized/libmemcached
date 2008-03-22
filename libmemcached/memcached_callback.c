@@ -54,6 +54,12 @@ memcached_return memcached_callback_set(memcached_st *ptr,
       ptr->get_key_failure= func;
       break;
     }
+  case MEMCACHED_CALLBACK_DELETE_TRIGGER:
+    {
+      memcached_trigger_delete_key func= (memcached_trigger_delete_key)data;
+      ptr->delete_trigger= func;
+      break;
+    }
   default:
     return MEMCACHED_FAILURE;
   }
@@ -105,6 +111,11 @@ void *memcached_callback_get(memcached_st *ptr,
     {
       *error= ptr->get_key_failure ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
       return (void *)ptr->get_key_failure;
+    }
+  case MEMCACHED_CALLBACK_DELETE_TRIGGER:
+    {
+      *error= ptr->delete_trigger ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
+      return (void *)ptr->delete_trigger;
     }
   default:
       WATCHPOINT_ASSERT(0);

@@ -584,6 +584,26 @@ uint8_t read_through(memcached_st *memc)
   return 0;
 }
 
+memcached_return delete_trigger(memcached_st *ptr,  char *key, size_t key_length)
+{
+  assert(key);
+
+  return MEMCACHED_SUCCESS;
+}
+
+uint8_t delete_through(memcached_st *memc)
+{
+  memcached_trigger_delete_key callback;
+  memcached_return rc;
+
+  callback= delete_trigger;
+
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, callback);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
 uint8_t get_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -2531,6 +2551,7 @@ test_st tests[] ={
   {"bad_key", 1, bad_key_test },
   {"memcached_server_cursor", 1, memcached_server_cursor_test },
   {"read_through", 1, read_through },
+  {"delete_through", 1, delete_through },
   {0, 0, 0}
 };
 

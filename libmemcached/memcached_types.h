@@ -28,6 +28,8 @@ typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcach
 typedef memcached_return (*memcached_trigger_key)(memcached_st *ptr,  
                                                   char *key, size_t key_length, 
                                                   memcached_result_st *result);
+typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr,  
+                                                         char *key, size_t key_length);
 
 #ifdef __cplusplus
 }

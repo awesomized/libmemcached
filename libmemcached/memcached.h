@@ -83,6 +83,7 @@ struct memcached_st {
   memcached_malloc_function call_malloc;
   memcached_realloc_function call_realloc;
   memcached_trigger_key get_key_failure;
+  memcached_trigger_delete_key delete_trigger;
 #ifdef NOT_USED /* Future Use */
   uint8_t replicas;
   memcached_return warning;
