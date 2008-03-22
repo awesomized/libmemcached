@@ -30,6 +30,7 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_constants.h \ 
 		    memcached_result.h \
 		    memcached_server.h \
+		    memcached_storage.h \
 		    memcached_string.h \
 		    memcached_types.h \
 		    memcached_watchpoint.h

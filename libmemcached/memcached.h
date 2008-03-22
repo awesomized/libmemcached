@@ -118,36 +118,6 @@ char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
 uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 
-/* All of the functions for adding data to the server */
-memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
-                               char *value, size_t value_length, 
-                               time_t expiration,
-                               uint32_t  flags);
-memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
-                               char *value, size_t value_length, 
-                               time_t expiration,
-                               uint32_t  flags);
-memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_length,
-                                   char *value, size_t value_length, 
-                                   time_t expiration,
-                                   uint32_t  flags);
-memcached_return memcached_append(memcached_st *ptr, 
-                                  char *key, size_t key_length,
-                                  char *value, size_t value_length, 
-                                  time_t expiration,
-                                  uint32_t flags);
-memcached_return memcached_prepend(memcached_st *ptr, 
-                                   char *key, size_t key_length,
-                                   char *value, size_t value_length, 
-                                   time_t expiration,
-                                   uint32_t flags);
-memcached_return memcached_cas(memcached_st *ptr, 
-                               char *key, size_t key_length,
-                               char *value, size_t value_length, 
-                               time_t expiration,
-                               uint32_t flags,
-                               uint64_t cas);
-
 /* Get functions */
 char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
                     size_t *value_length, 
@@ -198,48 +168,6 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
                                        char **keys, size_t *key_length, 
                                        unsigned int number_of_keys);
 
-memcached_return memcached_set_by_key(memcached_st *ptr, 
-                                      char *master_key, size_t master_key_length, 
-                                      char *key, size_t key_length, 
-                                      char *value, size_t value_length, 
-                                      time_t expiration,
-                                      uint32_t flags);
-
-memcached_return memcached_add_by_key(memcached_st *ptr, 
-                                      char *master_key, size_t master_key_length,
-                                      char *key, size_t key_length,
-                                      char *value, size_t value_length, 
-                                      time_t expiration,
-                                      uint32_t flags);
-
-memcached_return memcached_replace_by_key(memcached_st *ptr, 
-                                          char *master_key, size_t master_key_length,
-                                          char *key, size_t key_length,
-                                          char *value, size_t value_length, 
-                                          time_t expiration,
-                                          uint32_t flags);
-
-memcached_return memcached_prepend_by_key(memcached_st *ptr, 
-                                          char *master_key, size_t master_key_length,
-                                          char *key, size_t key_length,
-                                          char *value, size_t value_length, 
-                                          time_t expiration,
-                                          uint32_t flags);
-
-memcached_return memcached_append_by_key(memcached_st *ptr, 
-                                         char *master_key, size_t master_key_length,
-                                         char *key, size_t key_length,
-                                         char *value, size_t value_length, 
-                                         time_t expiration,
-                                         uint32_t flags);
-
-memcached_return memcached_cas_by_key(memcached_st *ptr, 
-                                      char *master_key, size_t master_key_length,
-                                      char *key, size_t key_length,
-                                      char *value, size_t value_length, 
-                                      time_t expiration,
-                                      uint32_t flags,
-                                      uint64_t cas);
 memcached_return memcached_delete_by_key(memcached_st *ptr, 
                                          char *master_key, size_t master_key_length,
                                          char *key, size_t key_length,
@@ -267,5 +195,7 @@ memcached_return memcached_server_cursor(memcached_st *ptr,
 #ifdef __cplusplus
 }
 #endif
+
+#include <libmemcached/memcached_storage.h>
 
 #endif /* __MEMCACHED_H__ */
