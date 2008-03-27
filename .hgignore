@@ -43,3 +43,32 @@ Makefile(.in)?$
 
 # Merged files
 \.orig$
+
+#HTML files
+docs/libmemcached/default.css
+docs/libmemcached/memcached.html
+docs/libmemcached/memcached_auto.html
+docs/libmemcached/memcached_behavior.html
+docs/libmemcached/memcached_callback.html
+docs/libmemcached/memcached_create.html
+docs/libmemcached/memcached_delete.html
+docs/libmemcached/memcached_examples.html
+docs/libmemcached/memcached_flush.html
+docs/libmemcached/memcached_get.html
+docs/libmemcached/memcached_quit.html
+docs/libmemcached/memcached_result_st.html
+docs/libmemcached/memcached_server_st.html
+docs/libmemcached/memcached_servers.html
+docs/libmemcached/memcached_set.html
+docs/libmemcached/memcached_stats.html
+docs/libmemcached/memcached_strerror.html
+docs/libmemcached/memcached_verbosity.html
+docs/libmemcached/memcached_version.html
+docs/libmemcached/memcat.html
+docs/libmemcached/memcp.html
+docs/libmemcached/memerror.html
+docs/libmemcached/memflush.html
+docs/libmemcached/memrm.html
+docs/libmemcached/memslap.html
+docs/libmemcached/memstat.html
+
