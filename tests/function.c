@@ -67,7 +67,7 @@ memcached_return server_display_function(memcached_st *ptr, memcached_server_st 
   /* Do Nothing */
   uint32_t bigger= *((uint32_t *)(context));
   assert(bigger <= server->port);
-  *((uint32_t *)(context))= bigger;
+  *((uint32_t *)(context))= server->port;
 
   return MEMCACHED_SUCCESS;
 }
@@ -123,7 +123,6 @@ uint8_t server_unsort_test(memcached_st *ptr)
 
   local_memc= memcached_create(NULL);
   assert(local_memc);
-  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
 
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
