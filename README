@@ -12,8 +12,8 @@ memslap - Load generation utility (benchmark!)
 
 The utilities are beta quality at this point. The library is in production
 in many locations (upwards to 600 nodes). For networks of more then 512
-hosts you must update the target WHEEL size for number of hosts * 4 in 
-libmemcached/memcached_constants.h.
+hosts using consistent hashing, you must update the target WHEEL size for 
+number of hosts * 4 in libmemcached/memcached_constants.h. 
 
 Want to contribute? If you write more then three good patches, then I will
 just ask you to commit directly to the tree. I am happy to have additional
