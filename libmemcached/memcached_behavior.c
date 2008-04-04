@@ -54,8 +54,17 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
-    set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
-    break;
+    {
+      set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
+
+      if (ptr->flags & MEM_USE_SORT_HOSTS)
+      {
+        memcached_quit(ptr);
+        sort_hosts(ptr);
+      }
+
+      break;
+    }
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     ptr->poll_timeout= (int32_t)data;
     break;

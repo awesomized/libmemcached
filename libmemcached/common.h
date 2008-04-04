@@ -109,4 +109,6 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 memcached_return memcachd_key_test(char **keys, size_t *key_length,
                                    unsigned int number_of_keys);
 
+void sort_hosts(memcached_st *ptr);
+
 #endif /* __COMMON_H__ */

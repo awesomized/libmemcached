@@ -117,6 +117,7 @@ uint8_t server_unsort_test(memcached_st *ptr)
 {
   uint8_t x;
   uint32_t counter= 0; /* Prime the value for the assert in server_display_function */
+  uint32_t bigger= 0; /* Prime the value for the assert in server_display_function */
   memcached_return rc;
   memcached_server_function callbacks[1];
   memcached_st *local_memc;
@@ -135,6 +136,11 @@ uint8_t server_unsort_test(memcached_st *ptr)
 
   callbacks[0]= server_display_unsort_function;
   memcached_server_cursor(local_memc, callbacks, (void *)&counter,  1);
+
+  /* Now we sort old data! */
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
+  callbacks[0]= server_display_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
 
 
   memcached_free(local_memc);
