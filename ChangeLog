@@ -1,4 +1,5 @@
 0.19
+  * Logic fix in branch prediction (thanks Jay!)
   * Read through cached support.
   * Fixed for cas by key operation.
   * Fix for memcached_server_st list structures to have correct count.

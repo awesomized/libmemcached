@@ -65,8 +65,9 @@ uint32_t test_ports[TEST_PORT_COUNT];
 memcached_return server_display_function(memcached_st *ptr, memcached_server_st *server, void *context)
 {
   /* Do Nothing */
-  uint32_t *bigger= (uint32_t *)context;
-  assert(*bigger <= server->port);
+  uint32_t bigger= *((uint32_t *)(context));
+  assert(bigger <= server->port);
+  *((uint32_t *)(context))= bigger;
 
   return MEMCACHED_SUCCESS;
 }
