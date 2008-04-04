@@ -116,7 +116,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
 
-  if (ptr->number_of_hosts > 1)
+  if (ptr->number_of_hosts > 1 && ptr->flags & MEMCACHED_BEHAVIOR_SORT_HOSTS)
     qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
 
   rebalance_wheel(ptr);
@@ -180,7 +180,7 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
 
-  if (ptr->number_of_hosts > 1)
+  if (ptr->number_of_hosts > 1 && ptr->flags & MEMCACHED_BEHAVIOR_SORT_HOSTS)
     qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
 
   ptr->hosts[0].count= ptr->number_of_hosts;
@@ -221,13 +221,8 @@ memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
 
   host_reset(NULL, &new_host_list[count-1], hostname, port, MEMCACHED_CONNECTION_TCP);
 
-  /* We alway sort lists by default */
-  if (new_host_list[0].count > 1)
-    qsort(new_host_list, count, sizeof(memcached_server_st), compare_servers);
-
   /* Backwards compatibility hack */
   new_host_list[0].count= count;
-
 
   *error= MEMCACHED_SUCCESS;
   return new_host_list;

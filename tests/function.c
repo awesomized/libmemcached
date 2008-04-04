@@ -102,6 +102,47 @@ uint8_t server_sort_test(memcached_st *ptr)
   return 0;
 }
 
+memcached_return server_display_unsort_function(memcached_st *ptr, memcached_server_st *server, void *context)
+{
+  /* Do Nothing */
+  uint32_t x= *((uint32_t *)(context));
+
+  assert(test_ports[x] == server->port);
+  *((uint32_t *)(context))= ++x;
+
+  return MEMCACHED_SUCCESS;
+}
+
+uint8_t server_unsort_test(memcached_st *ptr)
+{
+  uint8_t x;
+  uint32_t counter= 0; /* Prime the value for the assert in server_display_function */
+  memcached_return rc;
+  memcached_server_function callbacks[1];
+  memcached_st *local_memc;
+
+  local_memc= memcached_create(NULL);
+  assert(local_memc);
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
+
+  for (x= 0; x < TEST_PORT_COUNT; x++)
+  {
+    test_ports[x]= random() % 64000;
+    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    assert(local_memc->number_of_hosts == x+1);
+    assert(local_memc->hosts[0].count == x+1);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  callbacks[0]= server_display_unsort_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&counter,  1);
+
+
+  memcached_free(local_memc);
+
+  return 0;
+}
+
 uint8_t allocation_test(memcached_st *not_used)
 {
   memcached_st *memc;
@@ -2522,6 +2563,7 @@ test_st tests[] ={
   {"init", 0, init_test },
   {"allocation", 0, allocation_test },
   {"server_list_null_test", 0, server_list_null_test},
+  {"server_unsort", 0, server_unsort_test},
   {"server_sort", 0, server_sort_test},
   {"clone_test", 0, clone_test },
   {"error", 0, error_test },
