@@ -52,6 +52,7 @@ static int compare_servers(const void *p1, const void *p2)
 void sort_hosts(memcached_st *ptr)
 {
   qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
+  ptr->hosts[0].count= ptr->number_of_hosts;
 }
 
 static void host_reset(memcached_st *ptr, memcached_server_st *host, 
