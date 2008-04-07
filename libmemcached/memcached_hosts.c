@@ -51,8 +51,11 @@ static int compare_servers(const void *p1, const void *p2)
 
 void sort_hosts(memcached_st *ptr)
 {
-  qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
-  ptr->hosts[0].count= ptr->number_of_hosts;
+  if (ptr->number_of_hosts)
+  {
+    qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
+    ptr->hosts[0].count= ptr->number_of_hosts;
+  }
 }
 
 static void host_reset(memcached_st *ptr, memcached_server_st *host, 
@@ -122,7 +125,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
 
-  if (ptr->number_of_hosts > 1 && ptr->flags & MEM_USE_SORT_HOSTS)
+  if (ptr->flags & MEM_USE_SORT_HOSTS)
     sort_hosts(ptr);
 
   rebalance_wheel(ptr);
@@ -186,7 +189,7 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
 
-  if (ptr->number_of_hosts > 1 && ptr->flags & MEM_USE_SORT_HOSTS)
+  if (ptr->flags & MEM_USE_SORT_HOSTS)
     sort_hosts(ptr);
 
   ptr->hosts[0].count= ptr->number_of_hosts;
