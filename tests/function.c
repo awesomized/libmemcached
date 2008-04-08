@@ -620,6 +620,7 @@ uint8_t read_through(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(string_length ==  strlen(READ_THROUGH_VALUE));
   assert(!strcmp(READ_THROUGH_VALUE, string));
+  free(string);
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -627,6 +628,7 @@ uint8_t read_through(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(string_length ==  strlen(READ_THROUGH_VALUE));
   assert(!strcmp(READ_THROUGH_VALUE, string));
+  free(string);
 
   return 0;
 }
@@ -1950,8 +1952,6 @@ uint8_t user_supplied_bug14(memcached_st *memc)
                           &string_length, &flags, &rc);
 
     assert(rc == MEMCACHED_SUCCESS);
-    if (current_length > 0)
-      assert(string);
     assert(string_length == current_length);
     assert(!memcmp(string, value, string_length));
 
