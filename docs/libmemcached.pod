@@ -106,8 +106,8 @@ Major version value. Such as 1.23.4, would be 4
 
 When using threads or forked processes it is important to keep an instance
 of C<memcached_st> per process or thread. Without creating your own locking
-structures you can no share a single C<memcached_st>. You can though call
-memcached_close(3) on a C<memcached_st> and then use the resulting cloned
+structures you can not share a single C<memcached_st>. You can though call
+memcached_quit(3) on a C<memcached_st> and then use the resulting cloned
 structure.
 
 =head1 HOME
