@@ -1,4 +1,4 @@
-0.19 Tue Apr  8 08:39:46 PDT 2008
+0.19 Wed Apr  9 09:30:53 PDT 2008
   * Documentation fix in libmemcached.
   * Fixed bug where sort was always occuring on hosts
   * Logic fix in branch prediction (thanks Jay!)

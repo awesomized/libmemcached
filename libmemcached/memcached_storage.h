@@ -13,63 +13,78 @@
 extern "C" {
 #endif
 
-typedef enum {
-  SET_OP,
-  REPLACE_OP,
-  ADD_OP,
-  PREPEND_OP,
-  APPEND_OP,
-  CAS_OP,
-} memcached_storage_action;
+/* All of the functions for adding data to the server */
+memcached_return memcached_set(memcached_st *ptr, char *key, size_t key_length, 
+                               char *value, size_t value_length, 
+                               time_t expiration,
+                               uint32_t  flags);
+memcached_return memcached_add(memcached_st *ptr, char *key, size_t key_length,
+                               char *value, size_t value_length, 
+                               time_t expiration,
+                               uint32_t  flags);
+memcached_return memcached_replace(memcached_st *ptr, char *key, size_t key_length,
+                                   char *value, size_t value_length, 
+                                   time_t expiration,
+                                   uint32_t  flags);
+memcached_return memcached_append(memcached_st *ptr, 
+                                  char *key, size_t key_length,
+                                  char *value, size_t value_length, 
+                                  time_t expiration,
+                                  uint32_t flags);
+memcached_return memcached_prepend(memcached_st *ptr, 
+                                   char *key, size_t key_length,
+                                   char *value, size_t value_length, 
+                                   time_t expiration,
+                                   uint32_t flags);
+memcached_return memcached_cas(memcached_st *ptr, 
+                               char *key, size_t key_length,
+                               char *value, size_t value_length, 
+                               time_t expiration,
+                               uint32_t flags,
+                               uint64_t cas);
 
-/* This is not available for public use. */
-memcached_return memcached_send(memcached_st *ptr, 
-                                char *master_key, size_t master_key_length, 
-                                char *key, size_t key_length, 
-                                char *value, size_t value_length, 
-                                time_t expiration,
-                                uint32_t flags,
-                                uint64_t cas,
-                                memcached_storage_action verb);
+memcached_return memcached_set_by_key(memcached_st *ptr, 
+                                      char *master_key, size_t master_key_length, 
+                                      char *key, size_t key_length, 
+                                      char *value, size_t value_length, 
+                                      time_t expiration,
+                                      uint32_t flags);
 
+memcached_return memcached_add_by_key(memcached_st *ptr, 
+                                      char *master_key, size_t master_key_length,
+                                      char *key, size_t key_length,
+                                      char *value, size_t value_length, 
+                                      time_t expiration,
+                                      uint32_t flags);
 
-/* All of the functions/macros for adding data to the server */
+memcached_return memcached_replace_by_key(memcached_st *ptr, 
+                                          char *master_key, size_t master_key_length,
+                                          char *key, size_t key_length,
+                                          char *value, size_t value_length, 
+                                          time_t expiration,
+                                          uint32_t flags);
 
-#define memcached_set(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, SET_OP)
+memcached_return memcached_prepend_by_key(memcached_st *ptr, 
+                                          char *master_key, size_t master_key_length,
+                                          char *key, size_t key_length,
+                                          char *value, size_t value_length, 
+                                          time_t expiration,
+                                          uint32_t flags);
 
-#define memcached_add(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, ADD_OP)
+memcached_return memcached_append_by_key(memcached_st *ptr, 
+                                         char *master_key, size_t master_key_length,
+                                         char *key, size_t key_length,
+                                         char *value, size_t value_length, 
+                                         time_t expiration,
+                                         uint32_t flags);
 
-#define memcached_replace(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, REPLACE_OP)
-
-#define memcached_prepend(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, PREPEND_OP)
-
-#define memcached_append(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, APPEND_OP)
-
-#define memcached_cas(PTR, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS, CAS) \
-  memcached_send((PTR), (KEY), (KEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), (CAS), CAS_OP)
-
-#define memcached_set_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, SET_OP)
-
-#define memcached_add_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, ADD_OP)
-
-#define memcached_replace_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, REPLACE_OP)
-
-#define memcached_prepend_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, PREPEND_OP)
-
-#define memcached_append_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), 0, APPEND_OP)
-
-#define memcached_cas_by_key(PTR, MKEY, MKEY_LEN, KEY, KEY_LEN, VALUE, VALUE_LEN, EXP, FLAGS, CAS) \
-  memcached_send((PTR), (MKEY), (MKEY_LEN), (KEY), (KEY_LEN), (VALUE), (VALUE_LEN), (EXP), (FLAGS), (CAS), CAS_OP)
+memcached_return memcached_cas_by_key(memcached_st *ptr, 
+                                      char *master_key, size_t master_key_length,
+                                      char *key, size_t key_length,
+                                      char *value, size_t value_length, 
+                                      time_t expiration,
+                                      uint32_t flags,
+                                      uint64_t cas);
 
 #ifdef __cplusplus
 }
