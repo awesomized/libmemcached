@@ -310,6 +310,9 @@ test:
 	podchecker memflush.pod
 
 
+html:
+	pod2htmltree "/libmemcached" .
+
 clean:
 	rm -f *.1
 	rm -f *.3
