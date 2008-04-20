@@ -1,3 +1,5 @@
+  * Fix assert.h compile problem on CentOS
+
 0.19 Wed Apr  9 09:30:53 PDT 2008
   * Documentation fix in libmemcached.
   * Fixed bug where sort was always occuring on hosts

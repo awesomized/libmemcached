@@ -31,7 +31,7 @@ extern "C" {
 #define MEMCACHED_VERSION_STRING_LENGTH 12
 
 /* string value */
-#define LIBMEMCACHED_VERSION_STRING "0.19"
+#define LIBMEMCACHED_VERSION_STRING "0.20"
 
 struct memcached_stat_st {
   uint32_t pid;
