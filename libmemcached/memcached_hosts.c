@@ -40,10 +40,7 @@ static int compare_servers(const void *p1, const void *p2)
 
   if (return_value == 0)
   {
-    if (a->port > b->port)
-      return_value++;
-    else
-      return_value--;
+    return_value= (int) (a->port - b->port);
   }
 
   return return_value;
