@@ -59,7 +59,9 @@ Using this you can enable different means of distributing values to servers.
 The default method is MEMCACHED_DISTRIBUTION_MODULA. You can enable
 consistent hashing by setting MEMCACHED_DISTRIBUTION_CONSISTENT. 
 Consistent hashing delivers better distribution and allows servers to be 
-added to the cluster with minimal cache losses. 
+added to the cluster with minimal cache losses. Currently
+MEMCACHED_DISTRIBUTION_CONSISTENT is an alias for the value
+MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA.  
 
 =item MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
 
