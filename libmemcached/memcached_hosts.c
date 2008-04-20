@@ -95,9 +95,11 @@ static int continuum_item_cmp(const void *t1, const void *t2)
 {
   struct continuum_item *ct1 = (struct continuum_item *)t1;
   struct continuum_item *ct2 = (struct continuum_item *)t2;
-  if(ct1->value == ct2->value)
+
+  WATCHPOINT_ASSERT(ct1->value != 153);
+  if (ct1->value == ct2->value)
     return 0;
-  else if(ct1->value > ct2->value)
+  else if (ct1->value > ct2->value)
     return 1;
   else
     return -1;
@@ -117,10 +119,10 @@ static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
 
 void update_continuum(memcached_st *ptr)
 {
-  int index;
-  int host_index;
-  int continuum_index= 0;
-  int value;
+  uint32_t index;
+  uint32_t host_index;
+  uint32_t continuum_index= 0;
+  uint32_t value;
   memcached_server_st *list = ptr->hosts;
 
   for (host_index = 0; host_index < ptr->number_of_hosts; ++host_index) 
@@ -139,11 +141,12 @@ void update_continuum(memcached_st *ptr)
     }
   }
 
+  WATCHPOINT_ASSERT(ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
   qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(struct continuum_item), continuum_item_cmp);
 #ifdef HAVE_DEBUG
-  for(index= 0; index < ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER - 1; ++index) 
+  for (index= 0; index < ((ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
   {
-    WATCHPOINT_ASSERT(ptr->continuum[index].value < ptr->continuum[index + 1].value);
+    WATCHPOINT_ASSERT(ptr->continuum[index].value <= ptr->continuum[index + 1].value);
   }
 #endif
 }
