@@ -12,10 +12,11 @@ static uint32_t internal_generate_hash(char *key, size_t key_length);
 static uint32_t internal_generate_md5(char *key, size_t key_length);
 static uint32_t internal_generate_ketama_md5(char *key, size_t key_length);
 
-unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
+uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
-  unsigned int x;
+  uint32_t x= 0;
+
 
   WATCHPOINT_ASSERT(ptr->number_of_hosts);
 
@@ -98,12 +99,70 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
   }
 
   WATCHPOINT_ASSERT(hash);
+  return hash;
+}
+
+unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
+{
+  switch (ptr->distribution) 
+  {
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    {
+      int num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
+
+      hash= hash;
+      struct continuum_item *begin, *end, *left, *right, *middle;
+      begin= left= ptr->continuum;
+      end= right= ptr->continuum + (num - 1);
+
+      while (1)
+      {
+        struct continuum_item *rmiddle;
+
+        middle = left + (right - left) / 2;
+
+        if (middle==end)
+          return begin->index;
+
+        if (middle==begin)
+          return end->index;
+
+        rmiddle = middle+1;
+
+        if (hash<rmiddle->value && hash>=middle->value)
+          return middle->index;
+
+        if (middle->value < hash)
+          left = middle + 1;
+        else if (middle->value > hash)
+          right = middle - 1;
+
+        if (left>right)
+          return left->index;
+      }
+    } 
+    break;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
+    {
+      unsigned int server_key;
+
+      server_key= hash % MEMCACHED_WHEEL_SIZE;
+
+      return ptr->wheel[server_key];
+    }
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    return hash % ptr->number_of_hosts;
+  default:
+    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
+    return hash % ptr->number_of_hosts;
+  }
 
   if (ptr->distribution == MEMCACHED_DISTRIBUTION_MODULA)
   {
     return hash % ptr->number_of_hosts;
   }
-  else
+  else if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
   {
     unsigned int server_key;
 
@@ -111,6 +170,58 @@ unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_le
 
     return ptr->wheel[server_key];
   }
+  else if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA)
+  {
+    int num = ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
+
+    hash = hash;
+    struct continuum_item *begin, *end, *left, *right, *middle;
+    begin = left = ptr->continuum;
+    end = right = ptr->continuum + (num - 1);
+    while(1)
+    {
+      middle = left + (right - left) / 2;
+      if(middle==end)
+      {
+        return begin->index;
+      }
+      if(middle==begin)
+      {
+        return end->index;
+      }
+      struct continuum_item *rmiddle = middle+1;
+      if(hash<rmiddle->value && hash>=middle->value)
+        return middle->index;
+
+      if(middle->value < hash) {
+        left = middle + 1;
+      }else if(middle->value > hash) {
+        right = middle - 1;
+      }
+
+      if (left>right)
+        return left->index;
+    }
+  } 
+  else 
+  {
+    WATCHPOINT_ASSERT(0);
+  }
+}
+
+unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
+{
+  uint32_t hash= 1; /* Just here to remove compile warning */
+
+  WATCHPOINT_ASSERT(ptr->number_of_hosts);
+
+  if (ptr->number_of_hosts == 1)
+    return 0;
+
+  hash = generate_hash(ptr, key, key_length);
+
+  WATCHPOINT_ASSERT(hash);
+  return dispatch_host(ptr, hash);
 }
 
 static uint32_t internal_generate_hash(char *key, size_t key_length)

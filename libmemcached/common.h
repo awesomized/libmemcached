@@ -111,4 +111,5 @@ memcached_return memcachd_key_test(char **keys, size_t *key_length,
 
 void sort_hosts(memcached_st *ptr);
 
+uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length);
 #endif /* __COMMON_H__ */

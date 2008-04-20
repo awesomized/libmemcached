@@ -33,6 +33,11 @@ extern "C" {
 /* string value */
 #define LIBMEMCACHED_VERSION_STRING "0.19"
 
+struct continuum_item{
+	uint32_t index;
+	uint32_t value;
+};
+
 struct memcached_stat_st {
   uint32_t pid;
   uint32_t uptime;
@@ -77,6 +82,7 @@ struct memcached_st {
   memcached_server_distribution distribution;
   void *user_data;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
+  struct continuum_item continuum[MEMCACHED_CONTINUUM_SIZE];
   memcached_clone_func on_clone;
   memcached_cleanup_func on_cleanup;
   memcached_free_function call_free;
@@ -89,6 +95,7 @@ struct memcached_st {
   memcached_return warning;
 #endif
 };
+
 
 /* Public API */
 const char * memcached_lib_version(void);

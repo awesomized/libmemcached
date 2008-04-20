@@ -91,6 +91,64 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
     free(servers);
 }
 
+static int continuum_item_cmp(const void *t1, const void *t2)
+{
+  struct continuum_item *ct1 = (struct continuum_item *)t1;
+  struct continuum_item *ct2 = (struct continuum_item *)t2;
+  if(ct1->value == ct2->value)
+    return 0;
+  else if(ct1->value > ct2->value)
+    return 1;
+  else
+    return -1;
+}
+
+static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
+{
+  unsigned char results[16];
+
+  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
+
+  return ( (results[3] ) << 24)
+    | ( (results[2] ) << 16)
+    | ( (results[1] ) << 8)
+    | ( results[0] );
+}
+
+void update_continuum(memcached_st *ptr)
+{
+  int index;
+  int host_index;
+  int continuum_index= 0;
+  int value;
+  memcached_server_st *list = ptr->hosts;
+
+  for (host_index = 0; host_index < ptr->number_of_hosts; ++host_index) 
+  {
+    for(index= 1; index <= MEMCACHED_POINTS_PER_SERVER; ++index) 
+    {
+      char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
+      size_t sort_host_length;
+
+      sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH, "%s:%d-%d", 
+                                 list[host_index].hostname, list[host_index].port, index);
+      WATCHPOINT_ASSERT(sort_host_length);
+      value= internal_generate_ketama_md5(sort_host, sort_host_length);
+      ptr->continuum[continuum_index].index= host_index;
+      ptr->continuum[continuum_index++].value= value;
+    }
+  }
+
+  qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(struct continuum_item), continuum_item_cmp);
+#ifdef HAVE_DEBUG
+  for(index= 0; index < ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER - 1; ++index) 
+  {
+    WATCHPOINT_ASSERT(ptr->continuum[index].value < ptr->continuum[index + 1].value);
+  }
+#endif
+}
+
+
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
 {
   unsigned int x;
@@ -128,7 +186,20 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   if (ptr->flags & MEM_USE_SORT_HOSTS)
     sort_hosts(ptr);
 
-  rebalance_wheel(ptr);
+  switch (ptr->distribution) 
+  {
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    update_continuum(ptr);
+    break;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
+    rebalance_wheel(ptr);
+    break;
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    break;
+  default:
+    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
+  }
 
   return MEMCACHED_SUCCESS;
 }
@@ -194,7 +265,20 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
 
   ptr->hosts[0].count= ptr->number_of_hosts;
 
-  rebalance_wheel(ptr);
+  switch (ptr->distribution) 
+  {
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    update_continuum(ptr);
+    break;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
+    rebalance_wheel(ptr);
+    break;
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    break;
+  default:
+    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
+  }
 
   LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
 
