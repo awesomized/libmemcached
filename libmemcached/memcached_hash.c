@@ -148,7 +148,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
     {
       unsigned int server_key;
 
-      server_key= hash % MEMCACHED_WHEEL_SIZE;
+      server_key= hash % MEMCACHED_STRIDE * ptr->wheel_count;
 
       return ptr->wheel[server_key];
     }
@@ -159,55 +159,8 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
     return hash % ptr->number_of_hosts;
   }
 
-  if (ptr->distribution == MEMCACHED_DISTRIBUTION_MODULA)
-  {
-    return hash % ptr->number_of_hosts;
-  }
-  else if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT)
-  {
-    unsigned int server_key;
-
-    server_key= hash % MEMCACHED_WHEEL_SIZE;
-
-    return ptr->wheel[server_key];
-  }
-  else if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA)
-  {
-    int num = ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
-
-    hash = hash;
-    memcached_continuum_item_st *begin, *end, *left, *right, *middle;
-    begin = left = ptr->continuum;
-    end = right = ptr->continuum + (num - 1);
-    while(1)
-    {
-      middle = left + (right - left) / 2;
-      if(middle==end)
-      {
-        return begin->index;
-      }
-      if(middle==begin)
-      {
-        return end->index;
-      }
-      memcached_continuum_item_st *rmiddle = middle+1;
-      if(hash<rmiddle->value && hash>=middle->value)
-        return middle->index;
-
-      if(middle->value < hash) {
-        left = middle + 1;
-      }else if(middle->value > hash) {
-        right = middle - 1;
-      }
-
-      if (left>right)
-        return left->index;
-    }
-  } 
-  else 
-  {
-    WATCHPOINT_ASSERT(0);
-  }
+  WATCHPOINT_ASSERT(0); /* We should never reach here */
+  return 0;
 }
 
 unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)

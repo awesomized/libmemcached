@@ -8,16 +8,32 @@ memcached_return update_continuum(memcached_st *ptr);
 
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
-static void rebalance_wheel(memcached_st *ptr)
+static memcached_return rebalance_wheel(memcached_st *ptr)
 {
   unsigned int x;
   unsigned int y;
   unsigned int latch;
 
-  /* Seed the Wheel */
-  memset(ptr->wheel, 0, sizeof(unsigned int) * MEMCACHED_WHEEL_SIZE);
+  if (ptr->number_of_hosts > ptr->wheel_count)
+  {
+    uint32_t *new_ptr;
 
-  for (latch= y= x= 0; x < MEMCACHED_WHEEL_SIZE; x++, latch++)
+    if (ptr->call_realloc)
+      new_ptr= (uint32_t *)ptr->call_realloc(ptr, ptr->wheel, sizeof(uint32_t) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * MEMCACHED_STRIDE);
+    else
+      new_ptr= (uint32_t *)realloc(ptr->wheel, sizeof(uint32_t) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * MEMCACHED_STRIDE);
+
+    if (new_ptr == 0)
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+    ptr->wheel= new_ptr;
+    ptr->wheel_count= ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION;
+  }
+
+  /* Seed the Wheel */
+  memset(ptr->wheel, 0, sizeof(uint32_t) * MEMCACHED_STRIDE * ptr->wheel_count);
+
+  for (latch= y= x= 0; x < MEMCACHED_STRIDE * ptr->wheel_count; x++, latch++)
   {
     if (latch == MEMCACHED_STRIDE)
     {
@@ -29,6 +45,8 @@ static void rebalance_wheel(memcached_st *ptr)
 
     ptr->wheel[x]= y;
   }
+
+  return MEMCACHED_SUCCESS;
 }
 
 static int compare_servers(const void *p1, const void *p2)
@@ -65,7 +83,7 @@ memcached_return run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
     return update_continuum(ptr);
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
-    rebalance_wheel(ptr);
+    return rebalance_wheel(ptr);
     break;
   case MEMCACHED_DISTRIBUTION_MODULA:
     if (ptr->flags & MEM_USE_SORT_HOSTS)

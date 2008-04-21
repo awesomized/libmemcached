@@ -81,7 +81,8 @@ struct memcached_st {
   memcached_hash hash;
   memcached_server_distribution distribution;
   void *user_data;
-  unsigned int wheel[MEMCACHED_WHEEL_SIZE];
+  unsigned int *wheel;
+  uint32_t wheel_count;
   uint32_t continuum_count;
   memcached_continuum_item_st *continuum;
   memcached_clone_func on_clone;

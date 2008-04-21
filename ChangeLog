@@ -1,3 +1,5 @@
+  * Wheel uses less memory/dynamic allocation for size (no longer limited to
+    512 hosts by default.
   * memslap memory leak fix
   * Added Ketama distribution
   * Fix assert.h compile problem on CentOS
