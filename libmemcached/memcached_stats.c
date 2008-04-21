@@ -130,7 +130,7 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   }
   else if (!strcmp("limit_maxbytes", key))
   {
-    stat->limit_maxbytes= strtol(value, (char **)NULL, 10);
+    stat->limit_maxbytes= strtoll(value, (char **)NULL, 10);
   }
   else if (!strcmp("threads", key))
   {
