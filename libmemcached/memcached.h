@@ -31,16 +31,11 @@ extern "C" {
 #define MEMCACHED_VERSION_STRING_LENGTH 12
 
 /* string value */
-<<<<<<< local
-#define LIBMEMCACHED_VERSION_STRING "0.19"
-
 struct continuum_item{
 	uint32_t index;
 	uint32_t value;
 };
-=======
 #define LIBMEMCACHED_VERSION_STRING "0.20"
->>>>>>> other
 
 struct memcached_stat_st {
   uint32_t pid;
