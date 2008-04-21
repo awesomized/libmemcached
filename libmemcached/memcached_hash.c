@@ -110,6 +110,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
     {
       int num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
+      WATCHPOINT_ASSERT(ptr->continuum);
 
       hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;

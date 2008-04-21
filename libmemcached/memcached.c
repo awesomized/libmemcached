@@ -41,6 +41,14 @@ void memcached_free(memcached_st *ptr)
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
 
+  if (ptr->continuum)
+  {
+    if (ptr->call_free)
+      ptr->call_free(ptr, ptr->continuum);
+    else
+      free(ptr->continuum);
+  }
+
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
   {
     if (ptr->call_free)
