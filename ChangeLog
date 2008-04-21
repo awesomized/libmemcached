@@ -1,3 +1,4 @@
+  * memslap memory leak fix
   * Added Ketama distribution
   * Fix assert.h compile problem on CentOS
 
