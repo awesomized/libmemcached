@@ -207,7 +207,11 @@ test_connect:
             fds[0].events= POLLOUT |  POLLERR;
             error= poll(fds, 1, ptr->root->connect_timeout);
 
-            if (error != 1)
+            if (error == 0) 
+            {
+              goto handle_retry;
+            }
+            else if (error != 1)
             {
               ptr->cached_errno= errno;
               WATCHPOINT_ERRNO(ptr->cached_errno);
@@ -225,6 +229,7 @@ test_connect:
         case EISCONN: /* We were spinning waiting on connect */
           break;
         default:
+handle_retry:
           ptr->cached_errno= errno;
           WATCHPOINT_ERRNO(ptr->cached_errno);
           close(ptr->fd);

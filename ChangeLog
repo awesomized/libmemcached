@@ -1,3 +1,4 @@
+  * Changed default timeout to 1 second for poll timeouts
   * Wheel uses less memory/dynamic allocation for size (no longer limited to
     512 hosts by default.
   * memslap memory leak fix
