@@ -4,6 +4,7 @@
 static memcached_return server_add(memcached_st *ptr, char *hostname, 
                                    unsigned int port,
                                    memcached_connection type);
+memcached_return update_continuum(memcached_st *ptr);
 
 #define MEMCACHED_WHEEL_SIZE 1024
 #define MEMCACHED_STRIDE 4
@@ -55,6 +56,28 @@ void sort_hosts(memcached_st *ptr)
   }
 }
 
+
+memcached_return run_distribution(memcached_st *ptr)
+{
+  switch (ptr->distribution) 
+  {
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    return update_continuum(ptr);
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
+    rebalance_wheel(ptr);
+    break;
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    if (ptr->flags & MEM_USE_SORT_HOSTS)
+      sort_hosts(ptr);
+    break;
+  default:
+    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 static void host_reset(memcached_st *ptr, memcached_server_st *host, 
                        char *hostname, unsigned int port,
                        memcached_connection type)
@@ -90,8 +113,8 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 
 static int continuum_item_cmp(const void *t1, const void *t2)
 {
-  struct continuum_item *ct1 = (struct continuum_item *)t1;
-  struct continuum_item *ct2 = (struct continuum_item *)t2;
+  memcached_continuum_item_st *ct1 = (memcached_continuum_item_st *)t1;
+  memcached_continuum_item_st *ct2 = (memcached_continuum_item_st *)t2;
 
   WATCHPOINT_ASSERT(ct1->value != 153);
   if (ct1->value == ct2->value)
@@ -114,14 +137,31 @@ static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
     | ( results[0] );
 }
 
-void update_continuum(memcached_st *ptr)
+memcached_return update_continuum(memcached_st *ptr)
 {
   uint32_t index;
   uint32_t host_index;
   uint32_t continuum_index= 0;
   uint32_t value;
-  memcached_server_st *list = ptr->hosts;
+  memcached_server_st *list;
 
+  if (ptr->number_of_hosts > ptr->continuum_count)
+  {
+    memcached_continuum_item_st *new_ptr;
+
+    if (ptr->call_realloc)
+      new_ptr= (memcached_continuum_item_st *)ptr->call_realloc(ptr, ptr->continuum, sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * MEMCACHED_POINTS_PER_SERVER);
+    else
+      new_ptr= (memcached_continuum_item_st *)realloc(ptr->continuum, sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * MEMCACHED_POINTS_PER_SERVER);
+
+    if (new_ptr == 0)
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+    ptr->continuum= new_ptr;
+    ptr->continuum_count= ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION;
+  }
+
+  list = ptr->hosts;
   for (host_index = 0; host_index < ptr->number_of_hosts; ++host_index) 
   {
     for(index= 1; index <= MEMCACHED_POINTS_PER_SERVER; ++index) 
@@ -139,13 +179,15 @@ void update_continuum(memcached_st *ptr)
   }
 
   WATCHPOINT_ASSERT(ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
-  qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(struct continuum_item), continuum_item_cmp);
+  qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 #ifdef HAVE_DEBUG
   for (index= 0; index < ((ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
   {
     WATCHPOINT_ASSERT(ptr->continuum[index].value <= ptr->continuum[index + 1].value);
   }
 #endif
+
+  return MEMCACHED_SUCCESS;
 }
 
 
@@ -183,25 +225,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
 
-  if (ptr->flags & MEM_USE_SORT_HOSTS)
-    sort_hosts(ptr);
-
-  switch (ptr->distribution) 
-  {
-  case MEMCACHED_DISTRIBUTION_CONSISTENT:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
-    update_continuum(ptr);
-    break;
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
-    rebalance_wheel(ptr);
-    break;
-  case MEMCACHED_DISTRIBUTION_MODULA:
-    break;
-  default:
-    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
-  }
-
-  return MEMCACHED_SUCCESS;
+  return run_distribution(ptr);
 }
 
 memcached_return memcached_server_add_unix_socket(memcached_st *ptr, char *filename)
@@ -243,8 +267,6 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
                                    memcached_connection type)
 {
   memcached_server_st *new_host_list;
-  LIBMEMCACHED_MEMCACHED_SERVER_ADD_START();
-
 
   if (ptr->call_realloc)
     new_host_list= (memcached_server_st *)ptr->call_realloc(ptr, ptr->hosts, 
@@ -259,30 +281,9 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
 
   host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, type);
   ptr->number_of_hosts++;
-
-  if (ptr->flags & MEM_USE_SORT_HOSTS)
-    sort_hosts(ptr);
-
   ptr->hosts[0].count= ptr->number_of_hosts;
 
-  switch (ptr->distribution) 
-  {
-  case MEMCACHED_DISTRIBUTION_CONSISTENT:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
-    update_continuum(ptr);
-    break;
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
-    rebalance_wheel(ptr);
-    break;
-  case MEMCACHED_DISTRIBUTION_MODULA:
-    break;
-  default:
-    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
-  }
-
-  LIBMEMCACHED_MEMCACHED_SERVER_ADD_END();
-
-  return MEMCACHED_SUCCESS;
+  return run_distribution(ptr);
 }
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 

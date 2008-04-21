@@ -108,7 +108,7 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 memcached_return memcachd_key_test(char **keys, size_t *key_length,
                                    unsigned int number_of_keys);
 
-void sort_hosts(memcached_st *ptr);
+memcached_return run_distribution(memcached_st *ptr);
 
 uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length);
 #endif /* __COMMON_H__ */

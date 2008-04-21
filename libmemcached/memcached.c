@@ -105,6 +105,14 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->get_key_failure= ptr->get_key_failure;
   new_clone->delete_trigger= ptr->delete_trigger;
 
+  rc= run_distribution(new_clone);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    memcached_free(new_clone);
+
+    return NULL;
+  }
+
   if (ptr->on_clone)
     ptr->on_clone(ptr, new_clone);
 

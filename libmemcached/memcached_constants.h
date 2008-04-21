@@ -24,6 +24,7 @@ extern "C" {
 #define MEMCACHED_CONTINUUM_SIZE MEMCACHED_POINTS_PER_SERVER*100 /* This would then set max hosts to 100 */ 
 #define MEMCACHED_STRIDE 4
 #define MEMCACHED_DEFAULT_TIMEOUT INT32_MAX
+#define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
 
 typedef enum {
   MEMCACHED_SUCCESS,

@@ -60,7 +60,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       if (ptr->flags & MEM_USE_SORT_HOSTS)
       {
         memcached_quit(ptr);
-        sort_hosts(ptr);
+        run_distribution(ptr);
       }
 
       break;

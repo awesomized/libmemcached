@@ -39,7 +39,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   if (value == NULL)
   {
-    if (ptr->get_key_failure)
+    if (ptr->get_key_failure && *error == MEMCACHED_NOTFOUND)
     {
       memcached_return rc;
 

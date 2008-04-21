@@ -112,13 +112,13 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
       int num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
 
       hash= hash;
-      struct continuum_item *begin, *end, *left, *right, *middle;
+      memcached_continuum_item_st *begin, *end, *left, *right, *middle;
       begin= left= ptr->continuum;
       end= right= ptr->continuum + (num - 1);
 
       while (1)
       {
-        struct continuum_item *rmiddle;
+        memcached_continuum_item_st *rmiddle;
 
         middle = left + (right - left) / 2;
 
@@ -175,7 +175,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
     int num = ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
 
     hash = hash;
-    struct continuum_item *begin, *end, *left, *right, *middle;
+    memcached_continuum_item_st *begin, *end, *left, *right, *middle;
     begin = left = ptr->continuum;
     end = right = ptr->continuum + (num - 1);
     while(1)
@@ -189,7 +189,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
       {
         return end->index;
       }
-      struct continuum_item *rmiddle = middle+1;
+      memcached_continuum_item_st *rmiddle = middle+1;
       if(hash<rmiddle->value && hash>=middle->value)
         return middle->index;
 

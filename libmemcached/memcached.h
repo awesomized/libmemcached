@@ -31,10 +31,11 @@ extern "C" {
 #define MEMCACHED_VERSION_STRING_LENGTH 12
 
 /* string value */
-struct continuum_item{
-	uint32_t index;
-	uint32_t value;
+struct memcached_continuum_item_st {
+  uint32_t index;
+  uint32_t value;
 };
+
 #define LIBMEMCACHED_VERSION_STRING "0.20"
 
 struct memcached_stat_st {
@@ -81,7 +82,8 @@ struct memcached_st {
   memcached_server_distribution distribution;
   void *user_data;
   unsigned int wheel[MEMCACHED_WHEEL_SIZE];
-  struct continuum_item continuum[MEMCACHED_CONTINUUM_SIZE];
+  uint32_t continuum_count;
+  memcached_continuum_item_st *continuum;
   memcached_clone_func on_clone;
   memcached_cleanup_func on_cleanup;
   memcached_free_function call_free;
