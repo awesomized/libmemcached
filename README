@@ -17,7 +17,11 @@ number of hosts * 4 in libmemcached/memcached_constants.h.
 
 Want to contribute? If you write more then three good patches, then I will
 just ask you to commit directly to the tree. I am happy to have additional
-people work on this project. Please checkout README.FIRST
+people work on this project. Please checkout README.FIRST. 
+
+You will need a C99 compiler in order to compile this library. Currently we
+actively support Linux, MacOSX, FreeBSD, and Solaris. A Windows port is
+currently not supported.
 
 If you are looking for answers to your questions please check out the
 mailing list at:
