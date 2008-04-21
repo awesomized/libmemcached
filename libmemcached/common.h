@@ -16,7 +16,6 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <limits.h>
-#include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/un.h>

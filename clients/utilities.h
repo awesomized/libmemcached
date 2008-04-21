@@ -1,5 +1,4 @@
 #include <getopt.h>
-#include <assert.h>
 #include <libmemcached/memcached.h>
 #include "client_options.h"
 
