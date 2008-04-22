@@ -9,6 +9,7 @@
 class Memcached
 {
   memcached_st memc;
+  memcached_result_st result;
 
 public:
 
@@ -23,7 +24,32 @@ public:
     memcached_clone(&memc, clone);
     WATCHPOINT;
   }
+  memcached_result_st *fetch_result()
+  {
+    memcached_return rc;
+    return memcached_fetch_result(&memc, &result, &rc);
+  }
+  /*
+    
+  memcached_return fetch_execute(
+            memcached_return ((*callback[]))(&memc,
+                                             &result,
+                                             void *context,
+                                             unsigned in number_of_callbacks))
+  {
+    return memcached_fetch_execute(&memc,
+                            (*callback[])(&memc, &result, context,
+                                          number_of_callbacks));
+  }
+                                        */
+  char *fetch (char *key, size_t *key_length, size_t *value_length)
+  {
+    uint32_t flags;
+    memcached_return rc;
 
+    return memcached_fetch(&memc, key, key_length,
+                    value_length, &flags, &rc);
+  }
   char *get(char *key, size_t *value_length)
   {
     uint32_t flags;
@@ -63,6 +89,18 @@ public:
                          (time_t)0,
                          (uint32_t)0 );
   }
+  memcached_return
+    increment(char *key, unsigned int offset, uint64_t *value)
+  {
+    return memcached_increment(&memc, key, strlen(key),
+                         offset, value);
+  }
+  memcached_return
+    decrement(char *key, unsigned int offset, uint64_t *value)
+  {
+    return memcached_decrement(&memc, key, strlen(key),
+                         offset, value);
+  }
 
 
   memcached_return add(char *key, char *value, size_t value_length)
@@ -71,12 +109,27 @@ public:
                  value, value_length,
                  (time_t)0, (uint32_t)0);
   }
+  memcached_return add_by_key(char *master_key, char *key, char *value, size_t value_length)
+  {
+    return memcached_add_by_key(&memc, master_key, strlen(master_key),
+                                key, strlen(key),
+                                value, value_length,
+                                (time_t)0, (uint32_t)0);
+  }
 
   memcached_return replace(char *key, char *value, size_t value_length)
   {
     return memcached_replace(&memc, key, strlen(key),
                      value, value_length,
                      (time_t)0, (uint32_t)0);
+  }
+  memcached_return replace_by_key(char *master_key,
+                                  char *key, char *value, size_t value_length)
+  {
+    return memcached_replace_by_key(&memc, master_key, strlen(master_key),
+                                    key, strlen(key),
+                                    value, value_length,
+                                    (time_t)0, (uint32_t)0);
   }
 
   memcached_return prepend(char *key, char *value, size_t value_length)
@@ -86,7 +139,15 @@ public:
                     (time_t)0,
                     (uint32_t)0);
   }
-
+  memcached_return prepend_by_key(char *master_key,
+                                  char *key, char *value, size_t value_length)
+  {
+    return memcached_prepend_by_key(&memc, master_key, strlen(master_key),
+                                    key, strlen(key),
+                                    value, value_length,
+                                    (time_t)0,
+                                    (uint32_t)0);
+  }
 
   memcached_return  append(char *key, char *value, size_t value_length)
   {
@@ -94,6 +155,46 @@ public:
                     value, value_length,
                     (time_t)0,
                     (uint32_t)0);
+  }
+  memcached_return  append_by_key(char *master_key,
+                                  char *key, char *value, size_t value_length)
+  {
+    return memcached_append_by_key(&memc,
+                                   master_key, strlen(master_key),
+                                   key, strlen(key),
+                                   value, value_length,
+                                   (time_t)0,
+                                   (uint32_t)0);
+  }
+  memcached_return  cas(char *key, char *value, size_t value_length, uint64_t cas)
+  {
+    return memcached_cas(&memc, key, strlen(key),
+                    value, value_length,
+                    (time_t)0,
+                    (uint32_t)0,
+                    cas);
+  }
+  memcached_return  cas_by_key(char *master_key, char *key, char *value,
+                               size_t value_length, uint64_t cas)
+  {
+    return memcached_cas_by_key(&memc,
+                                master_key, strlen(master_key),
+                                key, strlen(key),
+                                value, value_length,
+                                (time_t)0,
+                                (uint32_t)0,
+                                cas);
+  }
+  // Ok, so how do I have a 'delete' method, delete being a keyword?
+  memcached_return delete(char *key)
+  {
+    return memcached_delete (&memc, key, strlen(key), (time_t)0);
+
+  }
+  memcached_return delete_by_key(char *master_key, char *key)
+  {
+    return memcached_delete_by_key(&memc, master_key, strlen(master_key),
+                           key, strlen(key), (time_t)0);
   }
  ~Memcached()
  {
