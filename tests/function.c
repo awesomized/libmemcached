@@ -2723,6 +2723,7 @@ collection_st collection[] ={
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", pre_hsieh, 0, generate_tests},
+  {"generate_ketama", pre_behavior_ketama, 0, generate_tests},
   {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
   {"generate_md5", pre_md5, 0, generate_tests},
   {"generate_murmur", pre_murmur, 0, generate_tests},

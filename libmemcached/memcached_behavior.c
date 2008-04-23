@@ -44,17 +44,20 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       break;
     }
   case MEMCACHED_BEHAVIOR_KETAMA:
-    if (data)
     {
-      ptr->hash= MEMCACHED_HASH_MD5;
-      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
+      if (data)
+      {
+        ptr->hash= MEMCACHED_HASH_MD5;
+        ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
+      }
+      else
+      {
+        ptr->hash= 0;
+        ptr->distribution= 0;
+      }
+      run_distribution(ptr);
+      break;
     }
-    else
-    {
-      ptr->hash= 0;
-      ptr->distribution= 0;
-    }
-    break;
   case MEMCACHED_BEHAVIOR_HASH:
     ptr->hash= (memcached_hash)(data);
     break;
