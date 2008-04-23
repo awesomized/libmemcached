@@ -36,14 +36,14 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-uint8_t cleanup_pairs(memcached_st *memc)
+test_return cleanup_pairs(memcached_st *memc)
 {
   pairs_free(global_pairs);
 
   return 0;
 }
 
-uint8_t generate_pairs(memcached_st *memc)
+test_return generate_pairs(memcached_st *memc)
 {
   unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
@@ -58,7 +58,7 @@ uint8_t generate_pairs(memcached_st *memc)
   return 0;
 }
 
-uint8_t drizzle(memcached_st *memc)
+test_return drizzle(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
@@ -152,7 +152,7 @@ memcached_return enable_consistent(memcached_st *memc)
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
 */
-uint8_t add_test(memcached_st *memc)
+test_return add_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -183,7 +183,7 @@ uint8_t add_test(memcached_st *memc)
  * repeating add_tests many times
  * may show a problem in timing
  */
-uint8_t many_adds(memcached_st *memc)
+test_return many_adds(memcached_st *memc)
 {
   unsigned int i;
   for (i = 0; i < TEST_COUNTER; i++){

@@ -10,7 +10,6 @@ static uint32_t FNV_32_PRIME= 16777619;
 /* Prototypes */
 static uint32_t internal_generate_hash(char *key, size_t key_length);
 static uint32_t internal_generate_md5(char *key, size_t key_length);
-static uint32_t internal_generate_ketama_md5(char *key, size_t key_length);
 
 uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
@@ -81,11 +80,6 @@ uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length)
       }
     }
     break;
-    case MEMCACHED_HASH_KETAMA: 
-    {
-      hash= internal_generate_ketama_md5(key, key_length);
-      break;
-    }
     case MEMCACHED_HASH_HSIEH:
     {
       hash= hsieh_hash(key, key_length);
@@ -109,7 +103,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
     {
-      int num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
+      uint32_t num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
       WATCHPOINT_ASSERT(ptr->continuum);
 
       hash= hash;
@@ -163,7 +157,11 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
   return 0;
 }
 
-unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
+/* 
+  One day make this public, and have it return the actual memcached_server_st 
+  to the calling application.
+*/
+uint32_t memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
 
@@ -197,18 +195,6 @@ static uint32_t internal_generate_hash(char *key, size_t key_length)
 }
 
 static uint32_t internal_generate_md5(char *key, size_t key_length)
-{
-  unsigned char results[16];
-
-  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
-
-  return (uint32_t)(( results[3] << 24 )
-                    | ( results[2] << 16 )
-                    | ( results[1] <<  8 )
-                    |   results[0] );
-}
-
-static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
 {
   unsigned char results[16];
 

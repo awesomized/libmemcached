@@ -143,18 +143,6 @@ static int continuum_item_cmp(const void *t1, const void *t2)
     return -1;
 }
 
-static uint32_t internal_generate_ketama_md5(char *key, size_t key_length)
-{
-  unsigned char results[16];
-
-  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
-
-  return ( (results[3] ) << 24)
-    | ( (results[2] ) << 16)
-    | ( (results[1] ) << 8)
-    | ( results[0] );
-}
-
 memcached_return update_continuum(memcached_st *ptr)
 {
   uint32_t index;
@@ -190,7 +178,7 @@ memcached_return update_continuum(memcached_st *ptr)
       sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH, "%s:%d-%d", 
                                  list[host_index].hostname, list[host_index].port, index);
       WATCHPOINT_ASSERT(sort_host_length);
-      value= internal_generate_ketama_md5(sort_host, sort_host_length);
+      value= generate_hash(ptr, sort_host, sort_host_length);
       ptr->continuum[continuum_index].index= host_index;
       ptr->continuum[continuum_index++].value= value;
     }

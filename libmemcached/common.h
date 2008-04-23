@@ -70,7 +70,7 @@ typedef enum {
   MEM_TCP_NODELAY= (1 << 1),
   MEM_REUSE_MEMORY= (1 << 2),
   MEM_USE_MD5= (1 << 3),
-  MEM_USE_KETAMA= (1 << 4),
+  /* 4 was once Ketama */
   MEM_USE_CRC= (1 << 5),
   MEM_USE_CACHE_LOOKUPS= (1 << 6),
   MEM_SUPPORT_CAS= (1 << 7),
@@ -90,7 +90,7 @@ memcached_return memcached_connect(memcached_server_st *ptr);
 memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
-unsigned int memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
+uint32_t memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++

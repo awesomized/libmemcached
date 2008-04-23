@@ -12,10 +12,17 @@ typedef struct world_st world_st;
 typedef struct collection_st collection_st;
 typedef struct test_st test_st;
 
+typedef enum {
+  TEST_SUCCESS= 0, /* Backwards compatibility */
+  TEST_FAILURE,
+  TEST_MEMORY_ALLOCATION_FAILURE,
+  TEST_MAXIMUM_RETURN, /* Always add new error code before */
+} test_return;
+
 struct test_st {
   char *name;
   unsigned int requires_flush;
-  uint8_t (*function)(memcached_st *memc);
+  test_return (*function)(memcached_st *memc);
 };
 
 struct collection_st {

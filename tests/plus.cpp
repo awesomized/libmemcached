@@ -15,7 +15,7 @@
 
 #include "test.h"
 
-uint8_t basic_test(memcached_st *memc)
+test_return basic_test(memcached_st *memc)
 {
   Memcached foo;
   char *value_set= "This is some data";
@@ -27,9 +27,10 @@ uint8_t basic_test(memcached_st *memc)
 
   assert((memcmp(value, value_set, value_length) == 0));
 
-  return 0;
+  return TEST_SUCCESS;
 }
-uint8_t basic_master_key_test(memcached_st *memc)
+
+test_return basic_master_key_test(memcached_st *memc)
 {
   Memcached foo;
   char *value_set= "Data for server A";
@@ -47,7 +48,7 @@ uint8_t basic_master_key_test(memcached_st *memc)
   value= foo.get_by_key(master_key_b, key, &value_length);
   assert((memcmp(value, value_set, value_length) == 0));
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 

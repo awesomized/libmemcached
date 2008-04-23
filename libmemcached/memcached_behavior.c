@@ -43,6 +43,18 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       run_distribution(ptr);
       break;
     }
+  case MEMCACHED_BEHAVIOR_KETAMA:
+    if (data)
+    {
+      ptr->hash= MEMCACHED_HASH_MD5;
+      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
+    }
+    else
+    {
+      ptr->hash= 0;
+      ptr->distribution= 0;
+    }
+    break;
   case MEMCACHED_BEHAVIOR_HASH:
     ptr->hash= (memcached_hash)(data);
     break;
@@ -52,9 +64,6 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     set_behavior_flag(ptr, MEM_VERIFY_KEY, data);
-    break;
-  case MEMCACHED_BEHAVIOR_KETAMA:
-    set_behavior_flag(ptr, MEM_USE_KETAMA, data);
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
@@ -114,11 +123,10 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
+  case MEMCACHED_BEHAVIOR_KETAMA:
+    return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA  && ptr->hash == MEMCACHED_HASH_MD5 ) ? 1 : 0;
   case MEMCACHED_BEHAVIOR_HASH:
     return ptr->hash;
-  case MEMCACHED_BEHAVIOR_KETAMA:
-    temp_flag= MEM_USE_KETAMA;
-    break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     temp_flag= MEM_USE_SORT_HOSTS;
     break;
