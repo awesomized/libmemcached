@@ -3,8 +3,7 @@
 memcached_return memcached_fetch_execute(memcached_st *ptr, 
                                              memcached_execute_function *callback,
                                              void *context,
-                                             unsigned int number_of_callbacks
-                                             )
+                                             unsigned int number_of_callbacks)
 {
   memcached_result_st *result= &ptr->result;
 

@@ -14,8 +14,7 @@ extern "C" {
 #endif
 
 /* Some personal debugging functions */
-#ifdef MEMCACHED_INTERNAL 
-#ifdef HAVE_DEBUG
+#if defined(MEMCACHED_INTERNAL) && defined(HAVE_DEBUG)
 #include <assert.h>
 
 #define WATCHPOINT fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
@@ -36,8 +35,8 @@ extern "C" {
 #define WATCHPOINT_ERRNO(A)
 #define WATCHPOINT_ASSERT_PRINT(A,B,C)
 #define WATCHPOINT_ASSERT(A)
-#endif
-#endif /* MEMCACHED_INTERNAL */
+
+#endif /* MEMCACHED_INTERNAL && HAVE_DEBUG */
 
 #ifdef __cplusplus
 }
