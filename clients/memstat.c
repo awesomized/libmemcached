@@ -5,7 +5,6 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <string.h>
-#include <assert.h>
 #include <getopt.h>
 
 #include <libmemcached/memcached.h>
@@ -71,8 +70,6 @@ int main(int argc, char *argv[])
     char **ptr;
 
     list= memcached_stat_get_keys(memc, &stat[x], &rc);
-    assert(list);
-    assert(rc == MEMCACHED_SUCCESS);
 
     printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
 	   memcached_server_port(memc, server_list[x]));

@@ -6,7 +6,6 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include <assert.h>
 #include <sys/time.h>
 #include <getopt.h>
 #include <pthread.h>

@@ -10,7 +10,6 @@
 #include <errno.h>
 #include <strings.h>
 #include <string.h>
-#include <assert.h>
 
 #include <libmemcached/memcached.h>
 
@@ -106,7 +105,12 @@ int main(int argc, char *argv[])
       fprintf(stderr, "read: %s\n", strerror(errno)); 
       exit(1);
     }
-    assert(read_length == sbuf.st_size);
+
+    if (read_length != sbuf.st_size);
+    {
+      fprintf(stderr, "Failure reading from file\n");
+      exit(1);
+    }
 
     if (opt_method == OPT_ADD)
       rc= memcached_add(memc, ptr, strlen(ptr),

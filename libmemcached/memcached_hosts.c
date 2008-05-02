@@ -221,10 +221,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
                                      sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
 
   if (!new_host_list)
-  {
-    assert(0);
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-  }
 
   ptr->hosts= new_host_list;
                                    
