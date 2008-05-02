@@ -218,6 +218,12 @@ test_connect:
               WATCHPOINT_NUMBER(ptr->root->connect_timeout);
               close(ptr->fd);
               ptr->fd= -1;
+              if (ptr->address_info)
+              {
+                freeaddrinfo(ptr->address_info);
+                ptr->address_info= NULL;
+              }
+
               return MEMCACHED_ERRNO;
             }
 
@@ -231,7 +237,6 @@ test_connect:
         default:
 handle_retry:
           ptr->cached_errno= errno;
-          WATCHPOINT_ERRNO(ptr->cached_errno);
           close(ptr->fd);
           ptr->fd= -1;
           if (ptr->root->retry_timeout)
@@ -289,9 +294,6 @@ memcached_return memcached_connect(memcached_server_st *ptr)
   default:
     WATCHPOINT_ASSERT(0);
   }
-
-  if (rc != MEMCACHED_SUCCESS)
-    WATCHPOINT_ERROR(rc);
 
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 

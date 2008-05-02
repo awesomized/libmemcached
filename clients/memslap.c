@@ -355,9 +355,6 @@ void *run_task(void *p)
   if (context->execute_pairs)
     pairs_free(context->execute_pairs);
 
-  if (context->initial_pairs)
-    pairs_free(context->initial_pairs);
-
   free(context);
 
   pthread_mutex_lock(&counter_mutex);

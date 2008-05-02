@@ -2175,6 +2175,42 @@ test_return generate_buffer_data(memcached_st *memc)
   return 0;
 }
 
+test_return get_read_count(memcached_st *memc)
+{
+  unsigned int x;
+  memcached_return rc;
+  memcached_st *clone;
+
+  clone= memcached_clone(NULL, memc);
+  assert(clone);
+
+  memcached_server_add(clone, "localhost", 6666);
+
+  {
+    char *return_value;
+    size_t return_value_length;
+    uint32_t flags;
+    uint32_t count;
+
+    for (x= count= 0; x < global_count; x++)
+    {
+      return_value= memcached_get(clone, global_keys[x], global_keys_length[x],
+                                  &return_value_length, &flags, &rc);
+      if (rc == MEMCACHED_SUCCESS)
+      {
+        count++;
+        if (return_value)
+          free(return_value);
+      }
+    }
+    fprintf(stderr, "\t%u -> %u", global_count, count);
+  }
+
+  memcached_free(clone);
+
+  return 0;
+}
+
 test_return get_read(memcached_st *memc)
 {
   unsigned int x;
@@ -2695,6 +2731,13 @@ test_st generate_tests[] ={
   {0, 0, 0}
 };
 
+test_st consistent_tests[] ={
+  {"generate_pairs", 1, generate_pairs },
+  {"generate_data", 1, generate_data },
+  {"get_read", 0, get_read_count },
+  {"cleanup", 1, cleanup_pairs },
+  {0, 0, 0}
+};
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
@@ -2728,6 +2771,9 @@ collection_st collection[] ={
   {"generate_md5", pre_md5, 0, generate_tests},
   {"generate_murmur", pre_murmur, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
+  {"consistent_not", 0, 0, consistent_tests},
+  {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
+  {"consistent_wheel", enable_wheel, 0, consistent_tests},
   {0, 0, 0, 0}
 };
 

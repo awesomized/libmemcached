@@ -121,7 +121,10 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 
   for (x= 0; x < servers->count; x++)
     if (servers[x].address_info)
+    {
       freeaddrinfo(servers[x].address_info);
+      servers[x].address_info= NULL;
+    }
 
   if (ptr && ptr->call_free)
     ptr->call_free(ptr, servers);
@@ -218,7 +221,10 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
                                      sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
 
   if (!new_host_list)
+  {
+    assert(0);
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
 
   ptr->hosts= new_host_list;
                                    
