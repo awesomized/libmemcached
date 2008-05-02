@@ -28,7 +28,6 @@ memflush_SOURCES = memflush.c utilities.c
 memflush_LDADD = $(LDADDS)
 memflush_LDFLAGS = -rpath $(pkglibdir)
 
-
 memerror_SOURCES = memerror.c utilities.c
 memerror_LDADD = $(LDADDS)
 memerror_LDFLAGS = -rpath $(pkglibdir)
@@ -36,3 +35,26 @@ memerror_LDFLAGS = -rpath $(pkglibdir)
 memslap_SOURCES = memslap.c utilities.c generator.c execute.c
 memslap_LDADD = $(LDADDS) -lpthread
 memslap_LDFLAGS = -rpath $(pkglibdir)
+
+test-start-server:
+	memflush --servers=localhost
+	memcp --servers=localhost /etc/services
+	memcat --servers=localhost /etc/services
+	memrm --servers=localhost /etc/services
+	memstat --servers=localhost
+	memslap --servers=localhost
+	memslap --servers=localhost --concurrency=10
+	memslap --servers=localhost --concurrency=10 --initial-load=1000
+	memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
+	memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
+	memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
+	memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
+
+valgrind:
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10 --initial-load=1000
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking

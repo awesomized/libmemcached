@@ -37,7 +37,7 @@ char *lookup_help(memcached_options option)
   case OPT_ADD: return("Use add command with memcached when storing.");
   case OPT_SLAP_EXECUTE_NUMBER: return("Number of times to execute the given test.");
   case OPT_SLAP_INITIAL_LOAD: return("Number of key pairs to load before executing tests.");
-  case OPT_SLAP_TEST: return("Test to run.");
+  case OPT_SLAP_TEST: return("Test to run (currently \"get\" or \"set\").");
   case OPT_SLAP_CONCURRENCY: return("Number of users to simulate with load.");
   case OPT_SLAP_NON_BLOCK: return("Set TCP up to use non-blocking IO.");
   case OPT_SLAP_TCP_NODELAY: return("Set TCP socket up to use nodelay.");
