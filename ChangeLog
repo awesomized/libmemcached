@@ -1,3 +1,4 @@
+0.20 Mon May  5 08:34:26 PDT 2008
   * New consistent distribution tests.
   * Found a memory leak when a server constantly fails.
   * Fix in watchpoint macro
