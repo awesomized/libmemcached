@@ -24,24 +24,6 @@ public:
     memcached_clone(&memc, clone);
     WATCHPOINT;
   }
-  memcached_result_st *fetch_result()
-  {
-    memcached_return rc;
-    return memcached_fetch_result(&memc, &result, &rc);
-  }
-  /*
-    
-  memcached_return fetch_execute(
-            memcached_return ((*callback[]))(&memc,
-                                             &result,
-                                             void *context,
-                                             unsigned in number_of_callbacks))
-  {
-    return memcached_fetch_execute(&memc,
-                            (*callback[])(&memc, &result, context,
-                                          number_of_callbacks));
-  }
-                                        */
   char *fetch (char *key, size_t *key_length, size_t *value_length)
   {
     uint32_t flags;
@@ -185,8 +167,8 @@ public:
                                 (uint32_t)0,
                                 cas);
   }
-  // Ok, so how do I have a 'delete' method, delete being a keyword?
-  memcached_return delete(char *key)
+  // using 'remove' vs. 'delete' since 'delete' is a keyword 
+  memcached_return remove(char *key)
   {
     return memcached_delete (&memc, key, strlen(key), (time_t)0);
 
