@@ -1,13 +1,13 @@
-AC_INIT(src/memcat.c)
+AC_INIT(clients/memcat.c)
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(include/libmemcached_config.h)
+AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
 AC_CANONICAL_SYSTEM
 
 MEMCACHED_LIBRARY_NAME=libmemcached
 
 #release versioning
 MEMCACHED_MAJOR_VERSION=0
-MEMCACHED_MINOR_VERSION=17
+MEMCACHED_MINOR_VERSION=20
 MEMCACHED_MICRO_VERSION=0
 
 #API version
@@ -57,9 +57,9 @@ if test "$GCC" = "yes"
 then
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-Wall -ggdb -DHAVE_DEBUG"
+    CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG"
   else
-    CFLAGS="-Wall -O3"
+    CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL "
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"
@@ -71,4 +71,4 @@ AC_C_CONST
 AC_HEADER_TIME
 AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
-AC_OUTPUT(Makefile src/Makefile tests/Makefile docs/Makefile lib/Makefile include/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)
+AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)

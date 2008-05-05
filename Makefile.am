@@ -1,5 +1,5 @@
-INCLUDES = include
-SUBDIRS = docs include lib src tests support
+INCLUDES = 
+SUBDIRS = docs libmemcached tests support clients
 EXTRA_dist = README.FIRST
 
 test: all

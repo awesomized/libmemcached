@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 
 typedef struct server_startup_st server_startup_st;
 

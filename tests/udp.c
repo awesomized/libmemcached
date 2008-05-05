@@ -2,7 +2,7 @@
   Sample test application.
 */
 #include <assert.h>
-#include <memcached.h>
+#include <libmemcached/memcached.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

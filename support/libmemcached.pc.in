@@ -7,5 +7,4 @@ Name: libmemcached
 Description: libmemcached C library.
 Version: @VERSION@
 Libs: -L${libdir} -lmemcached
-Cflags: -I${includedir}/@MEMCACHED_LIBRARY_NAME@
-
+Cflags: -I${includedir}

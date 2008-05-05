@@ -1,5 +1,5 @@
-INCLUDES = -I$(top_builddir)/include -I$(top_builddir)/lib
-LDADDS = ../lib/libmemcached.la
+INCLUDES = -I$(top_builddir)
+LDADDS = $(top_builddir)/libmemcached/libmemcached.la
 
 EXTRA_DIST = output.res output2.res\
 		r/memcat.res\
@@ -18,7 +18,7 @@ LIBS =
 noinst_HEADERS = test.h server.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
 
-testapp_SOURCES = test.c function.c ../src/generator.c ../src/execute.c server.c
+testapp_SOURCES = test.c function.c server.c ../clients/generator.c ../clients/execute.c
 testapp_LDADD = $(LDADDS)
 
 testplus_SOURCES = test.c plus.cpp server.c
@@ -27,7 +27,7 @@ testplus_LDADD = $(LDADDS)
 udptest_SOURCES = test.c udp.c server.c
 udptest_LDADD = $(LDADDS)
 
-atomsmasher_SOURCES = test.c atomsmasher.c server.c ../src/generator.c ../src/execute.c
+atomsmasher_SOURCES = test.c atomsmasher.c server.c ../clients/generator.c ../clients/execute.c
 atomsmasher_LDADD = $(LDADDS)
 
 startservers_SOURCES = start.c server.c

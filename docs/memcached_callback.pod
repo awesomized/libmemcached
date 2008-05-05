@@ -32,6 +32,9 @@ function set by memcached_callback_set().
 memcached_callback_set() changes the function/structure assigned by a
 callback flag. No connections are reset. 
 
+You can use MEMCACHED_CALLBACK_USER_DATA to provide custom context if required for any 
+of the callbacks
+
 =over 4
 
 =item MEMCACHED_CALLBACK_CLEANUP_FUNCTION
@@ -50,32 +53,47 @@ This allows you to store a pointer to a specifc piece of data. This can be
 retrieved from inside of memcached_fetch_execute(). Cloning a memcached_st
 will copy the pointer to the clone.
 
-=item  MEMCACHED_CALLBACK_MALLOC_FUNCTION,
+=item  MEMCACHED_CALLBACK_MALLOC_FUNCTION
 
 This alllows yout to pass in a customized version of malloc that will be used instead of the builtin malloc(3) call.
 The prototype for this is:
 
 void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
 
-You can use MEMCACHED_CALLBACK_USER_DATA to provide custom context if required for malloc.
-
-=item  MEMCACHED_CALLBACK_REALLOC_FUNCTION,
+=item  MEMCACHED_CALLBACK_REALLOC_FUNCTION
 
 This alllows yout to pass in a customized version of realloc that will be used instead of the builtin realloc(3) call.
 The prototype for this is:
 
 void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
 
-You can use MEMCACHED_CALLBACK_USER_DATA to provide custom context if required for realloc.
-
-=item  MEMCACHED_CALLBACK_FREE_FUNCTION,
+=item  MEMCACHED_CALLBACK_FREE_FUNCTION
 
 This alllows yout to pass in a customized version of realloc that will be used instead of the builtin free(3) call.
 The prototype for this is:
 
 typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
 
-You can use MEMCACHED_CALLBACK_USER_DATA to provide custom context if required for realloc.
+=item  MEMCACHED_CALLBACK_GET_FAILURE
+
+This function implements the read through cache behavior. On failure of retrieval this callback will be called. 
+You are responsible for populating the result object provided. This result object will then be stored in the server and
+returned to the calling process. You must clone the memcached_st in order to
+make use of it. The value will be stored only if you return
+MEMCACHED_SUCCESS or MEMCACHED_BUFFERED. Returning MEMCACHED_BUFFERED will
+cause the object to be buffered and not sent immediatly (if this is the default behavior based on your connection setup this will happen automatically).
+
+The prototype for this is:
+memcached_return (*memcached_trigger_key)(memcached_st *ptr, char *key, size_t key_length, memcached_result_st *result);
+
+=item  MEMCACHED_CALLBACK_DELETE_TRIGGER
+
+This function implements a trigger upon successful deletion of a key. The memcached_st structure will need to be cloned
+in order to make use of it.
+
+The prototype for this is:
+typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr, char *key, size_t key_length);
+
 
 =back
 

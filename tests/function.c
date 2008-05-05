@@ -2,7 +2,6 @@
   Sample test application.
 */
 #include <assert.h>
-#include <memcached.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,9 +11,8 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../lib/common.h"
-#include "../src/generator.h"
-#include "../src/execute.h"
+#include "../clients/generator.h"
+#include "../clients/execute.h"
 
 #ifndef INT64_MAX
 #define INT64_MAX LONG_MAX
@@ -34,7 +32,7 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-uint8_t init_test(memcached_st *not_used)
+test_return init_test(memcached_st *not_used)
 {
   memcached_st memc;
 
@@ -44,7 +42,7 @@ uint8_t init_test(memcached_st *not_used)
   return 0;
 }
 
-uint8_t server_list_null_test(memcached_st *ptr)
+test_return server_list_null_test(memcached_st *ptr)
 {
   memcached_server_st *server_list;
   memcached_return rc;
@@ -61,33 +59,96 @@ uint8_t server_list_null_test(memcached_st *ptr)
   return 0;
 }
 
-uint8_t server_sort_test(memcached_st *ptr)
+#define TEST_PORT_COUNT 7
+uint32_t test_ports[TEST_PORT_COUNT];
+
+memcached_return server_display_function(memcached_st *ptr, memcached_server_st *server, void *context)
 {
-  unsigned int setting;
-  memcached_server_st *server_list;
+  /* Do Nothing */
+  uint32_t bigger= *((uint32_t *)(context));
+  assert(bigger <= server->port);
+  *((uint32_t *)(context))= server->port;
+
+  return MEMCACHED_SUCCESS;
+}
+
+test_return server_sort_test(memcached_st *ptr)
+{
+  uint8_t x;
+  uint32_t bigger= 0; /* Prime the value for the assert in server_display_function */
   memcached_return rc;
+  memcached_server_function callbacks[1];
+  memcached_st *local_memc;
 
-  setting= 1;
-  memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_SORT_HOSTS, &setting);
+  local_memc= memcached_create(NULL);
+  assert(local_memc);
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
 
-  server_list= memcached_server_list_append(NULL, "arg", 0, &rc);
-  assert(server_list);
+  for (x= 0; x < TEST_PORT_COUNT; x++)
+  {
+    test_ports[x]= random() % 64000;
+    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    assert(local_memc->number_of_hosts == x+1);
+    assert(local_memc->hosts[0].count == x+1);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
 
-  server_list= memcached_server_list_append(server_list, "localhost", 0, &rc);
-  assert(server_list);
+  callbacks[0]= server_display_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
 
-  server_list= memcached_server_list_append(server_list, "c", 0, &rc);
-  assert(server_list);
 
-  server_list= memcached_server_list_append(server_list, "abba", 0, &rc);
-  assert(server_list);
-
-  free(server_list);
+  memcached_free(local_memc);
 
   return 0;
 }
 
-uint8_t allocation_test(memcached_st *not_used)
+memcached_return server_display_unsort_function(memcached_st *ptr, memcached_server_st *server, void *context)
+{
+  /* Do Nothing */
+  uint32_t x= *((uint32_t *)(context));
+
+  assert(test_ports[x] == server->port);
+  *((uint32_t *)(context))= ++x;
+
+  return MEMCACHED_SUCCESS;
+}
+
+test_return server_unsort_test(memcached_st *ptr)
+{
+  uint8_t x;
+  uint32_t counter= 0; /* Prime the value for the assert in server_display_function */
+  uint32_t bigger= 0; /* Prime the value for the assert in server_display_function */
+  memcached_return rc;
+  memcached_server_function callbacks[1];
+  memcached_st *local_memc;
+
+  local_memc= memcached_create(NULL);
+  assert(local_memc);
+
+  for (x= 0; x < TEST_PORT_COUNT; x++)
+  {
+    test_ports[x]= random() % 64000;
+    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    assert(local_memc->number_of_hosts == x+1);
+    assert(local_memc->hosts[0].count == x+1);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  callbacks[0]= server_display_unsort_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&counter,  1);
+
+  /* Now we sort old data! */
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
+  callbacks[0]= server_display_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
+
+
+  memcached_free(local_memc);
+
+  return 0;
+}
+
+test_return allocation_test(memcached_st *not_used)
 {
   memcached_st *memc;
   memc= memcached_create(NULL);
@@ -97,7 +158,7 @@ uint8_t allocation_test(memcached_st *not_used)
   return 0;
 }
 
-uint8_t clone_test(memcached_st *memc)
+test_return clone_test(memcached_st *memc)
 {
   /* All null? */
   {
@@ -136,7 +197,7 @@ uint8_t clone_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t connection_test(memcached_st *memc)
+test_return connection_test(memcached_st *memc)
 {
   memcached_return rc;
 
@@ -146,7 +207,7 @@ uint8_t connection_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t error_test(memcached_st *memc)
+test_return error_test(memcached_st *memc)
 {
   memcached_return rc;
 
@@ -158,7 +219,7 @@ uint8_t error_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t set_test(memcached_st *memc)
+test_return set_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -172,7 +233,7 @@ uint8_t set_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t append_test(memcached_st *memc)
+test_return append_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "fig";
@@ -208,7 +269,7 @@ uint8_t append_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t append_binary_test(memcached_st *memc)
+test_return append_binary_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "numbers";
@@ -254,7 +315,7 @@ uint8_t append_binary_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t cas2_test(memcached_st *memc)
+test_return cas2_test(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -269,7 +330,7 @@ uint8_t cas2_test(memcached_st *memc)
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
   for (x= 0; x < 3; x++)
   {
@@ -298,7 +359,7 @@ uint8_t cas2_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t cas_test(memcached_st *memc)
+test_return cas_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "fun";
@@ -312,7 +373,7 @@ uint8_t cas_test(memcached_st *memc)
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),
@@ -350,7 +411,7 @@ uint8_t cas_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t prepend_test(memcached_st *memc)
+test_return prepend_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "fig";
@@ -390,7 +451,7 @@ uint8_t prepend_test(memcached_st *memc)
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
 */
-uint8_t add_test(memcached_st *memc)
+test_return add_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -410,14 +471,14 @@ uint8_t add_test(memcached_st *memc)
 
   /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
   if (setting_value)
-    assert(rc == MEMCACHED_NOTSTORED || MEMCACHED_STORED);
+    assert(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_STORED);
   else
     assert(rc == MEMCACHED_NOTSTORED);
 
   return 0;
 }
 
-uint8_t add_wrapper(memcached_st *memc)
+test_return add_wrapper(memcached_st *memc)
 {
   unsigned int x;
 
@@ -427,7 +488,7 @@ uint8_t add_wrapper(memcached_st *memc)
   return 0;
 }
 
-uint8_t replace_test(memcached_st *memc)
+test_return replace_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -447,7 +508,7 @@ uint8_t replace_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t delete_test(memcached_st *memc)
+test_return delete_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -464,7 +525,7 @@ uint8_t delete_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t flush_test(memcached_st *memc)
+test_return flush_test(memcached_st *memc)
 {
   memcached_return rc;
 
@@ -481,7 +542,7 @@ memcached_return server_function(memcached_st *ptr, memcached_server_st *server,
   return MEMCACHED_SUCCESS;
 }
 
-uint8_t memcached_server_cursor_test(memcached_st *memc)
+test_return memcached_server_cursor_test(memcached_st *memc)
 {
   char *context= "foo bad";
   memcached_server_function callbacks[1];
@@ -492,7 +553,7 @@ uint8_t memcached_server_cursor_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t bad_key_test(memcached_st *memc)
+test_return bad_key_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo bad";
@@ -505,7 +566,7 @@ uint8_t bad_key_test(memcached_st *memc)
   clone= memcached_clone(NULL, memc);
   assert(clone);
 
-  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, &set);
+  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
 
   string= memcached_get(clone, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -514,7 +575,7 @@ uint8_t bad_key_test(memcached_st *memc)
   assert(!string);
 
   set= 0;
-  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, &set);
+  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
   string= memcached_get(clone, key, strlen(key),
                         &string_length, &flags, &rc);
   assert(rc == MEMCACHED_NOTFOUND);
@@ -526,7 +587,73 @@ uint8_t bad_key_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_test(memcached_st *memc)
+#define READ_THROUGH_VALUE "set for me"
+memcached_return read_through_trigger(memcached_st *memc,  
+                                      char *key, size_t key_length, 
+                                      memcached_result_st *result)
+{
+  
+  return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
+}
+
+test_return read_through(memcached_st *memc)
+{
+  memcached_return rc;
+  char *key= "foo";
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_NOTFOUND);
+  assert(string_length ==  0);
+  assert(!string);
+
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, read_through_trigger);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string_length ==  strlen(READ_THROUGH_VALUE));
+  assert(!strcmp(READ_THROUGH_VALUE, string));
+  free(string);
+
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string_length ==  strlen(READ_THROUGH_VALUE));
+  assert(!strcmp(READ_THROUGH_VALUE, string));
+  free(string);
+
+  return 0;
+}
+
+memcached_return delete_trigger(memcached_st *ptr,  char *key, size_t key_length)
+{
+  assert(key);
+
+  return MEMCACHED_SUCCESS;
+}
+
+test_return delete_through(memcached_st *memc)
+{
+  memcached_trigger_delete_key callback;
+  memcached_return rc;
+
+  callback= delete_trigger;
+
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, callback);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return 0;
+}
+
+test_return get_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -547,7 +674,7 @@ uint8_t get_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_test2(memcached_st *memc)
+test_return get_test2(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -574,7 +701,7 @@ uint8_t get_test2(memcached_st *memc)
   return 0;
 }
 
-uint8_t set_test2(memcached_st *memc)
+test_return set_test2(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -593,7 +720,7 @@ uint8_t set_test2(memcached_st *memc)
   return 0;
 }
 
-uint8_t set_test3(memcached_st *memc)
+test_return set_test3(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -620,7 +747,7 @@ uint8_t set_test3(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_test3(memcached_st *memc)
+test_return get_test3(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -656,7 +783,7 @@ uint8_t get_test3(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_test4(memcached_st *memc)
+test_return get_test4(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -696,7 +823,7 @@ uint8_t get_test4(memcached_st *memc)
 }
 
 /* Do not copy the style of this code, I just access hosts to testthis function */
-uint8_t stats_servername_test(memcached_st *memc)
+test_return stats_servername_test(memcached_st *memc)
 {
   memcached_return rc;
   memcached_stat_st stat;
@@ -707,7 +834,7 @@ uint8_t stats_servername_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t increment_test(memcached_st *memc)
+test_return increment_test(memcached_st *memc)
 {
   uint64_t new_number;
   memcached_return rc;
@@ -732,7 +859,7 @@ uint8_t increment_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t decrement_test(memcached_st *memc)
+test_return decrement_test(memcached_st *memc)
 {
   uint64_t new_number;
   memcached_return rc;
@@ -757,7 +884,7 @@ uint8_t decrement_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t quit_test(memcached_st *memc)
+test_return quit_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "fudge";
@@ -777,7 +904,7 @@ uint8_t quit_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_result_test(memcached_st *memc)
+test_return mget_result_test(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -834,7 +961,7 @@ uint8_t mget_result_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_result_alloc_test(memcached_st *memc)
+test_return mget_result_alloc_test(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -894,7 +1021,7 @@ unsigned int callback_counter(memcached_st *ptr, memcached_result_st *result, vo
   return 0;
 }
 
-uint8_t mget_result_function(memcached_st *memc)
+test_return mget_result_function(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -925,7 +1052,7 @@ uint8_t mget_result_function(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_test(memcached_st *memc)
+test_return mget_test(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -980,7 +1107,7 @@ uint8_t mget_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_stats_keys(memcached_st *memc)
+test_return get_stats_keys(memcached_st *memc)
 {
  char **list;
  char **ptr;
@@ -998,7 +1125,7 @@ uint8_t get_stats_keys(memcached_st *memc)
  return 0;
 }
 
-uint8_t version_string_test(memcached_st *memc)
+test_return version_string_test(memcached_st *memc)
 {
   const char *version_string;
 
@@ -1009,7 +1136,7 @@ uint8_t version_string_test(memcached_st *memc)
   return 0;
 }
 
-uint8_t get_stats(memcached_st *memc)
+test_return get_stats(memcached_st *memc)
 {
  unsigned int x;
  char **list;
@@ -1037,7 +1164,7 @@ uint8_t get_stats(memcached_st *memc)
   return 0;
 }
 
-uint8_t add_host_test(memcached_st *memc)
+test_return add_host_test(memcached_st *memc)
 {
   unsigned int x;
   memcached_server_st *servers;
@@ -1079,7 +1206,7 @@ memcached_return cleanup_test_callback(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-uint8_t callback_test(memcached_st *memc)
+test_return callback_test(memcached_st *memc)
 {
   /* Test User Data */
   {
@@ -1119,41 +1246,41 @@ uint8_t callback_test(memcached_st *memc)
 }
 
 /* We don't test the behavior itself, we test the switches */
-uint8_t behavior_test(memcached_st *memc)
+test_return behavior_test(memcached_st *memc)
 {
   unsigned long long value;
   unsigned int set= 1;
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
   assert(value == 1);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
   assert(value == 1);
 
   set= MEMCACHED_HASH_MD5;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
   assert(value == MEMCACHED_HASH_MD5);
 
   set= 0;
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
   assert(value == 0);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY);
   assert(value == 0);
 
   set= MEMCACHED_HASH_DEFAULT;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
   assert(value == MEMCACHED_HASH_DEFAULT);
 
   set= MEMCACHED_HASH_CRC;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &set);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
   assert(value == MEMCACHED_HASH_CRC);
 
@@ -1167,7 +1294,7 @@ uint8_t behavior_test(memcached_st *memc)
 }
 
 /* Test case provided by Cal Haldenbrand */
-uint8_t user_supplied_bug1(memcached_st *memc)
+test_return user_supplied_bug1(memcached_st *memc)
 {
   unsigned int setter= 1;
   unsigned int x;
@@ -1183,8 +1310,8 @@ uint8_t user_supplied_bug1(memcached_st *memc)
   /* We just keep looking at the same values over and over */
   srandom(10);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, setter);
 
 
   /* add key */
@@ -1214,7 +1341,7 @@ uint8_t user_supplied_bug1(memcached_st *memc)
 }
 
 /* Test case provided by Cal Haldenbrand */
-uint8_t user_supplied_bug2(memcached_st *memc)
+test_return user_supplied_bug2(memcached_st *memc)
 {
   int errors;
   unsigned int setter;
@@ -1222,13 +1349,13 @@ uint8_t user_supplied_bug2(memcached_st *memc)
   unsigned long long total;
 
   setter= 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, setter);
 #ifdef NOT_YET
   setter = 20 * 1024576;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, setter);
   setter = 20 * 1024576;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, setter);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 
@@ -1270,7 +1397,7 @@ uint8_t user_supplied_bug2(memcached_st *memc)
 
 /* Do a large mget() over all the keys we think exist */
 #define KEY_COUNT 3000 // * 1024576
-uint8_t user_supplied_bug3(memcached_st *memc)
+test_return user_supplied_bug3(memcached_st *memc)
 {
   memcached_return rc;
   unsigned int setter;
@@ -1279,13 +1406,13 @@ uint8_t user_supplied_bug3(memcached_st *memc)
   size_t key_lengths[KEY_COUNT];
 
   setter= 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, &setter);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, setter);
 #ifdef NOT_YET
   setter = 20 * 1024576;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, setter);
   setter = 20 * 1024576;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, setter);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 #endif
@@ -1330,7 +1457,7 @@ uint8_t user_supplied_bug3(memcached_st *memc)
 }
 
 /* Make sure we behave properly if server list has no values */
-uint8_t user_supplied_bug4(memcached_st *memc)
+test_return user_supplied_bug4(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"fudge", "son", "food"};
@@ -1393,7 +1520,7 @@ uint8_t user_supplied_bug4(memcached_st *memc)
 }
 
 #define VALUE_SIZE_BUG5 1048064
-uint8_t user_supplied_bug5(memcached_st *memc)
+test_return user_supplied_bug5(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"036790384900", "036790384902", "036790384904", "036790384906"};
@@ -1451,7 +1578,7 @@ uint8_t user_supplied_bug5(memcached_st *memc)
   return 0;
 }
 
-uint8_t user_supplied_bug6(memcached_st *memc)
+test_return user_supplied_bug6(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"036790384900", "036790384902", "036790384904", "036790384906"};
@@ -1516,7 +1643,7 @@ uint8_t user_supplied_bug6(memcached_st *memc)
   return 0;
 }
 
-uint8_t user_supplied_bug8(memcached_st *memc)
+test_return user_supplied_bug8(memcached_st *memc)
 {
   memcached_return rc;
   memcached_st *mine;
@@ -1547,7 +1674,7 @@ uint8_t user_supplied_bug8(memcached_st *memc)
 }
 
 /* Test flag store/retrieve */
-uint8_t user_supplied_bug7(memcached_st *memc)
+test_return user_supplied_bug7(memcached_st *memc)
 {
   memcached_return rc;
   char *keys= "036790384900";
@@ -1591,7 +1718,7 @@ uint8_t user_supplied_bug7(memcached_st *memc)
   return 0;
 }
 
-uint8_t user_supplied_bug9(memcached_st *memc)
+test_return user_supplied_bug9(memcached_st *memc)
 {
   memcached_return rc;
   char *keys[]= {"UDATA:edevil@sapo.pt", "fudge&*@#", "for^#@&$not"};
@@ -1636,7 +1763,7 @@ uint8_t user_supplied_bug9(memcached_st *memc)
 }
 
 /* We are testing with aggressive timeout to get failures */
-uint8_t user_supplied_bug10(memcached_st *memc)
+test_return user_supplied_bug10(memcached_st *memc)
 {
   char *key= "foo";
   char *value;
@@ -1648,10 +1775,10 @@ uint8_t user_supplied_bug10(memcached_st *memc)
   memcached_st *mclone= memcached_clone(NULL, memc);
   int32_t timeout;
 
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   timeout= 2;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
   value = (char*)malloc(value_length * sizeof(char));
 
@@ -1677,7 +1804,7 @@ uint8_t user_supplied_bug10(memcached_st *memc)
 /*
   We are looking failures in the async protocol
 */
-uint8_t user_supplied_bug11(memcached_st *memc)
+test_return user_supplied_bug11(memcached_st *memc)
 {
   char *key= "foo";
   char *value;
@@ -1689,10 +1816,10 @@ uint8_t user_supplied_bug11(memcached_st *memc)
   int32_t timeout;
   memcached_st *mclone= memcached_clone(NULL, memc);
 
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, &set);
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, &set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   timeout= -1;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
   timeout= (int32_t)memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
@@ -1717,7 +1844,7 @@ uint8_t user_supplied_bug11(memcached_st *memc)
 /*
   Bug found where incr was not returning MEMCACHED_NOTFOUND when object did not exist.
 */
-uint8_t user_supplied_bug12(memcached_st *memc)
+test_return user_supplied_bug12(memcached_st *memc)
 {
   memcached_return rc;
   uint32_t flags;
@@ -1756,7 +1883,7 @@ uint8_t user_supplied_bug12(memcached_st *memc)
   Bug found where command total one more than MEMCACHED_MAX_BUFFER
   set key34567890 0 0 8169 \r\n is sent followed by buffer of size 8169, followed by 8169
  */
-uint8_t user_supplied_bug13(memcached_st *memc)
+test_return user_supplied_bug13(memcached_st *memc)
 {
   char key[] = "key34567890";
   char *overflow;
@@ -1794,10 +1921,10 @@ uint8_t user_supplied_bug13(memcached_st *memc)
   set key34567890 0 0 8169 \r\n
   is sent followed by buffer of size 8169, followed by 8169
  */
-uint8_t user_supplied_bug14(memcached_st *memc)
+test_return user_supplied_bug14(memcached_st *memc)
 {
   int setter= 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, &setter);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, setter);
   memcached_return rc;
   char *key= "foo";
   char *value;
@@ -1825,7 +1952,6 @@ uint8_t user_supplied_bug14(memcached_st *memc)
                           &string_length, &flags, &rc);
 
     assert(rc == MEMCACHED_SUCCESS);
-    assert(string);
     assert(string_length == current_length);
     assert(!memcmp(string, value, string_length));
 
@@ -1837,7 +1963,47 @@ uint8_t user_supplied_bug14(memcached_st *memc)
   return 0;
 }
 
-uint8_t result_static(memcached_st *memc)
+/*
+  Look for zero length value problems
+  */
+test_return user_supplied_bug15(memcached_st *memc)
+{
+  uint32_t x;
+  memcached_return rc;
+  char *key= "mykey";
+  char *value;
+  size_t length;
+  uint32_t flags;
+
+  for (x= 0; x < 2; x++)
+  {
+    rc= memcached_set(memc, key, strlen(key), 
+                      NULL, 0,
+                      (time_t)0, (uint32_t)0);
+
+    assert(rc == MEMCACHED_SUCCESS);
+
+    value= memcached_get(memc, key, strlen(key),
+                         &length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(value == NULL);
+    assert(length == 0);
+    assert(flags == 0);
+
+    value= memcached_get(memc, key, strlen(key),
+                         &length, &flags, &rc);
+
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(value == NULL);
+    assert(length == 0);
+    assert(flags == 0);
+  }
+
+  return 0;
+}
+
+test_return result_static(memcached_st *memc)
 {
   memcached_result_st result;
   memcached_result_st *result_ptr;
@@ -1850,7 +2016,7 @@ uint8_t result_static(memcached_st *memc)
   return 0;
 }
 
-uint8_t result_alloc(memcached_st *memc)
+test_return result_alloc(memcached_st *memc)
 {
   memcached_result_st *result;
 
@@ -1861,7 +2027,7 @@ uint8_t result_alloc(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_static_null(memcached_st *memc)
+test_return string_static_null(memcached_st *memc)
 {
   memcached_string_st string;
   memcached_string_st *string_ptr;
@@ -1874,7 +2040,7 @@ uint8_t string_static_null(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_alloc_null(memcached_st *memc)
+test_return string_alloc_null(memcached_st *memc)
 {
   memcached_string_st *string;
 
@@ -1885,7 +2051,7 @@ uint8_t string_alloc_null(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_alloc_with_size(memcached_st *memc)
+test_return string_alloc_with_size(memcached_st *memc)
 {
   memcached_string_st *string;
 
@@ -1896,7 +2062,7 @@ uint8_t string_alloc_with_size(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_alloc_with_size_toobig(memcached_st *memc)
+test_return string_alloc_with_size_toobig(memcached_st *memc)
 {
   memcached_string_st *string;
 
@@ -1906,7 +2072,7 @@ uint8_t string_alloc_with_size_toobig(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_alloc_append(memcached_st *memc)
+test_return string_alloc_append(memcached_st *memc)
 {
   unsigned int x;
   char buffer[SMALL_STRING_LEN];
@@ -1929,7 +2095,7 @@ uint8_t string_alloc_append(memcached_st *memc)
   return 0;
 }
 
-uint8_t string_alloc_append_toobig(memcached_st *memc)
+test_return string_alloc_append_toobig(memcached_st *memc)
 {
   memcached_return rc;
   unsigned int x;
@@ -1954,14 +2120,14 @@ uint8_t string_alloc_append_toobig(memcached_st *memc)
   return 0;
 }
 
-uint8_t cleanup_pairs(memcached_st *memc)
+test_return cleanup_pairs(memcached_st *memc)
 {
   pairs_free(global_pairs);
 
   return 0;
 }
 
-uint8_t generate_pairs(memcached_st *memc)
+test_return generate_pairs(memcached_st *memc)
 {
   unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
@@ -1976,7 +2142,7 @@ uint8_t generate_pairs(memcached_st *memc)
   return 0;
 }
 
-uint8_t generate_large_pairs(memcached_st *memc)
+test_return generate_large_pairs(memcached_st *memc)
 {
   unsigned long long x;
   global_pairs= pairs_generate(GLOBAL2_COUNT, MEMCACHED_MAX_BUFFER+10);
@@ -1991,25 +2157,61 @@ uint8_t generate_large_pairs(memcached_st *memc)
   return 0;
 }
 
-uint8_t generate_data(memcached_st *memc)
+test_return generate_data(memcached_st *memc)
 {
   execute_set(memc, global_pairs, global_count);
 
   return 0;
 }
 
-uint8_t generate_buffer_data(memcached_st *memc)
+test_return generate_buffer_data(memcached_st *memc)
 {
   int latch= 0;
 
   latch= 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, &latch);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, latch);
   generate_data(memc);
 
   return 0;
 }
 
-uint8_t get_read(memcached_st *memc)
+test_return get_read_count(memcached_st *memc)
+{
+  unsigned int x;
+  memcached_return rc;
+  memcached_st *clone;
+
+  clone= memcached_clone(NULL, memc);
+  assert(clone);
+
+  memcached_server_add(clone, "localhost", 6666);
+
+  {
+    char *return_value;
+    size_t return_value_length;
+    uint32_t flags;
+    uint32_t count;
+
+    for (x= count= 0; x < global_count; x++)
+    {
+      return_value= memcached_get(clone, global_keys[x], global_keys_length[x],
+                                  &return_value_length, &flags, &rc);
+      if (rc == MEMCACHED_SUCCESS)
+      {
+        count++;
+        if (return_value)
+          free(return_value);
+      }
+    }
+    fprintf(stderr, "\t%u -> %u", global_count, count);
+  }
+
+  memcached_free(clone);
+
+  return 0;
+}
+
+test_return get_read(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
@@ -2035,7 +2237,7 @@ uint8_t get_read(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_read(memcached_st *memc)
+test_return mget_read(memcached_st *memc)
 {
   memcached_return rc;
 
@@ -2061,7 +2263,7 @@ uint8_t mget_read(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_read_result(memcached_st *memc)
+test_return mget_read_result(memcached_st *memc)
 {
   memcached_return rc;
 
@@ -2086,7 +2288,7 @@ uint8_t mget_read_result(memcached_st *memc)
   return 0;
 }
 
-uint8_t mget_read_function(memcached_st *memc)
+test_return mget_read_function(memcached_st *memc)
 {
   memcached_return rc;
   unsigned int counter;
@@ -2102,7 +2304,7 @@ uint8_t mget_read_function(memcached_st *memc)
   return 0;
 }
 
-uint8_t delete_generate(memcached_st *memc)
+test_return delete_generate(memcached_st *memc)
 {
   unsigned int x;
 
@@ -2114,13 +2316,13 @@ uint8_t delete_generate(memcached_st *memc)
   return 0;
 }
 
-uint8_t delete_buffer_generate(memcached_st *memc)
+test_return delete_buffer_generate(memcached_st *memc)
 {
   int latch= 0;
   unsigned int x;
 
   latch= 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, &latch);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, latch);
 
   for (x= 0; x < global_count; x++)
   {
@@ -2130,14 +2332,14 @@ uint8_t delete_buffer_generate(memcached_st *memc)
   return 0;
 }
 
-uint8_t free_data(memcached_st *memc)
+test_return free_data(memcached_st *memc)
 {
   pairs_free(global_pairs);
 
   return 0;
 }
 
-uint8_t add_host_test1(memcached_st *memc)
+test_return add_host_test1(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
@@ -2171,71 +2373,77 @@ uint8_t add_host_test1(memcached_st *memc)
 
 memcached_return pre_nonblock(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return pre_murmur(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_md5(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_MD5;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_crc(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_CRC;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_CRC);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hsieh(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_HSIEH;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hash_fnv1_64(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_FNV1_64;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1_64);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hash_fnv1a_64(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_FNV1A_64;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1A_64);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hash_fnv1_32(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_FNV1_32;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1_32);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hash_fnv1a_32(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_FNV1A_32;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1A_32);
 
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return pre_hash_ketama(memcached_st *memc)
+memcached_return pre_behavior_ketama(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_KETAMA;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_return rc;
+  uint64_t value;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA);
+  assert(value == 1);
 
   return MEMCACHED_SUCCESS;
 }
@@ -2293,11 +2501,28 @@ memcached_return set_memory_alloc(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return enable_wheel(memcached_st *memc)
+{
+  memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL;
+  memcached_hash hash;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
+  pre_hsieh(memc);
+
+  value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
+  assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL);
+
+  hash= (memcached_hash)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  assert(hash == MEMCACHED_HASH_HSIEH);
+
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return enable_consistent(memcached_st *memc)
 {
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
   memcached_hash hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
   pre_hsieh(memc);
 
   value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
@@ -2320,7 +2545,7 @@ memcached_return enable_cas(memcached_st *memc)
       memc->hosts[0].minor_version >= 2 &&
       memc->hosts[0].micro_version >= 4)
   {
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, &set);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
     return MEMCACHED_SUCCESS;
   }
@@ -2375,8 +2600,8 @@ memcached_return pre_udp(memcached_st *memc)
 
 memcached_return pre_nodelay(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, NULL);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 0);
 
   return MEMCACHED_SUCCESS;
 }
@@ -2387,7 +2612,7 @@ memcached_return poll_timeout(memcached_st *memc)
 
   timeout= 100;
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, &timeout);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
   timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
@@ -2403,6 +2628,7 @@ test_st tests[] ={
   {"init", 0, init_test },
   {"allocation", 0, allocation_test },
   {"server_list_null_test", 0, server_list_null_test},
+  {"server_unsort", 0, server_unsort_test},
   {"server_sort", 0, server_sort_test},
   {"clone_test", 0, clone_test },
   {"error", 0, error_test },
@@ -2432,6 +2658,8 @@ test_st tests[] ={
   {"version_string_test", 0, version_string_test},
   {"bad_key", 1, bad_key_test },
   {"memcached_server_cursor", 1, memcached_server_cursor_test },
+  {"read_through", 1, read_through },
+  {"delete_through", 1, delete_through },
   {0, 0, 0}
 };
 
@@ -2480,6 +2708,7 @@ test_st user_tests[] ={
   {"user_supplied_bug12", 1, user_supplied_bug12 },
   {"user_supplied_bug13", 1, user_supplied_bug13 },
   {"user_supplied_bug14", 1, user_supplied_bug14 },
+  {"user_supplied_bug15", 1, user_supplied_bug15 },
   {0, 0, 0}
 };
 
@@ -2502,6 +2731,13 @@ test_st generate_tests[] ={
   {0, 0, 0}
 };
 
+test_st consistent_tests[] ={
+  {"generate_pairs", 1, generate_pairs },
+  {"generate_data", 1, generate_data },
+  {"get_read", 0, get_read_count },
+  {"cleanup", 1, cleanup_pairs },
+  {0, 0, 0}
+};
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
@@ -2514,12 +2750,13 @@ collection_st collection[] ={
   {"fnv1a_64", pre_hash_fnv1a_64, 0, tests},
   {"fnv1_32", pre_hash_fnv1_32, 0, tests},
   {"fnv1a_32", pre_hash_fnv1a_32, 0, tests},
-  {"ketama", pre_hash_ketama, 0, tests},
+  {"ketama", pre_behavior_ketama, 0, tests},
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
+  {"wheel", enable_wheel, 0, tests},
   {"memory_allocators", set_memory_alloc, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
@@ -2529,9 +2766,14 @@ collection_st collection[] ={
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", pre_hsieh, 0, generate_tests},
+  {"generate_ketama", pre_behavior_ketama, 0, generate_tests},
   {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
   {"generate_md5", pre_md5, 0, generate_tests},
+  {"generate_murmur", pre_murmur, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
+  {"consistent_not", 0, 0, consistent_tests},
+  {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
+  {"consistent_wheel", enable_wheel, 0, consistent_tests},
   {0, 0, 0, 0}
 };
 

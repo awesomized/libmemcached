@@ -31,6 +31,13 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   uint64_t memcached_result_cas(memcached_result_st *result);
 
+  memcached_return memcached_result_set_value (memcached_result_st *ptr, 
+                                              char *value, size_t length)
+
+  void memcached_result_set_flags(memcached_result_st *ptr, uint32_t flags)
+
+  void memcached_result_set_expiration(memcached_result_st *ptr, time_t)
+
 =head1 DESCRIPTION
 
 libmemcached(3) can optionally return a memcached_result_st which acts as a 
@@ -68,6 +75,16 @@ current result object.
 memcached_result_cas() returns the cas associated with the
 current result object. This value will only be available if the server
 supports it.
+
+memcached_result_set_value() takes a byte array and a size and sets
+the result to this value. This function is used for trigger responses.
+
+void memcached_result_set_flags() takes a result structure and stores
+a new value for the flags field.
+
+void memcached_result_set_expiration(A) takes a result structure and stores 
+a new value for the expiration field (this is only used by read through
+triggers).
 
 
 =head1 RETURN

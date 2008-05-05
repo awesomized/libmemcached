@@ -2,7 +2,6 @@
   Sample test application.
 */
 #include <assert.h>
-#include <memcached.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,9 +11,9 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../lib/common.h"
-#include "../src/generator.h"
-#include "../src/execute.h"
+#include "../libmemcached/common.h"
+#include "../clients/generator.h"
+#include "../clients/execute.h"
 
 #ifndef INT64_MAX
 #define INT64_MAX LONG_MAX
@@ -37,14 +36,14 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-uint8_t cleanup_pairs(memcached_st *memc)
+test_return cleanup_pairs(memcached_st *memc)
 {
   pairs_free(global_pairs);
 
   return 0;
 }
 
-uint8_t generate_pairs(memcached_st *memc)
+test_return generate_pairs(memcached_st *memc)
 {
   unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
@@ -59,7 +58,7 @@ uint8_t generate_pairs(memcached_st *memc)
   return 0;
 }
 
-uint8_t drizzle(memcached_st *memc)
+test_return drizzle(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
@@ -113,23 +112,21 @@ infinite:
 
 memcached_return pre_nonblock(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, NULL);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_md5(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_MD5;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
 
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return pre_hsieh(memcached_st *memc)
 {
-  memcached_hash value= MEMCACHED_HASH_HSIEH;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
 
   return MEMCACHED_SUCCESS;
 }
@@ -138,7 +135,7 @@ memcached_return enable_consistent(memcached_st *memc)
 {
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
   memcached_hash hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, &value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
   pre_hsieh(memc);
 
   value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
@@ -155,7 +152,7 @@ memcached_return enable_consistent(memcached_st *memc)
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
 */
-uint8_t add_test(memcached_st *memc)
+test_return add_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -186,7 +183,7 @@ uint8_t add_test(memcached_st *memc)
  * repeating add_tests many times
  * may show a problem in timing
  */
-uint8_t many_adds(memcached_st *memc)
+test_return many_adds(memcached_st *memc)
 {
   unsigned int i;
   for (i = 0; i < TEST_COUNTER; i++){

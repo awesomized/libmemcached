@@ -1,6 +1,40 @@
-0.17
+  * New consistent distribution tests.
+  * Found a memory leak when a server constantly fails.
+  * Fix in watchpoint macro
+  * Changed default timeout to 1 second for poll timeouts
+  * Wheel uses less memory/dynamic allocation for size (no longer limited to
+    512 hosts by default.
+  * memslap memory leak fix
+  * Added Ketama distribution
+  * Fix assert.h compile problem on CentOS
+
+0.19 Wed Apr  9 09:30:53 PDT 2008
+  * Documentation fix in libmemcached.
+  * Fixed bug where sort was always occuring on hosts
+  * Logic fix in branch prediction (thanks Jay!)
+  * Read through cached support.
+  * Fixed for cas by key operation.
+  * Fix for memcached_server_st list structures to have correct count.
+  * Added callback MEMCACHED_CALLBACK_DELETE_TRIGGER
+  * Removed function call in favor of macro (aka cut out some instructions)
+
+
+0.18 Sun Mar 16 21:57:55 PDT 2008
+  * Fix plus tests for non-zero value objects and flags.
+  * MEMCACHED_HASH_MURMUR added for murmur algorithm provided.
+  * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping
+    on timeout.
+  * gcc branch prediction optimizations
+  * Refactored entire tree to make include files cleaner
+  * Fixed leaked socket.
+
+0.17 Wed Feb 27 03:33:29 PST 2008
   * MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in
     non-block mode.
+  * Incompatible change in memcached_behavior_set() api. We now use a 
+    uint64_t, instead of a pointer.
+  * Fix for storage of values for zero.
+  * memcached_server_cursor() function added to API for cycling through servers.
 
 0.16 Mon Feb 18 00:30:25 PST 2008
   * Work on the UDP protocol
