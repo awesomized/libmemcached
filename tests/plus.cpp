@@ -86,7 +86,6 @@ uint8_t basic_master_key_test(memcached_st *memc)
 
 test_st tests[] ={
   {"basic", 0, basic_test },
-  {"basic", 0, increment_test },
   {"basic_master_key", 0, basic_master_key_test },
   {0, 0, 0}
 };
