@@ -33,7 +33,7 @@ written in order to encapsulate the C<memcached_st>. It is not
 recommended that you operate directly against the structure.
 
 Nearly all functions return a C<memcached_return> value.
-This value can be translated to a printable string with memcached_strerr(3).
+This value can be translated to a printable string with memcached_strerror(3).
 
 Partitioning based on keys is supported in the library. Using the key partioning 
 functions it is possible to group sets of object onto servers.
