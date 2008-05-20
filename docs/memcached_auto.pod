@@ -12,13 +12,13 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_return
     memcached_increment (memcached_st *ptr, 
-                         char *key, size_t key_length,
+                         const char *key, size_t key_length,
                          unsigned int offset,
                          uint64_t *value);
 
   memcached_return
     memcached_decrement (memcached_st *ptr, 
-                         char *key, size_t key_length,
+                         const char *key, size_t key_length,
                          unsigned int offset,
                          uint64_t *value);
 

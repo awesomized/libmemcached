@@ -17,7 +17,7 @@
                       +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
-uint32_t hsieh_hash(char *key, size_t key_length)
+uint32_t hsieh_hash(const char *key, size_t key_length)
 {
   uint32_t hash = 0, tmp;
   int rem;

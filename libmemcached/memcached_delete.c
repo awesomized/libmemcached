@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
+memcached_return memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
                                   time_t expiration)
 {
   return memcached_delete_by_key(ptr, key, key_length,
@@ -8,8 +8,8 @@ memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_lengt
 }
 
 memcached_return memcached_delete_by_key(memcached_st *ptr, 
-                                         char *master_key, size_t master_key_length,
-                                         char *key, size_t key_length,
+                                         const char *master_key, size_t master_key_length,
+                                         const char *key, size_t key_length,
                                          time_t expiration)
 {
   char to_write;

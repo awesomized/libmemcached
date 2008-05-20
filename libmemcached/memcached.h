@@ -19,6 +19,7 @@
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
 #include <libmemcached/memcached_watchpoint.h>
+#include <libmemcached/memcached_get.h>
 #include <libmemcached/memcached_server.h>
 #include <libmemcached/memcached_string.h>
 #include <libmemcached/memcached_result.h>
@@ -106,14 +107,14 @@ memcached_st *memcached_create(memcached_st *ptr);
 void memcached_free(memcached_st *ptr);
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
 
-memcached_return memcached_delete(memcached_st *ptr, char *key, size_t key_length,
+memcached_return memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
                                   time_t expiration);
 memcached_return memcached_increment(memcached_st *ptr, 
-                                     char *key, size_t key_length,
+                                     const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value);
 memcached_return memcached_decrement(memcached_st *ptr, 
-                                     char *key, size_t key_length,
+                                     const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value);
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
@@ -126,21 +127,6 @@ void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
 uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
-
-/* Get functions */
-char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
-                    size_t *value_length, 
-                    uint32_t *flags,
-                    memcached_return *error);
-memcached_return memcached_mget(memcached_st *ptr, 
-                                char **keys, size_t *key_length, 
-                                unsigned int number_of_keys);
-char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
-                      size_t *value_length, uint32_t *flags, 
-                      memcached_return *error);
-memcached_result_st *memcached_fetch_result(memcached_st *ptr, 
-                                            memcached_result_st *result,
-                                            memcached_return *error);
 
 /* Server Public functions */
 
@@ -165,21 +151,9 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat,
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
                                 memcached_return *error);
 
-char *memcached_get_by_key(memcached_st *ptr, 
-                           char *master_key, size_t master_key_length, 
-                           char *key, size_t key_length, 
-                           size_t *value_length, 
-                           uint32_t *flags,
-                           memcached_return *error);
-
-memcached_return memcached_mget_by_key(memcached_st *ptr, 
-                                       char *master_key, size_t master_key_length,
-                                       char **keys, size_t *key_length, 
-                                       unsigned int number_of_keys);
-
 memcached_return memcached_delete_by_key(memcached_st *ptr, 
-                                         char *master_key, size_t master_key_length,
-                                         char *key, size_t key_length,
+                                         const char *master_key, size_t master_key_length,
+                                         const char *key, size_t key_length,
                                          time_t expiration);
 
 memcached_return memcached_fetch_execute(memcached_st *ptr, 

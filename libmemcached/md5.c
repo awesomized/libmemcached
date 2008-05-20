@@ -50,7 +50,7 @@ typedef struct {
 
 static void MD5Init (MD5_CTX *context);      /* context */
 static void MD5Update ( MD5_CTX *context,                                        /* context */
-                        unsigned char *input,                                /* input block */
+                        const unsigned char *input,                              /* input block */
                         unsigned int inputLen);                     /* length of input block */
 static void MD5Final ( unsigned char digest[16],                         /* message digest */
                        MD5_CTX *context);                              /* context */
@@ -128,7 +128,7 @@ Rotation is separate from addition to prevent recomputation.
   Just a simple method for getting the signature
   result must be == 16
 */
-void md5_signature(unsigned char *key, unsigned int length, unsigned char *result)
+void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result)
 {
     MD5_CTX my_md5;
 
@@ -157,7 +157,7 @@ static void MD5Init (MD5_CTX *context)      /* context */
 
 static void MD5Update (
                        MD5_CTX *context,                                        /* context */
-                       unsigned char *input,                                /* input block */
+                       const unsigned char *input,                              /* input block */
                        unsigned int inputLen)                     /* length of input block */
 {
   unsigned int i, idx, partLen;
@@ -181,7 +181,7 @@ static void MD5Update (
  MD5Transform(context->state, context->buffer);
 
  for (i = partLen; i + 63 < inputLen; i += 64)
-   MD5Transform (context->state, &input[i]);
+   MD5Transform (context->state, (unsigned char *)&input[i]);
 
  idx = 0;
   }

@@ -6,7 +6,7 @@
 
 #define MIX(h,k,m) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
 
-uint32_t murmur_hash(char *key, size_t length)
+uint32_t murmur_hash(const char *key, size_t length)
 {
   const uint32_t m= 0x5bd1e995;
   const int r= 16;

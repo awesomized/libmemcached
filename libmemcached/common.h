@@ -80,24 +80,24 @@ typedef enum {
 } memcached_flags;
 
 /* Hashing algo */
-void md5_signature(unsigned char *key, unsigned int length, unsigned char *result);
+void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
-uint32_t hsieh_hash(char *key, size_t key_length);
-uint32_t murmur_hash(char *key, size_t key_length);
+uint32_t hsieh_hash(const char *key, size_t key_length);
+uint32_t murmur_hash(const char *key, size_t key_length);
 
 memcached_return memcached_connect(memcached_server_st *ptr);
 memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
-uint32_t memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length);
+uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
-memcached_return memcached_do(memcached_server_st *ptr, char *commmand,
+memcached_return memcached_do(memcached_server_st *ptr, const char *commmand,
                               size_t command_length, uint8_t with_flush);
 memcached_return memcached_version(memcached_st *ptr);
 memcached_return value_fetch(memcached_server_st *ptr,
@@ -110,5 +110,5 @@ memcached_return memcachd_key_test(char **keys, size_t *key_length,
 
 memcached_return run_distribution(memcached_st *ptr);
 
-uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length);
+uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 #endif /* __COMMON_H__ */

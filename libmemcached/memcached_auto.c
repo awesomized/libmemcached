@@ -1,8 +1,8 @@
 #include "common.h"
 
 static memcached_return memcached_auto(memcached_st *ptr, 
-                                       char *verb,
-                                       char *key, size_t key_length,
+                                       const char *verb,
+                                       const char *key, size_t key_length,
                                        unsigned int offset,
                                        uint64_t *value)
 {
@@ -17,7 +17,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   server_key= memcached_generate_hash(ptr, key, key_length);
@@ -62,7 +62,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
 }
 
 memcached_return memcached_increment(memcached_st *ptr, 
-                                     char *key, size_t key_length,
+                                     const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value)
 {
@@ -76,7 +76,7 @@ memcached_return memcached_increment(memcached_st *ptr,
 }
 
 memcached_return memcached_decrement(memcached_st *ptr, 
-                                     char *key, size_t key_length,
+                                     const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value)
 {

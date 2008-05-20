@@ -28,6 +28,7 @@ pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
 		    libmemcached_config.h \
 		    memcached_constants.h \
+		    memcached_get.h \
 		    memcached_result.h \
 		    memcached_server.h \
 		    memcached_storage.h \

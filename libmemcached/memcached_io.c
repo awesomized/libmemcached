@@ -158,10 +158,10 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
 }
 
 ssize_t memcached_io_write(memcached_server_st *ptr,
-                           char *buffer, size_t length, char with_flush)
+                           const char *buffer, size_t length, char with_flush)
 {
   size_t original_length;
-  char* buffer_ptr;
+  const char* buffer_ptr;
 
   original_length= length;
   buffer_ptr= buffer;

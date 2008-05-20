@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return memcached_do(memcached_server_st *ptr, char *command, 
+memcached_return memcached_do(memcached_server_st *ptr, const char *command, 
                               size_t command_length, uint8_t with_flush)
 {
   memcached_return rc;

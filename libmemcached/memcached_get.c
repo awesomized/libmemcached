@@ -4,7 +4,8 @@
 /* 
   What happens if no servers exist?
 */
-char *memcached_get(memcached_st *ptr, char *key, size_t key_length, 
+char *memcached_get(memcached_st *ptr, const char *key, 
+                    size_t key_length, 
                     size_t *value_length, 
                     uint32_t *flags,
                     memcached_return *error)
@@ -14,8 +15,9 @@ char *memcached_get(memcached_st *ptr, char *key, size_t key_length,
 }
 
 char *memcached_get_by_key(memcached_st *ptr, 
-                           char *master_key, size_t master_key_length, 
-                           char *key, size_t key_length, 
+                           const char *master_key, 
+                           size_t master_key_length, 
+                           const char *key, size_t key_length,
                            size_t *value_length, 
                            uint32_t *flags,
                            memcached_return *error)
@@ -29,7 +31,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   *error= memcached_mget_by_key(ptr, 
                                 master_key, 
                                 master_key_length, 
-                                &key, &key_length, 1);
+                                (char **)&key, &key_length, 1);
 
   value= memcached_fetch(ptr, NULL, NULL, 
                          value_length, flags, error);
@@ -95,8 +97,10 @@ memcached_return memcached_mget(memcached_st *ptr,
 }
 
 memcached_return memcached_mget_by_key(memcached_st *ptr, 
-                                       char *master_key, size_t master_key_length,
-                                       char **keys, size_t *key_length, 
+                                       const char *master_key, 
+                                       size_t master_key_length,
+                                       char **keys, 
+                                       size_t *key_length, 
                                        unsigned int number_of_keys)
 {
   unsigned int x;

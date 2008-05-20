@@ -8,10 +8,10 @@ static uint32_t FNV_32_INIT= 2166136261UL;
 static uint32_t FNV_32_PRIME= 16777619;
 
 /* Prototypes */
-static uint32_t internal_generate_hash(char *key, size_t key_length);
-static uint32_t internal_generate_md5(char *key, size_t key_length);
+static uint32_t internal_generate_hash(const char *key, size_t key_length);
+static uint32_t internal_generate_md5(const char *key, size_t key_length);
 
-uint32_t generate_hash(memcached_st *ptr, char *key, size_t key_length)
+uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
   uint32_t x= 0;
@@ -161,7 +161,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
   One day make this public, and have it return the actual memcached_server_st 
   to the calling application.
 */
-uint32_t memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length)
+uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
 
@@ -176,9 +176,9 @@ uint32_t memcached_generate_hash(memcached_st *ptr, char *key, size_t key_length
   return dispatch_host(ptr, hash);
 }
 
-static uint32_t internal_generate_hash(char *key, size_t key_length)
+static uint32_t internal_generate_hash(const char *key, size_t key_length)
 {
-  char *ptr= key;
+  const char *ptr= key;
   uint32_t value= 0;
 
   while (--key_length) 
@@ -194,7 +194,7 @@ static uint32_t internal_generate_hash(char *key, size_t key_length)
   return value == 0 ? 1 : value;
 }
 
-static uint32_t internal_generate_md5(char *key, size_t key_length)
+static uint32_t internal_generate_md5(const char *key, size_t key_length)
 {
   unsigned char results[16];
 

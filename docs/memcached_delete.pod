@@ -12,13 +12,13 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_return
     memcached_delete (memcached_st *ptr,
-                      char *key, size_t key_length,
+                      const char *key, size_t key_length,
                       time_t expiration);
 
   memcached_return
   memcached_delete_by_key (memcached_st *ptr,
-                           char *master_key, size_t master_key_length,
-                           char *key, size_t key_length,
+                           const char *master_key, size_t master_key_length,
+                           const char *key, size_t key_length,
                            time_t expiration);
 
 =head1 DESCRIPTION

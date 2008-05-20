@@ -27,10 +27,10 @@ typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const 
 typedef memcached_return (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
 typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcached_server_st *server, void *context);
 typedef memcached_return (*memcached_trigger_key)(memcached_st *ptr,  
-                                                  char *key, size_t key_length, 
+                                                  const char *key, size_t key_length, 
                                                   memcached_result_st *result);
 typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr,  
-                                                         char *key, size_t key_length);
+                                                         const char *key, size_t key_length);
 
 #ifdef __cplusplus
 }
