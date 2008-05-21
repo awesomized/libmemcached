@@ -37,7 +37,7 @@ struct memcached_continuum_item_st {
   uint32_t value;
 };
 
-#define LIBMEMCACHED_VERSION_STRING "0.20"
+#define LIBMEMCACHED_VERSION_STRING "0.21"
 
 struct memcached_stat_st {
   uint32_t pid;
