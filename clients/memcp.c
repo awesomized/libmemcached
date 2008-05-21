@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
 
-    if (read_length != sbuf.st_size);
+    if (read_length != sbuf.st_size)
     {
       fprintf(stderr, "Failure reading from file\n");
       exit(1);

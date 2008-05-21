@@ -2,6 +2,7 @@
   * Change of char * to const char * for all key based functions.
   * New  MEMCACHED_CALLBACK_PREFIX_KEY added. You can now create domains for
     values.
+  * Fixed bug introducd in last version on memcp
 
 0.20 Mon May  5 08:34:26 PDT 2008
   * New consistent distribution tests.
