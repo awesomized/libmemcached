@@ -29,12 +29,9 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
        */
       while ((read_length=
 	      memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer)))
-	     > 0)
-	{
-	  ;
-	}
+	     > 0);
     }
-    memcached_io_close(ptr);
+    memcached_io_close(ptr, io_death);
 
     ptr->fd= -1;
     ptr->write_buffer_offset= 0;

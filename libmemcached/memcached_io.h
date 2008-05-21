@@ -6,4 +6,4 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 void memcached_io_reset(memcached_server_st *ptr);
 ssize_t memcached_io_read(memcached_server_st *ptr,
                           char *buffer, size_t length);
-memcached_return memcached_io_close(memcached_server_st *ptr);
+memcached_return memcached_io_close(memcached_server_st *ptr, uint8_t io_death);
