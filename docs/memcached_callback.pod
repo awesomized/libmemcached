@@ -47,6 +47,14 @@ point of its execution all connections have been closed.
 When memcached_delete() is called this function will be excuted. At the
 point of its execution all connections have been closed.
 
+=item MEMCACHED_CALLBACK_PREFIX_KEY
+
+You can set a value which will be used to create a domain for your keys.
+The value specified here will be appended to each of your keys. The value can not
+be greater then MEMCACHED_PREFIX_KEY_MAX_SIZE and will reduce MEMCACHED_MAX_KEY by
+the value of your key. The prefix key is only applied to the primary key,
+not the master key.
+
 =item MEMCACHED_CALLBACK_USER_DATA
 
 This allows you to store a pointer to a specifc piece of data. This can be

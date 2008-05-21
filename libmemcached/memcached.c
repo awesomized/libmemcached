@@ -121,6 +121,9 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->get_key_failure= ptr->get_key_failure;
   new_clone->delete_trigger= ptr->delete_trigger;
 
+  if (ptr->prefix_key[0] != 0)
+    strcpy(new_clone->prefix_key, ptr->prefix_key);
+
   rc= run_distribution(new_clone);
   if (rc != MEMCACHED_SUCCESS)
   {

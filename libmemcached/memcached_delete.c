@@ -30,11 +30,15 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
   if (expiration)
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s %llu\r\n", (int)key_length, key, 
+                          "delete %s%.*s %llu\r\n", 
+                          ptr->prefix_key,
+                          (int)key_length, key, 
                           (unsigned long long)expiration);
   else
     send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "delete %.*s\r\n", (int)key_length, key);
+                          "delete %s%.*s\r\n", 
+                          ptr->prefix_key,
+                          (int)key_length, key);
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
   {

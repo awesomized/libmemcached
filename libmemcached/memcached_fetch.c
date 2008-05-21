@@ -14,6 +14,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
   size_t to_read;
   char *value_ptr;
 
+  WATCHPOINT_ASSERT(ptr->root);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
   memcached_result_reset(result);
@@ -25,15 +26,21 @@ memcached_return value_fetch(memcached_server_st *ptr,
   /* We load the key */
   {
     char *key;
+    size_t prefix_length;
 
     key= result->key;
     result->key_length= 0;
 
-    for (; isgraph(*string_ptr); string_ptr++)
+    for (prefix_length= ptr->root->prefix_key_length; isgraph(*string_ptr); string_ptr++)
     {
-      *key= *string_ptr;
-      key++;
-      result->key_length++;
+      if (prefix_length == 0)
+      {
+        *key= *string_ptr;
+        key++;
+        result->key_length++;
+      }
+      else
+        prefix_length--;
     }
     result->key[result->key_length]= 0;
   }

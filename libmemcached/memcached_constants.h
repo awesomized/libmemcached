@@ -24,6 +24,7 @@ extern "C" {
 #define MEMCACHED_STRIDE 4
 #define MEMCACHED_DEFAULT_TIMEOUT 1000
 #define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
+#define MEMCACHED_PREFIX_KEY_MAX_SIZE 12
 
 typedef enum {
   MEMCACHED_SUCCESS,
@@ -89,6 +90,7 @@ typedef enum {
 } memcached_behavior;
 
 typedef enum {
+  MEMCACHED_CALLBACK_PREFIX_KEY,
   MEMCACHED_CALLBACK_USER_DATA,
   MEMCACHED_CALLBACK_CLEANUP_FUNCTION,
   MEMCACHED_CALLBACK_CLONE_FUNCTION,

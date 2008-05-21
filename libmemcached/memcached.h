@@ -93,6 +93,8 @@ struct memcached_st {
   memcached_realloc_function call_realloc;
   memcached_trigger_key get_key_failure;
   memcached_trigger_delete_key delete_trigger;
+  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
+  size_t prefix_key_length;
 #ifdef NOT_USED /* Future Use */
   uint8_t replicas;
   memcached_return warning;

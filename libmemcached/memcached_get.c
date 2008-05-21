@@ -180,6 +180,17 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
       WATCHPOINT_ASSERT(ptr->hosts[server_key].cursor_active == 1);
     }
 
+    /* Only called when we have a prefix key */
+    if (ptr->prefix_key[0] != 0)
+    {
+      if ((memcached_io_write(&ptr->hosts[server_key], ptr->prefix_key, ptr->prefix_key_length, 0)) == -1)
+      {
+        memcached_server_response_reset(&ptr->hosts[server_key]);
+        rc= MEMCACHED_SOME_ERRORS;
+        continue;
+      }
+    }
+
     if ((memcached_io_write(&ptr->hosts[server_key], keys[x], key_length[x], 0)) == -1)
     {
       memcached_server_response_reset(&ptr->hosts[server_key]);

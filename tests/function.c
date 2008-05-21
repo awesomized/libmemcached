@@ -633,7 +633,7 @@ test_return read_through(memcached_st *memc)
   return 0;
 }
 
-memcached_return delete_trigger(memcached_st *ptr,  char *key, size_t key_length)
+memcached_return delete_trigger(memcached_st *ptr,  const char *key, size_t key_length)
 {
   assert(key);
 
@@ -2463,6 +2463,42 @@ void *my_realloc(memcached_st *ptr, void *mem, const size_t size)
   return realloc(mem, size);
 }
 
+memcached_return set_prefix(memcached_st *memc)
+{
+  memcached_return rc;
+  const char *key= "mine";
+  char *value;
+
+  /* Make sure be default none exists */
+  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  assert(rc == MEMCACHED_FAILURE);
+
+  /* Test a clean set */
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)key);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  assert(memcmp(value, key, 4) == 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /* Test that we can turn it off */
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  assert(rc == MEMCACHED_FAILURE);
+
+  /* Now setup for main test */
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)key);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(memcmp(value, key, 4) == 0);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return set_memory_alloc(memcached_st *memc)
 {
   {
@@ -2758,6 +2794,7 @@ collection_st collection[] ={
   {"consistent", enable_consistent, 0, tests},
   {"wheel", enable_wheel, 0, tests},
   {"memory_allocators", set_memory_alloc, 0, tests},
+  {"prefix", set_prefix, 0, tests},
 //  {"udp", pre_udp, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
