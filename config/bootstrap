@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Taken from lighthttpd server (BSD). Thanks Jan!
 # Run this to generate all the initial makefiles, etc.
 
