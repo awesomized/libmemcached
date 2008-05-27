@@ -51,7 +51,7 @@ memcached_server_st *memcached_servers_parse(char *server_strings)
 
       ptr++;
 
-      port= strtol(ptr, (char **)NULL, 10);
+      port= strtoul(ptr, (char **)NULL, 10);
     }
 
     servers= memcached_server_list_append(servers, buffer, port, &rc);

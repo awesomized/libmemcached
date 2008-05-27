@@ -55,7 +55,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   }
   else
   {
-    *value= (uint64_t)strtoll(buffer, (char **)NULL, 10);
+    *value= strtoull(buffer, (char **)NULL, 10);
     rc= MEMCACHED_SUCCESS;
   }
 

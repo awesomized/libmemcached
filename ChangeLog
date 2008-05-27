@@ -1,3 +1,7 @@
+0.22
+  * Found a bug in Flags return (Jacek Ostrowski)
+  * Fixed issue with compiling on Visual Studio
+
 0.21 Fri May 23 18:34:09 PDT 2008
   * Change of char * to const char * for all key based functions.
   * New  MEMCACHED_CALLBACK_PREFIX_KEY added. You can now create domains for

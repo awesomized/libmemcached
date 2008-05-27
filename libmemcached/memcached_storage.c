@@ -36,6 +36,8 @@ static char *storage_op_string(memcached_storage_action verb)
     return "append";
   case CAS_OP:
     return "cas";
+  default:
+    return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
   };
 
   return SET_OP;

@@ -2003,6 +2003,33 @@ test_return user_supplied_bug15(memcached_st *memc)
   return 0;
 }
 
+/* Check the return sizes on FLAGS to make sure it stores 32bit unsigned values correctly */
+test_return user_supplied_bug16(memcached_st *memc)
+{
+  uint32_t x;
+  memcached_return rc;
+  char *key= "mykey";
+  char *value;
+  size_t length;
+  uint32_t flags;
+
+  rc= memcached_set(memc, key, strlen(key), 
+                    NULL, 0,
+                    (time_t)0, UINT32_MAX);
+
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_get(memc, key, strlen(key),
+                       &length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(value == NULL);
+  assert(length == 0);
+  assert(flags == UINT32_MAX);
+
+  return 0;
+}
+
 test_return result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -2745,6 +2772,7 @@ test_st user_tests[] ={
   {"user_supplied_bug13", 1, user_supplied_bug13 },
   {"user_supplied_bug14", 1, user_supplied_bug14 },
   {"user_supplied_bug15", 1, user_supplied_bug15 },
+  {"user_supplied_bug16", 1, user_supplied_bug16 },
   {0, 0, 0}
 };
 
