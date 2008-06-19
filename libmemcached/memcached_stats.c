@@ -134,7 +134,7 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   }
   else if (!strcmp("threads", key))
   {
-    stat->threads= strtol(key, (char **)NULL, 10);
+    stat->threads= strtol(value, (char **)NULL, 10);
   }
   else
   {
