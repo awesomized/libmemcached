@@ -40,7 +40,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                         unsigned int number_of_keys);
 
   char *memcached_fetch (memcached_st *ptr,
-                         const char *key, size_t *key_length, 
+                         char *key, size_t *key_length, 
                          size_t *value_length,
                          uint32_t *flags, 
                          memcached_return *error);

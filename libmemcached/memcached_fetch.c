@@ -127,9 +127,9 @@ read_error:
 }
 
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
-                    size_t *value_length, 
-                    uint32_t *flags,
-                    memcached_return *error)
+                      size_t *value_length, 
+                      uint32_t *flags,
+                      memcached_return *error)
 {
   memcached_result_st *result_buffer= &ptr->result;
 
