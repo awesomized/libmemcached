@@ -101,8 +101,16 @@ void *memcached_callback_get(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      *error= ptr->prefix_key[0] != 0  ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->prefix_key;
+      if (ptr->prefix_key[0] == 0)
+      {
+        *error= MEMCACHED_FAILURE;
+        return NULL;
+      }
+      else
+      {
+        *error= MEMCACHED_SUCCESS;
+        return (void *)ptr->prefix_key;
+      }
     }
   case MEMCACHED_CALLBACK_USER_DATA:
     {

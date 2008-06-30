@@ -2006,7 +2006,6 @@ test_return user_supplied_bug15(memcached_st *memc)
 /* Check the return sizes on FLAGS to make sure it stores 32bit unsigned values correctly */
 test_return user_supplied_bug16(memcached_st *memc)
 {
-  uint32_t x;
   memcached_return rc;
   char *key= "mykey";
   char *value;
@@ -2522,6 +2521,20 @@ memcached_return set_prefix(memcached_st *memc)
   value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
   assert(rc == MEMCACHED_SUCCESS);
   assert(memcmp(value, key, 4) == 0);
+
+  /* Set to Zero, and then Set to something too large */
+  {
+    char *long_key= "This is more then the allotted number of characters";
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+    assert(rc == MEMCACHED_FAILURE);
+    assert(value == NULL);
+
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+  }
 
   return MEMCACHED_SUCCESS;
 }

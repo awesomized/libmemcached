@@ -1,3 +1,6 @@
+  * Fixed bugs in stats output (thread output was wrong)
+  * Clarified MEMCACHED_BAD_KEY_PROVIDED is return for bad prefix key.
+
 0.22
   * Found a bug in Flags return (Jacek Ostrowski)
   * Fixed issue with compiling on Visual Studio
