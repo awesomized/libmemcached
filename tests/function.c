@@ -116,9 +116,12 @@ test_return server_sort2_test(memcached_st *ptr)
 
   rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43043);
   assert(rc == MEMCACHED_SUCCESS);
+  assert(local_memc->hosts[0].port == 43043);
 
   rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43042);
   assert(rc == MEMCACHED_SUCCESS);
+  assert(local_memc->hosts[0].port == 43042);
+  assert(local_memc->hosts[1].port == 43043);
 
   callbacks[0]= server_display_function;
   memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
