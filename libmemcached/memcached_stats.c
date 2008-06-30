@@ -84,6 +84,14 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   {
     stat->total_items= strtol(value, (char **)NULL, 10);
   }
+  else if (!strcmp("bytes_read", key))
+  {
+    stat->bytes_read= strtoll(value, (char **)NULL, 10);
+  }
+  else if (!strcmp("bytes_written", key))
+  {
+    stat->bytes_written= strtoll(value, (char **)NULL, 10);
+  }
   else if (!strcmp("bytes", key))
   {
     stat->bytes= strtoll(value, (char **)NULL, 10);
@@ -119,14 +127,6 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
   else if (!strcmp("evictions", key))
   {
     stat->evictions= (uint64_t)strtoll(value, (char **)NULL, 10);
-  }
-  else if (!strcmp("bytes_read", key))
-  {
-    stat->bytes_read= strtoll(value, (char **)NULL, 10);
-  }
-  else if (!strcmp("bytes_written", key))
-  {
-    stat->bytes_written= strtoll(value, (char **)NULL, 10);
   }
   else if (!strcmp("limit_maxbytes", key))
   {
