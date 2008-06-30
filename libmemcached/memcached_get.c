@@ -134,7 +134,11 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   }
 
   if (master_key && master_key_length)
+  {
+    if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test((char **)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+      return MEMCACHED_BAD_KEY_PROVIDED;
     master_server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  }
 
   /* 
     Here is where we pay for the non-block API. We need to remove any data sitting

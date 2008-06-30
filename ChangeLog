@@ -1,3 +1,4 @@
+  * Fix where master key was no being checked for "bad key"
   * Fixed bugs in stats output (thread output was wrong)
   * Clarified MEMCACHED_BAD_KEY_PROVIDED is return for bad prefix key.
 

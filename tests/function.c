@@ -566,7 +566,8 @@ test_return bad_key_test(memcached_st *memc)
   clone= memcached_clone(NULL, memc);
   assert(clone);
 
-  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+  rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+  assert(rc == MEMCACHED_SUCCESS);
 
   string= memcached_get(clone, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -575,12 +576,28 @@ test_return bad_key_test(memcached_st *memc)
   assert(!string);
 
   set= 0;
-  (void)memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+  rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+  assert(rc == MEMCACHED_SUCCESS);
   string= memcached_get(clone, key, strlen(key),
                         &string_length, &flags, &rc);
   assert(rc == MEMCACHED_NOTFOUND);
   assert(string_length ==  0);
   assert(!string);
+
+  /* Test multi key for bad keys */
+  {
+    char *keys[] = { "GoodKey", "Bad Key", "NotMine" };
+    size_t key_lengths[] = { 7, 7, 7 };
+    set= 1;
+    rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    rc= memcached_mget(clone, keys, &key_lengths, 3);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+
+    rc= memcached_mget_by_key(clone, "foo daddy", 9, keys, &key_lengths, 1);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+  }
 
   memcached_free(clone);
 
