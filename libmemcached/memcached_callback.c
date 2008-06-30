@@ -22,13 +22,19 @@ memcached_return memcached_callback_set(memcached_st *ptr,
         size_t key_length= strlen(key);
 
         if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+        {
           return MEMCACHED_BAD_KEY_PROVIDED;
+        }
 
-        if ((ptr->prefix_key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1)
+        if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1)
             || (strcpy(ptr->prefix_key, key) == NULL))
         {
           ptr->prefix_key_length= 0;
           return MEMCACHED_BAD_KEY_PROVIDED;
+        }
+        else
+        {
+          ptr->prefix_key_length= key_length;
         }
       }
       else

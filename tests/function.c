@@ -102,6 +102,33 @@ test_return server_sort_test(memcached_st *ptr)
   return 0;
 }
 
+test_return server_sort2_test(memcached_st *ptr)
+{
+  uint32_t bigger= 0; /* Prime the value for the assert in server_display_function */
+  memcached_return rc;
+  memcached_server_function callbacks[1];
+  memcached_st *local_memc;
+
+  local_memc= memcached_create(NULL);
+  assert(local_memc);
+  rc= memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43043);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43042);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  callbacks[0]= server_display_function;
+  memcached_server_cursor(local_memc, callbacks, (void *)&bigger,  1);
+
+
+  memcached_free(local_memc);
+
+  return 0;
+}
+
 memcached_return server_display_unsort_function(memcached_st *ptr, memcached_server_st *server, void *context)
 {
   /* Do Nothing */
@@ -592,10 +619,10 @@ test_return bad_key_test(memcached_st *memc)
     rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
     assert(rc == MEMCACHED_SUCCESS);
 
-    rc= memcached_mget(clone, keys, &key_lengths, 3);
+    rc= memcached_mget(clone, keys, key_lengths, 3);
     assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
 
-    rc= memcached_mget_by_key(clone, "foo daddy", 9, keys, &key_lengths, 1);
+    rc= memcached_mget_by_key(clone, "foo daddy", 9, keys, key_lengths, 1);
     assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
   }
 
@@ -2541,7 +2568,7 @@ memcached_return set_prefix(memcached_st *memc)
 
   /* Set to Zero, and then Set to something too large */
   {
-    char *long_key= "This is more then the allotted number of characters";
+    char *long_key;
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
     assert(rc == MEMCACHED_SUCCESS);
 
@@ -2549,6 +2576,21 @@ memcached_return set_prefix(memcached_st *memc)
     assert(rc == MEMCACHED_FAILURE);
     assert(value == NULL);
 
+    /* Test a long key for failure */
+    long_key= "Thisismorethentheallottednumberofcharacters";
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+
+    /* Now test a key with spaces (which will fail from long key, since bad key is not set) */
+    long_key= "This is more then the allotted number of characters";
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+
+    /* Test for a bad prefix, but with a short key */
+    rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, 1);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    long_key= "dog cat";
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
     assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
   }
@@ -2723,6 +2765,7 @@ test_st tests[] ={
   {"server_list_null_test", 0, server_list_null_test},
   {"server_unsort", 0, server_unsort_test},
   {"server_sort", 0, server_sort_test},
+  {"server_sort2", 0, server_sort2_test},
   {"clone_test", 0, clone_test },
   {"error", 0, error_test },
   {"set", 0, set_test },
