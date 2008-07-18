@@ -82,8 +82,6 @@ struct memcached_st {
   memcached_hash hash;
   memcached_server_distribution distribution;
   void *user_data;
-  unsigned int *wheel;
-  uint32_t wheel_count;
   uint32_t continuum_count;
   memcached_continuum_item_st *continuum;
   memcached_clone_func on_clone;
@@ -95,10 +93,6 @@ struct memcached_st {
   memcached_trigger_delete_key delete_trigger;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   size_t prefix_key_length;
-#ifdef NOT_USED /* Future Use */
-  uint8_t replicas;
-  memcached_return warning;
-#endif
 };
 
 

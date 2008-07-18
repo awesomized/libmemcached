@@ -138,14 +138,6 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
       }
     } 
     break;
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL:
-    {
-      unsigned int server_key;
-
-      server_key= hash % MEMCACHED_STRIDE * ptr->wheel_count;
-
-      return ptr->wheel[server_key];
-    }
   case MEMCACHED_DISTRIBUTION_MODULA:
     return hash % ptr->number_of_hosts;
   default:

@@ -2639,23 +2639,6 @@ memcached_return set_memory_alloc(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return enable_wheel(memcached_st *memc)
-{
-  memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL;
-  memcached_hash hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
-  pre_hsieh(memc);
-
-  value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
-  assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT_WHEEL);
-
-  hash= (memcached_hash)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
-  assert(hash == MEMCACHED_HASH_HSIEH);
-
-
-  return MEMCACHED_SUCCESS;
-}
-
 memcached_return enable_consistent(memcached_st *memc)
 {
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
@@ -2896,7 +2879,6 @@ collection_st collection[] ={
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
-  {"wheel", enable_wheel, 0, tests},
   {"memory_allocators", set_memory_alloc, 0, tests},
   {"prefix", set_prefix, 0, tests},
 //  {"udp", pre_udp, 0, tests},
@@ -2914,7 +2896,6 @@ collection_st collection[] ={
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
-  {"consistent_wheel", enable_wheel, 0, consistent_tests},
   {0, 0, 0, 0}
 };
 
