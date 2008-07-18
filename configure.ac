@@ -51,20 +51,21 @@ AC_LANG_CPLUSPLUS
 
 sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
+sinclude(config/64bit.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
 then
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG"
+    CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
   else
-    CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL "
+    CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL $CFLAGS"
   fi
 else
-  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -fast -m64"
-  LDFLAGS="-lsocket -lnsl"
-  DTRACEFLAGS="-64"
+  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
+  LDFLAGS="-lsocket -lnsl $LDFLAGS"
+  DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
 AC_C_CONST
