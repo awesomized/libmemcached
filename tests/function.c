@@ -2077,6 +2077,33 @@ test_return user_supplied_bug16(memcached_st *memc)
   return 0;
 }
 
+/* Check the validity of chinese key*/
+test_return user_supplied_bug17(memcached_st *memc)
+{
+    memcached_return rc;
+    char *key= "豆瓣";
+    char *value="我们在炎热抑郁的夏天无法停止豆瓣";
+    char *value2;
+    size_t length;
+    uint32_t flags;
+
+    rc= memcached_set(memc, key, strlen(key),
+            value, strlen(value),
+            (time_t)0, 0);
+
+    assert(rc == MEMCACHED_SUCCESS);
+
+    value2= memcached_get(memc, key, strlen(key),
+            &length, &flags, &rc);
+
+    assert(length==strlen(value));
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcmp(value, value2, length)==0);
+
+    return 0;
+}
+
+
 test_return result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -2868,6 +2895,7 @@ test_st user_tests[] ={
   {"user_supplied_bug14", 1, user_supplied_bug14 },
   {"user_supplied_bug15", 1, user_supplied_bug15 },
   {"user_supplied_bug16", 1, user_supplied_bug16 },
+  {"user_supplied_bug17", 1, user_supplied_bug17 },
   {0, 0, 0}
 };
 

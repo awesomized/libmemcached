@@ -31,7 +31,7 @@ memcached_return value_fetch(memcached_server_st *ptr,
     key= result->key;
     result->key_length= 0;
 
-    for (prefix_length= ptr->root->prefix_key_length; isgraph(*string_ptr); string_ptr++)
+    for (prefix_length= ptr->root->prefix_key_length; !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
     {
       if (prefix_length == 0)
       {

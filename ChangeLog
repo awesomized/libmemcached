@@ -2,6 +2,7 @@
   * Added strings.h header for Solaris 9
   * Solaris 64bit fix.
   * Support for weighted Ketama from Yin Chen.
+  * Fix for Chinese 
 
 0.22 Mon Jul 14 09:24:11 PDT 2008
   * Fix where master key was no being checked for "bad key"
