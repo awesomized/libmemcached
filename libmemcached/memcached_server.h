@@ -34,6 +34,7 @@ struct memcached_server_st {
   uint16_t count;
   time_t next_retry;
   memcached_st *root;
+  uint64_t limit_maxbytes;
 };
 
 #define memcached_server_count(A) (A)->number_of_hosts

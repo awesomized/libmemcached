@@ -93,6 +93,8 @@ struct memcached_st {
   memcached_trigger_delete_key delete_trigger;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   size_t prefix_key_length;
+  memcached_hash hash_continuum;
+  uint32_t continuum_points_counter;
 };
 
 

@@ -77,6 +77,16 @@ Support CAS operations (this is not enabled by default at this point in the serv
 Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA
 and the hash to MEMCACHED_HASH_MD5.
 
+=item MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
+
+Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted support.
+and the hash to MEMCACHED_HASH_MD5.
+
+=item MEMCACHED_BEHAVIOR_KETAMA_HASH
+
+Sets the hashing algorithm for host mapping on continuum. The value can be set
+to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, and MEMCACHED_HASH_FNV1A_32. 
+
 =item MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 
 Modify the timeout value that is used by poll(). The default value is -1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.

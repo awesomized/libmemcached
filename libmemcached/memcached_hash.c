@@ -11,18 +11,12 @@ static uint32_t FNV_32_PRIME= 16777619;
 static uint32_t internal_generate_hash(const char *key, size_t key_length);
 static uint32_t internal_generate_md5(const char *key, size_t key_length);
 
-uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
+uint32_t generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
   uint32_t x= 0;
 
-
-  WATCHPOINT_ASSERT(ptr->number_of_hosts);
-
-  if (ptr->number_of_hosts == 1)
-    return 0;
-
-  switch (ptr->hash)
+  switch (hash_algorithm)
   {
   case MEMCACHED_HASH_DEFAULT:
     hash= internal_generate_hash(key, key_length);
@@ -91,7 +85,20 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
       break;
     }
   }
+  return hash;
+}
 
+uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
+{
+  uint32_t hash= 1; /* Just here to remove compile warning */
+
+
+  WATCHPOINT_ASSERT(ptr->number_of_hosts);
+
+  if (ptr->number_of_hosts == 1)
+    return 0;
+
+  hash= generate_hash_value(key, key_length, ptr->hash);
   WATCHPOINT_ASSERT(hash);
   return hash;
 }
@@ -103,7 +110,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
     {
-      uint32_t num= ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER;
+      uint32_t num= ptr->continuum_points_counter;
       WATCHPOINT_ASSERT(ptr->continuum);
 
       hash= hash;
@@ -156,6 +163,7 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
 uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
+  uint32_t result= 1;
 
   WATCHPOINT_ASSERT(ptr->number_of_hosts);
 
@@ -165,6 +173,7 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   hash = generate_hash(ptr, key, key_length);
 
   WATCHPOINT_ASSERT(hash);
+
   return dispatch_host(ptr, hash);
 }
 

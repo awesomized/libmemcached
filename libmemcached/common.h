@@ -78,6 +78,8 @@ typedef enum {
   MEM_BUFFER_REQUESTS= (1 << 8),
   MEM_USE_SORT_HOSTS= (1 << 9),
   MEM_VERIFY_KEY= (1 << 10),
+  /* 11 used for weighted ketama */
+  MEM_KETAMA_WEIGHTED= (1 << 11),
 } memcached_flags;
 
 /* Hashing algo */

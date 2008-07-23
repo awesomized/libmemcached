@@ -24,8 +24,9 @@
 
 #include "test.h"
 
-#define GLOBAL_COUNT 100000
-#define GLOBAL2_COUNT 1000
+#define GLOBAL_COUNT 10000
+#define GLOBAL2_COUNT 100
+#define SERVERS_TO_CREATE 5
 static uint32_t global_count;
 
 static pairs_st *global_pairs;
@@ -2237,6 +2238,23 @@ test_return generate_data(memcached_st *memc)
   return 0;
 }
 
+test_return generate_data_with_stats(memcached_st *memc)
+{
+  memcached_stat_st *stat_p= NULL;
+  memcached_return rc;
+  int host_index= 0;
+  execute_set(memc, global_pairs, global_count);
+
+  //TODO: hosts used size stats
+  stat_p = memcached_stat(memc, NULL, &rc);
+  for (host_index = 0; host_index < SERVERS_TO_CREATE; ++host_index)
+  {
+      printf("\nserver %d|%s|%d bytes: %lld\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (stat_p + host_index)->bytes);
+  }
+
+
+  return 0;
+}
 test_return generate_buffer_data(memcached_st *memc)
 {
   int latch= 0;
@@ -2521,6 +2539,24 @@ memcached_return pre_behavior_ketama(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return pre_behavior_ketama_weighted(memcached_st *memc)
+{
+  memcached_return rc;
+  uint64_t value;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
+  assert(value == MEMCACHED_HASH_MD5);
+  return MEMCACHED_SUCCESS;
+}
 void my_free(memcached_st *ptr, void *mem)
 {
   free(mem);
@@ -2862,6 +2898,14 @@ test_st consistent_tests[] ={
   {0, 0, 0}
 };
 
+test_st consistent_weighted_tests[] ={
+  {"generate_pairs", 1, generate_pairs },
+  {"generate_data", 1, generate_data_with_stats },
+  {"get_read", 0, get_read_count },
+  {"cleanup", 1, cleanup_pairs },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"block", 0, 0, tests},
   {"nonblock", pre_nonblock, 0, tests},
@@ -2896,6 +2940,7 @@ collection_st collection[] ={
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
+  {"consistent_ketama_weighted", pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
   {0, 0, 0, 0}
 };
 

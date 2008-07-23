@@ -9,4 +9,4 @@ Kevin Dalley - Bug Fixes
 Patrick Galbraith - work on C++ interface
 Ross McFarland - Idea for sorting servers.
 Marcelo Fernandez - TCP/IP timeout pieces
-Yin Chen - Ketama support
+Yin Chen - Ketama support/weighted support
