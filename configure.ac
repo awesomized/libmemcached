@@ -51,6 +51,8 @@ AC_LANG_CPLUSPLUS
 
 sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
+sinclude(config/memcached.m4)
+sinclude(config/byteorder.m4)
 sinclude(config/64bit.m4)
 
 # We only support GCC and Sun's forte at the moment

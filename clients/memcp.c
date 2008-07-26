@@ -22,6 +22,7 @@
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
 
+static int opt_binary=0;
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
 
   while (optind < argc) 
   {
@@ -172,6 +174,7 @@ void options_parse(int argc, char *argv[])
       {"add",  no_argument, NULL, OPT_ADD},
       {"replace",  no_argument, NULL, OPT_REPLACE},
       {"hash", required_argument, NULL, OPT_HASH},
+      {"binary", no_argument, NULL, OPT_BINARY},
       {0, 0, 0, 0},
     };
 
@@ -184,6 +187,9 @@ void options_parse(int argc, char *argv[])
     switch (option_rv)
     {
     case 0:
+      break;
+    case OPT_BINARY:
+      opt_binary = 1;
       break;
     case OPT_VERBOSE: /* --verbose or -v */
       opt_verbose = OPT_VERBOSE;

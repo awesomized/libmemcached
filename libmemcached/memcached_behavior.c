@@ -23,6 +23,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 {
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
+    break;     
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     set_behavior_flag(ptr, MEM_SUPPORT_CAS, data);
     break;
@@ -118,6 +121,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    temp_flag= MEM_BINARY_PROTOCOL;
+    break;     
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     temp_flag= MEM_SUPPORT_CAS;
     break;

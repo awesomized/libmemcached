@@ -67,7 +67,8 @@ libmemcached_la_SOURCES = crc.c \
                           memcached_strerror.c \
 			  memcached_verbosity.c \
 			  memcached_version.c \
-			  murmur_hash.c
+			  murmur_hash.c \
+                          byteorder.c
 
 libmemcached_la_LIBADD =
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
