@@ -630,6 +630,16 @@ test_return bad_key_test(memcached_st *memc)
     assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
   }
 
+  /* Make sure zero length keys are marked as bad */
+  set= 1;
+  rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+  assert(rc == MEMCACHED_SUCCESS);
+  string= memcached_get(clone, key, 0,
+                        &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+  assert(string_length ==  0);
+  assert(!string);
+
   memcached_free(clone);
 
   return 0;
