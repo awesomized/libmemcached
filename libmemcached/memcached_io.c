@@ -75,7 +75,7 @@ void memcached_io_preread(memcached_st *ptr)
 #endif
 
 ssize_t memcached_io_read(memcached_server_st *ptr,
-                          char *buffer, size_t length)
+                          void *buffer, size_t length)
 {
   char *buffer_ptr;
 
@@ -154,11 +154,11 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
       break;
   }
 
-  return (size_t)(buffer_ptr - buffer);
+  return (size_t)(buffer_ptr - (char*)buffer);
 }
 
 ssize_t memcached_io_write(memcached_server_st *ptr,
-                           const char *buffer, size_t length, char with_flush)
+                           const void *buffer, size_t length, char with_flush)
 {
   size_t original_length;
   const char* buffer_ptr;

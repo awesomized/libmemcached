@@ -504,7 +504,7 @@ test_return add_test(memcached_st *memc)
   if (setting_value)
     assert(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_STORED);
   else
-    assert(rc == MEMCACHED_NOTSTORED);
+    assert(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_DATA_EXISTS);
 
   return 0;
 }
@@ -2594,6 +2594,19 @@ memcached_return pre_behavior_ketama_weighted(memcached_st *memc)
   assert(value == MEMCACHED_HASH_MD5);
   return MEMCACHED_SUCCESS;
 }
+
+memcached_return pre_binary(memcached_st *memc)
+{
+  memcached_return rc;
+
+  rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+
+  return MEMCACHED_SUCCESS;
+
+}
 void my_free(memcached_st *ptr, void *mem)
 {
   free(mem);
@@ -2736,8 +2749,8 @@ memcached_return enable_cas(memcached_st *memc)
   memcached_version(memc);
 
   if (memc->hosts[0].major_version >= 1 &&
-      memc->hosts[0].minor_version >= 2 &&
-      memc->hosts[0].micro_version >= 4)
+      (memc->hosts[0].minor_version == 2 && 
+       memc->hosts[0].micro_version >= 4) || memc->hosts[0].minor_version > 2)
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
@@ -2752,8 +2765,8 @@ memcached_return check_for_1_2_3(memcached_st *memc)
   memcached_version(memc);
 
   if (memc->hosts[0].major_version >= 1 &&
-      memc->hosts[0].minor_version >= 2 &&
-      memc->hosts[0].micro_version >= 4)
+      (memc->hosts[0].minor_version == 2 && memc->hosts[0].micro_version >= 4) 
+      || memc->hosts[0].minor_version > 2)
     return MEMCACHED_SUCCESS;
 
   return MEMCACHED_FAILURE;
@@ -2946,6 +2959,7 @@ test_st consistent_weighted_tests[] ={
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
+  {"binary", pre_binary, 0, tests},
   {"nonblock", pre_nonblock, 0, tests},
   {"nodelay", pre_nodelay, 0, tests},
   {"md5", pre_md5, 0, tests},

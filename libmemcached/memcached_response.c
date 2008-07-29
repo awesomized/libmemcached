@@ -8,6 +8,10 @@
 #include "common.h"
 #include "memcached_io.h"
 
+static memcached_return binary_response(memcached_server_st *ptr, 
+                                        char *buffer, size_t buffer_length,
+                                        memcached_result_st *result);
+
 memcached_return memcached_response(memcached_server_st *ptr, 
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result)
@@ -34,6 +38,9 @@ memcached_return memcached_response(memcached_server_st *ptr,
   if (ptr->root->flags & MEM_NO_BLOCK)
     (void)memcached_io_write(ptr, NULL, 0, 1);
 
+  if (ptr->root->flags & MEM_BINARY_PROTOCOL)
+    return binary_response(ptr, buffer, buffer_length, result);
+  
   max_messages= memcached_server_response_count(ptr);
   for (x= 0; x <  max_messages; x++)
   {
@@ -178,4 +185,196 @@ size_t memcached_result_length(memcached_result_st *ptr)
 {
   memcached_string_st *sptr= &ptr->value;
   return memcached_string_length(sptr);
+}
+
+/**
+ * Read a given number of bytes from the server and place it into a specific
+ * buffer. Reset the IO channel or this server if an error occurs. 
+ */
+static memcached_return safe_read(memcached_server_st *ptr, void *dta, 
+                                  size_t size) 
+{
+  int offset= 0;
+  char *data= dta;
+  while (offset < size) 
+  {
+    ssize_t nread= memcached_io_read(ptr, data + offset, size - offset);
+    if (nread <= 0) 
+    {
+      memcached_io_reset(ptr);
+      return MEMCACHED_UNKNOWN_READ_FAILURE;
+    }
+    offset += nread;
+  }
+   
+  return MEMCACHED_SUCCESS;
+}
+
+static memcached_return binary_response(memcached_server_st *ptr,
+                                        char *buffer,
+                                        size_t buffer_length,
+                                        memcached_result_st *result) 
+{
+  protocol_binary_response_header header;
+  memcached_server_response_decrement(ptr);
+   
+  unlikely (safe_read(ptr, &header.bytes, 
+                      sizeof(header.bytes)) != MEMCACHED_SUCCESS)
+    return MEMCACHED_UNKNOWN_READ_FAILURE;
+
+  unlikely (header.response.magic != PROTOCOL_BINARY_RES) 
+  {
+    memcached_io_reset(ptr);
+    return MEMCACHED_PROTOCOL_ERROR;
+  }
+
+  /*
+  ** Convert the header to host local endian!
+  */
+  header.response.keylen= ntohs(header.response.keylen);
+  header.response.status= ntohs(header.response.status);
+  header.response.bodylen= ntohl(header.response.bodylen);
+  header.response.cas= ntohll(header.response.cas);
+  uint32_t bodylen= header.response.bodylen;
+
+  if (header.response.status == 0) 
+  {
+    if ((header.response.opcode == PROTOCOL_BINARY_CMD_GETK) ||
+        (header.response.opcode == PROTOCOL_BINARY_CMD_GETKQ)) 
+    {
+      uint16_t keylen= header.response.keylen;
+      memcached_result_reset(result);
+      result->cas= header.response.cas;
+
+      if (safe_read(ptr, &result->flags,
+                    sizeof(result->flags)) != MEMCACHED_SUCCESS) 
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+      result->flags= ntohl(result->flags);
+      bodylen -= header.response.extlen;
+            
+      result->key_length= keylen;
+      if (safe_read(ptr, result->key, keylen) != MEMCACHED_SUCCESS) 
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+
+      bodylen -= keylen;
+      if (memcached_string_check(&result->value,
+                                 bodylen) != MEMCACHED_SUCCESS) 
+      {
+        memcached_io_reset(ptr);
+        return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      }
+
+      char *vptr= memcached_string_value(&result->value);
+      if (safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS) 
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+
+      memcached_string_set_length(&result->value, bodylen);  
+    } 
+    else if ((header.response.opcode == PROTOCOL_BINARY_CMD_INCREMENT) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_DECREMENT)) 
+    {
+      if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t)) 
+      {
+        return MEMCACHED_PROTOCOL_ERROR;
+      }
+
+      WATCHPOINT_ASSERT(bodylen == buffer_length);
+      uint64_t val;
+      if (safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS) 
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+
+      val= ntohll(val);
+      memcpy(buffer, &val, sizeof(val));
+    } 
+    else if (header.response.opcode == PROTOCOL_BINARY_CMD_VERSION) 
+    {
+      memset(buffer, 0, buffer_length);
+      if (bodylen >= buffer_length)
+	/* not enough space in buffer.. should not happen... */
+	return MEMCACHED_UNKNOWN_READ_FAILURE;
+      else 
+        safe_read(ptr, buffer, bodylen);
+    } 
+    else if ((header.response.opcode == PROTOCOL_BINARY_CMD_FLUSH) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_QUIT) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_SET) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_ADD) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_REPLACE) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_APPEND) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_PREPEND) ||
+	     (header.response.opcode == PROTOCOL_BINARY_CMD_DELETE)) 
+    {
+       WATCHPOINT_ASSERT(bodylen == 0);
+       return MEMCACHED_SUCCESS;
+    } 
+    else if (header.response.opcode == PROTOCOL_BINARY_CMD_NOOP) 
+    {
+       WATCHPOINT_ASSERT(bodylen == 0);
+       return MEMCACHED_END;
+    }
+    else if (header.response.opcode == PROTOCOL_BINARY_CMD_STAT) 
+    {
+       if (bodylen == 0)
+          return MEMCACHED_END;
+       else if (bodylen + 1 > buffer_length)
+          /* not enough space in buffer.. should not happen... */
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+       else 
+       {
+          size_t keylen= header.response.keylen;            
+          memset(buffer, 0, buffer_length);
+          safe_read(ptr, buffer, keylen);
+          safe_read(ptr, buffer + keylen + 1, bodylen - keylen);
+       }
+    } 
+    else 
+    {
+       /* Command not implemented yet! */
+       WATCHPOINT_ASSERT(0);
+       memcached_io_reset(ptr);
+       return MEMCACHED_PROTOCOL_ERROR;
+    }        
+  } 
+  else if (header.response.bodylen) 
+  {
+     /* What should I do with the error message??? just discard it for now */
+    char hole[1024];
+    while (bodylen > 0) 
+    {
+      size_t nr= (bodylen > sizeof(hole)) ? sizeof(hole) : bodylen;
+      safe_read(ptr, hole, nr);
+      bodylen -= nr;
+    }
+  }
+
+  memcached_return rc= MEMCACHED_SUCCESS;
+  unlikely(header.response.status != 0) 
+    switch (header.response.status) 
+    {
+    case PROTOCOL_BINARY_RESPONSE_KEY_ENOENT:
+      rc= MEMCACHED_NOTFOUND;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS:
+      rc= MEMCACHED_DATA_EXISTS;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_E2BIG:
+    case PROTOCOL_BINARY_RESPONSE_EINVAL:
+    case PROTOCOL_BINARY_RESPONSE_NOT_STORED:
+    case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:
+    case PROTOCOL_BINARY_RESPONSE_ENOMEM:
+    default:
+      /* @todo fix the error mappings */
+      rc= MEMCACHED_PROTOCOL_ERROR;
+      break;
+    }
+    
+  return rc;
 }

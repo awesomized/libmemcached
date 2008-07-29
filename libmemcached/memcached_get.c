@@ -102,6 +102,11 @@ memcached_return memcached_mget(memcached_st *ptr,
   return memcached_mget_by_key(ptr, NULL, 0, keys, key_length, number_of_keys);
 }
 
+static memcached_return binary_mget_by_key(memcached_st *ptr,
+                                           unsigned int master_server_key,
+                                           char **keys, size_t *key_length,
+                                           unsigned int number_of_keys);
+
 memcached_return memcached_mget_by_key(memcached_st *ptr, 
                                        const char *master_key, 
                                        size_t master_key_length,
@@ -159,6 +164,10 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
         (void)memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
     }
   }
+  
+  if (ptr->flags & MEM_BINARY_PROTOCOL)
+    return binary_mget_by_key(ptr, master_server_key, keys, 
+                              key_length, number_of_keys);
 
   /* 
     If a server fails we warn about errors and start all over with sending keys
@@ -232,5 +241,92 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   }
 
   LIBMEMCACHED_MEMCACHED_MGET_END();
+  return rc;
+}
+
+static memcached_return binary_mget_by_key(memcached_st *ptr, 
+                                           unsigned int master_server_key,
+                                           char **keys, size_t *key_length, 
+                                           unsigned int number_of_keys)
+{
+  memcached_return rc= MEMCACHED_NOTFOUND;
+
+  int flush= number_of_keys == 1;
+
+  /* 
+    If a server fails we warn about errors and start all over with sending keys
+    to the server.
+  */
+  for (int x= 0; x < number_of_keys; x++) 
+  {
+    unsigned int server_key;
+
+    if (master_server_key)
+      server_key= master_server_key;
+    else
+      server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
+
+    if (memcached_server_response_count(&ptr->hosts[server_key]) == 0) 
+    {
+      rc= memcached_connect(&ptr->hosts[server_key]);
+      if (rc != MEMCACHED_SUCCESS) 
+        continue;
+    }
+     
+    protocol_binary_request_getk request= {0};
+    request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+    if (number_of_keys == 1)
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
+    else
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
+
+    request.message.header.request.keylen= htons((uint16_t)key_length[x]);
+    request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+    request.message.header.request.bodylen= htonl(key_length[x]);
+    
+    if ((memcached_io_write(&ptr->hosts[server_key], request.bytes,
+                            sizeof(request.bytes), 0) == -1) ||
+        (memcached_io_write(&ptr->hosts[server_key], keys[x], 
+                            key_length[x], flush) == -1)) 
+    {
+      memcached_server_response_reset(&ptr->hosts[server_key]);
+      rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
+    memcached_server_response_increment(&ptr->hosts[server_key]);    
+  }
+
+  if (number_of_keys > 1) 
+  {
+    /*
+     * Send a noop command to flush the buffers
+     */
+    protocol_binary_request_noop request= {0};
+    request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
+    request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+    
+    for (int x= 0; x < ptr->number_of_hosts; x++)
+      if (memcached_server_response_count(&ptr->hosts[x])) 
+      {
+        if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1) 
+        {
+          memcached_server_response_reset(&ptr->hosts[x]);
+          memcached_io_reset(&ptr->hosts[x]);
+          rc= MEMCACHED_SOME_ERRORS;
+        }
+
+        if (memcached_io_write(&ptr->hosts[x], request.bytes, 
+			       sizeof(request.bytes), 1) == -1) 
+        {
+          memcached_server_response_reset(&ptr->hosts[x]);
+          memcached_io_reset(&ptr->hosts[x]);
+          rc= MEMCACHED_SOME_ERRORS;
+        }
+        memcached_server_response_increment(&ptr->hosts[x]);    
+      }
+    }
+
+
   return rc;
 }

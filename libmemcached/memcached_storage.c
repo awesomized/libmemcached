@@ -6,7 +6,6 @@
   memcached_add()
 
 */
-
 #include "common.h"
 #include "memcached_io.h"
 
@@ -43,6 +42,16 @@ static char *storage_op_string(memcached_storage_action verb)
   return SET_OP;
 }
 
+static memcached_return memcached_send_binary(memcached_server_st* server, 
+                                              const char *key, 
+                                              size_t key_length, 
+                                              const char *value, 
+                                              size_t value_length, 
+                                              time_t expiration,
+                                              uint32_t flags,
+                                              uint64_t cas,
+                                              memcached_storage_action verb);
+
 static inline memcached_return memcached_send(memcached_st *ptr, 
                                               const char *master_key, size_t master_key_length, 
                                               const char *key, size_t key_length, 
@@ -71,6 +80,11 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+
+  if (ptr->flags & MEM_BINARY_PROTOCOL)
+    return memcached_send_binary(&ptr->hosts[server_key], key, key_length, 
+                                 value, value_length, expiration, 
+                                 flags, cas, verb);
 
   if (cas)
     write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -128,6 +142,7 @@ error:
 
   return rc;
 }
+
 
 memcached_return memcached_set(memcached_st *ptr, const char *key, size_t key_length, 
                                const char *value, size_t value_length, 
@@ -303,3 +318,74 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
                      expiration, flags, cas, CAS_OP);
   return rc;
 }
+
+static memcached_return memcached_send_binary(memcached_server_st* server, 
+                                              const char *key, 
+                                              size_t key_length, 
+                                              const char *value, 
+                                              size_t value_length, 
+                                              time_t expiration,
+                                              uint32_t flags,
+                                              uint64_t cas,
+                                              memcached_storage_action verb)
+{
+  protocol_binary_request_set request= {0};
+  size_t send_length= sizeof(request.bytes);
+
+  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  switch (verb) 
+  {
+  case SET_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SET;
+    break;
+  case ADD_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_ADD;
+    break;
+  case REPLACE_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_REPLACE;
+    break;
+  case APPEND_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_APPEND;
+    break;
+  case PREPEND_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_PREPEND;
+    break;
+  case CAS_OP:
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_REPLACE;
+      break;
+  default:
+    abort();
+  }
+
+  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+  if (verb == APPEND_OP || verb == PREPEND_OP)
+    send_length -= 8; /* append & prepend does not contain extras! */
+  else {
+    request.message.header.request.extlen= 8;
+    request.message.body.flags= htonl(flags);   
+    request.message.body.expiration= htonl((uint32_t)expiration);
+  }
+  
+  request.message.header.request.bodylen= htonl(key_length + value_length + 
+						request.message.header.request.extlen);
+  
+  if (cas)
+    request.message.header.request.cas= htonll(cas);
+  
+  char flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
+  /* write the header */
+  if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
+      (memcached_io_write(server, key, key_length, 0) == -1) ||
+      (memcached_io_write(server, value, value_length, flush) == -1)) 
+  {
+    memcached_io_reset(server);
+    return MEMCACHED_WRITE_FAILURE;
+  }
+
+  if (flush == 0)
+    return MEMCACHED_BUFFERED;
+  
+  return memcached_response(server, NULL, 0, NULL);   
+}
+

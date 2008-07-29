@@ -6,6 +6,7 @@
 #include "client_options.h"
 #include "utilities.h"
 
+static int opt_binary= 0;
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
@@ -42,6 +43,7 @@ int main(int argc, char *argv[])
   servers= memcached_servers_parse(opt_servers);
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
   
   rc = memcached_flush(memc, opt_expire);
   if (rc != MEMCACHED_SUCCESS) 
@@ -76,6 +78,7 @@ void options_parse(int argc, char *argv[])
     {"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {"servers", required_argument, NULL, OPT_SERVERS},
     {"expire", required_argument, NULL, OPT_EXPIRE},
+    {"binary", no_argument, NULL, OPT_BINARY},
     {0, 0, 0, 0},
   };
   int option_index= 0;
@@ -88,6 +91,9 @@ void options_parse(int argc, char *argv[])
     switch (option_rv)
     {
     case 0:
+      break;
+    case OPT_BINARY:
+      opt_binary = 1;
       break;
     case OPT_VERBOSE: /* --verbose or -v */
       opt_verbose = OPT_VERBOSE;

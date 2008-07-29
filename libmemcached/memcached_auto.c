@@ -62,6 +62,45 @@ static memcached_return memcached_auto(memcached_st *ptr,
   return rc;
 }
 
+static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
+                                         const char *key, size_t key_length,
+                                         uint32_t offset, uint64_t *value) 
+{
+  unsigned int server_key;
+
+  unlikely (key_length == 0)
+    return MEMCACHED_NO_KEY_PROVIDED;
+
+  unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+    return MEMCACHED_NO_SERVERS;
+
+  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test(&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+    return MEMCACHED_BAD_KEY_PROVIDED;
+
+  server_key= memcached_generate_hash(ptr, key, key_length);
+
+  protocol_binary_request_incr request= {0};
+
+  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  request.message.header.request.opcode= cmd;
+  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.extlen= 20;
+  request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+  request.message.header.request.bodylen= htonl(key_length + request.message.header.request.extlen);  
+  request.message.body.delta= htonll(offset);
+  
+  /* TODO: The binary protocol allows you to specify initial and expiry time */
+  if ((memcached_do(&ptr->hosts[server_key], request.bytes,
+                    sizeof(request.bytes), 0)!=MEMCACHED_SUCCESS) ||
+      (memcached_io_write(&ptr->hosts[server_key], key, key_length, 1) == -1)) 
+  {
+    memcached_io_reset(&ptr->hosts[server_key]);
+    return MEMCACHED_WRITE_FAILURE;
+  }
+ 
+  return memcached_response(&ptr->hosts[server_key], value, sizeof(*value), NULL);
+}
+
 memcached_return memcached_increment(memcached_st *ptr, 
                                      const char *key, size_t key_length,
                                      uint32_t offset,
@@ -70,7 +109,12 @@ memcached_return memcached_increment(memcached_st *ptr,
   memcached_return rc;
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_START();
-  rc= memcached_auto(ptr, "incr", key, key_length, offset, value);
+  if (ptr->flags & MEM_BINARY_PROTOCOL) 
+    rc= binary_incr_decr(ptr, PROTOCOL_BINARY_CMD_INCREMENT, key, 
+			 key_length, offset, value);
+  else 
+     rc= memcached_auto(ptr, "incr", key, key_length, offset, value);
+  
   LIBMEMCACHED_MEMCACHED_INCREMENT_END();
 
   return rc;
@@ -84,7 +128,12 @@ memcached_return memcached_decrement(memcached_st *ptr,
   memcached_return rc;
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_START();
-  rc= memcached_auto(ptr, "decr", key, key_length, offset, value);
+  if (ptr->flags & MEM_BINARY_PROTOCOL) 
+    rc= binary_incr_decr(ptr, PROTOCOL_BINARY_CMD_DECREMENT, key, 
+			 key_length, offset, value);
+  else 
+    rc= memcached_auto(ptr, "decr", key, key_length, offset, value);      
+  
   LIBMEMCACHED_MEMCACHED_DECREMENT_END();
 
   return rc;
