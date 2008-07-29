@@ -48,17 +48,10 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   if (ptr->root->flags & MEM_NO_BLOCK)
   {
     int error;
-    struct linger linger;
     struct timeval waittime;
 
     waittime.tv_sec= 10;
     waittime.tv_usec= 0;
-
-    linger.l_onoff= 1; 
-    linger.l_linger= MEMCACHED_DEFAULT_TIMEOUT; 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER, 
-                      &linger, (socklen_t)sizeof(struct linger));
-    WATCHPOINT_ASSERT(error == 0);
 
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDTIMEO, 
                       &waittime, (socklen_t)sizeof(struct timeval));
@@ -66,6 +59,17 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
 
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVTIMEO, 
                       &waittime, (socklen_t)sizeof(struct timeval));
+    WATCHPOINT_ASSERT(error == 0);
+  }
+
+  {
+    int error;
+    struct linger linger;
+
+    linger.l_onoff= 1; 
+    linger.l_linger= MEMCACHED_DEFAULT_TIMEOUT; 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER, 
+                      &linger, (socklen_t)sizeof(struct linger));
     WATCHPOINT_ASSERT(error == 0);
   }
 

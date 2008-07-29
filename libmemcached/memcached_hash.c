@@ -163,7 +163,6 @@ unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
 uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
-  uint32_t result= 1;
 
   WATCHPOINT_ASSERT(ptr->number_of_hosts);
 

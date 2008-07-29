@@ -113,5 +113,7 @@ memcached_return memcachd_key_test(char **keys, size_t *key_length,
 
 memcached_return run_distribution(memcached_st *ptr);
 
+uint32_t generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm);
+
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 #endif /* __COMMON_H__ */

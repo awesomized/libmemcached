@@ -173,7 +173,8 @@ memcached_return update_continuum(memcached_st *ptr)
   qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
   ptr->continuum_points_counter= pointer_counter;
-  memcached_stat_free(NULL, stat_p);
+  if (stat_p)
+    memcached_stat_free(NULL, stat_p);
 
 #ifdef HAVE_DEBUG
   for (index= 0; index < ((ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
