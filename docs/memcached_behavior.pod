@@ -44,6 +44,18 @@ available for storage functions. For read operations it is currently
 similar in performance to the non-blocking method (this is being
 looked into).
 
+=item MEMCACHED_BEHAVIOR_SND_TIMEOUT
+
+This sets the microsecond behavior of the socket against the SO_SNDTIMEO flag.
+In cases where you cannot use non-blocking IO this will allow you to still have
+timeouts on the sending of data.
+
+=item MEMCACHED_BEHAVIOR_RCV_TIMEOUT
+
+This sets the microsecond behavior of the socket against the SO_RCVTIMEO flag.
+In cases where you cannot use non-blocking IO this will allow you to still have
+timeouts on the reading of data.
+
 =item MEMCACHED_BEHAVIOR_TCP_NODELAY
 
 Turns on the no-delay feature for connecting sockets (may be faster in some

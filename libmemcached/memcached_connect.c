@@ -45,17 +45,26 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   if (ptr->type == MEMCACHED_CONNECTION_UDP)
     return MEMCACHED_SUCCESS;
 
-  if (ptr->root->flags & MEM_NO_BLOCK)
+  if (ptr->root->snd_timeout)
   {
     int error;
     struct timeval waittime;
 
-    waittime.tv_sec= 10;
-    waittime.tv_usec= 0;
+    waittime.tv_sec= 0;
+    waittime.tv_usec= ptr->root->snd_timeout;
 
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDTIMEO, 
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
+  }
+
+  if (ptr->root->rcv_timeout)
+  {
+    int error;
+    struct timeval waittime;
+
+    waittime.tv_sec= 0;
+    waittime.tv_usec= ptr->root->rcv_timeout;
 
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVTIMEO, 
                       &waittime, (socklen_t)sizeof(struct timeval));

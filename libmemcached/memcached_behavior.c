@@ -23,6 +23,12 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 {
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
+    ptr->snd_timeout= (int32_t)data;
+    break;     
+  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
+    ptr->rcv_timeout= (int32_t)data;
+    break;     
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
     break;     

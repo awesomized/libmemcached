@@ -95,6 +95,8 @@ struct memcached_st {
   size_t prefix_key_length;
   memcached_hash hash_continuum;
   uint32_t continuum_points_counter;
+  int32_t snd_timeout;
+  int32_t rcv_timeout;
 };
 
 

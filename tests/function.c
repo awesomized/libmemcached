@@ -2813,6 +2813,14 @@ memcached_return pre_nodelay(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return pre_settimer(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 1000);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 1000);
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return poll_timeout(memcached_st *memc)
 {
   int32_t timeout;
@@ -2959,9 +2967,10 @@ test_st consistent_weighted_tests[] ={
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
-  {"binary", pre_binary, 0, tests},
+//  {"binary", pre_binary, 0, tests},
   {"nonblock", pre_nonblock, 0, tests},
   {"nodelay", pre_nodelay, 0, tests},
+  {"settimer", pre_settimer, 0, tests},
   {"md5", pre_md5, 0, tests},
   {"crc", pre_crc, 0, tests},
   {"hsieh", pre_hsieh, 0, tests},

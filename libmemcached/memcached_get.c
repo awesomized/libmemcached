@@ -250,6 +250,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
+  int x;
 
   int flush= number_of_keys == 1;
 
@@ -257,7 +258,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
-  for (int x= 0; x < number_of_keys; x++) 
+  for (x= 0; x < number_of_keys; x++) 
   {
     unsigned int server_key;
 
@@ -306,7 +307,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     
-    for (int x= 0; x < ptr->number_of_hosts; x++)
+    for (x= 0; x < ptr->number_of_hosts; x++)
       if (memcached_server_response_count(&ptr->hosts[x])) 
       {
         if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1) 

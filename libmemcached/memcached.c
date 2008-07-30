@@ -106,6 +106,9 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr)
   new_clone->hash_continuum= ptr->hash_continuum;
   new_clone->user_data= ptr->user_data;
 
+  new_clone->snd_timeout= ptr->snd_timeout;
+  new_clone->rcv_timeout= ptr->rcv_timeout;
+
   new_clone->on_clone= ptr->on_clone;
   new_clone->on_cleanup= ptr->on_cleanup;
   new_clone->call_free= ptr->call_free;
