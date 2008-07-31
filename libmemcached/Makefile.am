@@ -1,4 +1,4 @@
-EXTRA_DIST = libmemcached_probes.d
+EXTRA_DIST = libmemcached_probes.d memcached/README.txt
 
 INCLUDES = -I$(top_builddir)
 LIBS =
@@ -22,7 +22,8 @@ DTRACEFILES = memcached.o \
 
 noinst_HEADERS = libmemcached_probes.h \
 		 memcached_io.h \
-                 common.h
+                 common.h \
+                 memcached/protocol_binary.h
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
