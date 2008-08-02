@@ -69,8 +69,8 @@ struct memcached_stat_st {
 struct memcached_st {
   memcached_allocated is_allocated;
   memcached_server_st *hosts;
-  unsigned int number_of_hosts;
-  unsigned int cursor_server;
+  uint32_t number_of_hosts;
+  uint32_t cursor_server;
   int cached_errno;
   uint32_t flags;
   int send_size;

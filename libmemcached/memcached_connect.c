@@ -172,8 +172,10 @@ static memcached_return network_connect(memcached_server_st *ptr)
   {
     struct addrinfo *use;
 
-    if(ptr->root->server_failure_limit != 0) {
-      if(ptr->server_failure_counter >= ptr->root->server_failure_limit) {
+    if (ptr->root->server_failure_limit != 0) 
+    {
+      if (ptr->server_failure_counter >= ptr->root->server_failure_limit) 
+      {
           memcached_server_remove(ptr);
       }
     }
