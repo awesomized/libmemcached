@@ -2597,16 +2597,26 @@ memcached_return pre_behavior_ketama_weighted(memcached_st *memc)
 
 memcached_return pre_binary(memcached_st *memc)
 {
-  memcached_return rc;
+  memcached_return rc= MEMCACHED_FAILURE;
+  memcached_st *clone;
 
-  rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-  assert(rc == MEMCACHED_SUCCESS);
+  clone= memcached_clone(NULL, memc);
+  assert(clone);
+  // The memcached_version needs to be done on a clone, because the server
+  // will not toggle protocol on an connection.
+  memcached_version(clone);
 
-  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+  if (clone->hosts[0].major_version >= 1 && clone->hosts[0].minor_version > 2) 
+  {
+    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+  }
 
-  return MEMCACHED_SUCCESS;
-
+  memcached_free(clone);
+  return rc;
 }
+
 void my_free(memcached_st *ptr, void *mem)
 {
   free(mem);
@@ -2967,7 +2977,7 @@ test_st consistent_weighted_tests[] ={
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
-//  {"binary", pre_binary, 0, tests},
+  {"binary", pre_binary, 0, tests},
   {"nonblock", pre_nonblock, 0, tests},
   {"nodelay", pre_nodelay, 0, tests},
   {"settimer", pre_settimer, 0, tests},
