@@ -63,7 +63,7 @@ static inline memcached_return memcached_version_binary(memcached_st *ptr)
 {
   memcached_return rc;
   unsigned int x;
-  protocol_binary_request_version request= {0};
+  protocol_binary_request_version request= { .bytes= {0}};
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_VERSION;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;

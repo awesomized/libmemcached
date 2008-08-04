@@ -329,7 +329,7 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
                                               uint64_t cas,
                                               memcached_storage_action verb)
 {
-  protocol_binary_request_set request= {0};
+  protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
