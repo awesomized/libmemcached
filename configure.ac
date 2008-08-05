@@ -66,7 +66,6 @@ then
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
-  LDFLAGS="-lsocket -lnsl $LDFLAGS"
   DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
@@ -74,4 +73,6 @@ AC_C_CONST
 AC_HEADER_TIME
 AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
+AC_SEARCH_LIBS(socket, socket)
+AC_SEARCH_LIBS(gethostbyname, nsl)
 AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)
