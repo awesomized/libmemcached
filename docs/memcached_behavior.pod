@@ -138,6 +138,11 @@ connection.
 Enable the use of the binary protocol. Please note that you cannot toggle
 this flag on an open connection.
 
+=item MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+
+Set this value to enable the server be removed after continuous MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+times connection failure.
+
 =back
 
 =head1 RETURN

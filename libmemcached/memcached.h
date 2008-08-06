@@ -97,6 +97,7 @@ struct memcached_st {
   uint32_t continuum_points_counter;
   int32_t snd_timeout;
   int32_t rcv_timeout;
+  int32_t server_failure_limit;
 };
 
 

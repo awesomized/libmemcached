@@ -61,12 +61,14 @@ then
   if test "$ENABLE_DEBUG" = "yes"
   then
     CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
+    LDFLAGS="-lm"
   else
     CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL $CFLAGS"
+    LDFLAGS="-lm"
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
-  LDFLAGS="-lsocket -lnsl $LDFLAGS"
+  LDFLAGS="-lm -lsocket -lnsl $LDFLAGS"
   DTRACEFLAGS="$DTRACEFLAGS"
 fi
 

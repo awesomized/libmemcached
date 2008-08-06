@@ -282,6 +282,27 @@ static memcached_return server_add(memcached_st *ptr, char *hostname,
   return run_distribution(ptr);
 }
 
+memcached_return server_remove(memcached_server_st *st_ptr)
+{
+  int i,index;
+  memcached_st *ptr= st_ptr->root;
+  memcached_server_st *list=ptr->hosts;
+  index= 0;
+  for(i= 0; i< ptr->number_of_hosts; ++i) {
+    if(strncmp(list[i].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH)!=0 || list[i].port != st_ptr->port) {
+      memcpy(list+index, list+i, sizeof(memcached_server_st));
+      index++;
+    } else {
+      ptr->number_of_hosts-=1;
+    }
+  }
+  if(st_ptr->address_info) {
+      freeaddrinfo(st_ptr->address_info);
+  }
+  run_distribution(ptr);
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
                                                   char *hostname, unsigned int port, 
                                                   memcached_return *error)

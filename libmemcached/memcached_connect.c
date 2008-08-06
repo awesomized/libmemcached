@@ -172,6 +172,11 @@ static memcached_return network_connect(memcached_server_st *ptr)
   {
     struct addrinfo *use;
 
+    if(ptr->root->server_failure_limit != 0) {
+      if(ptr->server_failure_counter >= ptr->root->server_failure_limit) {
+          server_remove(ptr);
+      }
+    }
     /* Old connection junk still is in the structure */
     WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
@@ -224,7 +229,7 @@ test_connect:
             {
               goto handle_retry;
             }
-            else if (error != 1)
+            else if (error != 1 || fds[0].revents & POLLERR)
             {
               ptr->cached_errno= errno;
               WATCHPOINT_ERRNO(ptr->cached_errno);
@@ -237,6 +242,14 @@ test_connect:
                 ptr->address_info= NULL;
               }
 
+          if (ptr->root->retry_timeout)
+          {
+            struct timeval next_time;
+
+            gettimeofday(&next_time, NULL);
+            ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+          }
+              ptr->server_failure_counter+= 1;
               return MEMCACHED_ERRNO;
             }
 
@@ -264,15 +277,19 @@ handle_retry:
       else
       {
         WATCHPOINT_ASSERT(ptr->cursor_active == 0);
+        ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
       }
       use = use->ai_next;
     }
   }
 
-  if (ptr->fd == -1)
+  if (ptr->fd == -1) {
+    ptr->server_failure_counter+= 1;
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
+  }
 
+  ptr->server_failure_counter= 0;
   return MEMCACHED_SUCCESS; /* The last error should be from connect() */
 }
 

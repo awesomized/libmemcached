@@ -29,6 +29,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     ptr->rcv_timeout= (int32_t)data;
     break;     
+  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
+    ptr->server_failure_limit= (int32_t)data;
+    break;     
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
     break;     
@@ -159,6 +162,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
     return ptr->hash_continuum;
+  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
+    return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     temp_flag= MEM_USE_SORT_HOSTS;
     break;
