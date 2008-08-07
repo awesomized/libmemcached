@@ -174,7 +174,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
     if(ptr->root->server_failure_limit != 0) {
       if(ptr->server_failure_counter >= ptr->root->server_failure_limit) {
-          server_remove(ptr);
+          memcached_server_remove(ptr);
       }
     }
     /* Old connection junk still is in the structure */

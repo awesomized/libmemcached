@@ -30,7 +30,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     ptr->rcv_timeout= (int32_t)data;
     break;     
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
-    ptr->server_failure_limit= (int32_t)data;
+    ptr->server_failure_limit= (uint32_t)data;
     break;     
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
