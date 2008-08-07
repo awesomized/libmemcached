@@ -1,11 +1,6 @@
 AC_INIT(clients/memcat.c)
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
-AC_CANONICAL_SYSTEM
-
-MEMCACHED_LIBRARY_NAME=libmemcached
-
-#release versioning
+AM_CONFIG_HEADER(libmemcached/libmemcached_config.h) AC_CANONICAL_SYSTEM MEMCACHED_LIBRARY_NAME=libmemcached #release versioning
 MEMCACHED_MAJOR_VERSION=0
 MEMCACHED_MINOR_VERSION=22
 MEMCACHED_MICRO_VERSION=0
@@ -69,6 +64,7 @@ else
   DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
+LDFLAGS="-lm"
 AC_C_CONST
 AC_HEADER_TIME
 AC_TYPE_SIZE_T
