@@ -53,7 +53,7 @@ sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
 sinclude(config/byteorder.m4)
 sinclude(config/64bit.m4)
-#sinclude(config/protocol_binary.m4)
+sinclude(config/protocol_binary.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
@@ -61,14 +61,11 @@ then
   if test "$ENABLE_DEBUG" = "yes"
   then
     CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
-    LDFLAGS="-lm"
   else
     CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL $CFLAGS"
-    LDFLAGS="-lm"
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
-  LDFLAGS="-lm -lsocket -lnsl $LDFLAGS"
   DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
@@ -76,4 +73,6 @@ AC_C_CONST
 AC_HEADER_TIME
 AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
+AC_SEARCH_LIBS(socket, socket)
+AC_SEARCH_LIBS(gethostbyname, nsl)
 AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)

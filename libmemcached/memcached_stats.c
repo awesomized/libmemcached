@@ -219,7 +219,7 @@ static memcached_return binary_stats_fetch(memcached_st *ptr,
   memcached_return rc;
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  protocol_binary_request_stats request= {0};
+  protocol_binary_request_stats request= {.bytes= {0}};
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_STAT;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;

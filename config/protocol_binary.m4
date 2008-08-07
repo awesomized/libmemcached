@@ -10,9 +10,7 @@ AC_RUN_IFELSE([
          return 1;
       }
    ])
-],[ 
-  ;
-], AC_MSG_ERROR([Unsupported struct padding done by compiler.])) 
+],, AC_MSG_ERROR([Unsupported struct padding done by compiler.])) 
 
 dnl ---------------------------------------------------------------------------
 dnl End Macro: PROTOCOL_BINARY_TEST

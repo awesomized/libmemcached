@@ -79,7 +79,7 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
-  protocol_binary_request_incr request= {0};
+  protocol_binary_request_incr request= {.bytes= {0}};
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= cmd;

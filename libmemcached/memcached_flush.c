@@ -51,7 +51,7 @@ static memcached_return memcached_flush_binary(memcached_st *ptr,
                                                time_t expiration)
 {
   unsigned int x;
-  protocol_binary_request_flush request= {0};
+  protocol_binary_request_flush request= {.bytes= {0}};
 
   unlikely (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;

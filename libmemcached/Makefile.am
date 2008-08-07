@@ -1,7 +1,7 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt
 
 INCLUDES = -I$(top_builddir)
-LIBS =
+LIBS = @LIBS@
 
 DTRACE =                @DTRACE@
 DTRACEFLAGS =           @DTRACEFLAGS@

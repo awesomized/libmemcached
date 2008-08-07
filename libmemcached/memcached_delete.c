@@ -88,7 +88,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
 					     size_t key_length,
 					     int flush)
 {
-  protocol_binary_request_delete request= {0};
+  protocol_binary_request_delete request= {.bytes= {0}};
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
