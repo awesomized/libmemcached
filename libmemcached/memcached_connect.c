@@ -34,7 +34,10 @@ static memcached_return set_hostinfo(memcached_server_st *server)
   }
 
   if (server->address_info)
+  {
     freeaddrinfo(server->address_info);
+    server->address_info= NULL;
+  }
   server->address_info= ai;
 
   return MEMCACHED_SUCCESS;
@@ -177,6 +180,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
       if (ptr->server_failure_counter >= ptr->root->server_failure_limit) 
       {
           memcached_server_remove(ptr);
+          return MEMCACHED_FAILURE;
       }
     }
     /* Old connection junk still is in the structure */

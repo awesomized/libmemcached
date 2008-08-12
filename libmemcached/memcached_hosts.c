@@ -295,15 +295,14 @@ memcached_return memcached_server_remove(memcached_server_st *st_ptr)
       memcpy(list+index, list+x, sizeof(memcached_server_st));
       index++;
     } 
-    else 
-    {
-      ptr->number_of_hosts--;
-    }
   }
-
+  ptr->number_of_hosts= index;
 
   if (st_ptr->address_info) 
+  {
     freeaddrinfo(st_ptr->address_info);
+    st_ptr->address_info= NULL;
+  }
   run_distribution(ptr);
 
   return MEMCACHED_SUCCESS;
