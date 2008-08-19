@@ -1306,8 +1306,8 @@ test_return callback_test(memcached_st *memc)
 /* We don't test the behavior itself, we test the switches */
 test_return behavior_test(memcached_st *memc)
 {
-  unsigned long long value;
-  unsigned int set= 1;
+  uint64_t value;
+  uint32_t set= 1;
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);

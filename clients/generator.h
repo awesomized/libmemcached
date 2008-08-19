@@ -14,7 +14,7 @@ struct pairs_st {
   size_t value_length;
 };
 
-pairs_st *pairs_generate(uint32_t number_of, size_t length);
+pairs_st *pairs_generate(uint64_t number_of, size_t value_length);
 void pairs_free(pairs_st *pairs);
 
 #endif

@@ -14,7 +14,12 @@
 #include "test.h"
 #include "server.h"
 
-uint8_t set_test(memcached_st *memc)
+/* Prototypes */
+test_return set_test(memcached_st *memc);
+void *world_create(void);
+void world_destroy(void *p);
+
+test_return set_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -25,7 +30,7 @@ uint8_t set_test(memcached_st *memc)
                     (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 test_st tests[] ={
