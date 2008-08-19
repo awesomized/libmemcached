@@ -89,9 +89,10 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 
 static int continuum_item_cmp(const void *t1, const void *t2)
 {
-  memcached_continuum_item_st *ct1 = (memcached_continuum_item_st *)t1;
-  memcached_continuum_item_st *ct2 = (memcached_continuum_item_st *)t2;
+  memcached_continuum_item_st *ct1= (memcached_continuum_item_st *)t1;
+  memcached_continuum_item_st *ct2= (memcached_continuum_item_st *)t2;
 
+  /* Why 153? Hmmm... */
   WATCHPOINT_ASSERT(ct1->value != 153);
   if (ct1->value == ct2->value)
     return 0;
@@ -169,6 +170,9 @@ memcached_return update_continuum(memcached_st *ptr)
     pointer_counter+= pointer_per_server;
   }
 
+  WATCHPOINT_ASSERT(ptr);
+  WATCHPOINT_ASSERT(ptr->continuum);
+  WATCHPOINT_ASSERT(ptr->number_of_hosts);
   WATCHPOINT_ASSERT(ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
   qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 

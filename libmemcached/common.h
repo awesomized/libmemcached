@@ -22,11 +22,11 @@
 #include <sys/un.h>
 #include <netinet/tcp.h>
 
-#if TIME_WITH_SYS_TIME
+#ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
-# if HAVE_SYS_TIME_H
+# ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>
 # else
 #  include <time.h>
@@ -81,7 +81,7 @@ typedef enum {
   MEM_VERIFY_KEY= (1 << 10),
   /* 11 used for weighted ketama */
   MEM_KETAMA_WEIGHTED= (1 << 11),
-  MEM_BINARY_PROTOCOL= (1 << 12),
+  MEM_BINARY_PROTOCOL= (1 << 12)
 } memcached_flags;
 
 /* Hashing algo */

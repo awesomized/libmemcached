@@ -11,7 +11,8 @@
 extern "C" {
 #endif
 
-#if _DTRACE_VERSION
+
+#ifdef _DTRACE_VERSION
 
 #define	LIBMEMCACHED_MEMCACHED_ADD_END() \
 	__dtrace_libmemcached___memcached_add_end()

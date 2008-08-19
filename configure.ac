@@ -60,9 +60,9 @@ if test "$GCC" = "yes"
 then
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-Wall -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
+    CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -03 -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
   else
-    CFLAGS="-Wall -O3 -DMEMCACHED_INTERNAL $CFLAGS"
+    CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 -DMEMCACHED_INTERNAL $CFLAGS"
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
