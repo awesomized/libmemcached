@@ -56,16 +56,21 @@ sinclude(config/64bit.m4)
 sinclude(config/protocol_binary.m4)
 
 # We only support GCC and Sun's forte at the moment
+CFLAGS="-DMEMCACHED_INTERNAL $CFLAGS"
 if test "$GCC" = "yes"
 then
+  CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -03 $CFLAGS"
+
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -03 -ggdb -DMEMCACHED_INTERNAL -DHAVE_DEBUG $CFLAGS"
-  else
-    CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 -DMEMCACHED_INTERNAL $CFLAGS"
+    CFLAGS="$CFLAGS -ggdb -DHAVE_DEBUG"
   fi
 else
   CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
+  if test "$ENABLE_DEBUG" = "yes"
+  then
+    CFLAGS="$CFLAGS -DHAVE_DEBUG"
+  fi
   DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
