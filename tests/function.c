@@ -2109,6 +2109,7 @@ test_return user_supplied_bug17(memcached_st *memc)
     assert(length==strlen(value));
     assert(rc == MEMCACHED_SUCCESS);
     assert(memcmp(value, value2, length)==0);
+    free(value2);
 
     return 0;
 }
@@ -2277,17 +2278,21 @@ test_return generate_data(memcached_st *memc)
 
 test_return generate_data_with_stats(memcached_st *memc)
 {
-  memcached_stat_st *stat_p= NULL;
+  memcached_stat_st *stat_p;
   memcached_return rc;
-  int host_index= 0;
+  uint32_t host_index= 0;
   execute_set(memc, global_pairs, global_count);
 
   //TODO: hosts used size stats
-  stat_p = memcached_stat(memc, NULL, &rc);
-  for (host_index = 0; host_index < SERVERS_TO_CREATE; ++host_index)
+  stat_p= memcached_stat(memc, NULL, &rc);
+  assert(stat_p);
+
+  for (host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
   {
-      printf("\nserver %d|%s|%d bytes: %lld\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (stat_p + host_index)->bytes);
+      printf("\nserver %u|%s|%u bytes: %llu\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (unsigned long long)(stat_p + host_index)->bytes);
   }
+
+  memcached_stat_free(NULL, stat_p);
 
 
   return 0;
@@ -2758,9 +2763,8 @@ memcached_return enable_cas(memcached_st *memc)
 
   memcached_version(memc);
 
-  if (memc->hosts[0].major_version >= 1 &&
-      (memc->hosts[0].minor_version == 2 && 
-       memc->hosts[0].micro_version >= 4) || memc->hosts[0].minor_version > 2)
+  if ((memc->hosts[0].major_version >= 1 && (memc->hosts[0].minor_version == 2 && memc->hosts[0].micro_version >= 4)) 
+      || memc->hosts[0].minor_version > 2)
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
@@ -2774,8 +2778,7 @@ memcached_return check_for_1_2_3(memcached_st *memc)
 {
   memcached_version(memc);
 
-  if (memc->hosts[0].major_version >= 1 &&
-      (memc->hosts[0].minor_version == 2 && memc->hosts[0].micro_version >= 4) 
+  if ((memc->hosts[0].major_version >= 1 && (memc->hosts[0].minor_version == 2 && memc->hosts[0].micro_version >= 4))
       || memc->hosts[0].minor_version > 2)
     return MEMCACHED_SUCCESS;
 
