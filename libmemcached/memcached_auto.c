@@ -98,7 +98,7 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
     return MEMCACHED_WRITE_FAILURE;
   }
  
-  return memcached_response(&ptr->hosts[server_key], value, sizeof(*value), NULL);
+  return memcached_response(&ptr->hosts[server_key], (char*)value, sizeof(*value), NULL);
 }
 
 memcached_return memcached_increment(memcached_st *ptr, 
