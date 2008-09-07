@@ -59,7 +59,7 @@ sinclude(config/protocol_binary.m4)
 CFLAGS="-DMEMCACHED_INTERNAL $CFLAGS"
 if test "$GCC" = "yes"
 then
-  CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -03 $CFLAGS"
+  CFLAGS="-W -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"
 
   if test "$ENABLE_DEBUG" = "yes"
   then

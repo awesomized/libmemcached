@@ -32,6 +32,7 @@ memcached_result_st *memcached_result_create(memcached_st *ptr,
                                              memcached_result_st *result);
 #define memcached_result_key_value(A) (A)->key
 #define memcached_result_key_length(A) (A)->key_length
+#define memcached_result_string_st(A) ((A)->value)
 #ifdef FIX
 #define memcached_result_value(A) memcached_string_value((A)->value)
 #define memcached_result_length(A) memcached_string_length((A)->value)

@@ -174,9 +174,9 @@ memcached_return update_continuum(memcached_st *ptr)
   WATCHPOINT_ASSERT(ptr->continuum);
   WATCHPOINT_ASSERT(ptr->number_of_hosts);
   WATCHPOINT_ASSERT(ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
-  qsort(ptr->continuum, ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER, sizeof(memcached_continuum_item_st), continuum_item_cmp);
-
   ptr->continuum_points_counter= pointer_counter;
+  qsort(ptr->continuum, ptr->continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
+
   if (stat_p)
     memcached_stat_free(NULL, stat_p);
 
