@@ -12,7 +12,7 @@ valgrind:
 	cd tests; make valgrind; cd ..
 
 rpm: all dist
-	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
+	cp libmemcached-$(VERSION).tar.gz /home/brian/rpm/SOURCES/
 	rpmbuild -ba support/libmemcached.spec
-	cp /home/brian/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
-	cp /home/brian/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
+	cp /home/brian/rpm/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
+	cp /home/brian/rpm/SRPMS/libmemcached-$(VERSION)*.rpm .
