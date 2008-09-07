@@ -1,10 +1,11 @@
-0.23
+0.23 Sun Sep  7 08:13:59 PDT 2008
   * Added strings.h header for Solaris 9
   * Solaris 64bit fix.
   * Support for weighted Ketama from Yin Chen.
   * Fix for Chinese 
   * Fix for 0 length key to trigger bad key.
   * Added behaviors MEMCACHED_BEHAVIOR_SND_TIMEOUT, MEMCACHED_BEHAVIOR_RCV_TIMEOUT
+  * Support for Binary Protocol added
 
 0.22 Mon Jul 14 09:24:11 PDT 2008
   * Fix where master key was no being checked for "bad key"
