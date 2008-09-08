@@ -27,6 +27,18 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
 
 void memcached_server_free(memcached_server_st *ptr)
 {
+  memcached_return rc;
+  WATCHPOINT_ASSERT(ptr->is_allocated != MEMCACHED_NOT_ALLOCATED);
+
+  rc= memcached_io_close(ptr);
+  WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS);
+
+  if (ptr->address_info)
+  {
+    freeaddrinfo(ptr->address_info);
+    ptr->address_info= NULL;
+  }
+
   if (ptr->is_allocated == MEMCACHED_ALLOCATED)
   {
     if (ptr->root && ptr->root->call_free)
