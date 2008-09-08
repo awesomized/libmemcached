@@ -11,4 +11,4 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
                           void *buffer, size_t length);
 memcached_return memcached_io_close(memcached_server_st *ptr);
 
-#endif __MEMCACHED_IO_H__
+#endif /* __MEMCACHED_IO_H__ */
