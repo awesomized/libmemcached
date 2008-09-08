@@ -39,7 +39,8 @@ memcached_create() returns a pointer to the memcached_st that was created
 (or initialized). On an allocation failure, it returns NULL.
 
 memcached_clone() returns a pointer to the memcached_st that was created
-(or initialized). On an allocation failure, it returns NULL.
+(or initialized). On an allocation failure, it returns NULL. If you pass in 
+a preallocated structure it must be cleared first (aka memset()).
 
 =head1 HOME
 

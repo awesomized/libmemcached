@@ -51,9 +51,9 @@ memcached_return run_distribution(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                       char *hostname, unsigned int port,
-                       memcached_connection type)
+void host_reset(memcached_st *ptr, memcached_server_st *host, 
+                char *hostname, unsigned int port,
+                memcached_connection type)
 {
   memset(host,  0, sizeof(memcached_server_st));
   strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);

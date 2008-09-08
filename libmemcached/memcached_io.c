@@ -210,7 +210,14 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
   /* in case of death shutdown to avoid blocking at close() */
 
   r= shutdown(ptr->fd, SHUT_RDWR);
-  WATCHPOINT_ASSERT(r == 0);
+
+#ifdef HAVE_DEBUG
+  if (r && errno != ENOTCONN)
+  {
+    WATCHPOINT_ERRNO(errno);
+    WATCHPOINT_ASSERT(errno);
+  }
+#endif
 
   r= close(ptr->fd);
   WATCHPOINT_ASSERT(r == 0);

@@ -169,11 +169,6 @@ void *memcached_callback_get(memcached_st *ptr,
                              memcached_callback flag,
                              memcached_return *error);
 
-memcached_return memcached_server_cursor(memcached_st *ptr, 
-                                         memcached_server_function *callback,
-                                         void *context,
-                                         unsigned int number_of_callbacks);
-
 
 #ifdef __cplusplus
 }

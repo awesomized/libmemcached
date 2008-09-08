@@ -1,5 +1,11 @@
   * Cleanup compile warnings.
   * Fix issues in partitioning by keys.
+  * Fixed "fail case" to make sure when calling memcached_clone() no
+    memcached_st is over written.
+  * New memcached_server_by_key() method for finding a server from 
+    a key.
+  * memcached_server_free() was added for freeing server structures.
+    
 
 0.23 Sun Sep  7 08:13:59 PDT 2008
   * Added strings.h header for Solaris 9

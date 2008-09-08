@@ -211,6 +211,7 @@ static test_return  clone_test(memcached_st *memc)
   {
     memcached_st declared_clone;
     memcached_st *clone;
+    memset(&declared_clone, 0 , sizeof(memcached_st));
     clone= memcached_clone(&declared_clone, NULL);
     assert(clone);
     memcached_free(clone);
@@ -220,6 +221,7 @@ static test_return  clone_test(memcached_st *memc)
   {
     memcached_st declared_clone;
     memcached_st *clone;
+    memset(&declared_clone, 0 , sizeof(memcached_st));
     clone= memcached_clone(&declared_clone, memc);
     assert(clone);
     memcached_free(clone);
