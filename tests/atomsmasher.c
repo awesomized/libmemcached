@@ -36,14 +36,14 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-test_return cleanup_pairs(memcached_st *memc)
+static test_return cleanup_pairs(memcached_st *memc __attribute__((unused)))
 {
   pairs_free(global_pairs);
 
   return 0;
 }
 
-test_return generate_pairs(memcached_st *memc)
+static test_return generate_pairs(memcached_st *memc __attribute__((unused)))
 {
   unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
@@ -58,7 +58,7 @@ test_return generate_pairs(memcached_st *memc)
   return 0;
 }
 
-test_return drizzle(memcached_st *memc)
+static test_return drizzle(memcached_st *memc)
 {
   unsigned int x;
   memcached_return rc;
@@ -110,28 +110,28 @@ infinite:
   return 0;
 }
 
-memcached_return pre_nonblock(memcached_st *memc)
+static memcached_return pre_nonblock(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return pre_md5(memcached_st *memc)
+static memcached_return pre_md5(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
 
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return pre_hsieh(memcached_st *memc)
+static memcached_return pre_hsieh(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
 
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return enable_consistent(memcached_st *memc)
+static memcached_return enable_consistent(memcached_st *memc)
 {
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
   memcached_hash hash;
@@ -152,7 +152,7 @@ memcached_return enable_consistent(memcached_st *memc)
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
 */
-test_return add_test(memcached_st *memc)
+static test_return add_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -183,7 +183,7 @@ test_return add_test(memcached_st *memc)
  * repeating add_tests many times
  * may show a problem in timing
  */
-test_return many_adds(memcached_st *memc)
+static test_return many_adds(memcached_st *memc)
 {
   unsigned int i;
   for (i = 0; i < TEST_COUNTER; i++){
@@ -212,7 +212,7 @@ collection_st collection[] ={
 
 #define SERVERS_TO_CREATE 5
 
-void *world_create(void)
+static void *world_create(void)
 {
   server_startup_st *construct;
 
@@ -225,7 +225,7 @@ void *world_create(void)
   return construct;
 }
 
-void world_destroy(void *p)
+static void world_destroy(void *p)
 {
   server_startup_st *construct= (server_startup_st *)p;
   memcached_server_st *servers= (memcached_server_st *)construct->servers;

@@ -14,7 +14,7 @@ memcached_return memcached_do(memcached_server_st *ptr, const void *command,
 
   sent_length= memcached_io_write(ptr, command, command_length, with_flush);
 
-  if (sent_length == -1 || sent_length != command_length)
+  if (sent_length == -1 || (size_t)sent_length != command_length)
     rc= MEMCACHED_WRITE_FAILURE;
   else
     memcached_server_response_increment(ptr);

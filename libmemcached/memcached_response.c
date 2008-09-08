@@ -81,7 +81,6 @@ memcached_return memcached_response(memcached_server_st *ptr,
     memcached_server_response_decrement(ptr);
   }
 
-  uint64_t auto_return_value= 0;
   switch(buffer[0])
   {
   case 'V': /* VALUE || VERSION */
@@ -168,10 +167,16 @@ memcached_return memcached_response(memcached_server_st *ptr,
     memcached_io_reset(ptr);
     return MEMCACHED_CLIENT_ERROR;
   default:
-    if (sscanf(buffer, "%lld", &auto_return_value) == 1) 
+    {
+      unsigned long long auto_return_value;
+
+      if (sscanf(buffer, "%llu", &auto_return_value) == 1) 
         return MEMCACHED_SUCCESS;
-    memcached_io_reset(ptr);
-    return MEMCACHED_UNKNOWN_READ_FAILURE;
+
+      memcached_io_reset(ptr);
+
+      return MEMCACHED_UNKNOWN_READ_FAILURE;
+    }
 
   }
 
@@ -197,8 +202,9 @@ size_t memcached_result_length(memcached_result_st *ptr)
 static memcached_return safe_read(memcached_server_st *ptr, void *dta, 
                                   size_t size) 
 {
-  int offset= 0;
+  size_t offset= 0;
   char *data= dta;
+
   while (offset < size) 
   {
     ssize_t nread= memcached_io_read(ptr, data + offset, size - offset);

@@ -3,11 +3,11 @@
 memcached_return memcachd_key_test(char **keys, size_t *key_length, 
                                    unsigned int number_of_keys)
 {
-  int x;
+  uint32_t x;
 
   for (x= 0; x < number_of_keys; x++)
   {
-    int y;
+    size_t y;
 
     if (*(key_length + x) == 0)
         return MEMCACHED_BAD_KEY_PROVIDED;

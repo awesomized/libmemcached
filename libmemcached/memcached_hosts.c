@@ -23,7 +23,7 @@ static int compare_servers(const void *p1, const void *p2)
   return return_value;
 }
 
-void sort_hosts(memcached_st *ptr)
+static void sort_hosts(memcached_st *ptr)
 {
   if (ptr->number_of_hosts)
   {

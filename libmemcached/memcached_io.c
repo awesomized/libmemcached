@@ -204,14 +204,16 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
   return original_length;
 }
 
-memcached_return memcached_io_close(memcached_server_st *ptr, uint8_t io_death)
+memcached_return memcached_io_close(memcached_server_st *ptr)
 {
+  int r;
   /* in case of death shutdown to avoid blocking at close() */
 
-  if (io_death)
-    shutdown(ptr->fd, SHUT_RDWR);
-  else
-    close(ptr->fd);
+  r= shutdown(ptr->fd, SHUT_RDWR);
+  WATCHPOINT_ASSERT(r == 0);
+
+  r= close(ptr->fd);
+  WATCHPOINT_ASSERT(r == 0);
 
   return MEMCACHED_SUCCESS;
 }
@@ -219,7 +221,7 @@ memcached_return memcached_io_close(memcached_server_st *ptr, uint8_t io_death)
 static ssize_t io_flush(memcached_server_st *ptr,
                         memcached_return *error)
 {
-  size_t sent_length;
+  ssize_t sent_length;
   size_t return_length;
   char *local_write_ptr= ptr->write_buffer;
   size_t write_length= ptr->write_buffer_offset;
@@ -230,9 +232,11 @@ static ssize_t io_flush(memcached_server_st *ptr,
     return 0;
 
   /* Looking for memory overflows */
+#if defined(HAVE_DEBUG)
   if (write_length == MEMCACHED_MAX_BUFFER)
     WATCHPOINT_ASSERT(ptr->write_buffer == local_write_ptr);
   WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));
+#endif
 
   return_length= 0;
   while (write_length)
@@ -269,7 +273,7 @@ static ssize_t io_flush(memcached_server_st *ptr,
     }
     else
     {
-      if ((ssize_t)(sent_length= write(ptr->fd, local_write_ptr, 
+      if ((sent_length= write(ptr->fd, local_write_ptr, 
                                        write_length)) == -1)
       {
         switch (errno)

@@ -14,7 +14,7 @@
 
 #include "test.h"
 
-long int timedif(struct timeval a, struct timeval b)
+static long int timedif(struct timeval a, struct timeval b)
 {
   register int us, s;
 
