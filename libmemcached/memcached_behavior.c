@@ -9,7 +9,7 @@
   We quit all connections so we can reset the sockets.
 */
 
-void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint64_t data)
+static void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint64_t data)
 {
   if (data)
     ptr->flags|= temp_flag;
@@ -169,16 +169,20 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     {
-      return (unsigned long long)ptr->poll_timeout;
+      return (uint64_t)ptr->poll_timeout;
     }
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
     {
-      return (unsigned long long)ptr->connect_timeout;
+      return (uint64_t)ptr->connect_timeout;
     }
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
     {
-      return (unsigned long long)ptr->retry_timeout;
+      return (uint64_t)ptr->retry_timeout;
     }
+  case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
+    return (uint64_t)ptr->snd_timeout;
+  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
+    return (uint64_t)ptr->rcv_timeout;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       int sock_size;

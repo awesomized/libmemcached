@@ -1,3 +1,6 @@
+  * Cleanup compile warnings.
+  * Fix issues in partitioning by keys.
+
 0.23 Sun Sep  7 08:13:59 PDT 2008
   * Added strings.h header for Solaris 9
   * Solaris 64bit fix.

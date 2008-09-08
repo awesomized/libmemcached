@@ -250,7 +250,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
-  int x;
+  uint32_t x;
 
   int flush= number_of_keys == 1;
 

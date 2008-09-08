@@ -88,7 +88,7 @@ memcached_return memcached_string_append_character(memcached_string_st *string,
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  *string->end= ' ';
+  *string->end= character;
   string->end++;
 
   return MEMCACHED_SUCCESS;
@@ -114,24 +114,6 @@ memcached_return memcached_string_append(memcached_string_st *string,
   string->end+= length;
 
   return MEMCACHED_SUCCESS;
-}
-
-size_t memcached_string_backspace(memcached_string_st *string, size_t remove)
-{
-  WATCHPOINT_ASSERT(string->is_allocated != MEMCACHED_USED);
-
-  if (string->end - string->string  > remove)
-  {
-    size_t difference;
-
-    difference= string->end - string->string;
-    string->end= string->string;
-
-    return difference;
-  }
-  string->end-= remove;
-
-  return remove;
 }
 
 char *memcached_string_c_copy(memcached_string_st *string)

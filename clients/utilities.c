@@ -21,7 +21,7 @@ void version_command(char *command_name)
   exit(0);
 }
 
-char *lookup_help(memcached_options option)
+static char *lookup_help(memcached_options option)
 {
   switch (option)
   {
@@ -43,6 +43,7 @@ char *lookup_help(memcached_options option)
   case OPT_SLAP_TCP_NODELAY: return("Set TCP socket up to use nodelay.");
   case OPT_FLUSH: return("Flush servers before running tests.");
   case OPT_HASH: return("Select hash type.");
+  case OPT_BINARY: return("Switch to binary protocol.");
   };
 
   WATCHPOINT_ASSERT(0);
@@ -51,7 +52,7 @@ char *lookup_help(memcached_options option)
 
 void help_command(char *command_name, char *description,
                   const struct option *long_options,
-                  memcached_programs_help_st *options)
+                  memcached_programs_help_st *options __attribute__((unused)))
 {
   unsigned int x;
 

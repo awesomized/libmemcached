@@ -394,7 +394,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args,
   We make a copy of the keys since at some point in the not so distant future
   we will add support for "found" keys.
 */
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat __attribute__((unused)), 
                                 memcached_return *error)
 {
   char **list;

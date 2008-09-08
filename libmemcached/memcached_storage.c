@@ -229,7 +229,8 @@ memcached_return memcached_cas(memcached_st *ptr,
 }
 
 memcached_return memcached_set_by_key(memcached_st *ptr, 
-                                      const char *master_key, size_t master_key_length, 
+                                      const char *master_key __attribute__((unused)), 
+                                      size_t master_key_length __attribute__((unused)), 
                                       const char *key, size_t key_length, 
                                       const char *value, size_t value_length, 
                                       time_t expiration,
@@ -237,7 +238,7 @@ memcached_return memcached_set_by_key(memcached_st *ptr,
 {
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_SET_START();
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, 0, SET_OP);
   LIBMEMCACHED_MEMCACHED_SET_END();
@@ -253,7 +254,7 @@ memcached_return memcached_add_by_key(memcached_st *ptr,
 {
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_ADD_START();
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, 0, ADD_OP);
   LIBMEMCACHED_MEMCACHED_ADD_END();
@@ -269,7 +270,7 @@ memcached_return memcached_replace_by_key(memcached_st *ptr,
 {
   memcached_return rc;
   LIBMEMCACHED_MEMCACHED_REPLACE_START();
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, 0, REPLACE_OP);
   LIBMEMCACHED_MEMCACHED_REPLACE_END();
@@ -284,7 +285,7 @@ memcached_return memcached_prepend_by_key(memcached_st *ptr,
                                           uint32_t flags)
 {
   memcached_return rc;
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, 0, PREPEND_OP);
   return rc;
@@ -298,7 +299,7 @@ memcached_return memcached_append_by_key(memcached_st *ptr,
                                          uint32_t flags)
 {
   memcached_return rc;
-  rc= memcached_send(ptr, key, key_length, 
+  rc= memcached_send(ptr, master_key, master_key_length, 
                      key, key_length, value, value_length,
                      expiration, flags, 0, APPEND_OP);
   return rc;

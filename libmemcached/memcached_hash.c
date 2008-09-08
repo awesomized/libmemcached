@@ -103,7 +103,7 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
   return hash;
 }
 
-unsigned int dispatch_host(memcached_st *ptr, uint32_t hash)
+static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
 {
   switch (ptr->distribution) 
   {
@@ -169,7 +169,7 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   if (ptr->number_of_hosts == 1)
     return 0;
 
-  hash = generate_hash(ptr, key, key_length);
+  hash= generate_hash(ptr, key, key_length);
 
   WATCHPOINT_ASSERT(hash);
 

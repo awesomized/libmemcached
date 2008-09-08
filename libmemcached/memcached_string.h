@@ -36,7 +36,6 @@ memcached_return memcached_string_append_character(memcached_string_st *string,
                                                    char character);
 memcached_return memcached_string_append(memcached_string_st *string,
                                          char *value, size_t length);
-size_t memcached_string_backspace(memcached_string_st *string, size_t remove);
 memcached_return memcached_string_reset(memcached_string_st *string);
 void memcached_string_free(memcached_string_st *string);
 
