@@ -330,6 +330,7 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
                                               uint64_t cas,
                                               memcached_storage_action verb)
 {
+  char flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
 
@@ -354,15 +355,14 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
   case CAS_OP:
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_REPLACE;
       break;
-  default:
-    abort();
   }
 
   request.message.header.request.keylen= htons((uint16_t)key_length);
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   if (verb == APPEND_OP || verb == PREPEND_OP)
     send_length -= 8; /* append & prepend does not contain extras! */
-  else {
+  else 
+  {
     request.message.header.request.extlen= 8;
     request.message.body.flags= htonl(flags);   
     request.message.body.expiration= htonl((uint32_t)expiration);
@@ -374,7 +374,7 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
   if (cas)
     request.message.header.request.cas= htonll(cas);
   
-  char flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
+  flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
   /* write the header */
   if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, 0) == -1) ||
