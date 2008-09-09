@@ -248,118 +248,127 @@ static memcached_return binary_response(memcached_server_st *ptr,
 
   if (header.response.status == 0) 
   {
-    if ((header.response.opcode == PROTOCOL_BINARY_CMD_GETK) ||
-        (header.response.opcode == PROTOCOL_BINARY_CMD_GETKQ)) 
+    switch (header.response.opcode)
     {
-      uint16_t keylen= header.response.keylen;
-      memcached_result_reset(result);
-      result->cas= header.response.cas;
-
-      if (safe_read(ptr, &result->flags,
-                    sizeof(result->flags)) != MEMCACHED_SUCCESS) 
+    case PROTOCOL_BINARY_CMD_GETK:
+    case PROTOCOL_BINARY_CMD_GETKQ:
       {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
-      result->flags= ntohl(result->flags);
-      bodylen -= header.response.extlen;
-            
-      result->key_length= keylen;
-      if (safe_read(ptr, result->key, keylen) != MEMCACHED_SUCCESS) 
-      {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
+        uint16_t keylen= header.response.keylen;
+        memcached_result_reset(result);
+        result->cas= header.response.cas;
 
-      bodylen -= keylen;
-      if (memcached_string_check(&result->value,
-                                 bodylen) != MEMCACHED_SUCCESS) 
-      {
-        memcached_io_reset(ptr);
-        return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-      }
+        if (safe_read(ptr, &result->flags,
+                      sizeof(result->flags)) != MEMCACHED_SUCCESS) 
+        {
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
+        result->flags= ntohl(result->flags);
+        bodylen -= header.response.extlen;
 
-      char *vptr= memcached_string_value(&result->value);
-      if (safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS) 
-      {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
+        result->key_length= keylen;
+        if (safe_read(ptr, result->key, keylen) != MEMCACHED_SUCCESS) 
+        {
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
-      memcached_string_set_length(&result->value, bodylen);  
-    } 
-    else if ((header.response.opcode == PROTOCOL_BINARY_CMD_INCREMENT) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_DECREMENT)) 
-    {
-      if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t)) 
-      {
-        return MEMCACHED_PROTOCOL_ERROR;
-      }
+        bodylen -= keylen;
+        if (memcached_string_check(&result->value,
+                                   bodylen) != MEMCACHED_SUCCESS) 
+        {
+          memcached_io_reset(ptr);
+          return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+        }
 
-      WATCHPOINT_ASSERT(bodylen == buffer_length);
-      uint64_t val;
-      if (safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS) 
-      {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
+        char *vptr= memcached_string_value(&result->value);
+        if (safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS) 
+        {
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
-      val= ntohll(val);
-      memcpy(buffer, &val, sizeof(val));
-    } 
-    else if (header.response.opcode == PROTOCOL_BINARY_CMD_VERSION) 
-    {
-      memset(buffer, 0, buffer_length);
-      if (bodylen >= buffer_length)
-	/* not enough space in buffer.. should not happen... */
-	return MEMCACHED_UNKNOWN_READ_FAILURE;
-      else 
-        safe_read(ptr, buffer, bodylen);
-    } 
-    else if ((header.response.opcode == PROTOCOL_BINARY_CMD_FLUSH) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_QUIT) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_SET) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_ADD) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_REPLACE) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_APPEND) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_PREPEND) ||
-	     (header.response.opcode == PROTOCOL_BINARY_CMD_DELETE)) 
-    {
-       WATCHPOINT_ASSERT(bodylen == 0);
-       return MEMCACHED_SUCCESS;
-    } 
-    else if (header.response.opcode == PROTOCOL_BINARY_CMD_NOOP) 
-    {
-       WATCHPOINT_ASSERT(bodylen == 0);
-       return MEMCACHED_END;
-    }
-    else if (header.response.opcode == PROTOCOL_BINARY_CMD_STAT) 
-    {
-       if (bodylen == 0)
-          return MEMCACHED_END;
-       else if (bodylen + 1 > buffer_length)
+        memcached_string_set_length(&result->value, bodylen);  
+      } 
+      break;
+    case PROTOCOL_BINARY_CMD_INCREMENT:
+    case PROTOCOL_BINARY_CMD_DECREMENT:
+      {
+        if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t)) 
+        {
+          return MEMCACHED_PROTOCOL_ERROR;
+        }
+
+        WATCHPOINT_ASSERT(bodylen == buffer_length);
+        uint64_t val;
+        if (safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS) 
+        {
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
+
+        val= ntohll(val);
+        memcpy(buffer, &val, sizeof(val));
+      } 
+      break;
+    case PROTOCOL_BINARY_CMD_VERSION:
+      {
+        memset(buffer, 0, buffer_length);
+        if (bodylen >= buffer_length)
           /* not enough space in buffer.. should not happen... */
           return MEMCACHED_UNKNOWN_READ_FAILURE;
-       else 
-       {
+        else 
+          safe_read(ptr, buffer, bodylen);
+      } 
+      break;
+    case PROTOCOL_BINARY_CMD_FLUSH:
+    case PROTOCOL_BINARY_CMD_QUIT:
+    case PROTOCOL_BINARY_CMD_SET:
+    case PROTOCOL_BINARY_CMD_ADD:
+    case PROTOCOL_BINARY_CMD_REPLACE:
+    case PROTOCOL_BINARY_CMD_APPEND:
+    case PROTOCOL_BINARY_CMD_PREPEND:
+    case PROTOCOL_BINARY_CMD_DELETE:
+      {
+        WATCHPOINT_ASSERT(bodylen == 0);
+        return MEMCACHED_SUCCESS;
+      } 
+      break;
+    case PROTOCOL_BINARY_CMD_NOOP:
+      {
+        WATCHPOINT_ASSERT(bodylen == 0);
+        return MEMCACHED_END;
+      }
+      break;
+    case PROTOCOL_BINARY_CMD_STAT:
+      {
+        if (bodylen == 0)
+          return MEMCACHED_END;
+        else if (bodylen + 1 > buffer_length)
+          /* not enough space in buffer.. should not happen... */
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        else 
+        {
           size_t keylen= header.response.keylen;            
           memset(buffer, 0, buffer_length);
           safe_read(ptr, buffer, keylen);
           safe_read(ptr, buffer + keylen + 1, bodylen - keylen);
-       }
-    } 
-    else 
-    {
-       /* Command not implemented yet! */
-       WATCHPOINT_ASSERT(0);
-       memcached_io_reset(ptr);
-       return MEMCACHED_PROTOCOL_ERROR;
-    }        
+        }
+      } 
+      break;
+    default:
+      {
+        /* Command not implemented yet! */
+        WATCHPOINT_ASSERT(0);
+        memcached_io_reset(ptr);
+        return MEMCACHED_PROTOCOL_ERROR;
+      }        
+    }
   } 
   else if (header.response.bodylen) 
   {
      /* What should I do with the error message??? just discard it for now */
-    char hole[1024];
+    char buffer[SMALL_STRING_LEN];
     while (bodylen > 0) 
     {
-      size_t nr= (bodylen > sizeof(hole)) ? sizeof(hole) : bodylen;
-      safe_read(ptr, hole, nr);
+      size_t nr= (bodylen > SMALL_STRING_LEN) ? SMALL_STRING_LEN : bodylen;
+      safe_read(ptr, buffer, nr);
       bodylen -= nr;
     }
   }
