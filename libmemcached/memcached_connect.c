@@ -1,4 +1,5 @@
 #include "common.h"
+#include <netdb.h>
 #include <poll.h>
 #include <sys/time.h>
 
@@ -248,13 +249,13 @@ test_connect:
                 ptr->address_info= NULL;
               }
 
-          if (ptr->root->retry_timeout)
-          {
-            struct timeval next_time;
+              if (ptr->root->retry_timeout)
+              {
+                struct timeval next_time;
 
-            gettimeofday(&next_time, NULL);
-            ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
-          }
+                gettimeofday(&next_time, NULL);
+                ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+              }
               ptr->server_failure_counter+= 1;
               return MEMCACHED_ERRNO;
             }

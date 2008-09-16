@@ -7,7 +7,7 @@ MEMCACHED_LIBRARY_NAME=libmemcached
 
 #release versioning
 MEMCACHED_MAJOR_VERSION=0
-MEMCACHED_MINOR_VERSION=23
+MEMCACHED_MINOR_VERSION=24
 MEMCACHED_MICRO_VERSION=0
 
 #API version
@@ -59,7 +59,8 @@ sinclude(config/protocol_binary.m4)
 CFLAGS="-DMEMCACHED_INTERNAL $CFLAGS"
 if test "$GCC" = "yes"
 then
-  CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"
+  #CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"
+  CFLAGS="-Wall -O3 $CFLAGS"
 
   if test "$ENABLE_DEBUG" = "yes"
   then

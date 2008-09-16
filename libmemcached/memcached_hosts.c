@@ -152,7 +152,11 @@ memcached_return update_continuum(memcached_st *ptr)
         float pct = (float)list[host_index].limit_maxbytes/ (float)total_mem_bytes;
         pointer_per_server= floorf( pct * MEMCACHED_POINTS_PER_SERVER * (float)(ptr->number_of_hosts));
 #ifdef HAVE_DEBUG
-        printf("ketama_weighted:%s|%d|%llu|%u\n", list[host_index].hostname, list[host_index].port,  list[host_index].limit_maxbytes, pointer_per_server);
+        printf("ketama_weighted:%s|%d|%llu|%u\n", 
+               list[host_index].hostname, 
+               list[host_index].port,  
+               (unsigned long long)list[host_index].limit_maxbytes, 
+               pointer_per_server);
 #endif
     }
     for(index= 1; index <= pointer_per_server; ++index) 
