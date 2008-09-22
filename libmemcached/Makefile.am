@@ -69,6 +69,7 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_verbosity.c \
 			  memcached_version.c \
 			  murmur_hash.c \
+			  jenkins_hash.c \
                           byteorder.c
 
 libmemcached_la_LIBADD =

@@ -90,6 +90,7 @@ uint32_t hash_crc32(const char *data,
                     size_t data_len);
 uint32_t hsieh_hash(const char *key, size_t key_length);
 uint32_t murmur_hash(const char *key, size_t key_length);
+uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 
 memcached_return memcached_connect(memcached_server_st *ptr);
 memcached_return memcached_response(memcached_server_st *ptr,

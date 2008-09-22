@@ -2526,6 +2526,14 @@ static memcached_return  pre_murmur(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return pre_jenkins(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_JENKINS);
+
+  return MEMCACHED_SUCCESS;
+}
+
+
 static memcached_return  pre_md5(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
@@ -2980,6 +2988,7 @@ collection_st collection[] ={
   {"md5", pre_md5, 0, tests},
   {"crc", pre_crc, 0, tests},
   {"hsieh", pre_hsieh, 0, tests},
+  {"jenkins", pre_jenkins, 0, tests},
   {"fnv1_64", pre_hash_fnv1_64, 0, tests},
   {"fnv1a_64", pre_hash_fnv1a_64, 0, tests},
   {"fnv1_32", pre_hash_fnv1_32, 0, tests},
@@ -3003,6 +3012,7 @@ collection_st collection[] ={
   {"generate_hsieh_consistent", enable_consistent, 0, generate_tests},
   {"generate_md5", pre_md5, 0, generate_tests},
   {"generate_murmur", pre_murmur, 0, generate_tests},
+  {"generate_jenkins", pre_jenkins, 0, generate_tests},
   {"generate_nonblock", pre_nonblock, 0, generate_tests},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},

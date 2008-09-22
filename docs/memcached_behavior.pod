@@ -64,7 +64,8 @@ environments).
 =item MEMCACHED_BEHAVIOR_HASH
 
 Makes the default hashing algorithm for keys use MD5. The value can be set
-to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, and MEMCACHED_HASH_FNV1A_32. The behavior for all hashes but MEMCACHED_HASH_DEFAULT is identitical to the Java driver written by Dustin Sallings.
+to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR. 
+Each hash has it's advantages and it's weaknesses. If you dont know or dont care, just go with the default.
 
 =item MEMCACHED_BEHAVIOR_DISTRIBUTION
 

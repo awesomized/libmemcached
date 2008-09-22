@@ -84,6 +84,11 @@ uint32_t generate_hash_value(const char *key, size_t key_length, memcached_hash 
       hash= murmur_hash(key, key_length);
       break;
     }
+    case MEMCACHED_HASH_JENKINS:
+    {
+      hash=jenkins_hash(key, key_length, 13);
+      break;
+    }
   }
   return hash;
 }

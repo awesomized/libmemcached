@@ -1,4 +1,7 @@
-0.24 Tue Sep 16 02:59:03 PDT 2008
+0.25
+  * Jenkins HASH added.
+
+0.24 Tue Sep 16 02:59:03 PDT 2008 (never released)
   * Cleanup compile warnings.
   * Fix issues in partitioning by keys.
   * Fixed "fail case" to make sure when calling memcached_clone() no
