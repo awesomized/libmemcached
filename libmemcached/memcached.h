@@ -132,17 +132,17 @@ uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 /* Server Public functions */
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
-                                          char *hostname,
+                                          const char *hostname,
                                           unsigned int port);
 memcached_return memcached_server_add_unix_socket(memcached_st *ptr, 
-                                                  char *filename);
-memcached_return memcached_server_add(memcached_st *ptr, char *hostname, 
+                                                  const char *filename);
+memcached_return memcached_server_add(memcached_st *ptr, const char *hostname, 
                                       unsigned int port);
 void memcached_server_list_free(memcached_server_st *ptr);
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
-                                             char *hostname, unsigned int port, 
+                                             const char *hostname, unsigned int port, 
                                              memcached_return *error);
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 memcached_server_st *memcached_servers_parse(char *server_strings);

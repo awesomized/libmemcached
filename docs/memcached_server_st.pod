@@ -15,7 +15,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_server_st *
     memcached_server_list_append (memcached_server_st *ptr, 
-                                  char *hostname,
+                                  const char *hostname,
                                   unsigned int port, 
                                   memcached_return *error);
 

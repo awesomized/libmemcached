@@ -2,7 +2,7 @@
 #include <math.h>
 
 /* Protoypes (static) */
-static memcached_return server_add(memcached_st *ptr, char *hostname, 
+static memcached_return server_add(memcached_st *ptr, const char *hostname, 
                                    unsigned int port,
                                    memcached_connection type);
 memcached_return update_continuum(memcached_st *ptr);
@@ -52,7 +52,7 @@ memcached_return run_distribution(memcached_st *ptr)
 }
 
 void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                char *hostname, unsigned int port,
+                const char *hostname, unsigned int port,
                 memcached_connection type)
 {
   memset(host,  0, sizeof(memcached_server_st));
@@ -232,7 +232,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   return run_distribution(ptr);
 }
 
-memcached_return memcached_server_add_unix_socket(memcached_st *ptr, char *filename)
+memcached_return memcached_server_add_unix_socket(memcached_st *ptr, const char *filename)
 {
   if (!filename)
     return MEMCACHED_FAILURE;
@@ -241,7 +241,7 @@ memcached_return memcached_server_add_unix_socket(memcached_st *ptr, char *filen
 }
 
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
-                                          char *hostname,
+                                          const char *hostname,
                                           unsigned int port)
 {
   if (!port)
@@ -254,7 +254,7 @@ memcached_return memcached_server_add_udp(memcached_st *ptr,
 }
 
 memcached_return memcached_server_add(memcached_st *ptr, 
-                                      char *hostname, 
+                                      const char *hostname, 
                                       unsigned int port)
 {
   if (!port)
@@ -266,7 +266,7 @@ memcached_return memcached_server_add(memcached_st *ptr,
   return server_add(ptr, hostname, port, MEMCACHED_CONNECTION_TCP);
 }
 
-static memcached_return server_add(memcached_st *ptr, char *hostname, 
+static memcached_return server_add(memcached_st *ptr, const char *hostname, 
                                    unsigned int port,
                                    memcached_connection type)
 {
@@ -317,7 +317,7 @@ memcached_return memcached_server_remove(memcached_server_st *st_ptr)
 }
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
-                                                  char *hostname, unsigned int port, 
+                                                  const char *hostname, unsigned int port, 
                                                   memcached_return *error)
 {
   unsigned int count;

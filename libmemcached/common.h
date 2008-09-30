@@ -125,7 +125,7 @@ extern uint64_t ntohll(uint64_t);
 extern uint64_t htonll(uint64_t);
 
 void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                char *hostname, unsigned int port,
+                const char *hostname, unsigned int port,
                 memcached_connection type);
 
 #endif /* __COMMON_H__ */
