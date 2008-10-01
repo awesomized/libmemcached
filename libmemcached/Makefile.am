@@ -27,7 +27,6 @@ noinst_HEADERS = libmemcached_probes.h \
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
-		    libmemcached_config.h \
 		    memcached_constants.h \
 		    memcached_get.h \
 		    memcached_result.h \
