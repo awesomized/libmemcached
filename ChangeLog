@@ -1,5 +1,6 @@
 0.25
   * Jenkins HASH added.
+  * Update of Murmur hash code
 
 0.24 Tue Sep 16 02:59:03 PDT 2008 (never released)
   * Cleanup compile warnings.
