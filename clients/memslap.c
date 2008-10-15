@@ -210,7 +210,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
     struct timespec abstime;
 
     memset(&abstime, 0, sizeof(struct timespec));
-    abstime.tv_sec= 1;
+    abstime.tv_sec= 10;
 
     pthread_cond_timedwait(&count_threshhold, &counter_mutex, &abstime);
   }
@@ -292,6 +292,7 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_SLAP_CONCURRENCY:
       opt_concurrency= strtol(optarg, (char **)NULL, 10);
+      break;
     case OPT_SLAP_EXECUTE_NUMBER:
       opt_execute_number= strtol(optarg, (char **)NULL, 10);
       break;
