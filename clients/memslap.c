@@ -206,14 +206,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   */
   pthread_mutex_lock(&counter_mutex);
   while (thread_counter)
-  {
-    struct timespec abstime;
-
-    memset(&abstime, 0, sizeof(struct timespec));
-    abstime.tv_sec= 10;
-
-    pthread_cond_timedwait(&count_threshhold, &counter_mutex, &abstime);
-  }
+    pthread_cond_wait(&count_threshhold, &counter_mutex);
   pthread_mutex_unlock(&counter_mutex);
 
   gettimeofday(&end_time, NULL);
