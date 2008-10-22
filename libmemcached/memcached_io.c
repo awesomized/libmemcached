@@ -30,6 +30,17 @@ static memcached_return io_wait(memcached_server_st *ptr,
   fds[0].fd= ptr->fd;
   fds[0].events= flags;
 
+  /*
+  ** We are going to block on write, but at least on Solaris we might block
+  ** on write if we haven't read anything from our input buffer..
+  ** Try to purge the input buffer if we don't do any flow control in the
+  ** application layer (just sending a lot of data etc)
+  ** The test is moved down in the purge function to avoid duplication of
+  ** the test.
+  */
+  if (read_or_write == MEM_WRITE)
+    memcached_purge(ptr);
+
   error= poll(fds, 1, ptr->root->poll_timeout);
 
   if (error == 1)
@@ -124,6 +135,7 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
         }
       }
 
+      ptr->io_bytes_sent = 0;
       ptr->read_data_length= data_read;
       ptr->read_buffer_length= data_read;
       ptr->read_ptr= ptr->read_buffer;
@@ -280,6 +292,13 @@ static ssize_t io_flush(memcached_server_st *ptr,
     }
     else
     {
+      /*
+      ** We might want to purge the input buffer if we haven't consumed
+      ** any output yet... The test for the limits is the purge is inline
+      ** in the purge function to avoid duplicating the logic..
+      */
+      memcached_purge(ptr);
+
       if ((sent_length= write(ptr->fd, local_write_ptr, 
                                        write_length)) == -1)
       {
@@ -306,6 +325,8 @@ static ssize_t io_flush(memcached_server_st *ptr,
         }
       }
     }
+
+    ptr->io_bytes_sent += sent_length;
 
     local_write_ptr+= sent_length;
     write_length-= sent_length;

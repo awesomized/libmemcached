@@ -144,6 +144,21 @@ this flag on an open connection.
 Set this value to enable the server be removed after continuous MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
 times connection failure.
 
+=item MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK
+
+Set this value to tune the number of messages that may be sent before 
+libmemcached should start to automatically drain the input queue. Setting
+this value to high, may cause libmemcached to deadlock (trying to send data,
+but the send will block because the input buffer in the kernel is full).
+
+=item MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK
+
+Set this value to tune the number of bytes that may be sent before
+libmemcached should start to automatically drain the input queue (need
+at least 10 IO requests sent without reading the input buffer). Setting
+this value to high, may cause libmemcached to deadlock (trying to send 
+data, but the send will block because the input buffer in the kernel is full).
+
 =back
 
 =head1 RETURN

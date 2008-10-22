@@ -100,6 +100,9 @@ struct memcached_st {
   int32_t snd_timeout;
   int32_t rcv_timeout;
   uint32_t server_failure_limit;
+  uint32_t io_msg_watermark;
+  uint32_t io_bytes_watermark;
+  char purging;
 };
 
 
