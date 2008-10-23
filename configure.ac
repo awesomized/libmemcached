@@ -49,6 +49,7 @@ LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
 AC_LANG_CPLUSPLUS
 
+sinclude(config/pod2man.m4)
 sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
 sinclude(config/byteorder.m4)
