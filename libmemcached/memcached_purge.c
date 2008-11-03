@@ -5,21 +5,23 @@
 
 void memcached_purge(memcached_server_st *ptr) 
 {
+  int32_t timeout;
   char buffer[2048];
-  size_t buffer_length = sizeof(buffer);
+  size_t buffer_length= sizeof(buffer);
   memcached_result_st result;
 
   if (ptr->root->purging || /* already purging */
       (memcached_server_response_count(ptr) < ptr->root->io_msg_watermark && 
        ptr->io_bytes_sent < ptr->root->io_bytes_watermark) ||
       (ptr->io_bytes_sent > ptr->root->io_bytes_watermark && 
-       memcached_server_response_count(ptr) < 10)) {
+       memcached_server_response_count(ptr) < 10)) 
+  {
     return;
   }
 
   /* memcached_io_write and memcached_response may call memcached_purge
      so we need to be able stop any recursion.. */
-  ptr->root->purging = 1;
+  ptr->root->purging= 1;
 
   /* Force a flush of the buffer to ensure that we don't have the n-1 pending
      requests buffered up.. */
@@ -33,10 +35,10 @@ void memcached_purge(memcached_server_st *ptr)
   
   /* memcached_response may call memcached_io_read, but let's use a short
      timeout if there is no data yet */
-  int32_t timeout = ptr->root->poll_timeout;
-  ptr->root->poll_timeout = 1;
+  timeout= ptr->root->poll_timeout;
+  ptr->root->poll_timeout= 1;
   memcached_response(ptr, buffer, sizeof(buffer), &result);
-  ptr->root->poll_timeout = timeout;
+  ptr->root->poll_timeout= timeout;
   memcached_server_response_increment(ptr);
   ptr->root->purging = 0;
 }

@@ -28,8 +28,9 @@ memcached_st *memcached_create(memcached_st *ptr)
   ptr->retry_timeout= 0;
   ptr->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
-  ptr->io_msg_watermark = 500;
-  ptr->io_bytes_watermark = 65 * 1024;
+  /* TODO, Document why we picked these defaults */
+  ptr->io_msg_watermark= 500;
+  ptr->io_bytes_watermark= 65 * 1024;
 
   return ptr;
 }
