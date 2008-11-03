@@ -48,13 +48,13 @@ static test_return  server_list_null_test(memcached_st *ptr __attribute__((unuse
   memcached_server_st *server_list;
   memcached_return rc;
 
-  server_list= memcached_server_list_append(NULL, NULL, 0, NULL);
+  server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, NULL);
   assert(server_list == NULL);
 
-  server_list= memcached_server_list_append(NULL, "localhost", 0, NULL);
+  server_list= memcached_server_list_append_with_weight(NULL, "localhost", 0, 0, NULL);
   assert(server_list == NULL);
 
-  server_list= memcached_server_list_append(NULL, NULL, 0, &rc);
+  server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, &rc);
   assert(server_list == NULL);
 
   return 0;
@@ -88,7 +88,7 @@ static test_return  server_sort_test(memcached_st *ptr __attribute__((unused)))
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
     test_ports[x]= random() % 64000;
-    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     assert(local_memc->number_of_hosts == x + 1);
     assert(local_memc->hosts[0].count == x+1);
     assert(rc == MEMCACHED_SUCCESS);
@@ -115,11 +115,11 @@ static test_return  server_sort2_test(memcached_st *ptr __attribute__((unused)))
   rc= memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
   assert(rc == MEMCACHED_SUCCESS);
 
-  rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43043);
+  rc= memcached_server_add_with_weight(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43043, 0);
   assert(rc == MEMCACHED_SUCCESS);
   assert(local_memc->hosts[0].port == 43043);
 
-  rc= memcached_server_add(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43042);
+  rc= memcached_server_add_with_weight(local_memc, "MEMCACHED_BEHAVIOR_SORT_HOSTS", 43042, 0);
   assert(rc == MEMCACHED_SUCCESS);
   assert(local_memc->hosts[0].port == 43042);
   assert(local_memc->hosts[1].port == 43043);
@@ -159,7 +159,7 @@ static test_return  server_unsort_test(memcached_st *ptr __attribute__((unused))
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
     test_ports[x]= random() % 64000;
-    rc= memcached_server_add(local_memc, "localhost", test_ports[x]);
+    rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     assert(local_memc->number_of_hosts == x+1);
     assert(local_memc->hosts[0].count == x+1);
     assert(rc == MEMCACHED_SUCCESS);
@@ -234,7 +234,7 @@ static test_return  connection_test(memcached_st *memc)
 {
   memcached_return rc;
 
-  rc= memcached_server_add(memc, "localhost", 0);
+  rc= memcached_server_add_with_weight(memc, "localhost", 0, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -1238,7 +1238,7 @@ static test_return  add_host_test(memcached_st *memc)
   memcached_return rc;
   char servername[]= "0.example.com";
 
-  servers= memcached_server_list_append(NULL, servername, 400, &rc);
+  servers= memcached_server_list_append_with_weight(NULL, servername, 400, 0, &rc);
   assert(servers);
   assert(1 == memcached_server_list_count(servers));
 
@@ -1247,7 +1247,7 @@ static test_return  add_host_test(memcached_st *memc)
     char buffer[SMALL_STRING_LEN];
 
     snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
-    servers= memcached_server_list_append(servers, buffer, 401, 
+    servers= memcached_server_list_append_with_weight(servers, buffer, 401, 0, 
                                      &rc);
     assert(rc == MEMCACHED_SUCCESS);
     assert(x == memcached_server_list_count(servers));
@@ -2123,6 +2123,54 @@ static test_return  user_supplied_bug17(memcached_st *memc)
     return 0;
 }
 
+#include "ketama_test_cases.h"
+test_return user_supplied_bug18(memcached_st *memc)
+{
+  memcached_return rc;
+  int value;
+  int i;
+  memcached_server_st *server_pool;
+    
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
+  assert(value == MEMCACHED_HASH_MD5);
+
+  while (memc->number_of_hosts > 0)
+  {
+    memcached_server_remove(memc->hosts);
+  }
+  server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
+  memcached_server_push(memc, server_pool);
+  
+  /* verify that the server list was parsed okay. */
+  assert(memc->number_of_hosts == 8);
+  assert(strcmp(server_pool[0].hostname, "10.0.1.1") == 0);
+  assert(server_pool[0].port == 11211);
+  assert(server_pool[0].weight == 600);
+  assert(strcmp(server_pool[2].hostname, "10.0.1.3") == 0);
+  assert(server_pool[2].port == 11211);
+  assert(server_pool[2].weight == 200);
+  assert(strcmp(server_pool[7].hostname, "10.0.1.8") == 0);
+  assert(server_pool[7].port == 11211);
+  assert(server_pool[7].weight == 100);
+  
+  /* verify the standard ketama set. */
+  for (i= 0; i < 99; i++)
+  {
+    uint32_t server_idx = memcached_generate_hash(memc, test_cases[i].key, strlen(test_cases[i].key));
+    char *hostname = memc->hosts[server_idx].hostname;
+    assert(strcmp(hostname, test_cases[i].server) == 0);
+  }
+  return 0;
+}
 
 static test_return  result_static(memcached_st *memc)
 {
@@ -2325,7 +2373,7 @@ static test_return  get_read_count(memcached_st *memc)
   clone= memcached_clone(NULL, memc);
   assert(clone);
 
-  memcached_server_add(clone, "localhost", 6666);
+  memcached_server_add_with_weight(clone, "localhost", 6666, 0);
 
   {
     char *return_value;
@@ -2487,7 +2535,7 @@ static test_return  add_host_test1(memcached_st *memc)
   char servername[]= "0.example.com";
   memcached_server_st *servers;
 
-  servers= memcached_server_list_append(NULL, servername, 400, &rc);
+  servers= memcached_server_list_append_with_weight(NULL, servername, 400, 0, &rc);
   assert(servers);
   assert(1 == memcached_server_list_count(servers));
 
@@ -2496,7 +2544,7 @@ static test_return  add_host_test1(memcached_st *memc)
     char buffer[SMALL_STRING_LEN];
 
     snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
-    servers= memcached_server_list_append(servers, buffer, 401, 
+    servers= memcached_server_list_append_with_weight(servers, buffer, 401, 0, 
                                      &rc);
     assert(rc == MEMCACHED_SUCCESS);
     assert(x == memcached_server_list_count(servers));
@@ -2653,7 +2701,7 @@ static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, co
   return realloc(mem, size);
 }
 
-static memcached_return  set_prefix(memcached_st *memc)
+static memcached_return set_prefix(memcached_st *memc)
 {
   memcached_return rc;
   const char *key= "mine";
@@ -2697,9 +2745,11 @@ static memcached_return  set_prefix(memcached_st *memc)
     assert(value == NULL);
 
     /* Test a long key for failure */
+    /* TODO, extend test to determine based on setting, what result should be */
     long_key= "Thisismorethentheallottednumberofcharacters";
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
-    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+    //assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+    assert(rc == MEMCACHED_SUCCESS);
 
     /* Now test a key with spaces (which will fail from long key, since bad key is not set) */
     long_key= "This is more then the allotted number of characters";
@@ -2813,7 +2863,7 @@ static memcached_return  pre_unix_socket(memcached_st *memc)
   if (stat("/tmp/memcached.socket", &buf))
     return MEMCACHED_FAILURE;
 
-  rc= memcached_server_add_unix_socket(memc, "/tmp/memcached.socket");
+  rc= memcached_server_add_unix_socket_with_weight(memc, "/tmp/memcached.socket", 0);
 
   return rc;
 }
@@ -2941,6 +2991,7 @@ test_st user_tests[] ={
   {"user_supplied_bug15", 1, user_supplied_bug15 },
   {"user_supplied_bug16", 1, user_supplied_bug16 },
   {"user_supplied_bug17", 1, user_supplied_bug17 },
+  {"user_supplied_bug18", 1, user_supplied_bug18 },
   {0, 0, 0}
 };
 

@@ -232,7 +232,10 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
 #endif
 
   r= close(ptr->fd);
-  WATCHPOINT_ASSERT(r == 0);
+#ifdef HAVE_DEBUG
+  if (r != 0)
+    WATCHPOINT_ERRNO(errno);
+#endif
 
   return MEMCACHED_SUCCESS;
 }
@@ -334,7 +337,8 @@ static ssize_t io_flush(memcached_server_st *ptr,
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
-  WATCHPOINT_ASSERT(return_length == ptr->write_buffer_offset);
+  // Need to study this assert() WATCHPOINT_ASSERT(return_length ==
+  // ptr->write_buffer_offset);
   ptr->write_buffer_offset= 0;
 
   return return_length;

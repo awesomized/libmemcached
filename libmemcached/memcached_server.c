@@ -75,7 +75,7 @@ memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcache
   new_clone->root= ptr->root;
 
   host_reset(new_clone->root, new_clone, 
-             ptr->hostname, ptr->port,
+             ptr->hostname, ptr->port, ptr->weight,
              ptr->type);
 
   return new_clone;

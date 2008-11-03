@@ -12,6 +12,7 @@ memcached_server_st *memcached_servers_parse(char *server_strings)
 {
   char *string;
   unsigned int port;
+  uint32_t weight;
   char *begin_ptr;
   char *end_ptr;
   memcached_server_st *servers= NULL;
@@ -26,8 +27,9 @@ memcached_server_st *memcached_servers_parse(char *server_strings)
        string= index(begin_ptr, ','))
   {
     char buffer[HUGE_STRING_LEN];
-    char *ptr;
+    char *ptr, *ptr2;
     port= 0;
+    weight= 0;
 
     if (string)
     {
@@ -52,9 +54,18 @@ memcached_server_st *memcached_servers_parse(char *server_strings)
       ptr++;
 
       port= strtoul(ptr, (char **)NULL, 10);
+
+      ptr2= index(ptr, ' ');
+      if (! ptr2)
+        ptr2= index(ptr, ':');
+      if (ptr2)
+      {
+        ptr2++;
+        weight = strtoul(ptr2, (char **)NULL, 10);
+      }
     }
 
-    servers= memcached_server_list_append(servers, buffer, port, &rc);
+    servers= memcached_server_list_append_with_weight(servers, buffer, port, weight, &rc);
 
     if (isspace(*begin_ptr))
       begin_ptr++;

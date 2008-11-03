@@ -38,6 +38,7 @@ struct memcached_server_st {
   uint64_t limit_maxbytes;
   uint32_t server_failure_counter;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
+  uint32_t weight;
 };
 
 #define memcached_server_count(A) (A)->number_of_hosts

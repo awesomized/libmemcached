@@ -39,7 +39,7 @@ struct memcached_continuum_item_st {
   uint32_t value;
 };
 
-#define LIBMEMCACHED_VERSION_STRING "0.24"
+#define LIBMEMCACHED_VERSION_STRING "0.25"
 
 struct memcached_stat_st {
   uint32_t pid;
@@ -143,12 +143,29 @@ memcached_return memcached_server_add_unix_socket(memcached_st *ptr,
                                                   const char *filename);
 memcached_return memcached_server_add(memcached_st *ptr, const char *hostname, 
                                       unsigned int port);
+
+memcached_return memcached_server_add_udp_with_weight(memcached_st *ptr, 
+                                                      const char *hostname,
+                                                      unsigned int port,
+                                                      uint32_t weight);
+memcached_return memcached_server_add_unix_socket_with_weight(memcached_st *ptr, 
+                                                              const char *filename,
+                                                              uint32_t weight);
+memcached_return memcached_server_add_with_weight(memcached_st *ptr, const char *hostname, 
+                                                  unsigned int port,
+                                                  uint32_t weight);
 void memcached_server_list_free(memcached_server_st *ptr);
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
-                                             const char *hostname, unsigned int port, 
-                                             memcached_return *error);
+                                                  const char *hostname, 
+                                                  unsigned int port, 
+                                                  memcached_return *error);
+memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr, 
+                                                              const char *hostname, 
+                                                              unsigned int port, 
+                                                              uint32_t weight,
+                                                              memcached_return *error);
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 memcached_server_st *memcached_servers_parse(char *server_strings);
 

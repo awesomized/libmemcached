@@ -1,4 +1,5 @@
 #include "common.h" 
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
@@ -58,6 +59,10 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     {
       ptr->distribution= (memcached_server_distribution)(data);
+      if (ptr->distribution == MEMCACHED_DISTRIBUTION_RANDOM)
+      {
+        srandom(time(NULL));
+      }
       run_distribution(ptr);
       break;
     }
@@ -124,6 +129,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
+  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
+    set_behavior_flag(ptr, MEM_HASH_WITH_PREFIX_KEY, data);
+    break;
   }
 
   return MEMCACHED_SUCCESS;
@@ -229,6 +237,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     }
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
+  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
+    temp_flag= MEM_HASH_WITH_PREFIX_KEY;
+    break;
   }
 
   WATCHPOINT_ASSERT(temp_flag); /* Programming mistake if it gets this far */

@@ -53,7 +53,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
       ssize_t read_length;
 
       read_length= memcached_io_read(ptr, buffer_ptr, 1);
-      WATCHPOINT_ASSERT(isgraph(*buffer_ptr) || isspace(*buffer_ptr));
+      WATCHPOINT_ASSERT(*buffer_ptr != '\0');
 
       if (read_length != 1)
       {

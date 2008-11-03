@@ -81,7 +81,8 @@ typedef enum {
   MEM_VERIFY_KEY= (1 << 10),
   /* 11 used for weighted ketama */
   MEM_KETAMA_WEIGHTED= (1 << 11),
-  MEM_BINARY_PROTOCOL= (1 << 12)
+  MEM_BINARY_PROTOCOL= (1 << 12),
+  MEM_HASH_WITH_PREFIX_KEY= (1 << 13)
 } memcached_flags;
 
 /* Hashing algo */
@@ -125,7 +126,7 @@ extern uint64_t ntohll(uint64_t);
 extern uint64_t htonll(uint64_t);
 
 void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                const char *hostname, unsigned int port,
+                const char *hostname, unsigned int port, uint32_t weight,
                 memcached_connection type);
 
 #endif /* __COMMON_H__ */

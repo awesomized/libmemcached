@@ -1,6 +1,10 @@
 0.25
   * Jenkins HASH added.
   * Update of Murmur hash code
+  * Support explicit weights (Robey Pointer, Evan Weaver)
+  * Bugfix for ketama continuum (Robey Pointer)
+  * New behavior MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY (Robey Pointer)
+  * Don't ever call stats for weighting servers, because it is unstable.
 
 0.24 Tue Sep 16 02:59:03 PDT 2008 (never released)
   * Cleanup compile warnings.

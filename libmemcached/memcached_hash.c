@@ -121,37 +121,25 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
       hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;
       begin= left= ptr->continuum;
-      end= right= ptr->continuum + (num - 1);
+      end= right= ptr->continuum + num;
 
-      while (1)
+      while (left < right)
       {
-        memcached_continuum_item_st *rmiddle;
-
-        middle = left + (right - left) / 2;
-
-        if (middle==end)
-          return begin->index;
-
-        if (middle==begin)
-          return end->index;
-
-        rmiddle = middle+1;
-
-        if (hash<rmiddle->value && hash>=middle->value)
-          return middle->index;
-
+        middle= left + (right - left) / 2;
         if (middle->value < hash)
-          left = middle + 1;
-        else if (middle->value > hash)
-          right = middle - 1;
-
-        if (left>right)
-          return left->index;
+          left= middle + 1;
+        else
+          right= middle;
       }
+      if (right > end)
+        right= begin;
+      return right->index;
     } 
     break;
   case MEMCACHED_DISTRIBUTION_MODULA:
     return hash % ptr->number_of_hosts;
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+    return random() % ptr->number_of_hosts;
   default:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
     return hash % ptr->number_of_hosts;
@@ -174,7 +162,19 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   if (ptr->number_of_hosts == 1)
     return 0;
 
-  hash= generate_hash(ptr, key, key_length);
+  if (ptr->flags & MEM_HASH_WITH_PREFIX_KEY)
+  {
+    int temp_len= ptr->prefix_key_length + key_length;
+    char *temp= (char *)malloc(temp_len);
+    strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
+    strncpy(temp + ptr->prefix_key_length, key, key_length);
+    hash= generate_hash(ptr, temp, temp_len);
+    free(temp);
+  }
+  else
+  {
+    hash= generate_hash(ptr, key, key_length);
+  }
 
   WATCHPOINT_ASSERT(hash);
 
