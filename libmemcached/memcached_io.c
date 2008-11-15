@@ -112,6 +112,7 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
           switch (errno)
           {
           case EAGAIN:
+          case EINTR: 
             {
               memcached_return rc;
 
