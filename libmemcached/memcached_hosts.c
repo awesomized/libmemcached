@@ -361,9 +361,10 @@ memcached_return memcached_server_remove(memcached_server_st *st_ptr)
 
   for (x= 0, index= 0; x < ptr->number_of_hosts; x++) 
   {
-    if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH)!=0 || list[x].port != st_ptr->port) 
+    if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port) 
     {
-      memcpy(list+index, list+x, sizeof(memcached_server_st));
+      if (index != x)
+        memcpy(list+index, list+x, sizeof(memcached_server_st));
       index++;
     } 
   }
