@@ -65,7 +65,6 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
   u.ptr = key;
   if ((u.i & 0x3) == 0) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
-    const uint8_t  *k8;
 
     /*------ all but last block: aligned reads and affect 32 bits of (a,b,c) */
     while (length > 12)

@@ -184,8 +184,6 @@ static memcached_return network_connect(memcached_server_st *ptr)
           return MEMCACHED_FAILURE;
       }
     }
-    /* Old connection junk still is in the structure */
-    WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
     if (ptr->sockaddr_inited == MEMCACHED_NOT_ALLOCATED || 
         (!(ptr->root->flags & MEM_USE_CACHE_LOOKUPS)))

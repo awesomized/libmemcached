@@ -219,13 +219,17 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 memcached_return memcached_io_close(memcached_server_st *ptr)
 {
   int r;
-  /* in case of death shutdown to avoid blocking at close() */
 
+  if (ptr->fd == -1)
+    return MEMCACHED_SUCCESS;
+
+  /* in case of death shutdown to avoid blocking at close() */
   r= shutdown(ptr->fd, SHUT_RDWR);
 
 #ifdef HAVE_DEBUG
   if (r && errno != ENOTCONN)
   {
+    WATCHPOINT_NUMBER(ptr->fd);
     WATCHPOINT_ERRNO(errno);
     WATCHPOINT_ASSERT(errno);
   }

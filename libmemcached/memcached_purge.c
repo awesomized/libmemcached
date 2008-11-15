@@ -7,7 +7,6 @@ void memcached_purge(memcached_server_st *ptr)
 {
   int32_t timeout;
   char buffer[2048];
-  size_t buffer_length= sizeof(buffer);
   memcached_result_st result;
 
   if (ptr->root->purging || /* already purging */
