@@ -106,10 +106,12 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
+  /* Send command header */
   rc=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
+  /* Send command body */
   if ((sent_length= memcached_io_write(&ptr->hosts[server_key], value, value_length, 0)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;

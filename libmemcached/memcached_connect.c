@@ -234,7 +234,7 @@ test_connect:
             {
               goto handle_retry;
             }
-            else if (error != 1 || fds[0].revents & POLLERR)
+            else if (error != 1 && fds[0].revents & POLLERR)
             {
               ptr->cached_errno= errno;
               WATCHPOINT_ERRNO(ptr->cached_errno);
