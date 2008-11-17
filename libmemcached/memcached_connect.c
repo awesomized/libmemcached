@@ -46,6 +46,8 @@ static memcached_return set_hostinfo(memcached_server_st *server)
 
 static memcached_return set_socket_options(memcached_server_st *ptr)
 {
+  WATCHPOINT_ASSERT(ptr->fd != -1);
+
   if (ptr->type == MEMCACHED_CONNECTION_UDP)
     return MEMCACHED_SUCCESS;
 
@@ -167,6 +169,8 @@ test_connect:
       }
     }
   }
+
+  WATCHPOINT_ASSERT(ptr->fd != -1);
   return MEMCACHED_SUCCESS;
 }
 

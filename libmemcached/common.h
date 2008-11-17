@@ -129,4 +129,6 @@ void host_reset(memcached_st *ptr, memcached_server_st *host,
                 const char *hostname, unsigned int port, uint32_t weight,
                 memcached_connection type);
 
+memcached_return memcached_purge(memcached_server_st *ptr);
+
 #endif /* __COMMON_H__ */

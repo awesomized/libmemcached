@@ -69,6 +69,7 @@ struct memcached_stat_st {
 };
 
 struct memcached_st {
+  uint8_t purging;
   memcached_allocated is_allocated;
   memcached_server_st *hosts;
   uint32_t number_of_hosts;
@@ -102,7 +103,6 @@ struct memcached_st {
   uint32_t server_failure_limit;
   uint32_t io_msg_watermark;
   uint32_t io_bytes_watermark;
-  char purging;
 };
 
 
