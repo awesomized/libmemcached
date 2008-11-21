@@ -10,7 +10,10 @@ memcached_return memcached_do(memcached_server_st *ptr, const void *command,
   WATCHPOINT_ASSERT(command);
 
   if ((rc= memcached_connect(ptr)) != MEMCACHED_SUCCESS)
+  {
+    WATCHPOINT_ERROR(rc);
     return rc;
+  }
 
   sent_length= memcached_io_write(ptr, command, command_length, with_flush);
 

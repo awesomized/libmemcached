@@ -131,7 +131,7 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
         else
           right= middle;
       }
-      if (right > end)
+      if (right == end)
         right= begin;
       return right->index;
     } 

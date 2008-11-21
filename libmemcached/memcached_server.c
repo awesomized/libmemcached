@@ -30,8 +30,7 @@ void memcached_server_free(memcached_server_st *ptr)
   memcached_return rc;
   WATCHPOINT_ASSERT(ptr->is_allocated != MEMCACHED_NOT_ALLOCATED);
 
-  rc= memcached_io_close(ptr);
-  WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS);
+  memcached_quit_server(ptr, 0);
 
   if (ptr->address_info)
   {

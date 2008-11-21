@@ -2161,7 +2161,12 @@ test_return user_supplied_bug18(memcached_st *memc)
   assert(strcmp(server_pool[7].hostname, "10.0.1.8") == 0);
   assert(server_pool[7].port == 11211);
   assert(server_pool[7].weight == 100);
-  
+
+  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
+   * us test the boundary wraparound.
+   */
+  assert(memcached_generate_hash(memc, (unsigned char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+
   /* verify the standard ketama set. */
   for (i= 0; i < 99; i++)
   {
