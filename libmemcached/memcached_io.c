@@ -99,7 +99,6 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
 
   while (length)
   {
-    uint8_t found_eof= 0;
     if (!ptr->read_buffer_length)
     {
       ssize_t data_read;
@@ -136,8 +135,17 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
         }
         else
         {
-          found_eof= 1;
-          break;
+          /*
+            EOF. Any data received so far is incomplete
+            so discard it. This always reads by byte in case of TCP
+            and protocol enforcement happens at memcached_response()
+            looking for '\n'. We do not care for UDB which requests 8 bytes
+            at once. Generally, this means that connection went away. Since
+            for blocking I/O we do not return 0 and for non-blocking case
+            it will return EGAIN if data is not immediatly available.
+          */
+          memcached_quit_server(ptr, 1);
+          return -1;
         }
       }
 
@@ -167,9 +175,6 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
       buffer_ptr++;
       break;
     }
-
-    if (found_eof)
-      break;
   }
 
   return (size_t)(buffer_ptr - (char*)buffer);

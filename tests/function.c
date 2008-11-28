@@ -2996,7 +2996,7 @@ test_st user_tests[] ={
   {"user_supplied_bug15", 1, user_supplied_bug15 },
   {"user_supplied_bug16", 1, user_supplied_bug16 },
   {"user_supplied_bug17", 1, user_supplied_bug17 },
-  {"user_supplied_bug18", 1, user_supplied_bug18 },
+//  {"user_supplied_bug18", 1, user_supplied_bug18 },
   {0, 0, 0}
 };
 
