@@ -1397,10 +1397,13 @@ static test_return  user_supplied_bug1(memcached_st *memc)
     sprintf(key, "%d", x);
     rc = memcached_set(memc, key, strlen(key), 
                        randomstuff, strlen(randomstuff), 10, 0);
+    WATCHPOINT_ERROR(rc);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
     /* If we fail, lets try again */
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
       rc = memcached_set(memc, key, strlen(key), 
                          randomstuff, strlen(randomstuff), 10, 0);
+    WATCHPOINT_ERROR(rc);
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 

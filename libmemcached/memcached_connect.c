@@ -238,18 +238,12 @@ test_connect:
             {
               goto handle_retry;
             }
-            else if (error != 1 || fds[0].revents & POLLERR)
+            else if (error != 1 && fds[0].revents & POLLERR)
             {
               ptr->cached_errno= errno;
               WATCHPOINT_ERRNO(ptr->cached_errno);
               WATCHPOINT_NUMBER(ptr->root->connect_timeout);
-              close(ptr->fd);
-              ptr->fd= -1;
-              if (ptr->address_info)
-              {
-                freeaddrinfo(ptr->address_info);
-                ptr->address_info= NULL;
-              }
+              memcached_quit_server(ptr, 1);
 
               if (ptr->root->retry_timeout)
               {
@@ -259,6 +253,7 @@ test_connect:
                 ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
               }
               ptr->server_failure_counter+= 1;
+
               return MEMCACHED_ERRNO;
             }
 
