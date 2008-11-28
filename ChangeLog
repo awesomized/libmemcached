@@ -1,4 +1,4 @@
-0.25
+0.25 Fri Nov 28 09:59:35 PST 2008
   * Jenkins HASH added.
   * Update of Murmur hash code
   * Support explicit weights (Robey Pointer, Evan Weaver)

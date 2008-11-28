@@ -39,7 +39,7 @@
 #include "memcached_io.h"
 
 #include "memcached/protocol_binary.h"
-#include <libmemcached_config.h>
+#include "libmemcached_config.h"
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 
