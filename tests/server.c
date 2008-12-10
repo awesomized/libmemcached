@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <libmemcached/memcached.h>
 #include <unistd.h>
+#include "libmemcached/libmemcached_config.h"
 #include "server.h"
 
 void server_startup(server_startup_st *construct)
@@ -39,16 +40,20 @@ void server_startup(server_startup_st *construct)
 
         if (construct->udp){
           if(x == 0) {
-            sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -U %u -m 128", x, x+ TEST_PORT_BASE);
+            sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -U %u -m 128", 
+                    MEMCACHED_BINARY, x, x+ TEST_PORT_BASE);
           } else {
-            sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -U %u", x, x+ TEST_PORT_BASE);
+            sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -U %u", 
+                    MEMCACHED_BINARY, x, x+ TEST_PORT_BASE);
           }
         }
         else{
           if(x == 0) {
-            sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -p %u -m 128", x, x+ TEST_PORT_BASE);
+            sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -m 128", 
+                    MEMCACHED_BINARY, x, x+ TEST_PORT_BASE);
           } else {
-            sprintf(buffer, "memcached -d -P /tmp/%umemc.pid -t 1 -p %u", x, x+ TEST_PORT_BASE);
+            sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u", 
+                    MEMCACHED_BINARY, x, x+ TEST_PORT_BASE);
           }
         }
         status= system(buffer);
