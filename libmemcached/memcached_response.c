@@ -72,7 +72,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
       if (total_length >= buffer_length)
       {
         memcached_io_reset(ptr);
-        return MEMCACHED_PROTOCOL_ERROR;
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
       }
     }
     buffer_ptr++;
@@ -154,7 +154,6 @@ memcached_return memcached_response(memcached_server_st *ptr,
       }
       else if (buffer[1] == 'X')
       {
-        memcached_io_reset(ptr);
         return MEMCACHED_DATA_EXISTS;
       }
       else
