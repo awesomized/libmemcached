@@ -186,7 +186,7 @@ static uint32_t internal_generate_hash(const char *key, size_t key_length)
   const char *ptr= key;
   uint32_t value= 0;
 
-  while (--key_length) 
+  while (key_length--) 
   {
     value += *ptr++;
     value += (value << 10);
