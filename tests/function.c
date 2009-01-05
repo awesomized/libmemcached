@@ -2126,6 +2126,28 @@ static test_return  user_supplied_bug17(memcached_st *memc)
     return 0;
 }
 
+/*
+  From Andrei on IRC
+*/
+
+test_return user_supplied_bug19(memcached_st *memc)
+{
+  memcached_st *m;
+  memcached_server_st *s;
+  memcached_return res;
+
+  (void)memc;
+
+  m= memcached_create(NULL);
+  memcached_server_add_with_weight(m, "localhost", 11311, 100);
+  memcached_server_add_with_weight(m, "localhost", 11312, 100);
+
+  s= memcached_server_by_key(m, "a", 1, &res);
+  memcached_server_free(s);
+
+  memcached_free(m);
+}
+
 #include "ketama_test_cases.h"
 test_return user_supplied_bug18(memcached_st *memc)
 {
@@ -3000,6 +3022,7 @@ test_st user_tests[] ={
   {"user_supplied_bug16", 1, user_supplied_bug16 },
   {"user_supplied_bug17", 1, user_supplied_bug17 },
 //  {"user_supplied_bug18", 1, user_supplied_bug18 },
+  {"user_supplied_bug19", 1, user_supplied_bug19 },
   {0, 0, 0}
 };
 
