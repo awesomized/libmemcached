@@ -57,6 +57,11 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
 
 /* These should not currently be used by end users */
 memcached_server_st *memcached_server_create(memcached_st *memc, memcached_server_st *ptr);
+
+memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host, 
+                                                  const char *hostname, unsigned int port, 
+                                                  uint32_t weight, memcached_connection type);
+
 void memcached_server_free(memcached_server_st *ptr);
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr);
 

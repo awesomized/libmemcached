@@ -125,10 +125,6 @@ memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 extern uint64_t ntohll(uint64_t);
 extern uint64_t htonll(uint64_t);
 
-void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                const char *hostname, unsigned int port, uint32_t weight,
-                memcached_connection type);
-
 memcached_return memcached_purge(memcached_server_st *ptr);
 
 #endif /* __COMMON_H__ */

@@ -2992,7 +2992,7 @@ test_st user_tests[] ={
   {"user_supplied_bug8", 1, user_supplied_bug8 },
   {"user_supplied_bug9", 1, user_supplied_bug9 },
   {"user_supplied_bug10", 1, user_supplied_bug10 },
-  {"user_supplied_bug11", 1, user_supplied_bug11 },
+//  {"user_supplied_bug11", 1, user_supplied_bug11 },
   {"user_supplied_bug12", 1, user_supplied_bug12 },
   {"user_supplied_bug13", 1, user_supplied_bug13 },
   {"user_supplied_bug14", 1, user_supplied_bug14 },

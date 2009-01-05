@@ -25,9 +25,32 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
   return ptr;
 }
 
+memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host, 
+                                                  const char *hostname, unsigned int port, 
+                                                  uint32_t weight, memcached_connection type)
+{
+  host= memcached_server_create(memc, host);
+
+  if (host == NULL)
+    return NULL;
+
+  memset(host,  0, sizeof(memcached_server_st));
+  strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
+  host->root= memc ? memc : NULL;
+  host->port= port;
+  host->weight= weight;
+  host->fd= -1;
+  host->type= type;
+  host->read_ptr= host->read_buffer;
+  if (memc)
+    host->next_retry= memc->retry_timeout;
+  host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
+
+  return host;
+}
+
 void memcached_server_free(memcached_server_st *ptr)
 {
-  memcached_return rc;
   WATCHPOINT_ASSERT(ptr->is_allocated != MEMCACHED_NOT_ALLOCATED);
 
   memcached_quit_server(ptr, 0);
@@ -73,9 +96,10 @@ memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcache
 
   new_clone->root= ptr->root;
 
-  host_reset(new_clone->root, new_clone, 
-             ptr->hostname, ptr->port, ptr->weight,
-             ptr->type);
+  /* TODO We should check return type */
+  memcached_server_create_with(new_clone->root, new_clone, 
+                               ptr->hostname, ptr->port, ptr->weight,
+                               ptr->type);
 
   return new_clone;
 }

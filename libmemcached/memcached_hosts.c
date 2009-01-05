@@ -54,23 +54,6 @@ memcached_return run_distribution(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-void host_reset(memcached_st *ptr, memcached_server_st *host, 
-                const char *hostname, unsigned int port, uint32_t weight,
-                memcached_connection type)
-{
-  memset(host,  0, sizeof(memcached_server_st));
-  strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
-  host->root= ptr ? ptr : NULL;
-  host->port= port;
-  host->weight= weight;
-  host->fd= -1;
-  host->type= type;
-  host->read_ptr= host->read_buffer;
-  if (ptr)
-    host->next_retry= ptr->retry_timeout;
-  host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
-}
-
 void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 {
   unsigned int x;
@@ -261,8 +244,10 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   for (x= 0; x < count; x++)
   {
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
-    host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
-               list[x].port, list[x].weight, list[x].type);
+    memcached_server_create(ptr, &ptr->hosts[ptr->number_of_hosts]);
+    /* TODO check return type */
+    (void)memcached_server_create_with(ptr, &ptr->hosts[ptr->number_of_hosts], list[x].hostname, 
+                                       list[x].port, list[x].weight, list[x].type);
     ptr->number_of_hosts++;
   }
   ptr->hosts[0].count= ptr->number_of_hosts;
@@ -346,7 +331,8 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
 
   ptr->hosts= new_host_list;
 
-  host_reset(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, weight, type);
+  /* TODO: Check return type */
+  (void)memcached_server_create_with(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, weight, type);
   ptr->number_of_hosts++;
   ptr->hosts[0].count= ptr->number_of_hosts;
 
@@ -415,7 +401,8 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
     return NULL;
   }
 
-  host_reset(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
+  /* TODO: Check return type */
+  memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
 
   /* Backwards compatibility hack */
   new_host_list[0].count= count;
