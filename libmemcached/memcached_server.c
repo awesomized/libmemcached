@@ -17,6 +17,7 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
   }
   else
   {
+    ptr->is_allocated= MEMCACHED_USED;
     memset(ptr, 0, sizeof(memcached_server_st));
   }
   
@@ -34,7 +35,6 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
   if (host == NULL)
     return NULL;
 
-  memset(host,  0, sizeof(memcached_server_st));
   strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
   host->root= memc ? memc : NULL;
   host->port= port;
@@ -51,8 +51,6 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
 
 void memcached_server_free(memcached_server_st *ptr)
 {
-  WATCHPOINT_ASSERT(ptr->is_allocated != MEMCACHED_NOT_ALLOCATED);
-
   memcached_quit_server(ptr, 0);
 
   if (ptr->address_info)
@@ -68,8 +66,6 @@ void memcached_server_free(memcached_server_st *ptr)
     else
       free(ptr);
   }
-  else
-    ptr->is_allocated= MEMCACHED_USED;
 }
 
 /*
