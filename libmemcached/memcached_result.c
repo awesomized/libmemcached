@@ -11,10 +11,7 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
 {
   /* Saving malloc calls :) */
   if (ptr)
-  {
     memset(ptr, 0, sizeof(memcached_result_st));
-    ptr->is_allocated= MEMCACHED_NOT_ALLOCATED;
-  }
   else
   {
     if (memc->call_malloc)
@@ -25,13 +22,12 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
     if (ptr == NULL)
       return NULL;
     memset(ptr, 0, sizeof(memcached_result_st));
-    ptr->is_allocated= MEMCACHED_ALLOCATED;
+    ptr->is_allocated= true;
   }
 
   ptr->root= memc;
   memcached_string_create(memc, &ptr->value, 0);
   WATCHPOINT_ASSERT(ptr->value.string == NULL);
-  WATCHPOINT_ASSERT(ptr->value.is_allocated == MEMCACHED_NOT_ALLOCATED);
 
   return ptr;
 }
@@ -60,8 +56,6 @@ void memcached_result_free(memcached_result_st *ptr)
 
   memcached_string_free(&ptr->value);
 
-  if (ptr->is_allocated == MEMCACHED_ALLOCATED)
+  if (ptr->is_allocated)
     free(ptr);
-  else
-    ptr->is_allocated= MEMCACHED_USED;
 }

@@ -13,13 +13,10 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
     memset(ptr, 0, sizeof(memcached_server_st));
-    ptr->is_allocated= MEMCACHED_ALLOCATED;
+    ptr->is_allocated= true;
   }
   else
-  {
-    ptr->is_allocated= MEMCACHED_USED;
     memset(ptr, 0, sizeof(memcached_server_st));
-  }
   
   ptr->root= memc;
 
@@ -44,7 +41,6 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
   host->read_ptr= host->read_buffer;
   if (memc)
     host->next_retry= memc->retry_timeout;
-  host->sockaddr_inited= MEMCACHED_NOT_ALLOCATED;
 
   return host;
 }
@@ -59,13 +55,15 @@ void memcached_server_free(memcached_server_st *ptr)
     ptr->address_info= NULL;
   }
 
-  if (ptr->is_allocated == MEMCACHED_ALLOCATED)
+  if (ptr->is_allocated)
   {
     if (ptr->root && ptr->root->call_free)
       ptr->root->call_free(ptr->root, ptr);
     else
       free(ptr);
   }
+  else
+    memset(ptr, 0, sizeof(memcached_server_st));
 }
 
 /*
@@ -73,31 +71,14 @@ void memcached_server_free(memcached_server_st *ptr)
 */
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr)
 {
-  memcached_server_st *new_clone;
-
   /* We just do a normal create if ptr is missing */
   if (ptr == NULL)
     return NULL;
 
-  if (clone && clone->is_allocated == MEMCACHED_USED)
-  {
-    WATCHPOINT_ASSERT(0);
-    return NULL;
-  }
-  
-  new_clone= memcached_server_create(ptr->root, clone);
-  
-  if (new_clone == NULL)
-    return NULL;
-
-  new_clone->root= ptr->root;
-
   /* TODO We should check return type */
-  memcached_server_create_with(new_clone->root, new_clone, 
-                               ptr->hostname, ptr->port, ptr->weight,
-                               ptr->type);
-
-  return new_clone;
+  return memcached_server_create_with(ptr->root, clone, 
+                                      ptr->hostname, ptr->port, ptr->weight,
+                                      ptr->type);
 }
 
 memcached_return memcached_server_cursor(memcached_st *ptr, 

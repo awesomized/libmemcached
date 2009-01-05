@@ -15,7 +15,7 @@ memcached_st *memcached_create(memcached_st *ptr)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
     memset(ptr, 0, sizeof(memcached_st));
-    ptr->is_allocated= MEMCACHED_ALLOCATED;
+    ptr->is_allocated= true;
   }
   else
   {
@@ -53,7 +53,7 @@ void memcached_free(memcached_st *ptr)
       free(ptr->continuum);
   }
 
-  if (ptr->is_allocated == MEMCACHED_ALLOCATED)
+  if (ptr->is_allocated)
   {
     if (ptr->call_free)
       ptr->call_free(ptr, ptr);
@@ -61,7 +61,7 @@ void memcached_free(memcached_st *ptr)
       free(ptr);
   }
   else
-    ptr->is_allocated= MEMCACHED_USED;
+    memset(ptr, 0, sizeof(memcached_st));
 }
 
 /*
@@ -77,7 +77,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   if (source == NULL)
     return memcached_create(clone);
 
-  if (clone && clone->is_allocated == MEMCACHED_USED)
+  if (clone && clone->is_allocated)
   {
     return NULL;
   }

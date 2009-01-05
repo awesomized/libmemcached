@@ -131,13 +131,6 @@ typedef enum {
   MEMCACHED_CONNECTION_UNIX_SOCKET
 } memcached_connection;
 
-typedef enum {
-  MEMCACHED_NOT_ALLOCATED,
-  MEMCACHED_ALLOCATED,
-  MEMCACHED_USED
-} memcached_allocated;
-
-
 #ifdef __cplusplus
 }
 #endif

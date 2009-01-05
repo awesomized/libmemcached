@@ -12,6 +12,9 @@
 
 #include <stdlib.h>
 #include <inttypes.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 #include <sys/types.h>
 #include <netinet/in.h>
 
@@ -70,7 +73,7 @@ struct memcached_stat_st {
 
 struct memcached_st {
   uint8_t purging;
-  memcached_allocated is_allocated;
+  bool is_allocated;
   memcached_server_st *hosts;
   uint32_t number_of_hosts;
   uint32_t cursor_server;

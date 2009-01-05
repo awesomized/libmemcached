@@ -187,8 +187,6 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   if (result == NULL)
     result= memcached_result_create(ptr, NULL);
 
-  WATCHPOINT_ASSERT(result->value.is_allocated != MEMCACHED_USED);
-
 #ifdef UNUSED
   if (ptr->flags & MEM_NO_BLOCK)
     memcached_io_preread(ptr);
@@ -219,7 +217,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   }
 
   /* We have completed reading data */
-  if (result->is_allocated == MEMCACHED_ALLOCATED)
+  if (result->is_allocated)
     memcached_result_free(result);
   else
     memcached_string_reset(&result->value);

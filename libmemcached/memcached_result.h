@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 struct memcached_result_st {
-  memcached_allocated is_allocated;
+  bool is_allocated;
   memcached_st *root;
   char key[MEMCACHED_MAX_KEY];
   size_t key_length;

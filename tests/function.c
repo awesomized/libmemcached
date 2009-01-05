@@ -2146,6 +2146,8 @@ test_return user_supplied_bug19(memcached_st *memc)
   memcached_server_free(s);
 
   memcached_free(m);
+
+  return 0;
 }
 
 #include "ketama_test_cases.h"
@@ -2190,7 +2192,7 @@ test_return user_supplied_bug18(memcached_st *memc)
   /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
    * us test the boundary wraparound.
    */
-  assert(memcached_generate_hash(memc, (unsigned char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+  assert(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
 
   /* verify the standard ketama set. */
   for (i= 0; i < 99; i++)
@@ -2208,7 +2210,7 @@ static test_return  result_static(memcached_st *memc)
   memcached_result_st *result_ptr;
 
   result_ptr= memcached_result_create(memc, &result);
-  assert(result.is_allocated == MEMCACHED_NOT_ALLOCATED);
+  assert(result.is_allocated == false);
   assert(result_ptr);
   memcached_result_free(&result);
 
@@ -2232,7 +2234,7 @@ static test_return  string_static_null(memcached_st *memc)
   memcached_string_st *string_ptr;
 
   string_ptr= memcached_string_create(memc, &string, 0);
-  assert(string.is_allocated == MEMCACHED_NOT_ALLOCATED);
+  assert(string.is_allocated == false);
   assert(string_ptr);
   memcached_string_free(&string);
 
