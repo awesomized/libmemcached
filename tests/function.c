@@ -2151,12 +2151,18 @@ test_return user_supplied_bug19(memcached_st *memc)
 }
 
 #include "ketama_test_cases.h"
-test_return user_supplied_bug18(memcached_st *memc)
+test_return user_supplied_bug18(memcached_st *trash)
 {
   memcached_return rc;
   int value;
   int i;
   memcached_server_st *server_pool;
+  memcached_st *memc;
+
+  (void)trash;
+
+  memc= memcached_create(NULL);
+  assert(memc);
     
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
   assert(rc == MEMCACHED_SUCCESS);
@@ -2170,10 +2176,6 @@ test_return user_supplied_bug18(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
   assert(value == MEMCACHED_HASH_MD5);
 
-  while (memc->number_of_hosts > 0)
-  {
-    memcached_server_remove(memc->hosts);
-  }
   server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
   memcached_server_push(memc, server_pool);
   
@@ -2201,6 +2203,10 @@ test_return user_supplied_bug18(memcached_st *memc)
     char *hostname = memc->hosts[server_idx].hostname;
     assert(strcmp(hostname, test_cases[i].server) == 0);
   }
+
+  memcached_server_list_free(server_pool);
+  memcached_free(memc);
+
   return 0;
 }
 
@@ -3023,7 +3029,7 @@ test_st user_tests[] ={
   {"user_supplied_bug15", 1, user_supplied_bug15 },
   {"user_supplied_bug16", 1, user_supplied_bug16 },
   {"user_supplied_bug17", 1, user_supplied_bug17 },
-//  {"user_supplied_bug18", 1, user_supplied_bug18 },
+  {"user_supplied_bug18", 1, user_supplied_bug18 },
   {"user_supplied_bug19", 1, user_supplied_bug19 },
   {0, 0, 0}
 };

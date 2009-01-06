@@ -117,14 +117,19 @@ memcached_return update_continuum(memcached_st *ptr)
   is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   points_per_server= is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER;
 
+  if (ptr->number_of_hosts == 0)
+    return MEMCACHED_SUCCESS;
+
   if (ptr->number_of_hosts > ptr->continuum_count)
   {
     memcached_continuum_item_st *new_ptr;
 
     if (ptr->call_realloc)
-      new_ptr= (memcached_continuum_item_st *)ptr->call_realloc(ptr, ptr->continuum, sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
+      new_ptr= (memcached_continuum_item_st *)ptr->call_realloc(ptr, ptr->continuum, 
+                                                                sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
     else
-      new_ptr= (memcached_continuum_item_st *)realloc(ptr->continuum, sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
+      new_ptr= (memcached_continuum_item_st *)realloc(ptr->continuum, 
+                                                      sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
