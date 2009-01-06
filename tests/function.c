@@ -395,10 +395,13 @@ static test_return  cas2_test(memcached_st *memc)
 static test_return  cas_test(memcached_st *memc)
 {
   memcached_return rc;
-  char *key= "fun";
-  size_t key_length= strlen("fun");
-  char *value= "we the people";
-  size_t value_length= strlen("we the people");
+  const char *key= "fun";
+  size_t key_length= strlen(key);
+  const char *value= "we the people";
+  size_t value_length= strlen(value);
+  const char *value2= "change the value";
+  size_t value2_length= strlen(value2);
+
   memcached_result_st results_obj;
   memcached_result_st *results;
   unsigned int set= 1;
@@ -421,23 +424,26 @@ static test_return  cas_test(memcached_st *memc)
   assert(results);
   assert(rc == MEMCACHED_SUCCESS);
   WATCHPOINT_ASSERT(memcached_result_cas(results));
+  assert(!memcmp(value, memcached_result_value(results), value_length));
+  assert(strlen(memcached_result_value(results)) == value_length);
+  assert(rc == MEMCACHED_SUCCESS);
+  uint64_t cas = memcached_result_cas(results);
 
-  assert(!memcmp(value, "we the people", strlen("we the people")));
-  assert(strlen("we the people") == value_length);
+  #if 0
+  results= memcached_fetch_result(memc, &results_obj, &rc);
+  assert(rc == MEMCACHED_END);
+  assert(results == NULL);
+#endif
+  
+  rc= memcached_cas(memc, key, key_length, value2, value2_length, 0, 0, cas);
   assert(rc == MEMCACHED_SUCCESS);
 
-  rc= memcached_cas(memc, key, key_length,
-                    "change the value", strlen("change the value"), 
-                    0, 0, memcached_result_cas(results));
-
-  assert(rc == MEMCACHED_SUCCESS);
-
-  rc= memcached_cas(memc, key, key_length,
-                    "change the value", strlen("change the value"), 
-                    0, 0, 23);
-
+  /*
+   * The item will have a new cas value, so try to set it again with the old
+   * value. This should fail!
+   */
+  rc= memcached_cas(memc, key, key_length, value2, value2_length, 0, 0, cas);
   assert(rc == MEMCACHED_DATA_EXISTS);
-
 
   memcached_result_free(&results_obj);
 
@@ -1397,13 +1403,11 @@ static test_return  user_supplied_bug1(memcached_st *memc)
     sprintf(key, "%d", x);
     rc = memcached_set(memc, key, strlen(key), 
                        randomstuff, strlen(randomstuff), 10, 0);
-    WATCHPOINT_ERROR(rc);
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
     /* If we fail, lets try again */
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
       rc = memcached_set(memc, key, strlen(key), 
                          randomstuff, strlen(randomstuff), 10, 0);
-    WATCHPOINT_ERROR(rc);
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
@@ -1931,7 +1935,11 @@ static test_return  user_supplied_bug12(memcached_st *memc)
                           1, &number_value);
 
   assert(value == NULL);
-  assert(rc == MEMCACHED_NOTFOUND);
+  /* The binary protocol will set the key if it doesn't exist */
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1) 
+    assert(rc == MEMCACHED_SUCCESS);
+  else
+    assert(rc == MEMCACHED_NOTFOUND);
 
   rc= memcached_set(memc, "autoincrement", strlen("autoincrement"), "1", 1, 0, 0);
 
@@ -2146,6 +2154,33 @@ test_return user_supplied_bug19(memcached_st *memc)
   memcached_server_free(s);
 
   memcached_free(m);
+
+  return 0;
+}
+
+/* CAS test from Andei */
+test_return user_supplied_bug20(memcached_st *memc)
+{
+  memcached_return status;
+  memcached_result_st *result, result_obj;
+  char *key = "abc";
+  size_t key_len = strlen("abc");
+  char *value = "foobar";
+  size_t value_len = strlen(value);
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1);
+
+  status = memcached_set(memc, key, key_len, value, value_len, (time_t)0, (uint32_t)0);
+  assert(status == MEMCACHED_SUCCESS);
+
+  status = memcached_mget(memc, &key, &key_len, 1);
+  assert(status == MEMCACHED_SUCCESS);
+
+  memcached_result_create(memc, &result_obj);
+  result= memcached_fetch_result(memc, &result_obj, &status);
+
+  assert(result);
+  assert(status == MEMCACHED_SUCCESS);
 
   return 0;
 }
@@ -3022,7 +3057,7 @@ test_st user_tests[] ={
   {"user_supplied_bug8", 1, user_supplied_bug8 },
   {"user_supplied_bug9", 1, user_supplied_bug9 },
   {"user_supplied_bug10", 1, user_supplied_bug10 },
-//  {"user_supplied_bug11", 1, user_supplied_bug11 },
+  {"user_supplied_bug11", 1, user_supplied_bug11 },
   {"user_supplied_bug12", 1, user_supplied_bug12 },
   {"user_supplied_bug13", 1, user_supplied_bug13 },
   {"user_supplied_bug14", 1, user_supplied_bug14 },
@@ -3031,6 +3066,7 @@ test_st user_tests[] ={
   {"user_supplied_bug17", 1, user_supplied_bug17 },
   {"user_supplied_bug18", 1, user_supplied_bug18 },
   {"user_supplied_bug19", 1, user_supplied_bug19 },
+  {"user_supplied_bug20", 1, user_supplied_bug20 },
   {0, 0, 0}
 };
 

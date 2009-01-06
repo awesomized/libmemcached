@@ -1,6 +1,7 @@
 0.26
   * Fix for decrement on hash key
   * Fixed assert that was catching bad memset() call in host_reset()
+  * Fix purge issue for blocked IO which has been stacked.
 
 0.25 Fri Nov 28 09:59:35 PST 2008
   * Jenkins HASH added.
