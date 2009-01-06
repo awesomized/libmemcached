@@ -51,7 +51,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   if (ptr->type == MEMCACHED_CONNECTION_UDP)
     return MEMCACHED_SUCCESS;
 
-#ifndef __sun
+#ifdef HAVE_SNDTIMEO
   if (ptr->root->snd_timeout)
   {
     int error;
@@ -64,7 +64,9 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
   }
+#endif
 
+#ifdef HAVE_RCVTIMEO
   if (ptr->root->rcv_timeout)
   {
     int error;
