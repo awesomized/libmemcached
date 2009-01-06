@@ -2176,11 +2176,16 @@ test_return user_supplied_bug20(memcached_st *memc)
   status = memcached_mget(memc, &key, &key_len, 1);
   assert(status == MEMCACHED_SUCCESS);
 
+  result= memcached_result_create(memc, &result_obj);
+  assert(result);
+
   memcached_result_create(memc, &result_obj);
   result= memcached_fetch_result(memc, &result_obj, &status);
 
   assert(result);
   assert(status == MEMCACHED_SUCCESS);
+
+  memcached_result_free(result);
 
   return 0;
 }
