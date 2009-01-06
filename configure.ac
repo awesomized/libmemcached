@@ -84,4 +84,7 @@ AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
+
+sinclude(config/setsockopt.m4)
+
 AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)
