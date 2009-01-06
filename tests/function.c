@@ -2605,6 +2605,29 @@ static memcached_return  pre_nonblock(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return  pre_nonblock_binary(memcached_st *memc)
+{
+  memcached_return rc= MEMCACHED_FAILURE;
+  memcached_st *clone;
+
+  clone= memcached_clone(NULL, memc);
+  assert(clone);
+  // The memcached_version needs to be done on a clone, because the server
+  // will not toggle protocol on an connection.
+  memcached_version(clone);
+
+  if (clone->hosts[0].major_version >= 1 && clone->hosts[0].minor_version > 2) 
+  {
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
+    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+  }
+
+  memcached_free(clone);
+  return rc;
+}
+
 static memcached_return  pre_murmur(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR);
@@ -3104,6 +3127,7 @@ collection_st collection[] ={
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"async", pre_nonblock, 0, async_tests},
+  {"async_binary", pre_nonblock_binary, 0, async_tests},
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", pre_hsieh, 0, generate_tests},
