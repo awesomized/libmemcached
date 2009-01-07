@@ -30,7 +30,7 @@ tests/atomsmasher
 tests/startservers
 tests/stopservers
 tests/udptest
-
+^libmemcached/dtrace_probes.h$
 
 
 Makefile(.in)?$

@@ -52,13 +52,6 @@
 #define unlikely(x)     if(__builtin_expect((x), 0))
 #endif
 
-
-#ifdef HAVE_DTRACE
-#define _DTRACE_VERSION 1
-#else
-#undef _DTRACE_VERSION
-#endif
-
 #include "libmemcached_probes.h"
 
 #define MEMCACHED_BLOCK_SIZE 1024
