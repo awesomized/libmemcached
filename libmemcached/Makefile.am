@@ -5,27 +5,14 @@ BUILT_SOURCES= @DTRACE_HEADER@
 INCLUDES = -I$(top_builddir)
 LIBS = @LIBS@
 
+EXTRA_HEADERS = 
 DTRACE =                @DTRACE@
 DTRACEFLAGS =           @DTRACEFLAGS@
-DTRACEFILES = memcached.o \
-              memcached_strerror.o \
-              memcached_connect.o \
-              memcached_response.o \
-              memcached_get.o \
-              memcached_storage.o \
-              memcached_delete.o \
-              memcached_hash.o \
-              memcached_auto.o \
-              memcached_verbosity.o \
-              memcached_quit.o \
-              memcached_flush.o \
-              memcached_string.o \
-              memcached_stats.o
 
 noinst_HEADERS = libmemcached_probes.h \
 		 memcached_io.h \
                  common.h \
-                 memcached/protocol_binary.h
+                 memcached/protocol_binary.h @DTRACE_HEADER@
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
@@ -88,8 +75,7 @@ dtrace_probes.h: libmemcached_probes.d
 # So libtool doesn't support dtrace, but just copy one of the existing
 # lo-file and replace the file name ;-) 
 libmemcached_probes.lo: libmemcached_probes.o
-	sed "s,jenkins_hash,libmemcached_probes,g" jenkins_hash.lo > libmemcached_probes.tmp
-	mv libmemcached_probes.tmp libmemcached_probes.lo
+	sed "s,jenkins_hash,libmemcached_probes,g" jenkins_hash.lo > libmemcached_probes.lo
 
 libmemcached_probes.o: $(libmemcached_la_OBJECTS)
 	$(DTRACE) $(DTRACEFLAGS) -o .libs/libmemcached_probes.o -G -s libmemcached_probes.d `grep pic_object *.lo | cut -f 2 -d\' | grep -v non_pic_object`
