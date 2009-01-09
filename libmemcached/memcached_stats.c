@@ -143,7 +143,7 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
 }
 
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
-                               char *key, memcached_return *error)
+                               const char *key, memcached_return *error)
 {
   char buffer[SMALL_STRING_LEN];
   size_t length;

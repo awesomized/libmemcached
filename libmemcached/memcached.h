@@ -170,10 +170,10 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
                                                               uint32_t weight,
                                                               memcached_return *error);
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
-memcached_server_st *memcached_servers_parse(char *server_strings);
+memcached_server_st *memcached_servers_parse(const char *server_strings);
 
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
-                               char *key, memcached_return *error);
+                               const char *key, memcached_return *error);
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
                                 memcached_return *error);
 
