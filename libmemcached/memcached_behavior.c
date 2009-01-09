@@ -40,6 +40,8 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     ptr->server_failure_limit= (uint32_t)data;
     break;     
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    if (data)
+        set_behavior_flag(ptr, MEM_VERIFY_KEY, 0);
     set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
     break;     
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
@@ -101,6 +103,8 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    if (ptr->flags & MEM_BINARY_PROTOCOL)
+        break;
     set_behavior_flag(ptr, MEM_VERIFY_KEY, data);
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
