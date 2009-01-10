@@ -120,4 +120,23 @@ extern uint64_t htonll(uint64_t);
 
 memcached_return memcached_purge(memcached_server_st *ptr);
 
+static inline memcached_return memcached_validate_key_length(size_t key_length, 
+                                                             bool binary) {
+  unlikely (key_length == 0)
+    return MEMCACHED_BAD_KEY_PROVIDED;
+  
+  if (binary)
+  {
+    unlikely (key_length > 0xffff)
+      return MEMCACHED_BAD_KEY_PROVIDED;
+  }
+  else
+  {
+    unlikely (key_length > 250) 
+      return MEMCACHED_BAD_KEY_PROVIDED;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 #endif /* __COMMON_H__ */

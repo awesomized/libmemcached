@@ -603,6 +603,7 @@ static test_return  bad_key_test(memcached_st *memc)
   uint32_t flags;
   memcached_st *clone;
   unsigned int set= 1;
+  size_t max_keylen= 0xffff;
 
   clone= memcached_clone(NULL, memc);
   assert(clone);
@@ -610,23 +611,25 @@ static test_return  bad_key_test(memcached_st *memc)
   rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
   assert(rc == MEMCACHED_SUCCESS);
 
-  string= memcached_get(clone, key, strlen(key),
-                        &string_length, &flags, &rc);
-  assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
-  assert(string_length ==  0);
-  assert(!string);
-
-  set= 0;
-  rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
-  assert(rc == MEMCACHED_SUCCESS);
-  string= memcached_get(clone, key, strlen(key),
-                        &string_length, &flags, &rc);
-  assert(rc == MEMCACHED_NOTFOUND);
-  assert(string_length ==  0);
-  assert(!string);
-
-  /* Test multi key for bad keys */
+  /* All keys are valid in the binary protocol (except for length) */
+  if (memcached_behavior_get(clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 0) 
   {
+    string= memcached_get(clone, key, strlen(key),
+                          &string_length, &flags, &rc);
+    assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+    assert(string_length ==  0);
+    assert(!string);
+
+    set= 0;
+    rc= memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+    assert(rc == MEMCACHED_SUCCESS);
+    string= memcached_get(clone, key, strlen(key),
+                          &string_length, &flags, &rc);
+    assert(rc == MEMCACHED_NOTFOUND);
+    assert(string_length ==  0);
+    assert(!string);
+
+    /* Test multi key for bad keys */
     char *keys[] = { "GoodKey", "Bad Key", "NotMine" };
     size_t key_lengths[] = { 7, 7, 7 };
     set= 1;
@@ -638,6 +641,34 @@ static test_return  bad_key_test(memcached_st *memc)
 
     rc= memcached_mget_by_key(clone, "foo daddy", 9, keys, key_lengths, 1);
     assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+
+    max_keylen= 250;
+
+    /* The following test should be moved to the end of this function when the
+       memcached server is updated to allow max size length of the keys in the
+       binary protocol
+    */
+    rc= memcached_callback_set(clone, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
+    assert(rc == MEMCACHED_SUCCESS);
+
+    char *longkey= malloc(max_keylen + 1);
+    if (longkey != NULL) 
+    {
+      memset(longkey, 'a', max_keylen + 1);
+      string= memcached_get(clone, longkey, max_keylen,
+                            &string_length, &flags, &rc);
+      assert(rc == MEMCACHED_NOTFOUND);
+      assert(string_length ==  0);
+      assert(!string);
+
+      string= memcached_get(clone, longkey, max_keylen + 1,
+                            &string_length, &flags, &rc);
+      assert(rc == MEMCACHED_BAD_KEY_PROVIDED);
+      assert(string_length ==  0);
+      assert(!string);
+
+      free(longkey);
+    }
   }
 
   /* Make sure zero length keys are marked as bad */

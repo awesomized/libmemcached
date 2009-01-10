@@ -227,6 +227,11 @@ static memcached_return binary_stats_fetch(memcached_st *ptr,
   if (args != NULL) 
   {
     int len= strlen(args);
+
+    rc= memcached_validate_key_length(len, true);
+    unlikely (rc != MEMCACHED_SUCCESS)
+      return rc;
+
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl(len);
       

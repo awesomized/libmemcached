@@ -26,8 +26,10 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
-  unlikely (key_length == 0)
-    return MEMCACHED_NO_KEY_PROVIDED;
+  rc= memcached_validate_key_length(key_length, 
+                                    ptr->flags & MEM_BINARY_PROTOCOL);
+  unlikely (rc != MEMCACHED_SUCCESS)
+    return rc;
 
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;

@@ -110,11 +110,10 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
 {
   uint32_t server_key;
 
-  unlikely (key_length == 0)
-  {
-    *error= MEMCACHED_NO_KEY_PROVIDED;
+  *error= memcached_validate_key_length(key_length, 
+                                        ptr->flags & MEM_BINARY_PROTOCOL);
+  unlikely (*error != MEMCACHED_SUCCESS)
     return NULL;
-  }
 
   unlikely (ptr->number_of_hosts == 0)
   {

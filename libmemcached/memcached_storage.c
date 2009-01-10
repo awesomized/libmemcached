@@ -70,9 +70,10 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
-  unlikely (key_length == 0)
-    return MEMCACHED_NO_KEY_PROVIDED;
-
+  rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
+  unlikely (rc != MEMCACHED_SUCCESS)
+    return rc;
+  
   unlikely (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 

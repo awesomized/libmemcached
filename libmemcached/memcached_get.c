@@ -281,6 +281,15 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     else
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
 
+    memcached_return vk;
+    vk= memcached_validate_key_length(key_length[x],
+                                      ptr->flags & MEM_BINARY_PROTOCOL);
+    unlikely (vk != MEMCACHED_SUCCESS) {
+      if (x > 0)
+        memcached_io_reset(ptr);
+      return vk;
+    }
+
     request.message.header.request.keylen= htons((uint16_t)key_length[x]);
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl(key_length[x]);

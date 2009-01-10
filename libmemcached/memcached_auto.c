@@ -11,9 +11,6 @@ static memcached_return memcached_auto(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
-  unlikely (key_length == 0)
-    return MEMCACHED_NO_KEY_PROVIDED;
-
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
@@ -68,14 +65,8 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 {
   unsigned int server_key;
 
-  unlikely (key_length == 0)
-    return MEMCACHED_NO_KEY_PROVIDED;
-
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
-
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcachd_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
-    return MEMCACHED_BAD_KEY_PROVIDED;
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
@@ -106,7 +97,9 @@ memcached_return memcached_increment(memcached_st *ptr,
                                      uint32_t offset,
                                      uint64_t *value)
 {
-  memcached_return rc;
+  memcached_return rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
+  unlikely (rc != MEMCACHED_SUCCESS)
+    return rc;
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_START();
   if (ptr->flags & MEM_BINARY_PROTOCOL) 
@@ -125,7 +118,9 @@ memcached_return memcached_decrement(memcached_st *ptr,
                                      uint32_t offset,
                                      uint64_t *value)
 {
-  memcached_return rc;
+  memcached_return rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
+  unlikely (rc != MEMCACHED_SUCCESS)
+    return rc;
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_START();
   if (ptr->flags & MEM_BINARY_PROTOCOL) 
