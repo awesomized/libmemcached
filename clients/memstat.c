@@ -22,6 +22,17 @@ static int opt_verbose= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
 
+static struct option long_options[]=
+{
+  {"version", no_argument, NULL, OPT_VERSION},
+  {"help", no_argument, NULL, OPT_HELP},
+  {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+  {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+  {"servers", required_argument, NULL, OPT_SERVERS},
+  {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+  {0, 0, 0, 0},
+};
+
 int main(int argc, char *argv[])
 {
   unsigned int x;
@@ -41,7 +52,8 @@ int main(int argc, char *argv[])
       opt_servers= strdup(temp);
     else
     {
-      fprintf(stderr, "No Servers provided\n");
+      fprintf(stderr, "No Servers provided\n\n");
+      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, 0);
       exit(1);
     }
   }
@@ -99,17 +111,6 @@ void options_parse(int argc, char *argv[])
   memcached_programs_help_st help_options[]=
   {
     {0},
-  };
-
-  static struct option long_options[]=
-  {
-    {"version", no_argument, NULL, OPT_VERSION},
-    {"help", no_argument, NULL, OPT_HELP},
-    {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-    {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-    {"servers", required_argument, NULL, OPT_SERVERS},
-    {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-    {0, 0, 0, 0},
   };
 
   int option_index= 0;
