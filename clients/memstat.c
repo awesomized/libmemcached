@@ -16,7 +16,9 @@
 #define PROGRAM_DESCRIPTION "Output the state of a memcached cluster."
 
 /* Prototypes */
-void options_parse(int argc, char *argv[]);
+static void options_parse(int argc, char *argv[]);
+static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
+                                 memcached_server_st *server_list);
 
 static int opt_verbose= 0;
 static int opt_displayflag= 0;
@@ -35,7 +37,6 @@ static struct option long_options[]=
 
 int main(int argc, char *argv[])
 {
-  unsigned int x;
   memcached_return rc;
   memcached_st *memc;
   memcached_stat_st *stat;
@@ -74,6 +75,21 @@ int main(int argc, char *argv[])
   }
 
   server_list= memcached_server_list(memc);
+  print_server_listing(memc, stat, server_list);
+
+  free(stat);
+  free(opt_servers);
+
+  memcached_free(memc);
+
+  return 0;
+}
+
+static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
+                                 memcached_server_st *server_list)
+{
+  unsigned int x;
+  memcached_return rc;
 
   printf("Listing %u Server\n\n", memcached_server_count(memc));
   for (x= 0; x < memcached_server_count(memc); x++)
@@ -84,7 +100,7 @@ int main(int argc, char *argv[])
     list= memcached_stat_get_keys(memc, &stat[x], &rc);
 
     printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
-	   memcached_server_port(memc, server_list[x]));
+           memcached_server_port(memc, server_list[x]));
     for (ptr= list; *ptr; ptr++)
     {
       memcached_return rc;
@@ -97,16 +113,9 @@ int main(int argc, char *argv[])
     free(list);
     printf("\n");
   }
-
-  free(stat);
-  free(opt_servers);
-
-  memcached_free(memc);
-
-  return 0;
 }
 
-void options_parse(int argc, char *argv[])
+static void options_parse(int argc, char *argv[])
 {
   memcached_programs_help_st help_options[]=
   {
