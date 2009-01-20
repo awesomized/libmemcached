@@ -1,6 +1,6 @@
 Hi!
 
-So what is this? It is a library in C for connectinng to memcached servers
+So what is this? It is a library in C for connecting to memcached servers
 (http://danga.com/memcached/). It is also a collection of utilities designed
 to work with memcached.
 
