@@ -124,6 +124,19 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   else
     to_write= 1;
 
+  if (ptr->flags & MEM_NOREPLY)
+  {
+    if (memcached_io_write(&ptr->hosts[server_key], " noreply\r\n", 
+                           10, 1) == -1)
+    {
+      rc= MEMCACHED_WRITE_FAILURE;
+      goto error;
+    }
+
+    memcached_server_response_decrement(&ptr->hosts[server_key]);
+    return MEMCACHED_SUCCESS;
+  }
+
   if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
@@ -378,6 +391,18 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
     request.message.header.request.cas= htonll(cas);
   
   flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
+
+  /* The binary protocol does not implement NOREPLY right now, so I need to
+   * parse the return message from the server. The problem we tried to solve
+   * is the fact that the async mode will buffer commands, and if we issue a
+   * lot of sets followed by a get we have to flush the send buffer before we
+   * can send the get command (and all those commands have to be executed).
+   * The workaround for the binary is that we send the command, but we await
+   * parsing of the result message until we really need to do it..
+   */
+  if (server->root->flags & MEM_NOREPLY)
+    flush=1;
+
   /* write the header */
   if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, 0) == -1) ||
@@ -387,9 +412,9 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
     return MEMCACHED_WRITE_FAILURE;
   }
 
-  if (flush == 0)
+  if (flush == 0 || server->root->flags & MEM_NOREPLY)
     return MEMCACHED_BUFFERED;
-  
+
   return memcached_response(server, NULL, 0, NULL);   
 }
 

@@ -136,6 +136,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     set_behavior_flag(ptr, MEM_HASH_WITH_PREFIX_KEY, data);
     break;
+  case MEMCACHED_BEHAVIOR_NOREPLY:
+    set_behavior_flag(ptr, MEM_NOREPLY, data);
+    break;     
   }
 
   return MEMCACHED_SUCCESS;
@@ -243,6 +246,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return MEMCACHED_FAILURE;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     temp_flag= MEM_HASH_WITH_PREFIX_KEY;
+    break;
+  case MEMCACHED_BEHAVIOR_NOREPLY:
+    temp_flag= MEM_NOREPLY;
     break;
   }
 

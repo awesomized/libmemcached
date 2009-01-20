@@ -159,6 +159,13 @@ at least 10 IO requests sent without reading the input buffer). Setting
 this value to high, may cause libmemcached to deadlock (trying to send 
 data, but the send will block because the input buffer in the kernel is full).
 
+=item MEMCACHED_BEHAVIOR_NOREPLY
+
+Set this value to specify that you really don't care about the result
+from your storage commands (set, add, replace, append, prepend). With
+this flag enabled, each storage request will be sent immediately to the
+server overriding any setting of MEMCACHED_BEHAVIOR_BUFFER_REQUESTS.
+
 =back
 
 =head1 RETURN

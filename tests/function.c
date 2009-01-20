@@ -3031,6 +3031,44 @@ static memcached_return  poll_timeout(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return noreply_test(memcached_st *memc)
+{
+  memcached_return ret;
+  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1);
+  assert(ret == MEMCACHED_SUCCESS);
+  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
+  assert(ret == MEMCACHED_SUCCESS);
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY) == 1);
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS) == 1);
+  
+  for (int x= 0; x < 100; ++x) {
+    char key[10];
+    size_t len= sprintf(key, "%d", x);
+    ret= memcached_set(memc, key, len, key, len, 0, 0);
+    assert(ret == MEMCACHED_SUCCESS || ret == MEMCACHED_BUFFERED);
+  }
+  
+  /*
+  ** NOTE: Don't ever do this in your code! this is not a supported use of the
+  ** API and is _ONLY_ done this way to verify that the library works the
+  ** way it is supposed to do!!!!
+  */
+  int no_msg= 0;
+  for (int x= 0; x < memc->number_of_hosts; ++x) {
+     no_msg+= memc->hosts[x].cursor_active;
+  }
+  
+  /*
+  ** The binary protocol does not implement quiet commands yet. Fix this
+  ** test they are implemented!
+  */
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1)
+     assert(no_msg == 100);
+  else
+     assert(no_msg == 0);
+
+  return MEMCACHED_SUCCESS;
+}
 
 /* Clean the server before beginning testing */
 test_st tests[] ={
@@ -3072,6 +3110,7 @@ test_st tests[] ={
   {"memcached_server_cursor", 1, memcached_server_cursor_test },
   {"read_through", 1, read_through },
   {"delete_through", 1, delete_through },
+  {"noreply", 1, noreply_test},
   {0, 0, 0}
 };
 
