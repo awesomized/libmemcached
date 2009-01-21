@@ -348,11 +348,6 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   if (!stats)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    if (ptr->call_free)
-      ptr->call_free(ptr, stats);
-    else
-      free(stats);
-
     return NULL;
   }
   memset(stats, 0, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
