@@ -3067,6 +3067,7 @@ static memcached_return noreply_test(memcached_st *memc)
   else
      assert(no_msg == 0);
 
+  assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
   return MEMCACHED_SUCCESS;
 }
 
