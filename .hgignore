@@ -31,7 +31,7 @@ tests/startservers
 tests/stopservers
 tests/udptest
 ^libmemcached/dtrace_probes.h$
-
+^tests/core$
 
 Makefile(.in)?$
 .(deps|libs)$
@@ -72,3 +72,5 @@ docs/libmemcached/memrm.html
 docs/libmemcached/memslap.html
 docs/libmemcached/memstat.html
 
+# Backup files created by emacs
+.*~$
