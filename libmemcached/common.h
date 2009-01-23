@@ -111,8 +111,6 @@ memcached_return memcachd_key_test(char **keys, size_t *key_length,
 
 memcached_return run_distribution(memcached_st *ptr);
 
-uint32_t generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm);
-
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 
@@ -133,7 +131,7 @@ static inline memcached_return memcached_validate_key_length(size_t key_length,
   }
   else
   {
-    unlikely (key_length > 250) 
+    unlikely (key_length >= MEMCACHED_MAX_KEY) 
       return MEMCACHED_BAD_KEY_PROVIDED;
   }
 

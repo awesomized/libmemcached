@@ -11,7 +11,7 @@ static uint32_t FNV_32_PRIME= 16777619;
 static uint32_t internal_generate_hash(const char *key, size_t key_length);
 static uint32_t internal_generate_md5(const char *key, size_t key_length);
 
-uint32_t generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm)
+uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
   uint32_t x= 0;
@@ -103,7 +103,7 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
   if (ptr->number_of_hosts == 1)
     return 0;
 
-  hash= generate_hash_value(key, key_length, ptr->hash);
+  hash= memcached_generate_hash_value(key, key_length, ptr->hash);
   WATCHPOINT_ASSERT(hash);
   return hash;
 }

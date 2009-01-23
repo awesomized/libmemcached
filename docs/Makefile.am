@@ -25,7 +25,8 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_version.pod\
 	memflush.pod\
 	memcached_flush_buffers.pod\
-  memcached_analyze.pod
+        memcached_analyze.pod\
+        memcached_generate_hash_value.pod
 
 man_MANS = libmemcached.3\
 	libmemcached_examples.3\
@@ -84,7 +85,8 @@ man_MANS = libmemcached.3\
 	memcached_verbosity.3\
 	memcached_lib_version.3\
 	memcached_version.3\
-  memcached_flush_buffers.3
+        memcached_flush_buffers.3\
+        memcached_generate_hash_value.3
 
 libmemcached.3: libmemcached.pod 
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 libmemcached.pod > libmemcached.3
@@ -271,6 +273,9 @@ memcached_flush_buffers.3: memcached_flush_buffers.pod
 
 memcached_analyze.3: memcached_analyze.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_analyze.pod > memcached_analyze.3
+
+memcached_generate_hash_value.3: memcached_generate_hash_value.pod
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_generate_hash_value.pod > memcached_generate_hash_value.3
 
 memcp.1: memcp.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 1 memcp.pod > memcp.1

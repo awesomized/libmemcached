@@ -197,7 +197,7 @@ memcached_return update_continuum(memcached_st *ptr)
       }
       else
       {
-        value= generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
+        value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
         ptr->continuum[continuum_index].index= host_index;
         ptr->continuum[continuum_index++].value= value;
       }
