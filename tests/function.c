@@ -3070,6 +3070,22 @@ static test_return noreply_test(memcached_st *memc)
      assert(no_msg == 0);
 
   assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
+
+  /*
+  ** Now validate that all items was set properly!
+  */
+  for (int x= 0; x < 100; ++x) {
+    char key[10];
+    size_t len= sprintf(key, "%d", x);
+    size_t length;
+    uint32_t flags;
+    char* value= memcached_get(memc, key, strlen(key), 
+                               &length, &flags, &ret);    
+    assert(ret == MEMCACHED_SUCCESS && value != NULL);
+    assert(strncmp(value, key, len) == 0);
+    free(value);
+  }
+
   return TEST_SUCCESS;
 }
 

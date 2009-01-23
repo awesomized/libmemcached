@@ -89,17 +89,21 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   if (cas)
     write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                           "%s %s%.*s %u %llu %zu %llu\r\n", storage_op_string(verb),
+                           "%s %s%.*s %u %llu %zu %llu%s\r\n", 
+                           storage_op_string(verb),
                            ptr->prefix_key,
                            (int)key_length, key, flags, 
                            (unsigned long long)expiration, value_length, 
-                           (unsigned long long)cas);
+                           (unsigned long long)cas,
+                           (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
   else
     write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                           "%s %s%.*s %u %llu %zu\r\n", storage_op_string(verb),
+                           "%s %s%.*s %u %llu %zu%s\r\n", 
+                           storage_op_string(verb),
                            ptr->prefix_key,
                            (int)key_length, key, flags, 
-                           (unsigned long long)expiration, value_length);
+                           (unsigned long long)expiration, value_length,
+                           (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
 
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
   {
@@ -124,23 +128,16 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   else
     to_write= 1;
 
-  if (ptr->flags & MEM_NOREPLY)
-  {
-    if (memcached_io_write(&ptr->hosts[server_key], " noreply\r\n", 
-                           10, to_write) == -1)
-    {
-      rc= MEMCACHED_WRITE_FAILURE;
-      goto error;
-    }
-
-    memcached_server_response_decrement(&ptr->hosts[server_key]);
-    return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
-  }
-
   if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
+  }
+
+  if (ptr->flags & MEM_NOREPLY)
+  {
+    memcached_server_response_decrement(&ptr->hosts[server_key]);
+    return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
   }
 
   if (to_write == 0)
