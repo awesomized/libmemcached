@@ -19,9 +19,13 @@
 static void options_parse(int argc, char *argv[]);
 static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
                                  memcached_server_st *server_list);
+static void print_analysis_report(memcached_st *memc,
+                                  memcached_analysis_st *report,
+                                  memcached_server_st *server_list);
 
 static int opt_verbose= 0;
 static int opt_displayflag= 0;
+static int opt_analyze= 0;
 static char *opt_servers= NULL;
 
 static struct option long_options[]=
@@ -32,6 +36,7 @@ static struct option long_options[]=
   {"debug", no_argument, &opt_verbose, OPT_DEBUG},
   {"servers", required_argument, NULL, OPT_SERVERS},
   {"flag", no_argument, &opt_displayflag, OPT_FLAG},
+  {"analyze", no_argument, NULL, OPT_ANALYZE},
   {0, 0, 0, 0},
 };
 
@@ -42,6 +47,7 @@ int main(int argc, char *argv[])
   memcached_stat_st *stat;
   memcached_server_st *servers;
   memcached_server_st *server_list;
+  memcached_analysis_st *report;
 
   options_parse(argc, argv);
 
@@ -70,12 +76,26 @@ int main(int argc, char *argv[])
   if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
   {
     printf("Failure to communicate with servers (%s)\n",
-	   memcached_strerror(memc, rc));
+           memcached_strerror(memc, rc));
     exit(1);
   }
 
   server_list= memcached_server_list(memc);
-  print_server_listing(memc, stat, server_list);
+
+  if (opt_analyze)
+  {
+    report= memcached_analyze(memc, stat, &rc);
+    if (rc != MEMCACHED_SUCCESS || report == NULL)
+    {
+      printf("Failure to analyze servers (%s)\n",
+             memcached_strerror(memc, rc));
+      exit(1);
+    }
+    print_analysis_report(memc, report, server_list);
+    free(report);
+  }
+  else
+    print_server_listing(memc, stat, server_list);
 
   free(stat);
   free(opt_servers);
@@ -115,6 +135,41 @@ static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
   }
 }
 
+static void print_analysis_report(memcached_st *memc,
+                                  memcached_analysis_st *report,
+                                  memcached_server_st *server_list)
+{
+  uint32_t server_count= memcached_server_count(memc);
+
+  printf("Memcached Cluster Analysis Report\n\n");
+
+  printf("\tNumber of Servers Analyzed         : %d\n", server_count);
+  printf("\tAverage Item Size (incl/overhead)  : %u bytes\n",
+         report->average_item_size);
+
+  if (server_count == 1)
+  {
+    printf("\nFor a detailed report, you must supply multiple servers.\n");
+    return;
+  }
+
+  printf("\n");
+  printf("\tNode with most memory consumption  : %s:%u (%u bytes)\n",
+         memcached_server_name(memc, server_list[report->most_consumed_server]),
+         memcached_server_port(memc, server_list[report->most_consumed_server]),
+         report->most_used_bytes);
+  printf("\tNode with least free space         : %s:%u (%u bytes remaining)\n",
+         memcached_server_name(memc, server_list[report->least_free_server]),
+         memcached_server_port(memc, server_list[report->least_free_server]),
+         report->least_remaining_bytes);
+  printf("\tNode with longest uptime           : %s:%u (%us)\n",
+         memcached_server_name(memc, server_list[report->oldest_server]),
+         memcached_server_port(memc, server_list[report->oldest_server]),
+         report->longest_uptime);
+  printf("\tPool-wide Hit Ratio                : %1.f%%\n", report->pool_hit_ratio);
+  printf("\n");
+}
+
 static void options_parse(int argc, char *argv[])
 {
   memcached_programs_help_st help_options[]=
@@ -127,7 +182,7 @@ static void options_parse(int argc, char *argv[])
 
   while (1) 
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    option_rv= getopt_long(argc, argv, "Vhvds:a", long_options, &option_index);
     if (option_rv == -1) break;
     switch (option_rv)
     {
@@ -147,6 +202,9 @@ static void options_parse(int argc, char *argv[])
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
+      break;
+    case OPT_ANALYZE: /* --analyze or -a */
+      opt_analyze= OPT_ANALYZE;
       break;
     case '?':
       /* getopt_long already printed an error message. */

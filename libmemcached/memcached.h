@@ -44,6 +44,17 @@ struct memcached_continuum_item_st {
 
 #define LIBMEMCACHED_VERSION_STRING "0.25"
 
+struct memcached_analysis_st {
+  uint64_t most_used_bytes;
+  uint64_t least_remaining_bytes;
+  uint32_t average_item_size;
+  uint32_t longest_uptime;
+  uint32_t least_free_server;
+  uint32_t most_consumed_server;
+  uint32_t oldest_server;
+  double pool_hit_ratio;
+};
+
 struct memcached_stat_st {
   uint32_t pid;
   uint32_t uptime;

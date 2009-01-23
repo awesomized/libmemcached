@@ -9,6 +9,7 @@ typedef enum {
   OPT_HELP= 'h',
   OPT_VERBOSE= 'v',
   OPT_DEBUG= 'd',
+  OPT_ANALYZE= 'a',
   OPT_FLAG= 257,
   OPT_EXPIRE,
   OPT_SET,

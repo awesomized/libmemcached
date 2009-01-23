@@ -44,6 +44,7 @@ static char *lookup_help(memcached_options option)
   case OPT_FLUSH: return("Flush servers before running tests.");
   case OPT_HASH: return("Select hash type.");
   case OPT_BINARY: return("Switch to binary protocol.");
+  case OPT_ANALYZE: return("Analyze the provided servers.");
   };
 
   WATCHPOINT_ASSERT(0);

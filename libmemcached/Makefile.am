@@ -32,6 +32,7 @@ libmemcached_la_SOURCES = crc.c \
 			  hsieh_hash.c \
 			  memcached.c \
 			  memcached_auto.c \
+			  memcached_analyze.c \
 			  memcached_behavior.c \
 			  memcached_callback.c \
 			  memcached_connect.c \
@@ -56,7 +57,7 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_storage.c \
 			  memcached_string.c \
 			  memcached_stats.c \
-                          memcached_strerror.c \
+			  memcached_strerror.c \
 			  memcached_verbosity.c \
 			  memcached_version.c \
 			  murmur_hash.c \

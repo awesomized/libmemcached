@@ -3073,6 +3073,26 @@ static test_return noreply_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static memcached_return analyzer_test(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_stat_st *stat;
+  memcached_analysis_st *report;
+
+  stat= memcached_stat(memc, NULL, &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(stat);
+
+  report= memcached_analyze(memc, stat, &rc);  
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(report);
+
+  free(report);
+  memcached_stat_free(NULL, stat);
+
+  return MEMCACHED_SUCCESS;
+}
+
 /* Clean the server before beginning testing */
 test_st tests[] ={
   {"flush", 0, flush_test },
@@ -3114,6 +3134,7 @@ test_st tests[] ={
   {"read_through", 1, read_through },
   {"delete_through", 1, delete_through },
   {"noreply", 1, noreply_test},
+  {"analyzer", 1, analyzer_test},
   {0, 0, 0}
 };
 

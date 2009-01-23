@@ -64,6 +64,8 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
 
 void memcached_server_free(memcached_server_st *ptr);
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr);
+memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *stat,
+                                         memcached_return *error);
 
 
 #ifdef __cplusplus

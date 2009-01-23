@@ -15,6 +15,7 @@ extern "C" {
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
+typedef struct memcached_analysis_st memcached_analysis_st;
 typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
