@@ -156,7 +156,7 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
     }
   }
 
-  return MEMCACHED_SUCCESS;
+  /* NOTREACHED */
 }
 
 char *memcached_result_value(memcached_result_st *ptr)

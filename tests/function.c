@@ -3089,7 +3089,7 @@ static test_return noreply_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static memcached_return analyzer_test(memcached_st *memc)
+static test_return analyzer_test(memcached_st *memc)
 {
   memcached_return rc;
   memcached_stat_st *stat;
@@ -3106,7 +3106,7 @@ static memcached_return analyzer_test(memcached_st *memc)
   free(report);
   memcached_stat_free(NULL, stat);
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 /* Clean the server before beginning testing */

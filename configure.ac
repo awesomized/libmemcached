@@ -48,7 +48,13 @@ AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
-AC_LANG_CPLUSPLUS
+
+AC_C_CONST
+AC_HEADER_TIME
+AC_TYPE_SIZE_T
+AC_SEARCH_LIBS(getopt_long, gnugetopt)
+AC_SEARCH_LIBS(socket, socket)
+AC_SEARCH_LIBS(gethostbyname, nsl)
 
 sinclude(config/pod2man.m4)
 sinclude(config/debug.m4)
@@ -57,6 +63,7 @@ sinclude(config/byteorder.m4)
 sinclude(config/64bit.m4)
 sinclude(config/protocol_binary.m4)
 sinclude(config/memcached.m4)
+sinclude(config/setsockopt.m4)
 
 # We only support GCC and Sun's forte at the moment
 CFLAGS="-DMEMCACHED_INTERNAL $CFLAGS"
@@ -70,22 +77,15 @@ then
     CFLAGS="$CFLAGS -ggdb -DHAVE_DEBUG"
   fi
 else
-  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ $CFLAGS"
+  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -errfmt=error -errwarn -errshort=tags $CFLAGS"
+  CXXFLAGS="+w +w2 -xwe -mt -D_FORTEC_ $CXXFLAGS"
   if test "$ENABLE_DEBUG" = "yes"
   then
     CFLAGS="$CFLAGS -DHAVE_DEBUG"
+    CXXFLAGS="$CXXFLAGS -DHAVE_DEBUG"
   fi
-  DTRACEFLAGS="$DTRACEFLAGS"
 fi
 
 LDFLAGS="-lm"
-AC_C_CONST
-AC_HEADER_TIME
-AC_TYPE_SIZE_T
-AC_SEARCH_LIBS(getopt_long, gnugetopt)
-AC_SEARCH_LIBS(socket, socket)
-AC_SEARCH_LIBS(gethostbyname, nsl)
-
-sinclude(config/setsockopt.m4)
 
 AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec)

@@ -257,6 +257,4 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return 1;
   else
     return 0;
-
-  return MEMCACHED_SUCCESS;
 }

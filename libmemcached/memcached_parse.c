@@ -13,8 +13,8 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
   char *string;
   unsigned int port;
   uint32_t weight;
-  char *begin_ptr;
-  char *end_ptr;
+  const char *begin_ptr;
+  const char *end_ptr;
   memcached_server_st *servers= NULL;
   memcached_return rc;
 

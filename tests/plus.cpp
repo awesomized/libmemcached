@@ -15,10 +15,10 @@
 
 #include "test.h"
 
-test_return basic_test(memcached_st *memc)
+extern "C" test_return basic_test(memcached_st *memc)
 {
-  Memcached foo;
-  char *value_set= "This is some data";
+  Memcached foo(memc);
+  const char *value_set= "This is some data";
   char *value;
   size_t value_length;
 
@@ -30,12 +30,12 @@ test_return basic_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-uint8_t increment_test(memcached_st *memc)
+extern "C" uint8_t increment_test(memcached_st *memc)
 {
-  Memcached mcach;
+  Memcached mcach(memc);
   memcached_return rc;
-  char *key= "inctest";
-  char *inc_value= "1";
+  const char *key= "inctest";
+  const char *inc_value= "1";
   char *ret_value;
   uint64_t int_inc_value;
   uint64_t int_ret_value;
@@ -63,13 +63,13 @@ uint8_t increment_test(memcached_st *memc)
   return 0;
 }
 
-test_return basic_master_key_test(memcached_st *memc)
+extern "C" test_return basic_master_key_test(memcached_st *memc)
 {
-  Memcached foo;
-  char *value_set= "Data for server A";
-  char *master_key_a= "server-a";
-  char *master_key_b= "server-b";
-  char *key= "xyz";
+   Memcached foo(memc);
+  const char *value_set= "Data for server A";
+  const char *master_key_a= "server-a";
+  const char *master_key_b= "server-b";
+  const char *key= "xyz";
   char *value;
   size_t value_length;
 
@@ -98,10 +98,8 @@ collection_st collection[] ={
 
 #define SERVERS_TO_CREATE 1
 
-void *world_create(void)
+extern "C" void *world_create(void)
 {
-  unsigned int x;
-  memcached_server_st *servers;
   server_startup_st *construct;
 
   construct= (server_startup_st *)malloc(sizeof(server_startup_st));
@@ -113,7 +111,7 @@ void *world_create(void)
   return construct;
 }
 
-void world_destroy(void *p)
+extern "C" void world_destroy(void *p)
 {
   server_startup_st *construct= (server_startup_st *)p;
   memcached_server_st *servers= (memcached_server_st *)construct->servers;

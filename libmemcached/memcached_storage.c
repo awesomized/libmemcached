@@ -39,7 +39,7 @@ static char *storage_op_string(memcached_storage_action verb)
     return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
   };
 
-  return SET_OP;
+  /* NOTREACHED */
 }
 
 static memcached_return memcached_send_binary(memcached_server_st* server, 

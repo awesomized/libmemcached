@@ -145,8 +145,7 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
     return hash % ptr->number_of_hosts;
   }
 
-  WATCHPOINT_ASSERT(0); /* We should never reach here */
-  return 0;
+  /* NOTREACHED */
 }
 
 /* 
