@@ -67,40 +67,11 @@ memcached_return memcached_response(memcached_server_st *ptr,
   return memcached_read_one_response(ptr, buffer, buffer_length, result);
 }
 
-static memcached_return memcached_readline(memcached_server_st *ptr,
-                                           char *buffer,
-                                           size_t size)
-{
-  bool line_complete= false;
-  char *buffer_ptr= buffer;
-  int total_nr=0;
-
-  while (!line_complete)
-  {
-    if (memcached_io_read(ptr, buffer_ptr, 1) != 1)
-      return MEMCACHED_UNKNOWN_READ_FAILURE;
-
-    WATCHPOINT_ASSERT(*buffer_ptr != '\0');
-    if (*buffer_ptr == '\n')
-      line_complete=true;
-    else
-    {
-      ++buffer_ptr;
-      ++total_nr;
-    }
-
-    if (total_nr == size)
-      return MEMCACHED_PROTOCOL_ERROR;
-  }
-
-  return MEMCACHED_SUCCESS;
-}
-
 static memcached_return textual_read_one_response(memcached_server_st *ptr,
                                                   char *buffer, size_t buffer_length,
                                                   memcached_result_st *result)
 {
-  memcached_return rc=memcached_readline(ptr, buffer, buffer_length);
+  memcached_return rc= memcached_io_readline(ptr, buffer, buffer_length);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 

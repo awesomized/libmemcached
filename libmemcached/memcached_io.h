@@ -9,6 +9,10 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 void memcached_io_reset(memcached_server_st *ptr);
 ssize_t memcached_io_read(memcached_server_st *ptr,
                           void *buffer, size_t length);
+/* Read a line (terminated by '\n') into the buffer */
+memcached_return memcached_io_readline(memcached_server_st *ptr,
+                                       char *buffer_ptr,
+                                       size_t size);
 memcached_return memcached_io_close(memcached_server_st *ptr);
 /* Read n bytes of data from the server and store them in dta */
 memcached_return memcached_safe_read(memcached_server_st *ptr, 

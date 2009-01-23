@@ -409,3 +409,48 @@ memcached_return memcached_safe_read(memcached_server_st *ptr,
 
   return MEMCACHED_SUCCESS;
 }
+
+memcached_return memcached_io_readline(memcached_server_st *ptr,
+                                       char *buffer_ptr,
+                                       size_t size)
+{
+  bool line_complete= false;
+  int total_nr= 0;
+
+  while (!line_complete)
+  {
+    if (ptr->read_buffer_length == 0)
+    {
+      /*
+       * We don't have any data in the buffer, so let's fill the read
+       * buffer. Call the standard read function to avoid duplicating
+       * the logic.
+       */
+      if (memcached_io_read(ptr, buffer_ptr, 1) != 1)
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+
+      if (*buffer_ptr == '\n')
+        line_complete= true;
+
+      ++buffer_ptr;
+      ++total_nr;
+    }
+
+    /* Now let's look in the buffer and copy as we go! */
+    while (ptr->read_buffer_length && total_nr < size && !line_complete)
+    {
+      *buffer_ptr = *ptr->read_ptr;
+      if (*buffer_ptr == '\n')
+        line_complete = true;
+      --ptr->read_buffer_length;
+      ++ptr->read_ptr;
+      ++total_nr;
+      ++buffer_ptr;
+    }
+
+    if (total_nr == size)
+      return MEMCACHED_PROTOCOL_ERROR;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
