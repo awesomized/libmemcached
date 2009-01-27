@@ -300,13 +300,29 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
   else if (header.response.bodylen) 
   {
      /* What should I do with the error message??? just discard it for now */
-    char buffer[SMALL_STRING_LEN];
+    char hole[SMALL_STRING_LEN];
     while (bodylen > 0) 
     {
       size_t nr= (bodylen > SMALL_STRING_LEN) ? SMALL_STRING_LEN : bodylen;
-      if (memcached_safe_read(ptr, buffer, nr) != MEMCACHED_SUCCESS)
+      if (memcached_safe_read(ptr, hole, nr) != MEMCACHED_SUCCESS)
         return MEMCACHED_UNKNOWN_READ_FAILURE;
       bodylen -= nr;
+    }
+
+    /* This might be an error from one of the quiet commands.. if
+     * so, just throw it away and get the next one. What about creating
+     * a callback to the user with the error information?
+     */
+    switch (header.response.opcode)
+    {
+    case PROTOCOL_BINARY_CMD_SETQ:
+    case PROTOCOL_BINARY_CMD_ADDQ:
+    case PROTOCOL_BINARY_CMD_REPLACEQ:
+    case PROTOCOL_BINARY_CMD_APPENDQ:
+    case PROTOCOL_BINARY_CMD_PREPENDQ:
+      return binary_read_one_response(ptr, buffer, buffer_length, result);
+    default:
+      break;
     }
   }
 

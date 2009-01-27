@@ -3040,51 +3040,115 @@ static test_return noreply_test(memcached_st *memc)
   assert(ret == MEMCACHED_SUCCESS);
   ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
   assert(ret == MEMCACHED_SUCCESS);
+  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1);
+  assert(ret == MEMCACHED_SUCCESS);
   assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY) == 1);
   assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS) == 1);
-  
-  for (int x= 0; x < 100; ++x) {
-    char key[10];
-    size_t len= sprintf(key, "%d", x);
-    ret= memcached_set(memc, key, len, key, len, 0, 0);
-    assert(ret == MEMCACHED_SUCCESS || ret == MEMCACHED_BUFFERED);
-  }
-  
-  /*
-  ** NOTE: Don't ever do this in your code! this is not a supported use of the
-  ** API and is _ONLY_ done this way to verify that the library works the
-  ** way it is supposed to do!!!!
-  */
-  int no_msg= 0;
-  for (int x= 0; x < memc->number_of_hosts; ++x) {
-     no_msg+= memc->hosts[x].cursor_active;
-  }
-  
-  /*
-  ** The binary protocol does not implement quiet commands yet. Fix this
-  ** test they are implemented!
-  */
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1)
-     assert(no_msg == 100);
-  else
-     assert(no_msg == 0);
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS) == 1);
 
+  for (int count=0; count < 5; ++count)
+  {
+    for (int x=0; x < 100; ++x)
+    {
+      char key[10];
+      size_t len=sprintf(key, "%d", x);
+      switch (count)
+      {
+      case 0:
+        ret=memcached_add(memc, key, len, key, len, 0, 0);
+        break;
+      case 1:
+        ret=memcached_replace(memc, key, len, key, len, 0, 0);
+        break;
+      case 2:
+        ret=memcached_set(memc, key, len, key, len, 0, 0);
+        break;
+      case 3:
+        ret=memcached_append(memc, key, len, key, len, 0, 0);
+        break;
+      case 4:
+        ret=memcached_prepend(memc, key, len, key, len, 0, 0);
+        break;
+      }
+      assert(ret == MEMCACHED_SUCCESS || ret == MEMCACHED_BUFFERED);
+    }
+
+    /*
+    ** NOTE: Don't ever do this in your code! this is not a supported use of the
+    ** API and is _ONLY_ done this way to verify that the library works the
+    ** way it is supposed to do!!!!
+    */
+    int no_msg=0;
+    for (int x=0; x < memc->number_of_hosts; ++x)
+      no_msg+=memc->hosts[x].cursor_active;
+
+    assert(no_msg == 0);
+    assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
+
+    /*
+     ** Now validate that all items was set properly!
+     */
+    for (int x=0; x < 100; ++x)
+    {
+      char key[10];
+      size_t len=sprintf(key, "%d", x);
+      size_t length;
+      uint32_t flags;
+      char* value=memcached_get(memc, key, strlen(key),
+                                &length, &flags, &ret);
+      assert(ret == MEMCACHED_SUCCESS && value != NULL);
+      switch (count)
+      {
+      case 0: /* FALLTHROUGH */
+      case 1: /* FALLTHROUGH */
+      case 2:
+        assert(strncmp(value, key, len) == 0);
+        assert(len == length);
+        break;
+      case 3:
+        assert(length == len * 2);
+        break;
+      case 4:
+        assert(length == len * 3);
+        break;
+      }
+      free(value);
+    }
+  }
+
+  /* Try setting an illegal cas value (should not return an error to
+   * the caller (because we don't expect a return message from the server)
+   */
+  char* keys[]= {"0"};
+  size_t lengths[]= {1};
+  size_t length;
+  uint32_t flags;
+  memcached_result_st results_obj;
+  memcached_result_st *results;
+  ret=memcached_mget(memc, keys, lengths, 1);
+  assert(ret == MEMCACHED_SUCCESS);
+
+  results=memcached_result_create(memc, &results_obj);
+  assert(results);
+  results=memcached_fetch_result(memc, &results_obj, &ret);
+  assert(results);
+  assert(ret == MEMCACHED_SUCCESS);
+  uint64_t cas= memcached_result_cas(results);
+  memcached_result_free(&results_obj);
+
+  ret= memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas);
+  assert(ret == MEMCACHED_SUCCESS);
+
+  /*
+   * The item will have a new cas value, so try to set it again with the old
+   * value. This should fail!
+   */
+  ret= memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas);
+  assert(ret == MEMCACHED_SUCCESS);
   assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
-
-  /*
-  ** Now validate that all items was set properly!
-  */
-  for (int x= 0; x < 100; ++x) {
-    char key[10];
-    size_t len= sprintf(key, "%d", x);
-    size_t length;
-    uint32_t flags;
-    char* value= memcached_get(memc, key, strlen(key), 
-                               &length, &flags, &ret);    
-    assert(ret == MEMCACHED_SUCCESS && value != NULL);
-    assert(strncmp(value, key, len) == 0);
-    free(value);
-  }
+  char* value=memcached_get(memc, keys[0], lengths[0], &length, &flags, &ret);
+  assert(ret == MEMCACHED_SUCCESS && value != NULL);
+  free(value);
 
   return TEST_SUCCESS;
 }
