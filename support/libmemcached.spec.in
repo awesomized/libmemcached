@@ -78,6 +78,7 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/libmemcached_examples.3.gz
 %{_mandir}/man3/memcached_add.3.gz
 %{_mandir}/man3/memcached_add_by_key.3.gz
+%{_mandir}/man3/memcached_analyze.3.gz
 %{_mandir}/man3/memcached_append.3.gz
 %{_mandir}/man3/memcached_append_by_key.3.gz
 %{_mandir}/man3/memcached_behavior_get.3.gz
@@ -94,7 +95,9 @@ memerror - Creates human readable messages from libmemecached error codes.
 %{_mandir}/man3/memcached_fetch.3.gz
 %{_mandir}/man3/memcached_fetch_result.3.gz
 %{_mandir}/man3/memcached_fetch_execute.3.gz
+%{_mandir}/man3/memcached_flush_buffers.3.gz
 %{_mandir}/man3/memcached_free.3.gz
+%{_mandir}/man3/memcached_generate_hash_value.3.gz
 %{_mandir}/man3/memcached_get.3.gz
 %{_mandir}/man3/memcached_get_by_key.3.gz
 %{_mandir}/man3/memcached_increment.3.gz
