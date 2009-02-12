@@ -17,6 +17,8 @@
 
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
+static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
+                         memcached_server_st *server_list, char *mode);
 static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
                                  memcached_server_st *server_list);
 static void print_analysis_report(memcached_st *memc,
@@ -27,6 +29,7 @@ static int opt_verbose= 0;
 static int opt_displayflag= 0;
 static int opt_analyze= 0;
 static char *opt_servers= NULL;
+static char *analyze_mode= NULL;
 
 static struct option long_options[]=
 {
@@ -36,7 +39,7 @@ static struct option long_options[]=
   {"debug", no_argument, &opt_verbose, OPT_DEBUG},
   {"servers", required_argument, NULL, OPT_SERVERS},
   {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-  {"analyze", no_argument, NULL, OPT_ANALYZE},
+  {"analyze", optional_argument, NULL, OPT_ANALYZE},
   {0, 0, 0, 0},
 };
 
@@ -47,7 +50,6 @@ int main(int argc, char *argv[])
   memcached_stat_st *stat;
   memcached_server_st *servers;
   memcached_server_st *server_list;
-  memcached_analysis_st *report;
 
   options_parse(argc, argv);
 
@@ -83,7 +85,26 @@ int main(int argc, char *argv[])
   server_list= memcached_server_list(memc);
 
   if (opt_analyze)
+    run_analyzer(memc, stat, server_list, analyze_mode);
+  else
+    print_server_listing(memc, stat, server_list);
+
+  free(stat);
+  free(opt_servers);
+
+  memcached_free(memc);
+
+  return 0;
+}
+
+static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
+                         memcached_server_st *server_list, char *mode)
+{
+  memcached_return rc;
+
+  if (analyze_mode == NULL)
   {
+    memcached_analysis_st *report;
     report= memcached_analyze(memc, stat, &rc);
     if (rc != MEMCACHED_SUCCESS || report == NULL)
     {
@@ -95,14 +116,10 @@ int main(int argc, char *argv[])
     free(report);
   }
   else
-    print_server_listing(memc, stat, server_list);
-
-  free(stat);
-  free(opt_servers);
-
-  memcached_free(memc);
-
-  return 0;
+  {
+    /* More code here in the next patch */
+    free(mode);
+  }
 }
 
 static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
@@ -205,6 +222,7 @@ static void options_parse(int argc, char *argv[])
       break;
     case OPT_ANALYZE: /* --analyze or -a */
       opt_analyze= OPT_ANALYZE;
+      analyze_mode= (optarg) ? strdup(optarg) : NULL;
       break;
     case '?':
       /* getopt_long already printed an error message. */
