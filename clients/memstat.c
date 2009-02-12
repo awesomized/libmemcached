@@ -154,14 +154,14 @@ static void print_analysis_report(memcached_st *memc,
   }
 
   printf("\n");
-  printf("\tNode with most memory consumption  : %s:%u (%u bytes)\n",
+  printf("\tNode with most memory consumption  : %s:%u (%llu bytes)\n",
          memcached_server_name(memc, server_list[report->most_consumed_server]),
          memcached_server_port(memc, server_list[report->most_consumed_server]),
-         report->most_used_bytes);
-  printf("\tNode with least free space         : %s:%u (%u bytes remaining)\n",
+         (unsigned long long)report->most_used_bytes);
+  printf("\tNode with least free space         : %s:%u (%llu bytes remaining)\n",
          memcached_server_name(memc, server_list[report->least_free_server]),
          memcached_server_port(memc, server_list[report->least_free_server]),
-         report->least_remaining_bytes);
+         (unsigned long long)report->least_remaining_bytes);
   printf("\tNode with longest uptime           : %s:%u (%us)\n",
          memcached_server_name(memc, server_list[report->oldest_server]),
          memcached_server_port(memc, server_list[report->oldest_server]),
