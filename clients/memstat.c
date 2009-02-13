@@ -18,7 +18,7 @@
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
 static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
-                         memcached_server_st *server_list, char *mode);
+                         memcached_server_st *server_list);
 static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
                                  memcached_server_st *server_list);
 static void print_analysis_report(memcached_st *memc,
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   server_list= memcached_server_list(memc);
 
   if (opt_analyze)
-    run_analyzer(memc, stat, server_list, analyze_mode);
+    run_analyzer(memc, stat, server_list);
   else
     print_server_listing(memc, stat, server_list);
 
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 }
 
 static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
-                         memcached_server_st *server_list, char *mode)
+                         memcached_server_st *server_list)
 {
   memcached_return rc;
 
@@ -115,10 +115,98 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
     print_analysis_report(memc, report, server_list);
     free(report);
   }
+  else if (strcmp(analyze_mode, "latency") == 0)
+  {
+    memcached_st **servers;
+    uint32_t x, y, flags, server_count= memcached_server_count(memc);
+    uint32_t num_of_tests= 32;
+    const char *test_key= "libmemcached_test_key";
+
+    servers= malloc(sizeof(memcached_st*) * server_count);
+    if (!servers)
+    {
+      fprintf(stderr, "Failed to allocate memory\n");
+      return;
+    }
+
+    for (x= 0; x < server_count; x++)
+    {
+      if((servers[x]= memcached_create(NULL)) == NULL)
+      {
+        fprintf(stderr, "Failed to memcached_create()\n");
+        x--;
+        for (; x >= 0; x--)
+          memcached_free(servers[x]);
+        free(servers);
+        return;
+      }
+      memcached_server_add(servers[x],
+                           memcached_server_name(memc, server_list[x]),
+                           memcached_server_port(memc, server_list[x]));
+    }
+
+    printf("Network Latency Test:\n\n");
+    struct timeval start_time, end_time;
+    long elapsed_time, slowest_time= 0, slowest_server= 0;
+
+    for (x= 0; x < server_count; x++)
+    {
+      gettimeofday(&start_time, NULL);
+      for (y= 0; y < num_of_tests; y++)
+      {
+        size_t vlen;
+        char *val= memcached_get(servers[x], test_key, strlen(test_key),
+                                 &vlen, &flags, &rc);
+        if (rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_SUCCESS)
+          break;
+        free(val);
+      }
+      gettimeofday(&end_time, NULL);
+
+      elapsed_time= timedif(end_time, start_time);
+      elapsed_time /= num_of_tests;
+
+      if (elapsed_time > slowest_time)
+      {
+        slowest_server= x;
+        slowest_time= elapsed_time;
+      }
+
+      if (rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_SUCCESS)
+      {
+        printf("\t %s (%d)  =>  failed to reach the server\n",
+               memcached_server_name(memc, server_list[x]),
+               memcached_server_port(memc, server_list[x]));
+      }
+      else
+      {
+        printf("\t %s (%d)  =>  %ld.%ld seconds\n",
+               memcached_server_name(memc, server_list[x]),
+               memcached_server_port(memc, server_list[x]),
+               elapsed_time / 1000, elapsed_time % 1000);
+      }
+    }
+
+    if (server_count > 1 && slowest_time > 0)
+    {
+      printf("---\n");
+      printf("Slowest Server: %s (%d) => %ld.%ld seconds\n",
+             memcached_server_name(memc, server_list[slowest_server]),
+             memcached_server_port(memc, server_list[slowest_server]),
+             slowest_time / 1000, slowest_time % 1000);
+    }
+    printf("\n");
+
+    for (x= 0; x < server_count; x++)
+      memcached_free(servers[x]);
+
+    free(servers);
+    free(analyze_mode);
+  }
   else
   {
-    /* More code here in the next patch */
-    free(mode);
+    fprintf(stderr, "Invalid Analyzer Option provided\n");
+    free(analyze_mode);
   }
 }
 
