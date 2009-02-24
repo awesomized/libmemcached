@@ -97,6 +97,7 @@ static inline memcached_return memcached_version_binary(memcached_st *ptr)
       {
         memcached_io_reset(&ptr->hosts[x]);
         rc= MEMCACHED_SOME_ERRORS;
+        continue;
       }
 
       ptr->hosts[x].major_version= (uint8_t)strtol(buffer, &p, 10);
