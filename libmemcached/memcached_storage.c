@@ -136,7 +136,6 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   if (ptr->flags & MEM_NOREPLY)
   {
-    memcached_server_response_decrement(&ptr->hosts[server_key]);
     return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
   }
 
@@ -427,9 +426,6 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
     return MEMCACHED_WRITE_FAILURE;
   }
   
-  if (noreply)
-    memcached_server_response_decrement(server);
-
   if (flush == 0)
     return MEMCACHED_BUFFERED;
 
