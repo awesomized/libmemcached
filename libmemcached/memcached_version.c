@@ -41,7 +41,10 @@ static inline memcached_return memcached_version_textual(memcached_st *ptr)
 
     rrc= memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rrc != MEMCACHED_SUCCESS)
+    {
       rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
 
     /* Find the space, and then move one past it to copy version */
     response_ptr= index(buffer, ' ');
