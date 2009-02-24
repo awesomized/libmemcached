@@ -115,7 +115,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   {
     int error;
 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDBUF, 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVBUF, 
                       &ptr->root->recv_size, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
   }
