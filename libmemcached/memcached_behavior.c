@@ -152,11 +152,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   switch (flag)
   {
   case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
-    temp_flag = ptr->io_msg_watermark;
-    break;
+    return ptr->io_msg_watermark;
   case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
-    temp_flag = ptr->io_bytes_watermark;
-    break;
+    return ptr->io_bytes_watermark;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     temp_flag= MEM_BINARY_PROTOCOL;
     break;     
