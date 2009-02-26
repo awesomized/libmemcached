@@ -338,6 +338,7 @@ static ssize_t io_flush(memcached_server_st *ptr,
       if ((sent_length= write(ptr->fd, local_write_ptr, 
                               write_length)) == -1)
       {
+        ptr->cached_errno= errno;
         switch (errno)
         {
         case ENOBUFS:
@@ -355,7 +356,6 @@ static ssize_t io_flush(memcached_server_st *ptr,
           }
         default:
           memcached_quit_server(ptr, 1);
-          ptr->cached_errno= errno;
           *error= MEMCACHED_ERRNO;
           return -1;
         }
