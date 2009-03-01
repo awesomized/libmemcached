@@ -219,71 +219,57 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
       (void)set_socket_options(ptr);
 
-      /* connect to server */
-test_connect:
-      if (connect(ptr->fd, 
-                  use->ai_addr, 
-                  use->ai_addrlen) < 0)
+      int flags;
+      if (ptr->root->connect_timeout)
       {
-        switch (errno) {
-          /* We are spinning waiting on connect */
-        case EALREADY:
-        case EINPROGRESS:
-          {
-            struct pollfd fds[1];
-            int error;
-
-            memset(&fds, 0, sizeof(struct pollfd));
-            fds[0].fd= ptr->fd;
-            fds[0].events= POLLOUT |  POLLERR;
-            error= poll(fds, 1, ptr->root->connect_timeout);
-
-            if (error == 0) 
-            {
-              goto handle_retry;
-            }
-            else if (error != 1 && fds[0].revents & POLLERR)
-            {
-              ptr->cached_errno= errno;
-              WATCHPOINT_ERRNO(ptr->cached_errno);
-              WATCHPOINT_NUMBER(ptr->root->connect_timeout);
-              memcached_quit_server(ptr, 1);
-
-              if (ptr->root->retry_timeout)
-              {
-                struct timeval next_time;
-
-                gettimeofday(&next_time, NULL);
-                ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
-              }
-              ptr->server_failure_counter+= 1;
-
-              return MEMCACHED_ERRNO;
-            }
-
-            break;
-          }
-        /* We are spinning waiting on connect */
-        case EINTR:
-          goto test_connect;
-        case EISCONN: /* We were spinning waiting on connect */
-          break;
-        default:
-handle_retry:
-          ptr->cached_errno= errno;
-          close(ptr->fd);
-          ptr->fd= -1;
-          if (ptr->root->retry_timeout)
-          {
-            struct timeval next_time;
-
-            gettimeofday(&next_time, NULL);
-            ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
-          }
-        }
+        flags= fcntl(ptr->fd, F_GETFL, 0);
+        if (flags != -1 && !(flags & O_NONBLOCK))
+          (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
       }
-      else
+
+      /* connect to server */
+      while (ptr->fd != -1 && 
+             connect(ptr->fd, use->ai_addr, use->ai_addrlen) < 0)
       {
+        ptr->cached_errno= errno;
+        if (errno == EINPROGRESS || /* nonblocking mode - first return, */
+            errno == EALREADY) /* nonblocking mode - subsequent returns */
+        {
+          struct pollfd fds[1] = { [0].fd = ptr->fd, [0].events = POLLOUT };
+          int error= poll(fds, 1, ptr->root->connect_timeout);
+
+          if (error != 1 || fds[0].revents & POLLERR)
+          {
+            if (fds[0].revents & POLLERR)
+            {
+              int err;
+              int len = sizeof (err);
+              (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+              ptr->cached_errno= errno;
+            }
+
+            (void)close(ptr->fd);
+            ptr->fd= -1;
+          }
+        } 
+        else if (errno == EISCONN) /* we are connected :-) */
+        {
+          break;
+        } 
+        else if (errno != EINTR)
+        {
+          (void)close(ptr->fd);
+          ptr->fd= -1;
+          break;
+        } 
+      }
+
+      if (ptr->fd != -1)
+      {
+        /* restore flags */ 
+        if (ptr->root->connect_timeout && (flags & O_NONBLOCK) == 0) 
+          (void)fcntl(ptr->fd, F_SETFL, flags & ~O_NONBLOCK);
+
         WATCHPOINT_ASSERT(ptr->cursor_active == 0);
         ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
@@ -292,7 +278,16 @@ handle_retry:
     }
   }
 
-  if (ptr->fd == -1) {
+  if (ptr->fd == -1)
+  {
+    /* Failed to connect. schedule next retry */
+    if (ptr->root->retry_timeout)
+    {
+      struct timeval next_time;
+
+      if (gettimeofday(&next_time, NULL) == 0)
+        ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+    }
     ptr->server_failure_counter+= 1;
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
   }
