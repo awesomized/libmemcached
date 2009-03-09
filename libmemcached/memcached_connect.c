@@ -208,6 +208,12 @@ static memcached_return network_connect(memcached_server_st *ptr)
     /* Create the socket */
     while (use != NULL)
     {
+      /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
+      if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET) {
+        use= use->ai_next;
+        continue;
+      }
+
       if ((ptr->fd= socket(use->ai_family, 
                            use->ai_socktype, 
                            use->ai_protocol)) < 0)
