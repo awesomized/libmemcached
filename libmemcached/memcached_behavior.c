@@ -5,7 +5,7 @@
 #include <netinet/tcp.h>
 
 /* 
-  This function is used to modify the behabior of running client.
+  This function is used to modify the behavior of running client.
 
   We quit all connections so we can reset the sockets.
 */
@@ -53,6 +53,13 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     set_behavior_flag(ptr, MEM_BUFFER_REQUESTS, data);
     memcached_quit(ptr);
+    break;
+  case MEMCACHED_BEHAVIOR_USE_UDP:
+    if (ptr->number_of_hosts)
+      return MEMCACHED_FAILURE;
+    set_behavior_flag(ptr, MEM_USE_UDP, data);
+    if (data)
+      set_behavior_flag(ptr,MEM_NOREPLY,data);
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
@@ -169,6 +176,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     temp_flag= MEM_BUFFER_REQUESTS;
+    break;
+  case MEMCACHED_BEHAVIOR_USE_UDP:
+    temp_flag= MEM_USE_UDP;
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     temp_flag= MEM_TCP_NODELAY;

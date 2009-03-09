@@ -27,6 +27,12 @@ char *memcached_get_by_key(memcached_st *ptr,
   uint32_t dummy_flags;
   memcached_return dummy_error;
 
+  if (ptr->flags & MEM_USE_UDP)
+  {
+    *error= MEMCACHED_NOT_SUPPORTED;
+    return NULL;
+  }
+
   /* Request the key */
   *error= memcached_mget_by_key(ptr, 
                                 master_key, 
@@ -119,6 +125,9 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   char *get_command= "get ";
   uint8_t get_command_length= 4;
   unsigned int master_server_key= 0;
+
+   if (ptr->flags & MEM_USE_UDP)
+    return MEMCACHED_NOT_SUPPORTED;
 
   LIBMEMCACHED_MEMCACHED_MGET_START();
   ptr->cursor_server= 0;

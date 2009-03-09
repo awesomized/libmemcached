@@ -41,6 +41,11 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
   host->read_ptr= host->read_buffer;
   if (memc)
     host->next_retry= memc->retry_timeout;
+  if (type == MEMCACHED_CONNECTION_UDP)
+  {
+    host->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
+    memcached_io_init_udp_header(host, 0);
+  }
 
   return host;
 }

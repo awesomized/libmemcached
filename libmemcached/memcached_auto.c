@@ -10,6 +10,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
+  bool no_reply= (ptr->flags & MEM_NOREPLY);
 
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
@@ -20,15 +21,15 @@ static memcached_return memcached_auto(memcached_st *ptr,
   server_key= memcached_generate_hash(ptr, key, key_length);
 
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                        "%s %s%.*s %u\r\n", verb, 
+                        "%s %s%.*s %u%s\r\n", verb,
                         ptr->prefix_key,
                         (int)key_length, key,
-                        offset);
+                        offset, no_reply ? " noreply" : "");
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
   rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
-  if (rc != MEMCACHED_SUCCESS)
+  if (no_reply || rc != MEMCACHED_SUCCESS)
     return rc;
 
   rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
@@ -64,12 +65,20 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
                                          uint32_t offset, uint64_t *value) 
 {
   unsigned int server_key;
+  bool no_reply= (ptr->flags & MEM_NOREPLY);
 
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
+  if (no_reply)
+  {
+    if(cmd == PROTOCOL_BINARY_CMD_DECREMENT)
+      cmd= PROTOCOL_BINARY_CMD_DECREMENTQ;
+    if(cmd == PROTOCOL_BINARY_CMD_INCREMENT)
+      cmd= PROTOCOL_BINARY_CMD_INCREMENTQ;
+  }
   protocol_binary_request_incr request= {.bytes= {0}};
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
@@ -88,7 +97,9 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
     memcached_io_reset(&ptr->hosts[server_key]);
     return MEMCACHED_WRITE_FAILURE;
   }
- 
+
+  if (no_reply)
+    return MEMCACHED_SUCCESS;
   return memcached_response(&ptr->hosts[server_key], (char*)value, sizeof(*value), NULL);
 }
 

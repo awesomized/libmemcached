@@ -14,6 +14,9 @@ memcached_return value_fetch(memcached_server_st *ptr,
   size_t to_read;
   char *value_ptr;
 
+  if (ptr->root->flags & MEM_USE_UDP)
+    return MEMCACHED_NOT_SUPPORTED;
+
   WATCHPOINT_ASSERT(ptr->root);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
@@ -133,6 +136,12 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 {
   memcached_result_st *result_buffer= &ptr->result;
 
+  if (ptr->flags & MEM_USE_UDP)
+  {
+    *error= MEMCACHED_NOT_SUPPORTED;
+    return NULL;
+  }
+
   while (ptr->cursor_server < ptr->number_of_hosts)
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -184,6 +193,13 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_result_st *result,
                                             memcached_return *error)
 {
+
+  if (ptr->flags & MEM_USE_UDP)
+  {
+    *error= MEMCACHED_NOT_SUPPORTED;
+    return NULL;
+  }
+  
   if (result == NULL)
     result= memcached_result_create(ptr, NULL);
 

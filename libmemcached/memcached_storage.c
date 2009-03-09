@@ -105,6 +105,14 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                            (unsigned long long)expiration, value_length,
                            (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
 
+  if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS) {
+    size_t cmd_size= write_length + value_length + 2;
+    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+      return MEMCACHED_WRITE_FAILURE;
+    if (cmd_size + ptr->hosts[server_key].write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+      memcached_io_write(&ptr->hosts[server_key], NULL, 0, 1);
+  }
+
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
   {
     rc= MEMCACHED_WRITE_FAILURE;
@@ -135,9 +143,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   }
 
   if (ptr->flags & MEM_NOREPLY)
-  {
     return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
-  }
 
   if (to_write == 0)
     return MEMCACHED_BUFFERED;
@@ -394,7 +400,7 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
   char flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
-  bool noreply = server->root->flags & MEM_NOREPLY;
+  bool noreply= server->root->flags & MEM_NOREPLY;
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= get_com_code(verb, noreply);
@@ -417,6 +423,15 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
   
   flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
 
+  if ((server->root->flags & MEM_USE_UDP) && !flush)
+  {
+    size_t cmd_size= send_length + key_length + value_length;
+    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+      return MEMCACHED_WRITE_FAILURE;
+    if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+      memcached_io_write(server,NULL,0, 1);
+  }
+  
   /* write the header */
   if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, 0) == -1) ||

@@ -15,6 +15,14 @@ memcached_return memcached_do(memcached_server_st *ptr, const void *command,
     return rc;
   }
 
+  /*
+  ** Since non buffering ops in UDP mode dont check to make sure they will fit
+  ** before they start writing, if there is any data in buffer, clear it out,
+  ** otherwise we might get a partial write.
+  **/
+  if (ptr->type == MEMCACHED_CONNECTION_UDP && with_flush && ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
+    memcached_io_write(ptr, NULL, 0, 1);
+
   sent_length= memcached_io_write(ptr, command, command_length, with_flush);
 
   if (sent_length == -1 || (size_t)sent_length != command_length)

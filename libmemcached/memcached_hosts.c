@@ -248,6 +248,11 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
 
   for (x= 0; x < count; x++)
   {
+    if ((ptr->flags & MEM_USE_UDP && list[x].type != MEMCACHED_CONNECTION_UDP)
+            || ((list[x].type == MEMCACHED_CONNECTION_UDP)
+            && ! (ptr->flags & MEM_USE_UDP)) )
+      return MEMCACHED_INVALID_HOST_PROTOCOL;
+
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
     memcached_server_create(ptr, &ptr->hosts[ptr->number_of_hosts]);
     /* TODO check return type */
@@ -313,7 +318,7 @@ memcached_return memcached_server_add_with_weight(memcached_st *ptr,
     port= MEMCACHED_DEFAULT_PORT; 
 
   if (!hostname)
-    hostname= "localhost"; 
+    hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_TCP);
 }
@@ -325,6 +330,10 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
 {
   memcached_server_st *new_host_list;
 
+  if ( (ptr->flags & MEM_USE_UDP && type != MEMCACHED_CONNECTION_UDP)
+      || ( (type == MEMCACHED_CONNECTION_UDP) && !(ptr->flags & MEM_USE_UDP) ) )
+    return MEMCACHED_INVALID_HOST_PROTOCOL;
+  
   if (ptr->call_realloc)
     new_host_list= (memcached_server_st *)ptr->call_realloc(ptr, ptr->hosts, 
                                                             sizeof(memcached_server_st) * (ptr->number_of_hosts+1));

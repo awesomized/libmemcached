@@ -76,7 +76,8 @@ typedef enum {
   MEM_KETAMA_WEIGHTED= (1 << 11),
   MEM_BINARY_PROTOCOL= (1 << 12),
   MEM_HASH_WITH_PREFIX_KEY= (1 << 13),
-  MEM_NOREPLY= (1 << 14)
+  MEM_NOREPLY= (1 << 14),
+  MEM_USE_UDP= (1 << 15)
 } memcached_flags;
 
 /* Hashing algo */

@@ -77,6 +77,7 @@ static unsigned int opt_createial_load= 0;
 static unsigned int opt_concurrency= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
+static int opt_udp_io= 0;
 test_type opt_test= SET_TEST;
 
 int main(int argc, char *argv[])
@@ -139,6 +140,15 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
                               PTHREAD_CREATE_DETACHED);
 
   memc= memcached_create(NULL);
+
+  /* We need to set udp behavior before adding servers to the client */
+  if (opt_udp_io)
+  {
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, opt_udp_io);
+    unsigned int i= 0;
+    for(i= 0; i < servers[0].count; i++ )
+      servers[i].type= MEMCACHED_CONNECTION_UDP;
+  }
   memcached_server_push(memc, servers);
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
@@ -240,6 +250,7 @@ void options_parse(int argc, char *argv[])
       {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {"version", no_argument, NULL, OPT_VERSION},
       {"binary", no_argument, NULL, OPT_BINARY},
+      {"udp", no_argument, NULL, OPT_UDP},
       {0, 0, 0, 0},
     };
 
@@ -253,6 +264,15 @@ void options_parse(int argc, char *argv[])
     switch (option_rv)
     {
     case 0:
+      break;
+    case OPT_UDP:
+      if (opt_test == GET_TEST)
+      {
+        fprintf(stderr, "You can not run a get test in UDP mode. UDP mode "
+                  "does not currently support get ops.\n");
+        exit(1);
+      }
+      opt_udp_io= 1;
       break;
     case OPT_BINARY:
       opt_binary = 1;
@@ -274,7 +294,15 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_SLAP_TEST:
       if (!strcmp(optarg, "get"))
+      {
+        if (opt_udp_io == 1)
+        {
+          fprintf(stderr, "You can not run a get test in UDP mode. UDP mode "
+                  "does not currently support get ops.\n");
+          exit(1);
+        }
         opt_test= GET_TEST ;
+      }
       else if (!strcmp(optarg, "set"))
         opt_test= SET_TEST;
       else 
