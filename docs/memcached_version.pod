@@ -36,8 +36,10 @@ A string with the version of libmemcached driver is returned from
 memcached_lib_version()
 
 A value of type C<memcached_return> is returned from memcached_version()
-On success that value will be C<MEMCACHED_SUCCESS>.
-Use memcached_strerror() to translate this value to a printable string.
+On success that value will be C<MEMCACHED_SUCCESS>. If called with the
+C<MEMCACHED_BEHAVIOR_USE_UDP> behavior set, the value C<MEMCACHED_NOT_SUPPORTED> 
+will be returned. Use memcached_strerror() to translate this value to 
+a printable string.
 
 =head1 HOME
 

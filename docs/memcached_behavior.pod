@@ -37,6 +37,26 @@ memcached_behavior_set() will flush and reset all connections.
 
 =over 4
 
+=item MEMCACHED_BEHAVIOR_USE_UDP
+
+Causes libmemcached(3) to use the UDP transport when communicating
+with a memcached server. Not all I/O operations are supported 
+when this behavior is enababled. The following operations will return
+C<MEMCACHED_NOT_SUPPORTED> when executed with the MEMCACHED_BEHAVIOR_USE_UDP
+enabled: memcached_version(), memcached_stat(), memcached_get(),
+memcached_get_by_key(), memcached_mget(), memcached_mget_by_key(),
+memcached_fetch(), memcached_fetch_result(), memcached_value_fetch().
+
+All other operations are supported but are executed in a 'fire-and-forget'
+mode, in which once the client has executed the operation, no attempt
+will be made to ensure the operation has been received and acted on by the
+server. 
+
+libmemcached(3) does not allow TCP and UDP servers to be shared within
+the same libmemached(3) client 'instance'. An attempt to add a TCP server
+when this behavior is enabled will result in a C<MEMCACHED_INVALID_HOST_PROTOCOL>,
+as will attempting to add a UDP server when this behavior has not been enabled.
+
 =item MEMCACHED_BEHAVIOR_NO_BLOCK
 
 Causes libmemcached(3) to use asychronous IO. This is the fastest transport

@@ -38,7 +38,9 @@ While it is possible to access the structure directly it is not advisable.
 
 memcached_stat() fetches an array of C<memcached_stat_st> structures containing
 the state of all available memcached servers. The return value must be freed
-by the calling application.
+by the calling application. If called with the C<MEMCACHED_BEHAVIOR_USE_UDP>
+behavior set, a NULL value is returned and the error parameter is set to 
+C<MEMCACHED_NOT_SUPPORTED>.
 
 memcached_stat_servername() can be used standalone without a C<memcached_st> to
 obtain the state of a particular server.  "args" is used to define a

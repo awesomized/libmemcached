@@ -21,6 +21,11 @@ C Client Library for memcached (libmemcached, -lmemcached)
                           unsigned int port);
 
   memcached_return
+    memcached_server_add_udp (memcached_st *ptr,
+                          const char *hostname,
+                          unsigned int port);
+
+  memcached_return
     memcached_server_add_unix_socket (memcached_st *ptr,
                                       const char *socket);
 
@@ -47,9 +52,17 @@ memcached_server_list() is used to provide an array of all defined hosts.
 You are responsible for freeing this list (aka it is not a pointer to the
 currently used structure).
 
-memcached_server_add() pushes a single server into the C<memcached_st>
+memcached_server_add() pushes a single TCP server into the C<memcached_st>
 structure. This server will be placed at the end. Duplicate servers are
-allowed, so duplication is not checked.
+allowed, so duplication is not checked. Executing this function with the
+C<MEMCACHED_BEHAVIOR_USE_UDP> behavior set will result in a 
+C<MEMCACHED_INVALID_HOST_PROTOCOL>.
+
+memcached_server_add_udp() pushes a single UDP server into the C<memcached_st>
+structure. This server will be placed at the end. Duplicate servers are
+allowed, so duplication is not checked. Executing this function with out
+setting the C<MEMCACHED_BEHAVIOR_USE_UDP> behavior will result in a 
+C<MEMCACHED_INVALID_HOST_PROTOCOL>.
 
 memcached_server_add_unix_socket() pushes a single UNIX socket into the 
 C<memcached_st> structure. This UNIX socket will be placed at the end. 
