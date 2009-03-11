@@ -50,7 +50,8 @@ memcached_return memcached_response(memcached_server_st *ptr,
    * compatibility. 
    */
   if ((ptr->root->flags & MEM_BINARY_PROTOCOL) == 0)
-    while (memcached_server_response_count(ptr) > 1) {
+    while (memcached_server_response_count(ptr) > 1)
+    {
       memcached_return rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
       
       unlikely (rc != MEMCACHED_END &&

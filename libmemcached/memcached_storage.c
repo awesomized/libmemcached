@@ -105,7 +105,8 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                            (unsigned long long)expiration, value_length,
                            (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
 
-  if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS) {
+  if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS)
+  {
     size_t cmd_size= write_length + value_length + 2;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
       return MEMCACHED_WRITE_FAILURE;
@@ -338,7 +339,8 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
   return rc;
 }
 
-static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply) {
+static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
+{
    uint8_t ret;
 
   if (noreply)

@@ -26,7 +26,8 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
         rc= memcached_do(ptr, request.bytes, sizeof(request.bytes), 1);
-      } else 
+      }
+      else
         rc= memcached_do(ptr, "quit\r\n", 6, 1);
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);

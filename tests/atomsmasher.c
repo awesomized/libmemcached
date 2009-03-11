@@ -186,7 +186,8 @@ static test_return add_test(memcached_st *memc)
 static test_return many_adds(memcached_st *memc)
 {
   unsigned int i;
-  for (i = 0; i < TEST_COUNTER; i++){
+  for (i = 0; i < TEST_COUNTER; i++)
+  {
     add_test(memc);
   }
   return 0;

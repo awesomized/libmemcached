@@ -2228,7 +2228,7 @@ test_return user_supplied_bug18(memcached_st *trash)
 {
   memcached_return rc;
   int value;
-  int i;
+  int x;
   memcached_server_st *server_pool;
   memcached_st *memc;
 
@@ -2270,11 +2270,11 @@ test_return user_supplied_bug18(memcached_st *trash)
   assert(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
 
   /* verify the standard ketama set. */
-  for (i= 0; i < 99; i++)
+  for (x= 0; x < 99; x++)
   {
-    uint32_t server_idx = memcached_generate_hash(memc, test_cases[i].key, strlen(test_cases[i].key));
+    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
     char *hostname = memc->hosts[server_idx].hostname;
-    assert(strcmp(hostname, test_cases[i].server) == 0);
+    assert(strcmp(hostname, test_cases[x].server) == 0);
   }
 
   memcached_server_list_free(server_pool);
@@ -3173,7 +3173,8 @@ static test_return analyzer_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static void increment_request_id(uint16_t *id) {
+static void increment_request_id(uint16_t *id)
+{
   (*id)++;
   if ((*id & UDP_REQUEST_ID_THREAD_MASK) != 0)
     *id= 0;
@@ -3183,21 +3184,22 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 {
   uint16_t *ids= malloc(sizeof(uint16_t) * memc->number_of_hosts);
   assert(ids != NULL);
-  unsigned int i;
-  for (i= 0; i < memc->number_of_hosts; i++)
-    ids[i]= get_udp_datagram_request_id((struct udp_datagram_header_st *) memc->hosts[i].write_buffer);
+  unsigned int x;
+  for (x= 0; x < memc->number_of_hosts; x++)
+    ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) memc->hosts[x].write_buffer);
 
   return ids;
 }
 
-static test_return post_udp_op_check(memcached_st *memc, uint16_t *expected_req_ids) {
-  unsigned int i;
+static test_return post_udp_op_check(memcached_st *memc, uint16_t *expected_req_ids)
+{
+  unsigned int x;
   memcached_server_st *cur_server = memc->hosts;
   uint16_t *cur_req_ids = get_udp_request_ids(memc);
-  for (i= 0; i < memc->number_of_hosts; i++)
+  for (x= 0; x < memc->number_of_hosts; x++)
   {
-    assert(cur_server[i].cursor_active == 0);
-    assert(cur_req_ids[i] == expected_req_ids[i]);
+    assert(cur_server[x].cursor_active == 0);
+    assert(cur_req_ids[x] == expected_req_ids[x]);
   }
   free(expected_req_ids);
   free(cur_req_ids);
@@ -3215,15 +3217,15 @@ static memcached_return init_udp(memcached_st *memc)
     return MEMCACHED_FAILURE;
 
   uint32_t num_hosts= memc->number_of_hosts;
-  unsigned int i= 0;
+  unsigned int x= 0;
   memcached_server_st servers[num_hosts];
   memcpy(servers, memc->hosts, sizeof(memcached_server_st) * num_hosts);
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
-  for (i= 0; i < num_hosts; i++)
+  for (x= 0; x < num_hosts; x++)
   {
-    assert(memcached_server_add_udp(memc, servers[i].hostname, servers[i].port) == MEMCACHED_SUCCESS);
-    assert(memc->hosts[i].write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
+    assert(memcached_server_add_udp(memc, servers[x].hostname, servers[x].port) == MEMCACHED_SUCCESS);
+    assert(memc->hosts[x].write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
   }
   return MEMCACHED_SUCCESS;
 }
@@ -3278,9 +3280,9 @@ static test_return set_udp_behavior_test(memcached_st *memc)
 
 static test_return udp_set_test(memcached_st *memc)
 {
-  unsigned int i= 0;
+  unsigned int x= 0;
   unsigned int num_iters= 1025; //request id rolls over at 1024
-  for (i= 0; i < num_iters;i++)
+  for (x= 0; x < num_iters;x++)
   {
     memcached_return rc;
     char *key= "foo";
@@ -3300,9 +3302,12 @@ static test_return udp_set_test(memcached_st *memc)
             memc->hosts[server_key].write_buffer_offset < init_offset)
       increment_request_id(&expected_ids[server_key]);
     
-    if (rc == MEMCACHED_SUCCESS) {
+    if (rc == MEMCACHED_SUCCESS)
+    {
       assert(memc->hosts[server_key].write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
-    } else {
+    } 
+    else
+    {
       assert(memc->hosts[server_key].write_buffer_offset != UDP_DATAGRAM_HEADER_LENGTH);
       assert(memc->hosts[server_key].write_buffer_offset <= MAX_UDP_DATAGRAM_LENGTH);
     }
@@ -3332,9 +3337,9 @@ static test_return udp_set_too_big_test(memcached_st *memc)
 
 test_return udp_delete_test(memcached_st *memc)
 {
-  unsigned int i= 0;
+  unsigned int x= 0;
   unsigned int num_iters= 1025; //request id rolls over at 1024
-  for (i= 0; i < num_iters;i++)
+  for (x= 0; x < num_iters;x++)
   {
     memcached_return rc;
     char *key= "foo";
@@ -3482,8 +3487,8 @@ test_return udp_mixed_io_test(memcached_st *memc)
     {"udp_decr_test", 0, udp_decr_test},
     {"udp_version_test", 0, udp_version_test}
   };
-  unsigned int i= 0;
-  for (i= 0; i < 500; i++)
+  unsigned int x= 0;
+  for (x= 0; x < 500; x++)
   {
     current_op= mixed_io_ops[random() % 9];
     assert(current_op.function(memc) == TEST_SUCCESS);

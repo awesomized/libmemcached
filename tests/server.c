@@ -38,10 +38,13 @@ void server_startup(server_startup_st *construct)
         int count;
         int status;
 
-        if(x == 0) {
+        if (x == 0)
+        {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
                     MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
-        } else {
+        } 
+        else
+        {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u",
                     MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }

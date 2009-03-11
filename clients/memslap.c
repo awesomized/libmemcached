@@ -145,9 +145,9 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   if (opt_udp_io)
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, opt_udp_io);
-    unsigned int i= 0;
-    for(i= 0; i < servers[0].count; i++ )
-      servers[i].type= MEMCACHED_CONNECTION_UDP;
+    unsigned int x= 0;
+    for(x= 0; x < servers[0].count; x++ )
+      servers[x].type= MEMCACHED_CONNECTION_UDP;
   }
   memcached_server_push(memc, servers);
 

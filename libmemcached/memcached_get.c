@@ -293,7 +293,8 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     memcached_return vk;
     vk= memcached_validate_key_length(key_length[x],
                                       ptr->flags & MEM_BINARY_PROTOCOL);
-    unlikely (vk != MEMCACHED_SUCCESS) {
+    unlikely (vk != MEMCACHED_SUCCESS)
+    {
       if (x > 0)
         memcached_io_reset(&ptr->hosts[server_key]);
       return vk;

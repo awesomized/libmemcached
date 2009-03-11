@@ -159,7 +159,8 @@ test_connect:
                 (struct sockaddr *)&servAddr,
                 sizeof(servAddr)) < 0)
     {
-      switch (errno) {
+      switch (errno)
+      {
       case EINPROGRESS:
       case EALREADY:
       case EINTR:
@@ -209,7 +210,8 @@ static memcached_return network_connect(memcached_server_st *ptr)
     while (use != NULL)
     {
       /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
-      if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET) {
+      if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET)
+      {
         use= use->ai_next;
         continue;
       }

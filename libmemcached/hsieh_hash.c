@@ -22,13 +22,15 @@ uint32_t hsieh_hash(const char *key, size_t key_length)
   uint32_t hash = 0, tmp;
   int rem;
 
-  if (key_length <= 0 || key == NULL) return 0;
+  if (key_length <= 0 || key == NULL)
+    return 0;
 
   rem = key_length & 3;
   key_length >>= 2;
 
   /* Main loop */
-  for (;key_length > 0; key_length--) {
+  for (;key_length > 0; key_length--)
+  {
     hash  += get16bits (key);
     tmp    = (get16bits (key+2) << 11) ^ hash;
     hash   = (hash << 16) ^ tmp;
@@ -37,7 +39,8 @@ uint32_t hsieh_hash(const char *key, size_t key_length)
   }
 
   /* Handle end cases */
-  switch (rem) {
+  switch (rem)
+  {
   case 3: hash += get16bits (key);
           hash ^= hash << 16;
           hash ^= key[sizeof (uint16_t)] << 18;

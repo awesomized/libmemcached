@@ -20,10 +20,12 @@ static inline uint64_t swap64(uint64_t in)
 #endif
 }
 
-uint64_t ntohll(uint64_t value) {
+uint64_t ntohll(uint64_t value)
+{
   return swap64(value);
 }
 
-uint64_t htonll(uint64_t value) {
+uint64_t htonll(uint64_t value)
+{
   return swap64(value);
 }
