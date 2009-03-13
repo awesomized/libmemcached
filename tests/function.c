@@ -3213,7 +3213,9 @@ static test_return post_udp_op_check(memcached_st *memc, uint16_t *expected_req_
 static memcached_return init_udp(memcached_st *memc)
 {
   memcached_version(memc);
-  if (memc->hosts[0].major_version != 1 || memc->hosts[0].minor_version != 2)
+  /* For the time being, only support udp test for >= 1.2.6 && < 1.3 */
+  if (memc->hosts[0].major_version != 1 || memc->hosts[0].minor_version != 2
+          || memc->hosts[0].micro_version < 6)
     return MEMCACHED_FAILURE;
 
   uint32_t num_hosts= memc->number_of_hosts;
