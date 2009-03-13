@@ -66,7 +66,6 @@ sinclude(config/memcached.m4)
 sinclude(config/setsockopt.m4)
 
 # We only support GCC and Sun's forte at the moment
-CFLAGS="-DMEMCACHED_INTERNAL $CFLAGS"
 if test "$GCC" = "yes"
 then
   #CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"

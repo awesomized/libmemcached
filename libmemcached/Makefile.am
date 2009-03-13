@@ -67,6 +67,7 @@ if BUILD_BYTEORDER
 libmemcached_la_SOURCES += byteorder.c
 endif
 
+AM_CFLAGS = -DMEMCACHED_INTERNAL
 libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@
 libmemcached_la_LIBADD = @DTRACE_OBJ@
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION)
