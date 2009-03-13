@@ -11,6 +11,9 @@ test-extended: all
 valgrind:
 	@(cd tests; ${MAKE} valgrind)
 
+test-no-outputdiff:
+	@(cd tests; ${MAKE} test-no-outputdiff)
+
 rpm: all dist
 	cp libmemcached-$(VERSION).tar.gz /home/brian/rpm/SOURCES/
 	rpmbuild -ba support/libmemcached.spec

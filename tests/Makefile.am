@@ -71,3 +71,7 @@ clients:
 
 valgrind:
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
+
+test-no-outputdiff: testapp
+	./testapp > /dev/null
+	@echo "Test completed"
