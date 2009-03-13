@@ -61,8 +61,11 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_verbosity.c \
 			  memcached_version.c \
 			  murmur_hash.c \
-			  jenkins_hash.c \
-                          byteorder.c
+			  jenkins_hash.c
+
+if BUILD_BYTEORDER
+libmemcached_la_SOURCES += byteorder.c
+endif
 
 libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@
 libmemcached_la_LIBADD = @DTRACE_OBJ@

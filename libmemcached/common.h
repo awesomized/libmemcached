@@ -115,8 +115,10 @@ memcached_return run_distribution(memcached_st *ptr);
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 
+#ifndef HAVE_HTONLL
 extern uint64_t ntohll(uint64_t);
 extern uint64_t htonll(uint64_t);
+#endif
 
 memcached_return memcached_purge(memcached_server_st *ptr);
 
