@@ -63,6 +63,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
   a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 
   u.ptr = key;
+#ifdef BYTEORDER_LITTLE_ENDIAN
   if ((u.i & 0x3) == 0)
   {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
@@ -157,6 +158,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
   } 
   else
   {                        /* need to read the key one byte at a time */
+#endif /* little endian */
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */
@@ -197,7 +199,9 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
              break;
     case 0 : return c;
     }
+#ifdef BYTEORDER_LITTLE_ENDIAN
   }
+#endif
 
   final(a,b,c);
   return c;
