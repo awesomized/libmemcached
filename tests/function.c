@@ -204,6 +204,30 @@ static test_return  clone_test(memcached_st *memc)
     memcached_st *clone;
     clone= memcached_clone(NULL, memc);
     assert(clone);
+
+    assert(clone->call_free == memc->call_free);
+    assert(clone->call_malloc == memc->call_malloc);
+    assert(clone->call_realloc == memc->call_realloc);
+    assert(clone->connect_timeout == memc->connect_timeout);
+    assert(clone->delete_trigger == memc->delete_trigger);
+    assert(clone->distribution == memc->distribution);
+    assert(clone->flags == memc->flags);
+    assert(clone->get_key_failure == memc->get_key_failure);
+    assert(clone->hash == memc->hash);
+    assert(clone->hash_continuum == memc->hash_continuum);
+    assert(clone->io_bytes_watermark == memc->io_bytes_watermark);
+    assert(clone->io_msg_watermark == memc->io_msg_watermark);
+    assert(clone->on_cleanup == memc->on_cleanup);
+    assert(clone->on_clone == memc->on_clone);
+    assert(clone->poll_timeout == memc->poll_timeout);
+    assert(clone->rcv_timeout == memc->rcv_timeout);
+    assert(clone->recv_size == memc->recv_size);
+    assert(clone->retry_timeout == memc->retry_timeout);
+    assert(clone->send_size == memc->send_size);
+    assert(clone->server_failure_limit == memc->server_failure_limit);
+    assert(clone->snd_timeout == memc->snd_timeout);
+    assert(clone->user_data == memc->user_data);
+
     memcached_free(clone);
   }
 
