@@ -543,9 +543,20 @@ static test_return  add_test(memcached_st *memc)
   return 0;
 }
 
+/*
+** There was a problem of leaking filedescriptors in the initial release
+** of MacOSX 10.5. This test case triggers the problem. On some Solaris
+** systems it seems that the kernel is slow on reclaiming the resources
+** because the connects starts to time out (the test doesn't do much
+** anyway, so just loop 10 iterations)
+*/
 static test_return  add_wrapper(memcached_st *memc)
 {
   unsigned int x;
+  unsigned int max= 10000;
+#ifdef __sun
+  max= 10;
+#endif
 
   for (x= 0; x < 10000; x++)
     add_test(memc);
