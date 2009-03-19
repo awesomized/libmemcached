@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcahed_result_create, memcached_result_free,
+memcached_result_create, memcached_result_free,
 memcached_result_key_value, memcached_result_key_length,
 memcached_result_value, memcached_result_length,
 memcached_result_flags, memcached_result_cas
@@ -43,8 +43,8 @@ C Client Library for memcached (libmemcached, -lmemcached)
 libmemcached(3) can optionally return a memcached_result_st which acts as a 
 result object. The result objects have added benefits over the character
 pointer returns in that they are forward compatible with new return items
-that future memcached servers may implement (the best currect example of
-this is the CAS return iteam). The structures can also be reused which will
+that future memcached servers may implement (the best current example of
+this is the CAS return item). The structures can also be reused which will
 save on calls to malloc(3). It is suggested that you use result objects over
 char * return functions.
 
