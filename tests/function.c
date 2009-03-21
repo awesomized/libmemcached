@@ -558,7 +558,7 @@ static test_return  add_wrapper(memcached_st *memc)
   max= 10;
 #endif
 
-  for (x= 0; x < 10000; x++)
+  for (x= 0; x < max; x++)
     add_test(memc);
 
   return 0;
