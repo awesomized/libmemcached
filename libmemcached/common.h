@@ -107,8 +107,8 @@ memcached_return value_fetch(memcached_server_st *ptr,
                              memcached_result_st *result);
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
-memcached_return memcachd_key_test(char **keys, size_t *key_length,
-                                   unsigned int number_of_keys);
+memcached_return memcached_key_test(char **keys, size_t *key_length,
+                                    unsigned int number_of_keys);
 
 memcached_return run_distribution(memcached_st *ptr);
 

@@ -1,7 +1,7 @@
 #include "common.h"
 
-memcached_return memcachd_key_test(char **keys, size_t *key_length, 
-                                   unsigned int number_of_keys)
+memcached_return memcached_key_test(char **keys, size_t *key_length, 
+                                    unsigned int number_of_keys)
 {
   uint32_t x;
   memcached_return rc;
