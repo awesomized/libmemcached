@@ -21,6 +21,9 @@ memcached_return memcached_read_one_response(memcached_server_st *ptr,
 {
   memcached_server_response_decrement(ptr);
 
+  if (result == NULL)
+    result = &ptr->root->result;
+
   memcached_return rc;
   if (ptr->root->flags & MEM_BINARY_PROTOCOL)
     rc= binary_read_one_response(ptr, buffer, buffer_length, result);
@@ -81,16 +84,9 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
   case 'V': /* VALUE || VERSION */
     if (buffer[1] == 'A') /* VALUE */
     {
-      memcached_return rc;
-
       /* We add back in one because we will need to search for END */
       memcached_server_response_increment(ptr);
-      if (result)
-        rc= value_fetch(ptr, buffer, result);
-      else
-        rc= value_fetch(ptr, buffer, &ptr->root->result);
-
-      return rc;
+      return value_fetch(ptr, buffer, result);
     }
     else if (buffer[1] == 'E') /* VERSION */
     {

@@ -961,6 +961,51 @@ static test_return  get_test4(memcached_st *memc)
   return 0;
 }
 
+/*
+ * This test verifies that memcached_read_one_response doesn't try to
+ * dereference a NIL-pointer if you issue a multi-get and don't read out all
+ * responses before you execute a storage command.
+ */
+static test_return get_test5(memcached_st *memc)
+{
+  /*
+  ** Request the same key twice, to ensure that we hash to the same server
+  ** (so that we have multiple response values queued up) ;-)
+  */
+  char *keys[]= { "key", "key" };
+  size_t lengths[]= { 3, 3 };
+  uint32_t flags;
+  size_t rlen;
+
+  memcached_return rc= memcached_set(memc, keys[0], lengths[0], 
+                                     keys[0], lengths[0], 0, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+  rc= memcached_mget(memc, keys, lengths, 2);
+
+  memcached_result_st results_obj;
+  memcached_result_st *results;
+  results=memcached_result_create(memc, &results_obj);
+  assert(results);
+  results=memcached_fetch_result(memc, &results_obj, &rc);
+  assert(results);
+  memcached_result_free(&results_obj);
+
+  /* Don't read out the second result, but issue a set instead.. */
+  rc= memcached_set(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  char *val= memcached_get_by_key(memc, keys[0], lengths[0], "yek", 3,
+                                  &rlen, &flags, &rc);
+  assert(val == NULL);
+  assert(rc == MEMCACHED_NOTFOUND);
+  val= memcached_get(memc, keys[0], lengths[0], &rlen, &flags, &rc);
+  assert(val != NULL);
+  assert(rc == MEMCACHED_SUCCESS);
+  free(val);
+
+  return TEST_SUCCESS;
+}
+
 /* Do not copy the style of this code, I just access hosts to testthis function */
 static test_return  stats_servername_test(memcached_st *memc)
 {
@@ -3579,6 +3624,7 @@ test_st tests[] ={
   {"get2", 0, get_test2 },
   {"get3", 0, get_test3 },
   {"get4", 0, get_test4 },
+  {"partial mget", 0, get_test5 },
   {"stats_servername", 0, stats_servername_test },
   {"increment", 0, increment_test },
   {"decrement", 0, decrement_test },
