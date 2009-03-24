@@ -276,6 +276,54 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
+memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
+{
+#define MAX_SERVERS_TO_POLL 100
+  struct pollfd fds[MAX_SERVERS_TO_POLL];
+  int index= 0;
+
+  for (int x= 0; x< memc->number_of_hosts && index < MAX_SERVERS_TO_POLL; ++x)
+  {
+    if (memc->hosts[x].read_buffer_length > 0) /* I have data in the buffer */
+      return &memc->hosts[x];
+
+    if (memcached_server_response_count(&memc->hosts[x]) > 0)
+    {
+      fds[index].events = POLLIN;
+      fds[index].revents = 0;
+      fds[index].fd = memc->hosts[x].fd;
+      ++index;
+    }
+  }
+
+  if (index < 2)
+  {
+    /* We have 0 or 1 server with pending events.. */
+    for (int x= 0; x< memc->number_of_hosts; ++x)
+      if (memcached_server_response_count(&memc->hosts[x]) > 0)
+        return &memc->hosts[x];
+
+    return NULL;
+  }
+
+  int err= poll(fds, index, memc->poll_timeout);
+  switch (err) {
+  case -1:
+    memc->cached_errno = errno;
+    /* FALLTHROUGH */
+  case 0:
+    break;
+  default:
+    for (int x= 0; x < index; ++x)
+      if (fds[x].revents & POLLIN)
+        for (int y= 0; y < memc->number_of_hosts; ++y)
+          if (memc->hosts[y].fd == fds[x].fd)
+            return &memc->hosts[y];
+  }
+
+  return NULL;
+}
+
 static ssize_t io_flush(memcached_server_st *ptr,
                         memcached_return *error)
 {

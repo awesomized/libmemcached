@@ -43,4 +43,7 @@ memcached_return memcached_read_one_response(memcached_server_st *ptr,
                                              memcached_result_st *result);
 memcached_return memcached_io_init_udp_header(memcached_server_st *ptr,
                                               uint16_t thread_id);
+
+memcached_server_st *memcached_io_get_readable_server(memcached_st *memc);
+
 #endif /* __MEMCACHED_IO_H__ */
