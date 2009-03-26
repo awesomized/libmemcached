@@ -14,28 +14,51 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     return NULL;
   }
 
-  result_buffer= memcached_fetch_result(ptr, result_buffer, error);
-
-  if (*error != MEMCACHED_SUCCESS)
+  while (ptr->cursor_server < ptr->number_of_hosts)
   {
-    *value_length= 0;
-    return NULL;
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+    if (memcached_server_response_count(&ptr->hosts[ptr->cursor_server]) == 0)
+    {
+      ptr->cursor_server++;
+      continue;
+    }
+
+  *error= memcached_response(&ptr->hosts[ptr->cursor_server], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, result_buffer);
+
+    if (*error == MEMCACHED_END) /* END means that we move on to the next */
+    {
+      memcached_server_response_reset(&ptr->hosts[ptr->cursor_server]);
+      ptr->cursor_server++;
+      continue;
+    }
+    else if (*error == MEMCACHED_SUCCESS)
+    {
+      *value_length= memcached_string_length(&result_buffer->value);
+    
+      if (key)
+      {
+        strncpy(key, result_buffer->key, result_buffer->key_length);
+        *key_length= result_buffer->key_length;
+      }
+
+      if (result_buffer->flags)
+        *flags= result_buffer->flags;
+      else
+        *flags= 0;
+
+      return  memcached_string_c_copy(&result_buffer->value);
+    }
+    else
+    {
+      *value_length= 0;
+      return NULL;
+    }
   }
 
-  *value_length= memcached_string_length(&result_buffer->value);
-
-  if (key)
-  {
-    strncpy(key, result_buffer->key, result_buffer->key_length);
-    *key_length= result_buffer->key_length;
-  }
-
-  if (result_buffer->flags)
-    *flags= result_buffer->flags;
-  else
-    *flags= 0;
-
-  return memcached_string_c_copy(&result_buffer->value);
+  ptr->cursor_server= 0;
+  *value_length= 0;
+  return NULL;
 }
 
 memcached_result_st *memcached_fetch_result(memcached_st *ptr,
@@ -75,25 +98,3 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   return NULL;
 }
 
-memcached_return memcached_fetch_execute(memcached_st *ptr, 
-                                         memcached_execute_function *callback,
-                                         void *context,
-                                         unsigned int number_of_callbacks)
-{
-  memcached_result_st *result= &ptr->result;
-  memcached_return rc;
-  unsigned int x;
-
-  while ((result= memcached_fetch_result(ptr, result, &rc)) != NULL) {
-    if (rc == MEMCACHED_SUCCESS)
-    {
-      for (x= 0; x < number_of_callbacks; x++)
-      {
-        rc= (*callback[x])(ptr, result, context);
-        if (rc != MEMCACHED_SUCCESS)
-          break;
-      }
-    }
-  }
-  return rc;
-}
