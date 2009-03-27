@@ -26,7 +26,9 @@ a NULL. If a NULL passed in then a structure is allocated for you.
 memcached_clone() is similar to memcached_create(3) but it copies the
 defaults and list of servers from the source C<memcached_st>. If you pass a null as
 the argument for the source to clone, it is the same as a call to memcached_create().
-If the clone argument is NULL a C<memcached_st> will be allocated for you. 
+If the clone argument is NULL a C<memcached_st> will be allocated for you.
+If you pass a pointer to a memory area for the clone pointer, make sure you 
+memset it to 0 (unless you got the clone from a factory method in libmemcached).
 
 To clean up memory associated with a C<memcached_st> structure you should pass
 it to memcached_free() when you are finished using it. memcached_free() is
