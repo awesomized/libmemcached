@@ -1,3 +1,12 @@
+0.27 Sun Mar 29 22:33:01 PDT 2009
+  * Added new UDP fire-forget mode.
+  * Reworked performance for mget() to better make use of async protocol
+  * Cleaned up execution of fetch (just one set of code now)
+  * Fixed Jenkin's for big endian hosts.
+  * Updates for memstat to determine network latency.
+  * Updates for binary protocol.
+  * Many updates to documentation.
+
 0.26 Thu Jan 29 13:05:50 PST 2009
   * Fix for decrement on hash key
   * Fixed assert that was catching bad memset() call in host_reset()
