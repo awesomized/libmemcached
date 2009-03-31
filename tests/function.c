@@ -3302,6 +3302,8 @@ static memcached_return init_udp(memcached_st *memc)
   unsigned int x= 0;
   memcached_server_st servers[num_hosts];
   memcpy(servers, memc->hosts, sizeof(memcached_server_st) * num_hosts);
+  for (x= 0; x < num_hosts; x++)
+    memcached_server_free(&memc->hosts[x]);
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
   for (x= 0; x < num_hosts; x++)
