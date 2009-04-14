@@ -110,6 +110,7 @@ memcached_return memcached_mget(memcached_st *ptr,
 
 static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int master_server_key,
+                                           bool is_master_key_set,
                                            char **keys, size_t *key_length,
                                            unsigned int number_of_keys);
 
@@ -124,7 +125,8 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   memcached_return rc= MEMCACHED_NOTFOUND;
   char *get_command= "get ";
   uint8_t get_command_length= 4;
-  unsigned int master_server_key= -1; /* 0 is a valid server id! */
+  unsigned int master_server_key; /* 0 is a valid server id! */
+  bool is_master_key_set= false;
 
    if (ptr->flags & MEM_USE_UDP)
     return MEMCACHED_NOT_SUPPORTED;
@@ -152,6 +154,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
     if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((char **)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
       return MEMCACHED_BAD_KEY_PROVIDED;
     master_server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+    is_master_key_set= true;
   }
 
   /* 
@@ -175,7 +178,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   }
   
   if (ptr->flags & MEM_BINARY_PROTOCOL)
-    return binary_mget_by_key(ptr, master_server_key, keys, 
+    return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys, 
                               key_length, number_of_keys);
 
   /* 
@@ -186,7 +189,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   {
     unsigned int server_key;
 
-    if (master_server_key != -1)
+    if (is_master_key_set)
       server_key= master_server_key;
     else
       server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
@@ -255,6 +258,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
 
 static memcached_return binary_mget_by_key(memcached_st *ptr, 
                                            unsigned int master_server_key,
+                                           bool is_master_key_set,
                                            char **keys, size_t *key_length, 
                                            unsigned int number_of_keys)
 {
@@ -271,7 +275,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
   {
     unsigned int server_key;
 
-    if (master_server_key)
+    if (is_master_key_set)
       server_key= master_server_key;
     else
       server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
