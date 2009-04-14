@@ -194,7 +194,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
       }
     }
 
-    if (ptr->sockaddr_inited || 
+    if (!ptr->sockaddr_inited ||
         (!(ptr->root->flags & MEM_USE_CACHE_LOOKUPS)))
     {
       memcached_return rc;
