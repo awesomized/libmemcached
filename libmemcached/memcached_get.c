@@ -124,7 +124,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   memcached_return rc= MEMCACHED_NOTFOUND;
   char *get_command= "get ";
   uint8_t get_command_length= 4;
-  unsigned int master_server_key= 0;
+  unsigned int master_server_key= -1; /* 0 is a valid server id! */
 
    if (ptr->flags & MEM_USE_UDP)
     return MEMCACHED_NOT_SUPPORTED;
@@ -186,7 +186,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   {
     unsigned int server_key;
 
-    if (master_server_key)
+    if (master_server_key != -1)
       server_key= master_server_key;
     else
       server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
