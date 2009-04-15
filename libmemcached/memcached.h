@@ -42,7 +42,7 @@ struct memcached_continuum_item_st {
   uint32_t value;
 };
 
-#define LIBMEMCACHED_VERSION_STRING "0.27"
+#define LIBMEMCACHED_VERSION_STRING "0.28"
 
 struct memcached_analysis_st {
   uint64_t most_used_bytes;
