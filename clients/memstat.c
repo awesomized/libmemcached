@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <getopt.h>
+#include <sys/time.h>
 
 #include <libmemcached/memcached.h>
 
