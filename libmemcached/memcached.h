@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /* These are Private and should not be used by applications */
-#define MEMCACHED_VERSION_STRING_LENGTH 12
+#define MEMCACHED_VERSION_STRING_LENGTH 24
 
 /* string value */
 struct memcached_continuum_item_st {
