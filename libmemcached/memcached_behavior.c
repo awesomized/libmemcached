@@ -50,6 +50,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     set_behavior_flag(ptr, MEM_NO_BLOCK, data);
     memcached_quit(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     set_behavior_flag(ptr, MEM_BUFFER_REQUESTS, data);
     memcached_quit(ptr);

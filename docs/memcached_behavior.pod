@@ -60,9 +60,7 @@ as will attempting to add a UDP server when this behavior has not been enabled.
 =item MEMCACHED_BEHAVIOR_NO_BLOCK
 
 Causes libmemcached(3) to use asychronous IO. This is the fastest transport
-available for storage functions. For read operations it is currently 
-similar in performance to the non-blocking method (this is being
-looked into).
+available for storage functions.
 
 =item MEMCACHED_BEHAVIOR_SND_TIMEOUT
 
