@@ -1,6 +1,7 @@
 =head1 NAME
 
-memcached_increment, memcached_decrement
+memcached_increment, memcached_decrement,
+memcached_increment_with_initial, memcached_decrement_with_initial
 
 =head1 LIBRARY
 
@@ -22,6 +23,24 @@ C Client Library for memcached (libmemcached, -lmemcached)
                          unsigned int offset,
                          uint64_t *value);
 
+  memcached_return
+    memcached_increment_with_initial (memcached_st *ptr,
+                                      const char *key,
+                                      size_t key_length,
+                                      uint64_t offset,
+                                      uint64_t initial,
+                                      time_t expiration,
+                                      uint64_t *value);
+
+  memcached_return
+    memcached_decrement_with_initial (memcached_st *ptr,
+                                      const char *key,
+                                      size_t key_length,
+                                      uint64_t offset,
+                                      uint64_t initial,
+                                      time_t expiration,
+                                      uint64_t *value);
+
 =head1 DESCRIPTION
 
 memcached(1) servers have the ability to increment and decrement keys
@@ -34,6 +53,24 @@ value pointer you pass to it.
 
 memcached_decrement() takes a key and keylength and decrements the value by
 the offset passed to it. The value is then returned via the unsigned int
+value pointer you pass to it.
+
+memcached_increment_with_initial() takes a key and keylength and increments
+the value by the offset passed to it. If the object specified by key does
+not exist, one of two things may happen: If the expiration value is
+MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
+expiration values, the operation will succeed by seeding the value for that
+key with a initial value to expire with the provided expiration time. The
+flags will be set to zero.The value is then returned via the unsigned int
+value pointer you pass to it.
+
+memcached_decrement_with_initial() takes a key and keylength and decrements
+the value by the offset passed to it. If the object specified by key does
+not exist, one of two things may happen: If the expiration value is
+MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
+expiration values, the operation will succeed by seeding the value for that
+key with a initial value to expire with the provided expiration time. The
+flags will be set to zero.The value is then returned via the unsigned int
 value pointer you pass to it.
 
 =head1 RETURN

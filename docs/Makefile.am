@@ -51,6 +51,7 @@ man_MANS = libmemcached.3\
 	memcached_clone.3\
 	memcached_create.3\
 	memcached_decrement.3\
+	memcached_decrement_with_initial.3\
 	memcached_delete.3\
 	memcached_delete_by_key.3\
 	memcached_fetch.3\
@@ -60,6 +61,7 @@ man_MANS = libmemcached.3\
 	memcached_get.3\
 	memcached_get_by_key.3\
 	memcached_increment.3\
+	memcached_increment_with_initial.3\
 	memcached_mget.3\
 	memcached_mget_by_key.3\
 	memcached_prepend.3\
@@ -148,8 +150,14 @@ memcached_delete_by_key.3: memcached_delete.pod
 memcached_increment.3:
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_auto.pod > memcached_increment.3
 
+memcached_increment_with_initial.3:
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_auto.pod > memcached_increment_with_initial.3
+
 memcached_decrement.3:
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_auto.pod > memcached_decrement.3
+
+memcached_decrement_with_initial.3:
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_auto.pod > memcached_decrement_with_initial.3
 
 memcached_flush.3: memcached_flush.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_flush.pod > memcached_flush.3

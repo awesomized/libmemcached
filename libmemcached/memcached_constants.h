@@ -26,6 +26,7 @@ extern "C" {
 #define MEMCACHED_DEFAULT_TIMEOUT 1000
 #define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
 #define MEMCACHED_PREFIX_KEY_MAX_SIZE 128
+#define MEMCACHED_EXPIRATION_NOT_ADD 0xffffffffU
 
 typedef enum {
   MEMCACHED_SUCCESS,

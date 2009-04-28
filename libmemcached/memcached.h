@@ -137,6 +137,20 @@ memcached_return memcached_decrement(memcached_st *ptr,
                                      const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value);
+memcached_return memcached_increment_with_initial(memcached_st *ptr,
+                                                  const char *key,
+                                                  size_t key_length,
+                                                  uint64_t offset,
+                                                  uint64_t initial,
+                                                  time_t expiration,
+                                                  uint64_t *value);
+memcached_return memcached_decrement_with_initial(memcached_st *ptr,
+                                                  const char *key,
+                                                  size_t key_length,
+                                                  uint64_t offset,
+                                                  uint64_t initial,
+                                                  time_t expiration,
+                                                  uint64_t *value);
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
 memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args, 

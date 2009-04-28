@@ -1043,6 +1043,28 @@ static test_return  increment_test(memcached_st *memc)
   return 0;
 }
 
+static test_return  increment_with_initial_test(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+  {
+    uint64_t new_number;
+    memcached_return rc;
+    char *key= "number";
+    uint64_t initial= 0;
+
+    rc= memcached_increment_with_initial(memc, key, strlen(key),
+                                         1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == initial);
+
+    rc= memcached_increment_with_initial(memc, key, strlen(key),
+                                         1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == (initial + 1));
+  }
+  return 0;
+}
+
 static test_return  decrement_test(memcached_st *memc)
 {
   uint64_t new_number;
@@ -1065,6 +1087,28 @@ static test_return  decrement_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(new_number == 1);
 
+  return 0;
+}
+
+static test_return  decrement_with_initial_test(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+  {
+    uint64_t new_number;
+    memcached_return rc;
+    char *key= "number";
+    uint64_t initial= 3;
+
+    rc= memcached_decrement_with_initial(memc, key, strlen(key),
+                                         1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == initial);
+
+    rc= memcached_decrement_with_initial(memc, key, strlen(key),
+                                         1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == (initial - 1));
+  }
   return 0;
 }
 
@@ -3629,7 +3673,9 @@ test_st tests[] ={
   {"partial mget", 0, get_test5 },
   {"stats_servername", 0, stats_servername_test },
   {"increment", 0, increment_test },
+  {"increment_with_initial", 1, increment_with_initial_test },
   {"decrement", 0, decrement_test },
+  {"decrement_with_initial", 1, decrement_with_initial_test },
   {"quit", 0, quit_test },
   {"mget", 1, mget_test },
   {"mget_result", 1, mget_result_test },
