@@ -10,13 +10,13 @@ DTRACE =                @DTRACE@
 DTRACEFLAGS =           @DTRACEFLAGS@
 
 noinst_HEADERS = libmemcached_probes.h \
+                 libmemcached_config.h \
 		 memcached_io.h \
                  common.h \
                  memcached/protocol_binary.h @DTRACE_HEADER@
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
-		    libmemcached_config.h \
 		    memcached_constants.h \
 		    memcached_get.h \
 		    memcached_result.h \
