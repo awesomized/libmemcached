@@ -84,7 +84,9 @@ typedef enum {
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
+#ifdef HAVE_HSIEH_HASH
 uint32_t hsieh_hash(const char *key, size_t key_length);
+#endif
 uint32_t murmur_hash(const char *key, size_t key_length);
 uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 

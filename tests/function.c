@@ -2856,9 +2856,12 @@ static memcached_return  pre_crc(memcached_st *memc)
 
 static memcached_return  pre_hsieh(memcached_st *memc)
 {
+#ifdef HAVE_HSIEH_HASH
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
-
   return MEMCACHED_SUCCESS;
+#else
+  return MEMCACHED_FAILURE;
+#endif
 }
 
 static memcached_return  pre_hash_fnv1_64(memcached_st *memc)
@@ -3069,7 +3072,8 @@ static memcached_return  enable_consistent(memcached_st *memc)
   memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
   memcached_hash hash;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
-  pre_hsieh(memc);
+  if (pre_hsieh(memc) != MEMCACHED_SUCCESS)
+    return MEMCACHED_FAILURE;
 
   value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
   assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
@@ -3624,6 +3628,18 @@ test_return udp_mixed_io_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return hsieh_avaibility_test (memcached_st *memc)
+{
+  memcached_return expected_rc= MEMCACHED_FAILURE;
+#ifdef HAVE_HSIEH_HASH
+  expected_rc= MEMCACHED_SUCCESS;
+#endif
+  memcached_return rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
+                                            (uint64_t)MEMCACHED_HASH_HSIEH);
+  assert(rc == expected_rc);
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -3795,7 +3811,13 @@ test_st consistent_weighted_tests[] ={
   {0, 0, 0}
 };
 
+test_st hsieh_availability[] ={
+  {"hsieh_avaibility_test",0,hsieh_avaibility_test},
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
+  {"hsieh_availability",0,0,hsieh_availability},
   {"udp_setup", init_udp, 0, udp_setup_server_tests},
   {"udp_io", init_udp, 0, upd_io_tests},
   {"udp_binary_io", binary_init_udp, 0, upd_io_tests},

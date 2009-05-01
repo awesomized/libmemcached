@@ -64,6 +64,7 @@ sinclude(config/64bit.m4)
 sinclude(config/protocol_binary.m4)
 sinclude(config/memcached.m4)
 sinclude(config/setsockopt.m4)
+sinclude(config/hsieh.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"

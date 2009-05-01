@@ -74,11 +74,13 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       }
     }
     break;
+#ifdef HAVE_HSIEH_HASH
     case MEMCACHED_HASH_HSIEH:
     {
       hash= hsieh_hash(key, key_length);
       break;
     }
+#endif
     case MEMCACHED_HASH_MURMUR:
     {
       hash= murmur_hash(key, key_length);

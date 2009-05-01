@@ -100,6 +100,10 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       break;
     }
   case MEMCACHED_BEHAVIOR_HASH:
+#ifndef HAVE_HSIEH_HASH
+    if ((memcached_hash)(data) == MEMCACHED_HASH_HSIEH)
+      return MEMCACHED_FAILURE;
+#endif
     ptr->hash= (memcached_hash)(data);
     break;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:

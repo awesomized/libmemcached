@@ -29,7 +29,6 @@ pkginclude_HEADERS= memcached.h \
 lib_LTLIBRARIES = libmemcached.la
 
 libmemcached_la_SOURCES = crc.c \
-			  hsieh_hash.c \
 			  memcached.c \
 			  memcached_auto.c \
 			  memcached_analyze.c \
@@ -61,6 +60,10 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_version.c \
 			  murmur_hash.c \
 			  jenkins_hash.c
+
+if INCLUDE_HSIEH_SRC
+libmemcached_la_SOURCES += hsieh_hash.c
+endif
 
 if BUILD_BYTEORDER
 libmemcached_la_SOURCES += byteorder.c
