@@ -23,6 +23,7 @@ autom4te.cache/*$
 .(gz|cmp|tar|rpm|srpm)$
 support/libmemcached.pc$
 support/libmemcached.spec$
+support/libmemcached-fc.spec$
 docs/pod2htmd.tmp
 docs/pod2htmi.tmp
 libmemcached/memcachedplus.loT
