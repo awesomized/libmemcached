@@ -144,7 +144,10 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
              strcmp("decr_hits", key) == 0 ||
              strcmp("cas_misses", key) == 0 ||
              strcmp("cas_hits", key) == 0 ||
-             strcmp("cas_badval", key) == 0))
+             strcmp("cas_badval", key) == 0 ||
+             strcmp("cmd_flush", key) == 0 ||
+             strcmp("accepting_conns", key) == 0 ||
+             strcmp("listen_disabled_num", key) == 0))
   {
     fprintf(stderr, "Unknown key %s\n", key);
   }
