@@ -23,9 +23,9 @@ static memcached_return io_wait(memcached_server_st *ptr,
   int error;
 
   if (read_or_write == MEM_WRITE) /* write */
-    flags= POLLOUT |  POLLERR;
+    flags= POLLOUT;
   else
-    flags= POLLIN | POLLERR;
+    flags= POLLIN;
 
   memset(&fds, 0, sizeof(struct pollfd));
   fds[0].fd= ptr->fd;
