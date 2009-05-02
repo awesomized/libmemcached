@@ -150,7 +150,10 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NOREPLY:
     set_behavior_flag(ptr, MEM_NOREPLY, data);
-    break;     
+    break;
+  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
+    set_behavior_flag(ptr, MEM_AUTO_EJECT_HOSTS, data);
+    break;
   }
 
   return MEMCACHED_SUCCESS;
@@ -262,6 +265,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NOREPLY:
     temp_flag= MEM_NOREPLY;
+    break;
+  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
+    temp_flag= MEM_AUTO_EJECT_HOSTS;
     break;
   }
 

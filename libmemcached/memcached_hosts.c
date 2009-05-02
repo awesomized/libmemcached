@@ -112,33 +112,62 @@ memcached_return update_continuum(memcached_st *ptr)
   uint32_t pointer_per_hash= 1;
   uint64_t total_weight= 0;
   uint32_t is_ketama_weighted= 0;
+  uint32_t is_auto_ejecting= 0;
   uint32_t points_per_server= 0;
+  uint32_t live_servers= 0;
+  struct timeval now;
+
+  if (gettimeofday(&now, NULL) != 0)
+  {
+    ptr->cached_errno = errno;
+    return MEMCACHED_ERRNO;
+  }
+
+  list = ptr->hosts;
+
+  /* count live servers (those without a retry delay set) */
+  is_auto_ejecting= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS);
+  if (is_auto_ejecting)
+  {
+    live_servers= 0;
+    ptr->next_distribution_rebuild= 0;
+    for (host_index= 0; host_index < ptr->number_of_hosts; ++host_index)
+    {
+      if (list[host_index].next_retry <= now.tv_sec)
+        live_servers++;
+      else
+      {
+        if (ptr->next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->next_distribution_rebuild)
+          ptr->next_distribution_rebuild= list[host_index].next_retry;
+      }
+    }
+  }
+  else
+    live_servers= ptr->number_of_hosts;
 
   is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   points_per_server= is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER;
 
-  if (ptr->number_of_hosts == 0)
+  if (live_servers == 0)
     return MEMCACHED_SUCCESS;
 
-  if (ptr->number_of_hosts > ptr->continuum_count)
+  if (live_servers > ptr->continuum_count)
   {
     memcached_continuum_item_st *new_ptr;
 
     if (ptr->call_realloc)
       new_ptr= (memcached_continuum_item_st *)ptr->call_realloc(ptr, ptr->continuum, 
-                                                                sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
+                                                                sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
     else
       new_ptr= (memcached_continuum_item_st *)realloc(ptr->continuum, 
-                                                      sizeof(memcached_continuum_item_st) * (ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
+                                                      sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
     ptr->continuum= new_ptr;
-    ptr->continuum_count= ptr->number_of_hosts + MEMCACHED_CONTINUUM_ADDITION;
+    ptr->continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
   }
-
-  list = ptr->hosts;
 
   if (is_ketama_weighted) 
   {
@@ -148,16 +177,20 @@ memcached_return update_continuum(memcached_st *ptr)
       {
         list[host_index].weight = 1;
       }
-      total_weight += list[host_index].weight;
+      if (!is_auto_ejecting || list[host_index].next_retry <= now.tv_sec)
+        total_weight += list[host_index].weight;
     }
   }
 
   for (host_index = 0; host_index < ptr->number_of_hosts; ++host_index) 
   {
+    if (is_auto_ejecting && list[host_index].next_retry > now.tv_sec)
+      continue;
+
     if (is_ketama_weighted) 
     {
         float pct = (float)list[host_index].weight / (float)total_weight;
-        pointer_per_server= floorf(pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)(ptr->number_of_hosts) + 0.0000000001) * 4;
+        pointer_per_server= floorf(pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001) * 4;
         pointer_per_hash= 4;
 #ifdef HAVE_DEBUG
         printf("ketama_weighted:%s|%d|%llu|%u\n", 
@@ -212,7 +245,7 @@ memcached_return update_continuum(memcached_st *ptr)
   qsort(ptr->continuum, ptr->continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
 #ifdef HAVE_DEBUG
-  for (index= 0; ptr->number_of_hosts && index < ((ptr->number_of_hosts * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
+  for (index= 0; ptr->number_of_hosts && index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
   {
     WATCHPOINT_ASSERT(ptr->continuum[index].value <= ptr->continuum[index + 1].value);
   }

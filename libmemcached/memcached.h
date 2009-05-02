@@ -117,6 +117,7 @@ struct memcached_st {
   uint32_t server_failure_limit;
   uint32_t io_msg_watermark;
   uint32_t io_bytes_watermark;
+  time_t next_distribution_rebuild;
 };
 
 

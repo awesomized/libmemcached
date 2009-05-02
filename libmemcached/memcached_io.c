@@ -116,16 +116,11 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
           switch (errno)
           {
           case EAGAIN:
-          case EINTR: 
-            {
-              memcached_return rc;
+          case EINTR:
+            if (io_wait(ptr, MEM_READ) == MEMCACHED_SUCCESS)
+              continue;
+          /* fall through */
 
-              rc= io_wait(ptr, MEM_READ);
-
-              if (rc == MEMCACHED_SUCCESS)
-                continue;
-            }
-          /* fall trough */
           default:
             {
               memcached_quit_server(ptr, 1);
@@ -177,6 +172,7 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
     }
   }
 
+  ptr->server_failure_counter= 0;
   return (size_t)(buffer_ptr - (char*)buffer);
 }
 

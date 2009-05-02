@@ -77,7 +77,8 @@ typedef enum {
   MEM_BINARY_PROTOCOL= (1 << 12),
   MEM_HASH_WITH_PREFIX_KEY= (1 << 13),
   MEM_NOREPLY= (1 << 14),
-  MEM_USE_UDP= (1 << 15)
+  MEM_USE_UDP= (1 << 15),
+  MEM_AUTO_EJECT_HOSTS= (1 << 16)
 } memcached_flags;
 
 /* Hashing algo */

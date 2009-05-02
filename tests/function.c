@@ -2407,6 +2407,73 @@ test_return user_supplied_bug18(memcached_st *trash)
   return 0;
 }
 
+test_return auto_eject_hosts(memcached_st *trash)
+{
+  memcached_return rc;
+  memcached_st *memc= memcached_create(NULL);
+  assert(memc);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
+  assert(value == MEMCACHED_HASH_MD5);
+
+    /* server should be removed when in delay */
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS);
+  assert(value == 1);
+
+  memcached_server_st *server_pool;
+  server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
+  memcached_server_push(memc, server_pool);
+
+  /* verify that the server list was parsed okay. */
+  assert(memc->number_of_hosts == 8);
+  assert(strcmp(server_pool[0].hostname, "10.0.1.1") == 0);
+  assert(server_pool[0].port == 11211);
+  assert(server_pool[0].weight == 600);
+  assert(strcmp(server_pool[2].hostname, "10.0.1.3") == 0);
+  assert(server_pool[2].port == 11211);
+  assert(server_pool[2].weight == 200);
+  assert(strcmp(server_pool[7].hostname, "10.0.1.8") == 0);
+  assert(server_pool[7].port == 11211);
+  assert(server_pool[7].weight == 100);
+
+  memc->hosts[2].next_retry = time(NULL) + 15;
+  memc->next_distribution_rebuild= time(NULL) - 1;
+
+  for (int x= 0; x < 99; x++)
+  {
+    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
+    assert(server_idx != 2);
+  }
+
+  /* and re-added when it's back. */
+  memc->hosts[2].next_retry = time(NULL) - 1;
+  memc->next_distribution_rebuild= time(NULL) - 1;
+  run_distribution(memc);
+  for (int x= 0; x < 99; x++)
+  {
+    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
+    char *hostname = memc->hosts[server_idx].hostname;
+    assert(strcmp(hostname, test_cases[x].server) == 0);
+  }
+
+  memcached_server_list_free(server_pool);
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return  result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -3816,6 +3883,11 @@ test_st hsieh_availability[] ={
   {0, 0, 0}
 };
 
+test_st ketama_auto_eject_hosts[] ={
+  {"auto_eject_hosts", 1, auto_eject_hosts },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"hsieh_availability",0,0,hsieh_availability},
   {"udp_setup", init_udp, 0, udp_setup_server_tests},
@@ -3835,6 +3907,7 @@ collection_st collection[] ={
   {"fnv1_32", pre_hash_fnv1_32, 0, tests},
   {"fnv1a_32", pre_hash_fnv1a_32, 0, tests},
   {"ketama", pre_behavior_ketama, 0, tests},
+  {"ketama_auto_eject_hosts", pre_behavior_ketama, 0, ketama_auto_eject_hosts},
   {"unix_socket", pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", pre_nodelay, 0, tests},
   {"poll_timeout", poll_timeout, 0, tests},

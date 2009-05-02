@@ -179,6 +179,14 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
 
   WATCHPOINT_ASSERT(hash);
 
+  if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS) && ptr->next_distribution_rebuild) {
+    struct timeval now;
+
+    if (gettimeofday(&now, NULL) == 0 &&
+        now.tv_sec > ptr->next_distribution_rebuild)
+      run_distribution(ptr);
+  }
+
   return dispatch_host(ptr, hash);
 }
 

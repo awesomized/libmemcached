@@ -49,6 +49,8 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
     ptr->read_ptr= ptr->read_buffer;
     memcached_server_response_reset(ptr);
   }
+
+  ptr->server_failure_counter++;
 }
 
 void memcached_quit(memcached_st *ptr)

@@ -72,6 +72,8 @@ char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_re
     return "A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE";
   case MEMCACHED_INVALID_HOST_PROTOCOL:
     return "THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT";
+  case MEMCACHED_SERVER_MARKED_DEAD:
+    return "SERVER IS MARKED DEAD";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:
