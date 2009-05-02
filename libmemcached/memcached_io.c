@@ -90,8 +90,8 @@ void memcached_io_preread(memcached_st *ptr)
 }
 #endif
 
-ssize_t memcached_io_read(memcached_server_st *ptr,
-                          void *buffer, size_t length)
+memcached_return memcached_io_read(memcached_server_st *ptr,
+                                   void *buffer, size_t length, ssize_t *nread)
 {
   char *buffer_ptr;
 
@@ -105,26 +105,26 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
 
       while (1)
       {
-        data_read= read(ptr->fd, 
-                        ptr->read_buffer, 
-                        MEMCACHED_MAX_BUFFER);
+        data_read= read(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER);
         if (data_read > 0)
           break;
         else if (data_read == -1)
         {
           ptr->cached_errno= errno;
+          memcached_return rc= MEMCACHED_UNKNOWN_READ_FAILURE;
           switch (errno)
           {
           case EAGAIN:
           case EINTR:
-            if (io_wait(ptr, MEM_READ) == MEMCACHED_SUCCESS)
+            if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
               continue;
           /* fall through */
 
           default:
             {
               memcached_quit_server(ptr, 1);
-              return -1;
+              *nread= -1;
+              return rc;
             }
           }
         }
@@ -140,7 +140,8 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
             it will return EGAIN if data is not immediatly available.
           */
           memcached_quit_server(ptr, 1);
-          return -1;
+          *nread= -1;
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
       }
 
@@ -173,7 +174,8 @@ ssize_t memcached_io_read(memcached_server_st *ptr,
   }
 
   ptr->server_failure_counter= 0;
-  return (size_t)(buffer_ptr - (char*)buffer);
+  *nread = (size_t)(buffer_ptr - (char*)buffer);
+  return MEMCACHED_SUCCESS;
 }
 
 ssize_t memcached_io_write(memcached_server_st *ptr,
@@ -443,12 +445,12 @@ memcached_return memcached_safe_read(memcached_server_st *ptr,
 
   while (offset < size)
   {
-    ssize_t nread= memcached_io_read(ptr, data + offset, size - offset);
-    if (nread <= 0)
-    {
-      memcached_io_reset(ptr);
-      return MEMCACHED_UNKNOWN_READ_FAILURE;
-    }
+    ssize_t nread;
+    memcached_return rc= memcached_io_read(ptr, data + offset, size - offset,
+                                           &nread);
+    if (rc != MEMCACHED_SUCCESS)
+      return rc;
+
     offset+= nread;
   }
 
@@ -471,8 +473,10 @@ memcached_return memcached_io_readline(memcached_server_st *ptr,
        * buffer. Call the standard read function to avoid duplicating
        * the logic.
        */
-      if (memcached_io_read(ptr, buffer_ptr, 1) != 1)
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      ssize_t nread;
+      memcached_return rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
+      if (rc != MEMCACHED_SUCCESS)
+        return rc;
 
       if (*buffer_ptr == '\n')
         line_complete= true;

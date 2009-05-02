@@ -80,7 +80,6 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   char *end_ptr;
   char *next_ptr;
   size_t value_length;
-  size_t read_length;
   size_t to_read;
   char *value_ptr;
 
@@ -167,7 +166,6 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   }
 
   value_ptr= memcached_string_value(&result->value);
-  read_length= 0;
   /* 
     We read the \r\n into the string since not doing so is more 
     cycles then the waster of memory to do so.
@@ -176,7 +174,11 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
     some people lazy about using the return length.
   */
   to_read= (value_length) + 2;
-  read_length= memcached_io_read(ptr, value_ptr, to_read);
+  ssize_t read_length= 0;
+  memcached_return rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
+  if (rrc != MEMCACHED_SUCCESS)
+    return rrc;
+
   if (read_length != (size_t)(value_length + 2))
   {
     goto read_error;

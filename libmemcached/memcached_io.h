@@ -26,8 +26,8 @@ struct udp_datagram_header_st {
 ssize_t memcached_io_write(memcached_server_st *ptr,
                            const void *buffer, size_t length, char with_flush);
 void memcached_io_reset(memcached_server_st *ptr);
-ssize_t memcached_io_read(memcached_server_st *ptr,
-                          void *buffer, size_t length);
+memcached_return memcached_io_read(memcached_server_st *ptr,
+                                   void *buffer, size_t length, ssize_t *nread);
 /* Read a line (terminated by '\n') into the buffer */
 memcached_return memcached_io_readline(memcached_server_st *ptr,
                                        char *buffer_ptr,

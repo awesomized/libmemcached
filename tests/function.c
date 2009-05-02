@@ -2020,9 +2020,10 @@ static test_return  user_supplied_bug10(memcached_st *memc)
   {
     rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
-    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE || rc == MEMCACHED_BUFFERED);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE || 
+           rc == MEMCACHED_BUFFERED || rc == MEMCACHED_TIMEOUT);
 
-    if (rc == MEMCACHED_WRITE_FAILURE)
+    if (rc == MEMCACHED_WRITE_FAILURE || rc == MEMCACHED_TIMEOUT)
       x--;
   }
 

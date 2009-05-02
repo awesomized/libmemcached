@@ -16,7 +16,6 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
     if (io_death == 0 && ptr->type != MEMCACHED_CONNECTION_UDP)
     {
       memcached_return rc;
-      ssize_t read_length;
       char buffer[MEMCACHED_MAX_BUFFER];
 
       if (ptr->root->flags & MEM_BINARY_PROTOCOL) 
@@ -37,9 +36,9 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
        * results in server throwing away all data which is
        * not read
        */
-      while ((read_length=
-	      memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer)))
-	     > 0);
+      ssize_t nread;
+      while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
+                               &nread) == MEMCACHED_SUCCESS);
     }
     memcached_io_close(ptr);
 
