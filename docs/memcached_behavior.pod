@@ -180,13 +180,14 @@ data, but the send will block because the input buffer in the kernel is full).
 
 =item MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH
 
-The binary protocol works a bit different than the textual protocol in the
-way that a multiget is implemented as a pipe of single get-operations that
-is sent to the server in a chunk. If you use large multigets you may improve
-the latency by setting this value so that you send out the first chunk of
-requests when you hit the specified limit, allowing the server to start
-processing the request and send the data back while the rest of the
-requests is created.
+The binary protocol works a bit different than the textual protocol in
+that a multiget is implemented as a pipe of single get-operations which
+are sent to the server in a chunk. If you are using large multigets from
+your application, you may improve the latency of the gets by setting
+this value so you send out the first chunk of requests when you hit the
+specified limit.  It allows the servers to start processing the requests
+to send the data back while the rest of the requests are created and
+sent to the server.
 
 =item MEMCACHED_BEHAVIOR_NOREPLY
 
