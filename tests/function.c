@@ -217,6 +217,7 @@ static test_return  clone_test(memcached_st *memc)
     assert(clone->hash_continuum == memc->hash_continuum);
     assert(clone->io_bytes_watermark == memc->io_bytes_watermark);
     assert(clone->io_msg_watermark == memc->io_msg_watermark);
+    assert(clone->io_key_prefetch == memc->io_key_prefetch);
     assert(clone->on_cleanup == memc->on_cleanup);
     assert(clone->on_clone == memc->on_clone);
     assert(clone->poll_timeout == memc->poll_timeout);

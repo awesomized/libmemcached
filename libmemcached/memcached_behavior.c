@@ -30,6 +30,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
     ptr->io_bytes_watermark= (int32_t)data;
     break;
+  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
+    ptr->io_key_prefetch = (int32_t)data;
+    break;
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     ptr->snd_timeout= (int32_t)data;
     break;     
@@ -170,6 +173,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->io_msg_watermark;
   case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
     return ptr->io_bytes_watermark;
+  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
+    return ptr->io_key_prefetch;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     temp_flag= MEM_BINARY_PROTOCOL;
     break;     

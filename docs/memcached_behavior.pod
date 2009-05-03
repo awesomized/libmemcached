@@ -178,6 +178,16 @@ at least 10 IO requests sent without reading the input buffer). Setting
 this value to high, may cause libmemcached to deadlock (trying to send 
 data, but the send will block because the input buffer in the kernel is full).
 
+=item MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH
+
+The binary protocol works a bit different than the textual protocol in the
+way that a multiget is implemented as a pipe of single get-operations that
+is sent to the server in a chunk. If you use large multigets you may improve
+the latency by setting this value so that you send out the first chunk of
+requests when you hit the specified limit, allowing the server to start
+processing the request and send the data back while the rest of the
+requests is created.
+
 =item MEMCACHED_BEHAVIOR_NOREPLY
 
 Set this value to specify that you really don't care about the result

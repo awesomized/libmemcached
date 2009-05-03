@@ -311,7 +311,8 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     if ((memcached_io_write(&ptr->hosts[server_key], request.bytes,
                             sizeof(request.bytes), 0) == -1) ||
         (memcached_io_write(&ptr->hosts[server_key], keys[x], 
-                            key_length[x], flush) == -1)) 
+                            key_length[x], 
+                            flush || (x > 0 && x == ptr->io_key_prefetch)) == -1)) 
     {
       memcached_server_response_reset(&ptr->hosts[server_key]);
       rc= MEMCACHED_SOME_ERRORS;
