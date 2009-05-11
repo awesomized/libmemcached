@@ -65,6 +65,7 @@ sinclude(config/protocol_binary.m4)
 sinclude(config/memcached.m4)
 sinclude(config/setsockopt.m4)
 sinclude(config/hsieh.m4)
+sinclude(config/util.m4)
 
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
@@ -88,4 +89,4 @@ fi
 
 LDFLAGS="-lm"
 
-AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec support/libmemcached-fc.spec)
+AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile libmemcachedutil/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec support/libmemcached-fc.spec)

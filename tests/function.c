@@ -24,6 +24,11 @@
 
 #include "test.h"
 
+#ifdef HAVE_LIBMEMCACHEDUTIL
+#include <pthread.h>
+#include "libmemcached/memcached_util.h"
+#endif
+
 #define GLOBAL_COUNT 10000
 #define GLOBAL2_COUNT 100
 #define SERVERS_TO_CREATE 5
@@ -3370,6 +3375,62 @@ static test_return analyzer_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+#ifdef HAVE_LIBMEMCACHEDUTIL
+static void* connection_release(void *arg) {
+  struct {
+    memcached_pool_st* pool;
+    memcached_st* mmc;
+  } *resource= arg;
+
+  usleep(250);
+  memcached_pool_push(resource->pool, resource->mmc);
+}
+
+static test_return connection_pool_test(memcached_st *memc)
+{
+  memcached_pool_st* pool= memcached_pool_create(memc, 5, 10);
+  assert(pool != NULL);
+  memcached_st* mmc[10];
+  
+  for (int x= 0; x < 10; ++x) {
+    mmc[x]= memcached_pool_pop(pool, false);
+    assert(mmc[x] != NULL);
+  }
+
+  assert(memcached_pool_pop(pool, false) == NULL);
+  pthread_t tid;
+  struct {
+    memcached_pool_st* pool;
+    memcached_st* mmc;
+  } item= { .pool = pool, .mmc = mmc[9] };
+  pthread_create(&tid, NULL, connection_release, &item);
+  mmc[9]= memcached_pool_pop(pool, true);
+  pthread_join(tid, NULL);
+  assert(mmc[9] == item.mmc);
+  const char *key= "key";
+  size_t keylen= strlen(key);
+
+  // verify that I can do ops with all connections
+  memcached_return rc;
+  rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  for (int x= 0; x < 10; ++x) {
+    uint64_t number_value;
+    rc= memcached_increment(mmc[x], key, keylen, 1, &number_value);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(number_value == (x+1));
+  }
+
+  // Release them..
+  for (int x= 0; x < 10; ++x)
+    memcached_pool_push(pool, mmc[x]);
+
+  assert(memcached_pool_destroy(pool) == memc);
+  return TEST_SUCCESS;
+}
+#endif
+
 static void increment_request_id(uint16_t *id)
 {
   (*id)++;
@@ -3779,6 +3840,9 @@ test_st tests[] ={
   {"delete_through", 1, delete_through },
   {"noreply", 1, noreply_test},
   {"analyzer", 1, analyzer_test},
+#ifdef HAVE_LIBMEMCACHEDUTIL
+  {"connectionpool", 1, connection_pool_test },
+#endif
   {0, 0, 0}
 };
 

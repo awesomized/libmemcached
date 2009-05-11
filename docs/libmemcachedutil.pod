@@ -1,0 +1,41 @@
+=head1 NAME
+
+libmemcachedutil - Utility library for libmemcached
+
+=head1 LIBRARY
+
+C Client Library containing utility functions for libmemcached (libmemcachedutil, -lmemcachedutil)
+
+=head1 SYNOPSIS
+
+  cc [ flag ... ] file ... -lmemcachedutil
+
+  #include <libmemcached/memcached_util.h>
+
+=head1 DESCRIPTION
+
+B<libmemcachedutil> is a small and thread-safe client library that provides
+extra functionality built on top of B<libmemcached>.
+
+=head1 THREADS AND PROCESSES
+
+When using threads or forked processes it is important to keep an instance
+of C<memcached_st> per process or thread. Without creating your own locking
+structures you can not share a single C<memcached_st>. You can though call
+memcached_quit(3) on a C<memcached_st> and then use the resulting cloned
+structure.
+
+=head1 HOME
+
+To find out more information please check:
+L<http://tangent.org/552/libmemcached.html>
+
+=head1 AUTHOR
+
+Trond Norbye, E<lt>trond.norbye@sun.comE<gt>
+
+=head1 SEE ALSO
+
+libmemcached(3) memcached_pool_create(3) memcached_pool_destroy(3) memcached_pool_pop(3) memcached_pool_push(3)
+
+=cut

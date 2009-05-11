@@ -15,6 +15,7 @@
 
 # Build artifacts
 ^libmemcached/libmemcached.la$
+^libmemcachedutil/libmemcachedutil.la$
 ^clients/mem(cat|cp|flush|rm|slap|stat|error)$
 ^tests/testapp$
 .(deps|libs)/*$

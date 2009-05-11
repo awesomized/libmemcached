@@ -1,6 +1,7 @@
 INCLUDES = include
 
 EXTRA_DIST = libmemcached.pod\
+	libmemcachedutil.pod\
 	memcached_flush.pod\
 	memcached_stats.pod\
 	memrm.pod\
@@ -18,6 +19,7 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_server_st.pod\
 	memcat.pod\
 	memcached_create.pod\
+	memcached_pool.pod\
 	memcached_servers.pod\
 	memcp.pod\
 	memcached_delete.pod\
@@ -90,8 +92,20 @@ man_MANS = libmemcached.3\
         memcached_flush_buffers.3\
         memcached_generate_hash_value.3
 
+if BUILD_LIBMEMCACHEDUTIL
+man_MANS+= libmemcachedutil.3 \
+	memcached_pool_create.3 \
+	memcached_pool_destroy.3 \
+	memcached_pool_push.3 \
+	memcached_pool_pop.3
+endif
+
+
 libmemcached.3: libmemcached.pod 
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 libmemcached.pod > libmemcached.3
+
+libmemcachedutil.3: libmemcachedutil.pod 
+	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 libmemcachedutil.pod > libmemcachedutil.3
 
 libmemcached_examples.3: libmemcached_examples.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 libmemcached_examples.pod > libmemcached_examples.3
@@ -285,6 +299,18 @@ memcached_analyze.3: memcached_analyze.pod
 memcached_generate_hash_value.3: memcached_generate_hash_value.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 memcached_generate_hash_value.pod > memcached_generate_hash_value.3
 
+memcached_pool_create.3: memcached_pool.pod 
+	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 memcached_pool.pod > memcached_pool_create.3
+
+memcached_pool_destroy.3: memcached_pool.pod 
+	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 memcached_pool.pod > memcached_pool_destroy.3
+
+memcached_pool_pop.3: memcached_pool.pod 
+	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 memcached_pool.pod > memcached_pool_pop.3
+
+memcached_pool_push.3: memcached_pool.pod 
+	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 memcached_pool.pod > memcached_pool_push.3
+
 memcp.1: memcp.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 1 memcp.pod > memcp.1
 
@@ -332,6 +358,7 @@ test:
 	podchecker memcached_version.pod
 	podchecker memflush.pod
 	podchecker memcached_flush_buffers.pod
+	podchecker memcached_pool.pod
 
 html:
 	pod2htmltree "/libmemcached" .

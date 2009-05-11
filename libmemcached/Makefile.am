@@ -26,6 +26,10 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_types.h \
 		    memcached_watchpoint.h
 
+if BUILD_LIBMEMCACHEDUTIL
+pkginclude_HEADERS+= memcached_util.h memcached_pool.h
+endif
+
 lib_LTLIBRARIES = libmemcached.la
 
 libmemcached_la_SOURCES = crc.c \
