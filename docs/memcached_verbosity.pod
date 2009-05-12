@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_verbosity
+memcached_verbosity - Modifiy verbosity of servers
 
 =head1 LIBRARY
 

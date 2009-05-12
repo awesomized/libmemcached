@@ -1,8 +1,6 @@
 =head1 NAME
 
-memcached_lib_version
-
-memcached_version
+memcached_lib_version, memcached_version - Get library version
 
 =head1 LIBRARY
 

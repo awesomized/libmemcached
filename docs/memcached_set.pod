@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_set, memcached_add, memcached_replace
+memcached_set, memcached_add, memcached_replace - Store value on server
 
 =head1 LIBRARY
 

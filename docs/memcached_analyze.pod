@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_analyze
+memcached_analyze - Analyze server information
 
 =head1 LIBRARY
 

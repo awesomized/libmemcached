@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_get, memcached_mget, memcached_fetch
+memcached_get, memcached_mget, memcached_fetch - Get a value
 
 =head1 LIBRARY
 

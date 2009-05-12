@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_create, memcached_free
+memcached_create, memcached_free - Create a memcached_st structure
 
 =head1 LIBRARY
 

@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_quit
+memcached_quit - Disconnect from all servers
 
 =head1 LIBRARY
 

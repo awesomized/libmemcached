@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_delete
+memcached_delete - Delete a key
 
 =head1 LIBRARY
 

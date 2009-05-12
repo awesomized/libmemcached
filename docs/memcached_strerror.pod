@@ -1,7 +1,7 @@
 =head1 NAME
 
-memcached_strerror
-
+memcached_strerror - Get error string
+ 
 =head1 LIBRARY
 
 C Client Library for memcached (libmemcached, -lmemcached)
