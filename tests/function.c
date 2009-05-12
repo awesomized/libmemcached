@@ -3383,7 +3383,7 @@ static void* connection_release(void *arg) {
   } *resource= arg;
 
   usleep(250);
-  memcached_pool_push(resource->pool, resource->mmc);
+  assert(memcached_pool_push(resource->pool, resource->mmc) == MEMCACHED_SUCCESS);
 }
 
 static test_return connection_pool_test(memcached_st *memc)
@@ -3391,27 +3391,31 @@ static test_return connection_pool_test(memcached_st *memc)
   memcached_pool_st* pool= memcached_pool_create(memc, 5, 10);
   assert(pool != NULL);
   memcached_st* mmc[10];
-  
+  memcached_return rc;
+
   for (int x= 0; x < 10; ++x) {
-    mmc[x]= memcached_pool_pop(pool, false);
+    mmc[x]= memcached_pool_pop(pool, false, &rc);
     assert(mmc[x] != NULL);
+    assert(rc == MEMCACHED_SUCCESS);
   }
 
-  assert(memcached_pool_pop(pool, false) == NULL);
+  assert(memcached_pool_pop(pool, false, &rc) == NULL);
+  assert(rc == MEMCACHED_SUCCESS);
+
   pthread_t tid;
   struct {
     memcached_pool_st* pool;
     memcached_st* mmc;
   } item= { .pool = pool, .mmc = mmc[9] };
   pthread_create(&tid, NULL, connection_release, &item);
-  mmc[9]= memcached_pool_pop(pool, true);
+  mmc[9]= memcached_pool_pop(pool, true, &rc);
+  assert(rc == MEMCACHED_SUCCESS);
   pthread_join(tid, NULL);
   assert(mmc[9] == item.mmc);
   const char *key= "key";
   size_t keylen= strlen(key);
 
   // verify that I can do ops with all connections
-  memcached_return rc;
   rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
@@ -3424,7 +3428,7 @@ static test_return connection_pool_test(memcached_st *memc)
 
   // Release them..
   for (int x= 0; x < 10; ++x)
-    memcached_pool_push(pool, mmc[x]);
+    assert(memcached_pool_push(pool, mmc[x]) == MEMCACHED_SUCCESS);
 
   assert(memcached_pool_destroy(pool) == memc);
   return TEST_SUCCESS;

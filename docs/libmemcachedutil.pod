@@ -17,13 +17,12 @@ C Client Library containing utility functions for libmemcached (libmemcachedutil
 B<libmemcachedutil> is a small and thread-safe client library that provides
 extra functionality built on top of B<libmemcached>.
 
-=head1 THREADS AND PROCESSES
+=head1 THREADS
 
-When using threads or forked processes it is important to keep an instance
-of C<memcached_st> per process or thread. Without creating your own locking
-structures you can not share a single C<memcached_st>. You can though call
-memcached_quit(3) on a C<memcached_st> and then use the resulting cloned
-structure.
+Do not try to access an instance of C<memcached_st> from multiple threads
+at the same time. If you want to access memcached from multiple threads
+you should either clone the C<memcached_st>, or use the memcached pool
+implementation. see memcached_pool_create(3).
 
 =head1 HOME
 

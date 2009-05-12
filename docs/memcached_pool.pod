@@ -13,8 +13,8 @@ C Client Library for memcached (libmemcachedutil, -lmemcachedutil)
   memcached_pool_st *memcached_pool_create(memcached_st* mmc, int initial, int max);
   memcached_st* memcached_pool_destroy(memcached_pool_st* pool);
 
-  memcached_st* memcached_pool_pop(memcached_pool_st* pool, bool block);
-  void memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+  memcached_st* memcached_pool_pop(memcached_pool_st* pool, bool block, memcached_return *rc);
+  memcached_return memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
 
   memcached_st *memcached_create (memcached_st *ptr);
 
@@ -40,9 +40,9 @@ passed as an argument to memcached_pool_create(), and returns the
 ownership of the pointer to the caller.
 
 memcached_pool_pop() is used to grab a connection structure from the
-connection pool. The block argument specifies if the function should
-block and wait for a connection structure to be available if we try to
-exceed the maximum size.
+connection pool. The block argument specifies if the function should 
+block and wait for a connection structure to be available if we try
+to exceed the maximum size.
 
 memcached_pool_push() is used to return a connection structure back to the pool.
 
@@ -57,7 +57,9 @@ memcached_st structure used to create the pool. If connections are in
 use it returns NULL.
 
 memcached_pool_pop() returns a pointer to a memcached_st structure
-from the pool (or NULL if an allocation cannot be satisfied).
+from the pool (or NULL if an allocation cannot be satisfied). 
+
+memcached_pool_push() returns MEMCACHED_SUCCESS upon success.
 
 =head1 HOME
 

@@ -17,11 +17,14 @@ extern "C" {
 
 struct memcached_pool_st;
 typedef struct memcached_pool_st memcached_pool_st;
-memcached_pool_st *memcached_pool_create(memcached_st* mmc, int initial, 
-                                         int max);
+memcached_pool_st *memcached_pool_create(memcached_st* mmc, uint32_t initial, 
+                                         uint32_t max);
 memcached_st* memcached_pool_destroy(memcached_pool_st* pool);
-memcached_st* memcached_pool_pop(memcached_pool_st* pool, bool block);
-void memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+memcached_st* memcached_pool_pop(memcached_pool_st* pool,
+                                 bool block,
+                                 memcached_return* rc);
+memcached_return memcached_pool_push(memcached_pool_st* pool, 
+                                     memcached_st* mmc);
 
 #ifdef __cplusplus
 }

@@ -13,52 +13,23 @@ struct memcached_pool_st
   int current_size;
 };
 
-/**
- * Lock a the pthread mutex and handle error conditions. If we fail to
- * lock the mutex there must be something really wrong and we cannot continue.
- */
-static void mutex_enter(pthread_mutex_t *mutex) 
+static memcached_return mutex_enter(pthread_mutex_t *mutex) 
 {
   int ret;
   do 
     ret= pthread_mutex_lock(mutex);
   while (ret == -1 && errno == EINTR);
 
-  if (ret == -1) 
-  {
-    /*
-    ** This means something is seriously wrong (deadlock or an internal
-    ** error in the posix library. Print out an error message and abort
-    ** the program.
-    */
-    fprintf(stderr, "pthread_mutex_lock failed: %s\n", strerror(errno));
-    fflush(stderr);
-    abort();
-  }
+  return (ret == -1) ? MEMCACHED_ERRNO : MEMCACHED_SUCCESS;
 }
 
-/**
- * Unlock a the pthread mutex and handle error conditions. 
- * All errors except EINTR is fatal errors and will terminate the program
- * with a coredump.
- */
-static void mutex_exit(pthread_mutex_t *mutex) {
+static memcached_return mutex_exit(pthread_mutex_t *mutex) {
   int ret;
   do
-    ret = pthread_mutex_unlock(mutex);
+    ret= pthread_mutex_unlock(mutex);
   while (ret == -1 && errno == EINTR);
 
-  if (ret == -1) 
-  {
-    /*
-    ** This means something is seriously wrong (deadlock or an internal
-    ** error in the posix library. Print out an error message and abort
-    ** the program.
-    */
-    fprintf(stderr, "pthread_mutex_unlock %s\n", strerror(errno));
-    fflush(stderr);
-    abort();
-  }
+  return (ret == -1) ? MEMCACHED_ERRNO : MEMCACHED_SUCCESS;
 }
 
 /**
@@ -66,7 +37,7 @@ static void mutex_exit(pthread_mutex_t *mutex) {
  * original memcached handle.
  */
 static int grow_pool(memcached_pool_st* pool) {
-  memcached_st *obj = calloc(1, sizeof(*obj));
+  memcached_st *obj= calloc(1, sizeof(*obj));
   if (obj == NULL)
     return -1;
 
@@ -82,7 +53,8 @@ static int grow_pool(memcached_pool_st* pool) {
   return 0;
 }
 
-memcached_pool_st *memcached_pool_create(memcached_st* mmc, int initial, int max) 
+memcached_pool_st *memcached_pool_create(memcached_st* mmc, 
+                                         uint32_t initial, uint32_t max) 
 {
   memcached_pool_st* ret = NULL;
   memcached_pool_st object = { .mutex = PTHREAD_MUTEX_INITIALIZER, 
@@ -95,7 +67,7 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc, int initial, int max
 
   if (object.mmc != NULL) 
   {
-    ret = calloc(1, sizeof(*ret));
+    ret= calloc(1, sizeof(*ret));
     if (ret == NULL) 
     {
       free(object.mmc);
@@ -119,11 +91,11 @@ memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
 {
   memcached_st *ret = pool->master;
 
-  for (int ii = 0; ii <= pool->firstfree; ++ii) 
+  for (int xx= 0; xx <= pool->firstfree; ++xx) 
   {
-    memcached_free(pool->mmc[ii]);
-    free(pool->mmc[ii]);
-    pool->mmc[ii] = NULL;
+    memcached_free(pool->mmc[xx]);
+    free(pool->mmc[xx]);
+    pool->mmc[xx] = NULL;
   }
   
   pthread_mutex_destroy(&pool->mutex);
@@ -134,53 +106,63 @@ memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
   return ret;
 }
 
-memcached_st* memcached_pool_pop(memcached_pool_st* pool, bool block) {
-  memcached_st *ret = NULL;
-  mutex_enter(&pool->mutex);
+memcached_st* memcached_pool_pop(memcached_pool_st* pool,
+                                 bool block,
+                                 memcached_return *rc) 
+{
+  memcached_st *ret= NULL;
+  if ((*rc= mutex_enter(&pool->mutex)) != MEMCACHED_SUCCESS) 
+    return NULL;
+
   do 
   {
     if (pool->firstfree > -1)
-      ret = pool->mmc[pool->firstfree--];
+       ret= pool->mmc[pool->firstfree--];
     else if (pool->current_size == pool->size) 
     {
       if (!block) 
       {
-        mutex_exit(&pool->mutex);
+        *rc= mutex_exit(&pool->mutex);
         return NULL;
       }
-      
+
       if (pthread_cond_wait(&pool->cond, &pool->mutex) == -1) 
       {
-        /*
-        ** This means something is seriously wrong (an internal error in the
-        ** posix library. Print out an error message and abort the program.
-        */
-        fprintf(stderr, "pthread cond_wait %s\n", strerror(errno));
-        fflush(stderr);
-        abort();
+        int err = errno;
+        mutex_exit(&pool->mutex);
+        errno = err; 
+        *rc= MEMCACHED_ERRNO;
+        return NULL;
       }
     } 
     else if (grow_pool(pool) == -1) 
     {
-      mutex_exit(&pool->mutex);
-      return NULL;
+       *rc= mutex_exit(&pool->mutex);
+       return NULL;
     }
   } 
   while (ret == NULL);
 
-  mutex_exit(&pool->mutex);
+  *rc= mutex_exit(&pool->mutex);
+
   return ret;
 }
 
-void memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc) 
+memcached_return memcached_pool_push(memcached_pool_st* pool, 
+                                     memcached_st *mmc)
 {
-  mutex_enter(&pool->mutex);
-  pool->mmc[++pool->firstfree] = mmc;
+  memcached_return rc= mutex_enter(&pool->mutex);
+
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+
+  pool->mmc[++pool->firstfree]= mmc;
 
   if (pool->firstfree == 0 && pool->current_size == pool->size) 
   {
     /* we might have people waiting for a connection.. wake them up :-) */
     pthread_cond_broadcast(&pool->cond);
   }
-  mutex_exit(&pool->mutex);
+
+  return mutex_exit(&pool->mutex);
 }
