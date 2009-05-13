@@ -351,7 +351,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   memcached_return rc;
   memcached_stat_st *stats;
 
-  if (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags & MEM_USE_UDP)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;

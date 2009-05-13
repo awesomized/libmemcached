@@ -27,7 +27,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   uint32_t dummy_flags;
   memcached_return dummy_error;
 
-  if (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags & MEM_USE_UDP)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
@@ -128,7 +128,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
   bool is_master_key_set= false;
 
-   if (ptr->flags & MEM_USE_UDP)
+   unlikely (ptr->flags & MEM_USE_UDP)
     return MEMCACHED_NOT_SUPPORTED;
 
   LIBMEMCACHED_MEMCACHED_MGET_START();

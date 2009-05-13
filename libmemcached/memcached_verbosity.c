@@ -24,7 +24,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
       continue;
     }
 
-    if (ptr->flags & MEM_USE_UDP)
+    unlikely (ptr->flags & MEM_USE_UDP)
       continue;
 
     rrc= memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
