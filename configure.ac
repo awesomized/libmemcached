@@ -1,4 +1,4 @@
-AC_INIT(libmemcached, [0.29], [http://tangent.org/552/libmemcached.html])
+AC_INIT([libmemcached],[0.29],[http://tangent.org/552/libmemcached.html])
 AC_CONFIG_SRCDIR([clients/memcat.c])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
@@ -115,4 +115,5 @@ CFLAGS=""
 CXXFLAGS=""
 CPPFLAGS=""
 
-AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile libmemcachedutil/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec support/libmemcached-fc.spec)
+AC_CONFIG_FILES([Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile libmemcachedutil/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec support/libmemcached-fc.spec])
+AC_OUTPUT
