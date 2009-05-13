@@ -5,7 +5,6 @@ if BUILD_LIBMEMCACHEDUTIL
 LDADDS+= $(top_builddir)/libmemcachedutil/libmemcachedutil.la
 endif
 
-
 EXTRA_DIST = output.res output2.res\
 		r/memcat.res\
 		r/memcp.res\

@@ -228,7 +228,9 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 
       /* If io_flush calls memcached_purge, sent_length may be 0 */
       if (sent_length != 0)
+      {
         WATCHPOINT_ASSERT(sent_length == buffer_end);
+      }
     }
   }
 
@@ -278,9 +280,11 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
-  int index= 0;
+  unsigned int index= 0;
 
-  for (int x= 0; x< memc->number_of_hosts && index < MAX_SERVERS_TO_POLL; ++x)
+  for (unsigned int x= 0;
+       x< memc->number_of_hosts && index < MAX_SERVERS_TO_POLL;
+       ++x)
   {
     if (memc->hosts[x].read_buffer_length > 0) /* I have data in the buffer */
       return &memc->hosts[x];
@@ -297,7 +301,7 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   if (index < 2)
   {
     /* We have 0 or 1 server with pending events.. */
-    for (int x= 0; x< memc->number_of_hosts; ++x)
+    for (unsigned int x= 0; x< memc->number_of_hosts; ++x)
       if (memcached_server_response_count(&memc->hosts[x]) > 0)
         return &memc->hosts[x];
 
@@ -312,9 +316,9 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   case 0:
     break;
   default:
-    for (int x= 0; x < index; ++x)
+    for (unsigned int x= 0; x < index; ++x)
       if (fds[x].revents & POLLIN)
-        for (int y= 0; y < memc->number_of_hosts; ++y)
+        for (unsigned int y= 0; y < memc->number_of_hosts; ++y)
           if (memc->hosts[y].fd == fds[x].fd)
             return &memc->hosts[y];
   }
@@ -397,7 +401,8 @@ static ssize_t io_flush(memcached_server_st *ptr,
       }
     }
 
-    if (ptr->type == MEMCACHED_CONNECTION_UDP && sent_length != write_length)
+    if (ptr->type == MEMCACHED_CONNECTION_UDP &&
+        (size_t)sent_length != write_length)
     {
       memcached_quit_server(ptr, 1);
       return -1;
@@ -462,7 +467,7 @@ memcached_return memcached_io_readline(memcached_server_st *ptr,
                                        size_t size)
 {
   bool line_complete= false;
-  int total_nr= 0;
+  size_t total_nr= 0;
 
   while (!line_complete)
   {

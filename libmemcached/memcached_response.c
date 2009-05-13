@@ -179,7 +179,7 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   if (rrc != MEMCACHED_SUCCESS)
     return rrc;
 
-  if (read_length != (size_t)(value_length + 2))
+  if (read_length != (ssize_t)(value_length + 2))
   {
     goto read_error;
   }

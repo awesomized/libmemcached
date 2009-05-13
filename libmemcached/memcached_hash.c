@@ -1,5 +1,6 @@
 #include "common.h"
 
+
 /* Defines */
 static uint64_t FNV_64_INIT= 0xcbf29ce484222325LL;
 static uint64_t FNV_64_PRIME= 0x100000001b3LL;
@@ -74,13 +75,13 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       }
     }
     break;
-#ifdef HAVE_HSIEH_HASH
     case MEMCACHED_HASH_HSIEH:
     {
+#ifdef HAVE_HSIEH_HASH
       hash= hsieh_hash(key, key_length);
+#endif
       break;
     }
-#endif
     case MEMCACHED_HASH_MURMUR:
     {
       hash= murmur_hash(key, key_length);

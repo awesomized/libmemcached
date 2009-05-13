@@ -220,7 +220,7 @@ memcached_return update_continuum(memcached_st *ptr)
 
       if (is_ketama_weighted)
       {
-        int i;
+        unsigned int i;
         for (i = 0; i < pointer_per_hash; i++)
         {
           value= ketama_server_hash(sort_host, sort_host_length, i);

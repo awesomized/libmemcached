@@ -52,43 +52,43 @@ memcached_return memcached_callback_set(memcached_st *ptr,
     }
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
     {
-      memcached_cleanup_func func= (memcached_cleanup_func)data;
+      memcached_cleanup_func func= *(memcached_cleanup_func *)&data;
       ptr->on_cleanup= func;
       break;
     }
   case MEMCACHED_CALLBACK_CLONE_FUNCTION:
     {
-      memcached_clone_func func= (memcached_clone_func)data;
+      memcached_clone_func func= *(memcached_clone_func *)&data;
       ptr->on_clone= func;
       break;
     }
   case MEMCACHED_CALLBACK_MALLOC_FUNCTION:
     {
-      memcached_malloc_function func= (memcached_malloc_function)data;
+      memcached_malloc_function func= *(memcached_malloc_function *)&data;
       ptr->call_malloc= func;
       break;
     }
   case MEMCACHED_CALLBACK_REALLOC_FUNCTION:
     {
-      memcached_realloc_function func= (memcached_realloc_function)data;
+      memcached_realloc_function func= *(memcached_realloc_function *)&data;
       ptr->call_realloc= func;
       break;
     }
   case MEMCACHED_CALLBACK_FREE_FUNCTION:
     {
-      memcached_free_function func= (memcached_free_function)data;
+      memcached_free_function func= *(memcached_free_function *)&data;
       ptr->call_free= func;
       break;
     }
   case MEMCACHED_CALLBACK_GET_FAILURE:
     {
-      memcached_trigger_key func= (memcached_trigger_key)data;
+      memcached_trigger_key func= *(memcached_trigger_key *)&data;
       ptr->get_key_failure= func;
       break;
     }
   case MEMCACHED_CALLBACK_DELETE_TRIGGER:
     {
-      memcached_trigger_delete_key func= (memcached_trigger_delete_key)data;
+      memcached_trigger_delete_key func= *(memcached_trigger_delete_key *)&data;
       ptr->delete_trigger= func;
       break;
     }
@@ -104,6 +104,7 @@ void *memcached_callback_get(memcached_st *ptr,
                              memcached_return *error)
 {
   memcached_return local_error;
+
   if (!error)
     error = &local_error;
 
@@ -130,37 +131,37 @@ void *memcached_callback_get(memcached_st *ptr,
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
     {
       *error= ptr->on_cleanup ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->on_cleanup;
+      return *(void **)&ptr->on_cleanup;
     }
   case MEMCACHED_CALLBACK_CLONE_FUNCTION:
     {
       *error= ptr->on_clone ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->on_clone;
+      return *(void **)&ptr->on_clone;
     }
   case MEMCACHED_CALLBACK_MALLOC_FUNCTION:
     {
       *error= ptr->call_malloc ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->call_malloc;
+      return *(void **)&ptr->call_malloc;
     }
   case MEMCACHED_CALLBACK_REALLOC_FUNCTION:
     {
       *error= ptr->call_realloc ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->call_realloc;
+      return *(void **)&ptr->call_realloc;
     }
   case MEMCACHED_CALLBACK_FREE_FUNCTION:
     {
       *error= ptr->call_free ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->call_free;
+      return *(void **)&ptr->call_free;
     }
   case MEMCACHED_CALLBACK_GET_FAILURE:
     {
       *error= ptr->get_key_failure ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->get_key_failure;
+      return *(void **)&ptr->get_key_failure;
     }
   case MEMCACHED_CALLBACK_DELETE_TRIGGER:
     {
       *error= ptr->delete_trigger ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
-      return (void *)ptr->delete_trigger;
+      return *(void **)&ptr->delete_trigger;
     }
   default:
       WATCHPOINT_ASSERT(0);

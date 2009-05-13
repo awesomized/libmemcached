@@ -27,7 +27,7 @@ static void calc_least_free_node(memcached_analysis_st *result,
                                  const long max_allowed_bytes,
                                  const long used_bytes)
 {
-  long remaining_bytes= max_allowed_bytes - used_bytes;
+  uint64_t remaining_bytes= (uint64_t)max_allowed_bytes - used_bytes;
 
   if (result->least_remaining_bytes == 0 ||
       remaining_bytes < result->least_remaining_bytes)

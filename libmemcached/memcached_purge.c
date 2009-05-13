@@ -30,7 +30,7 @@ memcached_return memcached_purge(memcached_server_st *ptr)
   }
   WATCHPOINT_ASSERT(ptr->fd != -1);
 
-  int no_msg= memcached_server_response_count(ptr) - 1;
+  uint32_t no_msg= memcached_server_response_count(ptr) - 1;
   if (no_msg > 0)
   {
     memcached_result_st result;

@@ -746,6 +746,7 @@ static test_return  read_through(memcached_st *memc)
   char *string;
   size_t string_length;
   uint32_t flags;
+  memcached_trigger_key cb= (memcached_trigger_key)read_through_trigger;
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -754,7 +755,8 @@ static test_return  read_through(memcached_st *memc)
   assert(string_length ==  0);
   assert(!string);
 
-  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, (void *)read_through_trigger);
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE,
+                             *(void **)&cb);
   assert(rc == MEMCACHED_SUCCESS);
 
   string= memcached_get(memc, key, strlen(key),
@@ -790,9 +792,9 @@ static test_return  delete_through(memcached_st *memc)
   memcached_trigger_delete_key callback;
   memcached_return rc;
 
-  callback= delete_trigger;
+  callback= (memcached_trigger_delete_key)delete_trigger;
 
-  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, (void*)callback);
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback);
   assert(rc == MEMCACHED_SUCCESS);
 
   return 0;
@@ -1458,24 +1460,31 @@ static test_return  callback_test(memcached_st *memc)
 
   /* Test Clone Callback */
   {
-    memcached_clone_func temp_function;
+    memcached_clone_func clone_cb= (memcached_clone_func)clone_test_callback;
+    void *clone_cb_ptr= *(void **)&clone_cb;
+    void *temp_function= NULL;
     memcached_return rc;
 
-    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, (void*)clone_test_callback);
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION,
+                               clone_cb_ptr);
     assert(rc == MEMCACHED_SUCCESS);
-    temp_function= (memcached_clone_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
-    assert(temp_function == clone_test_callback);
+    temp_function= memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    assert(temp_function == clone_cb_ptr);
   }
 
   /* Test Cleanup Callback */
   {
-    memcached_cleanup_func temp_function;
+    memcached_cleanup_func cleanup_cb=
+      (memcached_cleanup_func)cleanup_test_callback;
+    void *cleanup_cb_ptr= *(void **)&cleanup_cb;
+    void *temp_function= NULL;
     memcached_return rc;
 
-    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, (void*)cleanup_test_callback);
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION,
+                               cleanup_cb_ptr);
     assert(rc == MEMCACHED_SUCCESS);
-    temp_function= (memcached_cleanup_func)memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
-    assert(temp_function == cleanup_test_callback);
+    temp_function= memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc);
+    assert(temp_function == cleanup_cb_ptr);
   }
 
   return 0;
@@ -2416,6 +2425,8 @@ test_return user_supplied_bug18(memcached_st *trash)
 
 test_return auto_eject_hosts(memcached_st *trash)
 {
+  (void) trash;
+
   memcached_return rc;
   memcached_st *memc= memcached_create(NULL);
   assert(memc);
@@ -2830,13 +2841,6 @@ static test_return  delete_buffer_generate(memcached_st *memc)
   return 0;
 }
 
-static test_return  free_data(memcached_st *memc __attribute__((unused)))
-{
-  pairs_free(global_pairs);
-
-  return 0;
-}
-
 static test_return  add_host_test1(memcached_st *memc)
 {
   unsigned int x;
@@ -2934,6 +2938,7 @@ static memcached_return  pre_hsieh(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
   return MEMCACHED_SUCCESS;
 #else
+  (void) memc;
   return MEMCACHED_FAILURE;
 #endif
 }
@@ -3105,37 +3110,45 @@ static memcached_return set_prefix(memcached_st *memc)
 
 static memcached_return  set_memory_alloc(memcached_st *memc)
 {
+  void *test_ptr= NULL;
+  void *cb_ptr= NULL;
   {
-    memcached_malloc_function test_ptr;
+    memcached_malloc_function malloc_cb= 
+      (memcached_malloc_function)my_malloc;
+    cb_ptr= *(void **)&malloc_cb;
     memcached_return rc;
 
-    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, (void*)&my_malloc);
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, cb_ptr);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_malloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, &rc);
+    test_ptr= memcached_callback_get(memc, MEMCACHED_CALLBACK_MALLOC_FUNCTION, &rc);
     assert(rc == MEMCACHED_SUCCESS);
-    assert(test_ptr == my_malloc);
+    assert(test_ptr == cb_ptr);
   }
 
   {
-    memcached_realloc_function test_ptr;
+    memcached_realloc_function realloc_cb= 
+      (memcached_realloc_function)my_realloc;
+    cb_ptr= *(void **)&realloc_cb;
     memcached_return rc;
 
-    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, (void*)&my_realloc);
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, cb_ptr);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_realloc_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, &rc);
+    test_ptr= memcached_callback_get(memc, MEMCACHED_CALLBACK_REALLOC_FUNCTION, &rc);
     assert(rc == MEMCACHED_SUCCESS);
-    assert(test_ptr == my_realloc);
+    assert(test_ptr == cb_ptr);
   }
 
   {
-    memcached_free_function test_ptr;
+    memcached_free_function free_cb= 
+      (memcached_free_function)my_free;
+    cb_ptr= *(void **)&free_cb;
     memcached_return rc;
 
-    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, (void*)my_free);
+    rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, cb_ptr);
     assert(rc == MEMCACHED_SUCCESS);
-    test_ptr= (memcached_free_function)memcached_callback_get(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, &rc);
+    test_ptr= memcached_callback_get(memc, MEMCACHED_CALLBACK_FREE_FUNCTION, &rc);
     assert(rc == MEMCACHED_SUCCESS);
-    assert(test_ptr == my_free);
+    assert(test_ptr == cb_ptr);
   }
 
   return MEMCACHED_SUCCESS;
@@ -3281,7 +3294,7 @@ static test_return noreply_test(memcached_st *memc)
     ** way it is supposed to do!!!!
     */
     int no_msg=0;
-    for (int x=0; x < memc->number_of_hosts; ++x)
+    for (uint32_t x=0; x < memc->number_of_hosts; ++x)
       no_msg+=memc->hosts[x].cursor_active;
 
     assert(no_msg == 0);
@@ -3384,6 +3397,7 @@ static void* connection_release(void *arg) {
 
   usleep(250);
   assert(memcached_pool_push(resource->pool, resource->mmc) == MEMCACHED_SUCCESS);
+  return arg;
 }
 
 static test_return connection_pool_test(memcached_st *memc)
@@ -3419,7 +3433,7 @@ static test_return connection_pool_test(memcached_st *memc)
   rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  for (int x= 0; x < 10; ++x) {
+  for (unsigned int x= 0; x < 10; ++x) {
     uint64_t number_value;
     rc= memcached_increment(mmc[x], key, keylen, 1, &number_value);
     assert(rc == MEMCACHED_SUCCESS);
@@ -3809,6 +3823,9 @@ test_st tests[] ={
   {"server_sort", 0, server_sort_test},
   {"server_sort2", 0, server_sort2_test},
   {"clone_test", 0, clone_test },
+  {"connection_test", 0, connection_test},
+  {"callback_test", 0, callback_test},
+  {"behavior_test", 0, behavior_test},
   {"error", 0, error_test },
   {"set", 0, set_test },
   {"set2", 0, set_test2 },

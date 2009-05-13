@@ -79,7 +79,7 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc,
     /* Try to create the initial size of the pool. An allocation failure at
      * this time is not fatal..
      */
-    for (int ii=0; ii < initial; ++ii)
+    for (unsigned int ii=0; ii < initial; ++ii)
       if (grow_pool(ret) == -1)
         break;
   }

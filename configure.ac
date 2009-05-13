@@ -1,7 +1,17 @@
 AC_INIT(clients/memcat.c)
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
-AC_CANONICAL_SYSTEM
+
+# Setting CFLAGS here prevents AC_CANONICAL_TARGET from injecting them
+SAVE_CFLAGS=${CFLAGS}
+SAVE_CXXFLAGS=${CXXFLAGS}
+CFLAGS=
+CXXFLAGS=
+
+AC_CANONICAL_TARGET
+
+CFLAGS=${SAVE_CFLAGS}
+CXXFLAGS=${SAVE_CXXFLAGS}
 
 MEMCACHED_LIBRARY_NAME=libmemcached 
 
@@ -39,7 +49,7 @@ AC_SUBST(MEMCACHED_VERSION)
 
 VERSION=$MEMCACHED_RELEASE
 
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+AM_INIT_AUTOMAKE($PACKAG$, $VERSION, nostdinc no-define -Wall -Werror)
 
 AC_PROG_CC
 AC_PROG_CC_C99
@@ -55,6 +65,7 @@ AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
+AC_SEARCH_LIBS(floorf, m)
 
 sinclude(config/pod2man.m4)
 sinclude(config/debug.m4)
@@ -71,7 +82,7 @@ sinclude(config/util.m4)
 if test "$GCC" = "yes"
 then
   #CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"
-  CFLAGS="-Wall -O3 $CFLAGS"
+  CFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Werror -O3 -ggdb $CFLAGS"
 
   if test "$ENABLE_DEBUG" = "yes"
   then
@@ -87,6 +98,18 @@ else
   fi
 fi
 
-LDFLAGS="-lm"
+
+AM_CPPFLAGS="${CPPFLAGS}"
+AM_CFLAGS="${CFLAGS}"
+AM_CXXFLAGS="${CXXFLAGS}"
+
+AC_SUBST([AM_CPPFLAGS])
+AC_SUBST([AM_CFLAGS])
+AC_SUBST([AM_CXXFLAGS])
+
+dnl We've collected the flags in AM_*FLAGS now, so blank these.
+CFLAGS=""
+CXXFLAGS=""
+CPPFLAGS=""
 
 AC_OUTPUT(Makefile clients/Makefile tests/Makefile docs/Makefile libmemcached/Makefile libmemcachedutil/Makefile support/Makefile support/libmemcached.pc support/libmemcached.spec support/libmemcached-fc.spec)

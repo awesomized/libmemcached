@@ -5,7 +5,7 @@ memcached_return memcached_flush_buffers(memcached_st *mem)
 {
   memcached_return ret= MEMCACHED_SUCCESS;
 
-  for (int x= 0; x < mem->number_of_hosts; ++x)
+  for (uint32_t x= 0; x < mem->number_of_hosts; ++x)
     if (mem->hosts[x].write_buffer_offset != 0) 
     {
       if (mem->hosts[x].fd == -1 &&

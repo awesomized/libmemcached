@@ -5,6 +5,8 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include "libmemcached_config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +24,12 @@
 #include <sys/un.h>
 #include <netinet/tcp.h>
 
+
+#include <memcached.h>
+#include "memcached_io.h"
+
+#include "memcached/protocol_binary.h"
+
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -34,12 +42,6 @@
 #endif
 
 
-
-#include <memcached.h>
-#include "memcached_io.h"
-
-#include "memcached/protocol_binary.h"
-#include "libmemcached_config.h"
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 

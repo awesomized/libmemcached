@@ -234,7 +234,9 @@ static memcached_return network_connect(memcached_server_st *ptr)
         if (errno == EINPROGRESS || /* nonblocking mode - first return, */
             errno == EALREADY) /* nonblocking mode - subsequent returns */
         {
-          struct pollfd fds[1] = { [0].fd = ptr->fd, [0].events = POLLOUT };
+          struct pollfd fds[1];
+          fds[0].fd = ptr->fd;
+          fds[0].events = POLLOUT;
           int error= poll(fds, 1, ptr->root->connect_timeout);
 
           if (error != 1 || fds[0].revents & POLLERR)
@@ -242,7 +244,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
             if (fds[0].revents & POLLERR)
             {
               int err;
-              int len = sizeof (err);
+              socklen_t len = sizeof (err);
               (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
               ptr->cached_errno= (err == 0) ? errno : err;
             }

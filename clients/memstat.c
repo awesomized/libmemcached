@@ -135,9 +135,12 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
       if((servers[x]= memcached_create(NULL)) == NULL)
       {
         fprintf(stderr, "Failed to memcached_create()\n");
+        if (x > 0)
+          memcached_free(servers[0]);
         x--;
-        for (; x >= 0; x--)
+        for (; x > 0; x--)
           memcached_free(servers[x]);
+
         free(servers);
         return;
       }
