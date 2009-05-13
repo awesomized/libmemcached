@@ -1,4 +1,3 @@
-INCLUDES = -I$(top_builddir)
 LIBS = @LIBS@
 
 lib_LTLIBRARIES=

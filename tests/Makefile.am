@@ -1,4 +1,3 @@
-INCLUDES = -I$(top_builddir)
 LDADDS = $(top_builddir)/libmemcached/libmemcached.la
 
 if BUILD_LIBMEMCACHEDUTIL

@@ -106,7 +106,9 @@ void server_shutdown(server_startup_st *construct)
     {
       char buffer[1024]; /* Nothing special for number */
       sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
-      system(buffer);
+      /* We have to check the return value of this or the compiler will yell */
+      int sys_ret= system(buffer);
+      assert(sys_ret != -1); 
       sprintf(buffer, "/tmp/%umemc.pid", x);
       unlink(buffer);
     }

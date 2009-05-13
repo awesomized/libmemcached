@@ -1,5 +1,5 @@
 /* Server IO, Not public! */
-#include <memcached.h>
+#include "libmemcached/memcached.h"
 
 #ifndef __MEMCACHED_IO_H__
 #define __MEMCACHED_IO_H__

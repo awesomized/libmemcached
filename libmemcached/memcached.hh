@@ -1,8 +1,4 @@
-#ifdef USE_PRAGMA_INTERFACE
-#pragma interface                       /* gcc class implementation */
-#endif
-
-#include <memcached.h>
+#include "libmemcached/memcached.h"
 #include <string.h>
 #include <stdio.h>
 

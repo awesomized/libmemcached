@@ -1,8 +1,6 @@
-EXTRA_DIST = libmemcached_probes.d memcached/README.txt
+EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver
 
 BUILT_SOURCES= @DTRACE_HEADER@
-
-INCLUDES = -I$(top_builddir) -I$(top_srcdir)
 
 EXTRA_HEADERS = 
 DTRACE =                @DTRACE@
@@ -75,7 +73,7 @@ endif
 DEFS += -DMEMCACHED_INTERNAL
 libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@
 libmemcached_la_LIBADD = @DTRACE_OBJ@
-libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LIBM)
+libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
 
 dtrace_probes.h: libmemcached_probes.d
 	$(DTRACE) $(DTRACEFLAGS) -o dtrace_probes.tmp -h -s libmemcached_probes.d

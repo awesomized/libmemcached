@@ -5,7 +5,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#include "libmemcached_config.h"
+#include "libmemcached/libmemcached_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +25,10 @@
 #include <netinet/tcp.h>
 
 
-#include <memcached.h>
-#include "memcached_io.h"
+#include "libmemcached/memcached.h"
+#include "libmemcached/memcached_io.h"
 
-#include "memcached/protocol_binary.h"
+#include "libmemcached/memcached/protocol_binary.h"
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>

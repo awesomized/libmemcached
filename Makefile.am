@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I config
-INCLUDES = 
+
 SUBDIRS = docs libmemcached libmemcachedutil tests support clients
 EXTRA_dist = README.FIRST
 
