@@ -1,4 +1,5 @@
 0.29
+  * Added new pooling mechanism.
   * MEMCACHED_BEHAVIOR_NO_BLOCK no longer also sets MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
   * Updated generic rpm
 
