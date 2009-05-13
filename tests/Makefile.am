@@ -76,9 +76,14 @@ valgrind:
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
 
 cachegrind:
-	rm cachegrind.out.*
+	rm -f cachegrind.out.*
 	libtool --mode=execute valgrind --tool=cachegrind  --branch-sim=yes testapp
-	cg_annotate cachegrind.out.* --auto=yes > /tmp/calgrind.out
+	cg_annotate cachegrind.out.* --auto=yes > /tmp/cachegrind.out
+
+callgrind:
+	rm -f callgrind.out.*
+	libtool --mode=execute valgrind --tool=callgrind  testapp
+	callgrind_annotate callgrind.out.* --auto=yes > /tmp/callgrind.out
 
 test-no-outputdiff: testapp
 	./testapp > /dev/null
