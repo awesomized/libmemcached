@@ -218,7 +218,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
       (void)set_socket_options(ptr);
 
-      int flags;
+      int flags= 0;
       if (ptr->root->connect_timeout)
       {
         flags= fcntl(ptr->fd, F_GETFL, 0);

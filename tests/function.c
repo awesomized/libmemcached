@@ -2557,7 +2557,7 @@ static test_return  string_alloc_with_size_toobig(memcached_st *memc)
 {
   memcached_string_st *string;
 
-  string= memcached_string_create(memc, NULL, INT64_MAX);
+  string= memcached_string_create(memc, NULL, SIZE_MAX);
   assert(string == NULL);
 
   return 0;
@@ -2604,7 +2604,7 @@ static test_return  string_alloc_append_toobig(memcached_st *memc)
     rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
     assert(rc == MEMCACHED_SUCCESS);
   }
-  rc= memcached_string_append(string, buffer, INT64_MAX);
+  rc= memcached_string_append(string, buffer, SIZE_MAX);
   assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
   memcached_string_free(string);
 

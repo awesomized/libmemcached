@@ -341,7 +341,9 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
 
 static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
 {
-   uint8_t ret;
+  /* 0 isn't a value we want, but GCC 4.2 seems to think ret can otherwise
+   * be used uninitialized in this function. FAIL */
+  uint8_t ret= 0;
 
   if (noreply)
     switch (verb)
