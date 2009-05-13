@@ -1,4 +1,5 @@
-AC_INIT(clients/memcat.c)
+AC_INIT(libmemcached, [0.29], [http://tangent.org/552/libmemcached.html])
+AC_CONFIG_SRCDIR([clients/memcat.c])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
 
@@ -13,17 +14,6 @@ AC_CANONICAL_TARGET
 CFLAGS=${SAVE_CFLAGS}
 CXXFLAGS=${SAVE_CXXFLAGS}
 
-MEMCACHED_LIBRARY_NAME=libmemcached 
-
-#release versioning
-MEMCACHED_MAJOR_VERSION=0
-MEMCACHED_MINOR_VERSION=29
-MEMCACHED_MICRO_VERSION=0
-
-#API version
-MEMCACHED_API_VERSION=1.0
-AC_SUBST(MEMCACHED_API_VERSION)
-
 #shared library versioning
 MEMCACHED_LIBRARY_VERSION=2:0:0
 #                         | | |
@@ -36,20 +26,9 @@ MEMCACHED_LIBRARY_VERSION=2:0:0
 #                  |        +- increment if source code has changed
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
-
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 
-PACKAGE=$MEMCACHED_LIBRARY_NAME
-AC_SUBST(MEMCACHED_LIBRARY_NAME)
-
-MEMCACHED_VERSION=$MEMCACHED_MAJOR_VERSION.$MEMCACHED_MINOR_VERSION.$MEMCACHED_MICRO_VERSION
-MEMCACHED_RELEASE=$MEMCACHED_MAJOR_VERSION.$MEMCACHED_MINOR_VERSION
-AC_SUBST(MEMCACHED_RELEASE)
-AC_SUBST(MEMCACHED_VERSION)
-
-VERSION=$MEMCACHED_RELEASE
-
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, nostdinc no-define -Wall -Werror)
+AM_INIT_AUTOMAKE(nostdinc no-define -Wall -Werror)
 AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_CC
@@ -59,6 +38,13 @@ AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
+
+# libmemcached versioning when linked with GNU ld.
+if test "$lt_cv_prog_gnu_ld" = "yes"
+then
+    LD_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/libmemcached.ver"
+fi
+AC_SUBST(LD_VERSION_SCRIPT)
 
 AC_C_CONST
 AC_HEADER_TIME
@@ -116,7 +102,7 @@ else
 fi
 
 
-AM_CPPFLAGS="${CPPFLAGS}"
+AM_CPPFLAGS="-I\$(top_srcdir) -I\$(top_builddir) ${CPPFLAGS}"
 AM_CFLAGS="${CFLAGS}"
 AM_CXXFLAGS="${CXXFLAGS}"
 
