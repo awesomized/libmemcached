@@ -1,7 +1,9 @@
-0.29
+0.29 Wed May 13 08:06:05 PDT 2009
+  * All code warnings now treated as errors.
+  * Fixes for debian packaging.
   * Added new pooling mechanism.
-  * MEMCACHED_BEHAVIOR_NO_BLOCK no longer also sets MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
-  * Updated generic rpm
+  * MEMCACHED_BEHAVIOR_NO_BLOCK no longer also sets MEMCACHED_BEHAVIOR_BUFFER_REQUESTS.
+  * Updated generic rpm.
 
 0.28 Tue Apr 14 18:56:28 PDT 2009
   * Fixed bug in init sructure (reapplied)

@@ -1,3 +1,4 @@
+(This is not complete, please send email if I have missed someone.)
 Eirik A. Nygaard - IO Patch
 Cal Heldenbrand - Awesome feedback on performance
 Dustin Sallings - Insight into protocol
@@ -10,3 +11,4 @@ Patrick Galbraith - work on C++ interface
 Ross McFarland - Idea for sorting servers.
 Marcelo Fernandez - TCP/IP timeout pieces
 Yin Chen - Ketama support/weighted support
+Monty Taylor - Debian Packages, Cleanup work for configure
