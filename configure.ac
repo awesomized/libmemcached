@@ -50,6 +50,7 @@ AC_SUBST(MEMCACHED_VERSION)
 VERSION=$MEMCACHED_RELEASE
 
 AM_INIT_AUTOMAKE($PACKAG$, $VERSION, nostdinc no-define -Wall -Werror)
+AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_CC
 AC_PROG_CC_C99
@@ -67,6 +68,7 @@ AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 AC_SEARCH_LIBS(floorf, m)
 
+
 sinclude(config/pod2man.m4)
 sinclude(config/debug.m4)
 sinclude(config/dtrace.m4)
@@ -78,11 +80,26 @@ sinclude(config/setsockopt.m4)
 sinclude(config/hsieh.m4)
 sinclude(config/util.m4)
 
+dnl This is likely subverted by vpath builds. How do we find the original
+dnl source dir in the configure step of a vpath build?
+if test -d ".hg"
+then
+  building_from_hg=yes
+else
+  building_from_hg=no
+fi
+
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
 then
-  #CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wstrict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 $CFLAGS"
-  CFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Werror -O3 -ggdb $CFLAGS"
+  if test "$building_from_hg" = "yes"
+  then
+    CFLAGS="-Werror $CFLAGS"
+    CXXFLAGS="-Werror $CXXFLAGS"
+  fi
+
+  CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 -ggdb $CFLAGS"
+  CXXFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wconversion -Wmissing-declarations -Wredundant-decls -O3 -ggdb $CXXFLAGS"
 
   if test "$ENABLE_DEBUG" = "yes"
   then

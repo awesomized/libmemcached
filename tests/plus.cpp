@@ -15,7 +15,15 @@
 
 #include "test.h"
 
-extern "C" test_return basic_test(memcached_st *memc)
+extern "C" {
+   test_return basic_test(memcached_st *memc);
+   uint8_t increment_test(memcached_st *memc);
+   test_return basic_master_key_test(memcached_st *memc);
+   void *world_create(void);
+   void world_destroy(void *p);
+}
+
+test_return basic_test(memcached_st *memc)
 {
   Memcached foo(memc);
   const char *value_set= "This is some data";
@@ -30,7 +38,7 @@ extern "C" test_return basic_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-extern "C" uint8_t increment_test(memcached_st *memc)
+uint8_t increment_test(memcached_st *memc)
 {
   Memcached mcach(memc);
   memcached_return rc;
@@ -63,7 +71,7 @@ extern "C" uint8_t increment_test(memcached_st *memc)
   return 0;
 }
 
-extern "C" test_return basic_master_key_test(memcached_st *memc)
+test_return basic_master_key_test(memcached_st *memc)
 {
    Memcached foo(memc);
   const char *value_set= "Data for server A";
@@ -111,10 +119,11 @@ extern "C" void *world_create(void)
   return construct;
 }
 
-extern "C" void world_destroy(void *p)
+void world_destroy(void *p)
 {
-  server_startup_st *construct= (server_startup_st *)p;
-  memcached_server_st *servers= (memcached_server_st *)construct->servers;
+  server_startup_st *construct= static_cast<server_startup_st *>(p);
+  memcached_server_st *servers=
+    static_cast<memcached_server_st *>(construct->servers);
   memcached_server_list_free(servers);
 
   server_shutdown(construct);

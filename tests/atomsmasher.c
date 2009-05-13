@@ -1,6 +1,8 @@
 /*
   Sample test application.
 */
+#include "libmemcached/common.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +13,6 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../libmemcached/common.h"
 #include "../clients/generator.h"
 #include "../clients/execute.h"
 

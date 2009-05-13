@@ -4,14 +4,16 @@
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
 
+#include "libmemcached/libmemcached_config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <signal.h>
 #include <libmemcached/memcached.h>
 #include <unistd.h>
-#include "libmemcached/libmemcached_config.h"
 #include "server.h"
 
 void server_startup(server_startup_st *construct)
@@ -37,6 +39,25 @@ void server_startup(server_startup_st *construct)
         char buffer[1024]; /* Nothing special for number */
         int count;
         int status;
+
+        sprintf(buffer, "/tmp/%umemc.pid", x);
+        if (access(buffer, F_OK) == 0) 
+        {
+          FILE *fp= fopen(buffer, "r");
+          remove(buffer);
+
+          if (fp != NULL)
+          {
+            if (fgets(buffer, sizeof(buffer), fp) != NULL)
+            { 
+              pid_t pid = atol(buffer);
+              if (pid != 0) 
+                kill(pid, SIGTERM);
+            }
+
+            fclose(fp);
+          }
+        }
 
         if (x == 0)
         {
@@ -86,7 +107,6 @@ void server_shutdown(server_startup_st *construct)
       char buffer[1024]; /* Nothing special for number */
       sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
       system(buffer);
-
       sprintf(buffer, "/tmp/%umemc.pid", x);
       unlink(buffer);
     }

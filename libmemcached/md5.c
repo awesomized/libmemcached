@@ -30,6 +30,8 @@ documentation and/or software.
 */
 
 
+#include "common.h"
+
 #include <string.h>
 #include <sys/types.h>
 

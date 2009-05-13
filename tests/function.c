@@ -1,6 +1,8 @@
 /*
   Sample test application.
 */
+#include "libmemcached/common.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +13,8 @@
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
-#include "../clients/generator.h"
-#include "../clients/execute.h"
+#include "clients/generator.h"
+#include "clients/execute.h"
 
 #ifndef INT64_MAX
 #define INT64_MAX LONG_MAX
@@ -2311,7 +2313,7 @@ static test_return  user_supplied_bug17(memcached_st *memc)
   From Andrei on IRC
 */
 
-test_return user_supplied_bug19(memcached_st *memc)
+static test_return user_supplied_bug19(memcached_st *memc)
 {
   memcached_st *m;
   memcached_server_st *s;
@@ -2332,7 +2334,7 @@ test_return user_supplied_bug19(memcached_st *memc)
 }
 
 /* CAS test from Andei */
-test_return user_supplied_bug20(memcached_st *memc)
+static test_return user_supplied_bug20(memcached_st *memc)
 {
   memcached_return status;
   memcached_result_st *result, result_obj;
@@ -2364,7 +2366,7 @@ test_return user_supplied_bug20(memcached_st *memc)
 }
 
 #include "ketama_test_cases.h"
-test_return user_supplied_bug18(memcached_st *trash)
+static test_return user_supplied_bug18(memcached_st *trash)
 {
   memcached_return rc;
   int value;
@@ -2423,7 +2425,7 @@ test_return user_supplied_bug18(memcached_st *trash)
   return 0;
 }
 
-test_return auto_eject_hosts(memcached_st *trash)
+static test_return auto_eject_hosts(memcached_st *trash)
 {
   (void) trash;
 
@@ -3615,7 +3617,7 @@ static test_return udp_set_too_big_test(memcached_st *memc)
   return post_udp_op_check(memc,expected_ids);
 }
 
-test_return udp_delete_test(memcached_st *memc)
+static test_return udp_delete_test(memcached_st *memc)
 {
   unsigned int x= 0;
   unsigned int num_iters= 1025; //request id rolls over at 1024
@@ -3648,7 +3650,7 @@ static test_return udp_buffered_delete_test(memcached_st *memc)
   return udp_delete_test(memc);
 }
 
-test_return udp_verbosity_test(memcached_st *memc)
+static test_return udp_verbosity_test(memcached_st *memc)
 {
   memcached_return rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
@@ -3661,14 +3663,14 @@ test_return udp_verbosity_test(memcached_st *memc)
   return post_udp_op_check(memc,expected_ids);
 }
 
-test_return udp_quit_test(memcached_st *memc)
+static test_return udp_quit_test(memcached_st *memc)
 {
   uint16_t *expected_ids= get_udp_request_ids(memc);
   memcached_quit(memc);
   return post_udp_op_check(memc, expected_ids);
 }
 
-test_return udp_flush_test(memcached_st *memc)
+static test_return udp_flush_test(memcached_st *memc)
 {
   memcached_return rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
@@ -3681,7 +3683,7 @@ test_return udp_flush_test(memcached_st *memc)
   return post_udp_op_check(memc,expected_ids);
 }
 
-test_return udp_incr_test(memcached_st *memc)
+static test_return udp_incr_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "incr";
@@ -3700,7 +3702,7 @@ test_return udp_incr_test(memcached_st *memc)
   return post_udp_op_check(memc, expected_ids);
 }
 
-test_return udp_decr_test(memcached_st *memc)
+static test_return udp_decr_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "decr";
@@ -3720,7 +3722,7 @@ test_return udp_decr_test(memcached_st *memc)
 }
 
 
-test_return udp_stat_test(memcached_st *memc)
+static test_return udp_stat_test(memcached_st *memc)
 {
   memcached_stat_st * rv= NULL;
   memcached_return rc;
@@ -3732,7 +3734,7 @@ test_return udp_stat_test(memcached_st *memc)
   return post_udp_op_check(memc, expected_ids);
 }
 
-test_return udp_version_test(memcached_st *memc)
+static test_return udp_version_test(memcached_st *memc)
 {
   memcached_return rc;
   uint16_t *expected_ids = get_udp_request_ids(memc);
@@ -3741,7 +3743,7 @@ test_return udp_version_test(memcached_st *memc)
   return post_udp_op_check(memc, expected_ids);
 }
 
-test_return udp_get_test(memcached_st *memc)
+static test_return udp_get_test(memcached_st *memc)
 {
   memcached_return rc;
   char *key= "foo";
@@ -3753,7 +3755,7 @@ test_return udp_get_test(memcached_st *memc)
   return post_udp_op_check(memc, expected_ids);
 }
 
-test_return udp_mixed_io_test(memcached_st *memc)
+static test_return udp_mixed_io_test(memcached_st *memc)
 {
   test_st current_op;
   test_st mixed_io_ops [] ={
@@ -3776,7 +3778,7 @@ test_return udp_mixed_io_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return hsieh_avaibility_test (memcached_st *memc)
+static test_return hsieh_avaibility_test (memcached_st *memc)
 {
   memcached_return expected_rc= MEMCACHED_FAILURE;
 #ifdef HAVE_HSIEH_HASH

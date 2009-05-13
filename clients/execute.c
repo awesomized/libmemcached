@@ -3,7 +3,8 @@
   Return the number of rows set.
 */
 
-#include <stdio.h>
+#include "libmemcached/common.h"
+
 #include "execute.h"
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
