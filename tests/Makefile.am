@@ -85,6 +85,13 @@ callgrind:
 	libtool --mode=execute valgrind --tool=callgrind  testapp
 	callgrind_annotate callgrind.out.* --auto=yes > /tmp/callgrind.out
 
+helgrind:
+	rm -f helgrind.out.*
+	libtool --mode=execute valgrind --tool=helgrind  testapp
+
+helgrind-slap:
+	libtool --mode=execute valgrind --tool=helgrind  ../clients/memslap --server=localhost --concurrency=30
+
 test-no-outputdiff: testapp
 	./testapp > /dev/null
 	@echo "Test completed"

@@ -1,4 +1,5 @@
-0.29 Wed May 13 08:06:05 PDT 2009
+0.29
+  * Fixed malloc usage to calloc for spots where we need zero filled memory. 
   * All code warnings now treated as errors.
   * Fixes for debian packaging.
   * Added new pooling mechanism.

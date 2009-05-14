@@ -16,8 +16,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
   result_buffer= memcached_fetch_result(ptr, result_buffer, error);
 
-  if (*error != MEMCACHED_SUCCESS || result_buffer == NULL)
+  if (result_buffer == NULL || *error != MEMCACHED_SUCCESS)
   {
+    WATCHPOINT_ASSERT(result_buffer == NULL);
     *value_length= 0;
     return NULL;
   }
@@ -54,7 +55,8 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     if ((result= memcached_result_create(ptr, NULL)) == NULL)
       return NULL;
 
-  while ((server = memcached_io_get_readable_server(ptr)) != NULL) {
+  while ((server = memcached_io_get_readable_server(ptr)) != NULL) 
+  {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     *error= memcached_response(server, buffer, sizeof(buffer), result);
 

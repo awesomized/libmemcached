@@ -65,6 +65,7 @@ will copy the pointer to the clone.
 =item  MEMCACHED_CALLBACK_MALLOC_FUNCTION
 
 This alllows yout to pass in a customized version of malloc that will be used instead of the builtin malloc(3) call.
+Your malloc must zero all memory.
 The prototype for this is:
 
 void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);

@@ -3035,7 +3035,7 @@ static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 
 static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
 {
-  return malloc(size);
+  return calloc(1, size);
 }
 
 static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)

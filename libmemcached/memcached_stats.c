@@ -360,14 +360,13 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   if (ptr->call_malloc)
     stats= (memcached_stat_st *)ptr->call_malloc(ptr, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
   else
-    stats= (memcached_stat_st *)malloc(sizeof(memcached_stat_st)*(ptr->number_of_hosts));
+    stats= (memcached_stat_st *)calloc(1, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
 
   if (!stats)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
   }
-  memset(stats, 0, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
 
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
@@ -420,14 +419,13 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat __att
   if (ptr->call_malloc)
     list= (char **)ptr->call_malloc(ptr, length);
   else
-    list= (char **)malloc(length);
+    list= (char **)calloc(1, length);
 
   if (!list)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
   }
-  memset(list, 0, sizeof(memcached_stat_keys));
 
   memcpy(list, memcached_stat_keys, sizeof(memcached_stat_keys));
 

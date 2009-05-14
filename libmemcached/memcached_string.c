@@ -47,11 +47,10 @@ memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string
     if (ptr->call_malloc)
       string= (memcached_string_st *)ptr->call_malloc(ptr, sizeof(memcached_string_st));
     else
-      string= (memcached_string_st *)malloc(sizeof(memcached_string_st));
+      string= (memcached_string_st *)calloc(1, sizeof(memcached_string_st));
 
     if (string == NULL)
       return NULL;
-    memset(string, 0, sizeof(memcached_string_st));
     string->is_allocated= true;
   }
   string->block_size= MEMCACHED_BLOCK_SIZE;

@@ -9,12 +9,11 @@ memcached_st *memcached_create(memcached_st *ptr)
 
   if (ptr == NULL)
   {
-    ptr= (memcached_st *)malloc(sizeof(memcached_st));
+    ptr= (memcached_st *)calloc(1, sizeof(memcached_st));
 
     if (!ptr)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
-    memset(ptr, 0, sizeof(memcached_st));
     ptr->is_allocated= true;
   }
   else

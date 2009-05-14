@@ -70,15 +70,13 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
   
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
-  result= (memcached_analysis_st*)malloc(sizeof(memcached_analysis_st)
+  result= (memcached_analysis_st*)calloc(1, sizeof(memcached_analysis_st)
                                          * (memc->number_of_hosts));
   if (!result)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
   }
-
-  memset(result, 0, sizeof(*result));
 
   for (x= 0; x < server_count; x++)
   {

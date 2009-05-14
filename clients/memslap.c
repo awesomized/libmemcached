@@ -178,8 +178,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   for (x= 0; x < opt_concurrency; x++)
   {
     thread_context_st *context;
-    context= (thread_context_st *)malloc(sizeof(thread_context_st));
-    memset(context, 0, sizeof(thread_context_st));
+    context= (thread_context_st *)calloc(1, sizeof(thread_context_st));
 
     context->memc= memcached_clone(NULL, memc);
     context->test= opt_test;
