@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <getopt.h>
 #include <pthread.h>
+#include <assert.h>
 
 #include <libmemcached/memcached.h>
 
@@ -371,6 +372,7 @@ void *run_task(void *p)
   switch (context->test)
   {
   case SET_TEST:
+    assert(context->execute_pairs);
     execute_set(memc, context->execute_pairs, context->execute_number);
     break;
   case GET_TEST:

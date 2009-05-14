@@ -44,22 +44,20 @@ pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
   unsigned int x;
   pairs_st *pairs;
 
-  pairs= (pairs_st*)malloc(sizeof(pairs_st) * (number_of+1));
+  pairs= (pairs_st*)calloc(number_of + 1, sizeof(pairs_st));
 
   if (!pairs)
     goto error;
 
-  memset(pairs, 0, sizeof(pairs_st) * (number_of+1));
-
   for (x= 0; x < number_of; x++)
   {
-    pairs[x].key= (char *)malloc(sizeof(char) * 100);
+    pairs[x].key= (char *)calloc(100, sizeof(char));
     if (!pairs[x].key)
       goto error;
     get_random_string(pairs[x].key, 100);
     pairs[x].key_length= 100;
 
-    pairs[x].value= (char *)malloc(sizeof(char) * value_length);
+    pairs[x].value= (char *)calloc(value_length, sizeof(char));
     if (!pairs[x].value)
       goto error;
     get_random_string(pairs[x].value, value_length);
