@@ -223,6 +223,8 @@ void *memcached_callback_get(memcached_st *ptr,
                              memcached_callback flag,
                              memcached_return *error);
 
+memcached_return memcached_dump(memcached_st *ptr, memcached_dump_func *function, void *context, uint32_t number_of_callbacks);
+
 
 #ifdef __cplusplus
 }

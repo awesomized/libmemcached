@@ -38,6 +38,7 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_connect.c \
 			  memcached_delete.c \
 			  memcached_do.c \
+			  memcached_dump.c \
 			  memcached_fetch.c \
 			  memcached_flush.c \
 			  memcached_get.c \
