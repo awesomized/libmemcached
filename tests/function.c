@@ -3346,12 +3346,12 @@ static test_return noreply_test(memcached_st *memc)
   uint32_t flags;
   memcached_result_st results_obj;
   memcached_result_st *results;
-  ret=memcached_mget(memc, keys, lengths, 1);
+  ret= memcached_mget(memc, keys, lengths, 1);
   assert(ret == MEMCACHED_SUCCESS);
 
-  results=memcached_result_create(memc, &results_obj);
+  results= memcached_result_create(memc, &results_obj);
   assert(results);
-  results=memcached_fetch_result(memc, &results_obj, &ret);
+  results= memcached_fetch_result(memc, &results_obj, &ret);
   assert(results);
   assert(ret == MEMCACHED_SUCCESS);
   uint64_t cas= memcached_result_cas(results);
