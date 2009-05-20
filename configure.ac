@@ -57,6 +57,20 @@ AC_TYPE_SIZE_T
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
+
+save_LIBS="$LIBS"
+LIBS="$LIBS -lm"
+AC_LINK_IFELSE(
+  [AC_LANG_PROGRAM(
+    [[
+#include <stdlib.h>
+    ]],[[
+      float f= floorf((float) 1.0);
+    ]],
+    [LIBM="-lm"],[LIBM=""])])
+    
+AC_SUBST(LIBM)
+LIBS="$save_LIBS"
 AC_SEARCH_LIBS(floorf, m)
 
 
