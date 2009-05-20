@@ -85,7 +85,10 @@ struct memcached_stat_st {
 struct memcached_st {
   uint8_t purging;
   bool is_allocated;
+  uint8_t distribution;
+  uint8_t hash;
   uint32_t continuum_points_counter;
+  memcached_server_st *hosts;
   int32_t snd_timeout;
   int32_t rcv_timeout;
   uint32_t server_failure_limit;
@@ -100,15 +103,13 @@ struct memcached_st {
   int32_t connect_timeout;
   int32_t retry_timeout;
   uint32_t continuum_count;
-  memcached_hash hash;
   int send_size;
   int recv_size;
-  memcached_server_st *hosts;
   void *user_data;
   time_t next_distribution_rebuild;
   size_t prefix_key_length;
+  memcached_hash hash_continuum;
   memcached_result_st result;
-  memcached_server_distribution distribution;
   memcached_continuum_item_st *continuum;
   memcached_clone_func on_clone;
   memcached_cleanup_func on_cleanup;
@@ -118,7 +119,6 @@ struct memcached_st {
   memcached_trigger_key get_key_failure;
   memcached_trigger_delete_key delete_trigger;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
-  memcached_hash hash_continuum;
 };
 
 
