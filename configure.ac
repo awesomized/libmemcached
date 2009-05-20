@@ -27,6 +27,8 @@ MEMCACHED_LIBRARY_VERSION=2:0:0
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
+MEMCACHEDUTIL_LIBRARY_VERSION=0:0:0
+AC_SUBST(MEMCACHEDUTIL_LIBRARY_VERSION)
 
 AM_INIT_AUTOMAKE(nostdinc no-define -Wall -Werror)
 AC_USE_SYSTEM_EXTENSIONS
@@ -39,12 +41,15 @@ AM_SANITY_CHECK
 LIBTOOL="$LIBTOOL --preserve-dup-deps"
 AC_SUBST(LIBTOOL)dnl
 
+
 # libmemcached versioning when linked with GNU ld.
 if test "$lt_cv_prog_gnu_ld" = "yes"
 then
     LD_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/libmemcached.ver"
+    LD_UTIL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcachedutil/libmemcachedutil.ver"
 fi
 AC_SUBST(LD_VERSION_SCRIPT)
+AC_SUBST(LD_UTIL_VERSION_SCRIPT)
 
 AC_C_CONST
 AC_HEADER_TIME
