@@ -38,9 +38,6 @@ AC_PROG_CC_C99
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 AM_SANITY_CHECK
-LIBTOOL="$LIBTOOL --preserve-dup-deps"
-AC_SUBST(LIBTOOL)dnl
-
 
 # libmemcached versioning when linked with GNU ld.
 if test "$lt_cv_prog_gnu_ld" = "yes"
