@@ -3,6 +3,8 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = docs libmemcached libmemcachedutil tests support clients
 EXTRA_dist = README.FIRST
 
+check-local: test-no-outputdiff
+
 test: all
 	@(cd tests; ${MAKE} test)
 

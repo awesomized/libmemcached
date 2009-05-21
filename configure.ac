@@ -39,6 +39,9 @@ AC_PROG_CXX
 AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 
+AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
+
+
 # libmemcached versioning when linked with GNU ld.
 if test "$lt_cv_prog_gnu_ld" = "yes"
 then
@@ -91,30 +94,48 @@ else
   building_from_hg=no
 fi
 
+
 # We only support GCC and Sun's forte at the moment
 if test "$GCC" = "yes"
 then
+  if test "$ENABLE_DEBUG" = "yes"
+  then
+    CFLAGS="-O0 -DHAVE_DEBUG $CFLAGS"
+    CXXFLAGS="-O0 -DHAVE_DEBUG $CXXFLAGS"
+  else
+    CFLAGS="-O3 $CFLAGS"
+    CXXFLAGS="-O3 $CXXFLAGS"
+  fi
   if test "$building_from_hg" = "yes"
   then
     CFLAGS="-Werror $CFLAGS"
     CXXFLAGS="-Werror $CXXFLAGS"
   fi
 
-  CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -O3 -ggdb $CFLAGS"
-  CXXFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wconversion -Wmissing-declarations -Wredundant-decls -O3 -ggdb $CXXFLAGS"
+  CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -ggdb3 $CFLAGS"
+  CXXFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wconversion -Wmissing-declarations -Wredundant-decls -ggdb3 $CXXFLAGS"
+
+
+fi
+
+if test "$SUNCC" = "yes"
+then
 
   if test "$ENABLE_DEBUG" = "yes"
   then
-    CFLAGS="$CFLAGS -ggdb -DHAVE_DEBUG"
+    CFLAGS="-xO0 -DHAVE_DEBUG $CFLAGS"
+    CXXFLAGS="-xO0 -DHAVE_DEBUG $CXXFLAGS"
+  else
+    CFLAGS="-xO4 -xlibmil -xdepend $CFLAGS"
+    CXXFLAGS="-xO4 -xlibmil -xdepend $CXXFLAGS"
   fi
-else
-  CFLAGS="-Xa -xstrconst -mt -D_FORTEC_ -errfmt=error -errwarn -errshort=tags $CFLAGS"
-  CXXFLAGS="+w +w2 -xwe -mt -D_FORTEC_ $CXXFLAGS"
-  if test "$ENABLE_DEBUG" = "yes"
+  if test "$building_from_hg" = "yes"
   then
-    CFLAGS="$CFLAGS -DHAVE_DEBUG"
-    CXXFLAGS="$CXXFLAGS -DHAVE_DEBUG"
+    CFLAGS="-errwarn $CFLAGS"
+    CXXFLAGS="-errwarn $CXXFLAGS"
   fi
+  CFLAGS="-Xa -xstrconst -mt -errfmt=error -errshort=tags ${CFLAGS}"
+  CXXFLAGS="+w +w2 -xwe -mt ${CXXFLAGS}"
 fi
 
 
