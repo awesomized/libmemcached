@@ -71,16 +71,16 @@ LIBS="$save_LIBS"
 AC_SEARCH_LIBS(floorf, m)
 
 
-sinclude(config/pod2man.m4)
-sinclude(config/debug.m4)
-sinclude(config/dtrace.m4)
-sinclude(config/byteorder.m4)
-sinclude(config/64bit.m4)
-sinclude(config/protocol_binary.m4)
-sinclude(config/memcached.m4)
-sinclude(config/setsockopt.m4)
-sinclude(config/hsieh.m4)
-sinclude(config/util.m4)
+sinclude(m4/pod2man.m4)
+sinclude(m4/debug.m4)
+sinclude(m4/dtrace.m4)
+sinclude(m4/byteorder.m4)
+sinclude(m4/64bit.m4)
+sinclude(m4/protocol_binary.m4)
+sinclude(m4/memcached.m4)
+sinclude(m4/setsockopt.m4)
+sinclude(m4/hsieh.m4)
+sinclude(m4/util.m4)
 
 dnl This is likely subverted by vpath builds. How do we find the original
 dnl source dir in the configure step of a vpath build?
