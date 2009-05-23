@@ -152,14 +152,16 @@ CFLAGS=""
 CXXFLAGS=""
 CPPFLAGS=""
 
-AC_CONFIG_FILES([Makefile dnl
-  clients/Makefile dnl
-  tests/Makefile dnl
-  docs/Makefile dnl
-  libmemcached/Makefile dnl
-  libmemcachedutil/Makefile dnl
-  support/Makefile dnl
-  support/libmemcached.pc dnl
-  support/libmemcached.spec dnl
-  support/libmemcached-fc.spec])
+AC_CONFIG_FILES([
+  Makefile
+  clients/Makefile
+  tests/Makefile
+  docs/Makefile
+  libmemcached/Makefile
+  libmemcachedutil/Makefile
+  support/Makefile
+  support/libmemcached.pc
+  support/libmemcached.spec
+  support/libmemcached-fc.spec
+  ])
 AC_OUTPUT
