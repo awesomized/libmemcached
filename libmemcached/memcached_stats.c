@@ -30,12 +30,13 @@ static char *memcached_stat_keys[] = {
 };
 
 
-static void set_data(memcached_stat_st *stat, char *key, char *value)
+static memcached_return set_data(memcached_stat_st *stat, char *key, char *value)
 {
 
   if(strlen(key) < 1) 
   {
-    fprintf(stderr, "Invalid key %s\n", key);
+    WATCHPOINT_STRING(key);
+    return MEMCACHED_UNKNOWN_STAT_KEY;
   }
   else if (!strcmp("pid", key))
   {
@@ -149,8 +150,11 @@ static void set_data(memcached_stat_st *stat, char *key, char *value)
              strcmp("accepting_conns", key) == 0 ||
              strcmp("listen_disabled_num", key) == 0))
   {
-    fprintf(stderr, "Unknown key %s\n", key);
+    WATCHPOINT_STRING(key);
+    return MEMCACHED_UNKNOWN_STAT_KEY;
   }
+
+  return MEMCACHED_SUCCESS;
 }
 
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
@@ -278,7 +282,11 @@ static memcached_return binary_stats_fetch(memcached_st *ptr,
         return rc;
      }
      
-     set_data(stat, buffer, buffer + strlen(buffer) + 1);
+     unlikely((set_data(stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
+     {
+       WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+       WATCHPOINT_ASSERT(0);
+     }
   } while (1);
   
   /* shit... memcached_response will decrement the counter, so I need to
@@ -332,7 +340,11 @@ static memcached_return ascii_stats_fetch(memcached_st *ptr,
       value= string_ptr;
       value[(size_t)(end_ptr-string_ptr)]= 0;
       string_ptr= end_ptr + 2;
-      set_data(stat, key, value);
+      unlikely((set_data(stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)
+      {
+        WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+        WATCHPOINT_ASSERT(0);
+      }
     }
     else
       break;

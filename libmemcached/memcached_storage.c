@@ -24,17 +24,17 @@ static char *storage_op_string(memcached_storage_action verb)
   switch (verb)
   {
   case SET_OP:
-    return "set";
+    return "set ";
   case REPLACE_OP:
-    return "replace";
+    return "replace ";
   case ADD_OP:
-    return "add";
+    return "add ";
   case PREPEND_OP:
-    return "prepend";
+    return "prepend ";
   case APPEND_OP:
-    return "append";
+    return "append ";
   case CAS_OP:
-    return "cas";
+    return "cas ";
   default:
     return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
   };
@@ -97,13 +97,30 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                            (unsigned long long)cas,
                            (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
   else
-    write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                           "%s %s%.*s %u %llu %zu%s\r\n", 
-                           storage_op_string(verb),
-                           ptr->prefix_key,
-                           (int)key_length, key, flags, 
+  {
+    char *buffer_ptr= buffer;
+    const char *command= storage_op_string(verb);
+
+    /* Copy in the command, no space needed, we handle that in the command function*/
+    memcpy(buffer_ptr, command, strlen(command));
+
+    /* Copy in the key prefix, switch to the buffer_ptr */
+    buffer_ptr= memcpy(buffer_ptr + strlen(command) , ptr->prefix_key, strlen(ptr->prefix_key));
+
+    /* Copy in the key, adjust point if a key prefix was used. */
+    buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key ? strlen(ptr->prefix_key) : 0), 
+                       key, key_length);
+    buffer_ptr+= key_length;
+    buffer_ptr[0]=  ' '; 
+    buffer_ptr++;
+
+    write_length= (size_t)(buffer_ptr - buffer);
+    write_length+= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                           "%u %llu %zu%s\r\n", 
+                           flags, 
                            (unsigned long long)expiration, value_length,
                            (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
+  }
 
   if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS)
   {

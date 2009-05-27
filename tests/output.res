@@ -41,7 +41,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -78,6 +78,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -114,7 +115,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -151,7 +152,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -188,7 +189,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -225,7 +226,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -262,7 +263,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -299,7 +300,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -336,7 +337,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -373,7 +374,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -410,7 +411,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -447,7 +448,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -484,30 +485,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
-ketama_weighted:10.0.1.1|11211|600|176
-ketama_weighted:10.0.1.2|11211|300|88
-ketama_weighted:10.0.1.3|11211|200|56
-ketama_weighted:10.0.1.4|11211|350|104
-ketama_weighted:10.0.1.5|11211|1000|296
-ketama_weighted:10.0.1.6|11211|800|236
-ketama_weighted:10.0.1.7|11211|950|280
-ketama_weighted:10.0.1.8|11211|100|28
-ketama_weighted:10.0.1.1|11211|600|160
-ketama_weighted:10.0.1.2|11211|300|80
-ketama_weighted:10.0.1.4|11211|350|92
-ketama_weighted:10.0.1.5|11211|1000|272
-ketama_weighted:10.0.1.6|11211|800|216
-ketama_weighted:10.0.1.7|11211|950|256
-ketama_weighted:10.0.1.8|11211|100|24
-ketama_weighted:10.0.1.1|11211|600|176
-ketama_weighted:10.0.1.2|11211|300|88
-ketama_weighted:10.0.1.3|11211|200|56
-ketama_weighted:10.0.1.4|11211|350|104
-ketama_weighted:10.0.1.5|11211|1000|296
-ketama_weighted:10.0.1.6|11211|800|236
-ketama_weighted:10.0.1.7|11211|950|280
-ketama_weighted:10.0.1.8|11211|100|28
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -544,7 +522,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -581,7 +559,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -618,7 +596,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -655,7 +633,7 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key foo
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 Error 0 -> SUCCESS
 Error 1 -> FAILURE
 Error 2 -> HOSTNAME LOOKUP FAILURE
@@ -692,78 +670,14 @@ Error 32 -> ACTION QUEUED
 Error 33 -> A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 Error 34 -> THE HOST TRANSPORT PROTOCOL DOES NOT MATCH THAT OF THE CLIENT
 Error 35 -> SERVER IS MARKED DEAD
-Key Thisismorethentheallottednumberofcharactersfoo
-ketama_weighted:10.0.1.1|11211|600|176
-ketama_weighted:10.0.1.2|11211|300|88
-ketama_weighted:10.0.1.3|11211|200|56
-ketama_weighted:10.0.1.4|11211|350|104
-ketama_weighted:10.0.1.5|11211|1000|296
-ketama_weighted:10.0.1.6|11211|800|236
-ketama_weighted:10.0.1.7|11211|950|280
-ketama_weighted:10.0.1.8|11211|100|28
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
+Error 36 -> ENCOUNTERED AN UNKNOWN STAT KEY
 
-server 0|localhost|11221 bytes: 3257982
+server 0|localhost|11221 bytes: 3122227
 
-server 1|localhost|11222 bytes: 3099222
+server 1|localhost|11222 bytes: 3274763
 
-server 2|localhost|11223 bytes: 3503809
+server 2|localhost|11223 bytes: 3658723
 
-server 3|localhost|11224 bytes: 3780740
+server 3|localhost|11224 bytes: 3866224
 
-server 4|localhost|11225 bytes: 3124164
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|6666|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
-ketama_weighted:localhost|11221|1|160
-ketama_weighted:localhost|11222|1|160
-ketama_weighted:localhost|11223|1|160
-ketama_weighted:localhost|11224|1|160
-ketama_weighted:localhost|11225|1|160
+server 4|localhost|11225 bytes: 3307046
