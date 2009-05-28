@@ -3,6 +3,8 @@
   * Realigned all structures to remove padding (and line up important bits for 64bit caches.
   * Remove some of sprintf() in storage calls().
   * Removed printf() in stat call for unknown stat member.
+  * memcached_generate_hash() function added.
+  * Added tests to make sure all hash functions are stable.
 
 0.29 Tue May 19 08:26:48 PDT 2009
   * Fixed malloc usage to calloc for spots where we need zero filled memory. 

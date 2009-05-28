@@ -163,7 +163,11 @@ void memcached_quit(memcached_st *ptr);
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
 uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
+
+/* The two public hash bits */
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm);
+uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length);
+
 memcached_return memcached_flush_buffers(memcached_st *mem);
 
 /* Server Public functions */

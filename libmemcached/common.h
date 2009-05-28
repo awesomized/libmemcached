@@ -97,7 +97,6 @@ memcached_return memcached_connect(memcached_server_st *ptr);
 memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
-uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++

@@ -3272,7 +3272,7 @@ static test_return noreply_test(memcached_st *memc)
     for (int x=0; x < 100; ++x)
     {
       char key[10];
-      size_t len=sprintf(key, "%d", x);
+      size_t len= sprintf(key, "%d", x);
       switch (count)
       {
       case 0:
@@ -3312,7 +3312,7 @@ static test_return noreply_test(memcached_st *memc)
     for (int x=0; x < 100; ++x)
     {
       char key[10];
-      size_t len=sprintf(key, "%d", x);
+      size_t len= sprintf(key, "%d", x);
       size_t length;
       uint32_t flags;
       char* value=memcached_get(memc, key, strlen(key),
@@ -3833,6 +3833,228 @@ static test_return hsieh_avaibility_test (memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static char *list[]=
+{
+  "apple",
+  "beat",
+  "carrot",
+  "daikon",
+  "eggplant",
+  "flower",
+  "green",
+  "hide",
+  "ick",
+  "jack",
+  "kick",
+  "lime",
+  "mushrooms",
+  "nectarine",
+  "orange",
+  "peach",
+  "quant",
+  "ripen",
+  "strawberry",
+  "tang",
+  "up",
+  "volumne",
+  "when",
+  "yellow",
+  "zip",
+  NULL
+};
+
+static test_return md5_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  3195025439, 2556848621, 3724893440, 3332385401, 245758794, 2550894432, 
+                        121710495, 3053817768, 1250994555, 1862072655, 2631955953, 2951528551, 
+                        1451250070, 2820856945, 2060845566, 3646985608, 2138080750, 217675895, 
+                        2230934345, 1234361223, 3968582726, 2455685270, 1293568479, 199067604, 
+                        2042482093 };
+
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MD5);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return crc_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  10542, 22009, 14526, 19510, 19432, 10199, 20634, 9369, 11511, 10362,
+                        7893, 31289, 11313, 9354, 7621, 30628, 15218, 25967, 2695, 9380, 
+                        17300, 28156, 9192, 20484, 16925 };
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_CRC);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return fnv1_64_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  473199127, 4148981457, 3971873300, 3257986707, 1722477987, 2991193800, 
+                        4147007314, 3633179701, 1805162104, 3503289120, 3395702895, 3325073042,
+                        2345265314, 3340346032, 2722964135, 1173398992, 2815549194, 2562818319,
+                        224996066, 2680194749, 3035305390, 246890365, 2395624193, 4145193337,
+                        1801941682 };
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_64);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return fnv1a_64_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  1488911807, 2500855813, 1510099634, 1390325195, 3647689787, 3241528582,
+                        1669328060, 2604311949, 734810122, 1516407546, 560948863, 1767346780,
+                        561034892, 4156330026, 3716417003, 3475297030, 1518272172, 227211583,
+                        3938128828, 126112909, 3043416448, 3131561933, 1328739897, 2455664041,
+                        2272238452 }; 
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_64);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return fnv1_32_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  67176023, 1190179409, 2043204404, 3221866419, 2567703427, 3787535528, 4147287986,
+                        3500475733, 344481048, 3865235296, 2181839183, 119581266, 510234242, 4248244304,
+                        1362796839, 103389328, 1449620010, 182962511, 3554262370, 3206747549, 1551306158,
+                        4127558461, 1889140833, 2774173721, 1180552018 };
+
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_32);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return fnv1a_32_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  280767167, 2421315013, 3072375666, 855001899, 459261019, 3521085446, 18738364,
+                        1625305005, 2162232970, 777243802, 3323728671, 132336572, 3654473228, 260679466,
+                        1169454059, 2698319462, 1062177260, 235516991, 2218399068, 405302637, 1128467232,
+                        3579622413, 2138539289, 96429129, 2877453236 };
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_32);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return hsieh_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+#ifdef HAVE_HSIEH_HASH
+  uint32_t values[]= {  3738850110, 3636226060, 3821074029, 3489929160, 3485772682, 80540287,
+                        1805464076, 1895033657, 409795758, 979934958, 3634096985, 1284445480,
+                        2265380744, 707972988, 353823508, 1549198350, 1327930172, 9304163,
+                        4220749037, 2493964934, 2777873870, 2057831732, 1510213931, 2027828987,
+                        3395453351 };
+#else
+  uint32_t values[]= {  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+#endif
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_HSIEH);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return murmur_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= { 473199127, 4148981457, 3971873300, 3257986707, 1722477987, 2991193800,
+                        4147007314, 3633179701, 1805162104, 3503289120, 3395702895, 3325073042,
+                        2345265314, 3340346032, 2722964135, 1173398992, 2815549194, 2562818319,
+                        224996066, 2680194749, 3035305390, 246890365, 2395624193, 4145193337,
+                        1801941682 };
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_64);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return jenkins_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  char **ptr;
+  uint32_t values[]= {  1442444624, 4253821186, 1885058256, 2120131735, 3261968576, 3515188778,
+                        4232909173, 4288625128, 1812047395, 3689182164, 2502979932, 1214050606,
+                        2415988847, 1494268927, 1025545760, 3920481083, 4153263658, 3824871822,
+                        3072759809, 798622255, 3065432577, 1453328165, 2691550971, 3408888387,
+                        2629893356 };
+
+
+  for (ptr= list, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val; 
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_JENKINS);
+    assert(values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4021,6 +4243,19 @@ test_st ketama_auto_eject_hosts[] ={
   {0, 0, 0}
 };
 
+test_st hash_tests[] ={
+  {"md5", 0, md5_run },
+  {"crc", 0, crc_run },
+  {"fnv1_64", 0, fnv1_64_run },
+  {"fnv1a_64", 0, fnv1a_64_run },
+  {"fnv1_32", 0, fnv1_32_run },
+  {"fnv1a_32", 0, fnv1a_32_run },
+  {"hsieh", 0, hsieh_run },
+  {"murmur", 0, murmur_run },
+  {"jenkis", 0, jenkins_run },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"hsieh_availability",0,0,hsieh_availability},
   {"udp_setup", init_udp, 0, udp_setup_server_tests},
@@ -4065,6 +4300,7 @@ collection_st collection[] ={
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
+  {"test_hashes", 0, 0, hash_tests},
   {0, 0, 0, 0}
 };
 

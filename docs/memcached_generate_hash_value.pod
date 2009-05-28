@@ -15,6 +15,11 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                    size_t key_length,
                                    memcached_hash hash_algorithm);
 
+  uint32_t 
+    memcached_generate_hash (memcached_st *ptr,
+                             const char *key, 
+                             size_t key_length);
+
 =head1 DESCRIPTION
 
 memcached_generate_hash_value() allows you to hash a key using one of
@@ -24,6 +29,10 @@ for normal memcache operations.
 
 The allowed hash algorithm constants are listed in the manpage for
 memcached_behavior_set().
+
+memcached_generate_hash() takes a memcached_st struture and produces
+the hash value that would have been generated based on the defaults
+of the memcached_st structure.
 
 =head1 RETURN
 
