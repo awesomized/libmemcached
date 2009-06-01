@@ -2672,7 +2672,11 @@ static test_return  generate_data_with_stats(memcached_st *memc)
 
   for (host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
   {
-      printf("\nserver %u|%s|%u bytes: %llu\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (unsigned long long)(stat_p + host_index)->bytes);
+    /* This test was changes so that "make test" would work properlly */
+#ifdef DEBUG
+    printf("\nserver %u|%s|%u bytes: %llu\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (unsigned long long)(stat_p + host_index)->bytes);
+#endif
+    assert((unsigned long long)(stat_p + host_index)->bytes);
   }
 
   memcached_stat_free(NULL, stat_p);

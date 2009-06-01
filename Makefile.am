@@ -18,16 +18,16 @@ test-no-outputdiff:
 	@(cd tests; ${MAKE} test-no-outputdiff)
 
 fedora:
-	rm ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
-	rm ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
+	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
+	rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
 	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
 	rpmbuild -ba support/libmemcached.spec
 	cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
 generic:
-	rm ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
-	rm ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
+	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
+	rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
 	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
 	rpmbuild -ba support/libmemcached.spec
 	cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .

@@ -42,7 +42,7 @@ struct memcached_continuum_item_st {
   uint32_t value;
 };
 
-#define LIBMEMCACHED_VERSION_STRING "0.29"
+#define LIBMEMCACHED_VERSION_STRING "0.30"
 
 struct memcached_analysis_st {
   uint32_t average_item_size;

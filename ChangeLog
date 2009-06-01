@@ -1,5 +1,5 @@
-0.30
-  * Added memcachd_dump command (and framework for memdump tool)
+0.30 Sun May 31 17:31:52 PDT 2009
+  * Added memcachd_dump command (and framework for memdump tool).
   * Realigned all structures to remove padding (and line up important bits for 64bit caches.
   * Remove some of sprintf() in storage calls().
   * Removed printf() in stat call for unknown stat member.
