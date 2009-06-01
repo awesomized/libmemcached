@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_flush
+memcached_flush - wipe contents of memcached servers
 
 =head1 LIBRARY
 

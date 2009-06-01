@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_dump
+memcached_dump - get a list of keys found on memcached servers
 
 =head1 LIBRARY
 
