@@ -42,7 +42,9 @@ static char *storage_op_string(memcached_storage_action verb)
   /* NOTREACHED */
 }
 
-static memcached_return memcached_send_binary(memcached_server_st* server, 
+static memcached_return memcached_send_binary(memcached_st *ptr,
+                                              const char *master_key, 
+                                              size_t master_key_length,
                                               const char *key, 
                                               size_t key_length, 
                                               const char *value, 
@@ -80,12 +82,13 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
-  server_key= memcached_generate_hash(ptr, master_key, master_key_length);
-
   if (ptr->flags & MEM_BINARY_PROTOCOL)
-    return memcached_send_binary(&ptr->hosts[server_key], key, key_length, 
-                                 value, value_length, expiration, 
+    return memcached_send_binary(ptr, master_key, master_key_length,
+                                 key, key_length,
+                                 value, value_length, expiration,
                                  flags, cas, verb);
+
+  server_key= memcached_generate_hash(ptr, master_key, master_key_length);
 
   if (cas)
     write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -408,8 +411,10 @@ static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
 
 
 
-static memcached_return memcached_send_binary(memcached_server_st* server, 
-                                              const char *key, 
+static memcached_return memcached_send_binary(memcached_st *ptr,
+                                              const char *master_key, 
+                                              size_t master_key_length,
+                                              const char *key,
                                               size_t key_length, 
                                               const char *value, 
                                               size_t value_length, 
@@ -421,6 +426,9 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
   char flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
+  uint32_t server_key= memcached_generate_hash(ptr, master_key, 
+                                               master_key_length);
+  memcached_server_st *server= &ptr->hosts[server_key];
   bool noreply= server->root->flags & MEM_NOREPLY;
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
@@ -461,7 +469,26 @@ static memcached_return memcached_send_binary(memcached_server_st* server,
     memcached_io_reset(server);
     return MEMCACHED_WRITE_FAILURE;
   }
-  
+
+  if (verb == SET_OP && ptr->number_of_replicas > 0) 
+  {
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
+
+    for (int x= 0; x < ptr->number_of_replicas; ++x)
+    {
+      ++server_key;
+      if (server_key == ptr->number_of_hosts)
+        server_key= 0;
+
+      memcached_server_st *srv= &ptr->hosts[server_key];
+      if ((memcached_do(srv, (const char*)request.bytes, 
+                        send_length, 0) != MEMCACHED_SUCCESS) ||
+          (memcached_io_write(srv, key, key_length, 0) == -1) ||
+          (memcached_io_write(srv, value, value_length, flush) == -1))
+        memcached_io_reset(server);
+    }
+  }
+
   if (flush == 0)
     return MEMCACHED_BUFFERED;
 

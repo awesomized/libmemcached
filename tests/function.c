@@ -235,6 +235,7 @@ static test_return  clone_test(memcached_st *memc)
     assert(clone->server_failure_limit == memc->server_failure_limit);
     assert(clone->snd_timeout == memc->snd_timeout);
     assert(clone->user_data == memc->user_data);
+    assert(clone->number_of_replicas == memc->number_of_replicas);
 
     memcached_free(clone);
   }
@@ -1541,6 +1542,9 @@ static test_return  behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
   assert(value > 0);
 
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, value + 1);
+  assert((value + 1) == memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
   return 0;
 }
 
@@ -3036,6 +3040,24 @@ static memcached_return  pre_binary(memcached_st *memc)
   return rc;
 }
 
+static memcached_return pre_replication(memcached_st *memc)
+{
+  memcached_return rc= MEMCACHED_FAILURE;
+  if (pre_binary(memc) == MEMCACHED_SUCCESS) 
+  {
+    /*
+     * Make sure that we store the item on all servers 
+     * (master + replicas == number of servers) 
+     */
+    rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 
+                               memc->number_of_hosts - 1);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS) == memc->number_of_hosts - 1);
+  }
+
+  return rc;
+}
+
 static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 {
   free(mem);
@@ -3497,6 +3519,175 @@ static test_return connection_pool_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 #endif
+
+static test_return replication_set_test(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_st *clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+
+  rc= memcached_set(memc, "bubba", 5, "0", 1, 0, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /*
+  ** "bubba" should now be stored on all of our servers. We don't have an
+  ** easy to use API to address each individual server, so I'll just iterate
+  ** through a bunch of "master keys" and I should most likely hit all of the
+  ** servers...
+  */
+  for (int x= 'a'; x <= 'z'; ++x)
+  {
+    char key[2]= { [0]= (char)x };
+    size_t len;
+    uint32_t flags;
+    char *val= memcached_get_by_key(clone, key, 1, "bubba", 5, 
+                                    &len, &flags, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(val != NULL);
+    free(val);
+  }
+
+  memcached_free(clone);
+
+  return TEST_SUCCESS;
+}
+
+static test_return replication_get_test(memcached_st *memc)
+{
+  memcached_return rc;
+
+  /*
+   * Don't do the following in your code. I am abusing the internal details
+   * within the library, and this is not a supported interface.
+   * This is to verify correct behavior in the library
+   */
+  for (int host= 0; host < memc->number_of_hosts; ++host) {
+    memcached_st *clone= memcached_clone(NULL, memc);
+    clone->hosts[host].port= 0;
+
+    for (int x= 'a'; x <= 'z'; ++x)
+    {
+      char key[2]= { [0]= (char)x };
+      size_t len;
+      uint32_t flags;
+      char *val= memcached_get_by_key(clone, key, 1, "bubba", 5, 
+                                      &len, &flags, &rc);
+      assert(rc == MEMCACHED_SUCCESS);
+      assert(val != NULL);
+      free(val);
+    }
+
+    memcached_free(clone);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return replication_mget_test(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_st *clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+
+  char *keys[]= { "bubba", "key1", "key2", "key3" };
+  size_t len[]= { 5, 4, 4, 4 };
+
+  for (int x=0; x< 4; ++x)
+  {
+    rc= memcached_set(memc, keys[x], len[x], "0", 1, 0, 0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  /*
+   * Don't do the following in your code. I am abusing the internal details
+   * within the library, and this is not a supported interface.
+   * This is to verify correct behavior in the library
+   */
+  memcached_result_st result_obj;
+  for (int host= 0; host < clone->number_of_hosts; ++host) {
+    memcached_st *clone= memcached_clone(NULL, memc);
+    clone->hosts[host].port= 0;
+
+    for (int x= 'a'; x <= 'z'; ++x)
+    {
+      char key[2]= { [0]= (char)x };
+
+      rc= memcached_mget_by_key(clone, key, 1, keys, len, 4);
+      assert(rc == MEMCACHED_SUCCESS);
+
+      memcached_result_st *results= memcached_result_create(clone, &result_obj);
+      assert(results);
+
+      int hits= 0;
+      while ((results= memcached_fetch_result(clone, &result_obj, &rc)) != NULL)
+      {
+        ++hits;
+      }
+      assert(hits == 4);
+      memcached_result_free(&result_obj);
+    }
+
+    memcached_free(clone);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return replication_delete_test(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_st *clone= memcached_clone(NULL, memc);
+  /* Delete the items from all of the servers except 1 */
+  uint64_t repl= memcached_behavior_get(memc,
+                                        MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, --repl);
+
+  char *keys[]= { "bubba", "key1", "key2", "key3" };
+  size_t len[]= { 5, 4, 4, 4 };
+
+  for (int x=0; x< 4; ++x)
+  {
+    rc= memcached_delete_by_key(memc, keys[0], len[0], keys[x], len[x], 0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  /*
+   * Don't do the following in your code. I am abusing the internal details
+   * within the library, and this is not a supported interface.
+   * This is to verify correct behavior in the library
+   */
+  int hash= memcached_generate_hash(memc, keys[0], len[0]);
+  for (int x= 0; x < (repl + 1); ++x) {
+    clone->hosts[hash].port= 0;
+    if (++hash == clone->number_of_hosts)
+      hash= 0;
+  }
+
+  memcached_result_st result_obj;
+  for (int host= 0; host < clone->number_of_hosts; ++host) {
+    for (int x= 'a'; x <= 'z'; ++x)
+    {
+      char key[2]= { [0]= (char)x };
+
+      rc= memcached_mget_by_key(clone, key, 1, keys, len, 4);
+      assert(rc == MEMCACHED_SUCCESS);
+
+      memcached_result_st *results= memcached_result_create(clone, &result_obj);
+      assert(results);
+
+      int hits= 0;
+      while ((results= memcached_fetch_result(clone, &result_obj, &rc)) != NULL)
+      {
+        ++hits;
+      }
+      assert(hits == 4);
+      memcached_result_free(&result_obj);
+    }
+  }
+  memcached_free(clone);
+
+  return TEST_SUCCESS;
+}
 
 static void increment_request_id(uint16_t *id)
 {
@@ -4202,6 +4393,14 @@ test_st user_tests[] ={
   {0, 0, 0}
 };
 
+test_st replication_tests[]= {
+  {"set", 1, replication_set_test },
+  {"get", 0, replication_get_test },
+  {"mget", 0, replication_mget_test },
+  {"delete", 0, replication_delete_test },
+  {0, 0, 0}
+};
+
 test_st generate_tests[] ={
   {"generate_pairs", 1, generate_pairs },
   {"generate_data", 1, generate_data },
@@ -4305,6 +4504,7 @@ collection_st collection[] ={
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
   {"test_hashes", 0, 0, hash_tests},
+  {"replication", pre_replication, 0, replication_tests},
   {0, 0, 0, 0}
 };
 

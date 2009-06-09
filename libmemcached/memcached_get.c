@@ -143,12 +143,6 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
-  if (ptr->flags & MEM_SUPPORT_CAS)
-  {
-    get_command= "gets ";
-    get_command_length= 5;
-  }
-
   if (master_key && master_key_length)
   {
     if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((char **)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
@@ -180,6 +174,12 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   if (ptr->flags & MEM_BINARY_PROTOCOL)
     return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys, 
                               key_length, number_of_keys);
+
+  if (ptr->flags & MEM_SUPPORT_CAS)
+  {
+    get_command= "gets ";
+    get_command_length= 5;
+  }
 
   /* 
     If a server fails we warn about errors and start all over with sending keys
@@ -256,7 +256,7 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
   return rc;
 }
 
-static memcached_return binary_mget_by_key(memcached_st *ptr, 
+static memcached_return simple_binary_mget(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
                                            char **keys, size_t *key_length, 
@@ -354,6 +354,174 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
       }
     }
 
+
+  return rc;
+}
+
+static memcached_return replication_binary_mget(memcached_st *ptr,
+                                             uint32_t* hash, bool* dead_servers,
+                                             char **keys, size_t *key_length,
+                                             unsigned int number_of_keys)
+{
+  memcached_return rc= MEMCACHED_NOTFOUND;
+  uint32_t x;
+
+  int flush= number_of_keys == 1;
+
+  for (int replica = 0; replica <= ptr->number_of_replicas; ++replica)
+  {
+    bool success= true;    
+    
+    for (uint32_t x= 0; x < number_of_keys; ++x)
+    {
+      if (hash[x] == ptr->number_of_hosts)
+        continue; /* Already successfully sent */
+
+      uint32_t server= hash[x] + replica;
+      while (server >= ptr->number_of_hosts)
+        server -= ptr->number_of_hosts;
+
+      if (dead_servers[server])
+        continue;
+
+      if (memcached_server_response_count(&ptr->hosts[server]) == 0)
+      {
+        rc= memcached_connect(&ptr->hosts[server]);
+        if (rc != MEMCACHED_SUCCESS)
+        {
+          memcached_io_reset(&ptr->hosts[server]);
+          dead_servers[server]= true;
+          success= false;
+          continue;
+        }
+      }
+
+      protocol_binary_request_getk request= {.bytes= {0}};
+      request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+      if (number_of_keys == 1)
+        request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
+      else
+        request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
+
+      request.message.header.request.keylen= htons((uint16_t)key_length[x]);
+      request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+      request.message.header.request.bodylen= htonl(key_length[x]);
+
+      if ((memcached_io_write(&ptr->hosts[server], request.bytes,
+                              sizeof(request.bytes), 0) == -1) ||
+          (memcached_io_write(&ptr->hosts[server], keys[x],
+                              key_length[x], flush) == -1))
+      {
+        memcached_io_reset(&ptr->hosts[server]);
+        dead_servers[server]= true;
+        success= false;
+        continue;
+      }
+      memcached_server_response_increment(&ptr->hosts[server]);
+    }
+
+    if (number_of_keys > 1)
+    {
+      /*
+       * Send a noop command to flush the buffers
+       */
+      protocol_binary_request_noop request= {.bytes= {0}};
+      request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
+      request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+
+      for (x= 0; x < ptr->number_of_hosts; x++)
+        if (memcached_server_response_count(&ptr->hosts[x]))
+        {
+          if (memcached_io_write(&ptr->hosts[x], request.bytes,
+                                 sizeof(request.bytes), 1) == -1)
+          {
+            memcached_io_reset(&ptr->hosts[x]);
+            dead_servers[x]= true;
+            success= false;
+          }
+          memcached_server_response_increment(&ptr->hosts[x]);
+
+          /* mark all of the messages bound for this server as sent! */
+          for (uint32_t x= 0; x < number_of_keys; ++x)
+            if (hash[x] == x)
+              hash[x]= ptr->number_of_hosts;
+        }
+    }
+
+    if (success) {
+      break;
+    }
+  }
+
+  return rc;
+}
+
+static memcached_return binary_mget_by_key(memcached_st *ptr,
+                                           unsigned int master_server_key,
+                                           bool is_master_key_set,
+                                           char **keys, size_t *key_length,
+                                           unsigned int number_of_keys)
+{
+  memcached_return rc;
+
+  if (ptr->number_of_replicas == 0) {
+    rc= simple_binary_mget(ptr, master_server_key, is_master_key_set,
+                           keys, key_length, number_of_keys);
+  } else {
+    uint32_t* hash;
+    bool* dead_servers;
+
+    if (ptr->call_malloc)
+    {
+      hash= ptr->call_malloc(ptr, sizeof(uint32_t) * number_of_keys);
+      dead_servers= ptr->call_malloc(ptr, sizeof(bool) * ptr->number_of_hosts);
+    }
+    else
+    {
+      hash = malloc(sizeof(uint32_t) * number_of_keys);
+      dead_servers= malloc(sizeof(bool) * ptr->number_of_hosts);
+    }
+
+    if (hash == NULL || dead_servers == NULL)
+    {
+      if (ptr->call_free)
+      {
+        if (hash != NULL) ptr->call_free(ptr, hash);
+        if (dead_servers != NULL) ptr->call_free(ptr, dead_servers);
+      }
+      else
+      {
+        free(hash); /* No need to check for NULL (just look in the C spec) */
+        free(dead_servers);
+      }
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    }
+
+    memset(dead_servers, 0, sizeof(bool) * ptr->number_of_hosts);
+
+    if (is_master_key_set)
+      for (unsigned int x= 0; x < number_of_keys; ++x)
+        hash[x]= master_server_key;
+    else
+      for (unsigned int x= 0; x < number_of_keys; ++x)
+        hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
+
+    rc= replication_binary_mget(ptr, hash, dead_servers, keys, key_length, number_of_keys);
+
+    if (ptr->call_free)
+    {
+      ptr->call_free(ptr, hash);
+      ptr->call_free(ptr, dead_servers);
+    }
+    else
+    {
+      free(hash);
+      free(dead_servers);
+    }
+
+    return MEMCACHED_SUCCESS;
+  }
 
   return rc;
 }
