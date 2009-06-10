@@ -20,6 +20,9 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
+
+  memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
+
   result_ptr= memcached_result_create(ptr, &ptr->result);
   WATCHPOINT_ASSERT(result_ptr);
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
@@ -45,20 +48,10 @@ void memcached_free(memcached_st *ptr)
     ptr->on_cleanup(ptr);
 
   if (ptr->continuum)
-  {
-    if (ptr->call_free)
-      ptr->call_free(ptr, ptr->continuum);
-    else
-      free(ptr->continuum);
-  }
+    ptr->call_free(ptr, ptr->continuum);
 
   if (ptr->is_allocated)
-  {
-    if (ptr->call_free)
-      ptr->call_free(ptr, ptr);
-    else
-      free(ptr);
-  }
+    ptr->call_free(ptr, ptr);
   else
     memset(ptr, 0, sizeof(memcached_st));
 }

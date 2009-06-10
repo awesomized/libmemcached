@@ -25,6 +25,7 @@ typedef memcached_return (*memcached_cleanup_func)(memcached_st *ptr);
 typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
 typedef void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
 typedef void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
+typedef void *(*memcached_calloc_function)(memcached_st *ptr, size_t nelem, const size_t elsize);
 typedef memcached_return (*memcached_execute_function)(memcached_st *ptr, memcached_result_st *result, void *context);
 typedef memcached_return (*memcached_server_function)(memcached_st *ptr, memcached_server_st *server, void *context);
 typedef memcached_return (*memcached_trigger_key)(memcached_st *ptr,  

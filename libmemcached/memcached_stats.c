@@ -216,10 +216,7 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat,
     return NULL;
   }
 
-  if (ptr->call_malloc)
-    ret= ptr->call_malloc(ptr, length + 1);
-  else
-    ret= malloc(length + 1);
+  ret= ptr->call_malloc(ptr, length + 1);
   memcpy(ret, buffer, length);
   ret[length]= '\0';
 
@@ -369,10 +366,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
     return NULL;
   }
 
-  if (ptr->call_malloc)
-    stats= (memcached_stat_st *)ptr->call_malloc(ptr, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
-  else
-    stats= (memcached_stat_st *)calloc(1, sizeof(memcached_stat_st)*(ptr->number_of_hosts));
+  stats= ptr->call_calloc(ptr, ptr->number_of_hosts, sizeof(memcached_stat_st));
 
   if (!stats)
   {
@@ -428,10 +422,7 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat __att
   char **list;
   size_t length= sizeof(memcached_stat_keys);
 
-  if (ptr->call_malloc)
-    list= (char **)ptr->call_malloc(ptr, length);
-  else
-    list= (char **)calloc(1, length);
+  list= ptr->call_malloc(ptr, length);
 
   if (!list)
   {
@@ -454,7 +445,7 @@ void memcached_stat_free(memcached_st *ptr, memcached_stat_st *stat)
     return;
   }
 
-  if (ptr && ptr->call_free)
+  if (ptr)
     ptr->call_free(ptr, stat);
   else
     free(stat);

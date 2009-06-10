@@ -64,25 +64,15 @@ will copy the pointer to the clone.
 
 =item  MEMCACHED_CALLBACK_MALLOC_FUNCTION
 
-This alllows yout to pass in a customized version of malloc that will be used instead of the builtin malloc(3) call.
-Your malloc must zero all memory.
-The prototype for this is:
-
-void *(*memcached_malloc_function)(memcached_st *ptr, const size_t size);
+DEPRECATED: use memcached_set_memory_allocators instead.
 
 =item  MEMCACHED_CALLBACK_REALLOC_FUNCTION
 
-This alllows yout to pass in a customized version of realloc that will be used instead of the builtin realloc(3) call.
-The prototype for this is:
-
-void *(*memcached_realloc_function)(memcached_st *ptr, void *mem, const size_t size);
+DEPRECATED: use memcached_set_memory_allocators instead.
 
 =item  MEMCACHED_CALLBACK_FREE_FUNCTION
 
-This alllows yout to pass in a customized version of realloc that will be used instead of the builtin free(3) call.
-The prototype for this is:
-
-typedef void (*memcached_free_function)(memcached_st *ptr, void *mem);
+DEPRECATED: use memcached_set_memory_allocators instead.
 
 =item  MEMCACHED_CALLBACK_GET_FAILURE
 
