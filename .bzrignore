@@ -105,6 +105,7 @@ libmemcached/jenkins_hash.lo
 libmemcached/libmemcached.la
 libmemcached/libmemcached_config.h
 libmemcached/libmemcached_config.h.in
+libmemcached/memcached_configure.h
 libmemcached/md5.lo
 libmemcached/memcached.lo
 libmemcached/memcached_analyze.lo

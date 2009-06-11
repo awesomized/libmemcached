@@ -84,6 +84,7 @@ sinclude(m4/memcached.m4)
 sinclude(m4/setsockopt.m4)
 sinclude(m4/hsieh.m4)
 sinclude(m4/util.m4)
+sinclude(m4/deprecated.m4)
 
 dnl This is likely subverted by vpath builds. How do we find the original
 dnl source dir in the configure step of a vpath build?
@@ -158,6 +159,7 @@ AC_CONFIG_FILES([
   tests/Makefile
   docs/Makefile
   libmemcached/Makefile
+  libmemcached/memcached_configure.h
   libmemcachedutil/Makefile
   support/Makefile
   support/libmemcached.pc
