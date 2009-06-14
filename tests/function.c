@@ -215,6 +215,7 @@ static test_return  clone_test(memcached_st *memc)
     assert(clone->call_free == memc->call_free);
     assert(clone->call_malloc == memc->call_malloc);
     assert(clone->call_realloc == memc->call_realloc);
+    assert(clone->call_calloc == memc->call_calloc);
     assert(clone->connect_timeout == memc->connect_timeout);
     assert(clone->delete_trigger == memc->delete_trigger);
     assert(clone->distribution == memc->distribution);

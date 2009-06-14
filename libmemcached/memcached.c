@@ -98,6 +98,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   new_clone->call_free= source->call_free;
   new_clone->call_malloc= source->call_malloc;
   new_clone->call_realloc= source->call_realloc;
+  new_clone->call_calloc= source->call_calloc;
   new_clone->get_key_failure= source->get_key_failure;
   new_clone->delete_trigger= source->delete_trigger;
   new_clone->server_failure_limit= source->server_failure_limit;
