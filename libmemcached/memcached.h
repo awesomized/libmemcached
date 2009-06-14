@@ -243,6 +243,9 @@ void memcached_get_memory_allocators(memcached_st *ptr,
                                      memcached_realloc_function *mem_realloc,
                                      memcached_calloc_function *mem_calloc);
 
+void *memcached_get_user_data(memcached_st *ptr);
+void *memcached_set_user_data(memcached_st *ptr, void *data);
+
 #ifdef __cplusplus
 }
 #endif

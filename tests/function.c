@@ -263,6 +263,16 @@ static test_return  clone_test(memcached_st *memc)
   return 0;
 }
 
+static test_return userdata_test(memcached_st *memc)
+{
+  void* foo;
+  assert(memcached_set_user_data(memc, foo) == NULL);
+  assert(memcached_get_user_data(memc) == foo);
+  assert(memcached_set_user_data(memc, NULL) == foo);
+  
+  return TEST_SUCCESS;
+}
+
 static test_return  connection_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -4131,6 +4141,7 @@ test_st tests[] ={
   {"connection_test", 0, connection_test},
   {"callback_test", 0, callback_test},
   {"behavior_test", 0, behavior_test},
+  {"userdata_test", 0, userdata_test},
   {"error", 0, error_test },
   {"set", 0, set_test },
   {"set2", 0, set_test2 },

@@ -97,6 +97,8 @@ docs/memslap.1
 docs/memstat.1
 docs/memcached_set_memory_allocators.3
 docs/memcached_get_memory_allocators.3
+docs/memcached_set_user_data.3
+docs/memcached_get_user_data.3
 libmemcached/.deps
 libmemcached/.libs
 libmemcached/Makefile

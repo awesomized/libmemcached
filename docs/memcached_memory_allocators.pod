@@ -46,6 +46,11 @@ all functions to reset them to the default values.
 memcached_get_memory_allocators() is used to get the currently used memory
 allocators by a mamcached handle.
 
+The first argument to the memory allocator functions is a pointer to a
+memcached structure, and you may use the memcached_set_user_data() and
+memcached_get_user_data() to store a user-specific value to each memcached
+structure.
+
 =head1 RETURN
 
 memcached_set_memory_allocators() return MEMCACHED_SUCCESS upon success, 
@@ -62,7 +67,7 @@ Trond Norbye, E<lt>trond.norbye@sun.comE<gt>
 
 =head1 SEE ALSO
 
-memcached(1) libmemcached(3)
+memcached(1) libmemcached(3) memcached_get_user_data(3) memcached_set_user_data(3)
 
 =cut
 
