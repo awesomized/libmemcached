@@ -470,7 +470,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
     return MEMCACHED_WRITE_FAILURE;
   }
 
-  if (verb == SET_OP && ptr->number_of_replicas > 0) 
+  unlikely (verb == SET_OP && ptr->number_of_replicas > 0) 
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
 

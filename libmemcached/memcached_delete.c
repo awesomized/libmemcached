@@ -129,7 +129,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
     rc= MEMCACHED_WRITE_FAILURE;
   }
 
-  if (ptr->number_of_replicas > 0) 
+  unlikely (ptr->number_of_replicas > 0) 
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
 

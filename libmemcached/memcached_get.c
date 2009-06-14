@@ -465,7 +465,8 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
 {
   memcached_return rc;
 
-  if (ptr->number_of_replicas == 0) {
+  if (ptr->number_of_replicas == 0) 
+  {
     rc= simple_binary_mget(ptr, master_server_key, is_master_key_set,
                            keys, key_length, number_of_keys);
   } else {
