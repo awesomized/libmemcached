@@ -206,7 +206,6 @@ AC_ARG_ENABLE([unreachable],
 
 dnl We can't do these two warnings, so turn them off
 W_STRICT_ALIASING="-Wno-strict-aliasing"
-ac_cv_safe_to_use_Wconversion_=no
 
 if test "$GCC" = "yes"
 then
@@ -228,31 +227,6 @@ then
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
   CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy  -Wold-style-cast -Weffc++ -Wno-long-long"
 
-  AC_CACHE_CHECK([whether it is safe to use -Wconversion],
-    [ac_cv_safe_to_use_Wconversion_],
-    [save_CFLAGS="$CFLAGS"
-     CFLAGS="-Werror -Wconversion"
-     AC_COMPILE_IFELSE(
-       [AC_LANG_PROGRAM(
-         [[
-#include <netinet/in.h>
-void foo(in_port_t port)
-{
-  return;
-}
-         ]],[[
-in_port_t x= 0;
-foo(x);
-         ]])],
-       [ac_cv_safe_to_use_Wconversion_=yes],
-       [ac_cv_safe_to_use_Wconversion_=no])
-     CFLAGS="$save_CFLAGS"])
-  dnl disable -Wconversion for now. Will fix later
-  AS_IF([test "$ac_cv_safe_to_use_Wconversion_" = "yes"],
-        [
-          CC_WARNINGS="${CC_WARNINGS} -Wconversion"
-          CXX_WARNINGS="${CXX_WARNINGS} -Wconversion"
-        ])
 
   AC_CACHE_CHECK([whether it is safe to use -Wlogical-op],
     [ac_cv_safe_to_use_Wlogical_op_],
