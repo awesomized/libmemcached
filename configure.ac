@@ -150,9 +150,9 @@ AC_SEARCH_LIBS(floorf, m)
 
 DETECT_BYTEORDER
 ENABLE_UTILLIB
+ENABLE_DTRACE
 
 sinclude(m4/pod2man.m4)
-sinclude(m4/dtrace.m4)
 sinclude(m4/protocol_binary.m4)
 sinclude(m4/memcached.m4)
 sinclude(m4/setsockopt.m4)
