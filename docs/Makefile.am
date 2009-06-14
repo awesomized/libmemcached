@@ -31,7 +31,9 @@ EXTRA_DIST = libmemcached.pod\
 	memdump.pod\
 	memcached_flush_buffers.pod\
         memcached_analyze.pod\
-        memcached_generate_hash_value.pod
+        memcached_generate_hash_value.pod\
+        memcached_memory_allocators.pod\
+        memory_user_data.pod
 
 man_MANS = libmemcached.3\
 	libmemcached_examples.3\
@@ -95,7 +97,11 @@ man_MANS = libmemcached.3\
 	memcached_version.3\
         memcached_flush_buffers.3\
         memcached_dump.3\
-        memcached_generate_hash_value.3
+        memcached_generate_hash_value.3\
+        memcached_set_memory_allocators.3\
+        memcached_get_memory_allocators.3\
+        memcached_set_user_data.3\
+        memcached_get_user_data.3
 
 if BUILD_LIBMEMCACHEDUTIL
 man_MANS+= libmemcachedutil.3 \
@@ -307,6 +313,18 @@ memcached_analyze.3: memcached_analyze.pod
 memcached_generate_hash_value.3: memcached_generate_hash_value.pod
 	@POD2MAN@ -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_generate_hash_value.pod > memcached_generate_hash_value.3
 
+memcached_get_memory_allocators.3: memcached_memory_allocators.pod
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_memory_allocators.pod > memcached_get_memory_allocators.3
+
+memcached_set_memory_allocators.3: memcached_memory_allocators.pod
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_memory_allocators.pod > memcached_set_memory_allocators.3
+
+memcached_get_user_data.3: memcached_user_data.pod
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_get_user_data.3
+
+memcached_set_user_data.3: memcached_user_data.pod
+	@POD2MAN@ -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_set_user_data.3
+
 memcached_pool_create.3: memcached_pool.pod 
 	@POD2MAN@ -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_create.3
 
@@ -370,6 +388,8 @@ test:
 	podchecker $(top_srcdir)/docs/memflush.pod
 	podchecker $(top_srcdir)/docs/memcached_flush_buffers.pod
 	podchecker $(top_srcdir)/docs/memcached_pool.pod
+	podchecker $(top_srcdir)/docs/memcached_memory_allocators.pod
+	podchecker $(top_srcdir)/docs/memcached_user_data.pod
 
 html-local:
 	pod2htmltree "/libmemcached" .

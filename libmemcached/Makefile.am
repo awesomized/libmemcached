@@ -9,6 +9,7 @@ DTRACEFLAGS =           @DTRACEFLAGS@
 noinst_HEADERS = libmemcached_probes.h \
                  libmemcached_config.h \
 		 memcached_io.h \
+                 memcached_internal.h \
                  common.h \
                  memcached/protocol_binary.h @DTRACE_HEADER@
 
@@ -61,7 +62,8 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_verbosity.c \
 			  memcached_version.c \
 			  murmur_hash.c \
-			  jenkins_hash.c
+			  jenkins_hash.c \
+                          memcached_allocators.c
 
 if INCLUDE_HSIEH_SRC
 libmemcached_la_SOURCES += hsieh_hash.c

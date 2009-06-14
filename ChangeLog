@@ -1,3 +1,6 @@
+  * Added support for memcached_set_memory_allocators().
+  * Fixed bug in configure.ac for have_htoll.
+
 0.30 Sun May 31 17:31:52 PDT 2009
   * Added memcachd_dump command (and framework for memdump tool).
   * Realigned all structures to remove padding (and line up important bits for 64bit caches.
