@@ -204,10 +204,13 @@ AC_ARG_ENABLE([unreachable],
   [ac_warn_unreachable="no"])
 
 
+dnl We can't do these two warnings, so turn them off
+W_STRICT_ALIASING="-Wno-strict-aliasing"
+ac_cv_safe_to_use_Wconversion_=no
+
 if test "$GCC" = "yes"
 then
 
-  W_STRICT_ALIASING="-Wno-strict-aliasing"
 
   AS_IF([test "$ac_profiling" = "yes"],
         [CC_PROFILING="-pg"])
@@ -245,7 +248,7 @@ foo(x);
        [ac_cv_safe_to_use_Wconversion_=no])
      CFLAGS="$save_CFLAGS"])
   dnl disable -Wconversion for now. Will fix later
-  AS_IF([test "$ac_cv_safe_to_use_Wconversion_" = "disabled"],
+  AS_IF([test "$ac_cv_safe_to_use_Wconversion_" = "yes"],
         [
           CC_WARNINGS="${CC_WARNINGS} -Wconversion"
           CXX_WARNINGS="${CXX_WARNINGS} -Wconversion"
@@ -294,7 +297,7 @@ then
   AS_IF([test "$ac_profiling" = "yes"],
         [CC_PROFILING="-xinstrument=datarace"])
 
-  AS_IF([test "$ac_warn_fail" = "yes"],
+  AS_IF([test "$building_from_bzr" = "yes"],
         [W_FAIL="-errwarn=%all"])
 
   AC_CACHE_CHECK([whether E_PASTE_RESULT_NOT_TOKEN is usable],
