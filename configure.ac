@@ -151,11 +151,11 @@ AC_SEARCH_LIBS(floorf, m)
 DETECT_BYTEORDER
 ENABLE_UTILLIB
 ENABLE_DTRACE
+SETSOCKOPT_SANITY
 
 sinclude(m4/pod2man.m4)
 sinclude(m4/protocol_binary.m4)
 sinclude(m4/memcached.m4)
-sinclude(m4/setsockopt.m4)
 sinclude(m4/hsieh.m4)
 
 dnl TODO: Remove this define once we are using 2.61 across the board.
