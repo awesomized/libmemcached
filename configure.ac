@@ -197,14 +197,7 @@ AC_ARG_ENABLE([coverage],
     [ac_coverage="$enableval"],
     [ac_coverage="no"])
 
-AC_ARG_ENABLE([unreachable],
-  [AS_HELP_STRING([--enable-unreachable],
-    [Enable warnings about unreachable code @<:@default=no@:>@])],
-  [ac_warn_unreachable="$enableval"],
-  [ac_warn_unreachable="no"])
-
-
-dnl We can't do these two warnings, so turn them off
+dnl We can't do this warning, so turn off
 W_STRICT_ALIASING="-Wno-strict-aliasing"
 
 if test "$GCC" = "yes"
@@ -219,9 +212,6 @@ then
 
   AS_IF([test "$building_from_bzr" = "yes"],
         [W_FAIL="-Werror"])
-
-  AS_IF([test "$ac_warn_unreachable" = "yes"],
-        [W_UNREACHABLE="-Wunreachable-code"])
 
   BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef  -Wshadow -Wmissing-declarations ${W_STRICT_ALIASING}" 
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
