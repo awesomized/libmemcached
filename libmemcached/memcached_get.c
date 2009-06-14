@@ -473,33 +473,15 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
     uint32_t* hash;
     bool* dead_servers;
 
-    if (ptr->call_malloc)
-    {
-      hash= ptr->call_malloc(ptr, sizeof(uint32_t) * number_of_keys);
-      dead_servers= ptr->call_malloc(ptr, sizeof(bool) * ptr->number_of_hosts);
-    }
-    else
-    {
-      hash = malloc(sizeof(uint32_t) * number_of_keys);
-      dead_servers= malloc(sizeof(bool) * ptr->number_of_hosts);
-    }
+    hash= ptr->call_malloc(ptr, sizeof(uint32_t) * number_of_keys);
+    dead_servers= ptr->call_calloc(ptr, ptr->number_of_hosts, sizeof(bool));
 
     if (hash == NULL || dead_servers == NULL)
     {
-      if (ptr->call_free)
-      {
-        if (hash != NULL) ptr->call_free(ptr, hash);
-        if (dead_servers != NULL) ptr->call_free(ptr, dead_servers);
-      }
-      else
-      {
-        free(hash); /* No need to check for NULL (just look in the C spec) */
-        free(dead_servers);
-      }
+      ptr->call_free(ptr, hash);
+      ptr->call_free(ptr, dead_servers);
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     }
-
-    memset(dead_servers, 0, sizeof(bool) * ptr->number_of_hosts);
 
     if (is_master_key_set)
       for (unsigned int x= 0; x < number_of_keys; ++x)
@@ -508,18 +490,11 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
       for (unsigned int x= 0; x < number_of_keys; ++x)
         hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
-    rc= replication_binary_mget(ptr, hash, dead_servers, keys, key_length, number_of_keys);
+    rc= replication_binary_mget(ptr, hash, dead_servers, keys, 
+                                key_length, number_of_keys);
 
-    if (ptr->call_free)
-    {
-      ptr->call_free(ptr, hash);
-      ptr->call_free(ptr, dead_servers);
-    }
-    else
-    {
-      free(hash);
-      free(dead_servers);
-    }
+    ptr->call_free(ptr, hash);
+    ptr->call_free(ptr, dead_servers);
 
     return MEMCACHED_SUCCESS;
   }
