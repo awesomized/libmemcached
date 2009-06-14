@@ -116,6 +116,7 @@ struct memcached_st {
   memcached_free_function call_free;
   memcached_malloc_function call_malloc;
   memcached_realloc_function call_realloc;
+  memcached_calloc_function call_calloc;
   memcached_trigger_key get_key_failure;
   memcached_trigger_delete_key delete_trigger;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
@@ -230,10 +231,29 @@ void *memcached_callback_get(memcached_st *ptr,
 memcached_return memcached_dump(memcached_st *ptr, memcached_dump_func *function, void *context, uint32_t number_of_callbacks);
 
 
+memcached_return memcached_set_memory_allocators(memcached_st *ptr,
+                                                 memcached_malloc_function mem_malloc,
+                                                 memcached_free_function mem_free,
+                                                 memcached_realloc_function mem_realloc,
+                                                 memcached_calloc_function mem_calloc);
+
+void memcached_get_memory_allocators(memcached_st *ptr,
+                                     memcached_malloc_function *mem_malloc,
+                                     memcached_free_function *mem_free,
+                                     memcached_realloc_function *mem_realloc,
+                                     memcached_calloc_function *mem_calloc);
+
+void *memcached_get_user_data(memcached_st *ptr);
+void *memcached_set_user_data(memcached_st *ptr, void *data);
+
 #ifdef __cplusplus
 }
 #endif
 
 #include <libmemcached/memcached_storage.h>
+
+#ifdef MEMCACHED_INTERNAL
+#include <libmemcached/memcached_internal.h>
+#endif
 
 #endif /* __MEMCACHED_H__ */

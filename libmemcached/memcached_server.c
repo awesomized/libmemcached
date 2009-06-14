@@ -60,12 +60,7 @@ void memcached_server_free(memcached_server_st *ptr)
   }
 
   if (ptr->is_allocated)
-  {
-    if (ptr->root && ptr->root->call_free)
-      ptr->root->call_free(ptr->root, ptr);
-    else
-      free(ptr);
-  }
+    ptr->root->call_free(ptr->root, ptr);
   else
     memset(ptr, 0, sizeof(memcached_server_st));
 }

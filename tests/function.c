@@ -215,6 +215,7 @@ static test_return  clone_test(memcached_st *memc)
     assert(clone->call_free == memc->call_free);
     assert(clone->call_malloc == memc->call_malloc);
     assert(clone->call_realloc == memc->call_realloc);
+    assert(clone->call_calloc == memc->call_calloc);
     assert(clone->connect_timeout == memc->connect_timeout);
     assert(clone->delete_trigger == memc->delete_trigger);
     assert(clone->distribution == memc->distribution);
@@ -260,6 +261,16 @@ static test_return  clone_test(memcached_st *memc)
   }
 
   return 0;
+}
+
+static test_return userdata_test(memcached_st *memc)
+{
+  void* foo;
+  assert(memcached_set_user_data(memc, foo) == NULL);
+  assert(memcached_get_user_data(memc) == foo);
+  assert(memcached_set_user_data(memc, NULL) == foo);
+  
+  return TEST_SUCCESS;
 }
 
 static test_return  connection_test(memcached_st *memc)
@@ -3043,12 +3054,21 @@ static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 
 static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
 {
-  return calloc(1, size);
+  void *ret= malloc(size);
+  if (ret != NULL)
+    memset(ret, 0xff, size);
+
+  return ret;
 }
 
 static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
 {
   return realloc(mem, size);
+}
+
+static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
+{
+  return calloc(nelem, size);
 }
 
 static memcached_return set_prefix(memcached_st *memc)
@@ -3118,7 +3138,7 @@ static memcached_return set_prefix(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return  set_memory_alloc(memcached_st *memc)
+static memcached_return deprecated_set_memory_alloc(memcached_st *memc)
 {
   void *test_ptr= NULL;
   void *cb_ptr= NULL;
@@ -3160,6 +3180,30 @@ static memcached_return  set_memory_alloc(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS);
     assert(test_ptr == cb_ptr);
   }
+  return MEMCACHED_SUCCESS;
+}
+
+static memcached_return set_memory_alloc(memcached_st *memc)
+{
+  memcached_return rc;
+  rc= memcached_set_memory_allocators(memc, NULL, my_free, 
+                                      my_realloc, my_calloc);
+  assert(rc == MEMCACHED_FAILURE);
+
+  rc= memcached_set_memory_allocators(memc, my_malloc, my_free, 
+                                      my_realloc, my_calloc);
+  
+  memcached_malloc_function mem_malloc;
+  memcached_free_function mem_free;
+  memcached_realloc_function mem_realloc;
+  memcached_calloc_function mem_calloc;
+  memcached_get_memory_allocators(memc, &mem_malloc, &mem_free, 
+                                  &mem_realloc, &mem_calloc);   
+
+  assert(mem_malloc == my_malloc);
+  assert(mem_realloc == my_realloc);
+  assert(mem_calloc == my_calloc);
+  assert(mem_free == my_free);
 
   return MEMCACHED_SUCCESS;
 }
@@ -4097,6 +4141,7 @@ test_st tests[] ={
   {"connection_test", 0, connection_test},
   {"callback_test", 0, callback_test},
   {"behavior_test", 0, behavior_test},
+  {"userdata_test", 0, userdata_test},
   {"error", 0, error_test },
   {"set", 0, set_test },
   {"set2", 0, set_test2 },
@@ -4285,6 +4330,7 @@ collection_st collection[] ={
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
+  {"deprecated_memory_allocators", deprecated_set_memory_alloc, 0, tests},
   {"memory_allocators", set_memory_alloc, 0, tests},
   {"prefix", set_prefix, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},

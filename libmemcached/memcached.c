@@ -20,6 +20,9 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
+
+  memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
+
   result_ptr= memcached_result_create(ptr, &ptr->result);
   WATCHPOINT_ASSERT(result_ptr);
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
@@ -45,20 +48,10 @@ void memcached_free(memcached_st *ptr)
     ptr->on_cleanup(ptr);
 
   if (ptr->continuum)
-  {
-    if (ptr->call_free)
-      ptr->call_free(ptr, ptr->continuum);
-    else
-      free(ptr->continuum);
-  }
+    ptr->call_free(ptr, ptr->continuum);
 
   if (ptr->is_allocated)
-  {
-    if (ptr->call_free)
-      ptr->call_free(ptr, ptr);
-    else
-      free(ptr);
-  }
+    ptr->call_free(ptr, ptr);
   else
     memset(ptr, 0, sizeof(memcached_st));
 }
@@ -105,6 +98,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   new_clone->call_free= source->call_free;
   new_clone->call_malloc= source->call_malloc;
   new_clone->call_realloc= source->call_realloc;
+  new_clone->call_calloc= source->call_calloc;
   new_clone->get_key_failure= source->get_key_failure;
   new_clone->delete_trigger= source->delete_trigger;
   new_clone->server_failure_limit= source->server_failure_limit;
@@ -141,4 +135,15 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
     source->on_clone(source, new_clone);
 
   return new_clone;
+}
+void *memcached_get_user_data(memcached_st *ptr)
+{
+  return ptr->user_data;
+}
+
+void *memcached_set_user_data(memcached_st *ptr, void *data)
+{
+  void *ret= ptr->user_data;
+  ptr->user_data= data;
+  return ret;
 }
