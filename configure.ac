@@ -97,18 +97,22 @@ fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
 
+# Use the C99 enabling flag found earlier
+AS_IF([test "$ac_cv_prog_cc_c99" != "no"],
+      [CFLAGS="$ac_cv_prog_cc_c99 ${CFLAGS}"])
+
 # Build optimized or debug version ?
 # First check for gcc and g++
 if test "$GCC" = "yes"
 then
-  CFLAGS="-ggdb3 -std=gnu99 ${CFLAGS}"
+  CFLAGS="-ggdb3 ${CFLAGS}"
   DEBUG_CFLAGS="-O0"
   OPTIMIZE_CFLAGS="-O3"
 fi
 if test "x$SUNCC" = "xyes"
 then
-   CFLAGS="-g -mt -xc99=all $CFLAGS"
-   CXXFLAGS="-g -mt -xlang=c99 $CXXFLAGS"
+   CFLAGS="-g -mt ${CFLAGS}"
+   CXXFLAGS="-g -mt -xlang=c99 ${CXXFLAGS}"
    OPTIMIZE_CFLAGS="-xO4 -xlibmil -xdepend -Xa -xstrconst"
 fi
 
@@ -314,3 +318,17 @@ AC_CONFIG_FILES([
   support/libmemcached-fc.spec
   ])
 AC_OUTPUT
+
+echo "---"
+echo "Configuration summary for $PACKAGE_NAME version $VERSION"
+echo ""
+echo "   * Installation prefix:       $prefix"
+echo "   * System type:               $host_vendor-$host_os"
+echo "   * Host CPU:                  $host_cpu"
+echo "   * C Compiler:                $CC_VERSION"
+echo "   * Assertions enabled:        $ac_cv_assert"
+echo "   * Debug enabled:             $with_debug"
+echo "   * Warnings as failure:       $building_from_bzr"
+echo ""
+echo "---"
+
