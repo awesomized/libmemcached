@@ -381,6 +381,9 @@ static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
     case PREPEND_OP:
       ret=PROTOCOL_BINARY_CMD_PREPENDQ;
       break;
+    default:
+      WATCHPOINT_ASSERT(verb);
+      break;
     }
   else
     switch (verb)
@@ -400,6 +403,9 @@ static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
       break;
     case PREPEND_OP:
       ret=PROTOCOL_BINARY_CMD_PREPEND;
+      break;
+    default:
+      WATCHPOINT_ASSERT(verb);
       break;
     }
 

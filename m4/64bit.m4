@@ -1,31 +1,39 @@
 dnl ---------------------------------------------------------------------------
-dnl Macro: 64BIT
+dnl Macro: SOLARIS_64BIT
 dnl ---------------------------------------------------------------------------
-AC_ARG_ENABLE(64bit,
-    [  --enable-64bit      Build 64bit library.],
-    [ 
-       org_cflags=$CFLAGS
-       CFLAGS=-m64
-       AC_LANG(C)
-       AC_RUN_IFELSE([
-            AC_LANG_PROGRAM([], [ if (sizeof(void*) != 8) return 1;])
-          ],[
-            CFLAGS="$CFLAGS $org_cflags"
-          ],[
-            AC_MSG_ERROR([Don't know how to build a 64-bit object.])
-          ])
-       org_cxxflags=$CXXFLAGS
-       CXXFLAGS=-m64
-       AC_LANG(C++)
-       AC_RUN_IFELSE([
-            AC_LANG_PROGRAM([], [ if (sizeof(void*) != 8) return 1;])
-          ],[
-            CXXFLAGS="$CXXFLAGS $org_cxxflags"
-          ],[
-            AC_MSG_ERROR([Don't know how to build a 64-bit object.])
-          ])
+AC_DEFUN([SOLARIS_64BIT],[
+AC_CHECK_PROGS(ISAINFO, [isainfo], [no])
+if test "x$ISAINFO" != "xno"
+then
+   isainfo_b=`${ISAINFO} -b` 
+   spro_common_flags="-mt"
+   if test "x$isainfo_b" = "x64"
+   then
+      AC_ARG_ENABLE([64bit],
+         [AS_HELP_STRING([--disable-64bit],
+            [Build 64 bit binary @<:@default=on@:>@])],
+         [ac_enable_64bit="$enableval"],
+         [ac_enable_64bit="yes"])
 
-    ])
+      if test "x$ac_enable_64bit" = "xyes"
+      then
+         if test "x$libdir" = "x\${exec_prefix}/lib" ; then
+           # The user hasn't overridden the default libdir, so we'll 
+           # the dir suffix to match solaris 32/64-bit policy
+           isainfo_k=`${ISAINFO} -k` 
+           libdir="${libdir}/${isainfo_k}"
+         fi
+         CFLAGS="-m64 $CFLAGS"
+         CXXFLAGS="-m64 $CXXFLAGS"
+         if test "$target_cpu" = "sparc" -a "x$SUNCC" = "xyes"
+         then
+            CFLAGS="-xmemalign=8s $CFLAGS"
+            CXXFLAGS="-xmemalign=8s $CXXFLAGS"
+         fi
+      fi
+   fi
+fi
+])
 dnl ---------------------------------------------------------------------------
 dnl End Macro: 64BIT
 dnl ---------------------------------------------------------------------------

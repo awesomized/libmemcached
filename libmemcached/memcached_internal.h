@@ -17,7 +17,8 @@ void *libmemcached_malloc(memcached_st *ptr __attribute__((unused)),
                           const size_t size);
 void *libmemcached_realloc(memcached_st *ptr __attribute__((unused)), 
                            void *mem, const size_t size);
-
+void *libmemcached_calloc(memcached_st *ptr __attribute__((unused)),
+                           size_t nelem, size_t size);
 #ifdef __cplusplus
 }
 #endif

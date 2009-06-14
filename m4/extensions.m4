@@ -20,7 +20,7 @@
 # AC_DEFINE.  The goal here is to define all known feature-enabling
 # macros, then, if reports of conflicts are made, disable macros that
 # cause problems on some platforms (such as __EXTENSIONS__).
-AC_DEFUN([AC_USE_SYSTEM_EXTENSIONS],
+AC_DEFUN([ACX_USE_SYSTEM_EXTENSIONS],
 [AC_BEFORE([$0], [AC_COMPILE_IFELSE])dnl
 AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
 

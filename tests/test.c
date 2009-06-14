@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
 
       if (next->pre)
       {
-        memcached_return rc;
         rc= next->pre(memc);
 
         if (rc != MEMCACHED_SUCCESS)

@@ -1,18 +1,15 @@
+# Gearman server and library
+# Copyright (C) 2008 Brian Aker
+# All rights reserved.
+#
+# Use and distribution licensed under the BSD license.  See
+# the COPYING file in this directory for full text.
+
+AC_PREREQ(2.59)
 AC_INIT([libmemcached],[0.30],[http://tangent.org/552/libmemcached.html])
-AC_CONFIG_SRCDIR([clients/memcat.c])
+AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
-
-# Setting CFLAGS here prevents AC_CANONICAL_TARGET from injecting them
-SAVE_CFLAGS=${CFLAGS}
-SAVE_CXXFLAGS=${CXXFLAGS}
-CFLAGS=
-CXXFLAGS=
-
-AC_CANONICAL_TARGET
-
-CFLAGS=${SAVE_CFLAGS}
-CXXFLAGS=${SAVE_CXXFLAGS}
 
 #shared library versioning
 MEMCACHED_LIBRARY_VERSION=2:0:0
@@ -30,17 +27,66 @@ AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 MEMCACHEDUTIL_LIBRARY_VERSION=0:0:0
 AC_SUBST(MEMCACHEDUTIL_LIBRARY_VERSION)
 
-AM_INIT_AUTOMAKE(nostdinc no-define -Wall -Werror)
-AC_USE_SYSTEM_EXTENSIONS
+# Setting CFLAGS here prevents AC_CANONICAL_TARGET from injecting them
+SAVE_CFLAGS=${CFLAGS}
+SAVE_CXXFLAGS=${CXXFLAGS}
+CFLAGS=
+CXXFLAGS=
+
+AC_CANONICAL_TARGET
+
+CFLAGS=${SAVE_CFLAGS}
+CXXFLAGS=${SAVE_CXXFLAGS}
+
+AM_INIT_AUTOMAKE([-Wall -Werror nostdinc subdir-objects])
+
+if test "x${enable_dependency_tracking}" = "x"
+then
+  enable_dependency_tracking=yes
+fi
+
+if test -d "${srcdir}/.bzr"
+then
+  building_from_bzr=yes
+else
+  building_from_bzr=no
+fi
 
 AC_PROG_CC
 AC_PROG_CC_C99
+AM_PROG_CC_STDC
 AC_PROG_CXX
-AC_PROG_LIBTOOL
-AM_SANITY_CHECK
+
+ACX_USE_SYSTEM_EXTENSIONS
+
+AC_PROG_CPP
+AM_PROG_CC_C_O
+
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_HEADER_TIME
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
 
 AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
 
+# We use libtool
+AC_PROG_LIBTOOL
+
+AC_MSG_CHECKING("C Compiler version")
+if test "$GCC" = "yes"
+then
+  CC_VERSION=`$CC --version | sed 1q`
+elif test "$SUNCC" = "yes"
+then
+  CC_VERSION=`$CC -V 2>&1 | sed 1q`
+else
+  CC_VERSION=""
+fi
+AC_MSG_RESULT("$CC_VERSION")
+AC_SUBST(CC_VERSION)
 
 # libmemcached versioning when linked with GNU ld.
 if test "$lt_cv_prog_gnu_ld" = "yes"
@@ -51,9 +97,33 @@ fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
 
-AC_C_CONST
-AC_HEADER_TIME
-AC_TYPE_SIZE_T
+# Build optimized or debug version ?
+# First check for gcc and g++
+if test "$GCC" = "yes"
+then
+  CFLAGS="-ggdb3 -std=gnu99 ${CFLAGS}"
+  DEBUG_CFLAGS="-O0"
+  OPTIMIZE_CFLAGS="-O3"
+fi
+if test "x$SUNCC" = "xyes"
+then
+   CFLAGS="-g -mt -xc99=all $CFLAGS"
+   CXXFLAGS="-g -mt -xlang=c99 $CXXFLAGS"
+   OPTIMIZE_CFLAGS="-xO4 -xlibmil -xdepend -Xa -xstrconst"
+fi
+
+SOLARIS_64BIT
+
+#--------------------------------------------------------------------
+# Check for libpthread
+#--------------------------------------------------------------------
+
+ACX_PTHREAD(,AC_MSG_ERROR(could not find libpthread))
+LIBS="${PTHREAD_LIBS} ${LIBS}"
+CFLAGS="${PTHREAD_CFLAGS} ${CFLAGS}"
+CC="$PTHREAD_CC"
+
+
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
@@ -71,77 +141,189 @@ AC_LINK_IFELSE(
     
 AC_SUBST(LIBM)
 LIBS="$save_LIBS"
+
 AC_SEARCH_LIBS(floorf, m)
 
+DETECT_BYTEORDER
+ENABLE_UTILLIB
 
 sinclude(m4/pod2man.m4)
-sinclude(m4/debug.m4)
 sinclude(m4/dtrace.m4)
-sinclude(m4/byteorder.m4)
-sinclude(m4/64bit.m4)
 sinclude(m4/protocol_binary.m4)
 sinclude(m4/memcached.m4)
 sinclude(m4/setsockopt.m4)
 sinclude(m4/hsieh.m4)
-sinclude(m4/util.m4)
 
-dnl This is likely subverted by vpath builds. How do we find the original
-dnl source dir in the configure step of a vpath build?
-if test -d ".hg"
+dnl TODO: Remove this define once we are using 2.61 across the board.
+# AX_HEADER_ASSERT
+# ----------------
+# Check whether to enable assertions.
+AC_DEFUN([AX_HEADER_ASSERT],
+[
+  AC_MSG_CHECKING([whether to enable assertions])
+  AC_ARG_ENABLE([assert],
+    [AS_HELP_STRING([--disable-assert],
+       [Turn off assertions])],
+    [ac_cv_assert="no"],
+    [ac_cv_assert="yes"])
+  AC_MSG_RESULT([$ac_cv_assert])
+])
+AX_HEADER_ASSERT
+
+
+AC_ARG_WITH([debug],
+    [AS_HELP_STRING([--with-debug],
+       [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],
+    [with_debug=$withval],
+    [with_debug=no])
+if test "$with_debug" = "yes"
 then
-  building_from_hg=yes
+  # Debugging. No optimization.
+  CFLAGS="${DEBUG_CFLAGS} -DDEBUG ${CFLAGS}"
 else
-  building_from_hg=no
+  # Optimized version. No debug
+  CFLAGS="${OPTIMIZE_CFLAGS} ${CFLAGS}"
 fi
 
+AC_ARG_ENABLE([profiling],
+    [AS_HELP_STRING([--enable-profiling],
+       [Toggle profiling @<:@default=off@:>@])],
+    [ac_profiling="$enableval"],
+    [ac_profiling="no"])
 
-# We only support GCC and Sun's forte at the moment
+AC_ARG_ENABLE([coverage],
+    [AS_HELP_STRING([--enable-coverage],
+       [Toggle coverage @<:@default=off@:>@])],
+    [ac_coverage="$enableval"],
+    [ac_coverage="no"])
+
+AC_ARG_ENABLE([unreachable],
+  [AS_HELP_STRING([--enable-unreachable],
+    [Enable warnings about unreachable code @<:@default=no@:>@])],
+  [ac_warn_unreachable="$enableval"],
+  [ac_warn_unreachable="no"])
+
+
 if test "$GCC" = "yes"
 then
-  if test "$ENABLE_DEBUG" = "yes"
-  then
-    CFLAGS="-O0 -DHAVE_DEBUG $CFLAGS"
-    CXXFLAGS="-O0 -DHAVE_DEBUG $CXXFLAGS"
-  else
-    CFLAGS="-O3 $CFLAGS"
-    CXXFLAGS="-O3 $CXXFLAGS"
-  fi
-  if test "$building_from_hg" = "yes"
-  then
-    CFLAGS="-Werror $CFLAGS"
-    CXXFLAGS="-Werror $CXXFLAGS"
-  fi
 
-  CFLAGS="-W -std=iso9899:1999 -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -ggdb3 $CFLAGS"
-  CXXFLAGS="-W -Wall -Wextra -Wno-strict-aliasing -pedantic -Wundef -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wconversion -Wmissing-declarations -Wredundant-decls -ggdb3 $CXXFLAGS"
+  W_STRICT_ALIASING="-Wno-strict-aliasing"
 
+  AS_IF([test "$ac_profiling" = "yes"],
+        [CC_PROFILING="-pg"])
 
+  AS_IF([test "$ac_coverage" = "yes"],
+        [CC_COVERAGE="-fprofile-arcs -ftest-coverage"])
+
+  AS_IF([test "$building_from_bzr" = "yes"],
+        [W_FAIL="-Werror"])
+
+  AS_IF([test "$ac_warn_unreachable" = "yes"],
+        [W_UNREACHABLE="-Wunreachable-code"])
+
+  BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef  -Wshadow -Wmissing-declarations ${W_STRICT_ALIASING}" 
+  CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
+  CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy  -Wold-style-cast -Weffc++ -Wno-long-long"
+
+  AC_CACHE_CHECK([whether it is safe to use -Wconversion],
+    [ac_cv_safe_to_use_Wconversion_],
+    [save_CFLAGS="$CFLAGS"
+     CFLAGS="-Werror -Wconversion"
+     AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM(
+         [[
+#include <netinet/in.h>
+void foo(in_port_t port)
+{
+  return;
+}
+         ]],[[
+in_port_t x= 0;
+foo(x);
+         ]])],
+       [ac_cv_safe_to_use_Wconversion_=yes],
+       [ac_cv_safe_to_use_Wconversion_=no])
+     CFLAGS="$save_CFLAGS"])
+  dnl disable -Wconversion for now. Will fix later
+  AS_IF([test "$ac_cv_safe_to_use_Wconversion_" = "disabled"],
+        [
+          CC_WARNINGS="${CC_WARNINGS} -Wconversion"
+          CXX_WARNINGS="${CXX_WARNINGS} -Wconversion"
+        ])
+
+  AC_CACHE_CHECK([whether it is safe to use -Wlogical-op],
+    [ac_cv_safe_to_use_Wlogical_op_],
+    [save_CFLAGS="$CFLAGS"
+     CFLAGS="-Wlogical-op"
+     AC_COMPILE_IFELSE([
+       AC_LANG_PROGRAM(
+       [[
+#include <stdio>
+       ]], [[]])
+    ],
+    [ac_cv_safe_to_use_Wlogical_op_=yes],
+    [ac_cv_safe_to_use_Wlogical_op_=no])
+  CFLAGS="$save_CFLAGS"])
+  AS_IF([test "$ac_cv_safe_to_use_Wlogical_op_" = "yes"],
+        [CC_WARNINGS="${CC_WARNINGS} -Wlogical-op"])
+
+  AC_CACHE_CHECK([whether it is safe to use -Wredundant-decls from C++],
+    [ac_cv_safe_to_use_Wredundant_decls_],
+    [AC_LANG_PUSH(C++)
+     save_CXXFLAGS="${CXXFLAGS}"
+     CXXFLAGS="${CXXFLAGS} ${W_FAIL} -Wredundant-decls"
+     AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([
+template <typename E> struct C { void foo(); };
+template <typename E> void C<E>::foo() { }
+template <> void C<int>::foo();
+          AC_INCLUDES_DEFAULT])],
+        [ac_cv_safe_to_use_Wredundant_decls_=yes],
+        [ac_cv_safe_to_use_Wredundant_decls_=no])
+      CXXFLAGS="${save_CXXFLAGS}"
+      AC_LANG_POP()])
+  AS_IF([test "$ac_cv_safe_to_use_Wredundant_decls_" = "yes"],
+        [CXX_WARNINGS="${CXX_WARNINGS} -Wredundant-decls"],
+        [CXX_WARNINGS="${CXX_WARNINGS} -Wno-redundant-decls"])
+
+  NO_REDUNDANT_DECLS="-Wno-redundant-decls"
 fi
-
 if test "$SUNCC" = "yes"
 then
 
-  if test "$ENABLE_DEBUG" = "yes"
-  then
-    CFLAGS="-xO0 -DHAVE_DEBUG $CFLAGS"
-    CXXFLAGS="-xO0 -DHAVE_DEBUG $CXXFLAGS"
-  else
-    CFLAGS="-xO4 -xlibmil -xdepend $CFLAGS"
-    CXXFLAGS="-xO4 -xlibmil -xdepend $CXXFLAGS"
-  fi
-  if test "$building_from_hg" = "yes"
-  then
-    CFLAGS="-errwarn $CFLAGS"
-    CXXFLAGS="-errwarn $CXXFLAGS"
-  fi
-  CFLAGS="-Xa -xstrconst -mt -errfmt=error -errshort=tags ${CFLAGS}"
-  CXXFLAGS="+w +w2 -xwe -mt ${CXXFLAGS}"
+  AS_IF([test "$ac_profiling" = "yes"],
+        [CC_PROFILING="-xinstrument=datarace"])
+
+  AS_IF([test "$ac_warn_fail" = "yes"],
+        [W_FAIL="-errwarn=%all"])
+
+  AC_CACHE_CHECK([whether E_PASTE_RESULT_NOT_TOKEN is usable],
+    [ac_cv_paste_result],
+    [
+      save_CFLAGS="${CFLAGS}"
+      CFLAGS="-errwarn=%all -erroff=E_PASTE_RESULT_NOT_TOKEN ${CFLAGS}"
+      AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM([
+          AC_INCLUDES_DEFAULT
+        ],[
+          int x= 0;])],
+        [ac_cv_paste_result=yes],
+        [ac_cv_paste_result=no])
+      CFLAGS="${save_CFLAGS}"
+    ])
+  AS_IF([test $ac_cv_paste_result = yes],
+    [W_PASTE_RESULT=",E_PASTE_RESULT_NOT_TOKEN"])
+
+
+  CC_WARNINGS="-v -errtags=yes ${W_FAIL} -erroff=E_INTEGER_OVERFLOW_DETECTED${W_PASTE_RESULT}"
+  CXX_WARNINGS="+w +w2 -xwe -xport64 -errtags=yes ${W_FAIL}"
 fi
 
+AC_SUBST(NO_REDUNDANT_DECLS)
 
 AM_CPPFLAGS="-I\$(top_srcdir) -I\$(top_builddir) ${CPPFLAGS}"
-AM_CFLAGS="${CFLAGS}"
-AM_CXXFLAGS="${CXXFLAGS}"
+AM_CFLAGS="${CC_WARNINGS} ${CC_PROFILING} ${CC_COVERAGE} ${CFLAGS}"
+AM_CXXFLAGS="${CXX_WARNING} ${CC_PROFILING} ${CC_COVERAGE} ${CXXFLAGS}"
 
 AC_SUBST([AM_CPPFLAGS])
 AC_SUBST([AM_CFLAGS])

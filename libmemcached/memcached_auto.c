@@ -20,11 +20,11 @@ static memcached_return memcached_auto(memcached_st *ptr,
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
-  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                        "%s %s%.*s %u%s\r\n", verb,
-                        ptr->prefix_key,
-                        (int)key_length, key,
-                        offset, no_reply ? " noreply" : "");
+  send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                "%s %s%.*s %u%s\r\n", verb,
+                                ptr->prefix_key,
+                                (int)key_length, key,
+                                offset, no_reply ? " noreply" : "");
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 

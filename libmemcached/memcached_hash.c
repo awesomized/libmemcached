@@ -92,6 +92,11 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       hash=jenkins_hash(key, key_length, 13);
       break;
     }
+    default:
+    {
+      WATCHPOINT_ASSERT(hash_algorithm);
+      break;
+    }
   }
   return hash;
 }

@@ -47,6 +47,7 @@ static char *lookup_help(memcached_options option)
   case OPT_BINARY: return("Switch to binary protocol.");
   case OPT_ANALYZE: return("Analyze the provided servers.");
   case OPT_UDP: return("Use UDP protocol when communicating with server.");
+  default: WATCHPOINT_ASSERT(0);
   };
 
   WATCHPOINT_ASSERT(0);

@@ -257,7 +257,7 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
   {
     r= shutdown(ptr->fd, SHUT_RDWR);
 
-#ifdef HAVE_DEBUG
+#ifdef DEBUG
     if (r && errno != ENOTCONN)
     {
       WATCHPOINT_NUMBER(ptr->fd);
@@ -268,7 +268,7 @@ memcached_return memcached_io_close(memcached_server_st *ptr)
   }
 
   r= close(ptr->fd);
-#ifdef HAVE_DEBUG
+#ifdef DEBUG
   if (r != 0)
     WATCHPOINT_ERRNO(errno);
 #endif
@@ -280,10 +280,10 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
-  unsigned int index= 0;
+  unsigned int host_index= 0;
 
   for (unsigned int x= 0;
-       x< memc->number_of_hosts && index < MAX_SERVERS_TO_POLL;
+       x< memc->number_of_hosts && host_index < MAX_SERVERS_TO_POLL;
        ++x)
   {
     if (memc->hosts[x].read_buffer_length > 0) /* I have data in the buffer */
@@ -291,14 +291,14 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
 
     if (memcached_server_response_count(&memc->hosts[x]) > 0)
     {
-      fds[index].events = POLLIN;
-      fds[index].revents = 0;
-      fds[index].fd = memc->hosts[x].fd;
-      ++index;
+      fds[host_index].events = POLLIN;
+      fds[host_index].revents = 0;
+      fds[host_index].fd = memc->hosts[x].fd;
+      ++host_index;
     }
   }
 
-  if (index < 2)
+  if (host_index < 2)
   {
     /* We have 0 or 1 server with pending events.. */
     for (unsigned int x= 0; x< memc->number_of_hosts; ++x)
@@ -308,7 +308,7 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
     return NULL;
   }
 
-  int err= poll(fds, index, memc->poll_timeout);
+  int err= poll(fds, host_index, memc->poll_timeout);
   switch (err) {
   case -1:
     memc->cached_errno = errno;
@@ -316,7 +316,7 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   case 0:
     break;
   default:
-    for (unsigned int x= 0; x < index; ++x)
+    for (unsigned int x= 0; x < host_index; ++x)
       if (fds[x].revents & POLLIN)
         for (unsigned int y= 0; y < memc->number_of_hosts; ++y)
           if (memc->hosts[y].fd == fds[x].fd)
@@ -360,7 +360,7 @@ static ssize_t io_flush(memcached_server_st *ptr,
     return 0;
 
   /* Looking for memory overflows */
-#if defined(HAVE_DEBUG)
+#if defined(DEBUG)
   if (write_length == MEMCACHED_MAX_BUFFER)
     WATCHPOINT_ASSERT(ptr->write_buffer == local_write_ptr);
   WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));

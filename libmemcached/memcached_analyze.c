@@ -60,7 +60,7 @@ static void calc_hit_ratio(memcached_analysis_st *result,
 }
 
 memcached_analysis_st *memcached_analyze(memcached_st *memc,
-                                         memcached_stat_st *stat,
+                                         memcached_stat_st *memc_stat,
                                          memcached_return *error)
 {
   uint64_t total_items= 0, total_bytes= 0;
@@ -81,14 +81,15 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 
   for (x= 0; x < server_count; x++)
   {
-    calc_largest_consumption(result, x, stat[x].bytes);
-    calc_oldest_node(result, x, stat[x].uptime);
-    calc_least_free_node(result, x, stat[x].limit_maxbytes, stat[x].bytes);
+    calc_largest_consumption(result, x, memc_stat[x].bytes);
+    calc_oldest_node(result, x, memc_stat[x].uptime);
+    calc_least_free_node(result, x,
+                         memc_stat[x].limit_maxbytes, memc_stat[x].bytes);
 
-    total_get_hits+= stat[x].get_hits;
-    total_get_cmds+= stat[x].cmd_get;
-    total_items+= stat[x].curr_items;
-    total_bytes+= stat[x].bytes;
+    total_get_hits+= memc_stat[x].get_hits;
+    total_get_cmds+= memc_stat[x].cmd_get;
+    total_items+= memc_stat[x].curr_items;
+    total_bytes+= memc_stat[x].bytes;
   }
 
   calc_average_item_size(result, total_items, total_bytes);
