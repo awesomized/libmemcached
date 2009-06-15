@@ -1,22 +1,21 @@
 dnl ---------------------------------------------------------------------------
-dnl Macro: SOLARIS_64BIT
+dnl Macro: ENABLE_64BIT
 dnl ---------------------------------------------------------------------------
-AC_DEFUN([SOLARIS_64BIT],[
-AC_CHECK_PROGS(ISAINFO, [isainfo], [no])
-if test "x$ISAINFO" != "xno"
-then
-   isainfo_b=`${ISAINFO} -b` 
-   spro_common_flags="-mt"
-   if test "x$isainfo_b" = "x64"
-   then
-      AC_ARG_ENABLE([64bit],
-         [AS_HELP_STRING([--disable-64bit],
-            [Build 64 bit binary @<:@default=on@:>@])],
-         [ac_enable_64bit="$enableval"],
-         [ac_enable_64bit="yes"])
+AC_DEFUN([ENABLE_64BIT],[
 
-      if test "x$ac_enable_64bit" = "xyes"
-      then
+  AC_CHECK_PROGS(ISAINFO, [isainfo], [no])
+  AS_IF([test "x$ISAINFO" != "xno"],
+        [isainfo_b=`${ISAINFO} -b`],
+        [isainfo_b="x"])
+
+  AS_IF([test "$isainfo_b" != "x"],
+        [AC_ARG_ENABLE([64bit],
+             [AS_HELP_STRING([--disable-64bit],
+                [Build 64 bit binary @<:@default=on@:>@])],
+             [ac_enable_64bit="$enableval"],
+             [ac_enable_64bit="yes"])])
+
+  AS_IF([test "x$ac_enable_64bit" = "xyes"],[
          if test "x$libdir" = "x\${exec_prefix}/lib" ; then
            # The user hasn't overridden the default libdir, so we'll 
            # the dir suffix to match solaris 32/64-bit policy
@@ -30,10 +29,8 @@ then
             CFLAGS="-xmemalign=8s $CFLAGS"
             CXXFLAGS="-xmemalign=8s $CXXFLAGS"
          fi
-      fi
-   fi
-fi
+       ])
 ])
 dnl ---------------------------------------------------------------------------
-dnl End Macro: 64BIT
+dnl End Macro: ENABLE_64BIT
 dnl ---------------------------------------------------------------------------
