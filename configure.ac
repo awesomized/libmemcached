@@ -148,15 +148,15 @@ LIBS="$save_LIBS"
 
 AC_SEARCH_LIBS(floorf, m)
 
+dnl Specialty checks
 DETECT_BYTEORDER
 ENABLE_UTILLIB
 ENABLE_DTRACE
 SETSOCKOPT_SANITY
 ENABLE_HSIEH_HASH
 REQUIRE_POD2MAN
-
-sinclude(m4/protocol_binary.m4)
-sinclude(m4/memcached.m4)
+PROTOCOL_BINARY_TEST
+WITH_MEMCACHED
 
 dnl TODO: Remove this define once we are using 2.61 across the board.
 # AX_HEADER_ASSERT
