@@ -85,7 +85,7 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= cmd;
-  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.keylen= htons(key_length);
   request.message.header.request.extlen= 20;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl(key_length + request.message.header.request.extlen);  

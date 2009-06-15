@@ -9,8 +9,8 @@ struct memcached_pool_st
   memcached_st *master;
   memcached_st **mmc;
   int firstfree;
-  int size;
-  int current_size;
+  uint32_t size;
+  uint32_t current_size;
 };
 
 static memcached_return mutex_enter(pthread_mutex_t *mutex) 

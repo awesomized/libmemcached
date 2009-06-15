@@ -50,7 +50,7 @@ void server_startup(server_startup_st *construct)
           {
             if (fgets(buffer, sizeof(buffer), fp) != NULL)
             { 
-              pid_t pid = atol(buffer);
+              pid_t pid = (pid_t)atol(buffer);
               if (pid != 0) 
                 kill(pid, SIGTERM);
             }
@@ -84,7 +84,7 @@ void server_startup(server_startup_st *construct)
 
   assert(construct->servers);
 
-  srandom(time(NULL));
+  srandom((unsigned int)time(NULL));
 
   for (x= 0; x < memcached_server_list_count(construct->servers); x++)
   {
