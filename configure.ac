@@ -153,8 +153,8 @@ ENABLE_UTILLIB
 ENABLE_DTRACE
 SETSOCKOPT_SANITY
 ENABLE_HSIEH_HASH
+REQUIRE_POD2MAN
 
-sinclude(m4/pod2man.m4)
 sinclude(m4/protocol_binary.m4)
 sinclude(m4/memcached.m4)
 
