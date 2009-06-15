@@ -395,13 +395,11 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
         WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_SUCCESS;
       } 
-      break;
     case PROTOCOL_BINARY_CMD_NOOP:
       {
         WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_END;
       }
-      break;
     case PROTOCOL_BINARY_CMD_STAT:
       {
         if (bodylen == 0)

@@ -37,7 +37,7 @@ static char *storage_op_string(memcached_storage_action verb)
     return "cas ";
   default:
     return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
-  };
+  }
 
   /* NOTREACHED */
 }
