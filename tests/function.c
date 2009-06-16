@@ -94,7 +94,7 @@ static test_return  server_sort_test(memcached_st *ptr __attribute__((unused)))
 
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
-    test_ports[x]= random() % 64000;
+    test_ports[x]= (uint32_t)random() % 64000;
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     assert(local_memc->number_of_hosts == x + 1);
     assert(local_memc->hosts[0].count == x+1);
@@ -165,7 +165,7 @@ static test_return  server_unsort_test(memcached_st *ptr __attribute__((unused))
 
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
-    test_ports[x]= random() % 64000;
+    test_ports[x]= (uint32_t)(random() % 64000);
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     assert(local_memc->number_of_hosts == x+1);
     assert(local_memc->hosts[0].count == x+1);
@@ -1581,12 +1581,12 @@ static test_return  user_supplied_bug1(memcached_st *memc)
   {
     unsigned int j= 0;
 
-    size= (rand() % ( 5 * 1024 ) ) + 400;
+    size= (uint32_t)(rand() % ( 5 * 1024 ) ) + 400;
     memset(randomstuff, 0, 6 * 1024);
     assert(size < 6 * 1024); /* Being safe here */
 
     for (j= 0 ; j < size ;j++) 
-      randomstuff[j] = (char) (rand() % 26) + 97;
+      randomstuff[j] = (signed char) ((rand() % 26) + 97);
 
     total += size;
     sprintf(key, "%d", x);
@@ -1798,7 +1798,7 @@ static test_return  user_supplied_bug5(memcached_st *memc)
   char insert_data[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
-    insert_data[x]= rand();
+    insert_data[x]= (signed char)rand();
 
   memcached_flush(memc, 0);
   value= memcached_get(memc, keys[0], key_length[0],
@@ -1856,7 +1856,7 @@ static test_return  user_supplied_bug6(memcached_st *memc)
   char insert_data[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
-    insert_data[x]= rand();
+    insert_data[x]= (signed char)rand();
 
   memcached_flush(memc, 0);
   value= memcached_get(memc, keys[0], key_length[0],
@@ -1951,7 +1951,7 @@ static test_return  user_supplied_bug7(memcached_st *memc)
   char insert_data[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
-    insert_data[x]= rand();
+    insert_data[x]= (signed char)rand();
 
   memcached_flush(memc, 0);
 
@@ -2032,7 +2032,7 @@ static test_return  user_supplied_bug10(memcached_st *memc)
   char *value;
   size_t value_length= 512;
   unsigned int x;
-  int key_len= 3;
+  size_t key_len= 3;
   memcached_return rc;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
@@ -2041,7 +2041,8 @@ static test_return  user_supplied_bug10(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   timeout= 2;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
+                         (uint64_t)timeout);
 
   value = (char*)malloc(value_length * sizeof(char));
 
@@ -2074,7 +2075,7 @@ static test_return  user_supplied_bug11(memcached_st *memc)
   char *value;
   size_t value_length= 512;
   unsigned int x;
-  int key_len= 3;
+  size_t key_len= 3;
   memcached_return rc;
   unsigned int set= 1;
   int32_t timeout;
@@ -2083,7 +2084,8 @@ static test_return  user_supplied_bug11(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   timeout= -1;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
+                         (size_t)timeout);
 
   timeout= (int32_t)memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
@@ -2191,7 +2193,7 @@ static test_return  user_supplied_bug13(memcached_st *memc)
  */
 static test_return  user_supplied_bug14(memcached_st *memc)
 {
-  int setter= 1;
+  size_t setter= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, setter);
   memcached_return rc;
   char *key= "foo";
@@ -2384,7 +2386,7 @@ static test_return user_supplied_bug20(memcached_st *memc)
 static test_return user_supplied_bug18(memcached_st *trash)
 {
   memcached_return rc;
-  int value;
+  uint64_t value;
   int x;
   memcached_server_st *server_pool;
   memcached_st *memc;
@@ -2696,7 +2698,7 @@ static test_return  generate_data_with_stats(memcached_st *memc)
 }
 static test_return  generate_buffer_data(memcached_st *memc)
 {
-  int latch= 0;
+  size_t latch= 0;
 
   latch= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, latch);
@@ -2848,7 +2850,7 @@ static test_return  delete_generate(memcached_st *memc)
 
 static test_return  delete_buffer_generate(memcached_st *memc)
 {
-  int latch= 0;
+  size_t latch= 0;
   unsigned int x;
 
   latch= 1;
@@ -3289,13 +3291,13 @@ static memcached_return  pre_settimer(memcached_st *memc)
 
 static memcached_return  poll_timeout(memcached_st *memc)
 {
-  int32_t timeout;
+  size_t timeout;
 
   timeout= 100;
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
-  timeout= (int32_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+  timeout= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
   assert(timeout == 100);
 
@@ -3320,7 +3322,7 @@ static test_return noreply_test(memcached_st *memc)
     for (int x=0; x < 100; ++x)
     {
       char key[10];
-      size_t len= sprintf(key, "%d", x);
+      size_t len= (size_t)sprintf(key, "%d", x);
       switch (count)
       {
       case 0:
@@ -3352,7 +3354,7 @@ static test_return noreply_test(memcached_st *memc)
     */
     int no_msg=0;
     for (uint32_t x=0; x < memc->number_of_hosts; ++x)
-      no_msg+=memc->hosts[x].cursor_active;
+      no_msg+=(int)(memc->hosts[x].cursor_active);
 
     assert(no_msg == 0);
     assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
@@ -3363,7 +3365,7 @@ static test_return noreply_test(memcached_st *memc)
     for (int x=0; x < 100; ++x)
     {
       char key[10];
-      size_t len= sprintf(key, "%d", x);
+      size_t len= (size_t)sprintf(key, "%d", x);
       size_t length;
       uint32_t flags;
       char* value=memcached_get(memc, key, strlen(key),

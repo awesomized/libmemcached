@@ -73,8 +73,8 @@ infinite:
     uint32_t test_bit;
     uint8_t which;
 
-    test_bit= random() % GLOBAL_COUNT;
-    which= random() % 2;
+    test_bit= (uint32_t)(random() % GLOBAL_COUNT);
+    which= (uint8_t)(random() % 2);
 
     if (which == 0)
     {
