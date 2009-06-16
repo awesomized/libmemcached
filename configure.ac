@@ -106,14 +106,23 @@ AS_IF([test "$ac_cv_prog_cc_c99" != "no"],
 if test "$GCC" = "yes"
 then
   CFLAGS="-ggdb3 ${CFLAGS}"
+  CXXFLAGS="-ggdb3 ${CXXFLAGS}"
+
   DEBUG_CFLAGS="-O0"
+  DEBUG_CXXFLAGS="-O0"
+
   OPTIMIZE_CFLAGS="-O3"
+  OPTIMIZE_CXXFLAGS="-O3"
 fi
 if test "x$SUNCC" = "xyes"
 then
-   CFLAGS="-g -mt ${CFLAGS}"
-   CXXFLAGS="-g -mt -xlang=c99 ${CXXFLAGS}"
-   OPTIMIZE_CFLAGS="-xO4 -xlibmil -xdepend -Xa -xstrconst"
+  CFLAGS="-g -mt ${CFLAGS}"
+  CXXFLAGS="-g -mt -xlang=c99 ${CXXFLAGS}"
+
+  OPTIMIZE_FLAGS="-xO4 -xlibmil -xdepend -xbuiltin -lmopt"
+  OPTIMIZE_CFLAGS="${OPTIMIZE_FLAGS} -Xa -xstrconst"
+  OPTIMIZE_CXXFLAGS="${OPTIMIZE_FLAGS}"
+
 fi
 
 SOLARIS_64BIT
