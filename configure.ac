@@ -117,7 +117,7 @@ fi
 if test "x$SUNCC" = "xyes"
 then
   CFLAGS="-g -mt ${CFLAGS}"
-  CXXFLAGS="-g -mt -xlang=c99 ${CXXFLAGS}"
+  CXXFLAGS="-xlang=c99 -g -mt -compat=5 -library=stlport4 -template=no%extdef ${CXXFLAGS}"
 
   OPTIMIZE_FLAGS="-xO4 -xlibmil -xdepend -xbuiltin -lmopt"
   OPTIMIZE_CFLAGS="${OPTIMIZE_FLAGS} -Xa -xstrconst"
