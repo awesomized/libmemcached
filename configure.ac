@@ -1,4 +1,4 @@
-# Gearman server and library
+# libmemcached 
 # Copyright (C) 2008 Brian Aker
 # All rights reserved.
 #
@@ -10,6 +10,7 @@ AC_INIT([libmemcached],[0.30],[http://tangent.org/552/libmemcached.html])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
+AC_CONFIG_MACRO_DIR([m4])
 
 #shared library versioning
 MEMCACHED_LIBRARY_VERSION=2:0:0
@@ -54,7 +55,6 @@ fi
 
 AC_PROG_CC
 AC_PROG_CC_C99
-AM_PROG_CC_STDC
 AC_PROG_CXX
 
 ACX_USE_SYSTEM_EXTENSIONS
@@ -106,17 +106,26 @@ AS_IF([test "$ac_cv_prog_cc_c99" != "no"],
 if test "$GCC" = "yes"
 then
   CFLAGS="-ggdb3 ${CFLAGS}"
+  CXXFLAGS="-ggdb3 ${CXXFLAGS}"
+
   DEBUG_CFLAGS="-O0"
+  DEBUG_CXXFLAGS="-O0"
+
   OPTIMIZE_CFLAGS="-O3"
+  OPTIMIZE_CXXFLAGS="-O3"
 fi
 if test "x$SUNCC" = "xyes"
 then
-   CFLAGS="-g -mt ${CFLAGS}"
-   CXXFLAGS="-g -mt -xlang=c99 ${CXXFLAGS}"
-   OPTIMIZE_CFLAGS="-xO4 -xlibmil -xdepend -Xa -xstrconst"
+  CFLAGS="-g -mt ${CFLAGS}"
+  CXXFLAGS="-xlang=c99 -g -mt -compat=5 -library=stlport4 -template=no%extdef ${CXXFLAGS}"
+
+  OPTIMIZE_FLAGS="-xO4 -xlibmil -xdepend -xbuiltin"
+  OPTIMIZE_CFLAGS="${OPTIMIZE_FLAGS} -Xa -xstrconst"
+  OPTIMIZE_CXXFLAGS="${OPTIMIZE_FLAGS}"
+
 fi
 
-SOLARIS_64BIT
+ENABLE_64BIT
 
 #--------------------------------------------------------------------
 # Check for libpthread
@@ -184,9 +193,11 @@ if test "$with_debug" = "yes"
 then
   # Debugging. No optimization.
   CFLAGS="${DEBUG_CFLAGS} -DDEBUG ${CFLAGS}"
+  CXXFLAGS="${DEBUG_CXXFLAGS} -DDEBUG ${CXXFLAGS}"
 else
   # Optimized version. No debug
   CFLAGS="${OPTIMIZE_CFLAGS} ${CFLAGS}"
+  CXXFLAGS="${OPTIMIZE_CXXFLAGS} ${CXXFLAGS}"
 fi
 
 AC_ARG_ENABLE([profiling],
@@ -201,12 +212,67 @@ AC_ARG_ENABLE([coverage],
     [ac_coverage="$enableval"],
     [ac_coverage="no"])
 
-dnl We can't do this warning, so turn off
-W_STRICT_ALIASING="-Wno-strict-aliasing"
-
 if test "$GCC" = "yes"
 then
 
+  AC_CACHE_CHECK([whether it is safe to use -fdiagnostics-show-option],
+    [ac_cv_safe_to_use_fdiagnostics_show_option_],
+    [save_CFLAGS="$CFLAGS"
+     CFLAGS="-fdiagnostics-show-option ${CFLAGS}"
+     AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([],[])],
+       [ac_cv_safe_to_use_fdiagnostics_show_option_=yes],
+       [ac_cv_safe_to_use_fdiagnostics_show_option_=no])
+     CFLAGS="$save_CFLAGS"])
+
+  AS_IF([test "$ac_cv_safe_to_use_fdiagnostics_show_option_" = "yes"],
+        [
+          F_DIAGNOSTICS_SHOW_OPTION="-fdiagnostics-show-option"
+        ])
+
+  AC_CACHE_CHECK([whether it is safe to use -Wconversion],
+    [ac_cv_safe_to_use_wconversion_],
+    [save_CFLAGS="$CFLAGS"
+     CFLAGS="-Werror -Wconversion ${CFLAGS}"
+     AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([[
+#include <stdbool.h>
+void foo(bool a)
+{
+  (void)a;
+}
+       ]],[[
+foo(0);
+       ]])],
+       [ac_cv_safe_to_use_wconversion_=yes],
+       [ac_cv_safe_to_use_wconversion_=no])
+     CFLAGS="$save_CFLAGS"])
+
+  AS_IF([test "$ac_cv_safe_to_use_wconversion_" = "yes"],
+    [W_CONVERSION="-Wconversion"
+    AC_CACHE_CHECK([whether it is safe to use -Wconversion with htons],
+      [ac_cv_safe_to_use_Wconversion_],
+      [save_CFLAGS="$CFLAGS"
+       CFLAGS="-Werror -Wconversion ${CFLAGS}"
+       AC_COMPILE_IFELSE(
+         [AC_LANG_PROGRAM(
+           [[
+#include <netinet/in.h>
+           ]],[[
+uint16_t x= htons(80);
+           ]])],
+         [ac_cv_safe_to_use_Wconversion_=yes],
+         [ac_cv_safe_to_use_Wconversion_=no])
+       CFLAGS="$save_CFLAGS"])
+
+    AS_IF([test "$ac_cv_safe_to_use_Wconversion_" = "no"],
+          [
+            NO_CONVERSION="-Wno-conversion"
+          ])
+    ])
+
+
+  W_STRICT_ALIASING="-Wno-strict-aliasing"
 
   AS_IF([test "$ac_profiling" = "yes"],
         [CC_PROFILING="-pg"])
@@ -217,10 +283,9 @@ then
   AS_IF([test "$building_from_bzr" = "yes"],
         [W_FAIL="-Werror"])
 
-  BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef  -Wshadow -Wmissing-declarations ${W_STRICT_ALIASING}" 
+  BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations ${W_STRICT_ALIASING} ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION}"
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
-  CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual  -Wnon-virtual-dtor -Wctor-dtor-privacy  -Wold-style-cast -Weffc++ -Wno-long-long"
-
+  CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wno-long-long"
 
   AC_CACHE_CHECK([whether it is safe to use -Wlogical-op],
     [ac_cv_safe_to_use_Wlogical_op_],
