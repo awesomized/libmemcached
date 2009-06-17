@@ -1,4 +1,5 @@
-EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver
+EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
+             memcached_configure.h.in
 
 BUILT_SOURCES= @DTRACE_HEADER@
 
