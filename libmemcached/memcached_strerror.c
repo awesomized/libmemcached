@@ -82,5 +82,5 @@ char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_re
     return "Gibberish returned!";
   default:
     return "Gibberish returned!";
-  };
+  }
 }

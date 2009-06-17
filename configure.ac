@@ -271,7 +271,6 @@ uint16_t x= htons(80);
           ])
     ])
 
-
   W_STRICT_ALIASING="-Wno-strict-aliasing"
 
   AS_IF([test "$ac_profiling" = "yes"],
@@ -355,6 +354,7 @@ then
   CXX_WARNINGS="+w +w2 -xwe -xport64 -errtags=yes ${W_FAIL}"
 fi
 
+AC_SUBST(NO_CONVERSION)
 AC_SUBST(NO_REDUNDANT_DECLS)
 
 AM_CPPFLAGS="-I\$(top_srcdir) -I\$(top_builddir) ${CPPFLAGS}"

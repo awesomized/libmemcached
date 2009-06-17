@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
+                         (uint64_t)opt_binary);
 
   while (optind < argc) 
   {
@@ -97,13 +98,13 @@ int main(int argc, char *argv[])
 	     ptr, opt_flags, (unsigned long long)opt_expires);
     }
 
-    if ((file_buffer_ptr= (char *)malloc(sizeof(char) * sbuf.st_size)) == NULL)
+    if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
     {
       fprintf(stderr, "malloc: %s\n", strerror(errno)); 
       exit(1);
     }
 
-    if ((read_length= read(fd, file_buffer_ptr, sbuf.st_size)) == -1)
+    if ((read_length= read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
     {
       fprintf(stderr, "read: %s\n", strerror(errno)); 
       exit(1);
@@ -117,15 +118,15 @@ int main(int argc, char *argv[])
 
     if (opt_method == OPT_ADD)
       rc= memcached_add(memc, ptr, strlen(ptr),
-                        file_buffer_ptr, sbuf.st_size,
+                        file_buffer_ptr, (size_t)sbuf.st_size,
 			opt_expires, opt_flags);
     else if (opt_method == OPT_REPLACE)
       rc= memcached_replace(memc, ptr, strlen(ptr),
-			    file_buffer_ptr, sbuf.st_size,
+			    file_buffer_ptr, (size_t)sbuf.st_size,
 			    opt_expires, opt_flags);
     else
       rc= memcached_set(memc, ptr, strlen(ptr),
-                        file_buffer_ptr, sbuf.st_size,
+                        file_buffer_ptr, (size_t)sbuf.st_size,
                         opt_expires, opt_flags);
 
     if (rc != MEMCACHED_SUCCESS)
