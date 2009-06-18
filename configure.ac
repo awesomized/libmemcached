@@ -53,7 +53,6 @@ else
   building_from_bzr=no
 fi
 
-AC_PROG_CC
 AC_PROG_CC_C99
 AC_PROG_CXX
 
@@ -96,10 +95,6 @@ then
 fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
-
-# Use the C99 enabling flag found earlier
-AS_IF([test "$ac_cv_prog_cc_c99" != "no"],
-      [CFLAGS="$ac_cv_prog_cc_c99 ${CFLAGS}"])
 
 # Build optimized or debug version ?
 # First check for gcc and g++
