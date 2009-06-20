@@ -24,6 +24,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 {
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
+    ptr->number_of_replicas= (uint32_t)data;
+    break;
   case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
     ptr->io_msg_watermark= (int32_t)data;
     break;
@@ -169,6 +172,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   switch (flag)
   {
+  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
+    return ptr->number_of_replicas;
   case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
     return ptr->io_msg_watermark;
   case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "memcached/protocol_binary.h"
 
 memcached_return memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
                                   time_t expiration)
@@ -117,14 +118,34 @@ static inline memcached_return binary_delete(memcached_st *ptr,
       memcached_io_write(&ptr->hosts[server_key], NULL, 0, 1);
   }
   
+  memcached_return rc= MEMCACHED_SUCCESS;
+
   if ((memcached_do(&ptr->hosts[server_key], request.bytes, 
                     sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(&ptr->hosts[server_key], key, 
                           key_length, flush) == -1)) 
   {
     memcached_io_reset(&ptr->hosts[server_key]);
-    return MEMCACHED_WRITE_FAILURE;
+    rc= MEMCACHED_WRITE_FAILURE;
   }
 
-  return MEMCACHED_SUCCESS;
+  unlikely (ptr->number_of_replicas > 0) 
+  {
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
+
+    for (int x= 0; x < ptr->number_of_replicas; ++x)
+    {
+      ++server_key;
+      if (server_key == ptr->number_of_hosts)
+        server_key= 0;
+  
+      memcached_server_st* server= &ptr->hosts[server_key];
+      if ((memcached_do(server, (const char*)request.bytes, 
+                        sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
+          (memcached_io_write(server, key, key_length, flush) == -1))
+         memcached_io_reset(server);
+    }
+  }
+
+  return rc;
 }
