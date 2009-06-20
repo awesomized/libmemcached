@@ -172,6 +172,7 @@ ENABLE_HSIEH_HASH
 REQUIRE_POD2MAN
 PROTOCOL_BINARY_TEST
 WITH_MEMCACHED
+ENABLE_DEPRECATED
 
 dnl TODO: Remove this define once we are using 2.61 across the board.
 # AX_HEADER_ASSERT
@@ -382,6 +383,7 @@ AC_CONFIG_FILES([
   tests/Makefile
   docs/Makefile
   libmemcached/Makefile
+  libmemcached/memcached_configure.h
   libmemcachedutil/Makefile
   support/Makefile
   support/libmemcached.pc

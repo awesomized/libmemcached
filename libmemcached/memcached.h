@@ -21,6 +21,7 @@
 #ifdef MEMCACHED_INTERNAL
 #include <libmemcached/libmemcached_config.h>
 #endif
+#include <libmemcached/memcached_configure.h>
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
 #include <libmemcached/memcached_watchpoint.h>
