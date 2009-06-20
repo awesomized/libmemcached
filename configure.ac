@@ -98,10 +98,6 @@ fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
 
-# Use the C99 enabling flag found earlier
-AS_IF([test "$ac_cv_prog_cc_c99" != "no"],
-      [CFLAGS="$ac_cv_prog_cc_c99 ${CFLAGS}"])
-
 # Build optimized or debug version ?
 # First check for gcc and g++
 if test "$GCC" = "yes"
