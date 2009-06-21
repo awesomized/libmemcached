@@ -55,7 +55,7 @@ char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_re
   case MEMCACHED_STAT:
     return "STAT VALUE";
   case MEMCACHED_ITEM:
-    return "ITEM";
+    return "ITEM VALUE";
   case MEMCACHED_ERRNO:
     return "SYSTEM ERROR";
   case MEMCACHED_FAIL_UNIX_SOCKET:
