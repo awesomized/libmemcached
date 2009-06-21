@@ -60,6 +60,7 @@ uint32_t murmur_hash(const char *key, size_t length)
   case 2: h ^= data[1] << 8;
   case 1: h ^= data[0];
           h *= m;
+  default: break;
   };
 
   /* 

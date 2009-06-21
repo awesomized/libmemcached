@@ -9,9 +9,9 @@ long int timedif(struct timeval a, struct timeval b)
 {
   register int us, s;
 
-  us = a.tv_usec - b.tv_usec;
+  us = (int)(a.tv_usec - b.tv_usec);
   us /= 1000;
-  s = a.tv_sec - b.tv_sec;
+  s = (int)(a.tv_sec - b.tv_sec);
   s *= 1000;
   return s + us;
 }
@@ -47,6 +47,7 @@ static char *lookup_help(memcached_options option)
   case OPT_BINARY: return("Switch to binary protocol.");
   case OPT_ANALYZE: return("Analyze the provided servers.");
   case OPT_UDP: return("Use UDP protocol when communicating with server.");
+  default: WATCHPOINT_ASSERT(0);
   };
 
   WATCHPOINT_ASSERT(0);

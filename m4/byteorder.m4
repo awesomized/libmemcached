@@ -38,4 +38,3 @@ if (htonl(5) != 5) {
     ])
 ])
 
-DETECT_BYTEORDER

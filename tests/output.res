@@ -30,7 +30,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -67,7 +67,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -104,7 +104,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -141,7 +141,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -178,7 +178,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -215,7 +215,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -252,7 +252,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -289,7 +289,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -326,7 +326,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -363,7 +363,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -400,7 +400,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -437,7 +437,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -474,7 +474,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -511,7 +511,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -548,7 +548,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -585,7 +585,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -622,7 +622,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED
@@ -659,7 +659,7 @@ Error 21 -> SERVER END
 Error 22 -> SERVER DELETE
 Error 23 -> SERVER VALUE
 Error 24 -> STAT VALUE
-Error 25 -> Gibberish returned!
+Error 25 -> ITEM VALUE
 Error 26 -> SYSTEM ERROR
 Error 27 -> COULD NOT OPEN UNIX SOCKET
 Error 28 -> ACTION NOT SUPPORTED

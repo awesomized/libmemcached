@@ -1,32 +1,20 @@
-AC_ARG_WITH(memcached,
-[[  --with-memcached[=memcached binary]
-                          Memcached binary to use for make test]],
-[
-  if test -n "$withval"
-  then
-    MEMC_BINARY="$withval"
-  fi
-
-  if test x$withval = xyes
-  then
-    MEMC_BINARY=memcached
-  fi
+AC_DEFUN([WITH_MEMCACHED],
+  [AC_ARG_WITH([memcached],
+    [AS_HELP_STRING([--with-memcached],
+      [Memcached binary to use for make test])],
+    [ac_cv_with_memcached="$withval"],
+    [ac_cv_with_memcached=memcached])
 
   # just ignore the user if --without-memcached is passed.. it is
   # only used by make test
-  if test x$withval = xno
-  then
-    MEMC_BINARY=memcached
-  fi
-],
-[
-   AC_PATH_PROG([MEMC_BINARY], [memcached], "no", [$PATH])
-])
+  AS_IF([test "x$withval" = "xno"],
+    [ac_cv_with_memcached=memcached])
 
-if test x$MEMC_BINARY = "xno"
-then
-  AC_MSG_ERROR(["could not find memcached binary"])
-fi
+  AC_PATH_PROG([MEMC_BINARY], [$ac_cv_with_memcached], "no")
 
-AC_DEFINE_UNQUOTED([MEMCACHED_BINARY], "$MEMC_BINARY", 
+  AS_IF([test "x$MEMC_BINARY" = "xno"],
+        AC_MSG_ERROR(["could not find memcached binary"]))
+
+  AC_DEFINE_UNQUOTED([MEMCACHED_BINARY], "$MEMC_BINARY", 
             [Name of the memcached binary used in make test])
+])

@@ -37,7 +37,7 @@ static char *storage_op_string(memcached_storage_action verb)
     return "cas ";
   default:
     return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
-  };
+  }
 
   /* NOTREACHED */
 }
@@ -384,6 +384,9 @@ static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
     case PREPEND_OP:
       ret=PROTOCOL_BINARY_CMD_PREPENDQ;
       break;
+    default:
+      WATCHPOINT_ASSERT(verb);
+      break;
     }
   else
     switch (verb)
@@ -403,6 +406,9 @@ static inline uint8_t get_com_code(memcached_storage_action verb, bool noreply)
       break;
     case PREPEND_OP:
       ret=PROTOCOL_BINARY_CMD_PREPEND;
+      break;
+    default:
+      WATCHPOINT_ASSERT(verb);
       break;
     }
 
@@ -474,7 +480,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
 
-    for (int x= 0; x < ptr->number_of_replicas; ++x)
+    for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
     {
       ++server_key;
       if (server_key == ptr->number_of_hosts)

@@ -18,9 +18,9 @@ static long int timedif(struct timeval a, struct timeval b)
 {
   register int us, s;
 
-  us = a.tv_usec - b.tv_usec;
+  us = (int)(a.tv_usec - b.tv_usec);
   us /= 1000;
-  s = a.tv_sec - b.tv_sec;
+  s = (int)(a.tv_sec - b.tv_sec);
   s *= 1000;
   return s + us;
 }
@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
 
       if (next->pre)
       {
-        memcached_return rc;
         rc= next->pre(memc);
 
         if (rc != MEMCACHED_SUCCESS)

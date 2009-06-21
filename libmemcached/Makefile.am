@@ -31,6 +31,7 @@ endif
 
 lib_LTLIBRARIES = libmemcached.la
 
+libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
 libmemcached_la_SOURCES = crc.c \
 			  memcached.c \
 			  memcached_auto.c \

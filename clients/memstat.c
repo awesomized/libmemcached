@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 {
   memcached_return rc;
   memcached_st *memc;
-  memcached_stat_st *stat;
+  memcached_stat_st *memc_stat;
   memcached_server_st *servers;
   memcached_server_st *server_list;
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
-  stat= memcached_stat(memc, NULL, &rc);
+  memc_stat= memcached_stat(memc, NULL, &rc);
 
   if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
   {
@@ -87,11 +87,11 @@ int main(int argc, char *argv[])
   server_list= memcached_server_list(memc);
 
   if (opt_analyze)
-    run_analyzer(memc, stat, server_list);
+    run_analyzer(memc, memc_stat, server_list);
   else
-    print_server_listing(memc, stat, server_list);
+    print_server_listing(memc, memc_stat, server_list);
 
-  free(stat);
+  free(memc_stat);
   free(opt_servers);
 
   memcached_free(memc);
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
+static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
                          memcached_server_st *server_list)
 {
   memcached_return rc;
@@ -107,7 +107,7 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
   if (analyze_mode == NULL)
   {
     memcached_analysis_st *report;
-    report= memcached_analyze(memc, stat, &rc);
+    report= memcached_analyze(memc, memc_stat, &rc);
     if (rc != MEMCACHED_SUCCESS || report == NULL)
     {
       printf("Failure to analyze servers (%s)\n",
@@ -215,7 +215,7 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
   }
 }
 
-static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
+static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_stat,
                                  memcached_server_st *server_list)
 {
   unsigned int x;
@@ -227,14 +227,13 @@ static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
     char **list;
     char **ptr;
 
-    list= memcached_stat_get_keys(memc, &stat[x], &rc);
+    list= memcached_stat_get_keys(memc, &memc_stat[x], &rc);
 
     printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
            memcached_server_port(memc, server_list[x]));
     for (ptr= list; *ptr; ptr++)
     {
-      memcached_return rc;
-      char *value= memcached_stat_get_value(memc, &stat[x], *ptr, &rc);
+      char *value= memcached_stat_get_value(memc, &memc_stat[x], *ptr, &rc);
 
       printf("\t %s: %s\n", *ptr, value);
       free(value);

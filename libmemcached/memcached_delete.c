@@ -133,7 +133,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
 
-    for (int x= 0; x < ptr->number_of_replicas; ++x)
+    for (uint32_t x= 0; x < ptr->number_of_replicas; ++x)
     {
       ++server_key;
       if (server_key == ptr->number_of_hosts)

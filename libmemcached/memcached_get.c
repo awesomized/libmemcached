@@ -368,11 +368,11 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
 
   int flush= number_of_keys == 1;
 
-  for (int replica = 0; replica <= ptr->number_of_replicas; ++replica)
+  for (uint32_t replica= 0; replica <= ptr->number_of_replicas; ++replica)
   {
     bool success= true;    
     
-    for (uint32_t x= 0; x < number_of_keys; ++x)
+    for (x= 0; x < number_of_keys; ++x)
     {
       if (hash[x] == ptr->number_of_hosts)
         continue; /* Already successfully sent */
@@ -443,7 +443,7 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
           memcached_server_response_increment(&ptr->hosts[x]);
 
           /* mark all of the messages bound for this server as sent! */
-          for (uint32_t x= 0; x < number_of_keys; ++x)
+          for (x= 0; x < number_of_keys; ++x)
             if (hash[x] == x)
               hash[x]= ptr->number_of_hosts;
         }

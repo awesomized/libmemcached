@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
   memset(&conclusion, 0, sizeof(conclusions_st));
 
-  srandom(time(NULL));
+  srandom((unsigned int)time(NULL));
   options_parse(argc, argv);
 
   if (!opt_servers)
@@ -146,14 +146,15 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
   /* We need to set udp behavior before adding servers to the client */
   if (opt_udp_io)
   {
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, opt_udp_io);
-    unsigned int x= 0;
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP,
+                           (uint64_t)opt_udp_io);
     for(x= 0; x < servers[0].count; x++ )
       servers[x].type= MEMCACHED_CONNECTION_UDP;
   }
   memcached_server_push(memc, servers);
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
+                         (uint64_t)opt_binary);
   
   if (opt_flush)
     flush_all(memc);
@@ -313,13 +314,13 @@ void options_parse(int argc, char *argv[])
       }
       break;
     case OPT_SLAP_CONCURRENCY:
-      opt_concurrency= strtol(optarg, (char **)NULL, 10);
+      opt_concurrency= (unsigned int)strtoul(optarg, (char **)NULL, 10);
       break;
     case OPT_SLAP_EXECUTE_NUMBER:
-      opt_execute_number= strtol(optarg, (char **)NULL, 10);
+      opt_execute_number= (unsigned int)strtoul(optarg, (char **)NULL, 10);
       break;
     case OPT_SLAP_INITIAL_LOAD:
-      opt_createial_load= strtol(optarg, (char **)NULL, 10);
+      opt_createial_load= (unsigned int)strtoul(optarg, (char **)NULL, 10);
       break;
     case '?':
       /* getopt_long already printed an error message. */
@@ -378,6 +379,9 @@ void *run_task(void *p)
   case GET_TEST:
     execute_get(memc, context->initial_pairs, context->initial_number);
     break;
+  default:
+    WATCHPOINT_ASSERT(context->test);
+    break;
   }
 
   memcached_free(memc);
@@ -403,17 +407,17 @@ void flush_all(memcached_st *memc)
 pairs_st *load_create_data(memcached_st *memc, unsigned int number_of, 
                            unsigned int *actual_loaded)
 {
-  memcached_st *clone;
+  memcached_st *memc_clone;
   pairs_st *pairs;
 
-  clone= memcached_clone(NULL, memc);
+  memc_clone= memcached_clone(NULL, memc);
   /* We always used non-blocking IO for load since it is faster */
-  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   pairs= pairs_generate(number_of, 400);
-  *actual_loaded= execute_set(clone, pairs, number_of);
+  *actual_loaded= execute_set(memc_clone, pairs, number_of);
 
-  memcached_free(clone);
+  memcached_free(memc_clone);
 
   return pairs;
 }

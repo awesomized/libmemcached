@@ -20,11 +20,11 @@ static memcached_return memcached_auto(memcached_st *ptr,
 
   server_key= memcached_generate_hash(ptr, key, key_length);
 
-  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                        "%s %s%.*s %u%s\r\n", verb,
-                        ptr->prefix_key,
-                        (int)key_length, key,
-                        offset, no_reply ? " noreply" : "");
+  send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                "%s %s%.*s %u%s\r\n", verb,
+                                ptr->prefix_key,
+                                (int)key_length, key,
+                                offset, no_reply ? " noreply" : "");
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
@@ -85,7 +85,7 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= cmd;
-  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.keylen= htons(key_length);
   request.message.header.request.extlen= 20;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl(key_length + request.message.header.request.extlen);  

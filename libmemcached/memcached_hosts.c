@@ -102,11 +102,11 @@ static int continuum_item_cmp(const void *t1, const void *t2)
 
 memcached_return update_continuum(memcached_st *ptr)
 {
-  uint32_t index;
   uint32_t host_index;
   uint32_t continuum_index= 0;
   uint32_t value;
   memcached_server_st *list;
+  uint32_t pointer_index;
   uint32_t pointer_counter= 0;
   uint32_t pointer_per_server= MEMCACHED_POINTS_PER_SERVER;
   uint32_t pointer_per_hash= 1;
@@ -188,7 +188,7 @@ memcached_return update_continuum(memcached_st *ptr)
         float pct = (float)list[host_index].weight / (float)total_weight;
         pointer_per_server= floorf(pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001) * 4;
         pointer_per_hash= 4;
-#ifdef HAVE_DEBUG
+#ifdef DEBUG
         printf("ketama_weighted:%s|%d|%llu|%u\n", 
                list[host_index].hostname, 
                list[host_index].port,  
@@ -196,21 +196,27 @@ memcached_return update_continuum(memcached_st *ptr)
                pointer_per_server);
 #endif
     }
-    for (index= 1; index <= pointer_per_server / pointer_per_hash; ++index) 
+    for (pointer_index= 1;
+         pointer_index <= pointer_per_server / pointer_per_hash;
+         ++pointer_index) 
     {
       char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
       size_t sort_host_length;
 
       if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
       {
-        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH, "%s-%d", 
-                                   list[host_index].hostname, index - 1);
+        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                   "%s-%d",
+                                   list[host_index].hostname,
+                                   pointer_index - 1);
 
       }
       else
       {
-        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH, "%s:%d-%d", 
-                                   list[host_index].hostname, list[host_index].port, index - 1);
+        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                   "%s:%d-%d", 
+                                   list[host_index].hostname,
+                                   list[host_index].port, pointer_index - 1);
       }
       WATCHPOINT_ASSERT(sort_host_length);
 
@@ -240,10 +246,10 @@ memcached_return update_continuum(memcached_st *ptr)
   ptr->continuum_points_counter= pointer_counter;
   qsort(ptr->continuum, ptr->continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
-#ifdef HAVE_DEBUG
-  for (index= 0; ptr->number_of_hosts && index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); index++) 
+#ifdef DEBUG
+  for (pointer_index= 0; ptr->number_of_hosts && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++) 
   {
-    WATCHPOINT_ASSERT(ptr->continuum[index].value <= ptr->continuum[index + 1].value);
+    WATCHPOINT_ASSERT(ptr->continuum[pointer_index].value <= ptr->continuum[pointer_index + 1].value);
   }
 #endif
 
@@ -375,20 +381,20 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
 
 memcached_return memcached_server_remove(memcached_server_st *st_ptr)
 {
-  uint32_t x, index;
+  uint32_t x, host_index;
   memcached_st *ptr= st_ptr->root;
   memcached_server_st *list= ptr->hosts;
 
-  for (x= 0, index= 0; x < ptr->number_of_hosts; x++) 
+  for (x= 0, host_index= 0; x < ptr->number_of_hosts; x++) 
   {
     if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port) 
     {
-      if (index != x)
-        memcpy(list+index, list+x, sizeof(memcached_server_st));
-      index++;
+      if (host_index != x)
+        memcpy(list+host_index, list+x, sizeof(memcached_server_st));
+      host_index++;
     } 
   }
-  ptr->number_of_hosts= index;
+  ptr->number_of_hosts= host_index;
 
   if (st_ptr->address_info) 
   {

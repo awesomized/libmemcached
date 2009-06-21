@@ -1,9 +1,15 @@
 dnl ---------------------------------------------------------------------------
-dnl Macro: DTRACE_TEST
+dnl Macro: ENABLE_DTRACE
 dnl ---------------------------------------------------------------------------
-AC_ARG_ENABLE(dtrace,
-    [  --enable-dtrace      Build with support for the DTRACE.],
-    [ 
+AC_DEFUN([ENABLE_DTRACE],[
+  AC_ARG_ENABLE([dtrace],
+    [AS_HELP_STRING([--enable-dtrace],
+       [Build with support for the DTRACE. @<:@default=off@:>@])],
+    [ac_cv_enable_dtrace="yes"],
+    [ac_cv_enable_dtrace="no"])
+
+  if test "$ac_cv_enable_dtrace" = "yes"
+  then
     AC_PATH_PROG([DTRACE], [dtrace], "no", [/usr/sbin:$PATH])
     if test "x$DTRACE" != "xno"; then
       AC_DEFINE([HAVE_DTRACE], [1], [Enables DTRACE Support])
@@ -17,21 +23,18 @@ AC_ARG_ENABLE(dtrace,
         rm conftest.$$
       fi
 
-      ENABLE_DTRACE="yes"
+      ac_cv_enable_dtrace="yes"
       AC_SUBST(HAVE_DTRACE)
     else
       AC_MSG_ERROR([Need dtrace binary and OS support.])
     fi
-    ],
-    [
-      ENABLE_DTRACE="no" 
-    ]
-    )
+  fi
 
-AC_SUBST(DTRACEFLAGS)
-AC_SUBST(DTRACE_HEADER)
-AC_SUBST(DTRACE_OBJ)
-AM_CONDITIONAL([HAVE_DTRACE], [ test "$ENABLE_DTRACE" = "yes" ])
+  AC_SUBST(DTRACEFLAGS)
+  AC_SUBST(DTRACE_HEADER)
+  AC_SUBST(DTRACE_OBJ)
+  AM_CONDITIONAL([HAVE_DTRACE], [ test "$ac_cv_enable_dtrace" = "yes" ])
+])
 dnl ---------------------------------------------------------------------------
-dnl End Macro: DTRACE_TEST
+dnl End Macro: ENABLE_DTRACE
 dnl ---------------------------------------------------------------------------

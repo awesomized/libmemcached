@@ -104,6 +104,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
     case 2 : a+=k[0]&0xffff; break;
     case 1 : a+=k[0]&0xff; break;
     case 0 : return c;              /* zero length strings require no mixing */
+    default: return c;
     }
 
   } 
@@ -153,6 +154,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
     case 1 : a+=k8[0];
              break;
     case 0 : return c;                     /* zero length requires no mixing */
+    default: return c;
     }
 
   } 
@@ -198,6 +200,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
     case 1 : a+=k[0];
              break;
     case 0 : return c;
+    default : return c;
     }
 #ifdef BYTEORDER_LITTLE_ENDIAN
   }
