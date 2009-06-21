@@ -62,6 +62,7 @@ memcached_return memcached_callback_set(memcached_st *ptr,
       ptr->on_clone= func;
       break;
     }
+#ifdef MEMCACHED_ENABLE_DEPRECATED
   case MEMCACHED_CALLBACK_MALLOC_FUNCTION:
     {
       memcached_malloc_function func= *(memcached_malloc_function *)&data;
@@ -80,6 +81,7 @@ memcached_return memcached_callback_set(memcached_st *ptr,
       ptr->call_free= func;
       break;
     }
+#endif
   case MEMCACHED_CALLBACK_GET_FAILURE:
     {
       memcached_trigger_key func= *(memcached_trigger_key *)&data;
@@ -138,6 +140,7 @@ void *memcached_callback_get(memcached_st *ptr,
       *error= ptr->on_clone ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
       return *(void **)&ptr->on_clone;
     }
+#ifdef MEMCACHED_ENABLE_DEPRECATED
   case MEMCACHED_CALLBACK_MALLOC_FUNCTION:
     {
       *error= ptr->call_malloc ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
@@ -153,6 +156,7 @@ void *memcached_callback_get(memcached_st *ptr,
       *error= ptr->call_free ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
       return *(void **)&ptr->call_free;
     }
+#endif
   case MEMCACHED_CALLBACK_GET_FAILURE:
     {
       *error= ptr->get_key_failure ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;

@@ -3160,6 +3160,7 @@ static memcached_return set_prefix(memcached_st *memc)
   return MEMCACHED_SUCCESS;
 }
 
+#ifdef MEMCACHED_ENABLE_DEPRECATED
 static memcached_return deprecated_set_memory_alloc(memcached_st *memc)
 {
   void *test_ptr= NULL;
@@ -3204,6 +3205,7 @@ static memcached_return deprecated_set_memory_alloc(memcached_st *memc)
   }
   return MEMCACHED_SUCCESS;
 }
+#endif
 
 static memcached_return set_memory_alloc(memcached_st *memc)
 {
@@ -4536,7 +4538,9 @@ collection_st collection[] ={
   {"poll_timeout", poll_timeout, 0, tests},
   {"gets", enable_cas, 0, tests},
   {"consistent", enable_consistent, 0, tests},
+#ifdef MEMCACHED_ENABLE_DEPRECATED
   {"deprecated_memory_allocators", deprecated_set_memory_alloc, 0, tests},
+#endif
   {"memory_allocators", set_memory_alloc, 0, tests},
   {"prefix", set_prefix, 0, tests},
   {"version_1_2_3", check_for_1_2_3, 0, version_1_2_3},
