@@ -278,8 +278,6 @@ uint16_t x= htons(80);
           ])
     ])
 
-  W_STRICT_ALIASING="-Wno-strict-aliasing"
-
   AS_IF([test "$ac_profiling" = "yes"],
         [CC_PROFILING="-pg"])
 
@@ -289,7 +287,7 @@ uint16_t x= htons(80);
   AS_IF([test "$building_from_bzr" = "yes"],
         [W_FAIL="-Werror"])
 
-  BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations ${W_STRICT_ALIASING} ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION}"
+  BASE_WARNINGS="-pedantic -W -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations -Wstrict-aliasing ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION}"
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
   CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wno-long-long"
 
