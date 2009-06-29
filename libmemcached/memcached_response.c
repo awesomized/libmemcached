@@ -238,7 +238,16 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
         return MEMCACHED_STAT;
       }
       else if (buffer[1] == 'E')
-        return MEMCACHED_SERVER_ERROR;
+	{
+	  /* SERVER_ERROR */ 
+	  char *startptr= buffer + 13, *endptr= startptr;
+	  while (*endptr != '\r' && *endptr != '\n') endptr++;
+	  if (ptr->cached_server_error) free(ptr->cached_server_error);
+	  ptr->cached_server_error= malloc(endptr - startptr + 1);
+	  memcpy(ptr->cached_server_error, startptr, endptr - startptr);
+	  ptr->cached_server_error[endptr - startptr]= 0;
+	  return MEMCACHED_SERVER_ERROR;
+	}
       else if (buffer[1] == 'T')
         return MEMCACHED_STORED;
       else
