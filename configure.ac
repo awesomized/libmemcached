@@ -285,7 +285,8 @@ uint16_t x= htons(80);
         [CC_COVERAGE="-fprofile-arcs -ftest-coverage"])
 
   AS_IF([test "$building_from_bzr" = "yes"],
-        [W_FAIL="-Werror"])
+        [W_FAIL=""])
+        #[W_FAIL="-Werror"])
 
   BASE_WARNINGS="-pedantic -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations -Wstrict-aliasing -Wformat=2 ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION}"
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
