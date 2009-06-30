@@ -242,7 +242,7 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
 	  /* SERVER_ERROR */ 
 	  char *startptr= buffer + 13, *endptr= startptr;
 	  while (*endptr != '\r' && *endptr != '\n') endptr++;
-	  if (ptr->cached_server_error) free(ptr->cached_server_error);
+	  if (ptr->cached_server_error) ptr->root->call_free(ptr->root, ptr->cached_server_error);
 	  ptr->cached_server_error= ptr->root->call_malloc(ptr->root, endptr - startptr + 1);
 	  memcpy(ptr->cached_server_error, startptr, endptr - startptr);
 	  ptr->cached_server_error[endptr - startptr]= 0;
