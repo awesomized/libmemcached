@@ -143,7 +143,9 @@ static inline memcached_return binary_delete(memcached_st *ptr,
       if ((memcached_do(server, (const char*)request.bytes, 
                         sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
           (memcached_io_write(server, key, key_length, flush) == -1))
-         memcached_io_reset(server);
+        memcached_io_reset(server);
+      else
+        memcached_server_response_decrement(server);
     }
   }
 

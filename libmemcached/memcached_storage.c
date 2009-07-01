@@ -491,7 +491,9 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
                         send_length, 0) != MEMCACHED_SUCCESS) ||
           (memcached_io_write(srv, key, key_length, 0) == -1) ||
           (memcached_io_write(srv, value, value_length, flush) == -1))
-        memcached_io_reset(server);
+        memcached_io_reset(srv);
+      else
+        memcached_server_response_decrement(srv);
     }
   }
 

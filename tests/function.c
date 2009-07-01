@@ -3070,6 +3070,16 @@ static memcached_return pre_replication(memcached_st *memc)
   return rc;
 }
 
+static memcached_return pre_replication_noblock(memcached_st *memc)
+{
+  memcached_return rc= MEMCACHED_FAILURE;
+  if (pre_replication(memc) == MEMCACHED_SUCCESS && 
+      pre_nonblock(memc) == MEMCACHED_SUCCESS)
+    rc= MEMCACHED_SUCCESS;
+
+  return rc;
+}
+
 static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 {
   free(mem);
@@ -3583,6 +3593,21 @@ static test_return replication_set_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
 
   /*
+  ** We are using the quiet commands to store the replicas, so we need
+  ** to ensure that all of them are processed before we can continue.
+  ** In the test we go directly from storing the object to trying to
+  ** receive the object from all of the different servers, so we
+  ** could end up in a race condition (the memcached server hasn't yet
+  ** processed the quiet command from the replication set when it process
+  ** the request from the other client (created by the clone)). As a
+  ** workaround for that we call memcached_quit to send the quit command
+  ** to the server and wait for the response ;-) If you use the test code
+  ** as an example for your own code, please note that you shouldn't need
+  ** to do this ;-)
+  */ 
+  memcached_quit(memc);
+
+  /*
   ** "bubba" should now be stored on all of our servers. We don't have an
   ** easy to use API to address each individual server, so I'll just iterate
   ** through a bunch of "master keys" and I should most likely hit all of the
@@ -3651,6 +3676,21 @@ static test_return replication_mget_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], len[x], "0", 1, 0, 0);
     assert(rc == MEMCACHED_SUCCESS);
   }
+
+  /*
+  ** We are using the quiet commands to store the replicas, so we need
+  ** to ensure that all of them are processed before we can continue.
+  ** In the test we go directly from storing the object to trying to
+  ** receive the object from all of the different servers, so we
+  ** could end up in a race condition (the memcached server hasn't yet
+  ** processed the quiet command from the replication set when it process
+  ** the request from the other client (created by the clone)). As a
+  ** workaround for that we call memcached_quit to send the quit command
+  ** to the server and wait for the response ;-) If you use the test code
+  ** as an example for your own code, please note that you shouldn't need
+  ** to do this ;-)
+  */ 
+  memcached_quit(memc);
 
   /*
    * Don't do the following in your code. I am abusing the internal details
@@ -4588,6 +4628,7 @@ collection_st collection[] ={
   {"consistent_ketama_weighted", pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
   {"test_hashes", 0, 0, hash_tests},
   {"replication", pre_replication, 0, replication_tests},
+  {"replication_noblock", pre_replication_noblock, 0, replication_tests},
   {0, 0, 0, 0}
 };
 
