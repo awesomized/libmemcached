@@ -170,12 +170,15 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
 
   if (ptr->flags & MEM_HASH_WITH_PREFIX_KEY)
   {
-    int temp_len= ptr->prefix_key_length + key_length;
-    char *temp= (char *)malloc(temp_len);
+    size_t temp_length= ptr->prefix_key_length + key_length;
+    char temp[temp_length];
+
+    if (temp_length > MEMCACHED_MAX_KEY -1)
+      return 0;
+
     strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
     strncpy(temp + ptr->prefix_key_length, key, key_length);
-    hash= generate_hash(ptr, temp, temp_len);
-    free(temp);
+    hash= generate_hash(ptr, temp, temp_length);
   }
   else
   {
