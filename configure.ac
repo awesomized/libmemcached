@@ -329,6 +329,7 @@ template <> void C<int>::foo();
         [CXX_WARNINGS="${CXX_WARNINGS} -Wredundant-decls"],
         [CXX_WARNINGS="${CXX_WARNINGS} -Wno-redundant-decls"])
 
+  NO_STRICT_ALIASING="-fno-strict-aliasing -Wno-strict-aliasing"
   NO_REDUNDANT_DECLS="-Wno-redundant-decls"
 fi
 if test "$SUNCC" = "yes"
@@ -364,6 +365,7 @@ fi
 
 AC_SUBST(NO_CONVERSION)
 AC_SUBST(NO_REDUNDANT_DECLS)
+AC_SUBST(NO_STRICT_ALIASING)
 
 AM_CPPFLAGS="-I\$(top_srcdir) -I\$(top_builddir) ${CPPFLAGS}"
 AM_CFLAGS="${CC_WARNINGS} ${CC_PROFILING} ${CC_COVERAGE} ${CFLAGS}"

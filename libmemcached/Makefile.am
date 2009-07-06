@@ -23,13 +23,17 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_storage.h \
 		    memcached_string.h \
 		    memcached_types.h \
-		    memcached_watchpoint.h
+		    memcached_watchpoint.h \
+		    visibility.h
 
 if BUILD_LIBMEMCACHEDUTIL
 pkginclude_HEADERS+= memcached_util.h memcached_pool.h
 endif
 
 lib_LTLIBRARIES = libmemcached.la
+noinst_LTLIBRARIES = libmemcachedcallbacks.la
+libmemcachedcallbacks_la_CFLAGS = ${AM_CFLAGS} ${NO_STRICT_ALIASING}
+libmemcachedcallbacks_la_SOURCES = memcached_callback.c
 
 libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBMEMCACHED
 libmemcached_la_SOURCES = crc.c \
@@ -37,7 +41,6 @@ libmemcached_la_SOURCES = crc.c \
 			  memcached_auto.c \
 			  memcached_analyze.c \
 			  memcached_behavior.c \
-			  memcached_callback.c \
 			  memcached_connect.c \
 			  memcached_delete.c \
 			  memcached_do.c \
@@ -75,8 +78,8 @@ if BUILD_BYTEORDER
 libmemcached_la_SOURCES += byteorder.c
 endif
 
-libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@
-libmemcached_la_LIBADD = @DTRACE_OBJ@ $(LIBM)
+libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@ libmemcachedcallbacks.la
+libmemcached_la_LIBADD = @DTRACE_OBJ@ $(LIBM) libmemcachedcallbacks.la
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
 
 dtrace_probes.h: libmemcached_probes.d

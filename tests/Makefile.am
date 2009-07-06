@@ -21,7 +21,7 @@ LIBS =
 noinst_HEADERS = test.h server.h ketama_test_cases.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
 
-testapp_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
+testapp_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} ${NO_STRICT_ALIASING}
 testapp_SOURCES = test.c function.c server.c ../clients/generator.c ../clients/execute.c
 testapp_LDADD = $(LDADDS)
 
