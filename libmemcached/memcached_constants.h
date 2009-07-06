@@ -9,10 +9,6 @@
 #ifndef __MEMCACHED_CONSTANTS_H__
 #define __MEMCACHED_CONSTANTS_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Public defines */
 #define MEMCACHED_DEFAULT_PORT 11211
 #define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
@@ -142,9 +138,5 @@ typedef enum {
   MEMCACHED_CONNECTION_UDP,
   MEMCACHED_CONNECTION_UNIX_SOCKET
 } memcached_connection;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __MEMCACHED_CONSTANTS_H__ */

@@ -35,7 +35,7 @@ noinst_LTLIBRARIES = libmemcachedcallbacks.la
 libmemcachedcallbacks_la_CFLAGS = ${AM_CFLAGS} ${NO_STRICT_ALIASING}
 libmemcachedcallbacks_la_SOURCES = memcached_callback.c
 
-libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBMEMCACHED
+libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
 libmemcached_la_SOURCES = crc.c \
 			  memcached.c \
 			  memcached_auto.c \

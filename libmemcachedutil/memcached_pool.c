@@ -1,4 +1,4 @@
-#include "config.h"
+#include "libmemcached/common.h"
 #include "libmemcached/memcached_pool.h"
 
 #include <errno.h>

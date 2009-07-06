@@ -4,7 +4,7 @@ dnl ---------------------------------------------------------------------------
 AC_DEFUN([PROTOCOL_BINARY_TEST],
   [AC_LANG_PUSH([C])
    save_CFLAGS="$CFLAGS"
-   CFLAGS="$CFLAGS -I${srcdir}"
+   CFLAGS="$CFLAGS -I${srcdir} -DBUILDING_LIBMEMCACHED"
    AC_RUN_IFELSE([ 
       AC_LANG_PROGRAM([[
 #include "libmemcached/memcached/protocol_binary.h"

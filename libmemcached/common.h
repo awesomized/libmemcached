@@ -34,11 +34,15 @@
 # endif
 #endif
 
+/* Define this here, which will turn on the visibilty controls while we're
+ * building libmemcached.
+ */
+#define BUILDING_LIBMEMCACHED 1
+
 
 #include "libmemcached/memcached.h"
 #include "libmemcached/memcached_watchpoint.h"
 
-#if defined(BUILDING_LIBMEMCACHED)
 /* These are private not to be installed headers */
 #include "libmemcached/memcached_io.h"
 #include "libmemcached/memcached_internal.h"
@@ -50,10 +54,6 @@ struct memcached_continuum_item_st {
   uint32_t index;
   uint32_t value;
 };
-
-#endif
-
-
 
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
@@ -95,48 +95,61 @@ typedef enum {
   MEM_AUTO_EJECT_HOSTS= (1 << 16)
 } memcached_flags;
 
-#if defined(BUILDING_LIBMEMCACHED)
 /* Hashing algo */
+
+LIBMEMCACHED_LOCAL
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
+LIBMEMCACHED_LOCAL
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
 #ifdef HAVE_HSIEH_HASH
+LIBMEMCACHED_LOCAL
 uint32_t hsieh_hash(const char *key, size_t key_length);
 #endif
+LIBMEMCACHED_LOCAL
 uint32_t murmur_hash(const char *key, size_t key_length);
+LIBMEMCACHED_LOCAL
 uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_connect(memcached_server_st *ptr);
+LIBMEMCACHED_LOCAL
 memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
+LIBMEMCACHED_LOCAL
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_do(memcached_server_st *ptr, const void *commmand,
                               size_t command_length, uint8_t with_flush);
-memcached_return memcached_version(memcached_st *ptr);
+LIBMEMCACHED_LOCAL
 memcached_return value_fetch(memcached_server_st *ptr,
                              char *buffer,
                              memcached_result_st *result);
+LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_key_test(char **keys, size_t *key_length,
                                     unsigned int number_of_keys);
 
-memcached_return run_distribution(memcached_st *ptr);
 
+LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
-memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 
 #ifndef HAVE_HTONLL
+LIBMEMCACHED_LOCAL
 extern uint64_t ntohll(uint64_t);
+LIBMEMCACHED_LOCAL
 extern uint64_t htonll(uint64_t);
 #endif
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_purge(memcached_server_st *ptr);
 
 static inline memcached_return memcached_validate_key_length(size_t key_length, 
@@ -157,6 +170,5 @@ static inline memcached_return memcached_validate_key_length(size_t key_length,
 
   return MEMCACHED_SUCCESS;
 }
-#endif /* BUILDING_LIBMEMCACHED */
 
-#endif /* !defined(LIBMEMCACHED_COMMON_H) && defined(BUILDING_LIBMEMCACHED) */
+#endif /* LIBMEMCACHED_COMMON_H */

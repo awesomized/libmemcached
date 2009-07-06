@@ -290,7 +290,7 @@ uint16_t x= htons(80);
         [W_FAIL=""])
         #[W_FAIL="-Werror"])
 
-  BASE_WARNINGS="-pedantic -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations -Wstrict-aliasing -Wformat=2 ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION}"
+  BASE_WARNINGS="-pedantic -Wall -Wextra ${W_FAIL} -Wundef -Wshadow -Wmissing-declarations -Wstrict-aliasing -Wformat=2 ${F_DIAGNOSTICS_SHOW_OPTION} ${W_CONVERSION} ${CFLAG_VISIBILITY}"
   CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wswitch-default -Wswitch-enum -Wcast-align"
   CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wold-style-cast -Weffc++ -Wno-long-long"
 
