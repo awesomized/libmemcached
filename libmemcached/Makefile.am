@@ -8,8 +8,7 @@ DTRACE =                @DTRACE@
 DTRACEFLAGS =           @DTRACEFLAGS@
 
 noinst_HEADERS = libmemcached_probes.h \
-                 libmemcached_config.h \
-		 memcached_io.h \
+                 memcached_io.h \
                  memcached_internal.h \
                  common.h \
                  memcached/protocol_binary.h @DTRACE_HEADER@
@@ -32,7 +31,7 @@ endif
 
 lib_LTLIBRARIES = libmemcached.la
 
-libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
+libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBMEMCACHED
 libmemcached_la_SOURCES = crc.c \
 			  memcached.c \
 			  memcached_auto.c \
@@ -76,7 +75,6 @@ if BUILD_BYTEORDER
 libmemcached_la_SOURCES += byteorder.c
 endif
 
-DEFS += -DMEMCACHED_INTERNAL
 libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@
 libmemcached_la_LIBADD = @DTRACE_OBJ@ $(LIBM)
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)

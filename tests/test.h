@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <libmemcached/memcached.h>
-#include "../libmemcached/common.h"
+#include <stdio.h>
 
 typedef struct world_st world_st;
 typedef struct collection_st collection_st;

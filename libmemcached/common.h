@@ -2,10 +2,10 @@
   Common include file for libmemached
 */
 
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef LIBMEMCACHED_COMMON_H
+#define LIBMEMCACHED_COMMON_H
 
-#include "libmemcached/libmemcached_config.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,13 +23,6 @@
 #include <fcntl.h>
 #include <sys/un.h>
 #include <netinet/tcp.h>
-
-
-#include "libmemcached/memcached.h"
-#include "libmemcached/memcached_io.h"
-
-#include "libmemcached/memcached/protocol_binary.h"
-
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -40,6 +33,26 @@
 #  include <time.h>
 # endif
 #endif
+
+
+#include "libmemcached/memcached.h"
+#include "libmemcached/memcached_watchpoint.h"
+
+#if defined(BUILDING_LIBMEMCACHED)
+/* These are private not to be installed headers */
+#include "libmemcached/memcached_io.h"
+#include "libmemcached/memcached_internal.h"
+#include "libmemcached/libmemcached_probes.h"
+#include "libmemcached/memcached/protocol_binary.h"
+
+/* string value */
+struct memcached_continuum_item_st {
+  uint32_t index;
+  uint32_t value;
+};
+
+#endif
+
 
 
 
@@ -54,7 +67,6 @@
 #define unlikely(x)     if(__builtin_expect((x), 0))
 #endif
 
-#include "libmemcached_probes.h"
 
 #define MEMCACHED_BLOCK_SIZE 1024
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
@@ -83,6 +95,7 @@ typedef enum {
   MEM_AUTO_EJECT_HOSTS= (1 << 16)
 } memcached_flags;
 
+#if defined(BUILDING_LIBMEMCACHED)
 /* Hashing algo */
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
 uint32_t hash_crc32(const char *data,
@@ -144,5 +157,6 @@ static inline memcached_return memcached_validate_key_length(size_t key_length,
 
   return MEMCACHED_SUCCESS;
 }
+#endif /* BUILDING_LIBMEMCACHED */
 
-#endif /* __COMMON_H__ */
+#endif /* !defined(LIBMEMCACHED_COMMON_H) && defined(BUILDING_LIBMEMCACHED) */

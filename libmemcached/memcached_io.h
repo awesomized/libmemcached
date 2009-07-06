@@ -1,8 +1,17 @@
-/* Server IO, Not public! */
-#include "libmemcached/memcached.h"
+/*
+ * Summary: Server IO, Not public!
+ *
+ * Copy: See Copyright for the status of this software.
+ *
+ * Author: Brian Aker
+ */
 
-#ifndef __MEMCACHED_IO_H__
-#define __MEMCACHED_IO_H__
+#ifndef LIBMEMCACHED_MEMCACHED_IO_H
+#define LIBMEMCACHED_MEMCACHED_IO_H
+
+#if defined(BUILDING_LIBMEMCACHED)
+
+#include "libmemcached/memcached.h"
 
 #define MAX_UDP_DATAGRAM_LENGTH 1400
 #define UDP_DATAGRAM_HEADER_LENGTH 8
@@ -46,4 +55,5 @@ memcached_return memcached_io_init_udp_header(memcached_server_st *ptr,
 
 memcached_server_st *memcached_io_get_readable_server(memcached_st *memc);
 
-#endif /* __MEMCACHED_IO_H__ */
+#endif /* BUILDING_LIBMEMCACHED */
+#endif /* LIBMEMCACHED_MEMCACHED_IO_H */

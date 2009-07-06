@@ -18,13 +18,9 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#ifdef MEMCACHED_INTERNAL
-#include <libmemcached/libmemcached_config.h>
-#endif
 #include <libmemcached/memcached_configure.h>
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
-#include <libmemcached/memcached_watchpoint.h>
 #include <libmemcached/memcached_get.h>
 #include <libmemcached/memcached_server.h>
 #include <libmemcached/memcached_string.h>
@@ -34,15 +30,7 @@
 extern "C" {
 #endif
 
-/* These are Private and should not be used by applications */
 #define MEMCACHED_VERSION_STRING_LENGTH 24
-
-/* string value */
-struct memcached_continuum_item_st {
-  uint32_t index;
-  uint32_t value;
-};
-
 #define LIBMEMCACHED_VERSION_STRING "0.30"
 
 struct memcached_analysis_st {
@@ -253,9 +241,5 @@ void *memcached_set_user_data(memcached_st *ptr, void *data);
 #endif
 
 #include <libmemcached/memcached_storage.h>
-
-#ifdef MEMCACHED_INTERNAL
-#include <libmemcached/memcached_internal.h>
-#endif
 
 #endif /* __MEMCACHED_H__ */

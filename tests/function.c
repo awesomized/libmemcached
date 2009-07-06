@@ -1,6 +1,14 @@
 /*
   Sample test application.
 */
+
+/* TODO: I'm torn about this. The file seems like a functional test, which
+ * should use only the exported API of the library. On the other hand,
+ * something needs to test some of the internals - so we're going to turn on
+ * internal symbols here... but I'd like to come up with another way to test
+ * the internals
+ */
+#define BUILDING_LIBMEMCACHED 1
 #include "libmemcached/common.h"
 
 #include <assert.h>
@@ -424,7 +432,7 @@ static test_return  cas2_test(memcached_st *memc)
   assert(results);
   assert(results->cas);
   assert(rc == MEMCACHED_SUCCESS);
-  WATCHPOINT_ASSERT(memcached_result_cas(results));
+  assert(memcached_result_cas(results));
 
   assert(!memcmp(value, "we the people", strlen("we the people")));
   assert(strlen("we the people") == value_length);
@@ -468,7 +476,7 @@ static test_return  cas_test(memcached_st *memc)
   results= memcached_fetch_result(memc, &results_obj, &rc);
   assert(results);
   assert(rc == MEMCACHED_SUCCESS);
-  WATCHPOINT_ASSERT(memcached_result_cas(results));
+  assert(memcached_result_cas(results));
   assert(!memcmp(value, memcached_result_value(results), value_length));
   assert(strlen(memcached_result_value(results)) == value_length);
   assert(rc == MEMCACHED_SUCCESS);
@@ -1647,8 +1655,7 @@ static test_return  user_supplied_bug2(memcached_st *memc)
         errors++;
       else
       {
-        WATCHPOINT_ERROR(rc);
-        assert(0);
+        assert(rc);
       }
 
       continue;

@@ -9,7 +9,7 @@ AC_PREREQ(2.59)
 AC_INIT([libmemcached],[0.30],[http://tangent.org/552/libmemcached.html])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(libmemcached/libmemcached_config.h)
+AM_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 #shared library versioning
@@ -97,6 +97,8 @@ then
 fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
+
+gl_VISIBILITY
 
 # Build optimized or debug version ?
 # First check for gcc and g++

@@ -6,15 +6,12 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_WATCHPOINT_H__
-#define __MEMCACHED_WATCHPOINT_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LIBMEMCACHED_MEMCACHED_WATCHPOINT_H
+#define LIBMEMCACHED_MEMCACHED_WATCHPOINT_H
 
 /* Some personal debugging functions */
-#if defined(MEMCACHED_INTERNAL) && defined(DEBUG)
+#if defined(DEBUG)
+
 #include <assert.h>
 
 #define WATCHPOINT fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
@@ -36,10 +33,6 @@ extern "C" {
 #define WATCHPOINT_ASSERT_PRINT(A,B,C)
 #define WATCHPOINT_ASSERT(A)
 
-#endif /* MEMCACHED_INTERNAL && DEBUG */
+#endif /* DEBUG */
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __MEMCACHED_WATCHPOINT_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_WATCHPOINT_H */
