@@ -53,8 +53,8 @@ uint8_t increment_test(memcached_st *memc)
   mcach.set(key, inc_value, strlen(inc_value));
   ret_value= mcach.get(key, &value_length);
   printf("\nretvalue %s\n",ret_value);
-  int_inc_value= atoi(inc_value);
-  int_ret_value= atoi(ret_value);
+  int_inc_value= uint64_t(atol(inc_value));
+  int_ret_value= uint64_t(atol(ret_value));
   assert(int_ret_value == int_inc_value); 
 
   rc= mcach.increment(key, 1, &int_ret_value);

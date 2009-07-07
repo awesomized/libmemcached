@@ -173,7 +173,7 @@ static test_return add_test(memcached_st *memc)
 
   /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
   if (setting_value)
-    assert(rc == MEMCACHED_NOTSTORED || MEMCACHED_STORED);
+    assert(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_STORED);
   else
     assert(rc == MEMCACHED_NOTSTORED);
 
