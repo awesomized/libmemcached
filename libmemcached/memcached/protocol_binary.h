@@ -32,10 +32,8 @@
  * Author: Trond Norbye <trond.norbye@sun.com>
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_PROTOCOL_BINARY_H
-#define LIBMEMCACHED_MEMCACHED_PROTOCOL_BINARY_H
-
-#if defined(BUILDING_LIBMEMCACHED)
+#ifndef PROTOCOL_BINARY_H
+#define PROTOCOL_BINARY_H
 
 #include <stdint.h>
 
@@ -360,6 +358,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* BUILDING_LIBMEMCACHED */
-#endif /* LIBMEMCACHED_MEMCACHED_PROTOCOL_BINARY_H */
+#endif /* PROTOCOL_BINARY_H */
