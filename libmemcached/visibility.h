@@ -25,9 +25,12 @@
  */
 
 #if defined(BUILDING_LIBMEMCACHED)
-# if defined(HAVE_VISIBILITY)
+# if defined(HAVE_VISIBILITY) && HAVE_VISIBILITY
 #  define LIBMEMCACHED_API __attribute__ ((visibility("default")))
 #  define LIBMEMCACHED_LOCAL  __attribute__ ((visibility("hidden")))
+# elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+#  define LIBMEMCACHED_API __global
+#  define LIBMEMCACHED_LOCAL __hidden
 # elif defined(_MSC_VER)
 #  define LIBMEMCACHED_API extern __declspec(dllexport) 
 #  define LIBMEMCACHED_LOCAL
