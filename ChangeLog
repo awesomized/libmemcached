@@ -1,3 +1,7 @@
+0.31
+  * Added support or HA via replication.
+  * malloc() removed for server key usage.
+  * Update build system.
   * Added support for memcached_set_memory_allocators().
   * Fixed bug in configure.ac for have_htoll.
 
