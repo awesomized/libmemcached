@@ -83,7 +83,6 @@ libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSIO
 
 if HAVE_DTRACE
 BUILT_SOURCES+= dtrace_probes.h
-noinst_HEADERS+= dtrace_probes.h
 libmemcached_la_SOURCES += libmemcached_probes.d
 endif
 
