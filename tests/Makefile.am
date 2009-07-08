@@ -20,22 +20,26 @@ LIBS =
 
 noinst_HEADERS = test.h server.h ketama_test_cases.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
+noinst_LTLIBRARIES= libserver.la libtest.la
 
-testapp_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} ${NO_STRICT_ALIASING}
-testapp_SOURCES = test.c function.c server.c ../clients/generator.c ../clients/execute.c
-testapp_LDADD = $(LDADDS)
+libserver_la_SOURCES= server.c
+libtest_la_SOURCES= test.c
 
-testplus_SOURCES = test.c plus.cpp server.c
-testplus_LDADD = $(LDADDS)
+testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+testapp_SOURCES = function.c
+testapp_LDADD = $(LDADDS) $(top_builddir)/clients/libgenexec.la libtest.la libserver.la
 
-udptest_SOURCES = test.c udp.c server.c
-udptest_LDADD = $(LDADDS)
+testplus_SOURCES = plus.cpp
+testplus_LDADD = $(LDADDS) libtest.la libserver.la
 
-atomsmasher_SOURCES = test.c atomsmasher.c server.c ../clients/generator.c ../clients/execute.c
-atomsmasher_LDADD = $(LDADDS)
+udptest_SOURCES = udp.c
+udptest_LDADD = $(LDADDS) libtest.la libserver.la
 
-startservers_SOURCES = start.c server.c
-startservers_LDADD = $(LDADDS)
+atomsmasher_SOURCES = atomsmasher.c
+atomsmasher_LDADD = $(LDADDS) $(top_builddir)/clients/libgenexec.la libtest.la libserver.la 
+
+startservers_SOURCES = start.c
+startservers_LDADD = $(LDADDS) libserver.la
 
 record:
 	./testapp > output.res
@@ -91,7 +95,7 @@ helgrind:
 	libtool --mode=execute valgrind --tool=helgrind  testapp
 
 helgrind-slap:
-	libtool --mode=execute valgrind --tool=helgrind  ../clients/memslap --server=localhost --concurrency=30
+	libtool --mode=execute valgrind --tool=helgrind  ${top_builddir}/clients/memslap --server=localhost --concurrency=30
 
 test-no-outputdiff: testapp
 	./testapp > /dev/null

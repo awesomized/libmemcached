@@ -1,4 +1,4 @@
-LDADDS = $(top_builddir)/libmemcached/libmemcached.la
+LDADDS = $(top_builddir)/libmemcached/libmemcached.la libutilities.la
 
 bin_PROGRAMS = memcat memdump memcp memstat memrm memflush memslap memerror
 
@@ -7,37 +7,43 @@ noinst_HEADERS = client_options.h \
 		generator.h \
 		execute.h 
 
-memcat_SOURCES = memcat.c utilities.c
+noinst_LTLIBRARIES= libutilities.la libgenexec.la
+
+libutilities_la_SOURCES= utilities.c
+libgenexec_la_SOURCES= generator.c execute.c
+
+memcat_SOURCES = memcat.c
 memcat_LDADD = $(LDADDS)
 memcat_LDFLAGS = -rpath $(pkglibdir)
 
-memcp_SOURCES = memcp.c utilities.c
+memcp_SOURCES = memcp.c
 memcp_LDADD = $(LDADDS)
 memcp_LDFLAGS = -rpath $(pkglibdir)
 
-memdump_SOURCES = memdump.c utilities.c
+memdump_SOURCES = memdump.c
 memdump_LDADD = $(LDADDS)
 memdump_LDFLAGS = -rpath $(pkglibdir)
 
-memstat_SOURCES = memstat.c utilities.c
+memstat_SOURCES = memstat.c
 memstat_LDADD = $(LDADDS)
 memstat_LDFLAGS = -rpath $(pkglibdir)
 
-memrm_SOURCES = memrm.c utilities.c
+memrm_SOURCES = memrm.c
 memrm_LDADD = $(LDADDS)
 memrm_LDFLAGS = -rpath $(pkglibdir)
 
-memflush_SOURCES = memflush.c utilities.c
+memflush_SOURCES = memflush.c
 memflush_LDADD = $(LDADDS)
 memflush_LDFLAGS = -rpath $(pkglibdir)
 
-memerror_SOURCES = memerror.c utilities.c
+memerror_SOURCES = memerror.c
 memerror_LDADD = $(LDADDS)
 memerror_LDFLAGS = -rpath $(pkglibdir)
 
-memslap_SOURCES = memslap.c utilities.c generator.c execute.c
-memslap_LDADD = $(LDADDS) -lpthread
-memslap_LDFLAGS = -rpath $(pkglibdir)
+memslap_SOURCES = memslap.c
+memslap_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
+memslap_LDADD = $(LDADDS) $(PTHREAD_LIBS) libgenexec.la
+memslap_LDFLAGS = $(AM_LDFLAGS) -rpath $(pkglibdir)
 
 test-start-server:
 	memflush --servers=localhost
