@@ -6,6 +6,9 @@ dnl with or without modifications, as long as this notice is preserved.
 dnl AC_PANDORA_WARNINGS([less-warnings|warnings-always-on])
 dnl   less-warnings turn on a limited set of warnings
 dnl   warnings-always-on always set warnings=error regardless of tarball/vc
+
+dnl @TODO: remove less-warnings option as soon as Drizzle is clean enough to
+dnl        allow it
  
 AC_DEFUN([PANDORA_WARNINGS],[
   m4_define([PW_LESS_WARNINGS],[no])
@@ -79,7 +82,9 @@ AC_DEFUN([PANDORA_WARNINGS],[
     AC_CACHE_CHECK([whether it is safe to use -Wconversion],
       [ac_cv_safe_to_use_wconversion_],
       [save_CFLAGS="$CFLAGS"
-       CFLAGS="-Wconversion ${W_FAIL} -pedantic ${AM_CFLAGS}"
+       dnl Use -Werror here instead of ${W_FAIL} so that we don't spew
+       dnl conversion warnings to all the tarball folks
+       CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS}"
        AC_COMPILE_IFELSE(
          [AC_LANG_PROGRAM([[
 #include <stdbool.h>
@@ -99,7 +104,9 @@ foo(0);
       AC_CACHE_CHECK([whether it is safe to use -Wconversion with htons],
         [ac_cv_safe_to_use_Wconversion_],
         [save_CFLAGS="$CFLAGS"
-         CFLAGS="-Wconversion ${W_FAIL} -pedantic ${AM_CFLAGS}"
+         dnl Use -Werror here instead of ${W_FAIL} so that we don't spew
+         dnl conversion warnings to all the tarball folks
+         CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS}"
          AC_COMPILE_IFELSE(
            [AC_LANG_PROGRAM(
              [[
