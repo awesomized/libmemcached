@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.1])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.3])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -16,11 +16,13 @@ AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
 dnl The standard setup for how we build Pandora projects
 AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_REQUIRE([PANDORA_FORCE_DEPEND_TRACKING])
-  m4_define([PCT_ALL_ARGS],[$@])
+  ifdef([m4_define],,[define([m4_define],   defn([define]))])
+  ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])
+  m4_define([PCT_ALL_ARGS],[$*])
   m4_define([PCT_USE_GNULIB],[no])
   m4_define([PCT_REQUIRE_CXX],[no])
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
-  m4_foreach_w([pct_arg],$@,[
+  m4_foreach([pct_arg],$*,[
     m4_case(pct_arg,
       [use-gnulib], [
         m4_undefine([PCT_USE_GNULIB])
