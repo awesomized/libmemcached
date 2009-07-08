@@ -33,7 +33,7 @@ EXTRA_DIST = libmemcached.pod\
         memcached_analyze.pod\
         memcached_generate_hash_value.pod\
         memcached_memory_allocators.pod\
-        memory_user_data.pod
+        memcached_user_data.pod
 
 man_MANS = libmemcached.3\
 	libmemcached_examples.3\

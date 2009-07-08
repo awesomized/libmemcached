@@ -5,7 +5,6 @@
   Frankly its too damn useful not to be here though.
 */
 
-#include "libmemcached/memcached.h"
 #include "common.h"
 
 memcached_server_st *memcached_servers_parse(const char *server_strings)

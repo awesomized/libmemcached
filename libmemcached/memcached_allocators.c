@@ -1,24 +1,24 @@
 #include "common.h"
 
-void libmemcached_free(memcached_st *ptr __attribute__((unused)), void *mem)
+void libmemcached_free(memcached_st *ptr, void *mem)
 {
+  (void) ptr;
   free(mem);
 }
 
-void *libmemcached_malloc(memcached_st *ptr __attribute__((unused)), 
-                          size_t size)
+void *libmemcached_malloc(memcached_st *ptr, size_t size)
 {
+  (void) ptr;
   return malloc(size);
 }
 
-void *libmemcached_realloc(memcached_st *ptr __attribute__((unused)), 
-                           void *mem, size_t size)
+void *libmemcached_realloc(memcached_st *ptr, void *mem, size_t size)
 {
+  (void) ptr;
   return realloc(mem, size);
 }
 
-void *libmemcached_calloc(memcached_st *ptr __attribute__((unused)), 
-                           size_t nelem, size_t size)
+void *libmemcached_calloc(memcached_st *ptr, size_t nelem, size_t size)
 {
   if (ptr->call_malloc != libmemcached_malloc)
   {

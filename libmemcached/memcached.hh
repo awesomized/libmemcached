@@ -142,20 +142,20 @@ public:
                                    value, value_length, 0, 0);
   }
   memcached_return  cas(const char *key, const char *value, 
-                        size_t value_length, uint64_t cas)
+                        size_t value_length, uint64_t cas_arg)
   {
     return memcached_cas(&memc, key, strlen(key),
-                    value, value_length, 0, 0, cas);
+                    value, value_length, 0, 0, cas_arg);
   }
   memcached_return  cas_by_key(const char *master_key, const char *key, 
                                const char *value, size_t value_length, 
-                               uint64_t cas)
+                               uint64_t cas_arg)
   {
     return memcached_cas_by_key(&memc,
                                 master_key, strlen(master_key),
                                 key, strlen(key),
                                 value, value_length,
-                                0, 0, cas);
+                                0, 0, cas_arg);
   }
   // using 'remove' vs. 'delete' since 'delete' is a keyword 
   memcached_return remove(const char *key)

@@ -1,6 +1,7 @@
 /*
   Sample test application.
 */
+
 #include "libmemcached/common.h"
 
 #include <assert.h>
@@ -424,7 +425,7 @@ static test_return  cas2_test(memcached_st *memc)
   assert(results);
   assert(results->cas);
   assert(rc == MEMCACHED_SUCCESS);
-  WATCHPOINT_ASSERT(memcached_result_cas(results));
+  assert(memcached_result_cas(results));
 
   assert(!memcmp(value, "we the people", strlen("we the people")));
   assert(strlen("we the people") == value_length);
@@ -468,7 +469,7 @@ static test_return  cas_test(memcached_st *memc)
   results= memcached_fetch_result(memc, &results_obj, &rc);
   assert(results);
   assert(rc == MEMCACHED_SUCCESS);
-  WATCHPOINT_ASSERT(memcached_result_cas(results));
+  assert(memcached_result_cas(results));
   assert(!memcmp(value, memcached_result_value(results), value_length));
   assert(strlen(memcached_result_value(results)) == value_length);
   assert(rc == MEMCACHED_SUCCESS);
@@ -1647,8 +1648,7 @@ static test_return  user_supplied_bug2(memcached_st *memc)
         errors++;
       else
       {
-        WATCHPOINT_ERROR(rc);
-        assert(0);
+        assert(rc);
       }
 
       continue;
@@ -3586,8 +3586,8 @@ static test_return connection_pool_test(memcached_st *memc)
 static test_return replication_set_test(memcached_st *memc)
 {
   memcached_return rc;
-  memcached_st *clone= memcached_clone(NULL, memc);
-  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
 
   rc= memcached_set(memc, "bubba", 5, "0", 1, 0, 0);
   assert(rc == MEMCACHED_SUCCESS);
@@ -3618,14 +3618,14 @@ static test_return replication_set_test(memcached_st *memc)
     char key[2]= { [0]= (char)x };
     size_t len;
     uint32_t flags;
-    char *val= memcached_get_by_key(clone, key, 1, "bubba", 5, 
+    char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5, 
                                     &len, &flags, &rc);
     assert(rc == MEMCACHED_SUCCESS);
     assert(val != NULL);
     free(val);
   }
 
-  memcached_free(clone);
+  memcached_free(memc_clone);
 
   return TEST_SUCCESS;
 }
@@ -3641,22 +3641,22 @@ static test_return replication_get_test(memcached_st *memc)
    */
   for (uint32_t host= 0; host < memc->number_of_hosts; ++host) 
   {
-    memcached_st *clone= memcached_clone(NULL, memc);
-    clone->hosts[host].port= 0;
+    memcached_st *memc_clone= memcached_clone(NULL, memc);
+    memc_clone->hosts[host].port= 0;
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
       char key[2]= { [0]= (char)x };
       size_t len;
       uint32_t flags;
-      char *val= memcached_get_by_key(clone, key, 1, "bubba", 5, 
+      char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5, 
                                       &len, &flags, &rc);
       assert(rc == MEMCACHED_SUCCESS);
       assert(val != NULL);
       free(val);
     }
 
-    memcached_free(clone);
+    memcached_free(memc_clone);
   }
 
   return TEST_SUCCESS;
@@ -3665,8 +3665,8 @@ static test_return replication_get_test(memcached_st *memc)
 static test_return replication_mget_test(memcached_st *memc)
 {
   memcached_return rc;
-  memcached_st *clone= memcached_clone(NULL, memc);
-  memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
 
   char *keys[]= { "bubba", "key1", "key2", "key3" };
   size_t len[]= { 5, 4, 4, 4 };
@@ -3698,7 +3698,7 @@ static test_return replication_mget_test(memcached_st *memc)
    * This is to verify correct behavior in the library
    */
   memcached_result_st result_obj;
-  for (uint32_t host= 0; host < clone->number_of_hosts; host++) 
+  for (uint32_t host= 0; host < memc_clone->number_of_hosts; host++) 
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
     new_clone->hosts[host].port= 0;
@@ -3731,7 +3731,7 @@ static test_return replication_mget_test(memcached_st *memc)
 static test_return replication_delete_test(memcached_st *memc)
 {
   memcached_return rc;
-  memcached_st *clone= memcached_clone(NULL, memc);
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
   /* Delete the items from all of the servers except 1 */
   uint64_t repl= memcached_behavior_get(memc,
                                         MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
@@ -3754,26 +3754,26 @@ static test_return replication_delete_test(memcached_st *memc)
   uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
   for (uint32_t x= 0; x < (repl + 1); ++x) 
   {
-    clone->hosts[hash].port= 0;
-    if (++hash == clone->number_of_hosts)
+    memc_clone->hosts[hash].port= 0;
+    if (++hash == memc_clone->number_of_hosts)
       hash= 0;
   }
 
   memcached_result_st result_obj;
-  for (uint32_t host= 0; host < clone->number_of_hosts; ++host) 
+  for (uint32_t host= 0; host < memc_clone->number_of_hosts; ++host) 
   {
     for (int x= 'a'; x <= 'z'; ++x)
     {
       char key[2]= { [0]= (char)x };
 
-      rc= memcached_mget_by_key(clone, key, 1, keys, len, 4);
+      rc= memcached_mget_by_key(memc_clone, key, 1, keys, len, 4);
       assert(rc == MEMCACHED_SUCCESS);
 
-      memcached_result_st *results= memcached_result_create(clone, &result_obj);
+      memcached_result_st *results= memcached_result_create(memc_clone, &result_obj);
       assert(results);
 
       int hits= 0;
-      while ((results= memcached_fetch_result(clone, &result_obj, &rc)) != NULL)
+      while ((results= memcached_fetch_result(memc_clone, &result_obj, &rc)) != NULL)
       {
         ++hits;
       }
@@ -3781,7 +3781,7 @@ static test_return replication_delete_test(memcached_st *memc)
       memcached_result_free(&result_obj);
     }
   }
-  memcached_free(clone);
+  memcached_free(memc_clone);
 
   return TEST_SUCCESS;
 }

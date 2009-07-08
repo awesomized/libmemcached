@@ -10,14 +10,6 @@
 #ifndef MEMCACHED_UTIL_H
 #define MEMCACHED_UTIL_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <libmemcached/memcached_pool.h>
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* MEMCACHED_UTIL_H */

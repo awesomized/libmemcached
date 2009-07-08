@@ -2,10 +2,10 @@
   Common include file for libmemached
 */
 
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef LIBMEMCACHED_COMMON_H
+#define LIBMEMCACHED_COMMON_H
 
-#include "libmemcached/libmemcached_config.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,13 +23,6 @@
 #include <fcntl.h>
 #include <sys/un.h>
 #include <netinet/tcp.h>
-
-
-#include "libmemcached/memcached.h"
-#include "libmemcached/memcached_io.h"
-
-#include "libmemcached/memcached/protocol_binary.h"
-
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -41,6 +34,26 @@
 # endif
 #endif
 
+/* Define this here, which will turn on the visibilty controls while we're
+ * building libmemcached.
+ */
+#define BUILDING_LIBMEMCACHED 1
+
+
+#include "libmemcached/memcached.h"
+#include "libmemcached/memcached_watchpoint.h"
+
+/* These are private not to be installed headers */
+#include "libmemcached/memcached_io.h"
+#include "libmemcached/memcached_internal.h"
+#include "libmemcached/libmemcached_probes.h"
+#include "libmemcached/memcached/protocol_binary.h"
+
+/* string value */
+struct memcached_continuum_item_st {
+  uint32_t index;
+  uint32_t value;
+};
 
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
@@ -54,7 +67,6 @@
 #define unlikely(x)     if(__builtin_expect((x), 0))
 #endif
 
-#include "libmemcached_probes.h"
 
 #define MEMCACHED_BLOCK_SIZE 1024
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
@@ -84,46 +96,60 @@ typedef enum {
 } memcached_flags;
 
 /* Hashing algo */
+
+LIBMEMCACHED_LOCAL
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
+LIBMEMCACHED_LOCAL
 uint32_t hash_crc32(const char *data,
                     size_t data_len);
 #ifdef HAVE_HSIEH_HASH
+LIBMEMCACHED_LOCAL
 uint32_t hsieh_hash(const char *key, size_t key_length);
 #endif
+LIBMEMCACHED_LOCAL
 uint32_t murmur_hash(const char *key, size_t key_length);
+LIBMEMCACHED_LOCAL
 uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_connect(memcached_server_st *ptr);
+LIBMEMCACHED_LOCAL
 memcached_return memcached_response(memcached_server_st *ptr,
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result);
+LIBMEMCACHED_LOCAL
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_do(memcached_server_st *ptr, const void *commmand,
                               size_t command_length, uint8_t with_flush);
-memcached_return memcached_version(memcached_st *ptr);
+LIBMEMCACHED_LOCAL
 memcached_return value_fetch(memcached_server_st *ptr,
                              char *buffer,
                              memcached_result_st *result);
+LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_key_test(char **keys, size_t *key_length,
                                     unsigned int number_of_keys);
 
-memcached_return run_distribution(memcached_st *ptr);
 
+LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
-memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 
 #ifndef HAVE_HTONLL
+LIBMEMCACHED_LOCAL
 extern uint64_t ntohll(uint64_t);
+LIBMEMCACHED_LOCAL
 extern uint64_t htonll(uint64_t);
 #endif
 
+LIBMEMCACHED_LOCAL
 memcached_return memcached_purge(memcached_server_st *ptr);
 
 static inline memcached_return memcached_validate_key_length(size_t key_length, 
@@ -145,4 +171,4 @@ static inline memcached_return memcached_validate_key_length(size_t key_length,
   return MEMCACHED_SUCCESS;
 }
 
-#endif /* __COMMON_H__ */
+#endif /* LIBMEMCACHED_COMMON_H */

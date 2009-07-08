@@ -18,31 +18,21 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#ifdef MEMCACHED_INTERNAL
-#include <libmemcached/libmemcached_config.h>
-#endif
+#include <libmemcached/visibility.h>
 #include <libmemcached/memcached_configure.h>
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
-#include <libmemcached/memcached_watchpoint.h>
 #include <libmemcached/memcached_get.h>
 #include <libmemcached/memcached_server.h>
 #include <libmemcached/memcached_string.h>
 #include <libmemcached/memcached_result.h>
+#include <libmemcached/memcached_storage.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* These are Private and should not be used by applications */
 #define MEMCACHED_VERSION_STRING_LENGTH 24
-
-/* string value */
-struct memcached_continuum_item_st {
-  uint32_t index;
-  uint32_t value;
-};
-
 #define LIBMEMCACHED_VERSION_STRING "0.30"
 
 struct memcached_analysis_st {
@@ -124,24 +114,35 @@ struct memcached_st {
   uint32_t number_of_replicas;
 };
 
+LIBMEMCACHED_API
+memcached_return memcached_version(memcached_st *ptr);
 
 /* Public API */
+
+LIBMEMCACHED_API
 const char * memcached_lib_version(void);
 
+LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
+LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
+LIBMEMCACHED_API
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
 
+LIBMEMCACHED_API
 memcached_return memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
                                   time_t expiration);
+LIBMEMCACHED_API
 memcached_return memcached_increment(memcached_st *ptr, 
                                      const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value);
+LIBMEMCACHED_API
 memcached_return memcached_decrement(memcached_st *ptr, 
                                      const char *key, size_t key_length,
                                      uint32_t offset,
                                      uint64_t *value);
+LIBMEMCACHED_API
 memcached_return memcached_increment_with_initial(memcached_st *ptr,
                                                   const char *key,
                                                   size_t key_length,
@@ -149,6 +150,7 @@ memcached_return memcached_increment_with_initial(memcached_st *ptr,
                                                   uint64_t initial,
                                                   time_t expiration,
                                                   uint64_t *value);
+LIBMEMCACHED_API
 memcached_return memcached_decrement_with_initial(memcached_st *ptr,
                                                   const char *key,
                                                   size_t key_length,
@@ -156,106 +158,138 @@ memcached_return memcached_decrement_with_initial(memcached_st *ptr,
                                                   uint64_t initial,
                                                   time_t expiration,
                                                   uint64_t *value);
+LIBMEMCACHED_API
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
+LIBMEMCACHED_API
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error);
+LIBMEMCACHED_API
 memcached_return memcached_stat_servername(memcached_stat_st *stat, char *args, 
                                            char *hostname, unsigned int port);
+LIBMEMCACHED_API
 memcached_return memcached_flush(memcached_st *ptr, time_t expiration);
+LIBMEMCACHED_API
 memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
+LIBMEMCACHED_API
 void memcached_quit(memcached_st *ptr);
+LIBMEMCACHED_API
 char *memcached_strerror(memcached_st *ptr, memcached_return rc);
+LIBMEMCACHED_API
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
+LIBMEMCACHED_API
 uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior flag);
 
 /* The two public hash bits */
+LIBMEMCACHED_API
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm);
+LIBMEMCACHED_API
 uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 
+LIBMEMCACHED_API
 memcached_return memcached_flush_buffers(memcached_st *mem);
 
 /* Server Public functions */
 
+LIBMEMCACHED_API
 memcached_return memcached_server_add_udp(memcached_st *ptr, 
                                           const char *hostname,
                                           unsigned int port);
+LIBMEMCACHED_API
 memcached_return memcached_server_add_unix_socket(memcached_st *ptr, 
                                                   const char *filename);
+LIBMEMCACHED_API
 memcached_return memcached_server_add(memcached_st *ptr, const char *hostname, 
                                       unsigned int port);
 
+LIBMEMCACHED_API
 memcached_return memcached_server_add_udp_with_weight(memcached_st *ptr, 
                                                       const char *hostname,
                                                       unsigned int port,
                                                       uint32_t weight);
+LIBMEMCACHED_API
 memcached_return memcached_server_add_unix_socket_with_weight(memcached_st *ptr, 
                                                               const char *filename,
                                                               uint32_t weight);
+LIBMEMCACHED_API
 memcached_return memcached_server_add_with_weight(memcached_st *ptr, const char *hostname, 
                                                   unsigned int port,
                                                   uint32_t weight);
+LIBMEMCACHED_API
 void memcached_server_list_free(memcached_server_st *ptr);
+LIBMEMCACHED_API
 memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
 
+LIBMEMCACHED_API
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
                                                   const char *hostname, 
                                                   unsigned int port, 
                                                   memcached_return *error);
+LIBMEMCACHED_API
 memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr, 
                                                               const char *hostname, 
                                                               unsigned int port, 
                                                               uint32_t weight,
                                                               memcached_return *error);
+LIBMEMCACHED_API
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
+LIBMEMCACHED_API
 memcached_server_st *memcached_servers_parse(const char *server_strings);
 
+LIBMEMCACHED_API
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *stat, 
                                const char *key, memcached_return *error);
+LIBMEMCACHED_API
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *stat, 
                                 memcached_return *error);
 
+LIBMEMCACHED_API
 memcached_return memcached_delete_by_key(memcached_st *ptr, 
                                          const char *master_key, size_t master_key_length,
                                          const char *key, size_t key_length,
                                          time_t expiration);
 
+LIBMEMCACHED_API
 memcached_return memcached_fetch_execute(memcached_st *ptr, 
                                              memcached_execute_function *callback,
                                              void *context,
                                              unsigned int number_of_callbacks);
 
+LIBMEMCACHED_API
 memcached_return memcached_callback_set(memcached_st *ptr, 
                                         memcached_callback flag, 
                                         void *data);
+LIBMEMCACHED_API
 void *memcached_callback_get(memcached_st *ptr, 
                              memcached_callback flag,
                              memcached_return *error);
 
+LIBMEMCACHED_API
 memcached_return memcached_dump(memcached_st *ptr, memcached_dump_func *function, void *context, uint32_t number_of_callbacks);
 
 
+LIBMEMCACHED_API
 memcached_return memcached_set_memory_allocators(memcached_st *ptr,
                                                  memcached_malloc_function mem_malloc,
                                                  memcached_free_function mem_free,
                                                  memcached_realloc_function mem_realloc,
                                                  memcached_calloc_function mem_calloc);
 
+LIBMEMCACHED_API
 void memcached_get_memory_allocators(memcached_st *ptr,
                                      memcached_malloc_function *mem_malloc,
                                      memcached_free_function *mem_free,
                                      memcached_realloc_function *mem_realloc,
                                      memcached_calloc_function *mem_calloc);
 
+LIBMEMCACHED_API
 void *memcached_get_user_data(memcached_st *ptr);
+LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
 
+LIBMEMCACHED_API
+memcached_return run_distribution(memcached_st *ptr);
 #ifdef __cplusplus
 }
 #endif
 
-#include <libmemcached/memcached_storage.h>
-
-#ifdef MEMCACHED_INTERNAL
-#include <libmemcached/memcached_internal.h>
-#endif
 
 #endif /* __MEMCACHED_H__ */

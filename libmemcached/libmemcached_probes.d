@@ -1,6 +1,10 @@
 provider libmemcached {
 	probe memcached_delete_start();
 	probe memcached_delete_end();
+	probe memcached_increment_with_initial_start();
+	probe memcached_increment_with_initial_end();
+	probe memcached_decrement_with_initial_start();
+	probe memcached_decrement_with_initial_end();
 	probe memcached_increment_start();
 	probe memcached_increment_end();
 	probe memcached_decrement_start();

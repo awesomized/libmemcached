@@ -1,5 +1,7 @@
 #include "libmemcached/common.h"
 #include "libmemcached/memcached_pool.h"
+
+#include <errno.h>
 #include <pthread.h>
 
 struct memcached_pool_st 

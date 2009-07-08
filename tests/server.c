@@ -4,7 +4,7 @@
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
 
-#include "libmemcached/libmemcached_config.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
