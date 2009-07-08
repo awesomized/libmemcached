@@ -1,17 +1,14 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
              memcached_configure.h.in
 
-BUILT_SOURCES= @DTRACE_HEADER@
-
 EXTRA_HEADERS = 
-DTRACE =                @DTRACE@
-DTRACEFLAGS =           @DTRACEFLAGS@
+BUILT_SOURCES= 
 
 noinst_HEADERS = libmemcached_probes.h \
                  memcached_io.h \
                  memcached_internal.h \
                  common.h \
-                 memcached/protocol_binary.h @DTRACE_HEADER@
+                 memcached/protocol_binary.h
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hh \
@@ -25,6 +22,7 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_types.h \
 		    memcached_watchpoint.h \
 		    visibility.h
+
 
 if BUILD_LIBMEMCACHEDUTIL
 pkginclude_HEADERS+= memcached_util.h memcached_pool.h
@@ -70,6 +68,7 @@ libmemcached_la_SOURCES = crc.c \
 			  jenkins_hash.c \
                           memcached_allocators.c
 
+
 if INCLUDE_HSIEH_SRC
 libmemcached_la_SOURCES += hsieh_hash.c
 endif
@@ -78,22 +77,26 @@ if BUILD_BYTEORDER
 libmemcached_la_SOURCES += byteorder.c
 endif
 
-libmemcached_la_DEPENDENCIES = @DTRACE_OBJ@ libmemcachedcallbacks.la
-libmemcached_la_LIBADD = @DTRACE_OBJ@ $(LIBM) libmemcachedcallbacks.la
+libmemcached_la_DEPENDENCIES= libmemcachedcallbacks.la
+libmemcached_la_LIBADD= $(LIBM) libmemcachedcallbacks.la
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
 
+if HAVE_DTRACE
+BUILT_SOURCES+= dtrace_probes.h
+noinst_HEADERS+= dtrace_probes.h
+libmemcached_la_SOURCES += libmemcached_probes.d
+endif
+
+if DTRACE_NEEDS_OBJECTS
+libmemcached_la_DEPENDENCIES += libmemcached_probes.o
+endif
+
+SUFFIXES= .d
+
 dtrace_probes.h: libmemcached_probes.d
-	$(DTRACE) $(DTRACEFLAGS) -o dtrace_probes.tmp -h -s libmemcached_probes.d
-	sed "s/#include <unistd.h>//g" dtrace_probes.tmp > dtrace_probes.h
-	rm dtrace_probes.tmp
+	$(DTRACE) $(DTRACEFLAGS) -h -o dtrace_probes.h -s libmemcached_probes.d
 
-
-# So libtool doesn't support dtrace, but just copy one of the existing
-# lo-file and replace the file name ;-) 
-libmemcached_probes.lo: libmemcached_probes.o
-	sed "s,jenkins_hash,libmemcached_probes,g" jenkins_hash.lo > libmemcached_probes.lo
-
-libmemcached_probes.o: $(libmemcached_la_OBJECTS)
-	$(DTRACE) $(DTRACEFLAGS) -o .libs/libmemcached_probes.o -G -s libmemcached_probes.d `grep pic_object *.lo | cut -f 2 -d\' | grep -v non_pic_object`
+libmemcached_probes.o: libmemcached_probes.d $(libmemcached_la_OBJECTS)
+	$(DTRACE) $(DTRACEFLAGS) -o .libs/libmemcached_probes.o -G -s libmemcached_probes.d `grep '^pic_object' *.lo | cut -f 2 -d\'`
 	$(DTRACE) $(DTRACEFLAGS) -o libmemcached_probes.o -G -s libmemcached_probes.d `grep non_pic_object *.lo | cut -f 2 -d\' `
 
