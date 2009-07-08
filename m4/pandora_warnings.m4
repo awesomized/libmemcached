@@ -13,7 +13,9 @@ dnl        allow it
 AC_DEFUN([PANDORA_WARNINGS],[
   m4_define([PW_LESS_WARNINGS],[no])
   m4_define([PW_WARN_ALWAYS_ON],[no])
-  m4_foreach_w([pw_arg],$@,[
+  ifdef([m4_define],,[define([m4_define],   defn([define]))])
+  ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])
+  m4_foreach([pw_arg],$*,[
     m4_case(pw_arg,
       [less-warnings],[
         m4_undefine([PW_LESS_WARNINGS])
