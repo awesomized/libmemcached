@@ -1,6 +1,6 @@
 #include "common.h"
 
-char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_return rc)
+const char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_return rc)
 {
   switch (rc)
   {

@@ -15,7 +15,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   server_key= memcached_generate_hash(ptr, key, key_length);

@@ -172,7 +172,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
 LIBMEMCACHED_API
 void memcached_quit(memcached_st *ptr);
 LIBMEMCACHED_API
-char *memcached_strerror(memcached_st *ptr, memcached_return rc);
+const char *memcached_strerror(memcached_st *ptr, memcached_return rc);
 LIBMEMCACHED_API
 memcached_return memcached_behavior_set(memcached_st *ptr, memcached_behavior flag, uint64_t data);
 LIBMEMCACHED_API

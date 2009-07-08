@@ -22,8 +22,8 @@ void world_destroy(void *p);
 test_return set_test(memcached_st *memc)
 {
   memcached_return rc;
-  char *key= "foo";
-  char *value= "when we sanitize";
+  const char *key= "foo";
+  const char *value= "when we sanitize";
 
   rc= memcached_set(memc, key, strlen(key), 
                     value, strlen(value),

@@ -21,7 +21,7 @@ memcached_return memcached_callback_set(memcached_st *ptr,
       {
         size_t key_length= strlen(key);
 
-        if (memcached_key_test((char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
+        if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
         {
           return MEMCACHED_BAD_KEY_PROVIDED;
         }

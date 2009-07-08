@@ -48,7 +48,7 @@ size_t memcached_result_length(memcached_result_st *ptr);
 #define memcached_result_flags(A) (A)->flags
 #define memcached_result_cas(A) (A)->cas
 LIBMEMCACHED_API
-memcached_return memcached_result_set_value(memcached_result_st *ptr, char *value, size_t length);
+memcached_return memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length);
 #define memcached_result_set_flags(A,B) (A)->flags=(B)
 #define memcached_result_set_expiration(A,B) (A)->expiration=(B)
 

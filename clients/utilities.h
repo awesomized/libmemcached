@@ -23,8 +23,8 @@ struct memcached_programs_help_st
 char *strdup_cleanup(const char *str);
 void cleanup(void);
 long int timedif(struct timeval a, struct timeval b);
-void version_command(char *command_name);
-void help_command(char *command_name, char *description,
+void version_command(const char *command_name);
+void help_command(const char *command_name, const char *description,
                   const struct option *long_options,
                   memcached_programs_help_st *options);
 void process_hash_option(memcached_st *memc, char *opt_hash);
