@@ -15,7 +15,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
   m4_define([PW_WARN_ALWAYS_ON],[no])
   ifdef([m4_define],,[define([m4_define],   defn([define]))])
   ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])
-  m4_foreach([pw_arg],$*,[
+  m4_foreach([pw_arg],[$*],[
     m4_case(pw_arg,
       [less-warnings],[
         m4_undefine([PW_LESS_WARNINGS])
@@ -129,13 +129,13 @@ uint16_t x= htons(80);
 
     m4_if(PW_LESS_WARNINGS,[no],[
       BASE_WARNINGS_FULL="-Wformat=2 ${W_CONVERSION} -Wstrict-aliasing"
-      CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum"
+      CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum -Wwrite-strings"
       CXX_WARNINGS_FULL="-Weffc++ -Wold-style-cast"
     ],[
       BASE_WARNINGS_FULL="-Wformat ${NO_STRICT_ALIASING}"
     ])
 
-    BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wextra -Wundef -Wshadow -Wstrict-aliasing ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
+    BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wextra -Wundef -Wshadow ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
     CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
     CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long ${CXX_WARNINGS_FULL}"
 
