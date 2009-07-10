@@ -46,7 +46,7 @@ test_return basic_test(memcached_st *memc)
 uint8_t increment_test(memcached_st *memc)
 {
   Memcached mcach(memc);
-  memcached_return rc;
+  bool rc;
   const string key("inctest");
   const char *inc_value= "1";
   string ret_value;
@@ -62,15 +62,15 @@ uint8_t increment_test(memcached_st *memc)
   assert(int_ret_value == int_inc_value); 
 
   rc= mcach.increment(key, 1, &int_ret_value);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == true);
   assert(int_ret_value == 2);
 
   rc= mcach.increment(key, 1, &int_ret_value);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == true);
   assert(int_ret_value == 3);
 
   rc= mcach.increment(key, 5, &int_ret_value);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == true);
   assert(int_ret_value == 8);
 
   return 0;
