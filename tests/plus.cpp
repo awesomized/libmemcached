@@ -16,6 +16,10 @@
 
 #include "test.h"
 
+#include <string>
+
+using namespace std;
+
 extern "C" {
    test_return basic_test(memcached_st *memc);
    uint8_t increment_test(memcached_st *memc);
@@ -28,13 +32,13 @@ test_return basic_test(memcached_st *memc)
 {
   Memcached foo(memc);
   const char *value_set= "This is some data";
-  char *value;
+  string value;
   size_t value_length;
 
   foo.set("mine", value_set, strlen(value_set));
   value= foo.get("mine", &value_length);
 
-  assert((memcmp(value, value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set, value_length) == 0));
 
   return TEST_SUCCESS;
 }
@@ -43,18 +47,18 @@ uint8_t increment_test(memcached_st *memc)
 {
   Memcached mcach(memc);
   memcached_return rc;
-  const char *key= "inctest";
+  const string key("inctest");
   const char *inc_value= "1";
-  char *ret_value;
+  string ret_value;
   uint64_t int_inc_value;
   uint64_t int_ret_value;
   size_t value_length;
 
   mcach.set(key, inc_value, strlen(inc_value));
   ret_value= mcach.get(key, &value_length);
-  printf("\nretvalue %s\n",ret_value);
+  printf("\nretvalue %s\n",ret_value.c_str());
   int_inc_value= uint64_t(atol(inc_value));
-  int_ret_value= uint64_t(atol(ret_value));
+  int_ret_value= uint64_t(atol(ret_value.c_str()));
   assert(int_ret_value == int_inc_value); 
 
   rc= mcach.increment(key, 1, &int_ret_value);
@@ -76,19 +80,19 @@ test_return basic_master_key_test(memcached_st *memc)
 {
    Memcached foo(memc);
   const char *value_set= "Data for server A";
-  const char *master_key_a= "server-a";
-  const char *master_key_b= "server-b";
-  const char *key= "xyz";
-  char *value;
+  const string master_key_a("server-a");
+  const string master_key_b("server-b");
+  const string key("xyz");
+  string value;
   size_t value_length;
 
   foo.set_by_key(master_key_a, key, value_set, strlen(value_set));
   value= foo.get_by_key(master_key_a, key, &value_length);
 
-  assert((memcmp(value, value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set, value_length) == 0));
 
   value= foo.get_by_key(master_key_b, key, &value_length);
-  assert((memcmp(value, value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set, value_length) == 0));
 
   return TEST_SUCCESS;
 }
