@@ -1,13 +1,10 @@
-#include "libmemcached/memcached.h"
-#include <string.h>
+#include <libmemcached/memcached.h>
 
+#include <string.h>
 #include <string>
 
 class Memcached
 {
-  memcached_st memc;
-  memcached_result_st result;
-
 public:
 
   Memcached() 
@@ -79,11 +76,12 @@ public:
     return ret_val;
   }
 
-  memcached_return mget(char **keys, size_t *key_length, 
-                        unsigned int number_of_keys)
+  bool mget(char **keys, size_t *key_length, 
+            unsigned int number_of_keys)
   {
 
-    return memcached_mget(&memc, keys, key_length, number_of_keys);
+    memcached_return rc= memcached_mget(&memc, keys, key_length, number_of_keys);
+    return (rc == MEMCACHED_SUCCESS);
   }
 
   bool set(const std::string& key, const char *value, size_t value_length)
@@ -226,4 +224,15 @@ public:
                                                  key, strlen(key), 0);
     return (rc == MEMCACHED_SUCCESS);
   }
+
+  const std::string lib_version() const
+  {
+    const char *ver= memcached_lib_version();
+    const std::string version(ver);
+    return version;
+  }
+
+private:
+  memcached_st memc;
+  memcached_result_st result;
 };
