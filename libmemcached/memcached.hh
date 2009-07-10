@@ -1,6 +1,5 @@
 #include "libmemcached/memcached.h"
 #include <string.h>
-#include <stdio.h>
 
 #include <string>
 
@@ -47,7 +46,7 @@ public:
     return ret_val;
   }
 
-  std::string get(const std::string& key, size_t *value_length)
+  std::string get(const std::string& key, size_t *value_length) 
   {
     uint32_t flags;
     memcached_return rc;
@@ -63,8 +62,8 @@ public:
   }
 
   std::string get_by_key(const std::string& master_key, 
-                   const std::string& key, 
-                   size_t *value_length)
+                         const std::string& key, 
+                         size_t *value_length)
   {
     uint32_t flags;
     memcached_return rc;
