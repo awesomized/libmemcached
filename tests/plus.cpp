@@ -22,7 +22,7 @@ using namespace std;
 
 extern "C" {
    test_return basic_test(memcached_st *memc);
-   uint8_t increment_test(memcached_st *memc);
+   test_return increment_test(memcached_st *memc);
    test_return basic_master_key_test(memcached_st *memc);
    void *world_create(void);
    void world_destroy(void *p);
@@ -31,33 +31,33 @@ extern "C" {
 test_return basic_test(memcached_st *memc)
 {
   Memcached foo(memc);
-  const char *value_set= "This is some data";
+  const string value_set("This is some data");
   string value;
   size_t value_length;
 
-  foo.set("mine", value_set, strlen(value_set));
+  foo.set("mine", value_set);
   value= foo.get("mine", &value_length);
 
-  assert((memcmp(value.c_str(), value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set.c_str(), value_length) == 0));
 
   return TEST_SUCCESS;
 }
 
-uint8_t increment_test(memcached_st *memc)
+test_return increment_test(memcached_st *memc)
 {
   Memcached mcach(memc);
   bool rc;
   const string key("inctest");
-  const char *inc_value= "1";
+  const string inc_value("1");
   string ret_value;
   uint64_t int_inc_value;
   uint64_t int_ret_value;
   size_t value_length;
 
-  mcach.set(key, inc_value, strlen(inc_value));
+  mcach.set(key, inc_value);
   ret_value= mcach.get(key, &value_length);
   printf("\nretvalue %s\n",ret_value.c_str());
-  int_inc_value= uint64_t(atol(inc_value));
+  int_inc_value= uint64_t(atol(inc_value.c_str()));
   int_ret_value= uint64_t(atol(ret_value.c_str()));
   assert(int_ret_value == int_inc_value); 
 
@@ -73,34 +73,35 @@ uint8_t increment_test(memcached_st *memc)
   assert(rc == true);
   assert(int_ret_value == 8);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 test_return basic_master_key_test(memcached_st *memc)
 {
-   Memcached foo(memc);
-  const char *value_set= "Data for server A";
+  Memcached foo(memc);
+  const string value_set("Data for server A");
   const string master_key_a("server-a");
   const string master_key_b("server-b");
   const string key("xyz");
   string value;
   size_t value_length;
 
-  foo.set_by_key(master_key_a, key, value_set, strlen(value_set));
+  foo.set_by_key(master_key_a, key, value_set);
   value= foo.get_by_key(master_key_a, key, &value_length);
 
-  assert((memcmp(value.c_str(), value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set.c_str(), value_length) == 0));
 
   value= foo.get_by_key(master_key_b, key, &value_length);
-  assert((memcmp(value.c_str(), value_set, value_length) == 0));
+  assert((memcmp(value.c_str(), value_set.c_str(), value_length) == 0));
 
   return TEST_SUCCESS;
 }
 
 
 test_st tests[] ={
-  {"basic", 0, basic_test },
-  {"basic_master_key", 0, basic_master_key_test },
+  { "basic", 0, basic_test },
+  { "basic_master_key", 0, basic_master_key_test },
+  { "increment_test", 0, increment_test },
   {0, 0, 0}
 };
 

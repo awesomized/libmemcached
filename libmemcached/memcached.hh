@@ -83,22 +83,23 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
-  bool set(const std::string& key, const char *value, size_t value_length)
+  bool set(const std::string& key, const std::string& value)
   {
-    memcached_return rc= memcached_set(&memc, key.c_str(), key.length(),
-                                       value, value_length,
+    memcached_return rc= memcached_set(&memc, 
+                                       key.c_str(), key.length(),
+                                       value.c_str(), value.length(),
                                        time_t(0), uint32_t(0));
     return (rc == MEMCACHED_SUCCESS);
   }
 
   bool set_by_key(const std::string& master_key, 
                   const std::string& key, 
-                  const char *value, size_t value_length)
+                  const std::string& value)
   {
     memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
                                               master_key.length(),
                                               key.c_str(), key.length(),
-                                              value, value_length,
+                                              value.c_str(), value.length(),
                                               time_t(0),
                                               uint32_t(0));
     return (rc == MEMCACHED_SUCCESS);
