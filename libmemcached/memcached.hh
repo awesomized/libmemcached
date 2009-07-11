@@ -1,6 +1,7 @@
 #include <libmemcached/memcached.h>
 
 #include <string>
+#include <vector>
 
 class Memcached
 {
@@ -75,12 +76,41 @@ public:
     return ret_val;
   }
 
-  bool mget(char **keys, size_t *key_length, 
-            unsigned int number_of_keys)
+  bool mget(std::vector<std::string> &keys)
   {
+    /*
+     * Construct an array which will contain the length
+     * of each of the strings in the input vector. Also, to
+     * interface with the memcached C API, we need to convert
+     * the vector of std::string's to a vector of char *.
+     */
+    size_t *key_len= static_cast<size_t *>(malloc(keys.size() * sizeof(size_t)));
+    if (key_len == NULL)
+    {
+      return false;
+    }
+    std::vector<char *> real_keys;
+    std::vector<std::string>::iterator it= keys.begin();
+    int i= 0;
+    while (it != keys.end())
+    {
+      real_keys.push_back(const_cast<char *>((*it).c_str()));
+      key_len[i++]= (*it).length();
+      ++it;
+    }
 
-    memcached_return rc= memcached_mget(&memc, keys, key_length, number_of_keys);
-    return (rc == MEMCACHED_SUCCESS);
+    /*
+     * If the std::vector of keys is empty then we cannot 
+     * call memcached_mget as we will get undefined behavior.
+     */
+    if (!real_keys.empty())
+    {
+      memcached_return rc= memcached_mget(&memc, &real_keys[0], key_len, 
+                                          static_cast<unsigned int>(real_keys.size()));
+      return (rc == MEMCACHED_SUCCESS);
+    }
+
+    return false;
   }
 
   bool set(const std::string &key, const std::string &value)
