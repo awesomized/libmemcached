@@ -113,25 +113,55 @@ public:
     return false;
   }
 
-  bool set(const std::string &key, const std::string &value)
+  bool set(const std::string &key, 
+           const std::string &value,
+           time_t expiration,
+           uint32_t flags)
   {
     memcached_return rc= memcached_set(&memc, 
                                        key.c_str(), key.length(),
                                        value.c_str(), value.length(),
-                                       time_t(0), uint32_t(0));
-    return (rc == MEMCACHED_SUCCESS);
+                                       expiration, flags);
+    return (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  bool set_all(std::vector<std::string> &keys,
+               std::vector<std::string> &values,
+               time_t expiration,
+               uint32_t flags)
+  {
+    if (keys.size() != values.size())
+    {
+      return false;
+    }
+    bool retval= true;
+    std::vector<std::string>::iterator key_it= keys.begin();
+    std::vector<std::string>::iterator val_it= values.begin();
+    while (key_it != keys.end())
+    {
+      retval= set((*key_it), (*val_it), expiration, flags);
+      if (retval == false)
+      {
+        return retval;
+      }
+      ++key_it;
+      ++val_it;
+    }
+    return retval;
   }
 
   bool set_by_key(const std::string &master_key, 
                   const std::string &key, 
-                  const std::string &value)
+                  const std::string &value,
+                  time_t expiration,
+                  uint32_t flags)
   {
     memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
                                               master_key.length(),
                                               key.c_str(), key.length(),
                                               value.c_str(), value.length(),
-                                              time_t(0),
-                                              uint32_t(0));
+                                              expiration,
+                                              flags);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -287,6 +317,23 @@ public:
                                                  key.c_str(), 
                                                  key.length(), 
                                                  0);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  bool flush(time_t expiration)
+  {
+    memcached_return rc= memcached_flush(&memc, expiration);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  bool fetch_execute(memcached_execute_function *callback,
+                     void *context,
+                     unsigned int num_of_callbacks)
+  {
+    memcached_return rc= memcached_fetch_execute(&memc,
+                                                 callback,
+                                                 context,
+                                                 num_of_callbacks);
     return (rc == MEMCACHED_SUCCESS);
   }
 
