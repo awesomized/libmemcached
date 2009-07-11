@@ -8,34 +8,45 @@ dnl Macro: PANDORA_64BIT
 dnl ---------------------------------------------------------------------------
 AC_DEFUN([PANDORA_64BIT],[
 
+  AC_ARG_ENABLE([64bit],[
+    AS_HELP_STRING([--disable-64bit],
+      [Build 64 bit binary @<:@default=on@:>@])],
+             [ac_enable_64bit="$enableval"],
+             [ac_enable_64bit="yes"])
+
   AC_CHECK_PROGS(ISAINFO, [isainfo], [no])
   AS_IF([test "x$ISAINFO" != "xno"],
         [isainfo_b=`${ISAINFO} -b`],
         [isainfo_b="x"])
 
-  AS_IF([test "$isainfo_b" != "x"],
-        [AC_ARG_ENABLE([64bit],
-             [AS_HELP_STRING([--disable-64bit],
-                [Build 64 bit binary @<:@default=on@:>@])],
-             [ac_enable_64bit="$enableval"],
-             [ac_enable_64bit="yes"])])
+  AS_IF([test "$isainfo_b" != "x"],[
 
-  AS_IF([test "x$ac_enable_64bit" = "xyes"],[
-         if test "x$libdir" = "x\${exec_prefix}/lib" ; then
-           # The user hasn't overridden the default libdir, so we'll 
-           # the dir suffix to match solaris 32/64-bit policy
-           isainfo_k=`${ISAINFO} -k` 
-           libdir="${libdir}/${isainfo_k}"
-         fi
-         CPPFLAGS="-m64 ${CPPFLAGS}"
-         LDFLAGS="-m64 ${LDFLAGS}"
-         DTRACEFLAGS="${DTRACEFLAGS} -64"
-         if test "$target_cpu" = "sparc" -a "x$SUNCC" = "xyes"
-         then
-            AM_CFLAGS="-xmemalign=8s ${AM_CFLAGS}"
-            AM_CXXFLAGS="-xmemalign=8s ${AM_CXXFLAGS}"
-         fi
-       ],[DTRACEFLAGS="${DTRACEFLAGS} -32"])
+    isainfo_k=`${ISAINFO} -k` 
+    DTRACEFLAGS="${DTRACEFLAGS} -${isainfo_k}"
+
+    AS_IF([test "x${ac_cv_env_CPPFLAGS_set}" = "x"],[
+      CPPFLAGS="-I/usr/local ${CPPFLAGS}"
+    ])
+
+    AS_IF([test "x${ac_cv_env_LDFLAGS_set}" = "x"],[
+      LDFLAGS="-L/usr/local/lib/${isainfo_k} ${LDFLAGS}"
+    ])
+
+    AS_IF([test "x$ac_enable_64bit" = "xyes"],[
+      AS_IF([test "x$libdir" = "x\${exec_prefix}/lib"],[
+       dnl The user hasn't overridden the default libdir, so we'll 
+       dnl the dir suffix to match solaris 32/64-bit policy
+       libdir="${libdir}/${isainfo_k}"
+      ])
+
+      CPPFLAGS="-m64 ${CPPFLAGS}"
+      LDFLAGS="-m64 ${LDFLAGS}"
+      AS_IF([test "$target_cpu" = "sparc" -a "x$SUNCC" = "xyes"],[
+        AM_CFLAGS="-xmemalign=8s ${AM_CFLAGS}"
+        AM_CXXFLAGS="-xmemalign=8s ${AM_CXXFLAGS}"
+      ])
+    ])
+  ])
 ])
 dnl ---------------------------------------------------------------------------
 dnl End Macro: PANDORA_64BIT
