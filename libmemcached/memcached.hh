@@ -28,19 +28,23 @@ public:
     memcached_free(&memc);
   }
 
-  std::string fetch(std::string &key, size_t *key_length, size_t *value_length)
+  bool fetch(std::string &key, 
+             std::string &ret_val,
+             size_t *key_length, 
+             size_t *value_length,
+             uint32_t *flags,
+             memcached_return *rc)
   {
-    uint32_t flags;
-    memcached_return rc;
-    std::string ret_val;
-
-    char *value= memcached_fetch(&memc, const_cast<char *>(key.c_str()), key_length,
-                                 value_length, &flags, &rc);
+    char ret_key[MEMCACHED_MAX_KEY];
+    char *value= memcached_fetch(&memc, ret_key, key_length,
+                                 value_length, flags, rc);
     if (value)
     {
       ret_val.assign(value);
+      key.assign(ret_key);
+      return true;
     }
-    return ret_val;
+    return false;
   }
 
   std::string get(const std::string &key, size_t *value_length) 
