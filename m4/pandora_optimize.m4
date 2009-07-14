@@ -8,8 +8,6 @@ AC_DEFUN([PANDORA_OPTIMIZE],[
   dnl First check for gcc and g++
   AS_IF([test "$GCC" = "yes"],[
 
-    AC_DEFINE([_GNU_SOURCE],[1],[Fix problem with S_ISLNK() on Linux])
-
     dnl The following is required for portable results of floating point 
     dnl calculations on PowerPC. The same must also be done for IA-64, but 
     dnl this options is missing in the IA-64 gcc backend.
