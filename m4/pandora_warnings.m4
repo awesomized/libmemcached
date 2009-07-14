@@ -15,7 +15,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
   m4_define([PW_WARN_ALWAYS_ON],[no])
   ifdef([m4_define],,[define([m4_define],   defn([define]))])
   ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])
-  m4_foreach([pw_arg],$*,[
+  m4_foreach([pw_arg],[$*],[
     m4_case(pw_arg,
       [less-warnings],[
         m4_undefine([PW_LESS_WARNINGS])
@@ -69,7 +69,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
     AC_CACHE_CHECK([whether it is safe to use -fdiagnostics-show-option],
       [ac_cv_safe_to_use_fdiagnostics_show_option_],
       [save_CFLAGS="$CFLAGS"
-       CFLAGS="-fdiagnostics-show-option ${AM_CFLAGS}"
+       CFLAGS="-fdiagnostics-show-option ${AM_CFLAGS} ${CFLAGS}"
        AC_COMPILE_IFELSE(
          [AC_LANG_PROGRAM([],[])],
          [ac_cv_safe_to_use_fdiagnostics_show_option_=yes],
@@ -86,7 +86,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
       [save_CFLAGS="$CFLAGS"
        dnl Use -Werror here instead of ${W_FAIL} so that we don't spew
        dnl conversion warnings to all the tarball folks
-       CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS}"
+       CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS} ${CFLAGS}"
        AC_COMPILE_IFELSE(
          [AC_LANG_PROGRAM([[
 #include <stdbool.h>
@@ -108,7 +108,7 @@ foo(0);
         [save_CFLAGS="$CFLAGS"
          dnl Use -Werror here instead of ${W_FAIL} so that we don't spew
          dnl conversion warnings to all the tarball folks
-         CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS}"
+         CFLAGS="-Wconversion -Werror -pedantic ${AM_CFLAGS} ${CFLAGS}"
          AC_COMPILE_IFELSE(
            [AC_LANG_PROGRAM(
              [[
@@ -129,13 +129,16 @@ uint16_t x= htons(80);
 
     m4_if(PW_LESS_WARNINGS,[no],[
       BASE_WARNINGS_FULL="-Wformat=2 ${W_CONVERSION} -Wstrict-aliasing"
-      CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum"
+      CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum -Wwrite-strings"
       CXX_WARNINGS_FULL="-Weffc++ -Wold-style-cast"
     ],[
       BASE_WARNINGS_FULL="-Wformat ${NO_STRICT_ALIASING}"
     ])
 
-    BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wextra -Wundef -Wshadow -Wstrict-aliasing ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
+    AS_IF([test "${ac_cv_assert}" = "no"],
+          [NO_UNUSED="-Wno-unused-variable -Wno-unused-parameter"])
+
+    BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wextra -Wundef -Wshadow ${NO_UNUSED} ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
     CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
     CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long ${CXX_WARNINGS_FULL}"
 
@@ -161,7 +164,7 @@ uint16_t x= htons(80);
     AC_CACHE_CHECK([whether it is safe to use -Wlogical-op],
       [ac_cv_safe_to_use_Wlogical_op_],
       [save_CFLAGS="$CFLAGS"
-       CFLAGS="${W_FAIL} -pedantic -Wlogical-op ${AM_CFLAGS}"
+       CFLAGS="${W_FAIL} -pedantic -Wlogical-op ${AM_CFLAGS} ${CFLAGS}"
        AC_COMPILE_IFELSE([
          AC_LANG_PROGRAM(
          [[
