@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_set_memory_allocators, memcached_get_memory_allocators
+memcached_set_memory_allocators, memcached_get_memory_allocators - Manage memory allocator functions
 
 =head1 LIBRARY
 
