@@ -73,7 +73,7 @@ void memcached_server_free(memcached_server_st *ptr);
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr);
 LIBMEMCACHED_API
-memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *stat,
+memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
                                          memcached_return *error);
 
 LIBMEMCACHED_API

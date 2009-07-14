@@ -19,9 +19,9 @@
 
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
-static void run_analyzer(memcached_st *memc, memcached_stat_st *stat,
+static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
                          memcached_server_st *server_list);
-static void print_server_listing(memcached_st *memc, memcached_stat_st *stat,
+static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_stat,
                                  memcached_server_st *server_list);
 static void print_analysis_report(memcached_st *memc,
                                   memcached_analysis_st *report,
