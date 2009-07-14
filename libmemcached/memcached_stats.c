@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-static char *memcached_stat_keys[] = {
+static const char *memcached_stat_keys[] = {
   "pid",
   "uptime",
   "time",

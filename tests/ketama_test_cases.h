@@ -1,8 +1,8 @@
 typedef struct {
-    char *key;
+    const char *key;
     unsigned long hash1;
     unsigned long hash2;
-    char *server;
+    const char *server;
 } TestCase;
 
 static TestCase test_cases[99] = {

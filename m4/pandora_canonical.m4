@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.3])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.13])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -22,7 +22,8 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_USE_GNULIB],[no])
   m4_define([PCT_REQUIRE_CXX],[no])
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
-  m4_foreach([pct_arg],$*,[
+  m4_define([PCT_FORCE_GCC42],[no])
+  m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
       [use-gnulib], [
         m4_undefine([PCT_USE_GNULIB])
@@ -35,6 +36,10 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [ignore-shared-ptr], [
         m4_undefine([PCT_IGNORE_SHARED_PTR])
         m4_define([PCT_IGNORE_SHARED_PTR],[yes])
+      ],
+      [force-gcc42], [
+        m4_undefine([PCT_FORCE_GCC42])
+        m4_define([PCT_FORCE_GCC42],[yes])
     ])
   ])
 
@@ -53,6 +58,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_if(PCT_USE_GNULIB,yes,[ gl_EARLY ])
   
   AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([PANDORA_MAC_GCC42])
 
   dnl Once we can use a modern autoconf, we can use this
   dnl AC_PROG_CC_C99
@@ -61,6 +67,9 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AM_PROG_CC_C_O
 
   gl_USE_SYSTEM_EXTENSIONS
+  m4_if(PCT_FORCE_GCC42, [yes], [
+    AS_IF([test "$GCC" = "yes"], PANDORA_ENSURE_GCC_VERSION)
+  ])
   
 
   PANDORA_LIBTOOL
@@ -99,17 +108,24 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   AC_SYS_LARGEFILE
 
+
   PANDORA_CHECK_C_VERSION
   PANDORA_CHECK_CXX_VERSION
 
   PANDORA_OPTIMIZE
   PANDORA_64BIT
+
+  dnl We need to inject error into the cflags to test if visibility works or not
+  save_CFLAGS="${CFLAGS}"
+  CFLAGS="${CFLAGS} -Werror"
+  gl_VISIBILITY
+  CFLAGS="${save_CFLAGS}"
+
+  PANDORA_HEADER_ASSERT
+
   PANDORA_WARNINGS(PCT_ALL_ARGS)
 
-  gl_VISIBILITY
-
   PANDORA_ENABLE_DTRACE
-  PANDORA_HEADER_ASSERT
 
   AC_CHECK_PROGS([DOXYGEN], [doxygen])
   AC_CHECK_PROGS([PERL], [perl])

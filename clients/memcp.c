@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
     if (opt_verbose) 
     {
-      static char *opstr[] = { "set", "add", "replace" };
+      static const char *opstr[] = { "set", "add", "replace" };
       printf("op: %s\nsource file: %s\nlength: %zu\n"
 	     "key: %s\nflags: %x\nexpires: %llu\n",
 	     opstr[opt_method - OPT_SET], argv[optind], (size_t)sbuf.st_size,

@@ -46,7 +46,7 @@ public:
                                 value_length, &flags, &rc);
   }
 
-  memcached_return mget(char **keys, size_t *key_length, 
+  memcached_return mget(const char **keys, size_t *key_length, 
                         unsigned int number_of_keys)
   {
 

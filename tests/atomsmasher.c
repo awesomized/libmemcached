@@ -156,8 +156,8 @@ static memcached_return enable_consistent(memcached_st *memc)
 static test_return add_test(memcached_st *memc)
 {
   memcached_return rc;
-  char *key= "foo";
-  char *value= "when we sanitize";
+  const char *key= "foo";
+  const char *value= "when we sanitize";
   unsigned long long setting_value;
 
   setting_value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);

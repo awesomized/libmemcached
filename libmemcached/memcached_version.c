@@ -26,7 +26,7 @@ static inline memcached_return memcached_version_textual(memcached_st *ptr)
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *response_ptr;
-  char *command= "version\r\n";
+  const char *command= "version\r\n";
 
   send_length= strlen(command);
 

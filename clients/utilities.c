@@ -16,13 +16,13 @@ long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
-void version_command(char *command_name)
+void version_command(const char *command_name)
 {
   printf("%s v%u.%u\n", command_name, 1, 0);
   exit(0);
 }
 
-static char *lookup_help(memcached_options option)
+static const char *lookup_help(memcached_options option)
 {
   switch (option)
   {
@@ -54,7 +54,7 @@ static char *lookup_help(memcached_options option)
   return "forgot to document this function :)";
 }
 
-void help_command(char *command_name, char *description,
+void help_command(const char *command_name, const char *description,
                   const struct option *long_options,
                   memcached_programs_help_st *options __attribute__((unused)))
 {
@@ -66,7 +66,7 @@ void help_command(char *command_name, char *description,
 
   for (x= 0; long_options[x].name; x++) 
   {
-    char *help_message;
+    const char *help_message;
 
     printf("\t --%s%c\n", long_options[x].name, 
            long_options[x].has_arg ? '=' : ' ');  
