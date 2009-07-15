@@ -13,13 +13,18 @@ static const char ALPHANUMERICS[]=
 
 #define ALPHANUMERICS_SIZE (sizeof(ALPHANUMERICS)-1)
 
+static size_t get_alpha_num(void)
+{
+  return (size_t)random() % ALPHANUMERICS_SIZE;
+}
+
 static void get_random_string(char *buffer, size_t size)
 {
   char *buffer_ptr= buffer;
 
   while (--size)
-    *buffer_ptr++= ALPHANUMERICS[random() % ALPHANUMERICS_SIZE];
-  *buffer_ptr++= ALPHANUMERICS[random() % ALPHANUMERICS_SIZE];
+    *buffer_ptr++= ALPHANUMERICS[get_alpha_num()];
+  *buffer_ptr++= ALPHANUMERICS[get_alpha_num()];
 }
 
 void pairs_free(pairs_st *pairs)
