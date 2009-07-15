@@ -287,10 +287,18 @@ static test_return  connection_test(memcached_st *memc)
 static test_return  error_test(memcached_st *memc)
 {
   memcached_return rc;
+  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U, 982370485U, 1263635348U, 4242906218U, 3829656100U, 1891735253U, 
+                        334139633U, 2257084983U, 3088286104U, 13199785U, 2542027183U, 1097051614U, 199566778U, 2748246961U, 2465192557U, 
+                        1664094137U, 2405439045U, 1842224848U, 692413798U, 3479807801U, 919913813U, 4269430871U, 610793021U, 527273862U, 
+                        1437122909U, 2300930706U, 2943759320U, 674306647U, 2400528935U, 54481931U, 4186304426U, 1741088401U, 2979625118U, 
+                        4159057246U };
 
+  assert(MEMCACHED_MAXIMUM_RETURN == 37); // You have updated the memcache_error messages but not updated docs/tests.
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
-    printf("Error %d -> %s\n", rc, memcached_strerror(memc, rc));
+    uint32_t hash_val;
+    hash_val= memcached_generate_hash_value(memcached_strerror(memc, rc), strlen(memcached_strerror(memc, rc)), MEMCACHED_HASH_JENKINS);
+    assert(values[rc] == hash_val);
   }
 
   return 0;
