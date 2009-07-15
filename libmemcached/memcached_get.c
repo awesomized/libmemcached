@@ -103,7 +103,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
 memcached_return memcached_mget(memcached_st *ptr, 
                                 const char **keys, size_t *key_length, 
-                                unsigned int number_of_keys)
+                                size_t number_of_keys)
 {
   return memcached_mget_by_key(ptr, NULL, 0, keys, key_length, number_of_keys);
 }
@@ -112,14 +112,14 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
                                            const char **keys, size_t *key_length,
-                                           unsigned int number_of_keys);
+                                           size_t number_of_keys);
 
 memcached_return memcached_mget_by_key(memcached_st *ptr, 
                                        const char *master_key, 
                                        size_t master_key_length,
                                        const char **keys, 
                                        size_t *key_length, 
-                                       unsigned int number_of_keys)
+                                       size_t number_of_keys)
 {
   unsigned int x;
   memcached_return rc= MEMCACHED_NOTFOUND;
@@ -260,7 +260,7 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
                                            const char **keys, size_t *key_length, 
-                                           unsigned int number_of_keys)
+                                           size_t number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
   uint32_t x;
@@ -361,7 +361,7 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
 static memcached_return replication_binary_mget(memcached_st *ptr,
                                              uint32_t* hash, bool* dead_servers,
                                              const char **keys, size_t *key_length,
-                                             unsigned int number_of_keys)
+                                             size_t number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
   uint32_t x;
@@ -460,7 +460,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
                                            const char **keys, size_t *key_length,
-                                           unsigned int number_of_keys)
+                                           size_t number_of_keys)
 {
   memcached_return rc;
 

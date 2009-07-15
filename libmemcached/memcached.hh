@@ -109,7 +109,7 @@ public:
     if (!real_keys.empty())
     {
       memcached_return rc= memcached_mget(&memc, &real_keys[0], &key_len[0], 
-                                          static_cast<unsigned int>(real_keys.size()));
+                                          real_keys.size());
       return (rc == MEMCACHED_SUCCESS);
     }
 
