@@ -1,3 +1,6 @@
+  * Fix for OSX compiles in development builds.
+  * Updated C++ interface.
+
 0.31 Fri Jul 10 09:02:50 PDT 2009
   * Added support or HA via replication.
   * malloc() removed for server key usage.
