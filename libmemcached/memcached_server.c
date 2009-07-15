@@ -53,11 +53,11 @@ void memcached_server_free(memcached_server_st *ptr)
 {
   memcached_quit_server(ptr, 0);
 
+  if (ptr->cached_server_error)
+    free(ptr->cached_server_error);
+
   if (ptr->address_info)
-  {
     freeaddrinfo(ptr->address_info);
-    ptr->address_info= NULL;
-  }
 
   if (ptr->is_allocated)
     ptr->root->call_free(ptr->root, ptr);
@@ -70,14 +70,24 @@ void memcached_server_free(memcached_server_st *ptr)
 */
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr)
 {
+  memcached_server_st *rv= NULL;
+
   /* We just do a normal create if ptr is missing */
   if (ptr == NULL)
     return NULL;
 
-  /* TODO We should check return type */
-  return memcached_server_create_with(ptr->root, clone, 
-                                      ptr->hostname, ptr->port, ptr->weight,
-                                      ptr->type);
+  rv = memcached_server_create_with(ptr->root, clone, 
+                                    ptr->hostname, ptr->port, ptr->weight,
+                                    ptr->type);
+  if (rv != NULL)
+  {
+    rv->cached_errno= ptr->cached_errno;
+    if (ptr->cached_server_error)
+      rv->cached_server_error= strdup(ptr->cached_server_error);
+  }
+
+  return rv;
+
 }
 
 memcached_return memcached_server_cursor(memcached_st *ptr, 
@@ -130,4 +140,17 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
 
   return memcached_server_clone(NULL, &ptr->hosts[server_key]);
 
+}
+
+const char *memcached_server_error(memcached_server_st *ptr)
+{
+  if (ptr)
+    return ptr->cached_server_error;
+  else 
+    return NULL;
+}
+
+void memcached_server_error_reset(memcached_server_st *ptr)
+{
+  ptr->cached_server_error[0]= 0;
 }

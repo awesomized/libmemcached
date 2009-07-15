@@ -29,6 +29,7 @@ struct memcached_server_st {
   uint8_t minor_version;
   memcached_connection type;
   char *read_ptr;
+  char *cached_server_error;
   size_t read_buffer_length;
   size_t read_data_length;
   size_t write_buffer_offset;
@@ -56,6 +57,12 @@ memcached_return memcached_server_cursor(memcached_st *ptr,
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, 
                                              size_t key_length, memcached_return *error);
+
+LIBMEMCACHED_API
+const char *memcached_server_error(memcached_server_st *ptr);
+
+LIBMEMCACHED_API
+void memcached_server_error_reset(memcached_server_st *ptr);
 
 /* These should not currently be used by end users */
 /* TODO: Is the above comment valid? If so, how can we unit test these if they

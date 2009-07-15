@@ -23,6 +23,10 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_server_st *memcached_servers_parse (const char *server_strings);
 
+  const char *memcached_server_error(memcached_server_st *ptr);
+
+  void memcached_server_error_reset(memcached_server_st *ptr);
+
 =head1 DESCRIPTION
 
 libmemcached(3) operates on a list of hosts which are stored in
@@ -43,6 +47,12 @@ memcached_servers_parse() takes a string, the type that is used for the
 command line applications, and parse it to an array of memcached_server_st.
 The example is "localhost, foo:555, foo, bar". All hosts except foo:555 will
 be set to the default port, while that host will have a port of 555.
+
+memcached_server_error() can be used to look at the text of the last error 
+message sent by the server to to the client. Use memcached_server_error_reset() 
+to reset the message (this does not currently free up the memory associated
+with the message).
+
 
 =head1 RETURN
 

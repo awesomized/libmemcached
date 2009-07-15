@@ -1,3 +1,4 @@
+  * Added Twitter's memcached_server_error() functions.
   * Fix for OSX compiles in development builds.
   * Updated C++ interface.
 
