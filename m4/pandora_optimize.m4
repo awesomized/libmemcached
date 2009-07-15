@@ -6,7 +6,7 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([PANDORA_OPTIMIZE],[
   dnl Build optimized or debug version ?
   dnl First check for gcc and g++
-  AS_IF([test "$GCC" = "yes"],[
+  AS_IF([test "$GCC" = "yes" -a "$INTELCC" = "no"],[
 
     dnl The following is required for portable results of floating point 
     dnl calculations on PowerPC. The same must also be done for IA-64, but 
@@ -29,6 +29,20 @@ AC_DEFUN([PANDORA_OPTIMIZE],[
 
     OPTIMIZE_CFLAGS="-O3"
     OPTIMIZE_CXXFLAGS="-O3"
+  ])
+  AS_IF([test "$INTELCC" = "yes"],[
+    dnl Once we can use a modern autoconf, we can replace the std=gnu99 here
+    dnl with using AC_CC_STD_C99 above
+    CC="${CC} -std=c99"
+
+    AM_CPPFLAGS="-g ${AM_CPPFLAGS}"
+
+    DEBUG_CFLAGS="-O0"
+    DEBUG_CXXFLAGS="-O0"
+
+    OPTIMIZE_CFLAGS="-xHOST -O3 -no-prec-div -static"
+    OPTIMIZE_CXXFLAGS="${OPTIMIZE_CFLAGS}"
+
   ])
   AS_IF([test "$SUNCC" = "yes"],[
     dnl Once we can use a modern autoconf, we can replace the -xc99=all here
