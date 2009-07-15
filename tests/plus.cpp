@@ -26,6 +26,9 @@ extern "C" {
    test_return basic_master_key_test(memcached_st *memc);
    test_return mget_result_function(memcached_st *memc);
    test_return mget_test(memcached_st *memc);
+   memcached_return callback_counter(memcached_st *ptr __attribute__((unused)), 
+                                     memcached_result_st *result __attribute__((unused)), 
+                                     void *context);
    void *world_create(void);
    void world_destroy(void *p);
 }
@@ -100,9 +103,9 @@ test_return basic_master_key_test(memcached_st *memc)
 }
 
 /* Count the results */
-static memcached_return callback_counter(memcached_st *ptr __attribute__((unused)), 
-                                     memcached_result_st *result __attribute__((unused)), 
-                                     void *context)
+memcached_return callback_counter(memcached_st *ptr __attribute__((unused)), 
+                                  memcached_result_st *result __attribute__((unused)), 
+                                  void *context)
 {
   unsigned int *counter= static_cast<unsigned int *>(context);
 
