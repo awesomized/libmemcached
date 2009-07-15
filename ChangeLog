@@ -1,6 +1,8 @@
   * Added Twitter's memcached_server_error() functions.
   * Fix for OSX compiles in development builds.
   * Updated C++ interface.
+  * Updated memcached_mget and memcached_mget_by_key to take a size_t 
+    as a parameter instead of an unsigned int for number_of_keys.
 
 0.31 Fri Jul 10 09:02:50 PDT 2009
   * Added support or HA via replication.

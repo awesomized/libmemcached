@@ -43,6 +43,7 @@ startservers_LDADD = $(LDADDS) libserver.la
 
 record:
 	./testapp > output.res
+	./testplus > output_plus.res
 
 client-record:
 	sh t/memcat.test > r/memcat.res
@@ -54,12 +55,14 @@ client-record:
 record-extended:
 	./testapp extended > output2.res
 
-test: testapp library_test
+test: testapp testplus library_test
 	echo "Tests completed"
 
 library_test:
 	./testapp > output.cmp
 	diff output.res output.cmp
+	./testplus > output_plus.cmp
+	diff output_plus.res output_plus.cmp
 
 clients:
 	memcached -d -P /tmp/Xumemc.pid -p 12555

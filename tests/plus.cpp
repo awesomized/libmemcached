@@ -21,11 +21,19 @@
 using namespace std;
 
 extern "C" {
+   test_return basic_test(memcached_st *memc);
+   test_return increment_test(memcached_st *memc);
+   test_return basic_master_key_test(memcached_st *memc);
+   test_return mget_result_function(memcached_st *memc);
+   test_return mget_test(memcached_st *memc);
+   memcached_return callback_counter(memcached_st *,
+                                     memcached_result_st *, 
+                                     void *context);
    void *world_create(void);
    void world_destroy(void *p);
 }
 
-static test_return basic_test(memcached_st *memc)
+test_return basic_test(memcached_st *memc)
 {
   Memcached foo(memc);
   const string value_set("This is some data");
@@ -40,7 +48,7 @@ static test_return basic_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return increment_test(memcached_st *memc)
+test_return increment_test(memcached_st *memc)
 {
   Memcached mcach(memc);
   bool rc;
@@ -73,7 +81,7 @@ static test_return increment_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return basic_master_key_test(memcached_st *memc)
+test_return basic_master_key_test(memcached_st *memc)
 {
   Memcached foo(memc);
   const string value_set("Data for server A");
@@ -95,9 +103,9 @@ static test_return basic_master_key_test(memcached_st *memc)
 }
 
 /* Count the results */
-static memcached_return callback_counter(memcached_st *ptr __attribute__((unused)), 
-                                     memcached_result_st *result __attribute__((unused)), 
-                                     void *context)
+memcached_return callback_counter(memcached_st *,
+                                  memcached_result_st *, 
+                                  void *context)
 {
   unsigned int *counter= static_cast<unsigned int *>(context);
 
@@ -106,7 +114,7 @@ static memcached_return callback_counter(memcached_st *ptr __attribute__((unused
   return MEMCACHED_SUCCESS;
 }
 
-static test_return mget_result_function(memcached_st *memc)
+test_return mget_result_function(memcached_st *memc)
 {
   Memcached mc(memc);
   bool rc;
@@ -138,7 +146,7 @@ static test_return mget_result_function(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return mget_test(memcached_st *memc)
+test_return mget_test(memcached_st *memc)
 {
   Memcached mc(memc);
   bool rc;
