@@ -3737,6 +3737,8 @@ static test_return replication_mget_test(memcached_st *memc)
     memcached_free(new_clone);
   }
 
+  memcached_free(memc_clone);
+
   return TEST_SUCCESS;
 }
 
