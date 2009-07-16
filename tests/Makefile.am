@@ -61,8 +61,8 @@ test: testapp testplus library_test
 library_test:
 	./testapp > output.cmp
 	diff output.res output.cmp
-	./testplus > output_plus.cmp
-	diff output_plus.res output_plus.cmp
+#	./testplus > output_plus.cmp
+#	diff output_plus.res output_plus.cmp
 
 clients:
 	memcached -d -P /tmp/Xumemc.pid -p 12555
