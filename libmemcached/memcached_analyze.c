@@ -24,10 +24,10 @@ static void calc_oldest_node(memcached_analysis_st *result,
 
 static void calc_least_free_node(memcached_analysis_st *result,
                                  const uint32_t server_num,
-                                 const long max_allowed_bytes,
-                                 const long used_bytes)
+                                 const uint64_t max_allowed_bytes,
+                                 const uint64_t used_bytes)
 {
-  uint64_t remaining_bytes= (uint64_t)max_allowed_bytes - used_bytes;
+  uint64_t remaining_bytes= max_allowed_bytes - used_bytes;
 
   if (result->least_remaining_bytes == 0 ||
       remaining_bytes < result->least_remaining_bytes)
@@ -42,7 +42,7 @@ static void calc_average_item_size(memcached_analysis_st *result,
                                    const uint64_t total_bytes)
 {
   if (total_items > 0 && total_bytes > 0)
-    result->average_item_size= total_bytes / total_items;
+    result->average_item_size= (uint32_t) (total_bytes / total_items);
 }
 
 static void calc_hit_ratio(memcached_analysis_st *result,
@@ -55,7 +55,7 @@ static void calc_hit_ratio(memcached_analysis_st *result,
     return;
   }
 
-  double temp= (double)total_get_hits/total_get_cmds;
+  double temp= (double) (total_get_hits/total_get_cmds);
   result->pool_hit_ratio= temp * 100;
 }
 
@@ -84,7 +84,8 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
     calc_largest_consumption(result, x, memc_stat[x].bytes);
     calc_oldest_node(result, x, memc_stat[x].uptime);
     calc_least_free_node(result, x,
-                         memc_stat[x].limit_maxbytes, memc_stat[x].bytes);
+                         memc_stat[x].limit_maxbytes, 
+                         memc_stat[x].bytes);
 
     total_get_hits+= memc_stat[x].get_hits;
     total_get_cmds+= memc_stat[x].cmd_get;
