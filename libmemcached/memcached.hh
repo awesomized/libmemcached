@@ -3,7 +3,13 @@
  *
  * Copy: See Copyright for the status of this software.
  *
- * Authors: Padraig O'Sullivan, Patrick Galbraith
+ * Authors: Padraig O'Sullivan <osullivan.padraig@gmail.com>
+ *          Patrick Galbraith <patg@patg.net>
+ */
+
+/**
+ * @file memcached.hh
+ * @brief Libmemcached C++ interface
  */
 
 #ifndef LIBMEMCACHEDPP_H
@@ -16,6 +22,10 @@
 #include <string>
 #include <vector>
 
+/**
+ * This is the core memcached library (if later, other objects
+ * are needed, they will be created from this class).
+ */
 class Memcached
 {
 public:
@@ -36,9 +46,45 @@ public:
     memcached_clone(&memc, clone);
   }
 
+  Memcached(const Memcached &rhs)
+    :
+      memc(),
+      result()
+  {
+    memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
+  }
+
   ~Memcached()
   {
     memcached_free(&memc);
+  }
+
+  /**
+   * Get the internal memcached_st *
+   */
+  memcached_st &getImpl()
+  {
+    return memc;
+  }
+
+  /**
+   * Get the internal memcached_st *
+   */
+  const memcached_st &getImpl() const
+  {
+    return memc;
+  }
+
+  /**
+   * Return an error string for the given return structure.
+   *
+   * @param[in] rc a memcached_return structure
+   * @return error string corresponding to given return code in the library.
+   */
+  const std::string getError(memcached_return rc) const
+  {
+    /* first parameter to strerror is unused */
+    return memcached_strerror(NULL, rc);
   }
 
   bool fetch(std::string &key, 
@@ -357,6 +403,10 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Get the library version string.
+   * @return std::string containing a copy of the library version string.
+   */
   const std::string libVersion() const
   {
     const char *ver= memcached_lib_version();
@@ -365,6 +415,7 @@ public:
   }
 
 private:
+
   memcached_st memc;
   memcached_result_st result;
 };
