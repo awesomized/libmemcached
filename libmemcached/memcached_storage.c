@@ -91,14 +91,14 @@ static inline memcached_return memcached_send(memcached_st *ptr,
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
 
   if (cas)
-    write_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                           "%s %s%.*s %u %llu %zu %llu%s\r\n", 
-                           storage_op_string(verb),
-                           ptr->prefix_key,
-                           (int)key_length, key, flags, 
-                           (unsigned long long)expiration, value_length, 
-                           (unsigned long long)cas,
-                           (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
+    write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                    "%s %s%.*s %u %llu %zu %llu%s\r\n", 
+                                    storage_op_string(verb),
+                                    ptr->prefix_key,
+                                    (int)key_length, key, flags, 
+                                    (unsigned long long)expiration, value_length, 
+                                    (unsigned long long)cas,
+                                    (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
   else
   {
     char *buffer_ptr= buffer;
@@ -118,11 +118,11 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     buffer_ptr++;
 
     write_length= (size_t)(buffer_ptr - buffer);
-    write_length+= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                           "%u %llu %zu%s\r\n", 
-                           flags, 
-                           (unsigned long long)expiration, value_length,
-                           (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
+    write_length+= (size_t) snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                     "%u %llu %zu%s\r\n", 
+                                     flags, 
+                                     (unsigned long long)expiration, value_length,
+                                     (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
   }
 
   if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS)
@@ -429,7 +429,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
                                               uint64_t cas,
                                               memcached_storage_action verb)
 {
-  char flush;
+  uint8_t flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
   uint32_t server_key= memcached_generate_hash(ptr, master_key, 
@@ -450,13 +450,13 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
     request.message.body.expiration= htonl((uint32_t)expiration);
   }
   
-  request.message.header.request.bodylen= htonl(key_length + value_length + 
-						request.message.header.request.extlen);
+  request.message.header.request.bodylen= htonl((uint32_t) (key_length + value_length + 
+						request.message.header.request.extlen));
   
   if (cas)
     request.message.header.request.cas= htonll(cas);
   
-  flush= ((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1;
+  flush= (uint8_t) (((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1);
 
   if ((server->root->flags & MEM_USE_UDP) && !flush)
   {
@@ -470,7 +470,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
   /* write the header */
   if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, 0) == -1) ||
-      (memcached_io_write(server, value, value_length, flush) == -1)) 
+      (memcached_io_write(server, value, value_length, (char) flush) == -1)) 
   {
     memcached_io_reset(server);
     return MEMCACHED_WRITE_FAILURE;
@@ -490,7 +490,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
       if ((memcached_do(srv, (const char*)request.bytes, 
                         send_length, 0) != MEMCACHED_SUCCESS) ||
           (memcached_io_write(srv, key, key_length, 0) == -1) ||
-          (memcached_io_write(srv, value, value_length, flush) == -1))
+          (memcached_io_write(srv, value, value_length, (char) flush) == -1))
         memcached_io_reset(srv);
       else
         memcached_server_response_decrement(srv);

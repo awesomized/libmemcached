@@ -125,7 +125,7 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   if (end_ptr == string_ptr)
     goto read_error;
   for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-  result->flags= strtoul(next_ptr, &string_ptr, 10);
+  result->flags= (uint32_t) strtoul(next_ptr, &string_ptr, 10);
 
   if (end_ptr == string_ptr)
     goto read_error;
@@ -250,7 +250,9 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
             memory in the struct, which is important, for something that
             rarely should happen?
           */
-	  rel_ptr= (char *)ptr->root->call_realloc(ptr->root, ptr->cached_server_error, endptr - startptr + 1);
+	  rel_ptr= (char *)ptr->root->call_realloc(ptr->root, 
+                                                   ptr->cached_server_error, 
+                                                   (size_t) (endptr - startptr + 1));
 
           if (rel_ptr == NULL)
           {
@@ -261,7 +263,7 @@ static memcached_return textual_read_one_response(memcached_server_st *ptr,
           }
 	  ptr->cached_server_error= rel_ptr;
 
-	  memcpy(ptr->cached_server_error, startptr, endptr - startptr);
+	  memcpy(ptr->cached_server_error, startptr, (size_t) (endptr - startptr));
 	  ptr->cached_server_error[endptr - startptr]= 0;
 	  return MEMCACHED_SERVER_ERROR;
 	}
@@ -461,7 +463,7 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
       size_t nr= (bodylen > SMALL_STRING_LEN) ? SMALL_STRING_LEN : bodylen;
       if (memcached_safe_read(ptr, hole, nr) != MEMCACHED_SUCCESS)
         return MEMCACHED_UNKNOWN_READ_FAILURE;
-      bodylen -= nr;
+      bodylen-= (uint32_t) nr;
     }
 
     /* This might be an error from one of the quiet commands.. if

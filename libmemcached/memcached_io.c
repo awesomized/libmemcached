@@ -146,8 +146,8 @@ memcached_return memcached_io_read(memcached_server_st *ptr,
       }
 
       ptr->io_bytes_sent = 0;
-      ptr->read_data_length= data_read;
-      ptr->read_buffer_length= data_read;
+      ptr->read_data_length= (size_t) data_read;
+      ptr->read_buffer_length= (size_t) data_read;
       ptr->read_ptr= ptr->read_buffer;
     }
 
@@ -174,7 +174,7 @@ memcached_return memcached_io_read(memcached_server_st *ptr,
   }
 
   ptr->server_failure_counter= 0;
-  *nread = (size_t)(buffer_ptr - (char*)buffer);
+  *nread = (ssize_t)(buffer_ptr - (char*)buffer);
   return MEMCACHED_SUCCESS;
 }
 
@@ -242,7 +242,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
       return -1;
   }
 
-  return original_length;
+  return (ssize_t) original_length;
 }
 
 memcached_return memcached_io_close(memcached_server_st *ptr)
@@ -408,11 +408,11 @@ static ssize_t io_flush(memcached_server_st *ptr,
       return -1;
     }
 
-    ptr->io_bytes_sent += sent_length;
+    ptr->io_bytes_sent += (uint32_t) sent_length;
 
     local_write_ptr+= sent_length;
-    write_length-= sent_length;
-    return_length+= sent_length;
+    write_length-= (uint32_t) sent_length;
+    return_length+= (uint32_t) sent_length;
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
@@ -426,7 +426,7 @@ static ssize_t io_flush(memcached_server_st *ptr,
   else
     ptr->write_buffer_offset= 0;
 
-  return return_length;
+  return (ssize_t) return_length;
 }
 
 /* 
@@ -456,7 +456,7 @@ memcached_return memcached_safe_read(memcached_server_st *ptr,
     if (rc != MEMCACHED_SUCCESS)
       return rc;
 
-    offset+= nread;
+    offset+= (size_t) nread;
   }
 
   return MEMCACHED_SUCCESS;
@@ -524,13 +524,13 @@ static void increment_udp_message_id(memcached_server_st *ptr)
 {
   struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
   uint16_t cur_req= get_udp_datagram_request_id(header);
-  uint16_t msg_num= get_msg_num_from_request_id(cur_req);
-  uint16_t thread_id= get_thread_id_from_request_id(cur_req);
+  int msg_num= get_msg_num_from_request_id(cur_req);
+  int thread_id= get_thread_id_from_request_id(cur_req);
   
   if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK) != 0)
     msg_num= 0;
 
-  header->request_id= htons(thread_id | msg_num);
+  header->request_id= htons((uint16_t) (thread_id | msg_num));
 }
 
 memcached_return memcached_io_init_udp_header(memcached_server_st *ptr, uint16_t thread_id)
@@ -539,7 +539,7 @@ memcached_return memcached_io_init_udp_header(memcached_server_st *ptr, uint16_t
     return MEMCACHED_FAILURE;
 
   struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
-  header->request_id= htons(generate_udp_request_thread_id(thread_id));
+  header->request_id= htons((uint16_t) (generate_udp_request_thread_id(thread_id)));
   header->num_datagrams= htons(1);
   header->sequence_number= htons(0);
 

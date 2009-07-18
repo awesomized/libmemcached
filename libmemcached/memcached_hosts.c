@@ -29,7 +29,7 @@ static void sort_hosts(memcached_st *ptr)
   if (ptr->number_of_hosts)
   {
     qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
-    ptr->hosts[0].count= ptr->number_of_hosts;
+    ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
   }
 }
 
@@ -111,8 +111,8 @@ memcached_return update_continuum(memcached_st *ptr)
   uint32_t pointer_per_server= MEMCACHED_POINTS_PER_SERVER;
   uint32_t pointer_per_hash= 1;
   uint64_t total_weight= 0;
-  uint32_t is_ketama_weighted= 0;
-  uint32_t is_auto_ejecting= 0;
+  uint64_t is_ketama_weighted= 0;
+  uint64_t is_auto_ejecting= 0;
   uint32_t points_per_server= 0;
   uint32_t live_servers= 0;
   struct timeval now;
@@ -146,7 +146,7 @@ memcached_return update_continuum(memcached_st *ptr)
     live_servers= ptr->number_of_hosts;
 
   is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  points_per_server= is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER;
+  points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
   if (live_servers == 0)
     return MEMCACHED_SUCCESS;
@@ -186,7 +186,7 @@ memcached_return update_continuum(memcached_st *ptr)
     if (is_ketama_weighted) 
     {
         float pct = (float)list[host_index].weight / (float)total_weight;
-        pointer_per_server= floorf(pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001) * 4;
+        pointer_per_server= (uint32_t) ((floorf((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
         pointer_per_hash= 4;
 #ifdef DEBUG
         printf("ketama_weighted:%s|%d|%llu|%u\n", 
@@ -205,18 +205,18 @@ memcached_return update_continuum(memcached_st *ptr)
 
       if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
       {
-        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                   "%s-%d",
-                                   list[host_index].hostname,
-                                   pointer_index - 1);
+        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                            "%s-%d",
+                                            list[host_index].hostname,
+                                            pointer_index - 1);
 
       }
       else
       {
-        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                   "%s:%d-%d", 
-                                   list[host_index].hostname,
-                                   list[host_index].port, pointer_index - 1);
+        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                            "%s:%d-%d", 
+                                            list[host_index].hostname,
+                                            list[host_index].port, pointer_index - 1);
       }
       WATCHPOINT_ASSERT(sort_host_length);
 
@@ -225,7 +225,7 @@ memcached_return update_continuum(memcached_st *ptr)
         unsigned int i;
         for (i = 0; i < pointer_per_hash; i++)
         {
-          value= ketama_server_hash(sort_host, sort_host_length, i);
+          value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
@@ -289,7 +289,7 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
                                        list[x].port, list[x].weight, list[x].type);
     ptr->number_of_hosts++;
   }
-  ptr->hosts[0].count= ptr->number_of_hosts;
+  ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
 
   return run_distribution(ptr);
 }
@@ -374,7 +374,7 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
   /* TODO: Check return type */
   (void)memcached_server_create_with(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, weight, type);
   ptr->number_of_hosts++;
-  ptr->hosts[0].count= ptr->number_of_hosts;
+  ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
 
   return run_distribution(ptr);
 }
@@ -445,7 +445,7 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
   memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
 
   /* Backwards compatibility hack */
-  new_host_list[0].count= count;
+  new_host_list[0].count= (uint16_t) count;
 
   *error= MEMCACHED_SUCCESS;
   return new_host_list;
