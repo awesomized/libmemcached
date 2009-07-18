@@ -23,8 +23,8 @@ static memcached_return ascii_dump(memcached_st *ptr, memcached_dump_func *callb
     /* 256 I BELIEVE is the upper limit of slabs */
     for (x= 0; x < 256; x++)
     {
-      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                            "stats cachedump %u 0 0\r\n", x);
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                     "stats cachedump %u 0 0\r\n", x);
 
       rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
 
