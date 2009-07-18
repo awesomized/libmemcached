@@ -11,6 +11,8 @@
 
 #include <libmemcached/memcached.h>
 
+#include <string.h>
+
 #include <string>
 #include <vector>
 
@@ -40,54 +42,58 @@ public:
   }
 
   bool fetch(std::string &key, 
-             std::string &ret_val,
-             size_t *key_length, 
-             size_t *value_length,
+             std::vector<char> &ret_val,
              uint32_t *flags,
              memcached_return *rc)
   {
     char ret_key[MEMCACHED_MAX_KEY];
-    char *value= memcached_fetch(&memc, ret_key, key_length,
-                                 value_length, flags, rc);
+    size_t value_length= 0;
+    size_t key_length= 0;
+    char *value= memcached_fetch(&memc, ret_key, &key_length,
+                                 &value_length, flags, rc);
     if (value)
     {
-      ret_val.assign(value);
+      ret_val.reserve(value_length);
+      memcpy(&*ret_val.begin(), value, value_length);
       key.assign(ret_key);
       return true;
     }
     return false;
   }
 
-  std::string get(const std::string &key, size_t *value_length) 
+  std::vector<char> &get(const std::string &key, 
+                         std::vector<char> &ret_val)
   {
-    uint32_t flags;
+    uint32_t flags= 0;
     memcached_return rc;
-    std::string ret_val;
+    size_t value_length= 0;
 
     char *value= memcached_get(&memc, key.c_str(), key.length(),
-                               value_length, &flags, &rc);
-    if (value)
+                               &value_length, &flags, &rc);
+    if (value != NULL)
     {
-      ret_val.assign(value);
+      ret_val.reserve(value_length);
+      memcpy(&ret_val[0], value, value_length);
     }
     return ret_val;
   }
 
-  std::string getByKey(const std::string &master_key, 
-                       const std::string &key, 
-                       size_t *value_length)
+  std::vector<char> &getByKey(const std::string &master_key, 
+                              const std::string &key, 
+                              std::vector<char> &ret_val)
   {
-    uint32_t flags;
+    uint32_t flags= 0;
     memcached_return rc;
-    std::string ret_val;
+    size_t value_length= 0;
 
     char *value= memcached_get_by_key(&memc, 
                                       master_key.c_str(), master_key.length(), 
                                       key.c_str(), key.length(),
-                                      value_length, &flags, &rc);
+                                      &value_length, &flags, &rc);
     if (value)
     {
-      ret_val.assign(value);
+      ret_val.reserve(value_length);
+      memcpy(&*ret_val.begin(), value, value_length);
     }
     return ret_val;
   }
@@ -129,19 +135,19 @@ public:
   }
 
   bool set(const std::string &key, 
-           const std::string &value,
+           const std::vector<char> &value,
            time_t expiration,
            uint32_t flags)
   {
     memcached_return rc= memcached_set(&memc, 
                                        key.c_str(), key.length(),
-                                       value.c_str(), value.length(),
+                                       &value[0], value.size(),
                                        expiration, flags);
     return (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
   bool setAll(std::vector<std::string> &keys,
-              std::vector<std::string> &values,
+              std::vector< std::vector<char> > &values,
               time_t expiration,
               uint32_t flags)
   {
@@ -151,7 +157,7 @@ public:
     }
     bool retval= true;
     std::vector<std::string>::iterator key_it= keys.begin();
-    std::vector<std::string>::iterator val_it= values.begin();
+    std::vector< std::vector<char> >::iterator val_it= values.begin();
     while (key_it != keys.end())
     {
       retval= set((*key_it), (*val_it), expiration, flags);
@@ -167,14 +173,14 @@ public:
 
   bool setByKey(const std::string &master_key, 
                 const std::string &key, 
-                const std::string &value,
+                const std::vector<char> &value,
                 time_t expiration,
                 uint32_t flags)
   {
     memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
                                               master_key.length(),
                                               key.c_str(), key.length(),
-                                              value.c_str(), value.length(),
+                                              &value[0], value.size(),
                                               expiration,
                                               flags);
     return (rc == MEMCACHED_SUCCESS);
