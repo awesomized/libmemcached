@@ -4,7 +4,7 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
 {
   if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
-    size_t current_offset= string->end - string->string;
+    size_t current_offset= (size_t) (string->end - string->string);
     char *new_value;
     size_t adjust;
     size_t new_size;

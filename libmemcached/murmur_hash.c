@@ -25,13 +25,13 @@ uint32_t murmur_hash(const char *key, size_t length)
   */
 
   const unsigned int m= 0x5bd1e995;
-  const unsigned int seed= (0xdeadbeef * length);
+  const size_t seed= (0xdeadbeef * length);
   const int r= 24;
 
 
   // Initialize the hash to a 'random' value
 
-  unsigned int h= seed ^ length;
+  size_t h= seed ^ length;
 
   // Mix 4 bytes at a time into the hash
 
@@ -72,5 +72,5 @@ uint32_t murmur_hash(const char *key, size_t length)
   h *= m;
   h ^= h >> 15;
 
-  return h;
+  return (uint32_t) h;
 }
