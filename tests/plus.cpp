@@ -91,12 +91,12 @@ test_return basic_master_key_test(memcached_st *memc)
   string value;
   size_t value_length;
 
-  foo.set_by_key(master_key_a, key, value_set, 0, 0);
-  value= foo.get_by_key(master_key_a, key, &value_length);
+  foo.setByKey(master_key_a, key, value_set, 0, 0);
+  value= foo.getByKey(master_key_a, key, &value_length);
 
   assert((memcmp(value.c_str(), value_set.c_str(), value_length) == 0));
 
-  value= foo.get_by_key(master_key_b, key, &value_length);
+  value= foo.getByKey(master_key_b, key, &value_length);
   assert((memcmp(value.c_str(), value_set.c_str(), value_length) == 0));
 
   return TEST_SUCCESS;
@@ -131,7 +131,7 @@ test_return mget_result_function(memcached_st *memc)
 
   /* We need to empty the server before we continue the test */
   rc= mc.flush(0);
-  rc= mc.set_all(keys, keys, 50, 9);
+  rc= mc.setAll(keys, keys, 50, 9);
   assert(rc == true);
 
   rc= mc.mget(keys);
@@ -139,7 +139,7 @@ test_return mget_result_function(memcached_st *memc)
 
   callbacks[0]= &callback_counter;
   counter= 0;
-  rc= mc.fetch_execute(callbacks, static_cast<void *>(&counter), 1); 
+  rc= mc.fetchExecute(callbacks, static_cast<void *>(&counter), 1); 
 
   assert(counter == 3);
 
@@ -178,7 +178,7 @@ test_return mget_test(memcached_st *memc)
   assert(return_value_length == 0);
   assert(mc_rc == MEMCACHED_END);
 
-  rc= mc.set_all(keys, keys, 50, 9);
+  rc= mc.setAll(keys, keys, 50, 9);
   assert(rc == true);
 
   rc= mc.mget(keys);
