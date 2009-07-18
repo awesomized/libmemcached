@@ -28,13 +28,13 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     ptr->number_of_replicas= (uint32_t)data;
     break;
   case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
-    ptr->io_msg_watermark= (int32_t)data;
+    ptr->io_msg_watermark= (uint32_t) data;
     break;
   case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
-    ptr->io_bytes_watermark= (int32_t)data;
+    ptr->io_bytes_watermark= (uint32_t)data;
     break;
   case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
-    ptr->io_key_prefetch = (int32_t)data;
+    ptr->io_key_prefetch = (uint32_t)data;
     break;
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     ptr->snd_timeout= (int32_t)data;
@@ -77,7 +77,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       ptr->distribution= (memcached_server_distribution)(data);
       if (ptr->distribution == MEMCACHED_DISTRIBUTION_RANDOM)
       {
-        srandom(time(NULL));
+        srandom((uint32_t) time(NULL));
       }
       run_distribution(ptr);
       break;
@@ -214,7 +214,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_KETAMA:
-    return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? 1 : 0;
+    return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? (uint64_t) 1 : 0;
   case MEMCACHED_BEHAVIOR_HASH:
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
@@ -254,7 +254,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
                      SO_SNDBUF, &sock_size, &sock_length))
         return 0; /* Zero means error */
 
-      return sock_size;
+      return (uint64_t) sock_size;
     }
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     {
@@ -270,7 +270,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
                      SO_RCVBUF, &sock_size, &sock_length))
         return 0; /* Zero means error */
 
-      return sock_size;
+      return (uint64_t) sock_size;
     }
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
