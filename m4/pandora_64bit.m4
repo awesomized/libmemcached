@@ -7,6 +7,8 @@ dnl ---------------------------------------------------------------------------
 dnl Macro: PANDORA_64BIT
 dnl ---------------------------------------------------------------------------
 AC_DEFUN([PANDORA_64BIT],[
+  AC_BEFORE([$0], [AC_LIB_PREFIX])
+
 
   AC_ARG_ENABLE([64bit],[
     AS_HELP_STRING([--disable-64bit],
