@@ -116,7 +116,7 @@ public:
 
     if (key.empty())
     {
-      return false;
+      return ret_val;
     }
     char *value= memcached_get(&memc, key.c_str(), key.length(),
                                &value_length, &flags, &rc);
@@ -138,7 +138,7 @@ public:
 
     if (master_key.empty() || key.empty())
     {
-      return false;
+      return ret_val;
     }
     char *value= memcached_get_by_key(&memc, 
                                       master_key.c_str(), master_key.length(), 
