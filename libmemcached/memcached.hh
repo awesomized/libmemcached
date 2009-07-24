@@ -97,7 +97,7 @@ public:
     size_t key_length= 0;
     char *value= memcached_fetch(&memc, ret_key, &key_length,
                                  &value_length, flags, rc);
-    if (value)
+    if (value && ret_val.empty())
     {
       ret_val.reserve(value_length);
       memcpy(&*ret_val.begin(), value, value_length);
@@ -114,9 +114,13 @@ public:
     memcached_return rc;
     size_t value_length= 0;
 
+    if (key.empty())
+    {
+      return false;
+    }
     char *value= memcached_get(&memc, key.c_str(), key.length(),
                                &value_length, &flags, &rc);
-    if (value != NULL)
+    if (value != NULL && ret_val.empty())
     {
       ret_val.reserve(value_length);
       memcpy(&ret_val[0], value, value_length);
@@ -132,6 +136,10 @@ public:
     memcached_return rc;
     size_t value_length= 0;
 
+    if (master_key.empty() || key.empty())
+    {
+      return false;
+    }
     char *value= memcached_get_by_key(&memc, 
                                       master_key.c_str(), master_key.length(), 
                                       key.c_str(), key.length(),
@@ -170,7 +178,7 @@ public:
      * If the std::vector of keys is empty then we cannot 
      * call memcached_mget as we will get undefined behavior.
      */
-    if (!real_keys.empty())
+    if (! real_keys.empty())
     {
       memcached_return rc= memcached_mget(&memc, &real_keys[0], &key_len[0], 
                                           real_keys.size());
@@ -185,6 +193,10 @@ public:
            time_t expiration,
            uint32_t flags)
   {
+    if (key.empty() || value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_set(&memc, 
                                        key.c_str(), key.length(),
                                        &value[0], value.size(),
@@ -223,6 +235,12 @@ public:
                 time_t expiration,
                 uint32_t flags)
   {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
                                               master_key.length(),
                                               key.c_str(), key.length(),
@@ -234,6 +252,10 @@ public:
 
   bool increment(const std::string &key, unsigned int offset, uint64_t *value)
   {
+    if (key.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_increment(&memc, key.c_str(), key.length(),
                                              offset, value);
     return (rc == MEMCACHED_SUCCESS);
@@ -241,6 +263,10 @@ public:
 
   bool decrement(const std::string &key, unsigned int offset, uint64_t *value)
   {
+    if (key.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_decrement(&memc, key.c_str(), 
                                              key.length(),
                                              offset, value);
@@ -250,6 +276,10 @@ public:
 
   bool add(const std::string &key, const std::vector<char> &value)
   {
+    if (key.empty() || value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_add(&memc, key.c_str(), key.length(), 
                                        &value[0], value.size(), 0, 0);
     return (rc == MEMCACHED_SUCCESS);
@@ -259,6 +289,12 @@ public:
                 const std::string &key, 
                 const std::vector<char> &value)
   {
+    if (master_key.empty() ||
+        key.empty() || 
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_add_by_key(&memc, 
                                               master_key.c_str(),
                                               master_key.length(),
@@ -272,6 +308,11 @@ public:
 
   bool replace(const std::string &key, const std::vector<char> &value)
   {
+    if (key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_replace(&memc, key.c_str(), key.length(),
                                            &value[0], value.size(),
                                            0, 0);
@@ -282,6 +323,12 @@ public:
                     const std::string &key, 
                     const std::vector<char> &value)
   {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_replace_by_key(&memc, 
                                                   master_key.c_str(), 
                                                   master_key.length(),
@@ -295,6 +342,10 @@ public:
 
   bool prepend(const std::string &key, const std::vector<char> &value)
   {
+    if (key.empty() || value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_prepend(&memc, key.c_str(), key.length(),
                                            &value[0], value.size(), 0, 0);
     return (rc == MEMCACHED_SUCCESS);
@@ -304,6 +355,12 @@ public:
                     const std::string &key, 
                     const std::vector<char> &value)
   {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_prepend_by_key(&memc, 
                                                   master_key.c_str(), 
                                                   master_key.length(),
@@ -318,6 +375,10 @@ public:
 
   bool append(const std::string &key, const std::vector<char> &value)
   {
+    if (key.empty() || value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_append(&memc, 
                                           key.c_str(), 
                                           key.length(),
@@ -331,6 +392,12 @@ public:
                    const std::string &key, 
                    const std::vector<char> &value)
   {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_append_by_key(&memc,
                                                  master_key.c_str(), 
                                                  master_key.length(),
@@ -346,6 +413,10 @@ public:
            const std::vector<char> &value, 
            uint64_t cas_arg)
   {
+    if (key.empty() || value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_cas(&memc, key.c_str(), key.length(),
                                        &value[0], value.size(), 
                                        0, 0, cas_arg);
@@ -357,6 +428,12 @@ public:
                 const std::vector<char> &value, 
                 uint64_t cas_arg)
   {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_cas_by_key(&memc,
                                               master_key.c_str(), 
                                               master_key.length(),
@@ -370,6 +447,10 @@ public:
 
   bool remove(const std::string &key)
   {
+    if (key.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_delete(&memc, key.c_str(), key.length(), 0);
     return (rc == MEMCACHED_SUCCESS);
   }
@@ -377,6 +458,10 @@ public:
   bool removeByKey(const std::string &master_key, 
                    const std::string &key)
   {
+    if (master_key.empty() || key.empty())
+    {
+      return false;
+    }
     memcached_return rc= memcached_delete_by_key(&memc, 
                                                  master_key.c_str(), 
                                                  master_key.length(),
