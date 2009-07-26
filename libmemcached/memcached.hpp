@@ -8,7 +8,7 @@
  */
 
 /**
- * @file memcached.hh
+ * @file memcached.hpp
  * @brief Libmemcached C++ interface
  */
 
@@ -21,16 +21,20 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
+namespace memcache
+{
 
 /**
  * This is the core memcached library (if later, other objects
  * are needed, they will be created from this class).
  */
-class Memcached
+class Memcache
 {
 public:
 
-  Memcached() 
+  Memcache() 
     : 
       memc(),
       result()
@@ -38,7 +42,7 @@ public:
     memcached_create(&memc);
   }
 
-  Memcached(memcached_st *clone) 
+  Memcache(memcached_st *clone) 
     : 
       memc(),
       result()
@@ -46,7 +50,7 @@ public:
     memcached_clone(&memc, clone);
   }
 
-  Memcached(const Memcached &rhs)
+  Memcache(const Memcache &rhs)
     :
       memc(),
       result()
@@ -54,7 +58,7 @@ public:
     memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
   }
 
-  ~Memcached()
+  ~Memcache()
   {
     memcached_free(&memc);
   }
@@ -100,7 +104,7 @@ public:
     if (value && ret_val.empty())
     {
       ret_val.reserve(value_length);
-      memcpy(&*ret_val.begin(), value, value_length);
+      ret_val.assign(value, value + value_length);
       key.assign(ret_key);
       return true;
     }
@@ -123,7 +127,7 @@ public:
     if (value != NULL && ret_val.empty())
     {
       ret_val.reserve(value_length);
-      memcpy(&ret_val[0], value, value_length);
+      ret_val.assign(value, value + value_length);
     }
     return ret_val;
   }
@@ -147,7 +151,7 @@ public:
     if (value)
     {
       ret_val.reserve(value_length);
-      memcpy(&*ret_val.begin(), value, value_length);
+      ret_val.assign(value, value + value_length);
     }
     return ret_val;
   }
@@ -205,7 +209,7 @@ public:
   }
 
   bool setAll(std::vector<std::string> &keys,
-              std::vector< std::vector<char> > &values,
+              std::vector< std::vector<char> *> &values,
               time_t expiration,
               uint32_t flags)
   {
@@ -215,10 +219,10 @@ public:
     }
     bool retval= true;
     std::vector<std::string>::iterator key_it= keys.begin();
-    std::vector< std::vector<char> >::iterator val_it= values.begin();
+    std::vector< std::vector<char> *>::iterator val_it= values.begin();
     while (key_it != keys.end())
     {
-      retval= set((*key_it), (*val_it), expiration, flags);
+      retval= set((*key_it), *(*val_it), expiration, flags);
       if (retval == false)
       {
         return retval;
@@ -227,6 +231,29 @@ public:
       ++val_it;
     }
     return retval;
+  }
+
+  bool setAll(std::map<const std::string, std::vector<char> > key_value_map,
+              time_t expiration,
+              uint32_t flags)
+  {
+    if (key_value_map.empty())
+    {
+      return false;
+    }
+    bool retval= true;
+    std::map<const std::string, std::vector<char> >::iterator it=
+      key_value_map.begin();
+    while (it != key_value_map.end())
+    {
+      retval= set(it->first, it->second, expiration, flags);
+      if (retval == false)
+      {
+        return false;
+      }
+      ++it;
+    }
+    return true;
   }
 
   bool setByKey(const std::string &master_key, 
@@ -504,5 +531,7 @@ private:
   memcached_st memc;
   memcached_result_st result;
 };
+
+}
 
 #endif /* LIBMEMCACHEDPP_H */
