@@ -212,7 +212,6 @@ test_return mget_test(memcached_st *memc)
   values.push_back(&val1);
   values.push_back(&val2);
   values.push_back(&val3);
-  uint32_t flags;
 
   string return_key;
   vector<char> return_value;
@@ -224,8 +223,7 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while (mc.fetch(return_key, return_value, 
-                  &flags, &mc_rc))
+  while (mc.fetch(return_key, return_value))
   {
     assert(return_value.size() != 0);
     return_value.clear();
@@ -238,10 +236,8 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while ((mc.fetch(return_key, return_value, 
-                   &flags, &mc_rc)))
+  while ((mc.fetch(return_key, return_value)))
   {
-    assert(mc_rc == MEMCACHED_SUCCESS);
     assert(return_key.length() == return_value.size());
     assert(!memcmp(&return_value[0], return_key.c_str(), return_value.size()));
   }

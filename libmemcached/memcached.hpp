@@ -91,16 +91,23 @@ public:
     return memcached_strerror(NULL, rc);
   }
 
+  /**
+   * Fetches an individual value from the server.
+   *
+   * @param[in] key key of object to fetch
+   * @param[out] ret_val store returned object in this vector
+   * @return true on success; false on failure
+   */
   bool fetch(std::string &key, 
-             std::vector<char> &ret_val,
-             uint32_t *flags,
-             memcached_return *rc)
+             std::vector<char> &ret_val)
   {
     char ret_key[MEMCACHED_MAX_KEY];
     size_t value_length= 0;
     size_t key_length= 0;
+    memcached_return rc;
+    uint32_t flags= 0;
     char *value= memcached_fetch(&memc, ret_key, &key_length,
-                                 &value_length, flags, rc);
+                                 &value_length, &flags, &rc);
     if (value && ret_val.empty())
     {
       ret_val.reserve(value_length);
