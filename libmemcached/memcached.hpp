@@ -505,6 +505,13 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Wipe the contents of memcached servers.
+   *
+   * @param[in] expiration time to wait until wiping contents of
+   *                       memcached servers
+   * @return true on success; false otherwise
+   */
   bool flush(time_t expiration)
   {
     memcached_return rc= memcached_flush(&memc, expiration);
