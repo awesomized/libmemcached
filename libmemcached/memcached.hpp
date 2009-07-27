@@ -240,7 +240,7 @@ public:
     return retval;
   }
 
-  bool setAll(std::map<const std::string, std::vector<char> > key_value_map,
+  bool setAll(std::map<const std::string, std::vector<char> > &key_value_map,
               time_t expiration,
               uint32_t flags)
   {
