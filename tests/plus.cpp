@@ -59,7 +59,7 @@ test_return basic_test(memcached_st *memc)
   populate_vector(value, value_set);
 
   foo.set("mine", value, 0, 0);
-  test_value= foo.get("mine", test_value);
+  foo.get("mine", test_value);
 
   assert((memcmp(&test_value[0], &value[0], test_value.size()) == 0));
 
@@ -85,7 +85,7 @@ test_return increment_test(memcached_st *memc)
   {
     return TEST_FAILURE;
   }
-  ret_value= mcach.get(key, ret_value);
+  mcach.get(key, ret_value);
   if (ret_value.empty())
   {
     return TEST_FAILURE;
@@ -124,13 +124,13 @@ test_return basic_master_key_test(memcached_st *memc)
   populate_vector(value, value_set);
 
   foo.setByKey(master_key_a, key, value, 0, 0);
-  test_value= foo.getByKey(master_key_a, key, test_value);
+  foo.getByKey(master_key_a, key, test_value);
 
   assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   test_value.clear();
 
-  test_value= foo.getByKey(master_key_b, key, test_value);
+  foo.getByKey(master_key_b, key, test_value);
   assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   return TEST_SUCCESS;
@@ -223,7 +223,7 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while (mc.fetch(return_key, return_value))
+  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
     assert(return_value.size() != 0);
     return_value.clear();
@@ -236,7 +236,7 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while ((mc.fetch(return_key, return_value)))
+  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
     assert(return_key.length() == return_value.size());
     assert(!memcmp(&return_value[0], return_key.c_str(), return_value.size()));

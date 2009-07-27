@@ -92,14 +92,15 @@ public:
   }
 
   /**
-   * Fetches an individual value from the server.
+   * Fetches an individual value from the server. mget() must always
+   * be called before using this method.
    *
    * @param[in] key key of object to fetch
    * @param[out] ret_val store returned object in this vector
-   * @return true on success; false on failure
+   * @return a memcached return structure
    */
-  bool fetch(std::string &key, 
-             std::vector<char> &ret_val)
+  memcached_return fetch(std::string &key, 
+                         std::vector<char> &ret_val)
   {
     char ret_key[MEMCACHED_MAX_KEY];
     size_t value_length= 0;
@@ -113,13 +114,20 @@ public:
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
       key.assign(ret_key);
-      return true;
     }
-    return false;
+    return rc;
   }
 
-  std::vector<char> &get(const std::string &key, 
-                         std::vector<char> &ret_val)
+  /**
+   * Fetches an individual value from the server.
+   *
+   * @param[in] key key of object whose value to get
+   * @param[out] ret_val object that is retrieved is stored in
+   *                     this vector
+   * @return true on success; false otherwise
+   */
+  bool get(const std::string &key, 
+           std::vector<char> &ret_val)
   {
     uint32_t flags= 0;
     memcached_return rc;
@@ -127,7 +135,7 @@ public:
 
     if (key.empty())
     {
-      return ret_val;
+      return false;
     }
     char *value= memcached_get(&memc, key.c_str(), key.length(),
                                &value_length, &flags, &rc);
@@ -135,13 +143,26 @@ public:
     {
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
+      return true;
     }
-    return ret_val;
+    return false;
   }
 
-  std::vector<char> &getByKey(const std::string &master_key, 
-                              const std::string &key, 
-                              std::vector<char> &ret_val)
+  /**
+   * Fetches an individual from a server which is specified by
+   * the master_key parameter that is used for determining which
+   * server an object was stored in if key partitioning was 
+   * used for storage.
+   *
+   * @param[in] master_key key that specifies server object is stored on
+   * @param[in] key key of object whose value to get
+   * @param[out] ret_val object that is retrieved is stored in
+   *                     this vector
+   * @return true on success; false otherwise
+   */
+  bool getByKey(const std::string &master_key, 
+                const std::string &key, 
+                std::vector<char> &ret_val)
   {
     uint32_t flags= 0;
     memcached_return rc;
@@ -149,7 +170,7 @@ public:
 
     if (master_key.empty() || key.empty())
     {
-      return ret_val;
+      return false;
     }
     char *value= memcached_get_by_key(&memc, 
                                       master_key.c_str(), master_key.length(), 
@@ -159,10 +180,18 @@ public:
     {
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
+      return true;
     }
-    return ret_val;
+    return false;
   }
 
+  /**
+   * Selects multiple keys at once. This method always
+   * works asynchronously.
+   *
+   * @param[in] keys vector of keys to select
+   * @return true if all keys are found
+   */
   bool mget(std::vector<std::string> &keys)
   {
     std::vector<const char *> real_keys;
@@ -199,6 +228,17 @@ public:
     return false;
   }
 
+  /**
+   * Writes an object to the server. If the object already exists, it will
+   * overwrite the existing object. This method always returns true
+   * when using non-blocking mode unless a network error occurs.
+   *
+   * @param[in] key key of object to write to server
+   * @param[in] value value of object to write to server
+   * @param[in] expiration time to keep the object stored in the server for
+   * @param[in] flags flags to store with the object
+   * @return true on succcess; false otherwise
+   */
   bool set(const std::string &key, 
            const std::vector<char> &value,
            time_t expiration,
@@ -215,6 +255,48 @@ public:
     return (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
+  /**
+   * Writes an object to a server specified by the master_key parameter.
+   * If the object already exists, it will overwrite the existing object.
+   *
+   * @param[in] master_key key that specifies server to write to
+   * @param[in] key key of object to write to server
+   * @param[in] value value of object to write to server
+   * @param[in] expiration time to keep the object stored in the server for
+   * @param[in] flags flags to store with the object
+   * @return true on succcess; false otherwise
+   */
+  bool setByKey(const std::string &master_key, 
+                const std::string &key, 
+                const std::vector<char> &value,
+                time_t expiration,
+                uint32_t flags)
+  {
+    if (master_key.empty() ||
+        key.empty() ||
+        value.empty())
+    {
+      return false;
+    }
+    memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
+                                              master_key.length(),
+                                              key.c_str(), key.length(),
+                                              &value[0], value.size(),
+                                              expiration,
+                                              flags);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  /**
+   * Writes a list of objects to the server. Objects are specified by
+   * 2 vectors - 1 vector of keys and 1 vector of values.
+   *
+   * @param[in] keys vector of keys of objects to write to server
+   * @param[in] values vector of values of objects to write to server
+   * @param[in] expiration time to keep the objects stored in server for
+   * @param[in] flags flags to store with the objects
+   * @return true on success; false otherwise
+   */
   bool setAll(std::vector<std::string> &keys,
               std::vector< std::vector<char> *> &values,
               time_t expiration,
@@ -240,6 +322,15 @@ public:
     return retval;
   }
 
+  /**
+   * Writes a list of objects to the server. Objects are specified by
+   * a map of keys to values.
+   *
+   * @param[in] key_value_map map of keys and values to store in server
+   * @param[in] expiration time to keep the objects stored in server for
+   * @param[in] flags flags to store with the objects
+   * @return true on success; false otherwise
+   */
   bool setAll(std::map<const std::string, std::vector<char> > &key_value_map,
               time_t expiration,
               uint32_t flags)
@@ -263,28 +354,17 @@ public:
     return true;
   }
 
-  bool setByKey(const std::string &master_key, 
-                const std::string &key, 
-                const std::vector<char> &value,
-                time_t expiration,
-                uint32_t flags)
-  {
-    if (master_key.empty() ||
-        key.empty() ||
-        value.empty())
-    {
-      return false;
-    }
-    memcached_return rc= memcached_set_by_key(&memc, master_key.c_str(), 
-                                              master_key.length(),
-                                              key.c_str(), key.length(),
-                                              &value[0], value.size(),
-                                              expiration,
-                                              flags);
-    return (rc == MEMCACHED_SUCCESS);
-  }
-
-  bool increment(const std::string &key, unsigned int offset, uint64_t *value)
+  /**
+   * Increment the value of the object associated with the specified
+   * key by the offset given. The resulting value is saved in the value
+   * parameter.
+   *
+   * @param[in] key key of object in server whose value to increment
+   * @param[in] offset amount to increment object's value by
+   * @param[out] value store the result of the increment here
+   * @return true on success; false otherwise
+   */
+  bool increment(const std::string &key, uint32_t offset, uint64_t *value)
   {
     if (key.empty())
     {
@@ -295,7 +375,17 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
-  bool decrement(const std::string &key, unsigned int offset, uint64_t *value)
+  /**
+   * Decrement the value of the object associated with the specified
+   * key by the offset given. The resulting value is saved in the value
+   * parameter.
+   *
+   * @param[in] key key of object in server whose value to decrement
+   * @param[in] offset amount to increment object's value by
+   * @param[out] value store the result of the decrement here
+   * @return true on success; false otherwise
+   */
+  bool decrement(const std::string &key, uint32_t offset, uint64_t *value)
   {
     if (key.empty())
     {
@@ -308,6 +398,14 @@ public:
   }
 
 
+  /**
+   * Add an object with the specified key and value to the server. This
+   * function returns false if the object already exists on the server.
+   *
+   * @param[in] key key of object to add
+   * @param[in] value of object to add
+   * @return true on success; false otherwise
+   */
   bool add(const std::string &key, const std::vector<char> &value)
   {
     if (key.empty() || value.empty())
@@ -319,6 +417,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Add an object with the specified key and value to the server. This
+   * function returns false if the object already exists on the server. The
+   * server to add the object to is specified by the master_key parameter.
+   *
+   * @param[in[ master_key key of server to add object to
+   * @param[in] key key of object to add
+   * @param[in] value of object to add
+   * @return true on success; false otherwise
+   */
   bool addByKey(const std::string &master_key, 
                 const std::string &key, 
                 const std::vector<char> &value)
@@ -340,6 +448,14 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Replaces an object on the server. This method only succeeds
+   * if the object is already present on the server.
+   *
+   * @param[in] key key of object to replace
+   * @param[in[ value value to replace object with
+   * @return true on success; false otherwise
+   */
   bool replace(const std::string &key, const std::vector<char> &value)
   {
     if (key.empty() ||
@@ -353,6 +469,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Replaces an object on the server. This method only succeeds
+   * if the object is already present on the server. The server
+   * to replace the object on is specified by the master_key param.
+   *
+   * @param[in] master_key key of server to replace object on
+   * @param[in] key key of object to replace
+   * @param[in[ value value to replace object with
+   * @return true on success; false otherwise
+   */
   bool replaceByKey(const std::string &master_key, 
                     const std::string &key, 
                     const std::vector<char> &value)
@@ -374,6 +500,13 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Places a segment of data before the last piece of data stored.
+   *
+   * @param[in] key key of object whose value we will prepend data to
+   * @param[in] value data to prepend to object's value
+   * @return true on success; false otherwise
+   */
   bool prepend(const std::string &key, const std::vector<char> &value)
   {
     if (key.empty() || value.empty())
@@ -385,6 +518,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Places a segment of data before the last piece of data stored. The
+   * server on which the object where we will be prepending data is stored
+   * on is specified by the master_key parameter.
+   *
+   * @param[in] master_key key of server where object is stored
+   * @param[in] key key of object whose value we will prepend data to
+   * @param[in] value data to prepend to object's value
+   * @return true on success; false otherwise
+   */
   bool prependByKey(const std::string &master_key, 
                     const std::string &key, 
                     const std::vector<char> &value)
@@ -407,6 +550,13 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Places a segment of data at the end of the last piece of data stored.
+   *
+   * @param[in] key key of object whose value we will append data to
+   * @param[in] value data to append to object's value
+   * @return true on success; false otherwise
+   */
   bool append(const std::string &key, const std::vector<char> &value)
   {
     if (key.empty() || value.empty())
@@ -422,6 +572,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Places a segment of data at the end of the last piece of data stored. The
+   * server on which the object where we will be appending data is stored
+   * on is specified by the master_key parameter.
+   *
+   * @param[in] master_key key of server where object is stored
+   * @param[in] key key of object whose value we will append data to
+   * @param[in] value data to append to object's value
+   * @return true on success; false otherwise
+   */
   bool appendByKey(const std::string &master_key, 
                    const std::string &key, 
                    const std::vector<char> &value)
@@ -443,6 +603,14 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Overwrite data in the server as long as the cas_arg value
+   * is still the same in the server.
+   *
+   * @param[in] key key of object in server
+   * @param[in] value value to store for object in server
+   * @param[in] cas_arg "cas" value
+   */
   bool cas(const std::string &key, 
            const std::vector<char> &value, 
            uint64_t cas_arg)
@@ -457,6 +625,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Overwrite data in the server as long as the cas_arg value
+   * is still the same in the server. The server to use is
+   * specified by the master_key parameter.
+   *
+   * @param[in] master_key specifies server to operate on
+   * @param[in] key key of object in server
+   * @param[in] value value to store for object in server
+   * @param[in] cas_arg "cas" value
+   */
   bool casByKey(const std::string &master_key, 
                 const std::string &key, 
                 const std::vector<char> &value, 
@@ -479,6 +657,12 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Delete an object from the server specified by the key given.
+   *
+   * @param[in] key key of object to delete
+   * @return true on success; false otherwise
+   */
   bool remove(const std::string &key)
   {
     if (key.empty())
@@ -489,6 +673,34 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Delete an object from the server specified by the key given.
+   *
+   * @param[in] key key of object to delete
+   * @param[in] expiration time to delete the object after
+   * @return true on success; false otherwise
+   */
+  bool remove(const std::string &key,
+              time_t expiration)
+  {
+    if (key.empty())
+    {
+      return false;
+    }
+    memcached_return rc= memcached_delete(&memc, 
+                                          key.c_str(), 
+                                          key.length(), 
+                                          expiration);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  /**
+   * Delete an object from the server specified by the key given. 
+   *
+   * @param[in] master_key specifies server to remove object from
+   * @param[in] key key of object to delete
+   * @return true on success; false otherwise
+   */
   bool removeByKey(const std::string &master_key, 
                    const std::string &key)
   {
@@ -502,6 +714,31 @@ public:
                                                  key.c_str(), 
                                                  key.length(), 
                                                  0);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  /**
+   * Delete an object from the server specified by the key given. 
+   *
+   * @param[in] master_key specifies server to remove object from
+   * @param[in] key key of object to delete
+   * @param[in] expiration time to delete the object after
+   * @return true on success; false otherwise
+   */
+  bool removeByKey(const std::string &master_key, 
+                   const std::string &key,
+                   time_t expiration)
+  {
+    if (master_key.empty() || key.empty())
+    {
+      return false;
+    }
+    memcached_return rc= memcached_delete_by_key(&memc, 
+                                                 master_key.c_str(), 
+                                                 master_key.length(),
+                                                 key.c_str(), 
+                                                 key.length(), 
+                                                 expiration);
     return (rc == MEMCACHED_SUCCESS);
   }
 
