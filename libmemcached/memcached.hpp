@@ -755,6 +755,16 @@ public:
     return (rc == MEMCACHED_SUCCESS);
   }
 
+  /**
+   * Callback function for result sets. It passes the result
+   * sets to the list of functions provided.
+   *
+   * @param[in] callback list of callback functions
+   * @param[in] context pointer to memory reference that is
+   *                    supplied to the calling function
+   * @param[in] num_of_callbacks number of callback functions
+   * @return true on success; false otherwise
+   */
   bool fetchExecute(memcached_execute_function *callback,
                     void *context,
                     unsigned int num_of_callbacks)
