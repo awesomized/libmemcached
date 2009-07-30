@@ -47,11 +47,11 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
     break;
   case MEMCACHED_HASH_FNV1A_64: 
     {
-      hash= FNV_64_INIT;
+      hash= (uint32_t) FNV_64_INIT;
       for (x= 0; x < key_length; x++) 
       {
         hash ^= key[x];
-        hash *= FNV_64_PRIME;
+        hash *= (uint32_t) FNV_64_PRIME;
       }
     }
     break;
@@ -146,7 +146,7 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_MODULA:
     return hash % ptr->number_of_hosts;
   case MEMCACHED_DISTRIBUTION_RANDOM:
-    return random() % ptr->number_of_hosts;
+    return (uint32_t) random() % ptr->number_of_hosts;
   default:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
     return hash % ptr->number_of_hosts;
@@ -205,7 +205,7 @@ static uint32_t internal_generate_hash(const char *key, size_t key_length)
 
   while (key_length--) 
   {
-    value += *ptr++;
+    value += (uint32_t) *ptr++;
     value += (value << 10);
     value ^= (value >> 6);
   }
@@ -213,7 +213,7 @@ static uint32_t internal_generate_hash(const char *key, size_t key_length)
   value ^= (value >> 11);
   value += (value << 15); 
 
-  return value == 0 ? 1 : value;
+  return value == 0 ? 1 : (uint32_t) value;
 }
 
 static uint32_t internal_generate_md5(const char *key, size_t key_length)

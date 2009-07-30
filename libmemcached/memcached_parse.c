@@ -10,7 +10,7 @@
 memcached_server_st *memcached_servers_parse(const char *server_strings)
 {
   char *string;
-  unsigned int port;
+  uint32_t port;
   uint32_t weight;
   const char *begin_ptr;
   const char *end_ptr;
@@ -32,7 +32,7 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
 
     if (string)
     {
-      memcpy(buffer, begin_ptr, string - begin_ptr);
+      memcpy(buffer, begin_ptr, (size_t) (string - begin_ptr));
       buffer[(unsigned int)(string - begin_ptr)]= 0;
       begin_ptr= string+1;
     }
@@ -52,7 +52,7 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
 
       ptr++;
 
-      port= strtoul(ptr, (char **)NULL, 10);
+      port= (uint32_t) strtoul(ptr, (char **)NULL, 10);
 
       ptr2= index(ptr, ' ');
       if (! ptr2)
@@ -60,7 +60,7 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
       if (ptr2)
       {
         ptr2++;
-        weight = strtoul(ptr2, (char **)NULL, 10);
+        weight = (uint32_t) strtoul(ptr2, (char **)NULL, 10);
       }
     }
 
