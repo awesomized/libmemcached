@@ -1,7 +1,7 @@
 /*
   C++ interface test
 */
-#include "libmemcached/memcached.hh"
+#include "libmemcached/memcached.hpp"
 
 #include <assert.h>
 #include <stdio.h>
@@ -19,6 +19,7 @@
 #include <string>
 
 using namespace std;
+using namespace memcache;
 
 extern "C" {
    test_return basic_test(memcached_st *memc);
@@ -36,23 +37,21 @@ extern "C" {
 static void populate_vector(vector<char> &vec, const string &str)
 {
   vec.reserve(str.length());
-  memcpy(&*vec.begin(), str.c_str(), str.length());
+  vec.assign(str.begin(), str.end());
 }
 
 static void copy_vec_to_string(vector<char> &vec, string &str)
 {
   str.clear();
-  char *tmp= static_cast<char *>(malloc(vec.size() * sizeof(char)));
-  if (!vec.empty())
+  if (! vec.empty())
   {
-    memcpy(tmp, &vec[0], vec.size());
-    str.assign(tmp);
+    str.assign(vec.begin(), vec.end());
   }
 }
 
 test_return basic_test(memcached_st *memc)
 {
-  Memcached foo(memc);
+  Memcache foo(memc);
   const string value_set("This is some data");
   std::vector<char> value;
   std::vector<char> test_value;
@@ -60,7 +59,7 @@ test_return basic_test(memcached_st *memc)
   populate_vector(value, value_set);
 
   foo.set("mine", value, 0, 0);
-  test_value= foo.get("mine", test_value);
+  foo.get("mine", test_value);
 
   assert((memcmp(&test_value[0], &value[0], test_value.size()) == 0));
 
@@ -69,7 +68,7 @@ test_return basic_test(memcached_st *memc)
 
 test_return increment_test(memcached_st *memc)
 {
-  Memcached mcach(memc);
+  Memcache mcach(memc);
   bool rc;
   const string key("blah");
   const string inc_value("1");
@@ -86,14 +85,12 @@ test_return increment_test(memcached_st *memc)
   {
     return TEST_FAILURE;
   }
-  ret_value= mcach.get(key, ret_value);
+  mcach.get(key, ret_value);
   if (ret_value.empty())
   {
     return TEST_FAILURE;
   }
   copy_vec_to_string(ret_value, ret_string);
-
-  printf("string is: %s\n", ret_string.c_str());
 
   int_inc_value= uint64_t(atol(inc_value.c_str()));
   int_ret_value= uint64_t(atol(ret_string.c_str()));
@@ -116,7 +113,7 @@ test_return increment_test(memcached_st *memc)
 
 test_return basic_master_key_test(memcached_st *memc)
 {
-  Memcached foo(memc);
+  Memcache foo(memc);
   const string value_set("Data for server A");
   vector<char> value;
   vector<char> test_value;
@@ -127,13 +124,13 @@ test_return basic_master_key_test(memcached_st *memc)
   populate_vector(value, value_set);
 
   foo.setByKey(master_key_a, key, value, 0, 0);
-  test_value= foo.getByKey(master_key_a, key, test_value);
+  foo.getByKey(master_key_a, key, test_value);
 
   assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   test_value.clear();
 
-  test_value= foo.getByKey(master_key_b, key, test_value);
+  foo.getByKey(master_key_b, key, test_value);
   assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   return TEST_SUCCESS;
@@ -153,13 +150,13 @@ memcached_return callback_counter(memcached_st *,
 
 test_return mget_result_function(memcached_st *memc)
 {
-  Memcached mc(memc);
+  Memcache mc(memc);
   bool rc;
   string key1("fudge");
   string key2("son");
   string key3("food");
   vector<string> keys;
-  vector< vector<char> > values;
+  vector< vector<char> *> values;
   vector<char> val1;
   vector<char> val2;
   vector<char> val3;
@@ -171,9 +168,9 @@ test_return mget_result_function(memcached_st *memc)
   keys.push_back(key2);
   keys.push_back(key3);
   values.reserve(3);
-  values.push_back(val1);
-  values.push_back(val2);
-  values.push_back(val3);
+  values.push_back(&val1);
+  values.push_back(&val2);
+  values.push_back(&val3);
   unsigned int counter;
   memcached_execute_function callbacks[1];
 
@@ -196,11 +193,11 @@ test_return mget_result_function(memcached_st *memc)
 
 test_return mget_test(memcached_st *memc)
 {
-  Memcached mc(memc);
+  Memcache mc(memc);
   bool rc;
   memcached_return mc_rc;
   vector<string> keys;
-  vector< vector<char> > values;
+  vector< vector<char> *> values;
   keys.reserve(3);
   keys.push_back("fudge");
   keys.push_back("son");
@@ -212,10 +209,9 @@ test_return mget_test(memcached_st *memc)
   populate_vector(val2, "son");
   populate_vector(val3, "food");
   values.reserve(3);
-  values.push_back(val1);
-  values.push_back(val2);
-  values.push_back(val3);
-  uint32_t flags;
+  values.push_back(&val1);
+  values.push_back(&val2);
+  values.push_back(&val3);
 
   string return_key;
   vector<char> return_value;
@@ -227,8 +223,7 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while (mc.fetch(return_key, return_value, 
-                  &flags, &mc_rc))
+  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
     assert(return_value.size() != 0);
     return_value.clear();
@@ -241,10 +236,8 @@ test_return mget_test(memcached_st *memc)
   rc= mc.mget(keys);
   assert(rc == true);
 
-  while ((mc.fetch(return_key, return_value, 
-                   &flags, &mc_rc)))
+  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
-    assert(mc_rc == MEMCACHED_SUCCESS);
     assert(return_key.length() == return_value.size());
     assert(!memcmp(&return_value[0], return_key.c_str(), return_value.size()));
   }
