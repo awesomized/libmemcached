@@ -19,6 +19,7 @@
 
 #include <string.h>
 
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -36,15 +37,47 @@ public:
 
   Memcache() 
     : 
+      servers_list(),
       memc(),
+      servers(NULL),
       result()
   {
     memcached_create(&memc);
   }
 
+  Memcache(const std::string &in_servers_list)
+    :
+      servers_list(in_servers_list),
+      memc(),
+      servers(NULL),
+      result()
+  {
+    memcached_create(&memc);
+    servers= memcached_servers_parse(servers_list.c_str());
+  }
+
+  Memcache(const std::string &hostname,
+           unsigned int port)
+    :
+      servers_list(),
+      memc(),
+      servers(NULL),
+      result()
+  {
+    memcached_create(&memc);
+    servers_list.append(hostname);
+    servers_list.append(":");
+    std::ostringstream strsmt;
+    strsmt << port;
+    servers_list.append(strsmt.str());
+    servers= memcached_servers_parse(servers_list.c_str());
+  }
+
   Memcache(memcached_st *clone) 
     : 
+      servers_list(),
       memc(),
+      servers(NULL),
       result()
   {
     memcached_clone(&memc, clone);
@@ -52,15 +85,29 @@ public:
 
   Memcache(const Memcache &rhs)
     :
+      servers_list(rhs.servers_list),
       memc(),
+      servers(NULL),
       result()
   {
     memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
+    servers= memcached_servers_parse(servers_list.c_str());
+  }
+
+  Memcache &operator=(const Memcache &rhs)
+  {
+    if (this != &rhs)
+    {
+      memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
+      servers= memcached_servers_parse(servers_list.c_str());
+    }
+    return *this;
   }
 
   ~Memcache()
   {
     memcached_free(&memc);
+    memcached_server_list_free(servers);
   }
 
   /**
@@ -89,6 +136,53 @@ public:
   {
     /* first parameter to strerror is unused */
     return memcached_strerror(NULL, rc);
+  }
+
+  /**
+   * Return the string which contains the list of memcached servers being
+   * used.
+   *
+   * @return a std::string containing the list of memcached servers
+   */
+  const std::string getServersList() const
+  {
+    return servers_list;
+  }
+
+  /**
+   * Set the list of memcached servers to use.
+   *
+   * @param[in] in_servers_list list of servers
+   * @return true on success; false otherwise
+   */
+  bool setServers(const std::string &in_servers_list)
+  {
+    servers_list.assign(in_servers_list);
+    servers= memcached_servers_parse(in_servers_list.c_str());
+    return (servers == NULL);
+  }
+
+  /**
+   * Add a server to the list of memcached servers to use.
+   *
+   * @param[in] server_name name of the server to add
+   * @param[in[ port port number of server to add
+   * @return true on success; false otherwise
+   */
+  bool addServer(const std::string &server_name, unsigned int port)
+  {
+    memcached_return rc;
+    std::ostringstream strstm;
+    servers_list.append(",");
+    servers_list.append(server_name);
+    servers_list.append(":");
+    strstm << port;
+    servers_list.append(strstm.str());
+    servers= memcached_server_list_append(servers,
+                                          server_name.c_str(),
+                                          port,
+                                          &rc);
+    return (rc == MEMCACHED_SUCCESS);
   }
 
   /**
@@ -789,7 +883,9 @@ public:
 
 private:
 
+  std::string servers_list;
   memcached_st memc;
+  memcached_server_st *servers;
   memcached_result_st result;
 };
 
