@@ -152,7 +152,7 @@ static memcached_return unix_socket_connect(memcached_server_st *ptr)
     servAddr.sun_family= AF_UNIX;
     strcpy(servAddr.sun_path, ptr->hostname); /* Copy filename */
 
-    addrlen= strlen(servAddr.sun_path) + sizeof(servAddr.sun_family);
+    addrlen= (socklen_t) (strlen(servAddr.sun_path) + sizeof(servAddr.sun_family));
 
 test_connect:
     if (connect(ptr->fd, 

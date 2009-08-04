@@ -12,14 +12,14 @@ static inline memcached_return binary_delete(memcached_st *ptr,
                                              unsigned int server_key,
                                              const char *key, 
                                              size_t key_length,
-					     int flush);
+					     uint8_t flush);
 
 memcached_return memcached_delete_by_key(memcached_st *ptr, 
                                          const char *master_key, size_t master_key_length,
                                          const char *key, size_t key_length,
                                          time_t expiration)
 {
-  char to_write;
+  uint8_t to_write;
   size_t send_length;
   memcached_return rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -36,7 +36,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
-  to_write= (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
+  to_write= (uint8_t) (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
   bool no_reply= (ptr->flags & MEM_NOREPLY);
      
   if (ptr->flags & MEM_BINARY_PROTOCOL) 
@@ -44,16 +44,16 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
   else 
   {
     if (expiration)
-      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                            "delete %s%.*s %u%s\r\n",
-                            ptr->prefix_key,
-                            (int)key_length, key, 
-                            (uint32_t)expiration, no_reply ? " noreply" :"" );
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                     "delete %s%.*s %u%s\r\n",
+                                     ptr->prefix_key,
+                                     (int) key_length, key, 
+                                     (uint32_t)expiration, no_reply ? " noreply" :"" );
     else
-       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                             "delete %s%.*s%s\r\n",
-                             ptr->prefix_key,
-                             (int)key_length, key, no_reply ? " noreply" :"");
+       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                      "delete %s%.*s%s\r\n",
+                                      ptr->prefix_key,
+                                      (int)key_length, key, no_reply ? " noreply" :"");
     
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE) 
     {
@@ -96,7 +96,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
                                              unsigned int server_key,
                                              const char *key, 
 					     size_t key_length,
-					     int flush)
+					     uint8_t flush)
 {
   protocol_binary_request_delete request= {.bytes= {0}};
 
@@ -107,7 +107,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
   request.message.header.request.keylen= htons((uint16_t)key_length);
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl(key_length);
+  request.message.header.request.bodylen= htonl((uint32_t) key_length);
 
   if (ptr->flags & MEM_USE_UDP && !flush)
   {
@@ -123,7 +123,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
   if ((memcached_do(&ptr->hosts[server_key], request.bytes, 
                     sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(&ptr->hosts[server_key], key, 
-                          key_length, flush) == -1)) 
+                          key_length, (char) flush) == -1)) 
   {
     memcached_io_reset(&ptr->hosts[server_key]);
     rc= MEMCACHED_WRITE_FAILURE;
@@ -142,7 +142,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
       memcached_server_st* server= &ptr->hosts[server_key];
       if ((memcached_do(server, (const char*)request.bytes, 
                         sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(server, key, key_length, flush) == -1))
+          (memcached_io_write(server, key, key_length, (char) flush) == -1))
         memcached_io_reset(server);
       else
         memcached_server_response_decrement(server);

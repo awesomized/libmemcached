@@ -183,18 +183,13 @@ AC_DEFUN([AC_LIB_PREPARE_MULTILIB],
       dnl "Portable Makefiles should refer to any library directories using the 64 symbolic link."
       dnl But we want to recognize the sparcv9 or amd64 subdirectory also if the
       dnl symlink is missing, so we set acl_libdirstem2 too.
-      AC_MSG_CHECKING([if buildling 64-bit app])
-      AC_RUN_IFELSE([
-         AC_LANG_PROGRAM([
-         ], [
-           return sizeof(void*) == 8 ? 0 : 1;
-         ])            
-      ], [
-         gl_cv_solaris_64bit=yes
-      ], [
-         gl_cv_solaris_64bit=no
-      ])
-      AC_MSG_RESULT([$gl_cv_solaris_64bit])
+      AC_CACHE_CHECK([for 64-bit host], [gl_cv_solaris_64bit],
+        [AC_RUN_IFELSE([
+           AC_LANG_PROGRAM([], [[
+             return sizeof(void*) == 8 ? 0 : 1;
+           ]])            
+           ], [gl_cv_solaris_64bit=yes], [gl_cv_solaris_64bit=no])
+        ])
       if test $gl_cv_solaris_64bit = yes; then
         acl_libdirstem=lib/64
         case "$host_cpu" in

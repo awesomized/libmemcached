@@ -33,12 +33,12 @@ static memcached_return memcached_flush_textual(memcached_st *ptr,
   {
     bool no_reply= (ptr->flags & MEM_NOREPLY);
     if (expiration)
-      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                            "flush_all %llu%s\r\n",
-                            (unsigned long long)expiration, no_reply ? " noreply" : "");
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                     "flush_all %llu%s\r\n",
+                                     (unsigned long long)expiration, no_reply ? " noreply" : "");
     else
-      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                            "flush_all%s\r\n", no_reply ? " noreply" : "");
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                                     "flush_all%s\r\n", no_reply ? " noreply" : "");
 
     rc= memcached_do(&ptr->hosts[x], buffer, send_length, 1);
 
@@ -63,7 +63,7 @@ static memcached_return memcached_flush_binary(memcached_st *ptr,
   request.message.header.request.extlen= 4;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl(request.message.header.request.extlen);
-  request.message.body.expiration= htonl(expiration);
+  request.message.body.expiration= htonl((uint32_t) expiration);
 
   for (x= 0; x < ptr->number_of_hosts; x++)
   {

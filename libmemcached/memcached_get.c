@@ -59,7 +59,7 @@ char *memcached_get_by_key(memcached_st *ptr,
       {
         if (rc == MEMCACHED_BUFFERED)
         {
-          uint8_t latch; /* We use latch to track the state of the original socket */
+          uint64_t latch; /* We use latch to track the state of the original socket */
           latch= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS);
           if (latch == 0)
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
@@ -306,12 +306,12 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
 
     request.message.header.request.keylen= htons((uint16_t)key_length[x]);
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-    request.message.header.request.bodylen= htonl(key_length[x]);
+    request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
     
     if ((memcached_io_write(&ptr->hosts[server_key], request.bytes,
                             sizeof(request.bytes), 0) == -1) ||
         (memcached_io_write(&ptr->hosts[server_key], keys[x], 
-                            key_length[x], flush) == -1)) 
+                            key_length[x], (char) flush) == -1)) 
     {
       memcached_server_response_reset(&ptr->hosts[server_key]);
       rc= MEMCACHED_SOME_ERRORS;
@@ -405,12 +405,12 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
 
       request.message.header.request.keylen= htons((uint16_t)key_length[x]);
       request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-      request.message.header.request.bodylen= htonl(key_length[x]);
+      request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
 
       if ((memcached_io_write(&ptr->hosts[server], request.bytes,
                               sizeof(request.bytes), 0) == -1) ||
           (memcached_io_write(&ptr->hosts[server], keys[x],
-                              key_length[x], flush) == -1))
+                              key_length[x], (char) flush) == -1))
       {
         memcached_io_reset(&ptr->hosts[server]);
         dead_servers[server]= true;

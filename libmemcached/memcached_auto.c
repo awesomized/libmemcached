@@ -85,13 +85,13 @@ static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= cmd;
-  request.message.header.request.keylen= htons(key_length);
+  request.message.header.request.keylen= htons((uint16_t) key_length);
   request.message.header.request.extlen= 20;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl(key_length + request.message.header.request.extlen);  
+  request.message.header.request.bodylen= htonl((uint32_t) (key_length + request.message.header.request.extlen));
   request.message.body.delta= htonll(offset);
   request.message.body.initial= htonll(initial);
-  request.message.body.expiration= htonl(expiration);
+  request.message.body.expiration= htonl((uint32_t) expiration);
 
   if ((memcached_do(&ptr->hosts[server_key], request.bytes,
                     sizeof(request.bytes), 0)!=MEMCACHED_SUCCESS) ||

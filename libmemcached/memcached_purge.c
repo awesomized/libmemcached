@@ -42,7 +42,7 @@ memcached_return memcached_purge(memcached_server_st *ptr)
      * data to be sent from the server (the commands was in the output buffer
      * and just flushed
      */
-    long timeo= ptr->root->poll_timeout;
+    int32_t timeo= ptr->root->poll_timeout;
     ptr->root->poll_timeout= 2000;
 
     result_ptr= memcached_result_create(ptr->root, &result);
@@ -68,7 +68,7 @@ memcached_return memcached_purge(memcached_server_st *ptr)
     }
 
     memcached_result_free(result_ptr);
-    ptr->root->poll_timeout=timeo;
+    ptr->root->poll_timeout= timeo;
   }
   ptr->root->purging= 0;
 
