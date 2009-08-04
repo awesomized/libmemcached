@@ -11,17 +11,28 @@ noinst_HEADERS = libmemcached_probes.h \
                  memcached/protocol_binary.h
 
 pkginclude_HEADERS= memcached.h \
-		    memcached.hpp \
+                    memcached.hpp \
+                    memcached_allocators.h \
+                    memcached_arithmetic.h \
+                    memcached_behavior.h \
+                    memcached_callback.h \
                     memcached_configure.h \
-		    memcached_constants.h \
-		    memcached_get.h \
-		    memcached_result.h \
-		    memcached_server.h \
-		    memcached_storage.h \
-		    memcached_string.h \
-		    memcached_types.h \
-		    memcached_watchpoint.h \
-		    visibility.h
+                    memcached_constants.h \
+                    memcached_delete.h \
+                    memcached_dump.h \
+                    memcached_flush.h \
+                    memcached_flush_buffers.h \
+                    memcached_get.h \
+                    memcached_hash.h \
+                    memcached_result.h \
+                    memcached_server.h \
+                    memcached_st.h \
+                    memcached_stats.h \
+                    memcached_storage.h \
+                    memcached_string.h \
+                    memcached_types.h \
+                    memcached_watchpoint.h \
+                    visibility.h
 
 
 if BUILD_LIBMEMCACHEDUTIL
