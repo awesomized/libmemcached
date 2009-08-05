@@ -6,26 +6,17 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_RESULT_H__
-#define __MEMCACHED_RESULT_H__
+#ifndef LIBMEMCACHED_MEMCACHED_RESULT_H
+#define LIBMEMCACHED_MEMCACHED_RESULT_H
+
+#ifndef LIBMEMCACHED_MEMCACHED_H
+#error "Please include <libmemcached/memcached.h> instead"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct memcached_result_st {
-  uint32_t flags;
-  bool is_allocated;
-  time_t expiration;
-  memcached_st *root;
-  size_t key_length;
-  uint64_t cas;
-  memcached_string_st value;
-  char key[MEMCACHED_MAX_KEY];
-  /* Add result callback function */
-};
-
-/* Result Struct */
 LIBMEMCACHED_API
 void memcached_result_free(memcached_result_st *result);
 LIBMEMCACHED_API
@@ -56,4 +47,4 @@ memcached_return memcached_result_set_value(memcached_result_st *ptr, const char
 }
 #endif
 
-#endif /* __MEMCACHED_RESULT_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_RESULT_H */

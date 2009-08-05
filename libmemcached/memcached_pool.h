@@ -6,8 +6,8 @@
  * Author: Trond Norbye
  */
 
-#ifndef MEMCACHED_POOL_H
-#define MEMCACHED_POOL_H
+#ifndef LIBMEMCACHED_MEMCACHED_POOL_H
+#define LIBMEMCACHED_MEMCACHED_POOL_H
 
 #include <libmemcached/memcached.h>
 
@@ -35,4 +35,4 @@ memcached_return memcached_pool_push(memcached_pool_st* pool,
 }
 #endif
 
-#endif /* MEMCACHED_POOL_H */
+#endif /* LIBMEMCACHED_MEMCACHED_POOL_H */

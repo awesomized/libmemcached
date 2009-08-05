@@ -6,8 +6,8 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_STORAGE_H__
-#define __MEMCACHED_STORAGE_H__
+#ifndef LIBMEMCACHED_MEMCACHED_STORAGE_H
+#define LIBMEMCACHED_MEMCACHED_STORAGE_H
 
 #include "libmemcached/memcached_types.h"
 
@@ -104,4 +104,4 @@ memcached_return memcached_cas_by_key(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_STORAGE_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_STORAGE_H */

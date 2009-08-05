@@ -6,8 +6,12 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_SERVER_H__
-#define __MEMCACHED_SERVER_H__
+#ifndef LIBMEMCACHED_MEMCACHED_SERVER_H
+#define LIBMEMCACHED_MEMCACHED_SERVER_H
+
+#ifndef LIBMEMCACHED_MEMCACHED_H
+#error "Please include <libmemcached/memcached.h> instead"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,8 +90,56 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *
 LIBMEMCACHED_API
 memcached_return memcached_server_remove(memcached_server_st *st_ptr);
 
+/* Server Public functions */
+
+LIBMEMCACHED_API
+memcached_return memcached_server_add_udp(memcached_st *ptr, 
+                                          const char *hostname,
+                                          unsigned int port);
+LIBMEMCACHED_API
+memcached_return memcached_server_add_unix_socket(memcached_st *ptr, 
+                                                  const char *filename);
+LIBMEMCACHED_API
+memcached_return memcached_server_add(memcached_st *ptr, const char *hostname, 
+                                      unsigned int port);
+
+LIBMEMCACHED_API
+memcached_return memcached_server_add_udp_with_weight(memcached_st *ptr, 
+                                                      const char *hostname,
+                                                      unsigned int port,
+                                                      uint32_t weight);
+LIBMEMCACHED_API
+memcached_return memcached_server_add_unix_socket_with_weight(memcached_st *ptr, 
+                                                              const char *filename,
+                                                              uint32_t weight);
+LIBMEMCACHED_API
+memcached_return memcached_server_add_with_weight(memcached_st *ptr, const char *hostname, 
+                                                  unsigned int port,
+                                                  uint32_t weight);
+LIBMEMCACHED_API
+void memcached_server_list_free(memcached_server_st *ptr);
+LIBMEMCACHED_API
+memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list);
+
+LIBMEMCACHED_API
+memcached_server_st *memcached_server_list_append(memcached_server_st *ptr, 
+                                                  const char *hostname, 
+                                                  unsigned int port, 
+                                                  memcached_return *error);
+LIBMEMCACHED_API
+memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr, 
+                                                              const char *hostname, 
+                                                              unsigned int port, 
+                                                              uint32_t weight,
+                                                              memcached_return *error);
+LIBMEMCACHED_API
+unsigned int memcached_server_list_count(memcached_server_st *ptr);
+LIBMEMCACHED_API
+memcached_server_st *memcached_servers_parse(const char *server_strings);
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MEMCACHED_SERVER_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_SERVER_H */

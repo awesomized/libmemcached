@@ -6,8 +6,12 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_CONSTANTS_H__
-#define __MEMCACHED_CONSTANTS_H__
+#ifndef LIBMEMCACHED_MEMCACHED_CONSTANTS_H
+#define LIBMEMCACHED_MEMCACHED_CONSTANTS_H
+
+#ifndef LIBMEMCACHED_MEMCACHED_H
+#error "Please include <libmemcached/memcached.h> instead"
+#endif
 
 /* Public defines */
 #define MEMCACHED_DEFAULT_PORT 11211
@@ -139,4 +143,4 @@ typedef enum {
   MEMCACHED_CONNECTION_UNIX_SOCKET
 } memcached_connection;
 
-#endif /* __MEMCACHED_CONSTANTS_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_CONSTANTS_H */

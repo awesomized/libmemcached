@@ -12,8 +12,8 @@
  * @brief Libmemcached C++ interface
  */
 
-#ifndef LIBMEMCACHEDPP_H
-#define LIBMEMCACHEDPP_H
+#ifndef LIBMEMCACHED_MEMCACHED_HPP
+#define LIBMEMCACHED_MEMCACHED_HPP
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/exception.hpp>
@@ -901,4 +901,4 @@ private:
 
 }
 
-#endif /* LIBMEMCACHEDPP_H */
+#endif /* LIBMEMCACHED_MEMCACHED_HPP */
