@@ -1,11 +1,8 @@
 /*
- * Drizzle Client & Protocol Library
+ * Summary: Exceptions for the C++ interface
  *
- * Copyright (C) 2009 Patrick Galbraith (patg@patg.net)
- * All rights reserved.
+ * Copy: See Copyright for the status of this software.
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in this directory for full text.
  */
 
 /**
@@ -19,21 +16,31 @@
 #include <stdexcept>
 
 
-namespace memcache {
-
+namespace memcache 
+{
   class Exception : public std::runtime_error
   {
   public:
-    Exception(const std::string& msg, bool errno)
-      : std::runtime_error(msg), _errno(errno) {}
-    Exception(const char *msg, bool errno)
-      : std::runtime_error(msg), _errno(errno) {}
+    Exception(const std::string& msg, bool in_errno)
+      : 
+        std::runtime_error(msg), 
+        errno(in_errno) 
+    {}
+
+    Exception(const char *msg, bool in_errno)
+      : 
+        std::runtime_error(msg), 
+        errno(in_errno) {}
+
     virtual ~Exception() throw() {}
 
-    int getErrno() const { return _errno; }
-  private:
-    int _errno;
+    int getErrno() const 
+    { 
+      return errno; 
+    }
 
+  private:
+    int errno;
   };
 
   class Warning : public Exception
