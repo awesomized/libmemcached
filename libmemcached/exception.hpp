@@ -46,15 +46,15 @@ namespace memcache
   class Warning : public Exception
   {
   public:
-    Warning(const std::string& msg, bool errno) : Exception(msg, errno) {}
-    Warning(const char *msg, bool errno) : Exception(msg, errno) {}
+    Warning(const std::string& msg, bool in_errno) : Exception(msg, in_errno) {}
+    Warning(const char *msg, bool in_errno) : Exception(msg, in_errno) {}
   };
 
   class Error : public Exception
   {
   public:
-    Error(const std::string& msg, bool errno) : Exception(msg, errno) {}
-    Error(const char *msg, bool errno) : Exception(msg, errno) {}
+    Error(const std::string& msg, bool in_errno) : Exception(msg, in_errno) {}
+    Error(const char *msg, bool in_errno) : Exception(msg, in_errno) {}
     virtual ~Error() throw() {}
   };
 
