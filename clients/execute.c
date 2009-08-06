@@ -46,7 +46,7 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
     uint32_t flags;
     unsigned int fetch_key;
 
-    fetch_key= (unsigned int)(random() % number_of);
+    fetch_key= (unsigned int)((unsigned int)random() % number_of);
 
     value= memcached_get(memc, pairs[fetch_key].key, pairs[fetch_key].key_length,
                          &value_length, &flags, &rc);
