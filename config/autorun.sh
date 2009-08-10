@@ -41,6 +41,12 @@ then
   . config/pre_hook.sh
 fi
 
+# We need to some file here for the m4_sinclude, even if it's just empty
+if ! test -f config/plugin.ac
+then
+  touch config/plugin.ac
+fi
+
 # Try to detect the supported binaries if the user didn't
 # override that by pushing the environment variable
 if test x$LIBTOOLIZE = x; then
