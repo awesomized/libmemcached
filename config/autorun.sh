@@ -35,6 +35,12 @@ locate_binary() {
   return 1
 }
 
+
+if test -f config/pre_hook.sh
+then
+  . config/pre_hook.sh
+fi
+
 # Try to detect the supported binaries if the user didn't
 # override that by pushing the environment variable
 if test x$LIBTOOLIZE = x; then
@@ -77,6 +83,11 @@ run $ACLOCAL $ACLOCAL_FLAGS || die "Can't execute aclocal"
 run $AUTOHEADER || die "Can't execute autoheader"
 run $AUTOMAKE $AUTOMAKE_FLAGS  || die "Can't execute automake"
 run $AUTOCONF || die "Can't execute autoconf"
+
+if test -f config/post_hook.sh
+then
+  . config/post_hook.sh
+fi
 
 echo "---"
 echo "Configured with the following tools:"

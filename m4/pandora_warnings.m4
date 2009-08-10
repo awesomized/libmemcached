@@ -206,7 +206,10 @@ template <> void C<int>::foo();
             [CXX_WARNINGS="${CXX_WARNINGS} -Wno-redundant-decls"])
   
       NO_REDUNDANT_DECLS="-Wno-redundant-decls"
-      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow"
+      dnl TODO: Figure out a better way to deal with this:
+      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow -Wno-missing-braces"
+      NO_WERROR="-Wno-error"
+      INNOBASE_SKIP_WARNINGS="-Wno-shadow -Wno-cast-align"
       
     ])
   ])
@@ -247,8 +250,9 @@ template <> void C<int>::foo();
 
     CC_WARNINGS="-v -errtags=yes ${W_FAIL} ${CC_WARNINGS_FULL}"
     CXX_WARNINGS="+w +w2 -xwe -xport64 -errtags=yes ${CXX_WARNINGS_FULL} ${W_FAIL}"
-    PROTOSKIP_WARNINGS="-erroff=attrskipunsup,doubunder,reftotemp,wbadinitl,identexpected,inllargeuse,truncwarn1,signextwarn"
+    PROTOSKIP_WARNINGS="-erroff=attrskipunsup,doubunder,reftotemp,wbadinitl,identexpected,inllargeuse,truncwarn1,signextwarn,partinit,notused,badargtype2w,wbadinit"
     NO_UNREACHED="-erroff=E_STATEMENT_NOT_REACHED"
+    NO_WERROR="-errwarn=%none"
 
   ])
 
@@ -258,5 +262,7 @@ template <> void C<int>::foo();
   AC_SUBST(NO_SHADOW)
   AC_SUBST(NO_STRICT_ALIASING)
   AC_SUBST(PROTOSKIP_WARNINGS)
+  AC_SUBST(INNOBASE_SKIP_WARNINGS)
+  AC_SUBST(NO_WERROR)
 
 ])
