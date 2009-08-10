@@ -42,7 +42,7 @@ then
 fi
 
 # We need to some file here for the m4_sinclude, even if it's just empty
-if ! test -f config/plugin.ac
+if test ! -f config/plugin.ac
 then
   touch config/plugin.ac
 fi
