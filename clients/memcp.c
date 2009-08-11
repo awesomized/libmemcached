@@ -165,18 +165,18 @@ void options_parse(int argc, char *argv[])
 
   static struct option long_options[]=
     {
-      {"version", no_argument, NULL, OPT_VERSION},
-      {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-      {"servers", required_argument, NULL, OPT_SERVERS},
-      {"flag", required_argument, NULL, OPT_FLAG},
-      {"expire", required_argument, NULL, OPT_EXPIRE},
-      {"set",  no_argument, NULL, OPT_SET},
-      {"add",  no_argument, NULL, OPT_ADD},
-      {"replace",  no_argument, NULL, OPT_REPLACE},
-      {"hash", required_argument, NULL, OPT_HASH},
-      {"binary", no_argument, NULL, OPT_BINARY},
+      {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
+      {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
+      {(OPTIONSTRING)"flag", required_argument, NULL, OPT_FLAG},
+      {(OPTIONSTRING)"expire", required_argument, NULL, OPT_EXPIRE},
+      {(OPTIONSTRING)"set",  no_argument, NULL, OPT_SET},
+      {(OPTIONSTRING)"add",  no_argument, NULL, OPT_ADD},
+      {(OPTIONSTRING)"replace",  no_argument, NULL, OPT_REPLACE},
+      {(OPTIONSTRING)"hash", required_argument, NULL, OPT_HASH},
+      {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
       {0, 0, 0, 0},
     };
 
