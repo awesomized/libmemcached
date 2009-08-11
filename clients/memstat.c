@@ -35,13 +35,13 @@ static char *analyze_mode= NULL;
 
 static struct option long_options[]=
 {
-  {"version", no_argument, NULL, OPT_VERSION},
-  {"help", no_argument, NULL, OPT_HELP},
-  {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-  {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-  {"servers", required_argument, NULL, OPT_SERVERS},
-  {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-  {"analyze", optional_argument, NULL, OPT_ANALYZE},
+  {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
+  {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+  {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+  {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+  {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
+  {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
+  {(OPTIONSTRING)"analyze", optional_argument, NULL, OPT_ANALYZE},
   {0, 0, 0, 0},
 };
 

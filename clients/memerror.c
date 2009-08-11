@@ -43,10 +43,10 @@ void options_parse(int argc, char *argv[])
 
   static struct option long_options[]=
     {
-      {"version", no_argument, NULL, OPT_VERSION},
-      {"help", no_argument, NULL, OPT_HELP},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
+      {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {0, 0, 0, 0},
     };
 

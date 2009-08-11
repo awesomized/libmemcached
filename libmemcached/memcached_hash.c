@@ -40,7 +40,7 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       for (x= 0; x < key_length; x++) 
       {
         temp_hash *= FNV_64_PRIME;
-        temp_hash ^= key[x];
+        temp_hash ^= (uint64_t)key[x];
       }
       hash= (uint32_t)temp_hash;
     }
@@ -50,7 +50,8 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       hash= (uint32_t) FNV_64_INIT;
       for (x= 0; x < key_length; x++) 
       {
-        hash ^= key[x];
+        uint32_t val= (uint32_t)key[x];
+        hash ^= val;
         hash *= (uint32_t) FNV_64_PRIME;
       }
     }
@@ -60,8 +61,9 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       hash= FNV_32_INIT;
       for (x= 0; x < key_length; x++) 
       {
+        uint32_t val= (uint32_t)key[x];
         hash *= FNV_32_PRIME;
-        hash ^= key[x];
+        hash ^= val;
       }
     }
     break;
@@ -70,7 +72,8 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
       hash= FNV_32_INIT;
       for (x= 0; x < key_length; x++) 
       {
-        hash ^= key[x];
+        uint32_t val= (uint32_t)key[x];
+        hash ^= val;
         hash *= FNV_32_PRIME;
       }
     }
@@ -205,7 +208,8 @@ static uint32_t internal_generate_hash(const char *key, size_t key_length)
 
   while (key_length--) 
   {
-    value += (uint32_t) *ptr++;
+    uint32_t val= (uint32_t) *ptr++;
+    value += val;
     value += (value << 10);
     value ^= (value >> 6);
   }
