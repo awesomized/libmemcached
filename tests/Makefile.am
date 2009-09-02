@@ -27,19 +27,19 @@ libtest_la_SOURCES= test.c
 
 testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 testapp_SOURCES = function.c
-testapp_LDADD = $(LDADDS) $(top_builddir)/clients/libgenexec.la libtest.la libserver.la
+testapp_LDADD = $(top_builddir)/clients/libgenexec.la libtest.la libserver.la $(LDADDS)
 
 testplus_SOURCES = plus.cpp
-testplus_LDADD = $(LDADDS) libtest.la libserver.la
+testplus_LDADD = libtest.la libserver.la $(LDADDS)
 
 udptest_SOURCES = udp.c
-udptest_LDADD = $(LDADDS) libtest.la libserver.la
+udptest_LDADD = libtest.la libserver.la $(LDADDS)
 
 atomsmasher_SOURCES = atomsmasher.c
-atomsmasher_LDADD = $(LDADDS) $(top_builddir)/clients/libgenexec.la libtest.la libserver.la 
+atomsmasher_LDADD = $(top_builddir)/clients/libgenexec.la libtest.la libserver.la $(LDADDS)
 
 startservers_SOURCES = start.c
-startservers_LDADD = $(LDADDS) libserver.la
+startservers_LDADD = libserver.la $(LDADDS)
 
 record:
 	./testapp > output.res
