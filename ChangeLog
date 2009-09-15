@@ -1,3 +1,5 @@
+  * Change of behavior where linger is only modified for no-block and then
+    it is set to zero.
   * Added Twitter's memcached_server_error() functions.
   * Fix for OSX compiles in development builds.
   * Updated C++ interface.
