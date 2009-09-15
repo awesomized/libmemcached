@@ -169,11 +169,11 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
       gettimeofday(&end_time, NULL);
 
       elapsed_time= timedif(end_time, start_time);
-      elapsed_time /= num_of_tests;
+      elapsed_time /= (long)num_of_tests;
 
       if (elapsed_time > slowest_time)
       {
-        slowest_server= x;
+        slowest_server= (long)x;
         slowest_time= elapsed_time;
       }
 

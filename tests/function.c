@@ -3344,7 +3344,7 @@ static memcached_return  poll_timeout(memcached_st *memc)
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
-  timeout= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+  timeout= (size_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
   assert(timeout == 100);
 

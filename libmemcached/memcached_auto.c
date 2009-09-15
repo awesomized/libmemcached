@@ -63,7 +63,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
 static memcached_return binary_incr_decr(memcached_st *ptr, uint8_t cmd,
                                          const char *key, size_t key_length,
                                          uint64_t offset, uint64_t initial,
-                                         time_t expiration,
+                                         uint32_t expiration,
                                          uint64_t *value) 
 {
   unsigned int server_key;
@@ -165,7 +165,8 @@ memcached_return memcached_increment_with_initial(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
   if (ptr->flags & MEM_BINARY_PROTOCOL)
     rc= binary_incr_decr(ptr, PROTOCOL_BINARY_CMD_INCREMENT, key,
-                         key_length, offset, initial, expiration, value);
+                         key_length, offset, initial, (uint32_t)expiration, 
+                         value);
   else
     rc= MEMCACHED_PROTOCOL_ERROR;
 
@@ -189,7 +190,8 @@ memcached_return memcached_decrement_with_initial(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_DECREMENT_WITH_INITIAL_START();
   if (ptr->flags & MEM_BINARY_PROTOCOL)
     rc= binary_incr_decr(ptr, PROTOCOL_BINARY_CMD_DECREMENT, key,
-                         key_length, offset, initial, expiration, value);
+                         key_length, offset, initial, (uint32_t)expiration,
+                         value);
   else
     rc= MEMCACHED_PROTOCOL_ERROR;
 
