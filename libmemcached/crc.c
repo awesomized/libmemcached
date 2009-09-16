@@ -80,7 +80,7 @@ uint32_t hash_crc32(const char *key, size_t key_length)
   uint32_t crc= UINT32_MAX;
 
   for (x= 0; x < key_length; x++)
-    crc= (crc >> 8) ^ crc32tab[(crc ^ (key[x])) & 0xff];
+     crc= (crc >> 8) ^ crc32tab[(crc ^ (uint64_t)key[x]) & 0xff];
 
   return ~crc;
 }

@@ -238,21 +238,21 @@ void options_parse(int argc, char *argv[])
 
   static struct option long_options[]=
     {
-      {"concurrency", required_argument, NULL, OPT_SLAP_CONCURRENCY},
-      {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-      {"execute-number", required_argument, NULL, OPT_SLAP_EXECUTE_NUMBER},
-      {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-      {"flush", no_argument, &opt_flush, OPT_FLUSH},
-      {"help", no_argument, NULL, OPT_HELP},
-      {"initial-load", required_argument, NULL, OPT_SLAP_INITIAL_LOAD}, /* Number to load initially */
-      {"non-blocking", no_argument, &opt_non_blocking_io, OPT_SLAP_NON_BLOCK},
-      {"servers", required_argument, NULL, OPT_SERVERS},
-      {"tcp-nodelay", no_argument, &opt_tcp_nodelay, OPT_SLAP_TCP_NODELAY},
-      {"test", required_argument, NULL, OPT_SLAP_TEST},
-      {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {"version", no_argument, NULL, OPT_VERSION},
-      {"binary", no_argument, NULL, OPT_BINARY},
-      {"udp", no_argument, NULL, OPT_UDP},
+      {(OPTIONSTRING)"concurrency", required_argument, NULL, OPT_SLAP_CONCURRENCY},
+      {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {(OPTIONSTRING)"execute-number", required_argument, NULL, OPT_SLAP_EXECUTE_NUMBER},
+      {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
+      {(OPTIONSTRING)"flush", no_argument, &opt_flush, OPT_FLUSH},
+      {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"initial-load", required_argument, NULL, OPT_SLAP_INITIAL_LOAD}, /* Number to load initially */
+      {(OPTIONSTRING)"non-blocking", no_argument, &opt_non_blocking_io, OPT_SLAP_NON_BLOCK},
+      {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
+      {(OPTIONSTRING)"tcp-nodelay", no_argument, &opt_tcp_nodelay, OPT_SLAP_TCP_NODELAY},
+      {(OPTIONSTRING)"test", required_argument, NULL, OPT_SLAP_TEST},
+      {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+      {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
+      {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+      {(OPTIONSTRING)"udp", no_argument, NULL, OPT_UDP},
       {0, 0, 0, 0},
     };
 

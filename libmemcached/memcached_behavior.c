@@ -225,17 +225,11 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     temp_flag= MEM_USE_SORT_HOSTS;
     break;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
-    {
-      return (uint64_t)ptr->poll_timeout;
-    }
+    return (uint64_t)ptr->poll_timeout;
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
-    {
-      return (uint64_t)ptr->connect_timeout;
-    }
+    return (uint64_t)ptr->connect_timeout;
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
-    {
-      return (uint64_t)ptr->retry_timeout;
-    }
+    return (uint64_t)ptr->retry_timeout;
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     return (uint64_t)ptr->snd_timeout;
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
