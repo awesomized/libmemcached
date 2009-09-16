@@ -18,11 +18,11 @@ AC_DEFUN([PANDORA_PLUGINS],[
   pandora_builtin_list=`echo $pandora_builtin_list | sed 's/, *$//'`
   AS_IF([test "x$pandora_builtin_list" = "x"], pandora_builtin_list="NULL")
   AC_SUBST([PANDORA_BUILTIN_LIST],[$pandora_builtin_list])
-  m4_ifblank($1,[
+  m4_ifval(m4_normalize([$1]),[
+    AC_CONFIG_FILES($*)
+    ],[
     AC_DEFINE_UNQUOTED([PANDORA_BUILTIN_LIST],[$pandora_builtin_list],
                        [List of plugins to be built in])
-    ],[
-    AC_CONFIG_FILES($*)
   ])
 
 

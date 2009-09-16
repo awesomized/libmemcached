@@ -40,10 +40,10 @@ AC_DEFUN([PANDORA_BUILDING_FROM_VC],[
   
 dnl Takes one argument which is the prefix to append
 AC_DEFUN([PANDORA_EXPORT_BZR_INFO],[
-  m4_ifnblank($1,[
-    m4_define([PEBI_PREFIX],m4_toupper(m4_normalize($1))[_])
-  ],[
+  m4_ifval(m4_normalize([$1]),[
     m4_define([PEBI_PREFIX],[])
+  ],[
+    m4_define([PEBI_PREFIX],m4_toupper(m4_normalize($1))[_])
   ])
 
   AC_DEFINE(PEBI_PREFIX[BZR_REVID], ["BZR_REVID"], [bzr revision ID])

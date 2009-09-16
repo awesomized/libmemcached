@@ -23,7 +23,7 @@ AC_DEFUN([PANDORA_64BIT],[
   AS_IF([test "$isainfo_b" != "x"],[
 
     isainfo_k=`${ISAINFO} -k` 
-    DTRACEFLAGS="${DTRACEFLAGS} -${isainfo_k}"
+    DTRACEFLAGS="${DTRACEFLAGS} -${isainfo_b}"
 
     AS_IF([test "x$ac_enable_64bit" = "xyes"],[
 

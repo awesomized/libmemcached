@@ -204,10 +204,49 @@ template <> void C<int>::foo();
       AS_IF([test "$ac_cv_safe_to_use_Wredundant_decls_" = "yes"],
             [CXX_WARNINGS="${CXX_WARNINGS} -Wredundant-decls"],
             [CXX_WARNINGS="${CXX_WARNINGS} -Wno-redundant-decls"])
+
+      AC_CACHE_CHECK([whether it is safe to use -Wattributes from C++],
+        [ac_cv_safe_to_use_Wattributes_],
+        [AC_LANG_PUSH(C++)
+         save_CXXFLAGS="${CXXFLAGS}"
+         CXXFLAGS="${W_FAIL} -pedantic -Wattributes -fvisibility=hidden ${AM_CXXFLAGS}"
+         AC_COMPILE_IFELSE(
+           [AC_LANG_PROGRAM([
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+
+
+const ::google::protobuf::EnumDescriptor* Table_TableOptions_RowType_descriptor();
+enum Table_TableOptions_RowType {
+  Table_TableOptions_RowType_ROW_TYPE_DEFAULT = 0,
+  Table_TableOptions_RowType_ROW_TYPE_FIXED = 1,
+  Table_TableOptions_RowType_ROW_TYPE_DYNAMIC = 2,
+  Table_TableOptions_RowType_ROW_TYPE_COMPRESSED = 3,
+  Table_TableOptions_RowType_ROW_TYPE_REDUNDANT = 4,
+  Table_TableOptions_RowType_ROW_TYPE_COMPACT = 5,
+  Table_TableOptions_RowType_ROW_TYPE_PAGE = 6
+};
+
+namespace google {
+namespace protobuf {
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<Table_TableOptions_RowType>() {
+  return Table_TableOptions_RowType_descriptor();
+}
+}
+}
+            ])],
+            [ac_cv_safe_to_use_Wattributes_=yes],
+            [ac_cv_safe_to_use_Wattributes_=no])
+          CXXFLAGS="${save_CXXFLAGS}"
+          AC_LANG_POP()])
+      AS_IF([test "$ac_cv_safe_to_use_Wattributes_" = "yes"],
+            [],
+            [CXX_WARNINGS="${CXX_WARNINGS} -Wno-attributes"])
   
       NO_REDUNDANT_DECLS="-Wno-redundant-decls"
       dnl TODO: Figure out a better way to deal with this:
-      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow -Wno-missing-braces"
+      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow -Wno-missing-braces -Wno-attributes"
       NO_WERROR="-Wno-error"
       INNOBASE_SKIP_WARNINGS="-Wno-shadow -Wno-cast-align"
       
