@@ -27,18 +27,28 @@ AC_DEFUN([PANDORA_WITH_LUA],[
       AC_DEFINE([HAVE_LUA_H], [1], [lua.h])
       with_lua=yes
     ],[
-      PKG_CHECK_MODULES([LUA], lua5.1 >= 5.1, [
+      LUAPC=lua5.1
+      PKG_CHECK_MODULES([LUA], $LUAPC >= 5.1, [
         AC_DEFINE([HAVE_LUA], [1], [liblua])
         AC_DEFINE([HAVE_LUA_H], [1], [lua.h])
-	with_lua=yes
+        with_lua=yes
       ],[
         AC_DEFINE([HAVE_LUA],["x"],["x"])
         with_lua=no
       ])
     ])
 
-   AC_SUBST(LUA_CFLAGS)
-   AC_SUBST(LUA_LIBS)
+    AC_CACHE_CHECK([for LUA installation location],[pandora_cv_lua_archdir],[
+      AS_IF([test "$prefix" = "NONE"],[
+        pandora_cv_lua_archdir=`${PKG_CONFIG} --define-variable=prefix=${ac_default_prefix} --variable=INSTALL_CMOD ${LUAPC}`
+      ],[
+        pandora_cv_lua_archdir=`${PKG_CONFIG} --define-variable=prefix=${prefix} --variable=INSTALL_CMOD ${LUAPC}`
+      ])
+    ])
+    LUA_ARCHDIR="${pandora_cv_lua_archdir}"
+    AC_SUBST(LUA_ARCHDIR)
+    AC_SUBST(LUA_CFLAGS)
+    AC_SUBST(LUA_LIBS)
   ])
   AM_CONDITIONAL(BUILD_LUA, test "$with_lua" = "yes")
 

@@ -9,15 +9,22 @@ dnl--------------------------------------------------------------------
 
 AC_DEFUN([PANDORA_PLUGINS],[
 
-  m4_include(config/plugin.ac)
+  m4_sinclude(config/plugin.ac)
   dnl Add code here to read set plugin lists and  set drizzled_default_plugin_list
   AC_DEFINE_UNQUOTED([PANDORA_PLUGIN_LIST],[$pandora_default_plugin_list],
                      [List of plugins that should be loaded on startup if no
                       value is given for --plugin-load])
 
   pandora_builtin_list=`echo $pandora_builtin_list | sed 's/, *$//'`
-  AC_DEFINE_UNQUOTED([PANDORA_BUILTIN_LIST],[$pandora_builtin_list],
-                     [List of plugins to be built in])
+  AS_IF([test "x$pandora_builtin_list" = "x"], pandora_builtin_list="NULL")
+  AC_SUBST([PANDORA_BUILTIN_LIST],[$pandora_builtin_list])
+  m4_ifblank($1,[
+    AC_DEFINE_UNQUOTED([PANDORA_BUILTIN_LIST],[$pandora_builtin_list],
+                       [List of plugins to be built in])
+    ],[
+    AC_CONFIG_FILES($*)
+  ])
+
 
   AC_SUBST(pandora_plugin_test_list)
   AC_SUBST(pandora_plugin_libs)

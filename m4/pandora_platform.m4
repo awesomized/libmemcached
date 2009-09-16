@@ -63,6 +63,15 @@ AC_DEFUN([PANDORA_PLATFORM],[
   AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
   AC_CHECK_DECL([__ICC], [INTELCC="yes"], [INTELCC="no"])
 
-  AS_IF([test "x$INTELCC" = "xyes"], [enable_rpath=no])
+  AS_IF([test "$INTELCC" = "yes"], [enable_rpath=no])
+ 
+  dnl By default, Sun Studio grabs special versions of limits.h and string.h
+  dnl when you use <cstring> and <climits>. By setting this define, we can
+  dnl disable that and cause those to wrap the standard headers instead.
+  dnl http://www.stlport.com/doc/configure.html
+  AS_IF([test "$SUNCC" = "yes"],[
+    AC_DEFINE([_STLP_NO_NEW_C_HEADERS],[1],
+      [Cause Sun Studio to not be quite so strict with standards conflicts])
+  ])
 
 ])

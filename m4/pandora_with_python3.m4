@@ -15,21 +15,30 @@ AC_DEFUN([PANDORA_WITH_PYTHON3], [
 
   AC_ARG_WITH([python3], 
     [AS_HELP_STRING([--with-python3],
-      [Build Python3 Bindings @<:@default=yes@:>@])],
-    [with_python3=$withval], 
-    [with_python3=yes])
+      [Build Python3 Bindings @<:@default=yes@:>@])],[
+        with_python3=$withval
+        python3_requested=yes
+      ],[ 
+        with_python3=yes
+        python3_requested=no
+      ])
 
-  AS_IF([test "x$ac_cv_swig_has_python3_" != "xno"],[
+  AS_IF([test "x$ac_cv_swig_has_python3_" != "xyes"],[
+     with_python3=no
+  ],[
    AS_IF([test "x$with_python3" != "xno"],[
      AS_IF([test "x$with_python3" != "xyes"],
-       [PYTHON3=$with_python3],
-       [AC_PATH_PROG([PYTHON3],[python3],[no])
-        AS_IF([test "x$PYTHON3" = "xno"],
-          [with_python3=no])
+       [PYTHON3=$with_python3],[
+        AC_PATH_PROG([PYTHON3],[python3],[no])
+        PANDORA_PYTHON3_DEVEL()
+        AS_IF([test "x$python3exists" = "xno"],[with_python="no"])
      ]) 
    ])
-  ],[
-     with_python3=no
   ])
-AM_CONDITIONAL(BUILD_PYTHON3, [test "$with_python3" = "yes"])
+  AS_IF([test "x$with_python3" = "xno" -a "$python3_requested" = "yes"],[
+    AC_MSG_ERROR([Python3 support was explicity requested, but Python3 support
+                  was not found. Please correct your build environment and try
+                  again])
+  ])
+  AM_CONDITIONAL(BUILD_PYTHON3, [test "$with_python3" = "yes"])
 ])
