@@ -28,7 +28,7 @@ static const char *lookup_help(memcached_options option)
   {
   case OPT_SERVERS: return("List which servers you wish to connect to.");
   case OPT_VERSION: return("Display the version of the application and then exit.");
-  case OPT_HELP: return("Diplay this message and then exit.");
+  case OPT_HELP: return("Display this message and then exit.");
   case OPT_VERBOSE: return("Give more details on the progression of the application.");
   case OPT_DEBUG: return("Provide output only useful for debugging.");
   case OPT_FLAG: return("Provide flag information for storage operation.");
