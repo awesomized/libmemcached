@@ -48,6 +48,7 @@
 #include "libmemcached/memcached_internal.h"
 #include "libmemcached/libmemcached_probes.h"
 #include "libmemcached/memcached/protocol_binary.h"
+#include "libmemcached/byteorder.h"
 
 /* string value */
 struct memcached_continuum_item_st {
@@ -142,21 +143,14 @@ memcached_return memcached_key_test(const char **keys, size_t *key_length,
 LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 
-#ifndef HAVE_HTONLL
-LIBMEMCACHED_LOCAL
-extern uint64_t ntohll(uint64_t);
-LIBMEMCACHED_LOCAL
-extern uint64_t htonll(uint64_t);
-#endif
-
 LIBMEMCACHED_LOCAL
 memcached_return memcached_purge(memcached_server_st *ptr);
 
-static inline memcached_return memcached_validate_key_length(size_t key_length, 
+static inline memcached_return memcached_validate_key_length(size_t key_length,
                                                              bool binary) {
   unlikely (key_length == 0)
     return MEMCACHED_BAD_KEY_PROVIDED;
-  
+
   if (binary)
   {
     unlikely (key_length > 0xffff)
@@ -164,7 +158,7 @@ static inline memcached_return memcached_validate_key_length(size_t key_length,
   }
   else
   {
-    unlikely (key_length >= MEMCACHED_MAX_KEY) 
+    unlikely (key_length >= MEMCACHED_MAX_KEY)
       return MEMCACHED_BAD_KEY_PROVIDED;
   }
 
