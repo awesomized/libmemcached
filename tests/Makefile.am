@@ -16,7 +16,7 @@ EXTRA_DIST = output.res output2.res\
 		t/memslap.test\
 		t/memstat.test
 
-LIBS = 
+LIBS =
 
 noinst_HEADERS = test.h server.h ketama_test_cases.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
@@ -55,7 +55,7 @@ client-record:
 record-extended:
 	./testapp extended > output2.res
 
-test: testapp testplus library_test
+test: testapp testplus library_test memcapable
 	echo "Tests completed"
 
 library_test:
@@ -64,8 +64,14 @@ library_test:
 #	./testplus > output_plus.cmp
 #	diff output_plus.res output_plus.cmp
 
+memcapable:
+	@MEMC_BINARY@ -d -P /tmp/Xumemc.pid -p 12555
+	@$(top_builddir)/clients/memcapable -p 12555 || echo "Your memcached server does not support all commands"
+	@cat /tmp/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm /tmp/Xumemc.pid
+
 clients:
-	memcached -d -P /tmp/Xumemc.pid -p 12555
+	@MEMC_BINARY@ -d -P /tmp/Xumemc.pid -p 12555
 	export MEMCACHED_SERVERS="localhost:12555"
 	sh t/memcat.test > r/memcat.cmp
 	diff r/memcat.res r/memcat.cmp

@@ -1,8 +1,8 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
              memcached_configure.h.in
 
-EXTRA_HEADERS = 
-BUILT_SOURCES= 
+EXTRA_HEADERS =
+BUILT_SOURCES=
 
 noinst_HEADERS = libmemcached_probes.h \
                  memcached_io.h \
@@ -73,13 +73,16 @@ if INCLUDE_HSIEH_SRC
 libmemcached_la_SOURCES += hsieh_hash.c
 endif
 
-if BUILD_BYTEORDER
-libmemcached_la_SOURCES += byteorder.c
-endif
-
 libmemcached_la_DEPENDENCIES= libmemcachedcallbacks.la
 libmemcached_la_LIBADD= $(LIBM) libmemcachedcallbacks.la
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
+
+if BUILD_BYTEORDER
+noinst_LTLIBRARIES += libbyteorder.la
+libbyteorder_la_SOURCES= byteorder.c byteorder.h
+libmemcached_la_LIBADD += libbyteorder.la
+libmemcached_la_DEPENDENCIES+= libbyteorder.la
+endif
 
 if HAVE_DTRACE
 BUILT_SOURCES+= dtrace_probes.h

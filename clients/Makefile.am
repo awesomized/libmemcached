@@ -1,11 +1,11 @@
 LDADDS = libutilities.la $(top_builddir)/libmemcached/libmemcached.la
 
-bin_PROGRAMS = memcat memdump memcp memstat memrm memflush memslap memerror
+bin_PROGRAMS = memcat memdump memcp memstat memrm memflush memslap memerror memcapable
 
 noinst_HEADERS = client_options.h \
 		utilities.h \
 		generator.h \
-		execute.h 
+		execute.h
 
 noinst_LTLIBRARIES= libutilities.la libgenexec.la
 
@@ -35,7 +35,12 @@ memerror_LDADD = $(LDADDS)
 
 memslap_SOURCES = memslap.c
 memslap_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
-memslap_LDADD = $(PTHREAD_LIBS) libgenexec.la $(LDADDS) 
+memslap_LDADD = $(PTHREAD_LIBS) libgenexec.la $(LDADDS)
+
+memcapable_SOURCES = memcapable.c
+if BUILD_BYTEORDER
+memcapable_LDADD=$(top_builddir)/libmemcached/libbyteorder.la
+endif
 
 test-start-server:
 	memflush --servers=localhost

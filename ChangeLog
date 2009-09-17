@@ -1,3 +1,6 @@
+0.33
+  * Added memcapable to test servers for binary compatibility.
+
   0.32 Tue Sep 15 15:49:09 PDT 2009
   * Change of behavior where linger is only modified for no-block and then
     it is set to zero.
