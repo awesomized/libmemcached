@@ -2312,6 +2312,7 @@ static test_return  user_supplied_bug16(memcached_st *memc)
   return 0;
 }
 
+#ifndef __sun
 /* Check the validity of chinese key*/
 static test_return  user_supplied_bug17(memcached_st *memc)
 {
@@ -2338,6 +2339,7 @@ static test_return  user_supplied_bug17(memcached_st *memc)
 
     return 0;
 }
+#endif
 
 /*
   From Andrei on IRC
@@ -3342,7 +3344,7 @@ static memcached_return  poll_timeout(memcached_st *memc)
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
-  timeout= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+  timeout= (size_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
   assert(timeout == 100);
 

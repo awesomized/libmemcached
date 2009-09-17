@@ -35,6 +35,18 @@ locate_binary() {
   return 1
 }
 
+
+if test -f config/pre_hook.sh
+then
+  . config/pre_hook.sh
+fi
+
+# We need to some file here for the m4_sinclude, even if it's just empty
+if test ! -f config/plugin.ac
+then
+  touch config/plugin.ac
+fi
+
 # Try to detect the supported binaries if the user didn't
 # override that by pushing the environment variable
 if test x$LIBTOOLIZE = x; then
@@ -45,14 +57,14 @@ if test x$LIBTOOLIZE = x; then
 fi
 
 if test x$ACLOCAL = x; then
-  ACLOCAL=`locate_binary aclocal-1.10 aclocal-1.9 aclocal19 aclocal`
+  ACLOCAL=`locate_binary aclocal-1.11 aclocal-1.10 aclocal-1.9 aclocal19 aclocal`
   if test x$ACLOCAL = x; then
     die "Did not find a supported aclocal"
   fi
 fi
 
 if test x$AUTOMAKE = x; then
-  AUTOMAKE=`locate_binary automake-1.10 automake-1.9 automake19 automake`
+  AUTOMAKE=`locate_binary automake-1.11 automake-1.10 automake-1.9 automake19 automake`
   if test x$AUTOMAKE = x; then
     die "Did not find a supported automake"
   fi
@@ -77,6 +89,11 @@ run $ACLOCAL $ACLOCAL_FLAGS || die "Can't execute aclocal"
 run $AUTOHEADER || die "Can't execute autoheader"
 run $AUTOMAKE $AUTOMAKE_FLAGS  || die "Can't execute automake"
 run $AUTOCONF || die "Can't execute autoconf"
+
+if test -f config/post_hook.sh
+then
+  . config/post_hook.sh
+fi
 
 echo "---"
 echo "Configured with the following tools:"

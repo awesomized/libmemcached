@@ -35,13 +35,13 @@ static char *analyze_mode= NULL;
 
 static struct option long_options[]=
 {
-  {"version", no_argument, NULL, OPT_VERSION},
-  {"help", no_argument, NULL, OPT_HELP},
-  {"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-  {"debug", no_argument, &opt_verbose, OPT_DEBUG},
-  {"servers", required_argument, NULL, OPT_SERVERS},
-  {"flag", no_argument, &opt_displayflag, OPT_FLAG},
-  {"analyze", optional_argument, NULL, OPT_ANALYZE},
+  {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
+  {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+  {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
+  {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+  {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
+  {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
+  {(OPTIONSTRING)"analyze", optional_argument, NULL, OPT_ANALYZE},
   {0, 0, 0, 0},
 };
 
@@ -169,11 +169,11 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
       gettimeofday(&end_time, NULL);
 
       elapsed_time= timedif(end_time, start_time);
-      elapsed_time /= num_of_tests;
+      elapsed_time /= (long)num_of_tests;
 
       if (elapsed_time > slowest_time)
       {
-        slowest_server= x;
+        slowest_server= (long)x;
         slowest_time= elapsed_time;
       }
 

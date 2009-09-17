@@ -47,9 +47,7 @@ void pairs_free(pairs_st *pairs)
 pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
 {
   unsigned int x;
-  pairs_st *pairs;
-
-  pairs= (pairs_st*)calloc(number_of + 1, sizeof(pairs_st));
+  pairs_st *pairs= calloc((size_t)(number_of + 1), sizeof(pairs_st));
 
   if (!pairs)
     goto error;

@@ -8,12 +8,15 @@ dnl You're gonna get 4.2.
 AC_DEFUN([PANDORA_MAC_GCC42],
   [AS_IF([test "$GCC" = "yes"],[
     AS_IF([test "$host_vendor" = "apple" -a "x${ac_cv_env_CC_set}" = "x"],[
-      AS_IF([test -f /usr/bin/gcc-4.2],
+      host_os_version=`echo ${host_os} | perl -ple 's/^\D+//g;s,\..*,,'`
+      AS_IF([test "$host_os_version" -lt 10],[
+        AS_IF([test -f /usr/bin/gcc-4.2],
         [
           CPP="/usr/bin/gcc-4.2 -E"
           CC=/usr/bin/gcc-4.2
           CXX=/usr/bin/g++-4.2
         ])
+      ])
     ])
   ])
 ])

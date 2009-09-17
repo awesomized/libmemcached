@@ -81,12 +81,13 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   }
 #endif
 
+  if (ptr->root->flags & MEM_NO_BLOCK)
   {
     int error;
     struct linger linger;
 
     linger.l_onoff= 1; 
-    linger.l_linger= MEMCACHED_DEFAULT_TIMEOUT; 
+    linger.l_linger= 0; /* By default on close() just drop the socket */ 
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER, 
                       &linger, (socklen_t)sizeof(struct linger));
     WATCHPOINT_ASSERT(error == 0);

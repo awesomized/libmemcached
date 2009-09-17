@@ -13,6 +13,15 @@
 # endif
 #endif
 
+#ifdef __sun
+  /* For some odd reason the option struct on solaris defines the argument
+   * as char* and not const char*
+   */
+#define OPTIONSTRING char*
+#else
+#define OPTIONSTRING const char*
+#endif
+
 typedef struct memcached_programs_help_st memcached_programs_help_st;
 
 struct memcached_programs_help_st 
