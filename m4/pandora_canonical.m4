@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.22])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.61])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -23,6 +23,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_REQUIRE_CXX],[no])
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
   m4_define([PCT_FORCE_GCC42],[no])
+  m4_define([PCT_SRC_IN_SRC],[no])
   m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
       [use-gnulib], [
@@ -40,6 +41,10 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [force-gcc42], [
         m4_undefine([PCT_FORCE_GCC42])
         m4_define([PCT_FORCE_GCC42],[yes])
+      ],
+      [src-in-src], [
+        m4_undefine([PCT_SRC_IN_SRC])
+        m4_define([PCT_SRC_IN_SRC],[yes])
     ])
   ])
 
@@ -54,6 +59,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_CANONICAL_TARGET
   
   AM_INIT_AUTOMAKE(-Wall -Werror nostdinc subdir-objects)
+  m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
   m4_if(PCT_USE_GNULIB,yes,[ gl_EARLY ])
   
@@ -63,19 +69,16 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   dnl Once we can use a modern autoconf, we can use this
   dnl AC_PROG_CC_C99
-  AC_PROG_CXX
-  AC_PROG_CPP
+  AC_REQUIRE([AC_PROG_CXX])
+  PANDORA_EXTENSIONS
   AM_PROG_CC_C_O
 
 
-  gl_USE_SYSTEM_EXTENSIONS
   m4_if(PCT_FORCE_GCC42, [yes], [
     AS_IF([test "$GCC" = "yes"], PANDORA_ENSURE_GCC_VERSION)
   ])
 
-  AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
-  AC_CHECK_DECL([__ICC], [INTELCC="yes"], [INTELCC="no"])
-  AS_IF([test "x$INTELCC" = "xyes"], [enable_rpath=no])
+  PANDORA_PLATFORM
 
   PANDORA_LIBTOOL
 
@@ -96,7 +99,10 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
     ])
   ])
   
-  m4_if(PCT_USE_GNULIB, [yes], [gl_INIT])
+  m4_if(PCT_USE_GNULIB, [yes], [
+    gl_INIT
+    AC_CONFIG_LIBOBJ_DIR([gnulib])
+  ])
 
   AC_C_BIGENDIAN
   AC_C_CONST
@@ -139,6 +145,12 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
     AM_CPPFLAGS="-I\$(top_srcdir)/gnulib -I\$(top_builddir)/gnulib ${AM_CPPFLAGS}"
     ])
   ])
+  AS_IF([test "PCT_SRC_IN_SRC" = "yes"],[
+    AM_CPPFLAGS="-I\$(top_srcdir)/src -I\$(top_builddir)/src ${AM_CPPFLAGS}"
+  ])
+
+  PANDORA_USE_PIPE
+
 
   AM_CPPFLAGS="-I\${top_srcdir} -I\${top_builddir} ${AM_CPPFLAGS}"
   AM_CFLAGS="${AM_CFLAGS} ${CC_WARNINGS} ${CC_PROFILING} ${CC_COVERAGE}"

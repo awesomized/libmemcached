@@ -11,8 +11,16 @@ AC_DEFUN([PANDORA_HAVE_BETTER_MALLOC],[
   AC_ARG_ENABLE([umem],
     [AS_HELP_STRING([--enable-umem],
        [Enable linking with libumem @<:@default=off@:>@])],
-    [ac_enable_umem="$enableval"],
-    [ac_enable_umem="no"])
+    [ac_enable_umem="$enableval"],[
+      case "$target_os" in
+        *solaris*)
+          ac_enable_umem="yes"
+        ;;
+        *)
+          ac_enable_umem="no"
+        ;;
+      esac
+    ])
   
   AC_ARG_ENABLE([tcmalloc],
     [AS_HELP_STRING([--enable-tcmalloc],

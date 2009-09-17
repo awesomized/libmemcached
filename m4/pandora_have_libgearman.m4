@@ -10,14 +10,24 @@ AC_DEFUN([_PANDORA_SEARCH_LIBGEARMAN],[
   dnl  Check for libgearman
   dnl --------------------------------------------------------------------
 
-  AC_LIB_HAVE_LINKFLAGS(gearman,, 
-    [#include <libgearman/gearman.h>],[ 
-      gearman_client_st gearman_client; 
-      gearman_version(); 
-    ]) 
+  AC_ARG_ENABLE([libgearman],
+    [AS_HELP_STRING([--disable-libgearman],
+      [Build with libgearman support @<:@default=on@:>@])],
+    [ac_enable_libgearman="$enableval"],
+    [ac_enable_libgearman="yes"])
+
+  AS_IF([test "x$ac_enable_libgearman" = "xyes"],[
+    AC_LIB_HAVE_LINKFLAGS(gearman,,[
+      #include <libgearman/gearman.h>
+    ],[
+      gearman_client_st gearman_client;
+      gearman_version();
+    ])
+  ],[
+    ac_cv_libgearman="no"
+  ])
 
   AM_CONDITIONAL(HAVE_LIBGEARMAN, [test "x${ac_cv_libgearman}" = "xyes"])
-  
 ])
 
 AC_DEFUN([PANDORA_HAVE_LIBGEARMAN],[
@@ -26,6 +36,6 @@ AC_DEFUN([PANDORA_HAVE_LIBGEARMAN],[
 
 AC_DEFUN([PANDORA_REQUIRE_LIBGEARMAN],[
   AC_REQUIRE([PANDORA_HAVE_LIBGEARMAN])
-  AS_IF([test x$ac_cv_libgearman = xno],
+  AS_IF([test "x${ac_cv_libgearman}" = "xno"],
       AC_MSG_ERROR([libgearman is required for ${PACKAGE}]))
 ])

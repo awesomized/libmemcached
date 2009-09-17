@@ -10,18 +10,27 @@ AC_DEFUN([_PANDORA_SEARCH_LIBMEMCACHED],[
   dnl  Check for libmemcached
   dnl --------------------------------------------------------------------
 
-  AC_LIB_HAVE_LINKFLAGS(memcached,,[
-    #include <libmemcached/memcached.h>
-  ], [
-    memcached_st memc;
-    memcached_dump_func *df;
-    memcached_version();
+  AC_ARG_ENABLE([libmemcached],
+    [AS_HELP_STRING([--disable-libmemcached],
+      [Build with libmemcached support @<:@default=on@:>@])],
+    [ac_enable_libmemcached="$enableval"],
+    [ac_enable_libmemcached="yes"])
+
+  AS_IF([test "x$ac_enable_libmemcached" = "xyes"],[
+    AC_LIB_HAVE_LINKFLAGS(memcached,,[
+      #include <libmemcached/memcached.h>
+    ],[
+      memcached_st memc;
+      memcached_dump_func *df;
+      memcached_lib_version();
+    ])
+  ],[
+    ac_cv_libmemcached="no"
   ])
   
   AM_CONDITIONAL(HAVE_LIBMEMCACHED, [test "x${ac_cv_libmemcached}" = "xyes"])
   
   AS_IF([test "x${ac_cv_libmemcached}" = "xyes"], [ PANDORA_WITH_MEMCACHED ])
-
 ])
 
 AC_DEFUN([PANDORA_HAVE_LIBMEMCACHED],[
