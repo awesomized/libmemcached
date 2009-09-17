@@ -7,9 +7,9 @@
  * Author: Trond Norbye
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_UTIL_H
-#define LIBMEMCACHED_MEMCACHED_UTIL_H
+#ifndef MEMCACHED_UTIL_H
+#define MEMCACHED_UTIL_H
 
 #include <libmemcached/memcached_pool.h>
 
-#endif /* LIBMEMCACHED_MEMCACHED_UTIL_H */
+#endif /* MEMCACHED_UTIL_H */

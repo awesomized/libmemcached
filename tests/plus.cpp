@@ -1,7 +1,7 @@
 /*
   C++ interface test
 */
-#include "libmemcached/memcached.h"
+#include "libmemcached/memcached.hpp"
 
 #include <assert.h>
 #include <stdio.h>

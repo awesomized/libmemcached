@@ -6,16 +6,21 @@
  * Author: Brian Aker
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_STRING_H
-#define LIBMEMCACHED_MEMCACHED_STRING_H
-
-#ifndef LIBMEMCACHED_MEMCACHED_H
-#error "Please include <libmemcached/memcached.h> instead"
-#endif
+#ifndef __MEMCACHED_STRING_H__
+#define __MEMCACHED_STRING_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct memcached_string_st {
+  memcached_st *root;
+  char *end;
+  char *string;
+  size_t current_size;
+  size_t block_size;
+  bool is_allocated;
+};
 
 #define memcached_string_length(A) (size_t)((A)->end - (A)->string)
 #define memcached_string_set_length(A, B) (A)->end= (A)->string + B
@@ -45,4 +50,4 @@ void memcached_string_free(memcached_string_st *string);
 }
 #endif
 
-#endif /* LIBMEMCACHED_MEMCACHED_STRING_H */
+#endif /* __MEMCACHED_STRING_H__ */

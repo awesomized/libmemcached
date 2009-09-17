@@ -6,12 +6,8 @@
  * Author: Brian Aker
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_GET_H
-#define LIBMEMCACHED_MEMCACHED_GET_H
-
-#ifndef LIBMEMCACHED_MEMCACHED_H
-#error "Please include <libmemcached/memcached.h> instead"
-#endif
+#ifndef __MEMCACHED_GET_H__
+#define __MEMCACHED_GET_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,4 +59,4 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 }
 #endif
 
-#endif /* LIBMEMCACHED_MEMCACHED_GET_H */
+#endif /* __MEMCACHED_GET_H__ */
