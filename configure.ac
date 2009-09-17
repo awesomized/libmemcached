@@ -29,6 +29,8 @@ MEMCACHED_LIBRARY_VERSION=3:0:0
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 MEMCACHEDUTIL_LIBRARY_VERSION=0:0:0
 AC_SUBST(MEMCACHEDUTIL_LIBRARY_VERSION)
+MEMCACHEDPROTOCOL_LIBRARY_VERSION=0:0:0
+AC_SUBST(MEMCACHEDPROTOCOL_LIBRARY_VERSION)
 
 
 # libmemcached versioning when linked with GNU ld.
@@ -36,9 +38,11 @@ if test "$lt_cv_prog_gnu_ld" = "yes"
 then
     LD_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/libmemcached.ver"
     LD_UTIL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcachedutil/libmemcachedutil.ver"
+    LD_PROTOCOL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/protocol/libmemcachedprotocol.ver"
 fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
+AC_SUBST(LD_PROTOCOL_VERSION_SCRIPT)
 
 
 #--------------------------------------------------------------------
@@ -87,9 +91,11 @@ AC_CONFIG_FILES([
   clients/Makefile
   tests/Makefile
   docs/Makefile
+  example/Makefile
   libmemcached/Makefile
   libmemcached/memcached_configure.h
   libmemcachedutil/Makefile
+  libmemcached/protocol/Makefile
   support/Makefile
   support/libmemcached.pc
   support/libmemcached.spec

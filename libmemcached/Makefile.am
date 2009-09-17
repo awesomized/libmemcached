@@ -1,6 +1,8 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
              memcached_configure.h.in
 
+SUBDIRS = protocol
+
 EXTRA_HEADERS = 
 BUILT_SOURCES= 
 
@@ -21,7 +23,11 @@ pkginclude_HEADERS= memcached.h \
 		    memcached_string.h \
 		    memcached_types.h \
 		    memcached_watchpoint.h \
+                    protocol_handler.h \
 		    visibility.h
+
+nobase_pkginclude_HEADERS=protocol/cache.h \
+                    protocol/callback.h
 
 
 if BUILD_LIBMEMCACHEDUTIL
