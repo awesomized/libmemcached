@@ -31,7 +31,7 @@
 #include <poll.h>
 
 #include <libmemcached/protocol_handler.h>
-#include "common.h"
+#include <libmemcached/byteorder.h>
 #include "storage.h"
 
 extern struct memcached_binary_protocol_callback_st interface_v0_impl;

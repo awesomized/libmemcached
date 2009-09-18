@@ -1,7 +1,7 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
              memcached_configure.h.in
 
-SUBDIRS = protocol
+SUBDIRS = . protocol
 
 EXTRA_HEADERS =
 BUILT_SOURCES=

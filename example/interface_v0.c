@@ -17,7 +17,7 @@
 #include <string.h>
 
 #include <libmemcached/protocol_handler.h>
-#include "common.h"
+#include <libmemcached/byteorder.h>
 #include "storage.h"
 
 static protocol_binary_response_status noop_command_handler(const void *cookie,
