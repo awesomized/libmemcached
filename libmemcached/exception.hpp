@@ -21,40 +21,40 @@ namespace memcache
   class Exception : public std::runtime_error
   {
   public:
-    Exception(const std::string& msg, bool in_errno)
+    Exception(const std::string& msg, int in_errno)
       : 
         std::runtime_error(msg), 
-        errno(in_errno) 
+        _errno(in_errno) 
     {}
 
-    Exception(const char *msg, bool in_errno)
+    Exception(const char *msg, int in_errno)
       : 
         std::runtime_error(msg), 
-        errno(in_errno) {}
+        _errno(in_errno) {}
 
     virtual ~Exception() throw() {}
 
     int getErrno() const 
     { 
-      return errno; 
+      return _errno; 
     }
 
   private:
-    int errno;
+    int _errno;
   };
 
   class Warning : public Exception
   {
   public:
-    Warning(const std::string& msg, bool in_errno) : Exception(msg, in_errno) {}
-    Warning(const char *msg, bool in_errno) : Exception(msg, in_errno) {}
+    Warning(const std::string& msg, int in_errno) : Exception(msg, in_errno) {}
+    Warning(const char *msg, int in_errno) : Exception(msg, in_errno) {}
   };
 
   class Error : public Exception
   {
   public:
-    Error(const std::string& msg, bool in_errno) : Exception(msg, in_errno) {}
-    Error(const char *msg, bool in_errno) : Exception(msg, in_errno) {}
+    Error(const std::string& msg, int in_errno) : Exception(msg, in_errno) {}
+    Error(const char *msg, int in_errno) : Exception(msg, in_errno) {}
     virtual ~Error() throw() {}
   };
 
