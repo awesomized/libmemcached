@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include <string.h>
 
@@ -12,6 +13,16 @@
 
 using namespace std;
 using namespace memcache;
+
+class DeletePtrs
+{
+public:
+  template<typename T>
+  inline void operator()(const T *ptr) const
+  {
+    delete ptr;
+  }
+};
 
 class MyCache
 {
@@ -73,6 +84,7 @@ private:
 
   ~MyCache()
   {
+    for_each(clients.begin(), clients.end(), DeletePtrs());
     clients.clear();
   }
 
