@@ -55,6 +55,7 @@ public:
   {
     memcached_create(&memc);
     servers= memcached_servers_parse(servers_list.c_str());
+    memcached_server_push(&memc, servers);
   }
 
   Memcache(const std::string &hostname,
@@ -72,6 +73,7 @@ public:
     strsmt << port;
     servers_list.append(strsmt.str());
     servers= memcached_servers_parse(servers_list.c_str());
+    memcached_server_push(&memc, servers);
   }
 
   Memcache(memcached_st *clone) 
@@ -93,6 +95,7 @@ public:
   {
     memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
     servers= memcached_servers_parse(servers_list.c_str());
+    memcached_server_push(&memc, servers);
   }
 
   Memcache &operator=(const Memcache &rhs)
@@ -101,6 +104,7 @@ public:
     {
       memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
       servers= memcached_servers_parse(servers_list.c_str());
+      memcached_server_push(&memc, servers);
     }
     return *this;
   }
