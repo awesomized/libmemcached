@@ -1042,6 +1042,70 @@ static test_return get_test5(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return  mget_end(memcached_st *memc)
+{
+  const char *keys[] = { "foo", "foo2" };
+  size_t lengths[] = { 3, 4 };
+  const char *values[] = { "fjord", "41" };
+
+  memcached_return rc;
+
+  // Set foo and foo2
+  for(int i = 0; i < 2; i++)
+  {
+    rc= memcached_set(memc, keys[i], lengths[i], values[i], strlen(values[i]),
+		      (time_t)0, (uint32_t)0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+
+  // retrieve both via mget
+  rc= memcached_mget(memc, keys, lengths, 2);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  char key[MEMCACHED_MAX_KEY];
+  size_t key_length;
+
+  // this should get both
+  for(int i = 0; i < 2; i++) {
+    string = memcached_fetch(memc, key, &key_length, &string_length,
+                             &flags, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    int val = 0;
+    if(key_length == 4)
+      val = 1;
+    assert(string_length == strlen(values[val]));
+    assert(strncmp(values[val], string, string_length) == 0);
+    free(string);
+  }
+
+  // this should indicate end
+  string = memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_END);
+
+  // now get just one
+  rc= memcached_mget(memc, keys, lengths, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  string = memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(key_length == lengths[0]);
+  assert(strncmp(keys[0], key, key_length) == 0);
+  assert(string_length == strlen(values[0]));
+  assert(strncmp(values[0], string, string_length) == 0);
+  assert(rc == MEMCACHED_SUCCESS);
+  free(string);
+
+  // this should indicate end
+  string = memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(rc != MEMCACHED_SUCCESS);
+  assert(rc == MEMCACHED_END);
+
+  return TEST_SUCCESS;
+}
+
 /* Do not copy the style of this code, I just access hosts to testthis function */
 static test_return  stats_servername_test(memcached_st *memc)
 {
@@ -4447,6 +4511,7 @@ test_st tests[] ={
   {"mget_result", 1, mget_result_test },
   {"mget_result_alloc", 1, mget_result_alloc_test },
   {"mget_result_function", 1, mget_result_function },
+  {"mget_end", 0, mget_end },
   {"get_stats", 0, get_stats },
   {"add_host_test", 0, add_host_test },
   {"add_host_test_1", 0, add_host_test1 },
