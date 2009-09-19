@@ -58,9 +58,12 @@ public:
 
   Memcache *getCache()
   {
-    /* pick a random element from the vector of clients */
-    Memcache *first= clients[0];
-    return first;
+    /* 
+     * pick a random element from the vector of clients. Obviously, this is
+     * not very random but suffices as an example!
+     */
+    uint32_t index= rand() % num_of_clients;
+    return clients[index];
   } 
 
 private:
