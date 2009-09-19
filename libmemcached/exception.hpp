@@ -14,7 +14,7 @@
 #define LIBMEMACHED_EXCEPTION_HPP
 
 #include <stdexcept>
-
+#include <string>
 
 namespace memcache 
 {
@@ -29,7 +29,7 @@ namespace memcache
 
     Exception(const char *msg, int in_errno)
       : 
-        std::runtime_error(msg), 
+        std::runtime_error(string(msg)), 
         _errno(in_errno) {}
 
     virtual ~Exception() throw() {}
