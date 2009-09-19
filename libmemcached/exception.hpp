@@ -29,7 +29,7 @@ namespace memcache
 
     Exception(const char *msg, int in_errno)
       : 
-        std::runtime_error(string(msg)), 
+        std::runtime_error(std::string(msg)), 
         _errno(in_errno) {}
 
     virtual ~Exception() throw() {}
