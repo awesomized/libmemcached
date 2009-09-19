@@ -446,9 +446,8 @@ public:
       retval= set(it->first, it->second, expiration, flags);
       if (retval == false)
       {
-        char err_buff[64];
-        sprintf(err_buff,  "There was an error setting the key %s",
-          it->first.c_str());
+        std::string err_buff("There was an error setting the key ");
+        err_buff.append(it->first);
         throw(Error(err_buff, false));
       }
       ++it;

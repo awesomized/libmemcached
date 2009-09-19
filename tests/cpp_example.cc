@@ -167,6 +167,7 @@ void setProduct(const string &key, const Product &product)
 
 int main()
 {
+#if 0
   Product pad(1, 5.0);
   const string key("padraig");
   cout << "Going to set an object in the cache..." << endl;
@@ -190,5 +191,12 @@ int main()
     cout << "product " << (*iter).getId() << " costs " << (*iter).getPrice() << endl;
     ++iter;
   }
+#endif
+  Memcache first_client("127.0.0.1:11211");
+  Memcache second_client("127.0.0.1", 11211);
+  //first_client.set("key", some_vector_of_chars, expiry, flags);
+  //first_client.get("key", vector_to_fill_with_data);
+  //first_client.remove("key");
+  first_client.addServer("192.168.1.1", 11211);
   return 0;
 }
