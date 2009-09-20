@@ -17,6 +17,7 @@
 #include "test.h"
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 using namespace memcache;
@@ -63,7 +64,20 @@ test_return basic_test(memcached_st *memc)
 
   assert((memcmp(&test_value[0], &value[0], test_value.size()) == 0));
 
-  return TEST_SUCCESS;
+  /* 
+   * Simple test of the exceptions here...this should throw an exception
+   * saying that the key is empty.
+   */
+  try
+  {
+    foo.set("", value, 0, 0);
+  }
+  catch (Error &err)
+  {
+    return TEST_SUCCESS;
+  }
+
+  return TEST_FAILURE;
 }
 
 test_return increment_test(memcached_st *memc)
