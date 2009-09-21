@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
@@ -2457,6 +2458,105 @@ static test_return user_supplied_bug18(memcached_st *trash)
   return 0;
 }
 
+/* Large mget() of missing keys with binary proto
+ * See http://lists.tangent.org/pipermail/libmemcached/2009-August/000918.html
+ */
+
+void fail(int);
+
+static test_return  _user_supplied_bug21(size_t key_count)
+{
+  memcached_return rc;
+  unsigned int x;
+  char **keys;
+  size_t* key_lengths;
+  void (*oldalarm)(int);
+  memcached_st *memc;
+
+  key_lengths = malloc(sizeof(size_t) * key_count);
+
+  memc= memcached_create(NULL);
+  assert(memc);
+
+  /* only binproto uses getq for mget */
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+
+  rc= memcached_server_add(memc, "localhost", 11221);
+
+  /* empty the cache to ensure misses (hence non-responses) */
+  rc= memcached_flush(memc, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  keys= (char **)malloc(sizeof(char *) * key_count);
+  assert(keys);
+  memset(keys, 0, (sizeof(char *) * key_count));
+  for (x= 0; x < key_count; x++)
+  {
+    char buffer[30];
+
+    snprintf(buffer, 30, "%u", x);
+    keys[x]= strdup(buffer);
+    key_lengths[x]= strlen(keys[x]);
+  }
+
+  oldalarm = signal(SIGALRM, fail);
+  alarm(5);
+
+  rc= memcached_mget(memc, (const char **)keys, key_lengths, key_count);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  alarm(0);
+  signal(SIGALRM, oldalarm);
+
+  /* Turn this into a help function */
+  {
+    char return_key[MEMCACHED_MAX_KEY];
+    size_t return_key_length;
+    char *return_value;
+    size_t return_value_length;
+    uint32_t flags;
+
+    while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                          &return_value_length, &flags, &rc)))
+    {
+      assert(return_value);
+      assert(rc == MEMCACHED_SUCCESS);
+      free(return_value);
+    }
+  }
+
+  for (x= 0; x < key_count; x++)
+    free(keys[x]);
+  free(keys);
+
+  memcached_free(memc);
+
+  free(key_lengths);
+
+  return MEMCACHED_SUCCESS;
+}
+
+static test_return  user_supplied_bug21(memcached_st *trash)
+{
+  (void)trash;
+  memcached_return rc;
+
+  /* should work as of r580 */
+  rc = _user_supplied_bug21(10);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  /* should fail as of r580 */
+  rc = _user_supplied_bug21(1000);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return MEMCACHED_SUCCESS;
+}
+
+void fail(int unused __attribute__((unused)))
+{
+  assert(0);
+}
+
 static test_return auto_eject_hosts(memcached_st *trash)
 {
   (void) trash;
@@ -4526,6 +4626,7 @@ test_st user_tests[] ={
   {"user_supplied_bug18", 1, user_supplied_bug18 },
   {"user_supplied_bug19", 1, user_supplied_bug19 },
   {"user_supplied_bug20", 1, user_supplied_bug20 },
+  {"user_supplied_bug21", 0, user_supplied_bug21 },
   {0, 0, 0}
 };
 
