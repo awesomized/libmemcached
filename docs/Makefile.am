@@ -19,6 +19,7 @@ EXTRA_DIST = libmemcached.pod\
 	memcached_behavior.pod\
 	memcached_callback.pod\
 	memcached_server_st.pod\
+        memcapable.pod \
 	memcat.pod\
 	memcached_create.pod\
 	memcached_pool.pod\
@@ -37,6 +38,7 @@ EXTRA_DIST = libmemcached.pod\
 
 man_MANS = libmemcached.3\
 	libmemcached_examples.3\
+	memcapable.1\
 	memcat.1\
 	memcp.1\
 	memerror.1\
@@ -112,16 +114,16 @@ man_MANS+= libmemcachedutil.3 \
 endif
 
 
-libmemcached.3: libmemcached.pod 
+libmemcached.3: libmemcached.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/libmemcached.pod > libmemcached.3
 
-libmemcachedutil.3: libmemcachedutil.pod 
+libmemcachedutil.3: libmemcachedutil.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/libmemcachedutil.pod > libmemcachedutil.3
 
 libmemcached_examples.3: libmemcached_examples.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/libmemcached_examples.pod > libmemcached_examples.3
 
-memcached_create.3: memcached_create.pod 
+memcached_create.3: memcached_create.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_create.pod > memcached_create.3
 
 memcached_free.3: memcached_create.pod
@@ -325,16 +327,16 @@ memcached_get_user_data.3: memcached_user_data.pod
 memcached_set_user_data.3: memcached_user_data.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_set_user_data.3
 
-memcached_pool_create.3: memcached_pool.pod 
+memcached_pool_create.3: memcached_pool.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_create.3
 
-memcached_pool_destroy.3: memcached_pool.pod 
+memcached_pool_destroy.3: memcached_pool.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_destroy.3
 
-memcached_pool_pop.3: memcached_pool.pod 
+memcached_pool_pop.3: memcached_pool.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_pop.3
 
-memcached_pool_push.3: memcached_pool.pod 
+memcached_pool_push.3: memcached_pool.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_push.3
 
 memcp.1: memcp.pod
@@ -342,6 +344,9 @@ memcp.1: memcp.pod
 
 memslap.1: memslap.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memslap.pod > memslap.1
+
+memcapable.1: memcapable.pod
+	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memcapable.pod > memcapable.1
 
 memcat.1: memcat.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memcat.pod > memcat.1
@@ -361,7 +366,7 @@ memdump.1: memdump.pod
 memflush.1: memflush.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memflush.pod > memflush.1
 
-test: 
+test:
 	podchecker $(top_srcdir)/docs/libmemcached.pod
 	podchecker $(top_srcdir)/docs/memcached_flush.pod
 	podchecker $(top_srcdir)/docs/memcached_stats.pod
@@ -390,6 +395,7 @@ test:
 	podchecker $(top_srcdir)/docs/memcached_pool.pod
 	podchecker $(top_srcdir)/docs/memcached_memory_allocators.pod
 	podchecker $(top_srcdir)/docs/memcached_user_data.pod
+	podchecker $(top_srcdir)/docs/memcapable.pod
 
 html-local:
 	pod2htmltree "/libmemcached" .
