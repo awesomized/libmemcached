@@ -2527,7 +2527,7 @@ static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
 
   memcached_free(memc);
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 static test_return  user_supplied_bug21(memcached_st *memc)
@@ -2536,13 +2536,13 @@ static test_return  user_supplied_bug21(memcached_st *memc)
 
   /* should work as of r580 */
   rc= _user_supplied_bug21(memc, 10);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == TEST_SUCCESS);
 
   /* should fail as of r580 */
   rc= _user_supplied_bug21(memc, 1000);
-  assert(rc == MEMCACHED_SUCCESS);
+  assert(rc == TEST_SUCCESS);
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 void fail(int unused __attribute__((unused)))
