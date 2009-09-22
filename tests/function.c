@@ -287,17 +287,25 @@ static test_return  connection_test(memcached_st *memc)
 static test_return  error_test(memcached_st *memc)
 {
   memcached_return rc;
-  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U, 982370485U, 1263635348U, 4242906218U, 3829656100U, 1891735253U, 
-                        334139633U, 2257084983U, 3088286104U, 13199785U, 2542027183U, 1097051614U, 199566778U, 2748246961U, 2465192557U, 
-                        1664094137U, 2405439045U, 1842224848U, 692413798U, 3479807801U, 919913813U, 4269430871U, 610793021U, 527273862U, 
-                        1437122909U, 2300930706U, 2943759320U, 674306647U, 2400528935U, 54481931U, 4186304426U, 1741088401U, 2979625118U, 
-                        4159057246U };
+  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U, 
+                        982370485U, 1263635348U, 4242906218U, 3829656100U, 
+                        1891735253U, 334139633U, 2257084983U, 3088286104U, 
+                        13199785U, 2542027183U, 1097051614U, 199566778U,
+                        2748246961U, 2465192557U, 1664094137U, 2405439045U, 
+                        1842224848U, 692413798U, 3479807801U, 919913813U,
+                        4269430871U, 610793021U, 527273862U, 1437122909U,
+                        2300930706U, 2943759320U, 674306647U, 2400528935U,
+                        54481931U, 4186304426U, 1741088401U, 2979625118U, 
+                        4159057246U, 3425930182U};
 
-  assert(MEMCACHED_MAXIMUM_RETURN == 37); // You have updated the memcache_error messages but not updated docs/tests.
+  // You have updated the memcache_error messages but not updated docs/tests.
+  assert(MEMCACHED_MAXIMUM_RETURN == 38); 
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
-    hash_val= memcached_generate_hash_value(memcached_strerror(memc, rc), strlen(memcached_strerror(memc, rc)), MEMCACHED_HASH_JENKINS);
+    const char *msg=  memcached_strerror(memc, rc);
+    hash_val= memcached_generate_hash_value(msg, strlen(msg), 
+                                            MEMCACHED_HASH_JENKINS);
     assert(values[rc] == hash_val);
   }
 
@@ -4385,6 +4393,28 @@ static test_return jenkins_run (memcached_st *memc __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
+static test_return regression_bug_434484(memcached_st *memc)
+{
+  if (pre_binary(memc) != TEST_SUCCESS) 
+    return TEST_SUCCESS;
+   
+  memcached_return ret;
+  const char *key= "regression_bug_434484";
+  size_t keylen= strlen(key);
+
+  ret= memcached_append(memc, key, keylen, key, keylen, 0, 0);
+  assert(ret == MEMCACHED_NOTSTORED);
+
+  size_t size= 2048 * 1024;
+  void *data= malloc(size);
+  assert(data != NULL);
+  ret= memcached_set(memc, key, keylen, data, size, 0, 0);
+  assert(ret == MEMCACHED_E2BIG);
+  free(data);
+
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4537,6 +4567,17 @@ test_st replication_tests[]= {
   {0, 0, 0}
 };
 
+/*
+ * The following test suite is used to verify that we don't introduce
+ * regression bugs. If you want more information about the bug / test,
+ * you should look in the bug report at 
+ *   http://bugs.launchpad.net/libmemcached
+ */
+test_st regression_tests[]= {
+  {"lp:434484", 1, regression_bug_434484 },
+  {0, 0, 0}
+};
+
 test_st generate_tests[] ={
   {"generate_pairs", 1, generate_pairs },
   {"generate_data", 1, generate_data },
@@ -4645,6 +4686,7 @@ collection_st collection[] ={
   {"test_hashes", 0, 0, hash_tests},
   {"replication", pre_replication, 0, replication_tests},
   {"replication_noblock", pre_replication_noblock, 0, replication_tests},
+  {"regression", 0, 0, regression_tests},
   {0, 0, 0, 0}
 };
 
