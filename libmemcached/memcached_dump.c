@@ -55,6 +55,18 @@ static memcached_return ascii_dump(memcached_st *ptr, memcached_dump_func *callb
         }
         else if (rc == MEMCACHED_END)
           break;
+        else if (rc == MEMCACHED_SERVER_ERROR || rc == MEMCACHED_CLIENT_ERROR)
+        {
+          /* If we try to request stats cachedump for a slab class that is too big
+           * the server will return an incorrect error message:
+           * "MEMCACHED_SERVER_ERROR failed to allocate memory"
+           * This isn't really a fatal error, so let's just skip it. I want to
+           * fix the return value from the memcached server to a CLIENT_ERROR,
+           * so let's add support for that as well right now.
+           */
+          rc= MEMCACHED_END;
+          break;
+        }
         else
           goto error;
       }
