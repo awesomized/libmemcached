@@ -1570,6 +1570,24 @@ static test_return  behavior_test(memcached_st *memc)
   return 0;
 }
 
+static test_return  fetch_all_results(memcached_st *memc) {
+  memcached_return rc;
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
+  uint32_t flags;
+
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                        &return_value_length, &flags, &rc)))
+  {
+    assert(return_value);
+    assert(rc == MEMCACHED_SUCCESS);
+    free(return_value);
+  }
+  return (rc == MEMCACHED_END) ? TEST_SUCCESS : TEST_FAILURE;
+}
+
 /* Test case provided by Cal Haldenbrand */
 static test_return  user_supplied_bug1(memcached_st *memc)
 {
@@ -1708,22 +1726,7 @@ static test_return  user_supplied_bug3(memcached_st *memc)
   rc= memcached_mget(memc, (const char **)keys, key_lengths, KEY_COUNT);
   assert(rc == MEMCACHED_SUCCESS);
 
-  /* Turn this into a help function */
-  {
-    char return_key[MEMCACHED_MAX_KEY];
-    size_t return_key_length;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
-
-    while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
-                                          &return_value_length, &flags, &rc)))
-    {
-      assert(return_value);
-      assert(rc == MEMCACHED_SUCCESS);
-      free(return_value);
-    }
-  }
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
 
   for (x= 0; x < KEY_COUNT; x++)
     free(keys[x]);
@@ -2458,10 +2461,13 @@ static test_return user_supplied_bug18(memcached_st *trash)
 }
 
 /* Large mget() of missing keys with binary proto
- * See http://lists.tangent.org/pipermail/libmemcached/2009-August/000918.html
+ *
+ * If many binary quiet commands (such as getq's in an mget) fill the output
+ * buffer and the server chooses not to respond, memcached_flush hangs. See
+ * http://lists.tangent.org/pipermail/libmemcached/2009-August/000918.html
  */
 
-void fail(int);
+void fail(int); /* sighandler_t function that always asserts false */
 
 static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
 {
@@ -2503,22 +2509,7 @@ static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
   alarm(0);
   signal(SIGALRM, oldalarm);
 
-  /* Turn this into a help function */
-  {
-    char return_key[MEMCACHED_MAX_KEY];
-    size_t return_key_length;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
-
-    while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
-                                          &return_value_length, &flags, &rc)))
-    {
-      assert(return_value);
-      assert(rc == MEMCACHED_SUCCESS);
-      free(return_value);
-    }
-  }
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
 
   for (x= 0; x < key_count; x++)
     free(keys[x]);
@@ -2883,22 +2874,7 @@ static test_return  mget_read(memcached_st *memc)
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   assert(rc == MEMCACHED_SUCCESS);
-  /* Turn this into a help function */
-  {
-    char return_key[MEMCACHED_MAX_KEY];
-    size_t return_key_length;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
-
-    while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
-                                          &return_value_length, &flags, &rc)))
-    {
-      assert(return_value);
-      assert(rc == MEMCACHED_SUCCESS);
-      free(return_value);
-    }
-  }
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
 
   return 0;
 }
