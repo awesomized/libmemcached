@@ -1694,9 +1694,8 @@ static test_return  user_supplied_bug3(memcached_st *memc)
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 #endif
 
-  keys= (char **)malloc(sizeof(char *) * KEY_COUNT);
+  keys= calloc(KEY_COUNT, sizeof(char *));
   assert(keys);
-  memset(keys, 0, (sizeof(char *) * KEY_COUNT));
   for (x= 0; x < KEY_COUNT; x++)
   {
     char buffer[30];
@@ -2464,32 +2463,28 @@ static test_return user_supplied_bug18(memcached_st *trash)
 
 void fail(int);
 
-static test_return  _user_supplied_bug21(size_t key_count)
+static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
 {
   memcached_return rc;
   unsigned int x;
   char **keys;
   size_t* key_lengths;
   void (*oldalarm)(int);
-  memcached_st *memc;
+  memcached_st *memc_clone;
 
-  key_lengths = malloc(sizeof(size_t) * key_count);
-
-  memc= memcached_create(NULL);
+  memc_clone= memcached_clone(NULL, memc);
   assert(memc);
 
   /* only binproto uses getq for mget */
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-
-  rc= memcached_server_add(memc, "localhost", 11221);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
 
   /* empty the cache to ensure misses (hence non-responses) */
-  rc= memcached_flush(memc, 0);
+  rc= memcached_flush(memc_clone, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  keys= (char **)malloc(sizeof(char *) * key_count);
+  key_lengths= calloc(key_count, sizeof(size_t));
+  keys= calloc(key_count, sizeof(char *));
   assert(keys);
-  memset(keys, 0, (sizeof(char *) * key_count));
   for (x= 0; x < key_count; x++)
   {
     char buffer[30];
@@ -2499,10 +2494,10 @@ static test_return  _user_supplied_bug21(size_t key_count)
     key_lengths[x]= strlen(keys[x]);
   }
 
-  oldalarm = signal(SIGALRM, fail);
+  oldalarm= signal(SIGALRM, fail);
   alarm(5);
 
-  rc= memcached_mget(memc, (const char **)keys, key_lengths, key_count);
+  rc= memcached_mget(memc_clone, (const char **)keys, key_lengths, key_count);
   assert(rc == MEMCACHED_SUCCESS);
 
   alarm(0);
@@ -2528,25 +2523,23 @@ static test_return  _user_supplied_bug21(size_t key_count)
   for (x= 0; x < key_count; x++)
     free(keys[x]);
   free(keys);
+  free(key_lengths);
 
   memcached_free(memc);
-
-  free(key_lengths);
 
   return MEMCACHED_SUCCESS;
 }
 
-static test_return  user_supplied_bug21(memcached_st *trash)
+static test_return  user_supplied_bug21(memcached_st *memc)
 {
-  (void)trash;
   memcached_return rc;
 
   /* should work as of r580 */
-  rc = _user_supplied_bug21(10);
+  rc= _user_supplied_bug21(memc, 10);
   assert(rc == MEMCACHED_SUCCESS);
 
   /* should fail as of r580 */
-  rc = _user_supplied_bug21(1000);
+  rc= _user_supplied_bug21(memc, 1000);
   assert(rc == MEMCACHED_SUCCESS);
 
   return MEMCACHED_SUCCESS;
@@ -4759,8 +4752,7 @@ void *world_create(void)
 {
   server_startup_st *construct;
 
-  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
-  memset(construct, 0, sizeof(server_startup_st));
+  construct= calloc(sizeof(server_startup_st), 1);
   construct->count= SERVERS_TO_CREATE;
   construct->udp= 0;
   server_startup(construct);
