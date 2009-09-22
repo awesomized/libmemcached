@@ -62,6 +62,7 @@ typedef enum {
   MEMCACHED_INVALID_HOST_PROTOCOL,
   MEMCACHED_SERVER_MARKED_DEAD,
   MEMCACHED_UNKNOWN_STAT_KEY,
+  MEMCACHED_E2BIG,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 } memcached_return;
 
