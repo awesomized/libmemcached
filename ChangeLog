@@ -1,8 +1,11 @@
-0.33
+0.33 Wed Sep 23 10:11:58 PDT 2009
   * Added memcapable to test servers for binary compatibility.
   * Updated C++ interface. Added basic support for C++ exceptions. Added 
     multiple constructors the memcached client object. The C++ interface
     now takes parameters which are C++ types (such as std::string).
+  * Several bug fixes for binary protocol support.
+  * Fixed crashing issue with dumping from memcachd server (server internals
+    were changed without documenting change).
 
 0.32 Tue Sep 15 15:49:09 PDT 2009
   * Change of behavior where linger is only modified for no-block and then
