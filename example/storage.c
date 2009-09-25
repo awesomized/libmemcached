@@ -153,3 +153,7 @@ void flush(uint32_t when) {
 void update_cas(struct item* item) {
   item->cas= ++cas;
 }
+
+void release_item(struct item* item __attribute__((unused))) {
+  /* EMPTY */
+}

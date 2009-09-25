@@ -47,6 +47,7 @@ static protocol_binary_response_status add_handler(const void *cookie,
     {
       put_item(item);
       *cas= item->cas;
+      release_item(item);
     }
   }
   else
@@ -81,15 +82,18 @@ static protocol_binary_response_status append_handler(const void *cookie,
   else if ((nitem= create_item(key, keylen, NULL, item->size + vallen,
                                item->flags, item->exp)) == NULL)
   {
+    release_item(item);
     rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
   }
   else
   {
     memcpy(nitem->data, item->data, item->size);
     memcpy(((char*)(nitem->data)) + item->size, val, vallen);
+    release_item(item);
     delete_item(key, keylen);
     put_item(nitem);
     *result_cas= nitem->cas;
+    release_item(nitem);
   }
 
   return rval;
@@ -116,6 +120,7 @@ static protocol_binary_response_status decrement_handler(const void *cookie,
       val= *(uint64_t*)item->data - delta;
 
     expiration= (uint32_t)item->exp;
+    release_item(item);
     delete_item(key, keylen);
   }
 
@@ -130,6 +135,7 @@ static protocol_binary_response_status decrement_handler(const void *cookie,
     put_item(item);
     *result= val;
     *result_cas= item->cas;
+    release_item(item);
   }
 
   return rval;
@@ -145,9 +151,14 @@ static protocol_binary_response_status delete_handler(const void *cookie,
   if (cas != 0)
   {
     struct item *item= get_item(key, keylen);
-    if (item != NULL && item->cas != cas)
+    if (item != NULL)
     {
-      return PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
+      if (item->cas != cas)
+      {
+        release_item(item);
+        return PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
+      }
+      release_item(item);
     }
   }
 
@@ -179,9 +190,12 @@ static protocol_binary_response_status get_handler(const void *cookie,
     return PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
   }
 
-  return response_handler(cookie, key, (uint16_t)keylen,
+  protocol_binary_response_status rc;
+  rc= response_handler(cookie, key, (uint16_t)keylen,
                           item->data, (uint32_t)item->size, item->flags,
                           item->cas);
+  release_item(item);
+  return rc;
 }
 
 static protocol_binary_response_status increment_handler(const void *cookie,
@@ -201,6 +215,7 @@ static protocol_binary_response_status increment_handler(const void *cookie,
   {
     val= (*(uint64_t*)item->data) + delta;
     expiration= (uint32_t)item->exp;
+    release_item(item);
     delete_item(key, keylen);
   }
 
@@ -217,6 +232,7 @@ static protocol_binary_response_status increment_handler(const void *cookie,
     put_item(item);
     *result= val;
     *result_cas= item->cas;
+    release_item(item);
   }
 
   return rval;
@@ -238,7 +254,8 @@ static protocol_binary_response_status prepend_handler(const void *cookie,
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
 
   struct item *item= get_item(key, keylen);
-  struct item *nitem;
+  struct item *nitem= NULL;
+
   if (item == NULL)
   {
     rval= PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
@@ -256,10 +273,18 @@ static protocol_binary_response_status prepend_handler(const void *cookie,
   {
     memcpy(nitem->data, val, vallen);
     memcpy(((char*)(nitem->data)) + vallen, item->data, item->size);
+    release_item(item);
+    item= NULL;
     delete_item(key, keylen);
     put_item(nitem);
     *result_cas= nitem->cas;
   }
+
+  if (item)
+    release_item(item);
+
+  if (nitem)
+    release_item(nitem);
 
   return rval;
 }
@@ -288,6 +313,7 @@ static protocol_binary_response_status replace_handler(const void *cookie,
   }
   else if (cas == 0 || cas == item->cas)
   {
+    release_item(item);
     delete_item(key, keylen);
     item= create_item(key, keylen, data, datalen, flags, (time_t)exptime);
     if (item == 0)
@@ -298,11 +324,13 @@ static protocol_binary_response_status replace_handler(const void *cookie,
     {
       put_item(item);
       *result_cas= item->cas;
+      release_item(item);
     }
   }
   else
   {
     rval= PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
+    release_item(item);
   }
 
   return rval;
@@ -326,6 +354,7 @@ static protocol_binary_response_status set_handler(const void *cookie,
     if (item != NULL && cas != item->cas)
     {
       /* Invalid CAS value */
+      release_item(item);
       return PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
     }
   }
@@ -340,6 +369,7 @@ static protocol_binary_response_status set_handler(const void *cookie,
   {
     put_item(item);
     *result_cas= item->cas;
+    release_item(item);
   }
 
   return rval;

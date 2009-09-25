@@ -486,3 +486,13 @@ void flush(uint32_t when __attribute__((unused))) {
 void update_cas(struct item* item) {
   item->cas= ++cas;
 }
+
+/**
+ * Release all the resources allocated by the item
+ * @param item the item to release
+ */
+void release_item(struct item* item) {
+  free(item->key);
+  free(item->data);
+  free(item);
+}

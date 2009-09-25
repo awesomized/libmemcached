@@ -92,6 +92,7 @@ static protocol_binary_response_status get_command_handler(const void *cookie,
     msg.response.message.header.response.bodylen= htonl(bodysize);
     msg.response.message.header.response.extlen= 4;
 
+    release_item(item);
     return response_handler(cookie, header, (void*)&msg);
   }
   else if (opcode == PROTOCOL_BINARY_CMD_GET || opcode == PROTOCOL_BINARY_CMD_GETK)
@@ -175,55 +176,47 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
   uint64_t initial= ntohll(req->message.body.initial);
   uint64_t delta= ntohll(req->message.body.delta);
   uint32_t expiration= ntohl(req->message.body.expiration);
+  uint32_t flags= 0;
   void *key= req->bytes + sizeof(req->bytes);
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
 
+  uint64_t value= initial;
+
   struct item *item= get_item(key, keylen);
-  if (item == NULL)
-  {
-    item= create_item(key, keylen, NULL, sizeof(initial), 0, (time_t)expiration);
-    if (item == NULL)
-    {
-      rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
-    }
-    else
-    {
-      memcpy(item->data, &initial, sizeof(initial));
-      put_item(item);
-    }
-  }
-  else
+  if (item != NULL)
   {
     if (header->request.opcode == PROTOCOL_BINARY_CMD_INCREMENT ||
         header->request.opcode == PROTOCOL_BINARY_CMD_INCREMENTQ)
     {
-      (*(uint64_t*)item->data) += delta;
+      value= (*(uint64_t*)item->data) + delta;
     }
     else
     {
       if (delta > *(uint64_t*)item->data)
       {
-        *(uint64_t*)item->data= 0;
+        value= 0;
       }
       else
       {
-        *(uint64_t*)item->data -= delta;
+        value= *(uint64_t*)item->data - delta;
       }
     }
+    expiration= (uint32_t)item->exp;
+    flags= item->flags;
 
-    struct item *nitem= create_item(key, keylen, NULL, sizeof(initial), 0, item->exp);
-    if (item == NULL)
-    {
-      rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
-      delete_item(key, keylen);
-    }
-    else
-    {
-      memcpy(nitem->data, item->data, item->size);
-      delete_item(key, keylen);
-      put_item(nitem);
-      item = nitem;
-    }
+    release_item(item);
+    delete_item(key, keylen);
+  }
+
+  item= create_item(key, keylen, NULL, sizeof(value), flags, (time_t)expiration);
+  if (item == NULL)
+  {
+    rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
+  }
+  else
+  {
+    memcpy(item->data, &value, sizeof(value));
+    put_item(item);
   }
 
   response.message.header.response.status= htons(rval);
@@ -233,6 +226,7 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
     response.message.body.value= ntohll((*(uint64_t*)item->data));
     response.message.header.response.cas= ntohll(item->cas);
 
+    release_item(item);
     if (header->request.opcode == PROTOCOL_BINARY_CMD_INCREMENTQ ||
         header->request.opcode == PROTOCOL_BINARY_CMD_DECREMENTQ)
     {
@@ -278,7 +272,8 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
   void *val= (char*)key + keylen;
 
   struct item *item= get_item(key, keylen);
-  struct item *nitem;
+  struct item *nitem= NULL;
+
   if (item == NULL)
   {
     rval= PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
@@ -290,6 +285,7 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
   else if ((nitem= create_item(key, keylen, NULL, item->size + vallen,
                                item->flags, item->exp)) == NULL)
   {
+    release_item(item);
     rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
   }
   else
@@ -305,8 +301,12 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
       memcpy(nitem->data, val, vallen);
       memcpy(((char*)(nitem->data)) + vallen, item->data, item->size);
     }
+    release_item(item);
     delete_item(key, keylen);
     put_item(nitem);
+    cas= nitem->cas;
+    release_item(nitem);
+
     if (header->request.opcode == PROTOCOL_BINARY_CMD_APPEND ||
         header->request.opcode == PROTOCOL_BINARY_CMD_PREPEND)
     {
@@ -317,7 +317,7 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
             .opcode= header->request.opcode,
             .status= htons(rval),
             .opaque= header->request.opaque,
-            .cas= htonll(nitem->cas),
+            .cas= htonll(cas),
           }
         }
       };
@@ -355,16 +355,21 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
   {
     /* validate cas */
     struct item* item= get_item(key, keylen);
-    if (item != NULL && item->cas != ntohll(header->request.cas))
+    if (item != NULL)
     {
-      response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
-      return response_handler(cookie, header, (void*)&response);
+      if (item->cas != ntohll(header->request.cas))
+      {
+        release_item(item);
+        response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
+        return response_handler(cookie, header, (void*)&response);
+      }
+      release_item(item);
     }
   }
 
   delete_item(key, keylen);
   struct item* item= create_item(key, keylen, data, datalen, flags, timeout);
-  if (item == 0)
+  if (item == NULL)
   {
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_ENOMEM);
   }
@@ -375,8 +380,11 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
     if (header->request.opcode == PROTOCOL_BINARY_CMD_SET)
     {
       response.message.header.response.cas= htonll(item->cas);
+      release_item(item);
       return response_handler(cookie, header, (void*)&response);
     }
+    release_item(item);
+
     return PROTOCOL_BINARY_RESPONSE_SUCCESS;
   }
 
@@ -410,7 +418,7 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
   if (item == NULL)
   {
     item= create_item(key, keylen, data, datalen, flags, timeout);
-    if (item == 0)
+    if (item == NULL)
       response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_ENOMEM);
     else
     {
@@ -419,13 +427,16 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
       if (header->request.opcode == PROTOCOL_BINARY_CMD_ADD)
       {
         response.message.header.response.cas= htonll(item->cas);
+        release_item(item);
         return response_handler(cookie, header, (void*)&response);
       }
+      release_item(item);
       return PROTOCOL_BINARY_RESPONSE_SUCCESS;
     }
   }
   else
   {
+    release_item(item);
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
   }
 
@@ -460,9 +471,10 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_ENOENT);
   else if (header->request.cas == 0 || ntohll(header->request.cas) == item->cas)
   {
+    release_item(item);
     delete_item(key, keylen);
     item= create_item(key, keylen, data, datalen, flags, timeout);
-    if (item == 0)
+    if (item == NULL)
       response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_ENOMEM);
     else
     {
@@ -471,13 +483,18 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
       if (header->request.opcode == PROTOCOL_BINARY_CMD_REPLACE)
       {
         response.message.header.response.cas= htonll(item->cas);
+        release_item(item);
         return response_handler(cookie, header, (void*)&response);
       }
+      release_item(item);
       return PROTOCOL_BINARY_RESPONSE_SUCCESS;
     }
   }
   else
+  {
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
+    release_item(item);
+  }
 
   return response_handler(cookie, header, (void*)&response);
 }
