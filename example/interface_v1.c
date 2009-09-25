@@ -105,35 +105,31 @@ static protocol_binary_response_status decrement_handler(const void *cookie,
                                                          uint64_t *result_cas) {
   (void)cookie;
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
+  uint64_t val= initial;
   struct item *item= get_item(key, keylen);
 
-  if (item == NULL)
+  if (item != NULL)
   {
-    item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
-    if (item == 0)
-    {
-      rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
-    }
+    if (delta > *(uint64_t*)item->data)
+      val= 0;
     else
-    {
-      memcpy(item->data, &initial, sizeof(initial));
-      put_item(item);
-      *result= initial;
-      *result_cas= item->cas;
-    }
+      val= *(uint64_t*)item->data - delta;
+
+    expiration= (uint32_t)item->exp;
+    delete_item(key, keylen);
+  }
+
+  item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
+  if (item == 0)
+  {
+    rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
   }
   else
   {
-    if (delta > *(uint64_t*)item->data)
-    {
-      *(uint64_t*)item->data= 0;
-    }
-    else
-    {
-      *(uint64_t*)item->data -= delta;
-    }
-    *result= (*(uint64_t*)item->data);
-    /* @todo fix cas */
+    memcpy(item->data, &val, sizeof(val));
+    put_item(item);
+    *result= val;
+    *result_cas= item->cas;
   }
 
   return rval;
@@ -198,28 +194,28 @@ static protocol_binary_response_status increment_handler(const void *cookie,
                                                          uint64_t *result_cas) {
   (void)cookie;
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
+  uint64_t val= initial;
   struct item *item= get_item(key, keylen);
 
+  if (item != NULL)
+  {
+    val= (*(uint64_t*)item->data) + delta;
+    expiration= (uint32_t)item->exp;
+    delete_item(key, keylen);
+  }
+
+  item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
   if (item == NULL)
   {
-    item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
-    if (item == 0)
-    {
-      rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
-    }
-    else
-    {
-      memcpy(item->data, &initial, sizeof(initial));
-      put_item(item);
-      *result= initial;
-      *result_cas= item->cas;
-    }
+    rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
   }
   else
   {
-    (*(uint64_t*)item->data) += delta;
-    *result= (*(uint64_t*)item->data);
-    update_cas(item);
+    char buffer[1024] = {0};
+    memcpy(buffer, key, keylen);
+    memcpy(item->data, &val, sizeof(val));
+    put_item(item);
+    *result= val;
     *result_cas= item->cas;
   }
 

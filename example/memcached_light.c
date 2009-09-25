@@ -40,6 +40,7 @@ extern struct memcached_binary_protocol_callback_st interface_v1_impl;
 static int server_sockets[1024];
 static int num_server_sockets= 0;
 static void* socket_userdata_map[1024];
+static bool verbose= false;
 
 /**
  * Create a socket and bind it to a specific port number
@@ -153,25 +154,33 @@ static const char* comcode2str(uint8_t cmd)
 /**
  * Print out the command we are about to execute
  */
-static void pre_execute(const void *cookie, protocol_binary_request_header *header)
+static void pre_execute(const void *cookie __attribute__((unused)),
+                        protocol_binary_request_header *header __attribute__((unused)))
 {
-  const char *cmd= comcode2str(header->request.opcode);
-  if (cmd != NULL)
-    fprintf(stderr, "pre_execute from %p: %s\n", cookie, cmd);
-  else
-    fprintf(stderr, "pre_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+  if (verbose)
+  {
+    const char *cmd= comcode2str(header->request.opcode);
+    if (cmd != NULL)
+      fprintf(stderr, "pre_execute from %p: %s\n", cookie, cmd);
+    else
+      fprintf(stderr, "pre_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+  }
 }
 
 /**
  * Print out the command we just executed
  */
-static void post_execute(const void *cookie, protocol_binary_request_header *header)
+static void post_execute(const void *cookie __attribute__((unused)),
+                         protocol_binary_request_header *header __attribute__((unused)))
 {
-  const char *cmd= comcode2str(header->request.opcode);
-  if (cmd != NULL)
-    fprintf(stderr, "post_execute from %p: %s\n", cookie, cmd);
-  else
-    fprintf(stderr, "post_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+  if (verbose)
+  {
+    const char *cmd= comcode2str(header->request.opcode);
+    if (cmd != NULL)
+      fprintf(stderr, "post_execute from %p: %s\n", cookie, cmd);
+    else
+      fprintf(stderr, "post_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+  }
 }
 
 /**
@@ -211,7 +220,7 @@ int main(int argc, char **argv)
   int cmd;
   struct memcached_binary_protocol_callback_st *interface= &interface_v0_impl;
 
-  while ((cmd= getopt(argc, argv, "1p:?")) != EOF)
+  while ((cmd= getopt(argc, argv, "v1p:?")) != EOF)
   {
     switch (cmd) {
     case '1':
@@ -221,11 +230,20 @@ int main(int argc, char **argv)
       port_specified= true;
       (void)server_socket(optarg);
       break;
+    case 'v':
+      verbose= true;
+      break;
     case '?':  /* FALLTHROUGH */
     default:
-      (void)fprintf(stderr, "Usage: %s [-p port]\n", argv[0]);
+      (void)fprintf(stderr, "Usage: %s [-p port] [-v] [-1]\n", argv[0]);
       return 1;
     }
+  }
+
+  if (!initialize_storage())
+  {
+    /* Error message already printed */
+    return 1;
   }
 
   if (!port_specified)

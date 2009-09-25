@@ -461,11 +461,6 @@ decrement_command_handler(const void *cookie,
     uint64_t result;
     uint64_t cas;
 
-    char buffer[1024] = {0};
-    memcpy(buffer, key, keylen);
-    fprintf(stderr, "%s\n", buffer);
-
-
     rval= client->root->callback->interface.v1.decrement(cookie, key, keylen,
                                                          delta, init, timeout,
                                                          &result, &cas);
@@ -681,6 +676,7 @@ increment_command_handler(const void *cookie,
           .body.value = htonll(result)
         }
       };
+
       rval= response_handler(cookie, header, (void*)&response);
     }
   }

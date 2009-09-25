@@ -15,36 +15,44 @@ struct list_entry {
 static struct list_entry *root;
 static uint64_t cas;
 
+bool initialize_storage(void) {
+  return true;
+}
+
+void shutdown_storage(void) {
+  /* Do nothing */
+}
+
 void put_item(struct item* item) {
   struct list_entry* entry= (void*)item;
   update_cas(item);
-  
-  if (root == NULL) 
+
+  if (root == NULL)
   {
     entry->next= entry->prev= entry;
-  } 
-  else 
+  }
+  else
   {
     entry->prev= root->prev;
     entry->next= root;
     entry->prev->next= entry;
     entry->next->prev= entry;
   }
-  
+
   root= entry;
 }
 
 struct item* get_item(const void* key, size_t nkey) {
   struct list_entry *walker= root;
-  if (root == NULL) 
+  if (root == NULL)
   {
     return NULL;
-  }  
-  
-  do 
+  }
+
+  do
   {
-    if (((struct item*)walker)->nkey == nkey && 
-        memcmp(((struct item*)walker)->key, key, nkey) == 0) 
+    if (((struct item*)walker)->nkey == nkey &&
+        memcmp(((struct item*)walker)->key, key, nkey) == 0)
     {
       return (struct item*)walker;
     }
@@ -54,19 +62,19 @@ struct item* get_item(const void* key, size_t nkey) {
   return NULL;
 }
 
-struct item* create_item(const void* key, size_t nkey, const void* data, 
+struct item* create_item(const void* key, size_t nkey, const void* data,
                          size_t size, uint32_t flags, time_t exp)
 {
   struct item* ret= calloc(1, sizeof(struct list_entry));
-  if (ret != NULL) 
+  if (ret != NULL)
   {
     ret->key= malloc(nkey);
-    if (size > 0) 
+    if (size > 0)
     {
       ret->data= malloc(size);
     }
 
-    if (ret->key == NULL || (size > 0 && ret->data == NULL)) 
+    if (ret->key == NULL || (size > 0 && ret->data == NULL))
     {
       free(ret->key);
       free(ret->data);
@@ -75,7 +83,7 @@ struct item* create_item(const void* key, size_t nkey, const void* data,
     }
 
     memcpy(ret->key, key, nkey);
-    if (data != NULL) 
+    if (data != NULL)
     {
       memcpy(ret->data, data, size);
     }
@@ -93,18 +101,18 @@ bool delete_item(const void* key, size_t nkey) {
   struct item* item= get_item(key, nkey);
   bool ret= false;
 
-  if (item) 
+  if (item)
   {
     /* remove from linked list */
     struct list_entry *entry= (void*)item;
-      
-    if (entry->next == entry) 
+
+    if (entry->next == entry)
     {
       /* Only one object in the list */
       root= NULL;
     }
     else
-    { 
+    {
       /* ensure that we don't loose track of the root, and this will
        * change the start position for the next search ;-) */
       root= entry->next;
@@ -125,17 +133,17 @@ void flush(uint32_t when) {
   /* FIXME */
   (void)when;
   /* remove the complete linked list */
-  if (root == NULL) 
+  if (root == NULL)
   {
     return;
   }
 
   root->prev->next= NULL;
-  while (root != NULL) 
+  while (root != NULL)
   {
     struct item* tmp= (void*)root;
     root= root->next;
-      
+
     free(tmp->key);
     free(tmp->data);
     free(tmp);

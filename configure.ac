@@ -1,4 +1,4 @@
-# libmemcached 
+# libmemcached
 # Copyright (C) 2008 Brian Aker, Monty Taylor
 # All rights reserved.
 #
@@ -69,7 +69,7 @@ AC_LINK_IFELSE(
       float f= floorf((float) 1.0);
     ]],
     [LIBM="-lm"],[LIBM=""])])
-    
+
 AC_SUBST(LIBM)
 LIBS="$save_LIBS"
 
@@ -84,7 +84,7 @@ REQUIRE_POD2MAN
 PROTOCOL_BINARY_TEST
 WITH_MEMCACHED
 ENABLE_DEPRECATED
-
+PANDORA_HAVE_LIBINNODB
 
 AC_CONFIG_FILES([
   Makefile

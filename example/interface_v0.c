@@ -182,7 +182,7 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
   if (item == NULL)
   {
     item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
-    if (item == 0)
+    if (item == NULL)
     {
       rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
     }
@@ -210,7 +210,20 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
         *(uint64_t*)item->data -= delta;
       }
     }
-    update_cas(item);
+
+    struct item *nitem= create_item(key, keylen, NULL, sizeof(initial), 0, item->exp);
+    if (item == NULL)
+    {
+      rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
+      delete_item(key, keylen);
+    }
+    else
+    {
+      memcpy(nitem->data, item->data, item->size);
+      delete_item(key, keylen);
+      put_item(nitem);
+      item = nitem;
+    }
   }
 
   response.message.header.response.status= htons(rval);
