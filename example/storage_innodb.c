@@ -10,7 +10,7 @@
 
 #include "storage.h"
 
-const char *tablename = "memcached/items";
+const char *tablename= "memcached/items";
 
 #define key_col_idx 0
 #define data_col_idx 1
@@ -50,7 +50,7 @@ do {                                                           \
  */
 static bool create_schema(void) {
   ib_tbl_sch_t schema= NULL;
-  ib_idx_sch_t index= NULL;
+  ib_idx_sch_t dbindex= NULL;
 
   if (ib_database_create("memcached") != IB_TRUE)
   {
@@ -72,9 +72,9 @@ static bool create_schema(void) {
                                   IB_COL_UNSIGNED, 0, 8));
   checked(ib_table_schema_add_col(schema, "exp", IB_INT,
                                   IB_COL_UNSIGNED, 0, 4));
-  checked(ib_table_schema_add_index(schema, "PRIMARY_KEY", &index));
-  checked(ib_index_schema_add_col(index, "key", 0));
-  checked(ib_index_schema_set_clustered(index));
+  checked(ib_table_schema_add_index(schema, "PRIMARY_KEY", &dbindex));
+  checked(ib_index_schema_add_col(dbindex, "key", 0));
+  checked(ib_index_schema_set_clustered(dbindex));
   checked(ib_schema_lock_exclusive(transaction));
   checked(ib_table_create(transaction, schema, &table_id));
   checked(ib_trx_commit(transaction));
@@ -101,12 +101,12 @@ static bool create_schema(void) {
  * @param item the item to store
  * @return true if we can go ahead and commit the transaction, false otherwise
  */
-bool do_put_item(ib_trx_t trx, struct item* item) {
+static bool do_put_item(ib_trx_t trx, struct item* item) {
   update_cas(item);
 
-  ib_crsr_t cursor = NULL;
+  ib_crsr_t cursor= NULL;
   ib_tpl_t tuple= NULL;
-  bool retval = false;
+  bool retval= false;
 
   checked(ib_cursor_open_table(tablename, trx, &cursor));
   checked(ib_cursor_lock(cursor, IB_LOCK_X));
@@ -116,7 +116,7 @@ bool do_put_item(ib_trx_t trx, struct item* item) {
   checked(ib_col_set_value(tuple, data_col_idx, item->data, item->size));
   checked(ib_tuple_write_u32(tuple, flags_col_idx, item->flags));
   checked(ib_tuple_write_u64(tuple, cas_col_idx, item->cas));
-  checked(ib_tuple_write_u32(tuple, exp_col_idx, item->exp));
+  checked(ib_tuple_write_u32(tuple, exp_col_idx, (ib_u32_t)item->exp));
   checked(ib_cursor_insert_row(cursor, tuple));
 
   retval= true;
@@ -150,9 +150,9 @@ static bool do_locate_item(ib_trx_t trx,
                            ib_crsr_t *cursor)
 {
   int res;
-  ib_tpl_t tuple;
+  ib_tpl_t tuple= NULL;
 
-  *cursor = NULL;
+  *cursor= NULL;
 
   checked(ib_cursor_open_table(tablename, trx, cursor));
   tuple= ib_clust_search_tuple_create(*cursor);
@@ -234,7 +234,7 @@ static struct item* do_get_item(ib_trx_t trx, const void* key, size_t nkey) {
     if (explen != 0) {
       ib_u32_t val;
       checked(ib_tuple_read_u32(tuple, exp_col_idx, &val));
-      retval->exp= (uint32_t)val;
+      retval->exp= (time_t)val;
     }
   }
 
@@ -267,7 +267,7 @@ static bool do_delete_item(ib_trx_t trx, const void* key, size_t nkey) {
   {
     checked(ib_cursor_lock(cursor, IB_LOCK_X));
     checked(ib_cursor_delete_row(cursor));
-    retval = true;
+    retval= true;
   }
   /* Release resources */
   /* FALLTHROUGH */
@@ -445,7 +445,7 @@ bool delete_item(const void* key, size_t nkey) {
  * Flush the entire cache
  * @param when when the cache should be flushed (0 == immediately)
  */
-void flush(uint32_t when) {
+void flush(uint32_t when __attribute__((unused))) {
   /* @TODO implement support for when != 0 */
   ib_trx_t transaction= ib_trx_begin(IB_TRX_REPEATABLE_READ);
   ib_crsr_t cursor= NULL;

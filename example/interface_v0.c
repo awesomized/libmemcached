@@ -181,7 +181,7 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
   struct item *item= get_item(key, keylen);
   if (item == NULL)
   {
-    item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
+    item= create_item(key, keylen, NULL, sizeof(initial), 0, (time_t)expiration);
     if (item == NULL)
     {
       rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
@@ -336,7 +336,7 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
   protocol_binary_request_replace *request= (void*)header;
   uint32_t flags= ntohl(request->message.body.flags);
-  time_t timeout= ntohl(request->message.body.expiration);
+  time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 
@@ -391,7 +391,7 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
   protocol_binary_request_add *request= (void*)header;
   uint32_t flags= ntohl(request->message.body.flags);
-  time_t timeout= ntohl(request->message.body.expiration);
+  time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 
@@ -440,7 +440,7 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
   protocol_binary_request_replace *request= (void*)header;
   uint32_t flags= ntohl(request->message.body.flags);
-  time_t timeout= ntohl(request->message.body.expiration);
+  time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 

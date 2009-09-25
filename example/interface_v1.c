@@ -38,7 +38,7 @@ static protocol_binary_response_status add_handler(const void *cookie,
   struct item* item= get_item(key, keylen);
   if (item == NULL)
   {
-    item= create_item(key, keylen, data, datalen, flags, exptime);
+    item= create_item(key, keylen, data, datalen, flags, (time_t)exptime);
     if (item == 0)
     {
       rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
@@ -119,7 +119,7 @@ static protocol_binary_response_status decrement_handler(const void *cookie,
     delete_item(key, keylen);
   }
 
-  item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
+  item= create_item(key, keylen, NULL, sizeof(initial), 0, (time_t)expiration);
   if (item == 0)
   {
     rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
@@ -204,7 +204,7 @@ static protocol_binary_response_status increment_handler(const void *cookie,
     delete_item(key, keylen);
   }
 
-  item= create_item(key, keylen, NULL, sizeof(initial), 0, expiration);
+  item= create_item(key, keylen, NULL, sizeof(initial), 0, (time_t)expiration);
   if (item == NULL)
   {
     rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
@@ -289,7 +289,7 @@ static protocol_binary_response_status replace_handler(const void *cookie,
   else if (cas == 0 || cas == item->cas)
   {
     delete_item(key, keylen);
-    item= create_item(key, keylen, data, datalen, flags, exptime);
+    item= create_item(key, keylen, data, datalen, flags, (time_t)exptime);
     if (item == 0)
     {
       rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
@@ -331,7 +331,7 @@ static protocol_binary_response_status set_handler(const void *cookie,
   }
 
   delete_item(key, keylen);
-  struct item* item= create_item(key, keylen, data, datalen, flags, exptime);
+  struct item* item= create_item(key, keylen, data, datalen, flags, (time_t)exptime);
   if (item == 0)
   {
     rval= PROTOCOL_BINARY_RESPONSE_ENOMEM;
