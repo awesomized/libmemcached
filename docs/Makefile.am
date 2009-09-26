@@ -107,6 +107,8 @@ man_MANS = libmemcached.3\
 
 if BUILD_LIBMEMCACHEDUTIL
 man_MANS+= libmemcachedutil.3 \
+	memcached_pool_behavior_set.3 \
+	memcached_pool_behavior_get.3 \
 	memcached_pool_create.3 \
 	memcached_pool_destroy.3 \
 	memcached_pool_push.3 \
@@ -326,6 +328,12 @@ memcached_get_user_data.3: memcached_user_data.pod
 
 memcached_set_user_data.3: memcached_user_data.pod
 	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_set_user_data.3
+
+memcached_pool_behavior_get.3: memcached_pool.pod
+	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_behavior_get.3
+
+memcached_pool_behavior_set.3: memcached_pool.pod
+	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_behavior_set.3
 
 memcached_pool_create.3: memcached_pool.pod
 	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_create.3

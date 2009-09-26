@@ -3664,6 +3664,29 @@ static test_return connection_pool_test(memcached_st *memc)
   for (int x= 0; x < 10; ++x)
     assert(memcached_pool_push(pool, mmc[x]) == MEMCACHED_SUCCESS);
 
+
+  /* verify that I can set behaviors on the pool when I don't have all 
+   * of the connections in the pool. It should however be enabled
+   * when I push the item into the pool
+   */
+  mmc[0]= memcached_pool_pop(pool, false, &rc);
+  assert(mmc[0] != NULL);
+
+  rc= memcached_pool_behavior_set(pool, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, 9999);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  mmc[1]= memcached_pool_pop(pool, false, &rc);
+  assert(mmc[1] != NULL);
+
+  assert(memcached_behavior_get(mmc[1], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == 9999);
+  assert(memcached_pool_push(pool, mmc[1]) == MEMCACHED_SUCCESS);
+  assert(memcached_pool_push(pool, mmc[0]) == MEMCACHED_SUCCESS);
+
+  mmc[0]= memcached_pool_pop(pool, false, &rc);
+  assert(memcached_behavior_get(mmc[0], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == 9999);
+  assert(memcached_pool_push(pool, mmc[0]) == MEMCACHED_SUCCESS);
+
+
   assert(memcached_pool_destroy(pool) == memc);
   return TEST_SUCCESS;
 }
