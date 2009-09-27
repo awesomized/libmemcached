@@ -17,7 +17,7 @@ AC_DEFUN([WITH_MEMCACHED],
          [
            ac_cv_with_memcached=$withval
            MEMC_BINARY=$withval
-         ], 
+         ],
          [
            AC_PATH_PROG([MEMC_BINARY], [$ac_cv_with_memcached], "no")
            AS_IF([test "x$MEMC_BINARY" = "xno"],
@@ -25,6 +25,7 @@ AC_DEFUN([WITH_MEMCACHED],
          ])
     ])
 
-  AC_DEFINE_UNQUOTED([MEMCACHED_BINARY], "$MEMC_BINARY", 
+  AC_DEFINE_UNQUOTED([MEMCACHED_BINARY], "$MEMC_BINARY",
             [Name of the memcached binary used in make test])
+  AC_SUBST(MEMC_BINARY)
 ])

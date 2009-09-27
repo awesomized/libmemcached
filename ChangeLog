@@ -1,11 +1,18 @@
-  0.32 Tue Sep 15 15:49:09 PDT 2009
+0.33 Wed Sep 23 10:11:58 PDT 2009
+  * Added memcapable to test servers for binary compatibility.
+  * Updated C++ interface. Added basic support for C++ exceptions. Added 
+    multiple constructors the memcached client object. The C++ interface
+    now takes parameters which are C++ types (such as std::string).
+  * Several bug fixes for binary protocol support.
+  * Fixed crashing issue with dumping from memcachd server (server internals
+    were changed without documenting change).
+
+0.32 Tue Sep 15 15:49:09 PDT 2009
   * Change of behavior where linger is only modified for no-block and then
     it is set to zero.
   * Added Twitter's memcached_server_error() functions.
   * Fix for OSX compiles in development builds.
-  * Updated C++ interface. Added basic support for C++ exceptions. Added 
-    multiple constructors the memcached client object. The C++ interface
-    now takes parameters which are C++ types (such as std::string).
+  * Updated C++ interface.
   * Updated memcached_mget and memcached_mget_by_key to take a size_t 
     as a parameter instead of an unsigned int for number_of_keys.
 

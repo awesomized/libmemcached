@@ -31,6 +31,11 @@ LIBMEMCACHED_API
 memcached_return memcached_pool_push(memcached_pool_st* pool, 
                                      memcached_st* mmc);
 
+LIBMEMCACHED_API
+memcached_return memcached_pool_behavior_set(memcached_pool_st *ptr, memcached_behavior flag, uint64_t data);
+LIBMEMCACHED_API
+memcached_return memcached_pool_behavior_get(memcached_pool_st *ptr, memcached_behavior flag, uint64_t *value);
+
 #ifdef __cplusplus
 }
 #endif

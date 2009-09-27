@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include "libmemcached/common.h"
 #include "libmemcached/memcached_pool.h"
 
@@ -13,6 +14,7 @@ struct memcached_pool_st
   int firstfree;
   uint32_t size;
   uint32_t current_size;
+  char* version;
 };
 
 static memcached_return mutex_enter(pthread_mutex_t *mutex) 
@@ -158,6 +160,18 @@ memcached_return memcached_pool_push(memcached_pool_st* pool,
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
+  char* version = memcached_get_user_data(mmc);
+  /* Someone updated the behavior on the object.. */
+  if (version != pool->version) 
+  {
+    memcached_free(mmc);
+    memset(mmc, 0, sizeof(*mmc));
+    if (memcached_clone(mmc, pool->master) == NULL)
+    {
+      rc= MEMCACHED_SOME_ERRORS;
+    }
+  }
+
   pool->mmc[++pool->firstfree]= mmc;
 
   if (pool->firstfree == 0 && pool->current_size == pool->size) 
@@ -166,5 +180,67 @@ memcached_return memcached_pool_push(memcached_pool_st* pool,
     pthread_cond_broadcast(&pool->cond);
   }
 
+  memcached_return rval= mutex_exit(&pool->mutex);
+  if (rc == MEMCACHED_SOME_ERRORS)
+    return rc;
+
+  return rval;
+}
+
+
+memcached_return memcached_pool_behavior_set(memcached_pool_st *pool, 
+                                             memcached_behavior flag, 
+                                             uint64_t data)
+{
+
+  memcached_return rc= mutex_enter(&pool->mutex);
+  if (rc != MEMCACHED_SUCCESS)
+     return rc;
+
+  /* update the master */
+  rc= memcached_behavior_set(pool->master, flag, data);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    mutex_exit(&pool->mutex);
+    return rc;
+  }
+
+  ++pool->version;
+  memcached_set_user_data(pool->master, pool->version);
+  /* update the clones */
+  for (int xx= 0; xx <= pool->firstfree; ++xx) 
+  {
+    rc= memcached_behavior_set(pool->mmc[xx], flag, data);
+    if (rc == MEMCACHED_SUCCESS)
+      memcached_set_user_data(pool->mmc[xx], pool->version);
+    else
+    {
+      memcached_free(pool->mmc[xx]);
+      memset(pool->mmc[xx], 0, sizeof(*pool->mmc[xx]));
+      if (memcached_clone(pool->mmc[xx], pool->master) == NULL)
+      {
+        /* I'm not sure what to do in this case.. this would happen
+           if we fail to push the server list inside the client..
+           I should add a testcase for this, but I believe the following
+           would work, except that you would add a hole in the pool list..
+           in theory you could end up with an empty pool....
+        */
+        free(pool->mmc[xx]);
+        pool->mmc[xx]= NULL;
+      }
+    }
+  }
+
+  return mutex_exit(&pool->mutex);
+}
+
+memcached_return memcached_pool_behavior_get(memcached_pool_st *pool, 
+                                             memcached_behavior flag,
+                                             uint64_t *value)
+{
+  memcached_return rc= mutex_enter(&pool->mutex);
+  if (rc != MEMCACHED_SUCCESS)
+    return rc;
+  *value= memcached_behavior_get(pool->master, flag);
   return mutex_exit(&pool->mutex);
 }

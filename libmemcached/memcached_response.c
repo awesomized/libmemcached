@@ -493,11 +493,17 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
     case PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS:
       rc= MEMCACHED_DATA_EXISTS;
       break;
-    case PROTOCOL_BINARY_RESPONSE_E2BIG:
-    case PROTOCOL_BINARY_RESPONSE_EINVAL:
     case PROTOCOL_BINARY_RESPONSE_NOT_STORED:
-    case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:
+      rc= MEMCACHED_NOTSTORED;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_E2BIG:
+      rc= MEMCACHED_E2BIG;
+      break;
     case PROTOCOL_BINARY_RESPONSE_ENOMEM:
+      rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_EINVAL:
+    case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:
     default:
       /* @todo fix the error mappings */
       rc= MEMCACHED_PROTOCOL_ERROR;

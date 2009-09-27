@@ -11,6 +11,7 @@ Makefile.in
 TAGS
 aclocal.m4
 autom4te.cache
+clients/memcapable
 clients/memcat
 clients/memcp
 clients/memdump

@@ -287,17 +287,25 @@ static test_return  connection_test(memcached_st *memc)
 static test_return  error_test(memcached_st *memc)
 {
   memcached_return rc;
-  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U, 982370485U, 1263635348U, 4242906218U, 3829656100U, 1891735253U, 
-                        334139633U, 2257084983U, 3088286104U, 13199785U, 2542027183U, 1097051614U, 199566778U, 2748246961U, 2465192557U, 
-                        1664094137U, 2405439045U, 1842224848U, 692413798U, 3479807801U, 919913813U, 4269430871U, 610793021U, 527273862U, 
-                        1437122909U, 2300930706U, 2943759320U, 674306647U, 2400528935U, 54481931U, 4186304426U, 1741088401U, 2979625118U, 
-                        4159057246U };
+  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U, 
+                        982370485U, 1263635348U, 4242906218U, 3829656100U, 
+                        1891735253U, 334139633U, 2257084983U, 3088286104U, 
+                        13199785U, 2542027183U, 1097051614U, 199566778U,
+                        2748246961U, 2465192557U, 1664094137U, 2405439045U, 
+                        1842224848U, 692413798U, 3479807801U, 919913813U,
+                        4269430871U, 610793021U, 527273862U, 1437122909U,
+                        2300930706U, 2943759320U, 674306647U, 2400528935U,
+                        54481931U, 4186304426U, 1741088401U, 2979625118U, 
+                        4159057246U, 3425930182U};
 
-  assert(MEMCACHED_MAXIMUM_RETURN == 37); // You have updated the memcache_error messages but not updated docs/tests.
+  // You have updated the memcache_error messages but not updated docs/tests.
+  assert(MEMCACHED_MAXIMUM_RETURN == 38); 
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
-    hash_val= memcached_generate_hash_value(memcached_strerror(memc, rc), strlen(memcached_strerror(memc, rc)), MEMCACHED_HASH_JENKINS);
+    const char *msg=  memcached_strerror(memc, rc);
+    hash_val= memcached_generate_hash_value(msg, strlen(msg), 
+                                            MEMCACHED_HASH_JENKINS);
     assert(values[rc] == hash_val);
   }
 
@@ -1038,6 +1046,70 @@ static test_return get_test5(memcached_st *memc)
   assert(val != NULL);
   assert(rc == MEMCACHED_SUCCESS);
   free(val);
+
+  return TEST_SUCCESS;
+}
+
+static test_return  mget_end(memcached_st *memc)
+{
+  const char *keys[]= { "foo", "foo2" };
+  size_t lengths[]= { 3, 4 };
+  const char *values[]= { "fjord", "41" };
+
+  memcached_return rc;
+
+  // Set foo and foo2
+  for (int i= 0; i < 2; i++)
+  {
+    rc= memcached_set(memc, keys[i], lengths[i], values[i], strlen(values[i]),
+		      (time_t)0, (uint32_t)0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  char *string;
+  size_t string_length;
+  uint32_t flags;
+
+  // retrieve both via mget
+  rc= memcached_mget(memc, keys, lengths, 2);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  char key[MEMCACHED_MAX_KEY];
+  size_t key_length;
+
+  // this should get both
+  for (int i = 0; i < 2; i++) 
+  {
+    string= memcached_fetch(memc, key, &key_length, &string_length,
+                            &flags, &rc);
+    assert(rc == MEMCACHED_SUCCESS);
+    int val = 0;
+    if (key_length == 4)
+      val= 1;
+    assert(string_length == strlen(values[val]));
+    assert(strncmp(values[val], string, string_length) == 0);
+    free(string);
+  }
+
+  // this should indicate end
+  string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_END);
+
+  // now get just one
+  rc= memcached_mget(memc, keys, lengths, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(key_length == lengths[0]);
+  assert(strncmp(keys[0], key, key_length) == 0);
+  assert(string_length == strlen(values[0]));
+  assert(strncmp(values[0], string, string_length) == 0);
+  assert(rc == MEMCACHED_SUCCESS);
+  free(string);
+
+  // this should indicate end
+  string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
+  assert(rc == MEMCACHED_END);
 
   return TEST_SUCCESS;
 }
@@ -3592,6 +3664,29 @@ static test_return connection_pool_test(memcached_st *memc)
   for (int x= 0; x < 10; ++x)
     assert(memcached_pool_push(pool, mmc[x]) == MEMCACHED_SUCCESS);
 
+
+  /* verify that I can set behaviors on the pool when I don't have all 
+   * of the connections in the pool. It should however be enabled
+   * when I push the item into the pool
+   */
+  mmc[0]= memcached_pool_pop(pool, false, &rc);
+  assert(mmc[0] != NULL);
+
+  rc= memcached_pool_behavior_set(pool, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, 9999);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  mmc[1]= memcached_pool_pop(pool, false, &rc);
+  assert(mmc[1] != NULL);
+
+  assert(memcached_behavior_get(mmc[1], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == 9999);
+  assert(memcached_pool_push(pool, mmc[1]) == MEMCACHED_SUCCESS);
+  assert(memcached_pool_push(pool, mmc[0]) == MEMCACHED_SUCCESS);
+
+  mmc[0]= memcached_pool_pop(pool, false, &rc);
+  assert(memcached_behavior_get(mmc[0], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == 9999);
+  assert(memcached_pool_push(pool, mmc[0]) == MEMCACHED_SUCCESS);
+
+
   assert(memcached_pool_destroy(pool) == memc);
   return TEST_SUCCESS;
 }
@@ -4385,6 +4480,28 @@ static test_return jenkins_run (memcached_st *memc __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
+static test_return regression_bug_434484(memcached_st *memc)
+{
+  if (pre_binary(memc) != TEST_SUCCESS) 
+    return TEST_SUCCESS;
+   
+  memcached_return ret;
+  const char *key= "regression_bug_434484";
+  size_t keylen= strlen(key);
+
+  ret= memcached_append(memc, key, keylen, key, keylen, 0, 0);
+  assert(ret == MEMCACHED_NOTSTORED);
+
+  size_t size= 2048 * 1024;
+  void *data= malloc(size);
+  assert(data != NULL);
+  ret= memcached_set(memc, key, keylen, data, size, 0, 0);
+  assert(ret == MEMCACHED_E2BIG);
+  free(data);
+
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4447,6 +4564,7 @@ test_st tests[] ={
   {"mget_result", 1, mget_result_test },
   {"mget_result_alloc", 1, mget_result_alloc_test },
   {"mget_result_function", 1, mget_result_function },
+  {"mget_end", 0, mget_end },
   {"get_stats", 0, get_stats },
   {"add_host_test", 0, add_host_test },
   {"add_host_test_1", 0, add_host_test1 },
@@ -4534,6 +4652,17 @@ test_st replication_tests[]= {
   {"get", 0, replication_get_test },
   {"mget", 0, replication_mget_test },
   {"delete", 0, replication_delete_test },
+  {0, 0, 0}
+};
+
+/*
+ * The following test suite is used to verify that we don't introduce
+ * regression bugs. If you want more information about the bug / test,
+ * you should look in the bug report at 
+ *   http://bugs.launchpad.net/libmemcached
+ */
+test_st regression_tests[]= {
+  {"lp:434484", 1, regression_bug_434484 },
   {0, 0, 0}
 };
 
@@ -4645,6 +4774,7 @@ collection_st collection[] ={
   {"test_hashes", 0, 0, hash_tests},
   {"replication", pre_replication, 0, replication_tests},
   {"replication_noblock", pre_replication_noblock, 0, replication_tests},
+  {"regression", 0, 0, regression_tests},
   {0, 0, 0, 0}
 };
 
