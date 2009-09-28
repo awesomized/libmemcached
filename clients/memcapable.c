@@ -454,8 +454,8 @@ static void arithmetic_command(command *cmd,
  * @param cc the expected command
  * @param status the expected status
  */
-static enum test_return validate_response_header(response *rsp,
-                                                 uint8_t cc, uint16_t status)
+static enum test_return do_validate_response_header(response *rsp,
+                                                    uint8_t cc, uint16_t status)
 {
   verify(rsp->plain.message.header.response.magic == PROTOCOL_BINARY_RES);
   verify(rsp->plain.message.header.response.opcode == cc);
@@ -555,6 +555,14 @@ static enum test_return validate_response_header(response *rsp,
   return TEST_PASS;
 }
 
+/* We call verify(validate_response_header), but that macro
+ * expects a boolean expression, and the function returns
+ * an enum.... Let's just create a macro to avoid cluttering
+ * the code with all of the == TEST_PASS ;-)
+ */
+#define validate_response_header(a,b,c) \
+        do_validate_response_header(a,b,c) == TEST_PASS
+
 static enum test_return test_binary_noop(void)
 {
   command cmd;
@@ -620,6 +628,20 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
     }
     else
       execute(test_binary_noop());
+  }
+
+  /*
+   * We need to get the current CAS id, and at this time we haven't
+   * verified that we have a working get
+   */
+  if (cc == PROTOCOL_BINARY_CMD_SETQ)
+  {
+    cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SET;
+    execute(resend_packet(&cmd));
+    execute(recv_packet(&rsp));
+    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET, 
+                                    PROTOCOL_BINARY_RESPONSE_SUCCESS));
+    cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
   }
 
   /* try to set with the correct CAS value */
@@ -1170,7 +1192,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n]\n"
               "\t-c\tGenerate coredump if a test fails\n"
               "\t-v\tVerbose test output (print out the assertion)\n"
-              "\t-c n\tSet the timeout for io-operations to n seconds\n",
+              "\t-t n\tSet the timeout for io-operations to n seconds\n",
               argv[0]);
       return 1;
     }
