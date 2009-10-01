@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
-#include "common.h"
+#include "libmemcached/protocol/common.h"
 
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -19,7 +19,7 @@ bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_he
   uint16_t keylen= ntohs(request->request.keylen);
   uint8_t extlen= request->request.extlen;
   uint32_t bodylen= ntohl(request->request.bodylen);
-  
+
   ensure(bodylen >= (keylen + extlen));
 
   switch (opcode) {
@@ -83,7 +83,7 @@ bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_he
     /* May have key, but not value */
     ensure(keylen == bodylen);
     break;
-      
+
   case PROTOCOL_BINARY_CMD_APPEND:
   case PROTOCOL_BINARY_CMD_APPENDQ:
   case PROTOCOL_BINARY_CMD_PREPEND:
@@ -109,7 +109,7 @@ bool memcached_binary_protocol_pedantic_check_response(protocol_binary_request_h
   uint16_t status= ntohs(response->response.status);
   uint8_t opcode= response->response.opcode;
 
-  if (status == PROTOCOL_BINARY_RESPONSE_SUCCESS) 
+  if (status == PROTOCOL_BINARY_RESPONSE_SUCCESS)
   {
     switch (opcode) {
     case PROTOCOL_BINARY_CMD_ADDQ:
@@ -189,11 +189,11 @@ bool memcached_binary_protocol_pedantic_check_response(protocol_binary_request_h
       break;
     }
   }
-  else 
+  else
   {
     ensure(response->response.cas == 0);
     ensure(response->response.extlen == 0);
-    if (opcode != PROTOCOL_BINARY_CMD_GETK) 
+    if (opcode != PROTOCOL_BINARY_CMD_GETK)
     {
       ensure(response->response.keylen == 0);
     }

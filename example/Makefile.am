@@ -4,8 +4,8 @@ memcached_light_SOURCES= memcached_light.c \
                          storage.h \
                          interface_v0.c \
                          interface_v1.c
-memcached_light_LDADD= $(top_builddir)/libmemcached/protocol/libmemcachedprotocol.la $(LIBINNODB)
-memcached_light_DEPENDENCIES= $(top_builddir)/libmemcached/protocol/libmemcachedprotocol.la
+memcached_light_LDADD= $(top_builddir)/libmemcached/libmemcachedprotocol.la $(LIBINNODB)
+memcached_light_DEPENDENCIES= $(top_builddir)/libmemcached/libmemcachedprotocol.la
 
 if BUILD_BYTEORDER
 memcached_light_LDADD+= $(top_builddir)/libmemcached/libbyteorder.la

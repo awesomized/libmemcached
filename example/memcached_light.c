@@ -264,8 +264,8 @@ int main(int argc, char **argv)
   interface->post_execute= post_execute;
   interface->unknown= unknown;
 
-  struct memcached_binary_protocol_st *protocol_handle;
-  if ((protocol_handle= memcached_binary_protocol_create_instance()) == NULL)
+  struct memcached_protocol_st *protocol_handle;
+  if ((protocol_handle= memcached_protocol_create_instance()) == NULL)
   {
     fprintf(stderr, "Failed to allocate protocol handle\n");
     return 1;
@@ -327,11 +327,11 @@ static void work(void) {
             continue;
           }
 
-          struct memcached_binary_protocol_st *protocol;
+          struct memcached_protocol_st *protocol;
           protocol= socket_userdata_map[fds[x].fd];
 
-          struct memcached_binary_protocol_client_st* c;
-          c= memcached_binary_protocol_create_client(protocol, sock);
+          struct memcached_protocol_client_st* c;
+          c= memcached_protocol_create_client(protocol, sock);
           if (c == NULL)
           {
             fprintf(stderr, "Failed to create client\n");
@@ -349,12 +349,12 @@ static void work(void) {
         else
         {
           /* drive the client */
-          struct memcached_binary_protocol_client_st* c;
+          struct memcached_protocol_client_st* c;
           c= socket_userdata_map[fds[x].fd];
           assert(c != NULL);
           fds[max_poll].events= 0;
 
-          switch (memcached_binary_protocol_client_work(c))
+          switch (memcached_protocol_client_work(c))
           {
           case WRITE_EVENT:
           case READ_WRITE_EVENT:
@@ -365,7 +365,7 @@ static void work(void) {
             break;
           case ERROR_EVENT:
           default: /* ERROR or unknown state.. close */
-            memcached_binary_protocol_client_destroy(c);
+            memcached_protocol_client_destroy(c);
             close(fds[x].fd);
             fds[x].events= 0;
 

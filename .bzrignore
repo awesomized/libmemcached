@@ -1,8 +1,10 @@
 *.lo
 */.deps
 */.libs
+*/.dirstamp
 */*/.deps
 */*/.libs
+*/*/.dirstamp
 */Makefile
 */Makefile.in
 */*.l[oa]

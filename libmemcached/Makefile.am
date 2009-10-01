@@ -1,7 +1,6 @@
 EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
-             memcached_configure.h.in
+             memcached_configure.h.in protocol/libmemcachedprotocol.ver
 
-SUBDIRS = . protocol
 
 EXTRA_HEADERS =
 BUILT_SOURCES=
@@ -10,7 +9,10 @@ noinst_HEADERS = libmemcached_probes.h \
                  memcached_io.h \
                  memcached_internal.h \
                  common.h \
-                 memcached/protocol_binary.h
+                 memcached/protocol_binary.h \
+                 protocol/common.h \
+                 protocol/ascii_handler.h \
+                 protocol/binary_handler.h
 
 pkginclude_HEADERS= memcached.h \
 		    memcached.hpp \
@@ -28,14 +30,22 @@ pkginclude_HEADERS= memcached.h \
 		    visibility.h
 
 nobase_pkginclude_HEADERS=protocol/cache.h \
-                    protocol/callback.h
+                          protocol/callback.h
 
 
 if BUILD_LIBMEMCACHEDUTIL
 pkginclude_HEADERS+= memcached_util.h memcached_pool.h
 endif
 
-lib_LTLIBRARIES = libmemcached.la
+libmemcachedprotocol_la_SOURCES= protocol/ascii_handler.c \
+                                 protocol/binary_handler.c \
+                                 protocol/cache.c \
+                                 protocol/pedantic.c \
+                                 protocol/protocol_handler.c
+
+libmemcachedprotocol_la_LDFLAGS= -version-info $(MEMCACHEDPROTOCOL_LIBRARY_VERSION) $(LD_PROTOCOL_VERSION_SCRIPT)
+
+lib_LTLIBRARIES = libmemcached.la libmemcachedprotocol.la
 noinst_LTLIBRARIES = libmemcachedcallbacks.la
 libmemcachedcallbacks_la_CFLAGS = ${AM_CFLAGS} ${NO_STRICT_ALIASING}
 libmemcachedcallbacks_la_SOURCES = memcached_callback.c
@@ -89,6 +99,8 @@ noinst_LTLIBRARIES += libbyteorder.la
 libbyteorder_la_SOURCES= byteorder.c byteorder.h
 libmemcached_la_LIBADD += libbyteorder.la
 libmemcached_la_DEPENDENCIES+= libbyteorder.la
+libmemcachedprotocol_la_LIBADD=libbyteorder.la
+libmemcachedprotocol_la_DEPENDENCIES=libbyteorder.la
 endif
 
 if HAVE_DTRACE

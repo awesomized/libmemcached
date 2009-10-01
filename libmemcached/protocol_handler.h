@@ -17,12 +17,12 @@
 
 /* Forward declarations */
 /*
- * You should only access memcached_binary_protocol_st from one thread!,
+ * You should only access memcached_protocol_st from one thread!,
  * and never assume anything about the internal layout / sizes of the
  * structures.
  */
-struct memcached_binary_protocol_st;
-struct memcached_binary_protocol_client_st;
+struct memcached_protocol_st;
+struct memcached_protocol_client_st;
 
 /**
  * Function the protocol handler should call to receive data.
@@ -35,10 +35,10 @@ struct memcached_binary_protocol_client_st;
  * @return the number of bytes copied into buf
  *         or -1 upon error (errno should contain more information)
  */
-typedef ssize_t (*memcached_binary_protocol_recv_func)(const void *cookie,
-                                                       int fd,
-                                                       void *buf, 
-                                                       size_t nbuf);
+typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie,
+                                                int fd,
+                                                void *buf, 
+                                                size_t nbuf);
 
 /**
  * Function the protocol handler should call to send data.
@@ -51,10 +51,10 @@ typedef ssize_t (*memcached_binary_protocol_recv_func)(const void *cookie,
  * @return the number of bytes sent
  *         or -1 upon error (errno should contain more information)
  */
-typedef ssize_t (*memcached_binary_protocol_send_func)(const void *cookie,
-                                                       int fd,
-                                                       const void *buf, 
-                                                       size_t nbuf);
+typedef ssize_t (*memcached_protocol_send_func)(const void *cookie,
+                                                int fd,
+                                                const void *buf, 
+                                                size_t nbuf);
 
 /**
  * Create an instance of the protocol handler
@@ -62,14 +62,14 @@ typedef ssize_t (*memcached_binary_protocol_send_func)(const void *cookie,
  * @return NULL if allocation of an instance fails
  */
 LIBMEMCACHED_API
-struct memcached_binary_protocol_st *memcached_binary_protocol_create_instance(void);
+struct memcached_protocol_st *memcached_protocol_create_instance(void);
 
 /**
  * Get the callbacks associated with a protocol handler instance
  * @return the callbacks currently used
  */
 LIBMEMCACHED_API
-struct memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(struct memcached_binary_protocol_st *instance);
+struct memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(struct memcached_protocol_st *instance);
 
 /**
  * Set the callbacks to be used by the given protocol handler instance
@@ -77,7 +77,7 @@ struct memcached_binary_protocol_callback_st *memcached_binary_protocol_get_call
  * @param callback the callbacks to use
  */
 LIBMEMCACHED_API
-void memcached_binary_protocol_set_callbacks(struct memcached_binary_protocol_st *instance, struct memcached_binary_protocol_callback_st *callback);
+void memcached_binary_protocol_set_callbacks(struct memcached_protocol_st *instance, struct memcached_binary_protocol_callback_st *callback);
 
 /**
  * Should the library inspect the packages being sent and received and verify
@@ -88,7 +88,7 @@ void memcached_binary_protocol_set_callbacks(struct memcached_binary_protocol_st
  * @param enable true if you want the library to check packages, false otherwise
  */
 LIBMEMCACHED_API
-void memcached_binary_protocol_set_pedantic(struct memcached_binary_protocol_st *instance, bool enable);
+void memcached_binary_protocol_set_pedantic(struct memcached_protocol_st *instance, bool enable);
 
 /**
  * Is the library inpecting each package?
@@ -96,7 +96,7 @@ void memcached_binary_protocol_set_pedantic(struct memcached_binary_protocol_st 
  * @return true it the library is inspecting each package, false otherwise
  */
 LIBMEMCACHED_API
-bool memcached_binary_protocol_get_pedantic(struct memcached_binary_protocol_st *instance);
+bool memcached_binary_protocol_get_pedantic(struct memcached_protocol_st *instance);
 
 /**
  * Destroy an instance of the protocol handler
@@ -104,7 +104,7 @@ bool memcached_binary_protocol_get_pedantic(struct memcached_binary_protocol_st 
  * @param instance The instance to destroy
  */
 LIBMEMCACHED_API
-void memcached_binary_protocol_destroy_instance(struct memcached_binary_protocol_st *instance);
+void memcached_protocol_destroy_instance(struct memcached_protocol_st *instance);
 
 /**
  * Set the IO functions used by the instance to send and receive data. The
@@ -115,9 +115,9 @@ void memcached_binary_protocol_destroy_instance(struct memcached_binary_protocol
  * @param send the function to call for sending data
  */
 LIBMEMCACHED_API
-void memached_binary_protocol_set_io_functions(struct memcached_binary_protocol_st *instance, 
-                                               memcached_binary_protocol_recv_func recv, 
-                                               memcached_binary_protocol_send_func send);
+void memached_protocol_set_io_functions(struct memcached_protocol_st *instance, 
+                                        memcached_protocol_recv_func recv, 
+                                        memcached_protocol_send_func send);
 
 
 /**
@@ -127,7 +127,7 @@ void memached_binary_protocol_set_io_functions(struct memcached_binary_protocol_
  * @return NULL if allocation fails, otherwise an instance 
  */
 LIBMEMCACHED_API
-struct memcached_binary_protocol_client_st *memcached_binary_protocol_create_client(struct memcached_binary_protocol_st *instance, int sock);
+struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, int sock);
 
 /**
  * Destroy a client handle.
@@ -138,12 +138,12 @@ struct memcached_binary_protocol_client_st *memcached_binary_protocol_create_cli
  * @param client the client to destroy
  */
 LIBMEMCACHED_API
-void memcached_binary_protocol_client_destroy(struct memcached_binary_protocol_client_st *client);
+void memcached_protocol_client_destroy(struct memcached_protocol_client_st *client);
 
 /**
  * The different events the client is interested in
  */
-enum MEMCACHED_BINARY_PROTOCOL_EVENT { 
+enum MEMCACHED_PROTOCOL_EVENT { 
    /* Error event means that the client encountered an error with the
     * connection so you should shut it down */
    ERROR_EVENT, 
@@ -162,7 +162,7 @@ enum MEMCACHED_BINARY_PROTOCOL_EVENT {
  * @return The next event the protocol handler will be notified for
  */
 LIBMEMCACHED_API
-enum MEMCACHED_BINARY_PROTOCOL_EVENT memcached_binary_protocol_client_work(struct memcached_binary_protocol_client_st *client);
+enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_protocol_client_st *client);
 
 /**
  * Get the socket attached to a client handle
@@ -170,7 +170,7 @@ enum MEMCACHED_BINARY_PROTOCOL_EVENT memcached_binary_protocol_client_work(struc
  * @return the socket handle
  */
 LIBMEMCACHED_API
-int memcached_binary_protocol_client_get_socket(struct memcached_binary_protocol_client_st *client);
+int memcached_protocol_client_get_socket(struct memcached_protocol_client_st *client);
 
 /**
  * Get the error id socket attached to a client handle
@@ -178,7 +178,7 @@ int memcached_binary_protocol_client_get_socket(struct memcached_binary_protocol
  * @return the OS error code from the client
  */
 LIBMEMCACHED_API
-int memcached_binary_protocol_client_get_errno(struct memcached_binary_protocol_client_st *client);
+int memcached_protocol_client_get_errno(struct memcached_protocol_client_st *client);
 
 /**
  * Get a raw response handler for the given cookie

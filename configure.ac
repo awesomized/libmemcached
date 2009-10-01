@@ -95,7 +95,6 @@ AC_CONFIG_FILES([
   libmemcached/Makefile
   libmemcached/memcached_configure.h
   libmemcachedutil/Makefile
-  libmemcached/protocol/Makefile
   support/Makefile
   support/libmemcached.pc
   support/libmemcached.spec

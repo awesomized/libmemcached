@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
-#ifndef MEMCACHED_PROTOCOL_INTERNAL_H
-#define MEMCACHED_PROTOCOL_INTERNAL_H
+#ifndef LIBMEMCACHED_PROTOCOL_COMMON_H
+#define LIBMEMCACHED_PROTOCOL_COMMON_H
 
 #include "config.h"
 #include <stdbool.h>
@@ -16,17 +16,47 @@
 #include <libmemcached/protocol_handler.h>
 #include <libmemcached/protocol/cache.h>
 
-struct memcached_binary_protocol_st {
+/*
+ * I don't really need the following two functions as function pointers
+ * in the instance handle, but I don't want to put them in the global
+ * namespace for those linking statically (personally I don't like that,
+ * but some people still do). If it ever shows up as a performance thing
+ * I'll look into optimizing this ;-)
+ */
+typedef bool (*drain_func)(struct memcached_protocol_client_st *client);
+typedef protocol_binary_response_status (*spool_func)(struct memcached_protocol_client_st *client,
+                                                      const void *data,
+                                                      size_t length);
+
+/**
+ * Definition of the per instance structure.
+ */
+struct memcached_protocol_st {
   struct memcached_binary_protocol_callback_st *callback;
-  memcached_binary_protocol_recv_func recv;
-  memcached_binary_protocol_send_func send;
-  char *input_buffer;
+  memcached_protocol_recv_func recv;
+  memcached_protocol_send_func send;
+
+  /*
+   * I really don't need these as funciton pointers, but I don't want
+   * to clutter the namespace if someone links statically.
+   */
+  drain_func drain;
+  spool_func spool;
+
+  /*
+   * To avoid keeping a buffer in each client all the time I have a
+   * bigger buffer in the instance that I read to initially, and then
+   * I try to parse and execute as much from the buffer. If I wasn't able
+   * to process all data I'll keep that in a per-connection buffer until
+   * the next time I can read from the socket.
+   */
+  uint8_t *input_buffer;
   size_t input_buffer_size;
+
   bool pedantic;
   /* @todo use multiple sized buffers */
   cache_t *buffer_cache;
 };
-
 
 struct chunk_st {
   /* Pointer to the data */
@@ -43,8 +73,30 @@ struct chunk_st {
 
 #define CHUNK_BUFFERSIZE 2048
 
-struct memcached_binary_protocol_client_st {
-  struct memcached_binary_protocol_st *root;
+typedef enum MEMCACHED_PROTOCOL_EVENT (*process_data)(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr);
+
+enum ascii_cmd {
+  GET_CMD,
+  GETS_CMD,
+  SET_CMD,
+  ADD_CMD,
+  REPLACE_CMD,
+  CAS_CMD,
+  APPEND_CMD,
+  PREPEND_CMD,
+  DELETE_CMD,
+  INCR_CMD,
+  DECR_CMD,
+  STATS_CMD,
+  FLUSH_ALL_CMD,
+  VERSION_CMD,
+  QUIT_CMD,
+  VERBOSITY_CMD,
+  UNKNOWN_CMD,
+};
+
+struct memcached_protocol_client_st {
+  struct memcached_protocol_st *root;
   int sock;
   int error;
 
@@ -52,29 +104,32 @@ struct memcached_binary_protocol_client_st {
   struct chunk_st *output;
   struct chunk_st *output_tail;
 
-
-
-  char *input_buffer;
+  /*
+   * While we process input data, this is where we spool incomplete commands
+   * if we need to receive more data....
+   * @todo use the buffercace
+   */
+  uint8_t *input_buffer;
   size_t input_buffer_size;
   size_t input_buffer_offset;
-  char *curr_input;
 
+  /* The callback to the protocol handler to use (ascii or binary) */
+  process_data work;
 
-  struct chunk_st *input;
-  /* Pointer to the last chunk to avoid the need to traverse the complete list */
-  struct chunk_st *input_tail;
-  size_t bytes_available;
+  /*
+   * Should the spool data discard the data to send or not? (aka noreply in
+   * the ascii protocol..
+   */
+  bool mute;
 
+  /* Members used by the binary protocol */
   protocol_binary_request_header *current_command;
-  bool quiet;
+
+  /* Members used by the ascii protocol */
+  enum ascii_cmd ascii_command;
 };
 
-LIBMEMCACHED_LOCAL
-bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_header *request);
-
-LIBMEMCACHED_LOCAL
-bool memcached_binary_protocol_pedantic_check_response(protocol_binary_request_header *request,
-                                                       protocol_binary_response_header *response);
-
+#include "ascii_handler.h"
+#include "binary_handler.h"
 
 #endif
