@@ -595,6 +595,9 @@ static test_return  add_wrapper(memcached_st *memc)
 #ifdef __sun
   max= 10;
 #endif
+#ifdef __APPLE__
+  max= 10;
+#endif
 
   for (x= 0; x < max; x++)
     add_test(memc);

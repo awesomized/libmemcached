@@ -1,4 +1,4 @@
-# libmemcached 
+# libmemcached
 # Copyright (C) 2008 Brian Aker, Monty Taylor
 # All rights reserved.
 #
@@ -29,6 +29,8 @@ MEMCACHED_LIBRARY_VERSION=3:0:0
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 MEMCACHEDUTIL_LIBRARY_VERSION=0:0:0
 AC_SUBST(MEMCACHEDUTIL_LIBRARY_VERSION)
+MEMCACHEDPROTOCOL_LIBRARY_VERSION=0:0:0
+AC_SUBST(MEMCACHEDPROTOCOL_LIBRARY_VERSION)
 
 
 # libmemcached versioning when linked with GNU ld.
@@ -36,9 +38,11 @@ if test "$lt_cv_prog_gnu_ld" = "yes"
 then
     LD_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/libmemcached.ver"
     LD_UTIL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcachedutil/libmemcachedutil.ver"
+    LD_PROTOCOL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/protocol/libmemcachedprotocol.ver"
 fi
 AC_SUBST(LD_VERSION_SCRIPT)
 AC_SUBST(LD_UTIL_VERSION_SCRIPT)
+AC_SUBST(LD_PROTOCOL_VERSION_SCRIPT)
 
 
 #--------------------------------------------------------------------
@@ -65,7 +69,7 @@ AC_LINK_IFELSE(
       float f= floorf((float) 1.0);
     ]],
     [LIBM="-lm"],[LIBM=""])])
-    
+
 AC_SUBST(LIBM)
 LIBS="$save_LIBS"
 
@@ -80,13 +84,14 @@ REQUIRE_POD2MAN
 PROTOCOL_BINARY_TEST
 WITH_MEMCACHED
 ENABLE_DEPRECATED
-
+PANDORA_HAVE_LIBINNODB
 
 AC_CONFIG_FILES([
   Makefile
   clients/Makefile
   tests/Makefile
   docs/Makefile
+  example/Makefile
   libmemcached/Makefile
   libmemcached/memcached_configure.h
   libmemcachedutil/Makefile
