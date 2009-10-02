@@ -1,9 +1,14 @@
 *.lo
 */.deps
 */.libs
+*/.dirstamp
+*/*/.deps
+*/*/.libs
+*/*/.dirstamp
 */Makefile
 */Makefile.in
 */*.l[oa]
+*/*/*.l[oa]
 *TAGS
 INSTALL
 Makefile
@@ -31,8 +36,10 @@ config/depcomp
 config/install-sh
 config/ltmain.sh
 config/missing
+config/plugin.ac
 configure
 docs/*.[13]
+example/memcached_light
 libmemcached-*.tar.gz
 libmemcached/memcached_configure.h
 libtool
@@ -57,4 +64,4 @@ libmemcached-0.30-1.src.rpm
 libmemcached-0.30-1.x86_64.rpm
 libmemcached-0.31-1.src.rpm
 libmemcached-0.31-1.x86_64.rpm
-config/plugin.ac
+libmemcached-?.??/
