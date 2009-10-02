@@ -3,7 +3,7 @@ dnl vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
 dnl   
 dnl pandora-build: A pedantic build system
 dnl Copyright (C) 2009 Sun Microsystems, Inc.
-dnl This file is free software; the Free Software Foundation
+dnl This file is free software; Sun Microsystem
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 dnl
