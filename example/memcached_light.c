@@ -15,8 +15,15 @@
  *                       the more "logical" interface.
  *   memcached_light.c - This file sets up all of the sockets and run the main
  *                       message loop.
+ *
+ *
+ * config.h is included so that I can use the ntohll/htonll on platforms that
+ * doesn't have that (this is a private function inside libmemcached, so you
+ * cannot use it directly from libmemcached without special modifications to
+ * the library)
  */
 
+#include "config.h"
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -286,7 +293,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void work(void) 
+static void work(void)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
