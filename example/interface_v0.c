@@ -519,7 +519,7 @@ static protocol_binary_response_status stat_command_handler(const void *cookie,
   return response_handler(cookie, header, (void*)&response);
 }
 
-struct memcached_binary_protocol_callback_st interface_v0_impl= {
+memcached_binary_protocol_callback_st interface_v0_impl= {
   .interface_version= 0,
   .interface.v0.comcode[PROTOCOL_BINARY_CMD_GET]= get_command_handler,
   .interface.v0.comcode[PROTOCOL_BINARY_CMD_SET]= set_command_handler,

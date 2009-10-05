@@ -41,8 +41,8 @@
 #include <libmemcached/byteorder.h>
 #include "storage.h"
 
-extern struct memcached_binary_protocol_callback_st interface_v0_impl;
-extern struct memcached_binary_protocol_callback_st interface_v1_impl;
+extern memcached_binary_protocol_callback_st interface_v0_impl;
+extern memcached_binary_protocol_callback_st interface_v1_impl;
 
 static int server_sockets[1024];
 static int num_server_sockets= 0;
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 {
   bool port_specified= false;
   int cmd;
-  struct memcached_binary_protocol_callback_st *interface= &interface_v0_impl;
+  memcached_binary_protocol_callback_st *interface= &interface_v0_impl;
 
   while ((cmd= getopt(argc, argv, "v1p:?")) != EOF)
   {
@@ -364,17 +364,16 @@ static void work(void)
           assert(c != NULL);
           fds[max_poll].events= 0;
 
-          switch (memcached_protocol_client_work(c))
-          {
-          case WRITE_EVENT:
-          case READ_WRITE_EVENT:
+          memcached_protocol_event_t events= memcached_protocol_client_work(c);
+          if (events & MEMCACHED_PROTOCOL_WRITE_EVENT)
             fds[max_poll].events= POLLOUT;
-            /* FALLTHROUGH */
-          case READ_EVENT:
-            fds[max_poll].events |= POLLIN;
-            break;
-          case ERROR_EVENT:
-          default: /* ERROR or unknown state.. close */
+
+          if (events & MEMCACHED_PROTOCOL_READ_EVENT)
+            fds[max_poll].events= POLLIN;
+
+          if (!(events & MEMCACHED_PROTOCOL_PAUSE_EVENT ||
+                fds[max_poll].events != 0))
+          {
             memcached_protocol_client_destroy(c);
             close(fds[x].fd);
             fds[x].events= 0;

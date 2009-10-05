@@ -20,7 +20,7 @@
  * @param cas The CAS value to insert into the response (should be 0
  *            if you don't care)
  */
-typedef protocol_binary_response_status 
+typedef protocol_binary_response_status
 (*memcached_binary_protocol_get_response_handler)(const void *cookie,
                                                   const void *key,
                                                   uint16_t keylen,
@@ -30,14 +30,14 @@ typedef protocol_binary_response_status
                                                   uint64_t cas);
 /**
  * Callback to send data back from a STAT command
- * 
+ *
  * @param cookie Just pass along the cookie supplied in the callback
  * @param key What to insert as key in the reply
  * @param keylen The length of the key
  * @param body What to store in the body of the package
  * @param bodylen The number of bytes of the body
  */
-typedef protocol_binary_response_status 
+typedef protocol_binary_response_status
 (*memcached_binary_protocol_stat_response_handler)(const void *cookie,
                                                    const void *key,
                                                    uint16_t keylen,
@@ -45,12 +45,12 @@ typedef protocol_binary_response_status
                                                    uint32_t bodylen);
 /**
  * Callback to send data back from a VERSION command
- * 
+ *
  * @param cookie Just pass along the cookie supplied in the callback
  * @param text The version string
  * @param length The number of bytes in the version string
  */
-typedef protocol_binary_response_status 
+typedef protocol_binary_response_status
 (*memcached_binary_protocol_version_response_handler)(const void *cookie,
                                                       const void *text,
                                                       uint32_t length);
@@ -58,7 +58,7 @@ typedef protocol_binary_response_status
 
 /**
  * In the low level interface you need to format the response
- * packet yourself (giving you complete freedom :-) 
+ * packet yourself (giving you complete freedom :-)
  *
  * @param cookie Just pass along the cookie supplied in the callback
  * @param request Pointer to the request packet you are sending a reply to
@@ -72,7 +72,7 @@ typedef protocol_binary_response_status (*memcached_binary_protocol_raw_response
 /**
  * In the low lever interface you have to do most of the work by
  * yourself, but it also gives you a lot of freedom :-)
- * @param cookie identification for this connection, just pass it along to 
+ * @param cookie identification for this connection, just pass it along to
  *               the response handler
  * @param header the command received over the wire. Never try to access
  *               <u>anything</u> outside the command.
@@ -84,22 +84,23 @@ typedef protocol_binary_response_status (*memcached_binary_protocol_command_hand
 
 /**
  * The raw interface to the packets is implemented in version 0. It contains
- * just an array with command handlers. The inxed in the array is the 
+ * just an array with command handlers. The inxed in the array is the
  * com code.
  */
-struct memcached_binary_protocol_callback_v0_st {
+typedef struct {
    memcached_binary_protocol_command_handler comcode[256];
-};
+} memcached_binary_protocol_callback_v0_st;
+
 
 /**
  * The first version of the callback struct containing all of the
  * documented commands in the initial release of the binary protocol
  * (aka. memcached 1.4.0).
- * 
+ *
  * You might miss the Q commands (addq etc) but the response function
  * knows how to deal with them so you don't need to worry about that :-)
  */
-struct memcached_binary_protocol_callback_v1_st {
+typedef struct {
    /**
     * Add an item to the cache
     * @param cookie id of the client receiving the command
@@ -111,13 +112,13 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param exptime the expiry time for the key-value pair
     * @param cas the resulting cas for the add operation (if success)
     */
-   protocol_binary_response_status (*add)(const void *cookie, 
-                                          const void *key, 
+   protocol_binary_response_status (*add)(const void *cookie,
+                                          const void *key,
                                           uint16_t keylen,
-                                          const void* val, 
-                                          uint32_t vallen, 
-                                          uint32_t flags, 
-                                          uint32_t exptime, 
+                                          const void* val,
+                                          uint32_t vallen,
+                                          uint32_t flags,
+                                          uint32_t exptime,
                                           uint64_t *cas);
 
    /**
@@ -130,13 +131,13 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param vallen the length of the data
     * @param cas the CAS in the request
     * @param result_cas the resulting cas for the append operation
-    * 
+    *
     */
-   protocol_binary_response_status (*append)(const void *cookie, 
-                                             const void *key, 
-                                             uint16_t keylen, 
-                                             const void* val, 
-                                             uint32_t vallen, 
+   protocol_binary_response_status (*append)(const void *cookie,
+                                             const void *key,
+                                             uint16_t keylen,
+                                             const void* val,
+                                             uint32_t vallen,
                                              uint64_t cas,
                                              uint64_t *result_cas);
 
@@ -152,13 +153,13 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cas the CAS in the request
     * @param result the result from the decrement
     * @param result_cas the cas of the item
-    * 
+    *
     */
-   protocol_binary_response_status (*decrement)(const void *cookie, 
-                                                const void *key, 
-                                                uint16_t keylen, 
-                                                uint64_t delta, 
-                                                uint64_t initial, 
+   protocol_binary_response_status (*decrement)(const void *cookie,
+                                                const void *key,
+                                                uint16_t keylen,
+                                                uint64_t delta,
+                                                uint64_t initial,
                                                 uint32_t expiration,
                                                 uint64_t *result,
                                                 uint64_t *result_cas);
@@ -171,9 +172,9 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param len the length of the key
     * @param cas the CAS in the request
     */
-   protocol_binary_response_status (*delete)(const void *cookie, 
-                                             const void *key, 
-                                             uint16_t keylen, 
+   protocol_binary_response_status (*delete)(const void *cookie,
+                                             const void *key,
+                                             uint16_t keylen,
                                              uint64_t cas);
 
 
@@ -183,7 +184,7 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cookie id of the client receiving the command
     * @param when when the cache should be flushed (0 == immediately)
     */
-   protocol_binary_response_status (*flush)(const void *cookie, 
+   protocol_binary_response_status (*flush)(const void *cookie,
                                             uint32_t when);
 
 
@@ -196,9 +197,9 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param len the length of the key
     * @param response_handler to send the result back to the client
     */
-   protocol_binary_response_status (*get)(const void *cookie, 
-                                          const void *key, 
-                                          uint16_t keylen, 
+   protocol_binary_response_status (*get)(const void *cookie,
+                                          const void *key,
+                                          uint16_t keylen,
                                           memcached_binary_protocol_get_response_handler response_handler);
 
    /**
@@ -213,21 +214,21 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cas the CAS in the request
     * @param result the result from the decrement
     * @param result_cas the cas of the item
-    * 
+    *
     */
-   protocol_binary_response_status (*increment)(const void *cookie, 
-                                                const void *key, 
-                                                uint16_t keylen, 
-                                                uint64_t delta, 
-                                                uint64_t initial, 
-                                                uint32_t expiration, 
+   protocol_binary_response_status (*increment)(const void *cookie,
+                                                const void *key,
+                                                uint16_t keylen,
+                                                uint64_t delta,
+                                                uint64_t initial,
+                                                uint32_t expiration,
                                                 uint64_t *result,
                                                 uint64_t *result_cas);
 
    /**
     * The noop command was received. This is just a notification callback (the
     * response is automatically created).
-    * 
+    *
     * @param cookie id of the client receiving the command
     */
    protocol_binary_response_status (*noop)(const void *cookie);
@@ -242,20 +243,20 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param vallen the length of the data
     * @param cas the CAS in the request
     * @param result-cas the cas id of the item
-    * 
+    *
     */
-   protocol_binary_response_status (*prepend)(const void *cookie, 
-                                              const void *key, 
-                                              uint16_t keylen, 
-                                              const void* val, 
-                                              uint32_t vallen, 
+   protocol_binary_response_status (*prepend)(const void *cookie,
+                                              const void *key,
+                                              uint16_t keylen,
+                                              const void* val,
+                                              uint32_t vallen,
                                               uint64_t cas,
                                               uint64_t *result_cas);
 
    /**
     * The quit command was received. This is just a notification callback (the
     * response is automatically created).
-    * 
+    *
     * @param cookie id of the client receiving the command
     */
    protocol_binary_response_status (*quit)(const void *cookie);
@@ -274,13 +275,13 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cas the cas id in the request
     * @param result_cas the cas id of the item
     */
-   protocol_binary_response_status (*replace)(const void *cookie, 
-                                              const void *key, 
+   protocol_binary_response_status (*replace)(const void *cookie,
+                                              const void *key,
                                               uint16_t keylen,
-                                              const void* val, 
-                                              uint32_t vallen, 
-                                              uint32_t flags, 
-                                              uint32_t exptime, 
+                                              const void* val,
+                                              uint32_t vallen,
+                                              uint32_t flags,
+                                              uint32_t exptime,
                                               uint64_t cas,
                                               uint64_t *result_cas);
 
@@ -298,13 +299,13 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cas the cas id in the request
     * @param result_cas the cas id of the new item
     */
-   protocol_binary_response_status (*set)(const void *cookie, 
-                                          const void *key, 
+   protocol_binary_response_status (*set)(const void *cookie,
+                                          const void *key,
                                           uint16_t keylen,
-                                          const void* val, 
-                                          uint32_t vallen, 
-                                          uint32_t flags, 
-                                          uint32_t exptime, 
+                                          const void* val,
+                                          uint32_t vallen,
+                                          uint32_t flags,
+                                          uint32_t exptime,
                                           uint64_t cas,
                                           uint64_t *result_cas);
 
@@ -318,11 +319,11 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param keylen the length of the key
     * @param response_handler to send the result back to the client, but
     *                         don't send reply on success!
-    * 
+    *
     */
-   protocol_binary_response_status (*stat)(const void *cookie, 
-                                           const void *key, 
-                                           uint16_t keylen, 
+   protocol_binary_response_status (*stat)(const void *cookie,
+                                           const void *key,
+                                           uint16_t keylen,
                                            memcached_binary_protocol_stat_response_handler response_handler);
 
    /**
@@ -331,16 +332,16 @@ struct memcached_binary_protocol_callback_v1_st {
     * @param cookie id of the client receiving the command
     * @param response_handler to send the result back to the client, but
     *                         don't send reply on success!
-    * 
+    *
     */
-   protocol_binary_response_status (*version)(const void *cookie, 
+   protocol_binary_response_status (*version)(const void *cookie,
                                               memcached_binary_protocol_version_response_handler response_handler);
-};
+} memcached_binary_protocol_callback_v1_st;
 
 /**
- * 
+ *
  */
-struct memcached_binary_protocol_callback_st {
+typedef struct {
    /**
     * The interface version used (set to 0 if you don't have any specialized
     * command handlers).
@@ -355,7 +356,7 @@ struct memcached_binary_protocol_callback_st {
     *               at the content you <b>must</b> ensure that you don't
     *               try to access beyond the end of the message.
     */
-   void (*pre_execute)(const void *cookie, 
+   void (*pre_execute)(const void *cookie,
                        protocol_binary_request_header *header);
    /**
     * Callback fired just after the command was exected (please note
@@ -390,15 +391,15 @@ struct memcached_binary_protocol_callback_st {
     * passed as the pointer is valid as long as you use the protocol handler.
     */
    union {
-      struct memcached_binary_protocol_callback_v0_st v0;
+      memcached_binary_protocol_callback_v0_st v0;
 
       /**
        * The first version of the callback struct containing all of the
        * documented commands in the initial release of the binary protocol
        * (aka. memcached 1.4.0).
        */
-      struct memcached_binary_protocol_callback_v1_st v1;
+      memcached_binary_protocol_callback_v1_st v1;
    } interface;
-};
+} memcached_binary_protocol_callback_st;
 
 #endif
