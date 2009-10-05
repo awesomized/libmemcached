@@ -48,7 +48,7 @@ static test_return  init_test(memcached_st *not_used __attribute__((unused)))
   (void)memcached_create(&memc);
   memcached_free(&memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  server_list_null_test(memcached_st *ptr __attribute__((unused)))
@@ -65,7 +65,7 @@ static test_return  server_list_null_test(memcached_st *ptr __attribute__((unuse
   server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, &rc);
   assert(server_list == NULL);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 #define TEST_PORT_COUNT 7
@@ -108,7 +108,7 @@ static test_return  server_sort_test(memcached_st *ptr __attribute__((unused)))
 
   memcached_free(local_memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  server_sort2_test(memcached_st *ptr __attribute__((unused)))
@@ -138,7 +138,7 @@ static test_return  server_sort2_test(memcached_st *ptr __attribute__((unused)))
 
   memcached_free(local_memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static memcached_return  server_display_unsort_function(memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
@@ -184,7 +184,7 @@ static test_return  server_unsort_test(memcached_st *ptr __attribute__((unused))
 
   memcached_free(local_memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  allocation_test(memcached_st *not_used __attribute__((unused)))
@@ -194,7 +194,7 @@ static test_return  allocation_test(memcached_st *not_used __attribute__((unused
   assert(memc);
   memcached_free(memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  clone_test(memcached_st *memc)
@@ -261,7 +261,7 @@ static test_return  clone_test(memcached_st *memc)
     memcached_free(memc_clone);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return userdata_test(memcached_st *memc)
@@ -281,7 +281,7 @@ static test_return  connection_test(memcached_st *memc)
   rc= memcached_server_add_with_weight(memc, "localhost", 0, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  error_test(memcached_st *memc)
@@ -309,7 +309,7 @@ static test_return  error_test(memcached_st *memc)
     assert(values[rc] == hash_val);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  set_test(memcached_st *memc)
@@ -323,7 +323,7 @@ static test_return  set_test(memcached_st *memc)
                     (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  append_test(memcached_st *memc)
@@ -360,7 +360,7 @@ static test_return  append_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   free(out_value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  append_binary_test(memcached_st *memc)
@@ -406,7 +406,7 @@ static test_return  append_binary_test(memcached_st *memc)
   }
   free(value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  cas2_test(memcached_st *memc)
@@ -450,7 +450,7 @@ static test_return  cas2_test(memcached_st *memc)
 
   memcached_result_free(&results_obj);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  cas_test(memcached_st *memc)
@@ -510,7 +510,7 @@ static test_return  cas_test(memcached_st *memc)
 
   memcached_result_free(&results_obj);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  prepend_test(memcached_st *memc)
@@ -547,7 +547,7 @@ static test_return  prepend_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   free(out_value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -578,7 +578,7 @@ static test_return  add_test(memcached_st *memc)
   else
     assert(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_DATA_EXISTS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -602,7 +602,7 @@ static test_return  add_wrapper(memcached_st *memc)
   for (x= 0; x < max; x++)
     add_test(memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  replace_test(memcached_st *memc)
@@ -622,7 +622,7 @@ static test_return  replace_test(memcached_st *memc)
                     (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  delete_test(memcached_st *memc)
@@ -639,7 +639,7 @@ static test_return  delete_test(memcached_st *memc)
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  flush_test(memcached_st *memc)
@@ -649,7 +649,7 @@ static test_return  flush_test(memcached_st *memc)
   rc= memcached_flush(memc, 0);
   assert(rc == MEMCACHED_SUCCESS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static memcached_return  server_function(memcached_st *ptr __attribute__((unused)),
@@ -669,7 +669,7 @@ static test_return  memcached_server_cursor_test(memcached_st *memc)
 
   callbacks[0]= server_function;
   memcached_server_cursor(memc, callbacks, context,  1);
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  bad_key_test(memcached_st *memc)
@@ -761,7 +761,7 @@ static test_return  bad_key_test(memcached_st *memc)
 
   memcached_free(memc_clone);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 #define READ_THROUGH_VALUE "set for me"
@@ -810,7 +810,7 @@ static test_return  read_through(memcached_st *memc)
   assert(!strcmp(READ_THROUGH_VALUE, string));
   free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static memcached_return  delete_trigger(memcached_st *ptr __attribute__((unused)),
@@ -832,7 +832,7 @@ static test_return  delete_through(memcached_st *memc)
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback);
   assert(rc == MEMCACHED_SUCCESS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_test(memcached_st *memc)
@@ -853,7 +853,7 @@ static test_return  get_test(memcached_st *memc)
   assert(string_length ==  0);
   assert(!string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_test2(memcached_st *memc)
@@ -880,7 +880,7 @@ static test_return  get_test2(memcached_st *memc)
 
   free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  set_test2(memcached_st *memc)
@@ -899,7 +899,7 @@ static test_return  set_test2(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  set_test3(memcached_st *memc)
@@ -930,7 +930,7 @@ static test_return  set_test3(memcached_st *memc)
 
   free(value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_test3(memcached_st *memc)
@@ -966,7 +966,7 @@ static test_return  get_test3(memcached_st *memc)
   free(string);
   free(value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_test4(memcached_st *memc)
@@ -1005,7 +1005,7 @@ static test_return  get_test4(memcached_st *memc)
 
   free(value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -1126,7 +1126,7 @@ static test_return  stats_servername_test(memcached_st *memc)
                                  memc->hosts[0].hostname,
                                  memc->hosts[0].port);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  increment_test(memcached_st *memc)
@@ -1151,7 +1151,7 @@ static test_return  increment_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(new_number == 2);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  increment_with_initial_test(memcached_st *memc)
@@ -1173,7 +1173,7 @@ static test_return  increment_with_initial_test(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS);
     assert(new_number == (initial + 1));
   }
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  decrement_test(memcached_st *memc)
@@ -1198,7 +1198,7 @@ static test_return  decrement_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(new_number == 1);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  decrement_with_initial_test(memcached_st *memc)
@@ -1220,7 +1220,7 @@ static test_return  decrement_with_initial_test(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS);
     assert(new_number == (initial - 1));
   }
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  quit_test(memcached_st *memc)
@@ -1240,7 +1240,7 @@ static test_return  quit_test(memcached_st *memc)
                     (time_t)50, (uint32_t)9);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_result_test(memcached_st *memc)
@@ -1297,7 +1297,7 @@ static test_return  mget_result_test(memcached_st *memc)
 
   memcached_result_free(&results_obj);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_result_alloc_test(memcached_st *memc)
@@ -1347,7 +1347,7 @@ static test_return  mget_result_alloc_test(memcached_st *memc)
     x++;
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Count the results */
@@ -1390,7 +1390,7 @@ static test_return  mget_result_function(memcached_st *memc)
 
   assert(counter == 3);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_test(memcached_st *memc)
@@ -1445,7 +1445,7 @@ static test_return  mget_test(memcached_st *memc)
     x++;
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_stats_keys(memcached_st *memc)
@@ -1463,7 +1463,7 @@ static test_return  get_stats_keys(memcached_st *memc)
 
  free(list);
 
- return 0;
+ return TEST_SUCCESS;
 }
 
 static test_return  version_string_test(memcached_st *memc __attribute__((unused)))
@@ -1474,7 +1474,7 @@ static test_return  version_string_test(memcached_st *memc __attribute__((unused
 
   assert(!strcmp(version_string, LIBMEMCACHED_VERSION_STRING));
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_stats(memcached_st *memc)
@@ -1502,7 +1502,7 @@ static test_return  get_stats(memcached_st *memc)
 
  memcached_stat_free(NULL, memc_stat);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  add_host_test(memcached_st *memc)
@@ -1534,7 +1534,7 @@ static test_return  add_host_test(memcached_st *memc)
 
   memcached_server_list_free(servers);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static memcached_return  clone_test_callback(memcached_st *parent __attribute__((unused)), memcached_st *memc_clone __attribute__((unused)))
@@ -1590,7 +1590,7 @@ static test_return  callback_test(memcached_st *memc)
     assert(temp_function == cleanup_cb_ptr);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* We don't test the behavior itself, we test the switches */
@@ -1641,7 +1641,7 @@ static test_return  behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, value + 1);
   assert((value + 1) == memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Test case provided by Cal Haldenbrand */
@@ -1689,7 +1689,7 @@ static test_return  user_supplied_bug1(memcached_st *memc)
     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Test case provided by Cal Haldenbrand */
@@ -1743,7 +1743,7 @@ static test_return  user_supplied_bug2(memcached_st *memc)
     free(getval);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Do a large mget() over all the keys we think exist */
@@ -1804,7 +1804,7 @@ static test_return  user_supplied_bug3(memcached_st *memc)
     free(keys[x]);
   free(keys);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Make sure we behave properly if server list has no values */
@@ -1867,7 +1867,7 @@ static test_return  user_supplied_bug4(memcached_st *memc)
     x++;
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 #define VALUE_SIZE_BUG5 1048064
@@ -1926,7 +1926,7 @@ static test_return  user_supplied_bug5(memcached_st *memc)
     assert(count == 4);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  user_supplied_bug6(memcached_st *memc)
@@ -1991,7 +1991,7 @@ static test_return  user_supplied_bug6(memcached_st *memc)
     }
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  user_supplied_bug8(memcached_st *memc __attribute__((unused)))
@@ -2021,7 +2021,7 @@ static test_return  user_supplied_bug8(memcached_st *memc __attribute__((unused)
   memcached_free(mine);
   memcached_free(memc_clone);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Test flag store/retrieve */
@@ -2066,7 +2066,7 @@ static test_return  user_supplied_bug7(memcached_st *memc)
   free(value);
 
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  user_supplied_bug9(memcached_st *memc)
@@ -2110,7 +2110,7 @@ static test_return  user_supplied_bug9(memcached_st *memc)
   }
   assert(count == 3);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* We are testing with aggressive timeout to get failures */
@@ -2151,7 +2151,7 @@ static test_return  user_supplied_bug10(memcached_st *memc)
   free(value);
   memcached_free(mclone);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -2192,7 +2192,7 @@ static test_return  user_supplied_bug11(memcached_st *memc)
   free(value);
   memcached_free(mclone);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -2234,7 +2234,7 @@ static test_return  user_supplied_bug12(memcached_st *memc)
   assert(number_value == 2);
   assert(rc == MEMCACHED_SUCCESS);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -2269,7 +2269,7 @@ static test_return  user_supplied_bug13(memcached_st *memc)
     free(overflow);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 
@@ -2318,7 +2318,7 @@ static test_return  user_supplied_bug14(memcached_st *memc)
 
   free(value);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -2358,7 +2358,7 @@ static test_return  user_supplied_bug15(memcached_st *memc)
     assert(flags == 0);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* Check the return sizes on FLAGS to make sure it stores 32bit unsigned values correctly */
@@ -2384,7 +2384,7 @@ static test_return  user_supplied_bug16(memcached_st *memc)
   assert(length == 0);
   assert(flags == UINT32_MAX);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 #ifndef __sun
@@ -2412,7 +2412,7 @@ static test_return  user_supplied_bug17(memcached_st *memc)
     assert(memcmp(value, value2, length)==0);
     free(value2);
 
-    return 0;
+    return TEST_SUCCESS;
 }
 #endif
 
@@ -2437,7 +2437,7 @@ static test_return user_supplied_bug19(memcached_st *memc)
 
   memcached_free(m);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 /* CAS test from Andei */
@@ -2469,7 +2469,7 @@ static test_return user_supplied_bug20(memcached_st *memc)
 
   memcached_result_free(result);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 #include "ketama_test_cases.h"
@@ -2529,7 +2529,7 @@ static test_return user_supplied_bug18(memcached_st *trash)
   memcached_server_list_free(server_pool);
   memcached_free(memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return auto_eject_hosts(memcached_st *trash)
@@ -2611,7 +2611,7 @@ static test_return  result_static(memcached_st *memc)
   assert(result_ptr);
   memcached_result_free(&result);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  result_alloc(memcached_st *memc)
@@ -2622,7 +2622,7 @@ static test_return  result_alloc(memcached_st *memc)
   assert(result);
   memcached_result_free(result);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_static_null(memcached_st *memc)
@@ -2635,7 +2635,7 @@ static test_return  string_static_null(memcached_st *memc)
   assert(string_ptr);
   memcached_string_free(&string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_alloc_null(memcached_st *memc)
@@ -2646,7 +2646,7 @@ static test_return  string_alloc_null(memcached_st *memc)
   assert(string);
   memcached_string_free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_alloc_with_size(memcached_st *memc)
@@ -2657,7 +2657,7 @@ static test_return  string_alloc_with_size(memcached_st *memc)
   assert(string);
   memcached_string_free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_alloc_with_size_toobig(memcached_st *memc)
@@ -2667,7 +2667,7 @@ static test_return  string_alloc_with_size_toobig(memcached_st *memc)
   string= memcached_string_create(memc, NULL, SIZE_MAX);
   assert(string == NULL);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_alloc_append(memcached_st *memc)
@@ -2690,7 +2690,7 @@ static test_return  string_alloc_append(memcached_st *memc)
   }
   memcached_string_free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  string_alloc_append_toobig(memcached_st *memc)
@@ -2715,14 +2715,14 @@ static test_return  string_alloc_append_toobig(memcached_st *memc)
   assert(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
   memcached_string_free(string);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  cleanup_pairs(memcached_st *memc __attribute__((unused)))
 {
   pairs_free(global_pairs);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  generate_pairs(memcached_st *memc __attribute__((unused)))
@@ -2737,7 +2737,7 @@ static test_return  generate_pairs(memcached_st *memc __attribute__((unused)))
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  generate_large_pairs(memcached_st *memc __attribute__((unused)))
@@ -2752,14 +2752,14 @@ static test_return  generate_large_pairs(memcached_st *memc __attribute__((unuse
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  generate_data(memcached_st *memc)
 {
   execute_set(memc, global_pairs, global_count);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  generate_data_with_stats(memcached_st *memc)
@@ -2784,7 +2784,7 @@ static test_return  generate_data_with_stats(memcached_st *memc)
 
   memcached_stat_free(NULL, stat_p);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 static test_return  generate_buffer_data(memcached_st *memc)
 {
@@ -2794,7 +2794,7 @@ static test_return  generate_buffer_data(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, latch);
   generate_data(memc);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_read_count(memcached_st *memc)
@@ -2830,7 +2830,7 @@ static test_return  get_read_count(memcached_st *memc)
 
   memcached_free(memc_clone);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  get_read(memcached_st *memc)
@@ -2856,7 +2856,7 @@ static test_return  get_read(memcached_st *memc)
     }
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_read(memcached_st *memc)
@@ -2882,7 +2882,7 @@ static test_return  mget_read(memcached_st *memc)
     }
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_read_result(memcached_st *memc)
@@ -2907,7 +2907,7 @@ static test_return  mget_read_result(memcached_st *memc)
     memcached_result_free(&results_obj);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  mget_read_function(memcached_st *memc)
@@ -2923,7 +2923,7 @@ static test_return  mget_read_function(memcached_st *memc)
   counter= 0;
   rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  delete_generate(memcached_st *memc)
@@ -2935,7 +2935,7 @@ static test_return  delete_generate(memcached_st *memc)
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  delete_buffer_generate(memcached_st *memc)
@@ -2951,7 +2951,7 @@ static test_return  delete_buffer_generate(memcached_st *memc)
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static test_return  add_host_test1(memcached_st *memc)
@@ -2983,7 +2983,7 @@ static test_return  add_host_test1(memcached_st *memc)
 
   memcached_server_list_free(servers);
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
 static memcached_return  pre_nonblock(memcached_st *memc)
