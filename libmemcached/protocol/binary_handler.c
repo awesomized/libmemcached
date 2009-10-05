@@ -125,8 +125,9 @@ get_response_handler(const void *cookie,
       .extlen= 4,
       .bodylen= htonl(bodylen + keylen + 4),
     },
-    .message.body.flags= htonl(flags),
   };
+
+  response.message.body.flags= htonl(flags);
 
   protocol_binary_response_status rval;
   const protocol_binary_response_status success= PROTOCOL_BINARY_RESPONSE_SUCCESS;
