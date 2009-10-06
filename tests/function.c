@@ -4505,6 +4505,81 @@ static test_return regression_bug_434484(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return regression_bug_434843(memcached_st *memc)
+{
+  if (pre_binary(memc) != TEST_SUCCESS)
+    return TEST_SUCCESS;
+
+  memcached_return rc;
+  unsigned int counter= 0;
+  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+
+  /*
+   * I only want to hit only _one_ server so I know the number of requests I'm
+   * sending in the pipleine to the server. Let's try to do a multiget of
+   * 10240 (that should satisfy most users don't you tink?)
+   */
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+  const int max_keys= 10240;
+  char **keys= calloc(max_keys, sizeof(char*));
+  size_t *key_length=calloc(max_keys, sizeof(size_t));
+
+  for (int x= 0; x < max_keys; ++x)
+  {
+     char k[251];
+     key_length[x]= snprintf(k, sizeof(k), "0200%u", x);
+     keys[x]= strdup(k);
+     assert(keys[x] != NULL);
+  }
+
+  /*
+   * Run two times.. the first time we should have 100% cache miss,
+   * and the second time we should have 100% cache hits
+   */
+  for (int y= 0; y < 2; ++y)
+  {
+    rc= memcached_mget(memc, (const char**)keys, key_length, max_keys);
+    assert(rc == MEMCACHED_SUCCESS);
+    rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+    if (y == 0)
+    {
+      /* The first iteration should give me a 100% cache miss. verify that*/
+      assert(counter == 0);
+      char blob[1024];
+      for (int x= 0; x < max_keys; ++x)
+      {
+        rc= memcached_add(memc, keys[x], key_length[x],
+                          blob, sizeof(blob), 0, 0);
+        assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+      }
+    }
+    else
+    {
+      /* Verify that we received all of the key/value pairs */
+      assert(counter == max_keys);
+    }
+  }
+
+  /* Release allocated resources */
+  for (int x= 0; x < max_keys; ++x)
+    free(keys[x]);
+  free(keys);
+  free(key_length);
+
+  memc->number_of_hosts= number_of_hosts;
+  return TEST_SUCCESS;
+}
+
+static test_return regression_bug_434843_buffered(memcached_st *memc)
+{
+  memcached_return rc;
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  return regression_bug_434843(memc);
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4666,6 +4741,8 @@ test_st replication_tests[]= {
  */
 test_st regression_tests[]= {
   {"lp:434484", 1, regression_bug_434484 },
+  {"lp:434843", 1, regression_bug_434843 },
+  {"lp:434843 buffered", 1, regression_bug_434843_buffered },
   {0, 0, 0}
 };
 
