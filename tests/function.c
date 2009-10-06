@@ -4521,14 +4521,14 @@ static test_return regression_bug_434843(memcached_st *memc)
    */
   uint32_t number_of_hosts= memc->number_of_hosts;
   memc->number_of_hosts= 1;
-  const int max_keys= 10240;
+  const size_t max_keys= 10240;
   char **keys= calloc(max_keys, sizeof(char*));
   size_t *key_length=calloc(max_keys, sizeof(size_t));
 
-  for (int x= 0; x < max_keys; ++x)
+  for (int x= 0; x < (int)max_keys; ++x)
   {
      char k[251];
-     key_length[x]= snprintf(k, sizeof(k), "0200%u", x);
+     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
      keys[x]= strdup(k);
      assert(keys[x] != NULL);
   }
@@ -4547,7 +4547,7 @@ static test_return regression_bug_434843(memcached_st *memc)
       /* The first iteration should give me a 100% cache miss. verify that*/
       assert(counter == 0);
       char blob[1024];
-      for (int x= 0; x < max_keys; ++x)
+      for (int x= 0; x < (int)max_keys; ++x)
       {
         rc= memcached_add(memc, keys[x], key_length[x],
                           blob, sizeof(blob), 0, 0);
@@ -4557,12 +4557,12 @@ static test_return regression_bug_434843(memcached_st *memc)
     else
     {
       /* Verify that we received all of the key/value pairs */
-      assert(counter == max_keys);
+       assert(counter == (unsigned int)max_keys);
     }
   }
 
   /* Release allocated resources */
-  for (int x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < max_keys; ++x)
     free(keys[x]);
   free(keys);
   free(key_length);
