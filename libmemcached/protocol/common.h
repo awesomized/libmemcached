@@ -23,8 +23,8 @@
  * but some people still do). If it ever shows up as a performance thing
  * I'll look into optimizing this ;-)
  */
-typedef bool (*drain_func)(struct memcached_protocol_client_st *client);
-typedef protocol_binary_response_status (*spool_func)(struct memcached_protocol_client_st *client,
+typedef bool (*drain_func)(memcached_protocol_client_st *client);
+typedef protocol_binary_response_status (*spool_func)(memcached_protocol_client_st *client,
                                                       const void *data,
                                                       size_t length);
 
@@ -32,7 +32,7 @@ typedef protocol_binary_response_status (*spool_func)(struct memcached_protocol_
  * Definition of the per instance structure.
  */
 struct memcached_protocol_st {
-  struct memcached_binary_protocol_callback_st *callback;
+  memcached_binary_protocol_callback_st *callback;
   memcached_protocol_recv_func recv;
   memcached_protocol_send_func send;
 
@@ -73,7 +73,7 @@ struct chunk_st {
 
 #define CHUNK_BUFFERSIZE 2048
 
-typedef enum MEMCACHED_PROTOCOL_EVENT (*process_data)(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr);
+typedef memcached_protocol_event_t (*process_data)(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr);
 
 enum ascii_cmd {
   GET_CMD,
@@ -96,7 +96,7 @@ enum ascii_cmd {
 };
 
 struct memcached_protocol_client_st {
-  struct memcached_protocol_st *root;
+  memcached_protocol_st *root;
   int sock;
   int error;
 

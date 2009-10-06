@@ -16,7 +16,7 @@
 static uint16_t parse_ascii_key(char **start)
 {
   uint16_t len= 0;
-  char *c = *start;
+  char *c= *start;
   /* Strip leading whitespaces */
   while (isspace(*c))
   {
@@ -47,7 +47,7 @@ static uint16_t parse_ascii_key(char **start)
  * @return status of the spool operation
  */
 static protocol_binary_response_status
-spool_string(struct memcached_protocol_client_st *client, const char *text)
+spool_string(memcached_protocol_client_st *client, const char *text)
 {
   return client->root->spool(client, text, strlen(text));
 }
@@ -57,7 +57,7 @@ spool_string(struct memcached_protocol_client_st *client, const char *text)
  * format of the command being sent
  * @param client the client to send the message to
  */
-static void send_command_usage(struct memcached_protocol_client_st *client)
+static void send_command_usage(memcached_protocol_client_st *client)
 {
   const char *errmsg[]= {
     [GET_CMD]= "CLIENT_ERROR: Syntax error: get <key>*\r\n",
@@ -94,7 +94,7 @@ ascii_version_response_handler(const void *cookie,
                          const void *text,
                          uint32_t textlen)
 {
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   spool_string(client, "VERSION ");
   client->root->spool(client, text, textlen);
   spool_string(client, "\r\n");
@@ -120,17 +120,17 @@ ascii_get_response_handler(const void *cookie,
                            uint32_t flags,
                            uint64_t cas)
 {
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   char buffer[300];
   strcpy(buffer, "VALUE ");
-  const char *source = key;
-  char *dest = buffer + 6;
+  const char *source= key;
+  char *dest= buffer + 6;
 
   for (int x= 0; x < keylen; ++x)
   {
     if (*source != '\0' && !isspace(*source) && !iscntrl(*source))
     {
-      *dest = *source;
+      *dest= *source;
     }
     else
     {
@@ -176,7 +176,7 @@ ascii_stat_response_handler(const void *cookie,
                      uint32_t bodylen)
 {
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
 
   if (key != NULL)
   {
@@ -200,7 +200,7 @@ ascii_stat_response_handler(const void *cookie,
  * @param buffer the complete get(s) command
  * @param end the last character in the command
  */
-static void ascii_process_gets(struct memcached_protocol_client_st *client,
+static void ascii_process_gets(memcached_protocol_client_st *client,
                                char *buffer, char *end)
 {
   char *key= buffer;
@@ -265,7 +265,7 @@ static int ascii_tokenize_command(char *str, char *end, char **vec, int size)
     }
 
     /* zero-terminate it for easier parsing later on */
-    *str = '\0';
+    *str= '\0';
     ++str;
 
     /* Is the vector full? */
@@ -292,7 +292,7 @@ static void recover_tokenize_command(char *start, char *end)
   while (start < end)
   {
     if (*start == '\0')
-      *start = ' ';
+      *start= ' ';
     ++start;
   }
 
@@ -308,7 +308,7 @@ static enum ascii_cmd ascii_to_cmd(char *start, size_t length)
     const char *cmd;
     size_t len;
     enum ascii_cmd cc;
-  } commands[] = {
+  } commands[]= {
     { .cmd= "get", .len= 3, .cc= GET_CMD },
     { .cmd= "gets", .len= 4, .cc= GETS_CMD },
     { .cmd= "set", .len= 3, .cc= SET_CMD },
@@ -353,7 +353,7 @@ static enum ascii_cmd ascii_to_cmd(char *start, size_t length)
  * @param tokens the command as a vector
  * @param ntokens the number of items in the vector
  */
-static void process_delete(struct memcached_protocol_client_st *client,
+static void process_delete(memcached_protocol_client_st *client,
                            char **tokens, int ntokens)
 {
   char *key= tokens[1];
@@ -390,7 +390,7 @@ static void process_delete(struct memcached_protocol_client_st *client,
   }
 }
 
-static void process_arithmetic(struct memcached_protocol_client_st *client,
+static void process_arithmetic(memcached_protocol_client_st *client,
                                char **tokens, int ntokens)
 {
   char *key= tokens[1];
@@ -404,7 +404,7 @@ static void process_arithmetic(struct memcached_protocol_client_st *client,
 
   uint64_t cas;
   uint64_t result;
-  uint64_t delta = strtoull(tokens[2], NULL, 10);
+  uint64_t delta= strtoull(tokens[2], NULL, 10);
 
   protocol_binary_response_status rval;
   if (client->ascii_command == INCR_CMD)
@@ -454,7 +454,7 @@ static void process_arithmetic(struct memcached_protocol_client_st *client,
  * @param key pointer to the first character after "stats"
  * @param end pointer to the "\n"
  */
-static void process_stats(struct memcached_protocol_client_st *client,
+static void process_stats(memcached_protocol_client_st *client,
                           char *key, char *end)
 {
   if (client->root->callback->interface.v1.stat == NULL)
@@ -471,7 +471,7 @@ static void process_stats(struct memcached_protocol_client_st *client,
                                                   ascii_stat_response_handler);
 }
 
-static void process_version(struct memcached_protocol_client_st *client,
+static void process_version(memcached_protocol_client_st *client,
                             char **tokens, int ntokens)
 {
   (void)tokens;
@@ -491,7 +491,7 @@ static void process_version(struct memcached_protocol_client_st *client,
                                               ascii_version_response_handler);
 }
 
-static void process_flush(struct memcached_protocol_client_st *client,
+static void process_flush(memcached_protocol_client_st *client,
                           char **tokens, int ntokens)
 {
   if (ntokens > 2)
@@ -509,7 +509,7 @@ static void process_flush(struct memcached_protocol_client_st *client,
   uint32_t timeout= 0;
   if (ntokens == 2)
   {
-    timeout = (uint32_t)strtoul(tokens[1], NULL, 10);
+    timeout= (uint32_t)strtoul(tokens[1], NULL, 10);
   }
 
   protocol_binary_response_status rval;
@@ -534,7 +534,7 @@ static void process_flush(struct memcached_protocol_client_st *client,
  *         0 storage command completed, continue processing
  *         1 We need more data, so just go ahead and wait for more!
  */
-static inline int process_storage_command(struct memcached_protocol_client_st *client,
+static inline int process_storage_command(memcached_protocol_client_st *client,
                                      char **tokens, int ntokens, char *start,
                                      char **end, ssize_t length)
 {
@@ -548,12 +548,12 @@ static inline int process_storage_command(struct memcached_protocol_client_st *c
     return -1;
   }
 
-  uint32_t flags = (uint32_t)strtoul(tokens[2], NULL, 10);
-  uint32_t timeout = (uint32_t)strtoul(tokens[3], NULL, 10);
-  unsigned long nbytes = strtoul(tokens[4], NULL, 10);
+  uint32_t flags= (uint32_t)strtoul(tokens[2], NULL, 10);
+  uint32_t timeout= (uint32_t)strtoul(tokens[3], NULL, 10);
+  unsigned long nbytes= strtoul(tokens[4], NULL, 10);
 
   /* Do we have all data? */
-  unsigned long need = nbytes + (unsigned long)((*end - start) + 1) + 2; /* \n\r\n */
+  unsigned long need= nbytes + (unsigned long)((*end - start) + 1) + 2; /* \n\r\n */
   if ((ssize_t)need > length)
   {
     /* Keep on reading */
@@ -561,7 +561,7 @@ static inline int process_storage_command(struct memcached_protocol_client_st *c
     return 1;
   }
 
-  void *data = (*end) + 1;
+  void *data= (*end) + 1;
   uint64_t cas= 0;
   uint64_t result_cas;
   protocol_binary_response_status rval;
@@ -585,7 +585,7 @@ static inline int process_storage_command(struct memcached_protocol_client_st *c
                                                    timeout, &result_cas);
     break;
   case CAS_CMD:
-    cas = strtoull(tokens[5], NULL, 10);
+    cas= strtoull(tokens[5], NULL, 10);
     /* FALLTHROUGH */
   case REPLACE_CMD:
     rval= client->root->callback->interface.v1.replace(client, key,
@@ -661,7 +661,7 @@ static inline int process_storage_command(struct memcached_protocol_client_st *c
   return 0;
 }
 
-static int process_cas_command(struct memcached_protocol_client_st *client,
+static int process_cas_command(memcached_protocol_client_st *client,
                                 char **tokens, int ntokens, char *start,
                                 char **end, ssize_t length)
 {
@@ -680,7 +680,7 @@ static int process_cas_command(struct memcached_protocol_client_st *client,
   return process_storage_command(client, tokens, ntokens, start, end, length);
 }
 
-static int process_set_command(struct memcached_protocol_client_st *client,
+static int process_set_command(memcached_protocol_client_st *client,
                                 char **tokens, int ntokens, char *start,
                                 char **end, ssize_t length)
 {
@@ -699,7 +699,7 @@ static int process_set_command(struct memcached_protocol_client_st *client,
   return process_storage_command(client, tokens, ntokens, start, end, length);
 }
 
-static int process_add_command(struct memcached_protocol_client_st *client,
+static int process_add_command(memcached_protocol_client_st *client,
                                 char **tokens, int ntokens, char *start,
                                 char **end, ssize_t length)
 {
@@ -718,7 +718,7 @@ static int process_add_command(struct memcached_protocol_client_st *client,
   return process_storage_command(client, tokens, ntokens, start, end, length);
 }
 
-static int process_replace_command(struct memcached_protocol_client_st *client,
+static int process_replace_command(memcached_protocol_client_st *client,
                                     char **tokens, int ntokens, char *start,
                                     char **end, ssize_t length)
 {
@@ -737,7 +737,7 @@ static int process_replace_command(struct memcached_protocol_client_st *client,
   return process_storage_command(client, tokens, ntokens, start, end, length);
 }
 
-static int process_append_command(struct memcached_protocol_client_st *client,
+static int process_append_command(memcached_protocol_client_st *client,
                                    char **tokens, int ntokens, char *start,
                                    char **end, ssize_t length)
 {
@@ -756,7 +756,7 @@ static int process_append_command(struct memcached_protocol_client_st *client,
   return process_storage_command(client, tokens, ntokens, start, end, length);
 }
 
-static int process_prepend_command(struct memcached_protocol_client_st *client,
+static int process_prepend_command(memcached_protocol_client_st *client,
                                     char **tokens, int ntokens, char *start,
                                     char **end, ssize_t length)
 {
@@ -780,7 +780,7 @@ static int process_prepend_command(struct memcached_protocol_client_st *client,
  * a optimal ascii support, I just convert the ASCII commands to the binary
  * protocol and calls back into the command handlers for the binary protocol ;)
  */
-enum MEMCACHED_PROTOCOL_EVENT memcached_ascii_protocol_process_data(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr)
+memcached_protocol_event_t memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssize_t *length, void **endptr)
 {
   char *ptr= (char*)client->root->input_buffer;
   *endptr= ptr;
@@ -791,7 +791,7 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_ascii_protocol_process_data(struct memca
     if (end == NULL)
     {
       *endptr= ptr;
-      return READ_EVENT;
+      return MEMCACHED_PROTOCOL_READ_EVENT;
     }
 
     client->ascii_command= ascii_to_cmd(ptr, (size_t)(*length));
@@ -869,7 +869,7 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_ascii_protocol_process_data(struct memca
           if (client->root->callback->interface.v1.quit != NULL)
             client->root->callback->interface.v1.quit(client);
 
-          return ERROR_EVENT;
+          return MEMCACHED_PROTOCOL_ERROR_EVENT;
         }
         break;
 
@@ -892,9 +892,9 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_ascii_protocol_process_data(struct memca
       }
 
       if (error == -1)
-        return ERROR_EVENT;
+        return MEMCACHED_PROTOCOL_ERROR_EVENT;
       else if (error == 1)
-        return READ_EVENT;
+        return MEMCACHED_PROTOCOL_READ_EVENT;
     }
 
     /* Move past \n */
@@ -903,6 +903,6 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_ascii_protocol_process_data(struct memca
     ptr= end;
   } while (*length > 0);
 
-  *endptr = ptr;
-  return READ_EVENT;
+  *endptr= ptr;
+  return MEMCACHED_PROTOCOL_READ_EVENT;
 }

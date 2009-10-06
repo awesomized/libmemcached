@@ -1,7 +1,7 @@
 LDADDS = $(top_builddir)/libmemcached/libmemcached.la
 
 if BUILD_LIBMEMCACHEDUTIL
-LDADDS+= $(top_builddir)/libmemcachedutil/libmemcachedutil.la
+LDADDS+= $(top_builddir)/libmemcached/libmemcachedutil.la
 endif
 
 EXTRA_DIST = output.res output2.res\
