@@ -4580,6 +4580,41 @@ static test_return regression_bug_434843_buffered(memcached_st *memc)
   return regression_bug_434843(memc);
 }
 
+static test_return regression_bug_421108(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  char *bytes= memcached_stat_get_value(memc, memc_stat, "bytes", &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(bytes != NULL);
+  char *bytes_read= memcached_stat_get_value(memc, memc_stat,
+                                             "bytes_read", &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(bytes_read != NULL);
+
+  char *bytes_written= memcached_stat_get_value(memc, memc_stat,
+                                                "bytes_written", &rc);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(bytes_written != NULL);
+
+  /*
+   * We did a flush before running the test, so bytes should be 0, but
+   * bytes_read and butes_written cannot be zero ;-)
+   */
+  assert(strcmp(bytes, "0") == 0);
+  assert(strcmp(bytes, bytes_read) != 0);
+  assert(strcmp(bytes, bytes_written) != 0);
+
+  /* Release allocated resources */
+  free(bytes);
+  free(bytes_read);
+  free(bytes_written);
+  memcached_stat_free(NULL, memc_stat);
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4743,6 +4778,7 @@ test_st regression_tests[]= {
   {"lp:434484", 1, regression_bug_434484 },
   {"lp:434843", 1, regression_bug_434843 },
   {"lp:434843 buffered", 1, regression_bug_434843_buffered },
+  {"lp:421108", 1, regression_bug_421108 },
   {0, 0, 0}
 };
 
