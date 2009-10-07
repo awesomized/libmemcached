@@ -36,7 +36,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
-  to_write= (uint8_t) (ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1;
+  to_write= (uint8_t)((ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1);
   bool no_reply= (ptr->flags & MEM_NOREPLY);
      
   if (ptr->flags & MEM_BINARY_PROTOCOL) 
