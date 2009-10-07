@@ -4599,11 +4599,6 @@ static test_return regression_bug_421108(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(bytes_written != NULL);
 
-  /*
-   * We did a flush before running the test, so bytes should be 0, but
-   * bytes_read and butes_written cannot be zero ;-)
-   */
-  assert(strcmp(bytes, "0") == 0);
   assert(strcmp(bytes, bytes_read) != 0);
   assert(strcmp(bytes, bytes_written) != 0);
 
