@@ -1,5 +1,9 @@
-EXTRA_DIST = libmemcached_probes.d memcached/README.txt libmemcached.ver \
-             memcached_configure.h.in protocol/libmemcachedprotocol.ver
+EXTRA_DIST = libmemcached.ver \
+             libmemcached_probes.d \
+             memcached/README.txt \
+             memcached_configure.h.in \
+             protocol/libmemcachedprotocol.ver \
+             util/libmemcachedutil.ver
 
 
 EXTRA_HEADERS =
@@ -32,10 +36,6 @@ pkginclude_HEADERS= memcached.h \
 nobase_pkginclude_HEADERS=protocol/cache.h \
                           protocol/callback.h
 
-
-if BUILD_LIBMEMCACHEDUTIL
-pkginclude_HEADERS+= memcached_util.h memcached_pool.h
-endif
 
 libmemcachedprotocol_la_SOURCES= protocol/ascii_handler.c \
                                  protocol/binary_handler.c \
@@ -93,6 +93,16 @@ endif
 libmemcached_la_DEPENDENCIES= libmemcachedcallbacks.la
 libmemcached_la_LIBADD= $(LIBM) libmemcachedcallbacks.la
 libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
+
+if BUILD_LIBMEMCACHEDUTIL
+pkginclude_HEADERS+= memcached_util.h memcached_pool.h
+lib_LTLIBRARIES+= libmemcachedutil.la
+endif
+
+libmemcachedutil_la_SOURCES= util/memcached_pool.c
+libmemcachedutil_la_LDFLAGS= -version-info $(MEMCACHEDUTIL_LIBRARY_VERSION) $(LD_UTIL_VERSION_SCRIPT)
+libmemcachedutil_la_LIBADD= libmemcached.la
+libmemcachedutil_la_DEPENDENCIES=libmemcached.la
 
 if BUILD_BYTEORDER
 noinst_LTLIBRARIES += libbyteorder.la

@@ -1,4 +1,5 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
+#include "config.h"
 #include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
@@ -15,17 +16,17 @@ struct list_entry {
 static struct list_entry *root;
 static uint64_t cas;
 
-bool initialize_storage(void) 
+bool initialize_storage(void)
 {
   return true;
 }
 
-void shutdown_storage(void) 
+void shutdown_storage(void)
 {
   /* Do nothing */
 }
 
-void put_item(struct item* item) 
+void put_item(struct item* item)
 {
   struct list_entry* entry= (void*)item;
 
@@ -46,7 +47,7 @@ void put_item(struct item* item)
   root= entry;
 }
 
-struct item* get_item(const void* key, size_t nkey) 
+struct item* get_item(const void* key, size_t nkey)
 {
   struct list_entry *walker= root;
 
@@ -104,7 +105,7 @@ struct item* create_item(const void* key, size_t nkey, const void* data,
   return ret;
 }
 
-bool delete_item(const void* key, size_t nkey) 
+bool delete_item(const void* key, size_t nkey)
 {
   struct item* item= get_item(key, nkey);
   bool ret= false;
@@ -137,7 +138,7 @@ bool delete_item(const void* key, size_t nkey)
   return ret;
 }
 
-void flush(uint32_t when) 
+void flush(uint32_t when)
 {
   /* FIXME */
   (void)when;
@@ -159,12 +160,12 @@ void flush(uint32_t when)
   }
 }
 
-void update_cas(struct item* item) 
+void update_cas(struct item* item)
 {
   item->cas= ++cas;
 }
 
-void release_item(struct item* item __attribute__((unused))) 
+void release_item(struct item* item __attribute__((unused)))
 {
   /* EMPTY */
 }

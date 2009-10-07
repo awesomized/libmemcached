@@ -30,7 +30,7 @@ raw_response_handler(const void *cookie,
                      protocol_binary_request_header *request,
                      protocol_binary_response_header *response)
 {
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
 
   if (client->root->pedantic &&
       !memcached_binary_protocol_pedantic_check_response(request, response))
@@ -106,7 +106,7 @@ get_response_handler(const void *cookie,
                      uint32_t flags,
                      uint64_t cas) {
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   uint8_t opcode= client->current_command->request.opcode;
 
   if (opcode == PROTOCOL_BINARY_CMD_GET || opcode == PROTOCOL_BINARY_CMD_GETQ)
@@ -125,11 +125,12 @@ get_response_handler(const void *cookie,
       .extlen= 4,
       .bodylen= htonl(bodylen + keylen + 4),
     },
-    .message.body.flags= htonl(flags),
   };
 
+  response.message.body.flags= htonl(flags);
+
   protocol_binary_response_status rval;
-  const protocol_binary_response_status success = PROTOCOL_BINARY_RESPONSE_SUCCESS;
+  const protocol_binary_response_status success= PROTOCOL_BINARY_RESPONSE_SUCCESS;
   if ((rval= client->root->spool(client, response.bytes, sizeof(response.bytes))) != success ||
       (rval= client->root->spool(client, key, keylen)) != success ||
       (rval= client->root->spool(client, body, bodylen)) != success)
@@ -155,7 +156,7 @@ stat_response_handler(const void *cookie,
                      const void *body,
                      uint32_t bodylen) {
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
 
   protocol_binary_response_no_extras response= {
     .message.header.response= {
@@ -169,7 +170,7 @@ stat_response_handler(const void *cookie,
   };
 
   protocol_binary_response_status rval;
-  const protocol_binary_response_status success = PROTOCOL_BINARY_RESPONSE_SUCCESS;
+  const protocol_binary_response_status success= PROTOCOL_BINARY_RESPONSE_SUCCESS;
   if ((rval= client->root->spool(client, response.bytes, sizeof(response.bytes))) != success ||
       (rval= client->root->spool(client, key, keylen)) != success ||
       (rval= client->root->spool(client, body, bodylen)) != success)
@@ -191,7 +192,7 @@ version_response_handler(const void *cookie,
                          const void *text,
                          uint32_t textlen) {
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
 
   protocol_binary_response_no_extras response= {
     .message.header.response= {
@@ -204,7 +205,7 @@ version_response_handler(const void *cookie,
   };
 
   protocol_binary_response_status rval;
-  const protocol_binary_response_status success = PROTOCOL_BINARY_RESPONSE_SUCCESS;
+  const protocol_binary_response_status success= PROTOCOL_BINARY_RESPONSE_SUCCESS;
   if ((rval= client->root->spool(client, response.bytes, sizeof(response.bytes))) != success ||
       (rval= client->root->spool(client, text, textlen)) != success)
   {
@@ -228,7 +229,7 @@ add_command_handler(const void *cookie,
 {
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.add != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -285,7 +286,7 @@ decrement_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.decrement != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -314,7 +315,7 @@ decrement_command_handler(const void *cookie,
             .cas= ntohll(cas),
             .bodylen= htonl(8)
           },
-          .body.value = htonll(result)
+          .body.value= htonll(result)
         }
       };
       rval= response_handler(cookie, header, (void*)&response);
@@ -343,7 +344,7 @@ delete_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.delete != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -390,7 +391,7 @@ flush_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.flush != NULL)
   {
     protocol_binary_request_flush *flush= (void*)header;
@@ -441,7 +442,7 @@ get_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.get != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -480,7 +481,7 @@ increment_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.increment != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -509,7 +510,7 @@ increment_command_handler(const void *cookie,
             .cas= ntohll(cas),
             .bodylen= htonl(8)
           },
-          .body.value = htonll(result)
+          .body.value= htonll(result)
         }
       };
 
@@ -538,16 +539,16 @@ noop_command_handler(const void *cookie,
                      protocol_binary_request_header *header,
                      memcached_binary_protocol_raw_response_handler response_handler)
 {
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.noop != NULL)
   {
     client->root->callback->interface.v1.noop(cookie);
   }
 
   protocol_binary_response_no_extras response= {
-    .message = {
-      .header.response = {
-        .magic = PROTOCOL_BINARY_RES,
+    .message= {
+      .header.response= {
+        .magic= PROTOCOL_BINARY_RES,
         .opcode= PROTOCOL_BINARY_CMD_NOOP,
         .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
         .opaque= header->request.opaque,
@@ -573,7 +574,7 @@ append_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.append != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -627,7 +628,7 @@ prepend_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.prepend != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -677,15 +678,15 @@ quit_command_handler(const void *cookie,
                      protocol_binary_request_header *header,
                      memcached_binary_protocol_raw_response_handler response_handler)
 {
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.quit != NULL)
   {
     client->root->callback->interface.v1.quit(cookie);
   }
 
   protocol_binary_response_no_extras response= {
-    .message = {
-      .header.response = {
+    .message= {
+      .header.response= {
         .magic= PROTOCOL_BINARY_RES,
         .opcode= PROTOCOL_BINARY_CMD_QUIT,
         .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
@@ -718,7 +719,7 @@ replace_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.replace != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -776,7 +777,7 @@ set_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.set != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -834,7 +835,7 @@ stat_command_handler(const void *cookie,
   (void)response_handler;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.stat != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
@@ -868,7 +869,7 @@ version_command_handler(const void *cookie,
   (void)header;
   protocol_binary_response_status rval;
 
-  struct memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (void*)cookie;
   if (client->root->callback->interface.v1.version != NULL)
   {
     rval= client->root->callback->interface.v1.version(cookie,
@@ -924,7 +925,7 @@ static memcached_binary_protocol_command_handler comcode_v0_v1_remap[256]= {
  * @return true if success or false if a fatal error occured so that the
  *         connection should be shut down.
  */
-static bool execute_command(struct memcached_protocol_client_st *client, protocol_binary_request_header *header)
+static protocol_binary_response_status execute_command(memcached_protocol_client_st *client, protocol_binary_request_header *header)
 {
   if (client->root->pedantic &&
       memcached_binary_protocol_pedantic_check_request(header))
@@ -970,7 +971,8 @@ static bool execute_command(struct memcached_protocol_client_st *client, protoco
   }
 
   if (rval != PROTOCOL_BINARY_RESPONSE_SUCCESS &&
-      rval != PROTOCOL_BINARY_RESPONSE_EIO)
+      rval != PROTOCOL_BINARY_RESPONSE_EIO &&
+      rval != PROTOCOL_BINARY_RESPONSE_PAUSE)
   {
     protocol_binary_response_no_extras response= {
       .message= {
@@ -990,7 +992,7 @@ static bool execute_command(struct memcached_protocol_client_st *client, protoco
     client->root->callback->post_execute(client, header);
   }
 
-  return rval != PROTOCOL_BINARY_RESPONSE_EIO;
+  return rval;
 }
 
 /*
@@ -998,7 +1000,7 @@ static bool execute_command(struct memcached_protocol_client_st *client, protoco
 ** "PROTOECTED" INTERFACE
 ** **********************************************************************
 */
-enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr)
+memcached_protocol_event_t memcached_binary_protocol_process_data(memcached_protocol_client_st *client, ssize_t *length, void **endptr)
 {
   /* try to parse all of the received packets */
   protocol_binary_request_header *header;
@@ -1006,7 +1008,7 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memc
   if (header->request.magic != (uint8_t)PROTOCOL_BINARY_REQ)
   {
     client->error= EINVAL;
-    return ERROR_EVENT;
+    return MEMCACHED_PROTOCOL_ERROR_EVENT;
   }
   ssize_t len= *length;
 
@@ -1014,13 +1016,16 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memc
          (len >= (ssize_t)(sizeof(*header) + ntohl(header->request.bodylen))))
   {
     /* I have the complete package */
-    client->current_command = header;
-    if (!execute_command(client, header))
+    client->current_command= header;
+    protocol_binary_response_status rv= execute_command(client, header);
+
+    if (rv == PROTOCOL_BINARY_RESPONSE_EIO)
     {
       *length= len;
       *endptr= (void*)header;
-      return ERROR_EVENT;
-    }
+      return MEMCACHED_PROTOCOL_ERROR_EVENT;
+    } else if (rv == PROTOCOL_BINARY_RESPONSE_PAUSE)
+      return MEMCACHED_PROTOCOL_PAUSE_EVENT;
 
     ssize_t total= (ssize_t)(sizeof(*header) + ntohl(header->request.bodylen));
     len -= total;
@@ -1039,12 +1044,11 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memc
         header= (void*)client->root->input_buffer;
       }
     }
+    *length= len;
+    *endptr= (void*)header;
   }
 
-  *length= len;
-  *endptr= (void*)header;
-
-  return READ_EVENT;
+  return MEMCACHED_PROTOCOL_READ_EVENT;
 }
 
 /*
@@ -1052,12 +1056,12 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memc
 ** PUBLIC INTERFACE
 ** **********************************************************************
 */
-struct memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(struct memcached_protocol_st *instance)
+memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(memcached_protocol_st *instance)
 {
   return instance->callback;
 }
 
-void memcached_binary_protocol_set_callbacks(struct memcached_protocol_st *instance, struct memcached_binary_protocol_callback_st *callback)
+void memcached_binary_protocol_set_callbacks(memcached_protocol_st *instance, memcached_binary_protocol_callback_st *callback)
 {
   instance->callback= callback;
 }
@@ -1068,12 +1072,12 @@ memcached_binary_protocol_raw_response_handler memcached_binary_protocol_get_raw
   return raw_response_handler;
 }
 
-void memcached_binary_protocol_set_pedantic(struct memcached_protocol_st *instance, bool enable)
+void memcached_binary_protocol_set_pedantic(memcached_protocol_st *instance, bool enable)
 {
   instance->pedantic= enable;
 }
 
-bool memcached_binary_protocol_get_pedantic(struct memcached_protocol_st *instance)
+bool memcached_binary_protocol_get_pedantic(memcached_protocol_st *instance)
 {
   return instance->pedantic;
 }

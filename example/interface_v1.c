@@ -8,6 +8,7 @@
  * you will not receive the next command before a answer to the previous
  * command is being sent.
  */
+#include "config.h"
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -391,7 +392,7 @@ static protocol_binary_response_status version_handler(const void *cookie,
   return response_handler(cookie, version, (uint32_t)strlen(version));
 }
 
-struct memcached_binary_protocol_callback_st interface_v1_impl= {
+memcached_binary_protocol_callback_st interface_v1_impl= {
   .interface_version= 1,
   .interface.v1= {
     .add= add_handler,

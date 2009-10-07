@@ -1,1 +1,1 @@
-libmemcached_2 { global: *; };
+libmemcached_3 { global: *; };

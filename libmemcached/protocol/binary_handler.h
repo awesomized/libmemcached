@@ -3,13 +3,13 @@
 #define LIBMEMCACHED_PROTOCOL_BINARY_HANDLER_H
 
 LIBMEMCACHED_LOCAL
-bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_header *request);
+bool memcached_binary_protocol_pedantic_check_request(const protocol_binary_request_header *request);
 
 LIBMEMCACHED_LOCAL
-bool memcached_binary_protocol_pedantic_check_response(protocol_binary_request_header *request,
-                                                       protocol_binary_response_header *response);
+bool memcached_binary_protocol_pedantic_check_response(const protocol_binary_request_header *request,
+                                                       const protocol_binary_response_header *response);
 
 LIBMEMCACHED_LOCAL
-enum MEMCACHED_PROTOCOL_EVENT memcached_binary_protocol_process_data(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr);
+memcached_protocol_event_t memcached_binary_protocol_process_data(memcached_protocol_client_st *client, ssize_t *length, void **endptr);
 
 #endif

@@ -1,6 +1,7 @@
 noinst_PROGRAMS = memcached_light
 
 memcached_light_SOURCES= memcached_light.c \
+                         memcached_light.h \
                          storage.h \
                          interface_v0.c \
                          interface_v1.c

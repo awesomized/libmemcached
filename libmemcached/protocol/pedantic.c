@@ -7,7 +7,7 @@
 
 #define ensure(a) if (!(a)) { return false; }
 
-bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_header *request)
+bool memcached_binary_protocol_pedantic_check_request(const protocol_binary_request_header *request)
 {
   ensure(request->request.magic == PROTOCOL_BINARY_REQ);
   ensure(request->request.datatype == PROTOCOL_BINARY_RAW_BYTES);
@@ -99,8 +99,8 @@ bool memcached_binary_protocol_pedantic_check_request(protocol_binary_request_he
   return true;
 }
 
-bool memcached_binary_protocol_pedantic_check_response(protocol_binary_request_header *request,
-                                                       protocol_binary_response_header *response)
+bool memcached_binary_protocol_pedantic_check_response(const protocol_binary_request_header *request,
+                                                       const protocol_binary_response_header *response)
 {
   ensure(response->response.magic == PROTOCOL_BINARY_RES);
   ensure(response->response.datatype == PROTOCOL_BINARY_RAW_BYTES);

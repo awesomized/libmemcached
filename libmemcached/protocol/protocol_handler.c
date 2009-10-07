@@ -124,13 +124,13 @@ static struct chunk_st *allocate_output_chunk(struct memcached_protocol_client_s
     return NULL;
   }
 
-  ret->offset = ret->nbytes = 0;
-  ret->next = NULL;
-  ret->size = CHUNK_BUFFERSIZE;
+  ret->offset= ret->nbytes= 0;
+  ret->next= NULL;
+  ret->size= CHUNK_BUFFERSIZE;
   ret->data= (void*)(ret + 1);
   if (client->output == NULL)
   {
-    client->output = client->output_tail = ret;
+    client->output= client->output_tail= ret;
   }
   else
   {
@@ -159,7 +159,7 @@ static protocol_binary_response_status spool_output(struct memcached_protocol_cl
     return PROTOCOL_BINARY_RESPONSE_SUCCESS;
   }
 
-  size_t offset = 0;
+  size_t offset= 0;
 
   struct chunk_st *chunk= client->output;
   while (offset < length)
@@ -172,10 +172,10 @@ static protocol_binary_response_status spool_output(struct memcached_protocol_cl
       }
     }
 
-    size_t bulk = length - offset;
+    size_t bulk= length - offset;
     if (bulk > chunk->size - chunk->nbytes)
     {
-      bulk = chunk->size - chunk->nbytes;
+      bulk= chunk->size - chunk->nbytes;
     }
 
     memcpy(chunk->data + chunk->nbytes, data, bulk);
@@ -194,7 +194,7 @@ static protocol_binary_response_status spool_output(struct memcached_protocol_cl
  * so the implementors needs to provide an implementation of that interface
  *
  */
-static enum MEMCACHED_PROTOCOL_EVENT determine_protocol(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr)
+static memcached_protocol_event_t determine_protocol(struct memcached_protocol_client_st *client, ssize_t *length, void **endptr)
 {
   if (*client->root->input_buffer == (uint8_t)PROTOCOL_BINARY_REQ)
   {
@@ -220,7 +220,7 @@ static enum MEMCACHED_PROTOCOL_EVENT determine_protocol(struct memcached_protoco
     const char *err= "CLIENT_ERROR: Unsupported protocol\r\n";
     client->root->spool(client, err, strlen(err));
     client->root->drain(client);
-    return ERROR_EVENT; /* Unsupported protocol */
+    return MEMCACHED_PROTOCOL_ERROR_EVENT; /* Unsupported protocol */
   }
 
   return client->work(client, length, endptr);
@@ -250,10 +250,10 @@ struct memcached_protocol_st *memcached_protocol_create_instance(void)
       return NULL;
     }
 
-    ret->buffer_cache = cache_create("protocol_handler",
+    ret->buffer_cache= cache_create("protocol_handler",
                                      CHUNK_BUFFERSIZE + sizeof(struct chunk_st),
                                      0, NULL, NULL);
-    if (ret->buffer_cache == NULL) 
+    if (ret->buffer_cache == NULL)
     {
       free(ret->input_buffer);
       free(ret);
@@ -288,7 +288,7 @@ void memcached_protocol_client_destroy(struct memcached_protocol_client_st *clie
   free(client);
 }
 
-enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_protocol_client_st *client)
+memcached_protocol_event_t memcached_protocol_client_work(struct memcached_protocol_client_st *client)
 {
   /* Try to send data and read from the socket */
   bool more_data= true;
@@ -314,9 +314,10 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_pr
       }
 
       void *endptr;
-      if (client->work(client, &len, &endptr) == ERROR_EVENT)
+      memcached_protocol_event_t events= client->work(client, &len, &endptr);
+      if (events == MEMCACHED_PROTOCOL_ERROR_EVENT)
       {
-        return ERROR_EVENT;
+        return MEMCACHED_PROTOCOL_ERROR_EVENT;
       }
 
       if (len > 0)
@@ -327,7 +328,7 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_pr
         if (client->input_buffer == NULL)
         {
           client->error= ENOMEM;
-          return ERROR_EVENT;
+          return MEMCACHED_PROTOCOL_ERROR_EVENT;
         }
         memcpy(client->input_buffer, endptr, (size_t)len);
         client->input_buffer_offset= (size_t)len;
@@ -338,7 +339,7 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_pr
     {
       /* Connection closed */
       drain_output(client);
-      return ERROR_EVENT;
+      return MEMCACHED_PROTOCOL_ERROR_EVENT;
     }
     else
     {
@@ -346,16 +347,20 @@ enum MEMCACHED_PROTOCOL_EVENT memcached_protocol_client_work(struct memcached_pr
       {
         client->error= errno;
         /* mark this client as terminated! */
-        return ERROR_EVENT;
+        return MEMCACHED_PROTOCOL_ERROR_EVENT;
       }
-      more_data = false;
+      more_data= false;
     }
   } while (more_data);
 
   if (!drain_output(client))
   {
-    return ERROR_EVENT;
+    return MEMCACHED_PROTOCOL_ERROR_EVENT;
   }
 
-  return (client->output) ? READ_WRITE_EVENT : READ_EVENT;
+  memcached_protocol_event_t ret= MEMCACHED_PROTOCOL_READ_EVENT;
+  if (client->output)
+    ret|= MEMCACHED_PROTOCOL_READ_EVENT;
+
+  return ret;
 }
