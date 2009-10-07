@@ -164,6 +164,7 @@ public:
   {
     servers_list.assign(in_servers_list);
     servers= memcached_servers_parse(in_servers_list.c_str());
+    memcached_server_push(&memc, servers);
     return (servers == NULL);
   }
 
@@ -171,7 +172,7 @@ public:
    * Add a server to the list of memcached servers to use.
    *
    * @param[in] server_name name of the server to add
-   * @param[in[ port port number of server to add
+   * @param[in] port port number of server to add
    * @return true on success; false otherwise
    */
   bool addServer(const std::string &server_name, unsigned int port)
@@ -187,6 +188,28 @@ public:
                                           server_name.c_str(),
                                           port,
                                           &rc);
+    memcached_server_push(&memc, servers);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  /**
+   * Remove a server from the list of memcached servers to use.
+   *
+   * @param[in] server_name name of the server to remove
+   * @param[in] port port number of server to remove
+   * @return true on success; false otherwise
+   */
+  bool removeServer(const std::string &server_name, size_t port)
+  {
+    std::string tmp_str;
+    std::ostringstream strstm;
+    tmp_str.append(",");
+    tmp_str.append(server_name);
+    tmp_str.append(":");
+    strstm << port;
+    tmp_str.append(strstm.str());
+    memcached_server_st *server= memcached_servers_parse(tmp_str.c_str());
+    memcached_return rc= memcached_server_remove(server);
     return (rc == MEMCACHED_SUCCESS);
   }
 
