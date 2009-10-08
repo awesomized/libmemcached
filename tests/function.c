@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #include <unistd.h>
 #include <time.h>
 #include "server.h"
@@ -1644,6 +1645,26 @@ static test_return  behavior_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return fetch_all_results(memcached_st *memc) 
+{
+  memcached_return rc= MEMCACHED_SUCCESS;
+  char return_key[MEMCACHED_MAX_KEY];
+  size_t return_key_length;
+  char *return_value;
+  size_t return_value_length;
+  uint32_t flags;
+
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+                                        &return_value_length, &flags, &rc)))
+  {
+    assert(return_value);
+    assert(rc == MEMCACHED_SUCCESS);
+    free(return_value);
+  }
+
+  return ((rc == MEMCACHED_END) || (rc == MEMCACHED_SUCCESS)) ? TEST_SUCCESS : TEST_FAILURE;
+}
+
 /* Test case provided by Cal Haldenbrand */
 static test_return  user_supplied_bug1(memcached_st *memc)
 {
@@ -1768,9 +1789,8 @@ static test_return  user_supplied_bug3(memcached_st *memc)
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 #endif
 
-  keys= (char **)malloc(sizeof(char *) * KEY_COUNT);
+  keys= calloc(KEY_COUNT, sizeof(char *));
   assert(keys);
-  memset(keys, 0, (sizeof(char *) * KEY_COUNT));
   for (x= 0; x < KEY_COUNT; x++)
   {
     char buffer[30];
@@ -1783,22 +1803,7 @@ static test_return  user_supplied_bug3(memcached_st *memc)
   rc= memcached_mget(memc, (const char **)keys, key_lengths, KEY_COUNT);
   assert(rc == MEMCACHED_SUCCESS);
 
-  /* Turn this into a help function */
-  {
-    char return_key[MEMCACHED_MAX_KEY];
-    size_t return_key_length;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
-
-    while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
-                                          &return_value_length, &flags, &rc)))
-    {
-      assert(return_value);
-      assert(rc == MEMCACHED_SUCCESS);
-      free(return_value);
-    }
-  }
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
 
   for (x= 0; x < KEY_COUNT; x++)
     free(keys[x]);
@@ -2532,6 +2537,87 @@ static test_return user_supplied_bug18(memcached_st *trash)
   return TEST_SUCCESS;
 }
 
+/* Large mget() of missing keys with binary proto
+ *
+ * If many binary quiet commands (such as getq's in an mget) fill the output
+ * buffer and the server chooses not to respond, memcached_flush hangs. See
+ * http://lists.tangent.org/pipermail/libmemcached/2009-August/000918.html
+ */
+
+void fail(int); /* sighandler_t function that always asserts false */
+
+static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
+{
+  memcached_return rc;
+  unsigned int x;
+  char **keys;
+  size_t* key_lengths;
+  void (*oldalarm)(int);
+  memcached_st *memc_clone;
+
+  memc_clone= memcached_clone(NULL, memc);
+  assert(memc_clone);
+
+  /* only binproto uses getq for mget */
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+
+  /* empty the cache to ensure misses (hence non-responses) */
+  rc= memcached_flush(memc_clone, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  key_lengths= calloc(key_count, sizeof(size_t));
+  keys= calloc(key_count, sizeof(char *));
+  assert(keys);
+  for (x= 0; x < key_count; x++)
+  {
+    char buffer[30];
+
+    snprintf(buffer, 30, "%u", x);
+    keys[x]= strdup(buffer);
+    key_lengths[x]= strlen(keys[x]);
+  }
+
+  oldalarm= signal(SIGALRM, fail);
+  alarm(5);
+
+  rc= memcached_mget(memc_clone, (const char **)keys, key_lengths, key_count);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  alarm(0);
+  signal(SIGALRM, oldalarm);
+
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
+
+  for (x= 0; x < key_count; x++)
+    free(keys[x]);
+  free(keys);
+  free(key_lengths);
+
+  memcached_free(memc_clone);
+
+  return TEST_SUCCESS;
+}
+
+static test_return user_supplied_bug21(memcached_st *memc)
+{
+  memcached_return rc;
+
+  /* should work as of r580 */
+  rc= _user_supplied_bug21(memc, 10);
+  assert(rc == TEST_SUCCESS);
+
+  /* should fail as of r580 */
+  rc= _user_supplied_bug21(memc, 1000);
+  assert(rc == TEST_SUCCESS);
+
+  return TEST_SUCCESS;
+}
+
+void fail(int unused __attribute__((unused)))
+{
+  assert(0);
+}
+
 static test_return auto_eject_hosts(memcached_st *trash)
 {
   (void) trash;
@@ -2825,7 +2911,6 @@ static test_return  get_read_count(memcached_st *memc)
           free(return_value);
       }
     }
-    fprintf(stderr, "\t%u -> %u", global_count, count);
   }
 
   memcached_free(memc_clone);
@@ -2865,22 +2950,7 @@ static test_return  mget_read(memcached_st *memc)
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   assert(rc == MEMCACHED_SUCCESS);
-  /* Turn this into a help function */
-  {
-    char return_key[MEMCACHED_MAX_KEY];
-    size_t return_key_length;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
-
-    while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
-                                          &return_value_length, &flags, &rc)))
-    {
-      assert(return_value);
-      assert(rc == MEMCACHED_SUCCESS);
-      free(return_value);
-    }
-  }
+  assert(fetch_all_results(memc) == TEST_SUCCESS);
 
   return TEST_SUCCESS;
 }
@@ -4797,6 +4867,7 @@ test_st user_tests[] ={
   {"user_supplied_bug18", 1, user_supplied_bug18 },
   {"user_supplied_bug19", 1, user_supplied_bug19 },
   {"user_supplied_bug20", 1, user_supplied_bug20 },
+  {"user_supplied_bug21", 1, user_supplied_bug21 },
   {0, 0, 0}
 };
 
@@ -4945,8 +5016,7 @@ void *world_create(void)
 {
   server_startup_st *construct;
 
-  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
-  memset(construct, 0, sizeof(server_startup_st));
+  construct= calloc(sizeof(server_startup_st), 1);
   construct->count= SERVERS_TO_CREATE;
   construct->udp= 0;
   server_startup(construct);
