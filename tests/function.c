@@ -4566,7 +4566,7 @@ static test_return regression_bug_434484(memcached_st *memc)
   assert(ret == MEMCACHED_NOTSTORED);
 
   size_t size= 2048 * 1024;
-  void *data= malloc(size);
+  void *data= calloc(1, size);
   assert(data != NULL);
   ret= memcached_set(memc, key, keylen, data, size, 0, 0);
   assert(ret == MEMCACHED_E2BIG);
@@ -4616,7 +4616,7 @@ static test_return regression_bug_434843(memcached_st *memc)
     {
       /* The first iteration should give me a 100% cache miss. verify that*/
       assert(counter == 0);
-      char blob[1024];
+      char blob[1024]= { 0 };
       for (int x= 0; x < (int)max_keys; ++x)
       {
         rc= memcached_add(memc, keys[x], key_length[x],
