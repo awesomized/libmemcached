@@ -4610,6 +4610,51 @@ static test_return regression_bug_421108(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+ * The test case isn't obvious so I should probably document why
+ * it works the way it does. Bug 442914 was caused by a bug
+ * in the logic in memcached_purge (it did not handle the case
+ * where the number of bytes sent was equal to the watermark).
+ * In this test case, create messages so that we hit that case
+ * and then disable noreply mode and issue a new command to
+ * verify that it isn't stuck. If we change the format for the
+ * delete command or the watermarks, we need to update this
+ * test....
+ */
+static test_return regression_bug_442914(memcached_st *memc)
+{
+  memcached_return rc;
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
+
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+
+  char k[250];
+  size_t len;
+
+  for (int x= 0; x < 250; ++x)
+  {
+     len= (size_t)snprintf(k, sizeof(k), "%0250u", x);
+     rc= memcached_delete(memc, k, len, 0);
+     assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  len= (size_t)snprintf(k, sizeof(k), "%037u", 251);
+  rc= memcached_delete(memc, k, len, 0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 0);
+  assert(rc == MEMCACHED_SUCCESS);
+  rc= memcached_delete(memc, k, len, 0);
+  assert(rc == MEMCACHED_NOTFOUND);
+
+  memc->number_of_hosts= number_of_hosts;
+
+  return TEST_SUCCESS;
+}
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4774,6 +4819,7 @@ test_st regression_tests[]= {
   {"lp:434843", 1, regression_bug_434843 },
   {"lp:434843 buffered", 1, regression_bug_434843_buffered },
   {"lp:421108", 1, regression_bug_421108 },
+  {"lp:442914", 1, regression_bug_442914 },
   {0, 0, 0}
 };
 
