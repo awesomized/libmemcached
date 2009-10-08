@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <poll.h>
+#include <ctype.h>
 
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
@@ -168,7 +169,7 @@ static ssize_t timeout_io_op(int fd, short direction, void *buf, size_t len)
     ret= read(fd, buf, len);
 
   if (ret == -1 && errno == EWOULDBLOCK) {
-    struct pollfd fds = {
+    struct pollfd fds= {
       .events= direction,
       .fd= fd
     };
@@ -183,7 +184,7 @@ static ssize_t timeout_io_op(int fd, short direction, void *buf, size_t len)
     }
     else if (err == 0)
     {
-      errno = ETIMEDOUT;
+      errno= ETIMEDOUT;
     }
     else
     {
@@ -206,7 +207,7 @@ static enum test_return ensure(bool val, const char *expression, const char *fil
   if (!val)
   {
     if (verbose)
-      fprintf(stderr, "%s:%u: %s\n", file, line, expression);
+      fprintf(stderr, "\n%s:%u: %s", file, line, expression);
 
     if (do_core)
       abort();
@@ -639,7 +640,7 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
     cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SET;
     execute(resend_packet(&cmd));
     execute(recv_packet(&rsp));
-    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET, 
+    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET,
                                     PROTOCOL_BINARY_RESPONSE_SUCCESS));
     cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
   }
@@ -720,7 +721,7 @@ static enum test_return test_binary_addq(void)
   return test_binary_add_impl("test_binary_addq", PROTOCOL_BINARY_CMD_ADDQ);
 }
 
-static enum test_return set_item(const char *key, const char *value)
+static enum test_return binary_set_item(const char *key, const char *value)
 {
   command cmd;
   response rsp;
@@ -761,7 +762,7 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
       verify(validate_response_header(&rsp, cc, expected_result));
 
       if (ii == 0)
-        execute(set_item(key, key));
+        execute(binary_set_item(key, key));
     }
     else
       execute(test_binary_noop());
@@ -810,7 +811,7 @@ static enum test_return test_binary_delete_impl(const char *key, uint8_t cc)
   execute(send_packet(&cmd));
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_ENOENT));
-  execute(set_item(key, key));
+  execute(binary_set_item(key, key));
 
   /* The item should be present now, resend*/
   execute(resend_packet(&cmd));
@@ -851,7 +852,7 @@ static enum test_return test_binary_get_impl(const char *key, uint8_t cc)
   else
     execute(test_binary_noop());
 
-  execute(set_item(key, key));
+  execute(binary_set_item(key, key));
   execute(resend_packet(&cmd));
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
@@ -993,7 +994,7 @@ static enum test_return test_binary_flush_impl(const char *key, uint8_t cc)
 
   for (int ii= 0; ii < 2; ++ii)
   {
-    execute(set_item(key, key));
+    execute(binary_set_item(key, key));
     flush_command(&cmd, cc, 0, ii == 0);
     execute(send_packet(&cmd));
 
@@ -1036,7 +1037,7 @@ static enum test_return test_binary_concat_impl(const char *key, uint8_t cc)
   else
     value=" world";
 
-  execute(set_item(key, value));
+  execute(binary_set_item(key, value));
 
   if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ)
     value=" world";
@@ -1117,7 +1118,650 @@ static enum test_return test_binary_illegal(void)
     ++cc;
   }
 
+  return TEST_PASS_RECONNECT;
+}
+
+static enum test_return send_string(const char *cmd)
+{
+  execute(retry_write(cmd, strlen(cmd)));
   return TEST_PASS;
+}
+
+static enum test_return receive_line(char *buffer, size_t size)
+{
+  size_t offset= 0;
+  while (offset < size)
+  {
+    execute(retry_read(buffer + offset, 1));
+    if (buffer[offset] == '\n')
+    {
+      if (offset + 1 < size)
+      {
+        buffer[offset + 1]= '\0';
+        return TEST_PASS;
+      }
+      else
+        return TEST_FAIL;
+    }
+    ++offset;
+  }
+
+  return TEST_FAIL;
+}
+
+static enum test_return receive_response(const char *msg) {
+  char buffer[80];
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strcmp(msg, buffer) == 0);
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_quit(void)
+{
+  /* Verify that quit handles unknown options */
+  execute(send_string("quit foo bar\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  /* quit doesn't support noreply */
+  execute(send_string("quit noreply\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  /* Verify that quit works */
+  execute(send_string("quit\r\n"));
+
+  /* Socket should be closed now, read should return 0 */
+  char buffer[80];
+  verify(timeout_io_op(sock, POLLIN, buffer, sizeof(buffer)) == 0);
+  return TEST_PASS_RECONNECT;
+
+}
+
+static enum test_return test_ascii_version(void)
+{
+  /* Verify that version command handles unknown options */
+  execute(send_string("version foo bar\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  /* version doesn't support noreply */
+  execute(send_string("version noreply\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  /* Verify that verify works */
+  execute(send_string("version\r\n"));
+  char buffer[256];
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "VERSION ", 8) == 0);
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_verbosity(void)
+{
+  /* This command does not adhere to the spec! */
+  execute(send_string("verbosity foo bar my\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  execute(send_string("verbosity noreply\r\n"));
+  execute(test_ascii_version());
+
+  execute(send_string("verbosity 0 noreply\r\n"));
+  execute(test_ascii_version());
+
+  execute(send_string("verbosity\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  execute(send_string("verbosity 1\r\n"));
+  execute(receive_response("OK\r\n"));
+
+  execute(send_string("verbosity 0\r\n"));
+  execute(receive_response("OK\r\n"));
+
+  return TEST_PASS;
+}
+
+
+
+static enum test_return test_ascii_set_impl(const char* key, bool noreply)
+{
+  /* @todo add tests for bogus format! */
+  char buffer[1024];
+  sprintf(buffer, "set %s 0 0 5%s\r\nvalue\r\n", key,
+          noreply ? " noreply" : "");
+  execute(send_string(buffer));
+
+  if (!noreply)
+    execute(receive_response("STORED\r\n"));
+
+  return test_ascii_version();
+}
+
+static enum test_return test_ascii_set(void)
+{
+  return test_ascii_set_impl("test_ascii_set", false);
+}
+
+static enum test_return test_ascii_set_noreply(void)
+{
+  return test_ascii_set_impl("test_ascii_set_noreply", true);
+}
+
+static enum test_return test_ascii_add_impl(const char* key, bool noreply)
+{
+  /* @todo add tests for bogus format! */
+  char buffer[1024];
+  sprintf(buffer, "add %s 0 0 5%s\r\nvalue\r\n", key,
+          noreply ? " noreply" : "");
+  execute(send_string(buffer));
+
+  if (!noreply)
+    execute(receive_response("STORED\r\n"));
+
+  execute(send_string(buffer));
+
+  if (!noreply)
+    execute(receive_response("NOT_STORED\r\n"));
+
+  return test_ascii_version();
+}
+
+static enum test_return test_ascii_add(void)
+{
+  return test_ascii_add_impl("test_ascii_add", false);
+}
+
+static enum test_return test_ascii_add_noreply(void)
+{
+  return test_ascii_add_impl("test_ascii_add_noreply", true);
+}
+
+static enum test_return ascii_get_value(const char *key, const char *value)
+{
+
+  char buffer[1024];
+  size_t datasize= strlen(value);
+
+  verify(datasize < sizeof(buffer));
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "VALUE ", 6) == 0);
+  verify(strncmp(buffer + 6, key, strlen(key)) == 0);
+  char *ptr= buffer + 6 + strlen(key) + 1;
+  char *end;
+
+  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(ptr != end);
+  verify(val == 0);
+  verify(end != NULL);
+  val= strtoul(end, &end, 10); /* size */
+  verify(ptr != end);
+  verify(val == datasize);
+  verify(end != NULL);
+  while (*end != '\n' && isspace(*end))
+    ++end;
+  verify(*end == '\n');
+
+  execute(retry_read(buffer, datasize));
+  verify(memcmp(buffer, value, datasize) == 0);
+
+  execute(retry_read(buffer, 2));
+  verify(memcmp(buffer, "\r\n", 2) == 0);
+
+  return TEST_PASS;
+}
+
+static enum test_return ascii_get_item(const char *key, const char *value,
+                                       bool exist)
+{
+  char buffer[1024];
+  size_t datasize= 0;
+  if (value != NULL)
+    datasize= strlen(value);
+
+  verify(datasize < sizeof(buffer));
+  sprintf(buffer, "get %s\r\n", key);
+  execute(send_string(buffer));
+
+  if (exist)
+    execute(ascii_get_value(key, value));
+
+  execute(retry_read(buffer, 5));
+  verify(memcmp(buffer, "END\r\n", 5) == 0);
+
+  return TEST_PASS;
+}
+
+static enum test_return ascii_gets_value(const char *key, const char *value,
+                                         unsigned long *cas)
+{
+
+  char buffer[1024];
+  size_t datasize= strlen(value);
+
+  verify(datasize < sizeof(buffer));
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "VALUE ", 6) == 0);
+  verify(strncmp(buffer + 6, key, strlen(key)) == 0);
+  char *ptr= buffer + 6 + strlen(key) + 1;
+  char *end;
+
+  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(ptr != end);
+  verify(val == 0);
+  verify(end != NULL);
+  val= strtoul(end, &end, 10); /* size */
+  verify(ptr != end);
+  verify(val == datasize);
+  verify(end != NULL);
+  *cas= strtoul(end, &end, 10); /* cas */
+  verify(ptr != end);
+  verify(val == datasize);
+  verify(end != NULL);
+
+  while (*end != '\n' && isspace(*end))
+    ++end;
+  verify(*end == '\n');
+
+  execute(retry_read(buffer, datasize));
+  verify(memcmp(buffer, value, datasize) == 0);
+
+  execute(retry_read(buffer, 2));
+  verify(memcmp(buffer, "\r\n", 2) == 0);
+
+  return TEST_PASS;
+}
+
+static enum test_return ascii_gets_item(const char *key, const char *value,
+                                        bool exist, unsigned long *cas)
+{
+  char buffer[1024];
+  size_t datasize= 0;
+  if (value != NULL)
+    datasize= strlen(value);
+
+  verify(datasize < sizeof(buffer));
+  sprintf(buffer, "gets %s\r\n", key);
+  execute(send_string(buffer));
+
+  if (exist)
+    execute(ascii_gets_value(key, value, cas));
+
+  execute(retry_read(buffer, 5));
+  verify(memcmp(buffer, "END\r\n", 5) == 0);
+
+  return TEST_PASS;
+}
+
+static enum test_return ascii_set_item(const char *key, const char *value)
+{
+  char buffer[300];
+  size_t len= strlen(value);
+  sprintf(buffer, "set %s 0 0 %u\r\n", key, (unsigned int)len);
+  execute(send_string(buffer));
+  execute(retry_write(value, len));
+  execute(send_string("\r\n"));
+  execute(receive_response("STORED\r\n"));
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_replace_impl(const char* key, bool noreply)
+{
+  char buffer[1024];
+  sprintf(buffer, "replace %s 0 0 5%s\r\nvalue\r\n", key,
+          noreply ? " noreply" : "");
+  execute(send_string(buffer));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("NOT_STORED\r\n"));
+
+  execute(ascii_set_item(key, "value"));
+  execute(ascii_get_item(key, "value", true));
+
+
+  execute(send_string(buffer));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("STORED\r\n"));
+
+  return test_ascii_version();
+}
+
+static enum test_return test_ascii_replace(void)
+{
+  return test_ascii_replace_impl("test_ascii_replace", false);
+}
+
+static enum test_return test_ascii_replace_noreply(void)
+{
+  return test_ascii_replace_impl("test_ascii_replace_noreply", true);
+}
+
+static enum test_return test_ascii_cas_impl(const char* key, bool noreply)
+{
+  char buffer[1024];
+  unsigned long cas;
+
+  execute(ascii_set_item(key, "value"));
+  execute(ascii_gets_item(key, "value", true, &cas));
+
+  sprintf(buffer, "cas %s 0 0 6 %lu%s\r\nvalue2\r\n", key, cas,
+          noreply ? " noreply" : "");
+  execute(send_string(buffer));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("STORED\r\n"));
+
+  /* reexecute the same command should fail due to illegal cas */
+  execute(send_string(buffer));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("EXISTS\r\n"));
+
+  return test_ascii_version();
+}
+
+static enum test_return test_ascii_cas(void)
+{
+  return test_ascii_cas_impl("test_ascii_cas", false);
+}
+
+static enum test_return test_ascii_cas_noreply(void)
+{
+  return test_ascii_cas_impl("test_ascii_cas_noreply", true);
+}
+
+static enum test_return test_ascii_delete_impl(const char *key, bool noreply)
+{
+  execute(ascii_set_item(key, "value"));
+
+  execute(send_string("delete\r\n"));
+  execute(receive_response("ERROR\r\n"));
+  /* BUG: the server accepts delete a b */
+  execute(send_string("delete a b c d e\r\n"));
+  execute(receive_response("ERROR\r\n"));
+
+  char buffer[1024];
+  sprintf(buffer, "delete %s%s\r\n", key, noreply ? " noreply" : "");
+  execute(send_string(buffer));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("DELETED\r\n"));
+
+  execute(ascii_get_item(key, "value", false));
+  execute(send_string(buffer));
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("NOT_FOUND\r\n"));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_delete(void)
+{
+  return test_ascii_delete_impl("test_ascii_delete", false);
+}
+
+static enum test_return test_ascii_delete_noreply(void)
+{
+  return test_ascii_delete_impl("test_ascii_delete_noreply", true);
+}
+
+static enum test_return test_ascii_get(void)
+{
+  execute(ascii_set_item("test_ascii_get", "value"));
+
+  execute(send_string("get\r\n"));
+  execute(receive_response("ERROR\r\n"));
+  execute(ascii_get_item("test_ascii_get", "value", true));
+  execute(ascii_get_item("test_ascii_get_notfound", "value", false));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_gets(void)
+{
+  execute(ascii_set_item("test_ascii_gets", "value"));
+
+  execute(send_string("gets\r\n"));
+  execute(receive_response("ERROR\r\n"));
+  unsigned long cas;
+  execute(ascii_gets_item("test_ascii_gets", "value", true, &cas));
+  execute(ascii_gets_item("test_ascii_gets_notfound", "value", false, &cas));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_mget(void)
+{
+  execute(ascii_set_item("test_ascii_mget1", "value"));
+  execute(ascii_set_item("test_ascii_mget2", "value"));
+  execute(ascii_set_item("test_ascii_mget3", "value"));
+  execute(ascii_set_item("test_ascii_mget4", "value"));
+  execute(ascii_set_item("test_ascii_mget5", "value"));
+
+  execute(send_string("get test_ascii_mget1 test_ascii_mget2 test_ascii_mget3 "
+                      "test_ascii_mget4 test_ascii_mget5 "
+                      "test_ascii_mget6\r\n"));
+  execute(ascii_get_value("test_ascii_mget1", "value"));
+  execute(ascii_get_value("test_ascii_mget2", "value"));
+  execute(ascii_get_value("test_ascii_mget3", "value"));
+  execute(ascii_get_value("test_ascii_mget4", "value"));
+  execute(ascii_get_value("test_ascii_mget5", "value"));
+
+  char buffer[5];
+  execute(retry_read(buffer, 5));
+  verify(memcmp(buffer, "END\r\n", 5) == 0);
+ return TEST_PASS;
+}
+
+static enum test_return test_ascii_incr_impl(const char* key, bool noreply)
+{
+  char cmd[300];
+  sprintf(cmd, "incr %s 1%s\r\n", key, noreply ? " noreply" : "");
+
+  execute(ascii_set_item(key, "0"));
+  for (int x= 1; x < 11; ++x)
+  {
+    execute(send_string(cmd));
+
+    if (noreply)
+      execute(test_ascii_version());
+    else
+    {
+      char buffer[80];
+      execute(receive_line(buffer, sizeof(buffer)));
+      int val= atoi(buffer);
+      verify(val == x);
+    }
+  }
+
+  execute(ascii_get_item(key, "10", true));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_incr(void)
+{
+  return test_ascii_incr_impl("test_ascii_incr", false);
+}
+
+static enum test_return test_ascii_incr_noreply(void)
+{
+  return test_ascii_incr_impl("test_ascii_incr_noreply", true);
+}
+
+static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
+{
+  char cmd[300];
+  sprintf(cmd, "decr %s 1%s\r\n", key, noreply ? " noreply" : "");
+
+  execute(ascii_set_item(key, "9"));
+  for (int x= 8; x > -1; --x)
+  {
+    execute(send_string(cmd));
+
+    if (noreply)
+      execute(test_ascii_version());
+    else
+    {
+      char buffer[80];
+      execute(receive_line(buffer, sizeof(buffer)));
+      int val= atoi(buffer);
+      verify(val == x);
+    }
+  }
+
+  execute(ascii_get_item(key, "0", true));
+
+  /* verify that it doesn't wrap */
+  execute(send_string(cmd));
+  if (noreply)
+    execute(test_ascii_version());
+  else
+  {
+    char buffer[80];
+    execute(receive_line(buffer, sizeof(buffer)));
+  }
+  execute(ascii_get_item(key, "0", true));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_decr(void)
+{
+  return test_ascii_decr_impl("test_ascii_decr", false);
+}
+
+static enum test_return test_ascii_decr_noreply(void)
+{
+  return test_ascii_decr_impl("test_ascii_decr_noreply", true);
+}
+
+
+static enum test_return test_ascii_flush_impl(const char *key, bool noreply)
+{
+#if 0
+  /* Verify that the flush_all command handles unknown options */
+  /* Bug in the current memcached server! */
+  execute(send_string("flush_all foo bar\r\n"));
+  execute(receive_response("ERROR\r\n"));
+#endif
+
+  execute(ascii_set_item(key, key));
+  execute(ascii_get_item(key, key, true));
+
+  if (noreply)
+  {
+    execute(send_string("flush_all noreply\r\n"));
+    execute(test_ascii_version());
+  }
+  else
+  {
+    execute(send_string("flush_all\r\n"));
+    execute(receive_response("OK\r\n"));
+  }
+
+  execute(ascii_get_item(key, key, false));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_flush(void)
+{
+  return test_ascii_flush_impl("test_ascii_flush", false);
+}
+
+static enum test_return test_ascii_flush_noreply(void)
+{
+  return test_ascii_flush_impl("test_ascii_flush_noreply", true);
+}
+
+static enum test_return test_ascii_concat_impl(const char *key,
+                                               bool append,
+                                               bool noreply)
+{
+  const char *value;
+
+  if (append)
+    value="hello";
+  else
+    value=" world";
+
+  execute(ascii_set_item(key, value));
+
+  if (append)
+    value=" world";
+  else
+    value="hello";
+
+  char cmd[400];
+  sprintf(cmd, "%s %s 0 0 %u%s\r\n%s\r\n",
+          append ? "append" : "prepend",
+          key, (unsigned int)strlen(value), noreply ? " noreply" : "",
+          value);
+  execute(send_string(cmd));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("STORED\r\n"));
+
+  execute(ascii_get_item(key, "hello world", true));
+
+  sprintf(cmd, "%s %s_notfound 0 0 %u%s\r\n%s\r\n",
+          append ? "append" : "prepend",
+          key, (unsigned int)strlen(value), noreply ? " noreply" : "",
+          value);
+  execute(send_string(cmd));
+
+  if (noreply)
+    execute(test_ascii_version());
+  else
+    execute(receive_response("NOT_STORED\r\n"));
+
+  return TEST_PASS;
+}
+
+static enum test_return test_ascii_append(void)
+{
+  return test_ascii_concat_impl("test_ascii_append", true, false);
+}
+
+static enum test_return test_ascii_prepend(void)
+{
+  return test_ascii_concat_impl("test_ascii_prepend", false, false);
+}
+
+static enum test_return test_ascii_append_noreply(void)
+{
+  return test_ascii_concat_impl("test_ascii_append_noreply", true, true);
+}
+
+static enum test_return test_ascii_prepend_noreply(void)
+{
+  return test_ascii_concat_impl("test_ascii_prepend_noreply", false, true);
+}
+
+static enum test_return test_ascii_stat(void)
+{
+  execute(send_string("stats noreply\r\n"));
+  execute(receive_response("ERROR\r\n"));
+  execute(send_string("stats\r\n"));
+  char buffer[1024];
+  do {
+    execute(receive_line(buffer, sizeof(buffer)));
+  } while (strcmp(buffer, "END\r\n") != 0);
+
+  return TEST_PASS_RECONNECT;
 }
 
 typedef enum test_return(*TEST_FUNC)(void);
@@ -1129,34 +1773,61 @@ struct testcase
 };
 
 struct testcase testcases[]= {
-  { "noop", test_binary_noop},
-  { "quit", test_binary_quit},
-  { "quitq", test_binary_quitq},
-  { "set", test_binary_set},
-  { "setq", test_binary_setq},
-  { "flush", test_binary_flush},
-  { "flushq", test_binary_flushq},
-  { "add", test_binary_add},
-  { "addq", test_binary_addq},
-  { "replace", test_binary_replace},
-  { "replaceq", test_binary_replaceq},
-  { "delete", test_binary_delete},
-  { "deleteq", test_binary_deleteq},
-  { "get", test_binary_get},
-  { "getq", test_binary_getq},
-  { "getk", test_binary_getk},
-  { "getkq", test_binary_getkq},
-  { "incr", test_binary_incr},
-  { "incrq", test_binary_incrq},
-  { "decr", test_binary_decr},
-  { "decrq", test_binary_decrq},
-  { "version", test_binary_version},
-  { "append", test_binary_append},
-  { "appendq", test_binary_appendq},
-  { "prepend", test_binary_prepend},
-  { "prependq", test_binary_prependq},
-  { "stat", test_binary_stat},
-  { "illegal", test_binary_illegal},
+  { "ascii quit", test_ascii_quit },
+  { "ascii version", test_ascii_version },
+  { "ascii verbosity", test_ascii_verbosity },
+  { "ascii set", test_ascii_set },
+  { "ascii set noreply", test_ascii_set_noreply },
+  { "ascii get", test_ascii_get },
+  { "ascii gets", test_ascii_gets },
+  { "ascii mget", test_ascii_mget },
+  { "ascii flush", test_ascii_flush },
+  { "ascii flush noreply", test_ascii_flush_noreply },
+  { "ascii add", test_ascii_add },
+  { "ascii add noreply", test_ascii_add_noreply },
+  { "ascii replace", test_ascii_replace },
+  { "ascii replace noreply", test_ascii_replace_noreply },
+  { "ascii cas", test_ascii_cas },
+  { "ascii cas noreply", test_ascii_cas_noreply },
+  { "ascii delete", test_ascii_delete },
+  { "ascii delete noreply", test_ascii_delete_noreply },
+  { "ascii incr", test_ascii_incr },
+  { "ascii incr noreply", test_ascii_incr_noreply },
+  { "ascii decr", test_ascii_decr },
+  { "ascii decr noreply", test_ascii_decr_noreply },
+  { "ascii append", test_ascii_append },
+  { "ascii append noreply", test_ascii_append_noreply },
+  { "ascii prepend", test_ascii_prepend },
+  { "ascii prepend noreply", test_ascii_prepend_noreply },
+  { "ascii stat", test_ascii_stat },
+  { "binary noop", test_binary_noop },
+  { "binary quit", test_binary_quit },
+  { "binary quitq", test_binary_quitq },
+  { "binary set", test_binary_set },
+  { "binary setq", test_binary_setq },
+  { "binary flush", test_binary_flush },
+  { "binary flushq", test_binary_flushq },
+  { "binary add", test_binary_add },
+  { "binary addq", test_binary_addq },
+  { "binary replace", test_binary_replace },
+  { "binary replaceq", test_binary_replaceq },
+  { "binary delete", test_binary_delete },
+  { "binary deleteq", test_binary_deleteq },
+  { "binary get", test_binary_get },
+  { "binary getq", test_binary_getq },
+  { "binary getk", test_binary_getk },
+  { "binary getkq", test_binary_getkq },
+  { "binary incr", test_binary_incr },
+  { "binary incrq", test_binary_incrq },
+  { "binary decr", test_binary_decr },
+  { "binary decrq", test_binary_decrq },
+  { "binary version", test_binary_version },
+  { "binary append", test_binary_append },
+  { "binary appendq", test_binary_appendq },
+  { "binary prepend", test_binary_prepend },
+  { "binary prependq", test_binary_prependq },
+  { "binary stat", test_binary_stat },
+  { "binary illegal", test_binary_illegal },
   { NULL, NULL}
 };
 
@@ -1209,20 +1880,22 @@ int main(int argc, char **argv)
   for (int ii= 0; testcases[ii].description != NULL; ++ii)
   {
     ++total;
-    fprintf(stdout, "%s\t\t", testcases[ii].description);
+    fprintf(stdout, "%-40s", testcases[ii].description);
     fflush(stdout);
 
     bool reconnect= false;
     enum test_return ret= testcases[ii].function();
-    fprintf(stderr, "%s\n", status_msg[ret]);
     if (ret == TEST_FAIL)
     {
       reconnect= true;
       ++failed;
+      if (verbose)
+        fprintf(stderr, "\n");
     }
     else if (ret == TEST_PASS_RECONNECT)
       reconnect= true;
 
+    fprintf(stderr, "%s\n", status_msg[ret]);
     if (reconnect)
     {
       (void) close(sock);

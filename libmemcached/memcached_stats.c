@@ -185,8 +185,6 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->curr_items);
   else if (!memcmp("total_items", key, strlen("total_items")))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->total_items);
-  else if (!memcmp("bytes", key, strlen("bytes")))
-    length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes);
   else if (!memcmp("curr_connections", key, strlen("curr_connections")))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->curr_connections);
   else if (!memcmp("total_connections", key, strlen("total_connections")))
@@ -207,6 +205,8 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_read);
   else if (!memcmp("bytes_written", key, strlen("bytes_written")))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_written);
+  else if (!memcmp("bytes", key, strlen("bytes")))
+    length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes);
   else if (!memcmp("limit_maxbytes", key, strlen("limit_maxbytes")))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->limit_maxbytes);
   else if (!memcmp("threads", key, strlen("threads")))

@@ -338,6 +338,9 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
+    
+    /* We just want one pending response per server */
+    memcached_server_response_reset(&ptr->hosts[server_key]); 
     memcached_server_response_increment(&ptr->hosts[server_key]);    
     if ((x > 0 && x == ptr->io_key_prefetch) &&
         memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
@@ -371,7 +374,6 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
           memcached_io_reset(&ptr->hosts[x]);
           rc= MEMCACHED_SOME_ERRORS;
         }
-        memcached_server_response_increment(&ptr->hosts[x]);    
       }
     }
 
@@ -438,6 +440,8 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
         success= false;
         continue;
       }
+      /* we just want one pending response per server */
+      memcached_server_response_reset(&ptr->hosts[server]); 
       memcached_server_response_increment(&ptr->hosts[server]);
     }
 
@@ -461,7 +465,6 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
             dead_servers[x]= true;
             success= false;
           }
-          memcached_server_response_increment(&ptr->hosts[x]);
 
           /* mark all of the messages bound for this server as sent! */
           for (x= 0; x < number_of_keys; ++x)

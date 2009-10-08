@@ -356,8 +356,14 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
   {
     switch (header.response.opcode)
     {
-    case PROTOCOL_BINARY_CMD_GETK:
     case PROTOCOL_BINARY_CMD_GETKQ:
+      /*
+       * We didn't increment the response counter for the GETKQ packet
+       * (only the final NOOP), so we need to increment the counter again.
+       */ 
+      memcached_server_response_increment(ptr); 
+      /* FALLTHROUGH */
+    case PROTOCOL_BINARY_CMD_GETK:
       {
         uint16_t keylen= header.response.keylen;
         memcached_result_reset(result);
