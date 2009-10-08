@@ -2600,7 +2600,7 @@ static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
 
 static test_return user_supplied_bug21(memcached_st *memc)
 {
-  memcached_return rc;
+  test_return rc;
 
   /* should work as of r580 */
   rc= _user_supplied_bug21(memc, 10);
