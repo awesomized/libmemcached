@@ -1645,7 +1645,7 @@ static test_return  behavior_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return fetch_all_results(memcached_st *memc) 
+static test_return fetch_all_results(memcached_st *memc)
 {
   memcached_return rc= MEMCACHED_SUCCESS;
   char return_key[MEMCACHED_MAX_KEY];
@@ -1654,7 +1654,7 @@ static test_return fetch_all_results(memcached_st *memc)
   size_t return_value_length;
   uint32_t flags;
 
-  while ((return_value= memcached_fetch(memc, return_key, &return_key_length, 
+  while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
                                         &return_value_length, &flags, &rc)))
   {
     assert(return_value);
@@ -2544,7 +2544,12 @@ static test_return user_supplied_bug18(memcached_st *trash)
  * http://lists.tangent.org/pipermail/libmemcached/2009-August/000918.html
  */
 
-void fail(int); /* sighandler_t function that always asserts false */
+/* sighandler_t function that always asserts false */
+static void fail(int unused __attribute__((unused)))
+{
+  assert(0);
+}
+
 
 static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
 {
@@ -2598,8 +2603,13 @@ static test_return  _user_supplied_bug21(memcached_st* memc, size_t key_count)
   return TEST_SUCCESS;
 }
 
+static memcached_return pre_binary(memcached_st *memc);
+
 static test_return user_supplied_bug21(memcached_st *memc)
 {
+  if (pre_binary(memc) != TEST_SUCCESS)
+    return TEST_SUCCESS;
+
   test_return rc;
 
   /* should work as of r580 */
@@ -2611,11 +2621,6 @@ static test_return user_supplied_bug21(memcached_st *memc)
   assert(rc == TEST_SUCCESS);
 
   return TEST_SUCCESS;
-}
-
-void fail(int unused __attribute__((unused)))
-{
-  assert(0);
 }
 
 static test_return auto_eject_hosts(memcached_st *trash)
