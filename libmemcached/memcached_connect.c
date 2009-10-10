@@ -326,6 +326,7 @@ memcached_return memcached_connect(memcached_server_st *ptr)
       if (memcached_behavior_get(ptr->root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
         run_distribution(ptr->root);
 
+      ptr->root->last_disconnected_server = ptr;
       return MEMCACHED_SERVER_MARKED_DEAD;
     }
   }
