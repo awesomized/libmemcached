@@ -4732,6 +4732,60 @@ static test_return_t regression_bug_442914(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
+
+/* Test memcached_server_get_last_disconnect
+ * For a working server set, shall be NULL
+ * For a set of non existing server, shall not be NULL
+ */
+static test_return_t  test_get_last_disconnect(memcached_st *memc)
+{
+  memcached_return rc;
+  memcached_server_st *disconnected_server;
+
+  /* With the working set of server */
+  const char *key= "marmotte";
+  const char *value= "milka";
+
+  rc= memcached_set(memc, key, strlen(key),
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+  disconnected_server = memcached_server_get_last_disconnect(memc);
+  assert(disconnected_server == NULL);
+
+  /* With a non existing server */
+  memcached_st *mine;
+  memcached_server_st *servers;
+
+  const char *server_list= "localhost:9";
+
+  servers= memcached_servers_parse(server_list);
+  assert(servers);
+  mine= memcached_create(NULL);
+  rc= memcached_server_push(mine, servers);
+  assert(rc == MEMCACHED_SUCCESS);
+  memcached_server_list_free(servers);
+  assert(mine);
+
+  rc= memcached_set(mine, key, strlen(key),
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+  assert(rc != MEMCACHED_SUCCESS);
+
+  disconnected_server = memcached_server_get_last_disconnect(mine);
+  assert(disconnected_server != NULL);
+  assert(disconnected_server->port == 9);
+  assert(strncmp(disconnected_server->hostname,"localhost",9) == 0);
+
+  memcached_quit(mine);
+  memcached_free(mine);
+
+  return TEST_SUCCESS;
+}
+
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -4811,6 +4865,7 @@ test_st tests[] ={
 #ifdef HAVE_LIBMEMCACHEDUTIL
   {"connectionpool", 1, connection_pool_test },
 #endif
+  {"test_get_last_disconnect", 1, test_get_last_disconnect},
   {0, 0, 0}
 };
 
