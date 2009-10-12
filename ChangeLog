@@ -1,4 +1,6 @@
+  * Updated memcapable to test ASCII protocol.
   * Changed behavior so that server can be removed at first sign of failure.
+  * Added memcached_server_get_last_disconnect() call
 
 0.33 Wed Sep 23 10:11:58 PDT 2009
   * Added memcapable to test servers for binary compatibility.

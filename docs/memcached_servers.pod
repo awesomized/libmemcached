@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push - Manage server list
+memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect - Manage server list
 
 =head1 LIBRARY
 
@@ -37,6 +37,9 @@ C Client Library for memcached (libmemcached, -lmemcached)
     memcached_server_by_key (memcached_st *ptr,  
                              const char *key, size_t key_length, 
                              memcached_return *error);
+  memcached_server_st *                          
+    memcached_server_get_last_disconnect (memcached_st *ptr)
+    
 
 =head1 DESCRIPTION
 
@@ -80,6 +83,11 @@ server which would be used for assignment. This structure is cloned
 from its original structure and must be freed. If NULL is returned you
 should consult *error. The returning structure should be freed with
 memcached_server_free().
+
+memcached_server_get_last_disconnect() returns a pointer to the last server 
+for which there was a connection problem. It does not mean this particular 
+server is currently dead but if the library is reporting a server is, 
+the returned server is a very good candidate.
 
 =head1 RETURN
 
