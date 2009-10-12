@@ -4593,11 +4593,12 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   /*
    * I only want to hit only _one_ server so I know the number of requests I'm
    * sending in the pipleine to the server. Let's try to do a multiget of
-   * 10240 (that should satisfy most users don't you tink?)
+   * 1024 (that should satisfy most users don't you think?). Future versions
+   * will include a mget_execute function call if you need a higher number.
    */
   uint32_t number_of_hosts= memc->number_of_hosts;
   memc->number_of_hosts= 1;
-  const size_t max_keys= 10240;
+  const size_t max_keys= 1024;
   char **keys= calloc(max_keys, sizeof(char*));
   size_t *key_length=calloc(max_keys, sizeof(size_t));
 
