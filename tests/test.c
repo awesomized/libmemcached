@@ -37,9 +37,9 @@ static const char *test_strerror(test_return_t code)
   case TEST_SKIPPED:
     return "skipped";
   case TEST_MAXIMUM_RETURN:
-  default: 
+  default:
     fprintf(stderr, "Unknown return value\n");
-    assert(0);
+    abort();
   }
 
 }
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
   if (world.create)
     world_ptr= world.create();
-  else 
+  else
     world_ptr= NULL;
 
   startup_ptr= (server_startup_st *)world_ptr;
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
       gettimeofday(&end_time, NULL);
       load_time= timedif(end_time, start_time);
 
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ %s ]\n", load_time / 1000, 
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ %s ]\n", load_time / 1000,
               load_time % 1000, test_strerror(failed));
 
       if (next->post)
