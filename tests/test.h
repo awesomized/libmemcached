@@ -16,13 +16,14 @@ typedef enum {
   TEST_SUCCESS= 0, /* Backwards compatibility */
   TEST_FAILURE,
   TEST_MEMORY_ALLOCATION_FAILURE,
+  TEST_SKIPPED,
   TEST_MAXIMUM_RETURN /* Always add new error code before */
-} test_return;
+} test_return_t;
 
 struct test_st {
   const char *name;
   unsigned int requires_flush;
-  test_return (*function)(memcached_st *memc);
+  test_return_t (*function)(memcached_st *memc);
 };
 
 struct collection_st {
