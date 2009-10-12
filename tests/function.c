@@ -4784,8 +4784,8 @@ static test_return_t  test_get_last_disconnect(memcached_st *memc)
 }
 
 /*
- * This tests ensures expected disconnections (for some behavior changes
- * for instance) do not wrongly increase failure counter
+ * This test ensures that the failure counter isn't incremented during
+ * normal termination of the memcached instance.
  */
 static test_return_t wrong_failure_counter_test(memcached_st *memc)
 {
@@ -4794,34 +4794,38 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
   /* Set value to force connection to the server */
   const char *key= "marmotte";
   const char *value= "milka";
-  char *string = NULL;
-  size_t string_length;
-  uint32_t flags;
 
+  /*
+   * Please note that I'm abusing the internal structures in libmemcached
+   * in a non-portable way and you shouldn't be doing this. I'm only
+   * doing this in order to verify that the library works the way it should
+   */
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+
+  /* Ensure that we are connected to the server by setting a value */
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
   assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
 
-  /* put failure limit to 1 */
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
-  assert(rc == MEMCACHED_SUCCESS);
-  /* Put a retry timeout to effectively activate failure_limit effect */
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1);
-  assert(rc == MEMCACHED_SUCCESS);
-  /* change behavior that triggers memcached_quit()*/
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
-  assert(rc == MEMCACHED_SUCCESS);
+  /* The test is to see that the memcached_quit doesn't increase the
+   * the server failure conter, so let's ensure that it is zero
+   * before sending quit
+   */
+  memc->hosts[0].server_failure_counter= 0;
 
+  memcached_quit(memc);
 
-  /* Check if we still are connected */
-  string= memcached_get(memc, key, strlen(key),
-                        &string_length, &flags, &rc);
+  /* Verify that it memcached_quit didn't increment the failure counter
+   * Please note that this isn't bullet proof, because an error could
+   * occur...
+   */
+  assert(memc->hosts[0].server_failure_counter == 0);
 
-  assert(rc == MEMCACHED_SUCCESS);
-  assert(string);
-  free(string);
+  /* restore the instance */
+  memc->number_of_hosts= number_of_hosts;
 
   return TEST_SUCCESS;
 }

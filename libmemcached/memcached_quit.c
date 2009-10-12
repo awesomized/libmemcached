@@ -39,6 +39,15 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
       ssize_t nread;
       while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
                                &nread) == MEMCACHED_SUCCESS);
+
+      /*
+       * memcached_io_read may call memcached_quit_server with io_death if
+       * it encounters problems, but we don't care about those occurences.
+       * The intention of that loop is to drain the data sent from the
+       * server to ensure that the server processed all of the data we
+       * sent to the server.
+       */
+      ptr->server_failure_counter= 0;
     }
     memcached_io_close(ptr);
 
