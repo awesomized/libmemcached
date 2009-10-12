@@ -4732,8 +4732,6 @@ static test_return_t regression_bug_442914(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-
-
 /* Test memcached_server_get_last_disconnect
  * For a working server set, shall be NULL
  * For a set of non existing server, shall not be NULL
@@ -4785,6 +4783,48 @@ static test_return_t  test_get_last_disconnect(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+ * This tests ensures expected disconnections (for some behavior changes
+ * for instance) do not wrongly increase failure counter
+ */
+static test_return_t wrong_failure_counter_test(memcached_st *memc)
+{
+  memcached_return rc;
+
+  /* Set value to force connection to the server */
+  const char *key= "marmotte";
+  const char *value= "milka";
+  char *string = NULL;
+  size_t string_length;
+  uint32_t flags;
+
+  rc= memcached_set(memc, key, strlen(key),
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+
+  /* put failure limit to 1 */
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* Put a retry timeout to effectively activate failure_limit effect */
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* change behavior that triggers memcached_quit()*/
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+
+  /* Check if we still are connected */
+  string= memcached_get(memc, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(string);
+  free(string);
+
+  return TEST_SUCCESS;
+}
 
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
@@ -4930,6 +4970,7 @@ test_st user_tests[] ={
   {"user_supplied_bug19", 1, user_supplied_bug19 },
   {"user_supplied_bug20", 1, user_supplied_bug20 },
   {"user_supplied_bug21", 1, user_supplied_bug21 },
+  {"wrong_failure_counter_test", 1, wrong_failure_counter_test},
   {0, 0, 0}
 };
 

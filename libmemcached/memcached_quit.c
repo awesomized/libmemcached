@@ -2,10 +2,10 @@
 
 /*
   This closes all connections (forces flush of input as well).
-  
-  Maybe add a host specific, or key specific version? 
-  
-  The reason we send "quit" is that in case we have buffered IO, this 
+
+  Maybe add a host specific, or key specific version?
+
+  The reason we send "quit" is that in case we have buffered IO, this
   will force data to be completed.
 */
 
@@ -18,7 +18,7 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
       memcached_return rc;
       char buffer[MEMCACHED_MAX_BUFFER];
 
-      if (ptr->root->flags & MEM_BINARY_PROTOCOL) 
+      if (ptr->root->flags & MEM_BINARY_PROTOCOL)
       {
         protocol_binary_request_quit request = {.bytes= {0}};
         request.message.header.request.magic = PROTOCOL_BINARY_REQ;
@@ -30,7 +30,7 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
         rc= memcached_do(ptr, "quit\r\n", 6, 1);
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
-      
+
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read
        * results in server throwing away all data which is
@@ -49,14 +49,14 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
     memcached_server_response_reset(ptr);
   }
 
-  ptr->server_failure_counter++;
+  if(io_death) ptr->server_failure_counter++;
 }
 
 void memcached_quit(memcached_st *ptr)
 {
   unsigned int x;
 
-  if (ptr->hosts == NULL || 
+  if (ptr->hosts == NULL ||
       ptr->number_of_hosts == 0)
     return;
 
