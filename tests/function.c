@@ -3217,15 +3217,14 @@ static memcached_return  pre_binary(memcached_st *memc)
 
 static memcached_return pre_replication(memcached_st *memc)
 {
-  memcached_return rc= MEMCACHED_FAILURE;
-
   if (pre_binary(memc) != MEMCACHED_SUCCESS)
-    return TEST_SKIPPED;
+    return MEMCACHED_FAILURE;
 
   /*
    * Make sure that we store the item on all servers
    * (master + replicas == number of servers)
- */
+   */
+  memcached_return rc;
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS,
                              memc->number_of_hosts - 1);
   assert(rc == MEMCACHED_SUCCESS);
