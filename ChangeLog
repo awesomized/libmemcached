@@ -1,3 +1,9 @@
+0.34
+  * Added support for setting behavior flags on a connection pool.
+  * Don't increment server_failure_counter on normal disconnects.
+  * Added prototype for a callback based protocol parser (server side)
+    with examples so that you could let your own application speak the
+    memcached protocol
   * Updated memcapable to test ASCII protocol.
   * Changed behavior so that server can be removed at first sign of failure.
   * Added memcached_server_get_last_disconnect() call
