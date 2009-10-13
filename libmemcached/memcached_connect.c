@@ -121,16 +121,25 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     WATCHPOINT_ASSERT(error == 0);
   }
 
-  /* For the moment, not getting a nonblocking mode will not be fatal */
-  if ((ptr->root->flags & MEM_NO_BLOCK) || ptr->root->connect_timeout)
-  {
-    int flags;
+  /* libmemcached will always use nonblocking IO to avoid write deadlocks */
+  int flags;
 
+  do
     flags= fcntl(ptr->fd, F_GETFL, 0);
-    unlikely (flags != -1)
-    {
-      (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
-    }
+  while (flags == -1 && (errno == EINTR || errno == EAGAIN));
+
+  unlikely (flags == -1)
+    return MEMCACHED_CONNECTION_FAILURE;
+  else if ((flags & O_NONBLOCK) == 0)
+  {
+    int rval;
+
+    do
+      rval= fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
+    while (rval == -1 && (errno == EINTR || errno == EAGAIN));
+
+    unlikely (rval == -1)
+      return MEMCACHED_CONNECTION_FAILURE;
   }
 
   return MEMCACHED_SUCCESS;
@@ -219,14 +228,6 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
       (void)set_socket_options(ptr);
 
-      int flags= 0;
-      if (ptr->root->connect_timeout)
-      {
-        flags= fcntl(ptr->fd, F_GETFL, 0);
-        if (flags != -1 && !(flags & O_NONBLOCK))
-          (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
-      }
-
       /* connect to server */
       while (ptr->fd != -1 &&
              connect(ptr->fd, use->ai_addr, use->ai_addrlen) < 0)
@@ -268,10 +269,6 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
       if (ptr->fd != -1)
       {
-        /* restore flags */
-        if (ptr->root->connect_timeout && (ptr->root->flags & MEM_NO_BLOCK) == 0)
-          (void)fcntl(ptr->fd, F_SETFL, flags & ~O_NONBLOCK);
-
         WATCHPOINT_ASSERT(ptr->cursor_active == 0);
         ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
@@ -290,9 +287,10 @@ static memcached_return network_connect(memcached_server_st *ptr)
       if (gettimeofday(&next_time, NULL) == 0)
         ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
     }
-    ptr->server_failure_counter+= 1;
+    ptr->server_failure_counter++;
     if (ptr->cached_errno == 0)
       return MEMCACHED_TIMEOUT;
+
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
   }
 

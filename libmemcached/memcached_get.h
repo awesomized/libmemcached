@@ -6,8 +6,8 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_GET_H__
-#define __MEMCACHED_GET_H__
+#ifndef LIBMEMCACHED_MEMCACHED_GET_H
+#define LIBMEMCACHED_MEMCACHED_GET_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,10 +53,19 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_result_st *result,
                                             memcached_return *error);
 
-
+LIBMEMCACHED_API
+memcached_return memcached_mget_execute(memcached_st *ptr,
+                                        const char *master_key,
+                                        size_t master_key_length,
+                                        const char **keys,
+                                        size_t *key_length,
+                                        size_t number_of_keys,
+                                        memcached_execute_function *callback,
+                                        void *context,
+                                        unsigned int number_of_callbacks);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MEMCACHED_GET_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_GET_H */

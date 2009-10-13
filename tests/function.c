@@ -1449,6 +1449,71 @@ static test_return_t  mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t mget_execute(memcached_st *memc)
+{
+  bool binary= false;
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+    binary= true;
+
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+
+  int max_keys= binary ? 20480 : 1;
+  
+
+  char **keys= calloc(max_keys, sizeof(char*));
+  size_t *key_length=calloc(max_keys, sizeof(size_t));
+
+  /* First add all of the items.. */
+  char blob[1024] = {0};
+  memcached_return rc;
+  for (int x= 0; x < max_keys; ++x)
+  {
+    char k[251];
+    key_length[x]= snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    assert(keys[x] != NULL);
+    rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  /* Try to get all of them with a large multiget */
+  unsigned int counter= 0;
+  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+  rc= memcached_mget_execute(memc, NULL, 0,
+                             (const char**)keys, key_length,
+                             max_keys, callbacks, &counter, 1);
+
+  if (binary)
+  {
+    assert(rc == MEMCACHED_SUCCESS);
+
+    rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+    assert(rc == MEMCACHED_END);
+
+    /* Verify that we got all of the items */
+    assert(counter == max_keys);
+  }
+  else
+  {
+    assert(rc == MEMCACHED_NOT_SUPPORTED);
+    assert(counter == 0);
+  }
+
+  /* Release all allocated resources */
+  for (int x= 0; x < max_keys; ++x)
+    free(keys[x]);
+  free(keys);
+  free(key_length);
+
+  memc->number_of_hosts= number_of_hosts;
+  return TEST_SUCCESS;
+}
+
 static test_return_t  get_stats_keys(memcached_st *memc)
 {
  char **list;
@@ -4892,6 +4957,7 @@ test_st tests[] ={
   {"mget_result", 1, mget_result_test },
   {"mget_result_alloc", 1, mget_result_alloc_test },
   {"mget_result_function", 1, mget_result_function },
+  {"mget_execute", 1, mget_execute },
   {"mget_end", 0, mget_end },
   {"get_stats", 0, get_stats },
   {"add_host_test", 0, add_host_test },

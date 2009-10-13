@@ -277,6 +277,34 @@ memcached_return memcached_mget_by_key(memcached_st *ptr,
                                     key_length, number_of_keys, true);
 }
 
+memcached_return memcached_mget_execute(memcached_st *ptr,
+                                        const char *master_key,
+                                        size_t master_key_length,
+                                        const char **keys,
+                                        size_t *key_length,
+                                        size_t number_of_keys,
+                                        memcached_execute_function *callback,
+                                        void *context,
+                                        unsigned int number_of_callbacks)
+{
+  if ((ptr->flags & MEM_BINARY_PROTOCOL) == 0)
+    return MEMCACHED_NOT_SUPPORTED;
+
+  memcached_return rc;
+  memcached_callback_st *original_callbacks= ptr->callbacks;
+  memcached_callback_st cb= {
+    .callback= callback,
+    .context= context,
+    .number_of_callback= 1
+  };
+
+  ptr->callbacks= &cb;
+  rc= memcached_mget_by_key(ptr, master_key, master_key_length, keys,
+                            key_length, number_of_keys);
+  ptr->callbacks= original_callbacks;
+  return rc;
+}
+
 static memcached_return simple_binary_mget(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
