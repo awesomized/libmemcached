@@ -1449,6 +1449,70 @@ static test_return_t  mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t mget_execute(memcached_st *memc)
+{
+  bool binary= false;
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+    binary= true;
+
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+
+  int max_keys= binary ? 20480 : 1;
+  
+
+  char **keys= calloc((size_t)max_keys, sizeof(char*));
+  size_t *key_length=calloc((size_t)max_keys, sizeof(size_t));
+
+  /* First add all of the items.. */
+  char blob[1024] = {0};
+  memcached_return rc;
+  for (int x= 0; x < max_keys; ++x)
+  {
+    char k[251];
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    assert(keys[x] != NULL);
+    rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  /* Try to get all of them with a large multiget */
+  unsigned int counter= 0;
+  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+  rc= memcached_mget_execute(memc, (const char**)keys, key_length,
+                             (size_t)max_keys, callbacks, &counter, 1);
+
+  if (binary)
+  {
+    assert(rc == MEMCACHED_SUCCESS);
+
+    rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+    assert(rc == MEMCACHED_END);
+
+    /* Verify that we got all of the items */
+    assert(counter == (unsigned int)max_keys);
+  }
+  else
+  {
+    assert(rc == MEMCACHED_NOT_SUPPORTED);
+    assert(counter == 0);
+  }
+
+  /* Release all allocated resources */
+  for (int x= 0; x < max_keys; ++x)
+    free(keys[x]);
+  free(keys);
+  free(key_length);
+
+  memc->number_of_hosts= number_of_hosts;
+  return TEST_SUCCESS;
+}
+
 static test_return_t  get_stats_keys(memcached_st *memc)
 {
  char **list;
@@ -4732,6 +4796,114 @@ static test_return_t regression_bug_442914(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t regression_bug_447342(memcached_st *memc)
+{
+  if (memc->number_of_hosts < 3 || pre_replication(memc) != MEMCACHED_SUCCESS)
+    return TEST_SKIPPED;
+
+  memcached_return rc;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  const size_t max_keys= 100;
+  char **keys= calloc(max_keys, sizeof(char*));
+  size_t *key_length=calloc(max_keys, sizeof(size_t));
+
+  for (int x= 0; x < (int)max_keys; ++x)
+  {
+    char k[251];
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    assert(keys[x] != NULL);
+    rc= memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0);
+    assert(rc == MEMCACHED_SUCCESS);
+  }
+
+  /*
+  ** We are using the quiet commands to store the replicas, so we need
+  ** to ensure that all of them are processed before we can continue.
+  ** In the test we go directly from storing the object to trying to
+  ** receive the object from all of the different servers, so we
+  ** could end up in a race condition (the memcached server hasn't yet
+  ** processed the quiet command from the replication set when it process
+  ** the request from the other client (created by the clone)). As a
+  ** workaround for that we call memcached_quit to send the quit command
+  ** to the server and wait for the response ;-) If you use the test code
+  ** as an example for your own code, please note that you shouldn't need
+  ** to do this ;-)
+  */
+  memcached_quit(memc);
+  
+  /* Verify that all messages are stored, and we didn't stuff too much 
+   * into the servers
+   */
+  rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  unsigned int counter= 0;
+  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+  /* Verify that we received all of the key/value pairs */
+  assert(counter == (unsigned int)max_keys);
+
+  memcached_quit(memc);
+  /*
+   * Don't do the following in your code. I am abusing the internal details
+   * within the library, and this is not a supported interface.
+   * This is to verify correct behavior in the library. Fake that two servers
+   * are dead..
+   */
+  unsigned int port0= memc->hosts[0].port;
+  unsigned int port2= memc->hosts[2].port;
+  memc->hosts[0].port= 0;
+  memc->hosts[2].port= 0;
+
+  rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  counter= 0;
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+  assert(counter == (unsigned int)max_keys);
+
+  /* restore the memc handle */
+  memc->hosts[0].port= port0;
+  memc->hosts[2].port= port2;
+
+  memcached_quit(memc);
+
+  /* Remove half of the objects */
+  for (int x= 0; x < (int)max_keys; ++x)
+    if (x & 1)
+    {
+      rc= memcached_delete(memc, keys[x], key_length[x], 0);
+      assert(rc == MEMCACHED_SUCCESS);
+    }
+
+  memcached_quit(memc);
+  memc->hosts[0].port= 0;
+  memc->hosts[2].port= 0;
+
+  /* now retry the command, this time we should have cache misses */
+  rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  counter= 0;
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+  assert(counter == (unsigned int)(max_keys >> 1));
+
+  /* Release allocated resources */
+  for (size_t x= 0; x < max_keys; ++x)
+    free(keys[x]);
+  free(keys);
+  free(key_length);
+
+  /* restore the memc handle */
+  memc->hosts[0].port= port0;
+  memc->hosts[2].port= port2;
+  return TEST_SUCCESS;
+}
+
 /* Test memcached_server_get_last_disconnect
  * For a working server set, shall be NULL
  * For a set of non existing server, shall not be NULL
@@ -4892,6 +5064,7 @@ test_st tests[] ={
   {"mget_result", 1, mget_result_test },
   {"mget_result_alloc", 1, mget_result_alloc_test },
   {"mget_result_function", 1, mget_result_function },
+  {"mget_execute", 1, mget_execute },
   {"mget_end", 0, mget_end },
   {"get_stats", 0, get_stats },
   {"add_host_test", 0, add_host_test },
@@ -4998,6 +5171,7 @@ test_st regression_tests[]= {
   {"lp:434843 buffered", 1, regression_bug_434843_buffered },
   {"lp:421108", 1, regression_bug_421108 },
   {"lp:442914", 1, regression_bug_442914 },
+  {"lp:447342", 1, regression_bug_447342 },
   {0, 0, 0}
 };
 

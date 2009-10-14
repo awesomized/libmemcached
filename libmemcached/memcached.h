@@ -113,6 +113,7 @@ struct memcached_st {
   memcached_trigger_delete_key delete_trigger;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   uint32_t number_of_replicas;
+  memcached_callback_st *callbacks;
 };
 
 LIBMEMCACHED_API

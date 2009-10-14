@@ -1,6 +1,7 @@
 #include "common.h"
 
-memcached_return memcached_key_test(const char **keys, size_t *key_length, 
+memcached_return memcached_key_test(const char * const *keys, 
+                                    const size_t *key_length, 
                                     size_t number_of_keys)
 {
   uint32_t x;
@@ -14,8 +15,6 @@ memcached_return memcached_key_test(const char **keys, size_t *key_length,
     if (rc != MEMCACHED_SUCCESS)
       return rc;
     
-
-
     for (y= 0; y < *(key_length + x); y++)
     {
       if ((isgraph(keys[x][y])) == 0)
