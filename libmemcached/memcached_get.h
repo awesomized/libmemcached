@@ -23,7 +23,8 @@ char *memcached_get(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return memcached_mget(memcached_st *ptr, 
-                                const char **keys, size_t *key_length, 
+                                const char * const *keys, 
+                                const size_t *key_length, 
                                 size_t number_of_keys);
 
 LIBMEMCACHED_API
@@ -38,8 +39,8 @@ LIBMEMCACHED_API
 memcached_return memcached_mget_by_key(memcached_st *ptr, 
                                        const char *master_key, size_t 
                                        master_key_length,
-                                       const char **keys, 
-                                       size_t *key_length, 
+                                       const char * const *keys, 
+                                       const size_t *key_length, 
                                        size_t number_of_keys);
 
 LIBMEMCACHED_API
@@ -57,8 +58,8 @@ LIBMEMCACHED_API
 memcached_return memcached_mget_execute(memcached_st *ptr,
                                         const char *master_key,
                                         size_t master_key_length,
-                                        const char **keys,
-                                        size_t *key_length,
+                                        const char * const *keys,
+                                        const size_t *key_length,
                                         size_t number_of_keys,
                                         memcached_execute_function *callback,
                                         void *context,
