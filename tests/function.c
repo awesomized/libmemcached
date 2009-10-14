@@ -1484,8 +1484,7 @@ static test_return_t mget_execute(memcached_st *memc)
   /* Try to get all of them with a large multiget */
   unsigned int counter= 0;
   memcached_execute_function callbacks[1]= { [0]= &callback_counter };
-  rc= memcached_mget_execute(memc, NULL, 0,
-                             (const char**)keys, key_length,
+  rc= memcached_mget_execute(memc, (const char**)keys, key_length,
                              (size_t)max_keys, callbacks, &counter, 1);
 
   if (binary)
