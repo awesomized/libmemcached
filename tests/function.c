@@ -4807,19 +4807,18 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2);
   assert(rc == MEMCACHED_SUCCESS);
 
-
   const size_t max_keys= 100;
   char **keys= calloc(max_keys, sizeof(char*));
   size_t *key_length=calloc(max_keys, sizeof(size_t));
 
   for (int x= 0; x < (int)max_keys; ++x)
   {
-     char k[251];
-     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
-     keys[x]= strdup(k);
-     assert(keys[x] != NULL);
-     rc= memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0);
-     assert(rc == MEMCACHED_SUCCESS);
+    char k[251];
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    assert(keys[x] != NULL);
+    rc= memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0);
+    assert(rc == MEMCACHED_SUCCESS);
   }
 
   /*
@@ -4868,6 +4867,32 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
   assert(counter == (unsigned int)max_keys);
 
+  /* restore the memc handle */
+  memc->hosts[0].port= port0;
+  memc->hosts[2].port= port2;
+
+  memcached_quit(memc);
+
+  /* Remove half of the objects */
+  for (int x= 0; x < (int)max_keys; ++x)
+    if (x & 1)
+    {
+      rc= memcached_delete(memc, keys[x], key_length[x], 0);
+      assert(rc == MEMCACHED_SUCCESS);
+    }
+
+  memcached_quit(memc);
+  memc->hosts[0].port= 0;
+  memc->hosts[2].port= 0;
+
+  /* now retry the command, this time we should have cache misses */
+  rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  counter= 0;
+  rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
+  assert(counter == (unsigned int)(max_keys >> 1));
+
   /* Release allocated resources */
   for (size_t x= 0; x < max_keys; ++x)
     free(keys[x]);
@@ -4877,10 +4902,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   /* restore the memc handle */
   memc->hosts[0].port= port0;
   memc->hosts[2].port= port2;
-
   return TEST_SUCCESS;
 }
-
 
 /* Test memcached_server_get_last_disconnect
  * For a working server set, shall be NULL
