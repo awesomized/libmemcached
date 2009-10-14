@@ -416,18 +416,15 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
                                                 bool* dead_servers,
                                                 const char *const *keys, 
                                                 const size_t *key_length,
-                                                size_t number_of_keys, 
-                                                bool mget_mode)
+                                                size_t number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
   uint32_t x;
 
-  int flush= number_of_keys == 1;
-
   for (uint32_t replica= 0; replica <= ptr->number_of_replicas; ++replica)
   {
     bool success= true;    
-    
+
     for (x= 0; x < number_of_keys; ++x)
     {
       if (hash[x] == ptr->number_of_hosts)
@@ -452,58 +449,39 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
         }
       }
 
-      protocol_binary_request_getk request= {.bytes= {0}};
-      request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-      if (mget_mode)
-        request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
-      else
-        request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
+      protocol_binary_request_getk request= {
+        .message.header.request= {
+          .magic= PROTOCOL_BINARY_REQ,
+          .opcode= PROTOCOL_BINARY_CMD_GETK,
+          .keylen= htons((uint16_t)key_length[x]),
+          .datatype= PROTOCOL_BINARY_RAW_BYTES,
+          .bodylen= htonl((uint32_t)key_length[x])
+        }
+      };
 
-      request.message.header.request.keylen= htons((uint16_t)key_length[x]);
-      request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-      request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
-
+      /*
+       * We need to disable buffering to actually know that the request was
+       * successfully sent to the server (so that we should expect a result
+       * back). It would be nice to do this in buffered mode, but then it
+       * would be complex to handle all error situations if we got to send
+       * some of the messages, and then we failed on writing out some others
+       * and we used the callback interface from memcached_mget_execute so
+       * that we might have processed some of the responses etc. For now,
+       * just make sure we work _correctly_
+       */
       if ((memcached_io_write(&ptr->hosts[server], request.bytes,
                               sizeof(request.bytes), 0) == -1) ||
           (memcached_io_write(&ptr->hosts[server], keys[x],
-                              key_length[x], (char) flush) == -1))
+                              key_length[x], 1) == -1))
       {
         memcached_io_reset(&ptr->hosts[server]);
         dead_servers[server]= true;
         success= false;
         continue;
       }
-      /* we just want one pending response per server */
-      memcached_server_response_reset(&ptr->hosts[server]); 
+
       memcached_server_response_increment(&ptr->hosts[server]);
-    }
-
-    if (mget_mode)
-    {
-      /*
-       * Send a noop command to flush the buffers
-       */
-      protocol_binary_request_noop request= {.bytes= {0}};
-      request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
-      request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-
-      for (x= 0; x < ptr->number_of_hosts; x++)
-        if (memcached_server_response_count(&ptr->hosts[x]))
-        {
-          if (memcached_io_write(&ptr->hosts[x], request.bytes,
-                                 sizeof(request.bytes), 1) == -1)
-          {
-            memcached_io_reset(&ptr->hosts[x]);
-            dead_servers[x]= true;
-            success= false;
-          }
-
-          /* mark all of the messages bound for this server as sent! */
-          for (x= 0; x < number_of_keys; ++x)
-            if (hash[x] == x)
-              hash[x]= ptr->number_of_hosts;
-        }
+      hash[x]= ptr->number_of_hosts;
     }
 
     if (success)
@@ -551,7 +529,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
         hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
     rc= replication_binary_mget(ptr, hash, dead_servers, keys, 
-                                key_length, number_of_keys, mget_mode);
+                                key_length, number_of_keys);
 
     ptr->call_free(ptr, hash);
     ptr->call_free(ptr, dead_servers);
