@@ -296,7 +296,7 @@ memcached_return memcached_mget_execute(memcached_st *ptr,
   memcached_callback_st cb= {
     .callback= callback,
     .context= context,
-    .number_of_callback= 1
+    .number_of_callback= number_of_callbacks
   };
 
   ptr->callbacks= &cb;

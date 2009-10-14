@@ -18,15 +18,14 @@ static void increment_udp_message_id(memcached_server_st *ptr);
 static memcached_return io_wait(memcached_server_st *ptr,
                                 memc_read_or_write read_or_write)
 {
-  struct pollfd fds[1]= {
-     [0].fd= ptr->fd,
-     [0].events = POLLIN
+  struct pollfd fds= {
+     .fd= ptr->fd,
+     .events = POLLIN
   };
-  short flags= 0;
   int error;
 
   unlikely (read_or_write == MEM_WRITE) /* write */
-    fds[0].events= POLLOUT;
+    fds.events= POLLOUT;
 
   /*
   ** We are going to block on write, but at least on Solaris we might block
@@ -47,7 +46,7 @@ static memcached_return io_wait(memcached_server_st *ptr,
   if ((ptr->root->flags & MEM_NO_BLOCK) == 0)
     timeout= -1;
 
-  error= poll(fds, 1, timeout);
+  error= poll(&fds, 1, timeout);
 
   if (error == 1)
     return MEMCACHED_SUCCESS;
@@ -127,7 +126,7 @@ static bool process_input_buffer(memcached_server_st *ptr)
                               &ptr->root->result);
     if (error == MEMCACHED_SUCCESS)
     {
-      for (int x= 0; x < cb.number_of_callback; x++)
+      for (unsigned int x= 0; x < cb.number_of_callback; x++)
       {
         error= (*cb.callback[x])(ptr->root, &ptr->root->result, cb.context);
         if (error != MEMCACHED_SUCCESS)

@@ -1465,8 +1465,8 @@ static test_return_t mget_execute(memcached_st *memc)
   int max_keys= binary ? 20480 : 1;
   
 
-  char **keys= calloc(max_keys, sizeof(char*));
-  size_t *key_length=calloc(max_keys, sizeof(size_t));
+  char **keys= calloc((size_t)max_keys, sizeof(char*));
+  size_t *key_length=calloc((size_t)max_keys, sizeof(size_t));
 
   /* First add all of the items.. */
   char blob[1024] = {0};
@@ -1474,7 +1474,7 @@ static test_return_t mget_execute(memcached_st *memc)
   for (int x= 0; x < max_keys; ++x)
   {
     char k[251];
-    key_length[x]= snprintf(k, sizeof(k), "0200%u", x);
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
     keys[x]= strdup(k);
     assert(keys[x] != NULL);
     rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
@@ -1486,7 +1486,7 @@ static test_return_t mget_execute(memcached_st *memc)
   memcached_execute_function callbacks[1]= { [0]= &callback_counter };
   rc= memcached_mget_execute(memc, NULL, 0,
                              (const char**)keys, key_length,
-                             max_keys, callbacks, &counter, 1);
+                             (size_t)max_keys, callbacks, &counter, 1);
 
   if (binary)
   {
@@ -1496,7 +1496,7 @@ static test_return_t mget_execute(memcached_st *memc)
     assert(rc == MEMCACHED_END);
 
     /* Verify that we got all of the items */
-    assert(counter == max_keys);
+    assert(counter == (unsigned int)max_keys);
   }
   else
   {
