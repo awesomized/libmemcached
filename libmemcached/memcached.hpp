@@ -303,6 +303,7 @@ public:
     {
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
+      free(value);
       return true;
     }
     return false;
