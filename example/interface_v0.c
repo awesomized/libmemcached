@@ -559,7 +559,7 @@ memcached_binary_protocol_callback_st interface_v0_impl= {
 #endif
 };
 
-void initialize_iterface_v0_handler(void)
+void initialize_interface_v0_handler(void)
 {
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_GET]= get_command_handler;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_SET]= set_command_handler;

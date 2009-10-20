@@ -60,7 +60,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     waittime.tv_sec= 0;
     waittime.tv_usec= ptr->root->snd_timeout;
 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDTIMEO, 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
   }
@@ -75,7 +75,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     waittime.tv_sec= 0;
     waittime.tv_usec= ptr->root->rcv_timeout;
 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVTIMEO, 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
   }
@@ -86,9 +86,9 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     int error;
     struct linger linger;
 
-    linger.l_onoff= 1; 
-    linger.l_linger= 0; /* By default on close() just drop the socket */ 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER, 
+    linger.l_onoff= 1;
+    linger.l_linger= 0; /* By default on close() just drop the socket */
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER,
                       &linger, (socklen_t)sizeof(struct linger));
     WATCHPOINT_ASSERT(error == 0);
   }
@@ -98,7 +98,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     int flag= 1;
     int error;
 
-    error= setsockopt(ptr->fd, IPPROTO_TCP, TCP_NODELAY, 
+    error= setsockopt(ptr->fd, IPPROTO_TCP, TCP_NODELAY,
                       &flag, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
   }
@@ -107,7 +107,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   {
     int error;
 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDBUF, 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDBUF,
                       &ptr->root->send_size, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
   }
@@ -116,21 +116,30 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   {
     int error;
 
-    error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVBUF, 
+    error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVBUF,
                       &ptr->root->recv_size, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
   }
 
-  /* For the moment, not getting a nonblocking mode will not be fatal */
-  if ((ptr->root->flags & MEM_NO_BLOCK) || ptr->root->connect_timeout)
-  {
-    int flags;
+  /* libmemcached will always use nonblocking IO to avoid write deadlocks */
+  int flags;
 
+  do
     flags= fcntl(ptr->fd, F_GETFL, 0);
-    unlikely (flags != -1)
-    {
-      (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
-    }
+  while (flags == -1 && (errno == EINTR || errno == EAGAIN));
+
+  unlikely (flags == -1)
+    return MEMCACHED_CONNECTION_FAILURE;
+  else if ((flags & O_NONBLOCK) == 0)
+  {
+    int rval;
+
+    do
+      rval= fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
+    while (rval == -1 && (errno == EINTR || errno == EAGAIN));
+
+    unlikely (rval == -1)
+      return MEMCACHED_CONNECTION_FAILURE;
   }
 
   return MEMCACHED_SUCCESS;
@@ -156,7 +165,7 @@ static memcached_return unix_socket_connect(memcached_server_st *ptr)
     addrlen= (socklen_t) (strlen(servAddr.sun_path) + sizeof(servAddr.sun_family));
 
 test_connect:
-    if (connect(ptr->fd, 
+    if (connect(ptr->fd,
                 (struct sockaddr *)&servAddr,
                 sizeof(servAddr)) < 0)
     {
@@ -208,8 +217,8 @@ static memcached_return network_connect(memcached_server_st *ptr)
         continue;
       }
 
-      if ((ptr->fd= socket(use->ai_family, 
-                           use->ai_socktype, 
+      if ((ptr->fd= socket(use->ai_family,
+                           use->ai_socktype,
                            use->ai_protocol)) < 0)
       {
         ptr->cached_errno= errno;
@@ -219,16 +228,8 @@ static memcached_return network_connect(memcached_server_st *ptr)
 
       (void)set_socket_options(ptr);
 
-      int flags= 0;
-      if (ptr->root->connect_timeout)
-      {
-        flags= fcntl(ptr->fd, F_GETFL, 0);
-        if (flags != -1 && !(flags & O_NONBLOCK))
-          (void)fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
-      }
-
       /* connect to server */
-      while (ptr->fd != -1 && 
+      while (ptr->fd != -1 &&
              connect(ptr->fd, use->ai_addr, use->ai_addrlen) < 0)
       {
         ptr->cached_errno= errno;
@@ -253,25 +254,21 @@ static memcached_return network_connect(memcached_server_st *ptr)
             (void)close(ptr->fd);
             ptr->fd= -1;
           }
-        } 
+        }
         else if (errno == EISCONN) /* we are connected :-) */
         {
           break;
-        } 
+        }
         else if (errno != EINTR)
         {
           (void)close(ptr->fd);
           ptr->fd= -1;
           break;
-        } 
+        }
       }
 
       if (ptr->fd != -1)
       {
-        /* restore flags */ 
-        if (ptr->root->connect_timeout && (ptr->root->flags & MEM_NO_BLOCK) == 0) 
-          (void)fcntl(ptr->fd, F_SETFL, flags & ~O_NONBLOCK);
-
         WATCHPOINT_ASSERT(ptr->cursor_active == 0);
         ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
@@ -290,9 +287,10 @@ static memcached_return network_connect(memcached_server_st *ptr)
       if (gettimeofday(&next_time, NULL) == 0)
         ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
     }
-    ptr->server_failure_counter+= 1;
+    ptr->server_failure_counter++;
     if (ptr->cached_errno == 0)
       return MEMCACHED_TIMEOUT;
+
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
   }
 
@@ -310,22 +308,23 @@ memcached_return memcached_connect(memcached_server_st *ptr)
   WATCHPOINT_ASSERT(ptr->root);
   if (ptr->root->retry_timeout && ptr->root->server_failure_limit)
   {
-    struct timeval next_time;
+    struct timeval curr_time;
 
-    gettimeofday(&next_time, NULL);
+    gettimeofday(&curr_time, NULL);
 
     /* if we've had too many consecutive errors on this server, mark it dead. */
-    if (ptr->server_failure_counter > ptr->root->server_failure_limit)
+    if (ptr->server_failure_counter >= ptr->root->server_failure_limit)
     {
-      ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+      ptr->next_retry= curr_time.tv_sec + ptr->root->retry_timeout;
       ptr->server_failure_counter= 0;
     }
 
-    if (next_time.tv_sec < ptr->next_retry)
+    if (curr_time.tv_sec < ptr->next_retry)
     {
       if (memcached_behavior_get(ptr->root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
         run_distribution(ptr->root);
 
+      ptr->root->last_disconnected_server = ptr;
       return MEMCACHED_SERVER_MARKED_DEAD;
     }
   }
@@ -347,6 +346,8 @@ memcached_return memcached_connect(memcached_server_st *ptr)
   default:
     WATCHPOINT_ASSERT(0);
   }
+
+  unlikely ( rc != MEMCACHED_SUCCESS) ptr->root->last_disconnected_server = ptr;
 
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 

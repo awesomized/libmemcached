@@ -25,8 +25,28 @@ static long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
+static const char *test_strerror(test_return_t code)
+{
+  switch (code) {
+  case TEST_SUCCESS:
+    return "ok";
+  case TEST_FAILURE:
+    return "failed";
+  case TEST_MEMORY_ALLOCATION_FAILURE:
+    return "memory allocation";
+  case TEST_SKIPPED:
+    return "skipped";
+  case TEST_MAXIMUM_RETURN:
+  default:
+    fprintf(stderr, "Unknown return value\n");
+    abort();
+  }
+
+}
+
 int main(int argc, char *argv[])
 {
+  test_return_t failed;
   unsigned int x;
   char *collection_to_run= NULL;
   char *wildcard= NULL;
@@ -35,7 +55,6 @@ int main(int argc, char *argv[])
   world_st world;
   collection_st *collection;
   collection_st *next;
-  uint8_t failed;
   void *world_ptr;
 
   memset(&world, 0, sizeof(world_st));
@@ -44,7 +63,7 @@ int main(int argc, char *argv[])
 
   if (world.create)
     world_ptr= world.create();
-  else 
+  else
     world_ptr= NULL;
 
   startup_ptr= (server_startup_st *)world_ptr;
@@ -112,12 +131,9 @@ int main(int argc, char *argv[])
       failed= run->function(memc);
       gettimeofday(&end_time, NULL);
       load_time= timedif(end_time, start_time);
-      if (failed)
-        fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ failed ]\n", load_time / 1000, 
-                load_time % 1000);
-      else
-        fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ ok ]\n", load_time / 1000, 
-                load_time % 1000);
+
+      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ %s ]\n", load_time / 1000,
+              load_time % 1000, test_strerror(failed));
 
       if (next->post)
         (void)next->post(memc);

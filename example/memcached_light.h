@@ -2,6 +2,6 @@
 #ifndef MEMCACHED_LIGHT_H
 #define MEMCACHED_LIGHT_H
 
-extern void initialize_iterface_v0_handler(void);
+extern void initialize_interface_v0_handler(void);
 
 #endif

@@ -15,11 +15,11 @@
 #include "server.h"
 
 /* Prototypes */
-test_return set_test(memcached_st *memc);
+test_return_t set_test(memcached_st *memc);
 void *world_create(void);
 void world_destroy(void *p);
 
-test_return set_test(memcached_st *memc)
+test_return_t set_test(memcached_st *memc)
 {
   memcached_return rc;
   const char *key= "foo";

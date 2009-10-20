@@ -10,7 +10,7 @@ memcached_return memcached_purge(memcached_server_st *ptr)
   if (ptr->root->purging || /* already purging */
       (memcached_server_response_count(ptr) < ptr->root->io_msg_watermark &&
       ptr->io_bytes_sent < ptr->root->io_bytes_watermark) ||
-      (ptr->io_bytes_sent > ptr->root->io_bytes_watermark &&
+      (ptr->io_bytes_sent >= ptr->root->io_bytes_watermark &&
       memcached_server_response_count(ptr) < 2))
   {
     return MEMCACHED_SUCCESS;

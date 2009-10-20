@@ -1,6 +1,7 @@
 =head1 NAME
 
-memcached_get, memcached_mget, memcached_fetch - Get a value
+memcached_get, memcached_mget, memcached_fetch, memcached_mget_execute,
+memcached_mget_execute_by_key - Get a value
 
 =head1 LIBRARY
 
@@ -23,7 +24,8 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_return
   memcached_mget (memcached_st *ptr, 
-                  char **keys, size_t *key_length, 
+                  const char * const *keys, 
+                  const size_t *key_length, 
                   size_t number_of_keys);
   char *
   memcached_get_by_key(memcached_st *ptr, 
@@ -36,7 +38,8 @@ C Client Library for memcached (libmemcached, -lmemcached)
   memcached_return 
   memcached_mget_by_key(memcached_st *ptr, 
                         const char *master_key, size_t master_key_length,
-                        char **keys, size_t *key_length, 
+                        const char * const *keys, 
+                        const size_t *key_length, 
                         size_t number_of_keys);
 
   char *memcached_fetch (memcached_st *ptr,
@@ -44,11 +47,34 @@ C Client Library for memcached (libmemcached, -lmemcached)
                          size_t *value_length,
                          uint32_t *flags, 
                          memcached_return *error);
+
   memcached_return 
   memcached_fetch_execute(memcached_st *ptr, 
                           memcached_return (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
                           void *context,
                           unsigned int number_of_callbacks);
+
+
+  memcached_return
+  memcached_mget_execute(memcached_st *ptr,
+                         const char * const *keys,
+                         const size_t *key_length,
+                         size_t number_of_keys,
+                         memcached_execute_function *callback,
+                         void *context,
+                         unsigned int number_of_callbacks);
+
+  memcached_return 
+  memcached_mget_execute_by_key(memcached_st *ptr,
+                                const char *master_key,
+                                size_t master_key_length,
+                                const char * const *keys,
+                                const size_t *key_length,
+                                size_t number_of_keys,
+                                memcached_execute_function *callback,
+                                void *context,
+                                unsigned int number_of_callbacks);
+
 
 =head1 DESCRIPTION
 
@@ -98,6 +124,16 @@ Finally it passes a "context". This is just a pointer to a memory reference
 you supply the calling function. Currently only one value is being passed
 to each function call. In the future there will be an option to allow this
 to be an array.
+
+memcached_mget_execute() and memcached_mget_execute_by_key() is
+similar to memcached_mget(), but it may trigger the supplied callbacks
+with result sets while sending out the queries. If you try to perform
+a really large multiget with memcached_mget() you may encounter a
+deadlock in the OS kernel (we fail to write data to the socket because
+the input buffer is full). memcached_mget_execute() solves this
+problem by processing some of the results before continuing sending
+out requests. Please note that this function is only available in the
+binary protocol.
 
 memcached_get_by_key() and memcached_mget_by_key() behave in a similar nature
 as memcached_get() and memcached_mget(). The difference is that they take

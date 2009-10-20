@@ -80,9 +80,12 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcached.a
 %exclude %{_libdir}/libmemcached.la
 %exclude %{_libdir}/libmemcachedutil.a
+%exclude %{_libdir}/libmemcachedprotocol.a
 %exclude %{_libdir}/libmemcachedutil.la
+%exclude %{_libdir}/libmemcachedprotocol.la
 %{_libdir}/libmemcached.so.*
 %{_libdir}/libmemcachedutil.so.*
+%{_libdir}/libmemcachedprotocol.so.*
 %{_mandir}/man1/mem*
 
 
@@ -92,6 +95,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedutil.so
+%{_libdir}/libmemcachedprotocol.so
 %{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man3/libmemcached*.3.gz
 %{_mandir}/man3/memcached_*.3.gz

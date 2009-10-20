@@ -6,8 +6,8 @@
  * Author: Brian Aker
  */
 
-#ifndef __MEMCACHED_TYPES_H__
-#define __MEMCACHED_TYPES_H__
+#ifndef LIBMEMCACHED_MEMCACHED_TYPES_H
+#define LIBMEMCACHED_MEMCACHED_TYPES_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,8 +37,14 @@ typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr,
 typedef memcached_return (*memcached_dump_func)(memcached_st *ptr,  
                                                 const char *key, size_t key_length, void *context);
 
+typedef struct {
+  memcached_execute_function *callback;
+  void *context;
+  unsigned int number_of_callback;
+} memcached_callback_st;
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MEMCACHED_TYPES_H__ */
+#endif /* LIBMEMCACHED_MEMCACHED_TYPES_H */
