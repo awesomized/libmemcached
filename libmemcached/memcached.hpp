@@ -236,6 +236,7 @@ public:
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
       key.assign(ret_key);
+      free(value);
     }
     return rc;
   }
