@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 #include <string.h>
 
@@ -167,36 +168,27 @@ void setProduct(const string &key, const Product &product)
 
 int main()
 {
-#if 0
-  Product pad(1, 5.0);
-  const string key("padraig");
-  cout << "Going to set an object in the cache..." << endl;
-  setProduct(key, pad);
-  cout << "Now retrieve that key..." << endl;
-  Product test= getProduct(key);
-  double price= test.getPrice();
-  cout << "Price of retrieve object: " << price << endl;
-  Product next(2, 10.0);
-  vector<Product> products;
-  products.push_back(pad);
-  products.push_back(next);
-  cout << "going to set a vector of products..." << endl;
-  setAllProducts(products);
-  cout << "now retrieve those products..." << endl;
-  vector<Product> got= getAllProducts();
-  cout << "size of retrieved vector: " << got.size() << endl;
-  vector<Product>::iterator iter= got.begin();
-  while (iter != got.end())
+  Memcache first_client("127.0.0.1:19191");
+  map< string, map<string, string> > my_stats;
+  first_client.getStats(my_stats);
+  
+  /*
+   * Iterate through the retrieved stats.
+   */
+  map< string, map<string, string> >::iterator it=
+    my_stats.begin();
+  while (it != my_stats.end())
   {
-    cout << "product " << (*iter).getId() << " costs " << (*iter).getPrice() << endl;
-    ++iter;
+    cout << "working with server: " << (*it).first << endl;
+    map<string, string> serv_stats= (*it).second;
+    map<string, string>::iterator iter= serv_stats.begin();
+    while (iter != serv_stats.end())
+    {
+      cout << (*iter).first << ":" << (*iter).second << endl;
+      ++iter;
+    }
+    ++it;
   }
-#endif
-  Memcache first_client("127.0.0.1:11211");
-  Memcache second_client("127.0.0.1", 11211);
-  //first_client.set("key", some_vector_of_chars, expiry, flags);
-  //first_client.get("key", vector_to_fill_with_data);
-  //first_client.remove("key");
-  first_client.addServer("192.168.1.1", 11211);
+
   return 0;
 }
