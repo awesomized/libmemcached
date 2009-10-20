@@ -920,6 +920,14 @@ public:
     return version;
   }
 
+  /**
+   * Retrieve memcached statistics. Populate a std::map with the retrieved
+   * stats. Each server will map to another std::map of the key:value stats.
+   *
+   * @param[out] stats_map a std::map to be populated with the memcached
+   *                       stats
+   * @return true on success; false otherwise
+   */
   bool getStats(std::map< std::string, std::map<std::string, std::string> >
                 &stats_map)
   {
