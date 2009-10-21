@@ -236,7 +236,13 @@ public:
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
       key.assign(ret_key);
+      free(value);
     }
+    else if (value)
+    {
+      free(value);
+    }
+
     return rc;
   }
 
@@ -265,6 +271,7 @@ public:
     {
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
+      free(value);
       return true;
     }
     return false;
@@ -302,6 +309,7 @@ public:
     {
       ret_val.reserve(value_length);
       ret_val.assign(value, value + value_length);
+      free(value);
       return true;
     }
     return false;
@@ -915,6 +923,60 @@ public:
     const char *ver= memcached_lib_version();
     const std::string version(ver);
     return version;
+  }
+
+  /**
+   * Retrieve memcached statistics. Populate a std::map with the retrieved
+   * stats. Each server will map to another std::map of the key:value stats.
+   *
+   * @param[out] stats_map a std::map to be populated with the memcached
+   *                       stats
+   * @return true on success; false otherwise
+   */
+  bool getStats(std::map< std::string, std::map<std::string, std::string> >
+                &stats_map)
+  {
+    memcached_return rc;
+    memcached_stat_st *stats= memcached_stat(&memc, NULL, &rc);
+
+    if (rc != MEMCACHED_SUCCESS &&
+        rc != MEMCACHED_SOME_ERRORS)
+    {
+      return false;
+    }
+
+    uint32_t server_count= memcached_server_count(&memc);
+
+    /*
+     * For each memcached server, construct a std::map for its stats and add
+     * it to the std::map of overall stats.
+     */
+    for (uint32_t x= 0; x < server_count; x++)
+    {
+      std::ostringstream strstm;
+      std::string server_name(memcached_server_name(&memc, servers[x]));
+      server_name.append(":");
+      strstm << memcached_server_port(&memc, servers[x]);
+      server_name.append(strstm.str());
+
+      std::map<std::string, std::string> server_stats;
+      char **list= NULL;
+      char **ptr= NULL;
+
+      list= memcached_stat_get_keys(&memc, &stats[x], &rc);
+      for (ptr= list; *ptr; ptr++)
+      {
+        char *value= memcached_stat_get_value(&memc, &stats[x], *ptr, &rc);
+        server_stats[*ptr]= value;
+        free(value);
+      }
+      
+      stats_map[server_name]= server_stats;
+      free(list);
+    }
+
+    memcached_stat_free(&memc, stats);
+    return true;
   }
 
 private:
