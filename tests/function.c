@@ -2756,6 +2756,57 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
   return TEST_SUCCESS;
 }
 
+static test_return_t output_ketama_weighted_keys(memcached_st *trash)
+{
+  (void) trash;
+
+  memcached_return rc;
+  memcached_st *memc= memcached_create(NULL);
+  assert(memc);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
+  assert(value == MEMCACHED_HASH_MD5);
+
+  memcached_server_st *server_pool;
+  server_pool = memcached_servers_parse("10.0.1.1:11211,10.0.1.2:11211,10.0.1.3:11211,10.0.1.4:11211,10.0.1.5:11211,10.0.1.6:11211,10.0.1.7:11211,10.0.1.8:11211,192.168.1.1:11211,192.168.100.1:11211");
+  memcached_server_push(memc, server_pool);
+
+  FILE *fp;
+  if ((fp = fopen("ketama_keys.txt", "w")))
+  {
+    // noop
+  } else {
+    printf("cannot write to file ketama_keys.txt");
+    return TEST_FAILURE;
+  }
+
+  for (int x= 0; x < 10000; x++)
+  {
+    char key[10];
+    sprintf(key, "%d", x);
+      
+    uint32_t server_idx = memcached_generate_hash(memc, key, strlen(key));
+    char *hostname = memc->hosts[server_idx].hostname;
+    unsigned int port = memc->hosts[server_idx].port;
+    fprintf(fp, "key %s is on host /%s:%u\n", key, hostname, port);
+  }
+  fclose(fp);
+  memcached_server_list_free(server_pool);
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+
 static test_return_t  result_static(memcached_st *memc)
 {
   memcached_result_st result;
@@ -5217,6 +5268,7 @@ test_st hsieh_availability[] ={
 
 test_st ketama_auto_eject_hosts[] ={
   {"auto_eject_hosts", 1, auto_eject_hosts },
+  {"output_ketama_weighted_keys", 1, output_ketama_weighted_keys },
   {0, 0, 0}
 };
 
