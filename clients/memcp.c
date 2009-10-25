@@ -222,6 +222,7 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_ADD:
       opt_method= OPT_ADD;
+      break;
     case OPT_HASH:
       opt_hash= strdup(optarg);
       break;

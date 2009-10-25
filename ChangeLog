@@ -1,3 +1,6 @@
+  * Update C++ interface.
+  * Fix for memcp
+
 0.34 Tue Oct 13 08:39:51 PDT 2009
   * Added support for setting behavior flags on a connection pool.
   * Don't increment server_failure_counter on normal disconnects.
