@@ -80,6 +80,8 @@ const char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcac
     return "ENCOUNTERED AN UNKNOWN STAT KEY";
   case MEMCACHED_E2BIG:
     return "ITEM TOO BIG";
+  case MEMCACHED_INVALID_ARGUMENTS:
+     return "INVALID ARGUMENTS";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

@@ -24,8 +24,12 @@ C Client Library for memcached (libmemcached, -lmemcached)
 =head1 DESCRIPTION
 
 memcached_delete() is used to delete a particular key. An expiration value
-can be applied so that the key is deleted after that many seconds.
-memcached_delete_by_key() works the same, but it takes a master key to 
+can be applied so that the key is deleted after that many seconds, but this
+will only work if you are using a 1.2.x server. If you are using a 1.2.x
+server and you want to use the expiration value, please call memcached_version
+one time for the memcached_st instance. If you don't do this no-reply and
+buffered mode will be disabled to avoid getting out of sync with the server.
+memcached_delete_by_key() works the same, but it takes a master key to
 find the given value.
 
 =head1 RETURN

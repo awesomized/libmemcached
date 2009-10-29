@@ -17,7 +17,7 @@
 #define MEMCACHED_MAX_HOST_SORT_LENGTH 86 /* Used for Ketama */
 #define MEMCACHED_POINTS_PER_SERVER 100
 #define MEMCACHED_POINTS_PER_SERVER_KETAMA 160
-#define MEMCACHED_CONTINUUM_SIZE MEMCACHED_POINTS_PER_SERVER*100 /* This would then set max hosts to 100 */ 
+#define MEMCACHED_CONTINUUM_SIZE MEMCACHED_POINTS_PER_SERVER*100 /* This would then set max hosts to 100 */
 #define MEMCACHED_STRIDE 4
 #define MEMCACHED_DEFAULT_TIMEOUT 1000
 #define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
@@ -63,6 +63,7 @@ typedef enum {
   MEMCACHED_SERVER_MARKED_DEAD,
   MEMCACHED_UNKNOWN_STAT_KEY,
   MEMCACHED_E2BIG,
+  MEMCACHED_INVALID_ARGUMENTS,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 } memcached_return;
 
