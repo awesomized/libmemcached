@@ -1463,7 +1463,7 @@ static test_return_t mget_execute(memcached_st *memc)
   memc->number_of_hosts= 1;
 
   int max_keys= binary ? 20480 : 1;
-  
+
 
   char **keys= calloc((size_t)max_keys, sizeof(char*));
   size_t *key_length=calloc((size_t)max_keys, sizeof(size_t));
@@ -2590,9 +2590,9 @@ static test_return_t user_supplied_bug18(memcached_st *trash)
   /* verify the standard ketama set. */
   for (x= 0; x < 99; x++)
   {
-    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
+    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     char *hostname = memc->hosts[server_idx].hostname;
-    assert(strcmp(hostname, test_cases[x].server) == 0);
+    assert(strcmp(hostname, ketama_test_cases[x].server) == 0);
   }
 
   memcached_server_list_free(server_pool);
@@ -2735,7 +2735,7 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
 
   for (int x= 0; x < 99; x++)
   {
-    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
+    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     assert(server_idx != 2);
   }
 
@@ -2745,9 +2745,9 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
   run_distribution(memc);
   for (int x= 0; x < 99; x++)
   {
-    uint32_t server_idx = memcached_generate_hash(memc, test_cases[x].key, strlen(test_cases[x].key));
+    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     char *hostname = memc->hosts[server_idx].hostname;
-    assert(strcmp(hostname, test_cases[x].server) == 0);
+    assert(strcmp(hostname, ketama_test_cases[x].server) == 0);
   }
 
   memcached_server_list_free(server_pool);
@@ -2764,6 +2764,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
   memcached_st *memc= memcached_create(NULL);
   assert(memc);
 
+
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
   assert(rc == MEMCACHED_SUCCESS);
 
@@ -2775,6 +2776,10 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
   assert(value == MEMCACHED_HASH_MD5);
+
+
+  assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
+                                MEMCACHED_KETAMA_COMPAT_SPY) == MEMCACHED_SUCCESS);
 
   memcached_server_st *server_pool;
   server_pool = memcached_servers_parse("10.0.1.1:11211,10.0.1.2:11211,10.0.1.3:11211,10.0.1.4:11211,10.0.1.5:11211,10.0.1.6:11211,10.0.1.7:11211,10.0.1.8:11211,192.168.1.1:11211,192.168.100.1:11211");
@@ -2793,7 +2798,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
   {
     char key[10];
     sprintf(key, "%d", x);
-      
+
     uint32_t server_idx = memcached_generate_hash(memc, key, strlen(key));
     char *hostname = memc->hosts[server_idx].hostname;
     unsigned int port = memc->hosts[server_idx].port;
@@ -4674,6 +4679,125 @@ static test_return_t jenkins_run (memcached_st *memc __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
+
+static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
+{
+  memcached_return rc;
+  uint64_t value;
+  int x;
+  memcached_server_st *server_pool;
+  memcached_st *memc;
+
+  (void)trash;
+
+  memc= memcached_create(NULL);
+  assert(memc);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
+                                MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED) == MEMCACHED_SUCCESS);
+
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE) ==
+         MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED);
+
+  server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
+  memcached_server_push(memc, server_pool);
+
+  /* verify that the server list was parsed okay. */
+  assert(memc->number_of_hosts == 8);
+  assert(strcmp(server_pool[0].hostname, "10.0.1.1") == 0);
+  assert(server_pool[0].port == 11211);
+  assert(server_pool[0].weight == 600);
+  assert(strcmp(server_pool[2].hostname, "10.0.1.3") == 0);
+  assert(server_pool[2].port == 11211);
+  assert(server_pool[2].weight == 200);
+  assert(strcmp(server_pool[7].hostname, "10.0.1.8") == 0);
+  assert(server_pool[7].port == 11211);
+  assert(server_pool[7].weight == 100);
+
+  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
+   * us test the boundary wraparound.
+   */
+  assert(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+
+  /* verify the standard ketama set. */
+  for (x= 0; x < 99; x++)
+  {
+    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
+    char *hostname = memc->hosts[server_idx].hostname;
+    assert(strcmp(hostname, ketama_test_cases[x].server) == 0);
+  }
+
+  memcached_server_list_free(server_pool);
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
+{
+  memcached_return rc;
+  uint64_t value;
+  int x;
+  memcached_server_st *server_pool;
+  memcached_st *memc;
+
+  (void)trash;
+
+  memc= memcached_create(NULL);
+  assert(memc);
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  assert(value == 1);
+
+  assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
+                                MEMCACHED_KETAMA_COMPAT_SPY) == MEMCACHED_SUCCESS);
+
+  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE) ==
+         MEMCACHED_KETAMA_COMPAT_SPY);
+
+  server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
+  memcached_server_push(memc, server_pool);
+
+  /* verify that the server list was parsed okay. */
+  assert(memc->number_of_hosts == 8);
+  assert(strcmp(server_pool[0].hostname, "10.0.1.1") == 0);
+  assert(server_pool[0].port == 11211);
+  assert(server_pool[0].weight == 600);
+  assert(strcmp(server_pool[2].hostname, "10.0.1.3") == 0);
+  assert(server_pool[2].port == 11211);
+  assert(server_pool[2].weight == 200);
+  assert(strcmp(server_pool[7].hostname, "10.0.1.8") == 0);
+  assert(server_pool[7].port == 11211);
+  assert(server_pool[7].weight == 100);
+
+  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
+   * us test the boundary wraparound.
+   */
+  assert(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+
+  /* verify the standard ketama set. */
+  for (x= 0; x < 99; x++)
+  {
+    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases_spy[x].key, strlen(ketama_test_cases_spy[x].key));
+    char *hostname = memc->hosts[server_idx].hostname;
+    assert(strcmp(hostname, ketama_test_cases_spy[x].server) == 0);
+  }
+
+  memcached_server_list_free(server_pool);
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t regression_bug_434484(memcached_st *memc)
 {
   if (pre_binary(memc) != MEMCACHED_SUCCESS)
@@ -4885,8 +5009,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   ** to do this ;-)
   */
   memcached_quit(memc);
-  
-  /* Verify that all messages are stored, and we didn't stuff too much 
+
+  /* Verify that all messages are stored, and we didn't stuff too much
    * into the servers
    */
   rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
@@ -5226,6 +5350,12 @@ test_st regression_tests[]= {
   {0, 0, 0}
 };
 
+test_st ketama_compatibility[]= {
+  {"libmemcached", 1, ketama_compatibility_libmemcached },
+  {"spymemcached", 1, ketama_compatibility_spymemcached },
+  {0, 0, 0}
+};
+
 test_st generate_tests[] ={
   {"generate_pairs", 1, generate_pairs },
   {"generate_data", 1, generate_data },
@@ -5332,6 +5462,7 @@ collection_st collection[] ={
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
+  {"ketama_compat", 0, 0, ketama_compatibility},
   {"test_hashes", 0, 0, hash_tests},
   {"replication", pre_replication, 0, replication_tests},
   {"replication_noblock", pre_replication_noblock, 0, replication_tests},

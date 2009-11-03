@@ -1,10 +1,10 @@
-#include "common.h" 
+#include "common.h"
 #include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 
-/* 
+/*
   This function is used to modify the behavior of running client.
 
   We quit all connections so we can reset the sockets.
@@ -18,8 +18,8 @@ static void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint
     ptr->flags&= ~temp_flag;
 }
 
-memcached_return memcached_behavior_set(memcached_st *ptr, 
-                                        memcached_behavior flag, 
+memcached_return memcached_behavior_set(memcached_st *ptr,
+                                        memcached_behavior flag,
                                         uint64_t data)
 {
   switch (flag)
@@ -38,18 +38,18 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     ptr->snd_timeout= (int32_t)data;
-    break;     
+    break;
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     ptr->rcv_timeout= (int32_t)data;
-    break;     
+    break;
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     ptr->server_failure_limit= (uint32_t)data;
-    break;     
+    break;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     if (data)
         set_behavior_flag(ptr, MEM_VERIFY_KEY, 0);
     set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
-    break;     
+    break;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     set_behavior_flag(ptr, MEM_SUPPORT_CAS, data);
     break;
@@ -105,6 +105,22 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
       run_distribution(ptr);
       break;
     }
+  case MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE:
+    switch (data)
+    {
+    case MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED:
+      ptr->hash= MEMCACHED_HASH_MD5;
+      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
+      break;
+    case MEMCACHED_KETAMA_COMPAT_SPY:
+      ptr->hash= MEMCACHED_HASH_MD5;
+      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY;
+      break;
+    default:
+       return MEMCACHED_FAILURE;
+    }
+    run_distribution(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_HASH:
 #ifndef HAVE_HSIEH_HASH
     if ((memcached_hash)(data) == MEMCACHED_HASH_HSIEH)
@@ -169,7 +185,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-uint64_t memcached_behavior_get(memcached_st *ptr, 
+uint64_t memcached_behavior_get(memcached_st *ptr,
                                 memcached_behavior flag)
 {
   memcached_flags temp_flag= MEM_NO_BLOCK;
@@ -186,7 +202,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->io_key_prefetch;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     temp_flag= MEM_BINARY_PROTOCOL;
-    break;     
+    break;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     temp_flag= MEM_SUPPORT_CAS;
     break;
@@ -215,6 +231,17 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_KETAMA:
     return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? (uint64_t) 1 : 0;
+  case MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE:
+    switch (ptr->distribution)
+    {
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+      return MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+      return MEMCACHED_KETAMA_COMPAT_SPY;
+    default:
+      return (uint64_t)-1;
+    }
+    /* NOTREACHED */
   case MEMCACHED_BEHAVIOR_HASH:
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
@@ -244,7 +271,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       if ((memcached_connect(&ptr->hosts[0])) != MEMCACHED_SUCCESS)
         return 0;
 
-      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET, 
+      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET,
                      SO_SNDBUF, &sock_size, &sock_length))
         return 0; /* Zero means error */
 
@@ -260,7 +287,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       if ((memcached_connect(&ptr->hosts[0])) != MEMCACHED_SUCCESS)
         return 0;
 
-      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET, 
+      if (getsockopt(ptr->hosts[0].fd, SOL_SOCKET,
                      SO_RCVBUF, &sock_size, &sock_length))
         return 0; /* Zero means error */
 
