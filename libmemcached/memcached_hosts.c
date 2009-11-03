@@ -40,6 +40,7 @@ memcached_return run_distribution(memcached_st *ptr)
   {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     return update_continuum(ptr);
   case MEMCACHED_DISTRIBUTION_MODULA:
     if (ptr->flags & MEM_USE_SORT_HOSTS)
@@ -198,47 +199,93 @@ memcached_return update_continuum(memcached_st *ptr)
                pointer_per_server);
 #endif
     }
-    for (pointer_index= 1;
-         pointer_index <= pointer_per_server / pointer_per_hash;
-         ++pointer_index)
+
+
+    if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY)
     {
-      char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
-      size_t sort_host_length;
-
-      if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
+      for (pointer_index= 0;
+           pointer_index < pointer_per_server / pointer_per_hash;
+           pointer_index++)
       {
+        char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
+        size_t sort_host_length;
+
+        // Spymemcached ketema key format is: hostname/ip:port-index
+        // If hostname is not available then: /ip:port-index
         sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "%s-%d",
+                                            "/%s:%d-%d",
                                             list[host_index].hostname,
-                                            pointer_index - 1);
+                                            list[host_index].port,
+                                            pointer_index);
+#ifdef DEBUG
+        printf("update_continuum: key is %s\n", sort_host);
+#endif
 
-      }
-      else
-      {
-        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "%s:%d-%d",
-                                            list[host_index].hostname,
-                                            list[host_index].port, pointer_index - 1);
-      }
-      WATCHPOINT_ASSERT(sort_host_length);
+        WATCHPOINT_ASSERT(sort_host_length);
 
-      if (is_ketama_weighted)
-      {
-        unsigned int i;
-        for (i = 0; i < pointer_per_hash; i++)
+        if (is_ketama_weighted)
         {
-          value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
+          unsigned int i;
+          for (i = 0; i < pointer_per_hash; i++)
+          {
+             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
+             ptr->continuum[continuum_index].index= host_index;
+             ptr->continuum[continuum_index++].value= value;
+          }
+        }
+        else
+        {
+          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
       }
-      else
+    }
+    else
+    {
+      for (pointer_index= 1;
+           pointer_index <= pointer_per_server / pointer_per_hash;
+           pointer_index++)
       {
-        value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
-        ptr->continuum[continuum_index].index= host_index;
-        ptr->continuum[continuum_index++].value= value;
+        char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
+        size_t sort_host_length;
+
+        if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
+        {
+          sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                              "%s-%d",
+                                              list[host_index].hostname,
+                                              pointer_index - 1);
+        }
+        else
+        {
+          sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                              "%s:%d-%d",
+                                              list[host_index].hostname,
+                                              list[host_index].port, pointer_index - 1);
+        }
+
+        WATCHPOINT_ASSERT(sort_host_length);
+
+        if (is_ketama_weighted)
+        {
+          unsigned int i;
+          for (i = 0; i < pointer_per_hash; i++)
+          {
+             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
+             ptr->continuum[continuum_index].index= host_index;
+             ptr->continuum[continuum_index++].value= value;
+          }
+        }
+        else
+        {
+          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
+          ptr->continuum[continuum_index].index= host_index;
+          ptr->continuum[continuum_index++].value= value;
+        }
       }
     }
+
     pointer_counter+= pointer_per_server;
   }
 
