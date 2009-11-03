@@ -198,28 +198,24 @@ memcached_return update_continuum(memcached_st *ptr)
                pointer_per_server);
 #endif
     }
-    for (pointer_index= 1;
-         pointer_index <= pointer_per_server / pointer_per_hash;
-         ++pointer_index)
+    for (pointer_index= 0;
+         pointer_index < pointer_per_server / pointer_per_hash;
+         pointer_index++)
     {
       char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
       size_t sort_host_length;
 
-      if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
-      {
-        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "%s-%d",
-                                            list[host_index].hostname,
-                                            pointer_index - 1);
+      // Spymemcached ketema key format is: hostname/ip:port-index
+      // If hostname is not available then: /ip:port-index
+      sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                          "/%s:%d-%d",
+                                          list[host_index].hostname,
+                                          list[host_index].port,
+                                          pointer_index);
+#ifdef DEBUG
+      printf("update_continuum: key is %s\n", sort_host);
+#endif
 
-      }
-      else
-      {
-        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "%s:%d-%d",
-                                            list[host_index].hostname,
-                                            list[host_index].port, pointer_index - 1);
-      }
       WATCHPOINT_ASSERT(sort_host_length);
 
       if (is_ketama_weighted)
