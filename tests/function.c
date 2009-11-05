@@ -297,10 +297,10 @@ static test_return_t  error_test(memcached_st *memc)
                         4269430871U, 610793021U, 527273862U, 1437122909U,
                         2300930706U, 2943759320U, 674306647U, 2400528935U,
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
-                        4159057246U, 3425930182U};
+                        4159057246U, 3425930182U, 2593724503U};
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  assert(MEMCACHED_MAXIMUM_RETURN == 38);
+  assert(MEMCACHED_MAXIMUM_RETURN == 39);
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
@@ -5079,6 +5079,63 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t regression_bug_463297(memcached_st *memc)
+{
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
+  assert(memc_clone != NULL);
+  assert(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
+
+  if (memc_clone->hosts[0].major_version > 1 ||
+      (memc_clone->hosts[0].major_version == 1 &&
+       memc_clone->hosts[0].minor_version > 2))
+  {
+     /* Binary protocol doesn't support deferred delete */
+     memcached_st *bin_clone= memcached_clone(NULL, memc);
+     assert(bin_clone != NULL);
+     assert(memcached_behavior_set(bin_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1) == MEMCACHED_SUCCESS);
+     assert(memcached_delete(bin_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
+     memcached_free(bin_clone);
+
+     memcached_quit(memc_clone);
+
+     /* If we know the server version, deferred delete should fail
+      * with invalid arguments */
+     assert(memcached_delete(memc_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
+
+     /* If we don't know the server version, we should get a protocol error */
+     memcached_return rc= memcached_delete(memc, "foo", 3, 1);
+     /* but there is a bug in some of the memcached servers (1.4) that treats
+      * the counter as noreply so it doesn't send the proper error message
+      */
+     assert(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+
+     /* And buffered mode should be disabled and we should get protocol error */
+     assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1) == MEMCACHED_SUCCESS);
+     rc= memcached_delete(memc, "foo", 3, 1);
+     assert(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+
+     /* Same goes for noreply... */
+     assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1) == MEMCACHED_SUCCESS);
+     rc= memcached_delete(memc, "foo", 3, 1);
+     assert(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+
+     /* but a normal request should go through (and be buffered) */
+     assert((rc= memcached_delete(memc, "foo", 3, 0)) == MEMCACHED_BUFFERED);
+     assert(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
+
+     assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0) == MEMCACHED_SUCCESS);
+     /* unbuffered noreply should be success */
+     assert(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_SUCCESS);
+     /* unbuffered with reply should be not found... */
+     assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 0) == MEMCACHED_SUCCESS);
+     assert(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_NOTFOUND);
+  }
+
+  memcached_free(memc_clone);
+  return TEST_SUCCESS;
+}
+
+
 /* Test memcached_server_get_last_disconnect
  * For a working server set, shall be NULL
  * For a set of non existing server, shall not be NULL
@@ -5347,6 +5404,7 @@ test_st regression_tests[]= {
   {"lp:421108", 1, regression_bug_421108 },
   {"lp:442914", 1, regression_bug_442914 },
   {"lp:447342", 1, regression_bug_447342 },
+  {"lp:463297", 1, regression_bug_463297 },
   {0, 0, 0}
 };
 
