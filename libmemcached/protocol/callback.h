@@ -338,15 +338,28 @@ typedef struct {
                                               memcached_binary_protocol_version_response_handler response_handler);
 } memcached_binary_protocol_callback_v1_st;
 
+
 /**
- *
+ * The version numbers for the different callback structures.
+ */
+typedef enum {
+   /** Version 0 is a lowlevel interface that tries to maximize your freedom */
+   MEMCACHED_PROTOCOL_HANDLER_V0= 0,
+   /**
+    * Version 1 abstracts more of the protocol details, and let you work at
+    * a logical level
+    */
+   MEMCACHED_PROTOCOL_HANDLER_V1= 1,
+} memcached_protocol_interface_version_t;
+
+/**
+ * Definition of the protocol callback structure.
  */
 typedef struct {
    /**
-    * The interface version used (set to 0 if you don't have any specialized
-    * command handlers).
+    * The interface version you provide callbacks for.
     */
-   uint64_t interface_version;
+   memcached_protocol_interface_version_t interface_version;
 
    /**
     * Callback fired just before the command will be executed.

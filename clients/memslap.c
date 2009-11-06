@@ -42,6 +42,7 @@ typedef struct thread_context_st thread_context_st;
 typedef enum {
   SET_TEST,
   GET_TEST,
+  MGET_TEST
 } test_type;
 
 struct thread_context_st {
@@ -50,6 +51,8 @@ struct thread_context_st {
   unsigned int initial_number;
   pairs_st *execute_pairs;
   unsigned int execute_number;
+  char **keys;
+  size_t *key_lengths;
   test_type test;
   memcached_st *memc;
 };
@@ -65,7 +68,7 @@ struct conclusions_st {
 void options_parse(int argc, char *argv[]);
 void conclusions_print(conclusions_st *conclusion);
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion);
-pairs_st *load_create_data(memcached_st *memc, unsigned int number_of, 
+pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
                            unsigned int *actual_loaded);
 void flush_all(memcached_st *memc);
 
@@ -155,11 +158,28 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
-  
+
   if (opt_flush)
     flush_all(memc);
   if (opt_createial_load)
     pairs= load_create_data(memc, opt_createial_load, &actual_loaded);
+
+  char **keys= calloc(actual_loaded, sizeof(char*));
+  size_t *key_lengths= calloc(actual_loaded, sizeof(size_t));
+
+  if (keys == NULL || key_lengths == NULL)
+  {
+    free(keys);
+    free(key_lengths);
+    keys= NULL;
+    key_lengths= NULL;
+  } else {
+    for (x= 0; x < actual_loaded; ++x)
+    {
+      keys[x]= pairs[x].key;
+      key_lengths[x]= pairs[x].key_length;
+    }
+  }
 
   /* We set this after we have loaded */
   {
@@ -168,7 +188,6 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
     if (opt_tcp_nodelay)
       memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
   }
-
 
   pthread_mutex_lock(&counter_mutex);
   thread_counter= 0;
@@ -187,6 +206,8 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
     context->initial_pairs= pairs;
     context->initial_number= actual_loaded;
+    context->keys= keys;
+    context->key_lengths= key_lengths;
 
     if (opt_test == SET_TEST)
     {
@@ -225,6 +246,8 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
   conclusion->load_time= timedif(end_time, start_time);
   conclusion->read_time= timedif(end_time, start_time);
+  free(keys);
+  free(key_lengths);
   pairs_free(pairs);
   memcached_free(memc);
 }
@@ -259,7 +282,7 @@ void options_parse(int argc, char *argv[])
   int option_index= 0;
   int option_rv;
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
@@ -307,7 +330,11 @@ void options_parse(int argc, char *argv[])
       }
       else if (!strcmp(optarg, "set"))
         opt_test= SET_TEST;
-      else 
+      else if (!strcmp(optarg, "mget"))
+      {
+        opt_test= MGET_TEST;
+      }
+      else
       {
         fprintf(stderr, "Your test, %s, is not a known test\n", optarg);
         exit(1);
@@ -330,7 +357,7 @@ void options_parse(int argc, char *argv[])
     }
   }
 
-  if (opt_test == GET_TEST && opt_createial_load == 0)
+  if ((opt_test == GET_TEST || opt_test == MGET_TEST) && opt_createial_load == 0)
     opt_createial_load= DEFAULT_INITIAL_LOAD;
 
   if (opt_execute_number == 0)
@@ -348,10 +375,10 @@ void conclusions_print(conclusions_st *conclusion)
   printf("\tRead %u rows\n", conclusion->rows_read);
 #endif
   if (opt_test == SET_TEST)
-    printf("\tTook %ld.%03ld seconds to load data\n", conclusion->load_time / 1000, 
+    printf("\tTook %ld.%03ld seconds to load data\n", conclusion->load_time / 1000,
            conclusion->load_time % 1000);
   else
-    printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000, 
+    printf("\tTook %ld.%03ld seconds to read data\n", conclusion->read_time / 1000,
            conclusion->read_time % 1000);
 }
 
@@ -366,7 +393,7 @@ void *run_task(void *p)
   while (master_wakeup)
   {
     pthread_cond_wait(&sleep_threshhold, &sleeper_mutex);
-  } 
+  }
   pthread_mutex_unlock(&sleeper_mutex);
 
   /* Do Stuff */
@@ -378,6 +405,10 @@ void *run_task(void *p)
     break;
   case GET_TEST:
     execute_get(memc, context->initial_pairs, context->initial_number);
+    break;
+  case MGET_TEST:
+    execute_mget(memc, (const char*const*)context->keys, context->key_lengths,
+                 context->initial_number);
     break;
   default:
     WATCHPOINT_ASSERT(context->test);
@@ -404,7 +435,7 @@ void flush_all(memcached_st *memc)
   memcached_flush(memc, 0);
 }
 
-pairs_st *load_create_data(memcached_st *memc, unsigned int number_of, 
+pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
                            unsigned int *actual_loaded)
 {
   memcached_st *memc_clone;
