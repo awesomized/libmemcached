@@ -393,7 +393,7 @@ static protocol_binary_response_status version_handler(const void *cookie,
 }
 
 memcached_binary_protocol_callback_st interface_v1_impl= {
-  .interface_version= 1,
+  .interface_version= MEMCACHED_PROTOCOL_HANDLER_V1,
   .interface.v1= {
     .add= add_handler,
     .append= append_handler,

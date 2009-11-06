@@ -521,10 +521,10 @@ static protocol_binary_response_status stat_command_handler(const void *cookie,
 }
 
 memcached_binary_protocol_callback_st interface_v0_impl= {
-  .interface_version= 0,
+  .interface_version= MEMCACHED_PROTOCOL_HANDLER_V0,
 #ifdef FUTURE
   /*
-  ** There is a number of bugs in the extra options for gcc causing 
+  ** There is a number of bugs in the extra options for gcc causing
   ** warning on these struct initializers. It hurts my heart to remove
   ** it so I'll just leave it in here so that we can enable it when
   ** we can drop support for the broken compilers
