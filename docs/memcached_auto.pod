@@ -57,7 +57,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                 uint64_t *value);
 
   memcached_return
-    memcached_increment_by_key_with_initial (memcached_st *ptr,
+    memcached_increment_with_initial_by_key (memcached_st *ptr,
                                              const char *master_key,
                                              size_t master_key_length,
                                              const char *key,
@@ -68,7 +68,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                              uint64_t *value);
 
   memcached_return
-    memcached_decrement_by_key_with_initial (memcached_st *ptr,
+    memcached_decrement_with_initial_by_key (memcached_st *ptr,
                                              const char *master_key,
                                              size_t master_key_length,
                                              const char *key,
@@ -111,8 +111,8 @@ flags will be set to zero.The value is then returned via the unsigned int
 value pointer you pass to it.
 
 memcached_increment_by_key(), memcached_decrement_by_key(),
-memcached_increment_by_key_with_initial(), and
-memcached_decrement_by_key_with_initial() are master key equivalents of the
+memcached_increment_with_initial_by_key(), and
+memcached_decrement_with_initial_by_key() are master key equivalents of the
 above.
 
 =head1 RETURN

@@ -4,7 +4,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
                                        const char *verb,
                                        const char *master_key, size_t master_key_length,
                                        const char *key, size_t key_length,
-                                       unsigned int offset,
+                                       uint64_t offset,
                                        uint64_t *value)
 {
   size_t send_length;
@@ -22,7 +22,7 @@ static memcached_return memcached_auto(memcached_st *ptr,
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
 
   send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                "%s %s%.*s %u%s\r\n", verb,
+                                "%s %s%.*s %" PRIu64 "%s\r\n", verb,
                                 ptr->prefix_key,
                                 (int)key_length, key,
                                 offset, no_reply ? " noreply" : "");
@@ -127,7 +127,7 @@ memcached_return memcached_decrement(memcached_st *ptr,
 memcached_return memcached_increment_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
-                                            uint32_t offset,
+                                            uint64_t offset,
                                             uint64_t *value)
 {
   memcached_return rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
@@ -151,7 +151,7 @@ memcached_return memcached_increment_by_key(memcached_st *ptr,
 memcached_return memcached_decrement_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
-                                            uint32_t offset,
+                                            uint64_t offset,
                                             uint64_t *value)
 {
   memcached_return rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
@@ -180,12 +180,12 @@ memcached_return memcached_increment_with_initial(memcached_st *ptr,
                                                   time_t expiration,
                                                   uint64_t *value)
 {
-  return memcached_increment_by_key_with_initial(ptr, key, key_length,
+  return memcached_increment_with_initial_by_key(ptr, key, key_length,
                                                  key, key_length,
                                                  offset, initial, expiration, value);
 }
 
-memcached_return memcached_increment_by_key_with_initial(memcached_st *ptr,
+memcached_return memcached_increment_with_initial_by_key(memcached_st *ptr,
                                                          const char *master_key,
                                                          size_t master_key_length,
                                                          const char *key,
@@ -221,12 +221,12 @@ memcached_return memcached_decrement_with_initial(memcached_st *ptr,
                                                   time_t expiration,
                                                   uint64_t *value)
 {
-  return memcached_decrement_by_key_with_initial(ptr, key, key_length,
+  return memcached_decrement_with_initial_by_key(ptr, key, key_length,
                                                  key, key_length,
                                                  offset, initial, expiration, value);
 }
 
-memcached_return memcached_decrement_by_key_with_initial(memcached_st *ptr,
+memcached_return memcached_decrement_with_initial_by_key(memcached_st *ptr,
                                                          const char *master_key,
                                                          size_t master_key_length,
                                                          const char *key,
