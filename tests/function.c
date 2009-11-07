@@ -1224,6 +1224,112 @@ static test_return_t  decrement_with_initial_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t  increment_by_key_test(memcached_st *memc)
+{
+  uint64_t new_number;
+  memcached_return rc;
+  const char *master_key= "foo";
+  const char *key= "number";
+  const char *value= "0";
+
+  rc= memcached_set_by_key(memc, master_key, strlen(master_key),
+                           key, strlen(key),
+                           value, strlen(value),
+                           (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+  rc= memcached_increment_by_key(memc, master_key, strlen(master_key), key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 1);
+
+  rc= memcached_increment_by_key(memc, master_key, strlen(master_key), key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 2);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t  increment_with_initial_by_key_test(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+  {
+    uint64_t new_number;
+    memcached_return rc;
+    const char *master_key= "foo";
+    const char *key= "number";
+    uint64_t initial= 0;
+
+    rc= memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                key, strlen(key),
+                                                1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == initial);
+
+    rc= memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                key, strlen(key),
+                                                1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == (initial + 1));
+  }
+  return TEST_SUCCESS;
+}
+
+static test_return_t  decrement_by_key_test(memcached_st *memc)
+{
+  uint64_t new_number;
+  memcached_return rc;
+  const char *master_key= "foo";
+  const char *key= "number";
+  const char *value= "3";
+
+  rc= memcached_set_by_key(memc, master_key, strlen(master_key),
+                           key, strlen(key),
+                           value, strlen(value),
+                           (time_t)0, (uint32_t)0);
+  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+  rc= memcached_decrement_by_key(memc, master_key, strlen(master_key),
+                                 key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 2);
+
+  rc= memcached_decrement_by_key(memc, master_key, strlen(master_key),
+                                 key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 1);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t  decrement_with_initial_by_key_test(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
+  {
+    uint64_t new_number;
+    memcached_return rc;
+    const char *master_key= "foo";
+    const char *key= "number";
+    uint64_t initial= 3;
+
+    rc= memcached_decrement_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                key, strlen(key),
+                                                1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == initial);
+
+    rc= memcached_decrement_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                key, strlen(key),
+                                                1, initial, 0, &new_number);
+    assert(rc == MEMCACHED_SUCCESS);
+    assert(new_number == (initial - 1));
+  }
+  return TEST_SUCCESS;
+}
+
 static test_return_t  quit_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -5291,6 +5397,10 @@ test_st tests[] ={
   {"increment_with_initial", 1, increment_with_initial_test },
   {"decrement", 0, decrement_test },
   {"decrement_with_initial", 1, decrement_with_initial_test },
+  {"increment_by_key", 0, increment_by_key_test },
+  {"increment_with_initial_by_key", 1, increment_with_initial_by_key_test },
+  {"decrement_by_key", 0, decrement_by_key_test },
+  {"decrement_with_initial_by_key", 1, decrement_with_initial_by_key_test },
   {"quit", 0, quit_test },
   {"mget", 1, mget_test },
   {"mget_result", 1, mget_result_test },

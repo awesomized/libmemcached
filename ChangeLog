@@ -1,3 +1,4 @@
+  * Added support for by_key operations for inc/dec methods.
   * Added mget test to memslap.
   * Support for compatible ketama for SpyMemcached
   * Update C++ interface.

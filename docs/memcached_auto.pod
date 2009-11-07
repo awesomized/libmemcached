@@ -42,6 +42,42 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                       time_t expiration,
                                       uint64_t *value);
 
+  memcached_return
+    memcached_increment_by_key (memcached_st *ptr, 
+                                const char *master_key, size_t master_key_length,
+                                const char *key, size_t key_length,
+                                unsigned int offset,
+                                uint64_t *value);
+
+  memcached_return
+    memcached_decrement_by_key (memcached_st *ptr, 
+                                const char *master_key, size_t master_key_length,
+                                const char *key, size_t key_length,
+                                unsigned int offset,
+                                uint64_t *value);
+
+  memcached_return
+    memcached_increment_with_initial_by_key (memcached_st *ptr,
+                                             const char *master_key,
+                                             size_t master_key_length,
+                                             const char *key,
+                                             size_t key_length,
+                                             uint64_t offset,
+                                             uint64_t initial,
+                                             time_t expiration,
+                                             uint64_t *value);
+
+  memcached_return
+    memcached_decrement_with_initial_by_key (memcached_st *ptr,
+                                             const char *master_key,
+                                             size_t master_key_length,
+                                             const char *key,
+                                             size_t key_length,
+                                             uint64_t offset,
+                                             uint64_t initial,
+                                             time_t expiration,
+                                             uint64_t *value);
+
 =head1 DESCRIPTION
 
 memcached(1) servers have the ability to increment and decrement keys
@@ -73,6 +109,11 @@ expiration values, the operation will succeed by seeding the value for that
 key with a initial value to expire with the provided expiration time. The
 flags will be set to zero.The value is then returned via the unsigned int
 value pointer you pass to it.
+
+memcached_increment_by_key(), memcached_decrement_by_key(),
+memcached_increment_with_initial_by_key(), and
+memcached_decrement_with_initial_by_key() are master key equivalents of the
+above.
 
 =head1 RETURN
 
