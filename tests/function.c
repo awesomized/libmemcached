@@ -1152,6 +1152,12 @@ static test_return_t  increment_test(memcached_st *memc)
   assert(rc == MEMCACHED_SUCCESS);
   assert(new_number == 2);
 
+  rc= memcached_increment_by_key(memc, key, strlen(key),
+                                 key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 3);
+
   return TEST_SUCCESS;
 }
 
@@ -1198,6 +1204,12 @@ static test_return_t  decrement_test(memcached_st *memc)
                           1, &new_number);
   assert(rc == MEMCACHED_SUCCESS);
   assert(new_number == 1);
+
+  rc= memcached_decrement_by_key(memc, key, strlen(key),
+                                 key, strlen(key),
+                                 1, &new_number);
+  assert(rc == MEMCACHED_SUCCESS);
+  assert(new_number == 0);
 
   return TEST_SUCCESS;
 }
