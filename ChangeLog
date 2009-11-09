@@ -1,3 +1,4 @@
+0.35 Mon Nov  9 11:18:33 PST 2009
   * Added support for by_key operations for inc/dec methods.
   * Added mget test to memslap.
   * Support for compatible ketama for SpyMemcached
