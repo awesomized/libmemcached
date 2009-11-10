@@ -18,7 +18,7 @@ EXTRA_DIST = output.res output2.res\
 
 LIBS =
 
-noinst_HEADERS = test.h server.h ketama_test_cases.h
+noinst_HEADERS = test.h server.h ketama_test_cases.h ketama_test_cases_spy.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
 noinst_LTLIBRARIES= libserver.la libtest.la
 
