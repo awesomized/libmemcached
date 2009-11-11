@@ -142,6 +142,28 @@ static bool process_input_buffer(memcached_server_st *ptr)
   return false;
 }
 
+#ifdef TCP_CORK
+  #define CORK TCP_CORK
+#elif defined TCP_NOPUSH
+  #define CORK TCP_NOPUSH
+#endif
+
+static void memcached_io_cork(memcached_server_st *ptr, int enable)
+{
+  #ifdef CORK
+  if (ptr->type != MEMCACHED_CONNECTION_TCP)
+    return;
+
+  if ((enable && ptr->is_corked) || (!enable && !ptr->is_corked))
+    return;
+
+  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
+                      &enable, (socklen_t)sizeof(int));
+  if (!err)
+    ptr->is_corked= enable;
+  #endif
+}
+
 #ifdef UNUSED
 void memcached_io_preread(memcached_st *ptr)
 {
@@ -268,6 +290,10 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
   original_length= length;
   buffer_ptr= buffer;
 
+  /* more writable data is coming if a flush isn't required, so delay send */
+  if (!with_flush)
+    memcached_io_cork(ptr, 1);
+
   while (length)
   {
     char *write_ptr;
@@ -319,6 +345,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
     WATCHPOINT_ASSERT(ptr->fd != -1);
     if (io_flush(ptr, &rc) == -1)
       return -1;
+    memcached_io_cork(ptr, 0);
   }
 
   return (ssize_t) original_length;

@@ -38,6 +38,7 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_
   host->fd= -1;
   host->type= type;
   host->read_ptr= host->read_buffer;
+  host->is_corked= 0;
   if (memc)
     host->next_retry= memc->retry_timeout;
   if (type == MEMCACHED_CONNECTION_UDP)

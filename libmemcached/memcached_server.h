@@ -40,6 +40,7 @@ struct memcached_server_st {
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];
   char hostname[MEMCACHED_MAX_HOST_LENGTH];
+  bool is_corked;
 };
 
 #define memcached_server_count(A) (A)->number_of_hosts
