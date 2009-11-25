@@ -42,6 +42,10 @@ struct world_st {
 /* How we make all of this work :) */
 void get_world(world_st *world);
 
+#define test_truth(A) if (! (A)) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
+#define test_false(A) if ((A)) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
+#define test_strcmp(A,B) if (strcmp((A), (B))) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
+
 #ifdef	__cplusplus
 }
 #endif

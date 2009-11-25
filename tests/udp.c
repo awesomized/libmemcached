@@ -25,10 +25,10 @@ test_return_t set_test(memcached_st *memc)
   const char *key= "foo";
   const char *value= "when we sanitize";
 
-  rc= memcached_set(memc, key, strlen(key), 
+  rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  test_truth(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   return TEST_SUCCESS;
 }
