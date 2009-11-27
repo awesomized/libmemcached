@@ -4153,6 +4153,46 @@ static test_return_t replication_mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t replication_randomize_mget_test(memcached_st *memc)
+{
+  memcached_result_st result_obj;
+  memcached_return rc;
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 3);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, 1);
+
+  const char *keys[]= { "key1", "key2", "key3", "key4", "key5", "key6", "key7" };
+  size_t len[]= { 4, 4, 4, 4, 4, 4, 4 };
+
+  for (int x=0; x< 7; ++x)
+  {
+    rc= memcached_set(memc, keys[x], len[x], "1", 1, 0, 0);
+    test_truth(rc == MEMCACHED_SUCCESS);
+  }
+  
+  memcached_quit(memc);
+
+  for (int x=0; x< 7; ++x) {
+    const char key[2]= { [0]= (const char)x };
+
+    rc= memcached_mget_by_key(memc_clone, key, 1, keys, len, 7);
+    test_truth(rc == MEMCACHED_SUCCESS);
+
+    memcached_result_st *results= memcached_result_create(memc_clone, &result_obj);
+    test_truth(results);
+
+    int hits= 0;
+    while ((results= memcached_fetch_result(memc_clone, &result_obj, &rc)) != NULL)
+    {
+      ++hits;
+    }
+    test_truth(hits == 7);
+    memcached_result_free(&result_obj);
+  }
+  memcached_free(memc_clone);
+  return TEST_SUCCESS;
+}
+
 static test_return_t replication_delete_test(memcached_st *memc)
 {
   memcached_return rc;
@@ -5509,6 +5549,7 @@ test_st replication_tests[]= {
   {"get", 0, replication_get_test },
   {"mget", 0, replication_mget_test },
   {"delete", 0, replication_delete_test },
+  {"rand_mget", 0, replication_randomize_mget_test },
   {0, 0, 0}
 };
 
