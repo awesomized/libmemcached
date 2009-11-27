@@ -177,6 +177,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     set_behavior_flag(ptr, MEM_AUTO_EJECT_HOSTS, data);
     break;
     case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
+      srandom((uint32_t) time(NULL));
       set_behavior_flag(ptr, MEM_RANDOMIZE_REPLICA_READ, data);
       break;
   default:

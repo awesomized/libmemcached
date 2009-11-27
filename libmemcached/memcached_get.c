@@ -432,13 +432,11 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
                                                 size_t number_of_keys)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
-  uint32_t x, start = 0;
-  uint64_t randomize_read = memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ);
+  uint32_t x, start= 0;
+  uint64_t randomize_read= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ);
 
-  if (randomize_read) {
-    srandom((uint32_t) time(NULL));
-    start = (uint32_t)(random() % (ptr->number_of_replicas + 1));
-  }
+  if (randomize_read) 
+    start= (uint32_t)(random() % (ptr->number_of_replicas + 1));
 
   /* Loop for each replica */
   for (uint32_t replica= 0; replica <= ptr->number_of_replicas; ++replica)
@@ -447,19 +445,14 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
  
     for (x= 0; x < number_of_keys; ++x)
     {
-      uint32_t server;
-      
       if (hash[x] == ptr->number_of_hosts)
         continue; /* Already successfully sent */
 
-      server= hash[x] + replica;
+      uint32_t server= hash[x] + replica;
 
       /* In case of randomized reads */
-      if (randomize_read) {
-        if ((server + start) <= (hash[x] + ptr->number_of_replicas)) {
-          server += start;
-        }
-      }
+      if (randomize_read && ((server + start) <= (hash[x] + ptr->number_of_replicas)))
+        server += start;
       
       while (server >= ptr->number_of_hosts)
         server -= ptr->number_of_hosts;
