@@ -176,6 +176,9 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
     set_behavior_flag(ptr, MEM_AUTO_EJECT_HOSTS, data);
     break;
+    case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
+      set_behavior_flag(ptr, MEM_RANDOMIZE_REPLICA_READ, data);
+      break;
   default:
     /* Shouldn't get here */
     WATCHPOINT_ASSERT(flag);
@@ -303,6 +306,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
     temp_flag= MEM_AUTO_EJECT_HOSTS;
+    break;
+  case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
+    temp_flag= MEM_RANDOMIZE_REPLICA_READ;
     break;
   default:
     WATCHPOINT_ASSERT(flag);
