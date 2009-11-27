@@ -27,6 +27,7 @@ extern "C" {
    test_return_t increment_test(memcached_st *memc);
    test_return_t basic_master_key_test(memcached_st *memc);
    test_return_t mget_result_function(memcached_st *memc);
+   test_return_t basic_behavior(memcached_st *memc);
    test_return_t mget_test(memcached_st *memc);
    memcached_return callback_counter(memcached_st *,
                                      memcached_result_st *, 
@@ -259,12 +260,26 @@ test_return_t mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t basic_behavior(memcached_st *memc)
+{
+  Memcache mc(memc);
+  bool rc;
+  uint64_t value = 1;
+  rc = mc.setBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY, value);
+  assert(rc);
+  uint64_t behavior = mc.getBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY);
+  assert(behavior == value);
+
+  return TEST_SUCCESS;
+}
+
 test_st tests[] ={
   { "basic", 0, basic_test },
   { "basic_master_key", 0, basic_master_key_test },
   { "increment_test", 0, increment_test },
   { "mget", 1, mget_test },
   { "mget_result_function", 1, mget_result_function },
+  { "basic_behavior", 0, basic_behavior },
   {0, 0, 0}
 };
 
