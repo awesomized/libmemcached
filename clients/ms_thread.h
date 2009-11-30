@@ -35,37 +35,41 @@ extern "C" {
 #endif
 
 /** Time relative to server start. Smaller than time_t on 64-bit systems. */
-typedef unsigned int rel_time_t;
+typedef unsigned int   rel_time_t;
 
 /* Used to store the context of each thread */
-typedef struct thread_ctx {
-  int       thd_idx;                    /* the thread index */
-  int       nconns;                     /* how many connections included by the thread */
-  int       srv_idx;                    /* index of the thread */
-  int       tps_perconn;                /* expected throughput per connection */
-  int64_t   exec_num_perconn;           /* execute number per connection */
+typedef struct thread_ctx
+{
+  int thd_idx;                          /* the thread index */
+  int nconns;                           /* how many connections included by the thread */
+  int srv_idx;                          /* index of the thread */
+  int tps_perconn;                      /* expected throughput per connection */
+  int64_t exec_num_perconn;             /* execute number per connection */
 } ms_thread_ctx_t;
 
 /* Used to store the private variables of each thread */
-typedef struct thread {
-    ms_conn_t           *conn;          /* conn array to store all the conn in the thread */
-    int                 nactive_conn;   /* how many connects are active */
+typedef struct thread
+{
+  ms_conn_t *conn;                      /* conn array to store all the conn in the thread */
+  int nactive_conn;                     /* how many connects are active */
 
-    ms_thread_ctx_t     *thread_ctx;    /* thread context from the caller */
-    struct event_base   *base;          /* libevent handler created by this thread */
+  ms_thread_ctx_t *thread_ctx;          /* thread context from the caller */
+  struct event_base *base;              /* libevent handler created by this thread */
 
-    rel_time_t          curr_time;      /* current time */
-    struct event        clock_event;    /* clock event to time each one second */
-    bool                initialized;    /* whether clock_event has been initialized */
+  rel_time_t curr_time;                 /* current time */
+  struct event clock_event;             /* clock event to time each one second */
+  bool initialized;                     /* whether clock_event has been initialized */
 
-    struct timeval      startup_time;   /* start time of the thread */
+  struct timeval startup_time;          /* start time of the thread */
 } ms_thread_t;
 
 /* initialize threads */
 void ms_thread_init(void);
 
+
 /* cleanup some resource of threads when all the threads exit */
 void ms_thread_cleanup(void);
+
 
 #ifdef __cplusplus
 }

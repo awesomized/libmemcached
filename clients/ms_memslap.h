@@ -30,83 +30,88 @@ extern "C" {
 #endif
 
 /* command line option  */
-typedef enum {
-    OPT_VERSION= 'V',
-    OPT_HELP= 'h',
-    OPT_UDP = 'U',
-    OPT_SERVERS= 's',
-    OPT_EXECUTE_NUMBER = 'x',
-    OPT_THREAD_NUMBER = 'T',
-    OPT_CONCURRENCY = 'c',
-    OPT_FIXED_LTH = 'X',
-    OPT_VERIFY = 'v',
-    OPT_GETS_DIVISION = 'd',
-    OPT_TIME = 't',
-    OPT_CONFIG_CMD = 'F',
-    OPT_WINDOW_SIZE = 'w',
-    OPT_EXPIRE = 'e',
-    OPT_STAT_FREQ = 'S',
-    OPT_RECONNECT = 'R',
-    OPT_VERBOSE = 'b',
-    OPT_FACEBOOK_TEST = 'a',
-    OPT_SOCK_PER_CONN = 'n',
-    OPT_BINARY_PROTOCOL = 'B',
-    OPT_OVERWRITE = 'o',
-    OPT_TPS = 'P',
-    OPT_REP_WRITE_SRV = 'p',
+typedef enum
+{
+  OPT_VERSION= 'V',
+  OPT_HELP= 'h',
+  OPT_UDP= 'U',
+  OPT_SERVERS= 's',
+  OPT_EXECUTE_NUMBER= 'x',
+  OPT_THREAD_NUMBER= 'T',
+  OPT_CONCURRENCY= 'c',
+  OPT_FIXED_LTH= 'X',
+  OPT_VERIFY= 'v',
+  OPT_GETS_DIVISION= 'd',
+  OPT_TIME= 't',
+  OPT_CONFIG_CMD= 'F',
+  OPT_WINDOW_SIZE= 'w',
+  OPT_EXPIRE= 'e',
+  OPT_STAT_FREQ= 'S',
+  OPT_RECONNECT= 'R',
+  OPT_VERBOSE= 'b',
+  OPT_FACEBOOK_TEST= 'a',
+  OPT_SOCK_PER_CONN= 'n',
+  OPT_BINARY_PROTOCOL= 'B',
+  OPT_OVERWRITE= 'o',
+  OPT_TPS= 'P',
+  OPT_REP_WRITE_SRV= 'p',
 } ms_options_t;
 
 /* global statistic of response time */
-typedef struct statistic {
-    pthread_mutex_t stat_mutex;     /* synchronize the following members */
+typedef struct statistic
+{
+  pthread_mutex_t stat_mutex;       /* synchronize the following members */
 
-    ms_stat_t    get_stat;          /* statistics of get command */
-    ms_stat_t    set_stat;          /* statistics of set command */
-    ms_stat_t    total_stat;        /* statistics of both get and set commands */
+  ms_stat_t get_stat;               /* statistics of get command */
+  ms_stat_t set_stat;               /* statistics of set command */
+  ms_stat_t total_stat;             /* statistics of both get and set commands */
 } ms_statistic_t;
 
 /* global status statistic structure */
-typedef struct stats {
-    int32_t     active_conns;       /* active connections */
-    uint64_t    bytes_read;         /* read bytes */
-    uint64_t    bytes_written;      /* written bytes */
-    uint64_t    obj_bytes;          /* object bytes */
-    uint64_t    pre_cmd_get;        /* previous total get command count */
-    uint64_t    pre_cmd_set;        /* previous total set command count */
-    uint64_t    cmd_get;            /* current total get command count */
-    uint64_t    cmd_set;            /* current total set command count */
-    uint64_t    get_misses;         /* total objects of get miss */
-    uint64_t    vef_miss;           /* total objects of verification miss  */
-    uint64_t    vef_failed;         /* total objects of verification failed  */
-    uint64_t    unexp_unget;        /* total objects which is unexpired but not get */
-    uint64_t    exp_get;            /* total objects which is expired but get  */
-    uint64_t    pkt_disorder;       /* disorder packages of UDP */
-    uint64_t    pkt_drop;           /* packages dropped of UDP */
-    uint64_t    udp_timeout;        /* how many times timeout of UDP happens */
+typedef struct stats
+{
+  int32_t active_conns;             /* active connections */
+  uint64_t bytes_read;              /* read bytes */
+  uint64_t bytes_written;           /* written bytes */
+  uint64_t obj_bytes;               /* object bytes */
+  uint64_t pre_cmd_get;             /* previous total get command count */
+  uint64_t pre_cmd_set;             /* previous total set command count */
+  uint64_t cmd_get;                 /* current total get command count */
+  uint64_t cmd_set;                 /* current total set command count */
+  uint64_t get_misses;              /* total objects of get miss */
+  uint64_t vef_miss;                /* total objects of verification miss  */
+  uint64_t vef_failed;              /* total objects of verification failed  */
+  uint64_t unexp_unget;             /* total objects which is unexpired but not get */
+  uint64_t exp_get;                 /* total objects which is expired but get  */
+  uint64_t pkt_disorder;            /* disorder packages of UDP */
+  uint64_t pkt_drop;                /* packages dropped of UDP */
+  uint64_t udp_timeout;             /* how many times timeout of UDP happens */
 } ms_stats_t;
 
 /* lock adapter */
-typedef struct sync_lock {
-    int             count;
-    pthread_mutex_t lock;
-    pthread_cond_t  cond;
+typedef struct sync_lock
+{
+  int count;
+  pthread_mutex_t lock;
+  pthread_cond_t cond;
 } ms_sync_lock_t;
 
 /* global variable structure */
-typedef struct global {
-    /* synchronize lock */
-    ms_sync_lock_t  init_lock;
-    ms_sync_lock_t  run_lock;
+typedef struct global
+{
+  /* synchronize lock */
+  ms_sync_lock_t init_lock;
+  ms_sync_lock_t run_lock;
 
-    /* mutex for outputing error log synchronously when memslap crashes */
-    pthread_mutex_t quit_mutex;
+  /* mutex for outputing error log synchronously when memslap crashes */
+  pthread_mutex_t quit_mutex;
 
-    /* mutex for generating key prefix */
-    pthread_mutex_t seq_mutex;
+  /* mutex for generating key prefix */
+  pthread_mutex_t seq_mutex;
 
-    /* global synchronous flags for slap mode */
-    bool    finish_warmup;
-    bool    time_out;
+  /* global synchronous flags for slap mode */
+  bool finish_warmup;
+  bool time_out;
 } ms_global_t;
 
 /* global structure */

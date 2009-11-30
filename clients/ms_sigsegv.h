@@ -18,11 +18,14 @@ extern "C" {
 /* redirect signal seg */
 int ms_setup_sigsegv(void);
 
+
 /* redirect signal pipe */
 int ms_setup_sigpipe(void);
 
+
 /* redirect signal int */
 int ms_setup_sigint(void);
+
 
 #ifdef __cplusplus
 }
