@@ -65,6 +65,20 @@ memcached_return memcached_purge(memcached_server_st *ptr)
         ret = rc;
         memcached_io_reset(ptr);
       }
+
+      if (ptr->root->callbacks != NULL)
+      {
+        memcached_callback_st cb = *ptr->root->callbacks;
+        if (rc == MEMCACHED_SUCCESS)
+        {
+          for (unsigned int y = 0; y < cb.number_of_callback; y++)
+          {
+            rc = (*cb.callback[y])(ptr->root, result_ptr, cb.context);
+            if (rc != MEMCACHED_SUCCESS)
+              break;
+          }
+        }
+      }
     }
 
     memcached_result_free(result_ptr);
