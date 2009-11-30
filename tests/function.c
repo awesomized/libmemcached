@@ -3922,7 +3922,7 @@ static test_return_t dump_test(memcached_st *memc)
 }
 
 #ifdef HAVE_LIBMEMCACHEDUTIL
-static void* connection_release(void *arg) 
+static void* connection_release(void *arg)
 {
   struct {
     memcached_pool_st* pool;
@@ -4169,7 +4169,7 @@ static test_return_t replication_randomize_mget_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], len[x], "1", 1, 0, 0);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
-  
+
   memcached_quit(memc);
 
   for (int x=0; x< 7; ++x) {
@@ -5391,6 +5391,88 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
+
+
+/*
+ * Test that ensures mget_execute does not end into recursive calls that finally fails
+ */
+static test_return_t regression_bug_490486(memcached_st *memc)
+{
+
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT,1000);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT,3600);
+
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  uint32_t number_of_hosts= memc->number_of_hosts;
+  memc->number_of_hosts= 1;
+  int max_keys= 20480;
+
+
+  char **keys= calloc((size_t)max_keys, sizeof(char*));
+  size_t *key_length=calloc((size_t)max_keys, sizeof(size_t));
+
+  /* First add all of the items.. */
+  char blob[1024] = {0};
+  memcached_return rc;
+  for (int x= 0; x < max_keys; ++x)
+  {
+    char k[251];
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    assert(keys[x] != NULL);
+    rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    assert(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  /* Try to get all of them with a large multiget */
+  unsigned int counter= 0;
+  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+  rc= memcached_mget_execute(memc, (const char**)keys, key_length,
+                             (size_t)max_keys, callbacks, &counter, 1);
+
+  assert(rc == MEMCACHED_SUCCESS);
+  char* the_value = NULL;
+  char the_key[MEMCACHED_MAX_KEY];
+  size_t the_key_length;
+  size_t the_value_length;
+  uint32_t the_flags;
+
+  do {
+    the_value = memcached_fetch(memc, the_key, &the_key_length, &the_value_length, &the_flags, &rc);
+    if((the_value!= NULL) && (rc == MEMCACHED_SUCCESS))
+    {
+      ++counter;
+      free(the_value);
+    }
+
+  }while( (the_value!= NULL) && (rc == MEMCACHED_SUCCESS));
+
+
+  assert(rc == MEMCACHED_END);
+
+  /* Verify that we got all of the items */
+  assert(counter == (unsigned int)max_keys);
+
+  /* Release all allocated resources */
+  for (int x= 0; x < max_keys; ++x)
+    free(keys[x]);
+  free(keys);
+  free(key_length);
+
+  memc->number_of_hosts= number_of_hosts;
+  return TEST_SUCCESS;
+}
+
+
+
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, add_tcp_server_udp_client_test},
@@ -5567,6 +5649,7 @@ test_st regression_tests[]= {
   {"lp:442914", 1, regression_bug_442914 },
   {"lp:447342", 1, regression_bug_447342 },
   {"lp:463297", 1, regression_bug_463297 },
+  {"lp:490486", 1, regression_bug_490486 },
   {0, 0, 0}
 };
 

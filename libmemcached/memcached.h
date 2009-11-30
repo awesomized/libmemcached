@@ -75,6 +75,7 @@ struct memcached_stat_st {
 
 struct memcached_st {
   uint8_t purging;
+  uint8_t processing_input;
   bool is_allocated;
   uint8_t distribution;
   uint8_t hash;

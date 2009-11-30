@@ -44,7 +44,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
                                     memcached_result_st *result)
 {
   /* We may have old commands in the buffer not set, first purge */
-  if (ptr->root->flags & MEM_NO_BLOCK)
+  if ((ptr->root->flags & MEM_NO_BLOCK) && (!ptr->root->processing_input))
     (void)memcached_io_write(ptr, NULL, 0, 1);
 
   /*

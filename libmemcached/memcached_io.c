@@ -120,10 +120,15 @@ static bool process_input_buffer(memcached_server_st *ptr)
      */
     memcached_callback_st cb= *ptr->root->callbacks;
 
+    ptr->root->processing_input = 1;
+
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     memcached_return error;
     error= memcached_response(ptr, buffer, sizeof(buffer),
                               &ptr->root->result);
+
+    ptr->root->processing_input = 0;
+
     if (error == MEMCACHED_SUCCESS)
     {
       for (unsigned int x= 0; x < cb.number_of_callback; x++)
