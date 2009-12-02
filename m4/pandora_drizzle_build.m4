@@ -56,13 +56,7 @@ AC_DEFUN([PANDORA_DRIZZLE_BUILD],[
   # and defines HAVE_LIBM etc
   #--------------------------------------------------------------------
   
-  AC_CHECK_LIB(m, floor, [], AC_CHECK_LIB(m, __infinity))
-  
-  AC_CHECK_FUNC(setsockopt, [], [AC_CHECK_LIB(socket, setsockopt)])
-  # This may get things to compile even if bind-8 is installed
-  AC_CHECK_FUNC(bind, [], [AC_CHECK_LIB(bind, bind)])
-  
-  # For the sched_yield() function on Solaris
+    # For the sched_yield() function on Solaris
   AC_CHECK_FUNC(sched_yield, [],
     [AC_CHECK_LIB(posix4, [sched_yield],
       [AC_DEFINE(HAVE_SCHED_YIELD, 1, [Have sched_yield function]) LIBS="$LIBS -lposix4"])])
@@ -78,19 +72,6 @@ AC_DEFUN([PANDORA_DRIZZLE_BUILD],[
   ]])
   AC_CHECK_TYPES([ulong])
 
-  AC_LANG_PUSH([C++])
-  AC_CHECK_HEADERS(cxxabi.h)
-  AC_CACHE_CHECK([checking for abi::__cxa_demangle], pandora_cv_cxa_demangle,
-  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <cxxabi.h>]], [[
-    char *foo= 0; int bar= 0;
-    foo= abi::__cxa_demangle(foo, foo, 0, &bar);
-  ]])],[pandora_cv_cxa_demangle=yes],[pandora_cv_cxa_demangle=no])])
-  AC_LANG_POP([])
-
-  AS_IF([test "x$pandora_cv_cxa_demangle" = xyes],[
-    AC_DEFINE(HAVE_ABI_CXA_DEMANGLE, 1,
-              [Define to 1 if you have the `abi::__cxa_demangle' function.])
-  ])
-
+  PANDORA_CXX_DEMANGLE
 
 ])

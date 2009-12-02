@@ -322,7 +322,7 @@ void *memcached_get_user_data(memcached_st *ptr);
 LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
 memcached_return run_distribution(memcached_st *ptr);
 #ifdef __cplusplus
 }

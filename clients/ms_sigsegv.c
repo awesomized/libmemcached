@@ -23,8 +23,7 @@
 #include "ms_memslap.h"
 #include "ms_setting.h"
 
-#define NO_CPP_DEMANGLE
-#ifndef NO_CPP_DEMANGLE
+#if defined(__cplusplus) && defined(HAVE_ABI_CXA_DEMANGLE)
 # include <cxxabi.h>
 #endif
 
@@ -86,7 +85,7 @@ static void ms_signal_segv(int signum, siginfo_t *info, void *ptr)
       break;
 
     const char *symname= dlinfo.dli_sname;
-# ifndef NO_CPP_DEMANGLE
+# if defined(HAVE_ABI_CXA_DEMANGLE) && defined(__cplusplus)
     int status;
     char *tmp= __cxa_demangle(symname, NULL, 0, &status);
 
@@ -101,7 +100,7 @@ static void ms_signal_segv(int signum, siginfo_t *info, void *ptr)
             (unsigned)(ip - dlinfo.dli_saddr),
             dlinfo.dli_fname);
 
-# ifndef NO_CPP_DEMANGLE
+# if defined(HAVE_ABI_CXA_DEMANGLE) && defined(__cplusplus)
     if (tmp)
       free(tmp);
 # endif

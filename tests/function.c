@@ -2848,7 +2848,8 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
   /* and re-added when it's back. */
   memc->hosts[2].next_retry = time(NULL) - 1;
   memc->next_distribution_rebuild= time(NULL) - 1;
-  run_distribution(memc);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
+                         memc->distribution);
   for (int x= 0; x < 99; x++)
   {
     uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
@@ -4302,7 +4303,7 @@ static test_return_t set_udp_behavior_test(memcached_st *memc)
 
   memcached_quit(memc);
   memc->number_of_hosts= 0;
-  run_distribution(memc);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, memc->distribution);
   assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1) == MEMCACHED_SUCCESS);
   assert(memc->flags & MEM_USE_UDP);
   assert(memc->flags & MEM_NOREPLY);;
