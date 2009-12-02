@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.78])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.79])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -24,6 +24,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
   m4_define([PCT_FORCE_GCC42],[no])
   m4_define([PCT_SRC_IN_SRC],[no])
+  m4_define([PCT_VERSION_FROM_VC],[no])
   m4_define([PCT_USE_VISIBILITY],[yes])
   m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
@@ -50,6 +51,10 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [src-in-src], [
         m4_undefine([PCT_SRC_IN_SRC])
         m4_define([PCT_SRC_IN_SRC],[yes])
+      ],
+      [version-from-vc], [
+        m4_undefine([PCT_VERSION_FROM_VC])
+        m4_define([PCT_VERSION_FROM_VC],[yes])
     ])
   ])
 
@@ -71,6 +76,11 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_REQUIRE([AC_PROG_CC])
   AC_REQUIRE([PANDORA_MAC_GCC42])
   AC_REQUIRE([PANDORA_64BIT])
+
+  m4_if(PCT_VERSION_FROM_VC,yes,[
+    PANDORA_VC_VERSION
+  ])
+  PANDORA_VERSION
 
   dnl Once we can use a modern autoconf, we can use this
   dnl AC_PROG_CC_C99

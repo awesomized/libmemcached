@@ -15,6 +15,9 @@ extern "C" {
 
 @DEPRECATED@
 
+#define LIBMEMCACHED_VERSION_STRING "@VERSION@"
+#define LIBMEMCACHED_VERSION_HEX @PANDORA_HEX_VERSION@
+
 #ifdef __cplusplus
 }
 #endif
