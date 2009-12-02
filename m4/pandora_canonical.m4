@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.75])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.76])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -24,6 +24,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
   m4_define([PCT_FORCE_GCC42],[no])
   m4_define([PCT_SRC_IN_SRC],[no])
+  m4_define([PCT_USE_VISIBILITY],[yes])
   m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
       [use-gnulib], [
@@ -41,6 +42,10 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [force-gcc42], [
         m4_undefine([PCT_FORCE_GCC42])
         m4_define([PCT_FORCE_GCC42],[yes])
+      ],
+      [skip-visibility], [
+        m4_undefine([PCT_USE_VISIBILITY])
+        m4_define([PCT_USE_VISIBILITY],[no])
       ],
       [src-in-src], [
         m4_undefine([PCT_SRC_IN_SRC])
@@ -185,11 +190,13 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   PANDORA_HAVE_GCC_ATOMICS
 
-  dnl We need to inject error into the cflags to test if visibility works or not
-  save_CFLAGS="${CFLAGS}"
-  CFLAGS="${CFLAGS} -Werror"
-  gl_VISIBILITY
-  CFLAGS="${save_CFLAGS}"
+  m4_if(PCT_USE_VISIBILITY,[yes],[
+    dnl We need to inject error into the cflags to test if visibility works or not
+    save_CFLAGS="${CFLAGS}"
+    CFLAGS="${CFLAGS} -Werror"
+    gl_VISIBILITY
+    CFLAGS="${save_CFLAGS}"
+  ])
 
   PANDORA_HEADER_ASSERT
 
