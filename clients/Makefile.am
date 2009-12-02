@@ -1,6 +1,10 @@
 LDADDS = libutilities.la $(top_builddir)/libmemcached/libmemcached.la
 
-bin_PROGRAMS = memcat memdump memcp memstat memrm memflush memslap memerror memcapable
+bin_PROGRAMS = memcat memdump memcp memstat memrm memflush memerror memcapable
+
+if HAVE_LIBEVENT
+  bin_PROGRAMS += memslap
+endif
 
 noinst_HEADERS = client_options.h \
 		utilities.h \
@@ -41,8 +45,7 @@ memslap_SOURCES = \
 		ms_stats.c \
 		ms_task.c \
 		ms_thread.c
-memslap_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
-memslap_LDADD = $(PTHREAD_LIBS) libgenexec.la $(LDADDS)
+memslap_LDADD = $(LTLIBEVENT) libgenexec.la $(LDADDS)
 
 memcapable_SOURCES = memcapable.c
 if BUILD_BYTEORDER

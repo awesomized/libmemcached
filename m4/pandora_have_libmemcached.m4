@@ -30,7 +30,6 @@ AC_DEFUN([_PANDORA_SEARCH_LIBMEMCACHED],[
   
   AM_CONDITIONAL(HAVE_LIBMEMCACHED, [test "x${ac_cv_libmemcached}" = "xyes"])
   
-  AS_IF([test "x${ac_cv_libmemcached}" = "xyes"], [ PANDORA_WITH_MEMCACHED ])
 ])
 
 AC_DEFUN([PANDORA_HAVE_LIBMEMCACHED],[
