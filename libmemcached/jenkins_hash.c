@@ -63,7 +63,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
   a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 
   u.ptr = key;
-#ifdef BYTEORDER_LITTLE_ENDIAN
+#ifndef WORDS_BIGENDIAN
   if ((u.i & 0x3) == 0)
   {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
@@ -202,7 +202,7 @@ uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval)
     case 0 : return c;
     default : return c;
     }
-#ifdef BYTEORDER_LITTLE_ENDIAN
+#ifndef WORDS_BIGENDIAN
   }
 #endif
 

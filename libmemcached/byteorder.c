@@ -3,7 +3,7 @@
 /* Byte swap a 64-bit number. */
 static inline uint64_t swap64(uint64_t in)
 {
-#ifndef BYTEORDER_BIG_ENDIAN
+#ifndef WORDS_BIGENDIAN
   /* Little endian, flip the bytes around until someone makes a faster/better
    * way to do this. */
   uint64_t rv= 0;
