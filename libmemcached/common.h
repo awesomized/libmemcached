@@ -93,7 +93,8 @@ typedef enum {
   MEM_HASH_WITH_PREFIX_KEY= (1 << 13),
   MEM_NOREPLY= (1 << 14),
   MEM_USE_UDP= (1 << 15),
-  MEM_AUTO_EJECT_HOSTS= (1 << 16)
+  MEM_AUTO_EJECT_HOSTS= (1 << 16),
+  MEM_RANDOMIZE_REPLICA_READ= (1 << 17)
 } memcached_flags;
 
 /* Hashing algo */

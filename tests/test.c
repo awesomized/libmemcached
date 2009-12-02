@@ -99,10 +99,10 @@ int main(int argc, char *argv[])
       fprintf(stderr, "Testing %s", run->name);
 
       memc= memcached_create(NULL);
-      assert(memc);
+      test_truth(memc);
 
       rc= memcached_server_push(memc, servers);
-      assert(rc == MEMCACHED_SUCCESS);
+      test_truth(rc == MEMCACHED_SUCCESS);
 
       if (run->requires_flush)
       {
@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
 
       for (loop= 0; loop < memcached_server_list_count(servers); loop++)
       {
-        assert(memc->hosts[loop].fd == -1);
-        assert(memc->hosts[loop].cursor_active == 0);
+        test_truth(memc->hosts[loop].fd == -1);
+        test_truth(memc->hosts[loop].cursor_active == 0);
       }
 
       if (next->pre)
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
       if (next->post)
         (void)next->post(memc);
 
-      assert(memc);
+      test_truth(memc);
 error:
       memcached_free(memc);
     }

@@ -209,6 +209,15 @@ This replication does not dedicate certain memcached servers to store the
 replicas in, but instead it will store the replicas together with all of the
 other objects (on the 'n' next servers specified in your server list).
 
+=item MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
+
+Allows randomizing the replica reads starting point. Normally the read is 
+done from primary server and in case of miss the read is done from primary
++ 1, then primary + 2 all the way to 'n' replicas. If this option is set 
+on the starting point of the replica reads is randomized between the servers.
+This allows distributing read load to multiple servers with the expense of 
+more write traffic.
+
 =back
 
 =head1 RETURN

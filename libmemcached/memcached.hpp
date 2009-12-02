@@ -143,6 +143,17 @@ public:
     return memcached_strerror(NULL, rc);
   }
 
+
+  bool setBehavior(memcached_behavior flag, uint64_t data) {
+    memcached_return rc;
+    rc= memcached_behavior_set(&memc, flag, data);
+    return (rc == MEMCACHED_SUCCESS);
+  }
+
+  uint64_t getBehavior(memcached_behavior flag) {
+    return memcached_behavior_get(&memc, flag);
+  }
+
   /**
    * Return the string which contains the list of memcached servers being
    * used.
