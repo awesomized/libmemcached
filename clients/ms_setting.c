@@ -8,6 +8,9 @@
  * http://www.schoonerinfotech.com/
  *
  */
+
+#include "config.h"
+
 #include <ctype.h>
 #include "ms_setting.h"
 #include "ms_conn.h"
@@ -32,7 +35,7 @@
 const char ALPHANUMBERICS[]=
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.-";
 
-ms_setting_t ms_setting;       /* store the settings specified by user */
+ms_setting_st ms_setting;       /* store the settings specified by user */
 
 
 /* read setting from configuration file */
@@ -818,7 +821,7 @@ static void ms_setting_slapmode_init_pre()
  */
 void ms_setting_init_pre()
 {
-  memset(&ms_setting, 0, sizeof(ms_setting_t));
+  memset(&ms_setting, 0, sizeof(ms_setting));
 
   /* common initialize */
   ms_setting.ncpu= ms_get_cpu_count();

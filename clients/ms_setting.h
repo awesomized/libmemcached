@@ -156,9 +156,9 @@ typedef struct setting
   bool binary_prot;                     /* whether it use binary protocol */
   int expected_tps;                     /* expected throughput */
   int rep_write_srv;                    /* which servers are used to do replication writing */
-} ms_setting_t;
+} ms_setting_st;
 
-extern ms_setting_t ms_setting;
+extern ms_setting_st ms_setting;
 
 /* previous part of initialization of setting structure */
 void ms_setting_init_pre(void);

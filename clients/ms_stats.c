@@ -8,6 +8,9 @@
  * http://www.schoonerinfotech.com/
  *
  */
+
+#include "config.h"
+
 #include "ms_stats.h"
 
 #define array_size(x)    (sizeof(x) / sizeof((x)[0]))

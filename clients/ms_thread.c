@@ -8,6 +8,9 @@
  * http://www.schoonerinfotech.com/
  *
  */
+
+#include "config.h"
+
 #include "ms_thread.h"
 #include "ms_setting.h"
 

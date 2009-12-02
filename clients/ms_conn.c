@@ -8,6 +8,9 @@
  * http://www.schoonerinfotech.com/
  *
  */
+
+#include "config.h"
+
 #include <stdio.h>
 #include <limits.h>
 #include <sys/uio.h>

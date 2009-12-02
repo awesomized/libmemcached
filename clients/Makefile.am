@@ -33,7 +33,14 @@ memflush_LDADD = $(LDADDS)
 memerror_SOURCES = memerror.c
 memerror_LDADD = $(LDADDS)
 
-memslap_SOURCES = memslap.c
+memslap_SOURCES = \
+		memslap.c \
+		ms_conn.c \
+		ms_setting.c \
+		ms_sigsegv.c \
+		ms_stats.c \
+		ms_task.c \
+		ms_thread.c
 memslap_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 memslap_LDADD = $(PTHREAD_LIBS) libgenexec.la $(LDADDS)
 

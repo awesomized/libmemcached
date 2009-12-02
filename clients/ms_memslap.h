@@ -21,7 +21,6 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <math.h>
-#include "../config.h"
 
 #include "ms_stats.h"
 
