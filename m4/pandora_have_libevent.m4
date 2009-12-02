@@ -25,6 +25,15 @@ AC_DEFUN([_PANDORA_SEARCH_LIBEVENT],[
   ]) 
 
   AM_CONDITIONAL(HAVE_LIBEVENT, [test "x${ac_cv_libevent}" = "xyes"])
+
+  AS_IF([test "x${ac_cv_libevent}" = "xyes"],[
+    save_LIBS="${LIBS}"
+    LIBS="${LIBS} ${LTLIBEVENT}"
+    AC_CHECK_FUNCS(event_base_new)
+    AC_CHECK_FUNCS(event_base_free)
+    AC_CHECK_FUNCS(event_base_get_method)
+    LIBS="$save_LIBS"
+  ])
 ])
 
 AC_DEFUN([_PANDORA_HAVE_LIBEVENT],[
