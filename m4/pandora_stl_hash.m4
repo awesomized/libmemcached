@@ -51,6 +51,38 @@ AC_DEFUN([PANDORA_CXX_STL_HASH],
       AC_MSG_WARN([could not find an STL hash_map])
    fi
    AC_CACHE_CHECK(
+     [whether hash_map has rehash method],
+     [ac_cv_hash_map_has_rehash],
+     [AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([[
+#include HASH_MAP_H
+using namespace HASH_NAMESPACE;
+       ]],[[
+HASH_MAP_CLASS<int, int> test_hash;
+test_hash.rehash(100);
+          ]])],
+       [ac_cv_hash_map_has_rehash=yes],
+       [ac_cv_hash_map_has_rehash=no])])
+   AS_IF([test $ac_cv_hash_map_has_rehash = yes],[
+      AC_DEFINE(HASH_MAP_HAS_REHASH, 1, [if hash_map<> hash rehash method])
+   ])
+   AC_CACHE_CHECK(
+     [whether hash_map has resize method],
+     [ac_cv_hash_map_has_resize],
+     [AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([[
+#include HASH_MAP_H
+using namespace HASH_NAMESPACE;
+       ]],[[
+HASH_MAP_CLASS<int, int> test_hash;
+test_hash.resize(100);
+          ]])],
+       [ac_cv_hash_map_has_resize=yes],
+       [ac_cv_hash_map_has_resize=no])])
+   AS_IF([test $ac_cv_hash_map_has_resize = yes],[
+      AC_DEFINE(HASH_MAP_HAS_RESIZE, 1, [if hash_map<> hash resize method])
+   ])
+   AC_CACHE_CHECK(
      [whether to redefine hash<string>],
      [ac_cv_redefine_hash_string],
      [AC_COMPILE_IFELSE(
