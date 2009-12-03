@@ -909,8 +909,8 @@ static int ms_reconn(ms_conn_t *c)
   close(c->sfd);
   c->tcpsfd[c->cur_idx]= 0;
 
-  if (atomic_add_32_nv((volatile uint32_t *)&ms_setting.servers[srv_idx].disconn_cnt, 1)
-      % srv_conn_cnt == 0)
+  if (atomic_add_32_nv(&ms_setting.servers[srv_idx].disconn_cnt, 1)
+      % (uint32_t)srv_conn_cnt == 0)
   {
     gettimeofday(&ms_setting.servers[srv_idx].disconn_time, NULL);
     fprintf(stderr, "Server %s:%d disconnect\n",
@@ -945,8 +945,8 @@ static int ms_reconn(ms_conn_t *c)
                              ms_setting.udp, &c->sfd) == 0)
       {
         c->tcpsfd[c->cur_idx]= c->sfd;
-        if (atomic_add_32_nv((volatile uint32_t *)(&ms_setting.servers[srv_idx].reconn_cnt), 1)
-            % srv_conn_cnt == 0)
+        if (atomic_add_32_nv(&ms_setting.servers[srv_idx].reconn_cnt, 1)
+            % (uint32_t)srv_conn_cnt == 0)
         {
           gettimeofday(&ms_setting.servers[srv_idx].reconn_time, NULL);
           int reconn_time=
@@ -1040,8 +1040,8 @@ int ms_reconn_socks(ms_conn_t *c)
         c->tcpsfd[i]= ret_sfd;
         c->alive_sfds++;
 
-        if (atomic_add_32_nv((volatile uint32_t *)(&ms_setting.servers[srv_idx].reconn_cnt), 1)
-            % srv_conn_cnt == 0)
+        if (atomic_add_32_nv(&ms_setting.servers[srv_idx].reconn_cnt, 1)
+            % (uint32_t)srv_conn_cnt == 0)
         {
           gettimeofday(&ms_setting.servers[srv_idx].reconn_time, NULL);
           int reconn_time=
