@@ -13,6 +13,7 @@
 
 #include "ms_thread.h"
 #include "ms_setting.h"
+#include "ms_atomic.h"
 
 /* global variable */
 __thread ms_thread_t ms_thread;    /* each thread with a private ms_thread structure */

@@ -13,6 +13,7 @@
 
 #include "ms_thread.h"
 #include "ms_setting.h"
+#include "ms_atomic.h"
 
 /* command distribution adjustment cycle */
 #define CMD_DISTR_ADJUST_CYCLE    1000

@@ -12,6 +12,8 @@
 #include "config.h"
 
 #include <ctype.h>
+#include <strings.h>
+
 #include "ms_setting.h"
 #include "ms_conn.h"
 

@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include "ms_setting.h"
 #include "ms_thread.h"
+#include "ms_atomic.h"
 
 /* for network write */
 #define TRANSMIT_COMPLETE      0
@@ -39,7 +40,7 @@
 static uint64_t key_prefix_seq= KEY_PREFIX_BASE;
 
 /* global increasing counter, generating request id for UDP */
-static int udp_request_id= 0;
+static int32_t udp_request_id= 0;
 
 extern __thread ms_thread_t ms_thread;
 
