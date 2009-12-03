@@ -42,9 +42,38 @@ struct world_st {
 /* How we make all of this work :) */
 void get_world(world_st *world);
 
-#define test_truth(A) if (! (A)) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
-#define test_false(A) if ((A)) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
-#define test_strcmp(A,B) if (strcmp((A), (B))) {fprintf(stderr, "%d", __LINE__); return TEST_FAILURE;}
+void create_core(void);
+
+#define test_truth(A) \
+do \
+{ \
+  if (! (A)) { \
+    fprintf(stderr, "Assertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_false(A) \
+do \
+{ \
+  if ((A)) { \
+    fprintf(stderr, "Assertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_strcmp(A,B) \
+do \
+{ \
+  if (strcmp((A), (B))) \
+  { \
+    fprintf(stderr, "%d", __LINE__); \
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
 
 #ifdef	__cplusplus
 }
