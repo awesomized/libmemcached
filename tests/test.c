@@ -44,6 +44,14 @@ static const char *test_strerror(test_return_t code)
 
 }
 
+void create_core(void)
+{
+   if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL && fork() == 0)
+     abort();
+
+   abort();
+}
+
 int main(int argc, char *argv[])
 {
   test_return_t failed;
