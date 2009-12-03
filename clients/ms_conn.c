@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <sys/uio.h>
 #include <event.h>
@@ -42,7 +43,7 @@ static uint64_t key_prefix_seq= KEY_PREFIX_BASE;
 /* global increasing counter, generating request id for UDP */
 static volatile uint32_t udp_request_id= 0;
 
-extern __thread ms_thread_t ms_thread;
+extern pthread_key_t ms_thread_key;
 
 /* generate upd request id */
 static uint32_t ms_get_udp_request_id(void);
@@ -398,11 +399,12 @@ static void ms_warmup_num_init(ms_conn_t *c)
  */
 static int ms_item_win_init(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   int exp_cnt= 0;
 
   c->win_size= (int)ms_setting.win_size;
   c->set_cursor= 0;
-  c->exec_num= ms_thread.thread_ctx->exec_num_perconn;
+  c->exec_num= ms_thread->thread_ctx->exec_num_perconn;
   c->remain_exec_num= c->exec_num;
 
   c->item_win= (ms_task_item_t *)malloc(
@@ -452,6 +454,7 @@ static int ms_item_win_init(ms_conn_t *c)
  */
 static int ms_conn_sock_init(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   int i;
   int ret_sfd;
   int srv_idx= 0;
@@ -470,7 +473,7 @@ static int ms_conn_sock_init(ms_conn_t *c)
     else
     {
       /* all the connections in a thread connects the same server */
-      srv_idx= ms_thread.thread_ctx->srv_idx;
+      srv_idx= ms_thread->thread_ctx->srv_idx;
     }
 
     if (ms_network_connect(c, ms_setting.servers[srv_idx].srv_host_name,
@@ -545,6 +548,7 @@ static int ms_conn_sock_init(ms_conn_t *c)
  */
 static int ms_conn_event_init(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   /* default event timeout 10 seconds */
   struct timeval t=
   {
@@ -553,7 +557,7 @@ static int ms_conn_event_init(ms_conn_t *c)
   short event_flags= EV_WRITE | EV_PERSIST;
 
   event_set(&c->event, c->sfd, event_flags, ms_event_handler, (void *)c);
-  event_base_set(ms_thread.base, &c->event);
+  event_base_set(ms_thread->base, &c->event);
   c->ev_flags= event_flags;
 
   if (c->total_sfds == 1)
@@ -616,6 +620,7 @@ int ms_setup_conn(ms_conn_t *c)
  */
 void ms_conn_free(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   if (c != NULL)
   {
     if (c->hdrbuf != NULL)
@@ -639,9 +644,9 @@ void ms_conn_free(ms_conn_t *c)
     if (c->tcpsfd != NULL)
       free(c->tcpsfd);
 
-    if (--ms_thread.nactive_conn == 0)
+    if (--ms_thread->nactive_conn == 0)
     {
-      free(ms_thread.conn);
+      free(ms_thread->conn);
     }
   }
 } /* ms_conn_free */
@@ -654,6 +659,7 @@ void ms_conn_free(ms_conn_t *c)
  */
 static void ms_conn_close(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   assert(c != NULL);
 
   /* delete the event, the socket and the connection */
@@ -685,7 +691,7 @@ static void ms_conn_close(ms_conn_t *c)
     pthread_mutex_unlock(&ms_global.run_lock.lock);
   }
 
-  if (ms_thread.nactive_conn == 0)
+  if (ms_thread->nactive_conn == 0)
   {
     pthread_exit(NULL);
   }
@@ -884,6 +890,7 @@ static int ms_network_connect(ms_conn_t *c,
  */
 static int ms_reconn(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   int srv_idx= 0;
   int32_t srv_conn_cnt= 0;
 
@@ -894,7 +901,7 @@ static int ms_reconn(ms_conn_t *c)
   }
   else
   {
-    srv_idx= ms_thread.thread_ctx->srv_idx;
+    srv_idx= ms_thread->thread_ctx->srv_idx;
     srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
   }
 
@@ -984,6 +991,7 @@ static int ms_reconn(ms_conn_t *c)
  */
 int ms_reconn_socks(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   int srv_idx= 0;
   int ret_sfd= 0;
   int srv_conn_cnt= 0;
@@ -1021,7 +1029,7 @@ int ms_reconn_socks(ms_conn_t *c)
       }
       else
       {
-        srv_idx= ms_thread.thread_ctx->srv_idx;
+        srv_idx= ms_thread->thread_ctx->srv_idx;
         srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
       }
 
@@ -1759,7 +1767,7 @@ static void ms_verify_value(ms_conn_t *c,
                   "\n<%d expire time verification failed, "
                   "object expired but get it now\n"
                   "\tkey len: %d\n"
-                  "\tkey: %lx %.*s\n"
+                  "\tkey: %" PRIx64 " %.*s\n"
                   "\tset time: %s current time: %s "
                   "diff time: %d expire time: %d\n"
                   "\texpected data: \n"
@@ -1793,7 +1801,7 @@ static void ms_verify_value(ms_conn_t *c,
           fprintf(stderr,
                   "\n<%d data verification failed\n"
                   "\tkey len: %d\n"
-                  "\tkey: %lx %.*s\n"
+                  "\tkey: %" PRIx64" %.*s\n"
                   "\texpected data len: %d\n"
                   "\texpected data: %.*s\n"
                   "\treceived data len: %d\n"
@@ -2452,6 +2460,7 @@ static bool ms_update_event(ms_conn_t *c, const int new_flags)
  */
 static bool ms_need_yield(ms_conn_t *c)
 {
+  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
   int64_t tps= 0;
   int64_t time_diff= 0;
   struct timeval curr_time;
@@ -2460,13 +2469,13 @@ static bool ms_need_yield(ms_conn_t *c)
   if (ms_setting.expected_tps > 0)
   {
     gettimeofday(&curr_time, NULL);
-    time_diff= ms_time_diff(&ms_thread.startup_time, &curr_time);
+    time_diff= ms_time_diff(&ms_thread->startup_time, &curr_time);
     tps=
       (int64_t)((task->get_opt
                  + task->set_opt) / ((uint64_t)time_diff / 1000000));
 
     /* current throughput is greater than expected throughput */
-    if (tps > ms_thread.thread_ctx->tps_perconn)
+    if (tps > ms_thread->thread_ctx->tps_perconn)
     {
       return true;
     }

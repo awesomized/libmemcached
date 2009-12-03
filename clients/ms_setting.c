@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include <ctype.h>
+#include <inttypes.h>
 #include <strings.h>
 
 #include "ms_setting.h"
@@ -59,7 +60,7 @@ static void ms_print_setting(void);
 static void ms_setting_slapmode_init_pre(void);
 static void ms_setting_slapmode_init_post(void);
 
-#if defined(__SUNPRO_C)
+#if !defined(HAVE_GETLINE)
 #include <limits.h>
 static ssize_t getline (char **line, size_t *line_size, FILE *fp)
 {
@@ -132,8 +133,8 @@ static ssize_t getline (char **line, size_t *line_size, FILE *fp)
       break;
   }
   (*line)[cur_len] = '\0';
-  result= cur_len ? cur_len : result;
-
+  if (cur_len != 0)
+    return (ssize_t)cur_len;
   return result;
 }
 #endif
@@ -858,9 +859,9 @@ static void ms_print_setting()
   }
   else
   {
-    fprintf(stdout, "execute number: %ld\n", ms_setting.exec_num);
+    fprintf(stdout, "execute number: %" PRId64 "\n", ms_setting.exec_num);
   }
-  fprintf(stdout, "windows size: %ldk\n",
+  fprintf(stdout, "windows size: %" PRId64 "k\n",
           (int64_t)(ms_setting.win_size / 1024));
   fprintf(stdout, "set proportion: set_prop=%.2f\n",
           ms_setting.cmd_distr[CMD_SET].cmd_prop);

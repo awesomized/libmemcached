@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <inttypes.h>
+
 #include "ms_thread.h"
 #include "ms_setting.h"
 #include "ms_atomic.h"
@@ -23,8 +25,6 @@
                                  * there are too many new item or need more new
                                  * item in the window. This factor shows it.
                                  */
-
-extern __thread ms_thread_t ms_thread;
 
 /* get item from task window */
 static ms_task_item_t *ms_get_cur_opt_item(ms_conn_t *c);
@@ -571,7 +571,7 @@ static void ms_warmup_server(ms_conn_t *c)
     }
     else if (c->precmd.cmd == CMD_SET && c->precmd.retstat != MCD_STORED)
     {
-      printf("key: %lx didn't set success\n", item->key_prefix);
+      printf("key: %" PRIx64 " didn't set success\n", item->key_prefix);
     }
   }
 
@@ -755,7 +755,7 @@ static void ms_update_multi_get_result(ms_conn_t *c)
                     "\n\t<%d expire time verification failed, object "
                     "doesn't expire but can't get it now\n"
                     "\tkey len: %d\n"
-                    "\tkey: %lx %.*s\n"
+                    "\tkey: %" PRIx64 " %.*s\n"
                     "\tset time: %s current time: %s "
                     "diff time: %d expire time: %d\n"
                     "\texpected data len: %d\n"
@@ -785,7 +785,7 @@ static void ms_update_multi_get_result(ms_conn_t *c)
         {
           fprintf(stderr, "\n<%d data verification failed\n"
                           "\tkey len: %d\n"
-                          "\tkey: %lx %.*s\n"
+                          "\tkey: %" PRIx64 " %.*s\n"
                           "\texpected data len: %d\n"
                           "\texpected data: %.*s\n"
                           "\treceived data: \n",
@@ -860,7 +860,7 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item)
                   "\n\t<%d expire time verification failed, object "
                   "doesn't expire but can't get it now\n"
                   "\tkey len: %d\n"
-                  "\tkey: %lx %.*s\n"
+                  "\tkey: %" PRIx64 " %.*s\n"
                   "\tset time: %s current time: %s "
                   "diff time: %d expire time: %d\n"
                   "\texpected data len: %d\n"
@@ -890,7 +890,7 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item)
       {
         fprintf(stderr, "\n<%d data verification failed\n"
                         "\tkey len: %d\n"
-                        "\tkey: %lx %.*s\n"
+                        "\tkey: %" PRIx64 " %.*s\n"
                         "\texpected data len: %d\n"
                         "\texpected data: %.*s\n"
                         "\treceived data: \n",
