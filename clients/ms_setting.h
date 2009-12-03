@@ -53,8 +53,8 @@ typedef struct mcd_sever
   int srv_port;                                     /* server port */
 
   /* for calculating how long the server disconnects */
-  int32_t disconn_cnt;                                  /* number of disconnections count */
-  int32_t reconn_cnt;                                   /* number of reconnections count */
+  volatile int32_t disconn_cnt;                    /* number of disconnections count */
+  volatile int32_t reconn_cnt;                     /* number of reconnections count */
   struct timeval disconn_time;                      /* start time of disconnection */
   struct timeval reconn_time;                       /* end time of reconnection */
 } ms_mcd_server_t;
@@ -112,7 +112,7 @@ typedef struct setting
 {
   int ncpu;                             /* cpu count of this system */
   int nthreads;                         /* total thread count, must equal or less than cpu cores */
-  int nconns;                           /* total conn count, must multiply by total thread count */
+  int nconns;                      /* total conn count, must multiply by total thread count */
   int64_t exec_num;                     /* total execute number */
   int run_time;                         /* total run time */
 

@@ -69,7 +69,7 @@ typedef struct statistic
 /* global status statistic structure */
 typedef struct stats
 {
-  int32_t active_conns;             /* active connections */
+  volatile uint32_t active_conns;   /* active connections */
   uint64_t bytes_read;              /* read bytes */
   uint64_t bytes_written;           /* written bytes */
   uint64_t obj_bytes;               /* object bytes */
@@ -82,7 +82,7 @@ typedef struct stats
   uint64_t vef_failed;              /* total objects of verification failed  */
   uint64_t unexp_unget;             /* total objects which is unexpired but not get */
   uint64_t exp_get;                 /* total objects which is expired but get  */
-  uint64_t pkt_disorder;            /* disorder packages of UDP */
+  volatile uint64_t pkt_disorder;            /* disorder packages of UDP */
   uint64_t pkt_drop;                /* packages dropped of UDP */
   uint64_t udp_timeout;             /* how many times timeout of UDP happens */
 } ms_stats_t;

@@ -725,7 +725,7 @@ static void ms_update_multi_get_result(ms_conn_t *c)
     /* update get miss counter */
     if (mlget_item->get_miss)
     {
-      __sync_fetch_and_add(&ms_stats.get_misses, 1);
+      atomic_add_64(&ms_stats.get_misses, 1);
     }
 
     /* get nothing from server for this task item */
@@ -741,7 +741,7 @@ static void ms_update_multi_get_result(ms_conn_t *c)
         if (curr_time.tv_sec - item->client_time
             < item->exp_time - EXPIRE_TIME_ERROR)
         {
-          __sync_fetch_and_add(&ms_stats.unexp_unget, 1);
+          atomic_add_64(&ms_stats.unexp_unget, 1);
 
           if (ms_setting.verbose)
           {
@@ -779,7 +779,7 @@ static void ms_update_multi_get_result(ms_conn_t *c)
       }
       else
       {
-        __sync_fetch_and_add(&ms_stats.vef_miss, 1);
+        atomic_add_64(&ms_stats.vef_miss, 1);
 
         if (ms_setting.verbose)
         {
@@ -829,7 +829,7 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item)
   /* update get miss counter */
   if ((c->precmd.cmd == CMD_GET) && c->curr_task.get_miss)
   {
-    __sync_fetch_and_add(&ms_stats.get_misses, 1);
+    atomic_add_64(&ms_stats.get_misses, 1);
   }
 
   /* get nothing from server for this task item */
@@ -846,7 +846,7 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item)
       if (curr_time.tv_sec - item->client_time
           < item->exp_time - EXPIRE_TIME_ERROR)
       {
-        __sync_fetch_and_add(&ms_stats.unexp_unget, 1);
+        atomic_add_64(&ms_stats.unexp_unget, 1);
 
         if (ms_setting.verbose)
         {
@@ -884,7 +884,7 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item)
     }
     else
     {
-      __sync_fetch_and_add(&ms_stats.vef_miss, 1);
+      atomic_add_64(&ms_stats.vef_miss, 1);
 
       if (ms_setting.verbose)
       {

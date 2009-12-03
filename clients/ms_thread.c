@@ -67,10 +67,10 @@ static void ms_check_sock_timeout(void)
         /* calculate dropped packets count */
         if (c->recvpkt > 0)
         {
-          __sync_fetch_and_add(&ms_stats.pkt_drop, c->packets - c->recvpkt);
+          atomic_add_64(&ms_stats.pkt_drop, c->packets - c->recvpkt);
         }
 
-        __sync_fetch_and_add(&ms_stats.udp_timeout, 1);
+        atomic_add_64(&ms_stats.udp_timeout, 1);
         ms_reset_conn(c, true);
       }
     }
@@ -168,14 +168,14 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
   ms_thread.thread_ctx= thread_ctx;
   ms_thread.nactive_conn= thread_ctx->nconns;
   ms_thread.initialized= false;
-  static int cnt= 0;
+  static volatile uint32_t cnt= 0;
 
   gettimeofday(&ms_thread.startup_time, NULL);
 
   ms_thread.base= event_init();
   if (ms_thread.base == NULL)
   {
-    if (__sync_fetch_and_add(&cnt, 1) == 0)
+    if (atomic_add_32_nv(&cnt, 1) == 0)
     {
       fprintf(stderr, "Can't allocate event base.\n");
     }
@@ -187,7 +187,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
     (ms_conn_t *)malloc((size_t)thread_ctx->nconns * sizeof(ms_conn_t));
   if (ms_thread.conn == NULL)
   {
-    if (__sync_fetch_and_add(&cnt, 1) == 0)
+    if (atomic_add_32_nv(&cnt, 1) == 0)
     {
       fprintf(
         stderr,
@@ -204,7 +204,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
     if (ms_setup_conn(&ms_thread.conn[i]) != 0)
     {
       /* only output this error once */
-      if (__sync_fetch_and_add(&cnt, 1) == 0)
+      if (atomic_add_32_nv(&cnt, 1) == 0)
       {
         fprintf(stderr, "Initializing connection failed.\n");
       }

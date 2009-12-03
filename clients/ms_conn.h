@@ -162,7 +162,7 @@ typedef struct conn
 
   /* data for UDP clients */
   int udp;                          /* is this is a UDP "connection" */
-  int request_id;                   /* UDP request ID of current operation, if this is a UDP "connection" */
+  uint32_t request_id;                   /* UDP request ID of current operation, if this is a UDP "connection" */
   uint8_t *hdrbuf;                  /* udp packet headers */
   int hdrsize;                      /* number of headers' worth of space is allocated */
   struct  sockaddr srv_recv_addr;   /* Sent the most recent request to which server */
