@@ -14,66 +14,13 @@ AC_CONFIG_MACRO_DIR([m4])
 
 PANDORA_CANONICAL_TARGET
 
-#shared library versioning
-MEMCACHED_LIBRARY_VERSION=3:0:0
-#                         | | |
-#                  +------+ | +---+
-#                  |        |     |
-#                 current:revision:age
-#                  |        |     |
-#                  |        |     +- increment if interfaces have been added
-#                  |        |        set to zero if interfaces have been removed or changed
-#                  |        +- increment if source code has changed
-#                  |           set to zero if current is incremented
-#                  +- increment if interfaces have been added, removed or changed
-AC_SUBST(MEMCACHED_LIBRARY_VERSION)
-MEMCACHEDUTIL_LIBRARY_VERSION=0:0:0
-AC_SUBST(MEMCACHEDUTIL_LIBRARY_VERSION)
-MEMCACHEDPROTOCOL_LIBRARY_VERSION=0:0:0
-AC_SUBST(MEMCACHEDPROTOCOL_LIBRARY_VERSION)
-
-
-# libmemcached versioning when linked with GNU ld.
-if test "$lt_cv_prog_gnu_ld" = "yes"
-then
-    LD_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/libmemcached.ver"
-    LD_UTIL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/util/libmemcachedutil.ver"
-    LD_PROTOCOL_VERSION_SCRIPT="-Wl,--version-script=\$(top_srcdir)/libmemcached/protocol/libmemcachedprotocol.ver"
-fi
-AC_SUBST(LD_VERSION_SCRIPT)
-AC_SUBST(LD_UTIL_VERSION_SCRIPT)
-AC_SUBST(LD_PROTOCOL_VERSION_SCRIPT)
-
-
-#--------------------------------------------------------------------
-# Check for libpthread
-#--------------------------------------------------------------------
-
-ACX_PTHREAD(,AC_MSG_ERROR(could not find libpthread))
-LIBS="${PTHREAD_LIBS} ${LIBS}"
-CFLAGS="${PTHREAD_CFLAGS} ${CFLAGS}"
-CC="$PTHREAD_CC"
-
-
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
-AC_SEARCH_LIBS(socket, socket)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-save_LIBS="$LIBS"
-LIBS="$LIBS -lm"
-AC_LINK_IFELSE(
-  [AC_LANG_PROGRAM(
-    [[
-#include <stdlib.h>
-    ]],[[
-      float f= floorf((float) 1.0);
-    ]],
-    [LIBM="-lm"],[LIBM=""])])
+PANDORA_HAVE_LIBEVENT
+PANDORA_REQUIRE_PTHREAD
+PANDORA_CXX_DEMANGLE
 
-AC_SUBST(LIBM)
-LIBS="$save_LIBS"
-
-AC_SEARCH_LIBS(floorf, m)
 
 dnl Specialty checks
 DETECT_BYTEORDER

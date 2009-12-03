@@ -147,7 +147,25 @@ uint16_t x= htons(80);
       AS_IF([test "${ac_cv_assert}" = "no"],
             [NO_UNUSED="-Wno-unused-variable -Wno-unused-parameter"])
   
-      BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wextra -Wundef -Wshadow ${NO_UNUSED} ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
+      AC_CACHE_CHECK([whether it is safe to use -Wextra],
+        [ac_cv_safe_to_use_Wextra_],
+        [save_CFLAGS="$CFLAGS"
+         CFLAGS="${W_FAIL} -pedantic -Wextra ${AM_CFLAGS} ${CFLAGS}"
+         AC_COMPILE_IFELSE([
+           AC_LANG_PROGRAM(
+           [[
+#include <stdio.h>
+           ]], [[]])
+        ],
+        [ac_cv_safe_to_use_Wextra_=yes],
+        [ac_cv_safe_to_use_Wextra_=no])
+      CFLAGS="$save_CFLAGS"])
+
+      BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wundef -Wshadow ${NO_UNUSED} ${F_DIAGNOSTICS_SHOW_OPTION} ${CFLAG_VISIBILITY} ${BASE_WARNINGS_FULL}"
+      AS_IF([test "$ac_cv_safe_to_use_Wextra_" = "yes"],
+            [BASE_WARNINGS="${BASE_WARNINGS} -Wextra"],
+            [BASE_WARNINGS="${BASE_WARNINGS} -W"])
+  
       CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
       CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long ${CXX_WARNINGS_FULL}"
 
@@ -240,13 +258,31 @@ inline const EnumDescriptor* GetEnumDescriptor<Table_TableOptions_RowType>() {
             [ac_cv_safe_to_use_Wattributes_=no])
           CXXFLAGS="${save_CXXFLAGS}"
           AC_LANG_POP()])
-      AS_IF([test "$ac_cv_safe_to_use_Wattributes_" = "yes"],
-            [],
-            [CXX_WARNINGS="${CXX_WARNINGS} -Wno-attributes"])
+      AC_CACHE_CHECK([whether it is safe to use -Wno-attributes],
+        [ac_cv_safe_to_use_Wno_attributes_],
+        [save_CFLAGS="$CFLAGS"
+         CFLAGS="${W_FAIL} -pedantic -Wno_attributes_ ${AM_CFLAGS} ${CFLAGS}"
+         AC_COMPILE_IFELSE([
+           AC_LANG_PROGRAM(
+           [[
+#include <stdio.h>
+           ]], [[]])
+        ],
+        [ac_cv_safe_to_use_Wno_attributes_=yes],
+        [ac_cv_safe_to_use_Wno_attributes_=no])
+      CFLAGS="$save_CFLAGS"])
+
+      dnl GCC 3.4 doesn't have -Wno-attributes, so we can't turn them off
+      dnl by using that. 
+      AS_IF([test "$ac_cv_safe_to_use_Wattributes_" != "yes"],[
+        AS_IF([test "$ac_cv_safe_to_use_Wno_attributes_" = "yes"],[
+          CC_WARNINGS="${CC_WARNINGS} -Wno-attributes"
+          NO_ATTRIBUTES="-Wno-attributes"])])
+  
   
       NO_REDUNDANT_DECLS="-Wno-redundant-decls"
       dnl TODO: Figure out a better way to deal with this:
-      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow -Wno-missing-braces -Wno-attributes"
+      PROTOSKIP_WARNINGS="-Wno-effc++ -Wno-shadow -Wno-missing-braces ${NO_ATTRIBUTES}"
       NO_WERROR="-Wno-error"
       INNOBASE_SKIP_WARNINGS="-Wno-shadow -Wno-cast-align"
       

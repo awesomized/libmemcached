@@ -33,7 +33,6 @@ extern "C" {
 #endif
 
 #define MEMCACHED_VERSION_STRING_LENGTH 24
-#define LIBMEMCACHED_VERSION_STRING "0.35"
 
 struct memcached_analysis_st {
   uint32_t average_item_size;
@@ -322,7 +321,7 @@ void *memcached_get_user_data(memcached_st *ptr);
 LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
 memcached_return run_distribution(memcached_st *ptr);
 #ifdef __cplusplus
 }

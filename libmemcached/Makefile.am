@@ -43,7 +43,7 @@ libmemcachedprotocol_la_SOURCES= protocol/ascii_handler.c \
                                  protocol/pedantic.c \
                                  protocol/protocol_handler.c
 
-libmemcachedprotocol_la_LDFLAGS= -version-info $(MEMCACHEDPROTOCOL_LIBRARY_VERSION) $(LD_PROTOCOL_VERSION_SCRIPT)
+libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0 
 
 lib_LTLIBRARIES = libmemcached.la libmemcachedprotocol.la
 noinst_LTLIBRARIES = libmemcachedcallbacks.la
@@ -92,7 +92,7 @@ endif
 
 libmemcached_la_DEPENDENCIES= libmemcachedcallbacks.la
 libmemcached_la_LIBADD= $(LIBM) libmemcachedcallbacks.la
-libmemcached_la_LDFLAGS = -version-info $(MEMCACHED_LIBRARY_VERSION) $(LD_VERSION_SCRIPT) $(LIBM)
+libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info 3:0:0
 
 if BUILD_LIBMEMCACHEDUTIL
 pkginclude_HEADERS+= memcached_util.h memcached_pool.h
@@ -100,8 +100,8 @@ lib_LTLIBRARIES+= libmemcachedutil.la
 endif
 
 libmemcachedutil_la_SOURCES= util/memcached_pool.c
-libmemcachedutil_la_LDFLAGS= -version-info $(MEMCACHEDUTIL_LIBRARY_VERSION) $(LD_UTIL_VERSION_SCRIPT)
 libmemcachedutil_la_LIBADD= libmemcached.la
+libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0
 libmemcachedutil_la_DEPENDENCIES=libmemcached.la
 
 if BUILD_BYTEORDER

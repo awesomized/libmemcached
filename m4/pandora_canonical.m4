@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.62])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.80])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   dnl Force dependency tracking on for Sun Studio builds
@@ -24,6 +24,8 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_IGNORE_SHARED_PTR],[no])
   m4_define([PCT_FORCE_GCC42],[no])
   m4_define([PCT_SRC_IN_SRC],[no])
+  m4_define([PCT_VERSION_FROM_VC],[no])
+  m4_define([PCT_USE_VISIBILITY],[yes])
   m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
       [use-gnulib], [
@@ -42,9 +44,17 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
         m4_undefine([PCT_FORCE_GCC42])
         m4_define([PCT_FORCE_GCC42],[yes])
       ],
+      [skip-visibility], [
+        m4_undefine([PCT_USE_VISIBILITY])
+        m4_define([PCT_USE_VISIBILITY],[no])
+      ],
       [src-in-src], [
         m4_undefine([PCT_SRC_IN_SRC])
         m4_define([PCT_SRC_IN_SRC],[yes])
+      ],
+      [version-from-vc], [
+        m4_undefine([PCT_VERSION_FROM_VC])
+        m4_define([PCT_VERSION_FROM_VC],[yes])
     ])
   ])
 
@@ -58,7 +68,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   
   AC_CANONICAL_TARGET
   
-  AM_INIT_AUTOMAKE(-Wall -Werror nostdinc subdir-objects)
+  AM_INIT_AUTOMAKE(-Wall -Werror nostdinc subdir-objects foreign)
   m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
   m4_if(PCT_USE_GNULIB,yes,[ gl_EARLY ])
@@ -66,6 +76,11 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_REQUIRE([AC_PROG_CC])
   AC_REQUIRE([PANDORA_MAC_GCC42])
   AC_REQUIRE([PANDORA_64BIT])
+
+  m4_if(PCT_VERSION_FROM_VC,yes,[
+    PANDORA_VC_VERSION
+  ])
+  PANDORA_VERSION
 
   dnl Once we can use a modern autoconf, we can use this
   dnl AC_PROG_CC_C99
@@ -82,6 +97,13 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   PANDORA_LIBTOOL
 
+  AS_IF([test "$lt_cv_prog_gnu_ld" = "yes"],[
+    ${LD} --help | grep default-symver >/dev/null 2>&1
+    AS_IF([test $? -eq 0],[
+      AM_LDFLAGS="${AM_LDFLAGS} -Wl,--default-symver"
+    ])
+  ])
+
   dnl autoconf doesn't automatically provide a fail-if-no-C++ macro
   dnl so we check c++98 features and fail if we don't have them, mainly
   dnl for that reason
@@ -90,6 +112,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
     AS_IF([test "$ac_cv_cxx_stdcxx_98" = "no"],[
       AC_MSG_ERROR([No working C++ Compiler has been found. ${PACKAGE} requires a C++ compiler that can handle C++98])
     ])
+
   ])
   
   PANDORA_SHARED_PTR
@@ -104,6 +127,9 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
     AC_CONFIG_LIBOBJ_DIR([gnulib])
   ])
 
+  PANDORA_CHECK_C_VERSION
+  PANDORA_CHECK_CXX_VERSION
+
   AC_C_BIGENDIAN
   AC_C_CONST
   AC_C_INLINE
@@ -114,17 +140,76 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_TYPE_SIZE_T
   AC_SYS_LARGEFILE
 
+  # off_t is not a builtin type
+  AC_CHECK_SIZEOF(off_t, 4)
+  AS_IF([test "$ac_cv_sizeof_off_t" -eq 0],[
+    AC_MSG_ERROR("${PACKAGE} needs an off_t type.")
+  ])
 
-  PANDORA_CHECK_C_VERSION
-  PANDORA_CHECK_CXX_VERSION
+  AC_CHECK_SIZEOF(size_t)
+  AS_IF([test "$ac_cv_sizeof_size_t" -eq 0],[
+    AC_MSG_ERROR("${PACKAGE} needs an size_t type.")
+  ])
+
+  AC_DEFINE_UNQUOTED([SIZEOF_SIZE_T],[$ac_cv_sizeof_size_t],[Size of size_t as computed by sizeof()])
+  AC_CHECK_SIZEOF(long long)
+  AC_DEFINE_UNQUOTED([SIZEOF_LONG_LONG],[$ac_cv_sizeof_long_long],[Size of long long as computed by sizeof()])
+  AC_CACHE_CHECK([if time_t is unsigned], [ac_cv_time_t_unsigned],[
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+      [[
+#include <time.h>
+      ]],
+      [[
+      int array[(((time_t)-1) > 0) ? 1 : -1];
+      ]])
+    ],[
+      ac_cv_time_t_unsigned=yes
+    ],[
+      ac_cv_time_t_unsigned=no
+    ])
+  ])
+  AS_IF([test "$ac_cv_time_t_unsigned" = "yes"],[
+    AC_DEFINE([TIME_T_UNSIGNED], 1, [Define to 1 if time_t is unsigned])
+  ])
+
+  dnl AC_FUNC_ALLOCA would test for stack direction if we didn't have a working
+  dnl alloca - but we need to know it anyway for check_stack_overrun.
+  PANDORA_STACK_DIRECTION
+
+  save_LIBS="${LIBS}"
+  LIBS=""
+  AC_CHECK_LIB(m, floor, [], AC_CHECK_LIB(m, __infinity))
+  LIBM="${LIBS}"
+  LIBS="${save_LIBS}"
+  AC_SUBST([LIBM])
+  
+  AC_CHECK_FUNC(setsockopt, [], [AC_CHECK_LIB(socket, setsockopt)])
+  AC_CHECK_FUNC(bind, [], [AC_CHECK_LIB(bind, bind)])
+
+
 
   PANDORA_OPTIMIZE
 
-  dnl We need to inject error into the cflags to test if visibility works or not
-  save_CFLAGS="${CFLAGS}"
-  CFLAGS="${CFLAGS} -Werror"
-  gl_VISIBILITY
-  CFLAGS="${save_CFLAGS}"
+  AC_LANG_PUSH(C++)
+  # Test whether madvise() is declared in C++ code -- it is not on some
+  # systems, such as Solaris
+  AC_CHECK_DECLS([madvise], [], [], [AC_INCLUDES_DEFAULT[
+  #if HAVE_SYS_MMAN_H
+  #include <sys/types.h>
+  #include <sys/mman.h>
+  #endif
+  ]])
+  AC_LANG_POP()
+
+  PANDORA_HAVE_GCC_ATOMICS
+
+  m4_if(PCT_USE_VISIBILITY,[yes],[
+    dnl We need to inject error into the cflags to test if visibility works or not
+    save_CFLAGS="${CFLAGS}"
+    CFLAGS="${CFLAGS} -Werror"
+    gl_VISIBILITY
+    CFLAGS="${save_CFLAGS}"
+  ])
 
   PANDORA_HEADER_ASSERT
 
@@ -159,5 +244,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_SUBST([AM_CFLAGS])
   AC_SUBST([AM_CXXFLAGS])
   AC_SUBST([AM_CPPFLAGS])
+  AC_SUBST([AM_LDFLAGS])
 
 ])
