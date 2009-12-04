@@ -12,6 +12,9 @@
 #include "config.h"
 
 #include <ctype.h>
+#include <inttypes.h>
+#include <strings.h>
+
 #include "ms_setting.h"
 #include "ms_conn.h"
 
@@ -57,6 +60,84 @@ static void ms_print_setting(void);
 static void ms_setting_slapmode_init_pre(void);
 static void ms_setting_slapmode_init_post(void);
 
+#if !defined(HAVE_GETLINE)
+#include <limits.h>
+static ssize_t getline (char **line, size_t *line_size, FILE *fp)
+{
+  char delim= '\n';
+  ssize_t result= 0;
+  size_t cur_len= 0;
+
+  if (line == NULL || line_size == NULL || fp == NULL)
+  {
+    errno = EINVAL;
+    return -1;
+  }
+
+  if (*line == NULL || *line_size == 0)
+  {
+    char *new_line;
+    *line_size = 120;
+    new_line= (char *) realloc (*line, *line_size);
+    if (new_line == NULL)
+    {
+      result= -1;
+      return result;
+    }
+    *line= new_line;
+  }
+
+  for (;;)
+  {
+    char i;
+
+    i = getc(fp);
+    if (i == EOF)
+    {
+      result = -1;
+      break;
+    }
+
+    /* Make enough space for len+1 (for final NUL) bytes.  */
+    if (cur_len + 1 >= *line_size)
+    {
+      size_t needed_max=
+        SSIZE_MAX < SIZE_MAX ? (size_t) SSIZE_MAX + 1 : SIZE_MAX;
+      size_t needed= (2 * (*line_size)) + 1;
+      char *new_line;
+
+      if (needed_max < needed)
+        needed= needed_max;
+      if (cur_len + 1 >= needed)
+      {
+        result= -1;
+        errno= EOVERFLOW;
+        return result;
+      }
+
+      new_line= (char *)realloc(*line, needed);
+      if (new_line == NULL)
+      {
+        result= -1;
+        return result;
+      }
+
+      *line= new_line;
+      *line_size= needed;
+    }
+
+    (*line)[cur_len]= i;
+    cur_len++;
+
+    if (i == delim)
+      break;
+  }
+  (*line)[cur_len] = '\0';
+  if (cur_len != 0)
+    return (ssize_t)cur_len;
+  return result;
+}
+#endif
 
 /**
  * parse the server list string, and build the servers
@@ -778,9 +859,9 @@ static void ms_print_setting()
   }
   else
   {
-    fprintf(stdout, "execute number: %ld\n", ms_setting.exec_num);
+    fprintf(stdout, "execute number: %" PRId64 "\n", ms_setting.exec_num);
   }
-  fprintf(stdout, "windows size: %ldk\n",
+  fprintf(stdout, "windows size: %" PRId64 "k\n",
           (int64_t)(ms_setting.win_size / 1024));
   fprintf(stdout, "set proportion: set_prop=%.2f\n",
           ms_setting.cmd_distr[CMD_SET].cmd_prop);

@@ -14,6 +14,7 @@
  *
  */
 #include <getopt.h>
+#include <limits.h>
 
 #include "ms_sigsegv.h"
 #include "ms_setting.h"
@@ -770,7 +771,8 @@ static void ms_monitor_slap_mode()
       second++;
 
       if ((ms_setting.stat_freq > 0) && (second % ms_setting.stat_freq == 0)
-          && (ms_stats.active_conns >= ms_setting.nconns))
+          && ((int32_t)ms_stats.active_conns >= ms_setting.nconns)
+          && (ms_stats.active_conns <= (uint32_t)INT_MAX))
       {
         ms_print_statistics(second);
       }

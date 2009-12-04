@@ -11,6 +11,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include "ms_stats.h"
 
 #define array_size(x)    (sizeof(x) / sizeof((x)[0]))
@@ -191,7 +192,7 @@ void ms_dump_stats(ms_stat_t *stat)
     {
       printf("\n      %2d:", (int)i);
     }
-    printf("   %6ld", stat->dist[i]);
+    printf("   %6" PRIu64 , stat->dist[i]);
   }
 
   printf("\n\n");
