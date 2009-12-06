@@ -1,32 +1,32 @@
 #include "common.h"
 #include "memcached_io.h"
 
-/* 
+/*
   What happens if no servers exist?
 */
-char *memcached_get(memcached_st *ptr, const char *key, 
-                    size_t key_length, 
-                    size_t *value_length, 
+char *memcached_get(memcached_st *ptr, const char *key,
+                    size_t key_length,
+                    size_t *value_length,
                     uint32_t *flags,
                     memcached_return *error)
 {
-  return memcached_get_by_key(ptr, NULL, 0, key, key_length, value_length, 
+  return memcached_get_by_key(ptr, NULL, 0, key, key_length, value_length,
                               flags, error);
 }
 
-static memcached_return memcached_mget_by_key_real(memcached_st *ptr, 
-                                                   const char *master_key, 
+static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
+                                                   const char *master_key,
                                                    size_t master_key_length,
-                                                   const char * const *keys, 
-                                                   const size_t *key_length, 
+                                                   const char * const *keys,
+                                                   const size_t *key_length,
                                                    size_t number_of_keys,
                                                    bool mget_mode);
 
-char *memcached_get_by_key(memcached_st *ptr, 
-                           const char *master_key, 
-                           size_t master_key_length, 
+char *memcached_get_by_key(memcached_st *ptr,
+                           const char *master_key,
+                           size_t master_key_length,
                            const char *key, size_t key_length,
-                           size_t *value_length, 
+                           size_t *value_length,
                            uint32_t *flags,
                            memcached_return *error)
 {
@@ -42,11 +42,11 @@ char *memcached_get_by_key(memcached_st *ptr,
   }
 
   /* Request the key */
-  *error= memcached_mget_by_key_real(ptr, master_key, master_key_length, 
-                                     (const char * const *)&key, 
+  *error= memcached_mget_by_key_real(ptr, master_key, master_key_length,
+                                     (const char * const *)&key,
                                      &key_length, 1, false);
 
-  value= memcached_fetch(ptr, NULL, NULL, 
+  value= memcached_fetch(ptr, NULL, NULL,
                          value_length, flags, error);
   /* This is for historical reasons */
   if (*error == MEMCACHED_END)
@@ -60,7 +60,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
       memcached_result_reset(&ptr->result);
       rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
-      
+
       /* On all failure drop to returning NULL */
       if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
       {
@@ -71,7 +71,7 @@ char *memcached_get_by_key(memcached_st *ptr,
           if (latch == 0)
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
 
-          rc= memcached_set(ptr, key, key_length, 
+          rc= memcached_set(ptr, key, key_length,
                             memcached_result_value(&ptr->result),
                             memcached_result_length(&ptr->result),
                             0, memcached_result_flags(&ptr->result));
@@ -81,7 +81,7 @@ char *memcached_get_by_key(memcached_st *ptr,
         }
         else
         {
-          rc= memcached_set(ptr, key, key_length, 
+          rc= memcached_set(ptr, key, key_length,
                             memcached_result_value(&ptr->result),
                             memcached_result_length(&ptr->result),
                             0, memcached_result_flags(&ptr->result));
@@ -100,17 +100,17 @@ char *memcached_get_by_key(memcached_st *ptr,
     return NULL;
   }
 
-  (void)memcached_fetch(ptr, NULL, NULL, 
-                        &dummy_length, &dummy_flags, 
+  (void)memcached_fetch(ptr, NULL, NULL,
+                        &dummy_length, &dummy_flags,
                         &dummy_error);
   WATCHPOINT_ASSERT(dummy_length == 0);
 
   return value;
 }
 
-memcached_return memcached_mget(memcached_st *ptr, 
-                                const char * const *keys, 
-                                const size_t *key_length, 
+memcached_return memcached_mget(memcached_st *ptr,
+                                const char * const *keys,
+                                const size_t *key_length,
                                 size_t number_of_keys)
 {
   return memcached_mget_by_key(ptr, NULL, 0, keys, key_length, number_of_keys);
@@ -119,16 +119,16 @@ memcached_return memcached_mget(memcached_st *ptr,
 static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
-                                           const char * const *keys, 
+                                           const char * const *keys,
                                            const size_t *key_length,
                                            size_t number_of_keys,
 					   bool mget_mode);
 
-static memcached_return memcached_mget_by_key_real(memcached_st *ptr, 
-                                                   const char *master_key, 
+static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
+                                                   const char *master_key,
                                                    size_t master_key_length,
-                                                   const char * const *keys, 
-                                                   const size_t *key_length, 
+                                                   const char * const *keys,
+                                                   const size_t *key_length,
                                                    size_t number_of_keys,
                                                    bool mget_mode)
 {
@@ -162,7 +162,7 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
     is_master_key_set= true;
   }
 
-  /* 
+  /*
     Here is where we pay for the non-block API. We need to remove any data sitting
     in the queue before we start our get.
 
@@ -181,9 +181,9 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
         (void)memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
     }
   }
-  
+
   if (ptr->flags & MEM_BINARY_PROTOCOL)
-    return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys, 
+    return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys,
                               key_length, number_of_keys, mget_mode);
 
   if (ptr->flags & MEM_SUPPORT_CAS)
@@ -192,7 +192,7 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
     get_command_length= 5;
   }
 
-  /* 
+  /*
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
@@ -267,14 +267,14 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
   return rc;
 }
 
-memcached_return memcached_mget_by_key(memcached_st *ptr, 
-                                       const char *master_key, 
+memcached_return memcached_mget_by_key(memcached_st *ptr,
+                                       const char *master_key,
                                        size_t master_key_length,
-                                       const char * const *keys, 
-                                       const size_t *key_length, 
+                                       const char * const *keys,
+                                       const size_t *key_length,
                                        size_t number_of_keys)
 {
-  return memcached_mget_by_key_real(ptr, master_key, master_key_length, keys, 
+  return memcached_mget_by_key_real(ptr, master_key, master_key_length, keys,
                                     key_length, number_of_keys, true);
 }
 
@@ -322,8 +322,8 @@ memcached_return memcached_mget_execute_by_key(memcached_st *ptr,
 static memcached_return simple_binary_mget(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
-                                           const char * const *keys, 
-                                           const size_t *key_length, 
+                                           const char * const *keys,
+                                           const size_t *key_length,
                                            size_t number_of_keys, bool mget_mode)
 {
   memcached_return rc= MEMCACHED_NOTFOUND;
@@ -331,11 +331,11 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
 
   int flush= number_of_keys == 1;
 
-  /* 
+  /*
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
-  for (x= 0; x < number_of_keys; x++) 
+  for (x= 0; x < number_of_keys; x++)
   {
     unsigned int server_key;
 
@@ -344,13 +344,13 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
     else
       server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
-    if (memcached_server_response_count(&ptr->hosts[server_key]) == 0) 
+    if (memcached_server_response_count(&ptr->hosts[server_key]) == 0)
     {
       rc= memcached_connect(&ptr->hosts[server_key]);
-      if (rc != MEMCACHED_SUCCESS) 
+      if (rc != MEMCACHED_SUCCESS)
         continue;
     }
-     
+
     protocol_binary_request_getk request= {.bytes= {0}};
     request.message.header.request.magic= PROTOCOL_BINARY_REQ;
     if (mget_mode)
@@ -371,26 +371,26 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
     request.message.header.request.keylen= htons((uint16_t)key_length[x]);
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
-    
+
     if ((memcached_io_write(&ptr->hosts[server_key], request.bytes,
                             sizeof(request.bytes), 0) == -1) ||
-        (memcached_io_write(&ptr->hosts[server_key], keys[x], 
-                            key_length[x], (char) flush) == -1)) 
+        (memcached_io_write(&ptr->hosts[server_key], keys[x],
+                            key_length[x], (char) flush) == -1))
     {
       memcached_server_response_reset(&ptr->hosts[server_key]);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
-    
+
     /* We just want one pending response per server */
-    memcached_server_response_reset(&ptr->hosts[server_key]); 
-    memcached_server_response_increment(&ptr->hosts[server_key]);    
+    memcached_server_response_reset(&ptr->hosts[server_key]);
+    memcached_server_response_increment(&ptr->hosts[server_key]);
     if ((x > 0 && x == ptr->io_key_prefetch) &&
         memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
   }
 
-  if (mget_mode) 
+  if (mget_mode)
   {
     /*
      * Send a noop command to flush the buffers
@@ -399,19 +399,19 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
     request.message.header.request.magic= PROTOCOL_BINARY_REQ;
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-    
+
     for (x= 0; x < ptr->number_of_hosts; x++)
-      if (memcached_server_response_count(&ptr->hosts[x])) 
+      if (memcached_server_response_count(&ptr->hosts[x]))
       {
-        if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1) 
+        if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1)
         {
           memcached_server_response_reset(&ptr->hosts[x]);
           memcached_io_reset(&ptr->hosts[x]);
           rc= MEMCACHED_SOME_ERRORS;
         }
 
-        if (memcached_io_write(&ptr->hosts[x], request.bytes, 
-			       sizeof(request.bytes), 1) == -1) 
+        if (memcached_io_write(&ptr->hosts[x], request.bytes,
+			       sizeof(request.bytes), 1) == -1)
         {
           memcached_server_response_reset(&ptr->hosts[x]);
           memcached_io_reset(&ptr->hosts[x]);
@@ -425,9 +425,9 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
 }
 
 static memcached_return replication_binary_mget(memcached_st *ptr,
-                                                uint32_t* hash, 
+                                                uint32_t* hash,
                                                 bool* dead_servers,
-                                                const char *const *keys, 
+                                                const char *const *keys,
                                                 const size_t *key_length,
                                                 size_t number_of_keys)
 {
@@ -435,14 +435,14 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
   uint32_t x, start= 0;
   uint64_t randomize_read= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ);
 
-  if (randomize_read) 
-    start= (uint32_t)(random() % (ptr->number_of_replicas + 1));
+  if (randomize_read)
+     start= (uint32_t)random() % (uint32_t)(ptr->number_of_replicas + 1);
 
   /* Loop for each replica */
   for (uint32_t replica= 0; replica <= ptr->number_of_replicas; ++replica)
   {
     bool success= true;
- 
+
     for (x= 0; x < number_of_keys; ++x)
     {
       if (hash[x] == ptr->number_of_hosts)
@@ -453,7 +453,7 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
       /* In case of randomized reads */
       if (randomize_read && ((server + start) <= (hash[x] + ptr->number_of_replicas)))
         server += start;
-      
+
       while (server >= ptr->number_of_hosts)
         server -= ptr->number_of_hosts;
 
@@ -517,19 +517,19 @@ static memcached_return replication_binary_mget(memcached_st *ptr,
 static memcached_return binary_mget_by_key(memcached_st *ptr,
                                            unsigned int master_server_key,
                                            bool is_master_key_set,
-                                           const char * const *keys, 
+                                           const char * const *keys,
                                            const size_t *key_length,
-                                           size_t number_of_keys, 
+                                           size_t number_of_keys,
                                            bool mget_mode)
 {
   memcached_return rc;
 
-  if (ptr->number_of_replicas == 0) 
+  if (ptr->number_of_replicas == 0)
   {
     rc= simple_binary_mget(ptr, master_server_key, is_master_key_set,
                            keys, key_length, number_of_keys, mget_mode);
-  } 
-  else 
+  }
+  else
   {
     uint32_t* hash;
     bool* dead_servers;
@@ -551,7 +551,7 @@ static memcached_return binary_mget_by_key(memcached_st *ptr,
       for (unsigned int x= 0; x < number_of_keys; x++)
         hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
-    rc= replication_binary_mget(ptr, hash, dead_servers, keys, 
+    rc= replication_binary_mget(ptr, hash, dead_servers, keys,
                                 key_length, number_of_keys);
 
     ptr->call_free(ptr, hash);

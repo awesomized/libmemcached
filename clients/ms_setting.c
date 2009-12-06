@@ -89,9 +89,7 @@ static ssize_t getline (char **line, size_t *line_size, FILE *fp)
 
   for (;;)
   {
-    char i;
-
-    i = getc(fp);
+    int i= getc(fp);
     if (i == EOF)
     {
       result = -1;
@@ -126,7 +124,7 @@ static ssize_t getline (char **line, size_t *line_size, FILE *fp)
       *line_size= needed;
     }
 
-    (*line)[cur_len]= i;
+    (*line)[cur_len]= (char)i;
     cur_len++;
 
     if (i == delim)
@@ -200,7 +198,7 @@ static void ms_get_serverlist(char *str)
     {
       srvs= (ms_mcd_server_t *)realloc(
         ms_setting.servers,
-        (uint64_t)ms_setting.total_srv_cnt
+        (size_t)ms_setting.total_srv_cnt
         * sizeof(ms_mcd_server_t) * 2);
       if (srvs == NULL)
       {
@@ -400,7 +398,7 @@ static void ms_parse_cfg_file(char *cfg_file)
 
         if (nread != EOF)
         {
-          if (sscanf(line, "%lu %lu %lf ", &start_len,
+          if (sscanf(line, "%zu %zu %lf ", &start_len,
                      &end_len, &proportion) != 3)
           {
             conf_type= ms_get_conf_type(line);
@@ -415,7 +413,7 @@ static void ms_parse_cfg_file(char *cfg_file)
           {
             key_distr= (ms_key_distr_t *)realloc(
               ms_setting.key_distr,
-              (uint64_t)ms_setting.
+              (size_t)ms_setting.
                  total_key_rng_cnt * sizeof(ms_key_distr_t) * 2);
             if (key_distr == NULL)
             {
@@ -442,7 +440,7 @@ static void ms_parse_cfg_file(char *cfg_file)
 
         if (nread != EOF)
         {
-          if (sscanf(line, "%lu %lu %lf %lu", &start_len, &end_len,
+          if (sscanf(line, "%zu %zu %lf %zu", &start_len, &end_len,
                      &proportion, &frequence) != 3)
           {
             conf_type= ms_get_conf_type(line);
@@ -459,7 +457,7 @@ static void ms_parse_cfg_file(char *cfg_file)
           {
             val_distr= (ms_value_distr_t *)realloc(
               ms_setting.value_distr,
-              (uint64_t)ms_setting.
+              (size_t)ms_setting.
                  total_val_rng_cnt * sizeof(ms_value_distr_t) * 2);
             if (val_distr == NULL)
             {
@@ -911,7 +909,7 @@ void ms_setting_init_pre()
   ms_setting.run_time= DEFAULT_RUN_TIME;
   ms_setting.total_srv_cnt= MCD_SRVS_NUM_INIT;
   ms_setting.servers= (ms_mcd_server_t *)malloc(
-    (uint64_t)ms_setting.total_srv_cnt
+    (size_t)ms_setting.total_srv_cnt
     * sizeof(ms_mcd_server_t));
   if (ms_setting.servers == NULL)
   {
@@ -930,7 +928,7 @@ static void ms_setting_slapmode_init_post()
 {
   ms_setting.total_key_rng_cnt= KEY_RANGE_COUNT_INIT;
   ms_setting.key_distr= (ms_key_distr_t *)malloc(
-    (uint64_t)ms_setting.total_key_rng_cnt
+    (size_t)ms_setting.total_key_rng_cnt
     * sizeof(ms_key_distr_t));
   if (ms_setting.key_distr == NULL)
   {
@@ -940,7 +938,7 @@ static void ms_setting_slapmode_init_post()
 
   ms_setting.total_val_rng_cnt= VALUE_RANGE_COUNT_INIT;
   ms_setting.value_distr= (ms_value_distr_t *)malloc(
-    (uint64_t)ms_setting.total_val_rng_cnt
+    (size_t)ms_setting.total_val_rng_cnt
     * sizeof(
       ms_value_distr_t));
   if (ms_setting.value_distr == NULL)
