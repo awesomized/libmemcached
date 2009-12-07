@@ -61,7 +61,7 @@ static void ms_check_sock_timeout(void)
 
     if (c->udp)
     {
-      time_diff= (int)(ms_thread->curr_time - c->start_time.tv_sec);
+      time_diff= (int)(ms_thread->curr_time - (rel_time_t)c->start_time.tv_sec);
 
       /* wait time out */
       if (time_diff > SOCK_WAIT_TIMEOUT)
@@ -169,7 +169,7 @@ static int ms_set_thread_cpu_affinity(int cpu)
  */
 static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
 {
-  
+
   ms_thread_t *ms_thread= (ms_thread_t *)calloc(sizeof(*ms_thread), 1);
   pthread_setspecific(ms_thread_key, (void *)ms_thread);
 

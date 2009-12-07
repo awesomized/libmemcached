@@ -23,6 +23,18 @@
 #include "ms_thread.h"
 #include "ms_atomic.h"
 
+#ifdef linux
+/* /usr/include/netinet/in.h defines macros from ntohs() to _bswap_nn to
+ * optimize the conversion functions, but the prototypes generate warnings
+ * from gcc. The conversion methods isn't the bottleneck for my app, so
+ * just remove the warnings by undef'ing the optimization ..
+ */
+#undef ntohs
+#undef ntohl
+#undef htons
+#undef htonl
+#endif
+
 /* for network write */
 #define TRANSMIT_COMPLETE      0
 #define TRANSMIT_INCOMPLETE    1
@@ -1272,7 +1284,7 @@ void ms_reset_conn(ms_conn_t *c, bool timeout)
   {
     if ((c->packets > 0) && (c->packets < MAX_UDP_PACKET))
     {
-      memset(c->udppkt, 0, sizeof(ms_udppkt_t) * (uint64_t)c->packets);
+      memset(c->udppkt, 0, sizeof(ms_udppkt_t) * (size_t)c->packets);
     }
 
     c->packets= 0;
@@ -1331,9 +1343,9 @@ static int ms_try_read_line(ms_conn_t *c)
 
       c->binary_header= *rsp;
       c->binary_header.response.extlen= rsp->response.extlen;
-      c->binary_header.response.keylen= ntohl(rsp->response.keylen);
+      c->binary_header.response.keylen= ntohs(rsp->response.keylen);
       c->binary_header.response.bodylen= ntohl(rsp->response.bodylen);
-      c->binary_header.response.status= ntohl(rsp->response.status);
+      c->binary_header.response.status= ntohs(rsp->response.status);
 
       if (c->binary_header.response.magic != PROTOCOL_BINARY_RES)
       {
@@ -2013,7 +2025,7 @@ static int ms_add_msghdr(ms_conn_t *c)
   if (c->msgsize == c->msgused)
   {
     msg=
-      realloc(c->msglist, (uint64_t)c->msgsize * 2 * sizeof(struct msghdr));
+      realloc(c->msglist, (size_t)c->msgsize * 2 * sizeof(struct msghdr));
     if (! msg)
       return -1;
 
@@ -2066,7 +2078,7 @@ static int ms_ensure_iov_space(ms_conn_t *c)
   {
     int i, iovnum;
     struct iovec *new_iov= (struct iovec *)realloc(c->iov,
-                                                   ((uint64_t)c->iovsize
+                                                   ((size_t)c->iovsize
                                                     * 2)
                                                    * sizeof(struct iovec));
     if (! new_iov)
@@ -2258,7 +2270,7 @@ static int ms_transmit(ms_conn_t *c)
       if (res > 0)
       {
         m->msg_iov->iov_base= (void *)((unsigned char *)m->msg_iov->iov_base + res);
-        m->msg_iov->iov_len-= (uint64_t)res;
+        m->msg_iov->iov_len-= (size_t)res;
       }
       return TRANSMIT_INCOMPLETE;
     }
@@ -3298,7 +3310,7 @@ static void ms_add_bin_header(ms_conn_t *c,
 
   header->request.magic= (uint8_t)PROTOCOL_BINARY_REQ;
   header->request.opcode= (uint8_t)opcode;
-  header->request.keylen= htonl(key_len);
+  header->request.keylen= htons(key_len);
 
   header->request.extlen= (uint8_t)hdr_len;
   header->request.datatype= (uint8_t)PROTOCOL_BINARY_RAW_BYTES;

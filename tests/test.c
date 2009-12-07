@@ -48,8 +48,6 @@ void create_core(void)
 {
    if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL && fork() == 0)
      abort();
-
-   abort();
 }
 
 int main(int argc, char *argv[])

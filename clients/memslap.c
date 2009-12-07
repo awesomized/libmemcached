@@ -24,56 +24,65 @@
 #define PROGRAM_DESCRIPTION \
                         "Generates workload against memcached servers."
 
+#ifdef __sun
+  /* For some odd reason the option struct on solaris defines the argument
+   * as char* and not const char*
+   */
+#define OPTIONSTRING char*
+#else
+#define OPTIONSTRING const char*
+#endif
+
 /* options */
 static struct option long_options[]=
 {
-  { "servers",        required_argument,            NULL,
+  { (OPTIONSTRING)"servers",        required_argument,            NULL,
     OPT_SERVERS            },
-  { "threads",        required_argument,            NULL,
+  { (OPTIONSTRING)"threads",        required_argument,            NULL,
     OPT_THREAD_NUMBER      },
-  { "concurrency",    required_argument,            NULL,
+  { (OPTIONSTRING)"concurrency",    required_argument,            NULL,
     OPT_CONCURRENCY        },
-  { "conn_sock",      required_argument,            NULL,
+  { (OPTIONSTRING)"conn_sock",      required_argument,            NULL,
     OPT_SOCK_PER_CONN      },
-  { "execute_number", required_argument,            NULL,
+  { (OPTIONSTRING)"execute_number", required_argument,            NULL,
     OPT_EXECUTE_NUMBER     },
-  { "time",           required_argument,            NULL,
+  { (OPTIONSTRING)"time",           required_argument,            NULL,
     OPT_TIME               },
-  { "cfg_cmd",        required_argument,            NULL,
+  { (OPTIONSTRING)"cfg_cmd",        required_argument,            NULL,
     OPT_CONFIG_CMD         },
-  { "win_size",       required_argument,            NULL,
+  { (OPTIONSTRING)"win_size",       required_argument,            NULL,
     OPT_WINDOW_SIZE        },
-  { "fixed_size",     required_argument,            NULL,
+  { (OPTIONSTRING)"fixed_size",     required_argument,            NULL,
     OPT_FIXED_LTH          },
-  { "verify",         required_argument,            NULL,
+  { (OPTIONSTRING)"verify",         required_argument,            NULL,
     OPT_VERIFY             },
-  { "division",       required_argument,            NULL,
+  { (OPTIONSTRING)"division",       required_argument,            NULL,
     OPT_GETS_DIVISION      },
-  { "stat_freq",      required_argument,            NULL,
+  { (OPTIONSTRING)"stat_freq",      required_argument,            NULL,
     OPT_STAT_FREQ          },
-  { "exp_verify",     required_argument,            NULL,
+  { (OPTIONSTRING)"exp_verify",     required_argument,            NULL,
     OPT_EXPIRE             },
-  { "overwrite",      required_argument,            NULL,
+  { (OPTIONSTRING)"overwrite",      required_argument,            NULL,
     OPT_OVERWRITE          },
-  { "reconnect",      no_argument,                  NULL,
+  { (OPTIONSTRING)"reconnect",      no_argument,                  NULL,
     OPT_RECONNECT          },
-  { "udp",            no_argument,                  NULL,
+  { (OPTIONSTRING)"udp",            no_argument,                  NULL,
     OPT_UDP                },
-  { "facebook",       no_argument,                  NULL,
+  { (OPTIONSTRING)"facebook",       no_argument,                  NULL,
     OPT_FACEBOOK_TEST      },
-  { "binary",         no_argument,                  NULL,
+  { (OPTIONSTRING)"binary",         no_argument,                  NULL,
     OPT_BINARY_PROTOCOL    },
-  { "tps",            required_argument,            NULL,
+  { (OPTIONSTRING)"tps",            required_argument,            NULL,
     OPT_TPS                },
-  { "rep_write",      required_argument,            NULL,
+  { (OPTIONSTRING)"rep_write",      required_argument,            NULL,
     OPT_REP_WRITE_SRV      },
-  { "verbose",        no_argument,                  NULL,
+  { (OPTIONSTRING)"verbose",        no_argument,                  NULL,
     OPT_VERBOSE            },
-  { "help",           no_argument,                  NULL,
+  { (OPTIONSTRING)"help",           no_argument,                  NULL,
     OPT_HELP               },
-  { "version",        no_argument,                  NULL,
+  { (OPTIONSTRING)"version",        no_argument,                  NULL,
     OPT_VERSION            },
-  { 0,                0,                            0,                 0                      },
+  { 0, 0, 0, 0 },
 };
 
 /* Prototypes */
