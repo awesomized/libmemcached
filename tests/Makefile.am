@@ -4,7 +4,7 @@ if BUILD_LIBMEMCACHEDUTIL
 LDADDS+= $(top_builddir)/libmemcached/libmemcachedutil.la
 endif
 
-EXTRA_DIST = output.res output2.res\
+EXTRA_DIST = \
 		r/memcat.res\
 		r/memcp.res\
 		r/memrm.res\
@@ -18,7 +18,7 @@ EXTRA_DIST = output.res output2.res\
 
 LIBS =
 
-noinst_HEADERS = test.h server.h ketama_test_cases.h ketama_test_cases_spy.h
+noinst_HEADERS = test.h server.h ketama_test_cases.h ketama_test_cases_spy.h hash_results.h libmemcached_world.h
 noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
 noinst_LTLIBRARIES= libserver.la libtest.la
 
@@ -41,10 +41,6 @@ atomsmasher_LDADD = $(top_builddir)/clients/libgenexec.la libtest.la libserver.l
 startservers_SOURCES = start.c
 startservers_LDADD = libserver.la $(LDADDS)
 
-record:
-	./testapp > output.res
-	./testplus > output_plus.res
-
 client-record:
 	sh t/memcat.test > r/memcat.res
 	sh t/memcp.test > r/memcp.res
@@ -52,17 +48,12 @@ client-record:
 	sh t/memslap.test > r/memslap.res
 	sh t/memstat.test > r/memstat.res
 
-record-extended:
-	./testapp extended > output2.res
-
 test: testapp testplus library_test memcapable
 	echo "Tests completed"
 
 library_test:
-	./testapp > output.cmp
-	diff output.res output.cmp
-#	./testplus > output_plus.cmp
-#	diff output_plus.res output_plus.cmp
+	./testapp
+#	./testplus
 
 memcapable:
 	@MEMC_BINARY@ -d -P /tmp/Xumemc.pid -p 12555
@@ -87,25 +78,23 @@ clients:
 	rm /tmp/Xumemc.pid
 
 valgrind:
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
+	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
 
 cachegrind:
 	rm -f cachegrind.out.*
-	libtool --mode=execute valgrind --tool=cachegrind  --branch-sim=yes testapp
+	$(LIBTOOL) --mode=execute valgrind --tool=cachegrind  --branch-sim=yes testapp
 	cg_annotate cachegrind.out.* --auto=yes > /tmp/cachegrind.out
 
 callgrind:
 	rm -f callgrind.out.*
-	libtool --mode=execute valgrind --tool=callgrind  testapp
+	$(LIBTOOL) --mode=execute valgrind --tool=callgrind  testapp
 	callgrind_annotate callgrind.out.* --auto=yes > /tmp/callgrind.out
 
 helgrind:
 	rm -f helgrind.out.*
-	libtool --mode=execute valgrind --tool=helgrind  testapp
+	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  testapp
 
 helgrind-slap:
-	libtool --mode=execute valgrind --tool=helgrind  ${top_builddir}/clients/memslap --server=localhost --concurrency=30
+	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  ${top_builddir}/clients/memslap --server=localhost --concurrency=30
 
-test-no-outputdiff: testapp
-	./testapp > /dev/null
-	@echo "Test completed"
+test-no-outputdiff: test

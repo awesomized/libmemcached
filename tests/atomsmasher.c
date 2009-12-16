@@ -210,51 +210,37 @@ static test_return_t many_adds(memcached_st *memc)
 }
 
 test_st smash_tests[] ={
-  {"generate_pairs", 1, generate_pairs },
-  {"drizzle", 1, drizzle },
-  {"cleanup", 1, cleanup_pairs },
-  {"many_adds", 1, many_adds },
+  {"generate_pairs", 1, (test_callback_fn)generate_pairs },
+  {"drizzle", 1, (test_callback_fn)drizzle },
+  {"cleanup", 1, (test_callback_fn)cleanup_pairs },
+  {"many_adds", 1, (test_callback_fn)many_adds },
   {0, 0, 0}
 };
 
 
 collection_st collection[] ={
   {"smash", 0, 0, smash_tests},
-  {"smash_hsieh", pre_hsieh, 0, smash_tests},
-  {"smash_hsieh_consistent", enable_consistent, 0, smash_tests},
-  {"smash_md5", pre_md5, 0, smash_tests},
-  {"smash_nonblock", pre_nonblock, 0, smash_tests},
+  {"smash_hsieh", (test_callback_fn)pre_hsieh, 0, smash_tests},
+  {"smash_hsieh_consistent", (test_callback_fn)enable_consistent, 0, smash_tests},
+  {"smash_md5", (test_callback_fn)pre_md5, 0, smash_tests},
+  {"smash_nonblock", (test_callback_fn)pre_nonblock, 0, smash_tests},
   {0, 0, 0, 0}
 };
 
+
 #define SERVERS_TO_CREATE 5
 
-static void *world_create(void)
-{
-  server_startup_st *construct;
-
-  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
-  memset(construct, 0, sizeof(server_startup_st));
-  construct->count= SERVERS_TO_CREATE;
-  construct->udp= 0;
-  server_startup(construct);
-
-  return construct;
-}
-
-static void world_destroy(void *p)
-{
-  server_startup_st *construct= (server_startup_st *)p;
-  memcached_server_st *servers= (memcached_server_st *)construct->servers;
-  memcached_server_list_free(servers);
-
-  server_shutdown(construct);
-  free(construct);
-}
+#include "libmemcached_world.h"
 
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->create= world_create;
-  world->destroy= world_destroy;
+  world->collection_startup= (test_callback_fn)world_collection_startup;
+  world->flush= (test_callback_fn)world_flush;
+  world->pre_run= (test_callback_fn)world_pre_run;
+  world->create= (test_callback_create_fn)world_create;
+  world->post_run= (test_callback_fn)world_post_run;
+  world->on_error= (test_callback_error_fn)world_on_error;
+  world->destroy= (test_callback_fn)world_destroy;
+  world->runner= &defualt_libmemcached_runner;
 }

@@ -27,6 +27,7 @@ memstat - Dump the stats of your servers to standard output.
 memslap - Generate testing loads on a memcached cluster.
 memcp - Copy files to memcached servers.
 memerror - Creates human readable messages from libmemecached error codes.
+memcapable - Verify a memcached server for protocol behavior.
 
 
 %package devel

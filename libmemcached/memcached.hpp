@@ -59,7 +59,7 @@ public:
   }
 
   Memcache(const std::string &hostname,
-           unsigned int port)
+           in_port_t port)
     :
       servers_list(),
       memc(),
@@ -187,7 +187,7 @@ public:
    * @param[in] port port number of server to add
    * @return true on success; false otherwise
    */
-  bool addServer(const std::string &server_name, unsigned int port)
+  bool addServer(const std::string &server_name, in_port_t port)
   {
     memcached_return_t rc;
     std::ostringstream strstm;
@@ -211,7 +211,7 @@ public:
    * @param[in] port port number of server to remove
    * @return true on success; false otherwise
    */
-  bool removeServer(const std::string &server_name, size_t port)
+  bool removeServer(const std::string &server_name, in_port_t port)
   {
     std::string tmp_str;
     std::ostringstream strstm;

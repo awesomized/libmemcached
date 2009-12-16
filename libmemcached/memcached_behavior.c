@@ -238,6 +238,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       return MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED;
     case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
       return MEMCACHED_KETAMA_COMPAT_SPY;
+    case MEMCACHED_DISTRIBUTION_MODULA:
+    case MEMCACHED_DISTRIBUTION_CONSISTENT:
+    case MEMCACHED_DISTRIBUTION_RANDOM:
     default:
       return (uint64_t)-1;
     }

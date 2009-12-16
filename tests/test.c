@@ -1,3 +1,11 @@
+/* uTest
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ */
+
 /*
   Sample test application.
 */
@@ -13,6 +21,14 @@
 #include "server.h"
 
 #include "test.h"
+
+static void world_stats_print(world_stats_st *stats)
+{
+  fprintf(stderr, "Total\t\t\t\t%u\n", stats->total);
+  fprintf(stderr, "\tFailed\t\t\t%u\n", stats->failed);
+  fprintf(stderr, "\tSkipped\t\t\t%u\n", stats->skipped);
+  fprintf(stderr, "\tSucceeded\t\t%u\n", stats->success);
+}
 
 static long int timedif(struct timeval a, struct timeval b)
 {
@@ -50,30 +66,54 @@ void create_core(void)
      abort();
 }
 
+
+static test_return_t _runner_default(test_callback_fn func, void *p)
+{
+  if (func)
+  {
+    return func(p);
+  }
+  else
+  {
+    return TEST_SUCCESS;
+  }
+}
+
+static world_runner_st defualt_runners= {
+  _runner_default,
+  _runner_default,
+  _runner_default
+};
+
+
 int main(int argc, char *argv[])
 {
-  test_return_t failed;
+  test_return_t return_code;
   unsigned int x;
   char *collection_to_run= NULL;
   char *wildcard= NULL;
-  server_startup_st *startup_ptr;
-  memcached_server_st *servers;
   world_st world;
   collection_st *collection;
   collection_st *next;
   void *world_ptr;
 
-  memset(&world, 0, sizeof(world_st));
+  world_stats_st stats;
+
+  memset(&stats, 0, sizeof(stats));
+  memset(&world, 0, sizeof(world));
   get_world(&world);
+
+  if (! world.runner)
+  {
+    world.runner= &defualt_runners;
+  }
+
   collection= world.collections;
 
   if (world.create)
     world_ptr= world.create();
   else
     world_ptr= NULL;
-
-  startup_ptr= (server_startup_st *)world_ptr;
-  servers= (memcached_server_st *)startup_ptr->servers;
 
   if (argc > 1)
     collection_to_run= argv[1];
@@ -93,60 +133,88 @@ int main(int argc, char *argv[])
 
     for (x= 0; run->name; run++)
     {
-      unsigned int loop;
-      memcached_st *memc;
-      memcached_return_t rc;
       struct timeval start_time, end_time;
-      long int load_time;
+      long int load_time= 0;
 
       if (wildcard && fnmatch(wildcard, run->name, 0))
         continue;
 
       fprintf(stderr, "Testing %s", run->name);
 
-      memc= memcached_create(NULL);
-      test_truth(memc);
-
-      rc= memcached_server_push(memc, servers);
-      test_truth(rc == MEMCACHED_SUCCESS);
-
-      if (run->requires_flush)
+      if (world.collection_startup)
       {
-        memcached_flush(memc, 0);
-        memcached_quit(memc);
+        world.collection_startup(world_ptr);
       }
 
-      for (loop= 0; loop < memcached_server_list_count(servers); loop++)
+      if (run->requires_flush && world.flush)
       {
-        test_truth(memc->hosts[loop].fd == -1);
-        test_truth(memc->hosts[loop].cursor_active == 0);
+        world.flush(world_ptr);
       }
+
+      if (world.pre_run)
+      {
+        world.pre_run(world_ptr);
+      }
+
 
       if (next->pre)
       {
-        rc= next->pre(memc);
+        return_code= world.runner->pre(next->pre, world_ptr);
 
-        if (rc != MEMCACHED_SUCCESS)
+        if (return_code != TEST_SUCCESS)
         {
-          fprintf(stderr, "\t\t\t\t\t [ skipping ]\n");
           goto error;
         }
       }
 
       gettimeofday(&start_time, NULL);
-      failed= run->function(memc);
+      return_code= world.runner->run(run->test_fn, world_ptr);
       gettimeofday(&end_time, NULL);
       load_time= timedif(end_time, start_time);
 
-      fprintf(stderr, "\t\t\t\t\t %ld.%03ld [ %s ]\n", load_time / 1000,
-              load_time % 1000, test_strerror(failed));
-
       if (next->post)
-        (void)next->post(memc);
+      {
+        (void) world.runner->pre(next->pre, world_ptr);
+      }
 
-      test_truth(memc);
+      if (world.post_run)
+      {
+        world.post_run(world_ptr);
+      }
+
 error:
-      memcached_free(memc);
+      stats.total++;
+
+      fprintf(stderr, "\t\t\t\t\t");
+
+      switch (return_code)
+      {
+      case TEST_SUCCESS:
+        fprintf(stderr, "%ld.%03ld ", load_time / 1000, load_time % 1000);
+        stats.success++;
+        break;
+      case TEST_FAILURE:
+        stats.failed++;
+        break;
+      case TEST_SKIPPED:
+        stats.skipped++;
+        break;
+      case TEST_MEMORY_ALLOCATION_FAILURE:
+      case TEST_MAXIMUM_RETURN:
+      default:
+        break;
+      }
+
+      fprintf(stderr, "[ %s ]\n", test_strerror(return_code));
+
+      if (world.on_error)
+      {
+        test_return_t rc;
+        rc= world.on_error(return_code, world_ptr);
+
+        if (rc != TEST_SUCCESS)
+          break;
+      }
     }
   }
 
@@ -154,6 +222,8 @@ error:
 
   if (world.destroy)
     world.destroy(world_ptr);
+
+  world_stats_print(&stats);
 
   return 0;
 }

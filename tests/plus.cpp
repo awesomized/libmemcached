@@ -30,10 +30,8 @@ extern "C" {
    test_return_t basic_behavior(memcached_st *memc);
    test_return_t mget_test(memcached_st *memc);
    memcached_return_t callback_counter(memcached_st *,
-                                     memcached_result_st *, 
-                                     void *context);
-   void *world_create(void);
-   void world_destroy(void *p);
+                                       memcached_result_st *,
+                                       void *context);
 }
 
 static void populate_vector(vector<char> &vec, const string &str)
@@ -65,7 +63,7 @@ test_return_t basic_test(memcached_st *memc)
 
   assert((memcmp(&test_value[0], &value[0], test_value.size()) == 0));
 
-  /* 
+  /*
    * Simple test of the exceptions here...this should throw an exception
    * saying that the key is empty.
    */
@@ -109,7 +107,7 @@ test_return_t increment_test(memcached_st *memc)
 
   int_inc_value= uint64_t(atol(inc_value.c_str()));
   int_ret_value= uint64_t(atol(ret_string.c_str()));
-  assert(int_ret_value == int_inc_value); 
+  assert(int_ret_value == int_inc_value);
 
   rc= mcach.increment(key, 1, &int_ret_value);
   assert(rc == true);
@@ -153,8 +151,8 @@ test_return_t basic_master_key_test(memcached_st *memc)
 
 /* Count the results */
 memcached_return_t callback_counter(memcached_st *,
-                                    memcached_result_st *, 
-                                    void *context)
+                                  memcached_result_st *,
+                                  void *context)
 {
   unsigned int *counter= static_cast<unsigned int *>(context);
 
@@ -199,7 +197,7 @@ test_return_t mget_result_function(memcached_st *memc)
 
   callbacks[0]= &callback_counter;
   counter= 0;
-  rc= mc.fetchExecute(callbacks, static_cast<void *>(&counter), 1); 
+  rc= mc.fetchExecute(callbacks, static_cast<void *>(&counter), 1);
 
   assert(counter == 3);
 
@@ -274,12 +272,18 @@ test_return_t basic_behavior(memcached_st *memc)
 }
 
 test_st tests[] ={
-  { "basic", 0, basic_test },
-  { "basic_master_key", 0, basic_master_key_test },
-  { "increment_test", 0, increment_test },
-  { "mget", 1, mget_test },
-  { "mget_result_function", 1, mget_result_function },
-  { "basic_behavior", 0, basic_behavior },
+  { "basic", 0,
+    reinterpret_cast<test_callback_fn>(basic_test) },
+  { "basic_master_key", 0,
+    reinterpret_cast<test_callback_fn>(basic_master_key_test) },
+  { "increment_test", 0,
+    reinterpret_cast<test_callback_fn>(increment_test) },
+  { "mget", 1,
+    reinterpret_cast<test_callback_fn>(mget_test) },
+  { "mget_result_function", 1,
+    reinterpret_cast<test_callback_fn>(mget_result_function) },
+  { "basic_behavior", 0,
+    reinterpret_cast<test_callback_fn>(basic_behavior) },
   {0, 0, 0}
 };
 
@@ -288,35 +292,19 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-#define SERVERS_TO_CREATE 1
+#define SERVERS_TO_CREATE 5
 
-extern "C" void *world_create(void)
-{
-  server_startup_st *construct;
-
-  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
-  memset(construct, 0, sizeof(server_startup_st));
-
-  construct->count= SERVERS_TO_CREATE;
-  server_startup(construct);
-
-  return construct;
-}
-
-void world_destroy(void *p)
-{
-  server_startup_st *construct= static_cast<server_startup_st *>(p);
-  memcached_server_st *servers=
-    static_cast<memcached_server_st *>(construct->servers);
-  memcached_server_list_free(servers);
-
-  server_shutdown(construct);
-  free(construct);
-}
+#include "libmemcached_world.h"
 
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->create= world_create;
-  world->destroy= world_destroy;
+  world->collection_startup= reinterpret_cast<test_callback_fn>(world_collection_startup);
+  world->flush= reinterpret_cast<test_callback_fn>(world_flush);
+  world->pre_run= reinterpret_cast<test_callback_fn>(world_pre_run);
+  world->create= reinterpret_cast<test_callback_create_fn>(world_create);
+  world->post_run= reinterpret_cast<test_callback_fn>(world_post_run);
+  world->on_error= reinterpret_cast<test_callback_error_fn>(world_on_error);
+  world->destroy= reinterpret_cast<test_callback_fn>(world_destroy);
+  world->runner= &defualt_libmemcached_runner;
 }

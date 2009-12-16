@@ -27,8 +27,6 @@
 
 /* Prototypes */
 test_return_t set_test(memcached_st *memc);
-void *world_create(void);
-void world_destroy(void *p);
 
 test_return_t set_test(memcached_st *memc)
 {
@@ -45,7 +43,7 @@ test_return_t set_test(memcached_st *memc)
 }
 
 test_st tests[] ={
-  {"set", 1, set_test },
+  {"set", 1, (test_callback_fn)set_test },
   {0, 0, 0}
 };
 
@@ -56,32 +54,17 @@ collection_st collection[] ={
 
 #define SERVERS_TO_CREATE 1
 
-void *world_create(void)
-{
-  server_startup_st *construct;
-
-  construct= (server_startup_st *)malloc(sizeof(server_startup_st));
-  memset(construct, 0, sizeof(server_startup_st));
-  construct->count= SERVERS_TO_CREATE;
-  construct->udp= 1;
-  server_startup(construct);
-
-  return construct;
-}
-
-void world_destroy(void *p)
-{
-  server_startup_st *construct= (server_startup_st *)p;
-  memcached_server_st *servers= (memcached_server_st *)construct->servers;
-  memcached_server_list_free(servers);
-
-  server_shutdown(construct);
-  free(construct);
-}
+#include "libmemcached_world.h"
 
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->create= world_create;
-  world->destroy= world_destroy;
+  world->collection_startup= (test_callback_fn)world_collection_startup;
+  world->flush= (test_callback_fn)world_flush;
+  world->pre_run= (test_callback_fn)world_pre_run;
+  world->create= (test_callback_create_fn)world_create;
+  world->post_run= (test_callback_fn)world_post_run;
+  world->on_error= (test_callback_error_fn)world_on_error;
+  world->destroy= (test_callback_fn)world_destroy;
+  world->runner= &defualt_libmemcached_runner;
 }

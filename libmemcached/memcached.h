@@ -85,8 +85,8 @@ struct memcached_st {
     bool is_initialized:1;
     bool is_purging:1;
   } options;
-  uint8_t distribution;
-  uint8_t hash;
+  memcached_server_distribution_t distribution;
+  memcached_hash_t hash;
   uint32_t continuum_points_counter;
   memcached_server_st *hosts;
   memcached_server_st *last_disconnected_server;
