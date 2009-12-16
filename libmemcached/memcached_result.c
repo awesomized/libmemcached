@@ -9,20 +9,27 @@
 memcached_result_st *memcached_result_create(memcached_st *memc, 
                                              memcached_result_st *ptr)
 {
+  WATCHPOINT_ASSERT(memc && memc->options.is_initialized);
+
   /* Saving malloc calls :) */
   if (ptr)
+  {
     memset(ptr, 0, sizeof(memcached_result_st));
+  }
   else
   {
     ptr= memc->call_malloc(memc, sizeof(memcached_result_st));
 
     if (ptr == NULL)
       return NULL;
-    ptr->is_allocated= true;
+    ptr->options.is_allocated= true;
   }
+
+  ptr->options.is_initialized= true;
 
   ptr->root= memc;
   memcached_string_create(memc, &ptr->value, 0);
+  WATCHPOINT_ASSERT_INITIALIZED(&ptr->value);
   WATCHPOINT_ASSERT(ptr->value.string == NULL);
 
   return ptr;
@@ -52,6 +59,12 @@ void memcached_result_free(memcached_result_st *ptr)
 
   memcached_string_free(&ptr->value);
 
-  if (ptr->is_allocated)
+  if (memcached_is_allocated(ptr))
+  {
     free(ptr);
+  }
+  else
+  {
+    ptr->options.is_initialized= false;
+  }
 }

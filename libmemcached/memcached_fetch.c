@@ -69,10 +69,14 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   }
 
   /* We have completed reading data */
-  if (result->is_allocated)
+  if (memcached_is_allocated(result))
+  {
     memcached_result_free(result);
+  }
   else
+  {
     memcached_string_reset(&result->value);
+  }
 
   return NULL;
 }

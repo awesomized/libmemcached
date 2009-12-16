@@ -23,7 +23,10 @@
 #define WATCHPOINT_ERRNO(A) fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));fflush(stdout);
 #define WATCHPOINT_ASSERT_PRINT(A,B,C) if(!(A)){fprintf(stderr, "\nWATCHPOINT ASSERT %s:%d (%s) ", __FILE__, __LINE__,__func__);fprintf(stderr, (B),(C));fprintf(stderr,"\n");fflush(stdout);}assert((A));
 #define WATCHPOINT_ASSERT(A) assert((A));
+#define WATCHPOINT_ASSERT_INITIALIZED(A) (memcached_is_initialized((A));
+
 #else
+
 #define WATCHPOINT
 #define WATCHPOINT_ERROR(A)
 #define WATCHPOINT_IFERROR(A)
@@ -32,6 +35,7 @@
 #define WATCHPOINT_ERRNO(A)
 #define WATCHPOINT_ASSERT_PRINT(A,B,C)
 #define WATCHPOINT_ASSERT(A)
+#define WATCHPOINT_ASSERT_INITIALIZED(A)
 
 #endif /* DEBUG */
 

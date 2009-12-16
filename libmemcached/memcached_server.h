@@ -14,7 +14,9 @@ extern "C" {
 #endif
 
 struct memcached_server_st {
-  bool is_allocated;
+  struct {
+    bool is_allocated:1;
+  } options;
   bool sockaddr_inited;
   uint16_t count;
   unsigned int cursor_active;

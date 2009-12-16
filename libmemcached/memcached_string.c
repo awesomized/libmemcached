@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return memcached_string_check(memcached_string_st *string, size_t need)
+inline static memcached_return _string_check(memcached_string_st *string, size_t need)
 {
   if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
@@ -32,30 +32,39 @@ memcached_return memcached_string_check(memcached_string_st *string, size_t need
   return MEMCACHED_SUCCESS;
 }
 
-memcached_string_st *memcached_string_create(memcached_st *ptr, memcached_string_st *string, size_t initial_size)
+memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *string, size_t initial_size)
 {
   memcached_return rc;
 
   /* Saving malloc calls :) */
   if (string)
+  {
+    WATCHPOINT_ASSERT(memc->options.is_safe && string->options.is_initialized == false);
+
     memset(string, 0, sizeof(memcached_string_st));
+  }
   else
   {
-    string= ptr->call_calloc(ptr, 1, sizeof(memcached_string_st));
+    string= memc->call_calloc(memc, 1, sizeof(memcached_string_st));
 
     if (string == NULL)
+    {
       return NULL;
-    string->is_allocated= true;
+    }
+
+    string->options.is_allocated= true;
   }
   string->block_size= MEMCACHED_BLOCK_SIZE;
-  string->root= ptr;
+  string->root= memc;
 
-  rc=  memcached_string_check(string, initial_size);
+  rc=  _string_check(string, initial_size);
   if (rc != MEMCACHED_SUCCESS)
   {
-    ptr->call_free(ptr, string);
+    memc->call_free(memc, string);
     return NULL;
   }
+
+  string->options.is_initialized= true;
 
   WATCHPOINT_ASSERT(string->string == string->end);
 
@@ -67,7 +76,7 @@ memcached_return memcached_string_append_character(memcached_string_st *string,
 {
   memcached_return rc;
 
-  rc=  memcached_string_check(string, 1);
+  rc=  _string_check(string, 1);
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
@@ -83,7 +92,7 @@ memcached_return memcached_string_append(memcached_string_st *string,
 {
   memcached_return rc;
 
-  rc= memcached_string_check(string, length);
+  rc= _string_check(string, length);
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
@@ -129,10 +138,23 @@ void memcached_string_free(memcached_string_st *ptr)
     return;
 
   if (ptr->string)
+  {
     ptr->root->call_free(ptr->root, ptr->string);
+  }
 
-  if (ptr->is_allocated)
+  if (memcached_is_allocated(ptr))
+  {
     ptr->root->call_free(ptr->root, ptr);
+  }
   else
+  {
+    ptr->options.is_initialized= false;
     memset(ptr, 0, sizeof(memcached_string_st));
+  }
 }
+
+memcached_return memcached_string_check(memcached_string_st *string, size_t need)
+{
+  return _string_check(string, need);
+}
+

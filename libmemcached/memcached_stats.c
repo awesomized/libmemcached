@@ -33,7 +33,7 @@ static const char *memcached_stat_keys[] = {
 static memcached_return set_data(memcached_stat_st *memc_stat, char *key, char *value)
 {
 
-  if(strlen(key) < 1) 
+  if (strlen(key) < 1) 
   {
     WATCHPOINT_STRING(key);
     return MEMCACHED_UNKNOWN_STAT_KEY;
@@ -398,8 +398,10 @@ memcached_return memcached_stat_servername(memcached_stat_st *memc_stat, char *a
 {
   memcached_return rc;
   memcached_st memc;
+  memcached_st *memc_ptr;
 
-  memcached_create(&memc);
+  memc_ptr= memcached_create(&memc);
+  WATCHPOINT_ASSERT(memc_ptr);
 
   memcached_server_add(&memc, hostname, port);
 

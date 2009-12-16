@@ -19,7 +19,10 @@ struct memcached_string_st {
   char *string;
   size_t current_size;
   size_t block_size;
-  bool is_allocated;
+  struct {
+    bool is_allocated:1;
+    bool is_initialized:1;
+  } options;
 };
 
 #define memcached_string_length(A) (size_t)((A)->end - (A)->string)
@@ -33,8 +36,10 @@ memcached_string_st *memcached_string_create(memcached_st *ptr,
                                              size_t initial_size);
 LIBMEMCACHED_API
 memcached_return memcached_string_check(memcached_string_st *string, size_t need);
+
 LIBMEMCACHED_API
 char *memcached_string_c_copy(memcached_string_st *string);
+
 LIBMEMCACHED_API
 memcached_return memcached_string_append_character(memcached_string_st *string,
                                                    char character);
@@ -43,6 +48,7 @@ memcached_return memcached_string_append(memcached_string_st *string,
                                          const char *value, size_t length);
 LIBMEMCACHED_API
 memcached_return memcached_string_reset(memcached_string_st *string);
+
 LIBMEMCACHED_API
 void memcached_string_free(memcached_string_st *string);
 

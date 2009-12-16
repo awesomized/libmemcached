@@ -11,15 +11,19 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     ptr= (memcached_st *)calloc(1, sizeof(memcached_st));
 
-    if (!ptr)
+    if (! ptr)
+    {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
+    }
 
-    ptr->is_allocated= true;
+    ptr->options.is_allocated= true;
   }
   else
   {
     memset(ptr, 0, sizeof(memcached_st));
   }
+
+  ptr->options.is_initialized= true;
 
   memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
 
@@ -33,6 +37,9 @@ memcached_st *memcached_create(memcached_st *ptr)
   /* TODO, Document why we picked these defaults */
   ptr->io_msg_watermark= 500;
   ptr->io_bytes_watermark= 65 * 1024;
+
+  WATCHPOINT_ASSERT_INITIALIZED(&ptr->result);
+  WATCHPOINT_ASSERT_INITIALIZED(&ptr->hashkit);
 
   return ptr;
 }
@@ -50,10 +57,14 @@ void memcached_free(memcached_st *ptr)
   if (ptr->continuum)
     ptr->call_free(ptr, ptr->continuum);
 
-  if (ptr->is_allocated)
+  if (memcached_is_allocated(ptr))
+  {
     ptr->call_free(ptr, ptr);
+  }
   else
-    memset(ptr, 0, sizeof(memcached_st));
+  {
+    ptr->options.is_initialized= false;
+  }
 }
 
 /*
@@ -69,7 +80,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   if (source == NULL)
     return memcached_create(clone);
 
-  if (clone && clone->is_allocated)
+  if (clone && memcached_is_allocated(clone))
   {
     return NULL;
   }

@@ -14,8 +14,11 @@ extern "C" {
 #endif
 
 struct memcached_result_st {
+  struct {
+    bool is_allocated:1;
+    bool is_initialized:1;
+  } options;
   uint32_t flags;
-  bool is_allocated;
   time_t expiration;
   memcached_st *root;
   size_t key_length;

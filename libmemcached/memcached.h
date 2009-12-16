@@ -73,8 +73,11 @@ struct memcached_stat_st {
 };
 
 struct memcached_st {
-  uint8_t purging;
-  bool is_allocated;
+  struct {
+    bool is_allocated:1;
+    bool is_initialized:1;
+    bool is_purging:1;
+  } options;
   uint8_t distribution;
   uint8_t hash;
   uint32_t continuum_points_counter;
@@ -323,6 +326,10 @@ void *memcached_set_user_data(memcached_st *ptr, void *data);
 
 LIBMEMCACHED_LOCAL
 memcached_return run_distribution(memcached_st *ptr);
+
+#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
+#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
+
 #ifdef __cplusplus
 }
 #endif

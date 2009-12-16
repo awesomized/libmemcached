@@ -12,10 +12,12 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
     if (!ptr)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
-    ptr->is_allocated= true;
+    ptr->options.is_allocated= true;
   }
   else
+  {
     memset(ptr, 0, sizeof(memcached_server_st));
+  }
 
   ptr->root= memc;
 
@@ -59,10 +61,15 @@ void memcached_server_free(memcached_server_st *ptr)
   if (ptr->address_info)
     freeaddrinfo(ptr->address_info);
 
-  if (ptr->is_allocated)
+
+  if (memcached_is_allocated(ptr))
+  {
     ptr->root->call_free(ptr->root, ptr);
+  }
   else
+  {
     memset(ptr, 0, sizeof(memcached_server_st));
+  }
 }
 
 /*

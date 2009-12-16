@@ -2933,20 +2933,28 @@ static test_return_t  result_static(memcached_st *memc)
   memcached_result_st *result_ptr;
 
   result_ptr= memcached_result_create(memc, &result);
-  test_truth(result.is_allocated == false);
+  test_truth(result.options.is_allocated == false);
+  test_truth(memcached_is_initialized(&result) == true);
   test_truth(result_ptr);
+  test_truth(result_ptr == &result);
+
   memcached_result_free(&result);
+
+  test_truth(result.options.is_allocated == false);
+  test_truth(memcached_is_initialized(&result) == false);
 
   return TEST_SUCCESS;
 }
 
 static test_return_t  result_alloc(memcached_st *memc)
 {
-  memcached_result_st *result;
+  memcached_result_st *result_ptr;
 
-  result= memcached_result_create(memc, NULL);
-  test_truth(result);
-  memcached_result_free(result);
+  result_ptr= memcached_result_create(memc, NULL);
+  test_truth(result_ptr);
+  test_truth(result_ptr->options.is_allocated == true);
+  test_truth(memcached_is_initialized(result_ptr) == true);
+  memcached_result_free(result_ptr);
 
   return TEST_SUCCESS;
 }
@@ -2957,9 +2965,18 @@ static test_return_t  string_static_null(memcached_st *memc)
   memcached_string_st *string_ptr;
 
   string_ptr= memcached_string_create(memc, &string, 0);
-  test_truth(string.is_allocated == false);
+  test_truth(string.options.is_initialized == true);
   test_truth(string_ptr);
+
+  /* The following two better be the same! */
+  test_truth(memcached_is_allocated(string_ptr) == false);
+  test_truth(memcached_is_allocated(&string) == false);
+  test_truth(&string == string_ptr);
+
+  test_truth(string.options.is_initialized == true);
+  test_truth(memcached_is_initialized(&string) == true);
   memcached_string_free(&string);
+  test_truth(memcached_is_initialized(&string) == false);
 
   return TEST_SUCCESS;
 }
@@ -2970,6 +2987,8 @@ static test_return_t  string_alloc_null(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 0);
   test_truth(string);
+  test_truth(memcached_is_allocated(string) == true);
+  test_truth(memcached_is_initialized(string) == true);
   memcached_string_free(string);
 
   return TEST_SUCCESS;
@@ -2981,6 +3000,8 @@ static test_return_t  string_alloc_with_size(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 1024);
   test_truth(string);
+  test_truth(memcached_is_allocated(string) == true);
+  test_truth(memcached_is_initialized(string) == true);
   memcached_string_free(string);
 
   return TEST_SUCCESS;
@@ -3007,6 +3028,8 @@ static test_return_t  string_alloc_append(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 100);
   test_truth(string);
+  test_truth(memcached_is_allocated(string) == true);
+  test_truth(memcached_is_initialized(string) == true);
 
   for (x= 0; x < 1024; x++)
   {
@@ -3014,6 +3037,7 @@ static test_return_t  string_alloc_append(memcached_st *memc)
     rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
+  test_truth(memcached_is_allocated(string) == true);
   memcached_string_free(string);
 
   return TEST_SUCCESS;
@@ -3031,6 +3055,8 @@ static test_return_t  string_alloc_append_toobig(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 100);
   test_truth(string);
+  test_truth(memcached_is_allocated(string) == true);
+  test_truth(memcached_is_initialized(string) == true);
 
   for (x= 0; x < 1024; x++)
   {
@@ -3039,6 +3065,7 @@ static test_return_t  string_alloc_append_toobig(memcached_st *memc)
   }
   rc= memcached_string_append(string, buffer, SIZE_MAX);
   test_truth(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
+  test_truth(memcached_is_allocated(string) == true);
   memcached_string_free(string);
 
   return TEST_SUCCESS;
