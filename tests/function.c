@@ -4241,7 +4241,7 @@ static test_return_t replication_randomize_mget_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], len[x], "1", 1, 0, 0);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
- 
+
   memcached_quit(memc);
 
   for (int x=0; x< 7; ++x) {
@@ -4729,7 +4729,7 @@ static test_return_t crc_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_CRC);
-    assert(crc_values[x] == hash_val);
+    test_truth(crc_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4745,7 +4745,7 @@ static test_return_t fnv1_64_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_64);
-    assert(fnv1_64_values[x] == hash_val);
+    test_truth(fnv1_64_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4761,7 +4761,7 @@ static test_return_t fnv1a_64_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_64);
-    assert(fnv1a_64_values[x] == hash_val);
+    test_truth(fnv1a_64_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4778,7 +4778,7 @@ static test_return_t fnv1_32_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_32);
-    assert(fnv1_32_values[x] == hash_val);
+    test_truth(fnv1_32_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4794,7 +4794,7 @@ static test_return_t fnv1a_32_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_32);
-    assert(fnv1a_32_values[x] == hash_val);
+    test_truth(fnv1a_32_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4810,7 +4810,7 @@ static test_return_t hsieh_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_HSIEH);
-    assert(hsieh_values[x] == hash_val);
+    test_truth(hsieh_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
@@ -4818,6 +4818,9 @@ static test_return_t hsieh_run (memcached_st *memc __attribute__((unused)))
 
 static test_return_t murmur_run (memcached_st *memc __attribute__((unused)))
 {
+#ifdef __sparc
+  return TEST_SKIPPED;
+#else
   uint32_t x;
   const char **ptr;
 
@@ -4826,10 +4829,11 @@ static test_return_t murmur_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MURMUR);
-    assert(murmur_values[x] == hash_val);
+    test_truth(murmur_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;
+#endif
 }
 
 static test_return_t jenkins_run (memcached_st *memc __attribute__((unused)))
@@ -4843,7 +4847,7 @@ static test_return_t jenkins_run (memcached_st *memc __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_JENKINS);
-    assert(jenkins_values[x] == hash_val);
+    test_truth(jenkins_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;

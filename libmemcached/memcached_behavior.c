@@ -214,7 +214,6 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.support_cas;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     return ptr->flags.use_cache_lookups;
-    break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     return ptr->flags.no_block;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:

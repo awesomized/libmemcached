@@ -225,5 +225,5 @@ error:
 
   world_stats_print(&stats);
 
-  return 0;
+  return stats.failed == 0 ? 0 : 1;
 }
