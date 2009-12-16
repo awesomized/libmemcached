@@ -17,7 +17,7 @@
 #include <netdb.h>
 
 #include "ms_task.h"
-#include "protocol_binary.h"
+#include <libmemcached/memcached/protocol_binary.h>
 
 #ifdef __cplusplus
 extern "C" {

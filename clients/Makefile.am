@@ -6,10 +6,19 @@ if HAVE_LIBEVENT
   bin_PROGRAMS += memslap
 endif
 
-noinst_HEADERS = client_options.h \
-		utilities.h \
+noinst_HEADERS = \
+		client_options.h \
+		execute.h \
 		generator.h \
-		execute.h
+		ms_atomic.h \
+		ms_conn.h \
+		ms_memslap.h \
+		ms_setting.h \
+		ms_sigsegv.h \
+		ms_stats.h \
+		ms_task.h \
+		ms_thread.h \
+		utilities.h
 
 noinst_LTLIBRARIES= libutilities.la libgenexec.la
 
