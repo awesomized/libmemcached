@@ -12,15 +12,15 @@ typedef enum {
   MEM_WRITE
 } memc_read_or_write;
 
-static ssize_t io_flush(memcached_server_st *ptr, memcached_return *error);
+static ssize_t io_flush(memcached_server_st *ptr, memcached_return_t *error);
 static void increment_udp_message_id(memcached_server_st *ptr);
 
-static memcached_return io_wait(memcached_server_st *ptr,
-                                memc_read_or_write read_or_write)
+static memcached_return_t io_wait(memcached_server_st *ptr,
+                                  memc_read_or_write read_or_write)
 {
   struct pollfd fds= {
-     .fd= ptr->fd,
-     .events = POLLIN
+    .fd= ptr->fd,
+    .events = POLLIN
   };
   int error;
 
@@ -28,16 +28,16 @@ static memcached_return io_wait(memcached_server_st *ptr,
     fds.events= POLLOUT;
 
   /*
-  ** We are going to block on write, but at least on Solaris we might block
-  ** on write if we haven't read anything from our input buffer..
-  ** Try to purge the input buffer if we don't do any flow control in the
-  ** application layer (just sending a lot of data etc)
-  ** The test is moved down in the purge function to avoid duplication of
-  ** the test.
-  */
+   ** We are going to block on write, but at least on Solaris we might block
+   ** on write if we haven't read anything from our input buffer..
+   ** Try to purge the input buffer if we don't do any flow control in the
+   ** application layer (just sending a lot of data etc)
+   ** The test is moved down in the purge function to avoid duplication of
+   ** the test.
+ */
   if (read_or_write == MEM_WRITE)
   {
-    memcached_return rc= memcached_purge(ptr);
+    memcached_return_t rc= memcached_purge(ptr);
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
       return MEMCACHED_FAILURE;
   }
@@ -71,8 +71,8 @@ static bool repack_input_buffer(memcached_server_st *ptr)
   if (ptr->read_ptr != ptr->read_buffer)
   {
     /* Move all of the data to the beginning of the buffer so
-    ** that we can fit more data into the buffer...
-    */
+     ** that we can fit more data into the buffer...
+   */
     memmove(ptr->read_buffer, ptr->read_ptr, ptr->read_buffer_length);
     ptr->read_ptr= ptr->read_buffer;
     ptr->read_data_length= ptr->read_buffer_length;
@@ -109,19 +109,19 @@ static bool repack_input_buffer(memcached_server_st *ptr)
 static bool process_input_buffer(memcached_server_st *ptr)
 {
   /*
-  ** We might be able to process some of the response messages if we
-  ** have a callback set up
-  */
+   ** We might be able to process some of the response messages if we
+   ** have a callback set up
+ */
   if (ptr->root->callbacks != NULL && ptr->root->flags.use_udp == false)
   {
     /*
      * We might have responses... try to read them out and fire
      * callbacks
-     */
+   */
     memcached_callback_st cb= *ptr->root->callbacks;
 
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    memcached_return error;
+    memcached_return_t error;
     error= memcached_response(ptr, buffer, sizeof(buffer),
                               &ptr->root->result);
     if (error == MEMCACHED_SUCCESS)
@@ -169,8 +169,8 @@ void memcached_io_preread(memcached_st *ptr)
 }
 #endif
 
-memcached_return memcached_io_read(memcached_server_st *ptr,
-                                   void *buffer, size_t length, ssize_t *nread)
+memcached_return_t memcached_io_read(memcached_server_st *ptr,
+                                     void *buffer, size_t length, ssize_t *nread)
 {
   char *buffer_ptr;
 
@@ -190,14 +190,14 @@ memcached_return memcached_io_read(memcached_server_st *ptr,
         else if (data_read == -1)
         {
           ptr->cached_errno= errno;
-          memcached_return rc= MEMCACHED_UNKNOWN_READ_FAILURE;
+          memcached_return_t rc= MEMCACHED_UNKNOWN_READ_FAILURE;
           switch (errno)
           {
           case EAGAIN:
           case EINTR:
             if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
               continue;
-          /* fall through */
+            /* fall through */
 
           default:
             {
@@ -297,7 +297,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 
     if (ptr->write_buffer_offset == buffer_end && ptr->type != MEMCACHED_CONNECTION_UDP)
     {
-      memcached_return rc;
+      memcached_return_t rc;
       ssize_t sent_length;
 
       WATCHPOINT_ASSERT(ptr->fd != -1);
@@ -315,7 +315,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 
   if (with_flush)
   {
-    memcached_return rc;
+    memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != -1);
     if (io_flush(ptr, &rc) == -1)
       return -1;
@@ -324,7 +324,7 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
   return (ssize_t) original_length;
 }
 
-memcached_return memcached_io_close(memcached_server_st *ptr)
+memcached_return_t memcached_io_close(memcached_server_st *ptr)
 {
   int r;
 
@@ -406,20 +406,20 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
 }
 
 static ssize_t io_flush(memcached_server_st *ptr,
-                        memcached_return *error)
+                        memcached_return_t *error)
 {
   /*
-  ** We might want to purge the input buffer if we haven't consumed
-  ** any output yet... The test for the limits is the purge is inline
-  ** in the purge function to avoid duplicating the logic..
-  */
+   ** We might want to purge the input buffer if we haven't consumed
+   ** any output yet... The test for the limits is the purge is inline
+   ** in the purge function to avoid duplicating the logic..
+ */
   {
-     memcached_return rc;
-     WATCHPOINT_ASSERT(ptr->fd != -1);
-     rc= memcached_purge(ptr);
+    memcached_return_t rc;
+    WATCHPOINT_ASSERT(ptr->fd != -1);
+    rc= memcached_purge(ptr);
 
-     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
-       return -1;
+    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+      return -1;
   }
   ssize_t sent_length;
   size_t return_length;
@@ -435,7 +435,7 @@ static ssize_t io_flush(memcached_server_st *ptr,
     return -1;
 
   if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
-          && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
+                                        && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
     return 0;
 
   /* Looking for memory overflows */
@@ -463,26 +463,26 @@ static ssize_t io_flush(memcached_server_st *ptr,
       case ENOBUFS:
         continue;
       case EAGAIN:
-      {
-        /*
-         * We may be blocked on write because the input buffer
-         * is full. Let's check if we have room in our input
-         * buffer for more data and retry the write before
-         * waiting..
+        {
+          /*
+           * We may be blocked on write because the input buffer
+           * is full. Let's check if we have room in our input
+           * buffer for more data and retry the write before
+           * waiting..
          */
-        if (repack_input_buffer(ptr) ||
-            process_input_buffer(ptr))
-          continue;
+          if (repack_input_buffer(ptr) ||
+              process_input_buffer(ptr))
+            continue;
 
-        memcached_return rc;
-        rc= io_wait(ptr, MEM_WRITE);
+          memcached_return_t rc;
+          rc= io_wait(ptr, MEM_WRITE);
 
-        if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_TIMEOUT)
-          continue;
+          if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_TIMEOUT)
+            continue;
 
-        memcached_quit_server(ptr, 1);
-        return -1;
-      }
+          memcached_quit_server(ptr, 1);
+          return -1;
+        }
       default:
         memcached_quit_server(ptr, 1);
         *error= MEMCACHED_ERRNO;
@@ -530,9 +530,9 @@ void memcached_io_reset(memcached_server_st *ptr)
  * Read a given number of bytes from the server and place it into a specific
  * buffer. Reset the IO channel on this server if an error occurs.
  */
-memcached_return memcached_safe_read(memcached_server_st *ptr,
-                                     void *dta,
-                                     size_t size)
+memcached_return_t memcached_safe_read(memcached_server_st *ptr,
+                                       void *dta,
+                                       size_t size)
 {
   size_t offset= 0;
   char *data= dta;
@@ -540,8 +540,8 @@ memcached_return memcached_safe_read(memcached_server_st *ptr,
   while (offset < size)
   {
     ssize_t nread;
-    memcached_return rc= memcached_io_read(ptr, data + offset, size - offset,
-                                           &nread);
+    memcached_return_t rc= memcached_io_read(ptr, data + offset, size - offset,
+                                             &nread);
     if (rc != MEMCACHED_SUCCESS)
       return rc;
 
@@ -551,9 +551,9 @@ memcached_return memcached_safe_read(memcached_server_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return memcached_io_readline(memcached_server_st *ptr,
-                                       char *buffer_ptr,
-                                       size_t size)
+memcached_return_t memcached_io_readline(memcached_server_st *ptr,
+                                         char *buffer_ptr,
+                                         size_t size)
 {
   bool line_complete= false;
   size_t total_nr= 0;
@@ -566,9 +566,9 @@ memcached_return memcached_io_readline(memcached_server_st *ptr,
        * We don't have any data in the buffer, so let's fill the read
        * buffer. Call the standard read function to avoid duplicating
        * the logic.
-       */
+     */
       ssize_t nread;
-      memcached_return rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
+      memcached_return_t rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
       if (rc != MEMCACHED_SUCCESS)
         return rc;
 
@@ -622,7 +622,7 @@ static void increment_udp_message_id(memcached_server_st *ptr)
   header->request_id= htons((uint16_t) (thread_id | msg_num));
 }
 
-memcached_return memcached_io_init_udp_header(memcached_server_st *ptr, uint16_t thread_id)
+memcached_return_t memcached_io_init_udp_header(memcached_server_st *ptr, uint16_t thread_id)
 {
   if (thread_id > UDP_REQUEST_ID_MAX_THREAD_ID)
     return MEMCACHED_FAILURE;

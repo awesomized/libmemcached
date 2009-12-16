@@ -10,15 +10,15 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  memcached_return 
+  memcached_return_t 
     memcached_callback_set (memcached_st *ptr, 
-                            memcached_callback flag, 
+                            memcached_callback_t flag, 
                             void *data);
 
   void *
     memcached_callback_get (memcached_st *ptr, 
-                            memcached_callback flag,
-                            memcached_return *error);
+                            memcached_callback_t flag,
+                            memcached_return_t *error);
 
 =head1 DESCRIPTION
 
@@ -84,7 +84,7 @@ MEMCACHED_SUCCESS or MEMCACHED_BUFFERED. Returning MEMCACHED_BUFFERED will
 cause the object to be buffered and not sent immediatly (if this is the default behavior based on your connection setup this will happen automatically).
 
 The prototype for this is:
-memcached_return (*memcached_trigger_key)(memcached_st *ptr, char *key, size_t key_length, memcached_result_st *result);
+memcached_return_t (*memcached_trigger_key)(memcached_st *ptr, char *key, size_t key_length, memcached_result_st *result);
 
 =item  MEMCACHED_CALLBACK_DELETE_TRIGGER
 
@@ -92,7 +92,7 @@ This function implements a trigger upon successful deletion of a key. The memcac
 in order to make use of it.
 
 The prototype for this is:
-typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr, char *key, size_t key_length);
+typedef memcached_return_t (*memcached_trigger_delete_key)(memcached_st *ptr, char *key, size_t key_length);
 
 
 =back
@@ -100,7 +100,7 @@ typedef memcached_return (*memcached_trigger_delete_key)(memcached_st *ptr, char
 =head1 RETURN
 
 memcached_callback_get() return the function or structure that was provided.
-Upon error, nothing is set, null is returned, and the memcached_return
+Upon error, nothing is set, null is returned, and the memcached_return_t
 argument is set to MEMCACHED_FAILURE.
 
 memcached_callback_set() returns MEMCACHED_SUCCESS upon successful setting,

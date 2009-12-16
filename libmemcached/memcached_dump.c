@@ -7,9 +7,9 @@
 */
 
 #include "common.h"
-static memcached_return ascii_dump(memcached_st *ptr, memcached_dump_func *callback, void *context, uint32_t number_of_callbacks)
+static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
-  memcached_return rc= 0;
+  memcached_return_t rc= 0;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   size_t send_length;
   uint32_t server_key;
@@ -80,7 +80,7 @@ error:
     return rc;
 }
 
-memcached_return memcached_dump(memcached_st *ptr, memcached_dump_func *callback, void *context, uint32_t number_of_callbacks)
+memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
   /* No support for Binary protocol yet */
   if (ptr->flags.binary_protocol)

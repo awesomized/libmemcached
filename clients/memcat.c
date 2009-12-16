@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   char *string;
   size_t string_length;
   uint32_t flags;
-  memcached_return rc;
+  memcached_return_t rc;
   memcached_server_st *servers;
 
   options_parse(argc, argv);

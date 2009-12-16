@@ -12,19 +12,19 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  memcached_return
+  memcached_return_t
     memcached_increment (memcached_st *ptr, 
                          const char *key, size_t key_length,
                          unsigned int offset,
                          uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_decrement (memcached_st *ptr, 
                          const char *key, size_t key_length,
                          unsigned int offset,
                          uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_increment_with_initial (memcached_st *ptr,
                                       const char *key,
                                       size_t key_length,
@@ -33,7 +33,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                       time_t expiration,
                                       uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_decrement_with_initial (memcached_st *ptr,
                                       const char *key,
                                       size_t key_length,
@@ -42,21 +42,21 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                       time_t expiration,
                                       uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_increment_by_key (memcached_st *ptr, 
                                 const char *master_key, size_t master_key_length,
                                 const char *key, size_t key_length,
                                 unsigned int offset,
                                 uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_decrement_by_key (memcached_st *ptr, 
                                 const char *master_key, size_t master_key_length,
                                 const char *key, size_t key_length,
                                 unsigned int offset,
                                 uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_increment_with_initial_by_key (memcached_st *ptr,
                                              const char *master_key,
                                              size_t master_key_length,
@@ -67,7 +67,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                              time_t expiration,
                                              uint64_t *value);
 
-  memcached_return
+  memcached_return_t
     memcached_decrement_with_initial_by_key (memcached_st *ptr,
                                              const char *master_key,
                                              size_t master_key_length,
@@ -117,7 +117,7 @@ above.
 
 =head1 RETURN
 
-A value of type C<memcached_return> is returned.
+A value of type C<memcached_return_t> is returned.
 On success that value will be C<MEMCACHED_SUCCESS>.
 Use memcached_strerror() to translate this value to a printable string.
 

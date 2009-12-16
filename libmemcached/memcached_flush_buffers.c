@@ -1,9 +1,9 @@
 #include "common.h"
 #include "memcached_io.h"
 
-memcached_return memcached_flush_buffers(memcached_st *mem)
+memcached_return_t memcached_flush_buffers(memcached_st *mem)
 {
-  memcached_return ret= MEMCACHED_SUCCESS;
+  memcached_return_t ret= MEMCACHED_SUCCESS;
 
   for (uint32_t x= 0; x < mem->number_of_hosts; ++x)
     if (mem->hosts[x].write_buffer_offset != 0) 

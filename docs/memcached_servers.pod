@@ -15,28 +15,29 @@ C Client Library for memcached (libmemcached, -lmemcached)
   memcached_server_st *
     memcached_server_list (memcached_st *ptr);
 
-  memcached_return
+  memcached_return_t
     memcached_server_add (memcached_st *ptr,
                           const char *hostname,
-                          unsigned int port);
+                          in_port_t port);
 
-  memcached_return
+  memcached_return_t
     memcached_server_add_udp (memcached_st *ptr,
                           const char *hostname,
-                          unsigned int port);
+                          in_port_t port);
 
-  memcached_return
+  memcached_return_t
     memcached_server_add_unix_socket (memcached_st *ptr,
                                       const char *socket);
 
-  memcached_return
+  memcached_return_t
     memcached_server_push (memcached_st *ptr,
                            memcached_server_st *list);
 
   memcached_server_st *
     memcached_server_by_key (memcached_st *ptr,  
                              const char *key, size_t key_length, 
-                             memcached_return *error);
+                             memcached_return_t *error);
+
   memcached_server_st *                          
     memcached_server_get_last_disconnect (memcached_st *ptr)
     

@@ -3,7 +3,7 @@
 #include <poll.h>
 #include <sys/time.h>
 
-static memcached_return set_hostinfo(memcached_server_st *server)
+static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
   struct addrinfo *ai;
   struct addrinfo hints;
@@ -44,7 +44,7 @@ static memcached_return set_hostinfo(memcached_server_st *server)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return set_socket_options(memcached_server_st *ptr)
+static memcached_return_t set_socket_options(memcached_server_st *ptr)
 {
   WATCHPOINT_ASSERT(ptr->fd != -1);
 
@@ -145,7 +145,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return unix_socket_connect(memcached_server_st *ptr)
+static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 {
   struct sockaddr_un servAddr;
   socklen_t addrlen;
@@ -189,7 +189,7 @@ test_connect:
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return network_connect(memcached_server_st *ptr)
+static memcached_return_t network_connect(memcached_server_st *ptr)
 {
   if (ptr->fd == -1)
   {
@@ -198,7 +198,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
     if (!ptr->sockaddr_inited ||
         (!(ptr->root->flags.use_cache_lookups)))
     {
-      memcached_return rc;
+      memcached_return_t rc;
 
       rc= set_hostinfo(ptr);
       if (rc != MEMCACHED_SUCCESS)
@@ -299,9 +299,9 @@ static memcached_return network_connect(memcached_server_st *ptr)
 }
 
 
-memcached_return memcached_connect(memcached_server_st *ptr)
+memcached_return_t memcached_connect(memcached_server_st *ptr)
 {
-  memcached_return rc= MEMCACHED_NO_SERVERS;
+  memcached_return_t rc= MEMCACHED_NO_SERVERS;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
   /* both retry_timeout and server_failure_limit must be set in order to delay retrying a server on error. */

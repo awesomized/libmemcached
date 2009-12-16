@@ -11,7 +11,7 @@ the library.
 =head2 Creating and Freeing structure
 
   memcached_st *memc;
-  memcached_return rc;
+  memcached_return_t rc;
 
   memc= memcached_create(NULL);
   ...do stuff...
@@ -74,7 +74,7 @@ It is best practice to always look at the return value of any operation.
 
 =head2 Fetching multiple values
 
-  memcached_return rc;
+  memcached_return_t rc;
   char *keys[]= {"fudge", "son", "food"};
   size_t key_length[]= {5, 3, 4};
   unsigned int x;

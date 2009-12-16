@@ -47,7 +47,7 @@ void memcached_result_reset(memcached_result_st *ptr)
 /*
   NOTE turn into macro
 */
-memcached_return memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length)
+memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length)
 {
   return memcached_string_append(&ptr->value, value, length);
 }

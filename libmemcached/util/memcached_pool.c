@@ -14,10 +14,10 @@ struct memcached_pool_st
   int firstfree;
   uint32_t size;
   uint32_t current_size;
-  char* version;
+  char *version;
 };
 
-static memcached_return mutex_enter(pthread_mutex_t *mutex) 
+static memcached_return_t mutex_enter(pthread_mutex_t *mutex) 
 {
   int ret;
   do 
@@ -27,7 +27,7 @@ static memcached_return mutex_enter(pthread_mutex_t *mutex)
   return (ret == -1) ? MEMCACHED_ERRNO : MEMCACHED_SUCCESS;
 }
 
-static memcached_return mutex_exit(pthread_mutex_t *mutex) {
+static memcached_return_t mutex_exit(pthread_mutex_t *mutex) {
   int ret;
   do
     ret= pthread_mutex_unlock(mutex);
@@ -62,12 +62,12 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc,
 {
   memcached_pool_st* ret = NULL;
   memcached_pool_st object = { .mutex = PTHREAD_MUTEX_INITIALIZER, 
-                               .cond = PTHREAD_COND_INITIALIZER,
-                               .master = mmc,
-                               .mmc = calloc(max, sizeof(memcached_st*)),
-                               .firstfree = -1,
-                               .size = max, 
-                               .current_size = 0 };
+    .cond = PTHREAD_COND_INITIALIZER,
+    .master = mmc,
+    .mmc = calloc(max, sizeof(memcached_st*)),
+    .firstfree = -1,
+    .size = max, 
+    .current_size = 0 };
 
   if (object.mmc != NULL) 
   {
@@ -82,7 +82,7 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc,
 
     /* Try to create the initial size of the pool. An allocation failure at
      * this time is not fatal..
-     */
+   */
     for (unsigned int ii=0; ii < initial; ++ii)
       if (grow_pool(ret) == -1)
         break;
@@ -101,7 +101,7 @@ memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
     free(pool->mmc[xx]);
     pool->mmc[xx] = NULL;
   }
-  
+
   pthread_mutex_destroy(&pool->mutex);
   pthread_cond_destroy(&pool->cond);
   free(pool->mmc);
@@ -112,7 +112,7 @@ memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
 
 memcached_st* memcached_pool_pop(memcached_pool_st* pool,
                                  bool block,
-                                 memcached_return *rc) 
+                                 memcached_return_t *rc) 
 {
   memcached_st *ret= NULL;
   if ((*rc= mutex_enter(&pool->mutex)) != MEMCACHED_SUCCESS) 
@@ -121,7 +121,7 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
   do 
   {
     if (pool->firstfree > -1)
-       ret= pool->mmc[pool->firstfree--];
+      ret= pool->mmc[pool->firstfree--];
     else if (pool->current_size == pool->size) 
     {
       if (!block) 
@@ -141,8 +141,8 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
     } 
     else if (grow_pool(pool) == -1) 
     {
-       *rc= mutex_exit(&pool->mutex);
-       return NULL;
+      *rc= mutex_exit(&pool->mutex);
+      return NULL;
     }
   } 
   while (ret == NULL);
@@ -152,10 +152,10 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
   return ret;
 }
 
-memcached_return memcached_pool_push(memcached_pool_st* pool, 
-                                     memcached_st *mmc)
+memcached_return_t memcached_pool_push(memcached_pool_st* pool, 
+                                       memcached_st *mmc)
 {
-  memcached_return rc= mutex_enter(&pool->mutex);
+  memcached_return_t rc= mutex_enter(&pool->mutex);
 
   if (rc != MEMCACHED_SUCCESS)
     return rc;
@@ -180,7 +180,7 @@ memcached_return memcached_pool_push(memcached_pool_st* pool,
     pthread_cond_broadcast(&pool->cond);
   }
 
-  memcached_return rval= mutex_exit(&pool->mutex);
+  memcached_return_t rval= mutex_exit(&pool->mutex);
   if (rc == MEMCACHED_SOME_ERRORS)
     return rc;
 
@@ -188,14 +188,14 @@ memcached_return memcached_pool_push(memcached_pool_st* pool,
 }
 
 
-memcached_return memcached_pool_behavior_set(memcached_pool_st *pool, 
-                                             memcached_behavior flag, 
-                                             uint64_t data)
+memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, 
+                                               memcached_behavior_t flag, 
+                                               uint64_t data)
 {
 
-  memcached_return rc= mutex_enter(&pool->mutex);
+  memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
-     return rc;
+    return rc;
 
   /* update the master */
   rc= memcached_behavior_set(pool->master, flag, data);
@@ -220,10 +220,10 @@ memcached_return memcached_pool_behavior_set(memcached_pool_st *pool,
       if (memcached_clone(pool->mmc[xx], pool->master) == NULL)
       {
         /* I'm not sure what to do in this case.. this would happen
-           if we fail to push the server list inside the client..
-           I should add a testcase for this, but I believe the following
-           would work, except that you would add a hole in the pool list..
-           in theory you could end up with an empty pool....
+          if we fail to push the server list inside the client..
+          I should add a testcase for this, but I believe the following
+          would work, except that you would add a hole in the pool list..
+          in theory you could end up with an empty pool....
         */
         free(pool->mmc[xx]);
         pool->mmc[xx]= NULL;
@@ -234,11 +234,11 @@ memcached_return memcached_pool_behavior_set(memcached_pool_st *pool,
   return mutex_exit(&pool->mutex);
 }
 
-memcached_return memcached_pool_behavior_get(memcached_pool_st *pool, 
-                                             memcached_behavior flag,
-                                             uint64_t *value)
+memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, 
+                                               memcached_behavior_t flag,
+                                               uint64_t *value)
 {
-  memcached_return rc= mutex_enter(&pool->mutex);
+  memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
   *value= memcached_behavior_get(pool->master, flag);

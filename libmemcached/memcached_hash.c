@@ -12,7 +12,7 @@ static uint32_t FNV_32_PRIME= 16777619;
 static uint32_t internal_generate_hash(const char *key, size_t key_length);
 static uint32_t internal_generate_md5(const char *key, size_t key_length);
 
-uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash hash_algorithm)
+uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm)
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
   uint32_t x= 0;

@@ -4,7 +4,7 @@
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                       size_t *value_length, 
                       uint32_t *flags,
-                      memcached_return *error)
+                      memcached_return_t *error)
 {
   memcached_result_st *result_buffer= &ptr->result;
 
@@ -41,7 +41,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
 memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_result_st *result,
-                                            memcached_return *error)
+                                            memcached_return_t *error)
 {
   memcached_server_st *server;
 
@@ -81,13 +81,13 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   return NULL;
 }
 
-memcached_return memcached_fetch_execute(memcached_st *ptr, 
-                                         memcached_execute_function *callback,
-                                         void *context,
-                                         unsigned int number_of_callbacks)
+memcached_return_t memcached_fetch_execute(memcached_st *ptr, 
+                                           memcached_execute_fn *callback,
+                                           void *context,
+                                           uint32_t number_of_callbacks)
 {
   memcached_result_st *result= &ptr->result;
-  memcached_return rc= MEMCACHED_FAILURE;
+  memcached_return_t rc= MEMCACHED_FAILURE;
   unsigned int x;
 
   while ((result= memcached_fetch_result(ptr, result, &rc)) != NULL) 

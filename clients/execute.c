@@ -9,7 +9,7 @@
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   unsigned int x;
   unsigned int pairs_sent;
 
@@ -34,7 +34,7 @@ unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 */
 unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   unsigned int x;
   unsigned int retrieved;
 
@@ -66,7 +66,7 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 /**
  * Callback function to count the number of results
  */
-static memcached_return callback_counter(memcached_st *ptr,
+static memcached_return_t callback_counter(memcached_st *ptr,
                                          memcached_result_st *result,
                                          void *context)
 {
@@ -92,8 +92,8 @@ unsigned int execute_mget(memcached_st *memc,
                           unsigned int number_of)
 {
   unsigned int retrieved= 0;
-  memcached_execute_function callbacks[1]= { [0]= &callback_counter };
-  memcached_return rc;
+  memcached_execute_fn callbacks[1]= { [0]= &callback_counter };
+  memcached_return_t rc;
   rc= memcached_mget_execute(memc, keys, key_length,
                              (size_t)number_of, callbacks, &retrieved, 1);
 

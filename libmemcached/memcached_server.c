@@ -25,8 +25,8 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
 }
 
 memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host,
-                                                  const char *hostname, unsigned int port,
-                                                  uint32_t weight, memcached_connection type)
+                                                  const char *hostname, in_port_t port,
+                                                  uint32_t weight, memcached_connection_t type)
 {
   host= memcached_server_create(memc, host);
 
@@ -97,10 +97,10 @@ memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcache
 
 }
 
-memcached_return memcached_server_cursor(memcached_st *ptr,
-                                         memcached_server_function *callback,
-                                         void *context,
-                                         unsigned int number_of_callbacks)
+memcached_return_t memcached_server_cursor(memcached_st *ptr,
+                                           memcached_server_fn *callback,
+                                           void *context,
+                                           uint32_t number_of_callbacks)
 {
   unsigned int y;
 
@@ -122,7 +122,7 @@ memcached_return memcached_server_cursor(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, size_t key_length, memcached_return *error)
+memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, size_t key_length, memcached_return_t *error)
 {
   uint32_t server_key;
 

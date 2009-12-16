@@ -29,7 +29,7 @@ extern "C" {
    test_return_t mget_result_function(memcached_st *memc);
    test_return_t basic_behavior(memcached_st *memc);
    test_return_t mget_test(memcached_st *memc);
-   memcached_return callback_counter(memcached_st *,
+   memcached_return_t callback_counter(memcached_st *,
                                      memcached_result_st *, 
                                      void *context);
    void *world_create(void);
@@ -152,9 +152,9 @@ test_return_t basic_master_key_test(memcached_st *memc)
 }
 
 /* Count the results */
-memcached_return callback_counter(memcached_st *,
-                                  memcached_result_st *, 
-                                  void *context)
+memcached_return_t callback_counter(memcached_st *,
+                                    memcached_result_st *, 
+                                    void *context)
 {
   unsigned int *counter= static_cast<unsigned int *>(context);
 
@@ -187,7 +187,7 @@ test_return_t mget_result_function(memcached_st *memc)
   values.push_back(&val2);
   values.push_back(&val3);
   unsigned int counter;
-  memcached_execute_function callbacks[1];
+  memcached_execute_fn callbacks[1];
 
   /* We need to empty the server before we continue the test */
   rc= mc.flush(0);
@@ -210,7 +210,7 @@ test_return_t mget_test(memcached_st *memc)
 {
   Memcache mc(memc);
   bool rc;
-  memcached_return mc_rc;
+  memcached_return_t mc_rc;
   vector<string> keys;
   vector< vector<char> *> values;
   keys.reserve(3);

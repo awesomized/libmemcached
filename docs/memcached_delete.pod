@@ -10,12 +10,12 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  memcached_return
+  memcached_return_t
     memcached_delete (memcached_st *ptr,
                       const char *key, size_t key_length,
                       time_t expiration);
 
-  memcached_return
+  memcached_return_t
   memcached_delete_by_key (memcached_st *ptr,
                            const char *master_key, size_t master_key_length,
                            const char *key, size_t key_length,
@@ -34,7 +34,7 @@ find the given value.
 
 =head1 RETURN
 
-A value of type C<memcached_return> is returned
+A value of type C<memcached_return_t> is returned
 On success that value will be C<MEMCACHED_SUCCESS>.
 Use memcached_strerror() to translate this value to a printable string.
 

@@ -15,7 +15,7 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
   const char *begin_ptr;
   const char *end_ptr;
   memcached_server_st *servers= NULL;
-  memcached_return rc;
+  memcached_return_t rc;
 
   WATCHPOINT_ASSERT(server_strings);
 

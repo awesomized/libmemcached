@@ -32,7 +32,7 @@ allocated and then initialized by memcached_create(). Functions have been
 written in order to encapsulate the C<memcached_st>. It is not
 recommended that you operate directly against the structure.
 
-Nearly all functions return a C<memcached_return> value.
+Nearly all functions return a C<memcached_return_t> value.
 This value can be translated to a printable string with memcached_strerror(3).
 
 Partitioning based on keys is supported in the library. Using the key partioning 

@@ -65,7 +65,8 @@ static protocol_binary_response_status append_handler(const void *cookie,
                                                       const void* val,
                                                       uint32_t vallen,
                                                       uint64_t cas,
-                                                      uint64_t *result_cas) {
+                                                      uint64_t *result_cas)
+{
   (void)cookie;
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
 

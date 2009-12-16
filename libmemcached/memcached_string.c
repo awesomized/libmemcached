@@ -1,6 +1,15 @@
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ */
+
 #include "common.h"
 
-inline static memcached_return _string_check(memcached_string_st *string, size_t need)
+inline static memcached_return_t _string_check(memcached_string_st *string, size_t need)
 {
   if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
@@ -34,7 +43,7 @@ inline static memcached_return _string_check(memcached_string_st *string, size_t
 
 memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *string, size_t initial_size)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   /* Saving malloc calls :) */
   if (string)
@@ -71,10 +80,10 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   return string;
 }
 
-memcached_return memcached_string_append_character(memcached_string_st *string, 
+memcached_return_t memcached_string_append_character(memcached_string_st *string, 
                                                    char character)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   rc=  _string_check(string, 1);
 
@@ -87,10 +96,10 @@ memcached_return memcached_string_append_character(memcached_string_st *string,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return memcached_string_append(memcached_string_st *string,
+memcached_return_t memcached_string_append(memcached_string_st *string,
                                          const char *value, size_t length)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   rc= _string_check(string, length);
 
@@ -125,7 +134,7 @@ char *memcached_string_c_copy(memcached_string_st *string)
   return c_ptr;
 }
 
-memcached_return memcached_string_reset(memcached_string_st *string)
+memcached_return_t memcached_string_reset(memcached_string_st *string)
 {
   string->end= string->string;
   
@@ -153,7 +162,7 @@ void memcached_string_free(memcached_string_st *ptr)
   }
 }
 
-memcached_return memcached_string_check(memcached_string_st *string, size_t need)
+memcached_return_t memcached_string_check(memcached_string_st *string, size_t need)
 {
   return _string_check(string, need);
 }

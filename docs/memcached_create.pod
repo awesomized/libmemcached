@@ -14,7 +14,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   void memcached_free (memcached_st *ptr);
 
-  memcached_st *memcached_clone(memcached_st *clone, memcached_st *source);
+  memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
 
 =head1 DESCRIPTION
 
@@ -26,14 +26,16 @@ a NULL. If a NULL passed in then a structure is allocated for you.
 memcached_clone() is similar to memcached_create(3) but it copies the
 defaults and list of servers from the source C<memcached_st>. If you pass a null as
 the argument for the source to clone, it is the same as a call to memcached_create().
-If the clone argument is NULL a C<memcached_st> will be allocated for you.
-If you pass a pointer to a memory area for the clone pointer, make sure you 
-memset it to 0 (unless you got the clone from a factory method in libmemcached).
+If the destination argument is NULL a C<memcached_st> will be allocated for you.
 
 To clean up memory associated with a C<memcached_st> structure you should pass
 it to memcached_free() when you are finished using it. memcached_free() is
 the only way to make sure all memory is deallocated when you finish using
 the structure.
+
+You may wish to avoid using memcached_create(3) or memcached_clone(3) with a
+stack based allocation. The most common issues related to ABI safety involve
+heap allocated structures.
 
 =head1 RETURN
 
@@ -41,8 +43,7 @@ memcached_create() returns a pointer to the memcached_st that was created
 (or initialized). On an allocation failure, it returns NULL.
 
 memcached_clone() returns a pointer to the memcached_st that was created
-(or initialized). On an allocation failure, it returns NULL. If you pass in 
-a preallocated structure it must be cleared first (aka memset()).
+(or initialized). On an allocation failure, it returns NULL.
 
 =head1 HOME
 

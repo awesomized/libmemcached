@@ -17,15 +17,15 @@ C Client Library for memcached (libmemcached, -lmemcached)
     memcached_server_list_append (memcached_server_st *ptr, 
                                   const char *hostname,
                                   unsigned int port, 
-                                  memcached_return *error);
+                                  memcached_return_t *error);
 
   unsigned int memcached_server_list_count (memcached_server_st *ptr);
 
   memcached_server_st *memcached_servers_parse (const char *server_strings);
 
-  const char *memcached_server_error(memcached_server_st *ptr);
+  const char *memcached_server_error (memcached_server_st *ptr);
 
-  void memcached_server_error_reset(memcached_server_st *ptr);
+  void memcached_server_error_reset (memcached_server_st *ptr);
 
 =head1 DESCRIPTION
 
@@ -39,7 +39,7 @@ of memcached_server_st that you passed to it.
 
 memcached_server_list_append() adds a server to the end of a
 memcached_server_st array. On error null will be returned and the
-memcached_return pointer you passed into the function will be set with the
+memcached_return_t pointer you passed into the function will be set with the
 appropriate error. If the value of port is zero, it is set to the default
 port of a memcached server.
 

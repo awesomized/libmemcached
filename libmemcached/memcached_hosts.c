@@ -2,11 +2,11 @@
 #include <math.h>
 
 /* Protoypes (static) */
-static memcached_return server_add(memcached_st *ptr, const char *hostname,
-                                   unsigned int port,
-                                   uint32_t weight,
-                                   memcached_connection type);
-memcached_return update_continuum(memcached_st *ptr);
+static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
+                                     in_port_t port,
+                                     uint32_t weight,
+                                     memcached_connection_t type);
+memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
 {
@@ -34,7 +34,7 @@ static void sort_hosts(memcached_st *ptr)
 }
 
 
-memcached_return run_distribution(memcached_st *ptr)
+memcached_return_t run_distribution(memcached_st *ptr)
 {
   switch (ptr->distribution)
   {
@@ -103,7 +103,7 @@ static int continuum_item_cmp(const void *t1, const void *t2)
     return -1;
 }
 
-memcached_return update_continuum(memcached_st *ptr)
+memcached_return_t update_continuum(memcached_st *ptr)
 {
   uint32_t host_index;
   uint32_t continuum_index= 0;
@@ -306,7 +306,7 @@ memcached_return update_continuum(memcached_st *ptr)
 }
 
 
-memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *list)
+memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st *list)
 {
   unsigned int x;
   uint16_t count;
@@ -343,15 +343,15 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
   return run_distribution(ptr);
 }
 
-memcached_return memcached_server_add_unix_socket(memcached_st *ptr,
-                                                  const char *filename)
+memcached_return_t memcached_server_add_unix_socket(memcached_st *ptr,
+                                                    const char *filename)
 {
   return memcached_server_add_unix_socket_with_weight(ptr, filename, 0);
 }
 
-memcached_return memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
-                                                              const char *filename,
-                                                              uint32_t weight)
+memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
+                                                                const char *filename,
+                                                                uint32_t weight)
 {
   if (!filename)
     return MEMCACHED_FAILURE;
@@ -359,17 +359,17 @@ memcached_return memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
   return server_add(ptr, filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
 }
 
-memcached_return memcached_server_add_udp(memcached_st *ptr,
-                                          const char *hostname,
-                                          unsigned int port)
+memcached_return_t memcached_server_add_udp(memcached_st *ptr,
+                                            const char *hostname,
+                                            in_port_t port)
 {
   return memcached_server_add_udp_with_weight(ptr, hostname, port, 0);
 }
 
-memcached_return memcached_server_add_udp_with_weight(memcached_st *ptr,
-                                                      const char *hostname,
-                                                      unsigned int port,
-                                                      uint32_t weight)
+memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
+                                                        const char *hostname,
+                                                        in_port_t port,
+                                                        uint32_t weight)
 {
   if (!port)
     port= MEMCACHED_DEFAULT_PORT;
@@ -380,17 +380,17 @@ memcached_return memcached_server_add_udp_with_weight(memcached_st *ptr,
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_UDP);
 }
 
-memcached_return memcached_server_add(memcached_st *ptr,
-                                      const char *hostname,
-                                      unsigned int port)
+memcached_return_t memcached_server_add(memcached_st *ptr,
+                                        const char *hostname,
+                                        in_port_t port)
 {
   return memcached_server_add_with_weight(ptr, hostname, port, 0);
 }
 
-memcached_return memcached_server_add_with_weight(memcached_st *ptr,
-                                                  const char *hostname,
-                                                  unsigned int port,
-                                                  uint32_t weight)
+memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
+                                                    const char *hostname,
+                                                    in_port_t port,
+                                                    uint32_t weight)
 {
   if (!port)
     port= MEMCACHED_DEFAULT_PORT;
@@ -401,10 +401,10 @@ memcached_return memcached_server_add_with_weight(memcached_st *ptr,
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_TCP);
 }
 
-static memcached_return server_add(memcached_st *ptr, const char *hostname,
-                                   unsigned int port,
-                                   uint32_t weight,
-                                   memcached_connection type)
+static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
+                                     in_port_t port,
+                                     uint32_t weight,
+                                     memcached_connection_t type)
 {
   memcached_server_st *new_host_list;
 
@@ -428,7 +428,7 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
   return run_distribution(ptr);
 }
 
-memcached_return memcached_server_remove(memcached_server_st *st_ptr)
+memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 {
   uint32_t x, host_index;
   memcached_st *ptr= st_ptr->root;
@@ -456,16 +456,16 @@ memcached_return memcached_server_remove(memcached_server_st *st_ptr)
 }
 
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
-                                                  const char *hostname, unsigned int port,
-                                                  memcached_return *error)
+                                                  const char *hostname, in_port_t port,
+                                                  memcached_return_t *error)
 {
   return memcached_server_list_append_with_weight(ptr, hostname, port, 0, error);
 }
 
 memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr,
-                                                              const char *hostname, unsigned int port,
+                                                              const char *hostname, in_port_t port,
                                                               uint32_t weight,
-                                                              memcached_return *error)
+                                                              memcached_return_t *error)
 {
   unsigned int count;
   memcached_server_st *new_host_list;

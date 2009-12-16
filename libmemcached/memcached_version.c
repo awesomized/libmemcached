@@ -5,25 +5,25 @@ const char * memcached_lib_version(void)
   return LIBMEMCACHED_VERSION_STRING;
 }
 
-static inline memcached_return memcached_version_binary(memcached_st *ptr);
-static inline memcached_return memcached_version_textual(memcached_st *ptr);
+static inline memcached_return_t memcached_version_binary(memcached_st *ptr);
+static inline memcached_return_t memcached_version_textual(memcached_st *ptr);
 
-memcached_return memcached_version(memcached_st *ptr)
+memcached_return_t memcached_version(memcached_st *ptr)
 {
-   if (ptr->flags.use_udp)
+  if (ptr->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
-   if (ptr->flags.binary_protocol)
-     return memcached_version_binary(ptr);
-   else
-     return memcached_version_textual(ptr);      
+  if (ptr->flags.binary_protocol)
+    return memcached_version_binary(ptr);
+  else
+    return memcached_version_textual(ptr);      
 }
 
-static inline memcached_return memcached_version_textual(memcached_st *ptr)
+static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
 {
   unsigned int x;
   size_t send_length;
-  memcached_return rc;
+  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   char *response_ptr;
   const char *command= "version\r\n";
@@ -33,7 +33,7 @@ static inline memcached_return memcached_version_textual(memcached_st *ptr)
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    memcached_return rrc;
+    memcached_return_t rrc;
 
     rrc= memcached_do(&ptr->hosts[x], command, send_length, 1);
     if (rrc != MEMCACHED_SUCCESS)
@@ -65,9 +65,9 @@ static inline memcached_return memcached_version_textual(memcached_st *ptr)
   return rc;
 }
 
-static inline memcached_return memcached_version_binary(memcached_st *ptr)
+static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   unsigned int x;
   protocol_binary_request_version request= { .bytes= {0}};
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
@@ -77,7 +77,7 @@ static inline memcached_return memcached_version_binary(memcached_st *ptr)
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++) 
   {
-    memcached_return rrc;
+    memcached_return_t rrc;
 
     rrc= memcached_do(&ptr->hosts[x], request.bytes, sizeof(request.bytes), 1);
     if (rrc != MEMCACHED_SUCCESS) 
@@ -91,7 +91,7 @@ static inline memcached_return memcached_version_binary(memcached_st *ptr)
   for (x= 0; x < ptr->number_of_hosts; x++) 
     if (memcached_server_response_count(&ptr->hosts[x]) > 0) 
     {
-      memcached_return rrc;
+      memcached_return_t rrc;
       char buffer[32];
       char *p;
 

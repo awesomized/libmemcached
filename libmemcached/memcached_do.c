@@ -1,9 +1,9 @@
 #include "common.h"
 
-memcached_return memcached_do(memcached_server_st *ptr, const void *command, 
-                              size_t command_length, uint8_t with_flush)
+memcached_return_t memcached_do(memcached_server_st *ptr, const void *command, 
+                                size_t command_length, uint8_t with_flush)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   ssize_t sent_length;
 
   WATCHPOINT_ASSERT(command_length);

@@ -1,10 +1,10 @@
 #include "common.h"
 
-memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
+memcached_return_t memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
 {
   unsigned int x;
   size_t send_length;
-  memcached_return rc;
+  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
   send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -15,7 +15,7 @@ memcached_return memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    memcached_return rrc;
+    memcached_return_t rrc;
 
     rrc= memcached_do(&ptr->hosts[x], buffer, send_length, 1);
     if (rrc != MEMCACHED_SUCCESS)

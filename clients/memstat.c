@@ -47,7 +47,7 @@ static struct option long_options[]=
 
 int main(int argc, char *argv[])
 {
-  memcached_return rc;
+  memcached_return_t rc;
   memcached_st *memc;
   memcached_stat_st *memc_stat;
   memcached_server_st *servers;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
                          memcached_server_st *server_list)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   if (analyze_mode == NULL)
   {
@@ -219,7 +219,7 @@ static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_sta
                                  memcached_server_st *server_list)
 {
   unsigned int x;
-  memcached_return rc;
+  memcached_return_t rc;
 
   printf("Listing %u Server\n\n", memcached_server_count(memc));
   for (x= 0; x < memcached_server_count(memc); x++)

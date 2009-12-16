@@ -10,9 +10,10 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  memcached_analysis_st *memcached_analyze(memcached_st *ptr,
-                                           memcached_stat_st *stat,
-                                           memcached_return *error);
+  memcached_analysis_st *
+    memcached_analyze (memcached_st *ptr,
+                       memcached_stat_st *stat,
+                       memcached_return_t *error);
 
 =head1 DESCRIPTION
 
@@ -31,7 +32,7 @@ you do not have to write an application to use this method.
 
 A pointer to the allocated C<memcached_analysis_st> structure on success and
 a NULL pointer on failure. You may inspect the error detail by checking the
-C<memcached_return> value.
+C<memcached_return_t> value.
 
 Any method returning a C<memcached_analysis_st> expects you to free the
 memory allocated for it.

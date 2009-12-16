@@ -30,7 +30,7 @@ static const char *memcached_stat_keys[] = {
 };
 
 
-static memcached_return set_data(memcached_stat_st *memc_stat, char *key, char *value)
+static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char *value)
 {
 
   if (strlen(key) < 1) 
@@ -159,7 +159,7 @@ static memcached_return set_data(memcached_stat_st *memc_stat, char *key, char *
 }
 
 char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat, 
-                               const char *key, memcached_return *error)
+                               const char *key, memcached_return_t *error)
 {
   char buffer[SMALL_STRING_LEN];
   int length;
@@ -224,12 +224,12 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
   return ret;
 }
 
-static memcached_return binary_stats_fetch(memcached_st *ptr,
-                                           memcached_stat_st *memc_stat,
-                                           char *args,
-                                           unsigned int server_key)
+static memcached_return_t binary_stats_fetch(memcached_st *ptr,
+                                             memcached_stat_st *memc_stat,
+                                             char *args,
+                                             unsigned int server_key)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   protocol_binary_request_stats request= {.bytes= {0}};
@@ -247,7 +247,7 @@ static memcached_return binary_stats_fetch(memcached_st *ptr,
 
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl((uint32_t) len);
-      
+
     if ((memcached_do(&ptr->hosts[server_key], request.bytes, 
                       sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
         (memcached_io_write(&ptr->hosts[server_key], args, len, 1) == -1)) 
@@ -269,38 +269,38 @@ static memcached_return binary_stats_fetch(memcached_st *ptr,
   memcached_server_response_decrement(&ptr->hosts[server_key]);  
   do 
   {
-     rc= memcached_response(&ptr->hosts[server_key], buffer, 
-                             sizeof(buffer), NULL);
-     if (rc == MEMCACHED_END)
-        break;
-     
-     unlikely (rc != MEMCACHED_SUCCESS) 
-     {
-        memcached_io_reset(&ptr->hosts[server_key]);
-        return rc;
-     }
-     
-     unlikely((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
-     {
-       WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
-       WATCHPOINT_ASSERT(0);
-     }
+    rc= memcached_response(&ptr->hosts[server_key], buffer, 
+                           sizeof(buffer), NULL);
+    if (rc == MEMCACHED_END)
+      break;
+
+    unlikely (rc != MEMCACHED_SUCCESS) 
+    {
+      memcached_io_reset(&ptr->hosts[server_key]);
+      return rc;
+    }
+
+    unlikely((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
+    {
+      WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+      WATCHPOINT_ASSERT(0);
+    }
   } while (1);
-  
+
   /* shit... memcached_response will decrement the counter, so I need to
-  ** reset it.. todo: look at this and try to find a better solution.
-  */
+   ** reset it.. todo: look at this and try to find a better solution.
+ */
   ptr->hosts[server_key].cursor_active= 0;
 
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return ascii_stats_fetch(memcached_st *ptr,
-                                              memcached_stat_st *memc_stat,
-                                              char *args,
-                                              unsigned int server_key)
+static memcached_return_t ascii_stats_fetch(memcached_st *ptr,
+                                            memcached_stat_st *memc_stat,
+                                            char *args,
+                                            unsigned int server_key)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   size_t send_length;
 
@@ -316,7 +316,7 @@ static memcached_return ascii_stats_fetch(memcached_st *ptr,
 
   rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
   if (rc != MEMCACHED_SUCCESS)
-      goto error;
+    goto error;
 
   while (1)
   {
@@ -355,10 +355,10 @@ error:
     return rc;
 }
 
-memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return *error)
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error)
 {
   unsigned int x;
-  memcached_return rc;
+  memcached_return_t rc;
   memcached_stat_st *stats;
 
   unlikely (ptr->flags.use_udp)
@@ -378,13 +378,13 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   rc= MEMCACHED_SUCCESS;
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    memcached_return temp_return;
-    
+    memcached_return_t temp_return;
+
     if (ptr->flags.binary_protocol)
       temp_return= binary_stats_fetch(ptr, stats + x, args, x);
     else
       temp_return= ascii_stats_fetch(ptr, stats + x, args, x);
-    
+
     if (temp_return != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
   }
@@ -393,10 +393,10 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   return stats;
 }
 
-memcached_return memcached_stat_servername(memcached_stat_st *memc_stat, char *args, 
-                                           char *hostname, unsigned int port)
+memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args, 
+                                             const char *hostname, in_port_t port)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   memcached_st memc;
   memcached_st *memc_ptr;
 
@@ -420,7 +420,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *memc_stat, char *a
   we will add support for "found" keys.
 */
 char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat, 
-                                memcached_return *error)
+                                memcached_return_t *error)
 {
   (void) memc_stat;
   char **list;

@@ -10,20 +10,29 @@ C Client Library for memcached (libmemcachedutil, -lmemcachedutil)
 
   #include <libmemcached/memcached_pool.h>
 
-  memcached_pool_st *memcached_pool_create(memcached_st* mmc, int initial, int max);
-  memcached_st* memcached_pool_destroy(memcached_pool_st* pool);
+  memcached_pool_st *
+    memcached_pool_create(memcached_st* mmc, int initial, int max);
 
-  memcached_st* memcached_pool_pop(memcached_pool_st* pool, bool block, memcached_return *rc);
-  memcached_return memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+  memcached_st *
+    memcached_pool_destroy(memcached_pool_st* pool);
+
+  memcached_st *
+    memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
+
+  memcached_return_t
+    memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
 
   memcached_st *memcached_create (memcached_st *ptr);
 
-  memcached_return memcached_pool_behavior_set(memcached_pool_st *pool, 
-                                               memcached_behavior flag, 
-                                               uint64_t data)
-  memcached_return memcached_pool_behavior_get(memcached_pool_st *pool, 
-                                               memcached_behavior flag,
-                                               uint64_t *value)
+  memcached_return_t
+    memcached_pool_behavior_set(memcached_pool_st *pool,
+                                memcached_behavior_t flag,
+                                uint64_t data)
+
+  memcached_return_t
+    memcached_pool_behavior_get(memcached_pool_st *pool,
+                                memcached_behavior_t flag,
+                                uint64_t *value)
 
 =head1 DESCRIPTION
 
@@ -46,7 +55,7 @@ passed as an argument to memcached_pool_create(), and returns the
 ownership of the pointer to the caller.
 
 memcached_pool_pop() is used to grab a connection structure from the
-connection pool. The block argument specifies if the function should 
+connection pool. The block argument specifies if the function should
 block and wait for a connection structure to be available if we try
 to exceed the maximum size.
 
@@ -67,7 +76,7 @@ memcached_st structure used to create the pool. If connections are in
 use it returns NULL.
 
 memcached_pool_pop() returns a pointer to a memcached_st structure
-from the pool (or NULL if an allocation cannot be satisfied). 
+from the pool (or NULL if an allocation cannot be satisfied).
 
 memcached_pool_push() returns MEMCACHED_SUCCESS upon success.
 

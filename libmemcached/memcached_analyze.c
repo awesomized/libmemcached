@@ -61,7 +61,7 @@ static void calc_hit_ratio(memcached_analysis_st *result,
 
 memcached_analysis_st *memcached_analyze(memcached_st *memc,
                                          memcached_stat_st *memc_stat,
-                                         memcached_return *error)
+                                         memcached_return_t *error)
 {
   uint64_t total_items= 0, total_bytes= 0;
   uint64_t total_get_cmds= 0, total_get_hits= 0;

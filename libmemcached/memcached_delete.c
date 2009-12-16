@@ -1,27 +1,27 @@
 #include "common.h"
 #include "memcached/protocol_binary.h"
 
-memcached_return memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
-                                  time_t expiration)
+memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
+                                    time_t expiration)
 {
   return memcached_delete_by_key(ptr, key, key_length,
                                  key, key_length, expiration);
 }
 
-static inline memcached_return binary_delete(memcached_st *ptr,
-                                             unsigned int server_key,
-                                             const char *key,
-                                             size_t key_length,
-					     uint8_t flush);
+static inline memcached_return_t binary_delete(memcached_st *ptr,
+                                               unsigned int server_key,
+                                               const char *key,
+                                               size_t key_length,
+                                               uint8_t flush);
 
-memcached_return memcached_delete_by_key(memcached_st *ptr,
-                                         const char *master_key, size_t master_key_length,
-                                         const char *key, size_t key_length,
-                                         time_t expiration)
+memcached_return_t memcached_delete_by_key(memcached_st *ptr,
+                                           const char *master_key, size_t master_key_length,
+                                           const char *key, size_t key_length,
+                                           time_t expiration)
 {
   uint8_t to_write;
   size_t send_length;
-  memcached_return rc;
+  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
 
@@ -124,11 +124,11 @@ error:
   return rc;
 }
 
-static inline memcached_return binary_delete(memcached_st *ptr,
-                                             unsigned int server_key,
-                                             const char *key,
-					     size_t key_length,
-					     uint8_t flush)
+static inline memcached_return_t binary_delete(memcached_st *ptr,
+                                               unsigned int server_key,
+                                               const char *key,
+                                               size_t key_length,
+                                               uint8_t flush)
 {
   protocol_binary_request_delete request= {.bytes= {0}};
 
@@ -150,7 +150,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
       memcached_io_write(&ptr->hosts[server_key], NULL, 0, 1);
   }
 
-  memcached_return rc= MEMCACHED_SUCCESS;
+  memcached_return_t rc= MEMCACHED_SUCCESS;
 
   if ((memcached_do(&ptr->hosts[server_key], request.bytes,
                     sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||

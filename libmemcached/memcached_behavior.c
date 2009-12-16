@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Change the behavior of the memcached connection.
+ *
+ */
+
 #include "common.h"
 #include <time.h>
 #include <sys/types.h>
@@ -10,9 +21,9 @@
   We quit all connections so we can reset the sockets.
 */
 
-memcached_return memcached_behavior_set(memcached_st *ptr,
-                                        memcached_behavior flag,
-                                        uint64_t data)
+memcached_return_t memcached_behavior_set(memcached_st *ptr,
+                                          memcached_behavior_t flag,
+                                          uint64_t data)
 {
   switch (flag)
   {
@@ -69,7 +80,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     {
-      ptr->distribution= (memcached_server_distribution)(data);
+      ptr->distribution= (memcached_server_distribution_t)(data);
       if (ptr->distribution == MEMCACHED_DISTRIBUTION_RANDOM)
       {
         srandom((uint32_t) time(NULL));
@@ -118,13 +129,13 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_HASH:
 #ifndef HAVE_HSIEH_HASH
-    if ((memcached_hash)(data) == MEMCACHED_HASH_HSIEH)
+    if ((memcached_hash_t)(data) == MEMCACHED_HASH_HSIEH)
       return MEMCACHED_FAILURE;
 #endif
-    ptr->hash= (memcached_hash)(data);
+    ptr->hash= (memcached_hash_t)(data);
     break;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
-    ptr->hash_continuum= (memcached_hash)(data);
+    ptr->hash_continuum= (memcached_hash_t)(data);
     run_distribution(ptr);
     break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
@@ -185,7 +196,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 }
 
 uint64_t memcached_behavior_get(memcached_st *ptr,
-                                memcached_behavior flag)
+                                memcached_behavior_t flag)
 {
   switch (flag)
   {

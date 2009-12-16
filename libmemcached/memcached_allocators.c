@@ -32,11 +32,11 @@ void *libmemcached_calloc(memcached_st *ptr, size_t nelem, size_t size)
   return calloc(nelem, size);
 }
 
-memcached_return memcached_set_memory_allocators(memcached_st *ptr,
-                                                 memcached_malloc_function mem_malloc,
-                                                 memcached_free_function mem_free,
-                                                 memcached_realloc_function mem_realloc,
-                                                 memcached_calloc_function mem_calloc)
+memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,
+                                                   memcached_malloc_fn mem_malloc,
+                                                   memcached_free_fn mem_free,
+                                                   memcached_realloc_fn mem_realloc,
+                                                   memcached_calloc_fn mem_calloc)
 {
   /* All should be set, or none should be set */
   if (mem_malloc == NULL && mem_free == NULL && mem_realloc == NULL && mem_calloc == NULL) 
@@ -60,10 +60,10 @@ memcached_return memcached_set_memory_allocators(memcached_st *ptr,
 }
 
 void memcached_get_memory_allocators(memcached_st *ptr,
-                                     memcached_malloc_function *mem_malloc,
-                                     memcached_free_function *mem_free,
-                                     memcached_realloc_function *mem_realloc,
-                                     memcached_calloc_function *mem_calloc)
+                                     memcached_malloc_fn *mem_malloc,
+                                     memcached_free_fn *mem_free,
+                                     memcached_realloc_fn *mem_realloc,
+                                     memcached_calloc_fn *mem_calloc)
 {
    *mem_malloc= ptr->call_malloc;
    *mem_free= ptr->call_free;

@@ -62,7 +62,7 @@ static test_return_t generate_pairs(memcached_st *memc __attribute__((unused)))
 static test_return_t drizzle(memcached_st *memc)
 {
   unsigned int x;
-  memcached_return rc;
+  memcached_return_t rc;
   char *return_value;
   size_t return_value_length;
   uint32_t flags;
@@ -111,38 +111,38 @@ infinite:
   return 0;
 }
 
-static memcached_return pre_nonblock(memcached_st *memc)
+static memcached_return_t pre_nonblock(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return pre_md5(memcached_st *memc)
+static memcached_return_t pre_md5(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
 
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return pre_hsieh(memcached_st *memc)
+static memcached_return_t pre_hsieh(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
 
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return enable_consistent(memcached_st *memc)
+static memcached_return_t enable_consistent(memcached_st *memc)
 {
-  memcached_server_distribution value= MEMCACHED_DISTRIBUTION_CONSISTENT;
-  memcached_hash hash;
+  memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
+  memcached_hash_t hash;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
   pre_hsieh(memc);
 
-  value= (memcached_server_distribution)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
+  value= (memcached_server_distribution_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
   assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
 
-  hash= (memcached_hash)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+  hash= (memcached_hash_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
   assert(hash == MEMCACHED_HASH_HSIEH);
 
 
@@ -155,7 +155,7 @@ static memcached_return enable_consistent(memcached_st *memc)
 */
 static test_return_t add_test(memcached_st *memc)
 {
-  memcached_return rc;
+  memcached_return_t rc;
   const char *key= "foo";
   const char *value= "when we sanitize";
   unsigned long long setting_value;

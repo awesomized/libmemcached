@@ -12,68 +12,70 @@ C Client Library for memcached (libmemcached, -lmemcached)
   #include <memcached.h>
 
   memcached_result_st *
-  memcached_fetch_result(memcached_st *ptr, 
-		       memcached_result_st *result,
-		       memcached_return *error);
+    memcached_fetch_result (memcached_st *ptr,
+                            memcached_result_st *result,
+                            memcached_return_t *error);
 
-  char *memcached_get (memcached_st *ptr,
-                       const char *key, size_t key_length,
-                       size_t *value_length, 
-                       uint32_t *flags,
-                       memcached_return *error);
+  char *
+    memcached_get (memcached_st *ptr,
+                   const char *key, size_t key_length,
+                   size_t *value_length,
+                   uint32_t *flags,
+                   memcached_return_t *error);
 
-  memcached_return
-  memcached_mget (memcached_st *ptr, 
-                  const char * const *keys, 
-                  const size_t *key_length, 
+  memcached_return_t
+    memcached_mget (memcached_st *ptr,
+                  const char * const *keys,
+                  const size_t *key_length,
                   size_t number_of_keys);
   char *
-  memcached_get_by_key(memcached_st *ptr, 
-                       const char *master_key, size_t master_key_length, 
-                       const char *key, size_t key_length, 
-                       size_t *value_length, 
-                       uint32_t *flags,
-                       memcached_return *error);
+    memcached_get_by_key (memcached_st *ptr,
+                          const char *master_key, size_t master_key_length,
+                          const char *key, size_t key_length,
+                          size_t *value_length,
+                          uint32_t *flags,
+                          memcached_return_t *error);
 
-  memcached_return 
-  memcached_mget_by_key(memcached_st *ptr, 
-                        const char *master_key, size_t master_key_length,
-                        const char * const *keys, 
-                        const size_t *key_length, 
-                        size_t number_of_keys);
+  memcached_return_t
+    memcached_mget_by_key (memcached_st *ptr,
+                           const char *master_key, size_t master_key_length,
+                           const char * const *keys,
+                           const size_t *key_length,
+                           size_t number_of_keys);
 
-  char *memcached_fetch (memcached_st *ptr,
-                         char *key, size_t *key_length, 
-                         size_t *value_length,
-                         uint32_t *flags, 
-                         memcached_return *error);
+  char *
+    memcached_fetch (memcached_st *ptr,
+                     char *key, size_t *key_length,
+                     size_t *value_length,
+                     uint32_t *flags,
+                     memcached_return_t *error);
 
-  memcached_return 
-  memcached_fetch_execute(memcached_st *ptr, 
-                          memcached_return (*callback[])(memcached_st *ptr, memcached_result_st *result, void *context),
-                          void *context,
-                          unsigned int number_of_callbacks);
+  memcached_return_t
+    memcached_fetch_execute (memcached_st *ptr,
+                             memcached_execute_fn *callback,
+                             void *context,
+                             uint32_t number_of_callbacks);
 
 
-  memcached_return
-  memcached_mget_execute(memcached_st *ptr,
-                         const char * const *keys,
-                         const size_t *key_length,
-                         size_t number_of_keys,
-                         memcached_execute_function *callback,
-                         void *context,
-                         unsigned int number_of_callbacks);
+  memcached_return_t
+    memcached_mget_execute (memcached_st *ptr,
+                            const char * const *keys,
+                            const size_t *key_length,
+                            size_t number_of_keys,
+                            memcached_execute_fn *callback,
+                            void *context,
+                            uint32_t number_of_callbacks);
 
-  memcached_return 
-  memcached_mget_execute_by_key(memcached_st *ptr,
-                                const char *master_key,
-                                size_t master_key_length,
-                                const char * const *keys,
-                                const size_t *key_length,
-                                size_t number_of_keys,
-                                memcached_execute_function *callback,
-                                void *context,
-                                unsigned int number_of_callbacks);
+  memcached_return_t
+    memcached_mget_execute_by_key (memcached_st *ptr,
+                                   const char *master_key,
+                                   size_t master_key_length,
+                                   const char * const *keys,
+                                   const size_t *key_length,
+                                   size_t number_of_keys,
+                                   memcached_execute_fn *callback,
+                                   void *context,
+                                   uint32_t number_of_callbacks);
 
 
 =head1 DESCRIPTION
@@ -83,9 +85,9 @@ must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
 object.  A uint32_t pointer to contain whatever flags you stored with the value,
 a size_t pointer which will be filled with size of of the object, and a
-memcached_return pointer to hold any error. The object will be returned
+memcached_return_t pointer to hold any error. The object will be returned
 upon success and NULL will be returned on failure. Any object returned by
-memcached_get() must be released by the caller application. 
+memcached_get() must be released by the caller application.
 
 memcached_mget() is used to select multiple keys at once. For multiple key
 operations it is always faster to use this function. This function always
@@ -97,28 +99,28 @@ return NULL (aka no more values). If you need to quit in the middle of a
 memcached_get() call, execute a memcached_quit(). After you do this, you can
 issue new queries against the server.
 
-memcached_fetch() is used to fetch an individual value from the server. 
+memcached_fetch() is used to fetch an individual value from the server.
 memcached_mget() must always be called before using this method.  You
 must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
 object.  A uint32_t pointer to contain whatever flags you stored with the value,
 a size_t pointer which will be filled with size of of the object, and a
-memcached_return pointer to hold any error. The object will be returned
+memcached_return_t pointer to hold any error. The object will be returned
 upon success and NULL will be returned on failure. MEMCACHD_END is returned
-by the *error value when all objects that have been found are returned. 
+by the *error value when all objects that have been found are returned.
 The final value upon MEMCACHED_END is null. Values returned by
 memcached_fetch() musted be free'ed by the caller.
 
-memcached_fetch_result() is used to return a memcached_result_st(3) structure 
+memcached_fetch_result() is used to return a memcached_result_st(3) structure
 from a memcached server. The result object is forward compatible with changes
-to the server. For more information please refer to the memcached_result_st(3) 
+to the server. For more information please refer to the memcached_result_st(3)
 help. This function will dynamically allocate a result structure for you
 if you do not pass one to the function.
 
 memcached_fetch_execute() is a callback function for result sets. Instead
 of returning the results to you for processing, it passes each of the
 result sets to the list of functions you provide. It passes to the function
-a memcached_st that can be cloned for use in the called function (it can not 
+a memcached_st that can be cloned for use in the called function (it can not
 be used directly). It also passes a result set which does not need to be freed.
 Finally it passes a "context". This is just a pointer to a memory reference
 you supply the calling function. Currently only one value is being passed
@@ -141,9 +143,9 @@ a master key that is used for determining which server an object was stored
 if key partitioning was used for storage.
 
 All of the above functions are not supported when the C<MEMCACHED_BEHAVIOR_USE_UDP>
-has been set. Executing any of these functions with this behavior on will result in 
+has been set. Executing any of these functions with this behavior on will result in
 C<MEMCACHED_NOT_SUPPORTED> being returned or, for those functions which do not return
-a C<memcached_return>, the error function parameter will be set to 
+a C<memcached_return_t>, the error function parameter will be set to
 C<MEMCACHED_NOT_SUPPORTED>.
 
 =head1 RETURN

@@ -7,9 +7,9 @@
   These functions provide data and function callback support
 */
 
-memcached_return memcached_callback_set(memcached_st *ptr, 
-                                        memcached_callback flag, 
-                                        void *data)
+memcached_return_t memcached_callback_set(memcached_st *ptr, 
+                                          memcached_callback_t flag, 
+                                          void *data)
 {
   switch (flag)
   {
@@ -52,13 +52,13 @@ memcached_return memcached_callback_set(memcached_st *ptr,
     }
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
     {
-      memcached_cleanup_func func= *(memcached_cleanup_func *)&data;
+      memcached_cleanup_fn func= *(memcached_cleanup_fn *)&data;
       ptr->on_cleanup= func;
       break;
     }
   case MEMCACHED_CALLBACK_CLONE_FUNCTION:
     {
-      memcached_clone_func func= *(memcached_clone_func *)&data;
+      memcached_clone_fn func= *(memcached_clone_fn *)&data;
       ptr->on_clone= func;
       break;
     }
@@ -84,13 +84,13 @@ memcached_return memcached_callback_set(memcached_st *ptr,
 #endif
   case MEMCACHED_CALLBACK_GET_FAILURE:
     {
-      memcached_trigger_key func= *(memcached_trigger_key *)&data;
+      memcached_trigger_key_fn func= *(memcached_trigger_key_fn *)&data;
       ptr->get_key_failure= func;
       break;
     }
   case MEMCACHED_CALLBACK_DELETE_TRIGGER:
     {
-      memcached_trigger_delete_key func= *(memcached_trigger_delete_key *)&data;
+      memcached_trigger_delete_key_fn func= *(memcached_trigger_delete_key_fn *)&data;
       ptr->delete_trigger= func;
       break;
     }
@@ -102,10 +102,10 @@ memcached_return memcached_callback_set(memcached_st *ptr,
 }
 
 void *memcached_callback_get(memcached_st *ptr, 
-                             memcached_callback flag,
-                             memcached_return *error)
+                             memcached_callback_t flag,
+                             memcached_return_t *error)
 {
-  memcached_return local_error;
+  memcached_return_t local_error;
 
   if (!error)
     error = &local_error;
@@ -168,8 +168,8 @@ void *memcached_callback_get(memcached_st *ptr,
       return *(void **)&ptr->delete_trigger;
     }
   default:
-      WATCHPOINT_ASSERT(0);
-      *error= MEMCACHED_FAILURE;
-      return NULL;
+    WATCHPOINT_ASSERT(0);
+    *error= MEMCACHED_FAILURE;
+    return NULL;
   }
 }

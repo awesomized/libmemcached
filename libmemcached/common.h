@@ -114,11 +114,11 @@ LIBMEMCACHED_LOCAL
 uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 
 LIBMEMCACHED_LOCAL
-memcached_return memcached_connect(memcached_server_st *ptr);
+memcached_return_t memcached_connect(memcached_server_st *ptr);
 LIBMEMCACHED_LOCAL
-memcached_return memcached_response(memcached_server_st *ptr,
-                                    char *buffer, size_t buffer_length,
-                                    memcached_result_st *result);
+memcached_return_t memcached_response(memcached_server_st *ptr,
+                                      char *buffer, size_t buffer_length,
+                                      memcached_result_st *result);
 LIBMEMCACHED_LOCAL
 void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 
@@ -127,29 +127,29 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
 LIBMEMCACHED_LOCAL
-memcached_return memcached_do(memcached_server_st *ptr, const void *commmand,
-                              size_t command_length, uint8_t with_flush);
+memcached_return_t memcached_do(memcached_server_st *ptr, const void *commmand,
+                                size_t command_length, uint8_t with_flush);
 LIBMEMCACHED_LOCAL
-memcached_return value_fetch(memcached_server_st *ptr,
-                             char *buffer,
-                             memcached_result_st *result);
+memcached_return_t value_fetch(memcached_server_st *ptr,
+                               char *buffer,
+                               memcached_result_st *result);
 LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
 LIBMEMCACHED_LOCAL
-memcached_return memcached_key_test(const char * const *keys, 
-                                    const size_t *key_length,
-                                    size_t number_of_keys);
+memcached_return_t memcached_key_test(const char * const *keys, 
+                                      const size_t *key_length,
+                                      size_t number_of_keys);
 
 
 LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 
 LIBMEMCACHED_LOCAL
-memcached_return memcached_purge(memcached_server_st *ptr);
+memcached_return_t memcached_purge(memcached_server_st *ptr);
 
-static inline memcached_return memcached_validate_key_length(size_t key_length,
-                                                             bool binary) {
+static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
+{
   unlikely (key_length == 0)
     return MEMCACHED_BAD_KEY_PROVIDED;
 

@@ -10,8 +10,9 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  void *memcached_get_user_data(memcached_st *ptr);
-  void *memcached_set_user_data(memcached_st *ptr, void *data);
+  void *memcached_get_user_data (memcached_st *ptr);
+
+  void *memcached_set_user_data (memcached_st *ptr, void *data);
 
 =head1 DESCRIPTION
 

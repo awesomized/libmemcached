@@ -1,11 +1,11 @@
 #include "common.h"
 
-memcached_return memcached_key_test(const char * const *keys, 
-                                    const size_t *key_length, 
-                                    size_t number_of_keys)
+memcached_return_t memcached_key_test(const char * const *keys, 
+                                      const size_t *key_length, 
+                                      size_t number_of_keys)
 {
   uint32_t x;
-  memcached_return rc;
+  memcached_return_t rc;
 
   for (x= 0; x < number_of_keys; x++)
   {

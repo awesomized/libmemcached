@@ -28,8 +28,8 @@ struct test_st {
 
 struct collection_st {
   const char *name;
-  memcached_return (*pre)(memcached_st *memc);
-  memcached_return (*post)(memcached_st *memc);
+  memcached_return_t (*pre)(memcached_st *memc);
+  memcached_return_t (*post)(memcached_st *memc);
   test_st *tests;
 };
 

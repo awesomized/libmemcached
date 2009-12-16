@@ -29,7 +29,7 @@ struct memcached_server_st {
   uint8_t major_version;
   uint8_t micro_version;
   uint8_t minor_version;
-  memcached_connection type;
+  memcached_connection_t type;
   char *read_ptr;
   char *cached_server_error;
   size_t read_buffer_length;
@@ -51,14 +51,14 @@ struct memcached_server_st {
 #define memcached_server_response_count(A) (A)->cursor_active
 
 LIBMEMCACHED_API
-memcached_return memcached_server_cursor(memcached_st *ptr,
-                                         memcached_server_function *callback,
-                                         void *context,
-                                         unsigned int number_of_callbacks);
+memcached_return_t memcached_server_cursor(memcached_st *ptr,
+                                           memcached_server_fn *callback,
+                                           void *context,
+                                           uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key,
-                                             size_t key_length, memcached_return *error);
+                                             size_t key_length, memcached_return_t *error);
 
 LIBMEMCACHED_API
 const char *memcached_server_error(memcached_server_st *ptr);
@@ -74,8 +74,8 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
 
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host,
-                                                  const char *hostname, unsigned int port,
-                                                  uint32_t weight, memcached_connection type);
+                                                  const char *hostname, in_port_t port,
+                                                  uint32_t weight, memcached_connection_t type);
 
 LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
@@ -83,10 +83,10 @@ LIBMEMCACHED_API
 memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr);
 LIBMEMCACHED_API
 memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
-                                         memcached_return *error);
+                                         memcached_return_t *error);
 
 LIBMEMCACHED_API
-memcached_return memcached_server_remove(memcached_server_st *st_ptr);
+memcached_return_t memcached_server_remove(memcached_server_st *st_ptr);
 
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_get_last_disconnect(memcached_st *ptr);

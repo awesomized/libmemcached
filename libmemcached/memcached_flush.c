@@ -1,13 +1,13 @@
 #include "common.h"
 
-static memcached_return memcached_flush_binary(memcached_st *ptr, 
-                                               time_t expiration);
-static memcached_return memcached_flush_textual(memcached_st *ptr, 
-                                                time_t expiration);
+static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
+                                                 time_t expiration);
+static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
+                                                  time_t expiration);
 
-memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
+memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
 {
-  memcached_return rc;
+  memcached_return_t rc;
 
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
   if (ptr->flags.binary_protocol)
@@ -18,12 +18,12 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   return rc;
 }
 
-static memcached_return memcached_flush_textual(memcached_st *ptr, 
-                                                time_t expiration)
+static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
+                                                  time_t expiration)
 {
   unsigned int x;
   size_t send_length;
-  memcached_return rc;
+  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
   unlikely (ptr->number_of_hosts == 0)
@@ -50,8 +50,8 @@ static memcached_return memcached_flush_textual(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return memcached_flush_binary(memcached_st *ptr, 
-                                               time_t expiration)
+static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
+                                                 time_t expiration)
 {
   unsigned int x;
   protocol_binary_request_flush request= {.bytes= {0}};
@@ -83,7 +83,7 @@ static memcached_return memcached_flush_binary(memcached_st *ptr,
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
     if (memcached_server_response_count(&ptr->hosts[x]) > 0)
-       (void)memcached_response(&ptr->hosts[x], NULL, 0, NULL);
+      (void)memcached_response(&ptr->hosts[x], NULL, 0, NULL);
   }
 
   return MEMCACHED_SUCCESS;

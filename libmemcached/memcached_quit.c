@@ -15,7 +15,7 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
   {
     if (io_death == 0 && ptr->type != MEMCACHED_CONNECTION_UDP)
     {
-      memcached_return rc;
+      memcached_return_t rc;
       char buffer[MEMCACHED_MAX_BUFFER];
 
       if (ptr->root->flags.binary_protocol)

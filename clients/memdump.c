@@ -29,9 +29,9 @@ static char *opt_servers= NULL;
 static char *opt_hash= NULL;
 
 /* Print the keys and counter how many were found */
-static memcached_return key_printer(memcached_st *ptr __attribute__((unused)),  
-                                              const char *key, size_t key_length, 
-                                              void *context __attribute__((unused)))
+static memcached_return_t key_printer(memcached_st *ptr __attribute__((unused)),  
+                                      const char *key, size_t key_length, 
+                                      void *context __attribute__((unused)))
 {
   printf("%.*s\n", (uint32_t)key_length, key);
 
@@ -41,9 +41,9 @@ static memcached_return key_printer(memcached_st *ptr __attribute__((unused)),
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
-  memcached_return rc;
+  memcached_return_t rc;
   memcached_server_st *servers;
-  memcached_dump_func callbacks[1];
+  memcached_dump_fn callbacks[1];
 
   callbacks[0]= &key_printer;
 

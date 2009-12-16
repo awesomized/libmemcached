@@ -65,7 +65,8 @@ typedef enum {
   MEMCACHED_E2BIG,
   MEMCACHED_INVALID_ARGUMENTS,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
-} memcached_return;
+} memcached_return_t;
+
 
 typedef enum {
   MEMCACHED_DISTRIBUTION_MODULA,
@@ -73,7 +74,7 @@ typedef enum {
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA,
   MEMCACHED_DISTRIBUTION_RANDOM,
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY
-} memcached_server_distribution;
+} memcached_server_distribution_t;
 
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
@@ -108,7 +109,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS,
   MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
   MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
-} memcached_behavior;
+} memcached_behavior_t;
 
 #define MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED 0
 #define MEMCACHED_KETAMA_COMPAT_SPY 1
@@ -125,7 +126,7 @@ typedef enum {
 #endif
   MEMCACHED_CALLBACK_GET_FAILURE = 7,
   MEMCACHED_CALLBACK_DELETE_TRIGGER = 8
-} memcached_callback;
+} memcached_callback_t;
 
 typedef enum {
   MEMCACHED_HASH_DEFAULT= 0,
@@ -138,13 +139,13 @@ typedef enum {
   MEMCACHED_HASH_HSIEH,
   MEMCACHED_HASH_MURMUR,
   MEMCACHED_HASH_JENKINS
-} memcached_hash;
+} memcached_hash_t;
 
 typedef enum {
   MEMCACHED_CONNECTION_UNKNOWN,
   MEMCACHED_CONNECTION_TCP,
   MEMCACHED_CONNECTION_UDP,
   MEMCACHED_CONNECTION_UNIX_SOCKET
-} memcached_connection;
+} memcached_connection_t;
 
 #endif /* __MEMCACHED_CONSTANTS_H__ */

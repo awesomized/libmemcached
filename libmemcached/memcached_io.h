@@ -1,13 +1,20 @@
-/*
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
  * Summary: Server IO, Not public!
  *
- * Copy: See Copyright for the status of this software.
- *
- * Author: Brian Aker
  */
 
 #ifndef LIBMEMCACHED_MEMCACHED_IO_H
 #define LIBMEMCACHED_MEMCACHED_IO_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #if defined(BUILDING_LIBMEMCACHED)
 
@@ -35,25 +42,30 @@ struct udp_datagram_header_st {
 ssize_t memcached_io_write(memcached_server_st *ptr,
                            const void *buffer, size_t length, char with_flush);
 void memcached_io_reset(memcached_server_st *ptr);
-memcached_return memcached_io_read(memcached_server_st *ptr,
-                                   void *buffer, size_t length, ssize_t *nread);
+memcached_return_t memcached_io_read(memcached_server_st *ptr,
+                                     void *buffer, size_t length, ssize_t *nread);
 /* Read a line (terminated by '\n') into the buffer */
-memcached_return memcached_io_readline(memcached_server_st *ptr,
-                                       char *buffer_ptr,
-                                       size_t size);
-memcached_return memcached_io_close(memcached_server_st *ptr);
+memcached_return_t memcached_io_readline(memcached_server_st *ptr,
+                                         char *buffer_ptr,
+                                         size_t size);
+memcached_return_t memcached_io_close(memcached_server_st *ptr);
 /* Read n bytes of data from the server and store them in dta */
-memcached_return memcached_safe_read(memcached_server_st *ptr, 
-                                     void *dta, 
-                                     size_t size);
+memcached_return_t memcached_safe_read(memcached_server_st *ptr, 
+                                       void *dta, 
+                                       size_t size);
 /* Read a single response from the server */
-memcached_return memcached_read_one_response(memcached_server_st *ptr,
-                                             char *buffer, size_t buffer_length,
-                                             memcached_result_st *result);
-memcached_return memcached_io_init_udp_header(memcached_server_st *ptr,
-                                              uint16_t thread_id);
+memcached_return_t memcached_read_one_response(memcached_server_st *ptr,
+                                               char *buffer, size_t buffer_length,
+                                               memcached_result_st *result);
+memcached_return_t memcached_io_init_udp_header(memcached_server_st *ptr,
+                                                uint16_t thread_id);
 
 memcached_server_st *memcached_io_get_readable_server(memcached_st *memc);
 
 #endif /* BUILDING_LIBMEMCACHED */
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* LIBMEMCACHED_MEMCACHED_IO_H */

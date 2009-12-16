@@ -8,14 +8,14 @@
 #include "common.h"
 #include "memcached_io.h"
 
-static memcached_return textual_read_one_response(memcached_server_st *ptr,
+static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
                                                   char *buffer, size_t buffer_length,
                                                   memcached_result_st *result);
-static memcached_return binary_read_one_response(memcached_server_st *ptr,
+static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
                                                  char *buffer, size_t buffer_length,
                                                  memcached_result_st *result);
 
-memcached_return memcached_read_one_response(memcached_server_st *ptr,
+memcached_return_t memcached_read_one_response(memcached_server_st *ptr,
                                              char *buffer, size_t buffer_length,
                                              memcached_result_st *result)
 {
@@ -24,7 +24,7 @@ memcached_return memcached_read_one_response(memcached_server_st *ptr,
   if (result == NULL)
     result = &ptr->root->result;
 
-  memcached_return rc;
+  memcached_return_t rc;
   if (ptr->root->flags.binary_protocol)
     rc= binary_read_one_response(ptr, buffer, buffer_length, result);
   else
@@ -39,7 +39,7 @@ memcached_return memcached_read_one_response(memcached_server_st *ptr,
   return rc;
 }
 
-memcached_return memcached_response(memcached_server_st *ptr, 
+memcached_return_t memcached_response(memcached_server_st *ptr, 
                                     char *buffer, size_t buffer_length,
                                     memcached_result_st *result)
 {
@@ -55,7 +55,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
   if (ptr->root->flags.binary_protocol == false)
     while (memcached_server_response_count(ptr) > 1)
     {
-      memcached_return rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
+      memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
       
       unlikely (rc != MEMCACHED_END &&
                 rc != MEMCACHED_STORED &&
@@ -71,11 +71,11 @@ memcached_return memcached_response(memcached_server_st *ptr,
   return memcached_read_one_response(ptr, buffer, buffer_length, result);
 }
 
-static memcached_return textual_value_fetch(memcached_server_st *ptr,
+static memcached_return_t textual_value_fetch(memcached_server_st *ptr,
                                             char *buffer,
                                             memcached_result_st *result)
 {
-  memcached_return rc= MEMCACHED_SUCCESS;
+  memcached_return_t rc= MEMCACHED_SUCCESS;
   char *string_ptr;
   char *end_ptr;
   char *next_ptr;
@@ -175,7 +175,7 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   */
   to_read= (value_length) + 2;
   ssize_t read_length= 0;
-  memcached_return rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
+  memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
   if (rrc != MEMCACHED_SUCCESS)
     return rrc;
 
@@ -201,11 +201,11 @@ read_error:
   return MEMCACHED_PARTIAL_READ;
 }
 
-static memcached_return textual_read_one_response(memcached_server_st *ptr,
+static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
                                                   char *buffer, size_t buffer_length,
                                                   memcached_result_st *result)
 {
-  memcached_return rc= memcached_io_readline(ptr, buffer, buffer_length);
+  memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length);
   if (rc != MEMCACHED_SUCCESS)
     return rc;
 
@@ -330,7 +330,7 @@ size_t memcached_result_length(memcached_result_st *ptr)
   return memcached_string_length(sptr);
 }
 
-static memcached_return binary_read_one_response(memcached_server_st *ptr,
+static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
                                                  char *buffer, size_t buffer_length,
                                                  memcached_result_st *result)
 {
@@ -489,7 +489,7 @@ static memcached_return binary_read_one_response(memcached_server_st *ptr,
     }
   }
 
-  memcached_return rc= MEMCACHED_SUCCESS;
+  memcached_return_t rc= MEMCACHED_SUCCESS;
   unlikely(header.response.status != 0) 
     switch (header.response.status) 
     {

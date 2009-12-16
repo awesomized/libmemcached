@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     {
       unsigned int loop;
       memcached_st *memc;
-      memcached_return rc;
+      memcached_return_t rc;
       struct timeval start_time, end_time;
       long int load_time;
 

@@ -14,7 +14,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
     memcached_behavior_get (memcached_st *ptr,
                             memcached_behavior flag);
 
-  memcached_return
+  memcached_return_t
     memcached_behavior_set (memcached_st *ptr,
                             memcached_behavior flag,
                             uint64_t data);

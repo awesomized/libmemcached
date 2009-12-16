@@ -74,7 +74,7 @@ void memcached_free(memcached_st *ptr)
 */
 memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
 {
-  memcached_return rc= MEMCACHED_SUCCESS;
+  memcached_return_t rc= MEMCACHED_SUCCESS;
   memcached_st *new_clone;
 
   if (source == NULL)
