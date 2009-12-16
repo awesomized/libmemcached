@@ -1,9 +1,12 @@
-/*
- * Summary: Storage functions for libmemcached
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
  *
- * Copy: See Copyright for the status of this software.
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
  *
- * Author: Brian Aker
+ * Summary: Storage related functions, aka set, replace,..
+ *
  */
 
 #ifndef __MEMCACHED_STORAGE_H__

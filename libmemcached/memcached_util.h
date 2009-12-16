@@ -1,11 +1,16 @@
-/*
- * Summary: interface for libmemcached utility library
- * Description: main include file for libmemcachedutil
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
  *
- * Copy: See Copyright for the status of this software.
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Connection pool library.
  *
  * Author: Trond Norbye
+ *
  */
+
 
 #ifndef MEMCACHED_UTIL_H
 #define MEMCACHED_UTIL_H

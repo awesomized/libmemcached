@@ -28,6 +28,7 @@
 #include <libmemcached/memcached_constants.h>
 #include <libmemcached/memcached_types.h>
 #include <libmemcached/memcached_behavior.h>
+#include <libmemcached/memcached_callback.h>
 #include <libmemcached/memcached_get.h>
 #include <libmemcached/memcached_server.h>
 #include <libmemcached/memcached_string.h>
@@ -320,15 +321,6 @@ memcached_return_t memcached_fetch_execute(memcached_st *ptr,
                                            memcached_execute_fn *callback,
                                            void *context,
                                            unsigned int number_of_callbacks);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_callback_set(memcached_st *ptr,
-                                          memcached_callback_t flag,
-                                          void *data);
-LIBMEMCACHED_API
-void *memcached_callback_get(memcached_st *ptr,
-                             memcached_callback_t flag,
-                             memcached_return_t *error);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *function, void *context, uint32_t number_of_callbacks);

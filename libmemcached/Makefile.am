@@ -22,6 +22,7 @@ pkginclude_HEADERS= memcached.h \
 		    memcached.hpp \
 		    exception.hpp \
 		    memcached_behavior.h \
+		    memcached_callback.h \
                     memcached_configure.h \
 		    memcached_constants.h \
 		    memcached_get.h \

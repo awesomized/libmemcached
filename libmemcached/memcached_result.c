@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Functions to manipulate the result structure.
+ *
+ */
+
 /* 
   memcached_result_st are used to internally represent the return values from
   memcached. We use a structure so that long term as identifiers are added 

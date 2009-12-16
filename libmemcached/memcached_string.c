@@ -5,6 +5,8 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
+ * Summary: String structure used for libmemcached.
+ *
  */
 
 #include "common.h"

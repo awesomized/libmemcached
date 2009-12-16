@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ */
+
 #ifndef TESTS_KETAMA_TEST_CASES_SPY_H
 #define TESTS_KETAMA_TEST_CASES_SPY_H
 

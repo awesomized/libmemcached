@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: String structure used for libmemcached.
+ *
+ */
+
 /*
   This is a partial implementation for fetching/creating memcached_server_st objects.
 */

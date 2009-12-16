@@ -1,9 +1,12 @@
-/*
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
  * Summary: Constants for libmemcached
  *
- * Copy: See Copyright for the status of this software.
- *
- * Author: Brian Aker
  */
 
 #ifndef __MEMCACHED_CONSTANTS_H__

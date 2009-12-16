@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Change any of the possible callbacks.
+ *
+ */
+
 #include "common.h" 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -65,19 +76,19 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
 #ifdef MEMCACHED_ENABLE_DEPRECATED
   case MEMCACHED_CALLBACK_MALLOC_FUNCTION:
     {
-      memcached_malloc_function func= *(memcached_malloc_function *)&data;
+      memcached_malloc_function func= *(memcached_malloc_fn *)&data;
       ptr->call_malloc= func;
       break;
     }
   case MEMCACHED_CALLBACK_REALLOC_FUNCTION:
     {
-      memcached_realloc_function func= *(memcached_realloc_function *)&data;
+      memcached_realloc_function func= *(memcached_realloc_fn *)&data;
       ptr->call_realloc= func;
       break;
     }
   case MEMCACHED_CALLBACK_FREE_FUNCTION:
     {
-      memcached_free_function func= *(memcached_free_function *)&data;
+      memcached_free_function func= *(memcached_free_fn *)&data;
       ptr->call_free= func;
       break;
     }

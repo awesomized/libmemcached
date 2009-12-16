@@ -1,8 +1,12 @@
-/*
- * Summary: Internal functions used by the library. Not for public use!
- * Copy: See Copyright for the status of this software.
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker 
+ * All rights reserved.
  *
- * Author: Trond Norbye
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Internal functions used by the library. Not for public use!
+ *
  */
 
 #ifndef LIBMEMCACHED_MEMCACHED_INTERNAL_H
