@@ -72,25 +72,28 @@ static inline memcached_return memcached_send(memcached_st *ptr,
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
-  rc= memcached_validate_key_length(key_length, ptr->flags & MEM_BINARY_PROTOCOL);
+  rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol);
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
   
   unlikely (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
-  if (ptr->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->flags.binary_protocol)
+  {
     return memcached_send_binary(ptr, master_key, master_key_length,
                                  key, key_length,
                                  value, value_length, expiration,
                                  flags, cas, verb);
+  }
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
 
   if (cas)
+  {
     write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                                     "%s %s%.*s %u %llu %zu %llu%s\r\n", 
                                     storage_op_string(verb),
@@ -98,7 +101,8 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                                     (int)key_length, key, flags, 
                                     (unsigned long long)expiration, value_length, 
                                     (unsigned long long)cas,
-                                    (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
+                                    (ptr->flags.no_reply) ? " noreply" : "");
+  }
   else
   {
     char *buffer_ptr= buffer;
@@ -122,10 +126,10 @@ static inline memcached_return memcached_send(memcached_st *ptr,
                                      "%u %llu %zu%s\r\n", 
                                      flags, 
                                      (unsigned long long)expiration, value_length,
-                                     (ptr->flags & MEM_NOREPLY) ? " noreply" : "");
+                                     ptr->flags.no_reply ? " noreply" : "");
   }
 
-  if (ptr->flags & MEM_USE_UDP && ptr->flags & MEM_BUFFER_REQUESTS)
+  if (ptr->flags.use_udp && ptr->flags.buffer_requests)
   {
     size_t cmd_size= write_length + value_length + 2;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
@@ -152,10 +156,14 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  if ((ptr->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP)
+  if (ptr->flags.buffer_requests && verb == SET_OP)
+  {
     to_write= 0;
+  }
   else
+  {
     to_write= 1;
+  }
 
   if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
   {
@@ -163,7 +171,7 @@ static inline memcached_return memcached_send(memcached_st *ptr,
     goto error;
   }
 
-  if (ptr->flags & MEM_NOREPLY)
+  if (ptr->flags.no_reply)
     return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
 
   if (to_write == 0)
@@ -435,7 +443,7 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
   uint32_t server_key= memcached_generate_hash(ptr, master_key, 
                                                master_key_length);
   memcached_server_st *server= &ptr->hosts[server_key];
-  bool noreply= server->root->flags & MEM_NOREPLY;
+  bool noreply= server->root->flags.no_reply;
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= get_com_code(verb, noreply);
@@ -456,11 +464,12 @@ static memcached_return memcached_send_binary(memcached_st *ptr,
   if (cas)
     request.message.header.request.cas= htonll(cas);
   
-  flush= (uint8_t) (((server->root->flags & MEM_BUFFER_REQUESTS) && verb == SET_OP) ? 0 : 1);
+  flush= (uint8_t) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
 
-  if ((server->root->flags & MEM_USE_UDP) && !flush)
+  if (server->root->flags.use_udp && !flush)
   {
     size_t cmd_size= send_length + key_length + value_length;
+
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
       return MEMCACHED_WRITE_FAILURE;
     if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)

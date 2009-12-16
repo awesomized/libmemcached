@@ -35,7 +35,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   uint32_t dummy_flags;
   memcached_return dummy_error;
 
-  unlikely (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
@@ -139,7 +139,7 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
   bool is_master_key_set= false;
 
-   unlikely (ptr->flags & MEM_USE_UDP)
+   unlikely (ptr->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
   LIBMEMCACHED_MEMCACHED_MGET_START();
@@ -151,12 +151,12 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
   if (ptr->number_of_hosts == 0)
     return MEMCACHED_NO_SERVERS;
 
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (ptr->flags.verify_key && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   if (master_key && master_key_length)
   {
-    if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((const char * const *)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+    if (ptr->flags.verify_key && (memcached_key_test((const char * const *)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
       return MEMCACHED_BAD_KEY_PROVIDED;
     master_server_key= memcached_generate_hash(ptr, master_key, master_key_length);
     is_master_key_set= true;
@@ -174,7 +174,7 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-      if (ptr->flags & MEM_NO_BLOCK)
+      if (ptr->flags.no_block)
         (void)memcached_io_write(&ptr->hosts[x], NULL, 0, 1);
 
       while(memcached_server_response_count(&ptr->hosts[x]))
@@ -182,11 +182,11 @@ static memcached_return memcached_mget_by_key_real(memcached_st *ptr,
     }
   }
 
-  if (ptr->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->flags.binary_protocol)
     return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys,
                               key_length, number_of_keys, mget_mode);
 
-  if (ptr->flags & MEM_SUPPORT_CAS)
+  if (ptr->flags.support_cas)
   {
     get_command= "gets ";
     get_command_length= 5;
@@ -301,7 +301,7 @@ memcached_return memcached_mget_execute_by_key(memcached_st *ptr,
                                                void *context,
                                                unsigned int number_of_callbacks)
 {
-  if ((ptr->flags & MEM_BINARY_PROTOCOL) == 0)
+  if ((ptr->flags.binary_protocol) == 0)
     return MEMCACHED_NOT_SUPPORTED;
 
   memcached_return rc;
@@ -360,7 +360,7 @@ static memcached_return simple_binary_mget(memcached_st *ptr,
 
     memcached_return vk;
     vk= memcached_validate_key_length(key_length[x],
-                                      ptr->flags & MEM_BINARY_PROTOCOL);
+                                      ptr->flags.binary_protocol);
     unlikely (vk != MEMCACHED_SUCCESS)
     {
       if (x > 0)

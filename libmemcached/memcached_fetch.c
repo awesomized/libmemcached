@@ -8,7 +8,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 {
   memcached_result_st *result_buffer= &ptr->result;
 
-  unlikely (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
@@ -45,7 +45,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 {
   memcached_server_st *server;
 
-  unlikely (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;

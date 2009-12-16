@@ -81,7 +81,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
   }
 #endif
 
-  if (ptr->root->flags & MEM_NO_BLOCK)
+  if (ptr->root->flags.no_block)
   {
     int error;
     struct linger linger;
@@ -93,7 +93,7 @@ static memcached_return set_socket_options(memcached_server_st *ptr)
     WATCHPOINT_ASSERT(error == 0);
   }
 
-  if (ptr->root->flags & MEM_TCP_NODELAY)
+  if (ptr->root->flags.tcp_nodelay)
   {
     int flag= 1;
     int error;
@@ -196,7 +196,7 @@ static memcached_return network_connect(memcached_server_st *ptr)
     struct addrinfo *use;
 
     if (!ptr->sockaddr_inited ||
-        (!(ptr->root->flags & MEM_USE_CACHE_LOOKUPS)))
+        (!(ptr->root->flags.use_cache_lookups)))
     {
       memcached_return rc;
 

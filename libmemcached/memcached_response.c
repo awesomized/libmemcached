@@ -25,7 +25,7 @@ memcached_return memcached_read_one_response(memcached_server_st *ptr,
     result = &ptr->root->result;
 
   memcached_return rc;
-  if (ptr->root->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->root->flags.binary_protocol)
     rc= binary_read_one_response(ptr, buffer, buffer_length, result);
   else
     rc= textual_read_one_response(ptr, buffer, buffer_length, result);
@@ -44,7 +44,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
                                     memcached_result_st *result)
 {
   /* We may have old commands in the buffer not set, first purge */
-  if (ptr->root->flags & MEM_NO_BLOCK)
+  if (ptr->root->flags.no_block)
     (void)memcached_io_write(ptr, NULL, 0, 1);
 
   /*
@@ -52,7 +52,7 @@ memcached_return memcached_response(memcached_server_st *ptr,
    * returned the last one. Purge all pending messages to ensure backwards
    * compatibility. 
    */
-  if ((ptr->root->flags & MEM_BINARY_PROTOCOL) == 0)
+  if (ptr->root->flags.binary_protocol == false)
     while (memcached_server_response_count(ptr) > 1)
     {
       memcached_return rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
@@ -83,7 +83,7 @@ static memcached_return textual_value_fetch(memcached_server_st *ptr,
   size_t to_read;
   char *value_ptr;
 
-  if (ptr->root->flags & MEM_USE_UDP)
+  if (ptr->root->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
   WATCHPOINT_ASSERT(ptr->root);

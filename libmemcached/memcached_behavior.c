@@ -10,14 +10,6 @@
   We quit all connections so we can reset the sockets.
 */
 
-static void set_behavior_flag(memcached_st *ptr, memcached_flags temp_flag, uint64_t data)
-{
-  if (data)
-    ptr->flags|= temp_flag;
-  else
-    ptr->flags&= ~temp_flag;
-}
-
 memcached_return memcached_behavior_set(memcached_st *ptr,
                                         memcached_behavior flag,
                                         uint64_t data)
@@ -47,29 +39,32 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     if (data)
-        set_behavior_flag(ptr, MEM_VERIFY_KEY, 0);
-    set_behavior_flag(ptr, MEM_BINARY_PROTOCOL, data);
+        ptr->flags.verify_key= false;
+
+    ptr->flags.binary_protocol= data ? true : false;
     break;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
-    set_behavior_flag(ptr, MEM_SUPPORT_CAS, data);
+    ptr->flags.support_cas= data ? true: false;
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
-    set_behavior_flag(ptr, MEM_NO_BLOCK, data);
+    ptr->flags.no_block= data ? true: false;
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    set_behavior_flag(ptr, MEM_BUFFER_REQUESTS, data);
+    ptr->flags.buffer_requests= data ? true : false;
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USE_UDP:
     if (ptr->number_of_hosts)
       return MEMCACHED_FAILURE;
-    set_behavior_flag(ptr, MEM_USE_UDP, data);
+    ptr->flags.use_udp= data ? true : false;
+
     if (data)
-      set_behavior_flag(ptr,MEM_NOREPLY,data);
+      ptr->flags.no_reply= data ? true : false;
     break;
+
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
-    set_behavior_flag(ptr, MEM_TCP_NODELAY, data);
+    ptr->flags.tcp_nodelay= data ? true : false;
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
@@ -101,7 +96,7 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     {
       ptr->hash= MEMCACHED_HASH_MD5;
       ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
-      set_behavior_flag(ptr, MEM_KETAMA_WEIGHTED, data);
+      ptr->flags.ketama_weighted= data ? true : false;
       run_distribution(ptr);
       break;
     }
@@ -133,17 +128,17 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
     run_distribution(ptr);
     break;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
-    set_behavior_flag(ptr, MEM_USE_CACHE_LOOKUPS, data);
+    ptr->flags.use_cache_lookups= data ? true : false;
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
-    if (ptr->flags & MEM_BINARY_PROTOCOL)
+    if (ptr->flags.binary_protocol)
         break;
-    set_behavior_flag(ptr, MEM_VERIFY_KEY, data);
+    ptr->flags.verify_key= data ? true : false;
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
-      set_behavior_flag(ptr, MEM_USE_SORT_HOSTS, data);
+      ptr->flags.use_sort_hosts= data ? true : false;
       run_distribution(ptr);
 
       break;
@@ -168,17 +163,17 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    set_behavior_flag(ptr, MEM_HASH_WITH_PREFIX_KEY, data);
+    ptr->flags.hash_with_prefix_key= data ? true : false;
     break;
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    set_behavior_flag(ptr, MEM_NOREPLY, data);
+    ptr->flags.no_reply= data ? true : false;
     break;
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
-    set_behavior_flag(ptr, MEM_AUTO_EJECT_HOSTS, data);
+    ptr->flags.auto_eject_hosts= data ? true : false;
     break;
-    case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
+  case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
       srandom((uint32_t) time(NULL));
-      set_behavior_flag(ptr, MEM_RANDOMIZE_REPLICA_READ, data);
+      ptr->flags.randomize_replica_read= data ? true : false;
       break;
   default:
     /* Shouldn't get here */
@@ -192,8 +187,6 @@ memcached_return memcached_behavior_set(memcached_st *ptr,
 uint64_t memcached_behavior_get(memcached_st *ptr,
                                 memcached_behavior flag)
 {
-  memcached_flags temp_flag= MEM_NO_BLOCK;
-
   switch (flag)
   {
   case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
@@ -205,32 +198,24 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
     return ptr->io_key_prefetch;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
-    temp_flag= MEM_BINARY_PROTOCOL;
-    break;
+    return ptr->flags.binary_protocol;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
-    temp_flag= MEM_SUPPORT_CAS;
-    break;
+    return ptr->flags.support_cas;
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
-    temp_flag= MEM_USE_CACHE_LOOKUPS;
+    return ptr->flags.use_cache_lookups;
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
-    temp_flag= MEM_NO_BLOCK;
-    break;
+    return ptr->flags.no_block;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    temp_flag= MEM_BUFFER_REQUESTS;
-    break;
+    return ptr->flags.buffer_requests;
   case MEMCACHED_BEHAVIOR_USE_UDP:
-    temp_flag= MEM_USE_UDP;
-    break;
+    return ptr->flags.use_udp;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
-    temp_flag= MEM_TCP_NODELAY;
-    break;
+    return ptr->flags.tcp_nodelay;
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
-    temp_flag= MEM_VERIFY_KEY;
-    break;
+    return ptr->flags.verify_key;
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
-    temp_flag= MEM_KETAMA_WEIGHTED;
-    break;
+    return ptr->flags.ketama_weighted;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_KETAMA:
@@ -253,8 +238,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
-    temp_flag= MEM_USE_SORT_HOSTS;
-    break;
+    return ptr->flags.use_sort_hosts;
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
     return (uint64_t)ptr->poll_timeout;
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
@@ -300,25 +284,18 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    temp_flag= MEM_HASH_WITH_PREFIX_KEY;
-    break;
+    return ptr->flags.hash_with_prefix_key;
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    temp_flag= MEM_NOREPLY;
-    break;
+    return ptr->flags.no_reply;
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
-    temp_flag= MEM_AUTO_EJECT_HOSTS;
-    break;
+    return ptr->flags.auto_eject_hosts;
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
-    temp_flag= MEM_RANDOMIZE_REPLICA_READ;
-    break;
+    return ptr->flags.randomize_replica_read;
   default:
     WATCHPOINT_ASSERT(flag);
     break;
   }
 
-  WATCHPOINT_ASSERT(temp_flag); /* Programming mistake if it gets this far */
-  if (ptr->flags & temp_flag)
-    return 1;
-  else
-    return 0;
+  WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
+  return 0;
 }

@@ -83,7 +83,7 @@ error:
 memcached_return memcached_dump(memcached_st *ptr, memcached_dump_func *callback, void *context, uint32_t number_of_callbacks)
 {
   /* No support for Binary protocol yet */
-  if (ptr->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->flags.binary_protocol)
     return MEMCACHED_FAILURE;
 
   return ascii_dump(ptr, callback, context, number_of_callbacks);

@@ -10,7 +10,7 @@ memcached_return memcached_flush(memcached_st *ptr, time_t expiration)
   memcached_return rc;
 
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
-  if (ptr->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->flags.binary_protocol)
     rc= memcached_flush_binary(ptr, expiration);
   else
     rc= memcached_flush_textual(ptr, expiration);
@@ -31,7 +31,8 @@ static memcached_return memcached_flush_textual(memcached_st *ptr,
 
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    bool no_reply= (ptr->flags & MEM_NOREPLY);
+    bool no_reply= ptr->flags.no_reply;
+
     if (expiration)
       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                                      "flush_all %llu%s\r\n",
@@ -67,7 +68,7 @@ static memcached_return memcached_flush_binary(memcached_st *ptr,
 
   for (x= 0; x < ptr->number_of_hosts; x++)
   {
-    if (ptr->flags & MEM_NOREPLY)
+    if (ptr->flags.no_reply)
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
     else
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;

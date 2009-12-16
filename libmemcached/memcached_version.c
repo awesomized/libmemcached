@@ -10,10 +10,10 @@ static inline memcached_return memcached_version_textual(memcached_st *ptr);
 
 memcached_return memcached_version(memcached_st *ptr)
 {
-   if (ptr->flags & MEM_USE_UDP)
+   if (ptr->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
-   if (ptr->flags & MEM_BINARY_PROTOCOL)
+   if (ptr->flags.binary_protocol)
      return memcached_version_binary(ptr);
    else
      return memcached_version_textual(ptr);      

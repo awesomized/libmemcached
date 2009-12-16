@@ -43,7 +43,7 @@ memcached_return run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     return update_continuum(ptr);
   case MEMCACHED_DISTRIBUTION_MODULA:
-    if (ptr->flags & MEM_USE_SORT_HOSTS)
+    if (ptr->flags.use_sort_hosts)
       sort_hosts(ptr);
     break;
   case MEMCACHED_DISTRIBUTION_RANDOM:
@@ -326,9 +326,9 @@ memcached_return memcached_server_push(memcached_st *ptr, memcached_server_st *l
 
   for (x= 0; x < count; x++)
   {
-    if ((ptr->flags & MEM_USE_UDP && list[x].type != MEMCACHED_CONNECTION_UDP)
+    if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
             || ((list[x].type == MEMCACHED_CONNECTION_UDP)
-            && ! (ptr->flags & MEM_USE_UDP)) )
+            && ! (ptr->flags.use_udp)) )
       return MEMCACHED_INVALID_HOST_PROTOCOL;
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
@@ -408,8 +408,8 @@ static memcached_return server_add(memcached_st *ptr, const char *hostname,
 {
   memcached_server_st *new_host_list;
 
-  if ( (ptr->flags & MEM_USE_UDP && type != MEMCACHED_CONNECTION_UDP)
-      || ( (type == MEMCACHED_CONNECTION_UDP) && !(ptr->flags & MEM_USE_UDP) ) )
+  if ( (ptr->flags.use_udp && type != MEMCACHED_CONNECTION_UDP)
+      || ( (type == MEMCACHED_CONNECTION_UDP) && (! ptr->flags.use_udp) ) )
     return MEMCACHED_INVALID_HOST_PROTOCOL;
 
   new_host_list= ptr->call_realloc(ptr, ptr->hosts,

@@ -18,7 +18,7 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
       memcached_return rc;
       char buffer[MEMCACHED_MAX_BUFFER];
 
-      if (ptr->root->flags & MEM_BINARY_PROTOCOL)
+      if (ptr->root->flags.binary_protocol)
       {
         protocol_binary_request_quit request = {.bytes= {0}};
         request.message.header.request.magic = PROTOCOL_BINARY_REQ;

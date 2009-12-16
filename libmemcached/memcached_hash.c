@@ -172,7 +172,7 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   if (ptr->number_of_hosts == 1)
     return 0;
 
-  if (ptr->flags & MEM_HASH_WITH_PREFIX_KEY)
+  if (ptr->flags.hash_with_prefix_key)
   {
     size_t temp_length= ptr->prefix_key_length + key_length;
     char temp[temp_length];

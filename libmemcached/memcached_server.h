@@ -19,8 +19,8 @@ struct memcached_server_st {
   } options;
   bool sockaddr_inited;
   uint16_t count;
-  unsigned int cursor_active;
-  unsigned int port;
+  uint32_t cursor_active;
+  in_port_t port;
   int cached_errno;
   int fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */

@@ -12,9 +12,11 @@
 
 #include <stdlib.h>
 #include <inttypes.h>
+
 #if !defined(__cplusplus)
 # include <stdbool.h>
 #endif
+
 #include <sys/types.h>
 #include <netinet/in.h>
 
@@ -92,7 +94,25 @@ struct memcached_st {
   uint32_t number_of_hosts;
   uint32_t cursor_server;
   int cached_errno;
-  uint32_t flags;
+  struct {
+    bool no_block:1;
+    bool tcp_nodelay:1;
+    bool reuse_memory:1;
+    bool use_md5:1;
+    bool use_crc:1;
+    bool use_cache_lookups:1;
+    bool support_cas:1;
+    bool buffer_requests:1;
+    bool use_sort_hosts:1;
+    bool verify_key:1;
+    bool ketama_weighted:1;
+    bool binary_protocol:1;
+    bool hash_with_prefix_key:1;
+    bool no_reply:1;
+    bool use_udp:1;
+    bool auto_eject_hosts:1;
+    bool randomize_replica_read:1;
+  } flags;
   int32_t poll_timeout;
   int32_t connect_timeout;
   int32_t retry_timeout;

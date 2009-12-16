@@ -27,7 +27,7 @@ memcached_return memcached_do(memcached_server_st *ptr, const void *command,
 
   if (sent_length == -1 || (size_t)sent_length != command_length)
     rc= MEMCACHED_WRITE_FAILURE;
-  else if ((ptr->root->flags & MEM_NOREPLY) == 0)
+  else if ((ptr->root->flags.no_reply) == 0)
     memcached_server_response_increment(ptr);
 
   return rc;

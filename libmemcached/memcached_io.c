@@ -43,7 +43,7 @@ static memcached_return io_wait(memcached_server_st *ptr,
   }
 
   int timeout= ptr->root->poll_timeout;
-  if ((ptr->root->flags & MEM_NO_BLOCK) == 0)
+  if (ptr->root->flags.no_block == false)
     timeout= -1;
 
   error= poll(&fds, 1, timeout);
@@ -112,7 +112,7 @@ static bool process_input_buffer(memcached_server_st *ptr)
   ** We might be able to process some of the response messages if we
   ** have a callback set up
   */
-  if (ptr->root->callbacks != NULL && (ptr->root->flags & MEM_USE_UDP) == 0)
+  if (ptr->root->callbacks != NULL && ptr->root->flags.use_udp == false)
   {
     /*
      * We might have responses... try to read them out and fire

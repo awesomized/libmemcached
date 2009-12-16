@@ -28,7 +28,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
   rc= memcached_validate_key_length(key_length,
-                                    ptr->flags & MEM_BINARY_PROTOCOL);
+                                    ptr->flags.binary_protocol);
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
 
@@ -36,10 +36,10 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
-  to_write= (uint8_t)((ptr->flags & MEM_BUFFER_REQUESTS) ? 0 : 1);
-  bool no_reply= (ptr->flags & MEM_NOREPLY);
+  to_write= (uint8_t)((ptr->flags.buffer_requests) ? 0 : 1);
+  bool no_reply= (ptr->flags.no_reply);
 
-  if (ptr->flags & MEM_BINARY_PROTOCOL)
+  if (ptr->flags.binary_protocol)
   {
     likely (!expiration)
       rc= binary_delete(ptr, server_key, key, key_length, to_write);
@@ -93,7 +93,7 @@ memcached_return memcached_delete_by_key(memcached_st *ptr,
       goto error;
     }
 
-    if (ptr->flags & MEM_USE_UDP && !to_write)
+    if (ptr->flags.use_udp && !to_write)
     {
       if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
         return MEMCACHED_WRITE_FAILURE;
@@ -133,7 +133,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
   protocol_binary_request_delete request= {.bytes= {0}};
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  if (ptr->flags & MEM_NOREPLY)
+  if (ptr->flags.no_reply)
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
   else
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
@@ -141,7 +141,7 @@ static inline memcached_return binary_delete(memcached_st *ptr,
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl((uint32_t) key_length);
 
-  if (ptr->flags & MEM_USE_UDP && !flush)
+  if (ptr->flags.use_udp && !flush)
   {
     size_t cmd_size= sizeof(request.bytes) + key_length;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)

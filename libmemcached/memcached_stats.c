@@ -361,7 +361,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   memcached_return rc;
   memcached_stat_st *stats;
 
-  unlikely (ptr->flags & MEM_USE_UDP)
+  unlikely (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
@@ -380,7 +380,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   {
     memcached_return temp_return;
     
-    if (ptr->flags & MEM_BINARY_PROTOCOL)
+    if (ptr->flags.binary_protocol)
       temp_return= binary_stats_fetch(ptr, stats + x, args, x);
     else
       temp_return= ascii_stats_fetch(ptr, stats + x, args, x);
@@ -405,7 +405,7 @@ memcached_return memcached_stat_servername(memcached_stat_st *memc_stat, char *a
 
   memcached_server_add(&memc, hostname, port);
 
-  if (memc.flags & MEM_BINARY_PROTOCOL)
+  if (memc.flags.binary_protocol)
     rc= binary_stats_fetch(&memc, memc_stat, args, 0);
   else
     rc= ascii_stats_fetch(&memc, memc_stat, args, 0);

@@ -221,7 +221,25 @@ static test_return_t  clone_test(memcached_st *memc)
     test_truth(memc_clone->connect_timeout == memc->connect_timeout);
     test_truth(memc_clone->delete_trigger == memc->delete_trigger);
     test_truth(memc_clone->distribution == memc->distribution);
-    test_truth(memc_clone->flags == memc->flags);
+    { // Test all of the flags
+      test_truth(memc_clone->flags.no_block == memc->flags.no_block);
+      test_truth(memc_clone->flags.tcp_nodelay == memc->flags.tcp_nodelay);
+      test_truth(memc_clone->flags.reuse_memory == memc->flags.reuse_memory);
+      test_truth(memc_clone->flags.use_md5 == memc->flags.use_md5);
+      test_truth(memc_clone->flags.use_crc == memc->flags.use_crc);
+      test_truth(memc_clone->flags.use_cache_lookups == memc->flags.use_cache_lookups);
+      test_truth(memc_clone->flags.support_cas == memc->flags.support_cas);
+      test_truth(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
+      test_truth(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);
+      test_truth(memc_clone->flags.verify_key == memc->flags.verify_key);
+      test_truth(memc_clone->flags.ketama_weighted == memc->flags.ketama_weighted);
+      test_truth(memc_clone->flags.binary_protocol == memc->flags.binary_protocol);
+      test_truth(memc_clone->flags.hash_with_prefix_key == memc->flags.hash_with_prefix_key);
+      test_truth(memc_clone->flags.no_reply == memc->flags.no_reply);
+      test_truth(memc_clone->flags.use_udp == memc->flags.use_udp);
+      test_truth(memc_clone->flags.auto_eject_hosts == memc->flags.auto_eject_hosts);
+      test_truth(memc_clone->flags.randomize_replica_read == memc->flags.randomize_replica_read);
+    }
     test_truth(memc_clone->get_key_failure == memc->get_key_failure);
     test_truth(memc_clone->hash == memc->hash);
     test_truth(memc_clone->hash_continuum == memc->hash_continuum);
@@ -3933,7 +3951,7 @@ static test_return_t dump_test(memcached_st *memc)
   callbacks[0]= &callback_dump_counter;
 
   /* No support for Binary protocol yet */
-  if (memc->flags & MEM_BINARY_PROTOCOL)
+  if (memc->flags.binary_protocol)
     return TEST_SUCCESS;
 
   main_rc= set_test3(memc);
@@ -4371,6 +4389,7 @@ static test_return_t add_udp_server_tcp_client_test(memcached_st *memc)
   memcached_st tcp_client;
   memcached_create(&tcp_client);
   test_truth(memcached_server_add_udp(&tcp_client, server.hostname, server.port) == MEMCACHED_INVALID_HOST_PROTOCOL);
+
   return TEST_SUCCESS;
 }
 
@@ -4381,15 +4400,16 @@ static test_return_t set_udp_behavior_test(memcached_st *memc)
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, memc->distribution);
   test_truth(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1) == MEMCACHED_SUCCESS);
-  test_truth(memc->flags & MEM_USE_UDP);
-  test_truth(memc->flags & MEM_NOREPLY);;
+  test_truth(memc->flags.use_udp);
+  test_truth(memc->flags.no_reply);
 
   test_truth(memc->number_of_hosts == 0);
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP,0);
-  test_truth(!(memc->flags & MEM_USE_UDP));
+  test_truth(! (memc->flags.use_udp));
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY,0);
-  test_truth(!(memc->flags & MEM_NOREPLY));
+  test_truth(! (memc->flags.no_reply));
+
   return TEST_SUCCESS;
 }
 

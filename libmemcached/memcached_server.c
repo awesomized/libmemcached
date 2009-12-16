@@ -127,7 +127,7 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
   uint32_t server_key;
 
   *error= memcached_validate_key_length(key_length,
-                                        ptr->flags & MEM_BINARY_PROTOCOL);
+                                        ptr->flags.binary_protocol);
   unlikely (*error != MEMCACHED_SUCCESS)
     return NULL;
 
@@ -137,7 +137,7 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
     return NULL;
   }
 
-  if ((ptr->flags & MEM_VERIFY_KEY) && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
   {
     *error= MEMCACHED_BAD_KEY_PROVIDED;
     return NULL;
