@@ -11,7 +11,7 @@ test: all
 test-extended: all
 	@(cd tests; ${MAKE} test-extended)
 
-valgrind:
+valgrind: all
 	@(cd tests; ${MAKE} valgrind)
 
 test-no-outputdiff:
@@ -34,3 +34,11 @@ generic:
 	cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
 rpm: all dist generic fedora
+
+clean-merge:
+	find ./ | grep \.orig | xargs rm
+	find ./ | grep \.rej | xargs rm
+	find ./ | grep \~$ | xargs rm
+
+hudson-valgrind: all
+	@(cd tests; ${MAKE} hudson-valgrind)

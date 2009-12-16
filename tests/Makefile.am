@@ -98,3 +98,6 @@ helgrind-slap:
 	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  ${top_builddir}/clients/memslap --server=localhost --concurrency=30
 
 test-no-outputdiff: test
+
+hudson-valgrind:
+	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --log-file=/tmp/valgrind.out testapp
