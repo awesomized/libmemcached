@@ -15,6 +15,6 @@
 #ifndef MEMCACHED_UTIL_H
 #define MEMCACHED_UTIL_H
 
-#include <libmemcached/memcached_pool.h>
+#include <libmemcached/pool.h>
 
 #endif /* MEMCACHED_UTIL_H */

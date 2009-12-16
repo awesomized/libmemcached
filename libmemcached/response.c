@@ -6,7 +6,6 @@
 */
 
 #include "common.h"
-#include "memcached_io.h"
 
 static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
                                                   char *buffer, size_t buffer_length,

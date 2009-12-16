@@ -25,15 +25,16 @@
 
 #include <libmemcached/visibility.h>
 #include <libmemcached/memcached_configure.h>
-#include <libmemcached/memcached_constants.h>
-#include <libmemcached/memcached_types.h>
-#include <libmemcached/memcached_behavior.h>
-#include <libmemcached/memcached_callback.h>
-#include <libmemcached/memcached_get.h>
-#include <libmemcached/memcached_server.h>
-#include <libmemcached/memcached_string.h>
-#include <libmemcached/memcached_result.h>
-#include <libmemcached/memcached_storage.h>
+#include <libmemcached/constants.h>
+#include <libmemcached/types.h>
+#include <libmemcached/string.h>
+// Everything above this line must be in the order specified.
+#include <libmemcached/behavior.h>
+#include <libmemcached/callback.h>
+#include <libmemcached/get.h>
+#include <libmemcached/result.h>
+#include <libmemcached/server.h>
+#include <libmemcached/storage.h>
 
 #ifdef __cplusplus
 extern "C" {

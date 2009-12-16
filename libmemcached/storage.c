@@ -10,7 +10,6 @@
  */
 
 #include "common.h"
-#include "memcached_io.h"
 
 typedef enum {
   SET_OP,

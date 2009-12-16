@@ -10,7 +10,6 @@
  */
 
 #include "common.h"
-#include "memcached_io.h"
 
 /*
   What happens if no servers exist?

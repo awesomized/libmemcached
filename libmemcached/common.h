@@ -52,11 +52,11 @@
 
 
 #include "libmemcached/memcached.h"
-#include "libmemcached/memcached_watchpoint.h"
+#include "libmemcached/watchpoint.h"
 
 /* These are private not to be installed headers */
-#include "libmemcached/memcached_io.h"
-#include "libmemcached/memcached_internal.h"
+#include "libmemcached/io.h"
+#include "libmemcached/internal.h"
 #include "libmemcached/libmemcached_probes.h"
 #include "libmemcached/memcached/protocol_binary.h"
 #include "libmemcached/byteorder.h"

@@ -12,7 +12,7 @@
 #ifndef __MEMCACHED_STORAGE_H__
 #define __MEMCACHED_STORAGE_H__
 
-#include "libmemcached/memcached_types.h"
+#include "libmemcached/memcached.h"
 
 #ifdef __cplusplus
 extern "C" {

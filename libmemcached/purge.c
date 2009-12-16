@@ -1,6 +1,4 @@
 #include "common.h"
-#include "memcached_io.h"
-#include "memcached_constants.h"
 
 memcached_return_t memcached_purge(memcached_server_st *ptr)
 {

@@ -11,7 +11,6 @@
 
 
 #include "common.h"
-#include "memcached_io.h"
 #include <sys/select.h>
 #include <poll.h>
 

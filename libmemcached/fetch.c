@@ -1,5 +1,4 @@
 #include "common.h"
-#include "memcached_io.h"
 
 char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length, 
                       size_t *value_length, 
