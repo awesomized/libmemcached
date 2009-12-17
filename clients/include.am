@@ -90,7 +90,7 @@ test-start-server:
 	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
 	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
 
-valgrind:
+client-valgrind:
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10
 	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000

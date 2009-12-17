@@ -2,7 +2,9 @@ ACLOCAL_AMFLAGS = -I m4
 
 # includes append to these:
 SUFFIXES =
+PHONY =
 TESTS =
+CLEANFILES = 
 bin_PROGRAMS =
 noinst_HEADERS =
 lib_LTLIBRARIES =
@@ -14,10 +16,13 @@ EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST = README.FIRST
 
-SUBDIRS = . docs support tests example 
+SUBDIRS = docs
 
 include libmemcached/include.am
 include clients/include.am
+include tests/include.am
+include example/include.am
+include support/include.am
 
 check-local: test-no-outputdiff
 
