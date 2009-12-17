@@ -235,8 +235,6 @@ static test_return_t  clone_test(memcached_st *memc)
       test_truth(memc_clone->flags.no_block == memc->flags.no_block);
       test_truth(memc_clone->flags.tcp_nodelay == memc->flags.tcp_nodelay);
       test_truth(memc_clone->flags.reuse_memory == memc->flags.reuse_memory);
-      test_truth(memc_clone->flags.use_md5 == memc->flags.use_md5);
-      test_truth(memc_clone->flags.use_crc == memc->flags.use_crc);
       test_truth(memc_clone->flags.use_cache_lookups == memc->flags.use_cache_lookups);
       test_truth(memc_clone->flags.support_cas == memc->flags.support_cas);
       test_truth(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
@@ -2952,7 +2950,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
 
     uint32_t server_idx = memcached_generate_hash(memc, key, strlen(key));
     char *hostname = memc->hosts[server_idx].hostname;
-    unsigned int port = memc->hosts[server_idx].port;
+    in_port_t port = memc->hosts[server_idx].port;
     fprintf(fp, "key %s is on host /%s:%u\n", key, hostname, port);
   }
   fclose(fp);
@@ -5218,8 +5216,9 @@ static test_return_t regression_bug_447342(memcached_st *memc)
    * This is to verify correct behavior in the library. Fake that two servers
    * are dead..
    */
-  unsigned int port0= memc->hosts[0].port;
-  unsigned int port2= memc->hosts[2].port;
+  in_port_t port0= memc->hosts[0].port;
+  in_port_t port2= memc->hosts[2].port;
+
   memc->hosts[0].port= 0;
   memc->hosts[2].port= 0;
 
@@ -5238,11 +5237,13 @@ static test_return_t regression_bug_447342(memcached_st *memc)
 
   /* Remove half of the objects */
   for (int x= 0; x < (int)max_keys; ++x)
+  {
     if (x & 1)
     {
       rc= memcached_delete(memc, keys[x], key_length[x], 0);
       assert(rc == MEMCACHED_SUCCESS);
     }
+  }
 
   memcached_quit(memc);
   memc->hosts[0].port= 0;
@@ -5265,6 +5266,7 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   /* restore the memc handle */
   memc->hosts[0].port= port0;
   memc->hosts[2].port= port2;
+
   return TEST_SUCCESS;
 }
 
