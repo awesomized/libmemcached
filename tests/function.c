@@ -2817,8 +2817,11 @@ static test_return_t pre_binary(memcached_st *memc);
 
 static test_return_t user_supplied_bug21(memcached_st *memc)
 {
-  if (pre_binary(memc) != MEMCACHED_SUCCESS)
-    return TEST_SKIPPED;
+  test_return_t test_rc;
+  test_rc= pre_binary(memc);
+
+  if (test_rc != TEST_SUCCESS)
+    return test_rc;
 
   test_return_t rc;
 
@@ -3522,8 +3525,11 @@ static test_return_t pre_binary(memcached_st *memc)
 
 static test_return_t pre_replication(memcached_st *memc)
 {
-  if (pre_binary(memc) != TEST_SUCCESS)
-    return TEST_FAILURE;
+  test_return_t test_rc;
+  test_rc= pre_binary(memc);
+
+  if (test_rc != TEST_SUCCESS)
+    return test_rc;
 
   /*
    * Make sure that we store the item on all servers
@@ -4394,7 +4400,12 @@ static test_return_t init_udp(memcached_st *memc)
 
 static test_return_t binary_init_udp(memcached_st *memc)
 {
-  pre_binary(memc);
+  test_return_t test_rc;
+  test_rc= pre_binary(memc);
+
+  if (test_rc != TEST_SUCCESS)
+    return test_rc;
+
   return init_udp(memc);
 }
 
@@ -4972,8 +4983,11 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
 
 static test_return_t regression_bug_434484(memcached_st *memc)
 {
-  if (pre_binary(memc) != MEMCACHED_SUCCESS)
-    return TEST_SKIPPED;
+  test_return_t test_rc;
+  test_rc= pre_binary(memc);
+
+  if (test_rc != TEST_SUCCESS)
+    return test_rc;
 
   memcached_return_t ret;
   const char *key= "regression_bug_434484";
@@ -4994,8 +5008,11 @@ static test_return_t regression_bug_434484(memcached_st *memc)
 
 static test_return_t regression_bug_434843(memcached_st *memc)
 {
-  if (pre_binary(memc) != MEMCACHED_SUCCESS)
-    return TEST_SKIPPED;
+  test_return_t test_rc;
+  test_rc= pre_binary(memc);
+
+  if (test_rc != TEST_SUCCESS)
+    return test_rc;
 
   memcached_return_t rc;
   unsigned int counter= 0;
