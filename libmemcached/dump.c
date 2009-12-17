@@ -88,4 +88,3 @@ memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback
 
   return ascii_dump(ptr, callback, context, number_of_callbacks);
 }
-

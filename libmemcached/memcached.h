@@ -31,6 +31,7 @@
 // Everything above this line must be in the order specified.
 #include <libmemcached/behavior.h>
 #include <libmemcached/callback.h>
+#include <libmemcached/dump.h>
 #include <libmemcached/get.h>
 #include <libmemcached/result.h>
 #include <libmemcached/server.h>
@@ -126,6 +127,7 @@ struct memcached_st {
   void *user_data;
   time_t next_distribution_rebuild;
   size_t prefix_key_length;
+  uint32_t number_of_replicas;
   memcached_hash_t distribution_hash;
   memcached_result_st result;
   memcached_continuum_item_st *continuum;
@@ -137,9 +139,8 @@ struct memcached_st {
   memcached_calloc_fn call_calloc;
   memcached_trigger_key_fn get_key_failure;
   memcached_trigger_delete_key_fn delete_trigger;
-  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
-  uint32_t number_of_replicas;
   memcached_callback_st *callbacks;
+  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
 };
 
 LIBMEMCACHED_API
@@ -320,10 +321,6 @@ memcached_return_t memcached_fetch_execute(memcached_st *ptr,
                                            memcached_execute_fn *callback,
                                            void *context,
                                            unsigned int number_of_callbacks);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *function, void *context, uint32_t number_of_callbacks);
-
 
 LIBMEMCACHED_API
 memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,

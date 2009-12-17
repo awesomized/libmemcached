@@ -23,6 +23,7 @@ pkginclude_HEADERS= \
 		    behavior.h \
 		    callback.h \
 		    constants.h \
+		    dump.h \
 		    exception.hpp \
 		    get.h \
 		    memcached.h \
