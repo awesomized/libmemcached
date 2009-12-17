@@ -105,6 +105,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
       ptr->delete_trigger= func;
       break;
     }
+  case MEMCACHED_CALLBACK_MAX:
   default:
     return MEMCACHED_FAILURE;
   }
@@ -178,6 +179,7 @@ void *memcached_callback_get(memcached_st *ptr,
       *error= ptr->delete_trigger ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
       return *(void **)&ptr->delete_trigger;
     }
+  case MEMCACHED_CALLBACK_MAX:
   default:
     WATCHPOINT_ASSERT(0);
     *error= MEMCACHED_FAILURE;

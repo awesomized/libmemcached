@@ -15,6 +15,29 @@
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 
+static bool set_flag(uint64_t data)
+{
+  // Wordy :)
+  return data ? true : false;
+}
+
+static memcached_return_t set_hash(memcached_hash_t *store, memcached_hash_t type)
+{
+#ifndef HAVE_HSIEH_HASH
+  if (type == MEMCACHED_HASH_HSIEH)
+    return MEMCACHED_FAILURE;
+#endif
+  if (type < MEMCACHED_HASH_MAX)
+  {
+    *store= type;
+  }
+  else
+  {
+    return MEMCACHED_FAILURE;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
 /*
   This function is used to modify the behavior of running client.
 
@@ -50,106 +73,82 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     if (data)
-        ptr->flags.verify_key= false;
-
-    ptr->flags.binary_protocol= data ? true : false;
+    {
+      ptr->flags.verify_key= false;
+    }
+    ptr->flags.binary_protocol= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
-    ptr->flags.support_cas= data ? true: false;
+    ptr->flags.support_cas= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
-    ptr->flags.no_block= data ? true: false;
+    ptr->flags.no_block= set_flag(data);
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    ptr->flags.buffer_requests= data ? true : false;
+    ptr->flags.buffer_requests= set_flag(data);
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USE_UDP:
     if (ptr->number_of_hosts)
+    {
       return MEMCACHED_FAILURE;
-    ptr->flags.use_udp= data ? true : false;
-
+    }
+    ptr->flags.use_udp= set_flag(data);
     if (data)
-      ptr->flags.no_reply= data ? true : false;
+    {
+      ptr->flags.no_reply= set_flag(data);
+    }
     break;
-
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
-    ptr->flags.tcp_nodelay= data ? true : false;
+    ptr->flags.tcp_nodelay= set_flag(data);
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
-    {
-      ptr->distribution= (memcached_server_distribution_t)(data);
-      if (ptr->distribution == MEMCACHED_DISTRIBUTION_RANDOM)
-      {
-        srandom((uint32_t) time(NULL));
-      }
-      run_distribution(ptr);
-      break;
-    }
+    return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
   case MEMCACHED_BEHAVIOR_KETAMA:
     {
       if (data)
       {
-        ptr->hash= MEMCACHED_HASH_MD5;
-        ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
+        (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_MD5);
+        (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_MD5);
+        (void)memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
       }
       else
       {
-        ptr->hash= 0;
-        ptr->distribution= 0;
+        (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_DEFAULT);
+        (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_DEFAULT);
+        (void)memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_MODULA);
       }
-      run_distribution(ptr);
+
       break;
     }
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
     {
-      ptr->hash= MEMCACHED_HASH_MD5;
-      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
-      ptr->flags.ketama_weighted= data ? true : false;
-      run_distribution(ptr);
-      break;
+      (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_MD5);
+      (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_MD5);
+      ptr->flags.ketama_weighted= set_flag(data);
+      /**
+        @note We try to keep the same distribution going. This should be deprecated and rewritten.
+      */
+      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA); 
     }
-  case MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE:
-    switch (data)
-    {
-    case MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED:
-      ptr->hash= MEMCACHED_HASH_MD5;
-      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA;
-      break;
-    case MEMCACHED_KETAMA_COMPAT_SPY:
-      ptr->hash= MEMCACHED_HASH_MD5;
-      ptr->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY;
-      break;
-    default:
-       return MEMCACHED_FAILURE;
-    }
-    run_distribution(ptr);
-    break;
   case MEMCACHED_BEHAVIOR_HASH:
-#ifndef HAVE_HSIEH_HASH
-    if ((memcached_hash_t)(data) == MEMCACHED_HASH_HSIEH)
-      return MEMCACHED_FAILURE;
-#endif
-    ptr->hash= (memcached_hash_t)(data);
-    break;
+    return memcached_behavior_set_key_hash(ptr, (memcached_hash_t)(data));
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
-    ptr->hash_continuum= (memcached_hash_t)(data);
-    run_distribution(ptr);
-    break;
+    return memcached_behavior_set_distribution_hash(ptr, (memcached_hash_t)(data));
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
-    ptr->flags.use_cache_lookups= data ? true : false;
+    ptr->flags.use_cache_lookups= set_flag(data);
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     if (ptr->flags.binary_protocol)
-        break;
-    ptr->flags.verify_key= data ? true : false;
+      return MEMCACHED_FAILURE;
+    ptr->flags.verify_key= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
-      ptr->flags.use_sort_hosts= data ? true : false;
+      ptr->flags.use_sort_hosts= set_flag(data);
       run_distribution(ptr);
 
       break;
@@ -174,21 +173,23 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    ptr->flags.hash_with_prefix_key= data ? true : false;
+    ptr->flags.hash_with_prefix_key= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    ptr->flags.no_reply= data ? true : false;
+    ptr->flags.no_reply= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
-    ptr->flags.auto_eject_hosts= data ? true : false;
+    ptr->flags.auto_eject_hosts= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
       srandom((uint32_t) time(NULL));
-      ptr->flags.randomize_replica_read= data ? true : false;
+      ptr->flags.randomize_replica_read= set_flag(data);
       break;
+  case MEMCACHED_BEHAVIOR_MAX:
   default:
     /* Shouldn't get here */
-    WATCHPOINT_ASSERT(flag);
+    WATCHPOINT_ASSERT(0);
+    return MEMCACHED_FAILURE;
     break;
   }
 
@@ -230,24 +231,10 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->distribution;
   case MEMCACHED_BEHAVIOR_KETAMA:
     return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? (uint64_t) 1 : 0;
-  case MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE:
-    switch (ptr->distribution)
-    {
-    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
-      return MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED;
-    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
-      return MEMCACHED_KETAMA_COMPAT_SPY;
-    case MEMCACHED_DISTRIBUTION_MODULA:
-    case MEMCACHED_DISTRIBUTION_CONSISTENT:
-    case MEMCACHED_DISTRIBUTION_RANDOM:
-    default:
-      return (uint64_t)-1;
-    }
-    /* NOTREACHED */
   case MEMCACHED_BEHAVIOR_HASH:
     return ptr->hash;
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
-    return ptr->hash_continuum;
+    return ptr->distribution_hash;
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
@@ -283,7 +270,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       int sock_size;
       socklen_t sock_length= sizeof(int);
 
-      /* REFACTOR */
+      /** 
+        @note REFACTOR 
+      */
       /* We just try the first host, and if it is down we return zero */
       if ((memcached_connect(&ptr->hosts[0])) != MEMCACHED_SUCCESS)
         return 0;
@@ -304,11 +293,53 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.auto_eject_hosts;
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
     return ptr->flags.randomize_replica_read;
+  case MEMCACHED_BEHAVIOR_MAX:
   default:
-    WATCHPOINT_ASSERT(flag);
-    break;
+    WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
+    return 0;
   }
 
-  WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
-  return 0;
+  /* NOTREACHED */
+}
+
+
+memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcached_server_distribution_t type)
+{
+  if (type < MEMCACHED_DISTRIBUTION_CONSISTENT_MAX)
+  {
+    ptr->distribution= type;
+    run_distribution(ptr);
+  }
+  else
+  {
+    return MEMCACHED_FAILURE;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
+
+memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st *ptr)
+{
+  return ptr->distribution;
+}
+
+memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_hash_t type)
+{
+  return set_hash(&ptr->hash, type);
+}
+
+memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
+{
+  return ptr->hash;
+}
+
+memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type)
+{
+  return set_hash(&ptr->distribution_hash, type);
+}
+
+memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr)
+{
+  return ptr->distribution_hash;
 }

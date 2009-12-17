@@ -1,3 +1,6 @@
+  * We removed the MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE added in 0.35. Instead use
+    memcached_behavior_set_distribution().
+
 0.35 Mon Nov  9 11:18:33 PST 2009
   * Added support for by_key operations for inc/dec methods.
   * Added mget test to memslap.

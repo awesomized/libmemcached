@@ -47,7 +47,9 @@ memcached_return_t run_distribution(memcached_st *ptr)
       sort_hosts(ptr);
     break;
   case MEMCACHED_DISTRIBUTION_RANDOM:
+    srandom((uint32_t) time(NULL));
     break;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
   }
@@ -235,7 +237,7 @@ memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
+          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->distribution_hash);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
@@ -279,7 +281,7 @@ memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->hash_continuum);
+          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->distribution_hash);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }

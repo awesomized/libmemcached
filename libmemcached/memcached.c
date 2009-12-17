@@ -98,7 +98,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   new_clone->retry_timeout= source->retry_timeout;
   new_clone->distribution= source->distribution;
   new_clone->hash= source->hash;
-  new_clone->hash_continuum= source->hash_continuum;
+  new_clone->distribution_hash= source->distribution_hash;
   new_clone->user_data= source->user_data;
 
   new_clone->snd_timeout= source->snd_timeout;
@@ -136,6 +136,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   }
 
   rc= run_distribution(new_clone);
+
   if (rc != MEMCACHED_SUCCESS)
   {
     memcached_free(new_clone);
@@ -148,6 +149,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
 
   return new_clone;
 }
+
 void *memcached_get_user_data(memcached_st *ptr)
 {
   return ptr->user_data;
@@ -157,5 +159,6 @@ void *memcached_set_user_data(memcached_st *ptr, void *data)
 {
   void *ret= ptr->user_data;
   ptr->user_data= data;
+
   return ret;
 }

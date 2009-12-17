@@ -92,15 +92,17 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
     }
     case MEMCACHED_HASH_JENKINS:
     {
-      hash=jenkins_hash(key, key_length, 13);
+      hash= jenkins_hash(key, key_length, 13);
       break;
     }
+    case MEMCACHED_HASH_MAX:
     default:
     {
-      WATCHPOINT_ASSERT(hash_algorithm);
+      WATCHPOINT_ASSERT(0);
       break;
     }
   }
+
   return hash;
 }
 
@@ -151,11 +153,11 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
     return hash % ptr->number_of_hosts;
   case MEMCACHED_DISTRIBUTION_RANDOM:
     return (uint32_t) random() % ptr->number_of_hosts;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
     return hash % ptr->number_of_hosts;
   }
-
   /* NOTREACHED */
 }
 
@@ -191,12 +193,15 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
 
   WATCHPOINT_ASSERT(hash);
 
-  if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS) && ptr->next_distribution_rebuild) {
+  if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS) && ptr->next_distribution_rebuild)
+  {
     struct timeval now;
 
     if (gettimeofday(&now, NULL) == 0 &&
         now.tv_sec > ptr->next_distribution_rebuild)
+    {
       run_distribution(ptr);
+    }
   }
 
   return dispatch_host(ptr, hash);

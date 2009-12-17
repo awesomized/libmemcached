@@ -22,6 +22,24 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr, const memcached_beh
 LIBMEMCACHED_API
 uint64_t memcached_behavior_get(memcached_st *ptr, const memcached_behavior_t flag);
 
+LIBMEMCACHED_API
+memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcached_server_distribution_t type);
+
+LIBMEMCACHED_API
+memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_hash_t type);
+
+LIBMEMCACHED_API
+memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type);
+
+LIBMEMCACHED_API
+memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr);
+
 
 #ifdef __cplusplus
 }

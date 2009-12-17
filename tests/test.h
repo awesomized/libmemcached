@@ -126,7 +126,7 @@ void create_core(void);
 do \
 { \
   if (! (A)) { \
-    fprintf(stderr, "Assertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\nAssertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -136,7 +136,7 @@ do \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "Assertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\nAssertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -147,7 +147,7 @@ do \
 { \
   if (strcmp((A), (B))) \
   { \
-    fprintf(stderr, "%d", __LINE__); \
+    fprintf(stderr, "\n%s:%d: %s -> %s\n", __FILE__, __LINE__, (A), (B)); \
     create_core(); \
     return TEST_FAILURE; \
   } \

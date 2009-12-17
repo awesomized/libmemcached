@@ -128,7 +128,7 @@ struct memcached_st {
   void *user_data;
   time_t next_distribution_rebuild;
   size_t prefix_key_length;
-  memcached_hash_t hash_continuum;
+  memcached_hash_t distribution_hash;
   memcached_result_st result;
   memcached_continuum_item_st *continuum;
   memcached_clone_fn on_clone;

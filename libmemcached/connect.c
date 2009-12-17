@@ -322,7 +322,9 @@ memcached_return_t memcached_connect(memcached_server_st *ptr)
     if (curr_time.tv_sec < ptr->next_retry)
     {
       if (memcached_behavior_get(ptr->root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
+      {
         run_distribution(ptr->root);
+      }
 
       ptr->root->last_disconnected_server = ptr;
       return MEMCACHED_SERVER_MARKED_DEAD;
@@ -343,6 +345,7 @@ memcached_return_t memcached_connect(memcached_server_st *ptr)
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     rc= unix_socket_connect(ptr);
     break;
+  case MEMCACHED_CONNECTION_MAX:
   default:
     WATCHPOINT_ASSERT(0);
   }

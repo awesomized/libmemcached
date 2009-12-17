@@ -252,7 +252,7 @@ static test_return_t  clone_test(memcached_st *memc)
     }
     test_truth(memc_clone->get_key_failure == memc->get_key_failure);
     test_truth(memc_clone->hash == memc->hash);
-    test_truth(memc_clone->hash_continuum == memc->hash_continuum);
+    test_truth(memc_clone->distribution_hash == memc->distribution_hash);
     test_truth(memc_clone->io_bytes_watermark == memc->io_bytes_watermark);
     test_truth(memc_clone->io_msg_watermark == memc->io_msg_watermark);
     test_truth(memc_clone->io_key_prefetch == memc->io_key_prefetch);
@@ -715,6 +715,10 @@ static test_return_t  bad_key_test(memcached_st *memc)
   memcached_st *memc_clone;
   unsigned int set= 1;
   size_t max_keylen= 0xffff;
+
+  // Just skip if we are in binary mode.
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+    return TEST_SKIPPED;
 
   memc_clone= memcached_clone(NULL, memc);
   test_truth(memc_clone);
@@ -2734,7 +2738,7 @@ static test_return_t user_supplied_bug18(memcached_st *trash)
   {
     uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     char *hostname = memc->hosts[server_idx].hostname;
-    test_truth(strcmp(hostname, ketama_test_cases[x].server) == 0);
+    test_strcmp(hostname, ketama_test_cases[x].server);
   }
 
   memcached_server_list_free(server_pool);
@@ -2921,8 +2925,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
   test_truth(value == MEMCACHED_HASH_MD5);
 
 
-  test_truth(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
-                                MEMCACHED_KETAMA_COMPAT_SPY) == MEMCACHED_SUCCESS);
+  test_truth(memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY) == MEMCACHED_SUCCESS);
 
   memcached_server_st *server_pool;
   server_pool = memcached_servers_parse("10.0.1.1:11211,10.0.1.2:11211,10.0.1.3:11211,10.0.1.4:11211,10.0.1.5:11211,10.0.1.6:11211,10.0.1.7:11211,10.0.1.8:11211,192.168.1.1:11211,192.168.100.1:11211");
@@ -4865,19 +4868,17 @@ static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
   (void)trash;
 
   memc= memcached_create(NULL);
-  assert(memc);
+  test_truth(memc);
 
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  assert(rc == MEMCACHED_SUCCESS);
+  test_truth(rc == MEMCACHED_SUCCESS);
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  assert(value == 1);
+  test_truth(value == 1);
 
-  assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
-                                MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED) == MEMCACHED_SUCCESS);
+  test_truth(memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) == MEMCACHED_SUCCESS);
+  test_truth(memcached_behavior_get_distribution(memc) == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
 
-  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE) ==
-         MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED);
 
   server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
   memcached_server_push(memc, server_pool);
@@ -4924,19 +4925,16 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
   (void)trash;
 
   memc= memcached_create(NULL);
-  assert(memc);
+  test_truth(memc);
 
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  assert(rc == MEMCACHED_SUCCESS);
+  test_truth(rc == MEMCACHED_SUCCESS);
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  assert(value == 1);
+  test_truth(value == 1);
 
-  assert(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE,
-                                MEMCACHED_KETAMA_COMPAT_SPY) == MEMCACHED_SUCCESS);
-
-  assert(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE) ==
-         MEMCACHED_KETAMA_COMPAT_SPY);
+  test_truth(memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY) == MEMCACHED_SUCCESS);
+  test_truth(memcached_behavior_get_distribution(memc) == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY);
 
   server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
   memcached_server_push(memc, server_pool);
