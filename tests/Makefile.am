@@ -19,7 +19,7 @@ EXTRA_DIST = \
 LIBS =
 
 noinst_HEADERS = test.h server.h ketama_test_cases.h ketama_test_cases_spy.h hash_results.h libmemcached_world.h
-noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers
+noinst_PROGRAMS = testapp testplus udptest atomsmasher startservers testhashkit
 noinst_LTLIBRARIES= libserver.la libtest.la
 
 libserver_la_SOURCES= server.c
@@ -41,6 +41,9 @@ atomsmasher_LDADD = $(top_builddir)/clients/libgenexec.la libtest.la libserver.l
 startservers_SOURCES = start.c
 startservers_LDADD = libserver.la $(LDADDS)
 
+testhashkit_SOURCES = hashkit_functions.c 
+testhashkit_LDADD = libtest.la $(top_builddir)/libhashkit/libhashkit.la
+
 client-record:
 	sh t/memcat.test > r/memcat.res
 	sh t/memcp.test > r/memcp.res
@@ -48,12 +51,14 @@ client-record:
 	sh t/memslap.test > r/memslap.res
 	sh t/memstat.test > r/memstat.res
 
-test: testapp testplus library_test memcapable
+test: testapp testhashkit testplus library_test libmhashkit_test memcapable
 	echo "Tests completed"
 
 library_test:
 	./testapp
-#	./testplus
+
+libmhashkit_test:
+	./testhashkit
 
 memcapable:
 	@MEMC_BINARY@ -d -P /tmp/Xumemc.pid -p 12555
@@ -76,6 +81,12 @@ clients:
 	diff r/memstat.res r/memstat.cmp
 	cat /tmp/Xumemc.pid | xargs kill
 	rm /tmp/Xumemc.pid
+
+gdb-mem:
+	$(LIBTOOL) --mode=execute gdb testapp
+
+gdb-hash:
+	$(LIBTOOL) --mode=execute gdb testhashkit
 
 valgrind:
 	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes  testapp
