@@ -9,7 +9,7 @@
 #include "common.h"
 static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
-  memcached_return_t rc= 0;
+  memcached_return_t rc= MEMCACHED_SUCCESS;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   size_t send_length;
   uint32_t server_key;
@@ -23,7 +23,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
     /* 256 I BELIEVE is the upper limit of slabs */
     for (x= 0; x < 256; x++)
     {
-      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                      "stats cachedump %u 0 0\r\n", x);
 
       rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
