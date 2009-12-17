@@ -10,7 +10,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
   int e;
   char str_port[NI_MAXSERV];
 
-  sprintf(str_port, "%u", server->port);
+  snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
 
   memset(&hints, 0, sizeof(hints));
 
@@ -63,6 +63,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 #endif
 
@@ -78,6 +80,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 #endif
 
@@ -91,6 +95,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_LINGER,
                       &linger, (socklen_t)sizeof(struct linger));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 
   if (ptr->root->flags.tcp_nodelay)
@@ -101,6 +107,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, IPPROTO_TCP, TCP_NODELAY,
                       &flag, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 
   if (ptr->root->send_size)
@@ -110,6 +118,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_SNDBUF,
                       &ptr->root->send_size, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 
   if (ptr->root->recv_size)
@@ -119,6 +129,8 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     error= setsockopt(ptr->fd, SOL_SOCKET, SO_RCVBUF,
                       &ptr->root->recv_size, (socklen_t)sizeof(int));
     WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
   }
 
   /* libmemcached will always use nonblocking IO to avoid write deadlocks */
@@ -129,7 +141,9 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
   while (flags == -1 && (errno == EINTR || errno == EAGAIN));
 
   unlikely (flags == -1)
+  {
     return MEMCACHED_CONNECTION_FAILURE;
+  }
   else if ((flags & O_NONBLOCK) == 0)
   {
     int rval;
@@ -139,7 +153,9 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
     while (rval == -1 && (errno == EINTR || errno == EAGAIN));
 
     unlikely (rval == -1)
+    {
       return MEMCACHED_CONNECTION_FAILURE;
+    }
   }
 
   return MEMCACHED_SUCCESS;
@@ -148,7 +164,6 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
 static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 {
   struct sockaddr_un servAddr;
-  socklen_t addrlen;
 
   if (ptr->fd == -1)
   {
@@ -161,8 +176,6 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
     memset(&servAddr, 0, sizeof (struct sockaddr_un));
     servAddr.sun_family= AF_UNIX;
     strcpy(servAddr.sun_path, ptr->hostname); /* Copy filename */
-
-    addrlen= (socklen_t) (strlen(servAddr.sun_path) + sizeof(servAddr.sun_family));
 
 test_connect:
     if (connect(ptr->fd,

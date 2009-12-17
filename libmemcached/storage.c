@@ -67,7 +67,6 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
 {
   char to_write;
   size_t write_length;
-  ssize_t sent_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   unsigned int server_key;
@@ -114,7 +113,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     memcpy(buffer_ptr, command, strlen(command));
 
     /* Copy in the key prefix, switch to the buffer_ptr */
-    buffer_ptr= memcpy(buffer_ptr + strlen(command) , ptr->prefix_key, strlen(ptr->prefix_key));
+    buffer_ptr= memcpy((buffer_ptr + strlen(command)), ptr->prefix_key, strlen(ptr->prefix_key));
 
     /* Copy in the key, adjust point if a key prefix was used. */
     buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key ? strlen(ptr->prefix_key) : 0), 
@@ -152,7 +151,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     goto error;
 
   /* Send command body */
-  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], value, value_length, 0)) == -1)
+  if (memcached_io_write(&ptr->hosts[server_key], value, value_length, 0) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -167,7 +166,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     to_write= 1;
   }
 
-  if ((sent_length= memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write)) == -1)
+  if (memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;

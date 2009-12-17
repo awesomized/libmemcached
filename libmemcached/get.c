@@ -82,9 +82,10 @@ char *memcached_get_by_key(memcached_st *ptr,
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
 
           rc= memcached_set(ptr, key, key_length,
-                            memcached_result_value(&ptr->result),
-                            memcached_result_length(&ptr->result),
-                            0, memcached_result_flags(&ptr->result));
+                            (memcached_result_value(&ptr->result)),
+                            (memcached_result_length(&ptr->result)),
+                            0,
+                            (memcached_result_flags(&ptr->result)));
 
           if (rc == MEMCACHED_BUFFERED && latch == 0)
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0);
@@ -92,9 +93,10 @@ char *memcached_get_by_key(memcached_st *ptr,
         else
         {
           rc= memcached_set(ptr, key, key_length,
-                            memcached_result_value(&ptr->result),
-                            memcached_result_length(&ptr->result),
-                            0, memcached_result_flags(&ptr->result));
+                            (memcached_result_value(&ptr->result)),
+                            (memcached_result_length(&ptr->result)),
+                            0,
+                            (memcached_result_flags(&ptr->result)));
         }
 
         if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)

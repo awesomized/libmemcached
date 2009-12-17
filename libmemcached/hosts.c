@@ -215,9 +215,9 @@ memcached_return_t update_continuum(memcached_st *ptr)
         // Spymemcached ketema key format is: hostname/ip:port-index
         // If hostname is not available then: /ip:port-index
         sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "/%s:%d-%d",
+                                            "/%s:%u-%u",
                                             list[host_index].hostname,
-                                            list[host_index].port,
+                                            (uint32_t)list[host_index].port,
                                             pointer_index);
 #ifdef DEBUG
         printf("update_continuum: key is %s\n", sort_host);

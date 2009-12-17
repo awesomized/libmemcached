@@ -333,7 +333,9 @@ ssize_t memcached_io_write(memcached_server_st *ptr,
 
 memcached_return_t memcached_io_close(memcached_server_st *ptr)
 {
+#ifdef DEBUG
   int r;
+#endif
 
   if (ptr->fd == -1)
     return MEMCACHED_SUCCESS;
@@ -341,7 +343,10 @@ memcached_return_t memcached_io_close(memcached_server_st *ptr)
   /* in case of death shutdown to avoid blocking at close() */
   if (1)
   {
-    r= shutdown(ptr->fd, SHUT_RDWR);
+#ifdef DEBUG
+    r=
+#endif
+      shutdown(ptr->fd, SHUT_RDWR);
 
 #ifdef DEBUG
     if (r && errno != ENOTCONN)
@@ -353,7 +358,10 @@ memcached_return_t memcached_io_close(memcached_server_st *ptr)
 #endif
   }
 
-  r= close(ptr->fd);
+#ifdef DEBUG
+  r=
+#endif
+    close(ptr->fd);
 #ifdef DEBUG
   if (r != 0)
     WATCHPOINT_ERRNO(errno);
