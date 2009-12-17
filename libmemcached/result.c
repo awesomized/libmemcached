@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -9,15 +9,15 @@
  *
  */
 
-/* 
+/*
   memcached_result_st are used to internally represent the return values from
-  memcached. We use a structure so that long term as identifiers are added 
-  to memcached we will be able to absorb new attributes without having 
+  memcached. We use a structure so that long term as identifiers are added
+  to memcached we will be able to absorb new attributes without having
   to addjust the entire API.
 */
 #include "common.h"
 
-memcached_result_st *memcached_result_create(memcached_st *memc, 
+memcached_result_st *memcached_result_create(memcached_st *memc,
                                              memcached_result_st *ptr)
 {
   WATCHPOINT_ASSERT(memc && memc->options.is_initialized);
@@ -29,7 +29,7 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   }
   else
   {
-    ptr= memc->call_malloc(memc, sizeof(memcached_result_st));
+    ptr= memc->call_calloc(memc, 1, sizeof(memcached_result_st));
 
     if (ptr == NULL)
       return NULL;
@@ -72,7 +72,14 @@ void memcached_result_free(memcached_result_st *ptr)
 
   if (memcached_is_allocated(ptr))
   {
-    free(ptr);
+    if (ptr->root != NULL)
+    {
+      ptr->root->call_free(ptr->root, ptr);
+    }
+    else
+    {
+      free(ptr);
+    }
   }
   else
   {
