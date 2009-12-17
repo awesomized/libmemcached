@@ -36,6 +36,9 @@ static void sort_hosts(memcached_st *ptr)
 
 memcached_return_t run_distribution(memcached_st *ptr)
 {
+  if (ptr->flags.use_sort_hosts)
+    sort_hosts(ptr);
+
   switch (ptr->distribution)
   {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
@@ -43,8 +46,6 @@ memcached_return_t run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     return update_continuum(ptr);
   case MEMCACHED_DISTRIBUTION_MODULA:
-    if (ptr->flags.use_sort_hosts)
-      sort_hosts(ptr);
     break;
   case MEMCACHED_DISTRIBUTION_RANDOM:
     srandom((uint32_t) time(NULL));
