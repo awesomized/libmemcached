@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = docs libmemcached support clients tests example libhashkit
+SUBDIRS = docs libmemcached libhashkit support clients tests example
 EXTRA_dist = README.FIRST
 
 check-local: test-no-outputdiff
