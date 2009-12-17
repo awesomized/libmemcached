@@ -80,14 +80,14 @@ library_test:
 #	tests/testplus
 
 memcapable: clients/memcapable
-	@MEMC_BINARY@ -d -P tests/Xumemc.pid -p 12555
+	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memcapable -p 12555 || echo "Your memcached server does not support all commands"
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
 PHONY += clients
 clients:
-	@MEMC_BINARY@ -d -P tests/Xumemc.pid -p 12555
+	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
 	export MEMCACHED_SERVERS="localhost:12555"
 	sh tests/t/memcat.test > tests/r/memcat.cmp
 	diff tests/r/memcat.res tests/r/memcat.cmp

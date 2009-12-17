@@ -26,17 +26,6 @@ include support/include.am
 
 check-local: test-no-outputdiff
 
-test: all
-	@(cd tests; ${MAKE} test)
-
-test-extended: all
-	@(cd tests; ${MAKE} test-extended)
-
-valgrind: all
-	@(cd tests; ${MAKE} valgrind)
-
-test-no-outputdiff:
-	@(cd tests; ${MAKE} test-no-outputdiff)
 
 fedora:
 	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
@@ -62,5 +51,3 @@ merge-clean:
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
 
-hudson-valgrind: all
-	@(cd tests; ${MAKE} hudson-valgrind)
