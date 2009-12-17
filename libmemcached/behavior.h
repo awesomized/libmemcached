@@ -17,10 +17,10 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-memcached_return_t memcached_behavior_set(memcached_st *ptr, memcached_behavior_t flag, uint64_t data);
+memcached_return_t memcached_behavior_set(memcached_st *ptr, const memcached_behavior_t flag, uint64_t data);
 
 LIBMEMCACHED_API
-uint64_t memcached_behavior_get(memcached_st *ptr, memcached_behavior_t flag);
+uint64_t memcached_behavior_get(memcached_st *ptr, const memcached_behavior_t flag);
 
 
 #ifdef __cplusplus

@@ -35,10 +35,11 @@ generic:
 
 rpm: all dist generic fedora
 
-clean-merge:
-	find ./ | grep \.orig | xargs rm
-	find ./ | grep \.rej | xargs rm
-	find ./ | grep \~$ | xargs rm
+merge-clean:
+	find ./ | $(GREP) \.orig | xargs rm -f
+	find ./ | $(GREP) \.rej | xargs rm -f
+	find ./ | $(GREP) \~$$ | xargs rm -f
+	bzr unknowns
 
 hudson-valgrind: all
 	@(cd tests; ${MAKE} hudson-valgrind)

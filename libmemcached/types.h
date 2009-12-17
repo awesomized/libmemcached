@@ -38,7 +38,9 @@ typedef memcached_return_t (*memcached_trigger_delete_key_fn)(memcached_st *ptr,
                                                               const char *key, size_t key_length);
 
 typedef memcached_return_t (*memcached_dump_fn)(memcached_st *ptr,
-                                                  const char *key, size_t key_length, void *context);
+                                                const char *key,
+                                                size_t key_length,
+                                                void *context);
 
 typedef struct {
   memcached_execute_fn *callback;

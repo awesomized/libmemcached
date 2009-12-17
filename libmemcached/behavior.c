@@ -22,7 +22,7 @@
 */
 
 memcached_return_t memcached_behavior_set(memcached_st *ptr,
-                                          memcached_behavior_t flag,
+                                          const memcached_behavior_t flag,
                                           uint64_t data)
 {
   switch (flag)
@@ -196,7 +196,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 }
 
 uint64_t memcached_behavior_get(memcached_st *ptr,
-                                memcached_behavior_t flag)
+                                const memcached_behavior_t flag)
 {
   switch (flag)
   {

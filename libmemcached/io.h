@@ -32,7 +32,8 @@ extern "C" {
 #define generate_udp_request_thread_id(A) (A) << UDP_REQUEST_ID_MSG_SIG_DIGITS
 #define UDP_REQUEST_ID_MAX_THREAD_ID get_thread_id_from_request_id(0xFFFF)
 
-struct udp_datagram_header_st {
+struct udp_datagram_header_st
+{
   uint16_t request_id;
   uint16_t sequence_number;
   uint16_t num_datagrams;
@@ -50,8 +51,8 @@ memcached_return_t memcached_io_readline(memcached_server_st *ptr,
                                          size_t size);
 memcached_return_t memcached_io_close(memcached_server_st *ptr);
 /* Read n bytes of data from the server and store them in dta */
-memcached_return_t memcached_safe_read(memcached_server_st *ptr, 
-                                       void *dta, 
+memcached_return_t memcached_safe_read(memcached_server_st *ptr,
+                                       void *dta,
                                        size_t size);
 /* Read a single response from the server */
 memcached_return_t memcached_read_one_response(memcached_server_st *ptr,

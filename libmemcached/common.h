@@ -62,7 +62,8 @@
 #include "libmemcached/byteorder.h"
 
 /* string value */
-struct memcached_continuum_item_st {
+struct memcached_continuum_item_st
+{
   uint32_t index;
   uint32_t value;
 };

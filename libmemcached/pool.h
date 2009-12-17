@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -23,7 +23,7 @@ struct memcached_pool_st;
 typedef struct memcached_pool_st memcached_pool_st;
 
 LIBMEMCACHED_API
-memcached_pool_st *memcached_pool_create(memcached_st* mmc, uint32_t initial, 
+memcached_pool_st *memcached_pool_create(memcached_st* mmc, uint32_t initial,
                                          uint32_t max);
 LIBMEMCACHED_API
 memcached_st* memcached_pool_destroy(memcached_pool_st* pool);
@@ -32,8 +32,8 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
                                  bool block,
                                  memcached_return_t* rc);
 LIBMEMCACHED_API
-memcached_return_t memcached_pool_push(memcached_pool_st* pool, 
-                                     memcached_st* mmc);
+memcached_return_t memcached_pool_push(memcached_pool_st* pool,
+                                       memcached_st* mmc);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_pool_behavior_set(memcached_pool_st *ptr,

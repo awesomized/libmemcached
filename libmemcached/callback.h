@@ -18,11 +18,11 @@ extern "C" {
 
 LIBMEMCACHED_API
 memcached_return_t memcached_callback_set(memcached_st *ptr,
-                                          memcached_callback_t flag,
+                                          const memcached_callback_t flag,
                                           void *data);
 LIBMEMCACHED_API
 void *memcached_callback_get(memcached_st *ptr,
-                             memcached_callback_t flag,
+                             const memcached_callback_t flag,
                              memcached_return_t *error);
 
 #ifdef __cplusplus

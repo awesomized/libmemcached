@@ -60,8 +60,10 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
                                            uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
-memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key,
-                                             size_t key_length, memcached_return_t *error);
+memcached_server_st *memcached_server_by_key(memcached_st *ptr,
+                                             const char *key,
+                                             size_t key_length,
+                                             memcached_return_t *error);
 
 LIBMEMCACHED_API
 const char *memcached_server_error(memcached_server_st *ptr);
@@ -76,16 +78,23 @@ LIBMEMCACHED_API
 memcached_server_st *memcached_server_create(memcached_st *memc, memcached_server_st *ptr);
 
 LIBMEMCACHED_API
-memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host,
-                                                  const char *hostname, in_port_t port,
-                                                  uint32_t weight, memcached_connection_t type);
+memcached_server_st *memcached_server_create_with(memcached_st *memc,
+                                                  memcached_server_st *host,
+                                                  const char *hostname,
+                                                  in_port_t port,
+                                                  uint32_t weight,
+                                                  memcached_connection_t type);
 
 LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
+
 LIBMEMCACHED_API
-memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr);
+memcached_server_st *memcached_server_clone(memcached_server_st *clone,
+                                            memcached_server_st *ptr);
+
 LIBMEMCACHED_API
-memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
+memcached_analysis_st *memcached_analyze(memcached_st *memc,
+                                         memcached_stat_st *memc_stat,
                                          memcached_return_t *error);
 
 LIBMEMCACHED_API

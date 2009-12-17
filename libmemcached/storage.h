@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -20,85 +20,85 @@ extern "C" {
 
 /* All of the functions for adding data to the server */
 LIBMEMCACHED_API
-memcached_return_t memcached_set(memcached_st *ptr, const char *key, size_t key_length, 
-                                 const char *value, size_t value_length, 
+memcached_return_t memcached_set(memcached_st *ptr, const char *key, size_t key_length,
+                                 const char *value, size_t value_length,
                                  time_t expiration,
                                  uint32_t  flags);
 LIBMEMCACHED_API
 memcached_return_t memcached_add(memcached_st *ptr, const char *key, size_t key_length,
-                                 const char *value, size_t value_length, 
+                                 const char *value, size_t value_length,
                                  time_t expiration,
                                  uint32_t  flags);
 LIBMEMCACHED_API
 memcached_return_t memcached_replace(memcached_st *ptr, const char *key, size_t key_length,
-                                     const char *value, size_t value_length, 
+                                     const char *value, size_t value_length,
                                      time_t expiration,
                                      uint32_t  flags);
 LIBMEMCACHED_API
-memcached_return_t memcached_append(memcached_st *ptr, 
+memcached_return_t memcached_append(memcached_st *ptr,
                                     const char *key, size_t key_length,
-                                    const char *value, size_t value_length, 
+                                    const char *value, size_t value_length,
                                     time_t expiration,
                                     uint32_t flags);
 LIBMEMCACHED_API
-memcached_return_t memcached_prepend(memcached_st *ptr, 
+memcached_return_t memcached_prepend(memcached_st *ptr,
                                      const char *key, size_t key_length,
-                                     const char *value, size_t value_length, 
+                                     const char *value, size_t value_length,
                                      time_t expiration,
                                      uint32_t flags);
 LIBMEMCACHED_API
-memcached_return_t memcached_cas(memcached_st *ptr, 
+memcached_return_t memcached_cas(memcached_st *ptr,
                                  const char *key, size_t key_length,
-                                 const char *value, size_t value_length, 
+                                 const char *value, size_t value_length,
                                  time_t expiration,
                                  uint32_t flags,
                                  uint64_t cas);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_set_by_key(memcached_st *ptr, 
-                                        const char *master_key, size_t master_key_length, 
-                                        const char *key, size_t key_length, 
-                                        const char *value, size_t value_length, 
-                                        time_t expiration,
-                                        uint32_t flags);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_add_by_key(memcached_st *ptr, 
+memcached_return_t memcached_set_by_key(memcached_st *ptr,
                                         const char *master_key, size_t master_key_length,
                                         const char *key, size_t key_length,
-                                        const char *value, size_t value_length, 
+                                        const char *value, size_t value_length,
                                         time_t expiration,
                                         uint32_t flags);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_replace_by_key(memcached_st *ptr, 
+memcached_return_t memcached_add_by_key(memcached_st *ptr,
+                                        const char *master_key, size_t master_key_length,
+                                        const char *key, size_t key_length,
+                                        const char *value, size_t value_length,
+                                        time_t expiration,
+                                        uint32_t flags);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_replace_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
-                                            const char *value, size_t value_length, 
+                                            const char *value, size_t value_length,
                                             time_t expiration,
                                             uint32_t flags);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_prepend_by_key(memcached_st *ptr, 
+memcached_return_t memcached_prepend_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
-                                            const char *value, size_t value_length, 
+                                            const char *value, size_t value_length,
                                             time_t expiration,
                                             uint32_t flags);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_append_by_key(memcached_st *ptr, 
+memcached_return_t memcached_append_by_key(memcached_st *ptr,
                                            const char *master_key, size_t master_key_length,
                                            const char *key, size_t key_length,
-                                           const char *value, size_t value_length, 
+                                           const char *value, size_t value_length,
                                            time_t expiration,
                                            uint32_t flags);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_cas_by_key(memcached_st *ptr, 
+memcached_return_t memcached_cas_by_key(memcached_st *ptr,
                                         const char *master_key, size_t master_key_length,
                                         const char *key, size_t key_length,
-                                        const char *value, size_t value_length, 
+                                        const char *value, size_t value_length,
                                         time_t expiration,
                                         uint32_t flags,
                                         uint64_t cas);

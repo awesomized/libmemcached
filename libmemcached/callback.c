@@ -19,7 +19,7 @@
 */
 
 memcached_return_t memcached_callback_set(memcached_st *ptr, 
-                                          memcached_callback_t flag, 
+                                          const memcached_callback_t flag, 
                                           void *data)
 {
   switch (flag)
@@ -113,7 +113,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
 }
 
 void *memcached_callback_get(memcached_st *ptr, 
-                             memcached_callback_t flag,
+                             const memcached_callback_t flag,
                              memcached_return_t *error)
 {
   memcached_return_t local_error;
