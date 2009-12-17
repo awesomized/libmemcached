@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <time.h>
 #include <fnmatch.h>
@@ -62,8 +63,22 @@ static const char *test_strerror(test_return_t code)
 
 void create_core(void)
 {
-   if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL && fork() == 0)
-     abort();
+  if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL)
+  {
+    pid_t pid= fork();
+
+    if (pid == 0)
+    {
+      abort();
+    }
+    else
+    {
+      while (waitpid(pid, NULL, 0) != pid)
+      {
+        ;
+      }
+    }
+  }
 }
 
 
