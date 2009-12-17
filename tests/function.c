@@ -3554,26 +3554,65 @@ static test_return_t pre_replication_noblock(memcached_st *memc)
 
 static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *real_ptr= (mem == NULL) ? mem : (void*)((caddr_t)mem - 8);
+  free(real_ptr);
+#else
   free(mem);
+#endif
 }
 
 static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
 {
-  void *ret= malloc(size);
+#ifdef HARD_MALLOC_TESTS
+  void *ret= malloc(size + 8);
   if (ret != NULL)
+  {
+    ret= (void*)((caddr_t)ret + 8);
+  }
+#else
+  void *ret= malloc(size);
+#endif
+
+  if (ret != NULL)
+  {
     memset(ret, 0xff, size);
+  }
 
   return ret;
 }
 
 static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *real_ptr= (mem == NULL) ? NULL : (void*)((caddr_t)mem - 8);
+  void *nmem= realloc(real_ptr, size + 8);
+
+  void *ret= NULL;
+  if (nmem != NULL)
+  {
+    ret= (void*)((caddr_t)nmem + 8);
+  }
+
+  return ret;
+#else
   return realloc(mem, size);
+#endif
 }
 
 static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *mem= my_malloc(ptr, nelem * size);
+  if (mem)
+  {
+    memset(mem, 0, nelem * size);
+  }
+
+  return mem;
+#else
   return calloc(nelem, size);
+#endif
 }
 
 static test_return_t set_prefix(memcached_st *memc)

@@ -50,7 +50,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   /* Saving malloc calls :) */
   if (string)
   {
-    WATCHPOINT_ASSERT(memc->options.is_safe && string->options.is_initialized == false);
+    WATCHPOINT_ASSERT(string->options.is_initialized == false);
 
     memset(string, 0, sizeof(memcached_string_st));
   }
@@ -82,7 +82,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   return string;
 }
 
-memcached_return_t memcached_string_append_character(memcached_string_st *string, 
+memcached_return_t memcached_string_append_character(memcached_string_st *string,
                                                    char character)
 {
   memcached_return_t rc;
@@ -139,7 +139,7 @@ char *memcached_string_c_copy(memcached_string_st *string)
 memcached_return_t memcached_string_reset(memcached_string_st *string)
 {
   string->end= string->string;
-  
+
   return MEMCACHED_SUCCESS;
 }
 
