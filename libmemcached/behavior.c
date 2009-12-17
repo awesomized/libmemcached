@@ -190,7 +190,6 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     /* Shouldn't get here */
     WATCHPOINT_ASSERT(0);
     return MEMCACHED_FAILURE;
-    break;
   }
 
   return MEMCACHED_SUCCESS;
