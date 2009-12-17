@@ -1,0 +1,143 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+EXTRA_DIST+= \
+	libmemcached/libmemcached.ver \
+	libmemcached/libmemcached_probes.d \
+	libmemcached/memcached/README.txt \
+	libmemcached/memcached_configure.h.in \
+	libmemcached/protocol/libmemcachedprotocol.ver \
+	libmemcached/util/libmemcachedutil.ver
+
+
+noinst_HEADERS+= \
+	libmemcached/byteorder.h \
+	libmemcached/libmemcached_probes.h \
+	libmemcached/io.h \
+	libmemcached/internal.h \
+	libmemcached/common.h \
+	libmemcached/memcached/protocol_binary.h \
+	libmemcached/protocol/common.h \
+	libmemcached/protocol/ascii_handler.h \
+	libmemcached/protocol/binary_handler.h
+
+nobase_pkginclude_HEADERS+= \
+	libmemcached/behavior.h \
+	libmemcached/callback.h \
+	libmemcached/constants.h \
+	libmemcached/exception.hpp \
+	libmemcached/get.h \
+	libmemcached/memcached.h \
+	libmemcached/memcached.hpp \
+	libmemcached/memcached_configure.h \
+	libmemcached/protocol/cache.h \
+	libmemcached/protocol/callback.h \
+	libmemcached/protocol_handler.h \
+	libmemcached/result.h \
+	libmemcached/server.h \
+	libmemcached/storage.h \
+	libmemcached/string.h \
+	libmemcached/types.h \
+	libmemcached/visibility.h \
+	libmemcached/watchpoint.h
+
+
+
+lib_LTLIBRARIES+= libmemcached/libmemcachedprotocol.la
+libmemcached_libmemcachedprotocol_la_SOURCES =  \
+	libmemcached/protocol/ascii_handler.c \
+	libmemcached/protocol/binary_handler.c \
+	libmemcached/protocol/cache.c \
+	libmemcached/protocol/pedantic.c \
+	libmemcached/protocol/protocol_handler.c
+
+libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0 
+
+noinst_LTLIBRARIES+= libmemcached/libmemcachedcallbacks.la
+libmemcached_libmemcachedcallbacks_la_CFLAGS = ${AM_CFLAGS} ${NO_STRICT_ALIASING}
+libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
+
+lib_LTLIBRARIES+= libmemcached/libmemcached.la
+libmemcached_libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
+libmemcached_libmemcached_la_SOURCES = \
+	libmemcached/allocators.c \
+	libmemcached/analyze.c \
+	libmemcached/auto.c \
+	libmemcached/behavior.c \
+	libmemcached/connect.c \
+	libmemcached/crc.c \
+	libmemcached/delete.c \
+	libmemcached/do.c \
+	libmemcached/dump.c \
+	libmemcached/fetch.c \
+	libmemcached/flush.c \
+	libmemcached/flush_buffers.c \
+	libmemcached/get.c \
+	libmemcached/hash.c \
+	libmemcached/hosts.c \
+	libmemcached/io.c \
+	libmemcached/jenkins_hash.c \
+	libmemcached/key.c \
+	libmemcached/md5.c \
+	libmemcached/memcached.c \
+	libmemcached/murmur_hash.c \
+	libmemcached/parse.c \
+	libmemcached/purge.c \
+	libmemcached/quit.c \
+	libmemcached/response.c \
+	libmemcached/result.c \
+	libmemcached/server.c \
+	libmemcached/stats.c \
+	libmemcached/storage.c \
+	libmemcached/strerror.c \
+	libmemcached/string.c \
+	libmemcached/verbosity.c \
+	libmemcached/version.c
+
+
+if INCLUDE_HSIEH_SRC
+libmemcached_libmemcached_la_SOURCES += libmemcached/hsieh_hash.c
+endif
+
+libmemcached_libmemcached_la_DEPENDENCIES= libmemcached/libmemcachedcallbacks.la
+libmemcached_libmemcached_la_LIBADD= $(LIBM) libmemcached/libmemcachedcallbacks.la
+libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info 3:0:0
+
+if BUILD_LIBMEMCACHEDUTIL
+pkginclude_HEADERS+= libmemcached/memcached_util.h libmemcached/pool.h
+lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
+endif
+
+libmemcached_libmemcachedutil_la_SOURCES= libmemcached/util/pool.c
+libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
+libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0
+libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la
+
+if BUILD_BYTEORDER
+noinst_LTLIBRARIES += libmemcached/libbyteorder.la
+libmemcached_libbyteorder_la_SOURCES= libmemcached/byteorder.c
+libmemcached_libmemcached_la_LIBADD += libmemcached/libbyteorder.la
+libmemcached_libmemcached_la_DEPENDENCIES+= libmemcached/libbyteorder.la
+libmemcached_libmemcachedprotocol_la_LIBADD=libmemcached/libbyteorder.la
+libmemcached_libmemcachedprotocol_la_DEPENDENCIES=libmemcached/libbyteorder.la
+endif
+
+if HAVE_DTRACE
+BUILT_SOURCES+= libmemcached/dtrace_probes.h
+libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
+endif
+
+if DTRACE_NEEDS_OBJECTS
+libmemcached_libmemcached_la_DEPENDENCIES += libmemcached/libmemcached_probes.o
+endif
+
+SUFFIXES+= .d
+
+libmemcached/dtrace_probes.h: libmemcached/libmemcached_probes.d
+	$(DTRACE) $(DTRACEFLAGS) -h -o libmemcached/dtrace_probes.h -s libmemcached/libmemcached_probes.d
+
+libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d $(libmemcached_libmemcached_la_OBJECTS)
+	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/.libs/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep '^pic_object' *.lo | cut -f 2 -d\'`
+	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep non_pic_object *.lo | cut -f 2 -d\' `
+

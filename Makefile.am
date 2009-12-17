@@ -1,7 +1,23 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = docs libmemcached support clients tests example
-EXTRA_dist = README.FIRST
+# includes append to these:
+SUFFIXES =
+TESTS =
+bin_PROGRAMS =
+noinst_HEADERS =
+lib_LTLIBRARIES =
+noinst_LTLIBRARIES =
+noinst_PROGRAMS =
+pkginclude_HEADERS =
+nobase_pkginclude_HEADERS =
+EXTRA_HEADERS =
+BUILT_SOURCES=
+EXTRA_DIST = README.FIRST
+
+SUBDIRS = . docs support tests example 
+
+include libmemcached/include.am
+include clients/include.am
 
 check-local: test-no-outputdiff
 
