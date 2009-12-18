@@ -1,21 +1,31 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = docs libmemcached libhashkit support clients tests example
-EXTRA_dist = README.FIRST
+# includes append to these:
+SUFFIXES =
+PHONY =
+TESTS =
+CLEANFILES = 
+bin_PROGRAMS =
+noinst_HEADERS =
+lib_LTLIBRARIES =
+noinst_LTLIBRARIES =
+noinst_PROGRAMS =
+pkginclude_HEADERS =
+nobase_pkginclude_HEADERS =
+EXTRA_HEADERS =
+BUILT_SOURCES=
+EXTRA_DIST = README.FIRST
+
+SUBDIRS = docs libhashkit
+
+include libmemcached/include.am
+include clients/include.am
+include tests/include.am
+include example/include.am
+include support/include.am
 
 check-local: test-no-outputdiff
 
-test: all
-	@(cd tests; ${MAKE} test)
-
-test-extended: all
-	@(cd tests; ${MAKE} test-extended)
-
-valgrind: all
-	@(cd tests; ${MAKE} valgrind)
-
-test-no-outputdiff:
-	@(cd tests; ${MAKE} test-no-outputdiff)
 
 fedora:
 	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
@@ -41,5 +51,3 @@ merge-clean:
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
 
-hudson-valgrind: all
-	@(cd tests; ${MAKE} hudson-valgrind)

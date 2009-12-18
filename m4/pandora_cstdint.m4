@@ -7,6 +7,8 @@
 AC_DEFUN([PANDORA_CXX_CSTDINT],
   [AC_MSG_CHECKING(the location of cstdint)
    AC_LANG_PUSH(C++)
+   save_CXXFLAGS="${CXXFLAGS}"
+   CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
    ac_cv_cxx_cstdint=""
    for location in tr1/cstdint boost/cstdint cstdint; do
      if test -z "$ac_cv_cxx_cstdint"; then
@@ -16,6 +18,7 @@ AC_DEFUN([PANDORA_CXX_CSTDINT],
      fi
    done
    AC_LANG_POP()
+   CXXFLAGS="${save_CXXFLAGS}"
    if test -n "$ac_cv_cxx_cstdint"; then
       AC_MSG_RESULT([$ac_cv_cxx_cstdint])
    else

@@ -9,12 +9,15 @@ dnl are set.
 
 AC_DEFUN([PANDORA_CXX_DEMANGLE],[
   AC_LANG_PUSH([C++])
+  save_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
   AC_CHECK_HEADERS(cxxabi.h)
   AC_CACHE_CHECK([checking for abi::__cxa_demangle], pandora_cv_cxa_demangle,
   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <cxxabi.h>]], [[
     char *foo= 0; int bar= 0;
     foo= abi::__cxa_demangle(foo, foo, 0, &bar);
   ]])],[pandora_cv_cxa_demangle=yes],[pandora_cv_cxa_demangle=no])])
+  CXXFLAGS="${save_CXXFLAGS}"
   AC_LANG_POP()
 
   AS_IF([test "x$pandora_cv_cxa_demangle" = xyes],[

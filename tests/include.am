@@ -1,0 +1,151 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+TESTS_LDADDS = libmemcached/libmemcached.la
+
+if BUILD_LIBMEMCACHEDUTIL
+TESTS_LDADDS+= libmemcached/libmemcachedutil.la
+endif
+
+EXTRA_DIST+= \
+	tests/r/memcat.res \
+	tests/r/memcp.res \
+	tests/r/memrm.res \
+	tests/r/memslap.res \
+	tests/r/memstat.res \
+	tests/t/memcat.test \
+	tests/t/memcp.test \
+	tests/t/memrm.test \
+	tests/t/memslap.test \
+	tests/t/memstat.test
+
+noinst_HEADERS+= \
+	tests/hash_results.h \
+	tests/ketama_test_cases.h \
+	tests/ketama_test_cases_spy.h \
+	tests/libmemcached_world.h \
+	tests/server.h \
+	tests/test.h
+
+noinst_PROGRAMS+= \
+	tests/atomsmasher \
+	tests/startservers \
+	tests/testapp \
+	tests/testhashkit \
+	tests/testplus \
+	tests/udptest
+
+noinst_LTLIBRARIES+= tests/libserver.la
+tests_libserver_la_SOURCES= tests/server.c
+
+noinst_LTLIBRARIES+= tests/libtest.la
+tests_libtest_la_SOURCES= tests/test.c
+
+tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+tests_testapp_SOURCES= tests/function.c
+tests_testapp_LDADD= \
+	clients/libgenexec.la \
+	tests/libserver.la \
+	tests/libtest.la \
+	$(TESTS_LDADDS)
+
+tests_testplus_SOURCES= tests/plus.cpp
+tests_testplus_LDADD= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+
+tests_udptest_SOURCES= tests/udp.c
+tests_udptest_LDADD= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+
+tests_atomsmasher_SOURCES= tests/atomsmasher.c
+tests_atomsmasher_LDADD= \
+	clients/libgenexec.la \
+	tests/libserver.la \
+	tests/libtest.la \
+	$(TESTS_LDADDS)
+
+tests_startservers_SOURCES= tests/start.c
+tests_startservers_LDADD= tests/libserver.la $(TESTS_LDADDS)
+
+tests_testhashkit_SOURCES = tests/hashkit_functions.c 
+tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
+tests_testhashkit_DEPENDENCIES = libhashkit
+
+client-record:
+	sh tests/t/memcat.test > tests/r/memcat.res
+	sh tests/t/memcp.test > tests/r/memcp.res
+	sh tests/t/memrm.test > tests/r/memrm.res
+	sh tests/t/memslap.test > tests/r/memslap.res
+	sh tests/t/memstat.test > tests/r/memstat.res
+
+test: tests/testapp tests/testplus library_test memcapable libmhashkit_test
+	echo "Tests completed"
+
+library_test:
+	tests/testapp
+#	tests/testplus
+
+libmhashkit_test: libhashkit
+	tests/testhashkit
+
+memcapable: clients/memcapable
+	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcapable -p 12555 || echo "Your memcached server does not support all commands"
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+PHONY += clients
+clients:
+	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	export MEMCACHED_SERVERS="localhost:12555"
+	sh tests/t/memcat.test > tests/r/memcat.cmp
+	diff tests/r/memcat.res tests/r/memcat.cmp
+	sh tests/t/memcp.test > tests/r/memcp.cmp
+	diff tests/r/memcp.res tests/r/memcp.cmp
+	sh tests/t/memrm.test > tests/r/memrm.cmp
+	diff tests/r/memrm.res tests/r/memrm.cmp
+	sh tests/t/memslap.test > tests/r/memslap.cmp
+	diff tests/r/memslap.res tests/r/memslap.cmp
+	sh tests/t/memstat.test > tests/r/memstat.cmp
+	diff tests/r/memstat.res tests/r/memstat.cmp
+	cat tests/Xumemc.pid | xargs kill
+	rm tests/Xumemc.pid
+
+gdb-mem:
+	$(LIBTOOL) --mode=execute gdb tests/testapp
+
+gdb-hash:
+	$(LIBTOOL) --mode=execute gdb tests/testhashkit
+
+
+PHONY += valgrind
+valgrind:
+	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes  tests/testapp
+
+PHONY += cachegrind
+CLEANFILES += tests/cachegrind.out
+cachegrind:
+	rm -f tests/cachegrind.out.*
+	$(LIBTOOL) --mode=execute valgrind --tool=cachegrind --cachegrind-out-file=tests/cachegrind.out.%p --branch-sim=yes tests/testapp
+	cg_annotate tests/cachegrind.out.* --auto=yes > tests/cachegrind.out
+
+PHONY += callgrind
+CLEANFILES += tests/callgrind.out
+callgrind:
+	rm -f tests/callgrind.out.*
+	$(LIBTOOL) --mode=execute valgrind --tool=callgrind --callgrind-out-file=tests/callgrind.out.%p  tests/testapp
+	callgrind_annotate tests/callgrind.out.* --auto=yes > tests/callgrind.out
+
+PHONY += helgrind
+CLEANFILES+= helgrind.out.*
+helgrind:
+	rm -f helgrind.out.*
+	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  tests/testapp
+
+PHONY += helgrind-slap
+helgrind-slap:
+	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  clients/memslap --server=localhost --concurrency=30
+
+test-no-outputdiff: test
+
+hudson-valgrind:
+	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --log-file=tests/valgrind.out tests/testapp

@@ -8,6 +8,8 @@ AC_DEFUN([PANDORA_CXX_CINTTYPES],
   [AC_REQUIRE([PANDORA_CXX_CSTDINT])
    AC_MSG_CHECKING(the location of cinttypes)
    AC_LANG_PUSH(C++)
+   save_CXXFLAGS="${CXXFLAGS}"
+   CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
    ac_cv_cxx_cinttypes=""
    for location in tr1/cinttypes boost/cinttypes cinttypes; do
      if test -z "$ac_cv_cxx_cinttypes"; then
@@ -18,14 +20,15 @@ AC_DEFUN([PANDORA_CXX_CINTTYPES],
      fi
    done
    AC_LANG_POP()
+   CXXFLAGS="${save_CXXFLAGS}"
    if test -n "$ac_cv_cxx_cinttypes"; then
       AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
    else
-      AC_DEFINE([__STDC_LIMIT_MACROS],[1],[Use STDC Limit Macros in C++])
       ac_cv_cxx_cinttypes="<inttypes.h>"
       AC_MSG_RESULT()
       AC_MSG_WARN([Could not find a cinttypes header.])
    fi
+   AC_DEFINE([__STDC_LIMIT_MACROS],[1],[Use STDC Limit Macros in C++])
    AC_DEFINE_UNQUOTED(CINTTYPES_H,$ac_cv_cxx_cinttypes,
                       [the location of <cinttypes>])
 ])

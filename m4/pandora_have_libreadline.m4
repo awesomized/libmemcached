@@ -105,9 +105,9 @@ rl_compentry_func_t *func2= (rl_compentry_func_t*)0;
               [Does system provide rl_compentry_func_t])
   ])
 
-  AC_LANG_PUSH(C++)
   save_CXXFLAGS="${CXXFLAGS}"
   CXXFLAGS="${AM_CXXFLAGS} ${CXXFLAGS}"
+  AC_LANG_PUSH(C++)
   AC_CACHE_CHECK([rl_compentry_func_t works], [pandora_cv_rl_compentry_works],[
     AC_COMPILE_IFELSE([
       AC_LANG_PROGRAM([[

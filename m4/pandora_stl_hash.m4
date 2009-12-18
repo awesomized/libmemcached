@@ -12,6 +12,8 @@
 
 AC_DEFUN([PANDORA_CXX_STL_HASH],
   [AC_MSG_CHECKING(the location of hash_map)
+   save_CXXFLAGS="${CXXFLAGS}"
+   CXXFLAGS="${AM_CXXFLAGS} ${CXXFLAGS}"
    AC_LANG_PUSH(C++)
    ac_cv_cxx_hash_map=""
    for location in "" "ext/" "tr1/" ; do
@@ -103,5 +105,6 @@ if (iter != test_hash.end())
    AS_IF([test $ac_cv_redefine_hash_string = yes],[
       AC_DEFINE(REDEFINE_HASH_STRING, 1, [if hash<string> needs to be defined])
    ])
+   CXXFLAGS="${save_CXXFLAGS}"
    AC_LANG_POP()
 ])
