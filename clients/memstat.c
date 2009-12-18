@@ -244,7 +244,7 @@ static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_sta
     list= memcached_stat_get_keys(memc, &memc_stat[x], &rc);
 
     printf("Server: %s (%u)\n", memcached_server_name(memc, server_list[x]),
-           memcached_server_port(memc, server_list[x]));
+           (uint32_t)memcached_server_port(memc, server_list[x]));
     for (ptr= list; *ptr; ptr++)
     {
       char *value= memcached_stat_get_value(memc, &memc_stat[x], *ptr, &rc);
@@ -266,7 +266,7 @@ static void print_analysis_report(memcached_st *memc,
 
   printf("Memcached Cluster Analysis Report\n\n");
 
-  printf("\tNumber of Servers Analyzed         : %d\n", server_count);
+  printf("\tNumber of Servers Analyzed         : %u\n", server_count);
   printf("\tAverage Item Size (incl/overhead)  : %u bytes\n",
          report->average_item_size);
 
@@ -279,15 +279,15 @@ static void print_analysis_report(memcached_st *memc,
   printf("\n");
   printf("\tNode with most memory consumption  : %s:%u (%llu bytes)\n",
          memcached_server_name(memc, server_list[report->most_consumed_server]),
-         memcached_server_port(memc, server_list[report->most_consumed_server]),
+         (uint32_t)memcached_server_port(memc, server_list[report->most_consumed_server]),
          (unsigned long long)report->most_used_bytes);
   printf("\tNode with least free space         : %s:%u (%llu bytes remaining)\n",
          memcached_server_name(memc, server_list[report->least_free_server]),
-         memcached_server_port(memc, server_list[report->least_free_server]),
+         (uint32_t)memcached_server_port(memc, server_list[report->least_free_server]),
          (unsigned long long)report->least_remaining_bytes);
   printf("\tNode with longest uptime           : %s:%u (%us)\n",
          memcached_server_name(memc, server_list[report->oldest_server]),
-         memcached_server_port(memc, server_list[report->oldest_server]),
+         (uint32_t)memcached_server_port(memc, server_list[report->oldest_server]),
          report->longest_uptime);
   printf("\tPool-wide Hit Ratio                : %1.f%%\n", report->pool_hit_ratio);
   printf("\n");

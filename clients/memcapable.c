@@ -218,7 +218,7 @@ static enum test_return ensure(bool val, const char *expression, const char *fil
   if (!val)
   {
     if (verbose)
-      fprintf(stderr, "\n%s:%u: %s", file, line, expression);
+      fprintf(stderr, "\n%s:%d: %s", file, line, expression);
 
     if (do_core)
       abort();

@@ -119,7 +119,7 @@ int update_continuum(hashkit_st *hashkit)
 
       if (hashkit->continuum_key_fn == NULL)
       {
-        sort_host_length= (size_t) snprintf(sort_host, HASHKIT_CONTINUUM_KEY_SIZE, "%d",
+        sort_host_length= (size_t) snprintf(sort_host, HASHKIT_CONTINUUM_KEY_SIZE, "%u",
                                             points_index);
       }
       else

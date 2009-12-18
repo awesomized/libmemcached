@@ -42,6 +42,33 @@ static int opt_method= OPT_SET;
 static uint32_t opt_flags= 0;
 static time_t opt_expires= 0;
 
+static long strtol_wrapper(const char *nptr, int base, bool *error)
+{
+  long val;
+  char *endptr;
+
+  errno= 0;    /* To distinguish success/failure after call */
+  val= strtol(nptr, &endptr, base);
+
+  /* Check for various possible errors */
+
+  if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+      || (errno != 0 && val == 0))
+  {
+    *error= true;
+    return 0;
+  }
+
+  if (endptr == nptr)
+  {
+    *error= true;
+    return 0;
+  }
+
+  *error= false;
+  return val;
+}
+
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
@@ -220,11 +247,26 @@ static void options_parse(int argc, char *argv[])
       opt_servers= strdup(optarg);
       break;
     case OPT_FLAG: /* --flag */
-      opt_flags= (uint32_t)strtol(optarg, (char **)NULL, 16);
-      break;
+      {
+        bool strtol_error;
+        opt_flags= (uint32_t)strtol_wrapper(optarg, 16, &strtol_error);
+        if (strtol_error == true)
+        {
+          fprintf(stderr, "Bad value passed via --flag\n");
+          exit(1);
+        }
+        break;
+      }
     case OPT_EXPIRE: /* --expire */
-      opt_expires= (time_t)strtoll(optarg, (char **)NULL, 10);
-      break;
+      {
+        bool strtol_error;
+        opt_expires= (time_t)strtol_wrapper(optarg, 16, &strtol_error);
+        if (strtol_error == true)
+        {
+          fprintf(stderr, "Bad value passed via --flag\n");
+          exit(1);
+        }
+      }
     case OPT_SET:
       opt_method= OPT_SET;
       break;

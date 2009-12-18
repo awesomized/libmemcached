@@ -1845,6 +1845,7 @@ static test_return_t  behavior_test(memcached_st *memc)
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, value + 1);
   test_truth((value + 1) == memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
+
   return TEST_SUCCESS;
 }
 
@@ -5520,7 +5521,6 @@ test_st tests[] ={
   {"clone_test", 0, (test_callback_fn)clone_test },
   {"connection_test", 0, (test_callback_fn)connection_test},
   {"callback_test", 0, (test_callback_fn)callback_test},
-  {"behavior_test", 0, (test_callback_fn)behavior_test},
   {"userdata_test", 0, (test_callback_fn)userdata_test},
   {"error", 0, (test_callback_fn)error_test },
   {"set", 0, (test_callback_fn)set_test },
@@ -5555,8 +5555,6 @@ test_st tests[] ={
   {"add_host_test", 0, (test_callback_fn)add_host_test },
   {"add_host_test_1", 0, (test_callback_fn)add_host_test1 },
   {"get_stats_keys", 0, (test_callback_fn)get_stats_keys },
-  {"behavior_test", 0, (test_callback_fn)get_stats_keys },
-  {"callback_test", 0, (test_callback_fn)get_stats_keys },
   {"version_string_test", 0, (test_callback_fn)version_string_test},
   {"bad_key", 1, (test_callback_fn)bad_key_test },
   {"memcached_server_cursor", 1, (test_callback_fn)memcached_server_cursor_test },
@@ -5568,6 +5566,11 @@ test_st tests[] ={
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
+  {0, 0, 0}
+};
+
+test_st behavior_tests[] ={
+  {"behavior_test", 0, (test_callback_fn)behavior_test},
   {0, 0, 0}
 };
 
@@ -5790,6 +5793,7 @@ collection_st collection[] ={
   {"replication", (test_callback_fn)pre_replication, 0, replication_tests},
   {"replication_noblock", (test_callback_fn)pre_replication_noblock, 0, replication_tests},
   {"regression", 0, 0, regression_tests},
+  {"behaviors", 0, 0, behavior_tests},
   {0, 0, 0, 0}
 };
 

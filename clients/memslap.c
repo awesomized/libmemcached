@@ -164,7 +164,7 @@ static void ms_global_struct_destroy()
  */
 static void ms_version_command(const char *command_name)
 {
-  printf("%s v%u.%u\n", command_name, 1, 0);
+  printf("%s v%u.%u\n", command_name, 1U, 0U);
   exit(0);
 }
 
@@ -287,7 +287,7 @@ void ms_help_command(const char *command_name, const char *description)
 {
   char *help_message= NULL;
 
-  printf("%s v%u.%u\n", command_name, 1, 0);
+  printf("%s v%u.%u\n", command_name, 1U, 0U);
   printf("    %s\n\n", description);
   printf(
     "Usage:\n"
