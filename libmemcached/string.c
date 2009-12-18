@@ -83,7 +83,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
 }
 
 memcached_return_t memcached_string_append_character(memcached_string_st *string,
-                                                   char character)
+                                                     char character)
 {
   memcached_return_t rc;
 
@@ -99,7 +99,7 @@ memcached_return_t memcached_string_append_character(memcached_string_st *string
 }
 
 memcached_return_t memcached_string_append(memcached_string_st *string,
-                                         const char *value, size_t length)
+                                           const char *value, size_t length)
 {
   memcached_return_t rc;
 

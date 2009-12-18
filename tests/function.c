@@ -800,16 +800,16 @@ static test_return_t  bad_key_test(memcached_st *memc)
 }
 
 #define READ_THROUGH_VALUE "set for me"
-static memcached_return_t  read_through_trigger(memcached_st *memc __attribute__((unused)),
-                                                char *key __attribute__((unused)),
-                                                size_t key_length __attribute__((unused)),
-                                                memcached_result_st *result)
+static memcached_return_t read_through_trigger(memcached_st *memc __attribute__((unused)),
+                                               char *key __attribute__((unused)),
+                                               size_t key_length __attribute__((unused)),
+                                               memcached_result_st *result)
 {
 
   return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
 }
 
-static test_return_t  read_through(memcached_st *memc)
+static test_return_t read_through(memcached_st *memc)
 {
   memcached_return_t rc;
   const char *key= "foo";
@@ -822,8 +822,8 @@ static test_return_t  read_through(memcached_st *memc)
                         &string_length, &flags, &rc);
 
   test_truth(rc == MEMCACHED_NOTFOUND);
-  test_truth(string_length ==  0);
-  test_truth(!string);
+  test_false(string_length);
+  test_false(string);
 
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE,
                              *(void **)&cb);
@@ -834,7 +834,7 @@ static test_return_t  read_through(memcached_st *memc)
 
   test_truth(rc == MEMCACHED_SUCCESS);
   test_truth(string_length ==  strlen(READ_THROUGH_VALUE));
-  test_truth(!strcmp(READ_THROUGH_VALUE, string));
+  test_strcmp(READ_THROUGH_VALUE, string);
   free(string);
 
   string= memcached_get(memc, key, strlen(key),
@@ -885,8 +885,8 @@ static test_return_t  get_test(memcached_st *memc)
                         &string_length, &flags, &rc);
 
   test_truth(rc == MEMCACHED_NOTFOUND);
-  test_truth(string_length ==  0);
-  test_truth(!string);
+  test_false(string_length);
+  test_false(string);
 
   return TEST_SUCCESS;
 }
@@ -1158,8 +1158,8 @@ static test_return_t  stats_servername_test(memcached_st *memc)
   memcached_return_t rc;
   memcached_stat_st memc_stat;
   rc= memcached_stat_servername(&memc_stat, NULL,
-                                 memc->hosts[0].hostname,
-                                 memc->hosts[0].port);
+                                memc->hosts[0].hostname,
+                                memc->hosts[0].port);
 
   return TEST_SUCCESS;
 }
@@ -1664,7 +1664,6 @@ static test_return_t  get_stats_keys(memcached_st *memc)
  test_truth(rc == MEMCACHED_SUCCESS);
  for (ptr= stat_list; *ptr; ptr++)
    test_truth(*ptr);
- fflush(stdout);
 
  free(stat_list);
 

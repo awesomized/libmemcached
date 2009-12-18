@@ -5,8 +5,6 @@
 
 memcached_st *memcached_create(memcached_st *ptr)
 {
-  memcached_result_st *result_ptr;
-
   if (ptr == NULL)
   {
     ptr= (memcached_st *)calloc(1, sizeof(memcached_st));
@@ -27,8 +25,11 @@ memcached_st *memcached_create(memcached_st *ptr)
 
   memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
 
-  result_ptr= memcached_result_create(ptr, &ptr->result);
-  WATCHPOINT_ASSERT(result_ptr);
+  if (! memcached_result_create(ptr, &ptr->result))
+  {
+    memcached_free(ptr);
+    return NULL;
+  }
   ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   ptr->connect_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   ptr->retry_timeout= 0;

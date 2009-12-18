@@ -173,14 +173,14 @@ memcached_return_t memcached_decrement(memcached_st *ptr,
                                      uint64_t *value);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_increment_by_key(memcached_st *ptr, 
+memcached_return_t memcached_increment_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
                                             uint64_t offset,
                                             uint64_t *value);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_decrement_by_key(memcached_st *ptr, 
+memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
                                             const char *master_key, size_t master_key_length,
                                             const char *key, size_t key_length,
                                             uint64_t offset,
@@ -258,28 +258,28 @@ memcached_return_t memcached_flush_buffers(memcached_st *mem);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_udp(memcached_st *ptr,
-                                          const char *hostname,
-                                          in_port_t port);
+                                            const char *hostname,
+                                            in_port_t port);
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_unix_socket(memcached_st *ptr,
-                                                  const char *filename);
+                                                    const char *filename);
 LIBMEMCACHED_API
-memcached_return_t memcached_server_add(memcached_st *ptr, 
+memcached_return_t memcached_server_add(memcached_st *ptr,
                                         const char *hostname, in_port_t port);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
-                                                      const char *hostname,
-                                                      in_port_t port,
-                                                      uint32_t weight);
+                                                        const char *hostname,
+                                                        in_port_t port,
+                                                        uint32_t weight);
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
-                                                              const char *filename,
-                                                              uint32_t weight);
+                                                                const char *filename,
+                                                                uint32_t weight);
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_with_weight(memcached_st *ptr, const char *hostname,
-                                                  in_port_t port,
-                                                  uint32_t weight);
+                                                    in_port_t port,
+                                                    uint32_t weight);
 LIBMEMCACHED_API
 void memcached_server_list_free(memcached_server_st *ptr);
 

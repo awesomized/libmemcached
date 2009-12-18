@@ -32,7 +32,7 @@
 #define PROGRAM_DESCRIPTION "Copy a set of files to a memcached cluster."
 
 /* Prototypes */
-void options_parse(int argc, char *argv[]);
+static void options_parse(int argc, char *argv[]);
 
 static int opt_binary=0;
 static int opt_verbose= 0;
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
 
-  while (optind < argc) 
+  while (optind < argc)
   {
     struct stat sbuf;
     int fd;
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     else
       ptr= argv[optind];
 
-    if (opt_verbose) 
+    if (opt_verbose)
     {
       static const char *opstr[] = { "set", "add", "replace" };
       printf("op: %s\nsource file: %s\nlength: %zu\n"
@@ -111,13 +111,13 @@ int main(int argc, char *argv[])
 
     if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
     {
-      fprintf(stderr, "malloc: %s\n", strerror(errno)); 
+      fprintf(stderr, "malloc: %s\n", strerror(errno));
       exit(1);
     }
 
     if ((read_length= read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
     {
-      fprintf(stderr, "read: %s\n", strerror(errno)); 
+      fprintf(stderr, "read: %s\n", strerror(errno));
       exit(1);
     }
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
     if (rc != MEMCACHED_SUCCESS)
     {
-      fprintf(stderr, "memcp: %s: memcache error %s", 
+      fprintf(stderr, "memcp: %s: memcache error %s",
 	      ptr, memcached_strerror(memc, rc));
       if (memc->cached_errno)
 	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void options_parse(int argc, char *argv[])
+static void options_parse(int argc, char *argv[])
 {
   int option_index= 0;
   int option_rv;
@@ -191,7 +191,7 @@ void options_parse(int argc, char *argv[])
       {0, 0, 0, 0},
     };
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
 

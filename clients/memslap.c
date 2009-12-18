@@ -13,6 +13,7 @@
  *      Mingqiang Zhuang <mingqiangzhuang@hengtiansoft.com>
  *
  */
+#include <stdlib.h>
 #include <getopt.h>
 #include <limits.h>
 

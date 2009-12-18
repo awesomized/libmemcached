@@ -67,7 +67,7 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
   uint64_t total_get_cmds= 0, total_get_hits= 0;
   uint32_t server_count, x;
   memcached_analysis_st *result;
-  
+ 
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
   result= (memcached_analysis_st*)calloc(memc->number_of_hosts,
@@ -84,7 +84,7 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
     calc_largest_consumption(result, x, memc_stat[x].bytes);
     calc_oldest_node(result, x, memc_stat[x].uptime);
     calc_least_free_node(result, x,
-                         memc_stat[x].limit_maxbytes, 
+                         memc_stat[x].limit_maxbytes,
                          memc_stat[x].bytes);
 
     total_get_hits+= memc_stat[x].get_hits;

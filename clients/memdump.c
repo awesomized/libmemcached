@@ -32,7 +32,7 @@
 #define PROGRAM_DESCRIPTION "Dump all values from one or many servers."
 
 /* Prototypes */
-void options_parse(int argc, char *argv[]);
+static void options_parse(int argc, char *argv[]);
 
 static int opt_binary=0;
 static int opt_verbose= 0;
@@ -40,8 +40,8 @@ static char *opt_servers= NULL;
 static char *opt_hash= NULL;
 
 /* Print the keys and counter how many were found */
-static memcached_return_t key_printer(memcached_st *ptr __attribute__((unused)),  
-                                      const char *key, size_t key_length, 
+static memcached_return_t key_printer(memcached_st *ptr __attribute__((unused)),
+                                      const char *key, size_t key_length,
                                       void *context __attribute__((unused)))
 {
   printf("%.*s\n", (uint32_t)key_length, key);
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void options_parse(int argc, char *argv[])
+static void options_parse(int argc, char *argv[])
 {
   int option_index= 0;
   int option_rv;
@@ -123,7 +123,7 @@ void options_parse(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
 

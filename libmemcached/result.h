@@ -46,10 +46,13 @@ memcached_result_st *memcached_result_create(memcached_st *ptr,
 #define memcached_result_value(A) memcached_string_value((A)->value)
 #define memcached_result_length(A) memcached_string_length((A)->value)
 #else
+
 LIBMEMCACHED_API
 char *memcached_result_value(memcached_result_st *ptr);
+
 LIBMEMCACHED_API
 size_t memcached_result_length(memcached_result_st *ptr);
+
 #endif
 #define memcached_result_flags(A) (A)->flags
 #define memcached_result_cas(A) (A)->cas

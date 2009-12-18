@@ -6,7 +6,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      in_port_t port,
                                      uint32_t weight,
                                      memcached_connection_t type);
-memcached_return_t update_continuum(memcached_st *ptr);
+static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
 {
@@ -106,7 +106,7 @@ static int continuum_item_cmp(const void *t1, const void *t2)
     return -1;
 }
 
-memcached_return_t update_continuum(memcached_st *ptr)
+static memcached_return_t update_continuum(memcached_st *ptr)
 {
   uint32_t host_index;
   uint32_t continuum_index= 0;
@@ -256,16 +256,17 @@ memcached_return_t update_continuum(memcached_st *ptr)
         if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
         {
           sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                              "%s-%d",
+                                              "%s-%u",
                                               list[host_index].hostname,
                                               pointer_index - 1);
         }
         else
         {
           sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                              "%s:%d-%d",
+                                              "%s:%u-%u",
                                               list[host_index].hostname,
-                                              list[host_index].port, pointer_index - 1);
+                                              (uint32_t)list[host_index].port,
+                                              pointer_index - 1);
         }
 
         WATCHPOINT_ASSERT(sort_host_length);

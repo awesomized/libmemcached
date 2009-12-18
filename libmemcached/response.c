@@ -317,18 +317,6 @@ static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
   /* NOTREACHED */
 }
 
-char *memcached_result_value(memcached_result_st *ptr)
-{
-  memcached_string_st *sptr= &ptr->value;
-  return memcached_string_value(sptr);
-}
-
-size_t memcached_result_length(memcached_result_st *ptr)
-{
-  memcached_string_st *sptr= &ptr->value;
-  return memcached_string_length(sptr);
-}
-
 static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
                                                  char *buffer, size_t buffer_length,
                                                  memcached_result_st *result)

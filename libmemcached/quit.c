@@ -27,9 +27,12 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
         rc= memcached_do(ptr, request.bytes, sizeof(request.bytes), 1);
       }
       else
+      {
         rc= memcached_do(ptr, "quit\r\n", 6, 1);
+      }
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
+      (void)rc; // Shut up ICC
 
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read

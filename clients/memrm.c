@@ -28,7 +28,7 @@ static char *opt_hash= NULL;
 #define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
 
 /* Prototypes */
-void options_parse(int argc, char *argv[]);
+static void options_parse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {
@@ -59,16 +59,16 @@ int main(int argc, char *argv[])
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t) opt_binary);
-  
-  while (optind < argc) 
+ 
+  while (optind < argc)
   {
-    if (opt_verbose) 
+    if (opt_verbose)
       printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
     rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
 
-    if (rc != MEMCACHED_SUCCESS) 
+    if (rc != MEMCACHED_SUCCESS)
     {
-      fprintf(stderr, "memrm: %s: memcache error %s", 
+      fprintf(stderr, "memrm: %s: memcache error %s",
 	      argv[optind], memcached_strerror(memc, rc));
       if (memc->cached_errno)
 	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 }
 
 
-void options_parse(int argc, char *argv[])
+static void options_parse(int argc, char *argv[])
 {
   memcached_programs_help_st help_options[]=
   {
@@ -111,7 +111,7 @@ void options_parse(int argc, char *argv[])
   int option_index= 0;
   int option_rv;
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
