@@ -50,6 +50,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
 
     AS_IF([test "$ac_profiling" = "yes"],[
       CC_PROFILING="-pg"
+      GCOV_LIBS="-pg -lgcov"
       save_LIBS="${LIBS}"
       LIBS=""
       AC_CHECK_LIB(c_p, read)
@@ -61,7 +62,12 @@ AC_DEFUN([PANDORA_WARNINGS],[
     ])
 
     AS_IF([test "$ac_coverage" = "yes"],
-          [CC_COVERAGE="-fprofile-arcs -ftest-coverage"])
+          [
+            CC_COVERAGE="--coverage"
+            GCOV_LIBS="-lgcov"
+          ])
+
+
 	 
     AS_IF([test "$ac_cv_warnings_as_errors" = "yes"],
           [W_FAIL="-Werror"])
@@ -129,9 +135,9 @@ uint16_t x= htons(80);
 
     AS_IF([test "$INTELCC" = "yes"],[
       m4_if(PW_LESS_WARNINGS,[no],[
-        BASE_WARNINGS="-w1 -Wall -Werror -Wcheck -Wformat -Wp64 -Woverloaded-virtual -Wcast-qual"
+        BASE_WARNINGS="-w1 -Werror -Wcheck -Wformat -Wp64 -Woverloaded-virtual -Wcast-qual"
       ],[
-        BASE_WARNINGS="-w1 -Wall -Wcheck -Wformat -Wp64 -Woverloaded-virtual -Wcast-qual -diag-disable 981"
+        BASE_WARNINGS="-w1 -Wcheck -Wformat -Wp64 -Woverloaded-virtual -Wcast-qual -diag-disable 981"
       ])
       CC_WARNINGS="${BASE_WARNINGS}"
       CXX_WARNINGS="${BASE_WARNINGS}"
@@ -217,8 +223,8 @@ template <> void C<int>::foo();
             AC_INCLUDES_DEFAULT])],
             [ac_cv_safe_to_use_Wredundant_decls_=yes],
             [ac_cv_safe_to_use_Wredundant_decls_=no])
-          CXXFLAGS="${save_CXXFLAGS}"
-          AC_LANG_POP()])
+         CXXFLAGS="${save_CXXFLAGS}"
+         AC_LANG_POP()])
       AS_IF([test "$ac_cv_safe_to_use_Wredundant_decls_" = "yes"],
             [CXX_WARNINGS="${CXX_WARNINGS} -Wredundant-decls"],
             [CXX_WARNINGS="${CXX_WARNINGS} -Wno-redundant-decls"])
@@ -339,5 +345,6 @@ inline const EnumDescriptor* GetEnumDescriptor<Table_TableOptions_RowType>() {
   AC_SUBST(PROTOSKIP_WARNINGS)
   AC_SUBST(INNOBASE_SKIP_WARNINGS)
   AC_SUBST(NO_WERROR)
+  AC_SUBST([GCOV_LIBS])
 
 ])

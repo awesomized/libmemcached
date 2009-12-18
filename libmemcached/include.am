@@ -3,12 +3,9 @@
 # All paths should be given relative to the root
 
 EXTRA_DIST+= \
-	libmemcached/libmemcached.ver \
 	libmemcached/libmemcached_probes.d \
 	libmemcached/memcached/README.txt \
-	libmemcached/memcached_configure.h.in \
-	libmemcached/protocol/libmemcachedprotocol.ver \
-	libmemcached/util/libmemcachedutil.ver
+	libmemcached/memcached_configure.h.in
 
 
 noinst_HEADERS+= \

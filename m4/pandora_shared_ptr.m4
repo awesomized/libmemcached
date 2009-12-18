@@ -20,6 +20,8 @@ dnl
 AC_DEFUN([PANDORA_SHARED_PTR],[
   AC_REQUIRE([PANDORA_CHECK_CXX_STANDARD])
   AC_LANG_PUSH(C++)
+  save_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
   AC_CHECK_HEADERS(memory tr1/memory boost/shared_ptr.hpp)
   AC_CACHE_CHECK([the location of shared_ptr header file],
     [ac_cv_shared_ptr_h],[
@@ -52,5 +54,6 @@ shared_ptr<string> test_ptr(new string("test string"));
   AC_DEFINE_UNQUOTED([SHARED_PTR_NAMESPACE],
                      ${ac_cv_shared_ptr_namespace},
                      [The namespace in which SHARED_PTR can be found])
+  CXXFLAGS="${save_CXXFLAGS}"
   AC_LANG_POP()
 ])
