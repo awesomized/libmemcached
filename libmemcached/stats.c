@@ -33,7 +33,7 @@ static const char *memcached_stat_keys[] = {
 static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char *value)
 {
 
-  if (strlen(key) < 1) 
+  if (strlen(key) < 1)
   {
     WATCHPOINT_STRING(key);
     return MEMCACHED_UNKNOWN_STAT_KEY;
@@ -79,7 +79,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   }
   else if (!strcmp("curr_items", key))
   {
-    memc_stat->curr_items= (uint32_t) strtol(value, (char **)NULL, 10); 
+    memc_stat->curr_items= (uint32_t) strtol(value, (char **)NULL, 10);
   }
   else if (!strcmp("total_items", key))
   {
@@ -149,7 +149,9 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
              strcmp("cmd_flush", key) == 0 ||
              strcmp("accepting_conns", key) == 0 ||
              strcmp("listen_disabled_num", key) == 0 ||
-             strcmp("conn_yields", key) == 0))
+             strcmp("conn_yields", key) == 0 ||
+             strcmp("auth_cmds", key) == 0 ||
+             strcmp("auth_errors", key) == 0))
   {
     WATCHPOINT_STRING(key);
     return MEMCACHED_UNKNOWN_STAT_KEY;
@@ -158,7 +160,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   return MEMCACHED_SUCCESS;
 }
 
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat, 
+char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
                                const char *key, memcached_return_t *error)
 {
   char buffer[SMALL_STRING_LEN];
@@ -237,7 +239,7 @@ static memcached_return_t binary_stats_fetch(memcached_st *ptr,
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_STAT;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
-  if (args != NULL) 
+  if (args != NULL)
   {
     size_t len= strlen(args);
 
@@ -248,9 +250,9 @@ static memcached_return_t binary_stats_fetch(memcached_st *ptr,
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl((uint32_t) len);
 
-    if ((memcached_do(&ptr->hosts[server_key], request.bytes, 
+    if ((memcached_do(&ptr->hosts[server_key], request.bytes,
                       sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
-        (memcached_io_write(&ptr->hosts[server_key], args, len, 1) == -1)) 
+        (memcached_io_write(&ptr->hosts[server_key], args, len, 1) == -1))
     {
       memcached_io_reset(&ptr->hosts[server_key]);
       return MEMCACHED_WRITE_FAILURE;
@@ -258,23 +260,23 @@ static memcached_return_t binary_stats_fetch(memcached_st *ptr,
   }
   else
   {
-    if (memcached_do(&ptr->hosts[server_key], request.bytes, 
-                     sizeof(request.bytes), 1) != MEMCACHED_SUCCESS) 
+    if (memcached_do(&ptr->hosts[server_key], request.bytes,
+                     sizeof(request.bytes), 1) != MEMCACHED_SUCCESS)
     {
       memcached_io_reset(&ptr->hosts[server_key]);
       return MEMCACHED_WRITE_FAILURE;
     }
   }
 
-  memcached_server_response_decrement(&ptr->hosts[server_key]);  
-  do 
+  memcached_server_response_decrement(&ptr->hosts[server_key]);
+  do
   {
-    rc= memcached_response(&ptr->hosts[server_key], buffer, 
+    rc= memcached_response(&ptr->hosts[server_key], buffer,
                            sizeof(buffer), NULL);
     if (rc == MEMCACHED_END)
       break;
 
-    unlikely (rc != MEMCACHED_SUCCESS) 
+    unlikely (rc != MEMCACHED_SUCCESS)
     {
       memcached_io_reset(&ptr->hosts[server_key]);
       return rc;
@@ -305,10 +307,10 @@ static memcached_return_t ascii_stats_fetch(memcached_st *ptr,
   size_t send_length;
 
   if (args)
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                    "stats %s\r\n", args);
   else
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                    "stats\r\n");
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
@@ -393,7 +395,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   return stats;
 }
 
-memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args, 
+memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args,
                                              const char *hostname, in_port_t port)
 {
   memcached_return_t rc;
@@ -415,11 +417,11 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   return rc;
 }
 
-/* 
+/*
   We make a copy of the keys since at some point in the not so distant future
   we will add support for "found" keys.
 */
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat, 
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
                                 memcached_return_t *error)
 {
   (void) memc_stat;
