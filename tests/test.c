@@ -42,7 +42,7 @@ static long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
-static const char *test_strerror(test_return_t code)
+const char *test_strerror(test_return_t code)
 {
   switch (code) {
   case TEST_SUCCESS:

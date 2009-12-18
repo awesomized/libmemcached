@@ -3521,6 +3521,7 @@ static test_return_t pre_binary(memcached_st *memc)
   return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
 }
 
+
 static test_return_t pre_replication(memcached_st *memc)
 {
   test_return_t test_rc;
@@ -3542,15 +3543,20 @@ static test_return_t pre_replication(memcached_st *memc)
   return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
 }
 
+
 static test_return_t pre_replication_noblock(memcached_st *memc)
 {
-  test_return_t rc= MEMCACHED_FAILURE;
-  if (pre_replication(memc) == TEST_SUCCESS &&
-      pre_nonblock(memc) == TEST_SUCCESS)
-    rc= TEST_SUCCESS;
+  test_return_t rc;
+
+  rc= pre_replication(memc);
+  if (rc != TEST_SUCCESS)
+    return rc;
+
+  rc= pre_nonblock(memc);
 
   return rc;
 }
+
 
 static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 {
@@ -3561,6 +3567,7 @@ static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
   free(mem);
 #endif
 }
+
 
 static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
 {
@@ -3582,6 +3589,7 @@ static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t s
   return ret;
 }
 
+
 static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
 {
 #ifdef HARD_MALLOC_TESTS
@@ -3600,6 +3608,7 @@ static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, co
 #endif
 }
 
+
 static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
 {
 #ifdef HARD_MALLOC_TESTS
@@ -3614,6 +3623,7 @@ static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, 
   return calloc(nelem, size);
 #endif
 }
+
 
 static test_return_t set_prefix(memcached_st *memc)
 {
@@ -3684,6 +3694,7 @@ static test_return_t set_prefix(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
 #ifdef MEMCACHED_ENABLE_DEPRECATED
 static test_return_t deprecated_set_memory_alloc(memcached_st *memc)
 {
@@ -3731,6 +3742,7 @@ static test_return_t deprecated_set_memory_alloc(memcached_st *memc)
   return TEST_SUCCESS;
 }
 #endif
+
 
 static test_return_t set_memory_alloc(memcached_st *memc)
 {

@@ -122,6 +122,11 @@ void get_world(world_st *world);
 
 void create_core(void);
 
+/**
+  @note Friendly print function for errors.
+*/
+const char *test_strerror(test_return_t code);
+
 #define test_truth(A) \
 do \
 { \
