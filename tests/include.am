@@ -49,12 +49,15 @@ tests_testapp_LDADD= \
 	tests/libserver.la \
 	tests/libtest.la \
 	$(TESTS_LDADDS)
+tests_testapp_DEPENDENCIES= $(tests_testapp_LDADD)
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_LDADD= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+tests_testplus_DEPENDENCIES= $(tests_testplus_LDADD)
 
 tests_udptest_SOURCES= tests/udp.c
 tests_udptest_LDADD= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+tests_udptest_DEPENDENCIES= $(tests_udptest_LDADD)
 
 tests_atomsmasher_SOURCES= tests/atomsmasher.c
 tests_atomsmasher_LDADD= \
@@ -62,13 +65,15 @@ tests_atomsmasher_LDADD= \
 	tests/libserver.la \
 	tests/libtest.la \
 	$(TESTS_LDADDS)
+tests_atomsmasher_DEPENDENCIES= $(tests_atomsmasher_LDADD)
 
 tests_startservers_SOURCES= tests/start.c
 tests_startservers_LDADD= tests/libserver.la $(TESTS_LDADDS)
+tests_startservers_DEPENDENCIES= $(tests_startservers_LDADD)
 
-tests_testhashkit_SOURCES = tests/hashkit_functions.c 
+tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
-tests_testhashkit_DEPENDENCIES = libhashkit
+tests_testhashkit_DEPENDENCIES = $(tests_testhashkit_LDADD)
 
 client-record:
 	sh tests/t/memcat.test > tests/r/memcat.res
