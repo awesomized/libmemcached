@@ -39,7 +39,6 @@ memcached_st *memcached_create(memcached_st *ptr)
   ptr->io_bytes_watermark= 65 * 1024;
 
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->result);
-  WATCHPOINT_ASSERT_INITIALIZED(&ptr->hashkit);
 
   return ptr;
 }

@@ -16,7 +16,7 @@ EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST = README.FIRST
 
-SUBDIRS = docs
+SUBDIRS = docs libhashkit
 
 include libmemcached/include.am
 include clients/include.am
@@ -30,7 +30,7 @@ check-local: test-no-outputdiff
 fedora:
 	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
-	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
+	cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
 	rpmbuild -ba support/libmemcached.spec
 	cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
@@ -38,7 +38,7 @@ fedora:
 generic:
 	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
-	cp libmemcached-$(VERSION).tar.gz /home/brian/rpmbuild/SOURCES/
+	cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
 	rpmbuild -ba support/libmemcached.spec
 	cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .

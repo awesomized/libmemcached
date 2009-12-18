@@ -23,6 +23,7 @@ nobase_pkginclude_HEADERS+= \
 	libmemcached/behavior.h \
 	libmemcached/callback.h \
 	libmemcached/constants.h \
+	libmemcached/dump.h \
 	libmemcached/exception.hpp \
 	libmemcached/get.h \
 	libmemcached/memcached.h \

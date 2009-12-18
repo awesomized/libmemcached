@@ -32,6 +32,7 @@ noinst_PROGRAMS+= \
 	tests/atomsmasher \
 	tests/startservers \
 	tests/testapp \
+	tests/testhashkit \
 	tests/testplus \
 	tests/udptest
 
@@ -65,6 +66,10 @@ tests_atomsmasher_LDADD= \
 tests_startservers_SOURCES= tests/start.c
 tests_startservers_LDADD= tests/libserver.la $(TESTS_LDADDS)
 
+tests_testhashkit_SOURCES = tests/hashkit_functions.c 
+tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
+tests_testhashkit_DEPENDENCIES = libhashkit
+
 client-record:
 	sh tests/t/memcat.test > tests/r/memcat.res
 	sh tests/t/memcp.test > tests/r/memcp.res
@@ -72,12 +77,15 @@ client-record:
 	sh tests/t/memslap.test > tests/r/memslap.res
 	sh tests/t/memstat.test > tests/r/memstat.res
 
-test: tests/testapp tests/testplus library_test memcapable
+test: tests/testapp tests/testplus library_test memcapable libmhashkit_test
 	echo "Tests completed"
 
 library_test:
 	tests/testapp
 #	tests/testplus
+
+libmhashkit_test: libhashkit
+	tests/testhashkit
 
 memcapable: clients/memcapable
 	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
@@ -101,6 +109,13 @@ clients:
 	diff tests/r/memstat.res tests/r/memstat.cmp
 	cat tests/Xumemc.pid | xargs kill
 	rm tests/Xumemc.pid
+
+gdb-mem:
+	$(LIBTOOL) --mode=execute gdb tests/testapp
+
+gdb-hash:
+	$(LIBTOOL) --mode=execute gdb tests/testhashkit
+
 
 PHONY += valgrind
 valgrind:

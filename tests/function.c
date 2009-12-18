@@ -3554,26 +3554,65 @@ static test_return_t pre_replication_noblock(memcached_st *memc)
 
 static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *real_ptr= (mem == NULL) ? mem : (void*)((caddr_t)mem - 8);
+  free(real_ptr);
+#else
   free(mem);
+#endif
 }
 
 static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
 {
-  void *ret= malloc(size);
+#ifdef HARD_MALLOC_TESTS
+  void *ret= malloc(size + 8);
   if (ret != NULL)
+  {
+    ret= (void*)((caddr_t)ret + 8);
+  }
+#else
+  void *ret= malloc(size);
+#endif
+
+  if (ret != NULL)
+  {
     memset(ret, 0xff, size);
+  }
 
   return ret;
 }
 
 static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *real_ptr= (mem == NULL) ? NULL : (void*)((caddr_t)mem - 8);
+  void *nmem= realloc(real_ptr, size + 8);
+
+  void *ret= NULL;
+  if (nmem != NULL)
+  {
+    ret= (void*)((caddr_t)nmem + 8);
+  }
+
+  return ret;
+#else
   return realloc(mem, size);
+#endif
 }
 
 static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
 {
+#ifdef HARD_MALLOC_TESTS
+  void *mem= my_malloc(ptr, nelem * size);
+  if (mem)
+  {
+    memset(mem, 0, nelem * size);
+  }
+
+  return mem;
+#else
   return calloc(nelem, size);
+#endif
 }
 
 static test_return_t set_prefix(memcached_st *memc)
@@ -3718,7 +3757,27 @@ static test_return_t set_memory_alloc(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t enable_consistent(memcached_st *memc)
+static test_return_t enable_consistent_crc(memcached_st *memc)
+{
+  test_return_t rc;
+  memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
+  memcached_hash_t hash;
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
+  if ((rc= pre_crc(memc)) != TEST_SUCCESS)
+    return rc;
+
+  value= (memcached_server_distribution_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
+  test_truth(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
+
+  hash= (memcached_hash_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
+
+  if (hash != MEMCACHED_HASH_CRC)
+    return TEST_SKIPPED;
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t enable_consistent_hsieh(memcached_st *memc)
 {
   test_return_t rc;
   memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
@@ -5703,7 +5762,8 @@ collection_st collection[] ={
   {"unix_socket_nodelay", (test_callback_fn)pre_nodelay, 0, tests},
   {"poll_timeout", (test_callback_fn)poll_timeout, 0, tests},
   {"gets", (test_callback_fn)enable_cas, 0, tests},
-  {"consistent", (test_callback_fn)enable_consistent, 0, tests},
+  {"consistent_crc", (test_callback_fn)enable_consistent_crc, 0, tests},
+  {"consistent_hsieh", (test_callback_fn)enable_consistent_hsieh, 0, tests},
 #ifdef MEMCACHED_ENABLE_DEPRECATED
   {"deprecated_memory_allocators", (test_callback_fn)deprecated_set_memory_alloc, 0, tests},
 #endif
@@ -5718,7 +5778,7 @@ collection_st collection[] ={
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", (test_callback_fn)pre_hsieh, 0, generate_tests},
   {"generate_ketama", (test_callback_fn)pre_behavior_ketama, 0, generate_tests},
-  {"generate_hsieh_consistent", (test_callback_fn)enable_consistent, 0, generate_tests},
+  {"generate_hsieh_consistent", (test_callback_fn)enable_consistent_hsieh, 0, generate_tests},
   {"generate_md5", (test_callback_fn)pre_md5, 0, generate_tests},
   {"generate_murmur", (test_callback_fn)pre_murmur, 0, generate_tests},
   {"generate_jenkins", (test_callback_fn)pre_jenkins, 0, generate_tests},

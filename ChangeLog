@@ -1,3 +1,4 @@
+  * Modified use_sort so that the option can be applied to any distribution type.
   * We removed the MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE added in 0.35. Instead use
     memcached_behavior_set_distribution().
 

@@ -14,6 +14,9 @@ AC_CONFIG_MACRO_DIR([m4])
 
 PANDORA_CANONICAL_TARGET
 
+HASHKIT_LIBRARY_VERSION=0:0:0
+AC_SUBST(HASHKIT_LIBRARY_VERSION)
+
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
@@ -48,6 +51,7 @@ AC_CONFIG_FILES([
   Makefile
   docs/Makefile
   libmemcached/memcached_configure.h
+  libhashkit/Makefile
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec
