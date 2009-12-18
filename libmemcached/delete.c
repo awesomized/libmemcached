@@ -59,6 +59,14 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
        }
        else
        {
+          /* ensure that we are connected, otherwise we might bump the
+           * command counter before connection */
+          if ((rc= memcached_connect(&ptr->hosts[server_key])) != MEMCACHED_SUCCESS)
+          {
+            WATCHPOINT_ERROR(rc);
+            return rc;
+          }
+
           if (ptr->hosts[server_key].minor_version == 0)
           {
              if (no_reply || !to_write)

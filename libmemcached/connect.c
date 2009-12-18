@@ -208,6 +208,8 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
   {
     struct addrinfo *use;
 
+    WATCHPOINT_ASSERT(ptr->cursor_active == 0);
+
     if (!ptr->sockaddr_inited ||
         (!(ptr->root->flags.use_cache_lookups)))
     {
@@ -282,7 +284,6 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 
       if (ptr->fd != -1)
       {
-        WATCHPOINT_ASSERT(ptr->cursor_active == 0);
         ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
       }
