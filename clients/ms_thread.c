@@ -69,10 +69,10 @@ static void ms_check_sock_timeout(void)
         /* calculate dropped packets count */
         if (c->recvpkt > 0)
         {
-          atomic_add_64(&ms_stats.pkt_drop, c->packets - c->recvpkt);
+          atomic_add_size(&ms_stats.pkt_drop, c->packets - c->recvpkt);
         }
 
-        atomic_add_64(&ms_stats.udp_timeout, 1);
+        atomic_add_size(&ms_stats.udp_timeout, 1);
         ms_reset_conn(c, true);
       }
     }

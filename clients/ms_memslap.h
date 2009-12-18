@@ -70,21 +70,21 @@ typedef struct statistic
 typedef struct stats
 {
   volatile uint32_t active_conns;   /* active connections */
-  uint64_t bytes_read;              /* read bytes */
-  uint64_t bytes_written;           /* written bytes */
-  uint64_t obj_bytes;               /* object bytes */
-  uint64_t pre_cmd_get;             /* previous total get command count */
-  uint64_t pre_cmd_set;             /* previous total set command count */
-  uint64_t cmd_get;                 /* current total get command count */
-  uint64_t cmd_set;                 /* current total set command count */
-  uint64_t get_misses;              /* total objects of get miss */
-  uint64_t vef_miss;                /* total objects of verification miss  */
-  uint64_t vef_failed;              /* total objects of verification failed  */
-  uint64_t unexp_unget;             /* total objects which is unexpired but not get */
-  uint64_t exp_get;                 /* total objects which is expired but get  */
-  volatile uint64_t pkt_disorder;            /* disorder packages of UDP */
-  uint64_t pkt_drop;                /* packages dropped of UDP */
-  uint64_t udp_timeout;             /* how many times timeout of UDP happens */
+  size_t bytes_read;              /* read bytes */
+  size_t bytes_written;           /* written bytes */
+  size_t obj_bytes;               /* object bytes */
+  size_t pre_cmd_get;             /* previous total get command count */
+  size_t pre_cmd_set;             /* previous total set command count */
+  size_t cmd_get;                 /* current total get command count */
+  size_t cmd_set;                 /* current total set command count */
+  size_t get_misses;              /* total objects of get miss */
+  size_t vef_miss;                /* total objects of verification miss  */
+  size_t vef_failed;              /* total objects of verification failed  */
+  size_t unexp_unget;             /* total objects which is unexpired but not get */
+  size_t exp_get;                 /* total objects which is expired but get  */
+  volatile size_t pkt_disorder;            /* disorder packages of UDP */
+  size_t pkt_drop;                /* packages dropped of UDP */
+  size_t udp_timeout;             /* how many times timeout of UDP happens */
 } ms_stats_t;
 
 /* lock adapter */
