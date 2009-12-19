@@ -329,21 +329,41 @@ collection_st collection[] ={
 };
 
 /* Prototypes for functions we will pass to test framework */
-void *world_create(void);
+void *world_create(test_return_t *error);
 test_return_t world_destroy(hashkit_st *hashk);
 
-void *world_create(void)
+void *world_create(test_return_t *error)
 {
   hashkit_st *hashk_ptr;
 
   hashk_ptr= hashkit_create(&global_hashk);
 
-  assert(hashk_ptr == &global_hashk);
+  if (hashk_ptr != &global_hashk)
+  {
+    *error= TEST_FAILURE;
+    return NULL;
+  }
 
   // First we test if hashk is even valid
-  assert(hashkit_is_initialized(hashk_ptr) == true);
-  assert(hashkit_is_allocated(hashk_ptr) == false);
-  assert(hashk_ptr->continuum == NULL);
+  if (hashkit_is_initialized(hashk_ptr) == false)
+  {
+    *error= TEST_FAILURE;
+    return NULL;
+  }
+
+  if (hashkit_is_allocated(hashk_ptr) == true)
+  {
+    *error= TEST_FAILURE;
+    return NULL;
+  }
+
+  if (hashk_ptr->continuum != NULL)
+  {
+    *error= TEST_FAILURE;
+    return NULL;
+  }
+
+  *error= TEST_SUCCESS;
 
   return hashk_ptr;
 }

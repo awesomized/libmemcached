@@ -29,7 +29,7 @@ typedef enum {
   TEST_MAXIMUM_RETURN /* Always add new error code before */
 } test_return_t;
 
-typedef void *(*test_callback_create_fn)(void);
+typedef void *(*test_callback_create_fn)(test_return_t *error);
 typedef test_return_t (*test_callback_fn)(void *);
 typedef test_return_t (*test_callback_runner_fn)(test_callback_fn, void *);
 typedef test_return_t (*test_callback_error_fn)(test_return_t, void *);

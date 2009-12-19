@@ -124,9 +124,16 @@ int main(int argc, char *argv[])
   collection= world.collections;
 
   if (world.create)
-    world_ptr= world.create();
+  {
+    test_return_t error;
+    world_ptr= world.create(&error);
+    if (error != TEST_SUCCESS)
+      exit(1);
+  }
   else
+  {
     world_ptr= NULL;
+  }
 
   if (argc > 1)
     collection_to_run= argv[1];
@@ -234,7 +241,16 @@ error:
   fprintf(stderr, "All tests completed successfully\n\n");
 
   if (world.destroy)
-    world.destroy(world_ptr);
+  {
+    test_return_t error;
+    error= world.destroy(world_ptr);
+
+    if (error != TEST_SUCCESS)
+    {
+      fprintf(stderr, "Failure during shutdown.\n");
+      stats.failed++; // We do this to make our exit code return 1
+    }
+  }
 
   world_stats_print(&stats);
 

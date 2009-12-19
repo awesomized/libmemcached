@@ -4,7 +4,7 @@
  *
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
- * 
+ *
  * Description: This is the startup bits for any libmemcached test.
  *
  */
@@ -21,7 +21,7 @@ typedef struct
 } libmemcached_test_container_st;
 
 /* Prototypes for functions we will pass to test framework */
-libmemcached_test_container_st *world_create(void);
+libmemcached_test_container_st *world_create(test_return_t *error);
 test_return_t world_collection_startup(libmemcached_test_container_st *);
 test_return_t world_flush(libmemcached_test_container_st *container);
 test_return_t world_pre_run(libmemcached_test_container_st *);
@@ -32,14 +32,21 @@ test_return_t world_destroy(libmemcached_test_container_st *);
 
 static libmemcached_test_container_st global_container;
 
-libmemcached_test_container_st *world_create(void)
+libmemcached_test_container_st *world_create(test_return_t *error)
 {
   memset(&global_container, 0, sizeof(global_container));
   global_container.construct.count= SERVERS_TO_CREATE;
   global_container.construct.udp= 0;
   server_startup(&global_container.construct);
 
-  assert(global_container.construct.servers);
+  if (! global_container.construct.servers)
+  {
+    *error= TEST_FAILURE;
+    server_shutdown(&global_container.construct);
+    return NULL;
+  }
+
+  *error= TEST_SUCCESS;
 
   return &global_container;
 }
@@ -90,7 +97,7 @@ test_return_t world_on_error(test_return_t test_state, libmemcached_test_contain
 {
   (void)test_state;
   memcached_free(container->memc);
-  
+
   return TEST_SUCCESS;
 }
 
