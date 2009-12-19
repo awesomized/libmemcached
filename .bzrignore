@@ -63,5 +63,6 @@ tests/atomsmasher
 tests/output.cmp
 tests/startservers
 tests/testapp
+tests/testhashkit
 tests/testplus
 tests/udptest
