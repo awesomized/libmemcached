@@ -57,7 +57,6 @@ const char *test_strerror(test_return_t code)
     fprintf(stderr, "Unknown return value\n");
     abort();
   }
-
 }
 
 void create_core(void)

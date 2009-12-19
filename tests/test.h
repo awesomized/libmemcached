@@ -57,7 +57,7 @@ struct collection_st {
 
 
 /**
-  Structure which houses the actual callers for the test cases contained in 
+  Structure which houses the actual callers for the test cases contained in
   the collections.
 */
 typedef struct {
@@ -75,7 +75,7 @@ typedef struct {
 
 struct world_st {
   collection_st *collections;
-  
+
   /* These methods are called outside of any collection call. */
   test_callback_create_fn create;
   test_callback_fn destroy;
@@ -92,15 +92,15 @@ struct world_st {
   */
   test_callback_fn pre_run;
   test_callback_fn post_run;
-  
-  /** 
+
+  /**
     If an error occurs during the test, this is called.
   */
   test_callback_error_fn on_error;
 
   /**
     Runner represents the callers for the tests. If not implemented we will use
-    a set of default implementations. 
+    a set of default implementations.
   */
   world_runner_st *runner;
 };
