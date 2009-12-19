@@ -82,12 +82,11 @@ client-record:
 	sh tests/t/memslap.test > tests/r/memslap.res
 	sh tests/t/memstat.test > tests/r/memstat.res
 
-test: tests/testapp tests/testplus library_test memcapable libmhashkit_test
+test: test-docs tests/testapp tests/testplus library_test memcapable libmhashkit_test
 	echo "Tests completed"
 
 library_test:
 	tests/testapp
-#	tests/testplus
 
 libmhashkit_test: libhashkit
 	tests/testhashkit

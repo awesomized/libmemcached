@@ -18,6 +18,8 @@ EXTRA_DIST = README.FIRST
 
 SUBDIRS = docs libhashkit
 
+test-docs:
+	(cd docs && make test-docs)
 include libmemcached/include.am
 include clients/include.am
 include tests/include.am

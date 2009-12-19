@@ -34,13 +34,13 @@ C Client Library for memcached (libmemcached, -lmemcached)
                            memcached_server_st *list);
 
   memcached_server_st *
-    memcached_server_by_key (memcached_st *ptr,  
-                             const char *key, size_t key_length, 
+    memcached_server_by_key (memcached_st *ptr,
+                             const char *key, size_t key_length,
                              memcached_return_t *error);
 
-  memcached_server_st *                          
+  memcached_server_st *
     memcached_server_get_last_disconnect (memcached_st *ptr)
-    
+
 
 =head1 DESCRIPTION
 
@@ -59,17 +59,17 @@ currently used structure).
 memcached_server_add() pushes a single TCP server into the C<memcached_st>
 structure. This server will be placed at the end. Duplicate servers are
 allowed, so duplication is not checked. Executing this function with the
-C<MEMCACHED_BEHAVIOR_USE_UDP> behavior set will result in a 
+C<MEMCACHED_BEHAVIOR_USE_UDP> behavior set will result in a
 C<MEMCACHED_INVALID_HOST_PROTOCOL>.
 
 memcached_server_add_udp() pushes a single UDP server into the C<memcached_st>
 structure. This server will be placed at the end. Duplicate servers are
 allowed, so duplication is not checked. Executing this function with out
-setting the C<MEMCACHED_BEHAVIOR_USE_UDP> behavior will result in a 
+setting the C<MEMCACHED_BEHAVIOR_USE_UDP> behavior will result in a
 C<MEMCACHED_INVALID_HOST_PROTOCOL>.
 
-memcached_server_add_unix_socket() pushes a single UNIX socket into the 
-C<memcached_st> structure. This UNIX socket will be placed at the end. 
+memcached_server_add_unix_socket() pushes a single UNIX socket into the
+C<memcached_st> structure. This UNIX socket will be placed at the end.
 Duplicate servers are allowed, so duplication is not checked. The length
 of the filename must be one character less then MEMCACHED_MAX_HOST_LENGTH.
 
@@ -85,9 +85,9 @@ from its original structure and must be freed. If NULL is returned you
 should consult *error. The returning structure should be freed with
 memcached_server_free().
 
-memcached_server_get_last_disconnect() returns a pointer to the last server 
-for which there was a connection problem. It does not mean this particular 
-server is currently dead but if the library is reporting a server is, 
+memcached_server_get_last_disconnect() returns a pointer to the last server
+for which there was a connection problem. It does not mean this particular
+server is currently dead but if the library is reporting a server is,
 the returned server is a very good candidate.
 
 =head1 RETURN
@@ -96,7 +96,7 @@ Varies, see particular functions.
 
 =head1 HOME
 
-To find out more information please check: 
+To find out more information please check:
 L<http://tangent.org/552/libmemcached.html>
 
 =head1 AUTHOR
