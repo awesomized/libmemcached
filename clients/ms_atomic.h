@@ -15,7 +15,7 @@
 #if defined(__SUNPRO_C)
 # define _KERNEL
 # include <atomic.h>
-# if defined(_INT64_TYPE)
+# if SIZEOF_SIZE_T == 8
 #  define  atomic_add_size(X, Y) atomic_add_64((X), (Y))
 #  define  atomic_add_size_nv(X, Y) atomic_add_64((X), (Y))
 #  define  atomic_dec_size(X, Y) atomic_add_64((X), (Y))
