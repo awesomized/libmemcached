@@ -1589,7 +1589,7 @@ static int ms_udp_read(ms_conn_t *c, char *buf, int len)
 
     if (res > 0)
     {
-      atomic_add_64(&ms_stats.bytes_read, res);
+      atomic_add_size(&ms_stats.bytes_read, res);
       c->rudpbytes+= res;
       rbytes+= res;
       if (res == avail)
@@ -1623,7 +1623,7 @@ static int ms_udp_read(ms_conn_t *c, char *buf, int len)
 
   if (copybytes == -1)
   {
-    atomic_add_64(&ms_stats.pkt_disorder, 1);
+    atomic_add_size(&ms_stats.pkt_disorder, 1);
   }
 
   return copybytes;
@@ -1701,7 +1701,7 @@ static int ms_try_read_network(ms_conn_t *c)
     {
       if (! c->udp)
       {
-        atomic_add_64(&ms_stats.bytes_read, res);
+        atomic_add_size(&ms_stats.bytes_read, res);
       }
       gotdata= 1;
       c->rbytes+= res;
@@ -1765,7 +1765,7 @@ static void ms_verify_value(ms_conn_t *c,
       if (curr_time.tv_sec - c->curr_task.item->client_time
           > c->curr_task.item->exp_time + EXPIRE_TIME_ERROR)
       {
-        atomic_add_64(&ms_stats.exp_get, 1);
+        atomic_add_size(&ms_stats.exp_get, 1);
 
         if (ms_setting.verbose)
         {
@@ -1806,7 +1806,7 @@ static void ms_verify_value(ms_conn_t *c,
       if ((c->curr_task.item->value_size != vlen)
           || (memcmp(orignval, value, (size_t)vlen) != 0))
       {
-        atomic_add_64(&ms_stats.vef_failed, 1);
+        atomic_add_size(&ms_stats.vef_failed, 1);
 
         if (ms_setting.verbose)
         {
@@ -2254,7 +2254,7 @@ static int ms_transmit(ms_conn_t *c)
     res= sendmsg(c->sfd, m, 0);
     if (res > 0)
     {
-      atomic_add_64(&ms_stats.bytes_written, res);
+      atomic_add_size(&ms_stats.bytes_written, res);
 
       /* We've written some of the data. Remove the completed
        *  iovec entries from the list of pending writes. */
@@ -2997,9 +2997,9 @@ int ms_mcd_set(ms_conn_t *c, ms_task_item_t *item)
     }
   }
 
-  atomic_add_64(&ms_stats.obj_bytes,
-                item->key_size + item->value_size);
-  atomic_add_64(&ms_stats.cmd_set, 1);
+  atomic_add_size(&ms_stats.obj_bytes,
+                  item->key_size + item->value_size);
+  atomic_add_size(&ms_stats.cmd_set, 1);
 
   return 0;
 } /* ms_mcd_set */
@@ -3083,7 +3083,7 @@ int ms_mcd_get(ms_conn_t *c, ms_task_item_t *item, bool verify)
     }
   }
 
-  atomic_add_64(&ms_stats.cmd_get, 1);
+  atomic_add_size(&ms_stats.cmd_get, 1);
 
   return 0;
 } /* ms_mcd_get */
@@ -3182,7 +3182,7 @@ int ms_mcd_mlget(ms_conn_t *c)
   for (int i= 0; i < c->mlget_task.mlget_num; i++)
   {
     item= c->mlget_task.mlget_item[i].item;
-    atomic_add_64(&ms_stats.cmd_get, 1);
+    atomic_add_size(&ms_stats.cmd_get, 1);
   }
 
   return 0;
