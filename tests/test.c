@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <fnmatch.h>
-#include "server.h"
 
 #include "test.h"
 
@@ -172,7 +171,7 @@ int main(int argc, char *argv[])
       }
 
 
-      if (next->pre)
+      if (next->pre && world.runner->pre)
       {
         return_code= world.runner->pre(next->pre, world_ptr);
 
@@ -187,9 +186,9 @@ int main(int argc, char *argv[])
       gettimeofday(&end_time, NULL);
       load_time= timedif(end_time, start_time);
 
-      if (next->post)
+      if (next->post && world.runner->post)
       {
-        (void) world.runner->pre(next->pre, world_ptr);
+        (void) world.runner->post(next->post, world_ptr);
       }
 
       if (world.post_run)
