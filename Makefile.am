@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUFFIXES =
 PHONY =
 TESTS =
-CLEANFILES = 
+CLEANFILES =
 bin_PROGRAMS =
 noinst_HEADERS =
 lib_LTLIBRARIES =
@@ -19,7 +19,7 @@ EXTRA_DIST = README.FIRST
 SUBDIRS = docs libhashkit
 
 test-docs:
-	(cd docs && make test-docs)
+	(cd docs && $(MAKE) test-docs)
 include libmemcached/include.am
 include clients/include.am
 include tests/include.am
