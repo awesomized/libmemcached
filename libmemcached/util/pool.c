@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include "libmemcached/common.h"
-#include "libmemcached/pool.h"
+#include "libmemcached/memcached_util.h"
 
 #include <errno.h>
 #include <pthread.h>

@@ -103,7 +103,7 @@ libmemcached_libmemcached_la_LIBADD= $(LIBM) libmemcached/libmemcachedcallbacks.
 libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info 3:0:0
 
 if BUILD_LIBMEMCACHEDUTIL
-pkginclude_HEADERS+= libmemcached/memcached_util.h libmemcached/pool.h
+pkginclude_HEADERS+= libmemcached/memcached_util.h libmemcached/util/pool.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 
