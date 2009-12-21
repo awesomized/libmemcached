@@ -81,6 +81,8 @@ static memcached_return_t textual_value_fetch(memcached_server_st *ptr,
   size_t value_length;
   size_t to_read;
   char *value_ptr;
+  ssize_t read_length= 0;
+  memcached_return_t rrc;
 
   if (ptr->root->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
@@ -173,8 +175,7 @@ static memcached_return_t textual_value_fetch(memcached_server_st *ptr,
     some people lazy about using the return length.
   */
   to_read= (value_length) + 2;
-  ssize_t read_length= 0;
-  memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
+  rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
   if (rrc != MEMCACHED_SUCCESS)
     return rrc;
 
