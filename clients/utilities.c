@@ -18,7 +18,7 @@
 
 long int timedif(struct timeval a, struct timeval b)
 {
-  register int us, s;
+  long us, s;
 
   us = (int)(a.tv_usec - b.tv_usec);
   us /= 1000;
@@ -29,7 +29,7 @@ long int timedif(struct timeval a, struct timeval b)
 
 void version_command(const char *command_name)
 {
-  printf("%s v%u.%u\n", command_name, 1, 0);
+  printf("%s v%u.%u\n", command_name, 1U, 0U);
   exit(0);
 }
 
@@ -71,7 +71,7 @@ void help_command(const char *command_name, const char *description,
 {
   unsigned int x;
 
-  printf("%s v%u.%u\n\n", command_name, 1, 0);
+  printf("%s v%u.%u\n\n", command_name, 1U, 0U);
   printf("\t%s\n\n", description);
   printf("Current options. A '=' means the option takes a value.\n\n");
 
