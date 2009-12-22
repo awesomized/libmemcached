@@ -93,11 +93,6 @@ memcached_server_st *memcached_server_clone(memcached_server_st *clone,
                                             memcached_server_st *ptr);
 
 LIBMEMCACHED_API
-memcached_analysis_st *memcached_analyze(memcached_st *memc,
-                                         memcached_stat_st *memc_stat,
-                                         memcached_return_t *error);
-
-LIBMEMCACHED_API
 memcached_return_t memcached_server_remove(memcached_server_st *st_ptr);
 
 LIBMEMCACHED_API

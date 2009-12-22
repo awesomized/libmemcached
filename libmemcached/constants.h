@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -26,6 +26,8 @@
 #define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
 #define MEMCACHED_PREFIX_KEY_MAX_SIZE 128
 #define MEMCACHED_EXPIRATION_NOT_ADD 0xffffffffU
+#define MEMCACHED_VERSION_STRING_LENGTH 24
+
 
 typedef enum {
   MEMCACHED_SUCCESS,

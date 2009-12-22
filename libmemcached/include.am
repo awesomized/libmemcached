@@ -20,6 +20,8 @@ noinst_HEADERS+= \
 	libmemcached/protocol/binary_handler.h
 
 nobase_pkginclude_HEADERS+= \
+	libmemcached/analyze.h \
+	libmemcached/auto.h \
 	libmemcached/behavior.h \
 	libmemcached/callback.h \
 	libmemcached/constants.h \
@@ -34,6 +36,7 @@ nobase_pkginclude_HEADERS+= \
 	libmemcached/protocol_handler.h \
 	libmemcached/result.h \
 	libmemcached/server.h \
+	libmemcached/stats.h \
 	libmemcached/storage.h \
 	libmemcached/string.h \
 	libmemcached/types.h \

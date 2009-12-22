@@ -79,6 +79,9 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
     return NULL;
   }
 
+  result->options.allocated= true;
+  result->root= memc;
+
   for (x= 0; x < server_count; x++)
   {
     calc_largest_consumption(result, x, memc_stat[x].bytes);
@@ -97,4 +100,10 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
   calc_hit_ratio(result, total_get_hits, total_get_cmds);
 
   return result;
+}
+
+void memcached_analyze_free(memcached_analysis_st *ptr)
+{
+  if (ptr->options.allocated)
+    free(ptr);
 }
