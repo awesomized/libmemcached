@@ -48,6 +48,7 @@ tests_testapp_LDADD= \
 	clients/libgenexec.la \
 	tests/libserver.la \
 	tests/libtest.la \
+	libmemcached/libmemcachedinternal.la \
 	$(TESTS_LDADDS)
 tests_testapp_DEPENDENCIES= $(tests_testapp_LDADD)
 

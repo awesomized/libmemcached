@@ -55,9 +55,18 @@ libmemcached_libmemcachedprotocol_la_SOURCES =  \
 
 libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0 
 
-noinst_LTLIBRARIES+= libmemcached/libmemcachedcallbacks.la
+noinst_LTLIBRARIES+= \
+		     libmemcached/libmemcachedcallbacks.la
+
 libmemcached_libmemcachedcallbacks_la_CFLAGS = ${AM_CFLAGS} ${NO_STRICT_ALIASING}
 libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
+
+# This noinst lib contains things we want to be ABI private but still want to
+# either use in client programs or be able to test in test cases
+# These symbols will not be exposed in the shipped .so
+noinst_LTLIBRARIES+= \
+		     libmemcached/libmemcachedinternal.la
+libmemcached_libmemcachedinternal_la_SOURCES = libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
@@ -92,7 +101,6 @@ libmemcached_libmemcached_la_SOURCES = \
 				       libmemcached/stats.c \
 				       libmemcached/storage.c \
 				       libmemcached/strerror.c \
-				       libmemcached/string.c \
 				       libmemcached/verbosity.c \
 				       libmemcached/version.c
 
@@ -101,8 +109,8 @@ if INCLUDE_HSIEH_SRC
 libmemcached_libmemcached_la_SOURCES += libmemcached/hsieh_hash.c
 endif
 
-libmemcached_libmemcached_la_DEPENDENCIES= libmemcached/libmemcachedcallbacks.la
-libmemcached_libmemcached_la_LIBADD= $(LIBM) libmemcached/libmemcachedcallbacks.la
+libmemcached_libmemcached_la_DEPENDENCIES= libmemcached/libmemcachedcallbacks.la libmemcached/libmemcachedinternal.la
+libmemcached_libmemcached_la_LIBADD= $(LIBM) libmemcached/libmemcachedcallbacks.la libmemcached/libmemcachedinternal.la
 libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info 3:0:0
 
 if BUILD_LIBMEMCACHEDUTIL
