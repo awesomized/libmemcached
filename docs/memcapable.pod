@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcapable - Check memcached server capabilites
+memcapable - Check memcached server capabilities
 
 =head1 SYNOPSIS
 
