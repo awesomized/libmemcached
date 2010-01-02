@@ -25,6 +25,7 @@ AC_DEFUN([_PANDORA_SEARCH_MEMCACHED],[
   ])
   AC_DEFINE_UNQUOTED([MEMCACHED_BINARY], "$MEMCACHED_BINARY", 
             [Name of the memcached binary used in make test])
+  AM_CONDITIONAL([HAVE_MEMCACHED],[test "x$MEMCACHED_BINARY" != "xno"])
 ])
 
 AC_DEFUN([PANDORA_HAVE_MEMCACHED],[
