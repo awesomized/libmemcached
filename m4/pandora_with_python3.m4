@@ -17,7 +17,7 @@ AC_DEFUN([PANDORA_WITH_PYTHON3], [
     [AS_HELP_STRING([--with-python3],
       [Build Python3 Bindings @<:@default=yes@:>@])],[
         with_python3=$withval
-        python3_requested=yes
+        python3_requested=$withval
       ],[ 
         with_python3=yes
         python3_requested=no

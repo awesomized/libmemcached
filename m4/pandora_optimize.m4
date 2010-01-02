@@ -51,7 +51,7 @@ AC_DEFUN([PANDORA_OPTIMIZE],[
     CXX="${CXX} -xlang=c99"
 
     AM_CFLAGS="-g -mt -xstrconst -Xa ${AM_CFLAGS}"
-    AM_CXXFLAGS="-mt -compat=5 -library=stlport4 -template=no%extdef ${AM_CXXFLAGS}"
+    AM_CXXFLAGS="-mt -compat=5 -library=stlport4 -library=Crun -template=no%extdef ${AM_CXXFLAGS}"
 
     DEBUG_CXXFLAGS="-g"
 

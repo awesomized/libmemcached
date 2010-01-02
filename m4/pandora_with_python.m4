@@ -15,14 +15,23 @@ AC_DEFUN([PANDORA_WITH_PYTHON], [
   AC_ARG_WITH([python], 
     [AS_HELP_STRING([--with-python],
       [Build Python Bindings @<:@default=yes@:>@])],
-    [with_python=$withval], 
-    [with_python=yes])
+    [with_python=$withval
+     python_requested=$withval
+    ], 
+    [with_python=yes
+     python_requested=no
+    ])
 
   AS_IF([test "x$with_python" != "xno"],[
     AS_IF([test "x$with_python" != "xyes"],[PYTHON=$with_python])
     AM_PATH_PYTHON([2.4],,[with_python="no"])
     AC_PYTHON_DEVEL()
     AS_IF([test "x$pythonexists" = "xno"],[with_python="no"])
+  ])
+  AS_IF([test "x$with_python" = "xno" -a "$python_requested" = "yes"],[
+    AC_MSG_ERROR([Python support was explicity requested, but Python support
+                  was not found. Please correct your build environment and try
+                  again])
   ])
   AM_CONDITIONAL(BUILD_PYTHON, [test "$with_python" = "yes"])
 ])
