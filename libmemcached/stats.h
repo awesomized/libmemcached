@@ -5,7 +5,7 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
- * Summary: Change the behavior of the memcached connection.
+ * Summary: Collect up the stats for a memcached server.
  *
  */
 
@@ -41,6 +41,7 @@ struct memcached_stat_st {
   uint64_t get_misses;
   uint64_t limit_maxbytes;
   char version[MEMCACHED_VERSION_STRING_LENGTH];
+  memcached_st *root;
 };
 
 LIBMEMCACHED_API

@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See

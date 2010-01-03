@@ -371,6 +371,8 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 
   stats= ptr->call_calloc(ptr, ptr->number_of_hosts, sizeof(memcached_stat_st));
 
+  stats->root= ptr;
+
   if (!stats)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -451,8 +453,16 @@ void memcached_stat_free(memcached_st *ptr, memcached_stat_st *memc_stat)
     return;
   }
 
-  if (ptr)
+  if (memc_stat->root)
+  {
+    memc_stat->root->call_free(ptr, memc_stat);
+  }
+  else if (ptr)
+  {
     ptr->call_free(ptr, memc_stat);
+  }
   else
+  {
     free(memc_stat);
+  }
 }
