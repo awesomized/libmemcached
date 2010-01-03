@@ -9,17 +9,17 @@
  *
  */
 
-#include "common.h" 
+#include "common.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 
-/* 
+/*
   These functions provide data and function callback support
 */
 
-memcached_return_t memcached_callback_set(memcached_st *ptr, 
-                                          const memcached_callback_t flag, 
+memcached_return_t memcached_callback_set(memcached_st *ptr,
+                                          const memcached_callback_t flag,
                                           void *data)
 {
   switch (flag)
@@ -113,7 +113,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-void *memcached_callback_get(memcached_st *ptr, 
+void *memcached_callback_get(memcached_st *ptr,
                              const memcached_callback_t flag,
                              memcached_return_t *error)
 {

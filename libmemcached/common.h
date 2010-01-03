@@ -86,29 +86,6 @@ struct memcached_continuum_item_st
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 
-
-typedef enum {
-  MEM_NO_BLOCK= (1 << 0),
-  MEM_TCP_NODELAY= (1 << 1),
-  MEM_REUSE_MEMORY= (1 << 2),
-  MEM_USE_MD5= (1 << 3),
-  /* 4 was once Ketama */
-  MEM_USE_CRC= (1 << 5),
-  MEM_USE_CACHE_LOOKUPS= (1 << 6),
-  MEM_SUPPORT_CAS= (1 << 7),
-  MEM_BUFFER_REQUESTS= (1 << 8),
-  MEM_USE_SORT_HOSTS= (1 << 9),
-  MEM_VERIFY_KEY= (1 << 10),
-  /* 11 used for weighted ketama */
-  MEM_KETAMA_WEIGHTED= (1 << 11),
-  MEM_BINARY_PROTOCOL= (1 << 12),
-  MEM_HASH_WITH_PREFIX_KEY= (1 << 13),
-  MEM_NOREPLY= (1 << 14),
-  MEM_USE_UDP= (1 << 15),
-  MEM_AUTO_EJECT_HOSTS= (1 << 16),
-  MEM_RANDOMIZE_REPLICA_READ= (1 << 17)
-} memcached_flags;
-
 /* Hashing algo */
 
 LIBMEMCACHED_LOCAL
@@ -149,7 +126,7 @@ LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_key_test(const char * const *keys, 
+memcached_return_t memcached_key_test(const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys);
 

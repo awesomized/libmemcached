@@ -5,7 +5,7 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
- * Summary: Change the behavior of the memcached connection.
+ * Summary: Generate a memcached_analysis_st
  *
  */
 
@@ -18,9 +18,6 @@ extern "C" {
 
 
 struct memcached_analysis_st {
-  struct {
-    bool allocated:1;
-  } options;
   memcached_st *root;
   uint32_t average_item_size;
   uint32_t longest_uptime;

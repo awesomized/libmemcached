@@ -67,7 +67,7 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
   uint64_t total_get_cmds= 0, total_get_hits= 0;
   uint32_t server_count, x;
   memcached_analysis_st *result;
- 
+
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
   result= (memcached_analysis_st*)calloc(memc->number_of_hosts,
@@ -79,7 +79,6 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
     return NULL;
   }
 
-  result->options.allocated= true;
   result->root= memc;
 
   for (x= 0; x < server_count; x++)
@@ -104,6 +103,5 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 
 void memcached_analyze_free(memcached_analysis_st *ptr)
 {
-  if (ptr->options.allocated)
-    free(ptr);
+  free(ptr);
 }
