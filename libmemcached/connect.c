@@ -210,7 +210,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 
     WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
-    if (!ptr->sockaddr_inited ||
+    if (! ptr->options.sockaddr_inited ||
         (!(ptr->root->flags.use_cache_lookups)))
     {
       memcached_return_t rc;
@@ -218,7 +218,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       rc= set_hostinfo(ptr);
       if (rc != MEMCACHED_SUCCESS)
         return rc;
-      ptr->sockaddr_inited= true;
+      ptr->options.sockaddr_inited= true;
     }
 
     use= ptr->address_info;

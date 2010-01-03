@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -19,8 +19,8 @@ extern "C" {
 struct memcached_server_st {
   struct {
     bool is_allocated:1;
+    bool sockaddr_inited:1;
   } options;
-  bool sockaddr_inited;
   uint16_t count;
   uint32_t cursor_active;
   in_port_t port;

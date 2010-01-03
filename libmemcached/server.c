@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -94,9 +94,9 @@ memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcache
   if (ptr == NULL)
     return NULL;
 
-  rv = memcached_server_create_with(ptr->root, clone,
-                                    ptr->hostname, ptr->port, ptr->weight,
-                                    ptr->type);
+  rv= memcached_server_create_with(ptr->root, clone,
+                                   ptr->hostname, ptr->port, ptr->weight,
+                                   ptr->type);
   if (rv != NULL)
   {
     rv->cached_errno= ptr->cached_errno;

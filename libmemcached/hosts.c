@@ -323,7 +323,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
   new_host_list= ptr->call_realloc(ptr, ptr->hosts,
                                    sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
 
-  if (!new_host_list)
+  if (! new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   ptr->hosts= new_host_list;
