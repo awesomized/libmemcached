@@ -30,7 +30,6 @@ HASHKIT_API
 uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
 HASHKIT_API
 uint32_t hashkit_crc32(const char *key, size_t key_length);
-HASHKIT_API
 #ifdef HAVE_HSIEH_HASH
 HASHKIT_API
 uint32_t hashkit_hsieh(const char *key, size_t key_length);
