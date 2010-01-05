@@ -83,7 +83,7 @@ environments).
 
 Makes the default hashing algorithm for keys use MD5. The value can be set
 to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR.
-Each hash has it's advantages and it's weaknesses. If you dont know or dont care, just go with the default.
+Each hash has it's advantages and it's weaknesses. If you don't know or don't care, just go with the default.
 Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable support for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
 
 =item MEMCACHED_BEHAVIOR_DISTRIBUTION

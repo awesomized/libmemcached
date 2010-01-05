@@ -23,7 +23,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 =head1 DESCRIPTION
 
 memcached_generate_hash_value() allows you to hash a key using one of
-the hash fuctions defined in the library. This method is provided for
+the hash functions defined in the library. This method is provided for
 the convenience of higher-level language bindings and is not necessary
 for normal memcache operations.
 

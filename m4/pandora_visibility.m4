@@ -1,5 +1,5 @@
-# visibility.m4 serial 2 (gettext-0.18)
 dnl Copyright (C) 2005, 2008 Free Software Foundation, Inc.
+dnl Copyright (C) 2009 Monty Taylor
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -20,12 +20,13 @@ dnl "really only recommended for legacy code".
 dnl Set the variable CFLAG_VISIBILITY.
 dnl Defines and sets the variable HAVE_VISIBILITY.
 
-AC_DEFUN([gl_VISIBILITY],
+AC_DEFUN([PANDORA_VISIBILITY],
 [
   AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([PANDORA_PLATFORM])
   CFLAG_VISIBILITY=
   HAVE_VISIBILITY=0
-  if test -n "$GCC"; then
+  AS_IF([test -n "$GCC"],[
     AC_MSG_CHECKING([for simple visibility declarations])
     AC_CACHE_VAL([gl_cv_cc_visibility], [
       gl_save_CFLAGS="$CFLAGS"
@@ -44,7 +45,11 @@ AC_DEFUN([gl_VISIBILITY],
       CFLAG_VISIBILITY="-fvisibility=hidden"
       HAVE_VISIBILITY=1
     fi
-  fi
+  ])
+  AS_IF([test "x$SUNCC" = "xyes"],[
+    CFLAG_VISIBILITY="-xldscope=hidden"
+    HAVE_VISIBILITY=1
+  ])
   AC_SUBST([CFLAG_VISIBILITY])
   AC_SUBST([HAVE_VISIBILITY])
   AC_DEFINE_UNQUOTED([HAVE_VISIBILITY], [$HAVE_VISIBILITY],
