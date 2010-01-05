@@ -14,16 +14,108 @@ servers. It simulates loads on memcached server clusters.
 You can specify servers via the B<--servers> option or via the
 environment variable C<MEMCACHED_SERVERS>.
 
-For a full list of operations run the tool with the B<--help> option.
+-s, --servers=
+    List one or more servers to connect. Servers count must be less than
+    threads count. e.g.: --servers=localhost:1234,localhost:11211
+
+-T, --threads=
+    Number of threads to startup, better equal to CPU numbers. Default 8.
+
+-c, --concurrency=
+    Number of concurrency to simulate with load. Default 128.
+
+-n, --conn_sock=
+    Number of TCP socks per concurrency. Default 1.
+
+-x, --execute_number=
+    Number of operations(get and set) to execute for the
+    given test. Default 1000000.
+
+-t, --time=
+    How long the test to run, suffix: s-seconds, m-minutes, h-hours,
+    d-days e.g.: --time=2h.
+
+-F, --cfg_cmd=
+    Load the configure file to get command,key and value distribution list.
+
+-w, --win_size=
+    Task window size of each concurrency, suffix: K, M e.g.: --win_size=10k.
+    Default 10k.
+
+-X, --fixed_size=
+    Fixed length of value.
+
+-v, --verify=
+    The proportion of date verification, e.g.: --verify=0.01
+
+-d, --division=
+    Number of keys to multi-get once. Default 1, means single get.
+
+-S, --stat_freq=
+    Frequency of dumping statistic information. suffix: s-seconds,
+    m-minutes, e.g.: --resp_freq=10s.
+
+-e, --exp_verify=
+    The proportion of objects with expire time, e.g.: --exp_verify=0.01.
+    Default no object with expire time
+
+-o, --overwrite=
+    The proportion of objects need overwrite, e.g.: --overwrite=0.01.
+    Default never overwrite object.
+
+-R, --reconnect 
+    Reconnect support, when connection is closed it will be reconnected.
+
+-U, --udp 
+    UDP support, default memslap uses TCP, TCP port and UDP port of
+    server must be same.
+
+-a, --facebook 
+    Whether it enables facebook test feature, set with TCP and multi-get with UDP.
+
+-B, --binary 
+    Whether it enables binary protocol. Default with ASCII protocol.
+
+-P, --tps=
+    Expected throughput, suffix: K, e.g.: --tps=10k.
+
+-p, --rep_write=
+    The first nth servers can write data, e.g.: --rep_write=2.
+
+-b, --verbose 
+    Whether it outputs detailed information when verification fails.
+
+-h, --help 
+    Display this message and then exit.
+
+-V, --version 
+    Display the version of the application and then exit.
+
+=head1 EXAMPLES
+
+memslap -s 127.0.0.1:11211 -S 5s
+
+memslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b
+
+memslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2
+
+memslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k
+
+memslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40
+
+memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
+
+memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 
 =head1 HOME
 
 To find out more information please check:
 L<http://tangent.org/552/libmemcached.html>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Brian Aker, E<lt>brian@tangent.orgE<gt>
+Mingqiang Zhuang E<lt>mingqiangzhuang@hengtiansoft.comE<gt>
 
 =head1 SEE ALSO
 
