@@ -9,69 +9,80 @@
 #
 CLEANFILES= *.1 *.3 *.html *.pop
 
+BUILT_SOURCES=
+
 AUTO_PAGES= \
-	memcached_increment \
-	memcached_increment_with_initial \
-	memcached_decrement \
-	memcached_decrement_with_initial
+	memcached_increment.pop \
+	memcached_increment_with_initial.pop \
+	memcached_decrement.pop \
+	memcached_decrement_with_initial.pop
+BUILT_SOURCES += ${AUTO_PAGES}
 
 SET_PAGES= \
-	   memcached_set \
-	   memcached_set_by_key \
-	   memcached_cas \
-	   memcached_cas_by_key \
-	   memcached_replace \
-	   memcached_replace_by_key \
-	   memcached_add memcached_add_by_key \
-	   memcached_prepend \
-	   memcached_prepend_by_key \
-	   memcached_append \
-	   memcached_append_by_key
+	   memcached_set.pop \
+	   memcached_set_by_key.pop \
+	   memcached_cas.pop \
+	   memcached_cas_by_key.pop \
+	   memcached_replace.pop \
+	   memcached_replace_by_key.pop \
+	   memcached_add.pop \
+		 memcached_add_by_key.pop \
+	   memcached_prepend.pop \
+	   memcached_prepend_by_key.pop \
+	   memcached_append.pop \
+	   memcached_append_by_key.pop
+BUILT_SOURCES += ${SET_PAGES}
 
 CREATE_PAGES= \
-	     memcached_create \
-	     memcached_free \
-	     memcached_clone
+	     memcached_create.pop \
+	     memcached_free.pop \
+	     memcached_clone.pop
+BUILT_SOURCES += ${CREATE_PAGES}
 
 DELETE_PAGES= \
-	      memcached_delete \
-	      memcached_delete_by_key
+	      memcached_delete.pop \
+	      memcached_delete_by_key.pop
+BUILT_SOURCES += ${DELETE_PAGES}
 
 GET_PAGES= \
-	   memcached_get \
-	   memcached_get_by_key \
-	   memcached_fetch_result \
-	   memcached_fetch_execute \
-	   memcached_mget \
-	   memcached_mget_by_key \
-	   memcached_mget_execute \
-	   memcached_mget_execute_by_key \
-	   memcached_fetch
+	   memcached_get.pop \
+	   memcached_get_by_key.pop \
+	   memcached_fetch_result.pop \
+	   memcached_fetch_execute.pop \
+	   memcached_mget.pop \
+	   memcached_mget_by_key.pop \
+	   memcached_mget_execute.pop \
+	   memcached_mget_execute_by_key.pop \
+	   memcached_fetch.pop
+BUILT_SOURCES += ${GET_PAGES}
 
 RESULT_PAGES= \
-	      memcached_result_cas \
-	      memcached_result_create \
-	      memcached_result_flags \
-	      memcached_result_free \
-	      memcached_result_key_length \
-	      memcached_result_key_value \
-	      memcached_result_length \
-	      memcached_result_st \
-	      memcached_result_value
+	      memcached_result_cas.pop \
+	      memcached_result_create.pop \
+	      memcached_result_flags.pop \
+	      memcached_result_free.pop \
+	      memcached_result_key_length.pop \
+	      memcached_result_key_value.pop \
+	      memcached_result_length.pop \
+	      memcached_result_st.pop \
+	      memcached_result_value.pop
+BUILT_SOURCES += ${RESULT_PAGES}
 
 
 SERVER_PAGES= \
-	      memcached_server_count \
-	      memcached_server_list \
-	      memcached_server_add \
-	      memcached_server_add_unix_socket \
-	      memcached_server_push 
+	      memcached_server_count.pop \
+	      memcached_server_list.pop \
+	      memcached_server_add.pop \
+	      memcached_server_add_unix_socket.pop \
+	      memcached_server_push.pop 
+BUILT_SOURCES += ${SERVER_PAGES}
 
 SERVER_ST_PAGES= \
-		 memcached_server_list_free \
-		 memcached_server_list_count \
-		 memcached_server_list_append \
-		 memcached_servers_parse 
+		 memcached_server_list_free.pop \
+		 memcached_server_list_count.pop \
+		 memcached_server_list_append.pop \
+		 memcached_servers_parse.pop 
+BUILT_SOURCES += ${SERVER_ST_PAGES}
 
 HTML_FILES= \
 	    hashkit_create.html \
@@ -237,158 +248,169 @@ endif
 
 
 ${CREATE_PAGES}: 
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_create.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_create.pod ${top_builddir}/docs/$@
 
 ${SET_PAGES}: 
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_set.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_set.pod ${top_builddir}/docs/$@
 
 ${DELETE_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_delete.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_delete.pod ${top_builddir}/docs/$@
 
 ${AUTO_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_auto.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_auto.pod ${top_builddir}/docs/$@
 
 ${GET_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_get.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_get.pod ${top_builddir}/docs/$@
 
 ${SERVER_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_servers.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_servers.pod ${top_builddir}/docs/$@
 
 ${SERVER_ST_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_server_st.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_server_st.pod ${top_builddir}/docs/$@
 
 ${GENERIC_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/$@.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/$*.pod ${top_builddir}/docs/$@
 
 GENERIC_PAGES= \
-	libmemcached \
-	libmemcached_examples \
-	libmemcachedutil \
-	memcached_analyze \
-	memcached_dump \
-	memcached_flush \
-	memcached_flush_buffers \
-	memcached_generate_hash_value \
-	memcached_quit \
-	memcached_strerror \
-	memcached_verbosity \
-	memcapable \
-	memcat \
-	memcp \
-	memdump \
-	memerror \
-	memflush \
-	memrm \
-	memslap \
-	memstat
+	libmemcached.pop \
+	libmemcached_examples.pop \
+	libmemcachedutil.pop \
+	memcached_analyze.pop \
+	memcached_dump.pop \
+	memcached_flush.pop \
+	memcached_flush_buffers.pop \
+	memcached_generate_hash_value.pop \
+	memcached_quit.pop \
+	memcached_strerror.pop \
+	memcached_verbosity.pop \
+	memcapable.pop \
+	memcat.pop \
+	memcp.pop \
+	memdump.pop \
+	memerror.pop \
+	memflush.pop \
+	memrm.pop \
+	memslap.pop \
+	memstat.pop
+BUILT_SOURCES += ${GENERIC_PAGES}
 
 BEHAVIOR_PAGES= \
-	memcached_behavior_get \
-	memcached_behavior_set
+	memcached_behavior_get.pop \
+	memcached_behavior_set.pop
+BUILT_SOURCES += ${BEHAVIOR_PAGES}
 
 ${BEHAVIOR_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_behavior.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_behavior.pod ${top_builddir}/docs/$@
 
 CALLBACK_PAGES= \
-	memcached_callback_get \
-	memcached_callback_set
+	memcached_callback_get.pop \
+	memcached_callback_set.pop
+BUILT_SOURCES += ${CALLBACK_PAGES}
 
 ${CALLBACK_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_callback.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_callback.pod ${top_builddir}/docs/$@
 
 STATS_PAGES= \
-	memcached_stat \
-	memcached_stat_get_keys \
-	memcached_stat_get_value \
-	memcached_stat_servername
+	memcached_stat.pop \
+	memcached_stat_get_keys.pop .pop\
+	memcached_stat_get_value.pop \
+	memcached_stat_servername.pop
+BUILT_SOURCES += ${STATS_PAGES}
 
 ${STATS_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_stats.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_stats.pod ${top_builddir}/docs/$@
 
 ${RESULT_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_result_st.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_result_st.pod ${top_builddir}/docs/$@
 
 VERSION_PAGES= \
-	       memcached_version \
-	       memcached_lib_version
+	       memcached_version.pop \
+	       memcached_lib_version.pop
+BUILT_SOURCES += ${VERSION_PAGES}
 
 ${VERSION_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_version.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_version.pod ${top_builddir}/docs/$@
 
 MEMORY_ALLOCATORS_PAGES= \
-			 memcached_get_memory_allocators \
-			 memcached_set_memory_allocators
+			 memcached_get_memory_allocators.pop \
+			 memcached_set_memory_allocators.pop
+BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
 
 ${MEMORY_ALLOCATORS_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_memory_allocators.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_memory_allocators.pod ${top_builddir}/docs/$@
 
 USER_DATA_PAGES= \
-		 memcached_get_user_data \
-		 memcached_set_user_data
+		 memcached_get_user_data.pop \
+		 memcached_set_user_data.pop
+BUILT_SOURCES += ${USER_DATA_PAGES}
 
 ${USER_DATA_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@
 
 
 POOL_PAGES= \
-	memcached_pool_behavior_get \
-	memcached_pool_behavior_set \
-	memcached_pool_create \
-	memcached_pool_destroy \
-	memcached_pool_pop \
-	memcached_pool_push 
+	memcached_pool_behavior_get.pop \
+	memcached_pool_behavior_set.pop \
+	memcached_pool_create.pop \
+	memcached_pool_destroy.pop \
+	memcached_pool_pop.pop \
+	memcached_pool_push.pop 
+BUILT_SOURCES += ${POOL_PAGES}
 
 ${POOL_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@
 
 HASH_CREATE_PAGES= \
-	     hashkit_is_allocated \
-	     hashkit_create \
-	     hashkit_clone \
-	     hashkit_free
+	     hashkit_is_allocated.pop \
+	     hashkit_create.pop \
+	     hashkit_clone.pop \
+	     hashkit_free.pop
+BUILT_SOURCES += ${HASH_CREATE_PAGES}
 
 ${HASH_CREATE_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/hashkit_create.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/hashkit_create.pod ${top_builddir}/docs/$@
 
 KIT_FUNCTIONS_PAGES= \
-		     hashkit_crc32 \
-		     hashkit_fnv1_32 \
-		     hashkit_fnv1_64 \
-		     hashkit_fnv1a_32 \
-		     hashkit_fnv1a_64 \
-		     hashkit_functions \
-		     hashkit_hsieh \
-		     hashkit_jenkins \
-		     hashkit_md5 \
-		     hashkit_murmur
+		     hashkit_crc32.pop \
+		     hashkit_fnv1_32.pop \
+		     hashkit_fnv1_64.pop \
+		     hashkit_fnv1a_32.pop \
+		     hashkit_fnv1a_64.pop \
+		     hashkit_functions.pop \
+		     hashkit_hsieh.pop \
+		     hashkit_jenkins.pop \
+		     hashkit_md5.pop \
+		     hashkit_murmur.pop
+BUILT_SOURCES += ${KIT_FUNCTIONS_PAGES}
 
 ${KIT_FUNCTIONS_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/hashkit_functions.pod ${top_builddir}/docs/$@.pop
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/hashkit_functions.pod ${top_builddir}/docs/$@
 
 HASHKIT_ST_PAGES= \
-	hashkit_value
+	hashkit_value.pop
+BUILT_SOURCES += ${HASHKIT_ST_PAGES}
 
-${HASH_KIT_ST_PAGES}:
-	@rm -f $@.pop
-	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@.pop
+${HASHKIT_ST_PAGES}:
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@
 
 test-docs:
 	${PODCHECKER} $(top_srcdir)/docs/hashkit_create.pod
@@ -426,15 +448,15 @@ test-docs:
 
 html-pages: $(HTML_FILES)
 
-SUFFIXES: .pop .pod .html .1 .3
+SUFFIXES= .pop .pod .html .1 .3
 
 .pop: ${_set}
 
-.pop.html:
+.html.pop:
 	pod2html --infile=$< >  $@
 
 .pop.1:
-	${POD2MAN} -c "$*" -r "" -s 3 $< >  $@
+	${POD2MAN} -c "$*" -r "" -s 1 $< >  $@
 
-.pop.3: ${_set}
+.pop.3:
 	${POD2MAN} -c "$*" -r "" -s 3 $< >  $@
