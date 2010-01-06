@@ -1,4 +1,77 @@
-CLEANFILES= *.1 *.3 *.html
+# This file generates all of man/html pages that we use for documentation.
+#
+# When hacking this file you need to know that we take .pod files and turn
+# them into .pop files. .pop files are 1=1 for man pages, but one .pod
+# file may generate many .pop files.
+#
+#    -Brian
+#
+#
+CLEANFILES= *.1 *.3 *.html *.pop
+
+AUTO_PAGES= \
+	memcached_increment \
+	memcached_increment_with_initial \
+	memcached_decrement \
+	memcached_decrement_with_initial
+
+SET_PAGES= \
+	   memcached_set \
+	   memcached_set_by_key \
+	   memcached_cas \
+	   memcached_cas_by_key \
+	   memcached_replace \
+	   memcached_replace_by_key \
+	   memcached_add memcached_add_by_key \
+	   memcached_prepend \
+	   memcached_prepend_by_key \
+	   memcached_append \
+	   memcached_append_by_key
+
+CREATE_PAGES= \
+	     memcached_create \
+	     memcached_free \
+	     memcached_clone
+
+DELETE_PAGES= \
+	      memcached_delete \
+	      memcached_delete_by_key
+
+GET_PAGES= \
+	   memcached_get \
+	   memcached_get_by_key \
+	   memcached_fetch_result \
+	   memcached_fetch_execute \
+	   memcached_mget \
+	   memcached_mget_by_key \
+	   memcached_mget_execute \
+	   memcached_mget_execute_by_key \
+	   memcached_fetch
+
+RESULT_PAGES= \
+	      memcached_result_cas \
+	      memcached_result_create \
+	      memcached_result_flags \
+	      memcached_result_free \
+	      memcached_result_key_length \
+	      memcached_result_key_value \
+	      memcached_result_length \
+	      memcached_result_st \
+	      memcached_result_value
+
+
+SERVER_PAGES= \
+	      memcached_server_count \
+	      memcached_server_list \
+	      memcached_server_add \
+	      memcached_server_add_unix_socket \
+	      memcached_server_push 
+
+SERVER_ST_PAGES= \
+		 memcached_server_list_free \
+		 memcached_server_list_count \
+		 memcached_server_list_append \
+		 memcached_servers_parse 
 
 HTML_FILES= \
 	    hashkit_create.html \
@@ -79,7 +152,7 @@ EXTRA_DIST = \
 	  memslap.pod \
 	  memstat.pod
 
-man_MANS = \
+man_MANS = ${set_} \
 	  libmemcached.3 \
 	  libmemcached_examples.3 \
 	  memcached_add.3 \
@@ -163,314 +236,159 @@ man_MANS+= \
 endif
 
 
-libmemcached.3: libmemcached.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/libmemcached.pod > libmemcached.3
-
-libmemcachedutil.3: libmemcachedutil.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/libmemcachedutil.pod > libmemcachedutil.3
-
-libmemcached_examples.3: libmemcached_examples.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/libmemcached_examples.pod > libmemcached_examples.3
-
-memcached_create.3: memcached_create.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_create.pod > memcached_create.3
-
-memcached_free.3: memcached_create.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_create.pod > memcached_free.3
-
-memcached_clone.3: memcached_create.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_create.pod > memcached_clone.3
-
-memcached_set.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_set.3
-
-memcached_set_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_set_by_key.3
-
-memcached_cas.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_cas.3
-
-memcached_cas_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_cas_by_key.3
-
-memcached_replace.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_replace.3
-
-memcached_replace_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_replace_by_key.3
-
-memcached_add.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_add.3
-
-memcached_add_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_add_by_key.3
-
-memcached_prepend.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_prepend.3
-
-memcached_prepend_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_prepend_by_key.3
-
-memcached_append.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_append.3
-
-memcached_append_by_key.3: memcached_set.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_set.pod > memcached_append_by_key.3
-
-memcached_delete.3: memcached_delete.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_delete.pod > memcached_delete.3
-
-memcached_delete_by_key.3: memcached_delete.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_delete.pod > memcached_delete_by_key.3
-
-memcached_increment.3:
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_auto.pod > memcached_increment.3
-
-memcached_increment_with_initial.3:
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_auto.pod > memcached_increment_with_initial.3
-
-memcached_decrement.3:
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_auto.pod > memcached_decrement.3
-
-memcached_decrement_with_initial.3:
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_auto.pod > memcached_decrement_with_initial.3
-
-memcached_dump.3: memcached_dump.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_dump.pod > memcached_dump.3
-
-memcached_flush.3: memcached_flush.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_flush.pod > memcached_flush.3
-
-memcached_get.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_get.3
-
-memcached_get_by_key.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_get_by_key.3
-
-memcached_fetch_result.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_fetch_result.3
-
-memcached_fetch_execute.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_fetch_execute.3
-
-memcached_mget.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_mget.3
-
-memcached_mget_by_key.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_mget_by_key.3
-
-memcached_mget_execute.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_mget_execute.3
-
-memcached_mget_execute_by_key.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_mget_execute_by_key.3
-
-memcached_fetch.3: memcached_get.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_get.pod > memcached_fetch.3
-
-memcached_quit.3: memcached_quit.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_quit.pod > memcached_quit.3
-
-memcached_strerror.3: memcached_strerror.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_strerror.pod > memcached_strerror.3
-
-memcached_server_count.3: memcached_servers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_servers.pod > memcached_server_count.3
-
-memcached_server_list.3: memcached_servers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_servers.pod > memcached_server_list.3
-
-memcached_server_add.3: memcached_servers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_servers.pod > memcached_server_add.3
-
-memcached_server_add_unix_socket.3: memcached_servers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_servers.pod > memcached_server_add_unix_socket.3
-
-memcached_server_push.3: memcached_servers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_servers.pod > memcached_server_push.3
-
-memcached_server_list_free.3: memcached_server_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_server_st.pod > memcached_server_list_free.3
-
-memcached_server_list_count.3: memcached_server_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_server_st.pod > memcached_server_list_count.3
-
-memcached_server_list_append.3: memcached_server_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_server_st.pod > memcached_server_list_append.3
-
-memcached_servers_parse.3: memcached_server_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_server_st.pod > memcached_servers_parse.3
-
-memcached_verbosity.3: memcached_verbosity.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_verbosity.pod > memcached_verbosity.3
-
-memcached_behavior_get.3: memcached_behavior.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_behavior.pod > memcached_behavior_get.3
-
-memcached_behavior_set.3: memcached_behavior.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_behavior.pod > memcached_behavior_set.3
-
-memcached_callback_get.3: memcached_callback.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_callback.pod > memcached_callback_get.3
-
-memcached_callback_set.3: memcached_callback.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_callback.pod > memcached_callback_set.3
-
-memcached_stat.3: memcached_stats.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_stats.pod > memcached_stat.3
-
-memcached_stat_servername.3: memcached_stats.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_stats.pod > memcached_stat_servername.3
-
-memcached_stat_get_value.3: memcached_stats.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_stats.pod > memcached_stat_get_value.3
-
-memcached_stat_get_keys.3: memcached_stats.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_stats.pod > memcached_stat_get_keys.3
-
-memcached_result_st.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_st.3
-
-memcached_result_create.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_create.3
-
-memcached_result_free.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_free.3
-
-memcached_result_key_value.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_key_value.3
-
-memcached_result_key_length.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_key_length.3
-
-memcached_result_value.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_value.3
-
-memcached_result_length.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_length.3
-
-memcached_result_flags.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_flags.3
-
-memcached_result_cas.3: memcached_result_st.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_result_st.pod > memcached_result_cas.3
-
-memcached_version.3: memcached_version.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_version.pod > memcached_version.3
-
-memcached_lib_version.3: memcached_version.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_version.pod  > memcached_lib_version.3
-
-memcached_flush_buffers.3: memcached_flush_buffers.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_flush_buffers.pod  > memcached_flush_buffers.3
-
-memcached_analyze.3: memcached_analyze.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_analyze.pod > memcached_analyze.3
-
-memcached_generate_hash_value.3: memcached_generate_hash_value.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_generate_hash_value.pod > memcached_generate_hash_value.3
-
-memcached_get_memory_allocators.3: memcached_memory_allocators.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_memory_allocators.pod > memcached_get_memory_allocators.3
-
-memcached_set_memory_allocators.3: memcached_memory_allocators.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_memory_allocators.pod > memcached_set_memory_allocators.3
-
-memcached_get_user_data.3: memcached_user_data.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_get_user_data.3
-
-memcached_set_user_data.3: memcached_user_data.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 3 ${top_srcdir}/docs/memcached_user_data.pod > memcached_set_user_data.3
-
-memcached_pool_behavior_get.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_behavior_get.3
-
-memcached_pool_behavior_set.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_behavior_set.3
-
-memcached_pool_create.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_create.3
-
-memcached_pool_destroy.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_destroy.3
-
-memcached_pool_pop.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_pop.3
-
-memcached_pool_push.3: memcached_pool.pod
-	${POD2MAN} -c "libmemcachedutil" -r "" -s 3 ${top_srcdir}/docs/memcached_pool.pod > memcached_pool_push.3
-
-memcp.1: memcp.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memcp.pod > memcp.1
-
-memslap.1: memslap.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memslap.pod > memslap.1
-
-memcapable.1: memcapable.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memcapable.pod > memcapable.1
-
-memcat.1: memcat.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memcat.pod > memcat.1
-
-memstat.1: memstat.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memstat.pod > memstat.1
-
-memrm.1: memrm.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memrm.pod > memrm.1
-
-memerror.1: memerror.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memerror.pod > memerror.1
-
-memdump.1: memdump.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memdump.pod > memdump.1
-
-memflush.1: memflush.pod
-	${POD2MAN} -c "libmemcached" -r "" -s 1 ${top_srcdir}/docs/memflush.pod > memflush.1
-
-hashkit_create.3: hashkit_create.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_create.pod > hashkit_create.3
-
-hashkit_clone.3: hashkit_create.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_create.pod > hashkit_clone.3
-
-hashkit_free.3: hashkit_create.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_create.pod > hashkit_free.3
-
-hashkit_is_allocated.3: hashkit_create.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_create.pod > hashkit_is_allocated.3
-
-hashkit_functions.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_functions.3
-
-hashkit_fnv1_64.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_fnv1_64.3
-
-hashkit_fnv1a_64.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_fnv1a_64.3
-
-hashkit_fnv1_32.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_fnv1_32.3
-
-hashkit_fnv1a_32.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_fnv1a_32.3
-
-hashkit_crc32.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_crc32.3
-
-hashkit_hsieh.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_hsieh.3
-
-hashkit_murmur.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_murmur.3
-
-hashkit_jenkins.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_jenkins.3
-
-hashkit_md5.3: hashkit_functions.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_functions.pod > hashkit_md5.3
-
-hashkit_value.3: hashkit_value.pod
-	${POD2MAN} -c "libhashkit" -r "" -s 3 ${top_srcdir}/docs/hashkit_value.pod > hashkit_value.3
+${CREATE_PAGES}: 
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_create.pod ${top_builddir}/docs/$@.pop
+
+${SET_PAGES}: 
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_set.pod ${top_builddir}/docs/$@.pop
+
+${DELETE_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_delete.pod ${top_builddir}/docs/$@.pop
+
+${AUTO_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_auto.pod ${top_builddir}/docs/$@.pop
+
+${GET_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_get.pod ${top_builddir}/docs/$@.pop
+
+${SERVER_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_servers.pod ${top_builddir}/docs/$@.pop
+
+${SERVER_ST_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_server_st.pod ${top_builddir}/docs/$@.pop
+
+${GENERIC_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/$@.pod ${top_builddir}/docs/$@.pop
+
+GENERIC_PAGES= \
+	libmemcached \
+	libmemcached_examples \
+	libmemcachedutil \
+	memcached_analyze \
+	memcached_dump \
+	memcached_flush \
+	memcached_flush_buffers \
+	memcached_generate_hash_value \
+	memcached_quit \
+	memcached_strerror \
+	memcached_verbosity \
+	memcapable \
+	memcat \
+	memcp \
+	memdump \
+	memerror \
+	memflush \
+	memrm \
+	memslap \
+	memstat
+
+BEHAVIOR_PAGES= \
+	memcached_behavior_get \
+	memcached_behavior_set
+
+${BEHAVIOR_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_behavior.pod ${top_builddir}/docs/$@.pop
+
+CALLBACK_PAGES= \
+	memcached_callback_get \
+	memcached_callback_set
+
+${CALLBACK_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_callback.pod ${top_builddir}/docs/$@.pop
+
+STATS_PAGES= \
+	memcached_stat \
+	memcached_stat_get_keys \
+	memcached_stat_get_value \
+	memcached_stat_servername
+
+${STATS_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_stats.pod ${top_builddir}/docs/$@.pop
+
+${RESULT_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_result_st.pod ${top_builddir}/docs/$@.pop
+
+VERSION_PAGES= \
+	       memcached_version \
+	       memcached_lib_version
+
+${VERSION_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_version.pod ${top_builddir}/docs/$@.pop
+
+MEMORY_ALLOCATORS_PAGES= \
+			 memcached_get_memory_allocators \
+			 memcached_set_memory_allocators
+
+${MEMORY_ALLOCATORS_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_memory_allocators.pod ${top_builddir}/docs/$@.pop
+
+USER_DATA_PAGES= \
+		 memcached_get_user_data \
+		 memcached_set_user_data
+
+${USER_DATA_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@.pop
+
+
+POOL_PAGES= \
+	memcached_pool_behavior_get \
+	memcached_pool_behavior_set \
+	memcached_pool_create \
+	memcached_pool_destroy \
+	memcached_pool_pop \
+	memcached_pool_push 
+
+${POOL_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@.pop
+
+HASH_CREATE_PAGES= \
+	     hashkit_is_allocated \
+	     hashkit_create \
+	     hashkit_clone \
+	     hashkit_free
+
+${HASH_CREATE_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/hashkit_create.pod ${top_builddir}/docs/$@.pop
+
+KIT_FUNCTIONS_PAGES= \
+		     hashkit_crc32 \
+		     hashkit_fnv1_32 \
+		     hashkit_fnv1_64 \
+		     hashkit_fnv1a_32 \
+		     hashkit_fnv1a_64 \
+		     hashkit_functions \
+		     hashkit_hsieh \
+		     hashkit_jenkins \
+		     hashkit_md5 \
+		     hashkit_murmur
+
+${KIT_FUNCTIONS_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/hashkit_functions.pod ${top_builddir}/docs/$@.pop
+
+HASHKIT_ST_PAGES= \
+	hashkit_value
+
+${HASH_KIT_ST_PAGES}:
+	@rm -f $@.pop
+	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@.pop
 
 test-docs:
 	${PODCHECKER} $(top_srcdir)/docs/hashkit_create.pod
@@ -508,7 +426,15 @@ test-docs:
 
 html-pages: $(HTML_FILES)
 
-SUFFIXES: .pod .html
+SUFFIXES: .pop .pod .html .1 .3
 
-.pod.html:
+.pop: ${_set}
+
+.pop.html:
 	pod2html --infile=$< >  $@
+
+.pop.1:
+	${POD2MAN} -c "$*" -r "" -s 3 $< >  $@
+
+.pop.3: ${_set}
+	${POD2MAN} -c "$*" -r "" -s 3 $< >  $@
