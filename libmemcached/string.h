@@ -16,7 +16,6 @@
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
 struct memcached_string_st {
   memcached_st *root;
   char *end;
