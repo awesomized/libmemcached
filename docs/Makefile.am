@@ -1,44 +1,44 @@
 CLEANFILES= *.1 *.3 *.html
 
 HTML_FILES= \
-	    hashkit_create.pod \
-	    hashkit_functions.pod \
-	    hashkit_value.pod \
-	    libmemcached_examples.pod \
-	    libmemcached.pod \
-	    libmemcachedutil.pod \
-	    memcached_analyze.pod \
-	    memcached_auto.pod \
-	    memcached_behavior.pod \
-	    memcached_callback.pod \
-	    memcached_create.pod \
-	    memcached_delete.pod \
-	    memcached_dump.pod \
-	    memcached_flush_buffers.pod \
-	    memcached_flush.pod \
-	    memcached_generate_hash_value.pod \
-	    memcached_get.pod \
-	    memcached_memory_allocators.pod \
-	    memcached_pool.pod \
-	    memcached_quit.pod \
-	    memcached_result_st.pod \
-	    memcached_servers.pod \
-	    memcached_server_st.pod \
-	    memcached_set.pod \
-	    memcached_stats.pod \
-	    memcached_strerror.pod \
-	    memcached_user_data.pod \
-	    memcached_verbosity.pod \
-	    memcached_version.pod \
-	    memcapable.pod \
-	    memcat.pod \
-	    memcp.pod \
-	    memdump.pod \
-	    memerror.pod \
-	    memflush.pod \
-	    memrm.pod \
-	    memslap.pod \
-	    memstat.pod
+	    hashkit_create.html \
+	    hashkit_functions.html \
+	    hashkit_value.html \
+	    libmemcached_examples.html \
+	    libmemcached.html \
+	    libmemcachedutil.html \
+	    memcached_analyze.html \
+	    memcached_auto.html \
+	    memcached_behavior.html \
+	    memcached_callback.html \
+	    memcached_create.html \
+	    memcached_delete.html \
+	    memcached_dump.html \
+	    memcached_flush_buffers.html \
+	    memcached_flush.html \
+	    memcached_generate_hash_value.html \
+	    memcached_get.html \
+	    memcached_memory_allocators.html \
+	    memcached_pool.html \
+	    memcached_quit.html \
+	    memcached_result_st.html \
+	    memcached_servers.html \
+	    memcached_server_st.html \
+	    memcached_set.html \
+	    memcached_stats.html \
+	    memcached_strerror.html \
+	    memcached_user_data.html \
+	    memcached_verbosity.html \
+	    memcached_version.html \
+	    memcapable.html \
+	    memcat.html \
+	    memcp.html \
+	    memdump.html \
+	    memerror.html \
+	    memflush.html \
+	    memrm.html \
+	    memslap.html \
+	    memstat.html
 
 EXTRA_DIST = \
 	  hashkit_create.pod \

@@ -39,6 +39,9 @@ config/missing
 config/plugin.ac
 configure
 docs/*.[13]
+docs/*.html
+docs/pod2htmd.tmp
+docs/pod2htmi.tmp
 example/memcached_light
 libmemcached-*.tar.gz
 libmemcached-0.30-1.src.rpm
