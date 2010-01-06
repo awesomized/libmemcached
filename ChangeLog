@@ -1,3 +1,10 @@
+0.36
+  * Merged in new memslap utility.
+  * All of constants.h has been updated to match style (all old identifiers
+    continue to work).
+  * Added first pass for libhashkit.
+  * Updated test Framework/extended tests.
+  * Random read support during replication added.
   * Modified use_sort so that the option can be applied to any distribution type.
   * We removed the MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE added in 0.35. Instead use
     memcached_behavior_set_distribution().
