@@ -605,7 +605,7 @@ At the beginning, asynchronous memslap displays some configuration information a
 
 =back
 
-=head4 Where
+=head2 Where
 
 =over 4
 
@@ -665,7 +665,7 @@ The output of dynamic statistics is something like this:
  117.93     195.60
  ---------------------------------------------------------------------------------------------------------------------------------
 
-=head4 Where
+=head2 Where
 
 =over 4
 
@@ -780,7 +780,7 @@ At the end, asynchronous memslap will output something like this:
   Run time: 20.0s Ops: 1397754 TPS: 69817 Net_rate: 59.4M/s
   ---------------------------------------------------------------------------------------------------------------------------------
 
-=head4 Where
+=head2 Where
 
 =over 4
 

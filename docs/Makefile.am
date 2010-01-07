@@ -7,7 +7,7 @@
 #    -Brian
 #
 #
-CLEANFILES= *.1 *.3 *.html *.pop
+CLEANFILES= *.1 *.3 *.html *.pop *.tmp
 
 BUILT_SOURCES=
 
@@ -18,20 +18,15 @@ AUTO_PAGES= \
 	memcached_decrement_with_initial.pop
 BUILT_SOURCES += ${AUTO_PAGES}
 
-SET_PAGES= \
-	   memcached_set.pop \
-	   memcached_set_by_key.pop \
-	   memcached_cas.pop \
-	   memcached_cas_by_key.pop \
-	   memcached_replace.pop \
-	   memcached_replace_by_key.pop \
-	   memcached_add.pop \
-		 memcached_add_by_key.pop \
-	   memcached_prepend.pop \
-	   memcached_prepend_by_key.pop \
-	   memcached_append.pop \
-	   memcached_append_by_key.pop
-BUILT_SOURCES += ${SET_PAGES}
+BEHAVIOR_PAGES= \
+	memcached_behavior_get.pop \
+	memcached_behavior_set.pop
+BUILT_SOURCES += ${BEHAVIOR_PAGES}
+
+CALLBACK_PAGES= \
+	memcached_callback_get.pop \
+	memcached_callback_set.pop
+BUILT_SOURCES += ${CALLBACK_PAGES}
 
 CREATE_PAGES= \
 	     memcached_create.pop \
@@ -44,6 +39,29 @@ DELETE_PAGES= \
 	      memcached_delete_by_key.pop
 BUILT_SOURCES += ${DELETE_PAGES}
 
+GENERIC_PAGES= \
+	libmemcached.pop \
+	libmemcached_examples.pop \
+	libmemcachedutil.pop \
+	memcached_analyze.pop \
+	memcached_dump.pop \
+	memcached_flush.pop \
+	memcached_flush_buffers.pop \
+	memcached_generate_hash_value.pop \
+	memcached_quit.pop \
+	memcached_strerror.pop \
+	memcached_verbosity.pop \
+	memcapable.pop \
+	memcat.pop \
+	memcp.pop \
+	memdump.pop \
+	memerror.pop \
+	memflush.pop \
+	memrm.pop \
+	memslap.pop \
+	memstat.pop
+BUILT_SOURCES += ${GENERIC_PAGES}
+
 GET_PAGES= \
 	   memcached_get.pop \
 	   memcached_get_by_key.pop \
@@ -55,6 +73,20 @@ GET_PAGES= \
 	   memcached_mget_execute_by_key.pop \
 	   memcached_fetch.pop
 BUILT_SOURCES += ${GET_PAGES}
+
+MEMORY_ALLOCATORS_PAGES= \
+			 memcached_get_memory_allocators.pop \
+			 memcached_set_memory_allocators.pop
+BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
+
+POOL_PAGES= \
+	memcached_pool_behavior_get.pop \
+	memcached_pool_behavior_set.pop \
+	memcached_pool_create.pop \
+	memcached_pool_destroy.pop \
+	memcached_pool_pop.pop \
+	memcached_pool_push.pop 
+BUILT_SOURCES += ${POOL_PAGES}
 
 RESULT_PAGES= \
 	      memcached_result_cas.pop \
@@ -84,34 +116,160 @@ SERVER_ST_PAGES= \
 		 memcached_servers_parse.pop 
 BUILT_SOURCES += ${SERVER_ST_PAGES}
 
+SET_PAGES= \
+	   memcached_set.pop \
+	   memcached_set_by_key.pop \
+	   memcached_cas.pop \
+	   memcached_cas_by_key.pop \
+	   memcached_replace.pop \
+	   memcached_replace_by_key.pop \
+	   memcached_add.pop \
+	   memcached_add_by_key.pop \
+	   memcached_prepend.pop \
+	   memcached_prepend_by_key.pop \
+	   memcached_append.pop \
+	   memcached_append_by_key.pop
+BUILT_SOURCES += ${SET_PAGES}
+
+STATS_PAGES= \
+	memcached_stat.pop \
+	memcached_stat_get_keys.pop .pop\
+	memcached_stat_get_value.pop \
+	memcached_stat_servername.pop
+BUILT_SOURCES += ${STATS_PAGES}
+
+USER_DATA_PAGES= \
+		 memcached_get_user_data.pop \
+		 memcached_set_user_data.pop
+BUILT_SOURCES += ${USER_DATA_PAGES}
+
+VERSION_PAGES= \
+	       memcached_version.pop \
+	       memcached_lib_version.pop
+BUILT_SOURCES += ${VERSION_PAGES}
+
+
+#
+# These are for libhashkit
+#
+HASHKIT_CREATE_PAGES= \
+	     hashkit_is_allocated.pop \
+	     hashkit_create.pop \
+	     hashkit_clone.pop \
+	     hashkit_free.pop
+BUILT_SOURCES += ${HASHKIT_CREATE_PAGES}
+
+HASHKIT_FUNCTIONS_PAGES= \
+		     hashkit_crc32.pop \
+		     hashkit_fnv1_32.pop \
+		     hashkit_fnv1_64.pop \
+		     hashkit_fnv1a_32.pop \
+		     hashkit_fnv1a_64.pop \
+		     hashkit_functions.pop \
+		     hashkit_hsieh.pop \
+		     hashkit_jenkins.pop \
+		     hashkit_md5.pop \
+		     hashkit_murmur.pop
+BUILT_SOURCES += ${HASHKIT_FUNCTIONS_PAGES}
+
+HASHKIT_ST_PAGES= \
+	hashkit_value.pop
+BUILT_SOURCES += ${HASHKIT_ST_PAGES}
+
+
 HTML_FILES= \
+	    hashkit_clone.html \
+	    hashkit_crc32.html \
 	    hashkit_create.html \
+	    hashkit_fnv1_32.html \
+	    hashkit_fnv1_64.html \
+	    hashkit_fnv1a_32.html \
+	    hashkit_fnv1a_64.html \
+	    hashkit_free.html \
 	    hashkit_functions.html \
+	    hashkit_hsieh.html \
+	    hashkit_is_allocated.html \
+	    hashkit_jenkins.html \
+	    hashkit_md5.html \
+	    hashkit_murmur.html \
 	    hashkit_value.html \
 	    libmemcached_examples.html \
 	    libmemcached.html \
 	    libmemcachedutil.html \
+	    memcached_add_by_key.html \
+	    memcached_add.html \
 	    memcached_analyze.html \
-	    memcached_auto.html \
-	    memcached_behavior.html \
-	    memcached_callback.html \
+	    memcached_append_by_key.html \
+	    memcached_append.html \
+	    memcached_behavior_get.html \
+	    memcached_behavior_set.html \
+	    memcached_callback_get.html \
+	    memcached_callback_set.html \
+	    memcached_cas_by_key.html \
+	    memcached_cas.html \
+	    memcached_clone.html \
 	    memcached_create.html \
+	    memcached_decrement.html \
+	    memcached_decrement_with_initial.html \
+	    memcached_delete_by_key.html \
 	    memcached_delete.html \
 	    memcached_dump.html \
+	    memcached_fetch_execute.html \
+	    memcached_fetch.html \
+	    memcached_fetch_result.html \
 	    memcached_flush_buffers.html \
 	    memcached_flush.html \
+	    memcached_free.html \
 	    memcached_generate_hash_value.html \
+	    memcached_get_by_key.html \
+	    memcached_get_memory_allocators.html \
 	    memcached_get.html \
-	    memcached_memory_allocators.html \
-	    memcached_pool.html \
+	    memcached_get_user_data.html \
+	    memcached_increment.html \
+	    memcached_increment_with_initial.html \
+	    memcached_lib_version.html \
+	    memcached_mget_by_key.html \
+	    memcached_mget_execute_by_key.html \
+	    memcached_mget_execute.html \
+	    memcached_mget.html \
+	    memcached_pool_behavior_get.html \
+	    memcached_pool_behavior_set.html \
+	    memcached_pool_create.html \
+	    memcached_pool_destroy.html \
+	    memcached_pool_pop.html \
+	    memcached_pool_push.html \
+	    memcached_prepend_by_key.html \
+	    memcached_prepend.html \
 	    memcached_quit.html \
+	    memcached_replace_by_key.html \
+	    memcached_replace.html \
+	    memcached_result_cas.html \
+	    memcached_result_create.html \
+	    memcached_result_flags.html \
+	    memcached_result_free.html \
+	    memcached_result_key_length.html \
+	    memcached_result_key_value.html \
+	    memcached_result_length.html \
 	    memcached_result_st.html \
-	    memcached_servers.html \
-	    memcached_server_st.html \
+	    memcached_result_value.html \
+	    memcached_server_add.html \
+	    memcached_server_add_unix_socket.html \
+	    memcached_server_count.html \
+	    memcached_server_list_append.html \
+	    memcached_server_list_count.html \
+	    memcached_server_list_free.html \
+	    memcached_server_list.html \
+	    memcached_server_push.html \
+	    memcached_servers_parse.html \
+	    memcached_set_by_key.html \
+	    memcached_set_memory_allocators.html \
 	    memcached_set.html \
-	    memcached_stats.html \
+	    memcached_set_user_data.html \
+	    memcached_stat_get_keys.html \
+	    memcached_stat_get_value.html \
+	    memcached_stat.html \
+	    memcached_stat_servername.html \
 	    memcached_strerror.html \
-	    memcached_user_data.html \
 	    memcached_verbosity.html \
 	    memcached_version.html \
 	    memcapable.html \
@@ -125,45 +283,45 @@ HTML_FILES= \
 	    memstat.html
 
 EXTRA_DIST = \
-	  hashkit_create.pod \
-	  hashkit_functions.pod \
-	  hashkit_value.pod \
-	  libmemcached.pod \
-	  libmemcached_examples.pod \
-	  libmemcachedutil.pod \
-	  memcached_analyze.pod \
-	  memcached_auto.pod \
-	  memcached_behavior.pod \
-	  memcached_callback.pod \
-	  memcached_create.pod \
-	  memcached_delete.pod \
-	  memcached_dump.pod \
-	  memcached_flush.pod \
-	  memcached_flush_buffers.pod \
-	  memcached_generate_hash_value.pod \
-	  memcached_get.pod \
-	  memcached_memory_allocators.pod \
-	  memcached_pool.pod \
-	  memcached_quit.pod \
-	  memcached_server_st.pod \
-	  memcached_servers.pod \
-	  memcached_set.pod \
-	  memcached_stats.pod \
-	  memcached_strerror.pod \
-	  memcached_user_data.pod \
-	  memcached_verbosity.pod \
-	  memcached_version.pod \
-	  memcapable.pod \
-	  memcat.pod \
-	  memcp.pod \
-	  memdump.pod \
-	  memerror.pod \
-	  memflush.pod \
-	  memrm.pod \
-	  memslap.pod \
-	  memstat.pod
+	     hashkit_create.pod \
+	     hashkit_functions.pod \
+	     hashkit_value.pod \
+	     libmemcached.pod \
+	     libmemcached_examples.pod \
+	     libmemcachedutil.pod \
+	     memcached_analyze.pod \
+	     memcached_auto.pod \
+	     memcached_behavior.pod \
+	     memcached_callback.pod \
+	     memcached_create.pod \
+	     memcached_delete.pod \
+	     memcached_dump.pod \
+	     memcached_flush.pod \
+	     memcached_flush_buffers.pod \
+	     memcached_generate_hash_value.pod \
+	     memcached_get.pod \
+	     memcached_memory_allocators.pod \
+	     memcached_pool.pod \
+	     memcached_quit.pod \
+	     memcached_server_st.pod \
+	     memcached_servers.pod \
+	     memcached_set.pod \
+	     memcached_stats.pod \
+	     memcached_strerror.pod \
+	     memcached_user_data.pod \
+	     memcached_verbosity.pod \
+	     memcached_version.pod \
+	     memcapable.pod \
+	     memcat.pod \
+	     memcp.pod \
+	     memdump.pod \
+	     memerror.pod \
+	     memflush.pod \
+	     memrm.pod \
+	     memslap.pod \
+	     memstat.pod
 
-man_MANS = ${set_} \
+man_MANS = \
 	  libmemcached.3 \
 	  libmemcached_examples.3 \
 	  memcached_add.3 \
@@ -279,53 +437,13 @@ ${GENERIC_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/$*.pod ${top_builddir}/docs/$@
 
-GENERIC_PAGES= \
-	libmemcached.pop \
-	libmemcached_examples.pop \
-	libmemcachedutil.pop \
-	memcached_analyze.pop \
-	memcached_dump.pop \
-	memcached_flush.pop \
-	memcached_flush_buffers.pop \
-	memcached_generate_hash_value.pop \
-	memcached_quit.pop \
-	memcached_strerror.pop \
-	memcached_verbosity.pop \
-	memcapable.pop \
-	memcat.pop \
-	memcp.pop \
-	memdump.pop \
-	memerror.pop \
-	memflush.pop \
-	memrm.pop \
-	memslap.pop \
-	memstat.pop
-BUILT_SOURCES += ${GENERIC_PAGES}
-
-BEHAVIOR_PAGES= \
-	memcached_behavior_get.pop \
-	memcached_behavior_set.pop
-BUILT_SOURCES += ${BEHAVIOR_PAGES}
-
 ${BEHAVIOR_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_behavior.pod ${top_builddir}/docs/$@
 
-CALLBACK_PAGES= \
-	memcached_callback_get.pop \
-	memcached_callback_set.pop
-BUILT_SOURCES += ${CALLBACK_PAGES}
-
 ${CALLBACK_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_callback.pod ${top_builddir}/docs/$@
-
-STATS_PAGES= \
-	memcached_stat.pop \
-	memcached_stat_get_keys.pop .pop\
-	memcached_stat_get_value.pop \
-	memcached_stat_servername.pop
-BUILT_SOURCES += ${STATS_PAGES}
 
 ${STATS_PAGES}:
 	@rm -f $@
@@ -335,116 +453,71 @@ ${RESULT_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_result_st.pod ${top_builddir}/docs/$@
 
-VERSION_PAGES= \
-	       memcached_version.pop \
-	       memcached_lib_version.pop
-BUILT_SOURCES += ${VERSION_PAGES}
-
 ${VERSION_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_version.pod ${top_builddir}/docs/$@
 
-MEMORY_ALLOCATORS_PAGES= \
-			 memcached_get_memory_allocators.pop \
-			 memcached_set_memory_allocators.pop
-BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
-
 ${MEMORY_ALLOCATORS_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_memory_allocators.pod ${top_builddir}/docs/$@
-
-USER_DATA_PAGES= \
-		 memcached_get_user_data.pop \
-		 memcached_set_user_data.pop
-BUILT_SOURCES += ${USER_DATA_PAGES}
 
 ${USER_DATA_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@
 
 
-POOL_PAGES= \
-	memcached_pool_behavior_get.pop \
-	memcached_pool_behavior_set.pop \
-	memcached_pool_create.pop \
-	memcached_pool_destroy.pop \
-	memcached_pool_pop.pop \
-	memcached_pool_push.pop 
-BUILT_SOURCES += ${POOL_PAGES}
-
 ${POOL_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@
 
-HASH_CREATE_PAGES= \
-	     hashkit_is_allocated.pop \
-	     hashkit_create.pop \
-	     hashkit_clone.pop \
-	     hashkit_free.pop
-BUILT_SOURCES += ${HASH_CREATE_PAGES}
-
-${HASH_CREATE_PAGES}:
+${HASHKIT_CREATE_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/hashkit_create.pod ${top_builddir}/docs/$@
 
-KIT_FUNCTIONS_PAGES= \
-		     hashkit_crc32.pop \
-		     hashkit_fnv1_32.pop \
-		     hashkit_fnv1_64.pop \
-		     hashkit_fnv1a_32.pop \
-		     hashkit_fnv1a_64.pop \
-		     hashkit_functions.pop \
-		     hashkit_hsieh.pop \
-		     hashkit_jenkins.pop \
-		     hashkit_md5.pop \
-		     hashkit_murmur.pop
-BUILT_SOURCES += ${KIT_FUNCTIONS_PAGES}
 
-${KIT_FUNCTIONS_PAGES}:
+${HASHKIT_FUNCTIONS_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/hashkit_functions.pod ${top_builddir}/docs/$@
-
-HASHKIT_ST_PAGES= \
-	hashkit_value.pop
-BUILT_SOURCES += ${HASHKIT_ST_PAGES}
 
 ${HASHKIT_ST_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@
 
-test-docs:
-	${PODCHECKER} $(top_srcdir)/docs/hashkit_create.pod
-	${PODCHECKER} $(top_srcdir)/docs/hashkit_functions.pod
-	${PODCHECKER} $(top_srcdir)/docs/hashkit_value.pod
-	${PODCHECKER} $(top_srcdir)/docs/libmemcached.pod
-	${PODCHECKER} $(top_srcdir)/docs/libmemcached_examples.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_auto.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_behavior.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_callback.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_create.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_delete.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_flush.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_flush_buffers.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_get.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_memory_allocators.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_pool.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_quit.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_server_st.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_servers.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_set.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_stats.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_strerror.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_user_data.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_verbosity.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcached_version.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcapable.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcat.pod
-	${PODCHECKER} $(top_srcdir)/docs/memcp.pod
-	${PODCHECKER} $(top_srcdir)/docs/memerror.pod
-	${PODCHECKER} $(top_srcdir)/docs/memflush.pod
-	${PODCHECKER} $(top_srcdir)/docs/memrm.pod
-	${PODCHECKER} $(top_srcdir)/docs/memslap.pod
-	${PODCHECKER} $(top_srcdir)/docs/memstat.pod
+test-docs: $(EXTRA_DIST)
+	${PODCHECKER} $(top_srcdir)/docs/$?
+
+#	${PODCHECKER} $(top_srcdir)/docs/hashkit_create.pod
+#	${PODCHECKER} $(top_srcdir)/docs/hashkit_functions.pod
+#	${PODCHECKER} $(top_srcdir)/docs/hashkit_value.pod
+#	${PODCHECKER} $(top_srcdir)/docs/libmemcached.pod
+#	${PODCHECKER} $(top_srcdir)/docs/libmemcached_examples.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_auto.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_behavior.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_callback.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_create.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_delete.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_flush.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_flush_buffers.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_get.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_memory_allocators.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_pool.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_quit.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_server_st.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_servers.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_set.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_stats.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_strerror.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_user_data.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_verbosity.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcached_version.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcapable.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcat.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memcp.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memerror.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memflush.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memrm.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memslap.pod
+#	${PODCHECKER} $(top_srcdir)/docs/memstat.pod
 
 html-pages: $(HTML_FILES)
 
@@ -452,7 +525,7 @@ SUFFIXES= .pop .pod .html .1 .3
 
 .pop: ${_set}
 
-.html.pop:
+.pop.html:
 	pod2html --infile=$< >  $@
 
 .pop.1:
