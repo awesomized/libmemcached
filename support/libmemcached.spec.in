@@ -4,7 +4,7 @@ Version: @VERSION@
 Release:   1
 License:   BSD
 Group:     System Environment/Libraries
-URL:       http://tangent.org/552/libmemcached.html
+URL:       http://launchpad.net/libmemcached
 Source0:   http://download.tangent.org/libmemcached-%{version}.tar.gz
 
 # For test suite
@@ -78,29 +78,30 @@ you will need to install %{name}-devel.
 %defattr (-,root,root,-) 
 %doc AUTHORS COPYING NEWS README THANKS TODO
 %{_bindir}/mem*
-%exclude %{_libdir}/libmemcached.a
 %exclude %{_libdir}/libmemcached.la
-%exclude %{_libdir}/libmemcachedutil.a
-%exclude %{_libdir}/libmemcachedprotocol.a
+%exclude %{_libdir}/libhashkit.la
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
+%{_libdir}/libhashkit.so.*
 %{_libdir}/libmemcached.so.*
 %{_libdir}/libmemcachedutil.so.*
 %{_libdir}/libmemcachedprotocol.so.*
 %{_mandir}/man1/mem*
-%exclude libhashkit/*
 
 
 %files devel
 %defattr (-,root,root,-) 
 %doc examples
 %{_includedir}/libmemcached
+%{_includedir}/libhashkit
+%{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedutil.so
 %{_libdir}/libmemcachedprotocol.so
 %{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man3/libmemcached*.3.gz
 %{_mandir}/man3/memcached_*.3.gz
+%{_mandir}/man3/hashkit*.3.gz
 
 
 %changelog
