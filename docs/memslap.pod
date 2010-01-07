@@ -88,14 +88,14 @@ expected workload.
 
 =head2 Effective implementation of generating key and value
 
-In order to improve time efficiency and space efficiency, asynchronous
+In order to improve time efficiency and space efficiency, 
 memslap creates a random characters table with 10M characters. All the
 suffixes of keys and values are generated from this random characters table.
 
 Memslap uses the offset in the character table and the length
 of the string to identify a string. It can save much memory.
 Each key contains two parts, a prefix and a suffix. The prefix is an
-uint64_t, 8 bytes. In order to verify the data set before, asynchronous
+uint64_t, 8 bytes. In order to verify the data set before, 
 memslap need to ensure each key is unique, so it uses the prefix to identify
 a key. The prefix cannot include illegal characters, such as ‘\r’, ‘\n’,
 ‘\0’ and ‘ ‘. And memslap has an algorithm to ensure that. 
@@ -188,7 +188,7 @@ Below are some usage samples:
 
 =back
 
-The user must specify one server at least to run asynchronous memslap. The
+The user must specify one server at least to run memslap. The
 rest of the parameters have default values, as shown below:
 
 Thread number = 1                    Concurrency = 16
@@ -221,7 +221,7 @@ Facebook test = false                  Replication test = false
 
 All the distributions are read from the configuration file specified by user
 with “—cfg_cmd” option. If the user does not specify a configuration file,
-asynchronous memslap will run with the default distribution (key size = 64,
+memslap will run with the default distribution (key size = 64,
 value size = 1024, get/set = 9:1). For information on how to edit the
 configuration file, refer to the “Configuration File” section.
 
@@ -232,22 +232,22 @@ rounded to 3 decimal places.
 The minimum value size is 1 bytes; the maximum value size is 1M bytes. The
 precision of proportion is 0.001. The proportion of distribution will be
 rounded to 3 decimal places.
-Currently, asynchronous memslap only supports set and get commands. And it
+Currently, memslap only supports set and get commands. And it
 supports 100% set and 100% get. For 100% get, it will preset some objects to
 the server.
 
 =head2 Multi-thread and concurrency
 
-The high performance of asynchronous memslap benefits from the special
+The high performance of memslap benefits from the special
 schedule of thread and concurrency. It’s important to specify the proper
 number of them. The default number of threads is 1; the default number of
 concurrency is 16. The user can use “—threads” and “--concurrency” to
 specify these variables.
 
 If the system supports setting CPU affinity and the number of threads
-specified by the user is greater than 1, asynchronous memslap will try to
+specified by the user is greater than 1, memslap will try to
 bind each thread to a different CPU core. So if you want to get the best
-performance asynchronous memslap, it is better to specify the number of
+performance memslap, it is better to specify the number of
 thread equal to the number of CPU cores. The number of threads specified by
 the user can also be less or greater than the number of CPU cores. Because
 of the limitation of implementation, the number of concurrencies could be
@@ -277,15 +277,15 @@ For example:
 
 --threads=24 --concurrency=288
 
-The asynchronous memslap performs very well, when
+The memslap performs very well, when
 used to test the performance of memcached servers.
 Most of the time, the bottleneck is the network or
 the server. If for some reason the user wants to
-limit the performance of asynchronous memslap, there
+limit the performance of memslap, there
 are two ways to do this:
 
 Decrease the number of threads and concurrencies.
-Use the option “--tps” that Asynchronous memslap
+Use the option “--tps” that memslap
 provides to limit the throughput. This option allows
 the user to get the expected throughput. For
 example, assume that the maximum throughput is 50
@@ -298,7 +298,7 @@ throughput using “--tps” option.
 Most of the time, the user does not need to specify the window size. The
 default window size is 10k. For Schooner Memcached, the user can specify
 different window sizes to get different cache miss rates based on the test
-case. Asynchronous memslap supports cache miss rate between 0% and 100%.
+case. Memslap supports cache miss rate between 0% and 100%.
 If you use this utility to test the performance of Schooner Memcached, you
 can specify a proper window size to get the expected cache miss rate. The
 formula for calculating window size is as follows:
@@ -341,7 +341,7 @@ cache_size / concurrency / (key_size + value_size) * 0.7
 
 =head2 Verification
 
-Asynchronous memslap supports both data verification and expire-time
+Memslap supports both data verification and expire-time
 verification. The user can use "--verify=" or "-v" to specify the proportion
 of data verification. In theory, it supports 100% data verification. The
 user can use "--exp_verify=" or "-e" to specify the proportion of
@@ -351,14 +351,14 @@ information.
 
 For example: --exp_verify=0.01 –verify=0.1 , it means that 1% of the objects 
 set with expire-time, 10% of the objects gotten will be verified. If the
-objects are gotten, asynchronous memslap will verify the expire-time and
+objects are gotten, memslap will verify the expire-time and
 value. 
 
 =head2 multi-servers and multi-clients
 
-Asynchronous memslap supports multi-servers based on self-governed thread.
+Memslap supports multi-servers based on self-governed thread.
 There is a limitation that the number of servers cannot be greater than the
-number of threads. Asynchronous memslap assigns one thread to handle one
+number of threads. Memslap assigns one thread to handle one
 server at least. The user can use the "--servers=" or "-s" option to specify
 multi-servers. 
 
@@ -371,18 +371,18 @@ concurrencies and that threads 0 and 3 handle server 0 (10.1.1.1); threads 1
 and 4 handle server 1 (10.1.1.2); and thread 2 and 5 handle server 2
 (10.1.1.3).  
 
-All the threads and concurrencies in asynchronous memslap are self-governed.
+All the threads and concurrencies in memslap are self-governed.
 
-So is asynchronous memslap. The user can start up several asynchronous
-memslap instances. The user can run asynchronous memslap on different client
+So is memslap. The user can start up several 
+memslap instances. The user can run memslap on different client
 machines to communicate with the same memcached server at the same. It is
-recommended that the user start different asynchronous memslap on different
+recommended that the user start different memslap on different
 machines using the same configuration. 
 
 =head2 Run with execute number mode or time mode
 
-The default asynchronous memslap runs with time mode. The default run time
-is 10 minutes. If it times out, asynchronous memslap will exit. Do not
+The default memslap runs with time mode. The default run time
+is 10 minutes. If it times out, memslap will exit. Do not
 specify both execute number mode and time mode at the same time; just
 specify one instead. 
 
@@ -400,7 +400,7 @@ For example:
 
 --stat_freq=20s
 
-asynchronous memslap will dump the statistics of the commands (get and set) at the frequency of every 20
+Memslap will dump the statistics of the commands (get and set) at the frequency of every 20
 seconds. 
 
 For more information on the format of dumping statistic information, refer to “Format of Output” section.
@@ -408,23 +408,22 @@ For more information on the format of dumping statistic information, refer to �
 =head2 Multi-get
 
 The user can use "--division=" or "-d" to specify multi-get keys count.
-Asynchronous memslap by default does single get with TCP. Asynchronous
-memslap also supports data verification and expire-time verification for
-multi-get. 
+Memslap by default does single get with TCP. Memslap also supports data 
+verification and expire-time verification for multi-get. 
 
-Asynchronous memslap supports multi-get with both TCP and UDP. Because of
+Memslap supports multi-get with both TCP and UDP. Because of
 the different implementation of the ASCII protocol and binary protocol,
 there are some differences between the two. For the ASCII protocol,
-asynchronous memslap sends one “multi-get” to the server once. For the
-binary protocol, asynchronous memslap sends several single get commands
+memslap sends one “multi-get” to the server once. For the
+binary protocol, memslap sends several single get commands
 together as “multi-get” to the server.
 
 =head2 UDP and TCP
 
-Asynchronous memslap supports both UDP and TCP. For TCP, asynchronous
+Memslap supports both UDP and TCP. For TCP,
 memslap does not reconnect the memcached server if socket connections are
 lost. If all the socket connections are lost or memcached server crashes,
-asynchronous memslap will exit. If the user specifies the “--reconnect”
+memslap will exit. If the user specifies the “--reconnect”
 option when socket connections are lost, it will reconnect them. 
 
 User can use “--udp” to enable the UDP feature, but UDP comes with some
@@ -449,10 +448,10 @@ If you want to create thousands of TCP connections, specify the
 
 For example: --facebook --division=50 --conn_sock=200
 
-The above command means that asynchronous memslap will do facebook test,
+The above command means that memslap will do facebook test,
 each concurrency has 200 socket TCP connections and one UDP socket.
 
-Asynchronous memslap sets objects with the TCP socket, and multi-gets 50
+Memslap sets objects with the TCP socket, and multi-gets 50
 objects once with the UDP socket.
 
 If you specify "--division=50", the key size must be less that 25 bytes
@@ -468,16 +467,16 @@ For example:
 --servers=10.1.1.1:11211,10.1.1.2:11212 –rep_write=2
 
 The above command means that there are 2 replication memcached servers,
-asynchronous memslap will set objects to both server 0 and server 1, get
+memslap will set objects to both server 0 and server 1, get
 objects which are set to server 0 before from server 1, and also get objects
 which are set to server 1 before from server 0. If server 0 crashes,
-asynchronous memslap will only get objects from server 1. If server 0 comes
-back to life again, asynchronous memslap will reconnect server 0. If both
-server 0 and server 1 crash, asynchronous memslap will exit.
+memslap will only get objects from server 1. If server 0 comes
+back to life again, memslap will reconnect server 0. If both
+server 0 and server 1 crash, memslap will exit.
 
 =head2  Supports thousands of TCP connections
 
-Start asynchronous memslap with "--conn_sock=" or "-n" to enable this
+Start memslap with "--conn_sock=" or "-n" to enable this
 feature. Make sure that your system can support opening thousands of files
 and creating thousands of sockets. However, this feature does not support
 reconnection if sockets disconnect. 
@@ -486,14 +485,14 @@ For example:
 
 --threads=8 --concurrency=128 --conn_sock=128
 
-The above command means that asynchronous memslap starts up 8 threads, each
+The above command means that memslap starts up 8 threads, each
 thread has 16 concurrencies, each concurrency has 128 TCP socket
 connections, and the total number of TCP socket connections is 128 * 128 =
 16384.
 
 =head2 Supports binary protocol
 
-Start asynchronous memslap with "--binary" or "-B" options to enable this
+Start memslap with "--binary" or "-B" options to enable this
 feature. It supports all the above features except UDP, because the latest
 memcached 1.3.3 does not implement binary UDP protocol.
 
@@ -501,7 +500,7 @@ For example:
 
 --binary
 
-Since memcached 1.3.3 doesn't implement binary UDP protocol, asynchronous
+Since memcached 1.3.3 doesn't implement binary UDP protocol,
 memslap does not support UDP. In addition, memcached 1.3.3 does not support
 multi-get. If you specify "--division=50" option, it just sends 50 get
 commands together as “mulit-get” to the server.
@@ -520,7 +519,7 @@ sample configuration file:
  #start_len must be equal to or greater than 16
  #end_len must be equal to or less than 250
  #start_len must be equal to or greater than end_len
- #asynchronous memslap will generate keys according to the key range
+ #memslap will generate keys according to the key range
  #proportion: indicates keys generated from one range accounts for the total
  generated keys  
  #
@@ -545,7 +544,7 @@ sample configuration file:
  #start_len must be equal to or greater than 1
  #end_len must be equal to or less than 1M
  #start_len must be equal to or greater than end_len
- #asynchronous memslap will generate values according to the value range
+ #memslap will generate values according to the value range
  #proportion: indicates values generated from one range accounts for the
  total generated values  
  #
@@ -566,7 +565,7 @@ sample configuration file:
  #cmd
  #cmd_type cmd_proportion
  #
- #currently asynchronous memslap only supports get and set command.
+ #currently memslap only supports get and set command.
  #
  #cmd_type
  #set     0
@@ -587,7 +586,7 @@ sample configuration file:
 
 =head1 Format of output
 
-At the beginning, asynchronous memslap displays some configuration information as follows:
+At the beginning, memslap displays some configuration information as follows:
 
 =over 4
 
@@ -611,15 +610,15 @@ At the beginning, asynchronous memslap displays some configuration information a
 
 =item threads count
 
-The number of threads asynchronous memslap runs with.
+The number of threads memslap runs with.
 
 =item concurrency
 
-The number of concurrencies asynchronous memslap runs with.
+The number of concurrencies memslap runs with.
 
 =item run time
 
-How long to run asynchronous memslap.
+How long to run memslap.
 
 =item windows size
 
@@ -727,7 +726,7 @@ Geometric distribution based on natural exponential function
 
 =back
 
-At the end, asynchronous memslap will output something like this:
+At the end, memslap will output something like this:
 
   ---------------------------------------------------------------------------------------------------------------------------------
   Get Statistics (1257956 events)
