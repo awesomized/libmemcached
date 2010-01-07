@@ -29,7 +29,7 @@
  *
  * Copy: See Copyright for the status of this software.
  *
- * Author: Trond Norbye <trond.norbye@sun.com>
+ * Author: Trond Norbye <trond.norbye@gmail.com>
  */
 
 #ifndef PROTOCOL_BINARY_H

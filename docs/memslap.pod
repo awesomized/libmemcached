@@ -984,8 +984,6 @@ memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 =head1 HOME
 
 To find out more information please check:
-L<http://tangent.org/552/libmemcached.html>
-
 L<http://launchpad.org/libmemcached>
 
 =head1 AUTHORS

@@ -86,11 +86,11 @@ returns MEMCACHED_SUCCESS upon success.
 =head1 HOME
 
 To find out more information please check:
-L<http://tangent.org/552/libmemcached.html>
+L<https://launchpad.net/libmemcached>
 
 =head1 AUTHOR
 
-Trond Norbye, E<lt>trond.norbye@sun.comE<gt>
+Trond Norbye, E<lt>trond.norbye@gmail.comE<gt>
 
 =head1 SEE ALSO
 

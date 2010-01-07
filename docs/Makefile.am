@@ -11,6 +11,8 @@ CLEANFILES= *.1 *.3 *.html *.pop *.tmp
 
 BUILT_SOURCES=
 
+EXTRA_DIST= make_index.pl
+
 AUTO_PAGES= \
 	memcached_increment.pop \
 	memcached_increment_with_initial.pop \
@@ -282,7 +284,7 @@ HTML_FILES= \
 	    memslap.html \
 	    memstat.html
 
-EXTRA_DIST = \
+POD_FILES= \
 	     hashkit_create.pod \
 	     hashkit_functions.pod \
 	     hashkit_value.pod \
@@ -320,6 +322,7 @@ EXTRA_DIST = \
 	     memrm.pod \
 	     memslap.pod \
 	     memstat.pod
+EXTRA_DIST+= $(POD_FILES)
 
 man_MANS = \
 	  libmemcached.3 \
@@ -483,43 +486,15 @@ ${HASHKIT_ST_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@
 
-test-docs: $(EXTRA_DIST)
+test-docs: $(POD_FILES)
 	${PODCHECKER} $(top_srcdir)/docs/$?
 
-#	${PODCHECKER} $(top_srcdir)/docs/hashkit_create.pod
-#	${PODCHECKER} $(top_srcdir)/docs/hashkit_functions.pod
-#	${PODCHECKER} $(top_srcdir)/docs/hashkit_value.pod
-#	${PODCHECKER} $(top_srcdir)/docs/libmemcached.pod
-#	${PODCHECKER} $(top_srcdir)/docs/libmemcached_examples.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_auto.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_behavior.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_callback.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_create.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_delete.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_flush.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_flush_buffers.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_get.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_memory_allocators.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_pool.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_quit.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_server_st.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_servers.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_set.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_stats.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_strerror.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_user_data.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_verbosity.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcached_version.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcapable.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcat.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memcp.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memerror.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memflush.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memrm.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memslap.pod
-#	${PODCHECKER} $(top_srcdir)/docs/memstat.pod
+html-local: html-pages html-index
 
-html-pages: $(HTML_FILES)
+html-pages: $(HTML_FILES) 
+
+html-index: html-pages
+	perl make_index.pl *.html > index.html
 
 SUFFIXES= .pop .pod .html .1 .3
 
