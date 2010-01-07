@@ -52,7 +52,6 @@ AC_CONFIG_FILES([
   Makefile
   docs/Makefile
   libmemcached/memcached_configure.h
-  libhashkit/Makefile
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

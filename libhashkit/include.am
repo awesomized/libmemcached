@@ -1,0 +1,47 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+#
+# HashKit
+# Copyright (C) 2009 Brian Aker
+# All rights reserved.
+#
+# Use and distribution licensed under the BSD license.  See
+# the COPYING file in the parent directory for full text.
+
+lib_LTLIBRARIES+= libhashkit/libhashkit.la
+
+nobase_pkginclude_HEADERS+= \
+			    libhashkit/algorithm.h \
+			    libhashkit/behavior.h \
+			    libhashkit/hashkit.h \
+			    libhashkit/strerror.h \
+			    libhashkit/types.h \
+			    libhashkit/visibility.h
+
+noinst_HEADERS+= \
+		 libhashkit/common.h
+
+libhashkit_libhashkit_la_SOURCES= \
+				  libhashkit/crc32.c \
+				  libhashkit/behavior.c \
+				  libhashkit/default.c \
+				  libhashkit/fnv.c \
+				  libhashkit/hashkit.c \
+				  libhashkit/jenkins.c \
+				  libhashkit/ketama.c \
+				  libhashkit/md5.c \
+				  libhashkit/murmur.c \
+				  libhashkit/strerror.c
+
+if INCLUDE_HSIEH_SRC
+libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.c
+endif
+
+libhashkit_libhashkit_la_CFLAGS= \
+		      ${AM_CFLAGS} \
+		      -DBUILDING_HASHKIT
+
+libhashkit_libhashkit_la_LDFLAGS= \
+				  $(LIBM) \
+				  -version-info $(HASHKIT_LIBRARY_VERSION)

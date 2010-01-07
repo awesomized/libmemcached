@@ -1,11 +1,11 @@
 /* By Paul Hsieh (C) 2004, 2005.  Covered under the Paul Hsieh
- * derivative license. 
+ * derivative license.
  * See: http://www.azillionmonkeys.com/qed/weblicense.html for license
  * details.
  * http://www.azillionmonkeys.com/qed/hash.html
 */
 
-#include "hash_common.h"
+#include "common.h"
 
 #undef get16bits
 #if (defined(__GNUC__) && defined(__i386__))

@@ -16,12 +16,13 @@ EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST = README.FIRST
 
-SUBDIRS = docs libhashkit
+SUBDIRS = docs
 
 test-docs:
 	(cd docs && $(MAKE) test-docs)
 include libmemcached/include.am
 include clients/include.am
+include libhashkit/include.am
 include tests/include.am
 include example/include.am
 include support/include.am
