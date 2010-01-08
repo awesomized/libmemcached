@@ -3,10 +3,9 @@
 # All paths should be given relative to the root
 
 EXTRA_DIST+= \
+	     libmemcached/configure.h.in \
 	     libmemcached/libmemcached_probes.d \
-	     libmemcached/memcached/README.txt \
-	     libmemcached/memcached_configure.h.in
-
+	     libmemcached/memcached/README.txt
 
 noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
@@ -19,31 +18,29 @@ noinst_HEADERS+= \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h
 
-nobase_pkginclude_HEADERS+= \
-			    libmemcached/analyze.h \
-			    libmemcached/auto.h \
-			    libmemcached/behavior.h \
-			    libmemcached/callback.h \
-			    libmemcached/constants.h \
-			    libmemcached/dump.h \
-			    libmemcached/exception.hpp \
-			    libmemcached/get.h \
-			    libmemcached/memcached.h \
-			    libmemcached/memcached.hpp \
-			    libmemcached/memcached_configure.h \
-			    libmemcached/protocol/cache.h \
-			    libmemcached/protocol/callback.h \
-			    libmemcached/protocol_handler.h \
-			    libmemcached/result.h \
-			    libmemcached/server.h \
-			    libmemcached/stats.h \
-			    libmemcached/storage.h \
-			    libmemcached/string.h \
-			    libmemcached/types.h \
-			    libmemcached/visibility.h \
-			    libmemcached/watchpoint.h
-
-
+nobase_include_HEADERS+= \
+			 libmemcached/analyze.h \
+			 libmemcached/auto.h \
+			 libmemcached/behavior.h \
+			 libmemcached/callback.h \
+			 libmemcached/configure.h \
+			 libmemcached/constants.h \
+			 libmemcached/dump.h \
+			 libmemcached/exception.hpp \
+			 libmemcached/get.h \
+			 libmemcached/memcached.h \
+			 libmemcached/memcached.hpp \
+			 libmemcached/protocol/cache.h \
+			 libmemcached/protocol/callback.h \
+			 libmemcached/protocol_handler.h \
+			 libmemcached/result.h \
+			 libmemcached/server.h \
+			 libmemcached/stats.h \
+			 libmemcached/storage.h \
+			 libmemcached/string.h \
+			 libmemcached/types.h \
+			 libmemcached/visibility.h \
+			 libmemcached/watchpoint.h
 
 lib_LTLIBRARIES+= libmemcached/libmemcachedprotocol.la
 libmemcached_libmemcachedprotocol_la_SOURCES =  \
@@ -114,7 +111,9 @@ libmemcached_libmemcached_la_LIBADD= $(LIBM) libmemcached/libmemcachedcallbacks.
 libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info 3:0:0
 
 if BUILD_LIBMEMCACHEDUTIL
-pkginclude_HEADERS+= libmemcached/memcached_util.h libmemcached/util/pool.h
+nobase_include_HEADERS+= \
+			 libmemcached/memcached_util.h \
+			 libmemcached/util/pool.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 

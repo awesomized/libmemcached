@@ -11,7 +11,7 @@
 
 lib_LTLIBRARIES+= libhashkit/libhashkit.la
 
-nobase_pkginclude_HEADERS+= \
+nobase_include_HEADERS+= \
 			    libhashkit/algorithm.h \
 			    libhashkit/behavior.h \
 			    libhashkit/hashkit.h \

@@ -51,7 +51,7 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],
 AC_CONFIG_FILES([
   Makefile
   docs/Makefile
-  libmemcached/memcached_configure.h
+  libmemcached/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

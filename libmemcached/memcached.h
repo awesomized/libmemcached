@@ -24,7 +24,7 @@
 #include <netinet/in.h>
 
 #include <libmemcached/visibility.h>
-#include <libmemcached/memcached_configure.h>
+#include <libmemcached/configure.h>
 #include <libmemcached/constants.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>

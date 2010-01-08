@@ -1,9 +1,12 @@
-/*
- * Summary: Preprocessor symbols set from configure we need install-time
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker, Trond Norbye
+ * All rights reserved.
  *
- * Copy: See Copyright for the status of this software.
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
  *
- * Author: Trond Norbye
+ * Summary: Change the behavior of the memcached connection.
+ *
  */
 
 #ifndef MEMCACHED_CONFIGURE_H
