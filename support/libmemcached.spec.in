@@ -92,8 +92,31 @@ you will need to install %{name}-devel.
 %files devel
 %defattr (-,root,root,-) 
 %doc examples
-%{_includedir}/libmemcached
-%{_includedir}/libhashkit
+%{_includedir}/libmemcached/memcached_pool.h
+%{_includedir}/libmemcached/memcached_watchpoint.h
+%{_includedir}/libmemcached/memcached_get.h
+%{_includedir}/libmemcached/memcached_configure.h
+%{_includedir}/libmemcached/memcached_types.h
+%{_includedir}/libmemcached/memcached_constants.h
+%{_includedir}/libmemcached/protocol
+%{_includedir}/libmemcached/protocol/cache.h
+%{_includedir}/libmemcached/protocol/callback.h
+%{_includedir}/libmemcached/memcached_result.h
+%{_includedir}/libmemcached/memcached_server.h
+%{_includedir}/libmemcached/memcached_storage.h
+%{_includedir}/libmemcached/memcached_string.h
+%{_includedir}/libmemcached/memcached_util.h
+%{_includedir}/libmemcached/exception.hpp
+%{_includedir}/libmemcached/memcached.h
+%{_includedir}/libmemcached/protocol_handler.h
+%{_includedir}/libmemcached/memcached.hpp
+%{_includedir}/libmemcached/visibility.h
+%{_includedir}/libhashkit/algorithm.h
+%{_includedir}/libhashkit/behavior.h
+%{_includedir}/libhashkit/hashkit.h
+%{_includedir}/libhashkit/strerror.h
+%{_includedir}/libhashkit/types.h
+%{_includedir}/libhashkit/visibility.h
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedutil.so
