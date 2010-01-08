@@ -134,7 +134,7 @@ you will need to install %{name}-devel.
 
 
 %changelog
-* Fri Jan  8 2010
+* Fri Jan  8 2010 Brian Aker <brian@tangent.org> - 0.37-1
 - Modified to be explicit in install include files. 
 
 * Sat Apr 25 2009 Remi Collet <rpms@famillecollet.com> - 0.28-1
