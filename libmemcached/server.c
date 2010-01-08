@@ -113,11 +113,11 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
                                            void *context,
                                            uint32_t number_of_callbacks)
 {
-  unsigned int y;
+  uint32_t y;
 
   for (y= 0; y < ptr->number_of_hosts; y++)
   {
-    unsigned int x;
+    uint32_t x;
 
     for (x= 0; x < number_of_callbacks; x++)
     {

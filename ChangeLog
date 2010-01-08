@@ -1,7 +1,8 @@
 0.37
  * Fixed build for libhashkit.
- * Fixed install path regression.
- * Modified RPM to strict check install.
+ * Fixed install path regression.  
+ * Modified RPM to strict check install. 
+ * Added documentation for memcached_server_cursor();
 
 0.36 Wed Jan  6 18:23:50 PST 2010
   * Merged in new memslap utility.
