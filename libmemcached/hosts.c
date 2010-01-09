@@ -29,7 +29,7 @@ static void sort_hosts(memcached_st *ptr)
   if (ptr->number_of_hosts)
   {
     qsort(ptr->hosts, ptr->number_of_hosts, sizeof(memcached_server_st), compare_servers);
-    ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
+    ptr->hosts[0].number_of_hosts= ptr->number_of_hosts;
   }
 }
 
@@ -62,12 +62,12 @@ memcached_return_t run_distribution(memcached_st *ptr)
 
 void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 {
-  unsigned int x;
+  uint32_t x;
 
   if (servers == NULL)
     return;
 
-  for (x= 0; x < servers->count; x++)
+  for (x= 0; x < memcached_servers_count(servers); x++)
     if (servers[x].address_info)
     {
       freeaddrinfo(servers[x].address_info);
@@ -319,7 +319,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
   if (!list)
     return MEMCACHED_SUCCESS;
 
-  count= list[0].count;
+  count= memcached_servers_count(list);
   new_host_list= ptr->call_realloc(ptr, ptr->hosts,
                                    sizeof(memcached_server_st) * (count + ptr->number_of_hosts));
 
@@ -342,7 +342,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
                                        list[x].port, list[x].weight, list[x].type);
     ptr->number_of_hosts++;
   }
-  ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
+  ptr->hosts[0].number_of_hosts= (uint16_t) ptr->number_of_hosts;
 
   return run_distribution(ptr);
 }
@@ -427,7 +427,8 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   /* TODO: Check return type */
   (void)memcached_server_create_with(ptr, &ptr->hosts[ptr->number_of_hosts], hostname, port, weight, type);
   ptr->number_of_hosts++;
-  ptr->hosts[0].count= (uint16_t) ptr->number_of_hosts;
+
+  memcached_servers_set_count(&ptr->hosts[0], ptr->number_of_hosts);
 
   return run_distribution(ptr);
 }
@@ -484,7 +485,7 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
   count= 1;
   if (ptr != NULL)
   {
-    count+= ptr[0].count;
+    count+= memcached_servers_count(ptr);
   }
 
   new_host_list= (memcached_server_st *)realloc(ptr, sizeof(memcached_server_st) * count);
@@ -498,21 +499,8 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
   memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
 
   /* Backwards compatibility hack */
-  new_host_list[0].count= (uint16_t) count;
+  memcached_servers_set_count(new_host_list, count);
 
   *error= MEMCACHED_SUCCESS;
   return new_host_list;
-}
-
-unsigned int memcached_server_list_count(memcached_server_st *ptr)
-{
-  if (ptr == NULL)
-    return 0;
-
-  return ptr[0].count;
-}
-
-void memcached_server_list_free(memcached_server_st *ptr)
-{
-  server_list_free(NULL, ptr);
 }

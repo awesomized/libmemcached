@@ -177,3 +177,16 @@ memcached_server_st *memcached_server_get_last_disconnect(memcached_st *ptr)
 {
   return ptr->last_disconnected_server;
 }
+
+uint32_t memcached_server_list_count(memcached_server_st *ptr)
+{
+  if (ptr == NULL)
+    return 0;
+
+  return memcached_servers_count(ptr);
+}
+
+void memcached_server_list_free(memcached_server_st *ptr)
+{
+  server_list_free(NULL, ptr);
+}

@@ -109,7 +109,7 @@ static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused))
     test_ports[x]= (uint32_t)random() % 64000;
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     test_truth(local_memc->number_of_hosts == x + 1);
-    test_truth(local_memc->hosts[0].count == x+1);
+    test_truth(memcached_servers_count(local_memc->hosts) == x+1);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
 
@@ -180,7 +180,7 @@ static test_return_t  server_unsort_test(memcached_st *ptr __attribute__((unused
     test_ports[x]= (uint32_t)(random() % 64000);
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     test_truth(local_memc->number_of_hosts == x+1);
-    test_truth(local_memc->hosts[0].count == x+1);
+    test_truth(memcached_servers_count(local_memc->hosts) == x+1);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
 
