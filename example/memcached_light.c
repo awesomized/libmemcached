@@ -311,7 +311,6 @@ static void work(void)
     fds[max_poll].events= POLLIN;
     fds[max_poll].revents= 0;
     fds[max_poll].fd= server_sockets[max_poll];
-    ++max_poll;
   }
 
   while (true)
