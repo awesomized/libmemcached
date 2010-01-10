@@ -129,7 +129,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     }
   }
   else
+  {
     live_servers= memcached_server_count(ptr);
+  }
 
   is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);

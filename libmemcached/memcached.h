@@ -52,7 +52,7 @@ struct memcached_st {
   } options;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
-  uint32_t continuum_points_counter;
+  uint32_t continuum_points_counter; // Ketama
   memcached_server_st *hosts;
   memcached_server_st *last_disconnected_server;
   int32_t snd_timeout;
@@ -83,16 +83,16 @@ struct memcached_st {
   int32_t poll_timeout;
   int32_t connect_timeout;
   int32_t retry_timeout;
-  uint32_t continuum_count;
+  uint32_t continuum_count; // Ketama
   int send_size;
   int recv_size;
   void *user_data;
-  time_t next_distribution_rebuild;
+  time_t next_distribution_rebuild; // Ketama
   size_t prefix_key_length;
   uint32_t number_of_replicas;
   memcached_hash_t distribution_hash;
   memcached_result_st result;
-  memcached_continuum_item_st *continuum;
+  memcached_continuum_item_st *continuum; // Ketama
   memcached_clone_fn on_clone;
   memcached_cleanup_fn on_cleanup;
   memcached_free_fn call_free;
