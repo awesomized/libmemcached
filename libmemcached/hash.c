@@ -111,9 +111,9 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
   uint32_t hash= 1; /* Just here to remove compile warning */
 
 
-  WATCHPOINT_ASSERT(ptr->number_of_hosts);
+  WATCHPOINT_ASSERT(memcached_server_count(ptr));
 
-  if (ptr->number_of_hosts == 1)
+  if (memcached_server_count(ptr) == 1)
     return 0;
 
   hash= memcached_generate_hash_value(key, key_length, ptr->hash);
@@ -150,13 +150,13 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
       return right->index;
     }
   case MEMCACHED_DISTRIBUTION_MODULA:
-    return hash % ptr->number_of_hosts;
+    return hash % memcached_server_count(ptr);
   case MEMCACHED_DISTRIBUTION_RANDOM:
-    return (uint32_t) random() % ptr->number_of_hosts;
+    return (uint32_t) random() % memcached_server_count(ptr);
   case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
-    return hash % ptr->number_of_hosts;
+    return hash % memcached_server_count(ptr);
   }
   /* NOTREACHED */
 }
@@ -169,9 +169,9 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
 {
   uint32_t hash= 1; /* Just here to remove compile warning */
 
-  WATCHPOINT_ASSERT(ptr->number_of_hosts);
+  WATCHPOINT_ASSERT(memcached_server_count(ptr));
 
-  if (ptr->number_of_hosts == 1)
+  if (memcached_server_count(ptr) == 1)
     return 0;
 
   if (ptr->flags.hash_with_prefix_key)

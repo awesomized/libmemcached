@@ -1,19 +1,19 @@
 #include "common.h"
 
-memcached_return_t memcached_flush_buffers(memcached_st *mem)
+memcached_return_t memcached_flush_buffers(memcached_st *memc)
 {
   memcached_return_t ret= MEMCACHED_SUCCESS;
 
-  for (uint32_t x= 0; x < mem->number_of_hosts; ++x)
-    if (mem->hosts[x].write_buffer_offset != 0) 
+  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+    if (memc->hosts[x].write_buffer_offset != 0) 
     {
-      if (mem->hosts[x].fd == -1 &&
-          (ret= memcached_connect(&mem->hosts[x])) != MEMCACHED_SUCCESS)
+      if (memc->hosts[x].fd == -1 &&
+          (ret= memcached_connect(&memc->hosts[x])) != MEMCACHED_SUCCESS)
       {
         WATCHPOINT_ERROR(ret);
         return ret;
       }
-      if (memcached_io_write(&mem->hosts[x], NULL, 0, 1) == -1)
+      if (memcached_io_write(&memc->hosts[x], NULL, 0, 1) == -1)
         ret= MEMCACHED_SOME_ERRORS;
     }
 

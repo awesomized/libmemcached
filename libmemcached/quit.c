@@ -72,12 +72,12 @@ void memcached_quit(memcached_st *ptr)
   unsigned int x;
 
   if (ptr->hosts == NULL ||
-      ptr->number_of_hosts == 0)
+      memcached_server_count(ptr) == 0)
     return;
 
-  if (ptr->hosts && ptr->number_of_hosts)
+  if (ptr->hosts && memcached_server_count(ptr))
   {
-    for (x= 0; x < ptr->number_of_hosts; x++)
+    for (x= 0; x < memcached_server_count(ptr); x++)
       memcached_quit_server(&ptr->hosts[x], 0);
   }
 }

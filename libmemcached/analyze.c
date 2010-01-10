@@ -70,7 +70,7 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
-  result= (memcached_analysis_st*)calloc(memc->number_of_hosts,
+  result= (memcached_analysis_st*)calloc(memcached_server_count(memc),
                                          sizeof(memcached_analysis_st));
 
   if (!result)

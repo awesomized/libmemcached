@@ -160,7 +160,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   if (number_of_keys == 0)
     return MEMCACHED_NOTFOUND;
 
-  if (ptr->number_of_hosts == 0)
+  if (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   if (ptr->flags.verify_key && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
@@ -180,7 +180,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     It might be optimum to bounce the connection if count > some number.
   */
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     if (memcached_server_response_count(&ptr->hosts[x]))
     {
@@ -263,7 +263,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   /*
     Should we muddle on if some servers are dead?
   */
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     if (memcached_server_response_count(&ptr->hosts[x]))
     {
@@ -412,7 +412,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
-    for (x= 0; x < ptr->number_of_hosts; x++)
+    for (x= 0; x < memcached_server_count(ptr); x++)
       if (memcached_server_response_count(&ptr->hosts[x]))
       {
         if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1)
@@ -457,7 +457,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
     for (x= 0; x < number_of_keys; ++x)
     {
-      if (hash[x] == ptr->number_of_hosts)
+      if (hash[x] == memcached_server_count(ptr))
         continue; /* Already successfully sent */
 
       uint32_t server= hash[x] + replica;
@@ -466,8 +466,8 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       if (randomize_read && ((server + start) <= (hash[x] + ptr->number_of_replicas)))
         server += start;
 
-      while (server >= ptr->number_of_hosts)
-        server -= ptr->number_of_hosts;
+      while (server >= memcached_server_count(ptr))
+        server -= memcached_server_count(ptr);
 
       if (dead_servers[server])
         continue;
@@ -516,7 +516,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       }
 
       memcached_server_response_increment(&ptr->hosts[server]);
-      hash[x]= ptr->number_of_hosts;
+      hash[x]= memcached_server_count(ptr);
     }
 
     if (success)
@@ -547,7 +547,7 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
     bool* dead_servers;
 
     hash= ptr->call_malloc(ptr, sizeof(uint32_t) * number_of_keys);
-    dead_servers= ptr->call_calloc(ptr, ptr->number_of_hosts, sizeof(bool));
+    dead_servers= ptr->call_calloc(ptr, memcached_server_count(ptr), sizeof(bool));
 
     if (hash == NULL || dead_servers == NULL)
     {

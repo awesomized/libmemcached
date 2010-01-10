@@ -109,6 +109,9 @@ struct memcached_st {
 LIBMEMCACHED_API
 memcached_return_t memcached_version(memcached_st *ptr);
 
+LIBMEMCACHED_API
+void memcached_servers_reset(memcached_st *ptr);
+
 /* Public API */
 
 LIBMEMCACHED_API

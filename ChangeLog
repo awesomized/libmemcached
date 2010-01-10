@@ -4,6 +4,8 @@
  * Modified RPM to strict check install. 
  * Added documentation for memcached_server_cursor();
 
+ * Added memcached_servers_reset().
+
 0.36 Wed Jan  6 18:23:50 PST 2010
   * Merged in new memslap utility.
   * All of constants.h has been updated to match style (all old identifiers

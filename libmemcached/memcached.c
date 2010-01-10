@@ -44,6 +44,39 @@ memcached_st *memcached_create(memcached_st *ptr)
   return ptr;
 }
 
+void server_list_free(memcached_st *ptr, memcached_server_st *servers)
+{
+  uint32_t x;
+
+  if (servers == NULL)
+    return;
+
+  for (x= 0; x < memcached_servers_count(servers); x++)
+    if (servers[x].address_info)
+    {
+      freeaddrinfo(servers[x].address_info);
+      servers[x].address_info= NULL;
+    }
+
+  if (ptr)
+  {
+    ptr->call_free(ptr, servers);
+  }
+  else
+    free(servers);
+}
+
+void memcached_servers_reset(memcached_st *ptr)
+{
+  server_list_free(ptr, ptr->hosts);
+
+  ptr->hosts= NULL;
+  ptr->number_of_hosts= 0;
+  ptr->cursor_server= 0;
+  ptr->last_disconnected_server= NULL;
+  ptr->server_failure_limit= 0;
+}
+
 void memcached_free(memcached_st *ptr)
 {
   /* If we have anything open, lets close it now */

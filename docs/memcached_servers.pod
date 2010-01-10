@@ -10,7 +10,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  unsigned int memcached_server_count (memcached_st *ptr);
+  uint32_t memcached_server_count (memcached_st *ptr);
 
   memcached_server_st *
     memcached_server_list (memcached_st *ptr);

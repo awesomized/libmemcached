@@ -90,7 +90,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USE_UDP:
-    if (ptr->number_of_hosts)
+    if (memcached_server_count(ptr))
     {
       return MEMCACHED_FAILURE;
     }

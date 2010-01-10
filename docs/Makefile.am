@@ -31,9 +31,10 @@ CALLBACK_PAGES= \
 BUILT_SOURCES += ${CALLBACK_PAGES}
 
 CREATE_PAGES= \
+	      memcached_clone.pop \
 	      memcached_create.pop \
 	      memcached_free.pop \
-	      memcached_clone.pop
+	      memcached_servers_reset.pop
 BUILT_SOURCES += ${CREATE_PAGES}
 
 DELETE_PAGES= \

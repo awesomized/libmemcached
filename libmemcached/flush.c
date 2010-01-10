@@ -26,10 +26,10 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  unlikely (ptr->number_of_hosts == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     bool no_reply= ptr->flags.no_reply;
 
@@ -56,7 +56,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   unsigned int x;
   protocol_binary_request_flush request= {.bytes= {0}};
 
-  unlikely (ptr->number_of_hosts == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   request.message.header.request.magic= (uint8_t)PROTOCOL_BINARY_REQ;
@@ -66,7 +66,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   request.message.header.request.bodylen= htonl(request.message.header.request.extlen);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     if (ptr->flags.no_reply)
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
@@ -80,7 +80,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
     } 
   }
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     if (memcached_server_response_count(&ptr->hosts[x]) > 0)
       (void)memcached_response(&ptr->hosts[x], NULL, 0, NULL);

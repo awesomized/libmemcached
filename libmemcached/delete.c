@@ -32,7 +32,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  unlikely (ptr->hosts == NULL || ptr->number_of_hosts == 0)
+  unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
@@ -176,7 +176,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
     for (uint32_t x= 0; x < ptr->number_of_replicas; ++x)
     {
       ++server_key;
-      if (server_key == ptr->number_of_hosts)
+      if (server_key == memcached_server_count(ptr))
         server_key= 0;
 
       memcached_server_st* server= &ptr->hosts[server_key];
