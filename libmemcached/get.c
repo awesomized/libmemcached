@@ -155,7 +155,6 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     return MEMCACHED_NOT_SUPPORTED;
 
   LIBMEMCACHED_MEMCACHED_MGET_START();
-  ptr->cursor_server= 0;
 
   if (number_of_keys == 0)
     return MEMCACHED_NOTFOUND;

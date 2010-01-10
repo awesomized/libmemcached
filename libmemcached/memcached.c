@@ -72,7 +72,6 @@ void memcached_servers_reset(memcached_st *ptr)
 
   ptr->hosts= NULL;
   ptr->number_of_hosts= 0;
-  ptr->cursor_server= 0;
   ptr->last_disconnected_server= NULL;
   ptr->server_failure_limit= 0;
 }

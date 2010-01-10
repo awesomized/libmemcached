@@ -62,7 +62,6 @@ struct memcached_st {
   uint32_t io_bytes_watermark;
   uint32_t io_key_prefetch;
   uint32_t number_of_hosts;
-  uint32_t cursor_server;
   int cached_errno;
   struct {
     bool auto_eject_hosts:1;
