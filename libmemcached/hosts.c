@@ -295,7 +295,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st *list)
 {
   unsigned int x;
-  uint16_t count;
+  uint32_t count;
   memcached_server_st *new_host_list;
 
   if (!list)
