@@ -80,7 +80,7 @@ static test_return_t  server_list_null_test(memcached_st *ptr __attribute__((unu
 }
 
 #define TEST_PORT_COUNT 7
-uint32_t test_ports[TEST_PORT_COUNT];
+in_port_t test_ports[TEST_PORT_COUNT];
 
 static memcached_return_t  server_display_function(memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
 {
@@ -106,7 +106,7 @@ static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused))
 
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
-    test_ports[x]= (uint32_t)random() % 64000;
+    test_ports[x]= (in_port_t)random() % 64000;
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     test_truth(memcached_server_count(local_memc) == x + 1);
     test_truth(memcached_servers_count(local_memc->hosts) == x+1);
@@ -177,7 +177,7 @@ static test_return_t  server_unsort_test(memcached_st *ptr __attribute__((unused
 
   for (x= 0; x < TEST_PORT_COUNT; x++)
   {
-    test_ports[x]= (uint32_t)(random() % 64000);
+    test_ports[x]= (in_port_t)(random() % 64000);
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     test_truth(memcached_server_count(local_memc) == x+1);
     test_truth(memcached_servers_count(local_memc->hosts) == x+1);
