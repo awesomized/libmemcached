@@ -21,7 +21,7 @@ struct memcached_server_st {
     bool is_allocated:1;
     bool sockaddr_inited:1;
   } options;
-  uint16_t count;
+  uint32_t number_of_hosts;
   uint32_t cursor_active;
   in_port_t port;
   int cached_errno;
@@ -46,6 +46,16 @@ struct memcached_server_st {
   char write_buffer[MEMCACHED_MAX_BUFFER];
   char hostname[MEMCACHED_MAX_HOST_LENGTH];
 };
+
+static inline uint32_t memcached_servers_count(memcached_server_st *servers)
+{
+  return servers->number_of_hosts;
+}
+
+static inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
+{
+  return servers->number_of_hosts= count;
+}
 
 #define memcached_server_count(A) (A)->number_of_hosts
 #define memcached_server_name(A,B) (B).hostname

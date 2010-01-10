@@ -113,11 +113,11 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
                                            void *context,
                                            uint32_t number_of_callbacks)
 {
-  unsigned int y;
+  uint32_t y;
 
-  for (y= 0; y < ptr->number_of_hosts; y++)
+  for (y= 0; y < memcached_server_count(ptr); y++)
   {
-    unsigned int x;
+    uint32_t x;
 
     for (x= 0; x < number_of_callbacks; x++)
     {
@@ -142,7 +142,7 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
   unlikely (*error != MEMCACHED_SUCCESS)
     return NULL;
 
-  unlikely (ptr->number_of_hosts == 0)
+  unlikely (memcached_server_count(ptr) == 0)
   {
     *error= MEMCACHED_NO_SERVERS;
     return NULL;
@@ -162,10 +162,9 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
 
 const char *memcached_server_error(memcached_server_st *ptr)
 {
-  if (ptr)
-    return ptr->cached_server_error;
-  else
-    return NULL;
+  return ptr 
+    ?  ptr->cached_server_error
+    : NULL;
 }
 
 void memcached_server_error_reset(memcached_server_st *ptr)
@@ -176,4 +175,16 @@ void memcached_server_error_reset(memcached_server_st *ptr)
 memcached_server_st *memcached_server_get_last_disconnect(memcached_st *ptr)
 {
   return ptr->last_disconnected_server;
+}
+
+uint32_t memcached_server_list_count(memcached_server_st *ptr)
+{
+  return (ptr == NULL)
+    ? 0
+    : memcached_servers_count(ptr);
+}
+
+void memcached_server_list_free(memcached_server_st *ptr)
+{
+  server_list_free(NULL, ptr);
 }

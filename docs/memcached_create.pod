@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_create, memcached_free - Create a memcached_st structure
+memcached_create, memcached_free, memcached_clone, memcached_servers_reset- Create a memcached_st structure
 
 =head1 LIBRARY
 
@@ -16,6 +16,8 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
 
+  void memcached_servers_reset(memcached_st);
+
 =head1 DESCRIPTION
 
 memcached_create() is used to create a C<memcached_st> structure that will then
@@ -27,6 +29,9 @@ memcached_clone() is similar to memcached_create(3) but it copies the
 defaults and list of servers from the source C<memcached_st>. If you pass a null as
 the argument for the source to clone, it is the same as a call to memcached_create().
 If the destination argument is NULL a C<memcached_st> will be allocated for you.
+
+memcached_servers_reset() allows you to zero out the list of servers that
+the memcached_st has.
 
 To clean up memory associated with a C<memcached_st> structure you should pass
 it to memcached_free() when you are finished using it. memcached_free() is

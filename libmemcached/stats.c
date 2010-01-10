@@ -369,7 +369,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
     return NULL;
   }
 
-  stats= ptr->call_calloc(ptr, ptr->number_of_hosts, sizeof(memcached_stat_st));
+  stats= ptr->call_calloc(ptr, memcached_server_count(ptr), sizeof(memcached_stat_st));
 
   stats->root= ptr;
 
@@ -380,7 +380,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   }
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t temp_return;
 

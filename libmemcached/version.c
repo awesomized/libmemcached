@@ -31,7 +31,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   send_length= strlen(command);
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
 
@@ -75,7 +75,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < ptr->number_of_hosts; x++) 
+  for (x= 0; x < memcached_server_count(ptr); x++) 
   {
     memcached_return_t rrc;
 
@@ -88,7 +88,8 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
     }
   }
 
-  for (x= 0; x < ptr->number_of_hosts; x++) 
+  for (x= 0; x < memcached_server_count(ptr); x++) 
+  {
     if (memcached_server_response_count(&ptr->hosts[x]) > 0) 
     {
       memcached_return_t rrc;
@@ -107,6 +108,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
       ptr->hosts[x].minor_version= (uint8_t)strtol(p + 1, &p, 10);
       ptr->hosts[x].micro_version= (uint8_t)strtol(p + 1, NULL, 10);
     }
+  }
 
   return rc;
 }

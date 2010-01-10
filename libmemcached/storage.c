@@ -77,7 +77,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  unlikely (ptr->number_of_hosts == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
@@ -493,7 +493,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
     {
       ++server_key;
-      if (server_key == ptr->number_of_hosts)
+      if (server_key == memcached_server_count(ptr))
         server_key= 0;
 
       memcached_server_st *srv= &ptr->hosts[server_key];

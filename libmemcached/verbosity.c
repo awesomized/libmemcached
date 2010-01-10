@@ -13,7 +13,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, unsigned int verbosity
     return MEMCACHED_WRITE_FAILURE;
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
 

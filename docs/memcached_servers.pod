@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect - Manage server list
+memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect, memcached_server_cursor - Manage server list
 
 =head1 LIBRARY
 
@@ -10,7 +10,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   #include <memcached.h>
 
-  unsigned int memcached_server_count (memcached_st *ptr);
+  uint32_t memcached_server_count (memcached_st *ptr);
 
   memcached_server_st *
     memcached_server_list (memcached_st *ptr);
@@ -40,6 +40,12 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_server_st *
     memcached_server_get_last_disconnect (memcached_st *ptr)
+
+  memcached_return_t
+    memcached_server_cursor(memcached_st *ptr,
+                           memcached_server_fn *callback,
+                           void *context,
+                           uint32_t number_of_callbacks);
 
 
 =head1 DESCRIPTION
@@ -89,6 +95,13 @@ memcached_server_get_last_disconnect() returns a pointer to the last server
 for which there was a connection problem. It does not mean this particular
 server is currently dead but if the library is reporting a server is,
 the returned server is a very good candidate.
+
+memcached_server_cursor() takes a memcached_st and loops through the 
+list of hosts currently in the cursor calling the list of callback 
+functions provided. You can optionally pass in a value via 
+context which will be provided to each callback function. An error
+return from any callback will terminate the loop. memcached_server_cursor()
+is passed the original caller memcached_st in its current state. 
 
 =head1 RETURN
 

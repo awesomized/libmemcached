@@ -14,26 +14,27 @@ BUILT_SOURCES=
 EXTRA_DIST= make_index.pl
 
 AUTO_PAGES= \
-	memcached_increment.pop \
-	memcached_increment_with_initial.pop \
-	memcached_decrement.pop \
-	memcached_decrement_with_initial.pop
+	    memcached_increment.pop \
+	    memcached_increment_with_initial.pop \
+	    memcached_decrement.pop \
+	    memcached_decrement_with_initial.pop
 BUILT_SOURCES += ${AUTO_PAGES}
 
 BEHAVIOR_PAGES= \
-	memcached_behavior_get.pop \
-	memcached_behavior_set.pop
+		memcached_behavior_get.pop \
+		memcached_behavior_set.pop
 BUILT_SOURCES += ${BEHAVIOR_PAGES}
 
 CALLBACK_PAGES= \
-	memcached_callback_get.pop \
-	memcached_callback_set.pop
+		memcached_callback_get.pop \
+		memcached_callback_set.pop
 BUILT_SOURCES += ${CALLBACK_PAGES}
 
 CREATE_PAGES= \
-	     memcached_create.pop \
-	     memcached_free.pop \
-	     memcached_clone.pop
+	      memcached_clone.pop \
+	      memcached_create.pop \
+	      memcached_free.pop \
+	      memcached_servers_reset.pop
 BUILT_SOURCES += ${CREATE_PAGES}
 
 DELETE_PAGES= \
@@ -42,26 +43,26 @@ DELETE_PAGES= \
 BUILT_SOURCES += ${DELETE_PAGES}
 
 GENERIC_PAGES= \
-	libmemcached.pop \
-	libmemcached_examples.pop \
-	libmemcachedutil.pop \
-	memcached_analyze.pop \
-	memcached_dump.pop \
-	memcached_flush.pop \
-	memcached_flush_buffers.pop \
-	memcached_generate_hash_value.pop \
-	memcached_quit.pop \
-	memcached_strerror.pop \
-	memcached_verbosity.pop \
-	memcapable.pop \
-	memcat.pop \
-	memcp.pop \
-	memdump.pop \
-	memerror.pop \
-	memflush.pop \
-	memrm.pop \
-	memslap.pop \
-	memstat.pop
+	       libmemcached.pop \
+	       libmemcached_examples.pop \
+	       libmemcachedutil.pop \
+	       memcached_analyze.pop \
+	       memcached_dump.pop \
+	       memcached_flush.pop \
+	       memcached_flush_buffers.pop \
+	       memcached_generate_hash_value.pop \
+	       memcached_quit.pop \
+	       memcached_strerror.pop \
+	       memcached_verbosity.pop \
+	       memcapable.pop \
+	       memcat.pop \
+	       memcp.pop \
+	       memdump.pop \
+	       memerror.pop \
+	       memflush.pop \
+	       memrm.pop \
+	       memslap.pop \
+	       memstat.pop
 BUILT_SOURCES += ${GENERIC_PAGES}
 
 GET_PAGES= \
@@ -82,12 +83,12 @@ MEMORY_ALLOCATORS_PAGES= \
 BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
 
 POOL_PAGES= \
-	memcached_pool_behavior_get.pop \
-	memcached_pool_behavior_set.pop \
-	memcached_pool_create.pop \
-	memcached_pool_destroy.pop \
-	memcached_pool_pop.pop \
-	memcached_pool_push.pop 
+	    memcached_pool_behavior_get.pop \
+	    memcached_pool_behavior_set.pop \
+	    memcached_pool_create.pop \
+	    memcached_pool_destroy.pop \
+	    memcached_pool_pop.pop \
+	    memcached_pool_push.pop 
 BUILT_SOURCES += ${POOL_PAGES}
 
 RESULT_PAGES= \
@@ -105,6 +106,7 @@ BUILT_SOURCES += ${RESULT_PAGES}
 
 SERVER_PAGES= \
 	      memcached_server_count.pop \
+	      memcached_server_cursor.pop \
 	      memcached_server_list.pop \
 	      memcached_server_add.pop \
 	      memcached_server_add_unix_socket.pop \
@@ -134,10 +136,10 @@ SET_PAGES= \
 BUILT_SOURCES += ${SET_PAGES}
 
 STATS_PAGES= \
-	memcached_stat.pop \
-	memcached_stat_get_keys.pop .pop\
-	memcached_stat_get_value.pop \
-	memcached_stat_servername.pop
+	     memcached_stat.pop \
+	     memcached_stat_get_keys.pop .pop\
+	     memcached_stat_get_value.pop \
+	     memcached_stat_servername.pop
 BUILT_SOURCES += ${STATS_PAGES}
 
 USER_DATA_PAGES= \
@@ -155,27 +157,27 @@ BUILT_SOURCES += ${VERSION_PAGES}
 # These are for libhashkit
 #
 HASHKIT_CREATE_PAGES= \
-	     hashkit_is_allocated.pop \
-	     hashkit_create.pop \
-	     hashkit_clone.pop \
-	     hashkit_free.pop
+		      hashkit_is_allocated.pop \
+		      hashkit_create.pop \
+		      hashkit_clone.pop \
+		      hashkit_free.pop
 BUILT_SOURCES += ${HASHKIT_CREATE_PAGES}
 
 HASHKIT_FUNCTIONS_PAGES= \
-		     hashkit_crc32.pop \
-		     hashkit_fnv1_32.pop \
-		     hashkit_fnv1_64.pop \
-		     hashkit_fnv1a_32.pop \
-		     hashkit_fnv1a_64.pop \
-		     hashkit_functions.pop \
-		     hashkit_hsieh.pop \
-		     hashkit_jenkins.pop \
-		     hashkit_md5.pop \
-		     hashkit_murmur.pop
+			 hashkit_crc32.pop \
+			 hashkit_fnv1_32.pop \
+			 hashkit_fnv1_64.pop \
+			 hashkit_fnv1a_32.pop \
+			 hashkit_fnv1a_64.pop \
+			 hashkit_functions.pop \
+			 hashkit_hsieh.pop \
+			 hashkit_jenkins.pop \
+			 hashkit_md5.pop \
+			 hashkit_murmur.pop
 BUILT_SOURCES += ${HASHKIT_FUNCTIONS_PAGES}
 
 HASHKIT_ST_PAGES= \
-	hashkit_value.pop
+		  hashkit_value.pop
 BUILT_SOURCES += ${HASHKIT_ST_PAGES}
 
 
@@ -257,6 +259,7 @@ HTML_FILES= \
 	    memcached_server_add.html \
 	    memcached_server_add_unix_socket.html \
 	    memcached_server_count.html \
+	    memcached_server_cursor.html \
 	    memcached_server_list_append.html \
 	    memcached_server_list_count.html \
 	    memcached_server_list_free.html \
@@ -384,6 +387,7 @@ man_MANS = \
 	   memcached_replace_by_key.3 \
 	   memcached_server_add.3 \
 	   memcached_server_count.3 \
+	   memcached_server_cursor.3 \
 	   memcached_server_list.3 \
 	   memcached_server_list_append.3 \
 	   memcached_server_list_count.3 \

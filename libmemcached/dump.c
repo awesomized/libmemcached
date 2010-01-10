@@ -15,10 +15,10 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
   uint32_t server_key;
   uint32_t x;
 
-  unlikely (ptr->number_of_hosts == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  for (server_key= 0; server_key < ptr->number_of_hosts; server_key++)
+  for (server_key= 0; server_key < memcached_server_count(ptr); server_key++)
   {
     /* 256 I BELIEVE is the upper limit of slabs */
     for (x= 0; x < 256; x++)

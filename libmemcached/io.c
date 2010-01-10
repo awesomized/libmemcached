@@ -156,7 +156,7 @@ void memcached_io_preread(memcached_st *ptr)
 
   return;
 
-  for (x= 0; x < ptr->number_of_hosts; x++)
+  for (x= 0; x < memcached_server_count(ptr); x++)
   {
     if (memcached_server_response_count(ptr, x) &&
         ptr->hosts[x].read_data_length < MEMCACHED_MAX_BUFFER )
@@ -361,7 +361,7 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   unsigned int host_index= 0;
 
   for (unsigned int x= 0;
-       x< memc->number_of_hosts && host_index < MAX_SERVERS_TO_POLL;
+       x< memcached_server_count(memc) && host_index < MAX_SERVERS_TO_POLL;
        ++x)
   {
     if (memc->hosts[x].read_buffer_length > 0) /* I have data in the buffer */
@@ -379,7 +379,7 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   if (host_index < 2)
   {
     /* We have 0 or 1 server with pending events.. */
-    for (unsigned int x= 0; x< memc->number_of_hosts; ++x)
+    for (unsigned int x= 0; x< memcached_server_count(memc); ++x)
       if (memcached_server_response_count(&memc->hosts[x]) > 0)
         return &memc->hosts[x];
 
@@ -394,11 +394,17 @@ memcached_server_st *memcached_io_get_readable_server(memcached_st *memc)
   case 0:
     break;
   default:
-    for (unsigned int x= 0; x < host_index; ++x)
+    for (size_t x= 0; x < host_index; ++x)
+    {
       if (fds[x].revents & POLLIN)
-        for (unsigned int y= 0; y < memc->number_of_hosts; ++y)
+      {
+        for (unsigned int y= 0; y < memcached_server_count(memc); ++y)
+        {
           if (memc->hosts[y].fd == fds[x].fd)
             return &memc->hosts[y];
+        }
+      }
+    }
   }
 
   return NULL;
