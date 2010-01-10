@@ -13,7 +13,6 @@ noinst_HEADERS+= \
 		 libmemcached/io.h \
 		 libmemcached/internal.h \
 		 libmemcached/common.h \
-		 libmemcached/memcached/protocol_binary.h \
 		 libmemcached/protocol/common.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h
@@ -30,6 +29,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/get.h \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
+			 libmemcached/memcached/protocol_binary.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
