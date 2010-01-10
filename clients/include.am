@@ -69,7 +69,7 @@ clients_memslap_SOURCES= \
 		clients/ms_stats.c \
 		clients/ms_task.c \
 		clients/ms_thread.c
-clients_memslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS)
+clients_memslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS) $(LIBM)
 
 clients_memcapable_SOURCES= clients/memcapable.c
 if BUILD_BYTEORDER
