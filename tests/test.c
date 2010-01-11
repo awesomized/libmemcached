@@ -105,6 +105,34 @@ static world_runner_st defualt_runners= {
   _runner_default
 };
 
+static test_return_t _default_callback(void *p)
+{
+  (void)p;
+
+  return TEST_SUCCESS;
+}
+
+static inline void set_default_fn(test_callback_fn *fn)
+{
+  if (*fn == NULL)
+  {
+    *fn= _default_callback;
+  }
+}
+
+static collection_st *init_world(world_st *world)
+{
+  if (! world->runner)
+  {
+    world->runner= &defualt_runners;
+  }
+
+  set_default_fn(&world->collection.startup);
+  set_default_fn(&world->collection.shutdown);
+
+  return world->collections;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -123,12 +151,7 @@ int main(int argc, char *argv[])
   memset(&world, 0, sizeof(world));
   get_world(&world);
 
-  if (! world.runner)
-  {
-    world.runner= &defualt_runners;
-  }
-
-  collection= world.collections;
+  collection= init_world(&world);
 
   if (world.create)
   {
@@ -161,10 +184,7 @@ int main(int argc, char *argv[])
 
     stats.collection_total++;
 
-    if (world.collection_startup)
-    {
-      collection_rc= world.collection_startup(world_ptr);
-    }
+    collection_rc= world.collection.startup(world_ptr);
 
     switch (collection_rc)
     {
@@ -295,10 +315,7 @@ error:
       stats.collection_success++;
     }
 
-    if (world.collection_shutdown)
-    {
-      world.collection_shutdown(world_ptr);
-    }
+    world.collection.shutdown(world_ptr);
   }
 
   if (stats.collection_failed || stats.collection_skipped)

@@ -102,11 +102,13 @@ struct world_st {
     test_callback_error_fn on_error;
   } test;
 
-  /* This is called a the beginning of any collection run. */
-  test_callback_fn collection_startup;
+  struct {
+    /* This is called a the beginning of any collection run. */
+    test_callback_fn startup;
 
-  /* This is called a the beginning of any collection run. */
-  test_callback_fn collection_shutdown;
+    /* This is called at the end of any collection run. */
+    test_callback_fn shutdown;
+  } collection;
 
 
   /**
