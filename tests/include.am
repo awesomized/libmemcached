@@ -4,37 +4,41 @@
 
 TESTS_LDADDS = libmemcached/libmemcached.la
 
+VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes
+
+DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
+
 if BUILD_LIBMEMCACHEDUTIL
 TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 endif
 
 EXTRA_DIST+= \
-	tests/r/memcat.res \
-	tests/r/memcp.res \
-	tests/r/memrm.res \
-	tests/r/memslap.res \
-	tests/r/memstat.res \
-	tests/t/memcat.test \
-	tests/t/memcp.test \
-	tests/t/memrm.test \
-	tests/t/memslap.test \
-	tests/t/memstat.test
+	     tests/r/memcat.res \
+	     tests/r/memcp.res \
+	     tests/r/memrm.res \
+	     tests/r/memslap.res \
+	     tests/r/memstat.res \
+	     tests/t/memcat.test \
+	     tests/t/memcp.test \
+	     tests/t/memrm.test \
+	     tests/t/memslap.test \
+	     tests/t/memstat.test
 
 noinst_HEADERS+= \
-	tests/hash_results.h \
-	tests/ketama_test_cases.h \
-	tests/ketama_test_cases_spy.h \
-	tests/libmemcached_world.h \
-	tests/server.h \
-	tests/test.h
+		 tests/hash_results.h \
+		 tests/ketama_test_cases.h \
+		 tests/ketama_test_cases_spy.h \
+		 tests/libmemcached_world.h \
+		 tests/server.h \
+		 tests/test.h
 
 noinst_PROGRAMS+= \
-	tests/atomsmasher \
-	tests/startservers \
-	tests/testapp \
-	tests/testhashkit \
-	tests/testplus \
-	tests/udptest
+		  tests/atomsmasher \
+		  tests/startservers \
+		  tests/testapp \
+		  tests/testhashkit \
+		  tests/testplus \
+		  tests/udptest
 
 noinst_LTLIBRARIES+= tests/libserver.la
 tests_libserver_la_SOURCES= tests/server.c
@@ -43,7 +47,7 @@ noinst_LTLIBRARIES+= tests/libtest.la
 tests_libtest_la_SOURCES= tests/test.c
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testapp_SOURCES= tests/function.c
+tests_testapp_SOURCES= tests/mem_functions.c
 tests_testapp_LDADD= \
 	clients/libgenexec.la \
 	tests/libserver.la \
@@ -83,10 +87,10 @@ client-record:
 	sh tests/t/memslap.test > tests/r/memslap.res
 	sh tests/t/memstat.test > tests/r/memstat.res
 
-test: test-docs tests/testapp tests/testplus library_test memcapable libmhashkit_test
+test: test-docs tests/testplus library_test memcapable libmhashkit_test
 	echo "Tests completed"
 
-library_test:
+library_test: tests/testapp
 	tests/testapp
 
 libmhashkit_test: libhashkit
@@ -115,16 +119,31 @@ clients:
 	cat tests/Xumemc.pid | xargs kill
 	rm tests/Xumemc.pid
 
+MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
+
+HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
+
+test-mem:
+	$(MEM_COMMAND)
+
+test-hash:
+	$(HASH_COMMAND)
+
 gdb-mem:
-	$(LIBTOOL) --mode=execute gdb tests/testapp
+	$(DEBUG_COMMAND)  $(MEM_COMMAND)
 
 gdb-hash:
-	$(LIBTOOL) --mode=execute gdb tests/testhashkit
+	$(DEBUG_COMMAND) $(HASH_COMMAND)
+
+valgrind-mem:
+	$(VALGRIND_COMMAND)  $(MEM_COMMAND)
+
+valgrind-hash:
+	$(VALGRIND_COMMAND) $(HASH_COMMAND)
 
 
 PHONY += valgrind
-valgrind:
-	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes  tests/testapp
+valgrind: tests/testapp tests/testhashkit valgrind-mem valgrind-hash 
 
 PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out

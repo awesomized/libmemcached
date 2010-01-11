@@ -17,6 +17,7 @@ extern "C" {
 typedef struct
 {
   server_startup_st construct;
+  memcached_st *parent;
   memcached_st *memc;
 } libmemcached_test_container_st;
 
@@ -31,6 +32,12 @@ test_return_t world_on_error(test_return_t, libmemcached_test_container_st *);
 test_return_t world_destroy(libmemcached_test_container_st *);
 
 static libmemcached_test_container_st global_container;
+
+/**
+  @note generic shutdown/startup for libmemcached tests.
+*/
+test_return_t world_container_startup(libmemcached_test_container_st *container);
+test_return_t world_container_shutdown(libmemcached_test_container_st *container);
 
 libmemcached_test_container_st *world_create(test_return_t *error)
 {
@@ -51,15 +58,30 @@ libmemcached_test_container_st *world_create(test_return_t *error)
   return &global_container;
 }
 
+test_return_t world_container_startup(libmemcached_test_container_st *container)
+{
+  memcached_return_t rc;
+  container->parent= memcached_create(NULL);
+  test_truth((container->parent != NULL));
+
+  rc= memcached_server_push(container->parent, container->construct.servers);
+  test_truth(rc == MEMCACHED_SUCCESS);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t world_container_shutdown(libmemcached_test_container_st *container)
+{
+  memcached_free(container->parent);
+  container->parent= NULL;
+
+  return TEST_SUCCESS;
+}
 
 test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
-  memcached_return_t rc;
-  container->memc= memcached_create(NULL);
+  container->memc= memcached_clone(NULL, container->parent);
   test_truth((container->memc != NULL));
-
-  rc= memcached_server_push(container->memc, container->construct.servers);
-  test_truth(rc == MEMCACHED_SUCCESS);
 
   return TEST_SUCCESS;
 }
@@ -97,6 +119,7 @@ test_return_t world_on_error(test_return_t test_state, libmemcached_test_contain
 {
   (void)test_state;
   memcached_free(container->memc);
+  container->memc= NULL;
 
   return TEST_SUCCESS;
 }

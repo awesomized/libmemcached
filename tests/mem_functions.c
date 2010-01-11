@@ -5824,5 +5824,8 @@ void get_world(world_st *world)
   world->test.post_run= (test_callback_fn)world_post_run;
   world->test.on_error= (test_callback_error_fn)world_on_error;
 
+  world->collection.startup= (test_callback_fn)world_container_startup;
+  world->collection.shutdown= (test_callback_fn)world_container_shutdown;
+
   world->runner= &defualt_libmemcached_runner;
 }
