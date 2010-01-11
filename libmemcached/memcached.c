@@ -52,18 +52,22 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
     return;
 
   for (x= 0; x < memcached_servers_count(servers); x++)
+  {
     if (servers[x].address_info)
     {
       freeaddrinfo(servers[x].address_info);
       servers[x].address_info= NULL;
     }
+  }
 
   if (ptr)
   {
     ptr->call_free(ptr, servers);
   }
   else
+  {
     free(servers);
+  }
 }
 
 void memcached_servers_reset(memcached_st *ptr)
