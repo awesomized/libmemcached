@@ -19,11 +19,18 @@
 #include <unistd.h>
 #include <time.h>
 #include <fnmatch.h>
+#include <stdint.h>
 
 #include "test.h"
 
 static void world_stats_print(world_stats_st *stats)
 {
+  fputc('\n', stderr);
+  fprintf(stderr, "Total Collections\t\t\t\t%u\n", stats->collection_total);
+  fprintf(stderr, "\tFailed Collections\t\t\t%u\n", stats->collection_failed);
+  fprintf(stderr, "\tSkipped Collections\t\t\t%u\n", stats->collection_skipped);
+  fprintf(stderr, "\tSucceeded Collections\t\t%u\n", stats->collection_success);
+  fputc('\n', stderr);
   fprintf(stderr, "Total\t\t\t\t%u\n", stats->total);
   fprintf(stderr, "\tFailed\t\t\t%u\n", stats->failed);
   fprintf(stderr, "\tSkipped\t\t\t%u\n", stats->skipped);
@@ -143,13 +150,41 @@ int main(int argc, char *argv[])
 
   for (next= collection; next->name; next++)
   {
+    test_return_t collection_rc= TEST_SUCCESS;
     test_st *run;
+    bool failed= false;
+    bool skipped= false;
 
     run= next->tests;
     if (collection_to_run && fnmatch(collection_to_run, next->name, 0))
       continue;
 
-    fprintf(stderr, "\n%s\n\n", next->name);
+    stats.collection_total++;
+
+    if (world.collection_startup)
+    {
+      collection_rc= world.test_startup(world_ptr);
+    }
+
+    switch (collection_rc)
+    {
+      case TEST_SUCCESS:
+        fprintf(stderr, "\n%s\n\n", next->name);
+        break;
+      case TEST_FAILURE:
+        fprintf(stderr, "\n%s [ failed ]\n\n", next->name);
+        stats.failed++;
+        continue;
+      case TEST_SKIPPED:
+        fprintf(stderr, "\n%s [ skipping ]\n\n", next->name);
+        stats.skipped++;
+        continue;
+      case TEST_MEMORY_ALLOCATION_FAILURE:
+      case TEST_MAXIMUM_RETURN:
+      default:
+        assert(0);
+        break;
+    }
 
     for (x= 0; run->name; run++)
     {
@@ -215,13 +250,18 @@ error:
         break;
       case TEST_FAILURE:
         stats.failed++;
+        failed= true;
         break;
       case TEST_SKIPPED:
         stats.skipped++;
+        skipped= true;
         break;
       case TEST_MEMORY_ALLOCATION_FAILURE:
+        fprintf(stderr, "Exhausted memory, quitting\n");
+        abort();
       case TEST_MAXIMUM_RETURN:
       default:
+        assert(0); // Coding error.
         break;
       }
 
@@ -236,9 +276,36 @@ error:
           break;
       }
     }
+
+    if (failed)
+    {
+      stats.collection_failed++;
+    }
+
+    if (skipped)
+    {
+      stats.collection_skipped++;
+    }
+
+    if (! failed && ! skipped)
+    {
+      stats.collection_success++;
+    }
+
+    if (world.collection_shutdown)
+    {
+      world.collection_shutdown(world_ptr);
+    }
   }
 
-  fprintf(stderr, "All tests completed successfully\n\n");
+  if (stats.collection_failed || stats.collection_skipped)
+  {
+    fprintf(stderr, "Some test failures and/or skipped test occurred.\n\n");
+  }
+  else
+  {
+    fprintf(stderr, "All tests completed successfully\n\n");
+  }
 
   if (world.destroy)
   {

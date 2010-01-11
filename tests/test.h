@@ -82,8 +82,14 @@ struct world_st {
   test_callback_create_fn create;
   test_callback_fn destroy;
 
-  /* This is called a the beginning of any collection run. */
+  /* This is called a the beginning of any test run. */
   test_callback_fn test_startup;
+
+  /* This is called a the beginning of any collection run. */
+  test_callback_fn collection_startup;
+
+  /* This is called a the beginning of any collection run. */
+  test_callback_fn collection_shutdown;
 
   /* This called on a test if the test requires a flush call (the bool is from test_st) */
   test_callback_fn flush;
@@ -113,6 +119,10 @@ struct world_st {
   @note world_stats_st is a simple structure for tracking test successes.
 */
 typedef struct {
+  uint32_t collection_success;
+  uint32_t collection_skipped;
+  uint32_t collection_failed;
+  uint32_t collection_total;
   uint32_t success;
   uint32_t skipped;
   uint32_t failed;
