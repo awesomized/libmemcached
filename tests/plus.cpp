@@ -299,7 +299,7 @@ collection_st collection[] ={
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->collection_startup= reinterpret_cast<test_callback_fn>(world_collection_startup);
+  world->test_startup= reinterpret_cast<test_callback_fn>(world_test_startup);
   world->flush= reinterpret_cast<test_callback_fn>(world_flush);
   world->pre_run= reinterpret_cast<test_callback_fn>(world_pre_run);
   world->create= reinterpret_cast<test_callback_create_fn>(world_create);

@@ -5814,7 +5814,7 @@ collection_st collection[] ={
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->collection_startup= (test_callback_fn)world_collection_startup;
+  world->test_startup= (test_callback_fn)world_test_startup;
   world->flush= (test_callback_fn)world_flush;
   world->pre_run= (test_callback_fn)world_pre_run;
   world->create= (test_callback_create_fn)world_create;

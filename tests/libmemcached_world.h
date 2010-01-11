@@ -22,7 +22,7 @@ typedef struct
 
 /* Prototypes for functions we will pass to test framework */
 libmemcached_test_container_st *world_create(test_return_t *error);
-test_return_t world_collection_startup(libmemcached_test_container_st *);
+test_return_t world_test_startup(libmemcached_test_container_st *);
 test_return_t world_flush(libmemcached_test_container_st *container);
 test_return_t world_pre_run(libmemcached_test_container_st *);
 
@@ -52,7 +52,7 @@ libmemcached_test_container_st *world_create(test_return_t *error)
 }
 
 
-test_return_t world_collection_startup(libmemcached_test_container_st *container)
+test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
   memcached_return_t rc;
   container->memc= memcached_create(NULL);

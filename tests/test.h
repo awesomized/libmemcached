@@ -83,7 +83,7 @@ struct world_st {
   test_callback_fn destroy;
 
   /* This is called a the beginning of any collection run. */
-  test_callback_fn collection_startup;
+  test_callback_fn test_startup;
 
   /* This called on a test if the test requires a flush call (the bool is from test_st) */
   test_callback_fn flush;

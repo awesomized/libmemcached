@@ -161,9 +161,9 @@ int main(int argc, char *argv[])
 
       fprintf(stderr, "Testing %s", run->name);
 
-      if (world.collection_startup)
+      if (world.test_startup)
       {
-        world.collection_startup(world_ptr);
+        world.test_startup(world_ptr);
       }
 
       if (run->requires_flush && world.flush)
