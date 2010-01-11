@@ -299,12 +299,15 @@ collection_st collection[] ={
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->test_startup= reinterpret_cast<test_callback_fn>(world_test_startup);
-  world->flush= reinterpret_cast<test_callback_fn>(world_flush);
-  world->pre_run= reinterpret_cast<test_callback_fn>(world_pre_run);
+
   world->create= reinterpret_cast<test_callback_create_fn>(world_create);
-  world->post_run= reinterpret_cast<test_callback_fn>(world_post_run);
-  world->on_error= reinterpret_cast<test_callback_error_fn>(world_on_error);
   world->destroy= reinterpret_cast<test_callback_fn>(world_destroy);
+
+  world->test.startup= reinterpret_cast<test_callback_fn>(world_test_startup);
+  world->test.flush= reinterpret_cast<test_callback_fn>(world_flush);
+  world->test.pre_run= reinterpret_cast<test_callback_fn>(world_pre_run);
+  world->test.post_run= reinterpret_cast<test_callback_fn>(world_post_run);
+  world->test.on_error= reinterpret_cast<test_callback_error_fn>(world_on_error);
+
   world->runner= &defualt_libmemcached_runner;
 }

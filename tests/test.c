@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 
     if (world.collection_startup)
     {
-      collection_rc= world.test_startup(world_ptr);
+      collection_rc= world.collection_startup(world_ptr);
     }
 
     switch (collection_rc)
@@ -196,45 +196,48 @@ int main(int argc, char *argv[])
 
       fprintf(stderr, "Testing %s", run->name);
 
-      if (world.test_startup)
+      if (world.test.startup)
       {
-        world.test_startup(world_ptr);
+        world.test.startup(world_ptr);
       }
 
-      if (run->requires_flush && world.flush)
+      if (run->requires_flush && world.test.flush)
       {
-        world.flush(world_ptr);
+        world.test.flush(world_ptr);
       }
 
-      if (world.pre_run)
+      if (world.test.pre_run)
       {
-        world.pre_run(world_ptr);
+        world.test.pre_run(world_ptr);
       }
 
 
-      if (next->pre && world.runner->pre)
+      // Runner code
       {
-        return_code= world.runner->pre(next->pre, world_ptr);
-
-        if (return_code != TEST_SUCCESS)
+        if (next->pre && world.runner->pre)
         {
-          goto error;
+          return_code= world.runner->pre(next->pre, world_ptr);
+
+          if (return_code != TEST_SUCCESS)
+          {
+            goto error;
+          }
+        }
+
+        gettimeofday(&start_time, NULL);
+        return_code= world.runner->run(run->test_fn, world_ptr);
+        gettimeofday(&end_time, NULL);
+        load_time= timedif(end_time, start_time);
+
+        if (next->post && world.runner->post)
+        {
+          (void) world.runner->post(next->post, world_ptr);
         }
       }
 
-      gettimeofday(&start_time, NULL);
-      return_code= world.runner->run(run->test_fn, world_ptr);
-      gettimeofday(&end_time, NULL);
-      load_time= timedif(end_time, start_time);
-
-      if (next->post && world.runner->post)
+      if (world.test.post_run)
       {
-        (void) world.runner->post(next->post, world_ptr);
-      }
-
-      if (world.post_run)
-      {
-        world.post_run(world_ptr);
+        world.test.post_run(world_ptr);
       }
 
 error:
@@ -267,10 +270,10 @@ error:
 
       fprintf(stderr, "[ %s ]\n", test_strerror(return_code));
 
-      if (world.on_error)
+      if (world.test.on_error)
       {
         test_return_t rc;
-        rc= world.on_error(return_code, world_ptr);
+        rc= world.test.on_error(return_code, world_ptr);
 
         if (rc != TEST_SUCCESS)
           break;

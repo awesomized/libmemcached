@@ -82,8 +82,25 @@ struct world_st {
   test_callback_create_fn create;
   test_callback_fn destroy;
 
-  /* This is called a the beginning of any test run. */
-  test_callback_fn test_startup;
+  struct {
+    /* This is called a the beginning of any test run. */
+    test_callback_fn startup;
+
+    /* This called on a test if the test requires a flush call (the bool is from test_st) */
+    test_callback_fn flush;
+
+    /**
+      These are run before/after the test. If implemented. Their execution is not controlled
+      by the test.
+    */
+    test_callback_fn pre_run;
+    test_callback_fn post_run;
+
+    /**
+      If an error occurs during the test, this is called.
+    */
+    test_callback_error_fn on_error;
+  } test;
 
   /* This is called a the beginning of any collection run. */
   test_callback_fn collection_startup;
@@ -91,20 +108,6 @@ struct world_st {
   /* This is called a the beginning of any collection run. */
   test_callback_fn collection_shutdown;
 
-  /* This called on a test if the test requires a flush call (the bool is from test_st) */
-  test_callback_fn flush;
-
-  /**
-    These are run before/after the test. If implemented. Their execution is not controlled
-    by the test.
-  */
-  test_callback_fn pre_run;
-  test_callback_fn post_run;
-
-  /**
-    If an error occurs during the test, this is called.
-  */
-  test_callback_error_fn on_error;
 
   /**
     Runner represents the callers for the tests. If not implemented we will use

@@ -5814,12 +5814,15 @@ collection_st collection[] ={
 void get_world(world_st *world)
 {
   world->collections= collection;
-  world->test_startup= (test_callback_fn)world_test_startup;
-  world->flush= (test_callback_fn)world_flush;
-  world->pre_run= (test_callback_fn)world_pre_run;
+
   world->create= (test_callback_create_fn)world_create;
-  world->post_run= (test_callback_fn)world_post_run;
-  world->on_error= (test_callback_error_fn)world_on_error;
   world->destroy= (test_callback_fn)world_destroy;
+
+  world->test.startup= (test_callback_fn)world_test_startup;
+  world->test.flush= (test_callback_fn)world_flush;
+  world->test.pre_run= (test_callback_fn)world_pre_run;
+  world->test.post_run= (test_callback_fn)world_post_run;
+  world->test.on_error= (test_callback_error_fn)world_on_error;
+
   world->runner= &defualt_libmemcached_runner;
 }
