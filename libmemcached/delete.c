@@ -33,7 +33,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
 
-  unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);

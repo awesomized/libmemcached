@@ -360,18 +360,21 @@ memcached_server_instance_st *memcached_io_get_readable_server(memcached_st *mem
   struct pollfd fds[MAX_SERVERS_TO_POLL];
   unsigned int host_index= 0;
 
-  for (unsigned int x= 0;
+  for (uint32_t x= 0;
        x< memcached_server_count(memc) && host_index < MAX_SERVERS_TO_POLL;
        ++x)
   {
-    if (memc->hosts[x].read_buffer_length > 0) /* I have data in the buffer */
-      return &memc->hosts[x];
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(memc, x);
 
-    if (memcached_server_response_count(&memc->hosts[x]) > 0)
+    if (instance->read_buffer_length > 0) /* I have data in the buffer */
+      return instance;
+
+    if (memcached_server_response_count(instance) > 0)
     {
       fds[host_index].events = POLLIN;
       fds[host_index].revents = 0;
-      fds[host_index].fd = memc->hosts[x].fd;
+      fds[host_index].fd = instance->fd;
       ++host_index;
     }
   }
@@ -379,9 +382,16 @@ memcached_server_instance_st *memcached_io_get_readable_server(memcached_st *mem
   if (host_index < 2)
   {
     /* We have 0 or 1 server with pending events.. */
-    for (unsigned int x= 0; x< memcached_server_count(memc); ++x)
-      if (memcached_server_response_count(&memc->hosts[x]) > 0)
-        return &memc->hosts[x];
+    for (uint32_t x= 0; x< memcached_server_count(memc); ++x)
+    {
+      memcached_server_instance_st *instance=
+        memcached_server_instance_fetch(memc, x);
+
+      if (memcached_server_response_count(instance) > 0)
+      {
+        return instance;
+      }
+    }
 
     return NULL;
   }
@@ -398,10 +408,13 @@ memcached_server_instance_st *memcached_io_get_readable_server(memcached_st *mem
     {
       if (fds[x].revents & POLLIN)
       {
-        for (unsigned int y= 0; y < memcached_server_count(memc); ++y)
+        for (uint32_t y= 0; y < memcached_server_count(memc); ++y)
         {
-          if (memc->hosts[y].fd == fds[x].fd)
-            return &memc->hosts[y];
+          memcached_server_instance_st *instance=
+            memcached_server_instance_fetch(memc, y);
+
+          if (instance->fd == fds[x].fd)
+            return instance;
         }
       }
     }

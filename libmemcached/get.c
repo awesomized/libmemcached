@@ -181,15 +181,18 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    if (memcached_server_response_count(&ptr->hosts[x]))
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    if (memcached_server_response_count(instance))
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
       if (ptr->flags.no_block)
-        (void)memcached_io_write(&ptr->hosts[x], NULL, 0, 1);
+        (void)memcached_io_write(instance, NULL, 0, 1);
 
-      while(memcached_server_response_count(&ptr->hosts[x]))
-        (void)memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
+      while(memcached_server_response_count(instance))
+        (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
     }
   }
 
@@ -271,10 +274,13 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    if (memcached_server_response_count(&ptr->hosts[x]))
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    if (memcached_server_response_count(instance))
     {
       /* We need to do something about non-connnected hosts in the future */
-      if ((memcached_io_write(&ptr->hosts[x], "\r\n", 2, 1)) == -1)
+      if ((memcached_io_write(instance, "\r\n", 2, 1)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;
       }
@@ -429,23 +435,28 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
     for (x= 0; x < memcached_server_count(ptr); x++)
-      if (memcached_server_response_count(&ptr->hosts[x]))
+    {
+      memcached_server_instance_st *instance=
+        memcached_server_instance_fetch(ptr, x);
+
+      if (memcached_server_response_count(instance))
       {
-        if (memcached_io_write(&ptr->hosts[x], NULL, 0, 1) == -1)
+        if (memcached_io_write(instance, NULL, 0, 1) == -1)
         {
-          memcached_server_response_reset(&ptr->hosts[x]);
-          memcached_io_reset(&ptr->hosts[x]);
+          memcached_server_response_reset(instance);
+          memcached_io_reset(instance);
           rc= MEMCACHED_SOME_ERRORS;
         }
 
-        if (memcached_io_write(&ptr->hosts[x], request.bytes,
+        if (memcached_io_write(instance, request.bytes,
                                sizeof(request.bytes), 1) == -1)
         {
-          memcached_server_response_reset(&ptr->hosts[x]);
-          memcached_io_reset(&ptr->hosts[x]);
+          memcached_server_response_reset(instance);
+          memcached_io_reset(instance);
           rc= MEMCACHED_SOME_ERRORS;
         }
       }
+    }
   }
 
 
@@ -473,6 +484,8 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
     for (x= 0; x < number_of_keys; ++x)
     {
+      memcached_server_instance_st *instance;
+
       if (hash[x] == memcached_server_count(ptr))
         continue; /* Already successfully sent */
 
@@ -488,12 +501,14 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       if (dead_servers[server])
         continue;
 
-      if (memcached_server_response_count(&ptr->hosts[server]) == 0)
+      instance= memcached_server_instance_fetch(ptr, server);
+
+      if (memcached_server_response_count(instance) == 0)
       {
-        rc= memcached_connect(&ptr->hosts[server]);
+        rc= memcached_connect(instance);
         if (rc != MEMCACHED_SUCCESS)
         {
-          memcached_io_reset(&ptr->hosts[server]);
+          memcached_io_reset(instance);
           dead_servers[server]= true;
           success= false;
           continue;
@@ -520,18 +535,18 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * that we might have processed some of the responses etc. For now,
        * just make sure we work _correctly_
      */
-      if ((memcached_io_write(&ptr->hosts[server], request.bytes,
+      if ((memcached_io_write(instance, request.bytes,
                               sizeof(request.bytes), 0) == -1) ||
-          (memcached_io_write(&ptr->hosts[server], keys[x],
+          (memcached_io_write(instance, keys[x],
                               key_length[x], 1) == -1))
       {
-        memcached_io_reset(&ptr->hosts[server]);
+        memcached_io_reset(instance);
         dead_servers[server]= true;
         success= false;
         continue;
       }
 
-      memcached_server_response_increment(&ptr->hosts[server]);
+      memcached_server_response_increment(instance);
       hash[x]= memcached_server_count(ptr);
     }
 

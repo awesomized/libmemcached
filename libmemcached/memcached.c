@@ -72,9 +72,9 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 
 void memcached_servers_reset(memcached_st *ptr)
 {
-  server_list_free(ptr, ptr->hosts);
+  server_list_free(ptr, memcached_server_list(ptr));
 
-  ptr->hosts= NULL;
+  memcached_server_list_set(ptr, NULL);
   ptr->number_of_hosts= 0;
   ptr->last_disconnected_server= NULL;
   ptr->server_failure_limit= 0;
@@ -84,7 +84,7 @@ void memcached_free(memcached_st *ptr)
 {
   /* If we have anything open, lets close it now */
   memcached_quit(ptr);
-  server_list_free(ptr, ptr->hosts);
+  server_list_free(ptr, memcached_server_list(ptr));
   memcached_result_free(&ptr->result);
 
   if (ptr->on_cleanup)
@@ -154,8 +154,8 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   new_clone->io_key_prefetch= source->io_key_prefetch;
   new_clone->number_of_replicas= source->number_of_replicas;
 
-  if (source->hosts)
-    rc= memcached_server_push(new_clone, source->hosts);
+  if (memcached_server_list(source))
+    rc= memcached_server_push(new_clone, memcached_server_list(source));
 
   if (rc != MEMCACHED_SUCCESS)
   {

@@ -118,12 +118,14 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
   for (y= 0; y < memcached_server_count(ptr); y++)
   {
     uint32_t x;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, y);
 
     for (x= 0; x < number_of_callbacks; x++)
     {
       unsigned int iferror;
 
-      iferror= (*callback[x])(ptr, &ptr->hosts[y], context);
+      iferror= (*callback[x])(ptr, instance, context);
 
       if (iferror)
         continue;

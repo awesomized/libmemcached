@@ -109,7 +109,7 @@ static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused))
     test_ports[x]= (uint32_t)random() % 64000;
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
     test_truth(memcached_server_count(local_memc) == x + 1);
-    test_truth(memcached_servers_count(local_memc->hosts) == x+1);
+    test_truth(memcached_servers_count(memcached_server_list(local_memc)) == x+1);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
 
@@ -5234,6 +5234,9 @@ static test_return_t regression_bug_442914(memcached_st *memc)
 
 static test_return_t regression_bug_447342(memcached_st *memc)
 {
+  memcached_server_instance_st *instance_one;
+  memcached_server_instance_st *instance_two;
+
   if (memcached_server_count(memc) < 3 || pre_replication(memc) != MEMCACHED_SUCCESS)
     return TEST_SKIPPED;
 
@@ -5290,11 +5293,13 @@ static test_return_t regression_bug_447342(memcached_st *memc)
    * This is to verify correct behavior in the library. Fake that two servers
    * are dead..
    */
-  in_port_t port0= memc->hosts[0].port;
-  in_port_t port2= memc->hosts[2].port;
+  instance_one= memcached_server_instance_fetch(memc, 0);
+  instance_two= memcached_server_instance_fetch(memc, 2);
+  in_port_t port0= instance_one->port;
+  in_port_t port2= instance_two->port;
 
-  memc->hosts[0].port= 0;
-  memc->hosts[2].port= 0;
+  instance_one->port= 0;
+  instance_two->port= 0;
 
   rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
   test_truth(rc == MEMCACHED_SUCCESS);
@@ -5304,8 +5309,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   test_truth(counter == (unsigned int)max_keys);
 
   /* restore the memc handle */
-  memc->hosts[0].port= port0;
-  memc->hosts[2].port= port2;
+  instance_one->port= port0;
+  instance_two->port= port2;
 
   memcached_quit(memc);
 
@@ -5320,8 +5325,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   }
 
   memcached_quit(memc);
-  memc->hosts[0].port= 0;
-  memc->hosts[2].port= 0;
+  instance_one->port= 0;
+  instance_two->port= 0;
 
   /* now retry the command, this time we should have cache misses */
   rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
@@ -5340,8 +5345,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   free(key_length);
 
   /* restore the memc handle */
-  memc->hosts[0].port= port0;
-  memc->hosts[2].port= port2;
+  instance_one->port= port0;
+  instance_two->port= port2;
 
   return TEST_SUCCESS;
 }
@@ -5462,6 +5467,7 @@ static test_return_t  test_get_last_disconnect(memcached_st *memc)
 static test_return_t wrong_failure_counter_test(memcached_st *memc)
 {
   memcached_return_t rc;
+  memcached_server_instance_st *instance;
 
   /* Set value to force connection to the server */
   const char *key= "marmotte";
@@ -5482,11 +5488,12 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
   test_truth(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
 
+  instance= memcached_server_instance_fetch(memc, 0);
   /* The test is to see that the memcached_quit doesn't increase the
    * the server failure conter, so let's ensure that it is zero
    * before sending quit
    */
-  memc->hosts[0].server_failure_counter= 0;
+  instance->server_failure_counter= 0;
 
   memcached_quit(memc);
 
@@ -5494,7 +5501,7 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
    * Please note that this isn't bullet proof, because an error could
    * occur...
    */
-  test_truth(memc->hosts[0].server_failure_counter == 0);
+  test_truth(instance->server_failure_counter == 0);
 
   /* restore the instance */
   memc->number_of_hosts= number_of_hosts;

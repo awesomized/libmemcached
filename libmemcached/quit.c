@@ -69,15 +69,19 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
 
 void memcached_quit(memcached_st *ptr)
 {
-  unsigned int x;
+  uint32_t x;
 
-  if (ptr->hosts == NULL ||
-      memcached_server_count(ptr) == 0)
+  if (memcached_server_count(ptr) == 0)
     return;
 
-  if (ptr->hosts && memcached_server_count(ptr))
+  if (memcached_server_count(ptr))
   {
     for (x= 0; x < memcached_server_count(ptr); x++)
-      memcached_quit_server(&ptr->hosts[x], 0);
+    {
+      memcached_server_instance_st *instance=
+        memcached_server_instance_fetch(ptr, x);
+
+      memcached_quit_server(instance, 0);
+    }
   }
 }

@@ -25,7 +25,7 @@ static memcached_return_t memcached_auto(memcached_st *ptr,
   memcached_server_instance_st *instance;
   bool no_reply= ptr->flags.no_reply;
 
-  unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
@@ -85,7 +85,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   memcached_server_instance_st *instance;
   bool no_reply= ptr->flags.no_reply;
 
-  unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
+  unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
