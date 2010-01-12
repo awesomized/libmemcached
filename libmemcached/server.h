@@ -64,8 +64,8 @@ static inline uint32_t memcached_servers_set_count(memcached_server_st *servers,
 #define memcached_server_count(A) (A)->number_of_hosts
 #define memcached_server_name(A,B) (B).hostname
 #define memcached_server_port(A,B) (B).port
-#define memcached_server_list(A) (A)->hosts
-#define memcached_server_list_set(A,B) (A)->hosts=(B)
+#define memcached_server_list(A) (A)->servers
+#define memcached_server_list_set(A,B) (A)->servers=(B)
 #define memcached_server_response_count(A) (A)->cursor_active
 
 LIBMEMCACHED_API

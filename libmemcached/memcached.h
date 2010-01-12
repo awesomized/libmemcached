@@ -53,7 +53,7 @@ struct memcached_st {
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
   uint32_t continuum_points_counter; // Ketama
-  memcached_server_st *hosts;
+  memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;
   int32_t snd_timeout;
   int32_t rcv_timeout;
@@ -114,7 +114,7 @@ void memcached_servers_reset(memcached_st *ptr);
 // Local Only Inline
 static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
 {
-  return &ptr->hosts[server_key];
+  return &ptr->servers[server_key];
 }
 
 /* Public API */

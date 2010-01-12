@@ -3517,14 +3517,15 @@ static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
   memcached_st *memc_clone;
-  memcached_server_instance_st *instance=
-    memcached_server_instance_fetch(memc, 0);
+  memcached_server_instance_st *instance;
 
   memc_clone= memcached_clone(NULL, memc);
   test_truth(memc_clone);
   // The memcached_version needs to be done on a clone, because the server
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
+
+  instance= memcached_server_instance_fetch(memc_clone, 0);
 
   if (instance->major_version >= 1 && instance->minor_version > 2)
   {
@@ -3956,7 +3957,11 @@ static test_return_t noreply_test(memcached_st *memc)
     */
     int no_msg=0;
     for (uint32_t x=0; x < memcached_server_count(memc); ++x)
-      no_msg+=(int)(memc->hosts[x].cursor_active);
+    {
+      memcached_server_instance_st *instance=
+        memcached_server_instance_fetch(memc, x);
+      no_msg+=(int)(instance->cursor_active);
+    }
 
     test_truth(no_msg == 0);
     test_truth(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
@@ -4235,7 +4240,10 @@ static test_return_t replication_get_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc); ++host)
   {
     memcached_st *memc_clone= memcached_clone(NULL, memc);
-    memc_clone->hosts[host].port= 0;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(memc_clone, host);
+
+    instance->port= 0;
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -4294,7 +4302,9 @@ static test_return_t replication_mget_test(memcached_st *memc)
   for (uint32_t host= 0; host < memc_clone->number_of_hosts; host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
-    new_clone->hosts[host].port= 0;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(new_clone, host);
+    instance->port= 0;
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -4389,7 +4399,10 @@ static test_return_t replication_delete_test(memcached_st *memc)
   uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
   for (uint32_t x= 0; x < (repl + 1); ++x)
   {
-    memc_clone->hosts[hash].port= 0;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(memc_clone, x);
+
+    instance->port= 0;
     if (++hash == memc_clone->number_of_hosts)
       hash= 0;
   }
@@ -4435,7 +4448,12 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
   unsigned int x;
 
   for (x= 0; x < memcached_server_count(memc); x++)
-    ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) memc->hosts[x].write_buffer);
+  {
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(memc, x);
+
+    ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) instance->write_buffer);
+  }
 
   return ids;
 }
@@ -4443,7 +4461,7 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 static test_return_t post_udp_op_check(memcached_st *memc, uint16_t *expected_req_ids)
 {
   unsigned int x;
-  memcached_server_st *cur_server = memc->hosts;
+  memcached_server_st *cur_server = memcached_server_list(memc);
   uint16_t *cur_req_ids = get_udp_request_ids(memc);
 
   for (x= 0; x < memcached_server_count(memc); x++)
@@ -4475,16 +4493,24 @@ static test_return_t init_udp(memcached_st *memc)
   uint32_t num_hosts= memcached_server_count(memc);
   unsigned int x= 0;
   memcached_server_st servers[num_hosts];
-  memcpy(servers, memc->hosts, sizeof(memcached_server_st) * num_hosts);
+  memcpy(servers, memcached_server_list(memc), sizeof(memcached_server_st) * num_hosts);
   for (x= 0; x < num_hosts; x++)
-    memcached_server_free(&memc->hosts[x]);
+  {
+    memcached_server_instance_st *set_instance=
+      memcached_server_instance_fetch(memc, x);
+
+    memcached_server_free(set_instance);
+  }
 
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
   for (x= 0; x < num_hosts; x++)
   {
+    memcached_server_instance_st *set_instance=
+      memcached_server_instance_fetch(memc, x);
+
     test_truth(memcached_server_add_udp(memc, servers[x].hostname, servers[x].port) == MEMCACHED_SUCCESS);
-    test_truth(memc->hosts[x].write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
+    test_truth(set_instance->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
   }
 
   return TEST_SUCCESS;
