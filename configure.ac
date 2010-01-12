@@ -14,6 +14,21 @@ AC_CONFIG_MACRO_DIR([m4])
 
 PANDORA_CANONICAL_TARGET
 
+#shared library versioning
+MEMCACHED_LIBRARY_VERSION=4:0:0
+#                         | | |
+#                  +------+ | +---+
+#                  |        |     |
+#                 current:revision:age
+#                  |        |     |
+#                  |        |     +- increment if interfaces have been added
+#                  |        |        set to zero if interfaces have been removed or changed
+#                  |        +- increment if source code has changed
+#                  |           set to zero if current is incremented
+#                  +- increment if interfaces have been added, removed or changed
+AC_SUBST(MEMCACHED_LIBRARY_VERSION)
+
+
 HASHKIT_LIBRARY_VERSION=0:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
