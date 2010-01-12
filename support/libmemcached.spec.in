@@ -130,6 +130,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/util/pool.h
 %{_includedir}/libmemcached/visibility.h
 %{_includedir}/libmemcached/watchpoint.h
+%{_includedir}/libmemcached/memcached/protocol_binary.h
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedprotocol.so
