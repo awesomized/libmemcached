@@ -111,6 +111,12 @@ memcached_return_t memcached_version(memcached_st *ptr);
 LIBMEMCACHED_API
 void memcached_servers_reset(memcached_st *ptr);
 
+// Local Only Inline
+static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
+{
+  return &ptr->hosts[server_key];
+}
+
 /* Public API */
 
 LIBMEMCACHED_API

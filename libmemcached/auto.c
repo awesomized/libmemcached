@@ -21,7 +21,8 @@ static memcached_return_t memcached_auto(memcached_st *ptr,
   size_t send_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  unsigned int server_key;
+  uint32_t server_key;
+  memcached_server_instance_st *instance;
   bool no_reply= ptr->flags.no_reply;
 
   unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
@@ -31,6 +32,7 @@ static memcached_return_t memcached_auto(memcached_st *ptr,
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  instance= memcached_server_instance_fetch(ptr, server_key);
 
   send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                 "%s %s%.*s %" PRIu64 "%s\r\n", verb,
@@ -40,11 +42,11 @@ static memcached_return_t memcached_auto(memcached_st *ptr,
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
+  rc= memcached_do(instance, buffer, send_length, 1);
   if (no_reply || rc != MEMCACHED_SUCCESS)
     return rc;
 
-  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+  rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
   /*
     So why recheck responce? Because the protocol is brain dead :)
@@ -79,13 +81,15 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
                                            uint32_t expiration,
                                            uint64_t *value)
 {
-  unsigned int server_key;
+  uint32_t server_key;
+  memcached_server_instance_st *instance;
   bool no_reply= ptr->flags.no_reply;
 
   unlikely (ptr->hosts == NULL || memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  instance= memcached_server_instance_fetch(ptr, server_key);
 
   if (no_reply)
   {
@@ -106,17 +110,17 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.body.initial= htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  if ((memcached_do(&ptr->hosts[server_key], request.bytes,
+  if ((memcached_do(instance, request.bytes,
                     sizeof(request.bytes), 0)!=MEMCACHED_SUCCESS) ||
-      (memcached_io_write(&ptr->hosts[server_key], key, key_length, 1) == -1))
+      (memcached_io_write(instance, key, key_length, 1) == -1))
   {
-    memcached_io_reset(&ptr->hosts[server_key]);
+    memcached_io_reset(instance);
     return MEMCACHED_WRITE_FAILURE;
   }
 
   if (no_reply)
     return MEMCACHED_SUCCESS;
-  return memcached_response(&ptr->hosts[server_key], (char*)value, sizeof(*value), NULL);
+  return memcached_response(instance, (char*)value, sizeof(*value), NULL);
 }
 
 memcached_return_t memcached_increment(memcached_st *ptr,

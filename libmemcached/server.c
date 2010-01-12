@@ -136,6 +136,7 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
 memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, size_t key_length, memcached_return_t *error)
 {
   uint32_t server_key;
+  memcached_server_instance_st *instance;
 
   *error= memcached_validate_key_length(key_length,
                                         ptr->flags.binary_protocol);
@@ -155,8 +156,9 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
   }
 
   server_key= memcached_generate_hash(ptr, key, key_length);
+  instance= memcached_server_instance_fetch(ptr, server_key);
 
-  return memcached_server_clone(NULL, &ptr->hosts[server_key]);
+  return memcached_server_clone(NULL, instance);
 
 }
 

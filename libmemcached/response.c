@@ -1,22 +1,26 @@
-/*
-  Memcached library
-
-  memcached_response() is used to determine the return result
-  from an issued command.
+/* LibMemcached
+ * Copyright (C) 2006-2009 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: memcached_response() is used to determine the return result from an issued command.
+ *
 */
 
 #include "common.h"
 
-static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
-                                                  char *buffer, size_t buffer_length,
-                                                  memcached_result_st *result);
-static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
-                                                 char *buffer, size_t buffer_length,
-                                                 memcached_result_st *result);
+static memcached_return_t textual_read_one_response(memcached_server_instance_st *ptr,
+                                                    char *buffer, size_t buffer_length,
+                                                    memcached_result_st *result);
+static memcached_return_t binary_read_one_response(memcached_server_instance_st *ptr,
+                                                   char *buffer, size_t buffer_length,
+                                                   memcached_result_st *result);
 
-memcached_return_t memcached_read_one_response(memcached_server_st *ptr,
-                                             char *buffer, size_t buffer_length,
-                                             memcached_result_st *result)
+memcached_return_t memcached_read_one_response(memcached_server_instance_st *ptr,
+                                               char *buffer, size_t buffer_length,
+                                               memcached_result_st *result)
 {
   memcached_server_response_decrement(ptr);
 
@@ -33,14 +37,14 @@ memcached_return_t memcached_read_one_response(memcached_server_st *ptr,
            rc == MEMCACHED_PROTOCOL_ERROR ||
            rc == MEMCACHED_CLIENT_ERROR ||
            rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
-     memcached_io_reset(ptr);
+    memcached_io_reset(ptr);
 
   return rc;
 }
 
-memcached_return_t memcached_response(memcached_server_st *ptr, 
-                                    char *buffer, size_t buffer_length,
-                                    memcached_result_st *result)
+memcached_return_t memcached_response(memcached_server_instance_st *ptr, 
+                                      char *buffer, size_t buffer_length,
+                                      memcached_result_st *result)
 {
   /* We may have old commands in the buffer not set, first purge */
   if (ptr->root->flags.no_block)
@@ -50,12 +54,12 @@ memcached_return_t memcached_response(memcached_server_st *ptr,
    * The previous implementation purged all pending requests and just
    * returned the last one. Purge all pending messages to ensure backwards
    * compatibility. 
-   */
+ */
   if (ptr->root->flags.binary_protocol == false)
     while (memcached_server_response_count(ptr) > 1)
     {
       memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
-      
+
       unlikely (rc != MEMCACHED_END &&
                 rc != MEMCACHED_STORED &&
                 rc != MEMCACHED_SUCCESS &&
@@ -64,15 +68,15 @@ memcached_return_t memcached_response(memcached_server_st *ptr,
                 rc != MEMCACHED_NOTFOUND &&
                 rc != MEMCACHED_NOTSTORED && 
                 rc != MEMCACHED_DATA_EXISTS)
-	return rc;
+        return rc;
     }
 
   return memcached_read_one_response(ptr, buffer, buffer_length, result);
 }
 
-static memcached_return_t textual_value_fetch(memcached_server_st *ptr,
-                                            char *buffer,
-                                            memcached_result_st *result)
+static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
+                                              char *buffer,
+                                              memcached_result_st *result)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
   char *string_ptr;
@@ -184,7 +188,7 @@ static memcached_return_t textual_value_fetch(memcached_server_st *ptr,
     goto read_error;
   }
 
-/* This next bit blows the API, but this is internal....*/
+  /* This next bit blows the API, but this is internal....*/
   {
     char *char_ptr;
     char_ptr= memcached_string_value(&result->value);;
@@ -201,9 +205,9 @@ read_error:
   return MEMCACHED_PARTIAL_READ;
 }
 
-static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
-                                                  char *buffer, size_t buffer_length,
-                                                  memcached_result_st *result)
+static memcached_return_t textual_read_one_response(memcached_server_instance_st *ptr,
+                                                    char *buffer, size_t buffer_length,
+                                                    memcached_result_st *result)
 {
   memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length);
   if (rc != MEMCACHED_SUCCESS)
@@ -238,35 +242,35 @@ static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
         return MEMCACHED_STAT;
       }
       else if (buffer[1] == 'E') /* SERVER_ERROR */ 
-	{
-          char *rel_ptr;
-	  char *startptr= buffer + 13, *endptr= startptr;
+      {
+        char *rel_ptr;
+        char *startptr= buffer + 13, *endptr= startptr;
 
-	  while (*endptr != '\r' && *endptr != '\n') endptr++;
+        while (*endptr != '\r' && *endptr != '\n') endptr++;
 
-          /* 
-            Yes, we could make this "efficent" but to do that we would need
-            to maintain more state for the size of the buffer. Why waste
-            memory in the struct, which is important, for something that
-            rarely should happen?
-          */
-	  rel_ptr= (char *)ptr->root->call_realloc(ptr->root, 
-                                                   ptr->cached_server_error, 
-                                                   (size_t) (endptr - startptr + 1));
+        /* 
+          Yes, we could make this "efficent" but to do that we would need
+          to maintain more state for the size of the buffer. Why waste
+          memory in the struct, which is important, for something that
+          rarely should happen?
+        */
+        rel_ptr= (char *)ptr->root->call_realloc(ptr->root, 
+                                                 ptr->cached_server_error, 
+                                                 (size_t) (endptr - startptr + 1));
 
-          if (rel_ptr == NULL)
-          {
-            /* If we happened to have some memory, we just null it since we don't know the size */
-            if (ptr->cached_server_error)
-              ptr->cached_server_error[0]= 0;
-            return MEMCACHED_SERVER_ERROR;
-          }
-	  ptr->cached_server_error= rel_ptr;
+        if (rel_ptr == NULL)
+        {
+          /* If we happened to have some memory, we just null it since we don't know the size */
+          if (ptr->cached_server_error)
+            ptr->cached_server_error[0]= 0;
+          return MEMCACHED_SERVER_ERROR;
+        }
+        ptr->cached_server_error= rel_ptr;
 
-	  memcpy(ptr->cached_server_error, startptr, (size_t) (endptr - startptr));
-	  ptr->cached_server_error[endptr - startptr]= 0;
-	  return MEMCACHED_SERVER_ERROR;
-	}
+        memcpy(ptr->cached_server_error, startptr, (size_t) (endptr - startptr));
+        ptr->cached_server_error[endptr - startptr]= 0;
+        return MEMCACHED_SERVER_ERROR;
+      }
       else if (buffer[1] == 'T')
         return MEMCACHED_STORED;
       else
@@ -299,8 +303,8 @@ static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
         return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
   case 'I': /* CLIENT ERROR */
-      /* We add back in one because we will need to search for END */
-      memcached_server_response_increment(ptr);
+    /* We add back in one because we will need to search for END */
+    memcached_server_response_increment(ptr);
     return MEMCACHED_ITEM;
   case 'C': /* CLIENT ERROR */
     return MEMCACHED_CLIENT_ERROR;
@@ -318,12 +322,12 @@ static memcached_return_t textual_read_one_response(memcached_server_st *ptr,
   /* NOTREACHED */
 }
 
-static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
-                                                 char *buffer, size_t buffer_length,
-                                                 memcached_result_st *result)
+static memcached_return_t binary_read_one_response(memcached_server_instance_st *ptr,
+                                                   char *buffer, size_t buffer_length,
+                                                   memcached_result_st *result)
 {
   protocol_binary_response_header header;
-   
+
   unlikely (memcached_safe_read(ptr, &header.bytes, 
                                 sizeof(header.bytes)) != MEMCACHED_SUCCESS)
     return MEMCACHED_UNKNOWN_READ_FAILURE;
@@ -332,8 +336,8 @@ static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
     return MEMCACHED_PROTOCOL_ERROR;
 
   /*
-  ** Convert the header to host local endian!
-  */
+   ** Convert the header to host local endian!
+ */
   header.response.keylen= ntohs(header.response.keylen);
   header.response.status= ntohs(header.response.status);
   header.response.bodylen= ntohl(header.response.bodylen);
@@ -450,7 +454,7 @@ static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
   } 
   else if (header.response.bodylen) 
   {
-     /* What should I do with the error message??? just discard it for now */
+    /* What should I do with the error message??? just discard it for now */
     char hole[SMALL_STRING_LEN];
     while (bodylen > 0) 
     {
@@ -463,7 +467,7 @@ static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
     /* This might be an error from one of the quiet commands.. if
      * so, just throw it away and get the next one. What about creating
      * a callback to the user with the error information?
-     */
+   */
     switch (header.response.opcode)
     {
     case PROTOCOL_BINARY_CMD_SETQ:
@@ -503,6 +507,6 @@ static memcached_return_t binary_read_one_response(memcached_server_st *ptr,
       rc= MEMCACHED_PROTOCOL_ERROR;
       break;
     }
-    
+
   return rc;
 }

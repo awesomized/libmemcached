@@ -69,7 +69,8 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   size_t write_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  unsigned int server_key;
+  uint32_t server_key;
+  memcached_server_instance_st *instance;
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
@@ -92,6 +93,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  instance= memcached_server_instance_fetch(ptr, server_key);
 
   if (cas)
   {
@@ -135,8 +137,8 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     size_t cmd_size= write_length + value_length + 2;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
       return MEMCACHED_WRITE_FAILURE;
-    if (cmd_size + ptr->hosts[server_key].write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      memcached_io_write(&ptr->hosts[server_key], NULL, 0, 1);
+    if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+      memcached_io_write(instance, NULL, 0, 1);
   }
 
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
@@ -146,12 +148,12 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   /* Send command header */
-  rc=  memcached_do(&ptr->hosts[server_key], buffer, write_length, 0);
+  rc=  memcached_do(instance, buffer, write_length, 0);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
   /* Send command body */
-  if (memcached_io_write(&ptr->hosts[server_key], value, value_length, 0) == -1)
+  if (memcached_io_write(instance, value, value_length, 0) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -166,7 +168,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     to_write= 1;
   }
 
-  if (memcached_io_write(&ptr->hosts[server_key], "\r\n", 2, to_write) == -1)
+  if (memcached_io_write(instance, "\r\n", 2, to_write) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -178,7 +180,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   if (to_write == 0)
     return MEMCACHED_BUFFERED;
 
-  rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+  rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
   if (rc == MEMCACHED_STORED)
     return MEMCACHED_SUCCESS;
@@ -186,7 +188,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     return rc;
 
 error:
-  memcached_io_reset(&ptr->hosts[server_key]);
+  memcached_io_reset(instance);
 
   return rc;
 }
@@ -443,7 +445,10 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   size_t send_length= sizeof(request.bytes);
   uint32_t server_key= memcached_generate_hash(ptr, master_key,
                                                master_key_length);
-  memcached_server_st *server= &ptr->hosts[server_key];
+
+  memcached_server_instance_st *server=
+    memcached_server_instance_fetch(ptr, server_key);
+
   bool noreply= server->root->flags.no_reply;
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
@@ -472,9 +477,13 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     size_t cmd_size= send_length + key_length + value_length;
 
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+    {
       return MEMCACHED_WRITE_FAILURE;
+    }
     if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      memcached_io_write(server,NULL,0, 1);
+    {
+      memcached_io_write(server, NULL, 0, 1);
+    }
   }
 
   /* write the header */
@@ -492,26 +501,37 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
     for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
     {
+      memcached_server_instance_st *instance;
+
       ++server_key;
       if (server_key == memcached_server_count(ptr))
         server_key= 0;
 
-      memcached_server_st *srv= &ptr->hosts[server_key];
-      if ((memcached_do(srv, (const char*)request.bytes,
+      instance= memcached_server_instance_fetch(ptr, server_key);
+
+      if ((memcached_do(instance, (const char*)request.bytes,
                         send_length, 0) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(srv, key, key_length, 0) == -1) ||
-          (memcached_io_write(srv, value, value_length, (char) flush) == -1))
-        memcached_io_reset(srv);
+          (memcached_io_write(instance, key, key_length, 0) == -1) ||
+          (memcached_io_write(instance, value, value_length, (char) flush) == -1))
+      {
+        memcached_io_reset(instance);
+      }
       else
-        memcached_server_response_decrement(srv);
+      {
+        memcached_server_response_decrement(instance);
+      }
     }
   }
 
   if (flush == 0)
+  {
     return MEMCACHED_BUFFERED;
+  }
 
   if (noreply)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   return memcached_response(server, NULL, 0, NULL);
 }

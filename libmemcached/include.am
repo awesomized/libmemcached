@@ -9,13 +9,14 @@ EXTRA_DIST+= \
 
 noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
-		 libmemcached/libmemcached_probes.h \
-		 libmemcached/io.h \
-		 libmemcached/internal.h \
 		 libmemcached/common.h \
-		 libmemcached/protocol/common.h \
+		 libmemcached/internal.h \
+		 libmemcached/io.h \
+		 libmemcached/libmemcached_probes.h \
 		 libmemcached/protocol/ascii_handler.h \
-		 libmemcached/protocol/binary_handler.h
+		 libmemcached/protocol/binary_handler.h \
+		 libmemcached/protocol/common.h \
+		 libmemcached/response.h
 
 nobase_include_HEADERS+= \
 			 libmemcached/analyze.h \

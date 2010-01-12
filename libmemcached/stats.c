@@ -226,10 +226,9 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
   return ret;
 }
 
-static memcached_return_t binary_stats_fetch(memcached_st *ptr,
-                                             memcached_stat_st *memc_stat,
+static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
                                              char *args,
-                                             unsigned int server_key)
+                                             memcached_server_instance_st *instance)
 {
   memcached_return_t rc;
 
@@ -250,35 +249,35 @@ static memcached_return_t binary_stats_fetch(memcached_st *ptr,
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl((uint32_t) len);
 
-    if ((memcached_do(&ptr->hosts[server_key], request.bytes,
+    if ((memcached_do(instance, request.bytes,
                       sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
-        (memcached_io_write(&ptr->hosts[server_key], args, len, 1) == -1))
+        (memcached_io_write(instance, args, len, 1) == -1))
     {
-      memcached_io_reset(&ptr->hosts[server_key]);
+      memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;
     }
   }
   else
   {
-    if (memcached_do(&ptr->hosts[server_key], request.bytes,
+    if (memcached_do(instance, request.bytes,
                      sizeof(request.bytes), 1) != MEMCACHED_SUCCESS)
     {
-      memcached_io_reset(&ptr->hosts[server_key]);
+      memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;
     }
   }
 
-  memcached_server_response_decrement(&ptr->hosts[server_key]);
+  memcached_server_response_decrement(instance);
   do
   {
-    rc= memcached_response(&ptr->hosts[server_key], buffer,
+    rc= memcached_response(instance, buffer,
                            sizeof(buffer), NULL);
     if (rc == MEMCACHED_END)
       break;
 
     unlikely (rc != MEMCACHED_SUCCESS)
     {
-      memcached_io_reset(&ptr->hosts[server_key]);
+      memcached_io_reset(instance);
       return rc;
     }
 
@@ -292,15 +291,14 @@ static memcached_return_t binary_stats_fetch(memcached_st *ptr,
   /* shit... memcached_response will decrement the counter, so I need to
    ** reset it.. todo: look at this and try to find a better solution.
  */
-  ptr->hosts[server_key].cursor_active= 0;
+  instance->cursor_active= 0;
 
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t ascii_stats_fetch(memcached_st *ptr,
-                                            memcached_stat_st *memc_stat,
+static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             char *args,
-                                            unsigned int server_key)
+                                            memcached_server_instance_st *instance)
 {
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -316,13 +314,13 @@ static memcached_return_t ascii_stats_fetch(memcached_st *ptr,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
+  rc= memcached_do(instance, buffer, send_length, 1);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
   while (1)
   {
-    rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
     if (rc == MEMCACHED_STAT)
     {
@@ -359,7 +357,7 @@ error:
 
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error)
 {
-  unsigned int x;
+  uint32_t x;
   memcached_return_t rc;
   memcached_stat_st *stats;
 
@@ -383,11 +381,18 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t temp_return;
+    memcached_server_instance_st *instance;
+
+    instance= memcached_server_instance_fetch(ptr, x);
 
     if (ptr->flags.binary_protocol)
-      temp_return= binary_stats_fetch(ptr, stats + x, args, x);
+    {
+      temp_return= binary_stats_fetch(stats + x, args, instance);
+    }
     else
-      temp_return= ascii_stats_fetch(ptr, stats + x, args, x);
+    {
+      temp_return= ascii_stats_fetch(stats + x, args, instance);
+    }
 
     if (temp_return != MEMCACHED_SUCCESS)
       rc= MEMCACHED_SOME_ERRORS;
@@ -403,16 +408,23 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   memcached_return_t rc;
   memcached_st memc;
   memcached_st *memc_ptr;
+  memcached_server_instance_st *instance;
 
   memc_ptr= memcached_create(&memc);
   WATCHPOINT_ASSERT(memc_ptr);
 
   memcached_server_add(&memc, hostname, port);
 
+  instance= memcached_server_instance_fetch(memc_ptr, 0);
+
   if (memc.flags.binary_protocol)
-    rc= binary_stats_fetch(&memc, memc_stat, args, 0);
+  {
+    rc= binary_stats_fetch(memc_stat, args, instance);
+  }
   else
-    rc= ascii_stats_fetch(&memc, memc_stat, args, 0);
+  {
+    rc= ascii_stats_fetch(memc_stat, args, instance);
+  }
 
   memcached_free(&memc);
 
