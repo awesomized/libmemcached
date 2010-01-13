@@ -13,7 +13,9 @@
 
 #include <sys/types.h>
 #include <stdint.h>
-#include <stdbool.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 #include <time.h>
 
 #ifdef __cplusplus

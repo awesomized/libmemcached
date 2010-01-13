@@ -16,8 +16,11 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdint.h>
+
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 
 typedef struct world_st world_st;
 typedef struct collection_st collection_st;

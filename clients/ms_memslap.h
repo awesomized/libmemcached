@@ -19,7 +19,9 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <pthread.h>
-#include <stdbool.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 #include <math.h>
 
 #include "ms_stats.h"
