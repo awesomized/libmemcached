@@ -15,7 +15,7 @@ AC_DEFUN([_PANDORA_SEARCH_LIBDL],[
   AC_CHECK_LIB(dl,dlopen)
   AC_CHECK_FUNCS(dlopen)
   LIBDL_LIBS="$LIBS"
-  LIBS="$my_save_LIBS"
+  LIBS="${save_LIBS}"
   AC_SUBST(LIBDL_LIBS)
 
   AM_CONDITIONAL(HAVE_LIBDL, [test "x${ac_cv_func_dlopen}" = "xyes"])
