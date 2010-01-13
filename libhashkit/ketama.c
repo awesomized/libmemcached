@@ -6,6 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
+#include <math.h>
 #include "common.h"
 
 static uint32_t ketama_server_hash(const char *key, unsigned int key_length, int alignment)
