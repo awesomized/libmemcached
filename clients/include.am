@@ -3,6 +3,7 @@
 # All paths should be given relative to the root
 
 CLIENTS_LDADDS = \
+	$(LIBM) \
 	clients/libutilities.la \
 	libmemcached/libmemcached.la
 
@@ -69,7 +70,7 @@ clients_memslap_SOURCES= \
 		clients/ms_stats.c \
 		clients/ms_task.c \
 		clients/ms_thread.c
-clients_memslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS) $(LIBM)
+clients_memslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS)
 
 clients_memcapable_SOURCES= clients/memcapable.c
 if BUILD_BYTEORDER
