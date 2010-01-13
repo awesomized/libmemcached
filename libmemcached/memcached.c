@@ -22,6 +22,8 @@ memcached_st *memcached_create(memcached_st *ptr)
   }
 
   ptr->options.is_initialized= true;
+  ptr->options.is_purging= false;
+  ptr->options.is_processing_input= false;
 
   memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
 

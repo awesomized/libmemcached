@@ -47,8 +47,10 @@ memcached_return_t memcached_response(memcached_server_instance_st *ptr,
                                       memcached_result_st *result)
 {
   /* We may have old commands in the buffer not set, first purge */
-  if (ptr->root->flags.no_block)
+  if ((ptr->root->flags.no_block) && (ptr->root->options.is_processing_input == false))
+  {
     (void)memcached_io_write(ptr, NULL, 0, 1);
+  }
 
   /*
    * The previous implementation purged all pending requests and just

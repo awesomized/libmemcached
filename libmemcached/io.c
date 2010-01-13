@@ -127,10 +127,15 @@ static bool process_input_buffer(memcached_server_instance_st *ptr)
    */
     memcached_callback_st cb= *ptr->root->callbacks;
 
+    ptr->root->options.is_processing_input= true;
+
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     memcached_return_t error;
     error= memcached_response(ptr, buffer, sizeof(buffer),
                               &ptr->root->result);
+
+    ptr->root->options.is_processing_input = false;
+
     if (error == MEMCACHED_SUCCESS)
     {
       for (unsigned int x= 0; x < cb.number_of_callback; x++)

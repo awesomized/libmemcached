@@ -49,6 +49,7 @@ struct memcached_st {
     bool is_allocated:1;
     bool is_initialized:1;
     bool is_purging:1;
+    bool is_processing_input:1;
   } options;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
@@ -63,6 +64,9 @@ struct memcached_st {
   uint32_t io_key_prefetch;
   uint32_t number_of_hosts;
   int cached_errno;
+  /**
+    @note these are static and should not change without a call to behavior.
+  */
   struct {
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
