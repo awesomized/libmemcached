@@ -10,7 +10,7 @@
 memcached_server_st *memcached_servers_parse(const char *server_strings)
 {
   char *string;
-  uint32_t port;
+  in_port_t port;
   uint32_t weight;
   const char *begin_ptr;
   const char *end_ptr;
@@ -52,7 +52,7 @@ memcached_server_st *memcached_servers_parse(const char *server_strings)
 
       ptr++;
 
-      port= (uint32_t) strtoul(ptr, (char **)NULL, 10);
+      port= (in_port_t) strtoul(ptr, (char **)NULL, 10);
 
       ptr2= index(ptr, ' ');
       if (! ptr2)

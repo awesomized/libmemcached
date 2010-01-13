@@ -299,7 +299,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
 {
   uint32_t x;
   uint32_t count;
-  memcached_server_instance_st *new_host_list;
+  memcached_server_st *new_host_list;
 
   if (! list)
     return MEMCACHED_SUCCESS;
