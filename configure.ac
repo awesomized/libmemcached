@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # libmemcached
 # Copyright (C) 2008 Brian Aker, Monty Taylor
 # All rights reserved.
