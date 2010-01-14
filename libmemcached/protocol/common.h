@@ -3,7 +3,9 @@
 #define LIBMEMCACHED_PROTOCOL_COMMON_H
 
 #include "config.h"
-#include <stdbool.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 #include <assert.h>
 #include <netinet/in.h>
 

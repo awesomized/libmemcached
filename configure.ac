@@ -36,7 +36,7 @@ AC_SUBST(HASHKIT_LIBRARY_VERSION)
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-AC_CHECK_FUNCS_ONCE([getline])
+AC_CHECK_FUNCS([getline])
 
 PANDORA_HAVE_LIBEVENT
 PANDORA_REQUIRE_PTHREAD
@@ -56,13 +56,13 @@ PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
 
 AC_CHECK_HEADERS([atomic.h])
-AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],
+AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
       AC_CHECK_FUNCS(atomic_add_64)
       AC_CHECK_FUNCS(atomic_add_32)
-      AS_IF([test "x$ac_cv_func_atomic_add_64" = "xyes" -a "x$ac_cv_func_atomic_add_32" = "xyes"],
+      AS_IF([test "x$ac_cv_func_atomic_add_64" = "xyes" -a "x$ac_cv_func_atomic_add_32" = "xyes"],[
             AC_DEFINE([USE_ATOMIC_H],
 	              [1],
-                      [Define to true if you want to use functions from atomic.h])))
+                      [Define to true if you want to use functions from atomic.h])])])
 
 AC_CONFIG_FILES([
   Makefile

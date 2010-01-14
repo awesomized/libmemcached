@@ -15,7 +15,9 @@
 #define MEMCACHED_PROTOCOL_H
 
 #include <sys/types.h>
-#include <stdbool.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
 
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/visibility.h>
