@@ -125,28 +125,28 @@ MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem:
+test-mem: tests/testapp
 	$(MEM_COMMAND)
 
-test-hash:
+test-hash: tests/testhashkit
 	$(HASH_COMMAND)
 
-gdb-mem:
+gdb-mem: tests/testapp
 	$(DEBUG_COMMAND)  $(MEM_COMMAND)
 
-gdb-hash:
+gdb-hash: tests/testhashkit
 	$(DEBUG_COMMAND) $(HASH_COMMAND)
 
-gdb-memslap:
+gdb-memslap: clients/memslap
 	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
 
-valgrind-mem:
+valgrind-mem: tests/testapp
 	$(VALGRIND_COMMAND)  $(MEM_COMMAND)
 
-valgrind-hash:
+valgrind-hash: tests/testhashkit
 	$(VALGRIND_COMMAND) $(HASH_COMMAND)
 
-valgrind-memslap:
+valgrind-memslap: clients/memslap
 	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)
 
 PHONY += valgrind
@@ -178,5 +178,5 @@ helgrind-slap:
 
 test-no-outputdiff: test
 
-hudson-valgrind:
-	$(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --log-file=tests/valgrind.out tests/testapp
+hudson-valgrind: tests/testapp
+	$(VALGRIND_COMMAND) --log-file=tests/valgrind.out $(MEM_COMMAND)
