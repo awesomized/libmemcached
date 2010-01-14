@@ -31,12 +31,23 @@ static int opt_verbose= 0;
 
 int main(int argc, char *argv[])
 {
+  unsigned long value;
   options_parse(argc, argv);
 
   if (argc != 2)
     return 1;
 
-  printf("%s\n", memcached_strerror(NULL, atoi(argv[1])));
+  value= strtol(argv[1], (char **) NULL, 10);
+
+  if (value >= MEMCACHED_SUCCESS && value < MEMCACHED_MAXIMUM_RETURN)
+  {
+    printf("%s\n", memcached_strerror(NULL, (memcached_return_t)value));
+  }
+  else
+  {
+    fprintf(stderr, "Unknown Error Code\n");
+    return 1;
+  }
 
   return 0;
 }
