@@ -85,17 +85,17 @@ in_port_t test_ports[TEST_PORT_COUNT];
 static memcached_return_t  server_display_function(memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
 {
   /* Do Nothing */
-  uint32_t bigger= *((uint32_t *)(context));
+  size_t bigger= *((size_t *)(context));
   assert(bigger <= server->port);
-  *((uint32_t *)(context))= server->port;
+  *((size_t *)(context))= server->port;
 
   return MEMCACHED_SUCCESS;
 }
 
 static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused)))
 {
-  uint32_t x;
-  uint32_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
+  size_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
+
   memcached_return_t rc;
   memcached_server_fn callbacks[1];
   memcached_st *local_memc;
@@ -104,7 +104,7 @@ static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused))
   test_truth(local_memc);
   memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1);
 
-  for (x= 0; x < TEST_PORT_COUNT; x++)
+  for (size_t x= 0; x < TEST_PORT_COUNT; x++)
   {
     test_ports[x]= (in_port_t)random() % 64000;
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
@@ -124,7 +124,7 @@ static test_return_t  server_sort_test(memcached_st *ptr __attribute__((unused))
 
 static test_return_t  server_sort2_test(memcached_st *ptr __attribute__((unused)))
 {
-  uint32_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
+  size_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
   memcached_return_t rc;
   memcached_server_fn callbacks[1];
   memcached_st *local_memc;
@@ -171,9 +171,8 @@ static memcached_return_t server_display_unsort_function(memcached_st *ptr __att
 
 static test_return_t  server_unsort_test(memcached_st *ptr __attribute__((unused)))
 {
-  uint32_t x;
-  uint32_t counter= 0; /* Prime the value for the test_truth in server_display_function */
-  uint32_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
+  size_t counter= 0; /* Prime the value for the test_truth in server_display_function */
+  size_t bigger= 0; /* Prime the value for the test_truth in server_display_function */
   memcached_return_t rc;
   memcached_server_fn callbacks[1];
   memcached_st *local_memc;
@@ -181,7 +180,7 @@ static test_return_t  server_unsort_test(memcached_st *ptr __attribute__((unused
   local_memc= memcached_create(NULL);
   test_truth(local_memc);
 
-  for (x= 0; x < TEST_PORT_COUNT; x++)
+  for (size_t x= 0; x < TEST_PORT_COUNT; x++)
   {
     test_ports[x]= (in_port_t)(random() % 64000);
     rc= memcached_server_add_with_weight(local_memc, "localhost", test_ports[x], 0);
@@ -3301,7 +3300,7 @@ static test_return_t  mget_read_result(memcached_st *memc)
 static test_return_t  mget_read_function(memcached_st *memc)
 {
   memcached_return_t rc;
-  unsigned int counter;
+  size_t counter;
   memcached_execute_fn callbacks[1];
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
@@ -3328,13 +3327,12 @@ static test_return_t  delete_generate(memcached_st *memc)
 
 static test_return_t  delete_buffer_generate(memcached_st *memc)
 {
-  size_t latch= 0;
-  unsigned int x;
+  uint64_t latch= 0;
 
   latch= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, latch);
 
-  for (x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; x++)
   {
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
@@ -4067,7 +4065,7 @@ static memcached_return_t callback_dump_counter(memcached_st *ptr __attribute__(
                                               size_t key_length __attribute__((unused)),
                                               void *context)
 {
-  uint32_t *counter= (uint32_t *)context;
+  size_t *counter= (size_t *)context;
 
   *counter= *counter + 1;
 
@@ -4077,7 +4075,7 @@ static memcached_return_t callback_dump_counter(memcached_st *ptr __attribute__(
 static test_return_t dump_test(memcached_st *memc)
 {
   memcached_return_t rc;
-  uint32_t counter= 0;
+  size_t counter= 0;
   memcached_dump_fn callbacks[1];
   test_return_t main_rc;
 
@@ -5174,10 +5172,11 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   char **keys= calloc(max_keys, sizeof(char*));
   size_t *key_length=calloc(max_keys, sizeof(size_t));
 
-  for (int x= 0; x < (int)max_keys; ++x)
+  for (size_t x= 0; x < max_keys; ++x)
   {
      char k[251];
-     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+
+     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
      keys[x]= strdup(k);
      test_truth(keys[x] != NULL);
   }
@@ -5328,10 +5327,11 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   char **keys= calloc(max_keys, sizeof(char*));
   size_t *key_length= calloc(max_keys, sizeof(size_t));
 
-  for (uint64_t x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < max_keys; ++x)
   {
     char k[251];
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%"PRIu64, x);
+
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
     keys[x]= strdup(k);
     test_truth(keys[x] != NULL);
     rc= memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0);
@@ -5359,11 +5359,11 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   rc= memcached_mget(memc, (const char* const *)keys, key_length, max_keys);
   test_truth(rc == MEMCACHED_SUCCESS);
 
-  unsigned int counter= 0;
+  size_t counter= 0;
   memcached_execute_fn callbacks[1]= { [0]= &callback_counter };
   rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
   /* Verify that we received all of the key/value pairs */
-  test_truth(counter == (unsigned int)max_keys);
+  test_truth(counter == max_keys);
 
   memcached_quit(memc);
   /*
@@ -5631,7 +5631,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   }
 
   /* Try to get all of them with a large multiget */
-  unsigned int counter= 0;
+  size_t counter= 0;
   memcached_execute_function callbacks[1]= { [0]= &callback_counter };
   rc= memcached_mget_execute(memc, (const char**)keys, key_length,
                              (size_t)max_keys, callbacks, &counter, 1);
@@ -5658,7 +5658,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   assert(rc == MEMCACHED_END);
 
   /* Verify that we got all of the items */
-  assert(counter == (unsigned int)max_keys);
+  assert(counter == max_keys);
 
   /* Release all allocated resources */
   for (size_t x= 0; x < max_keys; ++x)
