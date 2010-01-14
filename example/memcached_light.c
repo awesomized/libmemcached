@@ -285,10 +285,12 @@ int main(int argc, char **argv)
     uint32_t pid;
 
     pid_file= fopen(global_options.pid_file, "w+");
-    perror(strerror(errno));
 
     if (pid_file == NULL)
+    {
+      perror(strerror(errno));
       abort();
+    }
 
     pid= (uint32_t)getpid();
     fprintf(pid_file, "%u\n", pid);

@@ -507,8 +507,11 @@ commands together as “mulit-get” to the server.
 
 =head1 Configuration file
 
-This section describes the format of the configuration file. Below is a
-sample configuration file:
+This section describes the format of the configuration file.  By default
+when no configuration file is specified memslap reads the default
+one located at ~/.memslap.cnf.
+
+Below is a sample configuration file:
 
  ***************************************************************************
  #comments should start with '#'

@@ -119,6 +119,8 @@ clients:
 	cat tests/Xumemc.pid | xargs kill
 	rm tests/Xumemc.pid
 
+MEMSLAP_COMMAND= clients/memslap $(COLLECTION) $(SUITE)
+
 MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
@@ -135,12 +137,17 @@ gdb-mem:
 gdb-hash:
 	$(DEBUG_COMMAND) $(HASH_COMMAND)
 
+gdb-memslap:
+	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
+
 valgrind-mem:
 	$(VALGRIND_COMMAND)  $(MEM_COMMAND)
 
 valgrind-hash:
 	$(VALGRIND_COMMAND) $(HASH_COMMAND)
 
+valgrind-memslap:
+	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)
 
 PHONY += valgrind
 valgrind: tests/testapp tests/testhashkit valgrind-mem valgrind-hash 

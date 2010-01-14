@@ -417,7 +417,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_CONCURRENCY:       /* --concurrency or -c */
-      ms_setting.nconns= atoi(optarg);
+      ms_setting.nconns= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.nconns <= 0)
       {
         fprintf(stderr, "Concurrency must be greater than 0.:-)\n");
@@ -426,7 +426,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_EXECUTE_NUMBER:        /* --execute_number or -x */
-      ms_setting.exec_num= atoll(optarg);
+      ms_setting.exec_num= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.exec_num <= 0)
       {
         fprintf(stderr, "Execute number must be greater than 0.:-)\n");
@@ -435,7 +435,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_THREAD_NUMBER:     /* --threads or -T */
-      ms_setting.nthreads= atoi(optarg);
+      ms_setting.nthreads= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.nthreads <= 0)
       {
         fprintf(stderr, "Threads number must be greater than 0.:-)\n");
@@ -444,7 +444,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_FIXED_LTH:         /* --fixed_size or -X */
-      ms_setting.fixed_value_size= (size_t)atoi(optarg);
+      ms_setting.fixed_value_size= (size_t)strtoull(optarg, (char **) NULL, 10);
       if ((ms_setting.fixed_value_size <= 0)
           || (ms_setting.fixed_value_size > MAX_VALUE_SIZE))
       {
@@ -465,7 +465,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_GETS_DIVISION:         /* --division or -d */
-      ms_setting.mult_key_num= atoi(optarg);
+      ms_setting.mult_key_num= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.mult_key_num <= 0)
       {
         fprintf(stderr, "Multi-get key number must be greater than 0.:-)\n");
@@ -551,7 +551,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_SOCK_PER_CONN:         /* --conn_sock or -n */
-      ms_setting.sock_per_conn= atoi(optarg);
+      ms_setting.sock_per_conn= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.sock_per_conn <= 0)
       {
         fprintf(stderr, "Number of socks of each concurrency "
@@ -588,7 +588,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_REP_WRITE_SRV:         /* --rep_write or -p */
-      ms_setting.rep_write_srv= atoi(optarg);
+      ms_setting.rep_write_srv= (int)strtol(optarg, (char **) NULL, 10);
       if (ms_setting.rep_write_srv <= 0)
       {
         fprintf(stderr,
@@ -781,8 +781,8 @@ static void ms_monitor_slap_mode()
       second++;
 
       if ((ms_setting.stat_freq > 0) && (second % ms_setting.stat_freq == 0)
-          && ((int32_t)ms_stats.active_conns >= ms_setting.nconns)
-          && (ms_stats.active_conns <= (uint32_t)INT_MAX))
+          && (ms_stats.active_conns >= ms_setting.nconns)
+          && (ms_stats.active_conns <= INT_MAX))
       {
         ms_print_statistics(second);
       }

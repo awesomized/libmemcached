@@ -69,7 +69,7 @@ typedef struct statistic
 /* global status statistic structure */
 typedef struct stats
 {
-  volatile uint32_t active_conns;   /* active connections */
+  volatile int32_t active_conns;   /* active connections */
   size_t bytes_read;              /* read bytes */
   size_t bytes_written;           /* written bytes */
   size_t obj_bytes;               /* object bytes */

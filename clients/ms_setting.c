@@ -13,7 +13,14 @@
 
 #include <ctype.h>
 #include <inttypes.h>
+#include <limits.h>
+#include <pwd.h>
 #include <strings.h>
+#include <sys/types.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+
 
 #include "ms_setting.h"
 #include "ms_conn.h"
@@ -22,6 +29,8 @@
 #define ADDR_ALIGN(addr)    ((addr + 15) & ~(16 - 1))      /* 16 bytes aligned */
 #define RAND_CHAR_SIZE             (10 * 1024 * 1024)      /* 10M character table */
 #define RESERVED_RAND_CHAR_SIZE    (2 * 1024 * 1024)       /* reserved 2M to avoid pointer sloping over */
+
+#define DEFAULT_CONFIG_NAME ".memslap.cnf"
 
 #define DEFAULT_THREADS_NUM        1                       /* default start one thread */
 #define DEFAULT_CONNS_NUM          16                      /* default each thread with 16 connections */
@@ -327,12 +336,30 @@ static int ms_read_is_data(char *line, ssize_t nread)
  */
 static void ms_no_config_file()
 {
-  FILE *fd= fopen("config", "w+");
+  char userpath[PATH_MAX];
+  struct passwd *usr= NULL;
+  FILE *fd;
 
+  usr= getpwuid(getuid());
+
+  snprintf(userpath, PATH_MAX, "%s/%s", usr->pw_dir, DEFAULT_CONFIG_NAME);
+
+  if (access (userpath, F_OK | R_OK) == 0)
+    goto exit;
+
+  fd= fopen(userpath, "w+");
+
+  if (fd == NULL)
+  {
+    fprintf(stderr, "Could not create default configure file %s\n", userpath);
+    perror(strerror(errno));
+    exit(1);
+  }
   fprintf(fd, "%s", DEFAULT_CONGIF_STR);
   fclose(fd);
 
-  ms_setting.cfg_file= strdup("config");
+exit:
+  ms_setting.cfg_file= strdup(userpath);
 } /* ms_no_config_file */
 
 
@@ -355,13 +382,11 @@ static void ms_parse_cfg_file(char *cfg_file)
   int end_of_file= 0;
   ms_key_distr_t *key_distr= NULL;
   ms_value_distr_t *val_distr= NULL;
-  bool no_cfg= false;
 
   if (cfg_file == NULL)
   {
     ms_no_config_file();
     cfg_file= ms_setting.cfg_file;
-    no_cfg= true;
   }
 
   /*read key value configure file*/
@@ -376,6 +401,7 @@ static void ms_parse_cfg_file(char *cfg_file)
     if ((((nread= getline(&line, &read_len, f)) == 1)
          || ! ms_read_is_data(line, nread)) && (nread != EOF)) /* bypass blank line */
       continue;
+
     if (nread == EOF)
     {
       fprintf(stderr, "Bad configuration file, no configuration find.\n");
@@ -528,13 +554,10 @@ static void ms_parse_cfg_file(char *cfg_file)
 
   fclose(f);
 
-  if (no_cfg)
-  {
-    remove(ms_setting.cfg_file);
-  }
-
   if (line != NULL)
+  {
     free(line);
+  }
 } /* ms_parse_cfg_file */
 
 
@@ -927,9 +950,9 @@ void ms_setting_init_pre()
 static void ms_setting_slapmode_init_post()
 {
   ms_setting.total_key_rng_cnt= KEY_RANGE_COUNT_INIT;
-  ms_setting.key_distr= (ms_key_distr_t *)malloc(
-    (size_t)ms_setting.total_key_rng_cnt
-    * sizeof(ms_key_distr_t));
+  ms_setting.key_distr= 
+    (ms_key_distr_t *)malloc((size_t)ms_setting.total_key_rng_cnt * sizeof(ms_key_distr_t));
+
   if (ms_setting.key_distr == NULL)
   {
     fprintf(stderr, "Can't allocate key distribution structure.\n");
@@ -937,10 +960,10 @@ static void ms_setting_slapmode_init_post()
   }
 
   ms_setting.total_val_rng_cnt= VALUE_RANGE_COUNT_INIT;
-  ms_setting.value_distr= (ms_value_distr_t *)malloc(
-    (size_t)ms_setting.total_val_rng_cnt
-    * sizeof(
-      ms_value_distr_t));
+
+  ms_setting.value_distr= 
+    (ms_value_distr_t *)malloc((size_t)ms_setting.total_val_rng_cnt * sizeof( ms_value_distr_t));
+
   if (ms_setting.value_distr == NULL)
   {
     fprintf(stderr, "Can't allocate value distribution structure.\n");

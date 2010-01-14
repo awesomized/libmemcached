@@ -1,5 +1,7 @@
 0.38
 
+ * memslap now creates a configuration file at ~/.memslap.cnf
+
  * memcached_purge() now calls any callbacks registered during get
    execution.
 
