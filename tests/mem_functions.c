@@ -3130,11 +3130,10 @@ static test_return_t  cleanup_pairs(memcached_st *memc __attribute__((unused)))
 
 static test_return_t  generate_pairs(memcached_st *memc __attribute__((unused)))
 {
-  unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
 
-  for (x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; x++)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
@@ -3145,11 +3144,10 @@ static test_return_t  generate_pairs(memcached_st *memc __attribute__((unused)))
 
 static test_return_t  generate_large_pairs(memcached_st *memc __attribute__((unused)))
 {
-  unsigned long long x;
   global_pairs= pairs_generate(GLOBAL2_COUNT, MEMCACHED_MAX_BUFFER+10);
   global_count= GLOBAL2_COUNT;
 
-  for (x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; x++)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
@@ -3202,7 +3200,6 @@ static test_return_t  generate_buffer_data(memcached_st *memc)
 
 static test_return_t  get_read_count(memcached_st *memc)
 {
-  unsigned int x;
   memcached_return_t rc;
   memcached_st *memc_clone;
 
@@ -3217,7 +3214,7 @@ static test_return_t  get_read_count(memcached_st *memc)
     uint32_t flags;
     uint32_t count;
 
-    for (x= count= 0; x < global_count; x++)
+    for (size_t x= count= 0; x < global_count; x++)
     {
       return_value= memcached_get(memc_clone, global_keys[x], global_keys_length[x],
                                   &return_value_length, &flags, &rc);
@@ -3237,7 +3234,6 @@ static test_return_t  get_read_count(memcached_st *memc)
 
 static test_return_t  get_read(memcached_st *memc)
 {
-  unsigned int x;
   memcached_return_t rc;
 
   {
@@ -3245,7 +3241,7 @@ static test_return_t  get_read(memcached_st *memc)
     size_t return_value_length;
     uint32_t flags;
 
-    for (x= 0; x < global_count; x++)
+    for (size_t x= 0; x < global_count; x++)
     {
       return_value= memcached_get(memc, global_keys[x], global_keys_length[x],
                                   &return_value_length, &flags, &rc);
@@ -3315,9 +3311,7 @@ static test_return_t  mget_read_function(memcached_st *memc)
 
 static test_return_t  delete_generate(memcached_st *memc)
 {
-  unsigned int x;
-
-  for (x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; x++)
   {
     (void)memcached_delete(memc, global_keys[x], global_keys_length[x], (time_t)0);
   }
@@ -3342,7 +3336,6 @@ static test_return_t  delete_buffer_generate(memcached_st *memc)
 
 static test_return_t  add_host_test1(memcached_st *memc)
 {
-  unsigned int x;
   memcached_return_t rc;
   char servername[]= "0.example.com";
   memcached_server_st *servers;
@@ -3351,11 +3344,11 @@ static test_return_t  add_host_test1(memcached_st *memc)
   test_truth(servers);
   test_truth(1 == memcached_server_list_count(servers));
 
-  for (x= 2; x < 20; x++)
+  for (size_t x= 2; x < 20; x++)
   {
     char buffer[SMALL_STRING_LEN];
 
-    snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
+    snprintf(buffer, SMALL_STRING_LEN, "%zu.example.com", 400+x);
     servers= memcached_server_list_append_with_weight(servers, buffer, 401, 0,
                                      &rc);
     test_truth(rc == MEMCACHED_SUCCESS);
@@ -3924,10 +3917,10 @@ static test_return_t noreply_test(memcached_st *memc)
 
   for (int count=0; count < 5; ++count)
   {
-    for (int x=0; x < 100; ++x)
+    for (size_t x= 0; x < 100; ++x)
     {
       char key[10];
-      size_t len= (size_t)sprintf(key, "%d", x);
+      size_t len= (size_t)sprintf(key, "%zu", x);
       switch (count)
       {
       case 0:
@@ -3958,7 +3951,7 @@ static test_return_t noreply_test(memcached_st *memc)
     ** way it is supposed to do!!!!
     */
     int no_msg=0;
-    for (uint32_t x=0; x < memcached_server_count(memc); ++x)
+    for (size_t x= 0; x < memcached_server_count(memc); ++x)
     {
       memcached_server_instance_st *instance=
         memcached_server_instance_fetch(memc, x);
@@ -3971,10 +3964,11 @@ static test_return_t noreply_test(memcached_st *memc)
     /*
      ** Now validate that all items was set properly!
      */
-    for (int x=0; x < 100; ++x)
+    for (size_t x= 0; x < 100; ++x)
     {
       char key[10];
-      size_t len= (size_t)sprintf(key, "%d", x);
+
+      size_t len= (size_t)sprintf(key, "%zu", x);
       size_t length;
       uint32_t flags;
       char* value=memcached_get(memc, key, strlen(key),
@@ -4118,7 +4112,8 @@ static test_return_t connection_pool_test(memcached_st *memc)
   memcached_st* mmc[10];
   memcached_return_t rc;
 
-  for (int x= 0; x < 10; ++x) {
+  for (size_t x= 0; x < 10; ++x)
+  {
     mmc[x]= memcached_pool_pop(pool, false, &rc);
     test_truth(mmc[x] != NULL);
     test_truth(rc == MEMCACHED_SUCCESS);
@@ -4144,7 +4139,8 @@ static test_return_t connection_pool_test(memcached_st *memc)
   rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
   test_truth(rc == MEMCACHED_SUCCESS);
 
-  for (unsigned int x= 0; x < 10; ++x) {
+  for (size_t x= 0; x < 10; ++x) 
+  {
     uint64_t number_value;
     rc= memcached_increment(mmc[x], key, keylen, 1, &number_value);
     test_truth(rc == MEMCACHED_SUCCESS);
@@ -4152,8 +4148,10 @@ static test_return_t connection_pool_test(memcached_st *memc)
   }
 
   // Release them..
-  for (int x= 0; x < 10; ++x)
+  for (size_t x= 0; x < 10; ++x)
+  {
     test_truth(memcached_pool_push(pool, mmc[x]) == MEMCACHED_SUCCESS);
+  }
 
 
   /* verify that I can set behaviors on the pool when I don't have all
@@ -4274,7 +4272,7 @@ static test_return_t replication_mget_test(memcached_st *memc)
   const char *keys[]= { "bubba", "key1", "key2", "key3" };
   size_t len[]= { 5, 4, 4, 4 };
 
-  for (int x=0; x< 4; ++x)
+  for (size_t x= 0; x< 4; ++x)
   {
     rc= memcached_set(memc, keys[x], len[x], "0", 1, 0, 0);
     test_truth(rc == MEMCACHED_SUCCESS);
@@ -4354,7 +4352,8 @@ static test_return_t replication_randomize_mget_test(memcached_st *memc)
 
   memcached_quit(memc);
 
-  for (int x=0; x< 7; ++x) {
+  for (size_t x= 0; x< 7; ++x)
+  {
     const char key[2]= { [0]= (const char)x };
 
     rc= memcached_mget_by_key(memc_clone, key, 1, keys, len, 7);
@@ -4387,7 +4386,7 @@ static test_return_t replication_delete_test(memcached_st *memc)
   const char *keys[]= { "bubba", "key1", "key2", "key3" };
   size_t len[]= { 5, 4, 4, 4 };
 
-  for (int x=0; x< 4; ++x)
+  for (size_t x= 0; x< 4; ++x)
   {
     rc= memcached_delete_by_key(memc, keys[0], len[0], keys[x], len[x], 0);
     test_truth(rc == MEMCACHED_SUCCESS);
@@ -4399,7 +4398,7 @@ static test_return_t replication_delete_test(memcached_st *memc)
    * This is to verify correct behavior in the library
    */
   uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
-  for (uint32_t x= 0; x < (repl + 1); ++x)
+  for (size_t x= 0; x < (repl + 1); ++x)
   {
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(memc_clone, x);
@@ -4412,7 +4411,7 @@ static test_return_t replication_delete_test(memcached_st *memc)
   memcached_result_st result_obj;
   for (uint32_t host= 0; host < memc_clone->number_of_hosts; ++host)
   {
-    for (int x= 'a'; x <= 'z'; ++x)
+    for (size_t x= 'a'; x <= 'z'; ++x)
     {
       const char key[2]= { [0]= (const char)x };
 
@@ -4447,9 +4446,8 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 {
   uint16_t *ids= malloc(sizeof(uint16_t) * memcached_server_count(memc));
   assert(ids != NULL);
-  unsigned int x;
 
-  for (x= 0; x < memcached_server_count(memc); x++)
+  for (size_t x= 0; x < memcached_server_count(memc); x++)
   {
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(memc, x);
@@ -4462,11 +4460,10 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 
 static test_return_t post_udp_op_check(memcached_st *memc, uint16_t *expected_req_ids)
 {
-  unsigned int x;
   memcached_server_st *cur_server = memcached_server_list(memc);
   uint16_t *cur_req_ids = get_udp_request_ids(memc);
 
-  for (x= 0; x < memcached_server_count(memc); x++)
+  for (size_t x= 0; x < memcached_server_count(memc); x++)
   {
     test_truth(cur_server[x].cursor_active == 0);
     test_truth(cur_req_ids[x] == expected_req_ids[x]);
@@ -4493,10 +4490,9 @@ static test_return_t init_udp(memcached_st *memc)
     return TEST_SKIPPED;
 
   uint32_t num_hosts= memcached_server_count(memc);
-  unsigned int x= 0;
   memcached_server_st servers[num_hosts];
   memcpy(servers, memcached_server_list(memc), sizeof(memcached_server_st) * num_hosts);
-  for (x= 0; x < num_hosts; x++)
+  for (size_t x= 0; x < num_hosts; x++)
   {
     memcached_server_instance_st *set_instance=
       memcached_server_instance_fetch(memc, x);
@@ -4506,7 +4502,7 @@ static test_return_t init_udp(memcached_st *memc)
 
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
-  for (x= 0; x < num_hosts; x++)
+  for (size_t x= 0; x < num_hosts; x++)
   {
     memcached_server_instance_st *set_instance=
       memcached_server_instance_fetch(memc, x);
@@ -4585,9 +4581,9 @@ static test_return_t set_udp_behavior_test(memcached_st *memc)
 
 static test_return_t udp_set_test(memcached_st *memc)
 {
-  unsigned int x= 0;
   unsigned int num_iters= 1025; //request id rolls over at 1024
-  for (x= 0; x < num_iters;x++)
+
+  for (size_t x= 0; x < num_iters;x++)
   {
     memcached_return_t rc;
     const char *key= "foo";
@@ -4640,14 +4636,15 @@ static test_return_t udp_set_too_big_test(memcached_st *memc)
                     value, MAX_UDP_DATAGRAM_LENGTH,
                     (time_t)0, (uint32_t)0);
   test_truth(rc == MEMCACHED_WRITE_FAILURE);
+
   return post_udp_op_check(memc,expected_ids);
 }
 
 static test_return_t udp_delete_test(memcached_st *memc)
 {
-  unsigned int x= 0;
   unsigned int num_iters= 1025; //request id rolls over at 1024
-  for (x= 0; x < num_iters;x++)
+
+  for (size_t x= 0; x < num_iters;x++)
   {
     memcached_return_t rc;
     const char *key= "foo";
@@ -4686,9 +4683,11 @@ static test_return_t udp_verbosity_test(memcached_st *memc)
 {
   memcached_return_t rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
-  unsigned int x;
-  for (x= 0; x < memcached_server_count(memc); x++)
+
+  for (size_t x= 0; x < memcached_server_count(memc); x++)
+  {
     increment_request_id(&expected_ids[x]);
+  }
 
   rc= memcached_verbosity(memc,3);
   test_truth(rc == MEMCACHED_SUCCESS);
@@ -4706,9 +4705,11 @@ static test_return_t udp_flush_test(memcached_st *memc)
 {
   memcached_return_t rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
-  unsigned int x;
-  for (x= 0; x < memcached_server_count(memc);x++)
+
+  for (size_t x= 0; x < memcached_server_count(memc); x++)
+  {
     increment_request_id(&expected_ids[x]);
+  }
 
   rc= memcached_flush(memc,0);
   test_truth(rc == MEMCACHED_SUCCESS);
@@ -4810,8 +4811,7 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
     {"udp_version_test", 0,
       (test_callback_fn)udp_version_test}
   };
-  unsigned int x= 0;
-  for (x= 0; x < 500; x++)
+  for (size_t x= 0; x < 500; x++)
   {
     current_op= mixed_io_ops[random() % 9];
     test_truth(current_op.test_fn(memc) == TEST_SUCCESS);
