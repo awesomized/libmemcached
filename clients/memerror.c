@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
   if (argc != 2)
     return 1;
 
-  value= strtol(argv[1], (char **) NULL, 10);
+  value= strtoul(argv[1], (char **) NULL, 10);
 
-  if (value >= MEMCACHED_SUCCESS && value < MEMCACHED_MAXIMUM_RETURN)
+  if (value < MEMCACHED_MAXIMUM_RETURN)
   {
     printf("%s\n", memcached_strerror(NULL, (memcached_return_t)value));
   }

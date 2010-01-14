@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
   memcached_return_t rc;
   memcached_server_st *servers;
 
+  int return_code= 0;
+
   options_parse(argc, argv);
 
   if (!opt_servers)
@@ -94,6 +96,14 @@ int main(int argc, char *argv[])
       if (memc->cached_errno)
 	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
       fprintf(stderr, "\n");
+
+      return_code= -1;
+      break;
+    }
+    else // Unknown Issue
+    {
+      fprintf(stderr, "memcat: %s not found\n", argv[optind]);
+      return_code= -1;
     }
     optind++;
   }
@@ -105,7 +115,7 @@ int main(int argc, char *argv[])
   if (opt_hash)
     free(opt_hash);
 
-  return 0;
+  return return_code;
 }
 
 

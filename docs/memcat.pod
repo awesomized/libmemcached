@@ -9,7 +9,7 @@ memcat - Copy a set of keys to stdout
 =head1 DESCRIPTION
 
 B<memcat> outputs to stdout the value a single or mutiple set of keys
-stored in a memcached(1) server.
+stored in a memcached(1) server. If any key is not found an error is returned.
 
 It is similar to the standard UNIX cat(1) utility. 
 

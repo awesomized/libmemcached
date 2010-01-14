@@ -75,38 +75,120 @@ tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_DEPENDENCIES = $(tests_testhashkit_LDADD)
 
-client-record:
-	sh tests/t/memcat.test > tests/r/memcat.res
-	sh tests/t/memcp.test > tests/r/memcp.res
-	sh tests/t/memrm.test > tests/r/memrm.res
-	sh tests/t/memslap.test > tests/r/memslap.res
-	sh tests/t/memstat.test > tests/r/memstat.res
-
-test: test-docs test-mem test-plus test-hash memcapable
+test: test-docs test-plus test-mem test-hash memcapable test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
 	echo "Tests completed"
 
 memcapable: clients/memcapable
-	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memcapable -p 12555 || echo "Your memcached server does not support all commands"
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
-PHONY += clients
-clients:
-	@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
-	export MEMCACHED_SERVERS="localhost:12555"
-	sh tests/t/memcat.test > tests/r/memcat.cmp
-	diff tests/r/memcat.res tests/r/memcat.cmp
-	sh tests/t/memcp.test > tests/r/memcp.cmp
-	diff tests/r/memcp.res tests/r/memcp.cmp
-	sh tests/t/memrm.test > tests/r/memrm.cmp
-	diff tests/r/memrm.res tests/r/memrm.cmp
-	sh tests/t/memslap.test > tests/r/memslap.cmp
-	diff tests/r/memslap.res tests/r/memslap.cmp
-	sh tests/t/memstat.test > tests/r/memstat.cmp
-	diff tests/r/memstat.res tests/r/memstat.cmp
-	cat tests/Xumemc.pid | xargs kill
-	rm tests/Xumemc.pid
+test-memcat: clients/memcat clients/memcp
+	@echo "Testing memcat"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcp
+	@clients/memcat --servers="localhost:12555" memcp > tests/scratch
+#	@diff clients/memcp tests/scratch
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+	@rm tests/scratch
+
+valgrind-memcat: clients/memcat clients/memcp
+	@echo "Testing memcat"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcp
+	@$(VALGRIND_COMMAND) clients/memcat --servers="localhost:12555" memcp > tests/scratch
+#	@diff clients/memcp tests/scratch
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+	@rm tests/scratch
+
+test-memcp: clients/memcp
+	@echo "Testing memcp"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcp clients/memcat clients/memstat
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+valgrind-memcp: clients/memcat clients/memcp
+	@echo "Testing memcp"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(VALGRIND_COMMAND) clients/memcp --servers="localhost:12555" clients/memcp clients/memcat clients/memstat
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+test-memrm: clients/memrm clients/memcp
+	@echo "Testing memrm"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcat
+	@clients/memrm --servers="localhost:12555" memcat
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+valgrind-memrm: clients/memcat clients/memcp
+	@echo "Testing memrm"
+	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcat
+	@$(VALGRIND_COMMAND) clients/memrm --servers="localhost:12555" memcat
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+test-memflush: clients/memflush
+	@echo "Testing memflush"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memflush --servers="localhost:12555"
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+valgrind-memflush: clients/memflush
+	@echo "Testing memflush"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(VALGRIND_COMMAND) clients/memflush --servers="localhost:12555"
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+test-memdump: clients/memdump clients/memcp
+	@echo "Testing memdump"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcat
+	@clients/memdump --servers="localhost:12555" > /dev/null
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+valgrind-memdump: clients/memcat clients/memcp
+	@echo "Testing memdump"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memcp --servers="localhost:12555" clients/memcat
+	@$(VALGRIND_COMMAND) clients/memdump --servers="localhost:12555" > /dev/null
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+test-memstat: clients/memstat
+	@echo "Testing memstat"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@clients/memstat --servers="localhost:12555" > /dev/null
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+valgrind-memstat: clients/memstat
+	@echo "Testing memstat"
+	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(VALGRIND_COMMAND) clients/memstat --servers="localhost:12555" > /dev/null
+	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm tests/Xumemc.pid
+
+test-memerror: clients/memerror
+	@echo "Testing memerror"
+	@clients/memerror 0 > /dev/null
+
+valgrind-memerror: clients/memerror
+	@echo "Testing memerror"
+	@$(VALGRIND_COMMAND) clients/memerror 0 > /dev/null
+
+
+
+
 
 MEMSLAP_COMMAND= clients/memslap $(COLLECTION) $(SUITE)
 
@@ -161,7 +243,7 @@ valgrind-memslap: clients/memslap
 	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)
 
 PHONY += valgrind
-valgrind: tests/testapp tests/testhashkit valgrind-mem valgrind-hash 
+valgrind: tests/testapp tests/testhashkit valgrind-mem valgrind-hash valgrind-memcat valgrind-memcp valgrind-memrm valgrind-memerror valgrind-memdump valgrind-memflush valgrind-memstat
 
 PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out
