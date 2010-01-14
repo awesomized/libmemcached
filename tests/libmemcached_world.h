@@ -96,9 +96,7 @@ test_return_t world_flush(libmemcached_test_container_st *container)
 
 test_return_t world_pre_run(libmemcached_test_container_st *container)
 {
-  uint32_t loop;
-
-  for (loop= 0; loop < memcached_server_list_count(container->construct.servers); loop++)
+  for (uint32_t loop= 0; loop < memcached_server_list_count(container->construct.servers); loop++)
   {
     memcached_server_st *instance=
       memcached_server_instance_fetch(container->memc, loop);

@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include <libmemcached/memcached.h>
+
 #include <ctype.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -155,60 +157,28 @@ static ssize_t getline (char **line, size_t *line_size, FILE *fp)
  */
 static void ms_get_serverlist(char *str)
 {
-  char *string;
-  int64_t port;
-  char *begin_ptr;
-  char *end_ptr= str + strlen(str);
   ms_mcd_server_t *srvs= NULL;
-  char buffer[512];
-  char *ptr= NULL;
 
   /**
    * Servers list format is like this. For example:
    * "localhost:11108, localhost:11109"
    */
-  for (begin_ptr= str, string= index(str, ',');
-       begin_ptr != end_ptr;
-       string= index(begin_ptr, ','))
+  memcached_server_st *server_pool;
+  server_pool = memcached_servers_parse(str);
+
+  for (uint32_t loop= 0; loop < memcached_server_list_count(server_pool); loop++)
   {
-    port= 0;
-
-    if (string)
-    {
-      memcpy(buffer, begin_ptr, (size_t)(string - begin_ptr));
-      buffer[(unsigned int)(string - begin_ptr)]= '\0';
-      begin_ptr= string + 1;
-    }
-    else
-    {
-      size_t length= strlen(begin_ptr);
-      memcpy(buffer, begin_ptr, length);
-      buffer[length]= '\0';
-      begin_ptr= end_ptr;
-    }
-
-    ptr= index(buffer, ':');
-
-    if (ptr != NULL)
-    {
-      ptr[0]= '\0';
-      ptr++;
-      port= strtol(ptr, (char **)NULL, 10);
-    }
-
     assert(ms_setting.srv_cnt < ms_setting.total_srv_cnt);
-    strcpy(ms_setting.servers[ms_setting.srv_cnt].srv_host_name, buffer);
-    ms_setting.servers[ms_setting.srv_cnt].srv_port= (int)port;
+    strcpy(ms_setting.servers[ms_setting.srv_cnt].srv_host_name, server_pool[loop].hostname);
+    ms_setting.servers[ms_setting.srv_cnt].srv_port= server_pool[loop].port;
     ms_setting.servers[ms_setting.srv_cnt].disconn_cnt= 0;
     ms_setting.servers[ms_setting.srv_cnt].reconn_cnt= 0;
     ms_setting.srv_cnt++;
 
     if (ms_setting.srv_cnt >= ms_setting.total_srv_cnt)
     {
-      srvs= (ms_mcd_server_t *)realloc(
-        ms_setting.servers,
-        (size_t)ms_setting.total_srv_cnt
-        * sizeof(ms_mcd_server_t) * 2);
+      srvs= (ms_mcd_server_t *)realloc( ms_setting.servers,
+                                        (size_t)ms_setting.total_srv_cnt * sizeof(ms_mcd_server_t) * 2);
       if (srvs == NULL)
       {
         fprintf(stderr, "Can't reallocate servers structure.\n");
@@ -217,10 +187,9 @@ static void ms_get_serverlist(char *str)
       ms_setting.servers= srvs;
       ms_setting.total_srv_cnt*= 2;
     }
-
-    if (isspace(*begin_ptr))
-      begin_ptr++;
   }
+
+  memcached_server_free(server_pool);
 } /* ms_get_serverlist */
 
 
