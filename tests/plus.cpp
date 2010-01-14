@@ -309,5 +309,8 @@ void get_world(world_st *world)
   world->test.post_run= reinterpret_cast<test_callback_fn>(world_post_run);
   world->test.on_error= reinterpret_cast<test_callback_error_fn>(world_on_error);
 
+  world->collection.startup= reinterpret_cast<test_callback_fn>(world_container_startup);
+  world->collection.shutdown= reinterpret_cast<test_callback_fn>(world_container_shutdown);
+
   world->runner= &defualt_libmemcached_runner;
 }

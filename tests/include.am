@@ -118,6 +118,8 @@ MEMSLAP_COMMAND= clients/memslap $(COLLECTION) $(SUITE)
 
 MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
 
+PLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
+
 ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
@@ -128,6 +130,9 @@ test-mem: tests/testapp
 test-atom: tests/atomsmasher
 	$(ATOM_COMMAND)
 
+test-plus: tests/testplus
+	$(PLUS_COMMAND)
+
 test-hash: tests/testhashkit
 	$(HASH_COMMAND)
 
@@ -136,6 +141,9 @@ gdb-mem: tests/testapp
 
 gdb-atom: tests/atomsmasher
 	$(DEBUG_COMMAND)  $(ATOM_COMMAND)
+
+gdb-plus: tests/testplus
+	$(DEBUG_COMMAND)  $(PLUS_COMMAND)
 
 gdb-hash: tests/testhashkit
 	$(DEBUG_COMMAND) $(HASH_COMMAND)
@@ -148,6 +156,9 @@ valgrind-mem: tests/testapp
 
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND)  $(ATOM_COMMAND)
+
+valgrind-plus: tests/testplus
+	$(VALGRIND_COMMAND)  $(PLUS_COMMAND)
 
 valgrind-hash: tests/testhashkit
 	$(VALGRIND_COMMAND) $(HASH_COMMAND)

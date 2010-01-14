@@ -14,7 +14,6 @@
 */
 #include "libmemcached/common.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,9 +89,13 @@ infinite:
       return_value= memcached_get(memc, global_keys[test_bit], global_keys_length[test_bit],
                                   &return_value_length, &flags, &rc);
       if (rc == MEMCACHED_SUCCESS && return_value)
+      {
         free(return_value);
+      }
       else if (rc == MEMCACHED_NOTFOUND)
+      {
         continue;
+      }
       else
       {
         WATCHPOINT_ERROR(rc);
@@ -117,45 +120,14 @@ infinite:
   if (getenv("MEMCACHED_ATOM_BURIN_IN"))
     goto infinite;
 
-  return 0;
+  return TEST_SUCCESS;
 }
 
-static memcached_return_t pre_nonblock(memcached_st *memc)
+static test_return_t pre_nonblock(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t pre_md5(memcached_st *memc)
-{
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MD5);
-
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t pre_hsieh(memcached_st *memc)
-{
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
-
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t enable_consistent(memcached_st *memc)
-{
-  memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
-  memcached_hash_t hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
-  pre_hsieh(memc);
-
-  value= (memcached_server_distribution_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
-  assert(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
-
-  hash= (memcached_hash_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
-  assert(hash == MEMCACHED_HASH_HSIEH);
-
-
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 /* 
@@ -217,9 +189,6 @@ test_st smash_tests[] ={
 
 collection_st collection[] ={
   {"smash", 0, 0, smash_tests},
-  {"smash_hsieh", (test_callback_fn)pre_hsieh, 0, smash_tests},
-  {"smash_hsieh_consistent", (test_callback_fn)enable_consistent, 0, smash_tests},
-  {"smash_md5", (test_callback_fn)pre_md5, 0, smash_tests},
   {"smash_nonblock", (test_callback_fn)pre_nonblock, 0, smash_tests},
   {0, 0, 0, 0}
 };

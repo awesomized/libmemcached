@@ -111,7 +111,7 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
 
 test_return_t world_post_run(libmemcached_test_container_st *container)
 {
-  assert(container->memc);
+  test_truth(container->memc);
 
   return TEST_SUCCESS;
 }
