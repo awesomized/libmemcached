@@ -57,11 +57,10 @@ static test_return_t cleanup_pairs(memcached_st *memc __attribute__((unused)))
 
 static test_return_t generate_pairs(memcached_st *memc __attribute__((unused)))
 {
-  unsigned long long x;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
 
-  for (x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; x++)
   {
     global_keys[x]= global_pairs[x].key; 
     global_keys_length[x]=  global_pairs[x].key_length;
@@ -72,14 +71,13 @@ static test_return_t generate_pairs(memcached_st *memc __attribute__((unused)))
 
 static test_return_t drizzle(memcached_st *memc)
 {
-  unsigned int x;
   memcached_return_t rc;
   char *return_value;
   size_t return_value_length;
   uint32_t flags;
 
 infinite:
-  for (x= 0; x < TEST_COUNTER; x++)
+  for (size_t x= 0; x < TEST_COUNTER; x++)
   {
     uint32_t test_bit;
     uint8_t which;
@@ -201,8 +199,7 @@ static test_return_t add_test(memcached_st *memc)
  */
 static test_return_t many_adds(memcached_st *memc)
 {
-  unsigned int i;
-  for (i = 0; i < TEST_COUNTER; i++)
+  for (size_t x= 0; x < TEST_COUNTER; x++)
   {
     add_test(memc);
   }
@@ -244,6 +241,9 @@ void get_world(world_st *world)
   world->test.pre_run= (test_callback_fn)world_pre_run;
   world->test.post_run= (test_callback_fn)world_post_run;
   world->test.on_error= (test_callback_error_fn)world_on_error;
+
+  world->collection.startup= (test_callback_fn)world_container_startup;
+  world->collection.shutdown= (test_callback_fn)world_container_shutdown;
 
   world->runner= &defualt_libmemcached_runner;
 }
