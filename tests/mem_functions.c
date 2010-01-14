@@ -399,12 +399,11 @@ static test_return_t  append_binary_test(memcached_st *memc)
 {
   memcached_return_t rc;
   const char *key= "numbers";
-  unsigned int *store_ptr;
-  unsigned int store_list[] = { 23, 56, 499, 98, 32847, 0 };
-  char *value;
+  uint32_t store_list[] = { 23, 56, 499, 98, 32847, 0 };
+  uint32_t *value;
   size_t value_length;
   uint32_t flags;
-  unsigned int x;
+  uint32_t x;
 
   rc= memcached_flush(memc, 0);
   test_truth(rc == MEMCACHED_SUCCESS);
@@ -419,22 +418,20 @@ static test_return_t  append_binary_test(memcached_st *memc)
   {
     rc= memcached_append(memc,
                          key, strlen(key),
-                         (char *)&store_list[x], sizeof(unsigned int),
+                         (char *)&store_list[x], sizeof(uint32_t),
                          (time_t)0, (uint32_t)0);
     test_truth(rc == MEMCACHED_SUCCESS);
   }
 
-  value= memcached_get(memc, key, strlen(key),
+  value= (uint32_t *)memcached_get(memc, key, strlen(key),
                        &value_length, &flags, &rc);
-  test_truth((value_length == (sizeof(unsigned int) * x)));
+  test_truth((value_length == (sizeof(uint32_t) * x)));
   test_truth(rc == MEMCACHED_SUCCESS);
 
-  store_ptr= (unsigned int *)value;
-  x= 0;
-  while ((size_t)store_ptr < (size_t)(value + value_length))
+  for (uint32_t counter= x, *ptr= value; counter; counter--)
   {
-    test_truth(*store_ptr == store_list[x++]);
-    store_ptr++;
+    test_truth(*ptr == store_list[x - counter]);
+    ptr++;
   }
   free(value);
 
@@ -1885,7 +1882,6 @@ static test_return_t fetch_all_results(memcached_st *memc)
 static test_return_t  user_supplied_bug1(memcached_st *memc)
 {
   unsigned int setter= 1;
-  unsigned int x;
 
   unsigned long long total= 0;
   uint32_t size= 0;
@@ -1903,7 +1899,7 @@ static test_return_t  user_supplied_bug1(memcached_st *memc)
 
 
   /* add key */
-  for (x= 0 ; total < 20 * 1024576 ; x++ )
+  for (uint32_t x= 0 ; total < 20 * 1024576 ; x++ )
   {
     unsigned int j= 0;
 
@@ -1915,7 +1911,7 @@ static test_return_t  user_supplied_bug1(memcached_st *memc)
       randomstuff[j] = (signed char) ((rand() % 26) + 97);
 
     total += size;
-    sprintf(key, "%d", x);
+    snprintf(key, sizeof(key), "%u", x);
     rc = memcached_set(memc, key, strlen(key),
                        randomstuff, strlen(randomstuff), 10, 0);
     test_truth(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
@@ -1932,10 +1928,8 @@ static test_return_t  user_supplied_bug1(memcached_st *memc)
 /* Test case provided by Cal Haldenbrand */
 static test_return_t  user_supplied_bug2(memcached_st *memc)
 {
-  int errors;
   unsigned int setter;
-  unsigned int x;
-  unsigned long long total;
+  size_t total= 0;
 
   setter= 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, setter);
@@ -1948,10 +1942,10 @@ static test_return_t  user_supplied_bug2(memcached_st *memc)
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 
-  for (x= 0, errors= 0, total= 0 ; total < 20 * 1024576 ; x++)
+  for (x= 0, errors= 0; total < 20 * 1024576 ; x++)
 #endif
 
-  for (x= 0, errors= 0, total= 0 ; total < 24576 ; x++)
+  for (uint32_t x= 0, errors= 0; total < 24576 ; x++)
   {
     memcached_return_t rc= MEMCACHED_SUCCESS;
     char buffer[SMALL_STRING_LEN];
@@ -1961,7 +1955,7 @@ static test_return_t  user_supplied_bug2(memcached_st *memc)
 
     memset(buffer, 0, SMALL_STRING_LEN);
 
-    snprintf(buffer, SMALL_STRING_LEN, "%u", x);
+    snprintf(buffer, sizeof(buffer), "%u", x);
     getval= memcached_get(memc, buffer, strlen(buffer),
                            &val_len, &flags, &rc);
     if (rc != MEMCACHED_SUCCESS)
@@ -4311,7 +4305,7 @@ static test_return_t replication_mget_test(memcached_st *memc)
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
-      const char key[2]= { [0]= (const char)x };
+      char key[2]= { [0]= (char)x, [1]= 0 };
 
       rc= memcached_mget_by_key(new_clone, key, 1, keys, len, 4);
       test_truth(rc == MEMCACHED_SUCCESS);
@@ -5292,14 +5286,16 @@ static test_return_t regression_bug_442914(memcached_st *memc)
   char k[250];
   size_t len;
 
-  for (int x= 0; x < 250; ++x)
+  for (uint32_t x= 0; x < 250; ++x)
   {
      len= (size_t)snprintf(k, sizeof(k), "%0250u", x);
      rc= memcached_delete(memc, k, len, 0);
      test_truth(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
-  len= (size_t)snprintf(k, sizeof(k), "%037u", 251);
+  (void)snprintf(k, sizeof(k), "%037u", 251U);
+  len= strlen(k);
+
   rc= memcached_delete(memc, k, len, 0);
   test_truth(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
