@@ -112,7 +112,7 @@ typedef struct setting
 {
   int ncpu;                             /* cpu count of this system */
   int nthreads;                         /* total thread count, must equal or less than cpu cores */
-  int nconns;                      /* total conn count, must multiply by total thread count */
+  uint32_t nconns;                      /* total conn count, must multiply by total thread count */
   int64_t exec_num;                     /* total execute number */
   int run_time;                         /* total run time */
 

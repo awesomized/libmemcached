@@ -307,7 +307,7 @@ void ms_thread_init()
   for (int i= 0; i < ms_setting.nthreads; i++)
   {
     ms_thread_ctx[i].thd_idx= i;
-    ms_thread_ctx[i].nconns= ms_setting.nconns / ms_setting.nthreads;
+    ms_thread_ctx[i].nconns= (int)((int)ms_setting.nconns / ms_setting.nthreads);
 
     /**
      *  If only one server, all the connections in all threads
@@ -316,7 +316,7 @@ void ms_thread_init()
      */
     ms_thread_ctx[i].srv_idx= i % ms_setting.srv_cnt;
     ms_thread_ctx[i].tps_perconn= ms_setting.expected_tps
-                                  / ms_setting.nconns;
+                                  / (int)ms_setting.nconns;
     ms_thread_ctx[i].exec_num_perconn= ms_setting.exec_num
                                        / ms_setting.nconns;
   }

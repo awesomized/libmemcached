@@ -919,12 +919,12 @@ static int ms_reconn(ms_conn_t *c)
   if (ms_setting.rep_write_srv > 0)
   {
     srv_idx= c->cur_idx;
-    srv_conn_cnt= ms_setting.nconns;
+    srv_conn_cnt= (int)ms_setting.nconns;
   }
   else
   {
     srv_idx= ms_thread->thread_ctx->srv_idx;
-    srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
+    srv_conn_cnt= (int32_t)((int)ms_setting.nconns / ms_setting.srv_cnt);
   }
 
   /* close the old socket handler */
@@ -1047,12 +1047,12 @@ int ms_reconn_socks(ms_conn_t *c)
       if (ms_setting.rep_write_srv > 0)
       {
         srv_idx= i;
-        srv_conn_cnt= ms_setting.nconns;
+        srv_conn_cnt= (int)ms_setting.nconns;
       }
       else
       {
         srv_idx= ms_thread->thread_ctx->srv_idx;
-        srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
+        srv_conn_cnt= (int)ms_setting.nconns / ms_setting.srv_cnt;
       }
 
       if (ms_network_connect(c, ms_setting.servers[srv_idx].srv_host_name,

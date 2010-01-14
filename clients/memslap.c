@@ -431,7 +431,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_CONCURRENCY:       /* --concurrency or -c */
-      ms_setting.nconns= (int)strtol(optarg, (char **) NULL, 10);
+      ms_setting.nconns= (uint32_t)strtoul(optarg, (char **) NULL, 10);
       if (ms_setting.nconns <= 0)
       {
         fprintf(stderr, "Concurrency must be greater than 0.:-)\n");
@@ -640,7 +640,7 @@ static int ms_check_para()
     }
   }
 
-  if (ms_setting.nconns % ms_setting.nthreads != 0)
+  if (ms_setting.nconns % (uint32_t)ms_setting.nthreads != 0)
   {
     fprintf(stderr, "Concurrency must be the multiples of threads count.\n");
     return -1;
@@ -784,7 +784,7 @@ static void ms_monitor_slap_mode()
   {
     /* Wait all the connects complete warm up. */
     pthread_mutex_lock(&ms_global.init_lock.lock);
-    while (ms_global.init_lock.count < ms_setting.nconns)
+    while (ms_global.init_lock.count < (int)ms_setting.nconns)
     {
       pthread_cond_wait(&ms_global.init_lock.cond,
                         &ms_global.init_lock.lock);
@@ -834,7 +834,7 @@ static void ms_monitor_slap_mode()
      * We loop until we know that all connects have cleaned up.
      */
     pthread_mutex_lock(&ms_global.run_lock.lock);
-    while (ms_global.run_lock.count < ms_setting.nconns)
+    while (ms_global.run_lock.count < (int)ms_setting.nconns)
     {
       pthread_cond_wait(&ms_global.run_lock.cond, &ms_global.run_lock.lock);
     }
