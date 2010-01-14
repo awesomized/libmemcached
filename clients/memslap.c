@@ -699,53 +699,45 @@ static void ms_print_memslap_stats(struct timeval *start_time,
   char buf[1024];
   char *pos= buf;
 
-  pos+= sprintf(pos,
-                "cmd_get: %llu\n",
-                (unsigned long long)ms_stats.cmd_get);
-  pos+= sprintf(pos,
-                "cmd_set: %llu\n",
-                (unsigned long long)ms_stats.cmd_set);
-  pos+= sprintf(pos,
-                "get_misses: %llu\n",
-                (unsigned long long)ms_stats.get_misses);
+  pos+= sprintf(pos, "cmd_get: %zu\n",
+                ms_stats.cmd_get);
+  pos+= sprintf(pos, "cmd_set: %zu\n",
+                ms_stats.cmd_set);
+  pos+= sprintf(pos, "get_misses: %zu\n",
+                ms_stats.get_misses);
 
   if (ms_setting.verify_percent > 0)
   {
-    pos+= sprintf(pos, "verify_misses: %llu\n",
-                  (unsigned long long)ms_stats.vef_miss);
-    pos+= sprintf(pos, "verify_failed: %llu\n",
-                  (unsigned long long)ms_stats.vef_failed);
+    pos+= sprintf(pos, "verify_misses: %zu\n",
+                  ms_stats.vef_miss);
+    pos+= sprintf(pos, "verify_failed: %zu\n",
+                  ms_stats.vef_failed);
   }
 
   if (ms_setting.exp_ver_per > 0)
   {
-    pos+= sprintf(pos, "expired_get: %llu\n",
-                  (unsigned long long)ms_stats.exp_get);
-    pos+= sprintf(pos, "unexpired_unget: %llu\n",
-                  (unsigned long long)ms_stats.unexp_unget);
+    pos+= sprintf(pos, "expired_get: %zu\n",
+                  ms_stats.exp_get);
+    pos+= sprintf(pos, "unexpired_unget: %zu\n",
+                  ms_stats.unexp_unget);
   }
 
   pos+= sprintf(pos,
-                "written_bytes: %llu\n",
-                (unsigned long long)ms_stats.bytes_written);
-  pos+= sprintf(pos,
-                "read_bytes: %llu\n",
-                (unsigned long long)ms_stats.bytes_read);
-  pos+= sprintf(pos,
-                "object_bytes: %llu\n",
-                (unsigned long long)ms_stats.obj_bytes);
+                "written_bytes: %zu\n",
+                ms_stats.bytes_written);
+  pos+= sprintf(pos, "read_bytes: %zu\n",
+                ms_stats.bytes_read);
+  pos+= sprintf(pos, "object_bytes: %zu\n",
+                ms_stats.obj_bytes);
 
   if (ms_setting.udp || ms_setting.facebook_test)
   {
-    pos+= sprintf(pos,
-                  "packet_disorder: %llu\n",
-                  (unsigned long long)ms_stats.pkt_disorder);
-    pos+= sprintf(pos,
-                  "packet_drop: %llu\n",
-                  (unsigned long long)ms_stats.pkt_drop);
-    pos+= sprintf(pos,
-                  "udp_timeout: %llu\n",
-                  (unsigned long long)ms_stats.udp_timeout);
+    pos+= sprintf(pos, "packet_disorder: %zu\n",
+                  ms_stats.pkt_disorder);
+    pos+= sprintf(pos, "packet_drop: %zu\n",
+                  ms_stats.pkt_drop);
+    pos+= sprintf(pos, "udp_timeout: %zu\n",
+                  ms_stats.udp_timeout);
   }
 
   if (ms_setting.stat_freq > 0)
