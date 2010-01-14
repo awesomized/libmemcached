@@ -872,6 +872,7 @@ static void ms_init_random_block()
  */
 static void ms_print_setting()
 {
+  fprintf(stdout, "servers : %s\n", ms_setting.srv_str);
   fprintf(stdout, "threads count: %d\n", ms_setting.nthreads);
   fprintf(stdout, "concurrency: %d\n", ms_setting.nconns);
   if (ms_setting.run_time > 0)

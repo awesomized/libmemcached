@@ -298,6 +298,7 @@ void ms_help_command(const char *command_name, const char *description)
   {
     printf("    -%c, --%s%c\n", long_options[x].val, long_options[x].name,
            long_options[x].has_arg ? '=' : ' ');
+
     if ((help_message= (char *)ms_lookup_help(long_options[x].val)) != NULL)
     {
       printf("        %s\n", help_message);
@@ -613,8 +614,17 @@ static int ms_check_para()
 {
   if (ms_setting.srv_str == NULL)
   {
-    fprintf(stderr, "No Servers provided.\n\n");
-    return -1;
+    char *temp;
+
+    if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
+      ms_setting.srv_str= strdup(temp);
+    }
+    else
+    {
+      fprintf(stderr, "No Servers provided\n\n");
+      return -1;
+    }
   }
 
   if (ms_setting.nconns % ms_setting.nthreads != 0)

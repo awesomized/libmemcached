@@ -85,7 +85,9 @@ int main(int argc, char *argv[])
     char *temp;
 
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
       fprintf(stderr, "No Servers provided\n");

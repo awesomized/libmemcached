@@ -593,6 +593,8 @@ At the beginning, memslap displays some configuration information as follows:
 
 =over 4
 
+=item servers : 127.0.0.1:11211
+
 =item threads count: 1
 
 =item concurrency: 16
@@ -610,6 +612,10 @@ At the beginning, memslap displays some configuration information as follows:
 =head2 Where
 
 =over 4
+
+=item servers : "servers"
+
+The servers used by memslap.
 
 =item threads count
 
