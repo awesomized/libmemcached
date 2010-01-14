@@ -3178,7 +3178,10 @@ static test_return_t  generate_data_with_stats(memcached_st *memc)
   {
     /* This test was changes so that "make test" would work properlly */
 #ifdef DEBUG
-    printf("\nserver %u|%s|%u bytes: %llu\n", host_index, (memc->hosts)[host_index].hostname, (memc->hosts)[host_index].port, (unsigned long long)(stat_p + host_index)->bytes);
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(memc, host_index);
+
+    printf("\nserver %u|%s|%u bytes: %llu\n", host_index, instance->hostname, instance->port, (unsigned long long)(stat_p + host_index)->bytes);
 #endif
     test_truth((unsigned long long)(stat_p + host_index)->bytes);
   }
@@ -3951,7 +3954,7 @@ static test_return_t noreply_test(memcached_st *memc)
     ** way it is supposed to do!!!!
     */
     int no_msg=0;
-    for (size_t x= 0; x < memcached_server_count(memc); ++x)
+    for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
     {
       memcached_server_instance_st *instance=
         memcached_server_instance_fetch(memc, x);
@@ -4398,7 +4401,7 @@ static test_return_t replication_delete_test(memcached_st *memc)
    * This is to verify correct behavior in the library
    */
   uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
-  for (size_t x= 0; x < (repl + 1); ++x)
+  for (uint32_t x= 0; x < (repl + 1); ++x)
   {
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(memc_clone, x);
@@ -4447,7 +4450,7 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
   uint16_t *ids= malloc(sizeof(uint16_t) * memcached_server_count(memc));
   assert(ids != NULL);
 
-  for (size_t x= 0; x < memcached_server_count(memc); x++)
+  for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(memc, x);
@@ -4492,7 +4495,7 @@ static test_return_t init_udp(memcached_st *memc)
   uint32_t num_hosts= memcached_server_count(memc);
   memcached_server_st servers[num_hosts];
   memcpy(servers, memcached_server_list(memc), sizeof(memcached_server_st) * num_hosts);
-  for (size_t x= 0; x < num_hosts; x++)
+  for (uint32_t x= 0; x < num_hosts; x++)
   {
     memcached_server_instance_st *set_instance=
       memcached_server_instance_fetch(memc, x);
@@ -4502,7 +4505,7 @@ static test_return_t init_udp(memcached_st *memc)
 
   memc->number_of_hosts= 0;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
-  for (size_t x= 0; x < num_hosts; x++)
+  for (uint32_t x= 0; x < num_hosts; x++)
   {
     memcached_server_instance_st *set_instance=
       memcached_server_instance_fetch(memc, x);
