@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return_t memcached_purge(memcached_server_st *ptr)
+memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
 {
   uint32_t x;
   memcached_return_t ret= MEMCACHED_SUCCESS;
@@ -62,6 +62,20 @@ memcached_return_t memcached_purge(memcached_server_st *ptr)
         WATCHPOINT_ERROR(rc);
         ret = rc;
         memcached_io_reset(ptr);
+      }
+
+      if (ptr->root->callbacks != NULL)
+      {
+        memcached_callback_st cb = *ptr->root->callbacks;
+        if (rc == MEMCACHED_SUCCESS)
+        {
+          for (uint32_t y= 0; y < cb.number_of_callback; y++)
+          {
+            rc = (*cb.callback[y])(ptr->root, result_ptr, cb.context);
+            if (rc != MEMCACHED_SUCCESS)
+              break;
+          }
+        }
       }
     }
 

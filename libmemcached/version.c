@@ -34,15 +34,17 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
 
-    rrc= memcached_do(&ptr->hosts[x], command, send_length, 1);
+    rrc= memcached_do(instance, command, send_length, 1);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
 
-    rrc= memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+    rrc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
@@ -53,13 +55,13 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     response_ptr= index(buffer, ' ');
     response_ptr++;
 
-    ptr->hosts[x].major_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    instance->major_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
     response_ptr= index(response_ptr, '.');
     response_ptr++;
-    ptr->hosts[x].minor_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    instance->minor_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
     response_ptr= index(response_ptr, '.');
     response_ptr++;
-    ptr->hosts[x].micro_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    instance->micro_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
   }
 
   return rc;
@@ -79,10 +81,13 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   {
     memcached_return_t rrc;
 
-    rrc= memcached_do(&ptr->hosts[x], request.bytes, sizeof(request.bytes), 1);
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), 1);
     if (rrc != MEMCACHED_SUCCESS) 
     {
-      memcached_io_reset(&ptr->hosts[x]);
+      memcached_io_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -90,23 +95,26 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
 
   for (x= 0; x < memcached_server_count(ptr); x++) 
   {
-    if (memcached_server_response_count(&ptr->hosts[x]) > 0) 
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    if (memcached_server_response_count(instance) > 0) 
     {
       memcached_return_t rrc;
       char buffer[32];
       char *p;
 
-      rrc= memcached_response(&ptr->hosts[x], buffer, sizeof(buffer), NULL);
+      rrc= memcached_response(instance, buffer, sizeof(buffer), NULL);
       if (rrc != MEMCACHED_SUCCESS) 
       {
-        memcached_io_reset(&ptr->hosts[x]);
+        memcached_io_reset(instance);
         rc= MEMCACHED_SOME_ERRORS;
         continue;
       }
 
-      ptr->hosts[x].major_version= (uint8_t)strtol(buffer, &p, 10);
-      ptr->hosts[x].minor_version= (uint8_t)strtol(p + 1, &p, 10);
-      ptr->hosts[x].micro_version= (uint8_t)strtol(p + 1, NULL, 10);
+      instance->major_version= (uint8_t)strtol(buffer, &p, 10);
+      instance->minor_version= (uint8_t)strtol(p + 1, &p, 10);
+      instance->micro_version= (uint8_t)strtol(p + 1, NULL, 10);
     }
   }
 

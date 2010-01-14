@@ -49,11 +49,12 @@ struct memcached_st {
     bool is_allocated:1;
     bool is_initialized:1;
     bool is_purging:1;
+    bool is_processing_input:1;
   } options;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
   uint32_t continuum_points_counter; // Ketama
-  memcached_server_st *hosts;
+  memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;
   int32_t snd_timeout;
   int32_t rcv_timeout;
@@ -63,6 +64,9 @@ struct memcached_st {
   uint32_t io_key_prefetch;
   uint32_t number_of_hosts;
   int cached_errno;
+  /**
+    @note these are static and should not change without a call to behavior.
+  */
   struct {
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
@@ -110,6 +114,12 @@ memcached_return_t memcached_version(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_servers_reset(memcached_st *ptr);
+
+// Local Only Inline
+static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
+{
+  return &ptr->servers[server_key];
+}
 
 /* Public API */
 

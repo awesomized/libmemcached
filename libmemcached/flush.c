@@ -32,6 +32,8 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
     bool no_reply= ptr->flags.no_reply;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
 
     if (expiration)
       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
@@ -41,10 +43,10 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                                      "flush_all%s\r\n", no_reply ? " noreply" : "");
 
-    rc= memcached_do(&ptr->hosts[x], buffer, send_length, 1);
+    rc= memcached_do(instance, buffer, send_length, 1);
 
     if (rc == MEMCACHED_SUCCESS && !no_reply)
-      (void)memcached_response(&ptr->hosts[x], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+      (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
   }
 
   return MEMCACHED_SUCCESS;
@@ -53,7 +55,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
 static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
                                                  time_t expiration)
 {
-  unsigned int x;
+  uint32_t x;
   protocol_binary_request_flush request= {.bytes= {0}};
 
   unlikely (memcached_server_count(ptr) == 0)
@@ -68,22 +70,33 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
 
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
     if (ptr->flags.no_reply)
+    {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
+    }
     else
+    {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;
-    if (memcached_do(&ptr->hosts[x], request.bytes, 
+    }
+
+    if (memcached_do(instance, request.bytes, 
                      sizeof(request.bytes), 1) != MEMCACHED_SUCCESS) 
     {
-      memcached_io_reset(&ptr->hosts[x]);
+      memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;
     } 
   }
 
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    if (memcached_server_response_count(&ptr->hosts[x]) > 0)
-      (void)memcached_response(&ptr->hosts[x], NULL, 0, NULL);
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    if (memcached_server_response_count(instance) > 0)
+      (void)memcached_response(instance, NULL, 0, NULL);
   }
 
   return MEMCACHED_SUCCESS;

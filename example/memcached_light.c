@@ -50,11 +50,20 @@ static int num_server_sockets= 0;
 static void* socket_userdata_map[1024];
 static bool verbose= false;
 
+struct options_st {
+  char *pid_file;
+  bool has_port;
+  in_port_t port;
+} global_options;
+
+typedef struct options_st options_st;
+
 /**
  * Create a socket and bind it to a specific port number
  * @param port the port number to bind to
  */
-static int server_socket(const char *port) {
+static int server_socket(const char *port)
+{
   struct addrinfo *ai;
   struct addrinfo hints= { .ai_flags= AI_PASSIVE,
                            .ai_family= AF_UNSPEC,
@@ -226,9 +235,10 @@ static void work(void);
  */
 int main(int argc, char **argv)
 {
-  bool port_specified= false;
   int cmd;
   memcached_binary_protocol_callback_st *interface= &interface_v0_impl;
+
+  memset(&global_options, 0, sizeof(global_options));
 
   /*
    * We need to initialize the handlers manually due to a bug in the
@@ -236,19 +246,23 @@ int main(int argc, char **argv)
    */
   initialize_interface_v0_handler();
 
-  while ((cmd= getopt(argc, argv, "v1p:?")) != EOF)
+  while ((cmd= getopt(argc, argv, "v1pP:?h")) != EOF)
   {
     switch (cmd) {
     case '1':
       interface= &interface_v1_impl;
       break;
+    case 'P':
+      global_options.pid_file= strdup(optarg);
+      break;
     case 'p':
-      port_specified= true;
+      global_options.has_port= true;
       (void)server_socket(optarg);
       break;
     case 'v':
       verbose= true;
       break;
+    case 'h':  /* FALLTHROUGH */
     case '?':  /* FALLTHROUGH */
     default:
       (void)fprintf(stderr, "Usage: %s [-p port] [-v] [-1]\n", argv[0]);
@@ -256,14 +270,30 @@ int main(int argc, char **argv)
     }
   }
 
-  if (!initialize_storage())
+  if (! initialize_storage())
   {
     /* Error message already printed */
     return 1;
   }
 
-  if (!port_specified)
+  if (! global_options.has_port)
     (void)server_socket("9999");
+
+  if (global_options.pid_file)
+  {
+    FILE *pid_file;
+    uint32_t pid;
+
+    pid_file= fopen(global_options.pid_file, "w+");
+    perror(strerror(errno));
+
+    if (pid_file == NULL)
+      abort();
+
+    pid= (uint32_t)getpid();
+    fprintf(pid_file, "%u\n", pid);
+    fclose(pid_file);
+  }
 
   if (num_server_sockets == 0)
   {
@@ -311,7 +341,6 @@ static void work(void)
     fds[max_poll].events= POLLIN;
     fds[max_poll].revents= 0;
     fds[max_poll].fd= server_sockets[max_poll];
-    ++max_poll;
   }
 
   while (true)

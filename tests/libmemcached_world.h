@@ -100,8 +100,11 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
 
   for (loop= 0; loop < memcached_server_list_count(container->construct.servers); loop++)
   {
-    test_truth(container->memc->hosts[loop].fd == -1);
-    test_truth(container->memc->hosts[loop].cursor_active == 0);
+    memcached_server_st *instance=
+      memcached_server_instance_fetch(container->memc, loop);
+
+    test_truth(instance->fd == -1);
+    test_truth(instance->cursor_active == 0);
   }
 
   return TEST_SUCCESS;

@@ -118,12 +118,14 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
   for (y= 0; y < memcached_server_count(ptr); y++)
   {
     uint32_t x;
+    memcached_server_instance_st *instance=
+      memcached_server_instance_fetch(ptr, y);
 
     for (x= 0; x < number_of_callbacks; x++)
     {
       unsigned int iferror;
 
-      iferror= (*callback[x])(ptr, &ptr->hosts[y], context);
+      iferror= (*callback[x])(ptr, instance, context);
 
       if (iferror)
         continue;
@@ -136,6 +138,7 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
 memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, size_t key_length, memcached_return_t *error)
 {
   uint32_t server_key;
+  memcached_server_instance_st *instance;
 
   *error= memcached_validate_key_length(key_length,
                                         ptr->flags.binary_protocol);
@@ -155,8 +158,9 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
   }
 
   server_key= memcached_generate_hash(ptr, key, key_length);
+  instance= memcached_server_instance_fetch(ptr, server_key);
 
-  return memcached_server_clone(NULL, &ptr->hosts[server_key]);
+  return memcached_server_clone(NULL, instance);
 
 }
 

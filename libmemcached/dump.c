@@ -20,13 +20,16 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
 
   for (server_key= 0; server_key < memcached_server_count(ptr); server_key++)
   {
+    memcached_server_instance_st *instance;
+    instance= memcached_server_instance_fetch(ptr, server_key);
+
     /* 256 I BELIEVE is the upper limit of slabs */
     for (x= 0; x < 256; x++)
     {
       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                      "stats cachedump %u 0 0\r\n", x);
 
-      rc= memcached_do(&ptr->hosts[server_key], buffer, send_length, 1);
+      rc= memcached_do(instance, buffer, send_length, 1);
 
       unlikely (rc != MEMCACHED_SUCCESS)
         goto error;
@@ -34,7 +37,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
       while (1)
       {
         uint32_t callback_counter;
-        rc= memcached_response(&ptr->hosts[server_key], buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+        rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
         if (rc == MEMCACHED_ITEM)
         {

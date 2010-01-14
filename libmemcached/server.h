@@ -47,20 +47,25 @@ struct memcached_server_st {
   char hostname[MEMCACHED_MAX_HOST_LENGTH];
 };
 
+// Local Only Inline
 static inline uint32_t memcached_servers_count(memcached_server_st *servers)
 {
   return servers->number_of_hosts;
 }
 
+// Local Only Inline
 static inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
   return servers->number_of_hosts= count;
 }
 
+
+
 #define memcached_server_count(A) (A)->number_of_hosts
 #define memcached_server_name(A,B) (B).hostname
 #define memcached_server_port(A,B) (B).port
-#define memcached_server_list(A) (A)->hosts
+#define memcached_server_list(A) (A)->servers
+#define memcached_server_list_set(A,B) (A)->servers=(B)
 #define memcached_server_response_count(A) (A)->cursor_active
 
 LIBMEMCACHED_API
@@ -84,10 +89,10 @@ void memcached_server_error_reset(memcached_server_st *ptr);
 /* These should not currently be used by end users */
 /* TODO: Is the above comment valid? If so, how can we unit test these if they
  * aren't exported. If not, we should remove the comment */
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
 memcached_server_st *memcached_server_create(memcached_st *memc, memcached_server_st *ptr);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
 memcached_server_st *memcached_server_create_with(memcached_st *memc,
                                                   memcached_server_st *host,
                                                   const char *hostname,
@@ -98,7 +103,7 @@ memcached_server_st *memcached_server_create_with(memcached_st *memc,
 LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
 memcached_server_st *memcached_server_clone(memcached_server_st *clone,
                                             memcached_server_st *ptr);
 

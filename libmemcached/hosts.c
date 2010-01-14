@@ -11,8 +11,8 @@ static memcached_return_t update_continuum(memcached_st *ptr);
 static int compare_servers(const void *p1, const void *p2)
 {
   int return_value;
-  memcached_server_st *a= (memcached_server_st *)p1;
-  memcached_server_st *b= (memcached_server_st *)p2;
+  memcached_server_instance_st *a= (memcached_server_instance_st *)p1;
+  memcached_server_instance_st *b= (memcached_server_instance_st *)p2;
 
   return_value= strcmp(a->hostname, b->hostname);
 
@@ -28,8 +28,11 @@ static void sort_hosts(memcached_st *ptr)
 {
   if (memcached_server_count(ptr))
   {
-    qsort(ptr->hosts, memcached_server_count(ptr), sizeof(memcached_server_st), compare_servers);
-    ptr->hosts[0].number_of_hosts= memcached_server_count(ptr);
+    memcached_server_instance_st *instance;
+
+    qsort(memcached_server_list(ptr), memcached_server_count(ptr), sizeof(memcached_server_instance_st), compare_servers);
+    instance= memcached_server_instance_fetch(ptr, 0);
+    instance->number_of_hosts= memcached_server_count(ptr);
   }
 }
 
@@ -91,7 +94,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint32_t host_index;
   uint32_t continuum_index= 0;
   uint32_t value;
-  memcached_server_st *list;
+  memcached_server_instance_st *list;
   uint32_t pointer_index;
   uint32_t pointer_counter= 0;
   uint32_t pointer_per_server= MEMCACHED_POINTS_PER_SERVER;
@@ -109,7 +112,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     return MEMCACHED_ERRNO;
   }
 
-  list = ptr->hosts;
+  list = memcached_server_list(ptr);
 
   /* count live servers (those without a retry delay set) */
   is_auto_ejecting= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS);
@@ -294,37 +297,48 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
 memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st *list)
 {
-  unsigned int x;
-  uint16_t count;
+  uint32_t x;
+  uint32_t count;
   memcached_server_st *new_host_list;
 
-  if (!list)
+  if (! list)
     return MEMCACHED_SUCCESS;
 
   count= memcached_servers_count(list);
-  new_host_list= ptr->call_realloc(ptr, ptr->hosts,
-                                   sizeof(memcached_server_st) * (count + memcached_server_count(ptr)));
+  new_host_list= ptr->call_realloc(ptr, memcached_server_list(ptr),
+                                   sizeof(memcached_server_instance_st) * (count + memcached_server_count(ptr)));
 
   if (! new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-  ptr->hosts= new_host_list;
+  memcached_server_list_set(ptr, new_host_list);
 
   for (x= 0; x < count; x++)
   {
+    memcached_server_instance_st *instance;
+
     if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
             || ((list[x].type == MEMCACHED_CONNECTION_UDP)
             && ! (ptr->flags.use_udp)) )
       return MEMCACHED_INVALID_HOST_PROTOCOL;
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
-    memcached_server_create(ptr, &ptr->hosts[memcached_server_count(ptr)]);
+
+    instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+
+    memcached_server_create(ptr, instance);
     /* TODO check return type */
-    (void)memcached_server_create_with(ptr, &ptr->hosts[memcached_server_count(ptr)], list[x].hostname,
+    (void)memcached_server_create_with(ptr, instance, list[x].hostname,
                                        list[x].port, list[x].weight, list[x].type);
     ptr->number_of_hosts++;
   }
-  ptr->hosts[0].number_of_hosts= memcached_server_count(ptr);
+
+  // Provides backwards compatibility with server list.
+  {
+    memcached_server_instance_st *instance;
+    instance= memcached_server_instance_fetch(ptr, 0);
+    instance->number_of_hosts= memcached_server_count(ptr);
+  }
 
   return run_distribution(ptr);
 }
@@ -339,7 +353,7 @@ memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *pt
                                                                 const char *filename,
                                                                 uint32_t weight)
 {
-  if (!filename)
+  if (! filename)
     return MEMCACHED_FAILURE;
 
   return server_add(ptr, filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
@@ -357,10 +371,10 @@ memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
                                                         in_port_t port,
                                                         uint32_t weight)
 {
-  if (!port)
+  if (! port)
     port= MEMCACHED_DEFAULT_PORT;
 
-  if (!hostname)
+  if (! hostname)
     hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_UDP);
@@ -378,10 +392,10 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
                                                     in_port_t port,
                                                     uint32_t weight)
 {
-  if (!port)
+  if (! port)
     port= MEMCACHED_DEFAULT_PORT;
 
-  if (!hostname)
+  if (! hostname)
     hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_TCP);
@@ -392,25 +406,28 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      uint32_t weight,
                                      memcached_connection_t type)
 {
-  memcached_server_st *new_host_list;
+  memcached_server_instance_st *new_host_list;
+  memcached_server_instance_st *instance;
 
   if ( (ptr->flags.use_udp && type != MEMCACHED_CONNECTION_UDP)
       || ( (type == MEMCACHED_CONNECTION_UDP) && (! ptr->flags.use_udp) ) )
     return MEMCACHED_INVALID_HOST_PROTOCOL;
 
-  new_host_list= ptr->call_realloc(ptr, ptr->hosts,
-                                   sizeof(memcached_server_st) * (ptr->number_of_hosts + 1));
+  new_host_list= ptr->call_realloc(ptr, memcached_server_list(ptr),
+                                   sizeof(memcached_server_instance_st) * (ptr->number_of_hosts + 1));
 
   if (new_host_list == NULL)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-  ptr->hosts= new_host_list;
+  memcached_server_list_set(ptr, new_host_list);
 
   /* TODO: Check return type */
-  (void)memcached_server_create_with(ptr, &ptr->hosts[memcached_server_count(ptr)], hostname, port, weight, type);
+  instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+  (void)memcached_server_create_with(ptr, instance, hostname, port, weight, type);
   ptr->number_of_hosts++;
 
-  memcached_servers_set_count(&ptr->hosts[0], memcached_server_count(ptr));
+  instance= memcached_server_instance_fetch(ptr, 0);
+  memcached_servers_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
 }
@@ -419,7 +436,7 @@ memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 {
   uint32_t x, host_index;
   memcached_st *ptr= st_ptr->root;
-  memcached_server_st *list= ptr->hosts;
+  memcached_server_st *list= memcached_server_list(ptr);
 
   for (x= 0, host_index= 0; x < memcached_server_count(ptr); x++)
   {
@@ -455,12 +472,12 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
                                                               memcached_return_t *error)
 {
   unsigned int count;
-  memcached_server_st *new_host_list;
+  memcached_server_instance_st *new_host_list;
 
   if (hostname == NULL || error == NULL)
     return NULL;
 
-  if (!port)
+  if (! port)
     port= MEMCACHED_DEFAULT_PORT;
 
   /* Increment count for hosts */
@@ -470,7 +487,7 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
     count+= memcached_servers_count(ptr);
   }
 
-  new_host_list= (memcached_server_st *)realloc(ptr, sizeof(memcached_server_st) * count);
+  new_host_list= (memcached_server_instance_st *)realloc(ptr, sizeof(memcached_server_instance_st) * count);
   if (!new_host_list)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;

@@ -54,12 +54,15 @@
 #include "libmemcached/memcached.h"
 #include "libmemcached/watchpoint.h"
 
+typedef struct memcached_server_st memcached_server_instance_st;
+
 /* These are private not to be installed headers */
 #include "libmemcached/io.h"
 #include "libmemcached/internal.h"
 #include "libmemcached/libmemcached_probes.h"
 #include "libmemcached/memcached/protocol_binary.h"
 #include "libmemcached/byteorder.h"
+#include "libmemcached/response.h"
 
 /* string value */
 struct memcached_continuum_item_st
@@ -103,27 +106,23 @@ LIBMEMCACHED_LOCAL
 uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_connect(memcached_server_st *ptr);
+memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_response(memcached_server_st *ptr,
-                                      char *buffer, size_t buffer_length,
-                                      memcached_result_st *result);
-LIBMEMCACHED_LOCAL
-void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death);
+void memcached_quit_server(memcached_server_instance_st *ptr, uint8_t io_death);
 
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_do(memcached_server_st *ptr, const void *commmand,
+memcached_return_t memcached_do(memcached_server_instance_st *ptr, const void *commmand,
                                 size_t command_length, uint8_t with_flush);
 LIBMEMCACHED_LOCAL
-memcached_return_t value_fetch(memcached_server_st *ptr,
+memcached_return_t value_fetch(memcached_server_instance_st *ptr,
                                char *buffer,
                                memcached_result_st *result);
 LIBMEMCACHED_LOCAL
-void server_list_free(memcached_st *ptr, memcached_server_st *servers);
+void server_list_free(memcached_st *ptr, memcached_server_instance_st *servers);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const char * const *keys,
@@ -135,7 +134,7 @@ LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_purge(memcached_server_st *ptr);
+memcached_return_t memcached_purge(memcached_server_instance_st *ptr);
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
 {
