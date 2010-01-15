@@ -45,29 +45,13 @@ extern "C" {
 #endif
 
 struct memcached_st {
-  struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
-    bool is_purging:1;
-    bool is_processing_input:1;
-  } options;
-  memcached_server_distribution_t distribution;
-  memcached_hash_t hash;
-  uint32_t continuum_points_counter; // Ketama
-  memcached_server_st *servers;
-  memcached_server_st *last_disconnected_server;
-  int32_t snd_timeout;
-  int32_t rcv_timeout;
-  uint32_t server_failure_limit;
-  uint32_t io_msg_watermark;
-  uint32_t io_bytes_watermark;
-  uint32_t io_key_prefetch;
-  uint32_t number_of_hosts;
-  int cached_errno;
   /**
     @note these are static and should not change without a call to behavior.
   */
   struct {
+    bool is_purging:1;
+    bool is_processing_input:1;
+    // Everything below here is pretty static.
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
     bool buffer_requests:1;
@@ -85,6 +69,19 @@ struct memcached_st {
     bool verify_key:1;
     bool cork:1;
   } flags;
+  memcached_server_distribution_t distribution;
+  memcached_hash_t hash;
+  uint32_t continuum_points_counter; // Ketama
+  memcached_server_st *servers;
+  memcached_server_st *last_disconnected_server;
+  int32_t snd_timeout;
+  int32_t rcv_timeout;
+  uint32_t server_failure_limit;
+  uint32_t io_msg_watermark;
+  uint32_t io_bytes_watermark;
+  uint32_t io_key_prefetch;
+  uint32_t number_of_hosts;
+  int cached_errno;
   int32_t poll_timeout;
   int32_t connect_timeout;
   int32_t retry_timeout;
@@ -108,6 +105,9 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
+  struct {
+    bool is_allocated:1;
+  } options;
 };
 
 LIBMEMCACHED_API
@@ -250,8 +250,13 @@ void *memcached_set_user_data(memcached_st *ptr, void *data);
 LIBMEMCACHED_LOCAL
 memcached_return_t run_distribution(memcached_st *ptr);
 
+// These are private 
 #define memcached_is_allocated(__object) ((__object)->options.is_allocated)
 #define memcached_is_initialized(__object) ((__object)->options.is_initialized)
+#define memcached_is_purging(__object) ((__object)->flags.is_purging)
+#define memcached_is_processing_input(__object) ((__object)->flags.is_processing_input)
+#define memcached_set_purging(__object, __value) ((__object)->flags.is_purging= (__value))
+#define memcached_set_processing_input(__object, __value) ((__object)->flags.is_processing_input= (__value))
 
 #ifdef __cplusplus
 }

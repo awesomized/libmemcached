@@ -5,7 +5,7 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
   uint32_t x;
   memcached_return_t ret= MEMCACHED_SUCCESS;
 
-  if (ptr->root->options.is_purging || /* already purging */
+  if (memcached_is_purging(ptr->root) || /* already purging */
       (memcached_server_response_count(ptr) < ptr->root->io_msg_watermark &&
        ptr->io_bytes_sent < ptr->root->io_bytes_watermark) ||
       (ptr->io_bytes_sent >= ptr->root->io_bytes_watermark &&
@@ -16,14 +16,15 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
 
   /* memcached_io_write and memcached_response may call memcached_purge
     so we need to be able stop any recursion.. */
-  ptr->root->options.is_purging= true;
+  memcached_set_purging(ptr->root, true);
 
   WATCHPOINT_ASSERT(ptr->fd != -1);
   /* Force a flush of the buffer to ensure that we don't have the n-1 pending
     requests buffered up.. */
   if (memcached_io_write(ptr, NULL, 0, 1) == -1)
   {
-    ptr->root->options.is_purging= true;
+    memcached_set_purging(ptr->root, true);
+
     return MEMCACHED_WRITE_FAILURE;
   }
   WATCHPOINT_ASSERT(ptr->fd != -1);
@@ -82,7 +83,7 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
     memcached_result_free(result_ptr);
     ptr->root->poll_timeout= timeo;
   }
-  ptr->root->options.is_purging= false;
+  memcached_set_purging(ptr->root, false);
 
   return ret;
 }

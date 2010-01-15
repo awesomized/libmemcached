@@ -21,9 +21,10 @@ memcached_st *memcached_create(memcached_st *ptr)
     memset(ptr, 0, sizeof(memcached_st));
   }
 
-  ptr->options.is_initialized= true;
-  ptr->options.is_purging= false;
-  ptr->options.is_processing_input= false;
+#if 0
+  memcached_set_purging(ptr, false);
+  memcached_set_processing_input(ptr, false);
+#endif
 
   memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
 
@@ -102,10 +103,6 @@ void memcached_free(memcached_st *ptr)
   if (memcached_is_allocated(ptr))
   {
     ptr->call_free(ptr, ptr);
-  }
-  else
-  {
-    ptr->options.is_initialized= false;
   }
 }
 

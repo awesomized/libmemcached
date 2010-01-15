@@ -8,6 +8,8 @@ VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-rea
 
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
+PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
+
 if BUILD_LIBMEMCACHEDUTIL
 TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 endif
@@ -214,6 +216,10 @@ test-plus: tests/testplus
 
 test-hash: tests/testhashkit
 	$(HASH_COMMAND)
+
+pahole-mem: tests/testapp
+	$(PAHOLE_COMMAND)  $(MEM_COMMAND)
+
 
 gdb-mem: tests/testapp
 	$(DEBUG_COMMAND)  $(MEM_COMMAND)
