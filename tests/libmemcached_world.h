@@ -62,10 +62,10 @@ test_return_t world_container_startup(libmemcached_test_container_st *container)
 {
   memcached_return_t rc;
   container->parent= memcached_create(NULL);
-  test_truth((container->parent != NULL));
+  test_true((container->parent != NULL));
 
   rc= memcached_server_push(container->parent, container->construct.servers);
-  test_truth(rc == MEMCACHED_SUCCESS);
+  test_true(rc == MEMCACHED_SUCCESS);
 
   return TEST_SUCCESS;
 }
@@ -81,7 +81,7 @@ test_return_t world_container_shutdown(libmemcached_test_container_st *container
 test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
   container->memc= memcached_clone(NULL, container->parent);
-  test_truth((container->memc != NULL));
+  test_true((container->memc != NULL));
 
   return TEST_SUCCESS;
 }
@@ -101,8 +101,8 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
     memcached_server_st *instance=
       memcached_server_instance_fetch(container->memc, loop);
 
-    test_truth(instance->fd == -1);
-    test_truth(instance->cursor_active == 0);
+    test_true(instance->fd == -1);
+    test_true(instance->cursor_active == 0);
   }
 
   return TEST_SUCCESS;
@@ -111,7 +111,7 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
 
 test_return_t world_post_run(libmemcached_test_container_st *container)
 {
-  test_truth(container->memc);
+  test_true(container->memc);
 
   return TEST_SUCCESS;
 }

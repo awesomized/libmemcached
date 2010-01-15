@@ -35,14 +35,14 @@ static test_return_t init_test(void *not_used __attribute__((unused)))
   hashkit_st *hashk_ptr;
 
   hashk_ptr= hashkit_create(&hashk);
-  test_truth(hashk_ptr);
-  test_truth(hashk_ptr == &hashk);
-  test_truth(hashkit_is_initialized(&hashk) == true);
-  test_truth(hashkit_is_allocated(hashk_ptr) == false);
+  test_true(hashk_ptr);
+  test_true(hashk_ptr == &hashk);
+  test_true(hashkit_is_initialized(&hashk) == true);
+  test_true(hashkit_is_allocated(hashk_ptr) == false);
 
   hashkit_free(hashk_ptr);
 
-  test_truth(hashkit_is_initialized(&hashk) == false);
+  test_true(hashkit_is_initialized(&hashk) == false);
 
   return TEST_SUCCESS;
 }
@@ -52,9 +52,9 @@ static test_return_t allocation_test(void *not_used __attribute__((unused)))
   hashkit_st *hashk_ptr;
 
   hashk_ptr= hashkit_create(NULL);
-  test_truth(hashk_ptr);
-  test_truth(hashkit_is_allocated(hashk_ptr) == true);
-  test_truth(hashkit_is_initialized(hashk_ptr) == true);
+  test_true(hashk_ptr);
+  test_true(hashkit_is_allocated(hashk_ptr) == true);
+  test_true(hashkit_is_initialized(hashk_ptr) == true);
   hashkit_free(hashk_ptr);
 
   return TEST_SUCCESS;
@@ -66,15 +66,15 @@ static test_return_t clone_test(hashkit_st *hashk)
   assert(&global_hashk == hashk);
 
   // Second we test if hashk is even valid
-  test_truth(hashkit_is_initialized(hashk) == true);
+  test_true(hashkit_is_initialized(hashk) == true);
 
   /* All null? */
   {
     hashkit_st *hashk_ptr;
     hashk_ptr= hashkit_clone(NULL, NULL);
-    test_truth(hashk_ptr);
-    test_truth(hashkit_is_allocated(hashk_ptr) == true);
-    test_truth(hashkit_is_initialized(hashk_ptr) == true);
+    test_true(hashk_ptr);
+    test_true(hashkit_is_allocated(hashk_ptr) == true);
+    test_true(hashkit_is_initialized(hashk_ptr) == true);
     hashkit_free(hashk_ptr);
   }
 
@@ -84,23 +84,23 @@ static test_return_t clone_test(hashkit_st *hashk)
 
     hashk_ptr= hashkit_clone(NULL, hashk);
 
-    test_truth(hashk_ptr);
-    test_truth(hashkit_is_allocated(hashk_ptr) == true);
-    test_truth(hashkit_is_initialized(hashk_ptr) == true);
+    test_true(hashk_ptr);
+    test_true(hashkit_is_allocated(hashk_ptr) == true);
+    test_true(hashkit_is_initialized(hashk_ptr) == true);
 
-    test_truth(hashk_ptr->distribution == hashk->distribution);
-    test_truth(hashk_ptr->continuum_count == hashk->continuum_count);
-    test_truth(hashk_ptr->continuum_points_count == hashk->continuum_points_count);
-    test_truth(hashk_ptr->list_size == hashk->list_size);
-    test_truth(hashk_ptr->context_size == hashk->context_size);
-    test_truth(hashk_ptr->continuum == NULL);
-    test_truth(hashk_ptr->hash_fn == hashk->hash_fn);
-    test_truth(hashk_ptr->active_fn == hashk->active_fn);
-    test_truth(hashk_ptr->continuum_hash_fn == hashk->continuum_hash_fn);
-    test_truth(hashk_ptr->continuum_key_fn == hashk->continuum_key_fn);
-    test_truth(hashk_ptr->sort_fn == hashk->sort_fn);
-    test_truth(hashk_ptr->weight_fn == hashk->weight_fn);
-    test_truth(hashk_ptr->list == hashk->list);
+    test_true(hashk_ptr->distribution == hashk->distribution);
+    test_true(hashk_ptr->continuum_count == hashk->continuum_count);
+    test_true(hashk_ptr->continuum_points_count == hashk->continuum_points_count);
+    test_true(hashk_ptr->list_size == hashk->list_size);
+    test_true(hashk_ptr->context_size == hashk->context_size);
+    test_true(hashk_ptr->continuum == NULL);
+    test_true(hashk_ptr->hash_fn == hashk->hash_fn);
+    test_true(hashk_ptr->active_fn == hashk->active_fn);
+    test_true(hashk_ptr->continuum_hash_fn == hashk->continuum_hash_fn);
+    test_true(hashk_ptr->continuum_key_fn == hashk->continuum_key_fn);
+    test_true(hashk_ptr->sort_fn == hashk->sort_fn);
+    test_true(hashk_ptr->weight_fn == hashk->weight_fn);
+    test_true(hashk_ptr->list == hashk->list);
 
     hashkit_free(hashk_ptr);
   }
@@ -111,7 +111,7 @@ static test_return_t clone_test(hashkit_st *hashk)
     hashkit_st *hash_clone;
 
     hash_clone= hashkit_clone(&declared_clone, NULL);
-    test_truth(hash_clone);
+    test_true(hash_clone);
 
     hashkit_free(hash_clone);
   }
@@ -122,7 +122,7 @@ static test_return_t clone_test(hashkit_st *hashk)
     hashkit_st *hash_clone;
     memset(&declared_clone, 0 , sizeof(hashkit_st));
     hash_clone= hashkit_clone(&declared_clone, hashk);
-    test_truth(hash_clone);
+    test_true(hash_clone);
     hashkit_free(hash_clone);
   }
 
@@ -140,7 +140,7 @@ static test_return_t md5_run (hashkit_st *hashk __attribute__((unused)))
     uint32_t hash_val;
 
     hash_val= hashkit_md5(*ptr, strlen(*ptr));
-    test_truth(md5_values[x] == hash_val);
+    test_true(md5_values[x] == hash_val);
   }
 
   return TEST_SUCCESS;

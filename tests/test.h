@@ -155,7 +155,7 @@ do \
   return TEST_FAILURE; \
 } while (0)
 
-#define test_truth(A) \
+#define test_true(A) \
 do \
 { \
   if (! (A)) { \
