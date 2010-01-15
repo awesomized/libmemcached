@@ -168,11 +168,11 @@ static inline memcached_return_t memcached_validate_key_length(size_t key_length
 #endif
 
 /*
-  cork_switch() tries to enable TCP_CORK. IF TCP_CORK is not an option
+  test_cork() tries to enable TCP_CORK. IF TCP_CORK is not an option
   on the system it returns false but sets errno to 0. Otherwise on
   failure errno is set.
 */
-static inline memcached_ternary_t cork_switch(memcached_server_st *ptr, bool enable)
+static inline memcached_ternary_t test_cork(memcached_server_st *ptr, bool enable)
 {
 #ifdef CORK
   if (ptr->type != MEMCACHED_CONNECTION_TCP)
@@ -184,11 +184,11 @@ static inline memcached_ternary_t cork_switch(memcached_server_st *ptr, bool ena
   {
     return MEM_TRUE;
   }
-  else
-  {
-    ptr->cached_errno= errno;
-    return MEM_FALSE;
-  }
+
+  perror(strerror(errno));
+  ptr->cached_errno= errno;
+
+  return MEM_FALSE;
 #else
   (void)ptr;
   (void)enable;

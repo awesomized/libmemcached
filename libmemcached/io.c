@@ -160,8 +160,11 @@ static inline void memcached_io_cork_push(memcached_server_st *ptr)
   if (ptr->root->flags.cork == false || ptr->state.is_corked)
     return;
 
-  ptr->state.is_corked=
-    cork_switch(ptr, true) == MEM_TRUE ? true : false;
+  int enable= 1;
+  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
+                      &enable, (socklen_t)sizeof(int));
+  if (! err)
+    ptr->state.is_corked= true;
 
   WATCHPOINT_ASSERT(ptr->state.is_corked == true);
 #else
@@ -175,8 +178,11 @@ static inline void memcached_io_cork_pop(memcached_server_st *ptr)
   if (ptr->root->flags.cork == false || ptr->state.is_corked == false)
     return;
 
-  ptr->state.is_corked=
-    cork_switch(ptr, false) == MEM_FALSE ? false : true;
+  int enable= 0;
+  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
+                      &enable, (socklen_t)sizeof(int));
+  if (! err)
+    ptr->state.is_corked= false;
 
   WATCHPOINT_ASSERT(ptr->state.is_corked == false);
 #else

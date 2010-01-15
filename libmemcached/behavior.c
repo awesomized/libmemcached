@@ -211,7 +211,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 
         /* Now we test! */
         memcached_ternary_t enabled;
-        enabled= cork_switch(instance, true);
+        enabled= test_cork(instance, true);
 
         switch (enabled)
         {
@@ -219,7 +219,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
           return ptr->cached_errno ? MEMCACHED_ERRNO : MEMCACHED_FAILURE ;
         case MEM_TRUE:
           {
-            enabled= cork_switch(instance, false);
+            enabled= test_cork(instance, false);
 
             if (enabled == false) // Possible bug in OS?
             {
@@ -228,6 +228,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
             }
             ptr->flags.cork= true;
             ptr->flags.tcp_nodelay= true;
+            memcached_quit(ptr); // We go on and reset the connections.
           }
           break;
         case MEM_NOT:
