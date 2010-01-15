@@ -186,10 +186,87 @@ test_st smash_tests[] ={
   {0, 0, 0}
 };
 
+#define BENCHMARK_TEST_LOOP 20000
+
+struct benchmark_state_st
+{
+  bool create_init;
+  bool clone_init;
+  memcached_st *create;
+  memcached_st *clone;
+} benchmark_state;
+
+static test_return_t memcached_create_benchmark(memcached_st *memc __attribute__((unused)))
+{
+  benchmark_state.create_init= true;
+
+  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  {
+    memcached_st *ptr;
+    ptr= memcached_create(&benchmark_state.create[x]);
+
+    test_true(ptr);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_clone_benchmark(memcached_st *memc)
+{
+  benchmark_state.clone_init= true;
+
+  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  {
+    memcached_st *ptr;
+    ptr= memcached_clone(&benchmark_state.clone[x], memc);
+
+    test_true(ptr);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t pre_allocate(memcached_st *memc __attribute__((unused)))
+{
+  memset(&benchmark_state, 0, sizeof(benchmark_state));
+
+  benchmark_state.create= (memcached_st *)calloc(BENCHMARK_TEST_LOOP, sizeof(memcached_st));
+  test_true(benchmark_state.create);
+  benchmark_state.clone= (memcached_st *)calloc(BENCHMARK_TEST_LOOP, sizeof(memcached_st));
+  test_true(benchmark_state.clone);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t post_allocate(memcached_st *memc __attribute__((unused)))
+{
+  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  {
+    if (benchmark_state.create_init)
+      memcached_free(&benchmark_state.create[x]);
+
+    if (benchmark_state.clone_init)
+      memcached_free(&benchmark_state.clone[x]);
+  }
+
+  free(benchmark_state.create);
+  free(benchmark_state.clone);
+
+  return TEST_SUCCESS;
+}
+
+
+test_st micro_tests[] ={
+  {"memcached_create", 1, (test_callback_fn)memcached_create_benchmark },
+  {"memcached_clone", 1, (test_callback_fn)memcached_clone_benchmark },
+  {0, 0, 0}
+};
+
 
 collection_st collection[] ={
   {"smash", 0, 0, smash_tests},
   {"smash_nonblock", (test_callback_fn)pre_nonblock, 0, smash_tests},
+  {"micro-benchmark", (test_callback_fn)pre_allocate, (test_callback_fn)post_allocate, micro_tests},
   {0, 0, 0, 0}
 };
 
