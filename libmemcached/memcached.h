@@ -83,6 +83,7 @@ struct memcached_st {
     bool use_sort_hosts:1;
     bool use_udp:1;
     bool verify_key:1;
+    bool cork:1;
   } flags;
   int32_t poll_timeout;
   int32_t connect_timeout;

@@ -1,5 +1,7 @@
 0.38
 
+ * Added MEMCACHED_BEHAVIOR_CORK.
+ 
  * memslap now creates a configuration file at ~/.memslap.cnf
 
  * memcached_purge() now calls any callbacks registered during get

@@ -29,6 +29,9 @@ struct memcached_server_st {
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
   uint32_t weight;
+  struct { // Place any "state" sort variables in here.
+    bool is_corked;
+  } state;
   uint8_t major_version;
   uint8_t micro_version;
   uint8_t minor_version;

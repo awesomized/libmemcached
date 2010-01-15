@@ -1858,6 +1858,29 @@ static test_return_t  behavior_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t MEMCACHED_BEHAVIOR_CORK_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  bool set= true;
+  bool value;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CORK, set);
+#ifdef TCP_CORK
+  test_truth(rc == MEMCACHED_SUCCESS);
+#else
+  test_truth(rc == MEMCACHED_NOT_SUPPORTED);
+#endif
+
+  value= (bool)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_CORK);
+#ifdef TCP_CORK
+  test_truth((bool)value == set);
+#else
+  test_false((bool)value == set);
+#endif
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t fetch_all_results(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
@@ -3362,11 +3385,35 @@ static test_return_t  add_host_test1(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t  pre_nonblock(memcached_st *memc)
+static test_return_t pre_nonblock(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
   return TEST_SUCCESS;
+}
+
+static test_return_t pre_cork(memcached_st *memc)
+{
+  memcached_return_t rc;
+  bool set= true;
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CORK, set);
+
+  if (rc == MEMCACHED_SUCCESS)
+    return TEST_SUCCESS;
+
+  return TEST_SKIPPED;
+}
+
+static test_return_t pre_cork_and_nonblock(memcached_st *memc)
+{
+  test_return_t rc;
+  
+  rc= pre_cork(memc);
+
+  if (rc != TEST_SUCCESS)
+    return rc;
+
+  return pre_nonblock(memc);
 }
 
 static test_return_t pre_nonblock_binary(memcached_st *memc)
@@ -5762,6 +5809,7 @@ test_st tests[] ={
 
 test_st behavior_tests[] ={
   {"behavior_test", 0, (test_callback_fn)behavior_test},
+  {"MEMCACHED_BEHAVIOR_CORK", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_CORK_test},
   {0, 0, 0}
 };
 
@@ -5977,6 +6025,8 @@ collection_st collection[] ={
   {"generate_murmur", (test_callback_fn)pre_murmur, 0, generate_tests},
   {"generate_jenkins", (test_callback_fn)pre_jenkins, 0, generate_tests},
   {"generate_nonblock", (test_callback_fn)pre_nonblock, 0, generate_tests},
+  {"generate_corked", (test_callback_fn)pre_cork, 0, generate_tests},
+  {"generate_corked_and_nonblock", (test_callback_fn)pre_cork_and_nonblock, 0, generate_tests},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", (test_callback_fn)pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", (test_callback_fn)pre_behavior_ketama_weighted, 0, consistent_weighted_tests},

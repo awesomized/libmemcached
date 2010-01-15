@@ -111,7 +111,7 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
       return MEMCACHED_FAILURE;
   }
 
-  if (ptr->root->send_size)
+  if (ptr->root->send_size > 0)
   {
     int error;
 
@@ -122,7 +122,7 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
       return MEMCACHED_FAILURE;
   }
 
-  if (ptr->root->recv_size)
+  if (ptr->root->recv_size > 0)
   {
     int error;
 

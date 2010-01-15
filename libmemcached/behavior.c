@@ -185,6 +185,57 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       srandom((uint32_t) time(NULL));
       ptr->flags.randomize_replica_read= set_flag(data);
       break;
+  case MEMCACHED_BEHAVIOR_CORK:
+      {
+        memcached_server_instance_st *instance;
+        bool action= set_flag(data);
+
+        if (action == false)
+        {
+          ptr->flags.cork= set_flag(false);
+          return MEMCACHED_SUCCESS;
+        }
+
+        instance= memcached_server_instance_fetch(ptr, 0);
+        if (! instance)
+          return MEMCACHED_NO_SERVERS;
+
+
+        /* We just try the first host, and if it is down we return zero */
+        memcached_return_t rc;
+        rc= memcached_connect(instance);
+        if (rc != MEMCACHED_SUCCESS)
+        {
+          return rc;
+        }
+
+        /* Now we test! */
+        memcached_ternary_t enabled;
+        enabled= cork_switch(instance, true);
+
+        switch (enabled)
+        {
+        case MEM_FALSE:
+          return ptr->cached_errno ? MEMCACHED_ERRNO : MEMCACHED_FAILURE ;
+        case MEM_TRUE:
+          {
+            enabled= cork_switch(instance, false);
+
+            if (enabled == false) // Possible bug in OS?
+            {
+              memcached_quit_server(instance, false); // We should reset everything on this error.
+              return MEMCACHED_ERRNO;  // Errno will be true because we will have already set it.
+            }
+            ptr->flags.cork= true;
+            ptr->flags.tcp_nodelay= true;
+          }
+          break;
+        case MEM_NOT:
+        default:
+          return MEMCACHED_NOT_SUPPORTED;
+        }
+      }
+      break;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     /* Shouldn't get here */
@@ -250,41 +301,54 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return (uint64_t)ptr->rcv_timeout;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
-      int sock_size;
+      int sock_size= 0;
       socklen_t sock_length= sizeof(int);
       memcached_server_instance_st *instance;
 
+      if (ptr->send_size != -1) // If value is -1 then we are using the default
+        return (uint64_t) ptr->send_size;
+
       instance= memcached_server_instance_fetch(ptr, 0);
 
-      /* REFACTOR */
-      /* We just try the first host, and if it is down we return zero */
-      if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
-        return 0;
+      if (instance) // If we have an instance we test, otherwise we just set and pray
+      {
+        /* REFACTOR */
+        /* We just try the first host, and if it is down we return zero */
+        if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
+          return 0;
 
-      if (getsockopt(instance->fd, SOL_SOCKET,
-                     SO_SNDBUF, &sock_size, &sock_length))
-        return 0; /* Zero means error */
+        if (getsockopt(instance->fd, SOL_SOCKET,
+                       SO_SNDBUF, &sock_size, &sock_length))
+          return 0; /* Zero means error */
+      }
 
       return (uint64_t) sock_size;
     }
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     {
-      int sock_size;
+      int sock_size= 0;
       socklen_t sock_length= sizeof(int);
       memcached_server_instance_st *instance;
+
+      if (ptr->recv_size != -1) // If value is -1 then we are using the default
+        return (uint64_t) ptr->recv_size;
 
       instance= memcached_server_instance_fetch(ptr, 0);
 
       /** 
         @note REFACTOR 
       */
-      /* We just try the first host, and if it is down we return zero */
-      if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
-        return 0;
+      if (instance)
+      {
+        /* We just try the first host, and if it is down we return zero */
+        if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
+          return 0;
 
-      if (getsockopt(instance->fd, SOL_SOCKET,
-                     SO_RCVBUF, &sock_size, &sock_length))
-        return 0; /* Zero means error */
+        if (getsockopt(instance->fd, SOL_SOCKET,
+                       SO_RCVBUF, &sock_size, &sock_length))
+          return 0; /* Zero means error */
+
+      }
 
       return (uint64_t) sock_size;
     }
@@ -298,6 +362,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.auto_eject_hosts;
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
     return ptr->flags.randomize_replica_read;
+  case MEMCACHED_BEHAVIOR_CORK:
+    return ptr->flags.cork;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */

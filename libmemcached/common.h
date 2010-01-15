@@ -71,6 +71,13 @@ struct memcached_continuum_item_st
   uint32_t value;
 };
 
+/* Yum, Fortran.... can you make the reference? */
+typedef enum {
+  MEM_NOT= -1,
+  MEM_FALSE= false,
+  MEM_TRUE= true,
+} memcached_ternary_t;
+
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 
@@ -82,7 +89,6 @@ struct memcached_continuum_item_st
 #define likely(x)       if(__builtin_expect((x) != 0, 1))
 #define unlikely(x)     if(__builtin_expect((x) != 0, 0))
 #endif
-
 
 #define MEMCACHED_BLOCK_SIZE 1024
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
@@ -153,6 +159,44 @@ static inline memcached_return_t memcached_validate_key_length(size_t key_length
   }
 
   return MEMCACHED_SUCCESS;
+}
+
+#ifdef TCP_CORK
+  #define CORK TCP_CORK
+#elif defined TCP_NOPUSH
+  #define CORK TCP_NOPUSH
+#endif
+
+/*
+  cork_switch() tries to enable TCP_CORK. IF TCP_CORK is not an option
+  on the system it returns false but sets errno to 0. Otherwise on
+  failure errno is set.
+*/
+static inline memcached_ternary_t cork_switch(memcached_server_st *ptr, bool enable)
+{
+#ifdef CORK
+  if (ptr->type != MEMCACHED_CONNECTION_TCP)
+    return MEM_FALSE;
+
+  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
+                      &enable, (socklen_t)sizeof(int));
+  if (! err)
+  {
+    return MEM_TRUE;
+  }
+  else
+  {
+    ptr->cached_errno= errno;
+    return MEM_FALSE;
+  }
+#else
+  (void)ptr;
+  (void)enable;
+
+  ptr->cached_errno= 0;
+
+  return MEM_NOT;
+#endif
 }
 
 #endif /* LIBMEMCACHED_COMMON_H */

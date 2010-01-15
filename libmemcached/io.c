@@ -154,6 +154,36 @@ static bool process_input_buffer(memcached_server_instance_st *ptr)
   return false;
 }
 
+static inline void memcached_io_cork_push(memcached_server_st *ptr)
+{
+#ifdef CORK
+  if (ptr->root->flags.cork == false || ptr->state.is_corked)
+    return;
+
+  ptr->state.is_corked=
+    cork_switch(ptr, true) == MEM_TRUE ? true : false;
+
+  WATCHPOINT_ASSERT(ptr->state.is_corked == true);
+#else
+  (void)ptr;
+#endif
+}
+
+static inline void memcached_io_cork_pop(memcached_server_st *ptr)
+{
+#ifdef CORK
+  if (ptr->root->flags.cork == false || ptr->state.is_corked == false)
+    return;
+
+  ptr->state.is_corked=
+    cork_switch(ptr, false) == MEM_FALSE ? false : true;
+
+  WATCHPOINT_ASSERT(ptr->state.is_corked == false);
+#else
+  (void)ptr;
+#endif
+}
+
 #ifdef UNUSED
 void memcached_io_preread(memcached_st *ptr)
 {
@@ -280,6 +310,12 @@ ssize_t memcached_io_write(memcached_server_instance_st *ptr,
   original_length= length;
   buffer_ptr= buffer;
 
+  /* more writable data is coming if a flush isn't required, so delay send */
+  if (! with_flush)
+  {
+    memcached_io_cork_push(ptr);
+  }
+
   while (length)
   {
     char *write_ptr;
@@ -330,7 +366,11 @@ ssize_t memcached_io_write(memcached_server_instance_st *ptr,
     memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != -1);
     if (io_flush(ptr, &rc) == -1)
+    {
       return -1;
+    }
+
+    memcached_io_cork_pop(ptr);
   }
 
   return (ssize_t) original_length;
