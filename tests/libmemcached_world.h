@@ -149,6 +149,30 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
   }
 }
 
+static test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+{
+  if (func)
+  {
+    return func(container->parent);
+  }
+  else
+  {
+    return TEST_SUCCESS;
+  }
+}
+
+static test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+{
+  if (func)
+  {
+    return func(container->parent);
+  }
+  else
+  {
+    return TEST_SUCCESS;
+  }
+}
+
 #ifdef	__cplusplus
 }
 #endif
@@ -156,17 +180,17 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
 #ifdef	__cplusplus
 
 static world_runner_st defualt_libmemcached_runner= {
+  reinterpret_cast<test_callback_runner_fn>(_pre_runner_default),
   reinterpret_cast<test_callback_runner_fn>(_runner_default),
-  reinterpret_cast<test_callback_runner_fn>(_runner_default),
-  reinterpret_cast<test_callback_runner_fn>(_runner_default)
+  reinterpret_cast<test_callback_runner_fn>(_post_runner_default)
 };
 
 #else
 
 static world_runner_st defualt_libmemcached_runner= {
+  (test_callback_runner_fn)_pre_runner_default,
   (test_callback_runner_fn)_runner_default,
-  (test_callback_runner_fn)_runner_default,
-  (test_callback_runner_fn)_runner_default
+  (test_callback_runner_fn)_post_runner_default
 };
 
 #endif

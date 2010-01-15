@@ -4893,8 +4893,9 @@ static test_return_t hsieh_avaibility_test (memcached_st *memc)
   expected_rc= MEMCACHED_SUCCESS;
 #endif
   memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
-                                            (uint64_t)MEMCACHED_HASH_HSIEH);
+                                                (uint64_t)MEMCACHED_HASH_HSIEH);
   test_true(rc == expected_rc);
+
   return TEST_SUCCESS;
 }
 

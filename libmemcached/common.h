@@ -172,7 +172,7 @@ static inline memcached_return_t memcached_validate_key_length(size_t key_length
   on the system it returns false but sets errno to 0. Otherwise on
   failure errno is set.
 */
-static inline memcached_ternary_t test_cork(memcached_server_st *ptr, bool enable)
+static inline memcached_ternary_t test_cork(memcached_server_st *ptr, int enable)
 {
 #ifdef CORK
   if (ptr->type != MEMCACHED_CONNECTION_TCP)

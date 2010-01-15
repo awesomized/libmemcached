@@ -186,6 +186,15 @@ int main(int argc, char *argv[])
 
     collection_rc= world.collection.startup(world_ptr);
 
+    if (collection_rc != TEST_SUCCESS)
+      goto skip_pre;
+
+    if (next->pre)
+    {
+      collection_rc= world.runner->pre(next->pre, world_ptr);
+    }
+
+skip_pre:
     switch (collection_rc)
     {
       case TEST_SUCCESS:
@@ -193,18 +202,19 @@ int main(int argc, char *argv[])
         break;
       case TEST_FAILURE:
         fprintf(stderr, "\n%s [ failed ]\n\n", next->name);
-        stats.failed++;
-        continue;
+        stats.collection_failed++;
+        goto cleanup;
       case TEST_SKIPPED:
         fprintf(stderr, "\n%s [ skipping ]\n\n", next->name);
-        stats.skipped++;
-        continue;
+        stats.collection_skipped++;
+        goto cleanup;
       case TEST_MEMORY_ALLOCATION_FAILURE:
       case TEST_MAXIMUM_RETURN:
       default:
         assert(0);
         break;
     }
+
 
     for (x= 0; run->name; run++)
     {
@@ -234,6 +244,7 @@ int main(int argc, char *argv[])
 
       // Runner code
       {
+#if 0
         if (next->pre && world.runner->pre)
         {
           return_code= world.runner->pre(next->pre, world_ptr);
@@ -243,16 +254,19 @@ int main(int argc, char *argv[])
             goto error;
           }
         }
+#endif
 
         gettimeofday(&start_time, NULL);
         return_code= world.runner->run(run->test_fn, world_ptr);
         gettimeofday(&end_time, NULL);
         load_time= timedif(end_time, start_time);
 
+#if 0
         if (next->post && world.runner->post)
         {
           (void) world.runner->post(next->post, world_ptr);
         }
+#endif
       }
 
       if (world.test.post_run)
@@ -260,7 +274,6 @@ int main(int argc, char *argv[])
         world.test.post_run(world_ptr);
       }
 
-error:
       stats.total++;
 
       fprintf(stderr, "\t\t\t\t\t");
@@ -300,20 +313,16 @@ error:
       }
     }
 
-    if (failed)
+    if (next->post && world.runner->post)
     {
-      stats.collection_failed++;
-    }
-
-    if (skipped)
-    {
-      stats.collection_skipped++;
+      (void) world.runner->post(next->post, world_ptr);
     }
 
     if (! failed && ! skipped)
     {
       stats.collection_success++;
     }
+cleanup:
 
     world.collection.shutdown(world_ptr);
   }
