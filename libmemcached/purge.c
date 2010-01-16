@@ -4,6 +4,7 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
 {
   uint32_t x;
   memcached_return_t ret= MEMCACHED_SUCCESS;
+  memcached_st *root= (memcached_st *)ptr->root;
 
   if (memcached_is_purging(ptr->root) || /* already purging */
       (memcached_server_response_count(ptr) < ptr->root->io_msg_watermark &&
@@ -16,14 +17,14 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
 
   /* memcached_io_write and memcached_response may call memcached_purge
     so we need to be able stop any recursion.. */
-  memcached_set_purging(ptr->root, true);
+  memcached_set_purging(root, true);
 
   WATCHPOINT_ASSERT(ptr->fd != -1);
   /* Force a flush of the buffer to ensure that we don't have the n-1 pending
     requests buffered up.. */
   if (memcached_io_write(ptr, NULL, 0, 1) == -1)
   {
-    memcached_set_purging(ptr->root, true);
+    memcached_set_purging(root, true);
 
     return MEMCACHED_WRITE_FAILURE;
   }
@@ -41,10 +42,10 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
      * data to be sent from the server (the commands was in the output buffer
      * and just flushed
    */
-    int32_t timeo= ptr->root->poll_timeout;
-    ptr->root->poll_timeout= 2000;
+    const int32_t timeo= ptr->root->poll_timeout;
+    root->poll_timeout= 2000;
 
-    result_ptr= memcached_result_create(ptr->root, &result);
+    result_ptr= memcached_result_create(root, &result);
     WATCHPOINT_ASSERT(result_ptr);
 
     for (x= 0; x < no_msg; x++)
@@ -81,9 +82,9 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
     }
 
     memcached_result_free(result_ptr);
-    ptr->root->poll_timeout= timeo;
+    root->poll_timeout= timeo;
   }
-  memcached_set_purging(ptr->root, false);
+  memcached_set_purging(root, false);
 
   return ret;
 }

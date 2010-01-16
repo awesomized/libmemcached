@@ -82,7 +82,8 @@ static test_return_t server_list_null_test(memcached_st *ptr __attribute__((unus
 #define TEST_PORT_COUNT 7
 in_port_t test_ports[TEST_PORT_COUNT];
 
-static memcached_return_t  server_display_function(memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
+static memcached_return_t  server_display_function(const memcached_st *ptr __attribute__((unused)),
+                                                   memcached_server_st *server, void *context)
 {
   /* Do Nothing */
   size_t bigger= *((size_t *)(context));
@@ -158,7 +159,7 @@ static test_return_t server_sort2_test(memcached_st *ptr __attribute__((unused))
   return TEST_SUCCESS;
 }
 
-static memcached_return_t server_display_unsort_function(memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
+static memcached_return_t server_display_unsort_function(const memcached_st *ptr __attribute__((unused)), memcached_server_st *server, void *context)
 {
   /* Do Nothing */
   uint32_t x= *((uint32_t *)(context));
@@ -685,7 +686,7 @@ static test_return_t flush_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static memcached_return_t  server_function(memcached_st *ptr __attribute__((unused)),
+static memcached_return_t  server_function(const memcached_st *ptr __attribute__((unused)),
                                            memcached_server_st *server __attribute__((unused)),
                                            void *context __attribute__((unused)))
 {
@@ -1497,7 +1498,7 @@ static test_return_t mget_result_alloc_test(memcached_st *memc)
 }
 
 /* Count the results */
-static memcached_return_t callback_counter(memcached_st *ptr __attribute__((unused)),
+static memcached_return_t callback_counter(const memcached_st *ptr __attribute__((unused)),
                                            memcached_result_st *result __attribute__((unused)),
                                            void *context)
 {
@@ -3615,7 +3616,7 @@ static test_return_t pre_replication_noblock(memcached_st *memc)
 }
 
 
-static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
+static void my_free(const memcached_st *ptr __attribute__((unused)), void *mem)
 {
 #ifdef HARD_MALLOC_TESTS
   void *real_ptr= (mem == NULL) ? mem : (void*)((caddr_t)mem - 8);
@@ -3626,7 +3627,7 @@ static void my_free(memcached_st *ptr __attribute__((unused)), void *mem)
 }
 
 
-static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t size)
+static void *my_malloc(const memcached_st *ptr __attribute__((unused)), const size_t size)
 {
 #ifdef HARD_MALLOC_TESTS
   void *ret= malloc(size + 8);
@@ -3647,7 +3648,7 @@ static void *my_malloc(memcached_st *ptr __attribute__((unused)), const size_t s
 }
 
 
-static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
+static void *my_realloc(const memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
 {
 #ifdef HARD_MALLOC_TESTS
   void *real_ptr= (mem == NULL) ? NULL : (void*)((caddr_t)mem - 8);
@@ -3666,7 +3667,7 @@ static void *my_realloc(memcached_st *ptr __attribute__((unused)), void *mem, co
 }
 
 
-static void *my_calloc(memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
+static void *my_calloc(const memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
 {
 #ifdef HARD_MALLOC_TESTS
   void *mem= my_malloc(ptr, nelem * size);
@@ -4098,10 +4099,10 @@ static test_return_t analyzer_test(memcached_st *memc)
 }
 
 /* Count the objects */
-static memcached_return_t callback_dump_counter(memcached_st *ptr __attribute__((unused)),
-                                              const char *key __attribute__((unused)),
-                                              size_t key_length __attribute__((unused)),
-                                              void *context)
+static memcached_return_t callback_dump_counter(const memcached_st *ptr __attribute__((unused)),
+                                                const char *key __attribute__((unused)),
+                                                size_t key_length __attribute__((unused)),
+                                                void *context)
 {
   size_t *counter= (size_t *)context;
 

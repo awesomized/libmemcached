@@ -25,7 +25,10 @@ memcached_return_t memcached_read_one_response(memcached_server_instance_st *ptr
   memcached_server_response_decrement(ptr);
 
   if (result == NULL)
-    result = &ptr->root->result;
+  {
+    memcached_st *root= (memcached_st *)ptr->root;
+    result = &root->result;
+  }
 
   memcached_return_t rc;
   if (ptr->root->flags.binary_protocol)

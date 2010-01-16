@@ -335,12 +335,16 @@ memcached_return_t memcached_connect(memcached_server_st *ptr)
 
     if (curr_time.tv_sec < ptr->next_retry)
     {
-      if (memcached_behavior_get(ptr->root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
+      memcached_st *root= (memcached_st *)ptr->root;
+      // @todo fix this by fixing behavior to no longer make use of
+      // memcached_st
+      if (memcached_behavior_get(root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
       {
-        run_distribution(ptr->root);
+        run_distribution(root);
       }
 
-      ptr->root->last_disconnected_server = ptr;
+      root->last_disconnected_server = ptr;
+
       return MEMCACHED_SERVER_MARKED_DEAD;
     }
   }
@@ -364,7 +368,12 @@ memcached_return_t memcached_connect(memcached_server_st *ptr)
     WATCHPOINT_ASSERT(0);
   }
 
-  unlikely ( rc != MEMCACHED_SUCCESS) ptr->root->last_disconnected_server = ptr;
+  unlikely ( rc != MEMCACHED_SUCCESS) 
+  {
+    //@todo create interface around last_discontected_server
+    memcached_st *root= (memcached_st *)ptr->root;
+    root->last_disconnected_server = ptr;
+  }
 
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
 

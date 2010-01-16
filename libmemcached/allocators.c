@@ -1,24 +1,24 @@
 #include "common.h"
 
-void libmemcached_free(memcached_st *ptr, void *mem)
+void libmemcached_free(const memcached_st *ptr, void *mem)
 {
   (void) ptr;
   free(mem);
 }
 
-void *libmemcached_malloc(memcached_st *ptr, size_t size)
+void *libmemcached_malloc(const memcached_st *ptr, size_t size)
 {
   (void) ptr;
   return malloc(size);
 }
 
-void *libmemcached_realloc(memcached_st *ptr, void *mem, size_t size)
+void *libmemcached_realloc(const memcached_st *ptr, void *mem, size_t size)
 {
   (void) ptr;
   return realloc(mem, size);
 }
 
-void *libmemcached_calloc(memcached_st *ptr, size_t nelem, size_t size)
+void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size)
 {
   if (ptr->call_malloc != libmemcached_malloc)
   {
@@ -47,7 +47,9 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,
     ptr->call_calloc= libmemcached_calloc;
   }
   else if (mem_malloc == NULL || mem_free == NULL || mem_realloc == NULL || mem_calloc == NULL)
+  {
     return MEMCACHED_FAILURE;
+  }
   else
   {
     ptr->call_malloc= mem_malloc;
@@ -59,7 +61,7 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-void memcached_get_memory_allocators(memcached_st *ptr,
+void memcached_get_memory_allocators(const memcached_st *ptr,
                                      memcached_malloc_fn *mem_malloc,
                                      memcached_free_fn *mem_free,
                                      memcached_realloc_fn *mem_realloc,

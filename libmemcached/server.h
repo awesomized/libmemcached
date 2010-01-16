@@ -43,7 +43,7 @@ struct memcached_server_st {
   size_t write_buffer_offset;
   struct addrinfo *address_info;
   time_t next_retry;
-  memcached_st *root;
+  const memcached_st *root;
   uint64_t limit_maxbytes;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];
@@ -92,11 +92,9 @@ void memcached_server_error_reset(memcached_server_st *ptr);
 /* These should not currently be used by end users */
 /* TODO: Is the above comment valid? If so, how can we unit test these if they
  * aren't exported. If not, we should remove the comment */
-LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_create(memcached_st *memc, memcached_server_st *ptr);
 
 LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_create_with(memcached_st *memc,
+memcached_server_st *memcached_server_create_with(const memcached_st *memc,
                                                   memcached_server_st *host,
                                                   const char *hostname,
                                                   in_port_t port,

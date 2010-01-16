@@ -24,11 +24,23 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,
                                                    memcached_calloc_fn mem_calloc);
 
 LIBMEMCACHED_API
-void memcached_get_memory_allocators(memcached_st *ptr,
+void memcached_get_memory_allocators(const memcached_st *ptr,
                                      memcached_malloc_fn *mem_malloc,
                                      memcached_free_fn *mem_free,
                                      memcached_realloc_fn *mem_realloc,
                                      memcached_calloc_fn *mem_calloc);
+
+LIBMEMCACHED_LOCAL
+void libmemcached_free(const memcached_st *ptr, void *mem);
+
+LIBMEMCACHED_LOCAL
+void *libmemcached_malloc(const memcached_st *ptr, const size_t size);
+
+LIBMEMCACHED_LOCAL
+void *libmemcached_realloc(const memcached_st *ptr, void *mem, const size_t size);
+
+LIBMEMCACHED_LOCAL
+void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size);
 
 
 #ifdef __cplusplus

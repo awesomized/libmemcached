@@ -1,4 +1,6 @@
-0.38
+0.38 
+
+ * Functions used for callbacks are now given const memcached_st.
 
  * Added MEMCACHED_BEHAVIOR_CORK.
  

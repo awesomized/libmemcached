@@ -14,7 +14,7 @@
 */
 #include "common.h"
 
-memcached_server_st *memcached_server_create(memcached_st *memc, memcached_server_st *ptr)
+static memcached_server_st *_server_create(const memcached_st *memc, memcached_server_st *ptr)
 {
   if (ptr == NULL)
   {
@@ -35,11 +35,11 @@ memcached_server_st *memcached_server_create(memcached_st *memc, memcached_serve
   return ptr;
 }
 
-memcached_server_st *memcached_server_create_with(memcached_st *memc, memcached_server_st *host,
+memcached_server_st *memcached_server_create_with(const memcached_st *memc, memcached_server_st *host,
                                                   const char *hostname, in_port_t port,
                                                   uint32_t weight, memcached_connection_t type)
 {
-  host= memcached_server_create(memc, host);
+  host= _server_create(memc, host);
 
   if (host == NULL)
     return NULL;

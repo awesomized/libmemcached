@@ -29,7 +29,7 @@ extern "C" {
    test_return_t mget_result_function(memcached_st *memc);
    test_return_t basic_behavior(memcached_st *memc);
    test_return_t mget_test(memcached_st *memc);
-   memcached_return_t callback_counter(memcached_st *,
+   memcached_return_t callback_counter(const memcached_st *,
                                        memcached_result_st *,
                                        void *context);
 }
@@ -150,9 +150,9 @@ test_return_t basic_master_key_test(memcached_st *memc)
 }
 
 /* Count the results */
-memcached_return_t callback_counter(memcached_st *,
-                                  memcached_result_st *,
-                                  void *context)
+memcached_return_t callback_counter(const memcached_st *,
+                                    memcached_result_st *,
+                                    void *context)
 {
   unsigned int *counter= static_cast<unsigned int *>(context);
 

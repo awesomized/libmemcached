@@ -221,7 +221,9 @@ public:
     strstm << port;
     tmp_str.append(strstm.str());
     memcached_server_st *server= memcached_servers_parse(tmp_str.c_str());
+
     memcached_return_t rc= memcached_server_remove(server);
+
     return (rc == MEMCACHED_SUCCESS);
   }
 

@@ -326,7 +326,6 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
 
     instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
 
-    memcached_server_create(ptr, instance);
     /* TODO check return type */
     (void)memcached_server_create_with(ptr, instance, list[x].hostname,
                                        list[x].port, list[x].weight, list[x].type);
@@ -432,13 +431,21 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   return run_distribution(ptr);
 }
 
+/**
+  @todo allow lists to query themselves even if they lack a root
+*/
 memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 {
   uint32_t x, host_index;
-  memcached_st *ptr= st_ptr->root;
-  memcached_server_st *list= memcached_server_list(ptr);
+  memcached_st *root= (memcached_st *)st_ptr->root;
+  memcached_server_st *list;
 
-  for (x= 0, host_index= 0; x < memcached_server_count(ptr); x++)
+  if (root == NULL)
+    return MEMCACHED_FAILURE;
+
+  list= memcached_server_list(root);
+
+  for (x= 0, host_index= 0; x < memcached_server_count(root); x++)
   {
     if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port)
     {
@@ -447,14 +454,14 @@ memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
       host_index++;
     }
   }
-  ptr->number_of_hosts= host_index;
+  root->number_of_hosts= host_index;
 
   if (st_ptr->address_info)
   {
     freeaddrinfo(st_ptr->address_info);
     st_ptr->address_info= NULL;
   }
-  run_distribution(ptr);
+  run_distribution(root);
 
   return MEMCACHED_SUCCESS;
 }

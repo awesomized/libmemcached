@@ -77,9 +77,9 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 /**
  * Callback function to count the number of results
  */
-static memcached_return_t callback_counter(memcached_st *ptr,
-                                         memcached_result_st *result,
-                                         void *context)
+static memcached_return_t callback_counter(const memcached_st *ptr,
+                                           memcached_result_st *result,
+                                           void *context)
 {
   (void)ptr;
   (void)result;

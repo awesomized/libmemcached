@@ -127,20 +127,21 @@ static bool process_input_buffer(memcached_server_instance_st *ptr)
    */
     memcached_callback_st cb= *ptr->root->callbacks;
 
-    memcached_set_processing_input(ptr->root, true);
+    memcached_set_processing_input((memcached_st *)ptr->root, true);
 
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     memcached_return_t error;
+    memcached_st *root= (memcached_st *)ptr->root;
     error= memcached_response(ptr, buffer, sizeof(buffer),
-                              &ptr->root->result);
+                              &root->result);
 
-    memcached_set_processing_input(ptr->root, false);
+    memcached_set_processing_input(root, false);
 
     if (error == MEMCACHED_SUCCESS)
     {
       for (unsigned int x= 0; x < cb.number_of_callback; x++)
       {
-        error= (*cb.callback[x])(ptr->root, &ptr->root->result, cb.context);
+        error= (*cb.callback[x])(ptr->root, &root->result, cb.context);
         if (error != MEMCACHED_SUCCESS)
           break;
       }

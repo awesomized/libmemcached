@@ -40,7 +40,7 @@ static char *opt_servers= NULL;
 static char *opt_hash= NULL;
 
 /* Print the keys and counter how many were found */
-static memcached_return_t key_printer(memcached_st *ptr __attribute__((unused)),
+static memcached_return_t key_printer(const memcached_st *ptr __attribute__((unused)),
                                       const char *key, size_t key_length,
                                       void *context __attribute__((unused)))
 {
