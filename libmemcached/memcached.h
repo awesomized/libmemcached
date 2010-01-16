@@ -257,6 +257,8 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_is_processing_input(__object) ((__object)->flags.is_processing_input)
 #define memcached_set_purging(__object, __value) ((__object)->flags.is_purging= (__value))
 #define memcached_set_processing_input(__object, __value) ((__object)->flags.is_processing_input= (__value))
+#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
+#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
 
 #ifdef __cplusplus
 }

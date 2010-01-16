@@ -16,12 +16,21 @@
 extern "C" {
 #endif
 
+/**
+  Strings are always under our control so we make some assumptions
+  about them.
+
+  1) is_initialized is always valid.
+  2) A string once intialized will always be, until free where we 
+     unset this flag.
+  3) A string always has a root.
+*/
+
 struct memcached_string_st {
   memcached_st *root;
   char *end;
   char *string;
   size_t current_size;
-  size_t block_size;
   struct {
     bool is_allocated:1;
     bool is_initialized:1;

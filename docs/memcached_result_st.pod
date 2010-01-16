@@ -3,7 +3,7 @@
 memcached_result_create, memcached_result_free,
 memcached_result_key_value, memcached_result_key_length,
 memcached_result_value, memcached_result_length,
-memcached_result_flags, memcached_result_cas - Work with results
+memcached_result_flags, memcached_result_cas - Work with memcached_result_st
 
 
 =head1 LIBRARY
@@ -18,19 +18,19 @@ C Client Library for memcached (libmemcached, -lmemcached)
     memcached_result_create (memcached_st *ptr,
                              memcached_result_st *result);
 
-  void memcached_result_free(memcached_result_st *result);
+  void memcached_result_free (memcached_result_st *result);
 
-  char * memcached_result_key_value (memcached_result_st *result);
+  const char * memcached_result_key_value (memcached_result_st *result);
 
-  size_t memcached_result_key_length (memcached_result_st *result);
+  size_t memcached_result_key_length (const memcached_result_st *result);
 
-  char *memcached_result_value (memcached_result_st *ptr);
+  const char *memcached_result_value (memcached_result_st *ptr);
 
-  size_t memcached_result_length (memcached_result_st *ptr);
+  size_t memcached_result_length (const memcached_result_st *ptr);
 
-  uint32_t memcached_result_flags (memcached_result_st *result)
+  uint32_t memcached_result_flags (const memcached_result_st *result)
 
-  uint64_t memcached_result_cas (memcached_result_st *result);
+  uint64_t memcached_result_cas (const memcached_result_st *result);
 
   memcached_return_t
     memcached_result_set_value (memcached_result_st *ptr,

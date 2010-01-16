@@ -55,14 +55,6 @@ void memcached_result_reset(memcached_result_st *ptr)
   ptr->expiration= 0;
 }
 
-/*
-  NOTE turn into macro
-*/
-memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length)
-{
-  return memcached_string_append(&ptr->value, value, length);
-}
-
 void memcached_result_free(memcached_result_st *ptr)
 {
   if (ptr == NULL)
@@ -86,17 +78,3 @@ void memcached_result_free(memcached_result_st *ptr)
     ptr->options.is_initialized= false;
   }
 }
-
-
-char *memcached_result_value(memcached_result_st *ptr)
-{
-  memcached_string_st *sptr= &ptr->value;
-  return memcached_string_value(sptr);
-}
-
-size_t memcached_result_length(memcached_result_st *ptr)
-{
-  memcached_string_st *sptr= &ptr->value;
-  return memcached_string_length(sptr);
-}
-

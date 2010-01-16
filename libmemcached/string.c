@@ -21,10 +21,10 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     size_t new_size;
 
     /* This is the block multiplier. To keep it larger and surive division errors we must round it up */
-    adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / string->block_size;
+    adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / MEMCACHED_BLOCK_SIZE;
     adjust++;
 
-    new_size= sizeof(char) * (size_t)((adjust * string->block_size) + string->current_size);
+    new_size= sizeof(char) * (size_t)((adjust * MEMCACHED_BLOCK_SIZE) + string->current_size);
     /* Test for overflow */
     if (new_size < need)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -37,49 +37,58 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     string->string= new_value;
     string->end= string->string + current_offset;
 
-    string->current_size+= (string->block_size * adjust);
+    string->current_size+= (MEMCACHED_BLOCK_SIZE * adjust);
   }
 
   return MEMCACHED_SUCCESS;
 }
 
-memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *string, size_t initial_size)
+static inline void _init_string(memcached_string_st *self)
+{
+  self->current_size= 0;
+  self->end= self->string= NULL;
+}
+
+memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *self, size_t initial_size)
 {
   memcached_return_t rc;
 
-  /* Saving malloc calls :) */
-  if (string)
-  {
-    WATCHPOINT_ASSERT(string->options.is_initialized == false);
+  WATCHPOINT_ASSERT(memc);
 
-    memset(string, 0, sizeof(memcached_string_st));
+  /* Saving malloc calls :) */
+  if (self)
+  {
+    WATCHPOINT_ASSERT(self->options.is_initialized == false);
+
+    self->options.is_allocated= false;
   }
   else
   {
-    string= memc->call_calloc(memc, 1, sizeof(memcached_string_st));
+    self= memc->call_malloc(memc, sizeof(memcached_string_st));
 
-    if (string == NULL)
+    if (self == NULL)
     {
       return NULL;
     }
 
-    string->options.is_allocated= true;
+    self->options.is_allocated= true;
   }
-  string->block_size= MEMCACHED_BLOCK_SIZE;
-  string->root= memc;
+  self->root= memc;
 
-  rc=  _string_check(string, initial_size);
+  _init_string(self);
+
+  rc=  _string_check(self, initial_size);
   if (rc != MEMCACHED_SUCCESS)
   {
-    memc->call_free(memc, string);
+    memc->call_free(memc, self);
     return NULL;
   }
 
-  string->options.is_initialized= true;
+  self->options.is_initialized= true;
 
-  WATCHPOINT_ASSERT(string->string == string->end);
+  WATCHPOINT_ASSERT(self->string == self->end);
 
-  return string;
+  return self;
 }
 
 memcached_return_t memcached_string_append_character(memcached_string_st *string,
@@ -160,7 +169,6 @@ void memcached_string_free(memcached_string_st *ptr)
   else
   {
     ptr->options.is_initialized= false;
-    memset(ptr, 0, sizeof(memcached_string_st));
   }
 }
 
