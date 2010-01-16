@@ -35,7 +35,8 @@ static memcached_return_t memcached_auto(memcached_st *ptr,
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                "%s %s%.*s %" PRIu64 "%s\r\n", verb,
+                                "%s %.*s%.*s %" PRIu64 "%s\r\n", verb,
+                                (int)ptr->prefix_key_length,
                                 ptr->prefix_key,
                                 (int)key_length, key,
                                 offset, no_reply ? " noreply" : "");

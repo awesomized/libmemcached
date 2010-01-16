@@ -62,10 +62,13 @@ struct memcached_st {
   struct {
     bool is_purging:1;
     bool is_processing_input:1;
+  } state;
+  struct {
     // Everything below here is pretty static.
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
     bool buffer_requests:1;
+    bool cork:1;
     bool hash_with_prefix_key:1;
     bool ketama_weighted:1;
     bool no_block:1;
@@ -78,11 +81,11 @@ struct memcached_st {
     bool use_sort_hosts:1;
     bool use_udp:1;
     bool verify_key:1;
-    bool cork:1;
   } flags;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
   uint32_t continuum_points_counter; // Ketama
+  uint32_t number_of_hosts;
   memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;
   int32_t snd_timeout;
@@ -91,7 +94,6 @@ struct memcached_st {
   uint32_t io_msg_watermark;
   uint32_t io_bytes_watermark;
   uint32_t io_key_prefetch;
-  uint32_t number_of_hosts;
   int cached_errno;
   int32_t poll_timeout;
   int32_t connect_timeout;
@@ -106,12 +108,14 @@ struct memcached_st {
   memcached_hash_t distribution_hash;
   memcached_result_st result;
   memcached_continuum_item_st *continuum; // Ketama
-  memcached_clone_fn on_clone;
-  memcached_cleanup_fn on_cleanup;
+
   memcached_free_fn call_free;
   memcached_malloc_fn call_malloc;
   memcached_realloc_fn call_realloc;
   memcached_calloc_fn call_calloc;
+
+  memcached_clone_fn on_clone;
+  memcached_cleanup_fn on_cleanup;
   memcached_trigger_key_fn get_key_failure;
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;

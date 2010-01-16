@@ -38,7 +38,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
         }
 
         if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1)
-            || (strcpy(ptr->prefix_key, key) == NULL))
+            || (strncpy(ptr->prefix_key, key, MEMCACHED_PREFIX_KEY_MAX_SIZE) == NULL))
         {
           ptr->prefix_key_length= 0;
           return MEMCACHED_BAD_KEY_PROVIDED;
@@ -50,7 +50,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
       }
       else
       {
-        memset(ptr->prefix_key, 0, MEMCACHED_PREFIX_KEY_MAX_SIZE);
+        ptr->prefix_key[0]= 0;
         ptr->prefix_key_length= 0;
       }
 
@@ -126,15 +126,15 @@ void *memcached_callback_get(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      if (ptr->prefix_key[0] == 0)
-      {
-        *error= MEMCACHED_FAILURE;
-        return NULL;
-      }
-      else
+      if (ptr->prefix_key_length)
       {
         *error= MEMCACHED_SUCCESS;
         return (void *)ptr->prefix_key;
+      }
+      else
+      {
+        *error= MEMCACHED_FAILURE;
+        return NULL;
       }
     }
   case MEMCACHED_CALLBACK_USER_DATA:

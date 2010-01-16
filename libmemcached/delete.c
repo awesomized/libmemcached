@@ -90,7 +90,8 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
              }
           }
           send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                         "delete %s%.*s %u%s\r\n",
+                                         "delete %.*s%.*s %u%s\r\n",
+                                         (int)ptr->prefix_key_length,
                                          ptr->prefix_key,
                                          (int) key_length, key,
                                          (uint32_t)expiration,
@@ -99,7 +100,8 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
     }
     else
        send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                      "delete %s%.*s%s\r\n",
+                                      "delete %.*s%.*s%s\r\n",
+                                      (int)ptr->prefix_key_length,
                                       ptr->prefix_key,
                                       (int)key_length, key, no_reply ? " noreply" :"");
 

@@ -3,11 +3,84 @@
 */
 #include "common.h"
 
+static const memcached_st global_copy= {
+  .state= {
+    .is_purging= false,
+    .is_processing_input= false,
+  },
+  .flags= {
+    .auto_eject_hosts= false,
+    .binary_protocol= false,
+    .buffer_requests= false,
+    .cork= false,
+    .hash_with_prefix_key= false,
+    .ketama_weighted= false,
+    .no_block= false,
+    .no_reply= false,
+    .randomize_replica_read= false,
+    .reuse_memory= false,
+    .support_cas= false,
+    .tcp_nodelay= false,
+    .use_cache_lookups= false,
+    .use_sort_hosts= false,
+    .use_udp= false,
+    .verify_key= false
+  }
+};
+
+static inline void _memcached_init(memcached_st *self)
+{
+  self->state= global_copy.state;
+  self->flags= global_copy.flags;
+
+  self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
+  self->hash= MEMCACHED_HASH_DEFAULT;
+  self->continuum_points_counter= 0;
+
+  self->number_of_hosts= 0;
+  self->servers= NULL;
+  self->last_disconnected_server= NULL;
+
+  self->snd_timeout= 0;
+  self->rcv_timeout= 0;
+  self->server_failure_limit= 0;
+
+  /* TODO, Document why we picked these defaults */
+  self->io_msg_watermark= 500;
+  self->io_bytes_watermark= 65 * 1024;
+
+  self->io_key_prefetch= 0;
+  self->cached_errno= 0;
+  self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
+  self->connect_timeout= MEMCACHED_DEFAULT_TIMEOUT;
+  self->retry_timeout= 0;
+  self->continuum_count= 0;
+
+  self->send_size= -1;
+  self->recv_size= -1;
+
+  self->user_data= NULL;
+  self->next_distribution_rebuild= 0;
+  self->prefix_key_length= 0;
+  self->number_of_replicas= 0;
+  self->distribution_hash= MEMCACHED_HASH_DEFAULT;
+  self->continuum= NULL;
+
+
+  memcached_set_memory_allocators(self, NULL, NULL, NULL, NULL);
+
+  self->on_clone= NULL;
+  self->on_cleanup= NULL;
+  self->get_key_failure= NULL;
+  self->delete_trigger= NULL;
+  self->callbacks= NULL;
+}
+
 memcached_st *memcached_create(memcached_st *ptr)
 {
   if (ptr == NULL)
   {
-    ptr= (memcached_st *)calloc(1, sizeof(memcached_st));
+    ptr= (memcached_st *)malloc(sizeof(memcached_st));
 
     if (! ptr)
     {
@@ -18,7 +91,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   }
   else
   {
-    memset(ptr, 0, sizeof(memcached_st));
+    ptr->options.is_allocated= false;
   }
 
 #if 0
@@ -26,25 +99,13 @@ memcached_st *memcached_create(memcached_st *ptr)
   memcached_set_processing_input(ptr, false);
 #endif
 
-  memcached_set_memory_allocators(ptr, NULL, NULL, NULL, NULL);
+  _memcached_init(ptr);
 
   if (! memcached_result_create(ptr, &ptr->result))
   {
     memcached_free(ptr);
     return NULL;
   }
-  ptr->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
-  ptr->connect_timeout= MEMCACHED_DEFAULT_TIMEOUT;
-  ptr->retry_timeout= 0;
-  ptr->distribution= MEMCACHED_DISTRIBUTION_MODULA;
-
-
-  ptr->send_size= -1;
-  ptr->recv_size= -1;
-
-  /* TODO, Document why we picked these defaults */
-  ptr->io_msg_watermark= 500;
-  ptr->io_bytes_watermark= 65 * 1024;
 
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->result);
 
@@ -168,7 +229,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   }
 
 
-  if (source->prefix_key[0] != 0)
+  if (source->prefix_key_length)
   {
     strcpy(new_clone->prefix_key, source->prefix_key);
     new_clone->prefix_key_length= source->prefix_key_length;

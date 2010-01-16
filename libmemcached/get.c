@@ -244,7 +244,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     }
 
     /* Only called when we have a prefix key */
-    if (ptr->prefix_key[0] != 0)
+    if (ptr->prefix_key_length)
     {
       if ((memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, 0)) == -1)
       {

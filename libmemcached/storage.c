@@ -98,8 +98,9 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   if (cas)
   {
     write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                    "%s %s%.*s %u %llu %zu %llu%s\r\n",
+                                    "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
                                     storage_op_string(verb),
+                                    (int)ptr->prefix_key_length,
                                     ptr->prefix_key,
                                     (int)key_length, key, flags,
                                     (unsigned long long)expiration, value_length,
@@ -115,10 +116,10 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     memcpy(buffer_ptr, command, strlen(command));
 
     /* Copy in the key prefix, switch to the buffer_ptr */
-    buffer_ptr= memcpy((buffer_ptr + strlen(command)), ptr->prefix_key, strlen(ptr->prefix_key));
+    buffer_ptr= memcpy((buffer_ptr + strlen(command)), ptr->prefix_key, ptr->prefix_key_length);
 
     /* Copy in the key, adjust point if a key prefix was used. */
-    buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key ? strlen(ptr->prefix_key) : 0),
+    buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key_length ? ptr->prefix_key_length : 0),
                        key, key_length);
     buffer_ptr+= key_length;
     buffer_ptr[0]=  ' ';

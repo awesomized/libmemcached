@@ -50,7 +50,10 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
 
   self->root= root;
   self->limit_maxbytes= 0;
-  strncpy(self->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
+  if (hostname == NULL)
+    self->hostname[0]= 0;
+  else
+    strncpy(self->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
 }
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
