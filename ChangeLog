@@ -1,5 +1,7 @@
 0.38 
 
+ * memcached_clone() now runs 5 times faster.
+
  * Functions used for callbacks are now given const memcached_st.
 
  * Added MEMCACHED_BEHAVIOR_CORK.

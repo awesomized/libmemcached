@@ -14,98 +14,129 @@
 */
 #include "common.h"
 
-static memcached_server_st *_server_create(const memcached_st *memc, memcached_server_st *ptr)
+static inline void _server_init(memcached_server_st *self, const memcached_st *root,
+                                const char *hostname, in_port_t port,
+                                uint32_t weight, memcached_connection_t type)
 {
-  if (ptr == NULL)
+  self->options.sockaddr_inited= false;
+  self->number_of_hosts= 0;
+  self->cursor_active= 0;
+  self->port= port;
+  self->cached_errno= 0;
+  self->fd= -1;
+  self->io_bytes_sent= 0;
+  self->server_failure_counter= 0;
+  self->weight= weight;
+  self->state.is_corked= false;
+  self->major_version= 0;
+  self->micro_version= 0;
+  self->minor_version= 0;
+  self->type= type;
+  self->read_ptr= self->read_buffer;
+  self->cached_server_error= NULL;
+  self->read_buffer_length= 0;
+  self->read_data_length= 0;
+  self->write_buffer_offset= 0;
+  self->address_info= NULL;
+
+  if (root)
   {
-    ptr= (memcached_server_st *)memc->call_calloc(memc, 1, sizeof(memcached_server_st));
-
-    if (!ptr)
-      return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
-
-    ptr->options.is_allocated= true;
+    self->next_retry= root->retry_timeout;
   }
   else
   {
-    memset(ptr, 0, sizeof(memcached_server_st));
+    self->next_retry= 0;
   }
 
-  ptr->root= memc;
-
-  return ptr;
+  self->root= root;
+  self->limit_maxbytes= 0;
+  strncpy(self->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
 }
 
-memcached_server_st *memcached_server_create_with(const memcached_st *memc, memcached_server_st *host,
+static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
+{
+  if (self == NULL)
+  {
+   self= (memcached_server_st *)memc->call_malloc(memc, sizeof(memcached_server_st));
+
+    if (! self)
+      return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
+
+    self->options.is_allocated= true;
+  }
+  else
+  {
+    self->options.is_allocated= false;
+  }
+
+  self->options.is_initialized= true;
+
+  return self;
+}
+
+memcached_server_st *memcached_server_create_with(const memcached_st *memc, memcached_server_st *self,
                                                   const char *hostname, in_port_t port,
                                                   uint32_t weight, memcached_connection_t type)
 {
-  host= _server_create(memc, host);
+  self= _server_create(self, memc);
 
-  if (host == NULL)
+  if (self == NULL)
     return NULL;
 
-  strncpy(host->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
-  host->root= memc ? memc : NULL;
-  host->port= port;
-  host->weight= weight;
-  host->fd= -1;
-  host->type= type;
-  host->read_ptr= host->read_buffer;
-  host->state.is_corked= 0;
-  if (memc)
-    host->next_retry= memc->retry_timeout;
+  _server_init(self, memc, hostname, port, weight, type);
+
+
   if (type == MEMCACHED_CONNECTION_UDP)
   {
-    host->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
-    memcached_io_init_udp_header(host, 0);
+    self->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
+    memcached_io_init_udp_header(self, 0);
   }
 
-  return host;
+  return self;
 }
 
-void memcached_server_free(memcached_server_st *ptr)
+void memcached_server_free(memcached_server_st *self)
 {
-  memcached_quit_server(ptr, 0);
+  memcached_quit_server(self, 0);
 
-  if (ptr->cached_server_error)
-    free(ptr->cached_server_error);
+  if (self->cached_server_error)
+    free(self->cached_server_error);
 
-  if (ptr->address_info)
-    freeaddrinfo(ptr->address_info);
+  if (self->address_info)
+    freeaddrinfo(self->address_info);
 
-
-  if (memcached_is_allocated(ptr))
+  if (memcached_is_allocated(self))
   {
-    ptr->root->call_free(ptr->root, ptr);
+    self->root->call_free(self->root, self);
   }
   else
   {
-    memset(ptr, 0, sizeof(memcached_server_st));
+    self->options.is_initialized= false;
   }
 }
 
 /*
   If we do not have a valid object to clone from, we toss an error.
 */
-memcached_server_st *memcached_server_clone(memcached_server_st *clone, memcached_server_st *ptr)
+memcached_server_st *memcached_server_clone(memcached_server_st *destination,
+                                            const memcached_server_st *source)
 {
-  memcached_server_st *rv= NULL;
-
-  /* We just do a normal create if ptr is missing */
-  if (ptr == NULL)
+  /* We just do a normal create if source is missing */
+  if (source == NULL)
     return NULL;
 
-  rv= memcached_server_create_with(ptr->root, clone,
-                                   ptr->hostname, ptr->port, ptr->weight,
-                                   ptr->type);
-  if (rv != NULL)
+  destination= memcached_server_create_with(source->root, destination,
+                                            source->hostname, source->port, source->weight,
+                                            source->type);
+  if (destination != NULL)
   {
-    rv->cached_errno= ptr->cached_errno;
-    if (ptr->cached_server_error)
-      rv->cached_server_error= strdup(ptr->cached_server_error);
+    destination->cached_errno= source->cached_errno;
+
+    if (source->cached_server_error)
+      destination->cached_server_error= strdup(source->cached_server_error);
   }
 
-  return rv;
+  return destination;
 
 }
 

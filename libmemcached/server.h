@@ -19,6 +19,7 @@ extern "C" {
 struct memcached_server_st {
   struct {
     bool is_allocated:1;
+    bool is_initialized:1;
     bool sockaddr_inited:1;
   } options;
   uint32_t number_of_hosts;
@@ -105,8 +106,8 @@ LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
 
 LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_clone(memcached_server_st *clone,
-                                            memcached_server_st *ptr);
+memcached_server_st *memcached_server_clone(memcached_server_st *destination,
+                                            const memcached_server_st *source);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_server_remove(memcached_server_st *st_ptr);
