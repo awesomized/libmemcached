@@ -77,7 +77,7 @@ tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_DEPENDENCIES = $(tests_testhashkit_LDADD)
 
-test: test-docs test-plus test-mem test-hash memcapable
+test: test-docs test-mem test-hash memcapable
 	echo "Tests completed"
 
 test-x: test-docs test-plus test-mem test-hash memcapable test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
