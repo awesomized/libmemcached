@@ -116,9 +116,23 @@ memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
 LIBMEMCACHED_LOCAL
 void memcached_quit_server(memcached_server_instance_st *ptr, uint8_t io_death);
 
+LIBMEMCACHED_LOCAL
+memcached_return_t run_distribution(memcached_st *ptr);
+
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
+
+// These are private 
+#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
+#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
+#define memcached_is_purging(__object) ((__object)->flags.is_purging)
+#define memcached_is_processing_input(__object) ((__object)->flags.is_processing_input)
+#define memcached_set_purging(__object, __value) ((__object)->flags.is_purging= (__value))
+#define memcached_set_processing_input(__object, __value) ((__object)->flags.is_processing_input= (__value))
+#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
+#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
+
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_do(memcached_server_instance_st *ptr, const void *commmand,

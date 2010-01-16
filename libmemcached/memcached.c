@@ -189,7 +189,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   return new_clone;
 }
 
-void *memcached_get_user_data(memcached_st *ptr)
+void *memcached_get_user_data(const memcached_st *ptr)
 {
   return ptr->user_data;
 }

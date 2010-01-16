@@ -54,6 +54,14 @@ LIBMEMCACHED_API
 memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args,
                                              const char *hostname, in_port_t port);
 
+LIBMEMCACHED_API
+char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
+                               const char *key, memcached_return_t *error);
+
+LIBMEMCACHED_API
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
+                                memcached_return_t *error);
+
 #ifdef __cplusplus
 }
 #endif

@@ -100,6 +100,17 @@ you will need to install %{name}-devel.
 %files devel
 %defattr (-,root,root,-) 
 %doc examples
+%{_includedir}/libmemcached/allocators.h
+%{_includedir}/libmemcached/delete.h
+%{_includedir}/libmemcached/fetch.h
+%{_includedir}/libmemcached/flush.h
+%{_includedir}/libmemcached/flush_buffers.h
+%{_includedir}/libmemcached/hash.h
+%{_includedir}/libmemcached/parse.h
+%{_includedir}/libmemcached/quit.h
+%{_includedir}/libmemcached/strerror.h
+%{_includedir}/libmemcached/verbosity.h
+%{_includedir}/libmemcached/version.h
 %{_includedir}/libhashkit/algorithm.h
 %{_includedir}/libhashkit/behavior.h
 %{_includedir}/libhashkit/hashkit.h

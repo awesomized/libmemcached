@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return_t memcached_verbosity(memcached_st *ptr, unsigned int verbosity)
+memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
 {
   uint32_t x;
   size_t send_length;

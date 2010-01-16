@@ -19,27 +19,38 @@ noinst_HEADERS+= \
 		 libmemcached/response.h
 
 nobase_include_HEADERS+= \
+			 libmemcached/allocators.h \
 			 libmemcached/analyze.h \
 			 libmemcached/auto.h \
 			 libmemcached/behavior.h \
 			 libmemcached/callback.h \
 			 libmemcached/configure.h \
 			 libmemcached/constants.h \
+			 libmemcached/delete.h \
 			 libmemcached/dump.h \
 			 libmemcached/exception.hpp \
+			 libmemcached/fetch.h \
+			 libmemcached/flush.h \
+			 libmemcached/flush_buffers.h \
 			 libmemcached/get.h \
+			 libmemcached/hash.h \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
 			 libmemcached/memcached/protocol_binary.h \
+			 libmemcached/parse.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
+			 libmemcached/quit.h \
 			 libmemcached/result.h \
 			 libmemcached/server.h \
 			 libmemcached/stats.h \
 			 libmemcached/storage.h \
+			 libmemcached/strerror.h \
 			 libmemcached/string.h \
 			 libmemcached/types.h \
+			 libmemcached/verbosity.h \
+			 libmemcached/version.h \
 			 libmemcached/visibility.h \
 			 libmemcached/watchpoint.h
 

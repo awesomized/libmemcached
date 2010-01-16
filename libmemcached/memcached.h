@@ -30,15 +30,26 @@
 #include <libmemcached/string.h>
 #include <libmemcached/stats.h>
 // Everything above this line must be in the order specified.
+#include <libmemcached/allocators.h>
 #include <libmemcached/analyze.h>
 #include <libmemcached/auto.h>
 #include <libmemcached/behavior.h>
 #include <libmemcached/callback.h>
+#include <libmemcached/delete.h>
 #include <libmemcached/dump.h>
+#include <libmemcached/fetch.h>
+#include <libmemcached/flush.h>
+#include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
+#include <libmemcached/hash.h>
+#include <libmemcached/parse.h>
+#include <libmemcached/quit.h>
 #include <libmemcached/result.h>
 #include <libmemcached/server.h>
 #include <libmemcached/storage.h>
+#include <libmemcached/strerror.h>
+#include <libmemcached/verbosity.h>
+#include <libmemcached/version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -111,10 +122,24 @@ struct memcached_st {
 };
 
 LIBMEMCACHED_API
-memcached_return_t memcached_version(memcached_st *ptr);
+void memcached_servers_reset(memcached_st *ptr);
+
+/* Public API */
 
 LIBMEMCACHED_API
-void memcached_servers_reset(memcached_st *ptr);
+memcached_st *memcached_create(memcached_st *ptr);
+
+LIBMEMCACHED_API
+void memcached_free(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
+
+LIBMEMCACHED_API
+void *memcached_get_user_data(const memcached_st *ptr);
+
+LIBMEMCACHED_API
+void *memcached_set_user_data(memcached_st *ptr, void *data);
 
 // Local Only Inline
 static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
@@ -122,143 +147,6 @@ static inline memcached_server_st *memcached_server_instance_fetch(memcached_st 
   return &ptr->servers[server_key];
 }
 
-/* Public API */
-
-LIBMEMCACHED_API
-const char * memcached_lib_version(void);
-
-LIBMEMCACHED_API
-memcached_st *memcached_create(memcached_st *ptr);
-LIBMEMCACHED_API
-void memcached_free(memcached_st *ptr);
-LIBMEMCACHED_API
-memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
-                                  time_t expiration);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_verbosity(memcached_st *ptr, unsigned int verbosity);
-
-LIBMEMCACHED_API
-void memcached_quit(memcached_st *ptr);
-
-LIBMEMCACHED_API
-const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc);
-
-/* The two public hash bits */
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm);
-
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_flush_buffers(memcached_st *mem);
-
-/* Server Public functions */
-
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add_udp(memcached_st *ptr,
-                                            const char *hostname,
-                                            in_port_t port);
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add_unix_socket(memcached_st *ptr,
-                                                    const char *filename);
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add(memcached_st *ptr,
-                                        const char *hostname, in_port_t port);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
-                                                        const char *hostname,
-                                                        in_port_t port,
-                                                        uint32_t weight);
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
-                                                                const char *filename,
-                                                                uint32_t weight);
-LIBMEMCACHED_API
-memcached_return_t memcached_server_add_with_weight(memcached_st *ptr, const char *hostname,
-                                                    in_port_t port,
-                                                    uint32_t weight);
-LIBMEMCACHED_API
-void memcached_server_list_free(memcached_server_st *ptr);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st *list);
-
-LIBMEMCACHED_API
-memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
-                                                  const char *hostname,
-                                                  in_port_t port,
-                                                  memcached_return_t *error);
-LIBMEMCACHED_API
-memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr,
-                                                              const char *hostname,
-                                                              in_port_t port,
-                                                              uint32_t weight,
-                                                              memcached_return_t *error);
-LIBMEMCACHED_API
-unsigned int memcached_server_list_count(memcached_server_st *ptr);
-
-LIBMEMCACHED_API
-memcached_server_st *memcached_servers_parse(const char *server_strings);
-
-LIBMEMCACHED_API
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
-                               const char *key, memcached_return_t *error);
-LIBMEMCACHED_API
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
-                                memcached_return_t *error);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_delete_by_key(memcached_st *ptr,
-                                           const char *master_key, size_t master_key_length,
-                                           const char *key, size_t key_length,
-                                           time_t expiration);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_fetch_execute(memcached_st *ptr,
-                                           memcached_execute_fn *callback,
-                                           void *context,
-                                           unsigned int number_of_callbacks);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_set_memory_allocators(memcached_st *ptr,
-                                                   memcached_malloc_fn mem_malloc,
-                                                   memcached_free_fn mem_free,
-                                                   memcached_realloc_fn mem_realloc,
-                                                   memcached_calloc_fn mem_calloc);
-
-LIBMEMCACHED_API
-void memcached_get_memory_allocators(memcached_st *ptr,
-                                     memcached_malloc_fn *mem_malloc,
-                                     memcached_free_fn *mem_free,
-                                     memcached_realloc_fn *mem_realloc,
-                                     memcached_calloc_fn *mem_calloc);
-
-LIBMEMCACHED_API
-void *memcached_get_user_data(memcached_st *ptr);
-LIBMEMCACHED_API
-void *memcached_set_user_data(memcached_st *ptr, void *data);
-
-LIBMEMCACHED_LOCAL
-memcached_return_t run_distribution(memcached_st *ptr);
-
-// These are private 
-#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
-#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
-#define memcached_is_purging(__object) ((__object)->flags.is_purging)
-#define memcached_is_processing_input(__object) ((__object)->flags.is_processing_input)
-#define memcached_set_purging(__object, __value) ((__object)->flags.is_purging= (__value))
-#define memcached_set_processing_input(__object, __value) ((__object)->flags.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
-#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
 
 #ifdef __cplusplus
 }
