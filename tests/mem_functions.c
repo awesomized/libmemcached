@@ -1696,7 +1696,6 @@ static test_return_t version_string_test(memcached_st *memc __attribute__((unuse
 
 static test_return_t get_stats(memcached_st *memc)
 {
- unsigned int x;
  char **stat_list;
  char **ptr;
  memcached_return_t rc;
@@ -1708,7 +1707,7 @@ static test_return_t get_stats(memcached_st *memc)
  test_true(rc == MEMCACHED_SUCCESS);
  test_true(memc_stat);
 
- for (x= 0; x < memcached_server_count(memc); x++)
+ for (uint32_t x= 0; x < memcached_server_count(memc); x++)
  {
    stat_list= memcached_stat_get_keys(memc, memc_stat+x, &rc);
    test_true(rc == MEMCACHED_SUCCESS);

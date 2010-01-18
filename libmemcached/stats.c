@@ -357,7 +357,6 @@ error:
 
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error)
 {
-  uint32_t x;
   memcached_return_t rc;
   memcached_stat_st *stats;
 
@@ -369,29 +368,32 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 
   stats= libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(memcached_stat_st));
 
-  stats->root= ptr;
-
-  if (!stats)
+  if (! stats)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
   }
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t temp_return;
     memcached_server_instance_st *instance;
+    memcached_stat_st *stat_instance;
+
+    stat_instance= stats + x;
+
+    stat_instance->root= ptr;
 
     instance= memcached_server_instance_fetch(ptr, x);
 
     if (ptr->flags.binary_protocol)
     {
-      temp_return= binary_stats_fetch(stats + x, args, instance);
+      temp_return= binary_stats_fetch(stat_instance, args, instance);
     }
     else
     {
-      temp_return= ascii_stats_fetch(stats + x, args, instance);
+      temp_return= ascii_stats_fetch(stat_instance, args, instance);
     }
 
     if (temp_return != MEMCACHED_SUCCESS)
@@ -442,11 +444,10 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
   char **list;
   size_t length= sizeof(memcached_stat_keys);
 
-  (void)memc_stat;
-#if 0
-  list= libmemcached_malloc(memc_stat ? memc_stat->root : ptr, length);
-#endif
-  list= libmemcached_malloc(ptr, length);
+  list= libmemcached_malloc(memc_stat && memc_stat->root
+                            ? memc_stat->root
+                            : ptr,
+                            length);
 
   if (!list)
   {
