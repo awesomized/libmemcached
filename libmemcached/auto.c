@@ -11,7 +11,7 @@
 
 #include "common.h"
 
-static memcached_return_t memcached_auto(memcached_st *ptr,
+static memcached_return_t text_incr_decr(memcached_st *ptr,
                                          const char *verb,
                                          const char *master_key, size_t master_key_length,
                                          const char *key, size_t key_length,
@@ -160,7 +160,7 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
   }
   else
   {
-     rc= memcached_auto(ptr, "incr", master_key, master_key_length, key, key_length, offset, value);
+     rc= text_incr_decr(ptr, "incr", master_key, master_key_length, key, key_length, offset, value);
   }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_END();
@@ -180,12 +180,16 @@ memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_START();
   if (ptr->flags.binary_protocol)
+  {
     rc= binary_incr_decr(ptr, PROTOCOL_BINARY_CMD_DECREMENT,
                          master_key, master_key_length, key, key_length,
                          (uint64_t)offset, 0, MEMCACHED_EXPIRATION_NOT_ADD,
                          value);
+  }
   else
-    rc= memcached_auto(ptr, "decr", master_key, master_key_length, key, key_length, offset, value);
+  {
+    rc= text_incr_decr(ptr, "decr", master_key, master_key_length, key, key_length, offset, value);
+  }
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_END();
 
