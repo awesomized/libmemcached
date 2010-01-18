@@ -82,7 +82,7 @@ static inline void memcached_result_set_flags(memcached_result_st *self, uint32_
   self->flags= flags;
 }
 
-static inline void memcached_result_set_expiration(memcached_result_st *self, uint32_t expiration)
+static inline void memcached_result_set_expiration(memcached_result_st *self, time_t expiration)
 {
   self->expiration= expiration;
 }
