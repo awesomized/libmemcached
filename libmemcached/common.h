@@ -213,4 +213,25 @@ static inline memcached_ternary_t test_cork(memcached_server_st *ptr, int enable
 #endif
 }
 
+static inline void libmemcached_free(const memcached_st *ptr, void *mem)
+{
+  ptr->allocators.free(ptr, mem, ptr->allocators.context);
+}
+
+static inline void *libmemcached_malloc(const memcached_st *ptr, const size_t size)
+{
+  return ptr->allocators.malloc(ptr, size, ptr->allocators.context);
+}
+
+static inline void *libmemcached_realloc(const memcached_st *ptr, void *mem, const size_t size)
+{
+  return ptr->allocators.realloc(ptr, mem, size, ptr->allocators.context);
+}
+
+static inline void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size)
+{
+  return ptr->allocators.calloc(ptr, nelem, size, ptr->allocators.context);
+}
+
+
 #endif /* LIBMEMCACHED_COMMON_H */

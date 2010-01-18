@@ -109,10 +109,13 @@ struct memcached_st {
   memcached_result_st result;
   memcached_continuum_item_st *continuum; // Ketama
 
-  memcached_free_fn call_free;
-  memcached_malloc_fn call_malloc;
-  memcached_realloc_fn call_realloc;
-  memcached_calloc_fn call_calloc;
+  struct _allocators_st {
+    memcached_calloc_fn calloc;
+    memcached_free_fn free;
+    memcached_malloc_fn malloc;
+    memcached_realloc_fn realloc;
+    void *context;
+  } allocators;
 
   memcached_clone_fn on_clone;
   memcached_cleanup_fn on_cleanup;

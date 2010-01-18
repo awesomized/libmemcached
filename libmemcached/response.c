@@ -259,9 +259,9 @@ static memcached_return_t textual_read_one_response(memcached_server_instance_st
           memory in the struct, which is important, for something that
           rarely should happen?
         */
-        rel_ptr= (char *)ptr->root->call_realloc(ptr->root, 
-                                                 ptr->cached_server_error, 
-                                                 (size_t) (endptr - startptr + 1));
+        rel_ptr= (char *)libmemcached_realloc(ptr->root,
+                                              ptr->cached_server_error, 
+                                              (size_t) (endptr - startptr + 1));
 
         if (rel_ptr == NULL)
         {

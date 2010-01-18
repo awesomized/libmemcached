@@ -146,8 +146,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   {
     memcached_continuum_item_st *new_ptr;
 
-    new_ptr= ptr->call_realloc(ptr, ptr->continuum,
-                               sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
+    new_ptr= libmemcached_realloc(ptr, ptr->continuum,
+                                  sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -304,8 +304,8 @@ memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st 
     return MEMCACHED_SUCCESS;
 
   count= memcached_servers_count(list);
-  new_host_list= ptr->call_realloc(ptr, memcached_server_list(ptr),
-                                   sizeof(memcached_server_instance_st) * (count + memcached_server_count(ptr)));
+  new_host_list= libmemcached_realloc(ptr, memcached_server_list(ptr),
+                                      sizeof(memcached_server_instance_st) * (count + memcached_server_count(ptr)));
 
   if (! new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -411,8 +411,8 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
       || ( (type == MEMCACHED_CONNECTION_UDP) && (! ptr->flags.use_udp) ) )
     return MEMCACHED_INVALID_HOST_PROTOCOL;
 
-  new_host_list= ptr->call_realloc(ptr, memcached_server_list(ptr),
-                                   sizeof(memcached_server_instance_st) * (ptr->number_of_hosts + 1));
+  new_host_list= libmemcached_realloc(ptr, memcached_server_list(ptr),
+                                      sizeof(memcached_server_instance_st) * (ptr->number_of_hosts + 1));
 
   if (new_host_list == NULL)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;

@@ -219,7 +219,7 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
     return NULL;
   }
 
-  ret= ptr->call_malloc(ptr, (size_t) (length + 1));
+  ret= libmemcached_malloc(ptr, (size_t) (length + 1));
   memcpy(ret, buffer, (size_t) length);
   ret[length]= '\0';
 
@@ -367,7 +367,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
     return NULL;
   }
 
-  stats= ptr->call_calloc(ptr, memcached_server_count(ptr), sizeof(memcached_stat_st));
+  stats= libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(memcached_stat_st));
 
   stats->root= ptr;
 
@@ -435,14 +435,18 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   We make a copy of the keys since at some point in the not so distant future
   we will add support for "found" keys.
 */
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
+char ** memcached_stat_get_keys(memcached_st *ptr,
+                                memcached_stat_st *memc_stat,
                                 memcached_return_t *error)
 {
-  (void) memc_stat;
   char **list;
   size_t length= sizeof(memcached_stat_keys);
 
-  list= ptr->call_malloc(ptr, length);
+  (void)memc_stat;
+#if 0
+  list= libmemcached_malloc(memc_stat ? memc_stat->root : ptr, length);
+#endif
+  list= libmemcached_malloc(ptr, length);
 
   if (!list)
   {
@@ -467,11 +471,11 @@ void memcached_stat_free(memcached_st *ptr, memcached_stat_st *memc_stat)
 
   if (memc_stat->root)
   {
-    memc_stat->root->call_free(ptr, memc_stat);
+    libmemcached_free(memc_stat->root, memc_stat);
   }
   else if (ptr)
   {
-    ptr->call_free(ptr, memc_stat);
+    libmemcached_free(ptr, memc_stat);
   }
   else
   {

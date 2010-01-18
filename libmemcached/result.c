@@ -30,7 +30,7 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   }
   else
   {
-    ptr= memc->call_calloc(memc, 1, sizeof(memcached_result_st));
+    ptr= libmemcached_calloc(memc, 1, sizeof(memcached_result_st));
 
     if (ptr == NULL)
       return NULL;
@@ -65,14 +65,8 @@ void memcached_result_free(memcached_result_st *ptr)
 
   if (memcached_is_allocated(ptr))
   {
-    if (ptr->root != NULL)
-    {
-      ptr->root->call_free(ptr->root, ptr);
-    }
-    else
-    {
-      free(ptr);
-    }
+    WATCHPOINT_ASSERT(ptr->root); // Without a root, that means that result was not properly initialized.
+    libmemcached_free(ptr->root, ptr);
   }
   else
   {

@@ -577,13 +577,13 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
     uint32_t* hash;
     bool* dead_servers;
 
-    hash= ptr->call_malloc(ptr, sizeof(uint32_t) * number_of_keys);
-    dead_servers= ptr->call_calloc(ptr, memcached_server_count(ptr), sizeof(bool));
+    hash= libmemcached_malloc(ptr, sizeof(uint32_t) * number_of_keys);
+    dead_servers= libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(bool));
 
     if (hash == NULL || dead_servers == NULL)
     {
-      ptr->call_free(ptr, hash);
-      ptr->call_free(ptr, dead_servers);
+      libmemcached_free(ptr, hash);
+      libmemcached_free(ptr, dead_servers);
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     }
 
@@ -597,8 +597,8 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
     rc= replication_binary_mget(ptr, hash, dead_servers, keys,
                                 key_length, number_of_keys);
 
-    ptr->call_free(ptr, hash);
-    ptr->call_free(ptr, dead_servers);
+    libmemcached_free(ptr, hash);
+    libmemcached_free(ptr, dead_servers);
 
     return MEMCACHED_SUCCESS;
   }

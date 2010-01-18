@@ -30,10 +30,10 @@ typedef memcached_return_t (*memcached_cleanup_fn)(const memcached_st *ptr);
 /**
   Memory allocation functions.
 */
-typedef void (*memcached_free_fn)(const memcached_st *ptr, void *mem);
-typedef void *(*memcached_malloc_fn)(const memcached_st *ptr, const size_t size);
-typedef void *(*memcached_realloc_fn)(const memcached_st *ptr, void *mem, const size_t size);
-typedef void *(*memcached_calloc_fn)(const memcached_st *ptr, size_t nelem, const size_t elsize);
+typedef void (*memcached_free_fn)(const memcached_st *ptr, void *mem, void *context);
+typedef void *(*memcached_malloc_fn)(const memcached_st *ptr, const size_t size, void *context);
+typedef void *(*memcached_realloc_fn)(const memcached_st *ptr, void *mem, const size_t size, void *context);
+typedef void *(*memcached_calloc_fn)(const memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
 
 typedef memcached_return_t (*memcached_execute_fn)(const memcached_st *ptr, memcached_result_st *result, void *context);
 typedef memcached_return_t (*memcached_server_fn)(const memcached_st *ptr, memcached_server_st *server, void *context);

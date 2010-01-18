@@ -230,10 +230,13 @@ static test_return_t clone_test(memcached_st *memc)
     memc_clone= memcached_clone(NULL, memc);
     test_true(memc_clone);
 
-    test_true(memc_clone->call_free == memc->call_free);
-    test_true(memc_clone->call_malloc == memc->call_malloc);
-    test_true(memc_clone->call_realloc == memc->call_realloc);
-    test_true(memc_clone->call_calloc == memc->call_calloc);
+    { // Test allocators
+      test_true(memc_clone->allocators.free == memc->allocators.free);
+      test_true(memc_clone->allocators.malloc == memc->allocators.malloc);
+      test_true(memc_clone->allocators.realloc == memc->allocators.realloc);
+      test_true(memc_clone->allocators.calloc == memc->allocators.calloc);
+    }
+
     test_true(memc_clone->connect_timeout == memc->connect_timeout);
     test_true(memc_clone->delete_trigger == memc->delete_trigger);
     test_true(memc_clone->distribution == memc->distribution);
@@ -3616,8 +3619,9 @@ static test_return_t pre_replication_noblock(memcached_st *memc)
 }
 
 
-static void my_free(const memcached_st *ptr __attribute__((unused)), void *mem)
+static void my_free(const memcached_st *ptr __attribute__((unused)), void *mem, void *context)
 {
+  (void) context;
 #ifdef HARD_MALLOC_TESTS
   void *real_ptr= (mem == NULL) ? mem : (void*)((caddr_t)mem - 8);
   free(real_ptr);
@@ -3627,8 +3631,9 @@ static void my_free(const memcached_st *ptr __attribute__((unused)), void *mem)
 }
 
 
-static void *my_malloc(const memcached_st *ptr __attribute__((unused)), const size_t size)
+static void *my_malloc(const memcached_st *ptr __attribute__((unused)), const size_t size, void *context)
 {
+  (void)context;
 #ifdef HARD_MALLOC_TESTS
   void *ret= malloc(size + 8);
   if (ret != NULL)
@@ -3648,8 +3653,9 @@ static void *my_malloc(const memcached_st *ptr __attribute__((unused)), const si
 }
 
 
-static void *my_realloc(const memcached_st *ptr __attribute__((unused)), void *mem, const size_t size)
+static void *my_realloc(const memcached_st *ptr __attribute__((unused)), void *mem, const size_t size, void *context)
 {
+  (void)context;
 #ifdef HARD_MALLOC_TESTS
   void *real_ptr= (mem == NULL) ? NULL : (void*)((caddr_t)mem - 8);
   void *nmem= realloc(real_ptr, size + 8);
@@ -3667,8 +3673,9 @@ static void *my_realloc(const memcached_st *ptr __attribute__((unused)), void *m
 }
 
 
-static void *my_calloc(const memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size)
+static void *my_calloc(const memcached_st *ptr __attribute__((unused)), size_t nelem, const size_t size, void *context)
 {
+  (void)context;
 #ifdef HARD_MALLOC_TESTS
   void *mem= my_malloc(ptr, nelem * size);
   if (mem)
@@ -3806,11 +3813,11 @@ static test_return_t set_memory_alloc(memcached_st *memc)
 {
   memcached_return_t rc;
   rc= memcached_set_memory_allocators(memc, NULL, my_free,
-                                      my_realloc, my_calloc);
+                                      my_realloc, my_calloc, NULL);
   test_true(rc == MEMCACHED_FAILURE);
 
   rc= memcached_set_memory_allocators(memc, my_malloc, my_free,
-                                      my_realloc, my_calloc);
+                                      my_realloc, my_calloc, NULL);
 
   memcached_malloc_fn mem_malloc;
   memcached_free_fn mem_free;

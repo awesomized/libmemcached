@@ -1,6 +1,6 @@
 =head1 NAME
 
-memcached_set_memory_allocators, memcached_get_memory_allocators - Manage memory allocator functions
+memcached_set_memory_allocators, memcached_get_memory_allocators, memcached_set_memory_allocators_context - Manage memory allocator functions
 
 =head1 LIBRARY
 
@@ -15,7 +15,8 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                      memcached_malloc_fn mem_malloc,
                                      memcached_free_fn mem_free,
                                      memcached_realloc_fn mem_realloc,
-                                     memcached_calloc_fn mem_calloc);
+                                     memcached_calloc_fn mem_calloc,
+				     void *context);
 
   void
     memcached_get_memory_allocators (memcached_st *ptr,
@@ -24,19 +25,27 @@ C Client Library for memcached (libmemcached, -lmemcached)
                                      memcached_realloc_fn *mem_realloc,
                                      memcached_calloc_fn *mem_calloc);
 
+  void * 
+    memcached_get_memory_allocators_context(const memcached_st *ptr);
+
   void *
-  (*memcached_malloc_fn) (memcached_st *ptr, const size_t size);
+    (*memcached_malloc_fn) (memcached_st *ptr, const size_t size,
+    			    void *context);
 
   void *
     (*memcached_realloc_fn) (memcached_st *ptr, void *mem,
-                             const size_t size);
+                             const size_t size,
+			     void *context);
 
   void
-    (*memcached_free_fn) (memcached_st *ptr, void *mem);
+    (*memcached_free_fn) (memcached_st *ptr, void *mem,
+    			  void *context);
 
   void *
-  (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem,
-                          const size_t elsize);
+  (*memcached_calloc_fn) (memcached_st *ptr,
+  			  size_t nelem,
+                          const size_t elsize,
+			  void *context);
 
 
 =head1 DESCRIPTION
@@ -54,10 +63,18 @@ all functions to reset them to the default values.
 memcached_get_memory_allocators() is used to get the currently used memory
 allocators by a mamcached handle.
 
+memcached_get_memory_allocators_context() returns the void * that was
+passed in during the call to memcached_set_memory_allocators().
+
 The first argument to the memory allocator functions is a pointer to a
-memcached structure, and you may use the memcached_set_user_data() and
-memcached_get_user_data() to store a user-specific value to each memcached
-structure.
+memcached structure, the is passed as const and you will need to clone
+it in order to make use of any operation which would modify it.
+
+=head1 NOTES
+
+In version 0.38 all functions were modified to have a context void pointer
+passed to them. This was so that customer allocators could have their
+own space for memory.
 
 =head1 RETURN
 
@@ -72,6 +89,7 @@ L<https://launchpad.net/libmemcached>
 =head1 AUTHOR
 
 Trond Norbye, E<lt>trond.norbye@gmail.comE<gt>
+Brian Aker, E<lt>brian@tangent.orf<gt>
 
 =head1 SEE ALSO
 

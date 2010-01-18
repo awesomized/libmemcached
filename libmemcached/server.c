@@ -60,7 +60,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
 {
   if (self == NULL)
   {
-   self= (memcached_server_st *)memc->call_malloc(memc, sizeof(memcached_server_st));
+   self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
 
     if (! self)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
@@ -110,7 +110,7 @@ void memcached_server_free(memcached_server_st *self)
 
   if (memcached_is_allocated(self))
   {
-    self->root->call_free(self->root, self);
+    libmemcached_free(self->root, self);
   }
   else
   {

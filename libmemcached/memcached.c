@@ -67,7 +67,8 @@ static inline void _memcached_init(memcached_st *self)
   self->continuum= NULL;
 
 
-  memcached_set_memory_allocators(self, NULL, NULL, NULL, NULL);
+  memcached_set_memory_allocators(self, NULL, NULL, NULL, NULL, NULL);
+  self->allocators= memcached_allocators_return_default();
 
   self->on_clone= NULL;
   self->on_cleanup= NULL;
@@ -130,7 +131,7 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
 
   if (ptr)
   {
-    ptr->call_free(ptr, servers);
+    libmemcached_free(ptr, servers);
   }
   else
   {
@@ -159,11 +160,11 @@ void memcached_free(memcached_st *ptr)
     ptr->on_cleanup(ptr);
 
   if (ptr->continuum)
-    ptr->call_free(ptr, ptr->continuum);
+    libmemcached_free(ptr, ptr->continuum);
 
   if (memcached_is_allocated(ptr))
   {
-    ptr->call_free(ptr, ptr);
+    libmemcached_free(ptr, ptr);
   }
 }
 
@@ -206,10 +207,9 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
 
   new_clone->on_clone= source->on_clone;
   new_clone->on_cleanup= source->on_cleanup;
-  new_clone->call_free= source->call_free;
-  new_clone->call_malloc= source->call_malloc;
-  new_clone->call_realloc= source->call_realloc;
-  new_clone->call_calloc= source->call_calloc;
+
+  new_clone->allocators= source->allocators;
+
   new_clone->get_key_failure= source->get_key_failure;
   new_clone->delete_trigger= source->delete_trigger;
   new_clone->server_failure_limit= source->server_failure_limit;

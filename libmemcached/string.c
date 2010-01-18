@@ -29,7 +29,7 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     if (new_size < need)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-    new_value= string->root->call_realloc(string->root, string->string, new_size);
+    new_value= libmemcached_realloc(string->root, string->string, new_size);
 
     if (new_value == NULL)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -64,7 +64,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   }
   else
   {
-    self= memc->call_malloc(memc, sizeof(memcached_string_st));
+    self= libmemcached_malloc(memc, sizeof(memcached_string_st));
 
     if (self == NULL)
     {
@@ -80,7 +80,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   rc=  _string_check(self, initial_size);
   if (rc != MEMCACHED_SUCCESS)
   {
-    memc->call_free(memc, self);
+    libmemcached_free(memc, self);
     return NULL;
   }
 
@@ -134,7 +134,7 @@ char *memcached_string_c_copy(memcached_string_st *string)
   if (memcached_string_length(string) == 0)
     return NULL;
 
-  c_ptr= string->root->call_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char));
+  c_ptr= libmemcached_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char));
 
   if (c_ptr == NULL)
     return NULL;
@@ -159,12 +159,12 @@ void memcached_string_free(memcached_string_st *ptr)
 
   if (ptr->string)
   {
-    ptr->root->call_free(ptr->root, ptr->string);
+    libmemcached_free(ptr->root, ptr->string);
   }
 
   if (memcached_is_allocated(ptr))
   {
-    ptr->root->call_free(ptr->root, ptr);
+    libmemcached_free(ptr->root, ptr);
   }
   else
   {

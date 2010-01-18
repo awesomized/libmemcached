@@ -79,7 +79,8 @@ BUILT_SOURCES += ${GET_PAGES}
 
 MEMORY_ALLOCATORS_PAGES= \
 			 memcached_get_memory_allocators.pop \
-			 memcached_set_memory_allocators.pop
+			 memcached_set_memory_allocators.pop \
+			 memcached_set_memory_allocators_context.pop
 BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
 
 POOL_PAGES= \
