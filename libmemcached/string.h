@@ -37,10 +37,27 @@ struct memcached_string_st {
   } options;
 };
 
-#define memcached_string_length(A) (size_t)((A)->end - (A)->string)
+static inline size_t memcached_string_length(const memcached_string_st *self)
+{
+  return (size_t)(self->end - self->string);
+}
+
+static inline size_t memcached_string_size(const memcached_string_st *self)
+{
+  return self->current_size;
+}
+
+static inline const char *memcached_string_value(const memcached_string_st *self)
+{
+  return self->string;
+}
+
+static inline char *memcached_string_value_mutable(const memcached_string_st *self)
+{
+  return self->string;
+}
+
 #define memcached_string_set_length(A, B) (A)->end= (A)->string + B
-#define memcached_string_size(A) (A)->current_size
-#define memcached_string_value(A) (A)->string
 
 LIBMEMCACHED_LOCAL
 memcached_string_st *memcached_string_create(const memcached_st *ptr,

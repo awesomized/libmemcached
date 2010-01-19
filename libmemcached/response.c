@@ -175,7 +175,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
-  value_ptr= memcached_string_value(&result->value);
+  value_ptr= memcached_string_value_mutable(&result->value);
   /* 
     We read the \r\n into the string since not doing so is more 
     cycles then the waster of memory to do so.
@@ -196,7 +196,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
   /* This next bit blows the API, but this is internal....*/
   {
     char *char_ptr;
-    char_ptr= memcached_string_value(&result->value);;
+    char_ptr= memcached_string_value_mutable(&result->value);;
     char_ptr[value_length]= 0;
     char_ptr[value_length + 1]= 0;
     memcached_string_set_length(&result->value, value_length);
@@ -382,7 +382,7 @@ static memcached_return_t binary_read_one_response(memcached_server_instance_st 
                                    bodylen) != MEMCACHED_SUCCESS) 
           return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-        char *vptr= memcached_string_value(&result->value);
+        char *vptr= memcached_string_value_mutable(&result->value);
         if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS) 
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
