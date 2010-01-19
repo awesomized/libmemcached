@@ -444,12 +444,11 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
   char **list;
   size_t length= sizeof(memcached_stat_keys);
 
-  list= libmemcached_malloc(memc_stat && memc_stat->root
-                            ? memc_stat->root
-                            : ptr,
-                            length);
+  (void)memc_stat;
 
-  if (!list)
+  list= libmemcached_malloc(ptr, length);
+
+  if (! list)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;

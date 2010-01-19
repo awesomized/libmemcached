@@ -109,7 +109,9 @@ memcached_return_t pointer to hold any error. The object will be returned
 upon success and NULL will be returned on failure. MEMCACHD_END is returned
 by the *error value when all objects that have been found are returned.
 The final value upon MEMCACHED_END is null. Values returned by
-memcached_fetch() musted be free'ed by the caller.
+memcached_fetch() musted be free'ed by the caller. memcached_fetch() will
+be DEPRECATED in the near future, memcached_fetch_result() should be used
+instead.
 
 memcached_fetch_result() is used to return a memcached_result_st(3) structure
 from a memcached server. The result object is forward compatible with changes
@@ -153,6 +155,10 @@ C<MEMCACHED_NOT_SUPPORTED>.
 All objects returned must be freed by the calling application.
 memcached_get() and memcached_fetch() will return NULL on error. You must
 look at the value of error to determine what the actual error was.
+
+MEMCACHED_KEY_TOO_BIG is set to error whenever memcached_fetch() was used
+and the key was set larger then MEMCACHED_MAX_KEY, which was the largest
+key allowed for the original memcached ascii server.
 
 =head1 HOME
 

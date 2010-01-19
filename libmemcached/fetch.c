@@ -26,12 +26,19 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
   if (key)
   {
-    strncpy(key, result_buffer->key, result_buffer->key_length);
+    if (result_buffer->key_length > MEMCACHED_MAX_KEY)
+    {
+      *error= MEMCACHED_KEY_TOO_BIG;
+      *value_length= 0;
+
+      return NULL;
+    }
+    strncpy(key, result_buffer->item_key, result_buffer->key_length); // For the binary protocol we will cut off the key :(
     *key_length= result_buffer->key_length;
   }
 
-  if (result_buffer->flags)
-    *flags= result_buffer->flags;
+  if (result_buffer->item_flags)
+    *flags= result_buffer->item_flags;
   else
     *flags= 0;
 

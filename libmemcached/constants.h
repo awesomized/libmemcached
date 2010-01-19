@@ -69,6 +69,7 @@ typedef enum {
   MEMCACHED_UNKNOWN_STAT_KEY,
   MEMCACHED_E2BIG,
   MEMCACHED_INVALID_ARGUMENTS,
+  MEMCACHED_KEY_TOO_BIG,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 } memcached_return_t;
 

@@ -49,7 +49,7 @@ static inline void _init_string(memcached_string_st *self)
   self->end= self->string= NULL;
 }
 
-memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *self, size_t initial_size)
+memcached_string_st *memcached_string_create(const memcached_st *memc, memcached_string_st *self, size_t initial_size)
 {
   memcached_return_t rc;
 

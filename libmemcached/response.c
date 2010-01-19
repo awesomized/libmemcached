@@ -110,7 +110,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
     char *key;
     size_t prefix_length;
 
-    key= result->key;
+    key= result->item_key;
     result->key_length= 0;
 
     for (prefix_length= ptr->root->prefix_key_length; !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
@@ -124,7 +124,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
       else
         prefix_length--;
     }
-    result->key[result->key_length]= 0;
+    result->item_key[result->key_length]= 0;
   }
 
   if (end_ptr == string_ptr)
@@ -135,7 +135,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
   if (end_ptr == string_ptr)
     goto read_error;
   for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-  result->flags= (uint32_t) strtoul(next_ptr, &string_ptr, 10);
+  result->item_flags= (uint32_t) strtoul(next_ptr, &string_ptr, 10);
 
   if (end_ptr == string_ptr)
     goto read_error;
@@ -161,7 +161,7 @@ static memcached_return_t textual_value_fetch(memcached_server_instance_st *ptr,
   {
     string_ptr++;
     for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
-    result->cas= strtoull(next_ptr, &string_ptr, 10);
+    result->item_cas= strtoull(next_ptr, &string_ptr, 10);
   }
 
   if (end_ptr < string_ptr)
@@ -364,17 +364,17 @@ static memcached_return_t binary_read_one_response(memcached_server_instance_st 
       {
         uint16_t keylen= header.response.keylen;
         memcached_result_reset(result);
-        result->cas= header.response.cas;
+        result->item_cas= header.response.cas;
 
-        if (memcached_safe_read(ptr, &result->flags,
-                                sizeof (result->flags)) != MEMCACHED_SUCCESS)
+        if (memcached_safe_read(ptr, &result->item_flags,
+                                sizeof (result->item_flags)) != MEMCACHED_SUCCESS)
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-        result->flags= ntohl(result->flags);
+        result->item_flags= ntohl(result->item_flags);
         bodylen -= header.response.extlen;
 
         result->key_length= keylen;
-        if (memcached_safe_read(ptr, result->key, keylen) != MEMCACHED_SUCCESS) 
+        if (memcached_safe_read(ptr, result->item_key, keylen) != MEMCACHED_SUCCESS) 
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
         bodylen -= keylen;

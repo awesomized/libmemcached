@@ -43,7 +43,7 @@ struct memcached_string_st {
 #define memcached_string_value(A) (A)->string
 
 LIBMEMCACHED_LOCAL
-memcached_string_st *memcached_string_create(memcached_st *ptr,
+memcached_string_st *memcached_string_create(const memcached_st *ptr,
                                              memcached_string_st *string,
                                              size_t initial_size);
 LIBMEMCACHED_LOCAL

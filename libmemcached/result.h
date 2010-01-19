@@ -17,32 +17,34 @@ extern "C" {
 #endif
 
 struct memcached_result_st {
+  uint32_t item_flags;
+  time_t item_expiration;
+  size_t key_length;
+  uint64_t item_cas;
+  const memcached_st *root;
+  memcached_string_st value;
+  char item_key[MEMCACHED_MAX_KEY];
   struct {
     bool is_allocated:1;
     bool is_initialized:1;
   } options;
-  uint32_t flags;
-  time_t expiration;
-  memcached_st *root;
-  size_t key_length;
-  uint64_t cas;
-  memcached_string_st value;
-  char key[MEMCACHED_MAX_KEY];
   /* Add result callback function */
 };
 
 /* Result Struct */
 LIBMEMCACHED_API
 void memcached_result_free(memcached_result_st *result);
+
 LIBMEMCACHED_API
 void memcached_result_reset(memcached_result_st *ptr);
+
 LIBMEMCACHED_API
-memcached_result_st *memcached_result_create(memcached_st *ptr,
+memcached_result_st *memcached_result_create(const memcached_st *ptr,
                                              memcached_result_st *result);
 
 static inline const char *memcached_result_key_value(const memcached_result_st *self)
 {
-  return self->key;
+  return self->key_length ? self->item_key : NULL;
 }
 
 static inline size_t memcached_result_key_length(const memcached_result_st *self)
@@ -64,12 +66,12 @@ static inline size_t memcached_result_length(const memcached_result_st *self)
 
 static inline uint32_t memcached_result_flags(const memcached_result_st *self)
 {
-  return self->flags;
+  return self->item_flags;
 }
 
 static inline uint64_t memcached_result_cas(const memcached_result_st *self)
 {
-  return self->cas;
+  return self->item_cas;
 }
 
 static inline memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length)
@@ -79,12 +81,12 @@ static inline memcached_return_t memcached_result_set_value(memcached_result_st 
 
 static inline void memcached_result_set_flags(memcached_result_st *self, uint32_t flags)
 {
-  self->flags= flags;
+  self->item_flags= flags;
 }
 
 static inline void memcached_result_set_expiration(memcached_result_st *self, time_t expiration)
 {
-  self->expiration= expiration;
+  self->item_expiration= expiration;
 }
 
 #ifdef __cplusplus

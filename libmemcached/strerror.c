@@ -82,6 +82,8 @@ const char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcac
     return "ITEM TOO BIG";
   case MEMCACHED_INVALID_ARGUMENTS:
      return "INVALID ARGUMENTS";
+  case MEMCACHED_KEY_TOO_BIG:
+     return "KEY RETURNED FROM SERVER WAS TOO LARGE";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

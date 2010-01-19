@@ -332,16 +332,21 @@ static test_return_t error_test(memcached_st *memc)
                         4269430871U, 610793021U, 527273862U, 1437122909U,
                         2300930706U, 2943759320U, 674306647U, 2400528935U,
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
-                        4159057246U, 3425930182U, 2593724503U};
+                        4159057246U, 3425930182U, 2593724503U,  1868899624U};
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  test_true(MEMCACHED_MAXIMUM_RETURN == 39);
+  test_true(MEMCACHED_MAXIMUM_RETURN == 40);
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
     const char *msg=  memcached_strerror(memc, rc);
     hash_val= memcached_generate_hash_value(msg, strlen(msg),
                                             MEMCACHED_HASH_JENKINS);
+    if (values[rc] != hash_val)
+    {
+      fprintf(stderr, "\n\nYou have updated memcached_return_t without updating the error_test\n");
+      fprintf(stderr, "%u, %s, (%u)\n\n", (uint32_t)rc, memcached_strerror(memc, rc), hash_val);
+    }
     test_true(values[rc] == hash_val);
   }
 
@@ -473,7 +478,7 @@ static test_return_t cas2_test(memcached_st *memc)
 
   results= memcached_fetch_result(memc, &results_obj, &rc);
   test_true(results);
-  test_true(results->cas);
+  test_true(results->item_cas);
   test_true(rc == MEMCACHED_SUCCESS);
   test_true(memcached_result_cas(results));
 

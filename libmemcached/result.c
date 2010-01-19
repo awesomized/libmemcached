@@ -17,7 +17,18 @@
 */
 #include "common.h"
 
-memcached_result_st *memcached_result_create(memcached_st *memc,
+static inline void _result_init(memcached_result_st *self,
+                                const memcached_st *memc)
+{
+  self->item_flags= 0;
+  self->item_expiration= 0;
+  self->key_length= 0;
+  self->item_cas= 0;
+  self->root= memc;
+  self->item_key[0]= 0;
+}
+
+memcached_result_st *memcached_result_create(const memcached_st *memc,
                                              memcached_result_st *ptr)
 {
   WATCHPOINT_ASSERT(memc);
@@ -26,18 +37,21 @@ memcached_result_st *memcached_result_create(memcached_st *memc,
   /* Saving malloc calls :) */
   if (ptr)
   {
-    memset(ptr, 0, sizeof(memcached_result_st));
+    ptr->options.is_allocated= false;
   }
   else
   {
-    ptr= libmemcached_calloc(memc, 1, sizeof(memcached_result_st));
+    ptr= libmemcached_malloc(memc, sizeof(memcached_result_st));
 
     if (ptr == NULL)
       return NULL;
+
     ptr->options.is_allocated= true;
   }
 
   ptr->options.is_initialized= true;
+
+  _result_init(ptr, memc);
 
   ptr->root= memc;
   memcached_string_create(memc, &ptr->value, 0);
@@ -51,9 +65,9 @@ void memcached_result_reset(memcached_result_st *ptr)
 {
   ptr->key_length= 0;
   memcached_string_reset(&ptr->value);
-  ptr->flags= 0;
-  ptr->cas= 0;
-  ptr->expiration= 0;
+  ptr->item_flags= 0;
+  ptr->item_cas= 0;
+  ptr->item_expiration= 0;
 }
 
 void memcached_result_free(memcached_result_st *ptr)
