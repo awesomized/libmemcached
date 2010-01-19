@@ -54,3 +54,19 @@ merge-clean:
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
 
+lcov: lcov-clean check
+	@echo
+	@echo "	------------------------------------------------------"
+	@echo "Make sure ./configure was run with '--enable-coverage'"
+	@echo "------------------------------------------------------"
+	@echo
+	cd libmemcached && lcov --capture --directory . --base-directory .. --output-file lcov.out
+	genhtml -o lcov --function-coverage -t libmemcached libmemcached/lcov.out
+
+lcov-clean: clean
+	rm -rf lcov */lcov.out 
+	find . -name '*.gcno' | xargs rm -f
+	find . -name '*.gcda' | xargs rm -f
+
+
+
