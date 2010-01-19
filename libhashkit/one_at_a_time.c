@@ -6,9 +6,14 @@
  * the COPYING file in the parent directory for full text.
  */
 
+/*
+  This has is Jenkin's "One at A time Hash".
+http://en.wikipedia.org/wiki/Jenkins_hash_function
+*/
+
 #include "common.h"
 
-uint32_t hashkit_default(const char *key, size_t key_length)
+uint32_t hashkit_one_at_a_time(const char *key, size_t key_length)
 {
   const char *ptr= key;
   uint32_t value= 0;

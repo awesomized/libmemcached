@@ -4911,6 +4911,22 @@ static test_return_t hsieh_avaibility_test (memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t one_at_a_time_run (memcached_st *memc __attribute__((unused)))
+{
+  uint32_t x;
+  const char **ptr;
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_DEFAULT);
+    test_true(one_at_a_time_values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t md5_run (memcached_st *memc __attribute__((unused)))
 {
   uint32_t x;
@@ -5978,6 +5994,7 @@ test_st ketama_auto_eject_hosts[] ={
 };
 
 test_st hash_tests[] ={
+  {"one_at_a_time_run", 0, (test_callback_fn)one_at_a_time_run },
   {"md5", 0, (test_callback_fn)md5_run },
   {"crc", 0, (test_callback_fn)crc_run },
   {"fnv1_64", 0, (test_callback_fn)fnv1_64_run },

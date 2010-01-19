@@ -9,6 +9,7 @@
 #include "common.h"
 #include <math.h>
 
+#if 0
 static uint32_t ketama_server_hash(const char *key, unsigned int key_length, int alignment)
 {
   unsigned char results[16];
@@ -160,3 +161,4 @@ int update_continuum(hashkit_st *hashkit)
 
   return 0;
 }
+#endif

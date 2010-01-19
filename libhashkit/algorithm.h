@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 HASHKIT_API
-uint32_t hashkit_default(const char *key, size_t key_length);
+uint32_t hashkit_one_at_a_time(const char *key, size_t key_length);
 HASHKIT_API
 uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
 HASHKIT_API

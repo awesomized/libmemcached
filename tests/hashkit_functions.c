@@ -37,12 +37,9 @@ static test_return_t init_test(void *not_used __attribute__((unused)))
   hashk_ptr= hashkit_create(&hashk);
   test_true(hashk_ptr);
   test_true(hashk_ptr == &hashk);
-  test_true(hashkit_is_initialized(&hashk) == true);
   test_true(hashkit_is_allocated(hashk_ptr) == false);
 
   hashkit_free(hashk_ptr);
-
-  test_true(hashkit_is_initialized(&hashk) == false);
 
   return TEST_SUCCESS;
 }
@@ -54,7 +51,6 @@ static test_return_t allocation_test(void *not_used __attribute__((unused)))
   hashk_ptr= hashkit_create(NULL);
   test_true(hashk_ptr);
   test_true(hashkit_is_allocated(hashk_ptr) == true);
-  test_true(hashkit_is_initialized(hashk_ptr) == true);
   hashkit_free(hashk_ptr);
 
   return TEST_SUCCESS;
@@ -66,15 +62,13 @@ static test_return_t clone_test(hashkit_st *hashk)
   assert(&global_hashk == hashk);
 
   // Second we test if hashk is even valid
-  test_true(hashkit_is_initialized(hashk) == true);
 
   /* All null? */
   {
     hashkit_st *hashk_ptr;
     hashk_ptr= hashkit_clone(NULL, NULL);
     test_true(hashk_ptr);
-    test_true(hashkit_is_allocated(hashk_ptr) == true);
-    test_true(hashkit_is_initialized(hashk_ptr) == true);
+    test_true(hashkit_is_allocated(hashk_ptr));
     hashkit_free(hashk_ptr);
   }
 
@@ -85,22 +79,7 @@ static test_return_t clone_test(hashkit_st *hashk)
     hashk_ptr= hashkit_clone(NULL, hashk);
 
     test_true(hashk_ptr);
-    test_true(hashkit_is_allocated(hashk_ptr) == true);
-    test_true(hashkit_is_initialized(hashk_ptr) == true);
-
-    test_true(hashk_ptr->distribution == hashk->distribution);
-    test_true(hashk_ptr->continuum_count == hashk->continuum_count);
-    test_true(hashk_ptr->continuum_points_count == hashk->continuum_points_count);
-    test_true(hashk_ptr->list_size == hashk->list_size);
-    test_true(hashk_ptr->context_size == hashk->context_size);
-    test_true(hashk_ptr->continuum == NULL);
-    test_true(hashk_ptr->hash_fn == hashk->hash_fn);
-    test_true(hashk_ptr->active_fn == hashk->active_fn);
-    test_true(hashk_ptr->continuum_hash_fn == hashk->continuum_hash_fn);
-    test_true(hashk_ptr->continuum_key_fn == hashk->continuum_key_fn);
-    test_true(hashk_ptr->sort_fn == hashk->sort_fn);
-    test_true(hashk_ptr->weight_fn == hashk->weight_fn);
-    test_true(hashk_ptr->list == hashk->list);
+    test_true(hashkit_is_allocated(hashk_ptr));
 
     hashkit_free(hashk_ptr);
   }
@@ -112,6 +91,8 @@ static test_return_t clone_test(hashkit_st *hashk)
 
     hash_clone= hashkit_clone(&declared_clone, NULL);
     test_true(hash_clone);
+    test_true(hash_clone == &declared_clone);
+    test_false(hashkit_is_allocated(hash_clone));
 
     hashkit_free(hash_clone);
   }
@@ -120,15 +101,33 @@ static test_return_t clone_test(hashkit_st *hashk)
   {
     hashkit_st declared_clone;
     hashkit_st *hash_clone;
-    memset(&declared_clone, 0 , sizeof(hashkit_st));
+
     hash_clone= hashkit_clone(&declared_clone, hashk);
     test_true(hash_clone);
+    test_true(hash_clone == &declared_clone);
+    test_false(hashkit_is_allocated(hash_clone));
+
     hashkit_free(hash_clone);
   }
 
   return TEST_SUCCESS;
 }
 
+static test_return_t one_at_a_time_run (hashkit_st *hashk __attribute__((unused)))
+{
+  uint32_t x;
+  const char **ptr;
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= hashkit_one_at_a_time(*ptr, strlen(*ptr));
+    test_true(one_at_a_time_values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
 
 static test_return_t md5_run (hashkit_st *hashk __attribute__((unused)))
 {
@@ -298,7 +297,37 @@ test_st allocation[]= {
   {0, 0, 0}
 };
 
+static test_return_t hashkit_generate_value_test(hashkit_st *hashk)
+{
+  uint32_t value;
+  value= hashkit_generate_value(hashk, "a", sizeof("a"));
+
+  return TEST_SUCCESS;
+}
+
+test_st hashkit_st_functions[] ={
+  {"hashkit_generate_value", 0, (test_callback_fn)hashkit_generate_value_test},
+  {0, 0, 0}
+};
+
+static test_return_t libhashkit_generate_value_test(hashkit_st *hashk)
+{
+  uint32_t value;
+
+  (void)hashk;
+
+  value= libhashkit_generate_value("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
+
+  return TEST_SUCCESS;
+}
+
+test_st library_functions[] ={
+  {"libhashkit_generate_value", 0, (test_callback_fn)libhashkit_generate_value_test},
+  {0, 0, 0}
+};
+
 test_st hash_tests[] ={
+  {"one_at_a_time", 0, (test_callback_fn)one_at_a_time_run },
   {"md5", 0, (test_callback_fn)md5_run },
   {"crc", 0, (test_callback_fn)crc_run },
   {"fnv1_64", 0, (test_callback_fn)fnv1_64_run },
@@ -323,8 +352,10 @@ test_st regression[]= {
 
 collection_st collection[] ={
   {"allocation", 0, 0, allocation},
-  {"regression", 0, 0, regression},
+  {"hashkit_st_functions", 0, 0, hashkit_st_functions},
+  {"library_functions", 0, 0, library_functions},
   {"hashing", 0, 0, hash_tests},
+  {"regression", 0, 0, regression},
   {0, 0, 0, 0}
 };
 
@@ -344,20 +375,7 @@ void *world_create(test_return_t *error)
     return NULL;
   }
 
-  // First we test if hashk is even valid
-  if (hashkit_is_initialized(hashk_ptr) == false)
-  {
-    *error= TEST_FAILURE;
-    return NULL;
-  }
-
   if (hashkit_is_allocated(hashk_ptr) == true)
-  {
-    *error= TEST_FAILURE;
-    return NULL;
-  }
-
-  if (hashk_ptr->continuum != NULL)
   {
     *error= TEST_FAILURE;
     return NULL;
@@ -372,7 +390,6 @@ void *world_create(test_return_t *error)
 test_return_t world_destroy(hashkit_st *hashk)
 {
   // Did we get back what we expected?
-  assert(hashkit_is_initialized(hashk) == true);
   assert(hashkit_is_allocated(hashk) == false);
   hashkit_free(&global_hashk);
 

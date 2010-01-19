@@ -7,23 +7,12 @@
  * the COPYING file in the parent directory for full text.
  */
 
-/**
- * @file
- * @brief HashKit Header
- */
-
 #ifndef HASHKIT_TYPES_H
 #define HASHKIT_TYPES_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @addtogroup hashkit_types Types
- * @ingroup hashkit
- * @{
- */
 
 typedef enum {
   HASHKIT_SUCCESS,
@@ -32,24 +21,8 @@ typedef enum {
   HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
 } hashkit_return_t;
 
-/**
-  @todo hashkit_options_t is for future use, currently we do not define any user options.
- */
-
-typedef enum
-{
-  HASHKIT_OPTION_MAX
-} hashkit_options_t;
-
-typedef struct
-{
-  /* We use the following for internal book keeping. */
-  bool is_initialized:1;
-  bool is_allocated:1;
-} hashkit_options_st;
-
 typedef enum {
-  HASHKIT_HASH_DEFAULT= 0,
+  HASHKIT_HASH_DEFAULT= 0, // hashkit_one_at_a_time()
   HASHKIT_HASH_MD5,
   HASHKIT_HASH_CRC,
   HASHKIT_HASH_FNV1_64,
@@ -75,15 +48,7 @@ typedef enum
 
 
 typedef struct hashkit_st hashkit_st;
-typedef struct hashkit_continuum_point_st hashkit_continuum_point_st;
-typedef bool (hashkit_active_fn)(void *context);
-typedef uint32_t (hashkit_fn)(const char *key, size_t key_length);
-typedef size_t (hashkit_key_fn)(char *key, size_t key_length, uint32_t point_index, void *context);
-typedef void (hashkit_sort_fn)(void *context, size_t count);
-typedef uint32_t (hashkit_weight_fn)(void *context);
-
-/** @} */
-
+typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length);
 
 #ifdef __cplusplus
 }

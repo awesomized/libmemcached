@@ -25,13 +25,13 @@ noinst_HEADERS+= \
 libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/crc32.c \
 				  libhashkit/behavior.c \
-				  libhashkit/default.c \
 				  libhashkit/fnv.c \
 				  libhashkit/hashkit.c \
 				  libhashkit/jenkins.c \
 				  libhashkit/ketama.c \
 				  libhashkit/md5.c \
 				  libhashkit/murmur.c \
+				  libhashkit/one_at_a_time.c \
 				  libhashkit/strerror.c
 
 if INCLUDE_HSIEH_SRC
