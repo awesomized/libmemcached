@@ -102,6 +102,7 @@ typedef struct global
 {
   /* synchronize lock */
   ms_sync_lock_t init_lock;
+  ms_sync_lock_t warmup_lock;
   ms_sync_lock_t run_lock;
 
   /* mutex for outputing error log synchronously when memslap crashes */

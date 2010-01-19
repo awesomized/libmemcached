@@ -342,7 +342,6 @@ static void ms_parse_cfg_file(char *cfg_file)
   FILE *f;
   size_t start_len, end_len;
   double proportion;
-  size_t frequence;
   char *line= NULL;
   size_t  read_len;
   ssize_t nread;
@@ -435,8 +434,8 @@ static void ms_parse_cfg_file(char *cfg_file)
 
         if (nread != EOF)
         {
-          if (sscanf(line, "%zu %zu %lf %zu", &start_len, &end_len,
-                     &proportion, &frequence) != 3)
+          if (sscanf(line, "%zu %zu %lf", &start_len, &end_len,
+                     &proportion) != 3)
           {
             conf_type= ms_get_conf_type(line);
             break;
@@ -479,10 +478,14 @@ static void ms_parse_cfg_file(char *cfg_file)
 
         if (nread != EOF)
         {
-          if (sscanf(line, "%d %lf\n", &cmd_type, &proportion) != 2)
+          if (sscanf(line, "%d %lf", &cmd_type, &proportion) != 2)
           {
             conf_type= ms_get_conf_type(line);
             break;
+          }
+          if (cmd_type >= CMD_NULL)
+          {
+            continue;
           }
           ms_setting.cmd_distr[ms_setting.cmd_used_count].cmd_type=
             cmd_type;
@@ -920,7 +923,7 @@ void ms_setting_init_pre()
 static void ms_setting_slapmode_init_post()
 {
   ms_setting.total_key_rng_cnt= KEY_RANGE_COUNT_INIT;
-  ms_setting.key_distr= 
+  ms_setting.key_distr=
     (ms_key_distr_t *)malloc((size_t)ms_setting.total_key_rng_cnt * sizeof(ms_key_distr_t));
 
   if (ms_setting.key_distr == NULL)
@@ -931,7 +934,7 @@ static void ms_setting_slapmode_init_post()
 
   ms_setting.total_val_rng_cnt= VALUE_RANGE_COUNT_INIT;
 
-  ms_setting.value_distr= 
+  ms_setting.value_distr=
     (ms_value_distr_t *)malloc((size_t)ms_setting.total_val_rng_cnt * sizeof( ms_value_distr_t));
 
   if (ms_setting.value_distr == NULL)
@@ -980,13 +983,6 @@ static void ms_setting_slapmode_init_post()
     exit(1);
   }
 
-  if ((ms_setting.udp
-       || ms_setting.facebook_test) && ms_setting.binary_prot)
-  {
-    fprintf(stderr, "Binary protocol doesn't support UDP now.\n");
-    exit(1);
-  }
-
   if ((ms_setting.rep_write_srv > 0) && (ms_setting.srv_cnt < 2))
   {
     fprintf(stderr, "Please specify 2 servers at least for replication\n");
@@ -1007,23 +1003,9 @@ static void ms_setting_slapmode_init_post()
     exit(1);
   }
 
-  if ((ms_setting.rep_write_srv > 0) && (ms_setting.sock_per_conn > 1))
-  {
-    fprintf(stderr, "Replication doesn't support multi-socks "
-                    "in one connection structure.\n");
-    exit(1);
-  }
-
   if (ms_setting.facebook_test && (ms_setting.rep_write_srv > 0))
   {
     fprintf(stderr, "facebook test couldn't work with replication.\n");
-    exit(1);
-  }
-
-  if (ms_setting.reconnect && (ms_setting.sock_per_conn > 1))
-  {
-    fprintf(stderr, "Reconnection doesn't support multi-socks "
-                    "in one connection structure.\n");
     exit(1);
   }
 

@@ -30,8 +30,7 @@ extern "C" {
 #define UDP_MAX_SEND_PAYLOAD_SIZE    1400                 /* mtu size is 1500 */
 #define UDP_HEADER_SIZE              8                    /* UDP header size */
 #define MAX_SENDBUF_SIZE             (256 * 1024 * 1024)  /* Maximum socket buffer size */
-#define SOCK_WAIT_TIMEOUT            10                   /* maximum waiting time of UDP, 10s */
-#define EVENT_TIMEOUT                10                   /* maximum waiting time of event,10s */
+#define SOCK_WAIT_TIMEOUT            30                   /* maximum waiting time of UDP, 30s */
 #define MAX_UDP_PACKET               (1 << 16)            /* maximum UDP packets, 65536 */
 
 /* Initial size of the sendmsg() scatter/gather array. */
@@ -104,7 +103,6 @@ typedef struct udppkt
 enum protocol
 {
   ascii_prot = 3,           /* ASCII protocol */
-  ascii_udp_prot,           /* ASCII UDP protocol*/
   binary_prot,              /* binary protocol */
 };
 
@@ -229,7 +227,7 @@ int ms_mcd_set(ms_conn_t *c, ms_task_item_t *item);
 
 
 /* used to send the get command to server */
-int ms_mcd_get(ms_conn_t *c, ms_task_item_t *item, bool verify);
+int ms_mcd_get(ms_conn_t *c, ms_task_item_t *item);
 
 
 /* used to send the multi-get command to server */
