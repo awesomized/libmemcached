@@ -17,7 +17,7 @@
                       +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
-uint32_t hashkit_hsieh(const char *key, size_t key_length)
+uint32_t hashkit_hsieh(const char *key, size_t key_length, void *context__attribute__((unused)))
 {
   uint32_t hash = 0, tmp;
   int rem;

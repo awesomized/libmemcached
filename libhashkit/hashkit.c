@@ -76,7 +76,7 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
 
 uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length)
 {
-  return self->base_hash.function(key, key_length);
+  return self->base_hash.function(key, key_length, self->base_hash.context);
 }
 
 hashkit_return_t hashkit_set_base_function(hashkit_st *self, hashkit_hash_algorithm_t hash_algorithm)
@@ -146,29 +146,29 @@ uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_h
   switch (hash_algorithm)
   {
   case HASHKIT_HASH_DEFAULT:
-    return hashkit_one_at_a_time(key, key_length);
+    return libhashkit_one_at_a_time(key, key_length);
   case HASHKIT_HASH_MD5:
-    return hashkit_md5(key, key_length);
+    return libhashkit_md5(key, key_length);
   case HASHKIT_HASH_CRC:
-    return hashkit_crc32(key, key_length);
+    return libhashkit_crc32(key, key_length);
   case HASHKIT_HASH_FNV1_64:
-    return hashkit_fnv1_64(key, key_length);
+    return libhashkit_fnv1_64(key, key_length);
   case HASHKIT_HASH_FNV1A_64:
-    return hashkit_fnv1a_64(key, key_length);
+    return libhashkit_fnv1a_64(key, key_length);
   case HASHKIT_HASH_FNV1_32:
-    return hashkit_fnv1_32(key, key_length);
+    return libhashkit_fnv1_32(key, key_length);
   case HASHKIT_HASH_FNV1A_32:
-    return hashkit_fnv1a_32(key, key_length);
+    return libhashkit_fnv1a_32(key, key_length);
   case HASHKIT_HASH_HSIEH:
 #ifdef HAVE_HSIEH_HASH
-    return hashkit_hsieh(key, key_length);
+    return libhashkit_hsieh(key, key_length);
 #else
     return 1;
 #endif
   case HASHKIT_HASH_MURMUR:
-    return hashkit_murmur(key, key_length);
+    return libhashkit_murmur(key, key_length);
   case HASHKIT_HASH_JENKINS:
-    return hashkit_jenkins(key, key_length);
+    return libhashkit_jenkins(key, key_length);
   case HASHKIT_HASH_MAX:
   default:
 #ifdef HAVE_DEBUG

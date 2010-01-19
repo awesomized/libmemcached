@@ -122,7 +122,7 @@ static test_return_t one_at_a_time_run (hashkit_st *hashk __attribute__((unused)
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_one_at_a_time(*ptr, strlen(*ptr));
+    hash_val= libhashkit_one_at_a_time(*ptr, strlen(*ptr));
     test_true(one_at_a_time_values[x] == hash_val);
   }
 
@@ -138,7 +138,7 @@ static test_return_t md5_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_md5(*ptr, strlen(*ptr));
+    hash_val= libhashkit_md5(*ptr, strlen(*ptr));
     test_true(md5_values[x] == hash_val);
   }
 
@@ -154,7 +154,7 @@ static test_return_t crc_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_crc32(*ptr, strlen(*ptr));
+    hash_val= libhashkit_crc32(*ptr, strlen(*ptr));
     assert(crc_values[x] == hash_val);
   }
 
@@ -170,7 +170,7 @@ static test_return_t fnv1_64_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_fnv1_64(*ptr, strlen(*ptr));
+    hash_val= libhashkit_fnv1_64(*ptr, strlen(*ptr));
     assert(fnv1_64_values[x] == hash_val);
   }
 
@@ -186,7 +186,7 @@ static test_return_t fnv1a_64_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_fnv1a_64(*ptr, strlen(*ptr));
+    hash_val= libhashkit_fnv1a_64(*ptr, strlen(*ptr));
     assert(fnv1a_64_values[x] == hash_val);
   }
 
@@ -203,7 +203,7 @@ static test_return_t fnv1_32_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_fnv1_32(*ptr, strlen(*ptr));
+    hash_val= libhashkit_fnv1_32(*ptr, strlen(*ptr));
     assert(fnv1_32_values[x] == hash_val);
   }
 
@@ -219,7 +219,7 @@ static test_return_t fnv1a_32_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_fnv1a_32(*ptr, strlen(*ptr));
+    hash_val= libhashkit_fnv1a_32(*ptr, strlen(*ptr));
     assert(fnv1a_32_values[x] == hash_val);
   }
 
@@ -236,7 +236,7 @@ static test_return_t hsieh_run (hashkit_st *hashk __attribute__((unused)))
     uint32_t hash_val;
 
 #ifdef HAVE_HSIEH_HASH
-    hash_val= hashkit_hsieh(*ptr, strlen(*ptr));
+    hash_val= libhashkit_hsieh(*ptr, strlen(*ptr));
 #else
     hash_val= 1;
 #endif
@@ -258,7 +258,7 @@ static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_murmur(*ptr, strlen(*ptr));
+    hash_val= libhashkit_murmur(*ptr, strlen(*ptr));
     assert(murmur_values[x] == hash_val);
   }
 
@@ -276,7 +276,7 @@ static test_return_t jenkins_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_jenkins(*ptr, strlen(*ptr));
+    hash_val= libhashkit_jenkins(*ptr, strlen(*ptr));
     assert(jenkins_values[x] == hash_val);
   }
 
@@ -373,6 +373,12 @@ static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
+static uint32_t hash_test_function(const char *string, size_t string_length, void *context)
+{
+  (void)context;
+  return libhashkit_md5(string, string_length);
+}
+
 static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
 {
   hashkit_return_t rc;
@@ -380,7 +386,7 @@ static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
   const char **ptr;
 
 
-  rc= hashkit_set_base_function_custom(hashk, hashkit_md5, NULL);
+  rc= hashkit_set_base_function_custom(hashk, hash_test_function, NULL);
   test_true(rc == HASHKIT_SUCCESS);
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)

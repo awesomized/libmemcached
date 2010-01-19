@@ -56,7 +56,7 @@ use a bitmask.  For example, if you need only 10 bits, do
 In which case, the hash table should have hashsize(10) elements.
 */
 
-uint32_t hashkit_jenkins(const char *key, size_t length)
+uint32_t hashkit_jenkins(const char *key, size_t length, void *context __attribute__((unused)))
 {
   uint32_t a,b,c;                                          /* internal state */
   union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */

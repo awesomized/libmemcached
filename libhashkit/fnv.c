@@ -14,7 +14,7 @@ static uint64_t FNV_64_PRIME= UINT64_C(0x100000001b3);
 static uint32_t FNV_32_INIT= 2166136261UL;
 static uint32_t FNV_32_PRIME= 16777619;
 
-uint32_t hashkit_fnv1_64(const char *key, size_t key_length)
+uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *context __attribute__((unused)))
 {
   /* Thanks to pierre@demartines.com for the pointer */
   uint64_t hash= FNV_64_INIT;
@@ -28,7 +28,7 @@ uint32_t hashkit_fnv1_64(const char *key, size_t key_length)
   return (uint32_t)hash;
 }
 
-uint32_t hashkit_fnv1a_64(const char *key, size_t key_length)
+uint32_t hashkit_fnv1a_64(const char *key, size_t key_length, void *context __attribute__((unused)))
 {
   uint32_t hash= (uint32_t) FNV_64_INIT;
 
@@ -42,7 +42,7 @@ uint32_t hashkit_fnv1a_64(const char *key, size_t key_length)
   return hash;
 }
 
-uint32_t hashkit_fnv1_32(const char *key, size_t key_length)
+uint32_t hashkit_fnv1_32(const char *key, size_t key_length, void *context __attribute__((unused)))
 {
   uint32_t hash= FNV_32_INIT;
 
@@ -56,7 +56,7 @@ uint32_t hashkit_fnv1_32(const char *key, size_t key_length)
   return hash;
 }
 
-uint32_t hashkit_fnv1a_32(const char *key, size_t key_length)
+uint32_t hashkit_fnv1a_32(const char *key, size_t key_length, void *context __attribute__((unused)))
 {
   uint32_t hash= FNV_32_INIT;
 

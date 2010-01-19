@@ -48,7 +48,7 @@ typedef enum
 
 
 typedef struct hashkit_st hashkit_st;
-typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length);
+typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length, void *context);
 
 #ifdef __cplusplus
 }

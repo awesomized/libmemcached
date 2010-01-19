@@ -352,7 +352,7 @@ unsigned int len)
    (((UINT4)input[j+2]) << 16) | (((UINT4)input[j+3]) << 24);
 }
 
-uint32_t hashkit_md5(const char *key, size_t key_length)
+uint32_t hashkit_md5(const char *key, size_t key_length, void *context __attribute__((unused)))
 {
   unsigned char results[16];
 

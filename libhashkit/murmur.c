@@ -17,7 +17,7 @@
 
 #include "common.h"
 
-uint32_t hashkit_murmur(const char *key, size_t length)
+uint32_t hashkit_murmur(const char *key, size_t length, void *context __attribute__((unused)))
 {
   /* 
     'm' and 'r' are mixing constants generated offline.  They're not

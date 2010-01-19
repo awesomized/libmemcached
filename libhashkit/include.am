@@ -23,8 +23,9 @@ noinst_HEADERS+= \
 		 libhashkit/common.h
 
 libhashkit_libhashkit_la_SOURCES= \
-				  libhashkit/crc32.c \
+				  libhashkit/algorithm.c \
 				  libhashkit/behavior.c \
+				  libhashkit/crc32.c \
 				  libhashkit/fnv.c \
 				  libhashkit/hashkit.c \
 				  libhashkit/jenkins.c \
