@@ -44,23 +44,6 @@ static void ms_signal_segv(int signum, siginfo_t *info, void *ptr)
   abort();
 }
 
-/* signal pipe reaches, this function will run */
-static void ms_signal_pipe(int signum, siginfo_t *info, void *ptr)
-{
-  UNUSED_ARGUMENT(signum);
-  UNUSED_ARGUMENT(info);
-  UNUSED_ARGUMENT(ptr);
-
-  pthread_mutex_lock(&ms_global.quit_mutex);
-  fprintf(stderr, "\tMemslap encountered a server error. Quitting...\n");
-  fprintf(stderr, "\tError info: SIGPIPE captured (from write?)\n");
-  fprintf(stderr,
-          "\tProbably a socket I/O error when the server is down.\n");
-  pthread_mutex_unlock(&ms_global.quit_mutex);
-  exit(1);
-} /* ms_signal_pipe */
-
-
 /* signal int reaches, this function will run */
 static void ms_signal_int(int signum, siginfo_t *info, void *ptr)
 {
@@ -104,16 +87,8 @@ int ms_setup_sigsegv(void)
  */
 int ms_setup_sigpipe(void)
 {
-  struct sigaction action_2;
-
-  memset(&action_2, 0, sizeof(action_2));
-  action_2.sa_sigaction= ms_signal_pipe;
-  action_2.sa_flags= SA_SIGINFO;
-  if (sigaction(SIGPIPE, &action_2, NULL) < 0)
-  {
-    perror("sigaction");
-    return 0;
-  }
+  /* ignore the SIGPIPE signal */
+  signal(SIGPIPE, SIG_IGN);
 
   return -1;
 } /* ms_setup_sigpipe */

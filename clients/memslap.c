@@ -126,6 +126,10 @@ static void ms_sync_lock_init()
   pthread_mutex_init(&ms_global.init_lock.lock, NULL);
   pthread_cond_init(&ms_global.init_lock.cond, NULL);
 
+  ms_global.warmup_lock.count = 0;
+  pthread_mutex_init(&ms_global.warmup_lock.lock, NULL);
+  pthread_cond_init(&ms_global.warmup_lock.cond, NULL);
+
   ms_global.run_lock.count= 0;
   pthread_mutex_init(&ms_global.run_lock.lock, NULL);
   pthread_cond_init(&ms_global.run_lock.cond, NULL);
@@ -140,6 +144,9 @@ static void ms_sync_lock_destroy()
 {
   pthread_mutex_destroy(&ms_global.init_lock.lock);
   pthread_cond_destroy(&ms_global.init_lock.cond);
+
+  pthread_mutex_destroy(&ms_global.warmup_lock.lock);
+  pthread_cond_destroy(&ms_global.warmup_lock.cond);
 
   pthread_mutex_destroy(&ms_global.run_lock.lock);
   pthread_cond_destroy(&ms_global.run_lock.cond);
@@ -771,19 +778,25 @@ static void ms_monitor_slap_mode()
   int second= 0;
   struct timeval start_time, end_time;
 
+  /* Wait all the threads complete initialization. */
+  pthread_mutex_lock(&ms_global.init_lock.lock);
+  while (ms_global.init_lock.count < ms_setting.nthreads)
+  {
+    pthread_cond_wait(&ms_global.init_lock.cond,
+                      &ms_global.init_lock.lock);
+  }
+  pthread_mutex_unlock(&ms_global.init_lock.lock);
+
   /* only when there is no set operation it need warm up */
   if (ms_setting.cmd_distr[CMD_SET].cmd_prop < PROP_ERROR)
   {
     /* Wait all the connects complete warm up. */
-    pthread_mutex_lock(&ms_global.init_lock.lock);
-    while (ms_global.init_lock.count < (int)ms_setting.nconns)
-    {
-      pthread_cond_wait(&ms_global.init_lock.cond,
-                        &ms_global.init_lock.lock);
+    pthread_mutex_lock(&ms_global.warmup_lock.lock);
+    while (ms_global.warmup_lock.count < (int)ms_setting.nconns) {
+      pthread_cond_wait(&ms_global.warmup_lock.cond, &ms_global.warmup_lock.lock);
     }
-    pthread_mutex_unlock(&ms_global.init_lock.lock);
+    pthread_mutex_unlock(&ms_global.warmup_lock.lock);
   }
-
   ms_global.finish_warmup= true;
 
   /* running in "run time" mode, user specify run time */

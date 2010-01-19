@@ -40,7 +40,7 @@
 static ms_task_item_t *ms_get_cur_opt_item(ms_conn_t *c);
 static ms_task_item_t *ms_get_next_get_item(ms_conn_t *c);
 static ms_task_item_t *ms_get_next_set_item(ms_conn_t *c);
-static ms_task_item_t *ms_get_pre_set_item(ms_conn_t *c);
+static ms_task_item_t *ms_get_random_overwrite_item(ms_conn_t *c);
 
 
 /* select next operation to do */
@@ -54,7 +54,7 @@ static void ms_kick_out_item(ms_task_item_t *item);
 
 
 /* miss rate adjustment */
-static bool ms_need_overwirte_item(ms_task_t *task);
+static bool ms_need_overwrite_item(ms_task_t *task);
 static bool ms_adjust_opt(ms_conn_t *c, ms_task_t *task);
 
 
@@ -154,18 +154,10 @@ static ms_task_item_t *ms_get_next_set_item(ms_conn_t *c)
  * @return ms_task_item_t*, the pointer of the previous item of
  *         set operation
  */
-static ms_task_item_t *ms_get_pre_set_item(ms_conn_t *c)
+static ms_task_item_t *ms_get_random_overwrite_item(ms_conn_t *c)
 {
-  if (c->set_cursor <= 0)
-  {
-    return &c->item_win[0];
-  }
-  else
-  {
-    return &c->item_win[(int64_t)-- c->set_cursor % c->win_size];
-  }
-} /* ms_get_pre_set_item */
-
+    return ms_get_next_get_item(c);
+} /* ms_get_random_overwrite_item */
 
 /**
  * According to the proportion of operations(get or set), select
@@ -301,7 +293,7 @@ static void ms_kick_out_item(ms_task_item_t *item)
  * @return bool, if need overwrite, return true, else return
  *         false
  */
-static bool ms_need_overwirte_item(ms_task_t *task)
+static bool ms_need_overwrite_item(ms_task_t *task)
 {
   ms_task_item_t *item= task->item;
 
@@ -355,7 +347,7 @@ static bool ms_adjust_opt(ms_conn_t *c, ms_task_t *task)
     /* If the current item is not a new item, kick it out */
     if (item->value_offset != INVALID_OFFSET)
     {
-      if (ms_need_overwirte_item(task))
+      if (ms_need_overwrite_item(task))
       {
         /* overwrite */
         task->overwrite_set++;
@@ -369,17 +361,23 @@ static bool ms_adjust_opt(ms_conn_t *c, ms_task_t *task)
     else            /* it's a new item */
     {
       /* need overwrite */
-      if (ms_need_overwirte_item(task))
+      if (ms_need_overwrite_item(task))
       {
-        item= ms_get_pre_set_item(c);
+        /**
+         *  overwrite not use the item with current set cursor, revert
+         *  set cursor.
+         */
+        c->set_cursor--;
+
+        item= ms_get_random_overwrite_item(c);
         if (item->value_offset != INVALID_OFFSET)
         {
           task->item= item;
           task->overwrite_set++;
         }
-        else                /* previous set item is a new item */
+        else                /* item is a new item */
         {
-          /* select the previous item to run, and cancel overwrite */
+          /* select the item to run, and cancel overwrite */
           task->item= item;
         }
       }
@@ -601,7 +599,7 @@ static void ms_warmup_server(ms_conn_t *c)
    */
   if (c->remain_warmup_num == -1)
   {
-    ms_send_signal(&ms_global.init_lock);
+    ms_send_signal(&ms_global.warmup_lock);
     c->remain_warmup_num--;       /* never run the if branch */
   }
 } /* ms_warmup_server */
@@ -629,7 +627,7 @@ static void ms_single_getset_task_sch(ms_conn_t *c)
     else if (task->cmd == CMD_GET)
     {
       assert(task->cmd == CMD_GET);
-      ms_mcd_get(c, item, task->verify);
+      ms_mcd_get(c, item);
     }
   }
 } /* ms_single_getset_task_sch */

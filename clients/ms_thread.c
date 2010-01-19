@@ -244,7 +244,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
  */
 static void *ms_worker_libevent(void *arg)
 {
-  ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
+  ms_thread_t *ms_thread= NULL;
   ms_thread_ctx_t *thread_ctx= (ms_thread_ctx_t *)arg;
 
   /**
@@ -264,6 +264,12 @@ static void *ms_worker_libevent(void *arg)
   /* each thread with a timer */
   ms_clock_handler(0, 0, 0);
 
+  pthread_mutex_lock(&ms_global.init_lock.lock);
+  ms_global.init_lock.count++;
+  pthread_cond_signal(&ms_global.init_lock.cond);
+  pthread_mutex_unlock(&ms_global.init_lock.lock);
+
+  ms_thread= pthread_getspecific(ms_thread_key);
   event_base_loop(ms_thread->base, 0);
 
   return NULL;
