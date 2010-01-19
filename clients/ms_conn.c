@@ -130,8 +130,8 @@ static int ms_transmit(ms_conn_t *c);
 static void ms_conn_shrink(ms_conn_t *c);
 static void ms_conn_set_state(ms_conn_t *c, int state);
 static bool ms_update_event(ms_conn_t *c, const int new_flags);
-static int ms_get_rep_sock_index(ms_conn_t *c, int cmd);
-static int ms_get_next_sock_index(ms_conn_t *c);
+static uint32_t ms_get_rep_sock_index(ms_conn_t *c, int cmd);
+static uint32_t ms_get_next_sock_index(ms_conn_t *c);
 static int ms_update_conn_sock_event(ms_conn_t *c);
 static bool ms_need_yield(ms_conn_t *c);
 static void ms_update_start_time(ms_conn_t *c);
@@ -473,9 +473,9 @@ static int ms_item_win_init(ms_conn_t *c)
 static int ms_conn_sock_init(ms_conn_t *c)
 {
   ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
-  int i;
+  uint32_t i;
   int ret_sfd;
-  int srv_idx= 0;
+  uint32_t srv_idx= 0;
 
   assert(c != NULL);
   assert(c->tcpsfd != NULL);
@@ -538,7 +538,7 @@ static int ms_conn_sock_init(ms_conn_t *c)
     }
     else
     {
-      for (int j= 0; j < i; j++)
+      for (uint32_t j= 0; j < i; j++)
       {
         close(c->tcpsfd[j]);
       }
@@ -668,7 +668,7 @@ static void ms_conn_close(ms_conn_t *c)
   /* delete the event, the socket and the connection */
   event_del(&c->event);
 
-  for (int i= 0; i < c->total_sfds; i++)
+  for (uint32_t i= 0; i < c->total_sfds; i++)
   {
     if (c->tcpsfd[i] > 0)
     {
@@ -894,18 +894,18 @@ static int ms_network_connect(ms_conn_t *c,
 static int ms_reconn(ms_conn_t *c)
 {
   ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
-  int srv_idx= 0;
-  int32_t srv_conn_cnt= 0;
+  uint32_t srv_idx= 0;
+  uint32_t srv_conn_cnt= 0;
 
   if (ms_setting.rep_write_srv > 0)
   {
     srv_idx= c->cur_idx % ms_setting.srv_cnt;
-    srv_conn_cnt= (int)(ms_setting.sock_per_conn  * ms_setting.nconns);
+    srv_conn_cnt= ms_setting.sock_per_conn  * ms_setting.nconns;
   }
   else
   {
     srv_idx= ms_thread->thread_ctx->srv_idx;
-    srv_conn_cnt= (int32_t)((int)ms_setting.nconns / ms_setting.srv_cnt);
+    srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
   }
 
   /* close the old socket handler */
@@ -913,7 +913,7 @@ static int ms_reconn(ms_conn_t *c)
   c->tcpsfd[c->cur_idx]= 0;
 
   if (atomic_add_32_nv(&ms_setting.servers[srv_idx].disconn_cnt, 1)
-      % (uint32_t)srv_conn_cnt == 0)
+      % srv_conn_cnt == 0)
   {
     gettimeofday(&ms_setting.servers[srv_idx].disconn_time, NULL);
     fprintf(stderr, "Server %s:%d disconnect\n",
@@ -923,7 +923,8 @@ static int ms_reconn(ms_conn_t *c)
 
   if (ms_setting.rep_write_srv > 0)
   {
-    int i= 0;
+    uint32_t i= 0;
+
     for (i= 0; i < c->total_sfds; i++)
     {
       if (c->tcpsfd[i] != 0)
@@ -995,9 +996,9 @@ static int ms_reconn(ms_conn_t *c)
 int ms_reconn_socks(ms_conn_t *c)
 {
   ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
-  int srv_idx= 0;
+  uint32_t srv_idx= 0;
   int ret_sfd= 0;
-  int srv_conn_cnt= 0;
+  uint32_t srv_conn_cnt= 0;
   struct timeval cur_time;
 
   assert(c != NULL);
@@ -1007,7 +1008,7 @@ int ms_reconn_socks(ms_conn_t *c)
     return 0;
   }
 
-  for (int i= 0; i < c->total_sfds; i++)
+  for (uint32_t i= 0; i < c->total_sfds; i++)
   {
     if (c->tcpsfd[i] == 0)
     {
@@ -1028,12 +1029,12 @@ int ms_reconn_socks(ms_conn_t *c)
       if (ms_setting.rep_write_srv > 0)
       {
         srv_idx= i % ms_setting.srv_cnt;
-        srv_conn_cnt= (int)(ms_setting.sock_per_conn * ms_setting.nconns);
+        srv_conn_cnt= ms_setting.sock_per_conn * ms_setting.nconns;
       }
       else
       {
         srv_idx= ms_thread->thread_ctx->srv_idx;
-        srv_conn_cnt= (int)ms_setting.nconns / ms_setting.srv_cnt;
+        srv_conn_cnt= ms_setting.nconns / ms_setting.srv_cnt;
       }
 
       if (ms_network_connect(c, ms_setting.servers[srv_idx].srv_host_name,
@@ -2721,10 +2722,10 @@ void ms_event_handler(const int fd, const short which, void *arg)
  *
  * @return int, if success, return the index, else return 0
  */
-static int ms_get_rep_sock_index(ms_conn_t *c, int cmd)
+static uint32_t ms_get_rep_sock_index(ms_conn_t *c, int cmd)
 {
-  int sock_index= -1;
-  int i= 0;
+  uint32_t sock_index= 0;
+  uint32_t i= 0;
 
   if (c->total_sfds == 1)
   {
@@ -2751,18 +2752,18 @@ static int ms_get_rep_sock_index(ms_conn_t *c, int cmd)
       if (i == ms_setting.rep_write_srv)
       {
         /* random get one replication server to read */
-        sock_index= (int)(random() % c->total_sfds);
+        sock_index= (uint32_t)(random() % c->total_sfds);
       }
       else
       {
         /* random get one replication writing server to write */
-        sock_index= (int)(random() % ms_setting.rep_write_srv);
+        sock_index= (uint32_t)(random() % ms_setting.rep_write_srv);
       }
     }
     else if (cmd == CMD_GET)
     {
       /* random get one replication server to read */
-      sock_index= (int)(random() % c->total_sfds);
+      sock_index= (uint32_t)(random() % c->total_sfds);
     }
   }
   while (c->tcpsfd[sock_index] == 0);
@@ -2778,9 +2779,9 @@ static int ms_get_rep_sock_index(ms_conn_t *c, int cmd)
  *
  * @return int, return the index
  */
-static int ms_get_next_sock_index(ms_conn_t *c)
+static uint32_t ms_get_next_sock_index(ms_conn_t *c)
 {
-  int sock_index= 0;
+  uint32_t sock_index= 0;
 
   do
   {

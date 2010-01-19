@@ -110,8 +110,8 @@ typedef struct cmd_distr
 /* global setting structure */
 typedef struct setting
 {
-  int ncpu;                             /* cpu count of this system */
-  int nthreads;                         /* total thread count, must equal or less than cpu cores */
+  uint32_t ncpu;                             /* cpu count of this system */
+  uint32_t nthreads;                         /* total thread count, must equal or less than cpu cores */
   uint32_t nconns;                      /* total conn count, must multiply by total thread count */
   int64_t exec_num;                     /* total execute number */
   int run_time;                         /* total run time */
@@ -124,8 +124,8 @@ typedef struct setting
   char *cfg_file;                       /* configure file name */
 
   ms_mcd_server_t *servers;             /* servers array */
-  int total_srv_cnt;                    /* total servers count of the servers array */
-  int srv_cnt;                          /* servers count */
+  uint32_t total_srv_cnt;                    /* total servers count of the servers array */
+  uint32_t srv_cnt;                          /* servers count */
 
   ms_key_distr_t *key_distr;            /* array of key distribution */
   int total_key_rng_cnt;                /* total key range count of the array */
@@ -152,10 +152,10 @@ typedef struct setting
   bool reconnect;                       /* whether it reconnect when connection close */
   bool verbose;                         /* whether it outputs detailed information when verification */
   bool facebook_test;                   /* facebook test, TCP set and multi-get with UDP */
-  int sock_per_conn;                    /* number of socks per connection structure */
+  uint32_t sock_per_conn;                    /* number of socks per connection structure */
   bool binary_prot;                     /* whether it use binary protocol */
   int expected_tps;                     /* expected throughput */
-  int rep_write_srv;                    /* which servers are used to do replication writing */
+  uint32_t rep_write_srv;                    /* which servers are used to do replication writing */
 } ms_setting_st;
 
 extern ms_setting_st ms_setting;

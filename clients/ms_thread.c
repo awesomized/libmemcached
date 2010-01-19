@@ -35,7 +35,7 @@ static ms_thread_ctx_t *ms_thread_ctx;
 static void ms_set_current_time(void);
 static void ms_check_sock_timeout(void);
 static void ms_clock_handler(const int fd, const short which, void *arg);
-static int ms_set_thread_cpu_affinity(int cpu);
+static uint32_t ms_set_thread_cpu_affinity(uint32_t cpu);
 static int ms_setup_thread(ms_thread_ctx_t *thread_ctx);
 static void *ms_worker_libevent(void *arg);
 static void ms_create_worker(void *(*func)(void *), void *arg);
@@ -65,7 +65,7 @@ static void ms_check_sock_timeout(void)
   ms_conn_t *c= NULL;
   int time_diff= 0;
 
-  for (int i= 0; i < ms_thread->thread_ctx->nconns; i++)
+  for (uint32_t i= 0; i < ms_thread->thread_ctx->nconns; i++)
   {
     c= &ms_thread->conn[i];
 
@@ -94,7 +94,7 @@ static void ms_check_sock_timeout(void)
 static void ms_reconn_thread_socks(void)
 {
   ms_thread_t *ms_thread= pthread_getspecific(ms_thread_key);
-  for (int i= 0; i < ms_thread->thread_ctx->nconns; i++)
+  for (uint32_t i= 0; i < ms_thread->thread_ctx->nconns; i++)
   {
     ms_reconn_socks(&ms_thread->conn[i]);
   }
@@ -148,9 +148,9 @@ static void ms_clock_handler(const int fd, const short which, void *arg)
  *
  * @return if success, return 0, else return -1
  */
-static int ms_set_thread_cpu_affinity(int cpu)
+static uint32_t ms_set_thread_cpu_affinity(uint32_t cpu)
 {
-  int ret= 0;
+  uint32_t ret= 0;
 
 #ifdef HAVE_CPU_SET_T
   cpu_set_t cpu_set;
@@ -216,7 +216,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
   }
   memset(ms_thread->conn, 0, (size_t)thread_ctx->nconns * sizeof(ms_conn_t));
 
-  for (int i= 0; i < thread_ctx->nconns; i++)
+  for (uint32_t i= 0; i < thread_ctx->nconns; i++)
   {
     ms_thread->conn[i].conn_idx= i;
     if (ms_setup_conn(&ms_thread->conn[i]) != 0)
@@ -310,10 +310,10 @@ void ms_thread_init()
     exit(1);
   }
 
-  for (int i= 0; i < ms_setting.nthreads; i++)
+  for (uint32_t i= 0; i < ms_setting.nthreads; i++)
   {
     ms_thread_ctx[i].thd_idx= i;
-    ms_thread_ctx[i].nconns= (int)((int)ms_setting.nconns / ms_setting.nthreads);
+    ms_thread_ctx[i].nconns= ms_setting.nconns / ms_setting.nthreads;
 
     /**
      *  If only one server, all the connections in all threads
@@ -333,7 +333,7 @@ void ms_thread_init()
     exit(1);
   }
   /* Create threads after we've done all the epoll setup. */
-  for (int i= 0; i < ms_setting.nthreads; i++)
+  for (uint32_t i= 0; i < ms_setting.nthreads; i++)
   {
     ms_create_worker(ms_worker_libevent, (void *)&ms_thread_ctx[i]);
   }

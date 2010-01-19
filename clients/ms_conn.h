@@ -117,7 +117,7 @@ enum protocol
  */
 typedef struct conn
 {
-  int conn_idx;             /* connection index in the thread */
+  uint32_t conn_idx;             /* connection index in the thread */
   int sfd;                  /* current tcp sock handler of the connection structure */
   int udpsfd;               /* current udp sock handler of the connection structure*/
   int state;                /* state of the connection */
@@ -127,9 +127,9 @@ typedef struct conn
   bool change_sfd;          /* whether change sfd */
 
   int *tcpsfd;              /* TCP sock array */
-  int total_sfds;           /* how many socks in the tcpsfd array */
-  int alive_sfds;           /* alive socks */
-  int cur_idx;              /* current sock index in tcpsfd array */
+  uint32_t total_sfds;           /* how many socks in the tcpsfd array */
+  uint32_t alive_sfds;           /* alive socks */
+  uint32_t cur_idx;              /* current sock index in tcpsfd array */
 
   ms_cmdstat_t precmd;      /* previous command state */
   ms_cmdstat_t currcmd;     /* current command state */
@@ -159,7 +159,7 @@ typedef struct conn
   int msgbytes;             /* number of bytes in current msg */
 
   /* data for UDP clients */
-  int udp;                          /* is this is a UDP "connection" */
+  bool udp;                          /* is this is a UDP "connection" */
   uint32_t request_id;                   /* UDP request ID of current operation, if this is a UDP "connection" */
   uint8_t *hdrbuf;                  /* udp packet headers */
   int hdrsize;                      /* number of headers' worth of space is allocated */

@@ -40,9 +40,9 @@ typedef unsigned int   rel_time_t;
 /* Used to store the context of each thread */
 typedef struct thread_ctx
 {
-  int thd_idx;                          /* the thread index */
-  int nconns;                           /* how many connections included by the thread */
-  int srv_idx;                          /* index of the thread */
+  uint32_t thd_idx;                          /* the thread index */
+  uint32_t nconns;                           /* how many connections included by the thread */
+  uint32_t srv_idx;                          /* index of the thread */
   int tps_perconn;                      /* expected throughput per connection */
   int64_t exec_num_perconn;             /* execute number per connection */
 } ms_thread_ctx_t;
@@ -51,7 +51,7 @@ typedef struct thread_ctx
 typedef struct thread
 {
   ms_conn_t *conn;                      /* conn array to store all the conn in the thread */
-  int nactive_conn;                     /* how many connects are active */
+  uint32_t nactive_conn;                     /* how many connects are active */
 
   ms_thread_ctx_t *thread_ctx;          /* thread context from the caller */
   struct event_base *base;              /* libevent handler created by this thread */

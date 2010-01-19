@@ -54,7 +54,7 @@ ms_setting_st ms_setting;       /* store the settings specified by user */
 
 /* read setting from configuration file */
 static void ms_get_serverlist(char *str);
-static int ms_get_cpu_count(void);
+static uint32_t ms_get_cpu_count(void);
 ms_conf_type_t ms_get_conf_type(char *line);
 static int ms_is_line_data(char *line);
 static int ms_read_is_data(char *line, ssize_t nread);
@@ -198,7 +198,7 @@ static void ms_get_serverlist(char *str)
  *
  * @return return the cpu count if get, else return 1
  */
-static int ms_get_cpu_count()
+static uint32_t ms_get_cpu_count()
 {
 #ifdef HAVE__SC_NPROCESSORS_ONLN
   return sysconf(_SC_NPROCESSORS_CONF);

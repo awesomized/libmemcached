@@ -456,7 +456,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_THREAD_NUMBER:     /* --threads or -T */
-      ms_setting.nthreads= (int)strtol(optarg, (char **) NULL, 10);
+      ms_setting.nthreads= (uint32_t)strtoul(optarg, (char **) NULL, 10);
       if (ms_setting.nthreads <= 0)
       {
         fprintf(stderr, "Threads number must be greater than 0.:-)\n");
@@ -572,7 +572,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_SOCK_PER_CONN:         /* --conn_sock or -n */
-      ms_setting.sock_per_conn= (int)strtol(optarg, (char **) NULL, 10);
+      ms_setting.sock_per_conn= (uint32_t)strtoul(optarg, (char **) NULL, 10);
       if (ms_setting.sock_per_conn <= 0)
       {
         fprintf(stderr, "Number of socks of each concurrency "
@@ -609,7 +609,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_REP_WRITE_SRV:         /* --rep_write or -p */
-      ms_setting.rep_write_srv= (int)strtol(optarg, (char **) NULL, 10);
+      ms_setting.rep_write_srv= (uint32_t)strtoul(optarg, (char **) NULL, 10);
       if (ms_setting.rep_write_srv <= 0)
       {
         fprintf(stderr,
@@ -792,7 +792,8 @@ static void ms_monitor_slap_mode()
   {
     /* Wait all the connects complete warm up. */
     pthread_mutex_lock(&ms_global.warmup_lock.lock);
-    while (ms_global.warmup_lock.count < (int)ms_setting.nconns) {
+    while (ms_global.warmup_lock.count < ms_setting.nconns)
+    {
       pthread_cond_wait(&ms_global.warmup_lock.cond, &ms_global.warmup_lock.lock);
     }
     pthread_mutex_unlock(&ms_global.warmup_lock.lock);
@@ -839,7 +840,7 @@ static void ms_monitor_slap_mode()
      * We loop until we know that all connects have cleaned up.
      */
     pthread_mutex_lock(&ms_global.run_lock.lock);
-    while (ms_global.run_lock.count < (int)ms_setting.nconns)
+    while (ms_global.run_lock.count < ms_setting.nconns)
     {
       pthread_cond_wait(&ms_global.run_lock.cond, &ms_global.run_lock.lock);
     }

@@ -92,7 +92,7 @@ typedef struct stats
 /* lock adapter */
 typedef struct sync_lock
 {
-  int count;
+  uint32_t count;
   pthread_mutex_t lock;
   pthread_cond_t cond;
 } ms_sync_lock_t;
