@@ -13,7 +13,8 @@
 extern "C" {
 #endif
 
-const char *hashkit_strerror(hashkit_st *ptr __attribute__((unused)), hashkit_return_t rc);
+HASHKIT_API
+  const char *hashkit_strerror(hashkit_st *ptr __attribute__((unused)), hashkit_return_t rc);
 
 #ifdef __cplusplus
 }

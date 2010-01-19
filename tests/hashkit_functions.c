@@ -305,8 +305,99 @@ static test_return_t hashkit_generate_value_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
+static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
+{
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  {
+    hashkit_return_t rc;
+    uint32_t x;
+    const char **ptr;
+    uint32_t *list;
+
+    rc= hashkit_set_base_function(hashk, algo);
+
+    /* Hsieh is disabled most of the time for patent issues */
+    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
+      continue;
+
+    test_true(rc == HASHKIT_SUCCESS);
+
+    switch (algo)
+    {
+    case HASHKIT_HASH_DEFAULT:
+      list= one_at_a_time_values;
+      break;
+    case HASHKIT_HASH_MD5:
+      list= md5_values;
+      break;
+    case HASHKIT_HASH_CRC:
+      list= crc_values;
+      break;
+    case HASHKIT_HASH_FNV1_64:
+      list= fnv1_64_values;
+      break;
+    case HASHKIT_HASH_FNV1A_64:
+      list= fnv1a_64_values;
+      break;
+    case HASHKIT_HASH_FNV1_32:
+      list= fnv1_32_values;
+      break;
+    case HASHKIT_HASH_FNV1A_32:
+      list= fnv1a_32_values;
+      break;
+    case HASHKIT_HASH_HSIEH:
+      list= hsieh_values;
+      break;
+    case HASHKIT_HASH_MURMUR:
+      list= murmur_values;
+      break;
+    case HASHKIT_HASH_JENKINS:
+      list= jenkins_values;
+      break;
+    case HASHKIT_HASH_MAX:
+    default:
+      list= NULL;
+      test_fail("We ended up on a non-existent hash");
+    }
+
+    // Now we make sure we did set the hash correctly.
+    for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+    {
+      uint32_t hash_val;
+
+      hash_val= hashkit_generate_value(hashk, *ptr, strlen(*ptr));
+      test_true(list[x] == hash_val);
+    }
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
+{
+  hashkit_return_t rc;
+  uint32_t x;
+  const char **ptr;
+
+
+  rc= hashkit_set_base_function_custom(hashk, hashkit_md5, NULL);
+  test_true(rc == HASHKIT_SUCCESS);
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= hashkit_generate_value(hashk, *ptr, strlen(*ptr));
+    test_true(md5_values[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
 test_st hashkit_st_functions[] ={
   {"hashkit_generate_value", 0, (test_callback_fn)hashkit_generate_value_test},
+  {"hashkit_set_base_function", 0, (test_callback_fn)hashkit_set_base_function_test},
+  {"hashkit_set_base_function_custom", 0, (test_callback_fn)hashkit_set_base_function_custom_test},
   {0, 0, 0}
 };
 

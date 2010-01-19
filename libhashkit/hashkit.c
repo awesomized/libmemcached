@@ -10,7 +10,6 @@
 
 static const hashkit_st global_default_hash= {
   .base_hash= {
-    .type= HASHKIT_HASH_DEFAULT,
     .function= hashkit_one_at_a_time,
     .context= NULL
   },
@@ -78,6 +77,68 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
 uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length)
 {
   return self->base_hash.function(key, key_length);
+}
+
+hashkit_return_t hashkit_set_base_function(hashkit_st *self, hashkit_hash_algorithm_t hash_algorithm)
+{
+  switch (hash_algorithm)
+  {
+  case HASHKIT_HASH_DEFAULT:
+    self->base_hash.function= hashkit_one_at_a_time;
+    break;
+  case HASHKIT_HASH_MD5:
+    self->base_hash.function= hashkit_md5;
+    break;
+  case HASHKIT_HASH_CRC:
+    self->base_hash.function= hashkit_crc32;
+    break;
+  case HASHKIT_HASH_FNV1_64:
+    self->base_hash.function= hashkit_fnv1_64;
+    break;
+  case HASHKIT_HASH_FNV1A_64:
+    self->base_hash.function= hashkit_fnv1a_64;
+    break;
+  case HASHKIT_HASH_FNV1_32:
+    self->base_hash.function= hashkit_fnv1_32;
+    break;
+  case HASHKIT_HASH_FNV1A_32:
+    self->base_hash.function= hashkit_fnv1a_32;
+    break;
+  case HASHKIT_HASH_HSIEH:
+#ifdef HAVE_HSIEH_HASH
+    self->base_hash.function= hashkit_hsieh;
+    break;    
+#else
+    return HASHKIT_FAILURE;
+#endif
+  case HASHKIT_HASH_MURMUR:
+    self->base_hash.function= hashkit_murmur;
+    break;    
+  case HASHKIT_HASH_JENKINS:
+    self->base_hash.function= hashkit_jenkins;
+    break;    
+  case HASHKIT_HASH_MAX:
+  default:
+    return HASHKIT_FAILURE;
+    break;
+  }
+
+  self->base_hash.context= NULL;
+
+  return HASHKIT_SUCCESS;
+}
+
+hashkit_return_t hashkit_set_base_function_custom(hashkit_st *self, hashkit_hash_fn function, void *context)
+{
+  if (function)
+  {
+    self->base_hash.function= function;
+    self->base_hash.context= context;
+
+    return HASHKIT_SUCCESS;
+  }
+
+  return HASHKIT_FAILURE;
 }
 
 uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_hash_algorithm_t hash_algorithm)

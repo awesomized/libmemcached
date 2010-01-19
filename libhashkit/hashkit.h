@@ -27,7 +27,6 @@ extern "C" {
 struct hashkit_st
 {
   struct {
-    hashkit_hash_algorithm_t type;
     hashkit_hash_fn function;
     void *context;
   } base_hash;
@@ -48,6 +47,12 @@ void hashkit_free(hashkit_st *hash);
 
 HASHKIT_API
 uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length);
+
+HASHKIT_API
+hashkit_return_t hashkit_set_base_function(hashkit_st *hash, hashkit_hash_algorithm_t hash_algorithm);
+
+HASHKIT_API
+hashkit_return_t hashkit_set_base_function_custom(hashkit_st *hash, hashkit_hash_fn function, void *context);
 
 HASHKIT_API
 uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_hash_algorithm_t hash_algorithm);
