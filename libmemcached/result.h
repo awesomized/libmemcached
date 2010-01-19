@@ -74,10 +74,8 @@ static inline uint64_t memcached_result_cas(const memcached_result_st *self)
   return self->item_cas;
 }
 
-static inline memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length)
-{
-  return memcached_string_append(&ptr->value, value, length);
-}
+LIBMEMCACHED_API
+memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length);
 
 static inline void memcached_result_set_flags(memcached_result_st *self, uint32_t flags)
 {

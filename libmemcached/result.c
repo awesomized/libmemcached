@@ -87,3 +87,10 @@ void memcached_result_free(memcached_result_st *ptr)
     ptr->options.is_initialized= false;
   }
 }
+
+memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
+                                              const char *value,
+                                              size_t length)
+{
+  return memcached_string_append(&ptr->value, value, length);
+}

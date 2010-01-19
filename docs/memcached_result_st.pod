@@ -34,7 +34,7 @@ C Client Library for memcached (libmemcached, -lmemcached)
 
   memcached_return_t
     memcached_result_set_value (memcached_result_st *ptr,
-                                char *value, size_t length)
+                                const char *value, size_t length)
 
   void memcached_result_set_flags (memcached_result_st *ptr, uint32_t flags)
 
