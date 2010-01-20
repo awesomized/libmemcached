@@ -32,6 +32,7 @@ typedef enum {
   HASHKIT_HASH_HSIEH,
   HASHKIT_HASH_MURMUR,
   HASHKIT_HASH_JENKINS,
+  HASHKIT_HASH_CUSTOM,
   HASHKIT_HASH_MAX
 } hashkit_hash_algorithm_t;
 

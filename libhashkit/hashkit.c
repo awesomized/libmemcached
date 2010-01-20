@@ -49,9 +49,6 @@ void hashkit_free(hashkit_st *self)
   }
 }
 
-/**
-  @note We do assume source is valid. If source does not exist, we allocate.
-*/
 hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
 {
   if (source == NULL)
@@ -73,6 +70,14 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
   return destination;
 }
 
+bool hashkit_compare(const hashkit_st *first, const hashkit_st *second)
+{
+  if (first->base_hash.function == second->base_hash.function &&
+      first->base_hash.context == second->base_hash.context)
+    return true;
+
+  return false;
+}
 
 uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length)
 {
@@ -117,6 +122,7 @@ hashkit_return_t hashkit_set_base_function(hashkit_st *self, hashkit_hash_algori
   case HASHKIT_HASH_JENKINS:
     self->base_hash.function= hashkit_jenkins;
     break;    
+  case HASHKIT_HASH_CUSTOM:
   case HASHKIT_HASH_MAX:
   default:
     return HASHKIT_FAILURE;
@@ -139,6 +145,54 @@ hashkit_return_t hashkit_set_base_function_custom(hashkit_st *self, hashkit_hash
   }
 
   return HASHKIT_FAILURE;
+}
+
+hashkit_hash_algorithm_t hashkit_get_base_function(const hashkit_st *self)
+{
+  if (self->base_hash.function == hashkit_one_at_a_time)
+  {
+    return HASHKIT_HASH_DEFAULT;
+  }
+  else if (self->base_hash.function == hashkit_md5)
+  {
+    return HASHKIT_HASH_MD5;
+  }
+  else if (self->base_hash.function == hashkit_crc32)
+  {
+    return HASHKIT_HASH_CRC;
+  }
+  else if (self->base_hash.function == hashkit_fnv1_64)
+  {
+    return HASHKIT_HASH_FNV1_64;
+  }
+  else if (self->base_hash.function == hashkit_fnv1a_64)
+  {
+    return HASHKIT_HASH_FNV1A_64;
+  }
+  else if (self->base_hash.function == hashkit_fnv1_32)
+  {
+    return HASHKIT_HASH_FNV1_32;
+  }
+  else if (self->base_hash.function == hashkit_fnv1a_32)
+  {
+    return HASHKIT_HASH_FNV1A_32;
+  }
+#ifdef HAVE_HSIEH_HASH
+  else if (self->base_hash.function == hashkit_hsieh)
+  {
+    return HASHKIT_HASH_HSIEH;
+  }
+#endif
+  else if (self->base_hash.function == hashkit_murmur)
+  {
+    return HASHKIT_HASH_MURMUR;
+  }
+  else if (self->base_hash.function == hashkit_jenkins)
+  {
+    return HASHKIT_HASH_JENKINS;
+  }
+
+  return HASHKIT_HASH_CUSTOM;
 }
 
 uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_hash_algorithm_t hash_algorithm)
@@ -169,6 +223,7 @@ uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_h
     return libhashkit_murmur(key, key_length);
   case HASHKIT_HASH_JENKINS:
     return libhashkit_jenkins(key, key_length);
+  case HASHKIT_HASH_CUSTOM:
   case HASHKIT_HASH_MAX:
   default:
 #ifdef HAVE_DEBUG

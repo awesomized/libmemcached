@@ -320,6 +320,9 @@ static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
       continue;
 
+    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_CUSTOM)
+      continue;
+
     test_true(rc == HASHKIT_SUCCESS);
 
     switch (algo)
@@ -354,6 +357,7 @@ static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
     case HASHKIT_HASH_JENKINS:
       list= jenkins_values;
       break;
+    case HASHKIT_HASH_CUSTOM:
     case HASHKIT_HASH_MAX:
     default:
       list= NULL;
@@ -400,10 +404,40 @@ static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
+static test_return_t hashkit_get_base_function_test(hashkit_st *hashk)
+{
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  {
+    hashkit_return_t rc;
+
+    if (HASHKIT_HASH_CUSTOM || HASHKIT_HASH_HSIEH)
+      continue;
+
+    rc= hashkit_set_base_function(hashk, algo);
+    test_true(rc == HASHKIT_SUCCESS);
+
+    test_true(hashkit_get_base_function(hashk) == algo);
+  }
+  return TEST_SUCCESS;
+}
+
+static test_return_t hashkit_compare_test(hashkit_st *hashk)
+{
+  hashkit_st *clone;
+
+  clone= hashkit_clone(NULL, hashk);
+
+  test_true(hashkit_compare(clone, hashk));
+
+  return TEST_SUCCESS;
+}
+
 test_st hashkit_st_functions[] ={
   {"hashkit_generate_value", 0, (test_callback_fn)hashkit_generate_value_test},
   {"hashkit_set_base_function", 0, (test_callback_fn)hashkit_set_base_function_test},
   {"hashkit_set_base_function_custom", 0, (test_callback_fn)hashkit_set_base_function_custom_test},
+  {"hashkit_get_base_function", 0, (test_callback_fn)hashkit_get_base_function_test},
+  {"hashkit_compare", 0, (test_callback_fn)hashkit_compare_test},
   {0, 0, 0}
 };
 

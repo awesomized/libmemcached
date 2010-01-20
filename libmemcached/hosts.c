@@ -213,17 +213,16 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
         if (is_ketama_weighted)
         {
-          unsigned int i;
-          for (i = 0; i < pointer_per_hash; i++)
+          for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
+             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->distribution_hash);
+          value= hashkit_generate_value(&ptr->distribution_hashkit, sort_host, sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
@@ -258,17 +257,16 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
         if (is_ketama_weighted)
         {
-          unsigned int i;
-          for (i = 0; i < pointer_per_hash; i++)
+          for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) i);
+             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= memcached_generate_hash_value(sort_host, sort_host_length, ptr->distribution_hash);
+          value= hashkit_generate_value(&ptr->distribution_hashkit, sort_host, sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }

@@ -43,6 +43,9 @@ HASHKIT_API
 hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
 
 HASHKIT_API
+bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
+
+HASHKIT_API
 void hashkit_free(hashkit_st *hash);
 
 HASHKIT_API
@@ -50,6 +53,9 @@ uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t 
 
 HASHKIT_API
 hashkit_return_t hashkit_set_base_function(hashkit_st *hash, hashkit_hash_algorithm_t hash_algorithm);
+
+HASHKIT_API
+hashkit_hash_algorithm_t hashkit_get_base_function(const hashkit_st *hash);
 
 HASHKIT_API
 hashkit_return_t hashkit_set_base_function_custom(hashkit_st *hash, hashkit_hash_fn function, void *context);

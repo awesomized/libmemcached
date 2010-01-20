@@ -28,13 +28,18 @@ static const memcached_st global_copy= {
   }
 };
 
-static inline void _memcached_init(memcached_st *self)
+static inline bool _memcached_init(memcached_st *self)
 {
   self->state= global_copy.state;
   self->flags= global_copy.flags;
 
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
-  self->hash= MEMCACHED_HASH_DEFAULT;
+
+  hashkit_st *hash_ptr;
+  hash_ptr= hashkit_create(&self->hashkit);
+  if (! hash_ptr)
+    return false;
+
   self->continuum_points_counter= 0;
 
   self->number_of_hosts= 0;
@@ -63,11 +68,11 @@ static inline void _memcached_init(memcached_st *self)
   self->next_distribution_rebuild= 0;
   self->prefix_key_length= 0;
   self->number_of_replicas= 0;
-  self->distribution_hash= MEMCACHED_HASH_DEFAULT;
+  hash_ptr= hashkit_create(&self->distribution_hashkit);
+  if (! hash_ptr)
+    return false;
   self->continuum= NULL;
 
-
-  memcached_set_memory_allocators(self, NULL, NULL, NULL, NULL, NULL);
   self->allocators= memcached_allocators_return_default();
 
   self->on_clone= NULL;
@@ -75,6 +80,8 @@ static inline void _memcached_init(memcached_st *self)
   self->get_key_failure= NULL;
   self->delete_trigger= NULL;
   self->callbacks= NULL;
+
+  return true;
 }
 
 memcached_st *memcached_create(memcached_st *ptr)
@@ -100,7 +107,11 @@ memcached_st *memcached_create(memcached_st *ptr)
   memcached_set_processing_input(ptr, false);
 #endif
 
-  _memcached_init(ptr);
+  if (! _memcached_init(ptr))
+  {
+    memcached_free(ptr);
+    return NULL;
+  }
 
   if (! memcached_result_create(ptr, &ptr->result))
   {
@@ -198,8 +209,23 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   new_clone->connect_timeout= source->connect_timeout;
   new_clone->retry_timeout= source->retry_timeout;
   new_clone->distribution= source->distribution;
-  new_clone->hash= source->hash;
-  new_clone->distribution_hash= source->distribution_hash;
+
+  hashkit_st *hash_ptr;
+
+  hash_ptr= hashkit_clone(&new_clone->hashkit, &source->hashkit);
+  if (! hash_ptr)
+  {
+    memcached_free(new_clone);
+    return NULL;
+  }
+
+  hash_ptr= hashkit_clone(&new_clone->distribution_hashkit, &source->distribution_hashkit);
+  if (! hash_ptr)
+  {
+    memcached_free(new_clone);
+    return NULL;
+  }
+
   new_clone->user_data= source->user_data;
 
   new_clone->snd_timeout= source->snd_timeout;

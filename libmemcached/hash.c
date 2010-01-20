@@ -1,109 +1,9 @@
 #include "common.h"
 
 
-/* Defines */
-static uint64_t FNV_64_INIT= UINT64_C(0xcbf29ce484222325);
-static uint64_t FNV_64_PRIME= UINT64_C(0x100000001b3);
-
-static uint32_t FNV_32_INIT= 2166136261UL;
-static uint32_t FNV_32_PRIME= 16777619;
-
-/* Prototypes */
-static uint32_t internal_generate_hash(const char *key, size_t key_length);
-static uint32_t internal_generate_md5(const char *key, size_t key_length);
-
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm)
 {
-  uint32_t hash= 1; /* Just here to remove compile warning */
-  uint32_t x= 0;
-
-  switch (hash_algorithm)
-  {
-  case MEMCACHED_HASH_DEFAULT:
-    hash= internal_generate_hash(key, key_length);
-    break;
-  case MEMCACHED_HASH_MD5:
-    hash= internal_generate_md5(key, key_length);
-    break;
-  case MEMCACHED_HASH_CRC:
-    hash= ((hash_crc32(key, key_length) >> 16) & 0x7fff);
-    if (hash == 0)
-      hash= 1;
-    break;
-    /* FNV hash'es lifted from Dustin Sallings work */
-  case MEMCACHED_HASH_FNV1_64:
-    {
-      /* Thanks to pierre@demartines.com for the pointer */
-      uint64_t temp_hash;
-
-      temp_hash= FNV_64_INIT;
-      for (x= 0; x < key_length; x++)
-      {
-        temp_hash *= FNV_64_PRIME;
-        temp_hash ^= (uint64_t)key[x];
-      }
-      hash= (uint32_t)temp_hash;
-    }
-    break;
-  case MEMCACHED_HASH_FNV1A_64:
-    {
-      hash= (uint32_t) FNV_64_INIT;
-      for (x= 0; x < key_length; x++)
-      {
-        uint32_t val= (uint32_t)key[x];
-        hash ^= val;
-        hash *= (uint32_t) FNV_64_PRIME;
-      }
-    }
-    break;
-  case MEMCACHED_HASH_FNV1_32:
-    {
-      hash= FNV_32_INIT;
-      for (x= 0; x < key_length; x++)
-      {
-        uint32_t val= (uint32_t)key[x];
-        hash *= FNV_32_PRIME;
-        hash ^= val;
-      }
-    }
-    break;
-  case MEMCACHED_HASH_FNV1A_32:
-    {
-      hash= FNV_32_INIT;
-      for (x= 0; x < key_length; x++)
-      {
-        uint32_t val= (uint32_t)key[x];
-        hash ^= val;
-        hash *= FNV_32_PRIME;
-      }
-    }
-    break;
-    case MEMCACHED_HASH_HSIEH:
-    {
-#ifdef HAVE_HSIEH_HASH
-      hash= hsieh_hash(key, key_length);
-#endif
-      break;
-    }
-    case MEMCACHED_HASH_MURMUR:
-    {
-      hash= murmur_hash(key, key_length);
-      break;
-    }
-    case MEMCACHED_HASH_JENKINS:
-    {
-      hash= jenkins_hash(key, key_length, 13);
-      break;
-    }
-    case MEMCACHED_HASH_MAX:
-    default:
-    {
-      WATCHPOINT_ASSERT(0);
-      break;
-    }
-  }
-
-  return hash;
+  return libhashkit_generate_value(key, key_length, (hashkit_hash_algorithm_t)hash_algorithm);
 }
 
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
@@ -116,8 +16,9 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
   if (memcached_server_count(ptr) == 1)
     return 0;
 
-  hash= memcached_generate_hash_value(key, key_length, ptr->hash);
+  hash= hashkit_generate_value(&ptr->hashkit, key, key_length);
   WATCHPOINT_ASSERT(hash);
+
   return hash;
 }
 
@@ -205,35 +106,4 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   }
 
   return dispatch_host(ptr, hash);
-}
-
-static uint32_t internal_generate_hash(const char *key, size_t key_length)
-{
-  const char *ptr= key;
-  uint32_t value= 0;
-
-  while (key_length--)
-  {
-    uint32_t val= (uint32_t) *ptr++;
-    value += val;
-    value += (value << 10);
-    value ^= (value >> 6);
-  }
-  value += (value << 3);
-  value ^= (value >> 11);
-  value += (value << 15);
-
-  return value == 0 ? 1 : (uint32_t) value;
-}
-
-static uint32_t internal_generate_md5(const char *key, size_t key_length)
-{
-  unsigned char results[16];
-
-  md5_signature((unsigned char*)key, (unsigned int)key_length, results);
-
-  return ((uint32_t) (results[3] & 0xFF) << 24)
-    | ((uint32_t) (results[2] & 0xFF) << 16)
-    | ((uint32_t) (results[1] & 0xFF) << 8)
-    | (results[0] & 0xFF);
 }

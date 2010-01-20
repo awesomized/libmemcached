@@ -29,6 +29,7 @@
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>
 #include <libmemcached/stats.h>
+#include <libhashkit/hashkit.h>
 // Everything above this line must be in the order specified.
 #include <libmemcached/allocators.h>
 #include <libmemcached/analyze.h>
@@ -83,7 +84,7 @@ struct memcached_st {
     bool verify_key:1;
   } flags;
   memcached_server_distribution_t distribution;
-  memcached_hash_t hash;
+  hashkit_st hashkit;
   uint32_t continuum_points_counter; // Ketama
   uint32_t number_of_hosts;
   memcached_server_st *servers;
@@ -105,7 +106,7 @@ struct memcached_st {
   time_t next_distribution_rebuild; // Ketama
   size_t prefix_key_length;
   uint32_t number_of_replicas;
-  memcached_hash_t distribution_hash;
+  hashkit_st distribution_hashkit;
   memcached_result_st result;
   memcached_continuum_item_st *continuum; // Ketama
 
