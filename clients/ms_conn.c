@@ -2752,18 +2752,18 @@ static uint32_t ms_get_rep_sock_index(ms_conn_t *c, int cmd)
       if (i == ms_setting.rep_write_srv)
       {
         /* random get one replication server to read */
-        sock_index= (uint32_t)(random() % c->total_sfds);
+        sock_index= (uint32_t)random() % c->total_sfds;
       }
       else
       {
         /* random get one replication writing server to write */
-        sock_index= (uint32_t)(random() % ms_setting.rep_write_srv);
+        sock_index= (uint32_t)random() % ms_setting.rep_write_srv;
       }
     }
     else if (cmd == CMD_GET)
     {
       /* random get one replication server to read */
-      sock_index= (uint32_t)(random() % c->total_sfds);
+      sock_index= (uint32_t)random() % c->total_sfds;
     }
   }
   while (c->tcpsfd[sock_index] == 0);
