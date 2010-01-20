@@ -3404,7 +3404,12 @@ static test_return_t pre_cork(memcached_st *memc)
 {
   memcached_return_t rc;
   bool set= true;
+
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CORK, set);
+
+#ifdef __APPLE__
+  return TEST_SKIPPED;
+#endif
 
   if (rc == MEMCACHED_SUCCESS)
     return TEST_SUCCESS;
@@ -3417,6 +3422,10 @@ static test_return_t pre_cork_and_nonblock(memcached_st *memc)
   test_return_t rc;
   
   rc= pre_cork(memc);
+
+#ifdef __APPLE__
+  return TEST_SKIPPED;
+#endif
 
   if (rc != TEST_SUCCESS)
     return rc;
