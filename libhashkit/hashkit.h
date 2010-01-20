@@ -18,6 +18,7 @@
 #include <libhashkit/types.h>
 #include <libhashkit/algorithm.h>
 #include <libhashkit/behavior.h>
+#include <libhashkit/function.h>
 #include <libhashkit/strerror.h>
 
 #ifdef __cplusplus
@@ -26,10 +27,14 @@ extern "C" {
 
 struct hashkit_st
 {
-  struct {
+  struct hashkit_function_st {
     hashkit_hash_fn function;
     void *context;
-  } base_hash;
+  } base_hash, distribution_hash;
+
+  struct {
+    bool is_base_same_distributed:1;
+  } flags;
 
   struct {
     bool is_allocated:1;
@@ -47,21 +52,6 @@ bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
 
 HASHKIT_API
 void hashkit_free(hashkit_st *hash);
-
-HASHKIT_API
-uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length);
-
-HASHKIT_API
-hashkit_return_t hashkit_set_base_function(hashkit_st *hash, hashkit_hash_algorithm_t hash_algorithm);
-
-HASHKIT_API
-hashkit_hash_algorithm_t hashkit_get_base_function(const hashkit_st *hash);
-
-HASHKIT_API
-hashkit_return_t hashkit_set_base_function_custom(hashkit_st *hash, hashkit_hash_fn function, void *context);
-
-HASHKIT_API
-uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_hash_algorithm_t hash_algorithm);
 
 #define hashkit_is_allocated(__object) ((__object)->options.is_allocated)
 #define hashkit_is_initialized(__object) ((__object)->options.is_initialized)

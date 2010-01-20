@@ -305,7 +305,7 @@ static test_return_t hashkit_generate_value_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
+static test_return_t hashkit_set_function_test(hashkit_st *hashk)
 {
   for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
   {
@@ -314,7 +314,7 @@ static test_return_t hashkit_set_base_function_test(hashkit_st *hashk)
     const char **ptr;
     uint32_t *list;
 
-    rc= hashkit_set_base_function(hashk, algo);
+    rc= hashkit_set_function(hashk, algo);
 
     /* Hsieh is disabled most of the time for patent issues */
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
@@ -383,14 +383,14 @@ static uint32_t hash_test_function(const char *string, size_t string_length, voi
   return libhashkit_md5(string, string_length);
 }
 
-static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
+static test_return_t hashkit_set_custom_function_test(hashkit_st *hashk)
 {
   hashkit_return_t rc;
   uint32_t x;
   const char **ptr;
 
 
-  rc= hashkit_set_base_function_custom(hashk, hash_test_function, NULL);
+  rc= hashkit_set_custom_function(hashk, hash_test_function, NULL);
   test_true(rc == HASHKIT_SUCCESS);
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
@@ -404,7 +404,39 @@ static test_return_t hashkit_set_base_function_custom_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-static test_return_t hashkit_get_base_function_test(hashkit_st *hashk)
+static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
+{
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  {
+    hashkit_return_t rc;
+
+    rc= hashkit_set_distribution_function(hashk, algo);
+
+    /* Hsieh is disabled most of the time for patent issues */
+    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
+      continue;
+
+    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_CUSTOM)
+      continue;
+
+    test_true(rc == HASHKIT_SUCCESS);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t hashkit_set_custom_distribution_function_test(hashkit_st *hashk)
+{
+  hashkit_return_t rc;
+
+  rc= hashkit_set_custom_distribution_function(hashk, hash_test_function, NULL);
+  test_true(rc == HASHKIT_SUCCESS);
+
+  return TEST_SUCCESS;
+}
+
+
+static test_return_t hashkit_get_function_test(hashkit_st *hashk)
 {
   for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
   {
@@ -413,10 +445,10 @@ static test_return_t hashkit_get_base_function_test(hashkit_st *hashk)
     if (HASHKIT_HASH_CUSTOM || HASHKIT_HASH_HSIEH)
       continue;
 
-    rc= hashkit_set_base_function(hashk, algo);
+    rc= hashkit_set_function(hashk, algo);
     test_true(rc == HASHKIT_SUCCESS);
 
-    test_true(hashkit_get_base_function(hashk) == algo);
+    test_true(hashkit_get_function(hashk) == algo);
   }
   return TEST_SUCCESS;
 }
@@ -434,9 +466,11 @@ static test_return_t hashkit_compare_test(hashkit_st *hashk)
 
 test_st hashkit_st_functions[] ={
   {"hashkit_generate_value", 0, (test_callback_fn)hashkit_generate_value_test},
-  {"hashkit_set_base_function", 0, (test_callback_fn)hashkit_set_base_function_test},
-  {"hashkit_set_base_function_custom", 0, (test_callback_fn)hashkit_set_base_function_custom_test},
-  {"hashkit_get_base_function", 0, (test_callback_fn)hashkit_get_base_function_test},
+  {"hashkit_set_function", 0, (test_callback_fn)hashkit_set_function_test},
+  {"hashkit_set_custom_function", 0, (test_callback_fn)hashkit_set_custom_function_test},
+  {"hashkit_get_function", 0, (test_callback_fn)hashkit_get_function_test},
+  {"hashkit_set_distribution_function", 0, (test_callback_fn)hashkit_set_distribution_function_test},
+  {"hashkit_set_custom_distribution_function", 0, (test_callback_fn)hashkit_set_custom_distribution_function_test},
   {"hashkit_compare", 0, (test_callback_fn)hashkit_compare_test},
   {0, 0, 0}
 };

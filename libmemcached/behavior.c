@@ -266,9 +266,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? (uint64_t) 1 : 0;
   case MEMCACHED_BEHAVIOR_HASH:
-    return hashkit_get_base_function(&ptr->hashkit);
+    return hashkit_get_function(&ptr->hashkit);
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
-    return hashkit_get_base_function(&ptr->distribution_hashkit);
+    return hashkit_get_function(&ptr->distribution_hashkit);
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
@@ -382,25 +382,25 @@ memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st
 memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_hash_t type)
 {
   hashkit_return_t rc;
-  rc= hashkit_set_base_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type);
+  rc= hashkit_set_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type);
 
   return rc == HASHKIT_SUCCESS ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
 }
 
 memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
 {
-  return (memcached_hash_t)hashkit_get_base_function(&ptr->hashkit);
+  return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
 }
 
 memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type)
 {
   hashkit_return_t rc;
-  rc= hashkit_set_base_function(&ptr->distribution_hashkit, (hashkit_hash_algorithm_t)type);
+  rc= hashkit_set_function(&ptr->distribution_hashkit, (hashkit_hash_algorithm_t)type);
 
   return rc == HASHKIT_SUCCESS ? MEMCACHED_SUCCESS : MEMCACHED_FAILURE;
 }
 
 memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr)
 {
-  return (memcached_hash_t)hashkit_get_base_function(&ptr->distribution_hashkit);
+  return (memcached_hash_t)hashkit_get_function(&ptr->distribution_hashkit);
 }
