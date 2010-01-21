@@ -22,7 +22,7 @@ memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
   WATCHPOINT_ASSERT(ptr->fd != -1);
   /* Force a flush of the buffer to ensure that we don't have the n-1 pending
     requests buffered up.. */
-  if (memcached_io_write(ptr, NULL, 0, 1) == -1)
+  if (memcached_io_write(ptr, NULL, 0, true) == -1)
   {
     memcached_set_purging(root, true);
 

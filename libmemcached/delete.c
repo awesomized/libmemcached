@@ -116,7 +116,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
       if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
         return MEMCACHED_WRITE_FAILURE;
       if (send_length + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-        memcached_io_write(instance, NULL, 0, 1);
+        memcached_io_write(instance, NULL, 0, true);
     }
 
     rc= memcached_do(instance, buffer, send_length, to_write);
@@ -168,7 +168,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
       return MEMCACHED_WRITE_FAILURE;
     if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      memcached_io_write(instance, NULL, 0, 1);
+      memcached_io_write(instance, NULL, 0, true);
   }
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
@@ -176,7 +176,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
   if ((memcached_do(instance, request.bytes,
                     sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(instance, key,
-                          key_length, (char) flush) == -1))
+                          key_length, (bool) flush) == -1))
   {
     memcached_io_reset(instance);
     rc= MEMCACHED_WRITE_FAILURE;
@@ -198,7 +198,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
       if ((memcached_do(replica, (const char*)request.bytes,
                         sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(replica, key, key_length, (char) flush) == -1))
+          (memcached_io_write(replica, key, key_length, (bool) flush) == -1))
       {
         memcached_io_reset(replica);
       }

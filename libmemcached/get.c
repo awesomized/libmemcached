@@ -189,7 +189,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
       if (ptr->flags.no_block)
-        (void)memcached_io_write(instance, NULL, 0, 1);
+        (void)memcached_io_write(instance, NULL, 0, true);
 
       while(memcached_server_response_count(instance))
         (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
@@ -233,7 +233,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       if (rc != MEMCACHED_SUCCESS)
         continue;
 
-      if ((memcached_io_write(instance, get_command, get_command_length, 0)) == -1)
+      if ((memcached_io_write(instance, get_command, get_command_length, false)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;
         continue;
@@ -246,7 +246,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     /* Only called when we have a prefix key */
     if (ptr->prefix_key_length)
     {
-      if ((memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, 0)) == -1)
+      if ((memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false)) == -1)
       {
         memcached_server_response_reset(instance);
         rc= MEMCACHED_SOME_ERRORS;
@@ -254,14 +254,14 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       }
     }
 
-    if ((memcached_io_write(instance, keys[x], key_length[x], 0)) == -1)
+    if ((memcached_io_write(instance, keys[x], key_length[x], false)) == -1)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
 
-    if ((memcached_io_write(instance, " ", 1, 0)) == -1)
+    if ((memcached_io_write(instance, " ", 1, false)) == -1)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
@@ -280,7 +280,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     if (memcached_server_response_count(instance))
     {
       /* We need to do something about non-connnected hosts in the future */
-      if ((memcached_io_write(instance, "\r\n", 2, 1)) == -1)
+      if ((memcached_io_write(instance, "\r\n", 2, true)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;
       }
@@ -407,7 +407,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
 
     if ((memcached_io_write(instance, request.bytes,
-                            sizeof(request.bytes), 0) == -1) ||
+                            sizeof(request.bytes), false) == -1) ||
         (memcached_io_write(instance, keys[x],
                             key_length[x], (char) flush) == -1))
     {
@@ -441,7 +441,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
       if (memcached_server_response_count(instance))
       {
-        if (memcached_io_write(instance, NULL, 0, 1) == -1)
+        if (memcached_io_write(instance, NULL, 0, true) == -1)
         {
           memcached_server_response_reset(instance);
           memcached_io_reset(instance);
@@ -449,7 +449,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
         }
 
         if (memcached_io_write(instance, request.bytes,
-                               sizeof(request.bytes), 1) == -1)
+                               sizeof(request.bytes), true) == -1)
         {
           memcached_server_response_reset(instance);
           memcached_io_reset(instance);
@@ -536,9 +536,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * just make sure we work _correctly_
      */
       if ((memcached_io_write(instance, request.bytes,
-                              sizeof(request.bytes), 0) == -1) ||
+                              sizeof(request.bytes), false) == -1) ||
           (memcached_io_write(instance, keys[x],
-                              key_length[x], 1) == -1))
+                              key_length[x], true) == -1))
       {
         memcached_io_reset(instance);
         dead_servers[server]= true;

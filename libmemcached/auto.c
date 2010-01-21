@@ -113,7 +113,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   if ((memcached_do(instance, request.bytes,
                     sizeof(request.bytes), 0)!=MEMCACHED_SUCCESS) ||
-      (memcached_io_write(instance, key, key_length, 1) == -1))
+      (memcached_io_write(instance, key, key_length, true) == -1))
   {
     memcached_io_reset(instance);
     return MEMCACHED_WRITE_FAILURE;

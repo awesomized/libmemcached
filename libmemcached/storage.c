@@ -139,7 +139,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
       return MEMCACHED_WRITE_FAILURE;
     if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      memcached_io_write(instance, NULL, 0, 1);
+      memcached_io_write(instance, NULL, 0, true);
   }
 
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
@@ -154,7 +154,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     goto error;
 
   /* Send command body */
-  if (memcached_io_write(instance, value, value_length, 0) == -1)
+  if (memcached_io_write(instance, value, value_length, false) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
@@ -483,13 +483,13 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
     if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      memcached_io_write(server, NULL, 0, 1);
+      memcached_io_write(server, NULL, 0, true);
     }
   }
 
   /* write the header */
   if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
-      (memcached_io_write(server, key, key_length, 0) == -1) ||
+      (memcached_io_write(server, key, key_length, false) == -1) ||
       (memcached_io_write(server, value, value_length, (char) flush) == -1))
   {
     memcached_io_reset(server);
@@ -512,7 +512,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
       if ((memcached_do(instance, (const char*)request.bytes,
                         send_length, 0) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(instance, key, key_length, 0) == -1) ||
+          (memcached_io_write(instance, key, key_length, false) == -1) ||
           (memcached_io_write(instance, value, value_length, (char) flush) == -1))
       {
         memcached_io_reset(instance);

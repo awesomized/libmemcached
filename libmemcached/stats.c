@@ -251,7 +251,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 
     if ((memcached_do(instance, request.bytes,
                       sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
-        (memcached_io_write(instance, args, len, 1) == -1))
+        (memcached_io_write(instance, args, len, true) == -1))
     {
       memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;

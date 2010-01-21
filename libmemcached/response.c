@@ -52,7 +52,7 @@ memcached_return_t memcached_response(memcached_server_instance_st *ptr,
   /* We may have old commands in the buffer not set, first purge */
   if ((ptr->root->flags.no_block) && (memcached_is_processing_input(ptr->root) == false))
   {
-    (void)memcached_io_write(ptr, NULL, 0, 1);
+    (void)memcached_io_write(ptr, NULL, 0, true);
   }
 
   /*

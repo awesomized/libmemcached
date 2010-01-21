@@ -42,7 +42,7 @@ struct udp_datagram_header_st
 
 LIBMEMCACHED_LOCAL
 ssize_t memcached_io_write(memcached_server_instance_st *ptr,
-                           const void *buffer, size_t length, char with_flush);
+                           const void *buffer, size_t length, bool with_flush);
 
 LIBMEMCACHED_LOCAL
 void memcached_io_reset(memcached_server_instance_st *ptr);
