@@ -1,5 +1,7 @@
 0.38 
 
+ * C++ interface for libhashkit.
+
  * Modified memcached_set_memory_allocators() so that it requires a context
  pointer.
 

@@ -113,6 +113,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/version.h
 %{_includedir}/libhashkit/algorithm.h
 %{_includedir}/libhashkit/behavior.h
+%{_includedir}/libhashkit/digest.h
+%{_includedir}/libhashkit/function.h
 %{_includedir}/libhashkit/hashkit.h
 %{_includedir}/libhashkit/strerror.h
 %{_includedir}/libhashkit/types.h
