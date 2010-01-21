@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_GET_H
-#define LIBMEMCACHED_MEMCACHED_GET_H
+#ifndef __LIBMEMCACHED_GET_H__
+#define __LIBMEMCACHED_GET_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,4 +83,4 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
 }
 #endif
 
-#endif /* LIBMEMCACHED_MEMCACHED_GET_H */
+#endif /* __LIBMEMCACHED_GET_H__ */

@@ -86,6 +86,7 @@ struct hashkit_st
 
   hashkit_st& operator=(const hashkit_st& source)
   { 
+    hashkit_free(this);
     hashkit_clone(this, &source);
 
     return *this;

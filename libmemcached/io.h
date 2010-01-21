@@ -9,16 +9,16 @@
  *
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_IO_H
-#define LIBMEMCACHED_MEMCACHED_IO_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __LIBMEMCACHED_IO_H__
+#define __LIBMEMCACHED_IO_H__
 
 #if defined(BUILDING_LIBMEMCACHED)
 
 #include "libmemcached/memcached.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define MAX_UDP_DATAGRAM_LENGTH 1400
 #define UDP_DATAGRAM_HEADER_LENGTH 8
@@ -73,10 +73,10 @@ memcached_return_t memcached_io_init_udp_header(memcached_server_instance_st *pt
 LIBMEMCACHED_LOCAL
 memcached_server_instance_st *memcached_io_get_readable_server(memcached_st *memc);
 
-#endif /* BUILDING_LIBMEMCACHED */
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LIBMEMCACHED_MEMCACHED_IO_H */
+#endif /* BUILDING_LIBMEMCACHED */
+
+#endif /* __LIBMEMCACHED_IO_H__ */

@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_ALLOCATORS_H__
-#define __MEMCACHED_ALLOCATORS_H__
+#ifndef __LIBMEMCACHED_ALLOCATORS_H__
+#define __LIBMEMCACHED_ALLOCATORS_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,9 +49,8 @@ void *_libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size, v
 LIBMEMCACHED_LOCAL
 struct _allocators_st memcached_allocators_return_default(void);
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MEMCACHED_ALLOCATORS_H__ */
+#endif /* __LIBMEMCACHED_ALLOCATORS_H__ */

@@ -9,13 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_ANALYZE_H__
-#define __MEMCACHED_ANALYZE_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#ifndef __LIBMEMCACHED_ANALYZE_H__
+#define __LIBMEMCACHED_ANALYZE_H__
 
 struct memcached_analysis_st {
   memcached_st *root;
@@ -29,6 +24,9 @@ struct memcached_analysis_st {
   uint64_t least_remaining_bytes;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBMEMCACHED_API
 memcached_analysis_st *memcached_analyze(memcached_st *memc,
@@ -42,4 +40,4 @@ void memcached_analyze_free(memcached_analysis_st *);
 }
 #endif
 
-#endif /* __MEMCACHED_ANALYZE_H__ */
+#endif /* __LIBMEMCACHED_ANALYZE_H__ */

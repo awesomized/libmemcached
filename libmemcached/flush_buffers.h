@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_FLUSH_BUFFERS_H__
-#define __MEMCACHED_FLUSH_BUFFERS_H__
+#ifndef __LIBMEMCACHED_FLUSH_BUFFERS_H__
+#define __LIBMEMCACHED_FLUSH_BUFFERS_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ memcached_return_t memcached_flush_buffers(memcached_st *mem);
 }
 #endif
 
-#endif /* __MEMCACHED_FLUSH_BUFFERS_H__ */
+#endif /* __LIBMEMCACHED_FLUSH_BUFFERS_H__ */

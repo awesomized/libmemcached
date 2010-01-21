@@ -9,12 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_STRING_H__
-#define __MEMCACHED_STRING_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __LIBMEMCACHED_STRING_H__
+#define __LIBMEMCACHED_STRING_H__
 
 /**
   Strings are always under our control so we make some assumptions
@@ -37,27 +33,9 @@ struct memcached_string_st {
   } options;
 };
 
-static inline size_t memcached_string_length(const memcached_string_st *self)
-{
-  return (size_t)(self->end - self->string);
-}
-
-static inline size_t memcached_string_size(const memcached_string_st *self)
-{
-  return self->current_size;
-}
-
-static inline const char *memcached_string_value(const memcached_string_st *self)
-{
-  return self->string;
-}
-
-static inline char *memcached_string_value_mutable(const memcached_string_st *self)
-{
-  return self->string;
-}
-
-#define memcached_string_set_length(A, B) (A)->end= (A)->string + B
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBMEMCACHED_LOCAL
 memcached_string_st *memcached_string_create(const memcached_st *ptr,
@@ -81,8 +59,31 @@ memcached_return_t memcached_string_reset(memcached_string_st *string);
 LIBMEMCACHED_LOCAL
 void memcached_string_free(memcached_string_st *string);
 
+static inline size_t memcached_string_length(const memcached_string_st *self)
+{
+  return (size_t)(self->end - self->string);
+}
+
+static inline size_t memcached_string_size(const memcached_string_st *self)
+{
+  return self->current_size;
+}
+
+static inline const char *memcached_string_value(const memcached_string_st *self)
+{
+  return self->string;
+}
+
+static inline char *memcached_string_value_mutable(const memcached_string_st *self)
+{
+  return self->string;
+}
+
+#define memcached_string_set_length(A, B) (A)->end= (A)->string + B
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MEMCACHED_STRING_H__ */
+
+#endif /* __LIBMEMCACHED_STRING_H__ */

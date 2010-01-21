@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_STRERROR_H__
-#define __MEMCACHED_STRERROR_H__
+#ifndef __LIBMEMCACHED_STRERROR_H__
+#define __LIBMEMCACHED_STRERROR_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc);
 }
 #endif
 
-#endif /* __MEMCACHED_STRERROR_H__ */
+#endif /* __LIBMEMCACHED_STRERROR_H__ */

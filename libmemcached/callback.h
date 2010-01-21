@@ -9,8 +9,14 @@
  *
  */
 
-#ifndef __MEMCACHED_CALLBACK_H__
-#define __MEMCACHED_CALLBACK_H__
+#ifndef __LIBMEMCACHED_CALLBACK_H__
+#define __LIBMEMCACHED_CALLBACK_H__
+
+struct memcached_callback_st {
+  memcached_execute_fn *callback;
+  void *context;
+  uint32_t number_of_callback;
+};
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,4 +35,4 @@ void *memcached_callback_get(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_CALLBACK_H__ */
+#endif /* __LIBMEMCACHED_CALLBACK_H__ */

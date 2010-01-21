@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef LIBMEMCACHED_BYTEORDER_H
-#define LIBMEMCACHED_BYTEORDER_H
+#ifndef __LIBMEMCACHED_BYTEORDER_H__
+#define __LIBMEMCACHED_BYTEORDER_H__
 
 #include "config.h"
 
@@ -40,4 +40,4 @@ uint64_t htonll(uint64_t);
 #undef htonl
 #endif
 
-#endif /* LIBMEMCACHED_BYTEORDER_H */
+#endif /*__LIBMEMCACHED_BYTEORDER_H__ */

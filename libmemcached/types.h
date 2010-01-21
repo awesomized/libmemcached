@@ -9,19 +9,17 @@
  *
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_TYPES_H
-#define LIBMEMCACHED_MEMCACHED_TYPES_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __LIBMEMCACHED_TYPES_H__
+#define __LIBMEMCACHED_TYPES_H__
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_analysis_st memcached_analysis_st;
 typedef struct memcached_result_st memcached_result_st;
-typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
+typedef struct memcached_callback_st memcached_callback_st;
+
+typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_continuum_item_st memcached_continuum_item_st;
 
 typedef memcached_return_t (*memcached_clone_fn)(memcached_st *destination, const memcached_st *source);
@@ -52,12 +50,6 @@ typedef memcached_return_t (*memcached_dump_fn)(const memcached_st *ptr,
                                                 size_t key_length,
                                                 void *context);
 
-typedef struct {
-  memcached_execute_fn *callback;
-  void *context;
-  uint32_t number_of_callback;
-} memcached_callback_st;
-
  
 /**
   @note The following definitions are just here for backwards compatibility.
@@ -70,19 +62,10 @@ typedef memcached_hash_t memcached_hash;
 typedef memcached_connection_t memcached_connection;
 typedef memcached_clone_fn memcached_clone_func;
 typedef memcached_cleanup_fn memcached_cleanup_func;
-typedef memcached_free_fn memcached_free_function;
-typedef memcached_malloc_fn memcached_malloc_function;
-typedef memcached_realloc_fn memcached_realloc_function;
-typedef memcached_calloc_fn memcached_calloc_function;
 typedef memcached_execute_fn memcached_execute_function;
 typedef memcached_server_fn memcached_server_function;
 typedef memcached_trigger_key_fn memcached_trigger_key;
 typedef memcached_trigger_delete_key_fn memcached_trigger_delete_key;
 typedef memcached_dump_fn memcached_dump_func;
- 
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LIBMEMCACHED_MEMCACHED_TYPES_H */
+#endif /* __LIBMEMCACHED_TYPES_H__ */

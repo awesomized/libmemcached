@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_DUMP_H__
-#define __MEMCACHED_DUMP_H__
+#ifndef __LIBMEMCACHED_DUMP_H__
+#define __LIBMEMCACHED_DUMP_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,4 +24,4 @@ memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *function
 }
 #endif
 
-#endif /* __MEMCACHED_DUMP_H__ */
+#endif /* __LIBMEMCACHED_DUMP_H__ */

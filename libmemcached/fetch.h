@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_FETCH_H__
-#define __MEMCACHED_FETCH_H__
+#ifndef __LIBMEMCACHED_FETCH_H__
+#define __LIBMEMCACHED_FETCH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ memcached_return_t memcached_fetch_execute(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_FETCH_H__ */
+#endif /* __LIBMEMCACHED_FETCH_H__ */

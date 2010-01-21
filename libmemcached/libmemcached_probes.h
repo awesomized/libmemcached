@@ -15,8 +15,8 @@
  * implementation of the following macros to create your own sort of
  * probing :)
  */
-#ifndef	LIBMEMCACHED_PROBES_H
-#define	LIBMEMCACHED_PROBES_H
+#ifndef	__LIBMEMCACHED_PROBES_H__
+#define	__LIBMEMCACHED_PROBES_H__
 
 #ifdef HAVE_DTRACE
 /*
@@ -86,4 +86,4 @@
 
 #endif
 
-#endif	/* LIBMEMCACHED_PROBES_H */
+#endif	/* __LIBMEMCACHED_PROBES_H__ */

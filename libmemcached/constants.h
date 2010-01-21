@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_CONSTANTS_H__
-#define __MEMCACHED_CONSTANTS_H__
+#ifndef __LIBMEMCACHED_CONSTANTS_H__
+#define __LIBMEMCACHED_CONSTANTS_H__
 
 /* Public defines */
 #define MEMCACHED_DEFAULT_PORT 11211
@@ -157,4 +157,4 @@ typedef enum {
   MEMCACHED_CONNECTION_MAX
 } memcached_connection_t;
 
-#endif /* __MEMCACHED_CONSTANTS_H__ */
+#endif /* __LIBMEMCACHED_CONSTANTS_H__ */

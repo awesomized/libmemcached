@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_STORAGE_H__
-#define __MEMCACHED_STORAGE_H__
+#ifndef __LIBMEMCACHED_STORAGE_H__
+#define __LIBMEMCACHED_STORAGE_H__
 
 #include "libmemcached/memcached.h"
 
@@ -107,4 +107,4 @@ memcached_return_t memcached_cas_by_key(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_STORAGE_H__ */
+#endif /* __LIBMEMCACHED_STORAGE_H__ */

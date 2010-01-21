@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef MEMCACHED_CONFIGURE_H
-#define MEMCACHED_CONFIGURE_H
+#ifndef __LIBMEMCACHED_CONFIGURE_H
+#define __LIBMEMCACHED_CONFIGURE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,4 +25,4 @@ extern "C" {
 }
 #endif
 
-#endif /* MEMCACHED_CONFIGURE_H */
+#endif /* __LIBMEMCACHED_CONFIGURE_H */

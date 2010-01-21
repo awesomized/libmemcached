@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_RESPONSE_H__
-#define __MEMCACHED_RESPONSE_H__
+#ifndef __LIBMEMCACHED_RESPONSE_H__
+#define __LIBMEMCACHED_RESPONSE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,4 +31,4 @@ memcached_return_t memcached_response(memcached_server_instance_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_RESPONSE_H__ */
+#endif /* __LIBMEMCACHED_RESPONSE_H__ */

@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_QUIT_H__
-#define __MEMCACHED_QUIT_H__
+#ifndef __LIBMEMCACHED_QUIT_H__
+#define __LIBMEMCACHED_QUIT_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ void memcached_quit(memcached_st *ptr);
 }
 #endif
 
-#endif /* __MEMCACHED_QUIT_H__ */
+#endif /* __LIBMEMCACHED_QUIT_H__ */

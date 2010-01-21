@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_BEHAVIOR_H__
-#define __MEMCACHED_BEHAVIOR_H__
+#ifndef __LIBMEMCACHED_BEHAVIOR_H__
+#define __LIBMEMCACHED_BEHAVIOR_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,4 +45,4 @@ memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr);
 }
 #endif
 
-#endif /* __MEMCACHED_BEHAVIOR_H__ */
+#endif /* __LIBMEMCACHED_BEHAVIOR_H__ */

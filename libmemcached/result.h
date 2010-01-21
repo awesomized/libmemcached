@@ -9,12 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_RESULT_H__
-#define __MEMCACHED_RESULT_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __LIBMEMCACHED_RESULT_H__
+#define __LIBMEMCACHED_RESULT_H__
 
 struct memcached_result_st {
   uint32_t item_flags;
@@ -30,6 +26,10 @@ struct memcached_result_st {
   } options;
   /* Add result callback function */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Result Struct */
 LIBMEMCACHED_API
@@ -88,7 +88,8 @@ static inline void memcached_result_set_expiration(memcached_result_st *self, ti
 }
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
-#endif /* __MEMCACHED_RESULT_H__ */
+
+#endif /* __LIBMEMCACHED_RESULT_H__ */

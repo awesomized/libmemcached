@@ -9,12 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_STATS_H__
-#define __MEMCACHED_STATS_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __LIBMEMCACHED_STATS_H__
+#define __LIBMEMCACHED_STATS_H__
 
 struct memcached_stat_st {
   uint32_t connection_structures;
@@ -44,6 +40,10 @@ struct memcached_stat_st {
   memcached_st *root;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIBMEMCACHED_API
 void memcached_stat_free(memcached_st *, memcached_stat_st *);
 
@@ -63,7 +63,7 @@ char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
                                 memcached_return_t *error);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
-#endif /* __MEMCACHED_STATS_H__ */
+#endif /* __LIBMEMCACHED_STATS_H__ */

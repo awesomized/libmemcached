@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_VERSION_H__
-#define __MEMCACHED_VERSION_H__
+#ifndef __LIBMEMCACHED_VERSION_H__
+#define __LIBMEMCACHED_VERSION_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ const char * memcached_lib_version(void);
 }
 #endif
 
-#endif /* __MEMCACHED_VERSION_H__ */
+#endif /* __LIBMEMCACHED_VERSION_H__ */

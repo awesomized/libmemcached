@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef MEMCACHED_PROTOCOL_H
-#define MEMCACHED_PROTOCOL_H
+#ifndef __LIBMEMCACHED_PROTOCOL_H__
+#define __LIBMEMCACHED_PROTOCOL_H__
 
 #include <sys/types.h>
 #if !defined(__cplusplus)
@@ -31,6 +31,10 @@
  */
 typedef struct memcached_protocol_st memcached_protocol_st;
 typedef struct memcached_protocol_client_st memcached_protocol_client_st;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Function the protocol handler should call to receive data.
@@ -205,4 +209,9 @@ int memcached_protocol_client_get_errno(memcached_protocol_client_st *client);
  */
 LIBMEMCACHED_API
 memcached_binary_protocol_raw_response_handler memcached_binary_protocol_get_raw_response_handler(const void *cookie);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

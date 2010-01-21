@@ -13,8 +13,8 @@
   Common include file for libmemached
 */
 
-#ifndef LIBMEMCACHED_COMMON_H
-#define LIBMEMCACHED_COMMON_H
+#ifndef __LIBMEMCACHED_COMMON_H__
+#define __LIBMEMCACHED_COMMON_H__
 
 #include "config.h"
 
@@ -94,6 +94,10 @@ typedef enum {
 #define MEMCACHED_DEFAULT_COMMAND_SIZE 350
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
@@ -217,5 +221,8 @@ static inline void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, s
   return ptr->allocators.calloc(ptr, nelem, size, ptr->allocators.context);
 }
 
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* LIBMEMCACHED_COMMON_H */
+#endif /* __LIBMEMCACHED_COMMON_H__ */

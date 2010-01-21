@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef LIBMEMCACHED_MEMCACHED_WATCHPOINT_H
-#define LIBMEMCACHED_MEMCACHED_WATCHPOINT_H
+#ifndef __LIBMEMCACHED_WATCHPOINT_H__
+#define __LIBMEMCACHED_WATCHPOINT_H__
 
 /* Some personal debugging functions */
 #if defined(DEBUG)
@@ -42,4 +42,4 @@
 
 #endif /* DEBUG */
 
-#endif /* LIBMEMCACHED_MEMCACHED_WATCHPOINT_H */
+#endif /* __LIBMEMCACHED_WATCHPOINT_H__ */

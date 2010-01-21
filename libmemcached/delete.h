@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_DELETE_H__
-#define __MEMCACHED_DELETE_H__
+#ifndef __LIBMEMCACHED_DELETE_H__
+#define __LIBMEMCACHED_DELETE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,4 +30,4 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_DELETE_H__ */
+#endif /* __LIBMEMCACHED_DELETE_H__ */

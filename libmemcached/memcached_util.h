@@ -12,9 +12,9 @@
  */
 
 
-#ifndef MEMCACHED_UTIL_H
-#define MEMCACHED_UTIL_H
+#ifndef __LIBMEMCACHED__MEMCACHED_UTIL_H__
+#define __LIBMEMCACHED__MEMCACHED_UTIL_H__
 
 #include <libmemcached/util/pool.h>
 
-#endif /* MEMCACHED_UTIL_H */
+#endif /* __LIBMEMCACHED__MEMCACHED_UTIL_H__ */

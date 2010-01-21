@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_VERBOSITY_H__
-#define __MEMCACHED_VERBOSITY_H__
+#ifndef __LIBMEMCACHED_VERBOSITY_H__
+#define __LIBMEMCACHED_VERBOSITY_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,4 +24,4 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity);
 }
 #endif
 
-#endif /* __MEMCACHED_VERBOSITY_H__ */
+#endif /* __LIBMEMCACHED_VERBOSITY_H__ */

@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __MEMCACHED_AUTO_H__
-#define __MEMCACHED_AUTO_H__
+#ifndef __LIBMEMCACHED_AUTO_H__
+#define __LIBMEMCACHED_AUTO_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,4 +82,4 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
 }
 #endif
 
-#endif /* __MEMCACHED_AUTO_H__ */
+#endif /* __LIBMEMCACHED_AUTO_H__ */

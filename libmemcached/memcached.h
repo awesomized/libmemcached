@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef __MEMCACHED_H__
-#define __MEMCACHED_H__
+#ifndef __LIBMEMCACHED_MEMCACHED_H__
+#define __LIBMEMCACHED_MEMCACHED_H__
 
 #include <stdlib.h>
 #include <inttypes.h>
@@ -73,6 +73,10 @@ void *memcached_get_user_data(const memcached_st *ptr);
 
 LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 
 struct memcached_st {
@@ -237,6 +241,7 @@ struct memcached_st {
 
   memcached_st& operator=(const memcached_st& source)
   { 
+    memcached_free(this);
     memcached_clone(this, &source);
 
     return *this;
@@ -245,16 +250,11 @@ struct memcached_st {
 #endif
 };
 
+
 // Local Only Inline
 static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
 {
   return &ptr->servers[server_key];
 }
 
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
-
-
-#endif /* __MEMCACHED_H__ */
+#endif /* __LIBMEMCACHED_MEMCACHED_H__ */
