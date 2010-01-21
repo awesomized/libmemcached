@@ -56,6 +56,25 @@
 extern "C" {
 #endif
 
+LIBMEMCACHED_API
+void memcached_servers_reset(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_create(memcached_st *ptr);
+
+LIBMEMCACHED_API
+void memcached_free(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_clone(memcached_st *clone, const memcached_st *ptr);
+
+LIBMEMCACHED_API
+void *memcached_get_user_data(const memcached_st *ptr);
+
+LIBMEMCACHED_API
+void *memcached_set_user_data(memcached_st *ptr, void *data);
+
+
 struct memcached_st {
   /**
     @note these are static and should not change without a call to behavior.
@@ -127,27 +146,104 @@ struct memcached_st {
   struct {
     bool is_allocated:1;
   } options;
+
+#ifdef __cplusplus
+  memcached_st() :
+    state(),
+    flags(),
+    distribution(),
+    hashkit(),
+    continuum_points_counter(),
+    number_of_hosts(),
+    servers(),
+    last_disconnected_server(),
+    snd_timeout(),
+    rcv_timeout(),
+    server_failure_limit(),
+    io_msg_watermark(),
+    io_bytes_watermark(),
+    io_key_prefetch(),
+    cached_errno(),
+    poll_timeout(),
+    connect_timeout(),
+    retry_timeout(),
+    continuum_count(),
+    send_size(),
+    recv_size(),
+    user_data(),
+    next_distribution_rebuild(),
+    prefix_key_length(),
+    number_of_replicas(),
+    distribution_hashkit(),
+    result(),
+    continuum(),
+    allocators(),
+    on_clone(),
+    on_cleanup(),
+    get_key_failure(),
+    delete_trigger(),
+    callbacks(),
+    prefix_key(),
+    options()
+  {
+    memcached_create(this);
+  }
+
+  ~memcached_st()
+  {
+    memcached_free(this);
+  }
+
+  memcached_st(const memcached_st& source) :
+    state(),
+    flags(),
+    distribution(),
+    hashkit(),
+    continuum_points_counter(),
+    number_of_hosts(),
+    servers(),
+    last_disconnected_server(),
+    snd_timeout(),
+    rcv_timeout(),
+    server_failure_limit(),
+    io_msg_watermark(),
+    io_bytes_watermark(),
+    io_key_prefetch(),
+    cached_errno(),
+    poll_timeout(),
+    connect_timeout(),
+    retry_timeout(),
+    continuum_count(),
+    send_size(),
+    recv_size(),
+    user_data(),
+    next_distribution_rebuild(),
+    prefix_key_length(),
+    number_of_replicas(),
+    distribution_hashkit(),
+    result(),
+    continuum(),
+    allocators(),
+    on_clone(),
+    on_cleanup(),
+    get_key_failure(),
+    delete_trigger(),
+    callbacks(),
+    prefix_key(),
+    options()
+   {
+     memcached_clone(this, &source);
+   }
+
+  memcached_st& operator=(const memcached_st& source)
+  { 
+    memcached_clone(this, &source);
+
+    return *this;
+  }
+
+#endif
 };
-
-LIBMEMCACHED_API
-void memcached_servers_reset(memcached_st *ptr);
-
-/* Public API */
-
-LIBMEMCACHED_API
-memcached_st *memcached_create(memcached_st *ptr);
-
-LIBMEMCACHED_API
-void memcached_free(memcached_st *ptr);
-
-LIBMEMCACHED_API
-memcached_st *memcached_clone(memcached_st *clone, memcached_st *ptr);
-
-LIBMEMCACHED_API
-void *memcached_get_user_data(const memcached_st *ptr);
-
-LIBMEMCACHED_API
-void *memcached_set_user_data(memcached_st *ptr, void *data);
 
 // Local Only Inline
 static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
@@ -157,7 +253,7 @@ static inline memcached_server_st *memcached_server_instance_fetch(memcached_st 
 
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
 

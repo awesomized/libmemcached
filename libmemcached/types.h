@@ -24,7 +24,7 @@ typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_server_st memcached_server_st;
 typedef struct memcached_continuum_item_st memcached_continuum_item_st;
 
-typedef memcached_return_t (*memcached_clone_fn)(memcached_st *parent, memcached_st *clone);
+typedef memcached_return_t (*memcached_clone_fn)(memcached_st *destination, const memcached_st *source);
 typedef memcached_return_t (*memcached_cleanup_fn)(const memcached_st *ptr);
 
 /**

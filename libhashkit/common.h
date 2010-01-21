@@ -6,13 +6,12 @@
  * the COPYING file in the parent directory for full text.
  */
 
-/**
- * @file
- * @brief System Include Files
- */
-
 #ifndef HASHKIT_COMMON_H
 #define HASHKIT_COMMON_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "config.h"
 
@@ -29,5 +28,9 @@ void md5_signature(const unsigned char *key, unsigned int length, unsigned char 
 
 HASHKIT_LOCAL
 int update_continuum(hashkit_st *hashkit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HASHKIT_COMMON_H */

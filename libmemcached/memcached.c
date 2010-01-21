@@ -184,7 +184,7 @@ void memcached_free(memcached_st *ptr)
   If source is NULL the call is the same as if a memcached_create() was
   called.
 */
-memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
+memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
   memcached_st *new_clone;
@@ -271,7 +271,7 @@ memcached_st *memcached_clone(memcached_st *clone, memcached_st *source)
   }
 
   if (source->on_clone)
-    source->on_clone(source, new_clone);
+    source->on_clone(new_clone, source);
 
   return new_clone;
 }

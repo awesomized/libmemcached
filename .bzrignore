@@ -174,3 +174,6 @@ tests/testapp
 tests/testhashkit
 tests/testplus
 tests/udptest
+tests/hashplus
+patch
+patch2

@@ -36,6 +36,7 @@ noinst_HEADERS+= \
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
+		  tests/hashplus \
 		  tests/startservers \
 		  tests/testapp \
 		  tests/testhashkit \
@@ -76,6 +77,10 @@ tests_startservers_DEPENDENCIES= $(tests_startservers_LDADD)
 tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_DEPENDENCIES = $(tests_testhashkit_LDADD)
+
+tests_hashplus_SOURCES = tests/hash_plus.cc
+tests_hashplus_LDADD = $(tests_testhashkit_LDADD)
+tests_hashplus_DEPENDENCIES = $(tests_testhashkit_LDADD)
 
 test: test-docs test-mem test-hash memcapable
 	echo "Tests completed"
@@ -199,7 +204,9 @@ MEMSLAP_COMMAND= clients/memslap $(COLLECTION) $(SUITE)
 
 MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
 
-PLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
+MEMPLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
+
+HASHPLUS_COMMAND= tests/hashplus $(COLLECTION) $(SUITE)
 
 ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
 
@@ -212,14 +219,16 @@ test-atom: tests/atomsmasher
 	$(ATOM_COMMAND)
 
 test-plus: tests/testplus
-	$(PLUS_COMMAND)
+	$(MEMPLUS_COMMAND)
 
 test-hash: tests/testhashkit
 	$(HASH_COMMAND)
 
+test-hashplus: tests/hashplus
+	$(HASHPLUS_COMMAND)
+
 pahole-mem: tests/testapp
 	$(PAHOLE_COMMAND)  $(MEM_COMMAND)
-
 
 gdb-mem: tests/testapp
 	$(DEBUG_COMMAND)  $(MEM_COMMAND)
@@ -228,10 +237,13 @@ gdb-atom: tests/atomsmasher
 	$(DEBUG_COMMAND)  $(ATOM_COMMAND)
 
 gdb-plus: tests/testplus
-	$(DEBUG_COMMAND)  $(PLUS_COMMAND)
+	$(DEBUG_COMMAND)  $(MEMPLUS_COMMAND)
 
 gdb-hash: tests/testhashkit
 	$(DEBUG_COMMAND) $(HASH_COMMAND)
+
+gdb-hashplus: tests/hashplus
+	$(DEBUG_COMMAND) $(HASHPLUS_COMMAND)
 
 gdb-memslap: clients/memslap
 	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
@@ -243,10 +255,13 @@ valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND)  $(ATOM_COMMAND)
 
 valgrind-plus: tests/testplus
-	$(VALGRIND_COMMAND)  $(PLUS_COMMAND)
+	$(VALGRIND_COMMAND)  $(MEMPLUS_COMMAND)
 
 valgrind-hash: tests/testhashkit
 	$(VALGRIND_COMMAND) $(HASH_COMMAND)
+
+valgrind-hashplus: tests/hashplus
+	$(VALGRIND_COMMAND) $(HASHPLUS_COMMAND)
 
 valgrind-memslap: clients/memslap
 	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)

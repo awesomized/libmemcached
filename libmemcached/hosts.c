@@ -222,7 +222,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          value= hashkit_generate_value(&ptr->distribution_hashkit, sort_host, sort_host_length);
+          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
@@ -266,7 +266,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          value= hashkit_generate_value(&ptr->distribution_hashkit, sort_host, sort_host_length);
+          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }

@@ -106,3 +106,12 @@ bool hashkit_compare(const hashkit_st *first, const hashkit_st *second)
 
   return false;
 }
+
+#ifdef __cplusplus
+hashkit_st operator=(const hashkit_st& source)
+{ 
+  hashkit_clone(this, &source);
+
+  return *this;
+}
+#endif

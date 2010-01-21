@@ -3,7 +3,7 @@
 
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm)
 {
-  return libhashkit_generate_value(key, key_length, (hashkit_hash_algorithm_t)hash_algorithm);
+  return libhashkit_digest(key, key_length, (hashkit_hash_algorithm_t)hash_algorithm);
 }
 
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
@@ -16,7 +16,7 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
   if (memcached_server_count(ptr) == 1)
     return 0;
 
-  hash= hashkit_generate_value(&ptr->hashkit, key, key_length);
+  hash= hashkit_digest(&ptr->hashkit, key, key_length);
   WATCHPOINT_ASSERT(hash);
 
   return hash;

@@ -13,9 +13,6 @@
 extern "C" {
 #endif
 
-HASHKIT_API
-uint32_t hashkit_generate_value(const hashkit_st *self, const char *key, size_t key_length);
-
 /**
   This sets/gets the default function we will be using.
 */
@@ -39,13 +36,6 @@ hashkit_return_t hashkit_set_custom_distribution_function(hashkit_st *self, hash
 
 HASHKIT_API
 hashkit_hash_algorithm_t hashkit_get_distribution_function(const hashkit_st *self);
-
-/**
-  This is a utilitly function provided so that you can directly access hashes with a hashkit_st.
-*/
-
-HASHKIT_API
-uint32_t libhashkit_generate_value(const char *key, size_t key_length, hashkit_hash_algorithm_t hash_algorithm);
 
 #ifdef __cplusplus
 }

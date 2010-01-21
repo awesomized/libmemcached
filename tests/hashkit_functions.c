@@ -297,10 +297,10 @@ test_st allocation[]= {
   {0, 0, 0}
 };
 
-static test_return_t hashkit_generate_value_test(hashkit_st *hashk)
+static test_return_t hashkit_digest_test(hashkit_st *hashk)
 {
   uint32_t value;
-  value= hashkit_generate_value(hashk, "a", sizeof("a"));
+  value= hashkit_digest(hashk, "a", sizeof("a"));
 
   return TEST_SUCCESS;
 }
@@ -369,7 +369,7 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     {
       uint32_t hash_val;
 
-      hash_val= hashkit_generate_value(hashk, *ptr, strlen(*ptr));
+      hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
       test_true(list[x] == hash_val);
     }
   }
@@ -397,7 +397,7 @@ static test_return_t hashkit_set_custom_function_test(hashkit_st *hashk)
   {
     uint32_t hash_val;
 
-    hash_val= hashkit_generate_value(hashk, *ptr, strlen(*ptr));
+    hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
     test_true(md5_values[x] == hash_val);
   }
 
@@ -465,7 +465,7 @@ static test_return_t hashkit_compare_test(hashkit_st *hashk)
 }
 
 test_st hashkit_st_functions[] ={
-  {"hashkit_generate_value", 0, (test_callback_fn)hashkit_generate_value_test},
+  {"hashkit_digest", 0, (test_callback_fn)hashkit_digest_test},
   {"hashkit_set_function", 0, (test_callback_fn)hashkit_set_function_test},
   {"hashkit_set_custom_function", 0, (test_callback_fn)hashkit_set_custom_function_test},
   {"hashkit_get_function", 0, (test_callback_fn)hashkit_get_function_test},
@@ -475,19 +475,19 @@ test_st hashkit_st_functions[] ={
   {0, 0, 0}
 };
 
-static test_return_t libhashkit_generate_value_test(hashkit_st *hashk)
+static test_return_t libhashkit_digest_test(hashkit_st *hashk)
 {
   uint32_t value;
 
   (void)hashk;
 
-  value= libhashkit_generate_value("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
+  value= libhashkit_digest("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
 
   return TEST_SUCCESS;
 }
 
 test_st library_functions[] ={
-  {"libhashkit_generate_value", 0, (test_callback_fn)libhashkit_generate_value_test},
+  {"libhashkit_digest", 0, (test_callback_fn)libhashkit_digest_test},
   {0, 0, 0}
 };
 
