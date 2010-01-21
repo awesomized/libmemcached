@@ -50,7 +50,6 @@ static hashkit_return_t _set_function(struct hashkit_function_st *self, hashkit_
   case HASHKIT_HASH_MAX:
   default:
     return HASHKIT_FAILURE;
-    break;
   }
 
   self->context= NULL;

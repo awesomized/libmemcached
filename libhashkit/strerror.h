@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 HASHKIT_API
-  const char *hashkit_strerror(hashkit_st *ptr __attribute__((unused)), hashkit_return_t rc);
+  const char *hashkit_strerror(hashkit_st *ptr, hashkit_return_t rc);
 
 #ifdef __cplusplus
 }

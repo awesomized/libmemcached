@@ -361,16 +361,23 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     case HASHKIT_HASH_MAX:
     default:
       list= NULL;
-      test_fail("We ended up on a non-existent hash");
+      break;
     }
 
     // Now we make sure we did set the hash correctly.
-    for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+    if (list)
     {
-      uint32_t hash_val;
+      for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+      {
+        uint32_t hash_val;
 
-      hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
-      test_true(list[x] == hash_val);
+        hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
+        test_true(list[x] == hash_val);
+      }
+    }
+    else
+    {
+      return TEST_FAILURE;
     }
   }
 

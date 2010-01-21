@@ -10,16 +10,18 @@
 
 #include "hash_results.h"
 
-static test_return_t exists_test(void *obj __attribute__((unused)))
+static test_return_t exists_test(void *obj)
 {
   Hashkit hashk;
+  (void)obj;
 
   return TEST_SUCCESS;
 }
 
-static test_return_t new_test(void *obj __attribute__((unused)))
+static test_return_t new_test(void *obj)
 {
   Hashkit *hashk= new Hashkit;
+  (void)obj;
 
   (void)hashk;
 
@@ -28,10 +30,11 @@ static test_return_t new_test(void *obj __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t copy_test(void *obj __attribute__((unused)))
+static test_return_t copy_test(void *obj)
 {
   Hashkit *hashk= new Hashkit;
   Hashkit *copy(hashk);
+  (void)obj;
 
   (void)copy;
 
@@ -40,10 +43,11 @@ static test_return_t copy_test(void *obj __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t assign_test(void *obj __attribute__((unused)))
+static test_return_t assign_test(void *obj)
 {
   Hashkit hashk;
   Hashkit copy;
+  (void)obj;
 
   copy= hashk;
 
@@ -52,17 +56,18 @@ static test_return_t assign_test(void *obj __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t digest_test(void *obj __attribute__((unused)))
+static test_return_t digest_test(void *obj)
 {
   Hashkit hashk;
   uint32_t value;
+  (void)obj;
 
   value= hashk.digest("Foo", sizeof("Foo"));
 
   return TEST_SUCCESS;
 }
 
-static test_return_t set_function_test(void *obj __attribute__((unused)))
+static test_return_t set_function_test(void *obj)
 {
   Hashkit hashk;
   hashkit_hash_algorithm_t algo_list[]= { 
@@ -78,6 +83,7 @@ static test_return_t set_function_test(void *obj __attribute__((unused)))
     HASHKIT_HASH_MAX
   };
   hashkit_hash_algorithm_t *algo;
+  (void)obj;
 
 
   for (algo= algo_list; *algo != HASHKIT_HASH_MAX; algo++)
@@ -143,10 +149,11 @@ static test_return_t set_function_test(void *obj __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t set_distribution_function_test(void *obj __attribute__((unused)))
+static test_return_t set_distribution_function_test(void *obj)
 {
   Hashkit hashk;
   hashkit_return_t rc;
+  (void)obj;
 
   rc= hashk.set_distribution_function(HASHKIT_HASH_CUSTOM);
   test_true(rc == HASHKIT_FAILURE);
@@ -157,9 +164,10 @@ static test_return_t set_distribution_function_test(void *obj __attribute__((unu
   return TEST_SUCCESS;
 }
 
-static test_return_t compare_function_test(void *obj __attribute__((unused)))
+static test_return_t compare_function_test(void *obj)
 {
   Hashkit a, b;
+  (void)obj;
 
   b= a;
   
@@ -175,14 +183,14 @@ static test_return_t compare_function_test(void *obj __attribute__((unused)))
 }
 
 test_st basic[] ={
-  { "exists", 0, exists_test },
-  { "new", 0, new_test },
-  { "copy", 0, copy_test },
-  { "assign", 0, assign_test },
-  { "digest", 0, digest_test },
-  { "set_function", 0, set_function_test },
-  { "set_distribution_function", 0, set_distribution_function_test },
-  { "compare", 0, compare_function_test },
+  { "exists", 0, reinterpret_cast<test_callback_fn>(exists_test) },
+  { "new", 0, reinterpret_cast<test_callback_fn>(new_test) },
+  { "copy", 0, reinterpret_cast<test_callback_fn>(copy_test) },
+  { "assign", 0, reinterpret_cast<test_callback_fn>(assign_test) },
+  { "digest", 0, reinterpret_cast<test_callback_fn>(digest_test) },
+  { "set_function", 0, reinterpret_cast<test_callback_fn>(set_function_test) },
+  { "set_distribution_function", 0, reinterpret_cast<test_callback_fn>(set_distribution_function_test) },
+  { "compare", 0, reinterpret_cast<test_callback_fn>(compare_function_test) },
   { 0, 0, 0}
 };
 
