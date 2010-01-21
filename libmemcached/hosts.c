@@ -63,11 +63,12 @@ memcached_return_t run_distribution(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static uint32_t ketama_server_hash(const char *key, unsigned int key_length, int alignment)
+static uint32_t ketama_server_hash(const char *key, unsigned int key_length, uint32_t alignment)
 {
   unsigned char results[16];
 
-  md5_signature((unsigned char*)key, key_length, results);
+  libhashkit_md5_signature((unsigned char*)key, key_length, results);
+
   return ((uint32_t) (results[3 + alignment * 4] & 0xFF) << 24)
     | ((uint32_t) (results[2 + alignment * 4] & 0xFF) << 16)
     | ((uint32_t) (results[1 + alignment * 4] & 0xFF) << 8)
@@ -215,7 +216,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) x);
+             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }

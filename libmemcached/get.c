@@ -588,10 +588,10 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
     }
 
     if (is_master_key_set)
-      for (unsigned int x= 0; x < number_of_keys; x++)
+      for (size_t x= 0; x < number_of_keys; x++)
         hash[x]= master_server_key;
     else
-      for (unsigned int x= 0; x < number_of_keys; x++)
+      for (size_t x= 0; x < number_of_keys; x++)
         hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
 
     rc= replication_binary_mget(ptr, hash, dead_servers, keys,

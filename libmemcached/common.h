@@ -95,22 +95,6 @@ typedef enum {
 #define SMALL_STRING_LEN 1024
 #define HUGE_STRING_LEN 8196
 
-/* Hashing algo */
-
-LIBMEMCACHED_LOCAL
-void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
-LIBMEMCACHED_LOCAL
-uint32_t hash_crc32(const char *data,
-                    size_t data_len);
-#ifdef HAVE_HSIEH_HASH
-LIBMEMCACHED_LOCAL
-uint32_t hsieh_hash(const char *key, size_t key_length);
-#endif
-LIBMEMCACHED_LOCAL
-uint32_t murmur_hash(const char *key, size_t key_length);
-LIBMEMCACHED_LOCAL
-uint32_t jenkins_hash(const void *key, size_t length, uint32_t initval);
-
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
 LIBMEMCACHED_LOCAL

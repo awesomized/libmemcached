@@ -82,6 +82,9 @@ uint32_t hashkit_jenkins(const char *key, size_t key_length, void *context);
 HASHKIT_LOCAL
 uint32_t hashkit_md5(const char *key, size_t key_length, void *context);
 
+HASHKIT_API
+void libhashkit_md5_signature(const unsigned char *key, uint32_t length, unsigned char *result);
+
 #ifdef __cplusplus
 }
 #endif

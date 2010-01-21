@@ -59,3 +59,9 @@ uint32_t libhashkit_md5(const char *key, size_t key_length)
 {
   return hashkit_md5(key, key_length, NULL);
 }
+
+void libhashkit_md5_signature(const unsigned char *key, uint32_t length, unsigned char *result)
+{
+  md5_signature(key, length, result);
+}
+
