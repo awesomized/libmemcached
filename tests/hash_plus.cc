@@ -14,6 +14,7 @@ static test_return_t exists_test(void *obj)
 {
   Hashkit hashk;
   (void)obj;
+  (void)hashk;
 
   return TEST_SUCCESS;
 }

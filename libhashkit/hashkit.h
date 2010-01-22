@@ -63,28 +63,24 @@ struct hashkit_st
   struct {
     bool is_allocated:1;
   } options;
+};
 
 #ifdef __cplusplus
+class Hashkit : private hashkit_st {
 
-  hashkit_st() :
-    base_hash(),
-    distribution_hash(),
-    flags(),
-    options()
+public:
+
+  Hashkit()
   {
     hashkit_create(this);
   }
 
-  hashkit_st(const hashkit_st& source) :
-    base_hash(),
-    distribution_hash(),
-    flags(),
-    options()
+  Hashkit(const Hashkit& source)
   {
     hashkit_clone(this, &source);
   }
 
-  hashkit_st& operator=(const hashkit_st& source)
+  Hashkit& operator=(const Hashkit& source)
   { 
     hashkit_free(this);
     hashkit_clone(this, &source);
@@ -92,7 +88,7 @@ struct hashkit_st
     return *this;
   }
 
-  friend bool operator==(const hashkit_st &left, const hashkit_st &right)
+  friend bool operator==(const Hashkit &left, const Hashkit &right)
   {
     return hashkit_compare(&left, &right);
   }
@@ -117,12 +113,12 @@ struct hashkit_st
     return hashkit_set_function(this, hash_algorithm);
   }
 
-  ~hashkit_st()
+  ~Hashkit()
   {
     hashkit_free(this);
   }
-#endif
 };
+#endif
 
 
 #endif /* HASHKIT_H */

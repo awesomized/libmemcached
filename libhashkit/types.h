@@ -12,8 +12,6 @@
 
 #ifdef __cplusplus
 
-typedef struct hashkit_st Hashkit;
-
 extern "C" {
 #endif
 
