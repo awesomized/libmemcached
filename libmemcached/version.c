@@ -21,7 +21,6 @@ memcached_return_t memcached_version(memcached_st *ptr)
 
 static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
 {
-  unsigned int x;
   size_t send_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -31,13 +30,13 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   send_length= strlen(command);
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(ptr, x);
 
-    rrc= memcached_do(instance, command, send_length, 1);
+    rrc= memcached_do(instance, command, send_length, true);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
@@ -84,7 +83,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(ptr, x);
 
-    rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), 1);
+    rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), true);
     if (rrc != MEMCACHED_SUCCESS) 
     {
       memcached_io_reset(instance);

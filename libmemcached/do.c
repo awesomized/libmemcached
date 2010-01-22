@@ -1,7 +1,7 @@
 #include "common.h"
 
 memcached_return_t memcached_do(memcached_server_st *ptr, const void *command, 
-                                size_t command_length, uint8_t with_flush)
+                                size_t command_length, bool with_flush)
 {
   memcached_return_t rc;
   ssize_t sent_length;
@@ -23,7 +23,7 @@ memcached_return_t memcached_do(memcached_server_st *ptr, const void *command,
   if (ptr->type == MEMCACHED_CONNECTION_UDP && with_flush && ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
     memcached_io_write(ptr, NULL, 0, true);
 
-  sent_length= memcached_io_write(ptr, command, command_length, (bool) with_flush);
+  sent_length= memcached_io_write(ptr, command, command_length, with_flush);
 
   if (sent_length == -1 || (size_t)sent_length != command_length)
     rc= MEMCACHED_WRITE_FAILURE;

@@ -250,7 +250,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
     request.message.header.request.bodylen= htonl((uint32_t) len);
 
     if ((memcached_do(instance, request.bytes,
-                      sizeof(request.bytes), 0) != MEMCACHED_SUCCESS) ||
+                      sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
         (memcached_io_write(instance, args, len, true) == -1))
     {
       memcached_io_reset(instance);
@@ -260,7 +260,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
   else
   {
     if (memcached_do(instance, request.bytes,
-                     sizeof(request.bytes), 1) != MEMCACHED_SUCCESS)
+                     sizeof(request.bytes), true) != MEMCACHED_SUCCESS)
     {
       memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;
@@ -314,7 +314,7 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(instance, buffer, send_length, 1);
+  rc= memcached_do(instance, buffer, send_length, true);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 

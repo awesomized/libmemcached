@@ -144,7 +144,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      size_t number_of_keys,
                                                      bool mget_mode)
 {
-  unsigned int x;
+  uint32_t x;
   memcached_return_t rc= MEMCACHED_NOTFOUND;
   const char *get_command= "get ";
   uint8_t get_command_length= 4;
@@ -409,7 +409,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     if ((memcached_io_write(instance, request.bytes,
                             sizeof(request.bytes), false) == -1) ||
         (memcached_io_write(instance, keys[x],
-                            key_length[x], (char) flush) == -1))
+                            key_length[x], flush) == -1))
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;

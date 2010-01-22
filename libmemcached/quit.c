@@ -24,11 +24,11 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
         request.message.header.request.magic = PROTOCOL_BINARY_REQ;
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
-        rc= memcached_do(ptr, request.bytes, sizeof(request.bytes), 1);
+        rc= memcached_do(ptr, request.bytes, sizeof(request.bytes), true);
       }
       else
       {
-        rc= memcached_do(ptr, "quit\r\n", 6, 1);
+        rc= memcached_do(ptr, "quit\r\n", sizeof("quit\r\n"), true);
       }
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);

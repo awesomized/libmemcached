@@ -10,6 +10,7 @@ EXTRA_DIST+= \
 noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
+		 libmemcached/do.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
 		 libmemcached/libmemcached_probes.h \

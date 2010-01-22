@@ -57,6 +57,7 @@
 typedef struct memcached_server_st memcached_server_instance_st;
 
 /* These are private not to be installed headers */
+#include "libmemcached/do.h"
 #include "libmemcached/io.h"
 #include "libmemcached/internal.h"
 #include "libmemcached/libmemcached_probes.h"
@@ -122,9 +123,6 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
 
 
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_do(memcached_server_instance_st *ptr, const void *commmand,
-                                size_t command_length, uint8_t with_flush);
 LIBMEMCACHED_LOCAL
 memcached_return_t value_fetch(memcached_server_instance_st *ptr,
                                char *buffer,

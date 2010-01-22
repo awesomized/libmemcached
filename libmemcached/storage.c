@@ -65,7 +65,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                                 uint64_t cas,
                                                 memcached_storage_action_t verb)
 {
-  char to_write;
+  bool to_write;
   size_t write_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -149,7 +149,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   /* Send command header */
-  rc=  memcached_do(instance, buffer, write_length, 0);
+  rc=  memcached_do(instance, buffer, write_length, false);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
@@ -162,11 +162,11 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
 
   if (ptr->flags.buffer_requests && verb == SET_OP)
   {
-    to_write= 0;
+    to_write= false;
   }
   else
   {
-    to_write= 1;
+    to_write= true;
   }
 
   if (memcached_io_write(instance, "\r\n", 2, to_write) == -1)
@@ -176,9 +176,9 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   if (ptr->flags.no_reply)
-    return (to_write == 0) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
+    return (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
 
-  if (to_write == 0)
+  if (to_write == false)
     return MEMCACHED_BUFFERED;
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
@@ -441,7 +441,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
                                                 uint64_t cas,
                                                 memcached_storage_action_t verb)
 {
-  uint8_t flush;
+  bool flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
   uint32_t server_key= memcached_generate_hash(ptr, master_key,
@@ -471,9 +471,9 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   if (cas)
     request.message.header.request.cas= htonll(cas);
 
-  flush= (uint8_t) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
+  flush= (bool) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
 
-  if (server->root->flags.use_udp && !flush)
+  if (server->root->flags.use_udp && ! flush)
   {
     size_t cmd_size= send_length + key_length + value_length;
 
@@ -488,9 +488,9 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   }
 
   /* write the header */
-  if ((memcached_do(server, (const char*)request.bytes, send_length, 0) != MEMCACHED_SUCCESS) ||
+  if ((memcached_do(server, (const char*)request.bytes, send_length, false) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, false) == -1) ||
-      (memcached_io_write(server, value, value_length, (char) flush) == -1))
+      (memcached_io_write(server, value, value_length, flush) == -1))
   {
     memcached_io_reset(server);
     return MEMCACHED_WRITE_FAILURE;
@@ -511,9 +511,9 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
       instance= memcached_server_instance_fetch(ptr, server_key);
 
       if ((memcached_do(instance, (const char*)request.bytes,
-                        send_length, 0) != MEMCACHED_SUCCESS) ||
+                        send_length, false) != MEMCACHED_SUCCESS) ||
           (memcached_io_write(instance, key, key_length, false) == -1) ||
-          (memcached_io_write(instance, value, value_length, (char) flush) == -1))
+          (memcached_io_write(instance, value, value_length, flush) == -1))
       {
         memcached_io_reset(instance);
       }
@@ -524,7 +524,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
   }
 
-  if (flush == 0)
+  if (flush == false)
   {
     return MEMCACHED_BUFFERED;
   }

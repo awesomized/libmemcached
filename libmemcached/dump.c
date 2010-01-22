@@ -29,7 +29,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                      "stats cachedump %u 0 0\r\n", x);
 
-      rc= memcached_do(instance, buffer, send_length, 1);
+      rc= memcached_do(instance, buffer, send_length, true);
 
       unlikely (rc != MEMCACHED_SUCCESS)
         goto error;

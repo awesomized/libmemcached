@@ -43,7 +43,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(instance, buffer, send_length, 1);
+  rc= memcached_do(instance, buffer, send_length, true);
   if (no_reply || rc != MEMCACHED_SUCCESS)
     return rc;
 
@@ -112,7 +112,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.body.expiration= htonl((uint32_t) expiration);
 
   if ((memcached_do(instance, request.bytes,
-                    sizeof(request.bytes), 0)!=MEMCACHED_SUCCESS) ||
+                    sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(instance, key, key_length, true) == -1))
   {
     memcached_io_reset(instance);

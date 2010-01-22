@@ -19,7 +19,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
     memcached_server_instance_st *instance=
       memcached_server_instance_fetch(ptr, x);
 
-    rrc= memcached_do(instance, buffer, send_length, 1);
+    rrc= memcached_do(instance, buffer, send_length, true);
     if (rrc != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
