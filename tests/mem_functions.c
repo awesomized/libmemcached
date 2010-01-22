@@ -5086,6 +5086,81 @@ static test_return_t jenkins_run (memcached_st *memc __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
+static uint32_t hash_md5_test_function(const char *string, size_t string_length, void *context)
+{
+  (void)context;
+  return libhashkit_md5(string, string_length);
+}
+
+static uint32_t hash_crc_test_function(const char *string, size_t string_length, void *context)
+{
+  (void)context;
+  return libhashkit_crc32(string, string_length);
+}
+
+static test_return_t memcached_get_hashkit_test (memcached_st *memc)
+{
+  uint32_t x;
+  const char **ptr;
+  hashkit_st *kit;
+  hashkit_return_t hash_rc;
+
+  uint32_t md5_hosts[]= {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U};
+  uint32_t crc_hosts[]= {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U};
+
+  kit= memcached_get_hashkit(memc);
+
+  hash_rc= hashkit_set_custom_function(kit, hash_md5_test_function, NULL);
+  test_true(hash_rc == HASHKIT_SUCCESS);
+
+  /*
+    Verify Setting the hash.
+  */
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= hashkit_digest(kit, *ptr, strlen(*ptr));
+    test_true(md5_values[x] == hash_val);
+  }
+
+  
+  /*
+    Now check memcached_st.
+  */
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= memcached_generate_hash(memc, *ptr, strlen(*ptr));
+    test_true(md5_hosts[x] == hash_val);
+  }
+
+  hash_rc= hashkit_set_custom_function(kit, hash_crc_test_function, NULL);
+  test_true(hash_rc == HASHKIT_SUCCESS);
+
+  /*
+    Verify Setting the hash.
+  */
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= hashkit_digest(kit, *ptr, strlen(*ptr));
+    test_true(crc_values[x] == hash_val);
+  }
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    uint32_t hash_val;
+
+    hash_val= memcached_generate_hash(memc, *ptr, strlen(*ptr));
+    test_true(crc_hosts[x] == hash_val);
+  }
+
+  return TEST_SUCCESS;
+}
+
 
 static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
 {
@@ -6013,6 +6088,7 @@ test_st hash_tests[] ={
   {"hsieh", 0, (test_callback_fn)hsieh_run },
   {"murmur", 0, (test_callback_fn)murmur_run },
   {"jenkis", 0, (test_callback_fn)jenkins_run },
+  {"memcached_get_hashkit", 0, (test_callback_fn)memcached_get_hashkit_test },
   {0, 0, (test_callback_fn)0}
 };
 

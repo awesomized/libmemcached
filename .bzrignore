@@ -64,6 +64,8 @@ libmemcached-0.30-1.src.rpm
 libmemcached-0.30-1.x86_64.rpm
 libmemcached-0.31-1.src.rpm
 libmemcached-0.31-1.x86_64.rpm
+libmemcached-0.37-1.src.rpm
+libmemcached-0.37-1.x86_64.rpm
 libmemcached-?.??/
 libmemcached.pop
 libmemcached/configure.h
@@ -161,6 +163,8 @@ memflush.pop
 memrm.pop
 memslap.pop
 memstat.pop
+patch
+patch2
 stamp-h1
 support/Makefile
 support/Makefile.in
@@ -168,12 +172,11 @@ support/libmemcached-fc.spec
 support/libmemcached.pc
 support/libmemcached.spec
 tests/atomsmasher
+tests/hashplus
+tests/memplus
 tests/output.cmp
 tests/startservers
 tests/testapp
 tests/testhashkit
 tests/testplus
 tests/udptest
-tests/hashplus
-patch
-patch2
