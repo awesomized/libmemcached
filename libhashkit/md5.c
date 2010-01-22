@@ -169,8 +169,8 @@ static void MD5Update (
 
   /* Update number of bits */
   if ((context->count[0] += ((UINT4)inputLen << 3))
-   < ((UINT4)inputLen << 3))
- context->count[1]++;
+      < ((UINT4)inputLen << 3))
+    context->count[1]++;
   context->count[1] += ((UINT4)inputLen >> 29);
 
   partLen = 64 - idx;

@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2010 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: 
+ *
+ */
+
 #include "common.h"
 
 
@@ -106,4 +117,9 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   }
 
   return dispatch_host(ptr, hash);
+}
+
+hashkit_st *memcached_get_hashkit(memcached_st *ptr)
+{
+  return &ptr->hashkit;
 }

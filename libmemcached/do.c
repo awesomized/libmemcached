@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2010 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: 
+ *
+ */
+
 #include "common.h"
 
 memcached_return_t memcached_do(memcached_server_st *ptr, const void *command, 

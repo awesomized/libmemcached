@@ -227,3 +227,38 @@ void memcached_server_list_free(memcached_server_st *ptr)
 {
   server_list_free(NULL, ptr);
 }
+
+/**
+  @todo allow lists to query themselves even if they lack a root
+*/
+memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
+{
+  uint32_t x, host_index;
+  memcached_st *root= (memcached_st *)st_ptr->root;
+  memcached_server_st *list;
+
+  if (root == NULL)
+    return MEMCACHED_FAILURE;
+
+  list= memcached_server_list(root);
+
+  for (x= 0, host_index= 0; x < memcached_server_count(root); x++)
+  {
+    if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port)
+    {
+      if (host_index != x)
+        memcpy(list+host_index, list+x, sizeof(memcached_server_st));
+      host_index++;
+    }
+  }
+  root->number_of_hosts= host_index;
+
+  if (st_ptr->address_info)
+  {
+    freeaddrinfo(st_ptr->address_info);
+    st_ptr->address_info= NULL;
+  }
+  run_distribution(root);
+
+  return MEMCACHED_SUCCESS;
+}

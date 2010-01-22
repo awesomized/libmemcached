@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2006-2010 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: 
+ *
+ */
+
 #include "common.h"
 #include <math.h>
 
@@ -63,7 +74,7 @@ memcached_return_t run_distribution(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static uint32_t ketama_server_hash(const char *key, unsigned int key_length, uint32_t alignment)
+static uint32_t ketama_server_hash(const char *key, size_t key_length, uint32_t alignment)
 {
   unsigned char results[16];
 
@@ -214,9 +225,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
         if (is_ketama_weighted)
         {
-          for (uint32_t x = 0; x < pointer_per_hash; x++)
+          for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, x);
+             value= ketama_server_hash(sort_host, sort_host_length, x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
@@ -260,7 +271,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (uint32_t) sort_host_length, (int) x);
+             value= ketama_server_hash(sort_host, sort_host_length, x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
@@ -427,84 +438,4 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   memcached_servers_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
-}
-
-/**
-  @todo allow lists to query themselves even if they lack a root
-*/
-memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
-{
-  uint32_t x, host_index;
-  memcached_st *root= (memcached_st *)st_ptr->root;
-  memcached_server_st *list;
-
-  if (root == NULL)
-    return MEMCACHED_FAILURE;
-
-  list= memcached_server_list(root);
-
-  for (x= 0, host_index= 0; x < memcached_server_count(root); x++)
-  {
-    if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port)
-    {
-      if (host_index != x)
-        memcpy(list+host_index, list+x, sizeof(memcached_server_st));
-      host_index++;
-    }
-  }
-  root->number_of_hosts= host_index;
-
-  if (st_ptr->address_info)
-  {
-    freeaddrinfo(st_ptr->address_info);
-    st_ptr->address_info= NULL;
-  }
-  run_distribution(root);
-
-  return MEMCACHED_SUCCESS;
-}
-
-memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
-                                                  const char *hostname, in_port_t port,
-                                                  memcached_return_t *error)
-{
-  return memcached_server_list_append_with_weight(ptr, hostname, port, 0, error);
-}
-
-memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr,
-                                                              const char *hostname, in_port_t port,
-                                                              uint32_t weight,
-                                                              memcached_return_t *error)
-{
-  unsigned int count;
-  memcached_server_instance_st *new_host_list;
-
-  if (hostname == NULL || error == NULL)
-    return NULL;
-
-  if (! port)
-    port= MEMCACHED_DEFAULT_PORT;
-
-  /* Increment count for hosts */
-  count= 1;
-  if (ptr != NULL)
-  {
-    count+= memcached_servers_count(ptr);
-  }
-
-  new_host_list= (memcached_server_instance_st *)realloc(ptr, sizeof(memcached_server_instance_st) * count);
-  if (!new_host_list)
-  {
-    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    return NULL;
-  }
-
-  /* TODO: Check return type */
-  memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
-
-  /* Backwards compatibility hack */
-  memcached_servers_set_count(new_host_list, count);
-
-  *error= MEMCACHED_SUCCESS;
-  return new_host_list;
 }

@@ -44,17 +44,15 @@ libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.c
 endif
 
 libhashkit_libhashkit_la_CFLAGS= \
-		      ${AM_CFLAGS} \
-		      -DBUILDING_HASHKIT
+				 ${AM_CFLAGS} \
+				 -DBUILDING_HASHKIT
 
 libhashkit_libhashkit_la_LDFLAGS= \
 				  $(LIBM) \
 				  -version-info $(HASHKIT_LIBRARY_VERSION)
 
-noinst_LTLIBRARIES+= \
-		     libhashkit/libhashkitinc.la
+noinst_LTLIBRARIES+= libhashkit/libhashkitinc.la
 
 libhashkit_libhashkitinc_la_SOURCES= ${libhashkit_libhashkit_la_SOURCES}
 libhashkit_libhashkitinc_la_CFLAGS= ${libhashkit_libhashkit_la_CFLAGS}
-libhashkit_libhashkitinc_la_LDFLAGS= ${libhashkit_libhashkit_la_LDFLAGS}
-
+libhashkit_libhashkitinc_la_LDFLAGS=  $(LIBM)

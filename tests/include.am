@@ -51,11 +51,11 @@ tests_libtest_la_SOURCES= tests/test.c
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= tests/mem_functions.c
 tests_testapp_LDADD= \
-	clients/libgenexec.la \
-	tests/libserver.la \
-	tests/libtest.la \
-	libmemcached/libmemcachedinternal.la \
-	$(TESTS_LDADDS)
+		     clients/libgenexec.la \
+		     tests/libserver.la \
+		     tests/libtest.la \
+		     libmemcached/libmemcachedinternal.la \
+$(TESTS_LDADDS)
 tests_testapp_DEPENDENCIES= $(tests_testapp_LDADD)
 
 tests_testplus_SOURCES= tests/plus.cpp

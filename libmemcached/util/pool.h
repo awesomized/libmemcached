@@ -10,8 +10,8 @@
  */
 
 
-#ifndef MEMCACHED_POOL_H
-#define MEMCACHED_POOL_H
+#ifndef __LIMEMCACHED_UTIL_POOL_H__
+#define __LIMEMCACHED_UTIL_POOL_H__
 
 #include <libmemcached/memcached.h>
 
@@ -45,7 +45,7 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *ptr,
                                                uint64_t *value);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
-#endif /* MEMCACHED_POOL_H */
+#endif /* __LIMEMCACHED_UTIL_POOL_H__ */

@@ -74,9 +74,9 @@ libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
 # This noinst lib contains things we want to be ABI private but still want to
 # either use in client programs or be able to test in test cases
 # These symbols will not be exposed in the shipped .so
-noinst_LTLIBRARIES+= \
-		     libmemcached/libmemcachedinternal.la
-libmemcached_libmemcachedinternal_la_SOURCES = libmemcached/string.c
+noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
+libmemcached_libmemcachedinternal_la_SOURCES= \
+					      libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
@@ -104,6 +104,7 @@ libmemcached_libmemcached_la_SOURCES = \
 				       libmemcached/response.c \
 				       libmemcached/result.c \
 				       libmemcached/server.c \
+				       libmemcached/server_list.c \
 				       libmemcached/stats.c \
 				       libmemcached/storage.c \
 				       libmemcached/strerror.c \
