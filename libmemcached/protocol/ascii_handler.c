@@ -80,6 +80,7 @@ static void send_command_usage(memcached_protocol_client_st *client)
     [UNKNOWN_CMD]= "CLIENT_ERROR: Unknown command\r\n",
   };
 
+  client->mute = false;
   spool_string(client, errmsg[client->ascii_command]);
 }
 
@@ -146,11 +147,11 @@ ascii_get_response_handler(const void *cookie,
   if (client->ascii_command == GETS_CMD)
   {
     snprintf(dest, sizeof(buffer) - used, " %u %u %llu\r\n", flags,
-             flags, (unsigned long long)cas);
+             bodylen, (unsigned long long)cas);
   }
   else
   {
-    snprintf(dest, sizeof(buffer) - used, " %u %u\r\n", flags, flags);
+    snprintf(dest, sizeof(buffer) - used, " %u %u\r\n", flags, bodylen);
   }
 
   client->root->spool(client, buffer, strlen(buffer));
@@ -832,9 +833,10 @@ memcached_protocol_event_t memcached_ascii_protocol_process_data(memcached_proto
       case REPLACE_CMD:
         error= process_replace_command(client, tokens, ntokens,
                                        ptr, &end, *length);
+        break;
       case CAS_CMD:
         error= process_cas_command(client, tokens, ntokens, ptr, &end, *length);
-       break;
+        break;
       case APPEND_CMD:
         error= process_append_command(client, tokens, ntokens,
                                       ptr, &end, *length);
@@ -852,18 +854,34 @@ memcached_protocol_event_t memcached_ascii_protocol_process_data(memcached_proto
         process_arithmetic(client, tokens, ntokens);
         break;
       case STATS_CMD:
-        recover_tokenize_command(ptr, end);
-        process_stats(client, ptr + 6, end);
+        if (client->mute)
+        {
+          send_command_usage(client);
+        }
+        else
+        {
+          recover_tokenize_command(ptr, end);
+          process_stats(client, ptr + 6, end);
+        }
         break;
       case FLUSH_ALL_CMD:
         process_flush(client, tokens, ntokens);
         break;
       case VERSION_CMD:
-        process_version(client, tokens, ntokens);
+        if (client->mute)
+        {
+          send_command_usage(client);
+        }
+        else
+        {
+          process_version(client, tokens, ntokens);
+        }
         break;
       case QUIT_CMD:
-        if (ntokens != 1)
+        if (ntokens != 1 || client->mute)
+        {
           send_command_usage(client);
+        }
         else
         {
           if (client->root->callback->interface.v1.quit != NULL)
