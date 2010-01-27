@@ -1163,7 +1163,20 @@ static enum test_return receive_line(char *buffer, size_t size)
 static enum test_return receive_response(const char *msg) {
   char buffer[80];
   execute(receive_line(buffer, sizeof(buffer)));
+  if (strcmp(msg, buffer) != 0) {
+      fprintf(stderr, "[%s]\n", buffer);
+  }
   verify(strcmp(msg, buffer) == 0);
+  return TEST_PASS;
+}
+
+static enum test_return receive_error_response(void)
+{
+  char buffer[80];
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "ERROR\r\n", 7) == 0 ||
+         strncmp(buffer, "CLIENT_ERROR:", 13) == 0 ||
+         strncmp(buffer, "SERVER_ERROR:", 13) == 0);
   return TEST_PASS;
 }
 
@@ -1171,11 +1184,11 @@ static enum test_return test_ascii_quit(void)
 {
   /* Verify that quit handles unknown options */
   execute(send_string("quit foo bar\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   /* quit doesn't support noreply */
   execute(send_string("quit noreply\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   /* Verify that quit works */
   execute(send_string("quit\r\n"));
@@ -1191,11 +1204,11 @@ static enum test_return test_ascii_version(void)
 {
   /* Verify that version command handles unknown options */
   execute(send_string("version foo bar\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   /* version doesn't support noreply */
   execute(send_string("version noreply\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   /* Verify that verify works */
   execute(send_string("version\r\n"));
@@ -1210,16 +1223,16 @@ static enum test_return test_ascii_verbosity(void)
 {
   /* This command does not adhere to the spec! */
   execute(send_string("verbosity foo bar my\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   execute(send_string("verbosity noreply\r\n"));
-  execute(test_ascii_version());
+  execute(receive_error_response());
 
   execute(send_string("verbosity 0 noreply\r\n"));
   execute(test_ascii_version());
 
   execute(send_string("verbosity\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   execute(send_string("verbosity 1\r\n"));
   execute(receive_response("OK\r\n"));
@@ -1492,10 +1505,10 @@ static enum test_return test_ascii_delete_impl(const char *key, bool noreply)
   execute(ascii_set_item(key, "value"));
 
   execute(send_string("delete\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
   /* BUG: the server accepts delete a b */
   execute(send_string("delete a b c d e\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 
   char buffer[1024];
   sprintf(buffer, "delete %s%s\r\n", key, noreply ? " noreply" : "");
@@ -1531,7 +1544,7 @@ static enum test_return test_ascii_get(void)
   execute(ascii_set_item("test_ascii_get", "value"));
 
   execute(send_string("get\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
   execute(ascii_get_item("test_ascii_get", "value", true));
   execute(ascii_get_item("test_ascii_get_notfound", "value", false));
 
@@ -1543,7 +1556,7 @@ static enum test_return test_ascii_gets(void)
   execute(ascii_set_item("test_ascii_gets", "value"));
 
   execute(send_string("gets\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
   unsigned long cas;
   execute(ascii_gets_item("test_ascii_gets", "value", true, &cas));
   execute(ascii_gets_item("test_ascii_gets_notfound", "value", false, &cas));
@@ -1664,7 +1677,7 @@ static enum test_return test_ascii_flush_impl(const char *key, bool noreply)
   /* Verify that the flush_all command handles unknown options */
   /* Bug in the current memcached server! */
   execute(send_string("flush_all foo bar\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
 #endif
 
   execute(ascii_set_item(key, key));
@@ -1765,7 +1778,7 @@ static enum test_return test_ascii_prepend_noreply(void)
 static enum test_return test_ascii_stat(void)
 {
   execute(send_string("stats noreply\r\n"));
-  execute(receive_response("ERROR\r\n"));
+  execute(receive_error_response());
   execute(send_string("stats\r\n"));
   char buffer[1024];
   do {
