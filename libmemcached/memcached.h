@@ -13,15 +13,16 @@
 #ifndef __LIBMEMCACHED_MEMCACHED_H__
 #define __LIBMEMCACHED_MEMCACHED_H__
 
-#include <stdlib.h>
 #include <inttypes.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <sys/types.h>
+
 
 #if !defined(__cplusplus)
 # include <stdbool.h>
 #endif
-
-#include <sys/types.h>
-#include <netinet/in.h>
 
 #include <libmemcached/visibility.h>
 #include <libmemcached/configure.h>

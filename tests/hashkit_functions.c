@@ -467,6 +467,7 @@ static test_return_t hashkit_compare_test(hashkit_st *hashk)
   clone= hashkit_clone(NULL, hashk);
 
   test_true(hashkit_compare(clone, hashk));
+  hashkit_free(clone);
 
   return TEST_SUCCESS;
 }

@@ -45,7 +45,7 @@ struct memcached_server_st {
   uint64_t limit_maxbytes;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];
-  char hostname[MEMCACHED_MAX_HOST_LENGTH];
+  char hostname[NI_MAXHOST];
 };
 
 

@@ -53,7 +53,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   if (hostname == NULL)
     self->hostname[0]= 0;
   else
-    strncpy(self->hostname, hostname, MEMCACHED_MAX_HOST_LENGTH - 1);
+    strncpy(self->hostname, hostname, NI_MAXHOST - 1);
 }
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
@@ -244,7 +244,7 @@ memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 
   for (x= 0, host_index= 0; x < memcached_server_count(root); x++)
   {
-    if (strncmp(list[x].hostname, st_ptr->hostname, MEMCACHED_MAX_HOST_LENGTH) != 0 || list[x].port != st_ptr->port)
+    if (strncmp(list[x].hostname, st_ptr->hostname, NI_MAXHOST) != 0 || list[x].port != st_ptr->port)
     {
       if (host_index != x)
         memcpy(list+host_index, list+x, sizeof(memcached_server_st));
