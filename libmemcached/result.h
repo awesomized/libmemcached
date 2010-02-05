@@ -21,8 +21,8 @@ struct memcached_result_st {
   memcached_string_st value;
   char item_key[MEMCACHED_MAX_KEY];
   struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
+    bool is_allocated MEMCACHED_BITFIELD;
+    bool is_initialized MEMCACHED_BITFIELD;
   } options;
   /* Add result callback function */
 };
