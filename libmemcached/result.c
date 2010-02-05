@@ -32,7 +32,6 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
                                              memcached_result_st *ptr)
 {
   WATCHPOINT_ASSERT(memc);
-  WATCHPOINT_ASSERT(memc->options.is_initialized);
 
   /* Saving malloc calls :) */
   if (ptr)
