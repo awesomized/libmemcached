@@ -16,6 +16,7 @@
 #include <inttypes.h>
 #include <sys/types.h>
 #include <libhashkit/visibility.h>
+#include <libhashkit/configure.h>
 #include <libhashkit/types.h>
 #include <libhashkit/algorithm.h>
 #include <libhashkit/behavior.h>
@@ -57,11 +58,11 @@ struct hashkit_st
   } base_hash, distribution_hash;
 
   struct {
-    bool is_base_same_distributed:1;
+    bool is_base_same_distributed HASHKIT_BITFIELD;
   } flags;
 
   struct {
-    bool is_allocated:1;
+    bool is_allocated HASHKIT_BITFIELD;
   } options;
 };
 
@@ -81,7 +82,7 @@ public:
   }
 
   Hashkit& operator=(const Hashkit& source)
-  { 
+  {
     hashkit_free(this);
     hashkit_clone(this, &source);
 

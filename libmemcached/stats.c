@@ -151,7 +151,8 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
              strcmp("listen_disabled_num", key) == 0 ||
              strcmp("conn_yields", key) == 0 ||
              strcmp("auth_cmds", key) == 0 ||
-             strcmp("auth_errors", key) == 0))
+             strcmp("auth_errors", key) == 0 ||
+             strcmp("reclaimed", key) == 0))
   {
     WATCHPOINT_STRING(key);
     return MEMCACHED_UNKNOWN_STAT_KEY;

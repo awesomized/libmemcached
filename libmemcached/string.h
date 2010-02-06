@@ -17,7 +17,7 @@
   about them.
 
   1) is_initialized is always valid.
-  2) A string once intialized will always be, until free where we 
+  2) A string once intialized will always be, until free where we
      unset this flag.
   3) A string always has a root.
 */
@@ -28,8 +28,8 @@ struct memcached_string_st {
   size_t current_size;
   const memcached_st *root;
   struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
+    bool is_allocated MEMCACHED_BITFIELD;
+    bool is_initialized MEMCACHED_BITFIELD;
   } options;
 };
 

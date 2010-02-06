@@ -54,6 +54,7 @@ WITH_MEMCACHED
 ENABLE_DEPRECATED
 PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
+DETECT_BITFIELD
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
@@ -67,6 +68,7 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
 AC_CONFIG_FILES([
   Makefile
   docs/Makefile
+  libhashkit/configure.h
   libmemcached/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
