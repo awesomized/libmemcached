@@ -15,6 +15,33 @@
 /* Some personal debugging functions */
 #if defined(DEBUG)
 
+#if TARGET_OS_LINUX
+static inline void __stack_dump(void)
+{
+  void *array[10];
+  int size;
+  char **strings;
+
+  size= backtrace(array, 10);
+  strings= backtrace_symbols(array, size);
+
+  fprintf(stderr, "Found %d stack frames.\n", size);
+
+  for (int x= 0; x < size; x++)
+    fprintf(stderr, "%s\n", strings[x]);
+
+  free (strings);
+
+  fflush(stderr);
+}
+
+#else
+
+static inline void __stack_dump(void)
+{ }
+
+#endif // __stack_dump()
+
 #include <assert.h>
 
 #define WATCHPOINT do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout); } while (0)
@@ -24,9 +51,10 @@
 #define WATCHPOINT_STRING_LENGTH(A,B) do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %.*s\n", __FILE__, __LINE__,__func__,(int)B,A);fflush(stdout); } while (0)
 #define WATCHPOINT_NUMBER(A) do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %zu\n", __FILE__, __LINE__,__func__,(size_t)(A));fflush(stdout); } while (0)
 #define WATCHPOINT_ERRNO(A) do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));fflush(stdout); } while (0)
-#define WATCHPOINT_ASSERT_PRINT(A,B,C) do { if(!(A)){fprintf(stderr, "\nWATCHPOINT ASSERT %s:%d (%s) ", __FILE__, __LINE__,__func__);fprintf(stderr, (B),(C));fprintf(stderr,"\n");fflush(stdout);}assert((A)); } while (0)
-#define WATCHPOINT_ASSERT(A) assert((A))
-#define WATCHPOINT_ASSERT_INITIALIZED(A) assert(memcached_is_initialized((A)))
+#define WATCHPOINT_ASSERT_PRINT(A,B,C) do { if(!(A)){fprintf(stderr, "\nWATCHPOINT ASSERT %s:%d (%s) ", __FILE__, __LINE__,__func__);fprintf(stderr, (B),(C));fprintf(stderr,"\n");fflush(stdout); __stack_dump(); } assert((A)); } while (0)
+#define WATCHPOINT_ASSERT(A) do { if (! (A)) {__stack_dump();} assert((A)); } while (0)
+#define WATCHPOINT_ASSERT_INITIALIZED(A) do { if (! (A)) { __stack_dump(); } assert(memcached_is_initialized((A))); } while (0);
+#define WATCHPOINT_SET(A) do { A; } while(0);
 
 #else
 
@@ -39,6 +67,7 @@
 #define WATCHPOINT_ASSERT_PRINT(A,B,C)
 #define WATCHPOINT_ASSERT(A)
 #define WATCHPOINT_ASSERT_INITIALIZED(A)
+#define WATCHPOINT_SET(A)
 
 #endif /* DEBUG */
 

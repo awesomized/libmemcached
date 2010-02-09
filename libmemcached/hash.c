@@ -28,7 +28,6 @@ uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
     return 0;
 
   hash= hashkit_digest(&ptr->hashkit, key, key_length);
-  WATCHPOINT_ASSERT(hash);
 
   return hash;
 }
@@ -102,8 +101,6 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
   {
     hash= generate_hash(ptr, key, key_length);
   }
-
-  WATCHPOINT_ASSERT(hash);
 
   if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS) && ptr->next_distribution_rebuild)
   {

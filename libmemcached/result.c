@@ -53,6 +53,7 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
   _result_init(ptr, memc);
 
   ptr->root= memc;
+  WATCHPOINT_SET(ptr->value.options.is_initialized= false);
   memcached_string_create(memc, &ptr->value, 0);
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->value);
   WATCHPOINT_ASSERT(ptr->value.string == NULL);
