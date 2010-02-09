@@ -9,11 +9,11 @@
   will force data to be completed.
 */
 
-void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
+void memcached_quit_server(memcached_server_st *ptr, bool io_death)
 {
   if (ptr->fd != -1)
   {
-    if (io_death == 0 && ptr->type != MEMCACHED_CONNECTION_UDP)
+    if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP)
     {
       memcached_return_t rc;
       char buffer[MEMCACHED_MAX_BUFFER];
@@ -61,7 +61,7 @@ void memcached_quit_server(memcached_server_st *ptr, uint8_t io_death)
   ptr->read_ptr= ptr->read_buffer;
   memcached_server_response_reset(ptr);
 
-  if(io_death)
+  if (io_death)
   {
     ptr->server_failure_counter++;
   }

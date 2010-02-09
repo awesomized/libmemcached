@@ -102,8 +102,9 @@ extern "C" {
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
+
 LIBMEMCACHED_LOCAL
-void memcached_quit_server(memcached_server_instance_st *ptr, uint8_t io_death);
+void memcached_quit_server(memcached_server_instance_st *ptr, bool io_death);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t run_distribution(memcached_st *ptr);
@@ -134,7 +135,6 @@ LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys);
-
 
 LIBMEMCACHED_LOCAL
 uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
