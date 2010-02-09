@@ -53,15 +53,30 @@ static memcached_return_t io_wait(memcached_server_instance_st *ptr,
   if (ptr->root->flags.no_block == false)
     timeout= -1;
 
-  error= poll(&fds, 1, timeout);
+  while (1)
+  {
+    error= poll(&fds, 1, timeout);
 
-  if (error == 1)
-    return MEMCACHED_SUCCESS;
-  else if (error == 0)
-    return MEMCACHED_TIMEOUT;
+    switch (error)
+    {
+    case 1:
+      return MEMCACHED_SUCCESS;
+    case 0:
+      return MEMCACHED_TIMEOUT;
+    case ERESTART:
+    case EINTR:
+      continue;
+    default:
+      ptr->cached_errno= error;
+      memcached_quit_server(ptr, 1);
+
+      return MEMCACHED_FAILURE;
+    }
+  }
 
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
+  ptr->cached_errno= error;
   memcached_quit_server(ptr, 1);
 
   return MEMCACHED_FAILURE;
@@ -157,6 +172,7 @@ static bool process_input_buffer(memcached_server_instance_st *ptr)
 
 static inline void memcached_io_cork_push(memcached_server_st *ptr)
 {
+  (void)ptr;
 #ifdef CORK
   if (ptr->root->flags.cork == false || ptr->state.is_corked)
     return;
@@ -168,13 +184,12 @@ static inline void memcached_io_cork_push(memcached_server_st *ptr)
     ptr->state.is_corked= true;
 
   WATCHPOINT_ASSERT(ptr->state.is_corked == true);
-#else
-  (void)ptr;
 #endif
 }
 
 static inline void memcached_io_cork_pop(memcached_server_st *ptr)
 {
+  (void)ptr;
 #ifdef CORK
   if (ptr->root->flags.cork == false || ptr->state.is_corked == false)
     return;
@@ -186,12 +201,10 @@ static inline void memcached_io_cork_pop(memcached_server_st *ptr)
     ptr->state.is_corked= false;
 
   WATCHPOINT_ASSERT(ptr->state.is_corked == false);
-#else
-  (void)ptr;
 #endif
 }
 
-#ifdef UNUSED
+#if 0 // Dead code, this should be removed.
 void memcached_io_preread(memcached_st *ptr)
 {
   unsigned int x;
@@ -244,6 +257,7 @@ memcached_return_t memcached_io_read(memcached_server_instance_st *ptr,
           {
           case EAGAIN:
           case EINTR:
+          case ERESTART:
             if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
               continue;
             /* fall through */
