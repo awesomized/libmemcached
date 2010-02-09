@@ -112,7 +112,7 @@ static void ms_options_parse(int argc, char *argv[]);
 static int ms_check_para(void);
 static void ms_statistic_init(void);
 static void ms_stats_init(void);
-static void ms_print_statistics(int time);
+static void ms_print_statistics(int in_time);
 static void ms_print_memslap_stats(struct timeval *start_time,
                                    struct timeval *end_time);
 static void ms_monitor_slap_mode(void);

@@ -797,7 +797,11 @@ static int ms_network_connect(ms_conn_t *c,
    * that otherwise mess things up.
    */
   memset(&hints, 0, sizeof(hints));
+#ifdef AI_ADDRCONFIG
   hints.ai_flags= AI_PASSIVE | AI_ADDRCONFIG;
+#else
++  hints.ai_flags= AI_PASSIVE;
+#endif /* AI_ADDRCONFIG */
   if (is_udp)
   {
     hints.ai_protocol= IPPROTO_UDP;

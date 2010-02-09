@@ -342,7 +342,7 @@ static enum test_return recv_packet(response *rsp)
  * @param dta the data to store with the key
  * @param dtalen the length of the data to store with the key
  * @param flags the flags to store along with the key
- * @param exp the expiry time for the key
+ * @param exptime the expiry time for the key
  */
 static void storage_command(command *cmd,
                             uint8_t cc,
@@ -351,7 +351,7 @@ static void storage_command(command *cmd,
                             const void* dta,
                             size_t dtalen,
                             uint32_t flags,
-                            uint32_t exp)
+                            uint32_t exptime)
 {
   /* all of the storage commands use the same command layout */
   protocol_binary_request_set *request= &cmd->set;
@@ -364,7 +364,7 @@ static void storage_command(command *cmd,
   request->message.header.request.bodylen= (uint32_t)(keylen + 8 + dtalen);
   request->message.header.request.opaque= 0xdeadbeef;
   request->message.body.flags= flags;
-  request->message.body.expiration= exp;
+  request->message.body.expiration= exptime;
 
   off_t key_offset= sizeof (protocol_binary_request_no_extras) + 8;
   memcpy(cmd->bytes + key_offset, key, keylen);
@@ -435,7 +435,7 @@ static void flush_command(command *cmd,
  * @param keylen the number of bytes in the key
  * @param delta the number to add/subtract
  * @param initial the initial value if the key doesn't exist
- * @param exp when the key should expire if it isn't set
+ * @param exptime when the key should expire if it isn't set
  */
 static void arithmetic_command(command *cmd,
                                uint8_t cc,
@@ -443,7 +443,7 @@ static void arithmetic_command(command *cmd,
                                size_t keylen,
                                uint64_t delta,
                                uint64_t initial,
-                               uint32_t exp)
+                               uint32_t exptime)
 {
   memset(cmd, 0, sizeof (cmd->incr));
   cmd->incr.message.header.request.magic= PROTOCOL_BINARY_REQ;
@@ -454,7 +454,7 @@ static void arithmetic_command(command *cmd,
   cmd->incr.message.header.request.opaque= 0xdeadbeef;
   cmd->incr.message.body.delta= htonll(delta);
   cmd->incr.message.body.initial= htonll(initial);
-  cmd->incr.message.body.expiration= htonl(exp);
+  cmd->incr.message.body.expiration= htonl(exptime);
 
   off_t key_offset= sizeof (protocol_binary_request_no_extras) + 20;
   memcpy(cmd->bytes + key_offset, key, keylen);

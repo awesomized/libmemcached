@@ -14,6 +14,11 @@
 
 #include "config.h"
 
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+
 /* Define this here, which will turn on the visibilty controls while we're
  * building libmemcached.
  */
