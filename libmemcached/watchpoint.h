@@ -15,7 +15,7 @@
 /* Some personal debugging functions */
 #if defined(DEBUG)
 
-#if TARGET_OS_LINUX
+#ifdef TARGET_OS_LINUX
 static inline void __stack_dump(void)
 {
   void *array[10];
