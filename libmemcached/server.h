@@ -18,6 +18,7 @@ struct memcached_server_st {
     bool is_allocated MEMCACHED_BITFIELD;
     bool is_initialized MEMCACHED_BITFIELD;
     bool sockaddr_inited MEMCACHED_BITFIELD;
+    bool is_shutting_down MEMCACHED_BITFIELD;
   } options;
   uint32_t number_of_hosts;
   uint32_t cursor_active;

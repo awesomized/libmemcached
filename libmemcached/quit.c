@@ -13,10 +13,12 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
 {
   if (ptr->fd != -1)
   {
-    if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP)
+    if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP && ptr->options.is_shutting_down == false)
     {
       memcached_return_t rc;
       char buffer[MEMCACHED_MAX_BUFFER];
+
+      ptr->options.is_shutting_down= true;
 
       if (ptr->root->flags.binary_protocol)
       {
@@ -59,6 +61,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   ptr->write_buffer_offset= (size_t) ((ptr->type == MEMCACHED_CONNECTION_UDP) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
   ptr->read_buffer_length= 0;
   ptr->read_ptr= ptr->read_buffer;
+  ptr->options.is_shutting_down= false;
   memcached_server_response_reset(ptr);
 
   if (io_death)
@@ -81,7 +84,7 @@ void memcached_quit(memcached_st *ptr)
       memcached_server_instance_st *instance=
         memcached_server_instance_fetch(ptr, x);
 
-      memcached_quit_server(instance, 0);
+      memcached_quit_server(instance, false);
     }
   }
 }

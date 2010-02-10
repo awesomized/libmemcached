@@ -19,6 +19,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
                                 uint32_t weight, memcached_connection_t type)
 {
   self->options.sockaddr_inited= false;
+  self->options.is_shutting_down= false;
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
@@ -100,7 +101,7 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc, memc
 
 void memcached_server_free(memcached_server_st *self)
 {
-  memcached_quit_server(self, 0);
+  memcached_quit_server(self, false);
 
   if (self->cached_server_error)
     free(self->cached_server_error);

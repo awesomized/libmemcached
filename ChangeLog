@@ -9,6 +9,7 @@
 * Many fixes to memslap.
 * Updates for memcapable.
 * Compile fixes for OpenBSD.
+* Fix for possible recursive decent on IO failure.
 
 0.37 Mon Jan 11 16:29:57 PST 2010
 * Fixed build for libhashkit.

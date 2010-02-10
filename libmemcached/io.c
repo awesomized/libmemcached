@@ -64,14 +64,14 @@ static memcached_return_t io_wait(memcached_server_instance_st *ptr,
       return MEMCACHED_SUCCESS;
     case 0:
       return MEMCACHED_TIMEOUT;
-#if TARGET_OS_LINUX
+#ifdef TARGET_OS_LINUX
     case ERESTART:
 #endif
     case EINTR:
       continue;
     default:
       ptr->cached_errno= error;
-      memcached_quit_server(ptr, 1);
+      memcached_quit_server(ptr, true);
 
       return MEMCACHED_FAILURE;
     }
@@ -80,7 +80,7 @@ static memcached_return_t io_wait(memcached_server_instance_st *ptr,
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
   ptr->cached_errno= error;
-  memcached_quit_server(ptr, 1);
+  memcached_quit_server(ptr, true);
 
   return MEMCACHED_FAILURE;
 }
@@ -260,7 +260,7 @@ memcached_return_t memcached_io_read(memcached_server_instance_st *ptr,
           {
           case EAGAIN:
           case EINTR:
-#if TARGET_OS_LINUX
+#ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
             if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
@@ -269,7 +269,7 @@ memcached_return_t memcached_io_read(memcached_server_instance_st *ptr,
 
           default:
             {
-              memcached_quit_server(ptr, 1);
+              memcached_quit_server(ptr, true);
               *nread= -1;
               return rc;
             }
@@ -286,7 +286,7 @@ memcached_return_t memcached_io_read(memcached_server_instance_st *ptr,
             for blocking I/O we do not return 0 and for non-blocking case
             it will return EGAIN if data is not immediatly available.
           */
-          memcached_quit_server(ptr, 1);
+          memcached_quit_server(ptr, true);
           *nread= -1;
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
@@ -569,11 +569,11 @@ static ssize_t io_flush(memcached_server_instance_st *ptr,
           if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_TIMEOUT)
             continue;
 
-          memcached_quit_server(ptr, 1);
+          memcached_quit_server(ptr, true);
           return -1;
         }
       default:
-        memcached_quit_server(ptr, 1);
+        memcached_quit_server(ptr, true);
         *error= MEMCACHED_ERRNO;
         return -1;
       }
@@ -582,7 +582,7 @@ static ssize_t io_flush(memcached_server_instance_st *ptr,
     if (ptr->type == MEMCACHED_CONNECTION_UDP &&
         (size_t)sent_length != write_length)
     {
-      memcached_quit_server(ptr, 1);
+      memcached_quit_server(ptr, true);
       return -1;
     }
 
@@ -612,7 +612,7 @@ static ssize_t io_flush(memcached_server_instance_st *ptr,
 */
 void memcached_io_reset(memcached_server_instance_st *ptr)
 {
-  memcached_quit_server(ptr, 1);
+  memcached_quit_server(ptr, true);
 }
 
 /**
