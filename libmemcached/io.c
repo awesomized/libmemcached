@@ -53,7 +53,8 @@ static memcached_return_t io_wait(memcached_server_instance_st *ptr,
   if (ptr->root->flags.no_block == false)
     timeout= -1;
 
-  while (1)
+  size_t loop_max= 5;
+  while (--loop_max)
   {
     error= poll(&fds, 1, timeout);
 
@@ -63,7 +64,9 @@ static memcached_return_t io_wait(memcached_server_instance_st *ptr,
       return MEMCACHED_SUCCESS;
     case 0:
       return MEMCACHED_TIMEOUT;
+#if TARGET_OS_LINUX
     case ERESTART:
+#endif
     case EINTR:
       continue;
     default:
@@ -257,7 +260,9 @@ memcached_return_t memcached_io_read(memcached_server_instance_st *ptr,
           {
           case EAGAIN:
           case EINTR:
+#if TARGET_OS_LINUX
           case ERESTART:
+#endif
             if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
               continue;
             /* fall through */
