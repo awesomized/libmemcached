@@ -59,25 +59,17 @@ memcached_return_t memcached_string_reset(memcached_string_st *string);
 LIBMEMCACHED_LOCAL
 void memcached_string_free(memcached_string_st *string);
 
-static inline size_t memcached_string_length(const memcached_string_st *self)
-{
-  return (size_t)(self->end - self->string);
-}
+LIBMEMCACHED_LOCAL
+size_t memcached_string_length(const memcached_string_st *self);
 
-static inline size_t memcached_string_size(const memcached_string_st *self)
-{
-  return self->current_size;
-}
+LIBMEMCACHED_LOCAL
+size_t memcached_string_size(const memcached_string_st *self);
 
-static inline const char *memcached_string_value(const memcached_string_st *self)
-{
-  return self->string;
-}
+LIBMEMCACHED_LOCAL
+const char *memcached_string_value(const memcached_string_st *self);
 
-static inline char *memcached_string_value_mutable(const memcached_string_st *self)
-{
-  return self->string;
-}
+LIBMEMCACHED_LOCAL
+char *memcached_string_value_mutable(const memcached_string_st *self);
 
 #define memcached_string_set_length(A, B) (A)->end= (A)->string + B
 

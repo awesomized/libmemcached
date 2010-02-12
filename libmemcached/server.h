@@ -145,17 +145,11 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
 LIBMEMCACHED_API
 unsigned int memcached_server_list_count(memcached_server_st *ptr);
 
-// Local Only Inline
-static inline uint32_t memcached_servers_count(memcached_server_st *servers)
-{
-  return servers->number_of_hosts;
-}
+LIBMEMCACHED_API
+uint32_t memcached_servers_count(memcached_server_st *servers);
 
-// Local Only Inline
-static inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
-{
-  return servers->number_of_hosts= count;
-}
+LIBMEMCACHED_LOCAL
+uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count);
 
 
 #define memcached_server_count(A) (A)->number_of_hosts

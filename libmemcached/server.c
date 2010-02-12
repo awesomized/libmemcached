@@ -263,3 +263,15 @@ memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 
   return MEMCACHED_SUCCESS;
 }
+
+
+inline uint32_t memcached_servers_count(memcached_server_st *servers)
+{
+  return servers->number_of_hosts;
+}
+
+
+inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
+{
+  return servers->number_of_hosts= count;
+}

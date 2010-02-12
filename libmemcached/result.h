@@ -42,50 +42,32 @@ LIBMEMCACHED_API
 memcached_result_st *memcached_result_create(const memcached_st *ptr,
                                              memcached_result_st *result);
 
-static inline const char *memcached_result_key_value(const memcached_result_st *self)
-{
-  return self->key_length ? self->item_key : NULL;
-}
+LIBMEMCACHED_API
+const char *memcached_result_key_value(const memcached_result_st *self);
 
-static inline size_t memcached_result_key_length(const memcached_result_st *self)
-{
-  return self->key_length;
-}
+LIBMEMCACHED_API
+size_t memcached_result_key_length(const memcached_result_st *self);
 
-static inline const char *memcached_result_value(const memcached_result_st *self)
-{
-  const memcached_string_st *sptr= &self->value;
-  return memcached_string_value(sptr);
-}
+LIBMEMCACHED_API
+const char *memcached_result_value(const memcached_result_st *self);
 
-static inline size_t memcached_result_length(const memcached_result_st *self)
-{
-  const memcached_string_st *sptr= &self->value;
-  return memcached_string_length(sptr);
-}
+LIBMEMCACHED_API
+size_t memcached_result_length(const memcached_result_st *self);
 
-static inline uint32_t memcached_result_flags(const memcached_result_st *self)
-{
-  return self->item_flags;
-}
+LIBMEMCACHED_API
+uint32_t memcached_result_flags(const memcached_result_st *self);
 
-static inline uint64_t memcached_result_cas(const memcached_result_st *self)
-{
-  return self->item_cas;
-}
+LIBMEMCACHED_API
+uint64_t memcached_result_cas(const memcached_result_st *self);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value, size_t length);
 
-static inline void memcached_result_set_flags(memcached_result_st *self, uint32_t flags)
-{
-  self->item_flags= flags;
-}
+LIBMEMCACHED_API
+void memcached_result_set_flags(memcached_result_st *self, uint32_t flags);
 
-static inline void memcached_result_set_expiration(memcached_result_st *self, time_t expiration)
-{
-  self->item_expiration= expiration;
-}
+LIBMEMCACHED_API
+void memcached_result_set_expiration(memcached_result_st *self, time_t expiration);
 
 #ifdef __cplusplus
 } // extern "C"
