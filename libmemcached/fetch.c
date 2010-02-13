@@ -61,7 +61,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     if ((result= memcached_result_create(ptr, NULL)) == NULL)
       return NULL;
 
-  while ((server = memcached_io_get_readable_server(ptr)) != NULL) 
+  while ((server= memcached_io_get_readable_server(ptr)) != NULL) 
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     *error= memcached_response(server, buffer, sizeof(buffer), result);

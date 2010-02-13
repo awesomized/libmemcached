@@ -229,7 +229,7 @@ char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
 
 static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
                                              char *args,
-                                             memcached_server_instance_st *instance)
+                                             memcached_server_write_instance_st instance)
 {
   memcached_return_t rc;
 
@@ -299,7 +299,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 
 static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             char *args,
-                                            memcached_server_instance_st *instance)
+                                            memcached_server_write_instance_st instance)
 {
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -379,7 +379,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t temp_return;
-    memcached_server_instance_st *instance;
+    memcached_server_write_instance_st instance;
     memcached_stat_st *stat_instance;
 
     stat_instance= stats + x;
@@ -411,7 +411,7 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   memcached_return_t rc;
   memcached_st memc;
   memcached_st *memc_ptr;
-  memcached_server_instance_st *instance;
+  memcached_server_write_instance_st instance;
 
   memc_ptr= memcached_create(&memc);
   WATCHPOINT_ASSERT(memc_ptr);

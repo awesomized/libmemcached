@@ -18,7 +18,7 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
                                                               memcached_return_t *error)
 {
   unsigned int count;
-  memcached_server_instance_st *new_host_list;
+  memcached_server_st *new_host_list;
 
   if (hostname == NULL || error == NULL)
     return NULL;
@@ -30,10 +30,10 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
   count= 1;
   if (ptr != NULL)
   {
-    count+= memcached_servers_count(ptr);
+    count+= memcached_server_list_count(ptr);
   }
 
-  new_host_list= (memcached_server_instance_st *)realloc(ptr, sizeof(memcached_server_instance_st) * count);
+  new_host_list= (memcached_server_write_instance_st)realloc(ptr, sizeof(memcached_server_st) * count);
   if (!new_host_list)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;

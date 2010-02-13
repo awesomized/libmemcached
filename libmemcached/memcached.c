@@ -139,7 +139,7 @@ void server_list_free(memcached_st *ptr, memcached_server_st *servers)
   if (servers == NULL)
     return;
 
-  for (x= 0; x < memcached_servers_count(servers); x++)
+  for (x= 0; x < memcached_server_list_count(servers); x++)
   {
     if (servers[x].address_info)
     {
@@ -252,8 +252,8 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->io_key_prefetch= source->io_key_prefetch;
   new_clone->number_of_replicas= source->number_of_replicas;
 
-  if (memcached_server_list(source))
-    rc= memcached_server_push(new_clone, memcached_server_list(source));
+  if (memcached_server_count(source))
+    rc= memcached_push(new_clone, source);
 
   if (rc != MEMCACHED_SUCCESS)
   {
@@ -295,4 +295,19 @@ void *memcached_set_user_data(memcached_st *ptr, void *data)
   ptr->user_data= data;
 
   return ret;
+}
+
+memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source)
+{
+  return memcached_server_push(destination, source->servers);
+}
+
+inline memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
+{
+  return &ptr->servers[server_key];
+}
+
+inline memcached_server_instance_st *memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key)
+{
+  return &ptr->servers[server_key];
 }

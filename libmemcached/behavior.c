@@ -170,7 +170,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       break;
   case MEMCACHED_BEHAVIOR_CORK:
       {
-        memcached_server_instance_st *instance;
+        memcached_server_write_instance_st instance;
         bool action= set_flag(data);
 
         if (action == false)
@@ -230,6 +230,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
+inline bool _is_auto_eject_host(const memcached_st *ptr)
+{
+  return ptr->flags.auto_eject_hosts;
+}
+
 uint64_t memcached_behavior_get(memcached_st *ptr,
                                 const memcached_behavior_t flag)
 {
@@ -287,7 +292,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     {
       int sock_size= 0;
       socklen_t sock_length= sizeof(int);
-      memcached_server_instance_st *instance;
+      memcached_server_write_instance_st instance;
 
       if (ptr->send_size != -1) // If value is -1 then we are using the default
         return (uint64_t) ptr->send_size;
@@ -312,7 +317,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     {
       int sock_size= 0;
       socklen_t sock_length= sizeof(int);
-      memcached_server_instance_st *instance;
+      memcached_server_write_instance_st instance;
 
       if (ptr->recv_size != -1) // If value is -1 then we are using the default
         return (uint64_t) ptr->recv_size;

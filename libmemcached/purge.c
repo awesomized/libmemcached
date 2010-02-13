@@ -1,6 +1,6 @@
 #include "common.h"
 
-memcached_return_t memcached_purge(memcached_server_instance_st *ptr)
+memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
 {
   uint32_t x;
   memcached_return_t ret= MEMCACHED_SUCCESS;

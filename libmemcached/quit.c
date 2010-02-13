@@ -81,7 +81,7 @@ void memcached_quit(memcached_st *ptr)
   {
     for (x= 0; x < memcached_server_count(ptr); x++)
     {
-      memcached_server_instance_st *instance=
+      memcached_server_write_instance_st instance=
         memcached_server_instance_fetch(ptr, x);
 
       memcached_quit_server(instance, false);

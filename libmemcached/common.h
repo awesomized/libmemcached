@@ -54,7 +54,10 @@
 #include "libmemcached/memcached.h"
 #include "libmemcached/watchpoint.h"
 
-typedef struct memcached_server_st memcached_server_instance_st;
+typedef struct memcached_server_st * memcached_server_write_instance_st;
+
+LIBMEMCACHED_LOCAL
+memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key);
 
 /* These are private not to be installed headers */
 #include "libmemcached/do.h"
@@ -101,10 +104,7 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_connect(memcached_server_instance_st *ptr);
-
-LIBMEMCACHED_LOCAL
-void memcached_quit_server(memcached_server_instance_st *ptr, bool io_death);
+memcached_return_t memcached_connect(memcached_server_write_instance_st ptr);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t run_distribution(memcached_st *ptr);
@@ -129,18 +129,21 @@ memcached_return_t value_fetch(memcached_server_instance_st *ptr,
                                char *buffer,
                                memcached_result_st *result);
 LIBMEMCACHED_LOCAL
-void server_list_free(memcached_st *ptr, memcached_server_instance_st *servers);
-
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys);
 
 LIBMEMCACHED_LOCAL
-uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length);
+memcached_return_t memcached_purge(memcached_server_write_instance_st ptr);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_purge(memcached_server_instance_st *ptr);
+memcached_server_st *memcached_server_create_with(const memcached_st *memc,
+                                                  memcached_server_write_instance_st host,
+                                                  const char *hostname,
+                                                  in_port_t port,
+                                                  uint32_t weight,
+                                                  memcached_connection_t type);
+
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
 {

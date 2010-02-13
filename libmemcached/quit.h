@@ -19,6 +19,9 @@ extern "C" {
 LIBMEMCACHED_API
 void memcached_quit(memcached_st *ptr);
 
+LIBMEMCACHED_LOCAL
+void memcached_quit_server(memcached_server_st *ptr, bool io_death);
+
 #ifdef __cplusplus
 }
 #endif

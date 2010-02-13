@@ -16,7 +16,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     rrc= memcached_do(instance, buffer, send_length, true);

@@ -20,7 +20,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
 
   for (server_key= 0; server_key < memcached_server_count(ptr); server_key++)
   {
-    memcached_server_instance_st *instance;
+    memcached_server_write_instance_st instance;
     instance= memcached_server_instance_fetch(ptr, server_key);
 
     /* 256 I BELIEVE is the upper limit of slabs */

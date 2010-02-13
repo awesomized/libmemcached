@@ -1,6 +1,8 @@
 0.39
 * Modify inline calls for compatibility.
 
+* The undocumented call memcached_server_by_key() now returns const.
+
 0.38 Wed Feb 10 09:40:33 PST 2010
 * C++ interface for libhashkit.
 * Modified memcached_set_memory_allocators() so that it requires a context pointer.

@@ -17,22 +17,12 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
   return libhashkit_digest(key, key_length, (hashkit_hash_algorithm_t)hash_algorithm);
 }
 
-uint32_t generate_hash(memcached_st *ptr, const char *key, size_t key_length)
+static inline uint32_t generate_hash(const memcached_st *ptr, const char *key, size_t key_length)
 {
-  uint32_t hash= 1; /* Just here to remove compile warning */
-
-
-  WATCHPOINT_ASSERT(memcached_server_count(ptr));
-
-  if (memcached_server_count(ptr) == 1)
-    return 0;
-
-  hash= hashkit_digest(&ptr->hashkit, key, key_length);
-
-  return hash;
+  return hashkit_digest(&ptr->hashkit, key, key_length);
 }
 
-static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
+static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
 {
   switch (ptr->distribution)
   {
@@ -73,13 +63,10 @@ static uint32_t dispatch_host(memcached_st *ptr, uint32_t hash)
 }
 
 /*
-  One day make this public, and have it return the actual memcached_server_st
-  to the calling application.
+  One version is public and will not modify the distribution hash, the other will.
 */
-uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_length)
+static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const char *key, size_t key_length)
 {
-  uint32_t hash= 1; /* Just here to remove compile warning */
-
   WATCHPOINT_ASSERT(memcached_server_count(ptr));
 
   if (memcached_server_count(ptr) == 1)
@@ -95,14 +82,18 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
 
     strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
     strncpy(temp + ptr->prefix_key_length, key, key_length);
-    hash= generate_hash(ptr, temp, temp_length);
+
+    return generate_hash(ptr, temp, temp_length);
   }
   else
   {
-    hash= generate_hash(ptr, key, key_length);
+    return generate_hash(ptr, key, key_length);
   }
+}
 
-  if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS) && ptr->next_distribution_rebuild)
+static inline void _regen_for_auto_eject(memcached_st *ptr)
+{
+  if (_is_auto_eject_host(ptr) && ptr->next_distribution_rebuild)
   {
     struct timeval now;
 
@@ -112,8 +103,25 @@ uint32_t memcached_generate_hash(memcached_st *ptr, const char *key, size_t key_
       run_distribution(ptr);
     }
   }
+}
+
+void memcached_autoeject(memcached_st *ptr)
+{
+  _regen_for_auto_eject(ptr);
+}
+
+uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const char *key, size_t key_length)
+{
+  uint32_t hash= _generate_hash_wrapper(ptr, key, key_length);
+
+  _regen_for_auto_eject(ptr);
 
   return dispatch_host(ptr, hash);
+}
+
+uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length)
+{
+  return dispatch_host(ptr, _generate_hash_wrapper(ptr, key, key_length));
 }
 
 hashkit_st *memcached_get_hashkit(memcached_st *ptr)

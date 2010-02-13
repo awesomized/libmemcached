@@ -24,7 +24,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
-  memcached_server_instance_st *instance;
+  memcached_server_write_instance_st instance;
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
@@ -36,7 +36,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   to_write= (ptr->flags.buffer_requests) ? false : true;
@@ -148,7 +148,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
                                                size_t key_length,
                                                bool flush)
 {
-  memcached_server_instance_st *instance;
+  memcached_server_write_instance_st instance;
   protocol_binary_request_delete request= {.bytes= {0}};
 
   instance= memcached_server_instance_fetch(ptr, server_key);
@@ -188,7 +188,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
     for (uint32_t x= 0; x < ptr->number_of_replicas; ++x)
     {
-      memcached_server_instance_st *replica;
+      memcached_server_write_instance_st replica;
 
       ++server_key;
       if (server_key == memcached_server_count(ptr))

@@ -33,7 +33,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     rrc= memcached_do(instance, command, send_length, true);
@@ -80,7 +80,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   {
     memcached_return_t rrc;
 
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), true);
@@ -94,7 +94,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
 
   for (x= 0; x < memcached_server_count(ptr); x++) 
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (memcached_server_response_count(instance) > 0) 

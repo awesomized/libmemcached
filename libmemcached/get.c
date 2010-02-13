@@ -169,7 +169,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   {
     if (ptr->flags.verify_key && (memcached_key_test((const char * const *)&master_key, &master_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
       return MEMCACHED_BAD_KEY_PROVIDED;
-    master_server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+    master_server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
     is_master_key_set= true;
   }
 
@@ -181,7 +181,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (memcached_server_response_count(instance))
@@ -212,7 +212,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (x= 0; x < number_of_keys; x++)
   {
-    memcached_server_instance_st *instance;
+    memcached_server_write_instance_st instance;
     uint32_t server_key;
 
     if (is_master_key_set)
@@ -221,7 +221,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     }
     else
     {
-      server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
+      server_key= memcached_generate_hash_with_redistribution(ptr, keys[x], key_length[x]);
     }
 
     instance= memcached_server_instance_fetch(ptr, server_key);
@@ -274,7 +274,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (memcached_server_response_count(instance))
@@ -362,7 +362,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
   for (x= 0; x < number_of_keys; x++)
   {
     uint32_t server_key;
-    memcached_server_instance_st *instance;
+    memcached_server_write_instance_st instance;
 
     if (is_master_key_set)
     {
@@ -370,7 +370,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     }
     else
     {
-      server_key= memcached_generate_hash(ptr, keys[x], key_length[x]);
+      server_key= memcached_generate_hash_with_redistribution(ptr, keys[x], key_length[x]);
     }
 
     instance= memcached_server_instance_fetch(ptr, server_key);
@@ -436,7 +436,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     for (x= 0; x < memcached_server_count(ptr); x++)
     {
-      memcached_server_instance_st *instance=
+      memcached_server_write_instance_st instance=
         memcached_server_instance_fetch(ptr, x);
 
       if (memcached_server_response_count(instance))
@@ -484,7 +484,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
     for (x= 0; x < number_of_keys; ++x)
     {
-      memcached_server_instance_st *instance;
+      memcached_server_write_instance_st instance;
 
       if (hash[x] == memcached_server_count(ptr))
         continue; /* Already successfully sent */
@@ -598,7 +598,7 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
     {
       for (size_t x= 0; x < number_of_keys; x++)
       {
-        hash[x]= memcached_generate_hash(ptr, keys[x], key_length[x]);
+        hash[x]= memcached_generate_hash_with_redistribution(ptr, keys[x], key_length[x]);
       }
     }
 

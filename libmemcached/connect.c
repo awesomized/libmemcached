@@ -313,7 +313,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 }
 
 
-memcached_return_t memcached_connect(memcached_server_st *ptr)
+memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
 {
   memcached_return_t rc= MEMCACHED_NO_SERVERS;
   LIBMEMCACHED_MEMCACHED_CONNECT_START();

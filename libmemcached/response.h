@@ -18,12 +18,12 @@ extern "C" {
 
 /* Read a single response from the server */
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_read_one_response(memcached_server_instance_st *ptr,
+memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
                                                char *buffer, size_t buffer_length,
                                                memcached_result_st *result);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_response(memcached_server_instance_st *ptr,
+memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result);
 

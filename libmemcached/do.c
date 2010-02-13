@@ -11,7 +11,7 @@
 
 #include "common.h"
 
-memcached_return_t memcached_do(memcached_server_st *ptr, const void *command, 
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const void *command, 
                                 size_t command_length, bool with_flush)
 {
   memcached_return_t rc;

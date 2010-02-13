@@ -99,7 +99,7 @@ void server_startup(server_startup_st *construct)
 
   for (x= 0; x < memcached_server_list_count(construct->servers); x++)
   {
-    printf("\t%s : %d\n", construct->servers[x].hostname, construct->servers[x].port);
+    printf("\t%s : %d\n", memcached_server_name(&construct->servers[x]), memcached_server_port(&construct->servers[x]));
     assert(construct->servers[x].fd == -1);
     assert(construct->servers[x].cursor_active == 0);
   }

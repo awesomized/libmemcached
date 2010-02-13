@@ -149,16 +149,20 @@ void *memcached_get_user_data(const memcached_st *ptr);
 LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
 
+LIBMEMCACHED_API
+memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source);
+
+LIBMEMCACHED_API
+memcached_server_instance_st *memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key);
+
+LIBMEMCACHED_LOCAL
+void server_list_free(memcached_st *ptr, memcached_server_st *servers);
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
 
-
-// Local Only Inline
-static inline memcached_server_st *memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
-{
-  return &ptr->servers[server_key];
-}
 
 #ifdef __cplusplus
 class Memcached : private memcached_st {

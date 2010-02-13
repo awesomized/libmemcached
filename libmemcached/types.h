@@ -17,6 +17,8 @@ typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_analysis_st memcached_analysis_st;
 typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_server_st memcached_server_st;
+typedef const struct memcached_server_st memcached_server_instance_st;
+
 typedef struct memcached_callback_st memcached_callback_st;
 
 typedef struct memcached_string_st memcached_string_st;
@@ -40,7 +42,7 @@ typedef void *(*memcached_calloc_fn)(const memcached_st *ptr, size_t nelem, cons
 
 
 typedef memcached_return_t (*memcached_execute_fn)(const memcached_st *ptr, memcached_result_st *result, void *context);
-typedef memcached_return_t (*memcached_server_fn)(const memcached_st *ptr, memcached_server_st *server, void *context);
+typedef memcached_return_t (*memcached_server_fn)(const memcached_st *ptr, const memcached_server_st *server, void *context);
 
 /**
   Trigger functions.

@@ -17,8 +17,10 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_do(memcached_server_instance_st *ptr, const void *commmand,
-                                size_t command_length, bool with_flush);
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr, 
+                                const void *commmand,
+                                size_t command_length,
+                                bool with_flush);
 
 #ifdef __cplusplus
 }

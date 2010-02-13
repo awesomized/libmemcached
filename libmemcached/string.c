@@ -196,3 +196,8 @@ inline char *memcached_string_value_mutable(const memcached_string_st *self)
 {
   return self->string;
 }
+
+inline void memcached_string_set_length(memcached_string_st *self, size_t length)
+{
+  self->end= self->string + length;
+}

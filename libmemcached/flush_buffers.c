@@ -6,7 +6,7 @@ memcached_return_t memcached_flush_buffers(memcached_st *memc)
 
   for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(memc, x);
 
     if (instance->write_buffer_offset != 0) 

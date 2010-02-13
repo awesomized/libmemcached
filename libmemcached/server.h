@@ -55,34 +55,22 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-memcached_return_t memcached_server_cursor(memcached_st *ptr,
-                                           memcached_server_fn *callback,
+memcached_return_t memcached_server_cursor(const memcached_st *ptr,
+                                           const memcached_server_fn *callback,
                                            void *context,
                                            uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
-memcached_server_st *memcached_server_by_key(memcached_st *ptr,
-                                             const char *key,
-                                             size_t key_length,
-                                             memcached_return_t *error);
+  const memcached_server_st *memcached_server_by_key(const memcached_st *ptr,
+                                                     const char *key,
+                                                     size_t key_length,
+                                                     memcached_return_t *error);
 
 LIBMEMCACHED_API
-const char *memcached_server_error(memcached_server_st *ptr);
+const char *memcached_server_error(const memcached_server_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_server_error_reset(memcached_server_st *ptr);
-
-/* These should not currently be used by end users */
-/* TODO: Is the above comment valid? If so, how can we unit test these if they
- * aren't exported. If not, we should remove the comment */
-
-LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_create_with(const memcached_st *memc,
-                                                  memcached_server_st *host,
-                                                  const char *hostname,
-                                                  in_port_t port,
-                                                  uint32_t weight,
-                                                  memcached_connection_t type);
 
 LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
@@ -129,7 +117,7 @@ void memcached_server_list_free(memcached_server_st *ptr);
 
 
 LIBMEMCACHED_API
-memcached_return_t memcached_server_push(memcached_st *ptr, memcached_server_st *list);
+memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_st *list);
 
 LIBMEMCACHED_API
 memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
@@ -143,21 +131,30 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
                                                               uint32_t weight,
                                                               memcached_return_t *error);
 LIBMEMCACHED_API
-unsigned int memcached_server_list_count(memcached_server_st *ptr);
+uint32_t memcached_server_list_count(const memcached_server_st *ptr);
 
 LIBMEMCACHED_API
-uint32_t memcached_servers_count(memcached_server_st *servers);
+uint32_t memcached_server_count(const memcached_st *);
+
 
 LIBMEMCACHED_LOCAL
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count);
 
+LIBMEMCACHED_API
+memcached_server_st *memcached_server_list(memcached_st *);
 
-#define memcached_server_count(A) (A)->number_of_hosts
-#define memcached_server_name(A,B) (B).hostname
-#define memcached_server_port(A,B) (B).port
-#define memcached_server_list(A) (A)->servers
-#define memcached_server_list_set(A,B) (A)->servers=(B)
-#define memcached_server_response_count(A) (A)->cursor_active
+LIBMEMCACHED_LOCAL
+void memcached_server_list_set(memcached_st *self, memcached_server_st *list);
+
+LIBMEMCACHED_API
+uint32_t memcached_server_response_count(const memcached_server_st *self);
+
+LIBMEMCACHED_API
+const char *memcached_server_name(const memcached_server_st *self);
+
+LIBMEMCACHED_API
+in_port_t memcached_server_port(const memcached_server_st *self);
+
 
 #ifdef __cplusplus
 } // extern "C"

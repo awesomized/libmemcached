@@ -40,7 +40,6 @@ public:
     :
       servers_list(),
       memc(),
-      servers(NULL),
       result()
   {
     memcached_create(&memc);
@@ -50,12 +49,10 @@ public:
     :
       servers_list(in_servers_list),
       memc(),
-      servers(NULL),
       result()
   {
     memcached_create(&memc);
-    servers= memcached_servers_parse(servers_list.c_str());
-    memcached_server_push(&memc, servers);
+    init();
   }
 
   Memcache(const std::string &hostname,
@@ -63,24 +60,23 @@ public:
     :
       servers_list(),
       memc(),
-      servers(NULL),
       result()
   {
     memcached_create(&memc);
+
     servers_list.append(hostname);
     servers_list.append(":");
     std::ostringstream strsmt;
     strsmt << port;
     servers_list.append(strsmt.str());
-    servers= memcached_servers_parse(servers_list.c_str());
-    memcached_server_push(&memc, servers);
+
+    init();
   }
 
   Memcache(memcached_st *clone)
     :
       servers_list(),
       memc(),
-      servers(NULL),
       result()
   {
     memcached_clone(&memc, clone);
@@ -90,12 +86,10 @@ public:
     :
       servers_list(rhs.servers_list),
       memc(),
-      servers(NULL),
       result()
   {
     memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
-    servers= memcached_servers_parse(servers_list.c_str());
-    memcached_server_push(&memc, servers);
+    init();
   }
 
   Memcache &operator=(const Memcache &rhs)
@@ -103,16 +97,23 @@ public:
     if (this != &rhs)
     {
       memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
-      servers= memcached_servers_parse(servers_list.c_str());
-      memcached_server_push(&memc, servers);
+      init();
     }
+
     return *this;
   }
 
   ~Memcache()
   {
     memcached_free(&memc);
-    memcached_server_list_free(servers);
+  }
+
+  void init()
+  {
+    memcached_server_st *servers;
+    servers= memcached_servers_parse(servers_list.c_str());
+    memcached_server_push(&memc, servers);
+    memcached_server_free(servers);
   }
 
   /**
@@ -175,9 +176,9 @@ public:
   bool setServers(const std::string &in_servers_list)
   {
     servers_list.assign(in_servers_list);
-    servers= memcached_servers_parse(in_servers_list.c_str());
-    memcached_server_push(&memc, servers);
-    return (servers == NULL);
+    init();
+
+    return (memcached_server_count(&memc));
   }
 
   /**
@@ -190,17 +191,9 @@ public:
   bool addServer(const std::string &server_name, in_port_t port)
   {
     memcached_return_t rc;
-    std::ostringstream strstm;
-    servers_list.append(",");
-    servers_list.append(server_name);
-    servers_list.append(":");
-    strstm << port;
-    servers_list.append(strstm.str());
-    servers= memcached_server_list_append(servers,
-                                          server_name.c_str(),
-                                          port,
-                                          &rc);
-    memcached_server_push(&memc, servers);
+
+    rc= memcached_server_add(&memc, server_name.c_str(), port);
+
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -967,10 +960,12 @@ public:
      */
     for (uint32_t x= 0; x < server_count; x++)
     {
+      const memcached_server_instance_st *instance=
+        memcached_server_instance_by_position(&memc, x);
       std::ostringstream strstm;
-      std::string server_name(memcached_server_name(&memc, servers[x]));
+      std::string server_name(memcached_server_name(instance));
       server_name.append(":");
-      strstm << memcached_server_port(&memc, servers[x]);
+      strstm << memcached_server_port(instance);
       server_name.append(strstm.str());
 
       std::map<std::string, std::string> server_stats;
@@ -997,7 +992,6 @@ private:
 
   std::string servers_list;
   memcached_st memc;
-  memcached_server_st *servers;
   memcached_result_st result;
 };
 

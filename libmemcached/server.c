@@ -78,7 +78,8 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
   return self;
 }
 
-memcached_server_st *memcached_server_create_with(const memcached_st *memc, memcached_server_st *self,
+memcached_server_st *memcached_server_create_with(const memcached_st *memc,
+                                                  memcached_server_write_instance_st self,
                                                   const char *hostname, in_port_t port,
                                                   uint32_t weight, memcached_connection_t type)
 {
@@ -144,24 +145,21 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
 
 }
 
-memcached_return_t memcached_server_cursor(memcached_st *ptr,
-                                           memcached_server_fn *callback,
+memcached_return_t memcached_server_cursor(const memcached_st *ptr,
+                                           const memcached_server_fn *callback,
                                            void *context,
                                            uint32_t number_of_callbacks)
 {
-  uint32_t y;
-
-  for (y= 0; y < memcached_server_count(ptr); y++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    uint32_t x;
-    memcached_server_instance_st *instance=
-      memcached_server_instance_fetch(ptr, y);
+    const memcached_server_instance_st *instance=
+      memcached_server_instance_by_position(ptr, x);
 
-    for (x= 0; x < number_of_callbacks; x++)
+    for (uint32_t y= 0; y < number_of_callbacks; y++)
     {
       unsigned int iferror;
 
-      iferror= (*callback[x])(ptr, instance, context);
+      iferror= (*callback[y])(ptr, instance, context);
 
       if (iferror)
         continue;
@@ -171,10 +169,13 @@ memcached_return_t memcached_server_cursor(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key, size_t key_length, memcached_return_t *error)
+const memcached_server_st *memcached_server_by_key(const memcached_st *ptr,
+                                                   const char *key,
+                                                   size_t key_length,
+                                                   memcached_return_t *error)
 {
   uint32_t server_key;
-  memcached_server_instance_st *instance;
+  const memcached_server_instance_st *instance;
 
   *error= memcached_validate_key_length(key_length,
                                         ptr->flags.binary_protocol);
@@ -194,15 +195,15 @@ memcached_server_st *memcached_server_by_key(memcached_st *ptr,  const char *key
   }
 
   server_key= memcached_generate_hash(ptr, key, key_length);
-  instance= memcached_server_instance_fetch(ptr, server_key);
+  instance= memcached_server_instance_by_position(ptr, server_key);
 
-  return memcached_server_clone(NULL, instance);
+  return instance;
 
 }
 
-const char *memcached_server_error(memcached_server_st *ptr)
+const char *memcached_server_error(const memcached_server_st *ptr)
 {
-  return ptr 
+  return ptr
     ?  ptr->cached_server_error
     : NULL;
 }
@@ -217,25 +218,25 @@ memcached_server_st *memcached_server_get_last_disconnect(memcached_st *ptr)
   return ptr->last_disconnected_server;
 }
 
-uint32_t memcached_server_list_count(memcached_server_st *ptr)
+inline uint32_t memcached_server_list_count(const memcached_server_st *self)
 {
-  return (ptr == NULL)
+  return (self == NULL)
     ? 0
-    : memcached_servers_count(ptr);
+    : self->number_of_hosts;
 }
 
-void memcached_server_list_free(memcached_server_st *ptr)
+void memcached_server_list_free(memcached_server_st *self)
 {
-  server_list_free(NULL, ptr);
+  server_list_free(NULL, self);
 }
 
 /**
   @todo allow lists to query themselves even if they lack a root
 */
-memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
+memcached_return_t memcached_server_remove(memcached_server_st *self)
 {
-  uint32_t x, host_index;
-  memcached_st *root= (memcached_st *)st_ptr->root;
+  uint32_t host_index= 0;
+  memcached_st *root= (memcached_st *)self->root;
   memcached_server_st *list;
 
   if (root == NULL)
@@ -243,35 +244,66 @@ memcached_return_t memcached_server_remove(memcached_server_st *st_ptr)
 
   list= memcached_server_list(root);
 
-  for (x= 0, host_index= 0; x < memcached_server_count(root); x++)
+  /* Until we devise a way to mark servers that are about to be harvested, we need to shutdown before doing the clone. */
+  memcached_quit(root);
+
+  for (uint32_t x= 0; x < memcached_server_count(root); x++)
   {
-    if (strncmp(list[x].hostname, st_ptr->hostname, NI_MAXHOST) != 0 || list[x].port != st_ptr->port)
+    if (strncmp(list[x].hostname, self->hostname, NI_MAXHOST) != 0 || list[x].port != self->port)
     {
       if (host_index != x)
-        memcpy(list+host_index, list+x, sizeof(memcached_server_st));
+      {
+        memcached_server_st *check=
+          memcached_server_clone(list+host_index, list+x);
+
+        if (! check) // Now we are in trouble, allocation didn't happen and we are midway through an operation. Bail!
+        {
+          return MEMCACHED_FAILURE;
+        }
+        memcached_server_free(list+x);
+      }
       host_index++;
     }
   }
   root->number_of_hosts= host_index;
 
-  if (st_ptr->address_info)
-  {
-    freeaddrinfo(st_ptr->address_info);
-    st_ptr->address_info= NULL;
-  }
   run_distribution(root);
 
   return MEMCACHED_SUCCESS;
 }
 
 
-inline uint32_t memcached_servers_count(memcached_server_st *servers)
-{
-  return servers->number_of_hosts;
-}
-
-
 inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
   return servers->number_of_hosts= count;
+}
+
+inline uint32_t memcached_server_count(const memcached_st *self)
+{
+  return self->number_of_hosts;
+}
+
+inline const char *memcached_server_name(const memcached_server_st *self)
+{
+  return self->hostname;
+}
+
+inline in_port_t memcached_server_port(const memcached_server_st *self)
+{
+  return self->port;
+}
+
+inline memcached_server_st *memcached_server_list(memcached_st *self)
+{
+  return self->servers;
+}
+
+inline void memcached_server_list_set(memcached_st *self, memcached_server_st *list)
+{
+  self->servers= list;
+}
+
+inline uint32_t memcached_server_response_count(const memcached_server_st *self)
+{
+  return self->cursor_active;
 }

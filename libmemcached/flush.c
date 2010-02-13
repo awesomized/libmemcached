@@ -32,7 +32,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
     bool no_reply= ptr->flags.no_reply;
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (expiration)
@@ -70,7 +70,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
 
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (ptr->flags.no_reply)
@@ -92,7 +92,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
 
   for (x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
     if (memcached_server_response_count(instance) > 0)

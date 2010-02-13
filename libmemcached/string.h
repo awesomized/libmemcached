@@ -71,7 +71,8 @@ const char *memcached_string_value(const memcached_string_st *self);
 LIBMEMCACHED_LOCAL
 char *memcached_string_value_mutable(const memcached_string_st *self);
 
-#define memcached_string_set_length(A, B) (A)->end= (A)->string + B
+LIBMEMCACHED_LOCAL
+void memcached_string_set_length(memcached_string_st *self, size_t length);
 
 #ifdef __cplusplus
 }

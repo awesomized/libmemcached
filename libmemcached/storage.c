@@ -70,7 +70,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
-  memcached_server_instance_st *instance;
+  memcached_server_write_instance_st instance;
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
@@ -92,7 +92,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                  flags, cas, verb);
   }
 
-  server_key= memcached_generate_hash(ptr, master_key, master_key_length);
+  server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   if (cas)
@@ -444,10 +444,10 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   bool flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
-  uint32_t server_key= memcached_generate_hash(ptr, master_key,
-                                               master_key_length);
+  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, master_key,
+                                                                   master_key_length);
 
-  memcached_server_instance_st *server=
+  memcached_server_write_instance_st server=
     memcached_server_instance_fetch(ptr, server_key);
 
   bool noreply= server->root->flags.no_reply;
@@ -502,7 +502,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
     for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
     {
-      memcached_server_instance_st *instance;
+      memcached_server_write_instance_st instance;
 
       ++server_key;
       if (server_key == memcached_server_count(ptr))
