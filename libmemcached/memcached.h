@@ -48,6 +48,7 @@
 #include <libmemcached/quit.h>
 #include <libmemcached/result.h>
 #include <libmemcached/server.h>
+#include <libmemcached/server_list.h>
 #include <libmemcached/storage.h>
 #include <libmemcached/strerror.h>
 #include <libmemcached/verbosity.h>
@@ -154,6 +155,11 @@ memcached_return_t memcached_push(memcached_st *destination, const memcached_st 
 
 LIBMEMCACHED_API
 memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key);
+
+LIBMEMCACHED_API
+uint32_t memcached_server_count(const memcached_st *);
+
+
 
 LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);

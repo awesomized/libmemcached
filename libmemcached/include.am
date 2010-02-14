@@ -45,6 +45,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/quit.h \
 			 libmemcached/result.h \
 			 libmemcached/server.h \
+			 libmemcached/server_list.h \
 			 libmemcached/stats.h \
 			 libmemcached/storage.h \
 			 libmemcached/strerror.h \
