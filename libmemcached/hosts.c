@@ -22,8 +22,8 @@ static memcached_return_t update_continuum(memcached_st *ptr);
 static int compare_servers(const void *p1, const void *p2)
 {
   int return_value;
-  memcached_server_instance_st *a= (memcached_server_instance_st *)p1;
-  memcached_server_instance_st *b= (memcached_server_instance_st *)p2;
+  memcached_server_instance_st a= (memcached_server_instance_st)p1;
+  memcached_server_instance_st b= (memcached_server_instance_st)p2;
 
   return_value= strcmp(a->hostname, b->hostname);
 
@@ -41,7 +41,7 @@ static void sort_hosts(memcached_st *ptr)
   {
     memcached_server_write_instance_st instance;
 
-    qsort(memcached_server_list(ptr), memcached_server_count(ptr), sizeof(memcached_server_instance_st), compare_servers);
+    qsort(memcached_server_list(ptr), memcached_server_count(ptr), sizeof(memcached_server_st), compare_servers);
     instance= memcached_server_instance_fetch(ptr, 0);
     instance->number_of_hosts= memcached_server_count(ptr);
   }
@@ -315,7 +315,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
   count= memcached_server_list_count(list);
   new_host_list= libmemcached_realloc(ptr, memcached_server_list(ptr),
-                                      sizeof(memcached_server_instance_st) * (count + memcached_server_count(ptr)));
+                                      sizeof(memcached_server_st) * (count + memcached_server_count(ptr)));
 
   if (! new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;

@@ -130,7 +130,7 @@ static test_return_t server_sort2_test(memcached_st *ptr __attribute__((unused))
   memcached_return_t rc;
   memcached_server_fn callbacks[1];
   memcached_st *local_memc;
-  memcached_server_instance_st *instance;
+  memcached_server_instance_st instance;
 
   local_memc= memcached_create(NULL);
   test_true(local_memc);
@@ -1208,7 +1208,7 @@ static test_return_t stats_servername_test(memcached_st *memc)
 {
   memcached_return_t rc;
   memcached_stat_st memc_stat;
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
 
   rc= memcached_stat_servername(&memc_stat, NULL,
@@ -2806,7 +2806,7 @@ static test_return_t user_supplied_bug18(memcached_st *trash)
   {
     uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
 
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, server_idx);
 
     const char *hostname = memcached_server_name(instance);
@@ -2911,7 +2911,7 @@ static test_return_t user_supplied_bug21(memcached_st *memc)
 static test_return_t auto_eject_hosts(memcached_st *trash)
 {
   (void) trash;
-  memcached_server_instance_st *instance;
+  memcached_server_instance_st instance;
 
   memcached_return_t rc;
   memcached_st *memc= memcached_create(NULL);
@@ -3246,7 +3246,7 @@ static test_return_t generate_data_with_stats(memcached_st *memc)
   {
     /* This test was changes so that "make test" would work properlly */
 #ifdef DEBUG
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, host_index);
 
     printf("\nserver %u|%s|%u bytes: %llu\n", host_index, instance->hostname, instance->port, (unsigned long long)(stat_p + host_index)->bytes);
@@ -3480,7 +3480,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
   memcached_st *memc_clone;
-  memcached_server_instance_st *instance;
+  memcached_server_instance_st instance;
 
   memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
@@ -3616,7 +3616,7 @@ static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
   memcached_st *memc_clone;
-  memcached_server_instance_st *instance;
+  memcached_server_instance_st instance;
 
   memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
@@ -3935,7 +3935,7 @@ static test_return_t enable_cas(memcached_st *memc)
 {
   unsigned int set= 1;
 
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
 
   memcached_version(memc);
@@ -3955,7 +3955,7 @@ static test_return_t check_for_1_2_3(memcached_st *memc)
 {
   memcached_version(memc);
 
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
 
   if ((instance->major_version >= 1 && (instance->minor_version == 2 && instance->micro_version >= 4))
@@ -4062,7 +4062,7 @@ static test_return_t noreply_test(memcached_st *memc)
     int no_msg=0;
     for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
     {
-      memcached_server_instance_st *instance=
+      memcached_server_instance_st instance=
         memcached_server_instance_by_position(memc, x);
       no_msg+=(int)(instance->cursor_active);
     }
@@ -4349,7 +4349,7 @@ static test_return_t replication_get_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc); ++host)
   {
     memcached_st *memc_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc_clone, host);
 
     ((memcached_server_write_instance_st)instance)->port= 0;
@@ -4411,7 +4411,7 @@ static test_return_t replication_mget_test(memcached_st *memc)
   for (uint32_t host= 0; host < memc_clone->number_of_hosts; host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(new_clone, host);
     ((memcached_server_write_instance_st)instance)->port= 0;
 
@@ -4509,7 +4509,7 @@ static test_return_t replication_delete_test(memcached_st *memc)
   uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
   for (uint32_t x= 0; x < (repl + 1); ++x)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc_clone, x);
 
     ((memcached_server_write_instance_st)instance)->port= 0;
@@ -4558,10 +4558,10 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, x);
 
-    ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) ((memcached_server_instance_st *)instance)->write_buffer);
+    ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) ((memcached_server_instance_st )instance)->write_buffer);
   }
 
   return ids;
@@ -4590,7 +4590,7 @@ static test_return_t post_udp_op_check(memcached_st *memc, uint16_t *expected_re
 static test_return_t init_udp(memcached_st *memc)
 {
   memcached_version(memc);
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
 
   /* For the time being, only support udp test for >= 1.2.6 && < 1.3 */
@@ -4603,8 +4603,8 @@ static test_return_t init_udp(memcached_st *memc)
   memcpy(servers, memcached_server_list(memc), sizeof(memcached_server_st) * num_hosts);
   for (uint32_t x= 0; x < num_hosts; x++)
   {
-   memcached_server_instance_st *set_instance=
-      memcached_server_instance_by_position(memc, x);
+   memcached_server_instance_st set_instance=
+     memcached_server_instance_by_position(memc, x);
 
     memcached_server_free(((memcached_server_write_instance_st)set_instance));
   }
@@ -4613,7 +4613,7 @@ static test_return_t init_udp(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
   for (uint32_t x= 0; x < num_hosts; x++)
   {
-    memcached_server_instance_st *set_instance=
+    memcached_server_instance_st set_instance=
       memcached_server_instance_by_position(memc, x);
 
     test_true(memcached_server_add_udp(memc, servers[x].hostname, servers[x].port) == MEMCACHED_SUCCESS);
@@ -4640,7 +4640,7 @@ static test_return_t add_tcp_server_udp_client_test(memcached_st *memc)
   (void)memc;
 #if 0
   memcached_server_st server;
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
   memcached_server_clone(&server, &memc->hosts[0]);
   test_true(memcached_server_remove(&(memc->hosts[0])) == MEMCACHED_SUCCESS);
@@ -4655,7 +4655,7 @@ static test_return_t add_udp_server_tcp_client_test(memcached_st *memc)
   (void)memc;
 #if 0
   memcached_server_st server;
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
   memcached_server_clone(&server, &memc->hosts[0]);
   test_true(memcached_server_remove(&(memc->hosts[0])) == MEMCACHED_SUCCESS);
@@ -4699,7 +4699,7 @@ static test_return_t udp_set_test(memcached_st *memc)
     const char *value= "when we sanitize";
     uint16_t *expected_ids= get_udp_request_ids(memc);
     unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, server_key);
     size_t init_offset= instance->write_buffer_offset;
 
@@ -4759,7 +4759,7 @@ static test_return_t udp_delete_test(memcached_st *memc)
     const char *key= "foo";
     uint16_t *expected_ids=get_udp_request_ids(memc);
     unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, server_key);
     size_t init_offset= instance->write_buffer_offset;
 
@@ -5253,7 +5253,7 @@ static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
   for (x= 0; x < 99; x++)
   {
     uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, server_idx);
     const char *hostname = memcached_server_name(instance);
 
@@ -5313,7 +5313,7 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
   {
     uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases_spy[x].key, strlen(ketama_test_cases_spy[x].key));
 
-    memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc, server_idx);
 
     const char *hostname= memcached_server_name(instance);
@@ -5518,8 +5518,8 @@ static test_return_t regression_bug_442914(memcached_st *memc)
 
 static test_return_t regression_bug_447342(memcached_st *memc)
 {
-  memcached_server_instance_st *instance_one;
-  memcached_server_instance_st *instance_two;
+  memcached_server_instance_st instance_one;
+  memcached_server_instance_st instance_two;
 
   if (memcached_server_count(memc) < 3 || pre_replication(memc) != MEMCACHED_SUCCESS)
     return TEST_SKIPPED;
@@ -5642,7 +5642,7 @@ static test_return_t regression_bug_463297(memcached_st *memc)
   test_true(memc_clone != NULL);
   test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
 
-  memcached_server_instance_st *instance=
+  memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc_clone, 0);
 
   if (instance->major_version > 1 ||
@@ -5704,7 +5704,7 @@ static test_return_t regression_bug_463297(memcached_st *memc)
 static test_return_t test_get_last_disconnect(memcached_st *memc)
 {
   memcached_return_t rc;
-  memcached_server_instance_st *disconnected_server;
+  memcached_server_instance_st disconnected_server;
 
   /* With the working set of server */
   const char *key= "marmotte";
@@ -5755,7 +5755,7 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
 static test_return_t wrong_failure_counter_test(memcached_st *memc)
 {
   memcached_return_t rc;
-  memcached_server_instance_st *instance;
+  memcached_server_instance_st instance;
 
   /* Set value to force connection to the server */
   const char *key= "marmotte";

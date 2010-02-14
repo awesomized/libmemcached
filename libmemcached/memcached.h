@@ -153,7 +153,7 @@ LIBMEMCACHED_API
 memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source);
 
 LIBMEMCACHED_API
-memcached_server_instance_st *memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key);
+memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key);
 
 LIBMEMCACHED_LOCAL
 void server_list_free(memcached_st *ptr, memcached_server_st *servers);

@@ -125,10 +125,6 @@ memcached_return_t run_distribution(memcached_st *ptr);
 
 
 LIBMEMCACHED_LOCAL
-memcached_return_t value_fetch(memcached_server_instance_st *ptr,
-                               char *buffer,
-                               memcached_result_st *result);
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys);

@@ -61,7 +61,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
                                            uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
-  memcached_server_instance_st *memcached_server_by_key(const memcached_st *ptr,
+  memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
                                                         const char *key,
                                                         size_t key_length,
                                                         memcached_return_t *error);
@@ -80,7 +80,7 @@ LIBMEMCACHED_API
 memcached_return_t memcached_server_remove(memcached_server_st *st_ptr);
 
 LIBMEMCACHED_API
-memcached_server_instance_st *memcached_server_get_last_disconnect(const memcached_st *ptr);
+memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);
 
 
 LIBMEMCACHED_API
@@ -147,16 +147,16 @@ void memcached_server_list_set(memcached_st *self, memcached_server_st *list);
   Operations on Single Servers.
 */
 LIBMEMCACHED_API
-uint32_t memcached_server_response_count(memcached_server_instance_st *self);
+uint32_t memcached_server_response_count(memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-const char *memcached_server_name(memcached_server_instance_st *self);
+const char *memcached_server_name(memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-in_port_t memcached_server_port(memcached_server_instance_st *self);
+in_port_t memcached_server_port(memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-const char *memcached_server_error(memcached_server_instance_st *ptr);
+const char *memcached_server_error(memcached_server_instance_st ptr);
 
 
 

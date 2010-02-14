@@ -98,7 +98,7 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
 {
   for (uint32_t loop= 0; loop < memcached_server_list_count(container->construct.servers); loop++)
   {
-    const memcached_server_instance_st *instance=
+    memcached_server_instance_st instance=
       memcached_server_instance_by_position(container->memc, loop);
 
     test_true(instance->fd == -1);
