@@ -5704,7 +5704,7 @@ static test_return_t regression_bug_463297(memcached_st *memc)
 static test_return_t test_get_last_disconnect(memcached_st *memc)
 {
   memcached_return_t rc;
-  memcached_server_st *disconnected_server;
+  memcached_server_instance_st *disconnected_server;
 
   /* With the working set of server */
   const char *key= "marmotte";
@@ -5739,8 +5739,8 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
 
   disconnected_server = memcached_server_get_last_disconnect(mine);
   test_true(disconnected_server != NULL);
-  test_true(disconnected_server->port == 9);
-  test_true(strncmp(disconnected_server->hostname,"localhost",9) == 0);
+  test_true(memcached_server_port(disconnected_server)== 9);
+  test_true(strncmp(memcached_server_name(disconnected_server),"localhost",9) == 0);
 
   memcached_quit(mine);
   memcached_free(mine);

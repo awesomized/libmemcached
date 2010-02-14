@@ -152,7 +152,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
 {
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    const memcached_server_instance_st *instance=
+    memcached_server_instance_st *instance=
       memcached_server_instance_by_position(ptr, x);
 
     for (uint32_t y= 0; y < number_of_callbacks; y++)
@@ -169,13 +169,13 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-const memcached_server_st *memcached_server_by_key(const memcached_st *ptr,
-                                                   const char *key,
-                                                   size_t key_length,
-                                                   memcached_return_t *error)
+memcached_server_instance_st *memcached_server_by_key(const memcached_st *ptr,
+                                                      const char *key,
+                                                      size_t key_length,
+                                                      memcached_return_t *error)
 {
   uint32_t server_key;
-  const memcached_server_instance_st *instance;
+  memcached_server_instance_st *instance;
 
   *error= memcached_validate_key_length(key_length,
                                         ptr->flags.binary_protocol);
@@ -201,19 +201,12 @@ const memcached_server_st *memcached_server_by_key(const memcached_st *ptr,
 
 }
 
-const char *memcached_server_error(const memcached_server_st *ptr)
-{
-  return ptr
-    ?  ptr->cached_server_error
-    : NULL;
-}
-
 void memcached_server_error_reset(memcached_server_st *ptr)
 {
   ptr->cached_server_error[0]= 0;
 }
 
-memcached_server_st *memcached_server_get_last_disconnect(memcached_st *ptr)
+memcached_server_instance_st *memcached_server_get_last_disconnect(const memcached_st *ptr)
 {
   return ptr->last_disconnected_server;
 }
@@ -283,12 +276,12 @@ inline uint32_t memcached_server_count(const memcached_st *self)
   return self->number_of_hosts;
 }
 
-inline const char *memcached_server_name(const memcached_server_st *self)
+inline const char *memcached_server_name(memcached_server_instance_st *self)
 {
   return self->hostname;
 }
 
-inline in_port_t memcached_server_port(const memcached_server_st *self)
+inline in_port_t memcached_server_port(memcached_server_instance_st *self)
 {
   return self->port;
 }
@@ -303,7 +296,15 @@ inline void memcached_server_list_set(memcached_st *self, memcached_server_st *l
   self->servers= list;
 }
 
-inline uint32_t memcached_server_response_count(const memcached_server_st *self)
+inline uint32_t memcached_server_response_count(memcached_server_instance_st *self)
 {
   return self->cursor_active;
 }
+
+const char *memcached_server_error(memcached_server_instance_st *ptr)
+{
+  return ptr
+    ?  ptr->cached_server_error
+    : NULL;
+}
+
