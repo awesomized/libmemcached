@@ -33,13 +33,9 @@
 
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
-static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
-                         memcached_server_st *server_list);
-static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_stat,
-                                 memcached_server_st *server_list);
+static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat);
 static void print_analysis_report(memcached_st *memc,
-                                  memcached_analysis_st *report,
-                                  memcached_server_st *server_list);
+                                  memcached_analysis_st *report);
 
 static int opt_verbose= 0;
 static int opt_displayflag= 0;
@@ -59,17 +55,50 @@ static struct option long_options[]=
   {0, 0, 0, 0},
 };
 
+
+static memcached_return_t server_print_callback(const memcached_st *memc,
+                                                memcached_server_instance_st instance,
+                                                void *context)
+{
+  memcached_stat_st server_stat;
+  memcached_return_t rc;
+  char **list;
+  char **ptr;
+
+  (void)context;
+
+  rc= memcached_stat_servername(&server_stat, NULL,
+                                memcached_server_name(instance),
+                                memcached_server_port(instance));
+
+  list= memcached_stat_get_keys(memc, &server_stat, &rc);
+
+  printf("Server: %s (%u)\n", memcached_server_name(instance),
+         (uint32_t)memcached_server_port(instance));
+
+  for (ptr= list; *ptr; ptr++)
+  {
+    char *value= memcached_stat_get_value(memc, &server_stat, *ptr, &rc);
+
+    printf("\t %s: %s\n", *ptr, value);
+    free(value);
+  }
+
+  free(list);
+  printf("\n");
+
+  return MEMCACHED_SUCCESS;
+}
+
 int main(int argc, char *argv[])
 {
   memcached_return_t rc;
   memcached_st *memc;
-  memcached_stat_st *memc_stat;
   memcached_server_st *servers;
-  memcached_server_st *server_list;
 
   options_parse(argc, argv);
 
-  if (!opt_servers)
+  if (! opt_servers)
   {
     char *temp;
 
@@ -89,8 +118,6 @@ int main(int argc, char *argv[])
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
-  memc_stat= memcached_stat(memc, NULL, &rc);
-
   if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
   {
     printf("Failure to communicate with servers (%s)\n",
@@ -98,23 +125,37 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  server_list= memcached_server_list(memc);
-
   if (opt_analyze)
-    run_analyzer(memc, memc_stat, server_list);
-  else
-    print_server_listing(memc, memc_stat, server_list);
+  {
+    memcached_stat_st *memc_stat;
 
-  free(memc_stat);
+    memc_stat= memcached_stat(memc, NULL, &rc);
+
+    if (! memc_stat)
+      exit(-1);
+
+    run_analyzer(memc, memc_stat);
+
+    memcached_stat_free(memc, memc_stat);
+  }
+  else
+  {
+    memcached_server_fn callbacks[1];
+
+    callbacks[0]= server_print_callback;
+    rc= memcached_server_cursor(memc, callbacks,
+                                NULL, 1);
+
+  }
+
   free(opt_servers);
 
   memcached_free(memc);
 
-  return 0;
+  return rc == MEMCACHED_SUCCESS ? 0: -1;
 }
 
-static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
-                         memcached_server_st *server_list)
+static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat)
 {
   memcached_return_t rc;
 
@@ -128,7 +169,7 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
              memcached_strerror(memc, rc));
       exit(1);
     }
-    print_analysis_report(memc, report, server_list);
+    print_analysis_report(memc, report);
     free(report);
   }
   else if (strcmp(analyze_mode, "latency") == 0)
@@ -147,7 +188,10 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
 
     for (uint32_t x= 0; x < server_count; x++)
     {
-      if((servers[x]= memcached_create(NULL)) == NULL)
+      memcached_server_instance_st instance=
+        memcached_server_instance_by_position(memc, x);
+
+      if ((servers[x]= memcached_create(NULL)) == NULL)
       {
         fprintf(stderr, "Failed to memcached_create()\n");
         if (x > 0)
@@ -160,17 +204,21 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
         return;
       }
       memcached_server_add(servers[x],
-                           memcached_server_name(&server_list[x]),
-                           memcached_server_port(&server_list[x]));
+                           memcached_server_name(instance),
+                           memcached_server_port(instance));
     }
 
     printf("Network Latency Test:\n\n");
     struct timeval start_time, end_time;
-    long elapsed_time, slowest_time= 0, slowest_server= 0;
+    uint32_t slowest_server= 0;
+    long elapsed_time, slowest_time= 0;
 
     for (uint32_t x= 0; x < server_count; x++)
     {
+      memcached_server_instance_st instance=
+        memcached_server_instance_by_position(memc, x);
       gettimeofday(&start_time, NULL);
+
       for (uint32_t y= 0; y < num_of_tests; y++)
       {
         size_t vlen;
@@ -187,31 +235,34 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
 
       if (elapsed_time > slowest_time)
       {
-        slowest_server= (long)x;
+        slowest_server= x;
         slowest_time= elapsed_time;
       }
 
       if (rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_SUCCESS)
       {
         printf("\t %s (%d)  =>  failed to reach the server\n",
-               memcached_server_name(&server_list[x]),
-               memcached_server_port(&server_list[x]));
+               memcached_server_name(instance),
+               memcached_server_port(instance));
       }
       else
       {
         printf("\t %s (%d)  =>  %ld.%ld seconds\n",
-               memcached_server_name(&server_list[x]),
-               memcached_server_port(&server_list[x]),
+               memcached_server_name(instance),
+               memcached_server_port(instance),
                elapsed_time / 1000, elapsed_time % 1000);
       }
     }
 
     if (server_count > 1 && slowest_time > 0)
     {
+      memcached_server_instance_st slowest=
+        memcached_server_instance_by_position(memc, slowest_server);
+
       printf("---\n");
       printf("Slowest Server: %s (%d) => %ld.%ld seconds\n",
-             memcached_server_name(&server_list[slowest_server]),
-             memcached_server_port(&server_list[slowest_server]),
+             memcached_server_name(slowest),
+             memcached_server_port(slowest),
              slowest_time / 1000, slowest_time % 1000);
     }
     printf("\n");
@@ -229,39 +280,14 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat,
   }
 }
 
-static void print_server_listing(memcached_st *memc, memcached_stat_st *memc_stat,
-                                 memcached_server_st *server_list)
-{
-  memcached_return_t rc;
-
-  printf("Listing %u Server\n\n", memcached_server_count(memc));
-  for (uint32_t x= 0; x < memcached_server_count(memc); x++)
-  {
-    char **list;
-    char **ptr;
-
-    list= memcached_stat_get_keys(memc, &memc_stat[x], &rc);
-
-    printf("Server: %s (%u)\n", memcached_server_name(&server_list[x]),
-           (uint32_t)memcached_server_port(&server_list[x]));
-    for (ptr= list; *ptr; ptr++)
-    {
-      char *value= memcached_stat_get_value(memc, &memc_stat[x], *ptr, &rc);
-
-      printf("\t %s: %s\n", *ptr, value);
-      free(value);
-    }
-
-    free(list);
-    printf("\n");
-  }
-}
-
 static void print_analysis_report(memcached_st *memc,
-                                  memcached_analysis_st *report,
-                                  memcached_server_st *server_list)
+                                  memcached_analysis_st *report)
+                                  
 {
   uint32_t server_count= memcached_server_count(memc);
+  memcached_server_instance_st most_consumed_server= memcached_server_instance_by_position(memc, report->most_consumed_server);
+  memcached_server_instance_st least_free_server= memcached_server_instance_by_position(memc, report->least_free_server);
+  memcached_server_instance_st oldest_server= memcached_server_instance_by_position(memc, report->oldest_server);
 
   printf("Memcached Cluster Analysis Report\n\n");
 
@@ -277,16 +303,16 @@ static void print_analysis_report(memcached_st *memc,
 
   printf("\n");
   printf("\tNode with most memory consumption  : %s:%u (%llu bytes)\n",
-         memcached_server_name(&server_list[report->most_consumed_server]),
-         (uint32_t)memcached_server_port(&server_list[report->most_consumed_server]),
+         memcached_server_name(most_consumed_server),
+         (uint32_t)memcached_server_port(most_consumed_server),
          (unsigned long long)report->most_used_bytes);
   printf("\tNode with least free space         : %s:%u (%llu bytes remaining)\n",
-         memcached_server_name(&server_list[report->least_free_server]),
-         (uint32_t)memcached_server_port(&server_list[report->least_free_server]),
+         memcached_server_name(least_free_server),
+         (uint32_t)memcached_server_port(least_free_server),
          (unsigned long long)report->least_remaining_bytes);
   printf("\tNode with longest uptime           : %s:%u (%us)\n",
-         memcached_server_name(&server_list[report->oldest_server]),
-         (uint32_t)memcached_server_port(&server_list[report->oldest_server]),
+         memcached_server_name(oldest_server),
+         (uint32_t)memcached_server_port(oldest_server),
          report->longest_uptime);
   printf("\tPool-wide Hit Ratio                : %1.f%%\n", report->pool_hit_ratio);
   printf("\n");

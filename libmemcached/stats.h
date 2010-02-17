@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-void memcached_stat_free(memcached_st *, memcached_stat_st *);
+void memcached_stat_free(const memcached_st *, memcached_stat_st *);
 
 LIBMEMCACHED_API
 memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error);
@@ -55,11 +55,11 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
                                              const char *hostname, in_port_t port);
 
 LIBMEMCACHED_API
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
+char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_stat,
                                const char *key, memcached_return_t *error);
 
 LIBMEMCACHED_API
-char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
+char ** memcached_stat_get_keys(const memcached_st *ptr, memcached_stat_st *memc_stat,
                                 memcached_return_t *error);
 
 #ifdef __cplusplus

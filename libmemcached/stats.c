@@ -161,7 +161,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   return MEMCACHED_SUCCESS;
 }
 
-char *memcached_stat_get_value(memcached_st *ptr, memcached_stat_st *memc_stat,
+char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_stat,
                                const char *key, memcached_return_t *error)
 {
   char buffer[SMALL_STRING_LEN];
@@ -413,6 +413,8 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   memcached_st *memc_ptr;
   memcached_server_write_instance_st instance;
 
+  memset(memc_stat, 0, sizeof(memcached_stat_st));
+
   memc_ptr= memcached_create(&memc);
   WATCHPOINT_ASSERT(memc_ptr);
 
@@ -438,7 +440,7 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   We make a copy of the keys since at some point in the not so distant future
   we will add support for "found" keys.
 */
-char ** memcached_stat_get_keys(memcached_st *ptr,
+char ** memcached_stat_get_keys(const memcached_st *ptr,
                                 memcached_stat_st *memc_stat,
                                 memcached_return_t *error)
 {
@@ -462,7 +464,7 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
   return list;
 }
 
-void memcached_stat_free(memcached_st *ptr, memcached_stat_st *memc_stat)
+void memcached_stat_free(const memcached_st *ptr, memcached_stat_st *memc_stat)
 {
   if (memc_stat == NULL)
   {

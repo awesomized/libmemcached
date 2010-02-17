@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-memcached_server_st *memcached_servers_parse(const char *server_strings);
+memcached_server_list_st memcached_servers_parse(const char *server_strings);
 
 #ifdef __cplusplus
 }

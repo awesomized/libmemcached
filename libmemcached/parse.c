@@ -7,7 +7,7 @@
 
 #include "common.h"
 
-memcached_server_st *memcached_servers_parse(const char *server_strings)
+memcached_server_list_st memcached_servers_parse(const char *server_strings)
 {
   char *string;
   in_port_t port;

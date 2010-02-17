@@ -211,60 +211,31 @@ memcached_server_instance_st memcached_server_get_last_disconnect(const memcache
   return ptr->last_disconnected_server;
 }
 
-inline uint32_t memcached_server_list_count(const memcached_server_st *self)
+void memcached_server_list_free(memcached_server_list_st self)
 {
-  return (self == NULL)
-    ? 0
-    : self->number_of_hosts;
-}
+  if (self == NULL)
+    return;
 
-void memcached_server_list_free(memcached_server_st *self)
-{
-  server_list_free(NULL, self);
-}
+  const memcached_st *root= self->root;
 
-/**
-  @todo allow lists to query themselves even if they lack a root
-*/
-memcached_return_t memcached_server_remove(memcached_server_st *self)
-{
-  uint32_t host_index= 0;
-  memcached_st *root= (memcached_st *)self->root;
-  memcached_server_st *list;
-
-  if (root == NULL)
-    return MEMCACHED_FAILURE;
-
-  list= memcached_server_list(root);
-
-  /* Until we devise a way to mark servers that are about to be harvested, we need to shutdown before doing the clone. */
-  memcached_quit(root);
-
-  for (uint32_t x= 0; x < memcached_server_count(root); x++)
+  for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
   {
-    if (strncmp(list[x].hostname, self->hostname, NI_MAXHOST) != 0 || list[x].port != self->port)
+    if (self[x].address_info)
     {
-      if (host_index != x)
-      {
-        memcached_server_st *check=
-          memcached_server_clone(list+host_index, list+x);
-
-        if (! check) // Now we are in trouble, allocation didn't happen and we are midway through an operation. Bail!
-        {
-          return MEMCACHED_FAILURE;
-        }
-        memcached_server_free(list+x);
-      }
-      host_index++;
+      freeaddrinfo(self[x].address_info);
+      self[x].address_info= NULL;
     }
   }
-  root->number_of_hosts= host_index;
 
-  run_distribution(root);
-
-  return MEMCACHED_SUCCESS;
+  if (root)
+  {
+    libmemcached_free(root, self);
+  }
+  else
+  {
+    free(self);
+  }
 }
-
 
 inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
@@ -284,16 +255,6 @@ inline const char *memcached_server_name(memcached_server_instance_st self)
 inline in_port_t memcached_server_port(memcached_server_instance_st self)
 {
   return self->port;
-}
-
-inline memcached_server_st *memcached_server_list(memcached_st *self)
-{
-  return self->servers;
-}
-
-inline void memcached_server_list_set(memcached_st *self, memcached_server_st *list)
-{
-  self->servers= list;
 }
 
 inline uint32_t memcached_server_response_count(memcached_server_instance_st self)

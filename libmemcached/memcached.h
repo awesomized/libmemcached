@@ -159,12 +159,6 @@ memcached_server_instance_st memcached_server_instance_by_position(const memcach
 LIBMEMCACHED_API
 uint32_t memcached_server_count(const memcached_st *);
 
-
-
-LIBMEMCACHED_LOCAL
-void server_list_free(memcached_st *ptr, memcached_server_st *servers);
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

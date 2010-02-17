@@ -77,9 +77,6 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                             const memcached_server_st *source);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_server_remove(memcached_server_st *st_ptr);
-
-LIBMEMCACHED_API
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);
 
 

@@ -12,13 +12,14 @@
 
 #include "common.h"
 
-memcached_server_st *memcached_server_list_append_with_weight(memcached_server_st *ptr,
-                                                              const char *hostname, in_port_t port,
-                                                              uint32_t weight,
-                                                              memcached_return_t *error)
+memcached_server_list_st 
+memcached_server_list_append_with_weight(memcached_server_list_st ptr,
+                                         const char *hostname, in_port_t port,
+                                         uint32_t weight,
+                                         memcached_return_t *error)
 {
-  unsigned int count;
-  memcached_server_st *new_host_list;
+  uint32_t count;
+  memcached_server_list_st new_host_list;
 
   if (hostname == NULL || error == NULL)
     return NULL;
@@ -50,9 +51,27 @@ memcached_server_st *memcached_server_list_append_with_weight(memcached_server_s
   return new_host_list;
 }
 
-memcached_server_st *memcached_server_list_append(memcached_server_st *ptr,
-                                                  const char *hostname, in_port_t port,
-                                                  memcached_return_t *error)
+memcached_server_list_st
+memcached_server_list_append(memcached_server_list_st ptr,
+                             const char *hostname, in_port_t port,
+                             memcached_return_t *error)
 {
   return memcached_server_list_append_with_weight(ptr, hostname, port, 0, error);
+}
+
+inline uint32_t memcached_server_list_count(const memcached_server_list_st self)
+{
+  return (self == NULL)
+    ? 0
+    : self->number_of_hosts;
+}
+
+inline memcached_server_st *memcached_server_list(const memcached_st *self)
+{
+  return self->servers;
+}
+
+inline void memcached_server_list_set(memcached_st *self, memcached_server_st *list)
+{
+  self->servers= list;
 }

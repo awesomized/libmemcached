@@ -305,7 +305,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 }
 
 
-memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_st *list)
+memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list)
 {
   uint32_t count;
   memcached_server_st *new_host_list;
