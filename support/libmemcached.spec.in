@@ -137,6 +137,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/protocol_handler.h
 %{_includedir}/libmemcached/result.h
 %{_includedir}/libmemcached/server.h
+%{_includedir}/libmemcached/server_list.h
 %{_includedir}/libmemcached/stats.h
 %{_includedir}/libmemcached/storage.h
 %{_includedir}/libmemcached/string.h
