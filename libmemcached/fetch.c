@@ -37,10 +37,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     *key_length= result_buffer->key_length;
   }
 
-  if (result_buffer->item_flags)
-    *flags= result_buffer->item_flags;
-  else
-    *flags= 0;
+  *flags= result_buffer->item_flags;
 
   return memcached_string_c_copy(&result_buffer->value);
 }
