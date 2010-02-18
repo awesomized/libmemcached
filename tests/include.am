@@ -41,7 +41,8 @@ noinst_PROGRAMS+= \
 		  tests/startservers \
 		  tests/testapp \
 		  tests/testhashkit \
-		  tests/testplus
+		  tests/testplus \
+		  tests/testudp
 
 noinst_LTLIBRARIES+= tests/libserver.la
 tests_libserver_la_SOURCES= tests/server.c
@@ -70,6 +71,15 @@ tests_atomsmasher_LDADD= \
 	tests/libtest.la \
 	$(TESTS_LDADDS)
 tests_atomsmasher_DEPENDENCIES= $(tests_atomsmasher_LDADD)
+
+tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+tests_testudp_SOURCES= tests/mem_udp.c
+tests_testudp_LDADD= \
+	clients/libgenexec.la \
+	tests/libserver.la \
+	tests/libtest.la \
+	$(TESTS_LDADDS)
+tests_testudp_DEPENDENCIES= $(tests_testudp_LDADD)
 
 tests_startservers_SOURCES= tests/start.c
 tests_startservers_LDADD= tests/libserver.la $(TESTS_LDADDS)
@@ -217,10 +227,15 @@ HASHPLUS_COMMAND= tests/hashplus $(COLLECTION) $(SUITE)
 
 ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
 
+UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
+
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
 test-mem: tests/testapp
 	$(MEM_COMMAND)
+
+test-udp: tests/testudp
+	$(UDP_COMMAND)
 
 test-atom: tests/atomsmasher
 	$(ATOM_COMMAND)
@@ -244,6 +259,9 @@ gdb-mem: tests/testapp
 	$(DEBUG_COMMAND)  $(MEM_COMMAND)
 
 gdb-atom: tests/atomsmasher
+	$(DEBUG_COMMAND)  $(UDP_COMMAND)
+
+gdb-udp: tests/testudp
 	$(DEBUG_COMMAND)  $(ATOM_COMMAND)
 
 gdb-plus: tests/testplus
@@ -266,6 +284,9 @@ valgrind-mem: tests/testapp
 
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND)  $(ATOM_COMMAND)
+
+valgrind-udp: tests/testudp
+	$(VALGRIND_COMMAND)  $(UDP_COMMAND)
 
 valgrind-plus: tests/testplus
 	$(VALGRIND_COMMAND)  $(TESTPLUS_COMMAND)
