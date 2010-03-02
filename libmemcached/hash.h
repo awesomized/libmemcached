@@ -21,7 +21,10 @@ LIBMEMCACHED_API
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm);
 
 LIBMEMCACHED_API
-hashkit_st *memcached_get_hashkit(memcached_st *ptr);
+const hashkit_st *memcached_get_hashkit(const memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_set_hashkit(memcached_st *ptr, hashkit_st *hashk);
 
 LIBMEMCACHED_API
 uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length);

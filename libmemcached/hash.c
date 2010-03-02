@@ -124,7 +124,15 @@ uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_
   return dispatch_host(ptr, _generate_hash_wrapper(ptr, key, key_length));
 }
 
-hashkit_st *memcached_get_hashkit(memcached_st *ptr)
+const hashkit_st *memcached_get_hashkit(const memcached_st *ptr)
 {
   return &ptr->hashkit;
+}
+
+memcached_return_t memcached_set_hashkit(memcached_st *self, hashkit_st *hashk)
+{
+  hashkit_free(&self->hashkit);
+  hashkit_clone(&self->hashkit, hashk);
+
+  return MEMCACHED_SUCCESS;
 }

@@ -4766,7 +4766,8 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
 {
   uint32_t x;
   const char **ptr;
-  hashkit_st *kit;
+  const hashkit_st *kit;
+  hashkit_st new_kit;
   hashkit_return_t hash_rc;
 
   uint32_t md5_hosts[]= {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U};
@@ -4774,8 +4775,11 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
 
   kit= memcached_get_hashkit(memc);
 
-  hash_rc= hashkit_set_custom_function(kit, hash_md5_test_function, NULL);
+  hashkit_clone(&new_kit, kit);
+  hash_rc= hashkit_set_custom_function(&new_kit, hash_md5_test_function, NULL);
   test_true(hash_rc == HASHKIT_SUCCESS);
+
+  memcached_set_hashkit(memc, &new_kit);
 
   /*
     Verify Setting the hash.
@@ -4800,8 +4804,10 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
     test_true(md5_hosts[x] == hash_val);
   }
 
-  hash_rc= hashkit_set_custom_function(kit, hash_crc_test_function, NULL);
+  hash_rc= hashkit_set_custom_function(&new_kit, hash_crc_test_function, NULL);
   test_true(hash_rc == HASHKIT_SUCCESS);
+
+  memcached_set_hashkit(memc, &new_kit);
 
   /*
     Verify Setting the hash.
