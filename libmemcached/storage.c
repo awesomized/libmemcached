@@ -189,7 +189,8 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     return rc;
 
 error:
-  memcached_io_reset(instance);
+  if (rc == MEMCACHED_WRITE_FAILURE)
+    memcached_io_reset(instance);
 
   return rc;
 }
