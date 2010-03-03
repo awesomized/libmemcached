@@ -31,6 +31,8 @@ static int opt_verbose= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
+static char *opt_username;
+static char *opt_passwd;
 
 int main(int argc, char *argv[])
 {
@@ -68,11 +70,17 @@ int main(int argc, char *argv[])
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
 
-  while (optind < argc) 
+  if (!initialize_sasl(memc, opt_username, opt_passwd))
+  {
+    memcached_free(memc);
+    return 1;
+  }
+
+  while (optind < argc)
   {
     string= memcached_get(memc, argv[optind], strlen(argv[optind]),
                           &string_length, &flags, &rc);
-    if (rc == MEMCACHED_SUCCESS) 
+    if (rc == MEMCACHED_SUCCESS)
     {
       if (opt_displayflag)
       {
@@ -80,7 +88,7 @@ int main(int argc, char *argv[])
           printf("key: %s\nflags: ", argv[optind]);
         printf("%x\n", flags);
       }
-      else 
+      else
       {
         if (opt_verbose)
           printf("key: %s\nflags: %x\nlength: %zu\nvalue: ",
@@ -91,7 +99,7 @@ int main(int argc, char *argv[])
     }
     else if (rc != MEMCACHED_NOTFOUND)
     {
-      fprintf(stderr, "memcat: %s: memcache error %s", 
+      fprintf(stderr, "memcat: %s: memcache error %s",
               argv[optind], memcached_strerror(memc, rc));
       if (memc->cached_errno)
 	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
@@ -114,6 +122,8 @@ int main(int argc, char *argv[])
     free(opt_servers);
   if (opt_hash)
     free(opt_hash);
+
+  shutdown_sasl();
 
   return return_code;
 }
@@ -139,10 +149,12 @@ void options_parse(int argc, char *argv[])
       {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
       {(OPTIONSTRING)"hash", required_argument, NULL, OPT_HASH},
       {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+      {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
+      {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
       {0, 0, 0, 0},
     };
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
@@ -170,6 +182,12 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_HASH:
       opt_hash= strdup(optarg);
+      break;
+    case OPT_USERNAME:
+      opt_username= optarg;
+      break;
+    case OPT_PASSWD:
+      opt_passwd= optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */

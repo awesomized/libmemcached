@@ -282,6 +282,20 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
         }
       }
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+      if (ptr->fd != -1 && ptr->root->sasl.callbacks != NULL)
+      {
+        memcached_return rc= memcached_sasl_authenticate_connection(ptr);
+        if (rc != MEMCACHED_SUCCESS)
+        {
+          (void)close(ptr->fd);
+          ptr->fd= -1;
+          return rc;
+        }
+      }
+#endif
+
+
       if (ptr->fd != -1)
       {
         ptr->server_failure_counter= 0;
@@ -368,7 +382,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     WATCHPOINT_ASSERT(0);
   }
 
-  unlikely ( rc != MEMCACHED_SUCCESS) 
+  unlikely ( rc != MEMCACHED_SUCCESS)
   {
     //@todo create interface around last_discontected_server
     memcached_st *root= (memcached_st *)ptr->root;

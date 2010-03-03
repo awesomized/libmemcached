@@ -13,7 +13,7 @@
   Startup, and shutdown the memcached servers.
 */
 
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10 
+#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10
 
 #include "config.h"
 
@@ -52,7 +52,7 @@ void server_startup(server_startup_st *construct)
         int status;
 
         sprintf(buffer, "/tmp/%umemc.pid", x);
-        if (access(buffer, F_OK) == 0) 
+        if (access(buffer, F_OK) == 0)
         {
           FILE *fp= fopen(buffer, "r");
           remove(buffer);
@@ -60,9 +60,9 @@ void server_startup(server_startup_st *construct)
           if (fp != NULL)
           {
             if (fgets(buffer, sizeof(buffer), fp) != NULL)
-            { 
+            {
               pid_t pid= (pid_t)atoi(buffer);
-              if (pid != 0) 
+              if (pid != 0)
                 kill(pid, SIGTERM);
             }
 
@@ -74,7 +74,7 @@ void server_startup(server_startup_st *construct)
         {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
                     MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
-        } 
+        }
         else
         {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u",
@@ -119,7 +119,7 @@ void server_shutdown(server_startup_st *construct)
       sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
       /* We have to check the return value of this or the compiler will yell */
       int sys_ret= system(buffer);
-      assert(sys_ret != -1); 
+      assert(sys_ret != -1);
       sprintf(buffer, "/tmp/%umemc.pid", x);
       unlink(buffer);
     }

@@ -23,6 +23,8 @@ static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
+static char *opt_username;
+static char *opt_passwd;
 
 #define PROGRAM_NAME "memrm"
 #define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
@@ -61,7 +63,13 @@ int main(int argc, char *argv[])
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t) opt_binary);
- 
+
+  if (!initialize_sasl(memc, opt_username, opt_passwd))
+  {
+    memcached_free(memc);
+    return 1;
+  }
+
   while (optind < argc)
   {
     if (opt_verbose)
@@ -89,6 +97,8 @@ int main(int argc, char *argv[])
   if (opt_hash)
     free(opt_hash);
 
+  shutdown_sasl();
+
   return return_code;
 }
 
@@ -110,6 +120,8 @@ static void options_parse(int argc, char *argv[])
     {(OPTIONSTRING)"expire", required_argument, NULL, OPT_EXPIRE},
     {(OPTIONSTRING)"hash", required_argument, NULL, OPT_HASH},
     {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+    {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
+    {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
     {0, 0, 0, 0},
   };
   int option_index= 0;
@@ -146,6 +158,12 @@ static void options_parse(int argc, char *argv[])
       break;
     case OPT_HASH:
       opt_hash= strdup(optarg);
+      break;
+    case OPT_USERNAME:
+      opt_username= optarg;
+      break;
+    case OPT_PASSWD:
+      opt_passwd= optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */

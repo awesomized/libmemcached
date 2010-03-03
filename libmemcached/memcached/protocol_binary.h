@@ -29,13 +29,16 @@
  *
  * Copy: See Copyright for the status of this software.
  *
- * Author: Trond Norbye <trond.norbye@gmail.com>
+ * Author: Trond Norbye <trond.norbye@sun.com>
  */
 
 #ifndef PROTOCOL_BINARY_H
 #define PROTOCOL_BINARY_H
 
-#include <stdint.h>
+/**
+ * \addtogroup Protocol
+ * @{
+ */
 
 /**
  * This file contains definitions of the constants and packet formats
@@ -69,11 +72,14 @@ extern "C"
         PROTOCOL_BINARY_RESPONSE_EINVAL = 0x04,
         PROTOCOL_BINARY_RESPONSE_NOT_STORED = 0x05,
         PROTOCOL_BINARY_RESPONSE_DELTA_BADVAL = 0x06,
+        PROTOCOL_BINARY_RESPONSE_AUTH_ERROR = 0x20,
+        PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE = 0x21,
         PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND = 0x81,
         PROTOCOL_BINARY_RESPONSE_ENOMEM = 0x82,
 
         PROTOCOL_BINARY_RESPONSE_PAUSE = 0xfe00,
         PROTOCOL_BINARY_RESPONSE_EIO = 0xff00
+
     } protocol_binary_response_status;
 
     /**
@@ -108,6 +114,10 @@ extern "C"
         PROTOCOL_BINARY_CMD_FLUSHQ = 0x18,
         PROTOCOL_BINARY_CMD_APPENDQ = 0x19,
         PROTOCOL_BINARY_CMD_PREPENDQ = 0x1a,
+
+        PROTOCOL_BINARY_CMD_SASL_LIST_MECHS = 0x20,
+        PROTOCOL_BINARY_CMD_SASL_AUTH = 0x21,
+        PROTOCOL_BINARY_CMD_SASL_STEP = 0x22,
 
         /* These commands are used for range operations and exist within
          * this header for use in other projects.  Range operations are
@@ -414,6 +424,10 @@ extern "C"
     typedef protocol_binary_request_rangeop protocol_binary_request_rincrq;
     typedef protocol_binary_request_rangeop protocol_binary_request_rdecr;
     typedef protocol_binary_request_rangeop protocol_binary_request_rdecrq;
+
+    /**
+     * @}
+     */
 
 #ifdef __cplusplus
 }

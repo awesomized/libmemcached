@@ -21,6 +21,7 @@
 #include <fnmatch.h>
 #include <stdint.h>
 
+#include "libmemcached/memcached.h"
 #include "test.h"
 
 static void world_stats_print(world_stats_st *stats)
@@ -146,6 +147,14 @@ int main(int argc, char *argv[])
   void *world_ptr;
 
   world_stats_st stats;
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (sasl_client_init(NULL) != SASL_OK)
+  {
+     fprintf(stderr, "Failed to initialize sasl library!\n");
+     return 1;
+  }
+#endif
 
   memset(&stats, 0, sizeof(stats));
   memset(&world, 0, sizeof(world));
@@ -349,6 +358,10 @@ cleanup:
   }
 
   world_stats_print(&stats);
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  sasl_done();
+#endif
 
   return stats.failed == 0 ? 0 : 1;
 }

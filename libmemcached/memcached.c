@@ -5,7 +5,7 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
- * Summary: 
+ * Summary:
  *
  */
 
@@ -88,6 +88,10 @@ static inline bool _memcached_init(memcached_st *self)
   self->get_key_failure= NULL;
   self->delete_trigger= NULL;
   self->callbacks= NULL;
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  self->sasl.callbacks= NULL;
+  self->sasl.is_allocated= false;
+#endif
 
   return true;
 }
@@ -154,6 +158,13 @@ void memcached_free(memcached_st *ptr)
 
   if (ptr->continuum)
     libmemcached_free(ptr, ptr->continuum);
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (ptr->sasl.callbacks != NULL)
+  {
+    memcached_destroy_sasl_auth_data(ptr);
+  }
+#endif
 
   if (memcached_is_allocated(ptr))
   {
@@ -242,6 +253,17 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
     strcpy(new_clone->prefix_key, source->prefix_key);
     new_clone->prefix_key_length= source->prefix_key_length;
   }
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (source->sasl.callbacks)
+  {
+    if (memcached_clone_sasl(new_clone, source) != MEMCACHED_SUCCESS)
+    {
+      memcached_free(new_clone);
+      return NULL;
+    }
+  }
+#endif
 
   rc= run_distribution(new_clone);
 

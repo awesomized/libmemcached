@@ -488,12 +488,14 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   }
 
   /* write the header */
-  if ((memcached_do(server, (const char*)request.bytes, send_length, false) != MEMCACHED_SUCCESS) ||
+  memcached_return_t rc;
+  if (((rc= memcached_do(server, (const char*)request.bytes,
+                         send_length, false)) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(server, key, key_length, false) == -1) ||
       (memcached_io_write(server, value, value_length, flush) == -1))
   {
     memcached_io_reset(server);
-    return MEMCACHED_WRITE_FAILURE;
+    return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
   }
 
   unlikely (verb == SET_OP && ptr->number_of_replicas > 0)

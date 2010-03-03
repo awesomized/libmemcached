@@ -84,6 +84,12 @@ const char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcac
      return "INVALID ARGUMENTS";
   case MEMCACHED_KEY_TOO_BIG:
      return "KEY RETURNED FROM SERVER WAS TOO LARGE";
+  case MEMCACHED_AUTH_PROBLEM:
+    return "FAILED TO SEND AUTHENTICATION TO SERVER";
+  case MEMCACHED_AUTH_FAILURE:
+    return "AUTHENTICATION FAILURE";
+  case MEMCACHED_AUTH_CONTINUE:
+    return "CONTINUE AUTHENTICATION";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:
