@@ -53,6 +53,7 @@
 #include <libmemcached/strerror.h>
 #include <libmemcached/verbosity.h>
 #include <libmemcached/version.h>
+#include <libmemcached/sasl.h>
 
 struct memcached_st {
   /**
@@ -121,6 +122,17 @@ struct memcached_st {
   memcached_trigger_key_fn get_key_failure;
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  struct {
+    const sasl_callback_t *callbacks;
+    /*
+    ** Did we allocate data inside the callbacks, or did the user
+    ** supply that.
+    */
+    bool is_allocated MEMCACHED_BITFIELD;
+  } sasl;
+
+#endif
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   struct {
     bool is_allocated MEMCACHED_BITFIELD;

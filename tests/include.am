@@ -52,50 +52,50 @@ tests_libtest_la_SOURCES= tests/test.c
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= tests/mem_functions.c
-tests_testapp_LDADD= \
+tests_testapp_DEPENDENCIES= \
 		     clients/libgenexec.la \
 		     tests/libserver.la \
 		     tests/libtest.la \
 		     libmemcached/libmemcachedinternal.la \
-$(TESTS_LDADDS)
-tests_testapp_DEPENDENCIES= $(tests_testapp_LDADD)
+                     $(TESTS_LDADDS)
+tests_testapp_LDADD= $(tests_testapp_DEPENDENCIES) $(LIBSASL)
 
 tests_testplus_SOURCES= tests/plus.cpp
-tests_testplus_LDADD= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
-tests_testplus_DEPENDENCIES= $(tests_testplus_LDADD)
+tests_testplus_DEPENDENCIES= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 
 tests_atomsmasher_SOURCES= tests/atomsmasher.c
-tests_atomsmasher_LDADD= \
+tests_atomsmasher_DEPENDENCIES= \
 	clients/libgenexec.la \
 	tests/libserver.la \
 	tests/libtest.la \
 	$(TESTS_LDADDS)
-tests_atomsmasher_DEPENDENCIES= $(tests_atomsmasher_LDADD)
+tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.c
-tests_testudp_LDADD= \
+tests_testudp_DEPENDENCIES= \
 	clients/libgenexec.la \
 	tests/libserver.la \
 	tests/libtest.la \
 	$(TESTS_LDADDS)
-tests_testudp_DEPENDENCIES= $(tests_testudp_LDADD)
+tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 
 tests_startservers_SOURCES= tests/start.c
-tests_startservers_LDADD= tests/libserver.la $(TESTS_LDADDS)
-tests_startservers_DEPENDENCIES= $(tests_startservers_LDADD)
+tests_startservers_DEPENDENCIES= tests/libserver.la $(TESTS_LDADDS)
+tests_startservers_LDADD= $(tests_startservers_DEPENDENCIES) $(LIBSASL)
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.c
-tests_testhashkit_LDADD = tests/libtest.la libhashkit/libhashkit.la
-tests_testhashkit_DEPENDENCIES = $(tests_testhashkit_LDADD)
+tests_testhashkit_DEPENDENCIES = tests/libtest.la libhashkit/libhashkit.la
+tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_hashplus_SOURCES = tests/hash_plus.cc
-tests_hashplus_LDADD = $(tests_testhashkit_LDADD)
-tests_hashplus_DEPENDENCIES = $(tests_testhashkit_LDADD)
+tests_hashplus_DEPENDENCIES = $(tests_testhashkit_DEPENDENCIES)
+tests_hashplus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_memplus_SOURCES = tests/mem_plus.cc
-tests_memplus_LDADD = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
-tests_memplus_DEPENDENCIES = $(tests_memplus_LDADD)
+tests_memplus_DEPENDENCIES = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
+tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES)
 
 test: test-docs test-mem test-hash memcapable
 	echo "Tests completed"

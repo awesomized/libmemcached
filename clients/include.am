@@ -7,6 +7,10 @@ CLIENTS_LDADDS = \
 	clients/libutilities.la \
 	libmemcached/libmemcached.la
 
+if HAVE_SASL
+CLIENTS_LDADDS+= $(LIBSASL)
+endif
+
 bin_PROGRAMS+= \
 	clients/memcapable \
 	clients/memcat \

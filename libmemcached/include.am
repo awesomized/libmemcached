@@ -44,6 +44,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/protocol_handler.h \
 			 libmemcached/quit.h \
 			 libmemcached/result.h \
+                         libmemcached/sasl.h \
 			 libmemcached/server.h \
 			 libmemcached/server_list.h \
 			 libmemcached/stats.h \
@@ -64,7 +65,7 @@ libmemcached_libmemcachedprotocol_la_SOURCES =  \
 						libmemcached/protocol/pedantic.c \
 						libmemcached/protocol/protocol_handler.c
 
-libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0 
+libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0
 
 noinst_LTLIBRARIES+= \
 		     libmemcached/libmemcachedcallbacks.la
@@ -136,6 +137,11 @@ libmemcached_libmemcached_la_LIBADD += libmemcached/libbyteorder.la
 libmemcached_libmemcached_la_DEPENDENCIES+= libmemcached/libbyteorder.la
 libmemcached_libmemcachedprotocol_la_LIBADD=libmemcached/libbyteorder.la
 libmemcached_libmemcachedprotocol_la_DEPENDENCIES=libmemcached/libbyteorder.la
+endif
+
+if HAVE_SASL
+libmemcached_libmemcached_la_LDFLAGS+= $(LIBSASL)
+libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.c
 endif
 
 if HAVE_DTRACE

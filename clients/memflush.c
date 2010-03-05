@@ -22,6 +22,8 @@ static int opt_binary= 0;
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
+static char *opt_username;
+static char *opt_passwd;
 
 #define PROGRAM_NAME "memflush"
 #define PROGRAM_DESCRIPTION "Erase all data in a server of memcached servers."
@@ -57,11 +59,17 @@ int main(int argc, char *argv[])
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t) opt_binary);
-  
-  rc = memcached_flush(memc, opt_expire);
-  if (rc != MEMCACHED_SUCCESS) 
+
+  if (!initialize_sasl(memc, opt_username, opt_passwd))
   {
-    fprintf(stderr, "memflush: memcache error %s", 
+    memcached_free(memc);
+    return 1;
+  }
+
+  rc = memcached_flush(memc, opt_expire);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    fprintf(stderr, "memflush: memcache error %s",
 	    memcached_strerror(memc, rc));
     if (memc->cached_errno)
       fprintf(stderr, " system error %s", strerror(memc->cached_errno));
@@ -71,6 +79,8 @@ int main(int argc, char *argv[])
   memcached_free(memc);
 
   free(opt_servers);
+
+  shutdown_sasl();
 
   return 0;
 }
@@ -92,12 +102,14 @@ void options_parse(int argc, char *argv[])
     {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
     {(OPTIONSTRING)"expire", required_argument, NULL, OPT_EXPIRE},
     {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+    {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
+    {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
     {0, 0, 0, 0},
   };
   int option_index= 0;
   int option_rv;
 
-  while (1) 
+  while (1)
   {
     option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
@@ -125,6 +137,12 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
+      break;
+    case OPT_USERNAME:
+      opt_username= optarg;
+      break;
+    case OPT_PASSWD:
+      opt_passwd= optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */

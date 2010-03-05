@@ -376,10 +376,11 @@ static test_return_t error_test(memcached_st *memc)
                         4269430871U, 610793021U, 527273862U, 1437122909U,
                         2300930706U, 2943759320U, 674306647U, 2400528935U,
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
-                        4159057246U, 3425930182U, 2593724503U,  1868899624U};
+                        4159057246U, 3425930182U, 2593724503U,  1868899624U,
+                        1769812374U, 2302537950U, 1110330676U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  test_true(MEMCACHED_MAXIMUM_RETURN == 40);
+  test_true(MEMCACHED_MAXIMUM_RETURN == 43);
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
@@ -1215,6 +1216,10 @@ static test_return_t stats_servername_test(memcached_st *memc)
   memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (memcached_get_sasl_callbacks(memc) != NULL)
+    return TEST_SKIPPED;
+#endif
   rc= memcached_stat_servername(&memc_stat, NULL,
                                 memcached_server_name(instance),
                                 memcached_server_port(instance));
@@ -3467,7 +3472,7 @@ static test_return_t pre_cork(memcached_st *memc)
 static test_return_t pre_cork_and_nonblock(memcached_st *memc)
 {
   test_return_t rc;
-  
+
   rc= pre_cork(memc);
 
 #ifdef __APPLE__
@@ -3642,6 +3647,31 @@ static test_return_t pre_binary(memcached_st *memc)
   return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
 }
 
+static test_return_t pre_sasl(memcached_st *memc)
+{
+  memcached_return_t rc= MEMCACHED_FAILURE;
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  const char *server= getenv("LIBMEMCACHED_TEST_SASL_SERVER");
+  const char *user= getenv("LIBMEMCACHED_TEST_SASL_USERNAME");
+  const char *pass= getenv("LIBMEMCACHED_TEST_SASL_PASSWORD");
+
+  if (server != NULL && user != NULL && pass != NULL)
+  {
+    memcached_server_st *servers= memcached_servers_parse(server);
+    test_true(servers != NULL);
+    memcached_servers_reset(memc);
+    test_true(memcached_server_push(memc, servers) == MEMCACHED_SUCCESS);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+    rc= memcached_set_sasl_auth_data(memc, user, pass);
+    test_true(rc == MEMCACHED_SUCCESS);
+  }
+#else
+  (void)memc;
+#endif
+
+  return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
+}
 
 static test_return_t pre_replication(memcached_st *memc)
 {
@@ -4252,7 +4282,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  for (size_t x= 0; x < 10; ++x) 
+  for (size_t x= 0; x < 10; ++x)
   {
     uint64_t number_value;
     rc= memcached_increment(mmc[x], key, keylen, 1, &number_value);
@@ -4792,7 +4822,7 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
     test_true(md5_values[x] == hash_val);
   }
 
-  
+
   /*
     Now check memcached_st.
   */
@@ -5505,8 +5535,36 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+ * Test that the sasl authentication works. We cannot use the default
+ * pool of servers, because that would require that all servers we want
+ * to test supports SASL authentication, and that they use the default
+ * creds.
+ */
+static test_return_t sasl_auth_test(memcached_st *memc)
+{
+  memcached_return_t rc;
 
+  rc= memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_SUCCESS);
+  test_true((rc= memcached_delete(memc, "foo", 3, 0)) == MEMCACHED_SUCCESS);
+  test_true((rc= memcached_destroy_sasl_auth_data(memc)) == MEMCACHED_SUCCESS);
+  test_true((rc= memcached_destroy_sasl_auth_data(memc)) == MEMCACHED_FAILURE);
+  test_true((rc= memcached_destroy_sasl_auth_data(NULL)) == MEMCACHED_FAILURE);
+  memcached_quit(memc);
 
+  rc= memcached_set_sasl_auth_data(memc,
+                                   getenv("LIBMEMCACHED_TEST_SASL_USERNAME"),
+                                   getenv("LIBMEMCACHED_TEST_SASL_SERVER"));
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_AUTH_FAILURE);
+  test_true(memcached_destroy_sasl_auth_data(memc) == MEMCACHED_SUCCESS);
+
+  memcached_quit(memc);
+  return TEST_SUCCESS;
+}
 
 /* Clean the server before beginning testing */
 test_st tests[] ={
@@ -5667,6 +5725,13 @@ test_st regression_tests[]= {
   {0, 0, (test_callback_fn)0}
 };
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+test_st sasl_auth_tests[]= {
+  {"sasl_auth", 1, (test_callback_fn)sasl_auth_test },
+  {0, 0, (test_callback_fn)0}
+};
+#endif
+
 test_st ketama_compatibility[]= {
   {"libmemcached", 1, (test_callback_fn)ketama_compatibility_libmemcached },
   {"spymemcached", 1, (test_callback_fn)ketama_compatibility_spymemcached },
@@ -5772,6 +5837,8 @@ collection_st collection[] ={
 #endif
   {"memory_allocators", (test_callback_fn)set_memory_alloc, 0, tests},
   {"prefix", (test_callback_fn)set_prefix, 0, tests},
+  {"sasl_auth", (test_callback_fn)pre_sasl, 0, sasl_auth_tests },
+  {"sasl", (test_callback_fn)pre_sasl, 0, tests },
   {"version_1_2_3", (test_callback_fn)check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},

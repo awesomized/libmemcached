@@ -45,7 +45,7 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   return rc;
 }
 
-memcached_return_t memcached_response(memcached_server_write_instance_st ptr, 
+memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result)
 {
@@ -58,7 +58,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
   /*
    * The previous implementation purged all pending requests and just
    * returned the last one. Purge all pending messages to ensure backwards
-   * compatibility. 
+   * compatibility.
  */
   if (ptr->root->flags.binary_protocol == false)
     while (memcached_server_response_count(ptr) > 1)
@@ -68,10 +68,10 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
       unlikely (rc != MEMCACHED_END &&
                 rc != MEMCACHED_STORED &&
                 rc != MEMCACHED_SUCCESS &&
-                rc != MEMCACHED_STAT && 
+                rc != MEMCACHED_STAT &&
                 rc != MEMCACHED_DELETED &&
                 rc != MEMCACHED_NOTFOUND &&
-                rc != MEMCACHED_NOTSTORED && 
+                rc != MEMCACHED_NOTSTORED &&
                 rc != MEMCACHED_DATA_EXISTS)
         return rc;
     }
@@ -176,8 +176,8 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   }
 
   value_ptr= memcached_string_value_mutable(&result->value);
-  /* 
-    We read the \r\n into the string since not doing so is more 
+  /*
+    We read the \r\n into the string since not doing so is more
     cycles then the waster of memory to do so.
 
     We are null terminating through, which will most likely make
@@ -246,21 +246,21 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         memcached_server_response_increment(ptr);
         return MEMCACHED_STAT;
       }
-      else if (buffer[1] == 'E') /* SERVER_ERROR */ 
+      else if (buffer[1] == 'E') /* SERVER_ERROR */
       {
         char *rel_ptr;
         char *startptr= buffer + 13, *endptr= startptr;
 
         while (*endptr != '\r' && *endptr != '\n') endptr++;
 
-        /* 
+        /*
           Yes, we could make this "efficent" but to do that we would need
           to maintain more state for the size of the buffer. Why waste
           memory in the struct, which is important, for something that
           rarely should happen?
         */
         rel_ptr= (char *)libmemcached_realloc(ptr->root,
-                                              ptr->cached_server_error, 
+                                              ptr->cached_server_error,
                                               (size_t) (endptr - startptr + 1));
 
         if (rel_ptr == NULL)
@@ -333,11 +333,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
 {
   protocol_binary_response_header header;
 
-  unlikely (memcached_safe_read(ptr, &header.bytes, 
+  unlikely (memcached_safe_read(ptr, &header.bytes,
                                 sizeof(header.bytes)) != MEMCACHED_SUCCESS)
     return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-  unlikely (header.response.magic != PROTOCOL_BINARY_RES) 
+  unlikely (header.response.magic != PROTOCOL_BINARY_RES)
     return MEMCACHED_PROTOCOL_ERROR;
 
   /*
@@ -349,7 +349,8 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   header.response.cas= ntohll(header.response.cas);
   uint32_t bodylen= header.response.bodylen;
 
-  if (header.response.status == 0) 
+  if (header.response.status == PROTOCOL_BINARY_RESPONSE_SUCCESS ||
+      header.response.status == PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE)
   {
     switch (header.response.opcode)
     {
@@ -357,8 +358,8 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       /*
        * We didn't increment the response counter for the GETKQ packet
        * (only the final NOOP), so we need to increment the counter again.
-       */ 
-      memcached_server_response_increment(ptr); 
+       */
+      memcached_server_response_increment(ptr);
       /* FALLTHROUGH */
     case PROTOCOL_BINARY_CMD_GETK:
       {
@@ -374,36 +375,37 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         bodylen -= header.response.extlen;
 
         result->key_length= keylen;
-        if (memcached_safe_read(ptr, result->item_key, keylen) != MEMCACHED_SUCCESS) 
+        if (memcached_safe_read(ptr, result->item_key, keylen) != MEMCACHED_SUCCESS)
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
         bodylen -= keylen;
         if (memcached_string_check(&result->value,
-                                   bodylen) != MEMCACHED_SUCCESS) 
+                                   bodylen) != MEMCACHED_SUCCESS)
           return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
         char *vptr= memcached_string_value_mutable(&result->value);
-        if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS) 
+        if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS)
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-        memcached_string_set_length(&result->value, bodylen);  
-      } 
+        memcached_string_set_length(&result->value, bodylen);
+      }
       break;
     case PROTOCOL_BINARY_CMD_INCREMENT:
     case PROTOCOL_BINARY_CMD_DECREMENT:
       {
-        if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t)) 
+        if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t))
           return MEMCACHED_PROTOCOL_ERROR;
 
         WATCHPOINT_ASSERT(bodylen == buffer_length);
         uint64_t val;
-        if (memcached_safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS) 
+        if (memcached_safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS)
           return MEMCACHED_UNKNOWN_READ_FAILURE;
 
         val= ntohll(val);
         memcpy(buffer, &val, sizeof(val));
-      } 
+      }
       break;
+    case PROTOCOL_BINARY_CMD_SASL_LIST_MECHS:
     case PROTOCOL_BINARY_CMD_VERSION:
       {
         memset(buffer, 0, buffer_length);
@@ -412,7 +414,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         else if (memcached_safe_read(ptr, buffer, bodylen) != MEMCACHED_SUCCESS)
           return MEMCACHED_UNKNOWN_READ_FAILURE;
-      } 
+      }
       break;
     case PROTOCOL_BINARY_CMD_FLUSH:
     case PROTOCOL_BINARY_CMD_QUIT:
@@ -425,7 +427,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       {
         WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_SUCCESS;
-      } 
+      }
     case PROTOCOL_BINARY_CMD_NOOP:
       {
         WATCHPOINT_ASSERT(bodylen == 0);
@@ -438,30 +440,48 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         else if (bodylen + 1 > buffer_length)
           /* not enough space in buffer.. should not happen... */
           return MEMCACHED_UNKNOWN_READ_FAILURE;
-        else 
+        else
         {
-          size_t keylen= header.response.keylen;            
+          size_t keylen= header.response.keylen;
           memset(buffer, 0, buffer_length);
           if (memcached_safe_read(ptr, buffer, keylen) != MEMCACHED_SUCCESS ||
-              memcached_safe_read(ptr, buffer + keylen + 1, 
+              memcached_safe_read(ptr, buffer + keylen + 1,
                                   bodylen - keylen) != MEMCACHED_SUCCESS)
             return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
-      } 
+      }
+      break;
+
+    case PROTOCOL_BINARY_CMD_SASL_AUTH:
+    case PROTOCOL_BINARY_CMD_SASL_STEP:
+      {
+        memcached_result_reset(result);
+        result->item_cas= header.response.cas;
+
+        if (memcached_string_check(&result->value,
+                                   bodylen) != MEMCACHED_SUCCESS)
+          return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+        char *vptr= memcached_string_value_mutable(&result->value);
+        if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS)
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+
+        memcached_string_set_length(&result->value, bodylen);
+      }
       break;
     default:
       {
         /* Command not implemented yet! */
         WATCHPOINT_ASSERT(0);
         return MEMCACHED_PROTOCOL_ERROR;
-      }        
+      }
     }
-  } 
-  else if (header.response.bodylen) 
+  }
+  else if (header.response.bodylen)
   {
     /* What should I do with the error message??? just discard it for now */
     char hole[SMALL_STRING_LEN];
-    while (bodylen > 0) 
+    while (bodylen > 0)
     {
       size_t nr= (bodylen > SMALL_STRING_LEN) ? SMALL_STRING_LEN : bodylen;
       if (memcached_safe_read(ptr, hole, nr) != MEMCACHED_SUCCESS)
@@ -487,8 +507,8 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   }
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
-  unlikely(header.response.status != 0) 
-    switch (header.response.status) 
+  unlikely(header.response.status != 0)
+    switch (header.response.status)
     {
     case PROTOCOL_BINARY_RESPONSE_KEY_ENOENT:
       rc= MEMCACHED_NOTFOUND;
@@ -504,6 +524,12 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       break;
     case PROTOCOL_BINARY_RESPONSE_ENOMEM:
       rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE:
+      rc= MEMCACHED_AUTH_CONTINUE;
+      break;
+    case PROTOCOL_BINARY_RESPONSE_AUTH_ERROR:
+      rc= MEMCACHED_AUTH_FAILURE;
       break;
     case PROTOCOL_BINARY_RESPONSE_EINVAL:
     case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:

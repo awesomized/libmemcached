@@ -111,12 +111,13 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.body.initial= htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  if ((memcached_do(instance, request.bytes,
-                    sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
+  memcached_return_t rc;
+  if (((rc= memcached_do(instance, request.bytes,
+                         sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(instance, key, key_length, true) == -1))
   {
     memcached_io_reset(instance);
-    return MEMCACHED_WRITE_FAILURE;
+    return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
   }
 
   if (no_reply)

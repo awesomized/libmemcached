@@ -180,4 +180,4 @@ tests/startservers
 tests/testapp
 tests/testhashkit
 tests/testplus
-tests/udptest
+tests/testudp

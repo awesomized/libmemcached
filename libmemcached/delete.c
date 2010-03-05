@@ -173,13 +173,13 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
 
-  if ((memcached_do(instance, request.bytes,
-                    sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
+  if (((rc= memcached_do(instance, request.bytes,
+                         sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
       (memcached_io_write(instance, key,
                           key_length, flush) == -1))
   {
     memcached_io_reset(instance);
-    rc= MEMCACHED_WRITE_FAILURE;
+    rc= (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
   }
 
   unlikely (ptr->number_of_replicas > 0)

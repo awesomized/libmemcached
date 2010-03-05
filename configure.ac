@@ -55,6 +55,12 @@ ENABLE_DEPRECATED
 PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
 DETECT_BITFIELD
+PANDORA_HAVE_SASL
+
+dnl The sasl functions should only be visible if we build with sasl support
+AS_IF([test "x$ac_cv_sasl" = "xyes"],
+      [LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1"])
+AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[

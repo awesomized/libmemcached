@@ -41,6 +41,8 @@ static char *opt_hash= NULL;
 static int opt_method= OPT_SET;
 static uint32_t opt_flags= 0;
 static time_t opt_expires= 0;
+static char *opt_username;
+static char *opt_passwd;
 
 static long strtol_wrapper(const char *nptr, int base, bool *error)
 {
@@ -106,6 +108,11 @@ int main(int argc, char *argv[])
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
+  if (!initialize_sasl(memc, opt_username, opt_passwd))
+  {
+    memcached_free(memc);
+    return 1;
+  }
 
   while (optind < argc)
   {
@@ -193,6 +200,7 @@ int main(int argc, char *argv[])
     free(opt_servers);
   if (opt_hash)
     free(opt_hash);
+  shutdown_sasl();
 
   return return_code;
 }
@@ -221,6 +229,8 @@ static void options_parse(int argc, char *argv[])
       {(OPTIONSTRING)"replace",  no_argument, NULL, OPT_REPLACE},
       {(OPTIONSTRING)"hash", required_argument, NULL, OPT_HASH},
       {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+      {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
+      {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
       {0, 0, 0, 0},
     };
 
@@ -285,7 +295,13 @@ static void options_parse(int argc, char *argv[])
     case OPT_HASH:
       opt_hash= strdup(optarg);
       break;
-    case '?':
+    case OPT_USERNAME:
+      opt_username= optarg;
+      break;
+    case OPT_PASSWD:
+      opt_passwd= optarg;
+      break;
+   case '?':
       /* getopt_long already printed an error message. */
       exit(1);
     default:

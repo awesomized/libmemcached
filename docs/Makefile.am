@@ -89,7 +89,7 @@ POOL_PAGES= \
 	    memcached_pool_create.pop \
 	    memcached_pool_destroy.pop \
 	    memcached_pool_pop.pop \
-	    memcached_pool_push.pop 
+	    memcached_pool_push.pop
 BUILT_SOURCES += ${POOL_PAGES}
 
 RESULT_PAGES= \
@@ -111,14 +111,14 @@ SERVER_PAGES= \
 	      memcached_server_list.pop \
 	      memcached_server_add.pop \
 	      memcached_server_add_unix_socket.pop \
-	      memcached_server_push.pop 
+	      memcached_server_push.pop
 BUILT_SOURCES += ${SERVER_PAGES}
 
 SERVER_ST_PAGES= \
 		 memcached_server_list_free.pop \
 		 memcached_server_list_count.pop \
 		 memcached_server_list_append.pop \
-		 memcached_servers_parse.pop 
+		 memcached_servers_parse.pop
 BUILT_SOURCES += ${SERVER_ST_PAGES}
 
 SET_PAGES= \
@@ -416,6 +416,34 @@ man_MANS = \
 	   memslap.1 \
 	   memstat.1
 
+if HAVE_SASL
+POD_FILES+= memcached_sasl.pod
+man_MANS+= \
+           memcached_destroy_sasl_auth_data.3 \
+           memcached_get_sasl_callbacks.3 \
+           memcached_sasl_set_auth_data.3 \
+           memcached_set_sasl_callbacks.3
+
+HTML_FILES+= \
+           memcached_destroy_sasl_auth_data.html \
+           memcached_get_sasl_callbacks.html \
+           memcached_sasl_set_auth_data.html \
+           memcached_set_sasl_callbacks.html
+
+
+SASL_PAGES= \
+           memcached_destroy_sasl_auth_data.pop \
+           memcached_get_sasl_callbacks.pop \
+           memcached_sasl_set_auth_data.pop \
+           memcached_set_sasl_callbacks.pop
+BUILT_SOURCES += ${SASL_PAGES}
+
+${SASL_PAGES}:
+	@rm -f $@
+	ln -s ${top_srcdir}/docs/memcached_sasl.pod ${top_builddir}/docs/$@
+
+endif
+
 if BUILD_LIBMEMCACHEDUTIL
 man_MANS+= \
 	  libmemcachedutil.3 \
@@ -428,11 +456,11 @@ man_MANS+= \
 endif
 
 
-${CREATE_PAGES}: 
+${CREATE_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_create.pod ${top_builddir}/docs/$@
 
-${SET_PAGES}: 
+${SET_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_set.pod ${top_builddir}/docs/$@
 
@@ -488,7 +516,6 @@ ${USER_DATA_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@
 
-
 ${POOL_PAGES}:
 	@rm -f $@
 	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@
@@ -511,7 +538,7 @@ test-docs: $(POD_FILES)
 
 html-local: html-pages html-index
 
-html-pages: $(HTML_FILES) 
+html-pages: $(HTML_FILES)
 
 html-index: html-pages
 	perl make_index.pl *.html > index.html

@@ -58,6 +58,8 @@ static const char *lookup_help(memcached_options option)
   case OPT_BINARY: return("Switch to binary protocol.");
   case OPT_ANALYZE: return("Analyze the provided servers.");
   case OPT_UDP: return("Use UDP protocol when communicating with server.");
+  case OPT_USERNAME: return "Username to use for SASL authentication";
+  case OPT_PASSWD: return "Password to use for SASL authentication";
   default: WATCHPOINT_ASSERT(0);
   };
 
@@ -75,12 +77,12 @@ void help_command(const char *command_name, const char *description,
   printf("\t%s\n\n", description);
   printf("Current options. A '=' means the option takes a value.\n\n");
 
-  for (x= 0; long_options[x].name; x++) 
+  for (x= 0; long_options[x].name; x++)
   {
     const char *help_message;
 
-    printf("\t --%s%c\n", long_options[x].name, 
-           long_options[x].has_arg ? '=' : ' ');  
+    printf("\t --%s%c\n", long_options[x].name,
+           long_options[x].has_arg ? '=' : ' ');
     if ((help_message= lookup_help(long_options[x].val)))
       printf("\t\t%s\n", help_message);
   }
@@ -122,3 +124,93 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   }
 }
 
+static char *username;
+static char *passwd;
+
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+static int get_username(void *context, int id, const char **result,
+                        unsigned int *len)
+{
+  (void)context;
+  if (!result || (id != SASL_CB_USER && id != SASL_CB_AUTHNAME))
+    return SASL_BADPARAM;
+
+  *result= username;
+  if (len)
+     *len= (username == NULL) ? 0 : (unsigned int)strlen(username);
+
+  return SASL_OK;
+}
+
+static int get_password(sasl_conn_t *conn, void *context, int id,
+                        sasl_secret_t **psecret)
+{
+  (void)context;
+  static sasl_secret_t* x;
+
+  if (!conn || ! psecret || id != SASL_CB_PASS)
+    return SASL_BADPARAM;
+
+  if (passwd == NULL)
+  {
+     *psecret= NULL;
+     return SASL_OK;
+  }
+
+  size_t len= strlen(passwd);
+  x = realloc(x, sizeof(sasl_secret_t) + len);
+  if (!x)
+    return SASL_NOMEM;
+
+  x->len = len;
+  strcpy((void *)x->data, passwd);
+
+  *psecret = x;
+  return SASL_OK;
+}
+
+/* callbacks we support */
+static sasl_callback_t sasl_callbacks[] = {
+  {
+    SASL_CB_USER, &get_username, NULL
+  }, {
+    SASL_CB_AUTHNAME, &get_username, NULL
+  }, {
+    SASL_CB_PASS, &get_password, NULL
+  }, {
+    SASL_CB_LIST_END, NULL, NULL
+  }
+};
+#endif
+
+bool initialize_sasl(memcached_st *memc, char *user, char *password)
+{
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (user != NULL && password != NULL)
+  {
+    username= user;
+    passwd= password;
+
+    if (sasl_client_init(NULL) != SASL_OK)
+    {
+      fprintf(stderr, "Failed to initialize sasl library!\n");
+      return false;
+    }
+    memcached_set_sasl_callbacks(memc, sasl_callbacks);
+  }
+#else
+  (void)memc;
+  (void)user;
+  (void)passwd;
+#endif
+
+  return true;
+}
+
+void shutdown_sasl(void)
+{
+#if LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (username != NULL || passwd != NULL)
+    sasl_done();
+#endif
+}
