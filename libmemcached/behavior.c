@@ -157,6 +157,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->recv_size= (int32_t)data;
     memcached_quit(ptr);
     break;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    ptr->tcp_keepidle= (uint32_t)data;
+    memcached_quit(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return MEMCACHED_FAILURE;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
@@ -292,6 +296,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return (uint64_t)ptr->snd_timeout;
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     return (uint64_t)ptr->rcv_timeout;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    return (uint64_t)ptr->tcp_keepidle;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       int sock_size= 0;
