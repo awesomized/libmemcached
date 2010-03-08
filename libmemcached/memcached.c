@@ -5,7 +5,7 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
- * Summary: 
+ * Summary:
  *
  */
 
@@ -32,7 +32,8 @@ static const memcached_st global_copy= {
     .use_cache_lookups= false,
     .use_sort_hosts= false,
     .use_udp= false,
-    .verify_key= false
+    .verify_key= false,
+    .tcp_keepalive= false
   }
 };
 

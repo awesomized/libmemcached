@@ -80,6 +80,7 @@ struct memcached_st {
     bool use_sort_hosts MEMCACHED_BITFIELD;
     bool use_udp MEMCACHED_BITFIELD;
     bool verify_key MEMCACHED_BITFIELD;
+    bool tcp_keepalive MEMCACHED_BITFIELD;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;

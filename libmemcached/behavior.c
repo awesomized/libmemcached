@@ -87,6 +87,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->flags.tcp_nodelay= set_flag(data);
     memcached_quit(ptr);
     break;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    ptr->flags.tcp_keepalive= set_flag(data);
+    memcached_quit(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
   case MEMCACHED_BEHAVIOR_KETAMA:
@@ -114,7 +118,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       /**
         @note We try to keep the same distribution going. This should be deprecated and rewritten.
       */
-      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA); 
+      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
     }
   case MEMCACHED_BEHAVIOR_HASH:
     return memcached_behavior_set_key_hash(ptr, (memcached_hash_t)(data));
@@ -324,8 +328,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
       instance= memcached_server_instance_fetch(ptr, 0);
 
-      /** 
-        @note REFACTOR 
+      /**
+        @note REFACTOR
       */
       if (instance)
       {
