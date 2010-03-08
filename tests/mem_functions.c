@@ -5537,6 +5537,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
  */
 static test_return_t sasl_auth_test(memcached_st *memc)
 {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   memcached_return_t rc;
 
   rc= memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0);
@@ -5558,6 +5559,10 @@ static test_return_t sasl_auth_test(memcached_st *memc)
 
   memcached_quit(memc);
   return TEST_SUCCESS;
+#else
+  (void)memc;
+  return TEST_FAILURE;
+#endif
 }
 
 /* Clean the server before beginning testing */
@@ -5719,12 +5724,10 @@ test_st regression_tests[]= {
   {0, 0, (test_callback_fn)0}
 };
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
 test_st sasl_auth_tests[]= {
   {"sasl_auth", 1, (test_callback_fn)sasl_auth_test },
   {0, 0, (test_callback_fn)0}
 };
-#endif
 
 test_st ketama_compatibility[]= {
   {"libmemcached", 1, (test_callback_fn)ketama_compatibility_libmemcached },
