@@ -357,6 +357,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.randomize_replica_read;
   case MEMCACHED_BEHAVIOR_CORK:
     return ptr->flags.cork;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    return ptr->flags.tcp_keepalive;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
