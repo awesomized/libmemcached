@@ -85,6 +85,20 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
   }
 #endif
 
+#ifdef TCP_KEEPIDLE
+  if (ptr->root->tcp_keepidle)
+  {
+    int flag= 1;
+    int error;
+
+    error= setsockopt(ptr->fd, IPPROTO_TCP, TCP_KEEPIDLE,
+                      &flag, (socklen_t)sizeof(int));
+    WATCHPOINT_ASSERT(error == 0);
+    if (error)
+      return MEMCACHED_FAILURE;
+  }
+#endif
+
   if (ptr->root->flags.no_block)
   {
     int error;

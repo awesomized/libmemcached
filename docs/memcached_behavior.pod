@@ -231,6 +231,10 @@ MEMCACHED_BEHAVIOR_TCP_NODELAY when set.
 
 Enable TCP_KEEPALIVE behavior.
 
+=item MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE
+
+Specify time, in seconds, to mark a connection as idle. This is only available as an option Linux.
+
 =item MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
 
 Find the current size of SO_SNDBUF. A value of 0 means either an error
