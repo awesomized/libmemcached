@@ -124,10 +124,10 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   }
 }
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
 static char *username;
 static char *passwd;
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
 static int get_username(void *context, int id, const char **result,
                         unsigned int *len)
 {
@@ -201,7 +201,7 @@ bool initialize_sasl(memcached_st *memc, char *user, char *password)
 #else
   (void)memc;
   (void)user;
-  (void)passwd;
+  (void)password;
 #endif
 
   return true;
@@ -209,7 +209,7 @@ bool initialize_sasl(memcached_st *memc, char *user, char *password)
 
 void shutdown_sasl(void)
 {
-#if LIBMEMCACHED_WITH_SASL_SUPPORT
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (username != NULL || passwd != NULL)
     sasl_done();
 #endif
