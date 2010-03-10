@@ -575,15 +575,28 @@ static enum test_return do_validate_response_header(response *rsp,
 #define validate_response_header(a,b,c) \
         do_validate_response_header(a,b,c) == TEST_PASS
 
-static enum test_return test_binary_noop(void)
+
+static enum test_return send_binary_noop(void)
 {
   command cmd;
-  response rsp;
   raw_command(&cmd, PROTOCOL_BINARY_CMD_NOOP, NULL, 0, NULL, 0);
   execute(send_packet(&cmd));
+  return TEST_PASS;
+}
+
+static enum test_return receive_binary_noop(void)
+{
+  response rsp;
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_NOOP,
                                   PROTOCOL_BINARY_RESPONSE_SUCCESS));
+  return TEST_PASS;
+}
+
+static enum test_return test_binary_noop(void)
+{
+  execute(send_binary_noop());
+  execute(receive_binary_noop());
   return TEST_PASS;
 }
 
@@ -854,19 +867,23 @@ static enum test_return test_binary_get_impl(const char *key, uint8_t cc)
 
   raw_command(&cmd, cc, key, strlen(key), NULL, 0);
   execute(send_packet(&cmd));
+  execute(send_binary_noop());
 
   if (cc == PROTOCOL_BINARY_CMD_GET || cc == PROTOCOL_BINARY_CMD_GETK)
   {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_ENOENT));
   }
-  else
-    execute(test_binary_noop());
+
+  execute(receive_binary_noop());
 
   execute(binary_set_item(key, key));
   execute(resend_packet(&cmd));
+  execute(send_binary_noop());
+
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
+  execute(receive_binary_noop());
 
   return TEST_PASS;
 }
@@ -1112,24 +1129,6 @@ static enum test_return test_binary_stat(void)
   } while (rsp.plain.message.header.response.keylen != 0);
 
   return TEST_PASS;
-}
-
-static enum test_return test_binary_illegal(void)
-{
-  command cmd;
-  response rsp;
-  uint8_t cc= 0x1b;
-
-  while (cc != 0x00)
-  {
-    raw_command(&cmd, cc, NULL, 0, NULL, 0);
-    execute(send_packet(&cmd));
-    execute(recv_packet(&rsp));
-    verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND));
-    ++cc;
-  }
-
-  return TEST_PASS_RECONNECT;
 }
 
 static enum test_return send_string(const char *cmd)
@@ -1851,7 +1850,6 @@ struct testcase testcases[]= {
   { "binary prepend", test_binary_prepend },
   { "binary prependq", test_binary_prependq },
   { "binary stat", test_binary_stat },
-  { "binary illegal", test_binary_illegal },
   { NULL, NULL}
 };
 
