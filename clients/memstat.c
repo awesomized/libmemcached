@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
   memc= memcached_create(NULL);
 
   servers= memcached_servers_parse(opt_servers);
-  memcached_server_push(memc, servers);
+  rc= memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
   if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)

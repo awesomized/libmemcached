@@ -190,6 +190,7 @@ static test_return_t memcached_server_remove_test(memcached_st *ptr __attribute_
   servers= memcached_servers_parse(server_string);
 
   rc= memcached_server_push(memc, servers);
+  memcached_server_list_free(servers);
 
   callbacks[0]= server_print_callback;
   memcached_server_cursor(memc, callbacks, NULL,  1);
@@ -2728,6 +2729,8 @@ static test_return_t user_supplied_bug19(memcached_st *not_used)
   memcached_server_add_with_weight(memc, "localhost", 11312, 100);
 
   server= memcached_server_by_key(memc, "a", 1, &res);
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
