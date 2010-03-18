@@ -4490,7 +4490,7 @@ static test_return_t replication_randomize_mget_test(memcached_st *memc)
   const char *keys[]= { "key1", "key2", "key3", "key4", "key5", "key6", "key7" };
   size_t len[]= { 4, 4, 4, 4, 4, 4, 4 };
 
-  for (int x=0; x< 7; ++x)
+  for (size_t x= 0; x< 7; ++x)
   {
     rc= memcached_set(memc, keys[x], len[x], "1", 1, 0, 0);
     test_true(rc == MEMCACHED_SUCCESS);
