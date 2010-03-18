@@ -56,7 +56,12 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
     use it. We still called memcached_response() though since it
     worked its magic for non-blocking IO.
   */
-  if (!strncmp(buffer, "ERROR\r\n", 7))
+  if (! strncmp(buffer, "ERROR\r\n", 7))
+  {
+    *value= 0;
+    rc= MEMCACHED_PROTOCOL_ERROR;
+  } 
+  else if (! strncmp(buffer, "CLIENT_ERROR\r\n", 14))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
