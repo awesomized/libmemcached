@@ -16,7 +16,7 @@ AC_CONFIG_MACRO_DIR([m4])
 PANDORA_CANONICAL_TARGET
 
 #shared library versioning
-MEMCACHED_LIBRARY_VERSION=4:0:0
+MEMCACHED_LIBRARY_VERSION=3:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
