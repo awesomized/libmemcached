@@ -1,5 +1,7 @@
 0.39
 
+* Add support for prefix keys to binary protocol.
+
 * Remove the undocumented call memcached_server_remove().
 
 * The undocumented call memcached_server_by_key() now returns const.

@@ -402,14 +402,28 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       return vk;
     }
 
-    request.message.header.request.keylen= htons((uint16_t)key_length[x]);
+    request.message.header.request.keylen= htons((uint16_t)(key_length[x] + ptr->prefix_key_length));
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-    request.message.header.request.bodylen= htonl((uint32_t) key_length[x]);
+    request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + ptr->prefix_key_length));
 
-    if ((memcached_io_write(instance, request.bytes,
-                            sizeof(request.bytes), false) == -1) ||
-        (memcached_io_write(instance, keys[x],
-                            key_length[x], flush) == -1))
+    if (memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1)
+    {
+      memcached_server_response_reset(instance);
+      rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
+
+    if (ptr->prefix_key_length)
+    {
+      if (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1)
+      {
+        memcached_server_response_reset(instance);
+        rc= MEMCACHED_SOME_ERRORS;
+        continue;
+      }
+    }
+
+    if (memcached_io_write(instance, keys[x], key_length[x], flush) == -1)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
@@ -419,9 +433,10 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     /* We just want one pending response per server */
     memcached_server_response_reset(instance);
     memcached_server_response_increment(instance);
-    if ((x > 0 && x == ptr->io_key_prefetch) &&
-        memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
+    if ((x > 0 && x == ptr->io_key_prefetch) && memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
+    {
       rc= MEMCACHED_SOME_ERRORS;
+    }
   }
 
   if (mget_mode)
@@ -519,9 +534,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
         .message.header.request= {
           .magic= PROTOCOL_BINARY_REQ,
           .opcode= PROTOCOL_BINARY_CMD_GETK,
-          .keylen= htons((uint16_t)key_length[x]),
+          .keylen= htons((uint16_t)(key_length[x] + ptr->prefix_key_length)),
           .datatype= PROTOCOL_BINARY_RAW_BYTES,
-          .bodylen= htonl((uint32_t)key_length[x])
+          .bodylen= htonl((uint32_t)(key_length[x] + ptr->prefix_key_length))
         }
       };
 
@@ -535,10 +550,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * that we might have processed some of the responses etc. For now,
        * just make sure we work _correctly_
      */
-      if ((memcached_io_write(instance, request.bytes,
-                              sizeof(request.bytes), false) == -1) ||
-          (memcached_io_write(instance, keys[x],
-                              key_length[x], true) == -1))
+      if ((memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1) ||
+          (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
+          (memcached_io_write(instance, keys[x], key_length[x], true) == -1))
       {
         memcached_io_reset(instance);
         dead_servers[server]= true;

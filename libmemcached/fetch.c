@@ -91,13 +91,12 @@ memcached_return_t memcached_fetch_execute(memcached_st *ptr,
 {
   memcached_result_st *result= &ptr->result;
   memcached_return_t rc= MEMCACHED_FAILURE;
-  unsigned int x;
 
   while ((result= memcached_fetch_result(ptr, result, &rc)) != NULL) 
   {
     if (rc == MEMCACHED_SUCCESS)
     {
-      for (x= 0; x < number_of_callbacks; x++)
+      for (uint32_t x= 0; x < number_of_callbacks; x++)
       {
         rc= (*callback[x])(ptr, result, context);
         if (rc != MEMCACHED_SUCCESS)

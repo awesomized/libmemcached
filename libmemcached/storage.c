@@ -454,7 +454,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= get_com_code(verb, noreply);
-  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.keylen= htons((uint16_t)(key_length + ptr->prefix_key_length));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   if (verb == APPEND_OP || verb == PREPEND_OP)
     send_length -= 8; /* append & prepend does not contain extras! */
@@ -465,7 +465,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     request.message.body.expiration= htonl((uint32_t)expiration);
   }
 
-  request.message.header.request.bodylen= htonl((uint32_t) (key_length + value_length +
+  request.message.header.request.bodylen= htonl((uint32_t) (key_length + ptr->prefix_key_length + value_length +
                                                             request.message.header.request.extlen));
 
   if (cas)
@@ -491,6 +491,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   memcached_return_t rc;
   if (((rc= memcached_do(server, (const char*)request.bytes,
                          send_length, false)) != MEMCACHED_SUCCESS) ||
+      (memcached_io_write(server, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
       (memcached_io_write(server, key, key_length, false) == -1) ||
       (memcached_io_write(server, value, value_length, flush) == -1))
   {

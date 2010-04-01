@@ -158,9 +158,9 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
   else
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
-  request.message.header.request.keylen= htons((uint16_t)key_length);
+  request.message.header.request.keylen= htons((uint16_t)(key_length + ptr->prefix_key_length));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl((uint32_t) key_length);
+  request.message.header.request.bodylen= htonl((uint32_t)(key_length + ptr->prefix_key_length));
 
   if (ptr->flags.use_udp && ! flush)
   {
@@ -173,10 +173,9 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
 
-  if (((rc= memcached_do(instance, request.bytes,
-                         sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
-      (memcached_io_write(instance, key,
-                          key_length, flush) == -1))
+  if (((rc= memcached_do(instance, request.bytes, sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
+      (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
+      (memcached_io_write(instance, key, key_length, flush) == -1))
   {
     memcached_io_reset(instance);
     rc= (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
