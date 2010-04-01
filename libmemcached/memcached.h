@@ -60,27 +60,27 @@ struct memcached_st {
     @note these are static and should not change without a call to behavior.
   */
   struct {
-    bool is_purging MEMCACHED_BITFIELD;
-    bool is_processing_input MEMCACHED_BITFIELD;
+    bool is_purging:1;
+    bool is_processing_input:1;
   } state;
   struct {
     // Everything below here is pretty static.
-    bool auto_eject_hosts MEMCACHED_BITFIELD;
-    bool binary_protocol MEMCACHED_BITFIELD;
-    bool buffer_requests MEMCACHED_BITFIELD;
-    bool cork MEMCACHED_BITFIELD;
-    bool hash_with_prefix_key MEMCACHED_BITFIELD;
-    bool ketama_weighted MEMCACHED_BITFIELD;
-    bool no_block MEMCACHED_BITFIELD;
-    bool no_reply MEMCACHED_BITFIELD;
-    bool randomize_replica_read MEMCACHED_BITFIELD;
-    bool reuse_memory MEMCACHED_BITFIELD;
-    bool support_cas MEMCACHED_BITFIELD;
-    bool tcp_nodelay MEMCACHED_BITFIELD;
-    bool use_cache_lookups MEMCACHED_BITFIELD;
-    bool use_sort_hosts MEMCACHED_BITFIELD;
-    bool use_udp MEMCACHED_BITFIELD;
-    bool verify_key MEMCACHED_BITFIELD;
+    bool auto_eject_hosts:1;
+    bool binary_protocol:1;
+    bool buffer_requests:1;
+    bool cork:1;
+    bool hash_with_prefix_key:1;
+    bool ketama_weighted:1;
+    bool no_block:1;
+    bool no_reply:1;
+    bool randomize_replica_read:1;
+    bool reuse_memory:1;
+    bool support_cas:1;
+    bool tcp_nodelay:1;
+    bool use_cache_lookups:1;
+    bool use_sort_hosts:1;
+    bool use_udp:1;
+    bool verify_key:1;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
@@ -129,13 +129,13 @@ struct memcached_st {
     ** Did we allocate data inside the callbacks, or did the user
     ** supply that.
     */
-    bool is_allocated MEMCACHED_BITFIELD;
+    bool is_allocated:1;
   } sasl;
 
 #endif
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   struct {
-    bool is_allocated MEMCACHED_BITFIELD;
+    bool is_allocated:1;
   } options;
 
 };

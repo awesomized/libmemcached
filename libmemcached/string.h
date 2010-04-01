@@ -28,8 +28,8 @@ struct memcached_string_st {
   size_t current_size;
   const memcached_st *root;
   struct {
-    bool is_allocated MEMCACHED_BITFIELD;
-    bool is_initialized MEMCACHED_BITFIELD;
+    bool is_allocated:1;
+    bool is_initialized:1;
   } options;
 };
 

@@ -58,11 +58,11 @@ struct hashkit_st
   } base_hash, distribution_hash;
 
   struct {
-    bool is_base_same_distributed HASHKIT_BITFIELD;
+    bool is_base_same_distributed:1;
   } flags;
 
   struct {
-    bool is_allocated HASHKIT_BITFIELD;
+    bool is_allocated:1;
   } options;
 };
 
