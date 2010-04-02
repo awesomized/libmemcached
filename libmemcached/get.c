@@ -406,24 +406,9 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + ptr->prefix_key_length));
 
-    if (memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1)
-    {
-      memcached_server_response_reset(instance);
-      rc= MEMCACHED_SOME_ERRORS;
-      continue;
-    }
-
-    if (ptr->prefix_key_length)
-    {
-      if (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1)
-      {
-        memcached_server_response_reset(instance);
-        rc= MEMCACHED_SOME_ERRORS;
-        continue;
-      }
-    }
-
-    if (memcached_io_write(instance, keys[x], key_length[x], flush) == -1)
+    if ((memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1) ||
+        (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
+        (memcached_io_write(instance, keys[x], key_length[x], flush) == -1))
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
