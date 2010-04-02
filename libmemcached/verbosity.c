@@ -2,7 +2,6 @@
 
 memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
 {
-  uint32_t x;
   size_t send_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -13,7 +12,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
     return MEMCACHED_WRITE_FAILURE;
 
   rc= MEMCACHED_SUCCESS;
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_return_t rrc;
     memcached_server_write_instance_st instance=

@@ -22,6 +22,11 @@ memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
                                 size_t command_length,
                                 bool with_flush);
 
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
+                                 const struct __write_vector_st *vector, size_t count,
+                                 bool with_flush);
+
 #ifdef __cplusplus
 }
 #endif

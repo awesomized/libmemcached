@@ -250,9 +250,13 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl((uint32_t) len);
 
-    if ((memcached_do(instance, request.bytes,
-                      sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
-        (memcached_io_write(instance, args, len, true) == -1))
+    struct __write_vector_st vector[]= 
+    {
+      { .length= sizeof(request.bytes), .buffer= request.bytes },
+      { .length= len, .buffer= args }
+    }; 
+
+    if (memcached_vdo(instance, vector, 2, true) != MEMCACHED_SUCCESS)
     {
       memcached_io_reset(instance);
       return MEMCACHED_WRITE_FAILURE;
@@ -271,8 +275,8 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
   memcached_server_response_decrement(instance);
   do
   {
-    rc= memcached_response(instance, buffer,
-                           sizeof(buffer), NULL);
+    rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
+
     if (rc == MEMCACHED_END)
       break;
 

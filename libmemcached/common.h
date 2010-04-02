@@ -60,8 +60,8 @@ LIBMEMCACHED_LOCAL
 memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key);
 
 /* These are private not to be installed headers */
-#include "libmemcached/do.h"
 #include "libmemcached/io.h"
+#include "libmemcached/do.h"
 #include "libmemcached/internal.h"
 #include "libmemcached/libmemcached_probes.h"
 #include "libmemcached/memcached/protocol_binary.h"

@@ -99,11 +99,13 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
        }
     }
     else
-       send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                      "delete %.*s%.*s%s\r\n",
-                                      (int)ptr->prefix_key_length,
-                                      ptr->prefix_key,
-                                      (int)key_length, key, no_reply ? " noreply" :"");
+    {
+      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                                     "delete %.*s%.*s%s\r\n",
+                                     (int)ptr->prefix_key_length,
+                                     ptr->prefix_key,
+                                     (int)key_length, key, no_reply ? " noreply" :"");
+    }
 
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
     {
@@ -175,14 +177,14 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
   struct __write_vector_st vector[]= 
   {
+    { .length= sizeof(request.bytes), .buffer= request.bytes},
     { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
     { .length= key_length, .buffer= key },
   }; 
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
 
-  if (((rc= memcached_do(instance, request.bytes, sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
-      (memcached_io_writev(instance, vector, 2, flush) == -1))
+  if ((rc= memcached_vdo(instance, vector,  3, flush)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(instance);
     rc= (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
@@ -202,8 +204,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
       replica= memcached_server_instance_fetch(ptr, server_key);
 
-      if ((memcached_do(replica, (const char*)request.bytes, sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(replica, key, key_length, flush) == -1))
+      if (memcached_vdo(replica, vector, 3, flush) != MEMCACHED_SUCCESS)
       {
         memcached_io_reset(replica);
       }
