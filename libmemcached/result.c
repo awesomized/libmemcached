@@ -95,44 +95,44 @@ memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
   return memcached_string_append(&ptr->value, value, length);
 }
 
-inline const char *memcached_result_key_value(const memcached_result_st *self)
+const char *memcached_result_key_value(const memcached_result_st *self)
 {
   return self->key_length ? self->item_key : NULL;
 }
 
-inline size_t memcached_result_key_length(const memcached_result_st *self)
+size_t memcached_result_key_length(const memcached_result_st *self)
 {
   return self->key_length;
 }
 
-inline const char *memcached_result_value(const memcached_result_st *self)
+const char *memcached_result_value(const memcached_result_st *self)
 {
   const memcached_string_st *sptr= &self->value;
   return memcached_string_value(sptr);
 }
 
-inline size_t memcached_result_length(const memcached_result_st *self)
+size_t memcached_result_length(const memcached_result_st *self)
 {
   const memcached_string_st *sptr= &self->value;
   return memcached_string_length(sptr);
 }
 
-inline uint32_t memcached_result_flags(const memcached_result_st *self)
+uint32_t memcached_result_flags(const memcached_result_st *self)
 {
   return self->item_flags;
 }
 
-inline uint64_t memcached_result_cas(const memcached_result_st *self)
+uint64_t memcached_result_cas(const memcached_result_st *self)
 {
   return self->item_cas;
 }
 
-inline void memcached_result_set_flags(memcached_result_st *self, uint32_t flags)
+void memcached_result_set_flags(memcached_result_st *self, uint32_t flags)
 {
   self->item_flags= flags;
 }
 
-inline void memcached_result_set_expiration(memcached_result_st *self, time_t expiration)
+void memcached_result_set_expiration(memcached_result_st *self, time_t expiration)
 {
   self->item_expiration= expiration;
 }

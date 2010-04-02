@@ -237,27 +237,27 @@ void memcached_server_list_free(memcached_server_list_st self)
   }
 }
 
-inline uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
+uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
   return servers->number_of_hosts= count;
 }
 
-inline uint32_t memcached_server_count(const memcached_st *self)
+uint32_t memcached_server_count(const memcached_st *self)
 {
   return self->number_of_hosts;
 }
 
-inline const char *memcached_server_name(memcached_server_instance_st self)
+const char *memcached_server_name(memcached_server_instance_st self)
 {
   return self->hostname;
 }
 
-inline in_port_t memcached_server_port(memcached_server_instance_st self)
+in_port_t memcached_server_port(memcached_server_instance_st self)
 {
   return self->port;
 }
 
-inline uint32_t memcached_server_response_count(memcached_server_instance_st self)
+uint32_t memcached_server_response_count(memcached_server_instance_st self)
 {
   return self->cursor_active;
 }
