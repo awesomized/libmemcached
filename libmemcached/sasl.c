@@ -140,10 +140,15 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
 
   do {
     /* send the packet */
-    if (memcached_io_write(server, request.bytes,
-                           sizeof(request.bytes), 0) != sizeof(request.bytes) ||
-        memcached_io_write(server, chosenmech, keylen, 0) != keylen ||
-        memcached_io_write(server, data, len, 1) != (ssize_t)len)
+
+    struct __write_vector_st vector[]=  
+    { 
+      { .length= sizeof(request.bytes), .buffer= request.bytes }, 
+      { .length= keylen, .buffer= chosenmech }, 
+      { .length= len, .buffer= data } 
+    };  
+
+    if (memcached_io_writev(server, vector, 3, true) == -1)
     {
       rc= MEMCACHED_WRITE_FAILURE;
       goto end;

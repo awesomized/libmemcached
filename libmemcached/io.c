@@ -326,6 +326,34 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
   return MEMCACHED_SUCCESS;
 }
 
+ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
+                            struct __write_vector_st *vector,
+                            size_t number_of, bool with_flush)
+{
+  ssize_t total= 0;
+
+  for (size_t x= 0; x < number_of; x++, vector++)
+  {
+    ssize_t returnable;
+
+    if ((returnable= memcached_io_write(ptr, vector->buffer, vector->length, false)) == -1)
+    {
+      return -1;
+    }
+    total+= returnable;
+  }
+
+  if (with_flush)
+  {
+    if (memcached_io_write(ptr, NULL, 0, true) == -1)
+    {
+      return -1;
+    }
+  }
+
+  return total;
+}
+
 ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
                            const void *buffer, size_t length, bool with_flush)
 {

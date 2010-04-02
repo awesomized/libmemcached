@@ -487,13 +487,17 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
   }
 
+  struct __write_vector_st vector[]= 
+  {
+    { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+    { .length= key_length, .buffer= key },
+    { .length= value_length, .buffer= value }
+  }; 
+
   /* write the header */
   memcached_return_t rc;
-  if (((rc= memcached_do(server, (const char*)request.bytes,
-                         send_length, false)) != MEMCACHED_SUCCESS) ||
-      (memcached_io_write(server, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
-      (memcached_io_write(server, key, key_length, false) == -1) ||
-      (memcached_io_write(server, value, value_length, flush) == -1))
+  if (((rc= memcached_do(server, (const char*)request.bytes, send_length, false)) != MEMCACHED_SUCCESS) ||
+      (memcached_io_writev(server, vector, 3, flush) == -1))
   {
     memcached_io_reset(server);
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
@@ -513,10 +517,8 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
       instance= memcached_server_instance_fetch(ptr, server_key);
 
-      if ((memcached_do(instance, (const char*)request.bytes,
-                        send_length, false) != MEMCACHED_SUCCESS) ||
-          (memcached_io_write(instance, key, key_length, false) == -1) ||
-          (memcached_io_write(instance, value, value_length, flush) == -1))
+      if ((memcached_do(instance, (const char*)request.bytes, send_length, false) != MEMCACHED_SUCCESS) ||
+          (memcached_io_writev(instance, vector, 3, flush) == -1))
       {
         memcached_io_reset(instance);
       }

@@ -126,7 +126,9 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
     goto error;
 
   if (! to_write)
+  {
     rc= MEMCACHED_BUFFERED;
+  }
   else if (!no_reply)
   {
     rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
@@ -171,11 +173,16 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
       memcached_io_write(instance, NULL, 0, true);
   }
 
+  struct __write_vector_st vector[]= 
+  {
+    { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+    { .length= key_length, .buffer= key },
+  }; 
+
   memcached_return_t rc= MEMCACHED_SUCCESS;
 
   if (((rc= memcached_do(instance, request.bytes, sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
-      (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
-      (memcached_io_write(instance, key, key_length, flush) == -1))
+      (memcached_io_writev(instance, vector, 2, flush) == -1))
   {
     memcached_io_reset(instance);
     rc= (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
@@ -195,8 +202,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
       replica= memcached_server_instance_fetch(ptr, server_key);
 
-      if ((memcached_do(replica, (const char*)request.bytes,
-                        sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
+      if ((memcached_do(replica, (const char*)request.bytes, sizeof(request.bytes), false) != MEMCACHED_SUCCESS) ||
           (memcached_io_write(replica, key, key_length, flush) == -1))
       {
         memcached_io_reset(replica);

@@ -116,10 +116,15 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.body.initial= htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
+  struct __write_vector_st vector[]= 
+  {
+    { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+    { .length= key_length, .buffer= key }
+  }; 
+
   memcached_return_t rc;
   if (((rc= memcached_do(instance, request.bytes, sizeof(request.bytes), false)) != MEMCACHED_SUCCESS) ||
-      (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
-      (memcached_io_write(instance, key, key_length, true) == -1))
+      (memcached_io_writev(instance, vector, 2, true) == -1))
   {
     memcached_io_reset(instance);
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;

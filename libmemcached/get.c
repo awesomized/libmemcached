@@ -243,25 +243,14 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       WATCHPOINT_ASSERT(instance->cursor_active == 1);
     }
 
-    /* Only called when we have a prefix key */
-    if (ptr->prefix_key_length)
-    {
-      if ((memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false)) == -1)
-      {
-        memcached_server_response_reset(instance);
-        rc= MEMCACHED_SOME_ERRORS;
-        continue;
-      }
-    }
+    struct __write_vector_st vector[]=  
+    { 
+      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key }, 
+      { .length= key_length[x], .buffer= keys[x] }, 
+      { .length= 1, .buffer= " " } 
+    };  
 
-    if ((memcached_io_write(instance, keys[x], key_length[x], false)) == -1)
-    {
-      memcached_server_response_reset(instance);
-      rc= MEMCACHED_SOME_ERRORS;
-      continue;
-    }
-
-    if ((memcached_io_write(instance, " ", 1, false)) == -1)
+    if ((memcached_io_writev(instance, vector, 3, false)) == -1)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
@@ -535,9 +524,14 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * that we might have processed some of the responses etc. For now,
        * just make sure we work _correctly_
      */
-      if ((memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1) ||
-          (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
-          (memcached_io_write(instance, keys[x], key_length[x], true) == -1))
+      struct __write_vector_st vector[]= 
+      {
+        { .length= sizeof(request.bytes), .buffer= request.bytes },
+        { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+        { .length= key_length[x], .buffer= keys[x] }
+      }; 
+
+      if (memcached_io_writev(instance, vector, 3, true) == -1)
       {
         memcached_io_reset(instance);
         dead_servers[server]= true;
