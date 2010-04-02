@@ -144,7 +144,6 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      size_t number_of_keys,
                                                      bool mget_mode)
 {
-  uint32_t x;
   memcached_return_t rc= MEMCACHED_NOTFOUND;
   const char *get_command= "get ";
   uint8_t get_command_length= 4;
@@ -179,7 +178,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     It might be optimum to bounce the connection if count > some number.
   */
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
@@ -197,8 +196,10 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   }
 
   if (ptr->flags.binary_protocol)
+  {
     return binary_mget_by_key(ptr, master_server_key, is_master_key_set, keys,
                               key_length, number_of_keys, mget_mode);
+  }
 
   if (ptr->flags.support_cas)
   {
@@ -210,7 +211,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
-  for (x= 0; x < number_of_keys; x++)
+  for (uint32_t x= 0; x < number_of_keys; x++)
   {
     memcached_server_write_instance_st instance;
     uint32_t server_key;
@@ -226,6 +227,15 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     instance= memcached_server_instance_fetch(ptr, server_key);
 
+    struct __write_vector_st vector[]=  
+    { 
+      { .length= get_command_length, .buffer= get_command }, 
+      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key }, 
+      { .length= key_length[x], .buffer= keys[x] }, 
+      { .length= 1, .buffer= " " } 
+    };  
+
+
     if (memcached_server_response_count(instance) == 0)
     {
       rc= memcached_connect(instance);
@@ -233,7 +243,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       if (rc != MEMCACHED_SUCCESS)
         continue;
 
-      if ((memcached_io_write(instance, get_command, get_command_length, false)) == -1)
+      if ((memcached_io_writev(instance, vector, 4, false)) == -1)
       {
         rc= MEMCACHED_SOME_ERRORS;
         continue;
@@ -242,26 +252,21 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       memcached_server_response_increment(instance);
       WATCHPOINT_ASSERT(instance->cursor_active == 1);
     }
-
-    struct __write_vector_st vector[]=  
-    { 
-      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key }, 
-      { .length= key_length[x], .buffer= keys[x] }, 
-      { .length= 1, .buffer= " " } 
-    };  
-
-    if ((memcached_io_writev(instance, vector, 3, false)) == -1)
+    else
     {
-      memcached_server_response_reset(instance);
-      rc= MEMCACHED_SOME_ERRORS;
-      continue;
+      if ((memcached_io_writev(instance, (vector + 1), 3, false)) == -1)
+      {
+        memcached_server_response_reset(instance);
+        rc= MEMCACHED_SOME_ERRORS;
+        continue;
+      }
     }
   }
 
   /*
     Should we muddle on if some servers are dead?
   */
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
@@ -340,7 +345,6 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
                                              size_t number_of_keys, bool mget_mode)
 {
   memcached_return_t rc= MEMCACHED_NOTFOUND;
-  uint32_t x;
 
   int flush= number_of_keys == 1;
 
@@ -348,7 +352,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
-  for (x= 0; x < number_of_keys; x++)
+  for (uint32_t x= 0; x < number_of_keys; ++x)
   {
     uint32_t server_key;
     memcached_server_write_instance_st instance;
@@ -395,9 +399,14 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + ptr->prefix_key_length));
 
-    if ((memcached_io_write(instance, request.bytes, sizeof(request.bytes), false) == -1) ||
-        (memcached_io_write(instance, ptr->prefix_key, ptr->prefix_key_length, false) == -1) ||
-        (memcached_io_write(instance, keys[x], key_length[x], flush) == -1))
+    struct __write_vector_st vector[]= 
+    {
+      { .length= sizeof(request.bytes), .buffer= request.bytes },
+      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+      { .length= key_length[x], .buffer= keys[x] }
+    }; 
+
+    if (memcached_io_writev(instance, vector, 3, flush) == -1)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
@@ -423,7 +432,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
-    for (x= 0; x < memcached_server_count(ptr); x++)
+    for (uint32_t x= 0; x < memcached_server_count(ptr); ++x)
     {
       memcached_server_write_instance_st instance=
         memcached_server_instance_fetch(ptr, x);
@@ -460,7 +469,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
                                                   size_t number_of_keys)
 {
   memcached_return_t rc= MEMCACHED_NOTFOUND;
-  uint32_t x, start= 0;
+  uint32_t start= 0;
   uint64_t randomize_read= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ);
 
   if (randomize_read)
@@ -471,7 +480,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
   {
     bool success= true;
 
-    for (x= 0; x < number_of_keys; ++x)
+    for (uint32_t x= 0; x < number_of_keys; ++x)
     {
       memcached_server_write_instance_st instance;
 

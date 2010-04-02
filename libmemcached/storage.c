@@ -153,13 +153,6 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 
-  /* Send command body */
-  if (memcached_io_write(instance, value, value_length, false) == -1)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
-
   if (ptr->flags.buffer_requests && verb == SET_OP)
   {
     to_write= false;
@@ -169,7 +162,13 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     to_write= true;
   }
 
-  if (memcached_io_write(instance, "\r\n", 2, to_write) == -1)
+  struct __write_vector_st vector[]= 
+  {
+    { .length= value_length, .buffer= value },
+    { .length= 2, .buffer= "\r\n" }
+  }; 
+
+  if (memcached_io_writev(instance, vector, 2, to_write) == -1)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     goto error;
