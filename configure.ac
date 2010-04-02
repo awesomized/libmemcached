@@ -54,7 +54,6 @@ WITH_MEMCACHED
 ENABLE_DEPRECATED
 PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
-DETECT_BITFIELD
 PANDORA_HAVE_SASL
 
 dnl The sasl functions should only be visible if we build with sasl support
