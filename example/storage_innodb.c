@@ -129,8 +129,9 @@ static bool do_put_item(ib_trx_t trx, struct item* item)
   if (tuple != NULL)
     ib_tuple_delete(tuple);
 
+  ib_err_t currsor_error;
   if (cursor != NULL)
-    ib_cursor_close(cursor);
+    currsor_error= ib_cursor_close(cursor);
 
   return retval;
 }
@@ -182,8 +183,11 @@ static bool do_locate_item(ib_trx_t trx,
  error_exit:
   if (tuple != NULL)
     ib_tuple_delete(tuple);
+
+  ib_err_t cursor_error;
   if (*cursor != NULL)
-    ib_cursor_close(*cursor);
+    cursor_error= ib_cursor_close(*cursor);
+
   *cursor= NULL;
 
   return false;
@@ -253,8 +257,9 @@ static struct item* do_get_item(ib_trx_t trx, const void* key, size_t nkey)
   if (tuple != NULL)
     ib_tuple_delete(tuple);
 
+  ib_err_t cursor_error;
   if (cursor != NULL)
-    ib_cursor_close(cursor);
+    cursor_error= ib_cursor_close(cursor);
 
   return retval;
 }
@@ -282,7 +287,10 @@ static bool do_delete_item(ib_trx_t trx, const void* key, size_t nkey) {
 
  error_exit:
   if (cursor != NULL)
-    ib_cursor_close(cursor);
+  {
+    ib_err_t cursor_error;
+    cursor_error= ib_cursor_close(cursor);
+  }
 
   return retval;
 }
@@ -325,6 +333,7 @@ bool initialize_storage(void)
   return true;
 
  error_exit:
+
   return false;
 }
 
@@ -333,7 +342,7 @@ bool initialize_storage(void)
  */
 void shutdown_storage(void) 
 {
-  checked(ib_shutdown());
+  checked(ib_shutdown(IB_SHUTDOWN_NORMAL));
  error_exit:
   ;
 }
@@ -487,14 +496,17 @@ void flush(uint32_t when __attribute__((unused)))
     fprintf(stderr, "Failed to flush the cache: %s\n", ib_strerror(err));
     goto error_exit;
   }
-  ib_cursor_close(cursor);
+  ib_err_t cursor_error;
+  cursor_error= ib_cursor_close(cursor);
   cursor= NULL;
   checked(ib_trx_commit(transaction));
   return;
 
  error_exit:
   if (cursor != NULL)
-    ib_cursor_close(cursor);
+  {
+    cursor_error= ib_cursor_close(cursor);
+  }
 
   ib_err_t error= ib_trx_rollback(transaction);
   if (error != DB_SUCCESS)
