@@ -5407,6 +5407,13 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t test_verbosity(memcached_st *memc)
+{
+  memcached_verbosity(memc, 3);
+
+  return TEST_SUCCESS;
+}
+
 /*
  * This test ensures that the failure counter isn't incremented during
  * normal termination of the memcached instance.
@@ -5632,6 +5639,7 @@ test_st tests[] ={
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
+  {"verbosity", 1, (test_callback_fn)test_verbosity},
   {0, 0, 0}
 };
 
