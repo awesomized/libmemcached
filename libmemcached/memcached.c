@@ -32,7 +32,8 @@ static const memcached_st global_copy= {
     .use_cache_lookups= false,
     .use_sort_hosts= false,
     .use_udp= false,
-    .verify_key= false
+    .verify_key= false,
+    .tcp_keepalive= false
   }
 };
 
@@ -61,6 +62,8 @@ static inline bool _memcached_init(memcached_st *self)
   /* TODO, Document why we picked these defaults */
   self->io_msg_watermark= 500;
   self->io_bytes_watermark= 65 * 1024;
+
+  self->tcp_keepidle= 0;
 
   self->io_key_prefetch= 0;
   self->cached_errno= 0;
@@ -236,6 +239,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->io_bytes_watermark= source->io_bytes_watermark;
   new_clone->io_key_prefetch= source->io_key_prefetch;
   new_clone->number_of_replicas= source->number_of_replicas;
+  new_clone->tcp_keepidle= source->tcp_keepidle;
 
   if (memcached_server_count(source))
     rc= memcached_push(new_clone, source);

@@ -211,11 +211,11 @@ other objects (on the 'n' next servers specified in your server list).
 
 =item MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
 
-Allows randomizing the replica reads starting point. Normally the read is 
+Allows randomizing the replica reads starting point. Normally the read is
 done from primary server and in case of miss the read is done from primary
-+ 1, then primary + 2 all the way to 'n' replicas. If this option is set 
++ 1, then primary + 2 all the way to 'n' replicas. If this option is set
 on the starting point of the replica reads is randomized between the servers.
-This allows distributing read load to multiple servers with the expense of 
+This allows distributing read load to multiple servers with the expense of
 more write traffic.
 
 =item MEMCACHED_BEHAVIOR_CORK
@@ -224,9 +224,16 @@ Enable TCP_CORK behavior. This is only available as an option Linux.
 MEMCACHED_NO_SERVERS is returned if no servers are available to test with.
 MEMCACHED_NOT_SUPPORTED is returned if we were not able to determine
 if support was available. All other responses then MEMCACHED_SUCCESS
-report an error of some sort. This behavior also enables 
+report an error of some sort. This behavior also enables
 MEMCACHED_BEHAVIOR_TCP_NODELAY when set.
 
+=item MEMCACHED_BEHAVIOR_KEEPALIVE
+
+Enable TCP_KEEPALIVE behavior.
+
+=item MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE
+
+Specify time, in seconds, to mark a connection as idle. This is only available as an option Linux.
 
 =item MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
 

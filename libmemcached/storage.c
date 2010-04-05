@@ -145,48 +145,47 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
   {
     rc= MEMCACHED_WRITE_FAILURE;
-    goto error;
-  }
-
-
-  struct __write_vector_st vector[]= 
-  {
-    { .length= write_length, .buffer= buffer },
-    { .length= value_length, .buffer= value },
-    { .length= 2, .buffer= "\r\n" }
-  }; 
-
-  if (ptr->flags.buffer_requests && verb == SET_OP)
-  {
-    to_write= false;
   }
   else
   {
-    to_write= true;
+    struct __write_vector_st vector[]= 
+    {
+      { .length= write_length, .buffer= buffer },
+      { .length= value_length, .buffer= value },
+      { .length= 2, .buffer= "\r\n" }
+    }; 
+
+    if (ptr->flags.buffer_requests && verb == SET_OP)
+    {
+      to_write= false;
+    }
+    else
+    {
+      to_write= true;
+    }
+
+    /* Send command header */
+    rc=  memcached_vdo(instance, vector, 3, to_write);
+    if (rc == MEMCACHED_SUCCESS)
+    {
+
+      if (ptr->flags.no_reply)
+        return (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
+
+      if (to_write == false)
+        return MEMCACHED_BUFFERED;
+
+      rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+      if (rc == MEMCACHED_STORED)
+        return MEMCACHED_SUCCESS;
+      else
+        return rc;
+    }
   }
 
-  /* Send command header */
-  rc=  memcached_vdo(instance, vector, 3, to_write);
-  if (rc == MEMCACHED_SUCCESS)
-  {
-
-  if (ptr->flags.no_reply)
-    return (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
-
-  if (to_write == false)
-    return MEMCACHED_BUFFERED;
-
-  rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-  if (rc == MEMCACHED_STORED)
-    return MEMCACHED_SUCCESS;
-  else
-    return rc;
-  }
-
-error:
-
-  memcached_io_reset(instance);
+  if (rc == MEMCACHED_WRITE_FAILURE)
+    memcached_io_reset(instance);
 
   return rc;
 }

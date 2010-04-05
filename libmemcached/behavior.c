@@ -87,6 +87,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->flags.tcp_nodelay= set_flag(data);
     memcached_quit(ptr);
     break;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    ptr->flags.tcp_keepalive= set_flag(data);
+    memcached_quit(ptr);
+    break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
   case MEMCACHED_BEHAVIOR_KETAMA:
@@ -114,7 +118,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       /**
         @note We try to keep the same distribution going. This should be deprecated and rewritten.
       */
-      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA); 
+      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
     }
   case MEMCACHED_BEHAVIOR_HASH:
     return memcached_behavior_set_key_hash(ptr, (memcached_hash_t)(data));
@@ -151,6 +155,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     ptr->recv_size= (int32_t)data;
+    memcached_quit(ptr);
+    break;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    ptr->tcp_keepidle= (uint32_t)data;
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
@@ -288,6 +296,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return (uint64_t)ptr->snd_timeout;
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     return (uint64_t)ptr->rcv_timeout;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    return (uint64_t)ptr->tcp_keepidle;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     {
       int sock_size= 0;
@@ -324,8 +334,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
       instance= memcached_server_instance_fetch(ptr, 0);
 
-      /** 
-        @note REFACTOR 
+      /**
+        @note REFACTOR
       */
       if (instance)
       {
@@ -353,6 +363,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.randomize_replica_read;
   case MEMCACHED_BEHAVIOR_CORK:
     return ptr->flags.cork;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    return ptr->flags.tcp_keepalive;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */

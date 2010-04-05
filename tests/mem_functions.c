@@ -1939,6 +1939,54 @@ static test_return_t MEMCACHED_BEHAVIOR_CORK_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
+static test_return_t MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  bool set= true;
+  bool value;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_KEEPALIVE, set);
+  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOT_SUPPORTED);
+
+  value= (bool)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_KEEPALIVE);
+
+  if (rc == MEMCACHED_SUCCESS)
+  {
+    test_true((bool)value == set);
+  }
+  else
+  {
+    test_false((bool)value == set);
+  }
+
+  return TEST_SUCCESS;
+}
+
+
+static test_return_t MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  bool set= true;
+  bool value;
+
+  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_KEEPIDLE, set);
+  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOT_SUPPORTED);
+
+  value= (bool)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_KEEPIDLE);
+
+  if (rc == MEMCACHED_SUCCESS)
+  {
+    test_true((bool)value == set);
+  }
+  else
+  {
+    test_false((bool)value == set);
+  }
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t fetch_all_results(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
@@ -5646,6 +5694,8 @@ test_st tests[] ={
 test_st behavior_tests[] ={
   {"behavior_test", 0, (test_callback_fn)behavior_test},
   {"MEMCACHED_BEHAVIOR_CORK", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_CORK_test},
+  {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
+  {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
   {0, 0, 0}
 };
 
