@@ -49,8 +49,12 @@ generic:
 rpm: all dist generic fedora
 
 merge-clean:
+	find ./ | $(GREP) \.gcda | xargs rm -f
+	find ./ | $(GREP) \.gcno | xargs rm -f
+	find ./ | $(GREP) \.gz | xargs rm -f
 	find ./ | $(GREP) \.orig | xargs rm -f
 	find ./ | $(GREP) \.rej | xargs rm -f
+	find ./ | $(GREP) \.rpm | xargs rm -f
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
 

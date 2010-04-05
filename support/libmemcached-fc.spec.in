@@ -4,7 +4,7 @@ Version: @VERSION@
 Release:   1%{?dist}
 License:   BSD
 Group:     System Environment/Libraries
-URL:       http://tangent.org/552/libmemcached.html
+URL:       http://libmemcached.org/
 Source0:   http://download.tangent.org/libmemcached-%{version}.tar.gz
 
 # For test suite

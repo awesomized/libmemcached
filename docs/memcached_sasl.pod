@@ -51,7 +51,7 @@ memcached_get_sasl_set_auth_data() returns MEMCACHED_SUCCESS upon success.
 =head1 HOME
 
 To find out more information please check:
-L<http://tangent.org/552/libmemcached.html>
+L<http://libmemcached.org/>
 
 =head1 AUTHOR
 

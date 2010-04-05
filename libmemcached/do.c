@@ -57,8 +57,8 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
   memcached_return_t rc;
   ssize_t sent_length;
 
-  WATCHPOINT_ASSERT(command_length);
-  WATCHPOINT_ASSERT(command);
+  WATCHPOINT_ASSERT(count);
+  WATCHPOINT_ASSERT(vector);
 
   if ((rc= memcached_connect(ptr)) != MEMCACHED_SUCCESS)
   {

@@ -108,6 +108,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/hash.h
 %{_includedir}/libmemcached/parse.h
 %{_includedir}/libmemcached/quit.h
+%{_includedir}/libmemcached/sasl.h
 %{_includedir}/libmemcached/strerror.h
 %{_includedir}/libmemcached/verbosity.h
 %{_includedir}/libmemcached/version.h
