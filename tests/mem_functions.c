@@ -5462,6 +5462,24 @@ static test_return_t test_verbosity(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t test_cull_servers(memcached_st *memc)
+{
+  uint32_t count = memcached_server_count(memc);
+
+  // Do not do this in your code, it is not supported.
+  memc->servers[1].state.is_dead= true;
+  memc->state.is_time_for_rebuild= true;
+
+  uint32_t new_count= memcached_server_count(memc);
+  test_true(count == new_count);
+
+#if 0
+  test_true(count == new_count + 1 );
+#endif
+
+  return TEST_SUCCESS;
+}
+
 /*
  * This test ensures that the failure counter isn't incremented during
  * normal termination of the memcached instance.
@@ -5688,6 +5706,7 @@ test_st tests[] ={
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},
+  {"cull_servers", 1, (test_callback_fn)test_cull_servers},
   {0, 0, 0}
 };
 

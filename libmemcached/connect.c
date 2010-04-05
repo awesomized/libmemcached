@@ -382,7 +382,9 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
         run_distribution(root);
       }
 
-      root->last_disconnected_server = ptr;
+      if (ptr->root->last_disconnected_server)
+        memcached_server_free(ptr->root->last_disconnected_server);
+      root->last_disconnected_server= memcached_server_clone(NULL, ptr);
 
       return MEMCACHED_SERVER_MARKED_DEAD;
     }
@@ -407,14 +409,17 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     WATCHPOINT_ASSERT(0);
   }
 
+  LIBMEMCACHED_MEMCACHED_CONNECT_END();
+
   unlikely ( rc != MEMCACHED_SUCCESS)
   {
-    //@todo create interface around last_discontected_server
     memcached_st *root= (memcached_st *)ptr->root;
-    root->last_disconnected_server = ptr;
-  }
 
-  LIBMEMCACHED_MEMCACHED_CONNECT_END();
+    //@todo create interface around last_discontected_server
+    if (ptr->root->last_disconnected_server)
+      memcached_server_free(ptr->root->last_disconnected_server);
+    root->last_disconnected_server= memcached_server_clone(NULL, ptr);
+  }
 
   return rc;
 }

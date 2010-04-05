@@ -69,8 +69,6 @@ memcached_return_t run_distribution(memcached_st *ptr)
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
   }
 
-  ptr->last_disconnected_server = NULL;
-
   return MEMCACHED_SUCCESS;
 }
 

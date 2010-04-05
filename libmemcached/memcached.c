@@ -15,6 +15,7 @@ static const memcached_st global_copy= {
   .state= {
     .is_purging= false,
     .is_processing_input= false,
+    .is_time_for_rebuild= false,
   },
   .flags= {
     .auto_eject_hosts= false,
@@ -145,6 +146,10 @@ void memcached_servers_reset(memcached_st *ptr)
 
   memcached_server_list_set(ptr, NULL);
   ptr->number_of_hosts= 0;
+  if (ptr->last_disconnected_server)
+  {
+    memcached_server_free(ptr->last_disconnected_server);
+  }
   ptr->last_disconnected_server= NULL;
   ptr->server_failure_limit= 0;
 }
@@ -155,6 +160,9 @@ void memcached_free(memcached_st *ptr)
   memcached_quit(ptr);
   memcached_server_list_free(memcached_server_list(ptr));
   memcached_result_free(&ptr->result);
+
+  if (ptr->last_disconnected_server)
+    memcached_server_free(ptr->last_disconnected_server);
 
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);

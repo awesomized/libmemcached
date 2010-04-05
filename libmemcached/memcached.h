@@ -62,6 +62,7 @@ struct memcached_st {
   struct {
     bool is_purging:1;
     bool is_processing_input:1;
+    bool is_time_for_rebuild:1;
   } state;
   struct {
     // Everything below here is pretty static.

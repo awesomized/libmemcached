@@ -29,6 +29,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->server_failure_counter= 0;
   self->weight= weight;
   self->state.is_corked= false;
+  self->state.is_dead= false;
   self->major_version= 0;
   self->micro_version= 0;
   self->minor_version= 0;
