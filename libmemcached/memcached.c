@@ -298,12 +298,12 @@ memcached_return_t memcached_push(memcached_st *destination, const memcached_st 
   return memcached_server_push(destination, source->servers);
 }
 
-inline memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
+memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
 {
   return &ptr->servers[server_key];
 }
 
-inline memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key)
+memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key)
 {
   return &ptr->servers[server_key];
 }

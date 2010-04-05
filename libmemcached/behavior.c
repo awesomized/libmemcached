@@ -230,7 +230,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-inline bool _is_auto_eject_host(const memcached_st *ptr)
+bool _is_auto_eject_host(const memcached_st *ptr)
 {
   return ptr->flags.auto_eject_hosts;
 }

@@ -177,27 +177,27 @@ memcached_return_t memcached_string_check(memcached_string_st *string, size_t ne
   return _string_check(string, need);
 }
 
-inline size_t memcached_string_length(const memcached_string_st *self)
+size_t memcached_string_length(const memcached_string_st *self)
 {
   return (size_t)(self->end - self->string);
 }
 
-inline size_t memcached_string_size(const memcached_string_st *self)
+size_t memcached_string_size(const memcached_string_st *self)
 {
   return self->current_size;
 }
 
-inline const char *memcached_string_value(const memcached_string_st *self)
+const char *memcached_string_value(const memcached_string_st *self)
 {
   return self->string;
 }
 
-inline char *memcached_string_value_mutable(const memcached_string_st *self)
+char *memcached_string_value_mutable(const memcached_string_st *self)
 {
   return self->string;
 }
 
-inline void memcached_string_set_length(memcached_string_st *self, size_t length)
+void memcached_string_set_length(memcached_string_st *self, size_t length)
 {
   self->end= self->string + length;
 }
