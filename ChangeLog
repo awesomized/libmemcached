@@ -7,6 +7,7 @@
   * memcached_server_list() has been deprecated. Use memcached_server_cursor() to walk the servers found in a memcached_st() structure.
   * memcached_verbosity() can now be run concurrently with other operations.
   * SASL support.
+  * Fixes memory leak found in EJECT HOSTS.
 
 0.38 Wed Feb 10 09:40:33 PST 2010
   * C++ interface for libhashkit.

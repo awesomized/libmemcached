@@ -247,6 +247,21 @@ Find the current size of SO_RCVBUF. A value of 0 means either an error
 occured or no hosts were available. It is safe to assume system default
 if this occurs.
 
+=item MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+
+This number of times a host can have an error before it is disabled.
+
+=item MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
+
+If enabled any hosts which have been flagged as disabled will be removed
+from the list of servers in the memcached_st structure. This must be used
+in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
+
+=item MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
+
+When enabled a host which is problematic will only be checked for usage
+based on the amount of time set by this behavior.
+
 =back
 
 =head1 RETURN
