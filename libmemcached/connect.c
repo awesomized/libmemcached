@@ -315,6 +315,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
         {
           (void)close(ptr->fd);
           ptr->fd= -1;
+
           return rc;
         }
       }
@@ -323,7 +324,6 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 
       if (ptr->fd != -1)
       {
-        ptr->server_failure_counter= 0;
         return MEMCACHED_SUCCESS;
       }
       use = use->ai_next;
@@ -340,17 +340,25 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       if (gettimeofday(&next_time, NULL) == 0)
         ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
     }
-    ptr->server_failure_counter++;
+
     if (ptr->cached_errno == 0)
       return MEMCACHED_TIMEOUT;
 
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
   }
 
-  ptr->server_failure_counter= 0;
   return MEMCACHED_SUCCESS; /* The last error should be from connect() */
 }
 
+static inline void set_last_disconnected_host(memcached_server_write_instance_st ptr)
+{
+  // const_cast
+  memcached_st *root= (memcached_st *)ptr->root;
+
+  if (root->last_disconnected_server)
+    memcached_server_free(root->last_disconnected_server);
+  root->last_disconnected_server= memcached_server_clone(NULL, ptr);
+}
 
 memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
 {
@@ -359,35 +367,36 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
 
   /* both retry_timeout and server_failure_limit must be set in order to delay retrying a server on error. */
   WATCHPOINT_ASSERT(ptr->root);
-  if (ptr->root->retry_timeout && ptr->root->server_failure_limit)
+  if (ptr->root->retry_timeout && ptr->next_retry)
   {
     struct timeval curr_time;
 
     gettimeofday(&curr_time, NULL);
 
-    /* if we've had too many consecutive errors on this server, mark it dead. */
-    if (ptr->server_failure_counter >= ptr->root->server_failure_limit)
+    // We should optimize this to remove the allocation if the server was
+    // the last server to die
+    if (ptr->next_retry > curr_time.tv_sec)
     {
-      ptr->next_retry= curr_time.tv_sec + ptr->root->retry_timeout;
-      ptr->server_failure_counter= 0;
-    }
-
-    if (curr_time.tv_sec < ptr->next_retry)
-    {
-      memcached_st *root= (memcached_st *)ptr->root;
-      // @todo fix this by fixing behavior to no longer make use of
-      // memcached_st
-      if (memcached_behavior_get(root, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS))
-      {
-        run_distribution(root);
-      }
-
-      if (ptr->root->last_disconnected_server)
-        memcached_server_free(ptr->root->last_disconnected_server);
-      root->last_disconnected_server= memcached_server_clone(NULL, ptr);
+      set_last_disconnected_host(ptr);
 
       return MEMCACHED_SERVER_MARKED_DEAD;
     }
+  }
+
+  // If we are over the counter failure, we just fail. Reject host only
+  // works if you have a set number of failures.
+  if (ptr->root->server_failure_limit && ptr->server_failure_counter >= ptr->root->server_failure_limit)
+  {
+    set_last_disconnected_host(ptr);
+
+    // @todo fix this by fixing behavior to no longer make use of
+    // memcached_st
+    if (_is_auto_eject_host(ptr->root))
+    {
+      run_distribution((memcached_st *)ptr->root);
+    }
+
+    return MEMCACHED_SERVER_MARKED_DEAD;
   }
 
   /* We need to clean up the multi startup piece */
@@ -409,17 +418,19 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     WATCHPOINT_ASSERT(0);
   }
 
-  LIBMEMCACHED_MEMCACHED_CONNECT_END();
-
-  unlikely ( rc != MEMCACHED_SUCCESS)
+  if (rc == MEMCACHED_SUCCESS)
   {
-    memcached_st *root= (memcached_st *)ptr->root;
-
-    //@todo create interface around last_discontected_server
-    if (ptr->root->last_disconnected_server)
-      memcached_server_free(ptr->root->last_disconnected_server);
-    root->last_disconnected_server= memcached_server_clone(NULL, ptr);
+    ptr->server_failure_counter= 0;
+    ptr->next_retry= 0;
   }
+  else
+  {
+    ptr->server_failure_counter++;
+
+    set_last_disconnected_host(ptr);
+  }
+
+  LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
   return rc;
 }

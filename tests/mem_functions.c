@@ -3022,7 +3022,7 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
   for (size_t x= 0; x < 99; x++)
   {
     memcached_autoeject(memc);
-    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
+    uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     test_true(server_idx != 2);
   }
 
@@ -5462,6 +5462,42 @@ static test_return_t test_verbosity(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t test_server_failure(memcached_st *memc)
+{
+  memcached_st *local_memc;
+  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
+
+  local_memc= memcached_create(NULL);
+
+  memcached_server_add(local_memc, memcached_server_name(instance), memcached_server_port(instance));
+  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 2);
+
+  uint32_t server_count= memcached_server_count(local_memc);
+
+  test_true(server_count == 1);
+
+  // Disable the server
+  instance= memcached_server_instance_by_position(local_memc, 0);
+  ((memcached_server_write_instance_st)instance)->server_failure_counter= 2;
+
+  memcached_return_t rc;
+  rc= memcached_set(local_memc, "foo", strlen("foo"),
+                    NULL, 0,
+                    (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_SERVER_MARKED_DEAD);
+
+  ((memcached_server_write_instance_st)instance)->server_failure_counter= 0;
+  rc= memcached_set(local_memc, "foo", strlen("foo"),
+                    NULL, 0,
+                    (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+
+  memcached_free(local_memc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t test_cull_servers(memcached_st *memc)
 {
   uint32_t count = memcached_server_count(memc);
@@ -5706,6 +5742,7 @@ test_st tests[] ={
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},
+  {"test_server_failure", 1, (test_callback_fn)test_server_failure},
   {"cull_servers", 1, (test_callback_fn)test_cull_servers},
   {0, 0, 0}
 };
