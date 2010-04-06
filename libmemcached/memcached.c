@@ -92,10 +92,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->get_key_failure= NULL;
   self->delete_trigger= NULL;
   self->callbacks= NULL;
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  self->sasl.callbacks= NULL;
-  self->sasl.is_allocated= false;
-#endif
+  self->sasl= NULL;
 
   return true;
 }
@@ -170,12 +167,12 @@ void memcached_free(memcached_st *ptr)
   if (ptr->continuum)
     libmemcached_free(ptr, ptr->continuum);
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (ptr->sasl.callbacks != NULL)
+  if (ptr->sasl)
   {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
     memcached_destroy_sasl_auth_data(ptr);
-  }
 #endif
+  }
 
   if (memcached_is_allocated(ptr))
   {
@@ -267,7 +264,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (source->sasl.callbacks)
+  if (source->sasl && source->sasl->callbacks)
   {
     if (memcached_clone_sasl(new_clone, source) != MEMCACHED_SUCCESS)
     {

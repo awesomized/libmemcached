@@ -47,4 +47,19 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
 
 #endif /* LIBMEMCACHED_WITH_SASL_SUPPORT */
 
+struct memcached_sasl_st {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+    const sasl_callback_t *callbacks;
+#else
+    const void *callbacks;
+#endif
+    /*
+    ** Did we allocate data inside the callbacks, or did the user
+    ** supply that.
+    */
+    bool is_allocated;
+};
+
+
+
 #endif /* LIBMEMCACHED_MEMCACHED_SASL_H */
