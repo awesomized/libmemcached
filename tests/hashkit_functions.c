@@ -248,7 +248,7 @@ static test_return_t hsieh_run (hashkit_st *hashk __attribute__((unused)))
 
 static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
 {
-#ifdef __sparc
+#ifdef WORDS_BIGENDIAN
   return TEST_SKIPPED;
 #else
   uint32_t x;
