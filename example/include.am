@@ -2,7 +2,9 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+if HAVE_LIBEVENT
 noinst_PROGRAMS += example/memcached_light
+endif
 
 example_memcached_light_SOURCES= \
 	example/interface_v0.c \
@@ -11,7 +13,8 @@ example_memcached_light_SOURCES= \
 	example/memcached_light.h \
 	example/storage.h
 
-example_memcached_light_LDADD= libmemcached/libmemcachedprotocol.la $(LIBINNODB)
+example_memcached_light_LDADD= libmemcached/libmemcachedprotocol.la \
+                               $(LIBINNODB) $(LTLIBEVENT)
 
 if BUILD_BYTEORDER
 example_memcached_light_LDADD+= libmemcached/libbyteorder.la
