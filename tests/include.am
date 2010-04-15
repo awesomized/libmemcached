@@ -161,21 +161,21 @@ valgrind-memrm: clients/memcat clients/memcp
 
 test-memflush: clients/memflush
 	@echo "Testing memflush"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memflush --servers="localhost:12555"
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
 valgrind-memflush: clients/memflush
 	@echo "Testing memflush"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@$(VALGRIND_COMMAND) clients/memflush --servers="localhost:12555"
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
 test-memdump: clients/memdump clients/memcp
 	@echo "Testing memdump"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memcp --servers="localhost:12555" clients/memcat
 	@clients/memdump --servers="localhost:12555" > /dev/null
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
@@ -183,7 +183,7 @@ test-memdump: clients/memdump clients/memcp
 
 valgrind-memdump: clients/memcat clients/memcp
 	@echo "Testing memdump"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memcp --servers="localhost:12555" clients/memcat
 	@$(VALGRIND_COMMAND) clients/memdump --servers="localhost:12555" > /dev/null
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
@@ -191,14 +191,14 @@ valgrind-memdump: clients/memcat clients/memcp
 
 test-memstat: clients/memstat
 	@echo "Testing memstat"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@clients/memstat --servers="localhost:12555" > /dev/null
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
 valgrind-memstat: clients/memstat
 	@echo "Testing memstat"
-	@/usr/local/bin/memcached -d -P `pwd`/tests/Xumemc.pid -p 12555
+	@$(MEMC_BINARY) -d -P `pwd`/tests/Xumemc.pid -p 12555
 	@$(VALGRIND_COMMAND) clients/memstat --servers="localhost:12555" > /dev/null
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
