@@ -355,7 +355,7 @@ int main(int argc, char **argv)
    */
   initialize_interface_v0_handler();
 
-  while ((cmd= getopt(argc, argv, "v1pP:?hc:")) != EOF)
+  while ((cmd= getopt(argc, argv, "v1p:P:?hc:")) != EOF)
   {
     switch (cmd) {
     case '1':
