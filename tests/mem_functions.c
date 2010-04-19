@@ -5647,6 +5647,101 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static void memcached_die(memcached_st* mc, memcached_return error, const char* what, int it)
+{
+  fprintf(stderr, "Iteration #%i: ", it);
+
+  if(error == MEMCACHED_ERRNO)
+  {
+    fprintf(stderr, "system error %d from %s: %s\n",
+            errno, what, strerror(errno));
+  }
+  else
+  {
+    fprintf(stderr, "error %d from %s: %s\n", error, what,
+            memcached_strerror(mc, error));
+  }
+
+  abort();
+}
+
+#define TEST_CONSTANT_CREATION 400
+
+static test_return_t regression_bug_(memcached_st *memc)
+{
+  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
+  const char *servername= memcached_server_name(instance);
+  in_port_t port= memcached_server_port(instance);
+
+  for (uint32_t x= 0; x < TEST_CONSTANT_CREATION; x++) 
+  {
+    memcached_st* mc= memcached_create(NULL);
+    memcached_return rc;
+
+    rc= memcached_behavior_set(mc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      memcached_die(mc, rc, "memcached_behavior_set", x);
+    }
+
+    rc= memcached_behavior_set(mc, MEMCACHED_BEHAVIOR_CACHE_LOOKUPS, 1);
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      memcached_die(mc, rc, "memcached_behavior_set", x);
+    }
+
+    rc= memcached_server_add(mc, servername, port);
+    if(rc != MEMCACHED_SUCCESS)
+    {
+      memcached_die(mc, rc, "memcached_server_add", x);
+    }
+
+    const char *set_key= "akey";
+    const size_t set_key_len= strlen(set_key);
+    const char *set_value= "a value";
+    const size_t set_value_len= strlen(set_value);
+
+    char *get_value=NULL;
+    size_t get_value_len=0;
+    uint32_t get_value_flags=0;
+    if (x > 0) 
+    {
+      get_value= memcached_get(mc, set_key, set_key_len, &get_value_len,
+                               &get_value_flags, &rc);
+      if (rc != MEMCACHED_SUCCESS)
+      {
+        memcached_die(mc, rc, "memcached_get", x);
+      }
+
+      if (x != 0 &&
+          (get_value_len != set_value_len
+           || 0!=strncmp(get_value, set_value, get_value_len)))
+      {
+        fprintf(stderr, "Values don't match?\n");
+      }
+      free(get_value);
+      get_value= NULL;
+      get_value_len= 0;
+    }
+
+    rc= memcached_set(mc,
+                      set_key, set_key_len,
+                      set_value, set_value_len,
+                      0, /* time */
+                      0  /* flags */
+                     );
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      memcached_die(mc, rc, "memcached_set", x);
+    }
+
+    memcached_quit(mc);
+    memcached_free(mc);
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 /*
  * Test that the sasl authentication works. We cannot use the default
  * pool of servers, because that would require that all servers we want
@@ -5844,6 +5939,7 @@ test_st regression_tests[]= {
   {"lp:447342", 1, (test_callback_fn)regression_bug_447342 },
   {"lp:463297", 1, (test_callback_fn)regression_bug_463297 },
   {"lp:490486", 1, (test_callback_fn)regression_bug_490486 },
+  {"lp:?", 1, (test_callback_fn)regression_bug_ },
   {0, 0, (test_callback_fn)0}
 };
 
