@@ -64,19 +64,24 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     case 1:
       return MEMCACHED_SUCCESS;
     case 0:
-      return MEMCACHED_TIMEOUT;
-#ifdef TARGET_OS_LINUX
-    case ERESTART:
-#endif
-    case EINTR:
       continue;
     default:
-      ptr->cached_errno= error;
-      memcached_quit_server(ptr, true);
+      WATCHPOINT_ERRNO(errno);
+      {
+        switch (errno)
+        {
+        default:
+          ptr->cached_errno= error;
+          memcached_quit_server(ptr, true);
 
-      return MEMCACHED_FAILURE;
+          return MEMCACHED_FAILURE;
+        }
+      }
     }
   }
+
+  if (loop_max == 0 && error == 0)
+    return MEMCACHED_TIMEOUT;
 
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
@@ -583,6 +588,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     if (sent_length == -1)
     {
       ptr->cached_errno= errno;
+      WATCHPOINT_ERRNO(errno);
       switch (errno)
       {
       case ENOBUFS:

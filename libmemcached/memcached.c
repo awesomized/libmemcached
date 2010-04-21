@@ -69,7 +69,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->io_key_prefetch= 0;
   self->cached_errno= 0;
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
-  self->connect_timeout= MEMCACHED_DEFAULT_TIMEOUT;
+  self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= 0;
   self->continuum_count= 0;
 
@@ -149,6 +149,15 @@ void memcached_servers_reset(memcached_st *ptr)
   }
   ptr->last_disconnected_server= NULL;
   ptr->server_failure_limit= 0;
+}
+
+void memcached_reset_last_disconnected_server(memcached_st *ptr)
+{
+  if (ptr->last_disconnected_server)
+  {
+    memcached_server_free(ptr->last_disconnected_server);
+    ptr->last_disconnected_server= NULL;
+  }
 }
 
 void memcached_free(memcached_st *ptr)

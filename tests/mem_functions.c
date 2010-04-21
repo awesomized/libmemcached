@@ -5417,6 +5417,7 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
   const char *key= "marmotte";
   const char *value= "milka";
 
+  memcached_reset_last_disconnected_server(memc);
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
@@ -5444,7 +5445,12 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
                     (time_t)0, (uint32_t)0);
   test_true(rc != MEMCACHED_SUCCESS);
 
-  disconnected_server = memcached_server_get_last_disconnect(mine);
+  disconnected_server= memcached_server_get_last_disconnect(mine);
+  if (disconnected_server == NULL)
+  {
+    fprintf(stderr, "RC %s\n", memcached_strerror(mine, rc));
+    abort();
+  }
   test_true(disconnected_server != NULL);
   test_true(memcached_server_port(disconnected_server)== 9);
   test_true(strncmp(memcached_server_name(disconnected_server),"localhost",9) == 0);
@@ -5647,9 +5653,9 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static void memcached_die(memcached_st* mc, memcached_return error, const char* what, int it)
+static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
-  fprintf(stderr, "Iteration #%i: ", it);
+  fprintf(stderr, "Iteration #%u: ", it);
 
   if(error == MEMCACHED_ERRNO)
   {
@@ -5661,17 +5667,19 @@ static void memcached_die(memcached_st* mc, memcached_return error, const char* 
     fprintf(stderr, "error %d from %s: %s\n", error, what,
             memcached_strerror(mc, error));
   }
-
-  abort();
 }
 
-#define TEST_CONSTANT_CREATION 400
+#define TEST_CONSTANT_CREATION 200
 
 static test_return_t regression_bug_(memcached_st *memc)
 {
-  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
-  const char *servername= memcached_server_name(instance);
-  in_port_t port= memcached_server_port(instance);
+  const char *remote_server;
+  (void)memc;
+
+  if (! (remote_server= getenv("LIBMEMCACHED_REMOTE_SERVER")))
+  {
+    return TEST_SKIPPED;
+  }
 
   for (uint32_t x= 0; x < TEST_CONSTANT_CREATION; x++) 
   {
@@ -5690,8 +5698,8 @@ static test_return_t regression_bug_(memcached_st *memc)
       memcached_die(mc, rc, "memcached_behavior_set", x);
     }
 
-    rc= memcached_server_add(mc, servername, port);
-    if(rc != MEMCACHED_SUCCESS)
+    rc= memcached_server_add(mc, remote_server, 0);
+    if (rc != MEMCACHED_SUCCESS)
     {
       memcached_die(mc, rc, "memcached_server_add", x);
     }
@@ -5701,42 +5709,53 @@ static test_return_t regression_bug_(memcached_st *memc)
     const char *set_value= "a value";
     const size_t set_value_len= strlen(set_value);
 
-    char *get_value=NULL;
-    size_t get_value_len=0;
-    uint32_t get_value_flags=0;
-    if (x > 0) 
+    if (rc == MEMCACHED_SUCCESS)
     {
-      get_value= memcached_get(mc, set_key, set_key_len, &get_value_len,
-                               &get_value_flags, &rc);
+      if (x > 0) 
+      {
+        size_t get_value_len;
+        char *get_value;
+        uint32_t get_value_flags;
+
+        get_value= memcached_get(mc, set_key, set_key_len, &get_value_len,
+                                 &get_value_flags, &rc);
+        if (rc != MEMCACHED_SUCCESS)
+        {
+          memcached_die(mc, rc, "memcached_get", x);
+        }
+        else
+        {
+
+          if (x != 0 &&
+              (get_value_len != set_value_len
+               || 0!=strncmp(get_value, set_value, get_value_len)))
+          {
+            fprintf(stderr, "Values don't match?\n");
+            rc= MEMCACHED_FAILURE;
+          }
+          free(get_value);
+        }
+      }
+
+      rc= memcached_set(mc,
+                        set_key, set_key_len,
+                        set_value, set_value_len,
+                        0, /* time */
+                        0  /* flags */
+                       );
       if (rc != MEMCACHED_SUCCESS)
       {
-        memcached_die(mc, rc, "memcached_get", x);
+        memcached_die(mc, rc, "memcached_set", x);
       }
-
-      if (x != 0 &&
-          (get_value_len != set_value_len
-           || 0!=strncmp(get_value, set_value, get_value_len)))
-      {
-        fprintf(stderr, "Values don't match?\n");
-      }
-      free(get_value);
-      get_value= NULL;
-      get_value_len= 0;
-    }
-
-    rc= memcached_set(mc,
-                      set_key, set_key_len,
-                      set_value, set_value_len,
-                      0, /* time */
-                      0  /* flags */
-                     );
-    if (rc != MEMCACHED_SUCCESS)
-    {
-      memcached_die(mc, rc, "memcached_set", x);
     }
 
     memcached_quit(mc);
     memcached_free(mc);
+
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      break;
+    }
   }
 
   return MEMCACHED_SUCCESS;
@@ -5933,7 +5952,7 @@ test_st replication_tests[]= {
 test_st regression_tests[]= {
   {"lp:434484", 1, (test_callback_fn)regression_bug_434484 },
   {"lp:434843", 1, (test_callback_fn)regression_bug_434843 },
-  {"lp:434843 buffered", 1, (test_callback_fn)regression_bug_434843_buffered },
+  {"lp:434843-buffered", 1, (test_callback_fn)regression_bug_434843_buffered },
   {"lp:421108", 1, (test_callback_fn)regression_bug_421108 },
   {"lp:442914", 1, (test_callback_fn)regression_bug_442914 },
   {"lp:447342", 1, (test_callback_fn)regression_bug_447342 },

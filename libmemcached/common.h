@@ -123,6 +123,8 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
 #define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
 
+LIBMEMCACHED_LOCAL
+void set_last_disconnected_host(memcached_server_write_instance_st ptr);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const char * const *keys,

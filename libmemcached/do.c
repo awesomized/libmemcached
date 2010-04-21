@@ -87,6 +87,8 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
   if (sent_length == -1 || (size_t)sent_length != command_length)
   {
     rc= MEMCACHED_WRITE_FAILURE;
+    WATCHPOINT_ERROR(rc);
+    WATCHPOINT_ERRNO(errno);
   }
   else if ((ptr->root->flags.no_reply) == 0)
   {

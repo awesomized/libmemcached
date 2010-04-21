@@ -2,13 +2,14 @@
 #include <netdb.h>
 #include <poll.h>
 #include <sys/time.h>
+#include <time.h>
 
 static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
   struct addrinfo *ai;
   struct addrinfo hints;
-  int e;
   char str_port[NI_MAXSERV];
+  uint32_t counter= 5;
 
   snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
 
@@ -26,12 +27,31 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
-  e= getaddrinfo(server->hostname, str_port, &hints, &ai);
-  if (e != 0)
+  while (--counter)
   {
-    WATCHPOINT_STRING(server->hostname);
-    WATCHPOINT_STRING(gai_strerror(e));
-    return MEMCACHED_HOST_LOOKUP_FAILURE;
+    int e= getaddrinfo(server->hostname, str_port, &hints, &ai);
+
+    if (e == 0)
+    {
+      break;
+    }
+    else if (e == EAI_AGAIN)
+    {
+      struct timespec dream, rem;
+
+      dream.tv_nsec= 1000;
+      dream.tv_sec= 0;
+
+      nanosleep(&dream, &rem);
+
+      continue;
+    }
+    else
+    {
+      WATCHPOINT_STRING(server->hostname);
+      WATCHPOINT_STRING(gai_strerror(e));
+      return MEMCACHED_HOST_LOOKUP_FAILURE;
+    }
   }
 
   if (server->address_info)
@@ -269,8 +289,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       (void)set_socket_options(ptr);
 
       /* connect to server */
-      while (ptr->fd != -1 &&
-             connect(ptr->fd, use->ai_addr, use->ai_addrlen) < 0)
+      if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) == -1))
       {
         ptr->cached_errno= errno;
         if (errno == EINPROGRESS || /* nonblocking mode - first return, */
@@ -279,20 +298,48 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
           struct pollfd fds[1];
           fds[0].fd = ptr->fd;
           fds[0].events = POLLOUT;
-          int error= poll(fds, 1, ptr->root->connect_timeout);
 
-          if (error != 1 || fds[0].revents & POLLERR)
+          int timeout= ptr->root->connect_timeout;
+          if (ptr->root->flags.no_block == false)
+            timeout= -1;
+
+          size_t loop_max= 5;
+          while (--loop_max)
           {
-            if (fds[0].revents & POLLERR)
-            {
-              int err;
-              socklen_t len = sizeof (err);
-              (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-              ptr->cached_errno= (err == 0) ? errno : err;
-            }
+            int error= poll(fds, 1, timeout);
 
-            (void)close(ptr->fd);
-            ptr->fd= -1;
+            switch (error)
+            {
+            case 1:
+              loop_max= 1;
+              break;
+            case 0:
+              continue;
+              // A real error occurred and we need to completely bail
+            default:
+              WATCHPOINT_ERRNO(errno);
+              switch (errno)
+              {
+#ifdef TARGET_OS_LINUX
+              case ERESTART:
+#endif
+              case EINTR:
+                continue;
+              default:
+                if (fds[0].revents & POLLERR)
+                {
+                  int err;
+                  socklen_t len= sizeof (err);
+                  (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+                  ptr->cached_errno= (err == 0) ? errno : err;
+                }
+
+                (void)close(ptr->fd);
+                ptr->fd= -1;
+
+                break;
+              }
+            }
           }
         }
         else if (errno == EISCONN) /* we are connected :-) */
@@ -332,6 +379,8 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 
   if (ptr->fd == -1)
   {
+    WATCHPOINT_STRING("Never got a good file descriptor");
+
     /* Failed to connect. schedule next retry */
     if (ptr->root->retry_timeout)
     {
@@ -350,11 +399,16 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
   return MEMCACHED_SUCCESS; /* The last error should be from connect() */
 }
 
-static inline void set_last_disconnected_host(memcached_server_write_instance_st ptr)
+void set_last_disconnected_host(memcached_server_write_instance_st ptr)
 {
   // const_cast
   memcached_st *root= (memcached_st *)ptr->root;
 
+#if 0
+  WATCHPOINT_STRING(ptr->hostname);
+  WATCHPOINT_NUMBER(ptr->port);
+  WATCHPOINT_ERRNO(ptr->cached_errno);
+#endif
   if (root->last_disconnected_server)
     memcached_server_free(root->last_disconnected_server);
   root->last_disconnected_server= memcached_server_clone(NULL, ptr);

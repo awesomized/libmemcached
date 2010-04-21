@@ -147,6 +147,9 @@ LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
 
 LIBMEMCACHED_API
+void memcached_reset_last_disconnected_server(memcached_st *ptr);
+
+LIBMEMCACHED_API
 memcached_st *memcached_clone(memcached_st *clone, const memcached_st *ptr);
 
 LIBMEMCACHED_API
