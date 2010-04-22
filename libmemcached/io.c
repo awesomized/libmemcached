@@ -278,7 +278,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
         else if (data_read == -1)
         {
           ptr->cached_errno= errno;
-          memcached_return_t rc= MEMCACHED_UNKNOWN_READ_FAILURE;
+          memcached_return_t rc= MEMCACHED_ERRNO;
           switch (errno)
           {
           case EAGAIN:
@@ -309,6 +309,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             for blocking I/O we do not return 0 and for non-blocking case
             it will return EGAIN if data is not immediatly available.
           */
+          WATCHPOINT_STRING("We had a zero length read()");
           memcached_quit_server(ptr, true);
           *nread= -1;
           return MEMCACHED_UNKNOWN_READ_FAILURE;

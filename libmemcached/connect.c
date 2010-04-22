@@ -105,6 +105,19 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
   }
 #endif
 
+
+  {
+    int set = 1;
+    int error= setsockopt(ptr->fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+
+    // This is not considered a fatal error
+    if (error == -1)
+    {
+      WATCHPOINT_ERRNO(errno);
+      perror("setsockopt(SO_NOSIGPIPE)");
+    }
+  }
+
   if (ptr->root->flags.no_block)
   {
     int error;
@@ -244,6 +257,7 @@ test_connect:
   }
 
   WATCHPOINT_ASSERT(ptr->fd != -1);
+
   return MEMCACHED_SUCCESS;
 }
 

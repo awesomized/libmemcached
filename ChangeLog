@@ -1,3 +1,6 @@
+  * Placed retry logic in for busted resolvers
+  * Add an ignore for SIGPIPE to solve OSX issues.
+
 0.39 Tue Apr  6 12:35:13 PDT 2010
   * Add support for prefix keys to binary protocol.
   * Remove the undocumented call memcached_server_remove().

@@ -234,7 +234,6 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     else
     {
       WATCHPOINT_STRING(buffer);
-      WATCHPOINT_ASSERT(0);
       return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
   case 'O': /* OK */
@@ -281,7 +280,6 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       else
       {
         WATCHPOINT_STRING(buffer);
-        WATCHPOINT_ASSERT(0);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
       }
     }
@@ -294,7 +292,10 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       else if (buffer[4] == 'S')
         return MEMCACHED_NOTSTORED;
       else
+      {
+        WATCHPOINT_STRING(buffer);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
     }
   case 'E': /* PROTOCOL ERROR or END */
     {
@@ -305,7 +306,11 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       else if (buffer[1] == 'X')
         return MEMCACHED_DATA_EXISTS;
       else
+      {
+        WATCHPOINT_STRING(buffer);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+
     }
   case 'I': /* CLIENT ERROR */
     /* We add back in one because we will need to search for END */
@@ -320,6 +325,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       if (sscanf(buffer, "%llu", &auto_return_value) == 1)
         return MEMCACHED_SUCCESS;
 
+      WATCHPOINT_STRING(buffer);
       return MEMCACHED_UNKNOWN_READ_FAILURE;
     }
   }
@@ -331,14 +337,19 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
                                                    char *buffer, size_t buffer_length,
                                                    memcached_result_st *result)
 {
+  memcached_return_t rc;
   protocol_binary_response_header header;
 
-  unlikely (memcached_safe_read(ptr, &header.bytes,
-                                sizeof(header.bytes)) != MEMCACHED_SUCCESS)
-    return MEMCACHED_UNKNOWN_READ_FAILURE;
+  if ((rc= memcached_safe_read(ptr, &header.bytes, sizeof(header.bytes))) != MEMCACHED_SUCCESS)
+  {
+    WATCHPOINT_ERROR(rc);
+    return rc;
+  }
 
-  unlikely (header.response.magic != PROTOCOL_BINARY_RES)
+  if (header.response.magic != PROTOCOL_BINARY_RES)
+  {
     return MEMCACHED_PROTOCOL_ERROR;
+  }
 
   /*
    ** Convert the header to host local endian!
@@ -367,16 +378,21 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         memcached_result_reset(result);
         result->item_cas= header.response.cas;
 
-        if (memcached_safe_read(ptr, &result->item_flags,
-                                sizeof (result->item_flags)) != MEMCACHED_SUCCESS)
+        if ((rc= memcached_safe_read(ptr, &result->item_flags, sizeof (result->item_flags))) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
         result->item_flags= ntohl(result->item_flags);
         bodylen -= header.response.extlen;
 
         result->key_length= keylen;
-        if (memcached_safe_read(ptr, result->item_key, keylen) != MEMCACHED_SUCCESS)
+        if ((rc= memcached_safe_read(ptr, result->item_key, keylen)) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
         bodylen -= keylen;
         if (memcached_string_check(&result->value,
@@ -384,8 +400,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
         char *vptr= memcached_string_value_mutable(&result->value);
-        if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS)
+        if ((rc= memcached_safe_read(ptr, vptr, bodylen)) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
         memcached_string_set_length(&result->value, bodylen);
       }
@@ -398,8 +417,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
 
         WATCHPOINT_ASSERT(bodylen == buffer_length);
         uint64_t val;
-        if (memcached_safe_read(ptr, &val, sizeof(val)) != MEMCACHED_SUCCESS)
+        if ((rc= memcached_safe_read(ptr, &val, sizeof(val))) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
         val= ntohll(val);
         memcpy(buffer, &val, sizeof(val));
@@ -410,10 +432,15 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       {
         memset(buffer, 0, buffer_length);
         if (bodylen >= buffer_length)
+        {
           /* not enough space in buffer.. should not happen... */
           return MEMCACHED_UNKNOWN_READ_FAILURE;
-        else if (memcached_safe_read(ptr, buffer, bodylen) != MEMCACHED_SUCCESS)
+        }
+        else if ((rc= memcached_safe_read(ptr, buffer, bodylen)) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
       }
       break;
     case PROTOCOL_BINARY_CMD_FLUSH:
@@ -436,18 +463,24 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_CMD_STAT:
       {
         if (bodylen == 0)
+        {
           return MEMCACHED_END;
+        }
         else if (bodylen + 1 > buffer_length)
+        {
           /* not enough space in buffer.. should not happen... */
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
         else
         {
           size_t keylen= header.response.keylen;
           memset(buffer, 0, buffer_length);
-          if (memcached_safe_read(ptr, buffer, keylen) != MEMCACHED_SUCCESS ||
-              memcached_safe_read(ptr, buffer + keylen + 1,
-                                  bodylen - keylen) != MEMCACHED_SUCCESS)
+          if ((rc= memcached_safe_read(ptr, buffer, keylen)) != MEMCACHED_SUCCESS ||
+              (rc= memcached_safe_read(ptr, buffer + keylen + 1, bodylen - keylen)) != MEMCACHED_SUCCESS)
+          {
+            WATCHPOINT_ERROR(rc);
             return MEMCACHED_UNKNOWN_READ_FAILURE;
+          }
         }
       }
       break;
@@ -463,8 +496,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
         char *vptr= memcached_string_value_mutable(&result->value);
-        if (memcached_safe_read(ptr, vptr, bodylen) != MEMCACHED_SUCCESS)
+        if ((rc= memcached_safe_read(ptr, vptr, bodylen)) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(rc);
           return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
 
         memcached_string_set_length(&result->value, bodylen);
       }
@@ -484,8 +520,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     while (bodylen > 0)
     {
       size_t nr= (bodylen > SMALL_STRING_LEN) ? SMALL_STRING_LEN : bodylen;
-      if (memcached_safe_read(ptr, hole, nr) != MEMCACHED_SUCCESS)
+      if ((rc= memcached_safe_read(ptr, hole, nr)) != MEMCACHED_SUCCESS)
+      {
+        WATCHPOINT_ERROR(rc);
         return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
       bodylen-= (uint32_t) nr;
     }
 
@@ -506,7 +545,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     }
   }
 
-  memcached_return_t rc= MEMCACHED_SUCCESS;
+  rc= MEMCACHED_SUCCESS;
   unlikely(header.response.status != 0)
     switch (header.response.status)
     {
