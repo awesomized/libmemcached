@@ -32,6 +32,10 @@ struct memcached_server_st {
     bool is_corked:1;
     bool is_dead:1;
   } state;
+  struct {
+    uint32_t read;
+    uint32_t write;
+  } io_wait_count;
   uint8_t major_version;
   uint8_t micro_version;
   uint8_t minor_version;

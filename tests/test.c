@@ -38,7 +38,7 @@ static void world_stats_print(world_stats_st *stats)
   fprintf(stderr, "\tSucceeded\t\t%u\n", stats->success);
 }
 
-static long int timedif(struct timeval a, struct timeval b)
+long int timedif(struct timeval a, struct timeval b)
 {
   long us, s;
 

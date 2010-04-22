@@ -40,10 +40,17 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
        * closing the socket before all data is read
        * results in server throwing away all data which is
        * not read
+       *
+       * In .40 we began to only do this if we had been doing buffered
+       * requests of had replication enabled.
        */
-      ssize_t nread;
-      while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
-                               &nread) == MEMCACHED_SUCCESS);
+      if (ptr->root->flags.buffer_requests || ptr->root->number_of_replicas)
+      {
+        ssize_t nread;
+        while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
+                                 &nread) == MEMCACHED_SUCCESS);
+      }
+
 
       /*
        * memcached_io_read may call memcached_quit_server with io_death if

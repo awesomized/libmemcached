@@ -39,6 +39,8 @@ typedef test_return_t (*test_callback_fn)(void *);
 typedef test_return_t (*test_callback_runner_fn)(test_callback_fn, void *);
 typedef test_return_t (*test_callback_error_fn)(test_return_t, void *);
 
+/* Help function for use with gettimeofday() */
+long int timedif(struct timeval a, struct timeval b);
 
 /**
   A structure describing the test case.

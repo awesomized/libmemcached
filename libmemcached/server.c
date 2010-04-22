@@ -30,6 +30,8 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->weight= weight;
   self->state.is_corked= false;
   self->state.is_dead= false;
+  WATCHPOINT_SET(self->io_wait_count.read= 0);
+  WATCHPOINT_SET(self->io_wait_count.write= 0);
   self->major_version= 0;
   self->micro_version= 0;
   self->minor_version= 0;

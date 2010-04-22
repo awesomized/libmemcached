@@ -42,14 +42,15 @@ void pairs_free(pairs_st *pairs)
 {
   uint32_t x;
 
-  if (!pairs)
+  if (! pairs)
     return;
 
   /* We free until we hit the null pair we stores during creation */
   for (x= 0; pairs[x].key; x++)
   {
     free(pairs[x].key);
-    free(pairs[x].value);
+    if (pairs[x].value)
+      free(pairs[x].value);
   }
 
   free(pairs);
@@ -73,11 +74,19 @@ pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
     get_random_string(pairs[x].key, 100);
     pairs[x].key_length= 100;
 
-    pairs[x].value= (char *)calloc(value_length, sizeof(char));
-    if (!pairs[x].value)
-      goto error;
-    get_random_string(pairs[x].value, value_length);
-    pairs[x].value_length= value_length;
+    if (value_length)
+    {
+      pairs[x].value= (char *)calloc(value_length, sizeof(char));
+      if (!pairs[x].value)
+        goto error;
+      get_random_string(pairs[x].value, value_length);
+      pairs[x].value_length= value_length;
+    }
+    else
+    {
+      pairs[x].value= NULL;
+      pairs[x].value_length= 0;
+    }
   }
 
   return pairs;

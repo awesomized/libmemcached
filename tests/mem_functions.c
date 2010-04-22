@@ -52,6 +52,10 @@ static pairs_st *global_pairs;
 static const char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
+// Prototype
+static test_return_t pre_binary(memcached_st *memc);
+
+
 static test_return_t init_test(memcached_st *not_used __attribute__((unused)))
 {
   memcached_st memc;
@@ -1667,7 +1671,7 @@ static test_return_t mget_execute(memcached_st *memc)
   uint32_t number_of_hosts= memc->number_of_hosts;
   memc->number_of_hosts= 1;
 
-  size_t max_keys= binary ? 20480 : 1;
+  size_t max_keys= 20480;
 
 
   char **keys= calloc(max_keys, sizeof(char*));
@@ -1676,6 +1680,7 @@ static test_return_t mget_execute(memcached_st *memc)
   /* First add all of the items.. */
   char blob[1024] = {0};
   memcached_return_t rc;
+
   for (size_t x= 0; x < max_keys; ++x)
   {
     char k[251];
@@ -1693,20 +1698,22 @@ static test_return_t mget_execute(memcached_st *memc)
   rc= memcached_mget_execute(memc, (const char**)keys, key_length,
                              max_keys, callbacks, &counter, 1);
 
-  if (binary)
+  if (rc == MEMCACHED_SUCCESS)
   {
-    test_true(rc == MEMCACHED_SUCCESS);
-
+    test_true(binary);
     rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
     test_true(rc == MEMCACHED_END);
 
     /* Verify that we got all of the items */
     test_true(counter == max_keys);
   }
+  else if (rc == MEMCACHED_NOT_SUPPORTED)
+  {
+    test_true(counter == 0);
+  }
   else
   {
-    test_true(rc == MEMCACHED_NOT_SUPPORTED);
-    test_true(counter == 0);
+    test_fail("note: this test functions differently when in binary mode");
   }
 
   /* Release all allocated resources */
@@ -1719,6 +1726,51 @@ static test_return_t mget_execute(memcached_st *memc)
 
   memc->number_of_hosts= number_of_hosts;
   return TEST_SUCCESS;
+}
+
+#define REGRESSION_BINARY_VS_BLOCK_COUNT  20480
+
+static test_return_t key_setup(memcached_st *memc)
+{
+  (void)memc;
+
+  if (pre_binary(memc) != TEST_SUCCESS)
+    return TEST_SKIPPED;
+
+  global_pairs= pairs_generate(REGRESSION_BINARY_VS_BLOCK_COUNT, 0);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t key_teardown(memcached_st *memc)
+{
+  (void)memc;
+  pairs_free(global_pairs);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t block_add_regression(memcached_st *memc)
+{
+  /* First add all of the items.. */
+  for (size_t x= 0; x < REGRESSION_BINARY_VS_BLOCK_COUNT; ++x)
+  {
+    memcached_return_t rc;
+    char blob[1024] = {0};
+
+    rc= memcached_add_by_key(memc, "bob", 3, global_pairs[x].key, global_pairs[x].key_length, blob, sizeof(blob), 0, 0);
+    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t binary_add_regression(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+  test_return_t rc= block_add_regression(memc);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 0);
+  return rc;
 }
 
 static test_return_t get_stats_keys(memcached_st *memc)
@@ -2944,8 +2996,6 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
 
   return TEST_SUCCESS;
 }
-
-static test_return_t pre_binary(memcached_st *memc);
 
 static test_return_t user_supplied_bug21(memcached_st *memc)
 {
@@ -5869,6 +5919,12 @@ test_st behavior_tests[] ={
   {0, 0, 0}
 };
 
+test_st regression_binary_vs_block[] ={
+  {"block add", 1, (test_callback_fn)block_add_regression},
+  {"binary add", 1, (test_callback_fn)binary_add_regression},
+  {0, 0, 0}
+};
+
 test_st async_tests[] ={
   {"add", 1, (test_callback_fn)add_wrapper },
   {0, 0, 0}
@@ -6100,6 +6156,7 @@ collection_st collection[] ={
   {"replication_noblock", (test_callback_fn)pre_replication_noblock, 0, replication_tests},
   {"regression", 0, 0, regression_tests},
   {"behaviors", 0, 0, behavior_tests},
+  {"regression_binary_vs_block", (test_callback_fn)key_setup, (test_callback_fn)key_teardown, regression_binary_vs_block},
   {0, 0, 0, 0}
 };
 

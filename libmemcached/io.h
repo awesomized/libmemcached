@@ -46,7 +46,6 @@ struct __write_vector_st
   const void *buffer;
 };
 
-
 LIBMEMCACHED_LOCAL
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
                             const struct __write_vector_st *vector,

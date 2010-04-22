@@ -32,8 +32,15 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   };
   int error;
 
-  unlikely (read_or_write == MEM_WRITE) /* write */
+  if (read_or_write == MEM_WRITE) /* write */
+  {
     fds.events= POLLOUT;
+    WATCHPOINT_SET(ptr->io_wait_count.write++);
+  }
+  else
+  {
+    WATCHPOINT_SET(ptr->io_wait_count.read++);
+  }
 
   /*
    ** We are going to block on write, but at least on Solaris we might block
@@ -62,14 +69,22 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     switch (error)
     {
     case 1:
+      WATCHPOINT_IF_LABELED_NUMBER(read_or_write && loop_max < 4, "read() times we had to loop, decremented down from 5", loop_max);
+      WATCHPOINT_IF_LABELED_NUMBER(!read_or_write && loop_max < 4, "write() times we had to loop, decremented down from 5", loop_max);
+
       return MEMCACHED_SUCCESS;
     case 0:
-      continue;
+      return MEMCACHED_TIMEOUT;
     default:
       WATCHPOINT_ERRNO(errno);
       {
         switch (errno)
         {
+#ifdef TARGET_OS_LINUX
+        case ERESTART:
+#endif
+        case EINTR:
+          continue;
         default:
           ptr->cached_errno= error;
           memcached_quit_server(ptr, true);
@@ -257,7 +272,9 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
       {
         data_read= read(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER);
         if (data_read > 0)
+        {
           break;
+        }
         else if (data_read == -1)
         {
           ptr->cached_errno= errno;
@@ -589,6 +606,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     {
       ptr->cached_errno= errno;
       WATCHPOINT_ERRNO(errno);
+      WATCHPOINT_NUMBER(errno);
       switch (errno)
       {
       case ENOBUFS:

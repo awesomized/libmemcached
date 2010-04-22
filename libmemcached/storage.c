@@ -45,8 +45,8 @@ static inline const char *storage_op_string(memcached_storage_action_t verb)
 }
 
 static memcached_return_t memcached_send_binary(memcached_st *ptr,
-                                                const char *master_key,
-                                                size_t master_key_length,
+                                                memcached_server_write_instance_st server,
+                                                uint32_t server_key,
                                                 const char *key,
                                                 size_t key_length,
                                                 const char *value,
@@ -84,108 +84,122 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
 
-  if (ptr->flags.binary_protocol)
-  {
-    return memcached_send_binary(ptr, master_key, master_key_length,
-                                 key, key_length,
-                                 value, value_length, expiration,
-                                 flags, cas, verb);
-  }
-
   server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
-  if (cas)
+  WATCHPOINT_SET(instance->io_wait_count.read= 0);
+  WATCHPOINT_SET(instance->io_wait_count.write= 0);
+
+  if (ptr->flags.binary_protocol)
   {
-    write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                    "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
-                                    storage_op_string(verb),
-                                    (int)ptr->prefix_key_length,
-                                    ptr->prefix_key,
-                                    (int)key_length, key, flags,
-                                    (unsigned long long)expiration, value_length,
-                                    (unsigned long long)cas,
-                                    (ptr->flags.no_reply) ? " noreply" : "");
+    rc= memcached_send_binary(ptr, instance, server_key,
+                              key, key_length,
+                              value, value_length, expiration,
+                              flags, cas, verb);
+    WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.read > 2, "read IO_WAIT", instance->io_wait_count.read);
+    WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.write > 2, "write_IO_WAIT", instance->io_wait_count.write);
   }
   else
   {
-    char *buffer_ptr= buffer;
-    const char *command= storage_op_string(verb);
 
-    /* Copy in the command, no space needed, we handle that in the command function*/
-    memcpy(buffer_ptr, command, strlen(command));
-
-    /* Copy in the key prefix, switch to the buffer_ptr */
-    buffer_ptr= memcpy((buffer_ptr + strlen(command)), ptr->prefix_key, ptr->prefix_key_length);
-
-    /* Copy in the key, adjust point if a key prefix was used. */
-    buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key_length ? ptr->prefix_key_length : 0),
-                       key, key_length);
-    buffer_ptr+= key_length;
-    buffer_ptr[0]=  ' ';
-    buffer_ptr++;
-
-    write_length= (size_t)(buffer_ptr - buffer);
-    write_length+= (size_t) snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                     "%u %llu %zu%s\r\n",
-                                     flags,
-                                     (unsigned long long)expiration, value_length,
-                                     ptr->flags.no_reply ? " noreply" : "");
-  }
-
-  if (ptr->flags.use_udp && ptr->flags.buffer_requests)
-  {
-    size_t cmd_size= write_length + value_length + 2;
-    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-      return MEMCACHED_WRITE_FAILURE;
-    if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      memcached_io_write(instance, NULL, 0, true);
-  }
-
-  if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-  }
-  else
-  {
-    struct __write_vector_st vector[]= 
+    if (cas)
     {
-      { .length= write_length, .buffer= buffer },
-      { .length= value_length, .buffer= value },
-      { .length= 2, .buffer= "\r\n" }
-    }; 
-
-    if (ptr->flags.buffer_requests && verb == SET_OP)
-    {
-      to_write= false;
+      write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                                      "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
+                                      storage_op_string(verb),
+                                      (int)ptr->prefix_key_length,
+                                      ptr->prefix_key,
+                                      (int)key_length, key, flags,
+                                      (unsigned long long)expiration, value_length,
+                                      (unsigned long long)cas,
+                                      (ptr->flags.no_reply) ? " noreply" : "");
     }
     else
     {
-      to_write= true;
+      char *buffer_ptr= buffer;
+      const char *command= storage_op_string(verb);
+
+      /* Copy in the command, no space needed, we handle that in the command function*/
+      memcpy(buffer_ptr, command, strlen(command));
+
+      /* Copy in the key prefix, switch to the buffer_ptr */
+      buffer_ptr= memcpy((buffer_ptr + strlen(command)), ptr->prefix_key, ptr->prefix_key_length);
+
+      /* Copy in the key, adjust point if a key prefix was used. */
+      buffer_ptr= memcpy(buffer_ptr + (ptr->prefix_key_length ? ptr->prefix_key_length : 0),
+                         key, key_length);
+      buffer_ptr+= key_length;
+      buffer_ptr[0]=  ' ';
+      buffer_ptr++;
+
+      write_length= (size_t)(buffer_ptr - buffer);
+      write_length+= (size_t) snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                                       "%u %llu %zu%s\r\n",
+                                       flags,
+                                       (unsigned long long)expiration, value_length,
+                                       ptr->flags.no_reply ? " noreply" : "");
     }
 
-    /* Send command header */
-    rc=  memcached_vdo(instance, vector, 3, to_write);
-    if (rc == MEMCACHED_SUCCESS)
+    if (ptr->flags.use_udp && ptr->flags.buffer_requests)
     {
-
-      if (ptr->flags.no_reply)
-        return (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
-
-      if (to_write == false)
-        return MEMCACHED_BUFFERED;
-
-      rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-      if (rc == MEMCACHED_STORED)
-        return MEMCACHED_SUCCESS;
-      else
-        return rc;
+      size_t cmd_size= write_length + value_length + 2;
+      if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+        return MEMCACHED_WRITE_FAILURE;
+      if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+        memcached_io_write(instance, NULL, 0, true);
     }
+
+    if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    {
+      rc= MEMCACHED_WRITE_FAILURE;
+    }
+    else
+    {
+      struct __write_vector_st vector[]= 
+      {
+        { .length= write_length, .buffer= buffer },
+        { .length= value_length, .buffer= value },
+        { .length= 2, .buffer= "\r\n" }
+      }; 
+
+      if (ptr->flags.buffer_requests && verb == SET_OP)
+      {
+        to_write= false;
+      }
+      else
+      {
+        to_write= true;
+      }
+
+      /* Send command header */
+      rc=  memcached_vdo(instance, vector, 3, to_write);
+      if (rc == MEMCACHED_SUCCESS)
+      {
+
+        if (ptr->flags.no_reply)
+        {
+          rc= (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
+        }
+        else if (to_write == false)
+        {
+          rc= MEMCACHED_BUFFERED;
+        }
+        else
+        {
+          rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+          if (rc == MEMCACHED_STORED)
+            rc= MEMCACHED_SUCCESS;
+        }
+      }
+    }
+
+    if (rc == MEMCACHED_WRITE_FAILURE)
+      memcached_io_reset(instance);
   }
 
-  if (rc == MEMCACHED_WRITE_FAILURE)
-    memcached_io_reset(instance);
+  WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.read > 2, "read IO_WAIT", instance->io_wait_count.read);
+  WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.write > 2, "write_IO_WAIT", instance->io_wait_count.write);
 
   return rc;
 }
@@ -426,8 +440,8 @@ static inline uint8_t get_com_code(memcached_storage_action_t verb, bool noreply
 
 
 static memcached_return_t memcached_send_binary(memcached_st *ptr,
-                                                const char *master_key,
-                                                size_t master_key_length,
+                                                memcached_server_write_instance_st server,
+                                                uint32_t server_key,
                                                 const char *key,
                                                 size_t key_length,
                                                 const char *value,
@@ -440,11 +454,6 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   bool flush;
   protocol_binary_request_set request= {.bytes= {0}};
   size_t send_length= sizeof(request.bytes);
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, master_key,
-                                                                   master_key_length);
-
-  memcached_server_write_instance_st server=
-    memcached_server_instance_fetch(ptr, server_key);
 
   bool noreply= server->root->flags.no_reply;
 
@@ -499,9 +508,10 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
   }
 
-  unlikely (verb == SET_OP && ptr->number_of_replicas > 0)
+  if (verb == SET_OP && ptr->number_of_replicas > 0)
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
+    WATCHPOINT_STRING("replicating");
 
     for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
     {
