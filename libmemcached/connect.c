@@ -106,6 +106,7 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
 #endif
 
 
+#if defined(__MACH__) && defined(__APPLE__) || defined(__FreeBSD__)
   {
     int set = 1;
     int error= setsockopt(ptr->fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
@@ -117,6 +118,7 @@ static memcached_return_t set_socket_options(memcached_server_st *ptr)
       perror("setsockopt(SO_NOSIGPIPE)");
     }
   }
+#endif
 
   if (ptr->root->flags.no_block)
   {
