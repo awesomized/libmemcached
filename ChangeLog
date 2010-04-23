@@ -1,5 +1,8 @@
+0.40 Thu Apr 22 19:01:25 PDT 2010
   * Placed retry logic in for busted resolvers
   * Add an ignore for SIGPIPE to solve OSX issues.
+  * A couple of fixed for memcached_light server.
+  * Updated to debug mode to track io_wait
 
 0.39 Tue Apr  6 12:35:13 PDT 2010
   * Add support for prefix keys to binary protocol.

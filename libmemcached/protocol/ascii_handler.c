@@ -386,7 +386,7 @@ static void process_delete(memcached_protocol_client_st *client,
   else
   {
     char msg[80];
-    snprintf(msg, sizeof(msg), "SERVER_ERROR: delete failed %u\r\n",(int)rval);
+    snprintf(msg, sizeof(msg), "SERVER_ERROR: delete failed %u\r\n",(uint32_t)rval);
     spool_string(client, msg);
   }
 }
