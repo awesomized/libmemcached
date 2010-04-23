@@ -5835,7 +5835,7 @@ static test_return_t regression_bug_(memcached_st *memc)
     }
   }
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 /*
