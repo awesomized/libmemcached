@@ -5027,6 +5027,71 @@ static test_return_t memcached_get_MEMCACHED_NOTFOUND(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+  Test case adapted from John Gorman <johngorman2@gmail.com> 
+
+  We are testing the error condition when we connect to a server via memcached_get_by_key() 
+  but find that the server is not available.
+*/
+static test_return_t memcached_get_by_key_MEMCACHED_SOME_ERRORS(memcached_st *memc)
+{
+  (void)memc;
+  memcached_st *tl_memc_h;
+  memcached_server_st *servers;
+
+  const char *key= "MemcachedLives";
+  size_t len;
+  uint32_t flags;
+  memcached_return rc;
+  char *value;
+
+  // Create a handle.
+  tl_memc_h= memcached_create(NULL);
+  servers= memcached_servers_parse("localhost:9898"); // This server should not exist
+  memcached_server_push(tl_memc_h, servers);
+  memcached_server_list_free(servers);
+
+  // See if memcached is reachable.
+  value= memcached_get_by_key(tl_memc_h, key, strlen(key), key, strlen(key), &len, &flags, &rc);
+
+  if (value)
+  {
+    free(value);
+    test_true(value); // Pointer won't be zero so this is fine.
+  }
+
+  test_true(len == 0);
+  test_true(rc == MEMCACHED_SOME_ERRORS);
+
+  return TEST_SUCCESS;
+}
+
+/* 
+  We connect to a server which exists, but search for a key that does not exist.
+*/
+static test_return_t memcached_get_by_key_MEMCACHED_NOTFOUND(memcached_st *memc)
+{
+  const char *key= "MemcachedKeyNotEXIST";
+  size_t len;
+  uint32_t flags;
+  memcached_return rc;
+  char *value;
+
+  // See if memcached is reachable.
+  value= memcached_get_by_key(memc, key, strlen(key), key, strlen(key), &len, &flags, &rc);
+
+  if (value)
+  {
+    free(value);
+    test_true(value); // Pointer won't be zero so this is fine.
+  }
+
+  test_true(len == 0);
+  test_true(rc == MEMCACHED_NOTFOUND);
+
+  return TEST_SUCCESS;
+}
+
 
 static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
 {
@@ -6192,6 +6257,8 @@ test_st hash_tests[] ={
 test_st error_conditions[] ={
   {"memcached_get_MEMCACHED_SOME_ERRORS", 0, (test_callback_fn)memcached_get_MEMCACHED_SOME_ERRORS },
   {"memcached_get_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_MEMCACHED_NOTFOUND },
+  {"memcached_get_by_key_MEMCACHED_SOME_ERRORS", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_SOME_ERRORS },
+  {"memcached_get_by_key_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_NOTFOUND },
   {0, 0, (test_callback_fn)0}
 };
 
