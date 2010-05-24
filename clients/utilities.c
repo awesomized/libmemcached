@@ -60,6 +60,7 @@ static const char *lookup_help(memcached_options option)
   case OPT_UDP: return("Use UDP protocol when communicating with server.");
   case OPT_USERNAME: return "Username to use for SASL authentication";
   case OPT_PASSWD: return "Password to use for SASL authentication";
+  case OPT_FILE: return "Path to file in which to save result";
   default: WATCHPOINT_ASSERT(0);
   };
 
