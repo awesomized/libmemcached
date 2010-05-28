@@ -15,16 +15,18 @@ TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 endif
 
 EXTRA_DIST+= \
-	     tests/r/memcat.res \
-	     tests/r/memcp.res \
-	     tests/r/memrm.res \
-	     tests/r/memslap.res \
-	     tests/r/memstat.res \
-	     tests/t/memcat.test \
-	     tests/t/memcp.test \
-	     tests/t/memrm.test \
-	     tests/t/memslap.test \
-	     tests/t/memstat.test
+						 tests/cpp_example.cc \
+						 tests/output_plus.res \
+						 tests/r/memcat.res \
+						 tests/r/memcp.res \
+						 tests/r/memrm.res \
+						 tests/r/memslap.res \
+						 tests/r/memstat.res \
+						 tests/t/memcat.test \
+						 tests/t/memcp.test \
+						 tests/t/memrm.test \
+						 tests/t/memslap.test \
+						 tests/t/memstat.test
 
 noinst_HEADERS+= \
 		 tests/hash_results.h \
