@@ -14,7 +14,12 @@ include_HEADERS =
 nobase_include_HEADERS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
-EXTRA_DIST = README.FIRST
+EXTRA_DIST= \
+						${srcdir}/m4/pandora_*.m4 \
+						README.FIRST \
+						config/autorun.sh \
+						m4/pkg.m4
+
 
 SUBDIRS = docs
 
