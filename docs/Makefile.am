@@ -308,8 +308,10 @@ POD_FILES= \
 	     memcached_get.pod \
 	     memcached_memory_allocators.pod \
 	     memcached_pool.pod \
-	     memcached_quit.pod \
-	     memcached_server_st.pod \
+			 memcached_quit.pod \
+			 memcached_result_st.pod \
+			 memcached_sasl.pod \
+			 memcached_server_st.pod \
 	     memcached_servers.pod \
 	     memcached_set.pod \
 	     memcached_stats.pod \
