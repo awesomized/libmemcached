@@ -10,8 +10,6 @@ AC_PREREQ(2.59)
 AC_INIT([libmemcached],[0.41],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER([config.h])
-AC_CONFIG_MACRO_DIR([m4])
 
 PANDORA_CANONICAL_TARGET
 

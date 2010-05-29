@@ -30,7 +30,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
   AC_REQUIRE([PANDORA_BUILDING_FROM_VC])
   m4_if(PW_WARN_ALWAYS_ON, [yes],
     [ac_cv_warnings_as_errors=yes],
-    AS_IF([test "$ac_cv_building_from_vc" = "yes"],
+    AS_IF([test "$pandora_building_from_vc" = "yes"],
           [ac_cv_warnings_as_errors=yes],
           [ac_cv_warnings_as_errors=no]))
 
@@ -145,7 +145,9 @@ uint16_t x= htons(80);
       m4_if(PW_LESS_WARNINGS,[no],[
         BASE_WARNINGS_FULL="-Wformat=2 ${W_CONVERSION} -Wstrict-aliasing"
         CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum -Wwrite-strings"
-        CXX_WARNINGS_FULL="-Wold-style-cast"
+        CXX_WARNINGS_FULL="-Weffc++ -Wold-style-cast"
+        NO_OLD_STYLE_CAST="-Wno-old-style-cast"
+        NO_EFF_CXX="-Wno-effc++"
       ],[
         BASE_WARNINGS_FULL="-Wformat ${NO_STRICT_ALIASING}"
       ])
@@ -342,6 +344,8 @@ inline const EnumDescriptor* GetEnumDescriptor<Table_TableOptions_RowType>() {
   AC_SUBST(NO_UNREACHED)
   AC_SUBST(NO_SHADOW)
   AC_SUBST(NO_STRICT_ALIASING)
+  AC_SUBST(NO_EFF_CXX)
+  AC_SUBST(NO_OLD_STYLE_CAST)
   AC_SUBST(PROTOSKIP_WARNINGS)
   AC_SUBST(INNOBASE_SKIP_WARNINGS)
   AC_SUBST(NO_WERROR)

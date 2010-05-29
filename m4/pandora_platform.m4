@@ -34,6 +34,8 @@ AC_DEFUN([PANDORA_PLATFORM],[
     ;;
   esac
 
+  PANDORA_OPTIMIZE_BITFIELD=1
+
   case "$target_os" in
     *linux*)
     TARGET_LINUX="true"
@@ -47,6 +49,7 @@ AC_DEFUN([PANDORA_PLATFORM],[
       ;;
     *solaris*)
       TARGET_SOLARIS="true"
+      PANDORA_OPTIMIZE_BITFIELD=0
       AC_SUBST(TARGET_SOLARIS)
       AC_DEFINE([TARGET_OS_SOLARIS], [1], [Whether we are building for Solaris])
       ;;
@@ -59,6 +62,8 @@ AC_DEFUN([PANDORA_PLATFORM],[
     *)
       ;;
   esac
+
+  AC_SUBST(PANDORA_OPTIMIZE_BITFIELD)
 
   AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
   AC_CHECK_DECL([__ICC], [INTELCC="yes"], [INTELCC="no"])

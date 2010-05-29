@@ -22,8 +22,10 @@ AC_DEFUN([_PANDORA_SEARCH_LIBTOKYOCABINET],[
   AS_IF([test "x$ac_enable_libtokyocabinet" = "xyes"],[
     AC_LIB_HAVE_LINKFLAGS(tokyocabinet,,[
 #include <tcutil.h>
+#include <tcadb.h>
     ],[
 const char *test= tcversion;
+bool ret= tcadboptimize(NULL, "params");
     ])
   ],[
     ac_cv_libtokyocabinet="no"
@@ -31,11 +33,11 @@ const char *test= tcversion;
 
   AS_IF([test "${ac_cv_libtokyocabinet}" = "no" -a "${ac_enable_libtokyocabinet}" = "yes"],[
 
-    PKG_CHECK_MODULES([LIBTOKYOCABINET], [libtokyocabinet], [
+    PKG_CHECK_MODULES([LIBTOKYOCABINET], [libtokyocabinet >= 1.4.15], [
       ac_cv_libtokyocabinet=yes
       LTLIBTOKYOCABINET=${LIBTOKYOCABINET_LIBS}
       LIBTOKYOCABINET=${LIBTOKYOCABINET_LIBS}
-    ],[])
+    ],[test x = y])
   ])
 
   AM_CONDITIONAL(HAVE_LIBTOKYOCABINET, [test "${ac_cv_libtokyocabinet}" = "yes"])
