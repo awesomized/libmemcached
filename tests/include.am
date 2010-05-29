@@ -63,6 +63,7 @@ tests_testapp_DEPENDENCIES= \
 tests_testapp_LDADD= $(tests_testapp_DEPENDENCIES) $(LIBSASL)
 
 tests_testplus_SOURCES= tests/plus.cpp
+tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 
@@ -92,10 +93,12 @@ tests_testhashkit_DEPENDENCIES = tests/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_hashplus_SOURCES = tests/hash_plus.cc
+tests_hashplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_hashplus_DEPENDENCIES = $(tests_testhashkit_DEPENDENCIES)
 tests_hashplus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_memplus_SOURCES = tests/mem_plus.cc
+tests_memplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_memplus_DEPENDENCIES = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
 tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES)
 
