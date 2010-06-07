@@ -316,7 +316,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
           fds[0].events = POLLOUT;
 
           int timeout= ptr->root->connect_timeout;
-          if (ptr->root->flags.no_block == false)
+          if (ptr->root->flags.no_block == true)
             timeout= -1;
 
           size_t loop_max= 5;
@@ -330,6 +330,8 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
               loop_max= 1;
               break;
             case 0:
+              if (loop_max==1) 
+                return MEMCACHED_TIMEOUT;
               continue;
               // A real error occurred and we need to completely bail
             default:

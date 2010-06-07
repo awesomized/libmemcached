@@ -72,7 +72,7 @@ struct memcached_st {
     bool cork:1;
     bool hash_with_prefix_key:1;
     bool ketama_weighted:1;
-    bool no_block:1;
+    bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
     bool reuse_memory:1;

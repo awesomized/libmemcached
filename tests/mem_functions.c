@@ -5860,6 +5860,34 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t regression_bug_583031(memcached_st *unused)
+{
+  (void)unused;
+
+    memcached_st *memc= memcached_create(NULL);
+    assert(memc);
+    memcached_server_add(memc, "10.2.3.4", 11211);
+
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 1000);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1000);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 1000);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 1000);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 3);
+
+    memcached_return_t rc;
+    size_t length;
+    uint32_t flags;
+
+    (void)memcached_get(memc, "dsf", 3, &length, &flags, &rc);
+
+    test_true(rc == MEMCACHED_TIMEOUT);
+
+    memcached_free(memc);
+
+    return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -6171,6 +6199,7 @@ test_st regression_tests[]= {
   {"lp:447342", 1, (test_callback_fn)regression_bug_447342 },
   {"lp:463297", 1, (test_callback_fn)regression_bug_463297 },
   {"lp:490486", 1, (test_callback_fn)regression_bug_490486 },
+  {"lp:583031", 1, (test_callback_fn)regression_bug_583031 },
   {"lp:?", 1, (test_callback_fn)regression_bug_ },
   {0, 0, (test_callback_fn)0}
 };
