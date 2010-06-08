@@ -112,12 +112,14 @@ memcapable: clients/memcapable
 test-memcat: clients/memcat clients/memcp
 	@echo "Testing memcat"
 	@@MEMC_BINARY@ -d -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcp --servers="localhost:12555" clients/memcp
-	@clients/memcat --servers="localhost:12555" memcp > tests/scratch
+	@clients/memcp --servers="localhost:12555" `pwd`/clients/memcp
+	@clients/memcat --servers="localhost:12555" memcp > `pwd`/tests/scratch
+	@clients/memcat --servers="localhost:12555" --file=`pwd`/tests/scratch2 memcp
 #	@diff clients/memcp tests/scratch
-	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm tests/Xumemc.pid
-	@rm tests/scratch
+	@cat `pwd`/tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
+	@rm `pwd`/tests/Xumemc.pid
+	@rm `pwd`/tests/scratch
+	@rm `pwd`/tests/scratch2
 
 valgrind-memcat: clients/memcat clients/memcp
 	@echo "Testing memcat"

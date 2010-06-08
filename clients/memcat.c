@@ -33,6 +33,7 @@ static char *opt_servers= NULL;
 static char *opt_hash= NULL;
 static char *opt_username;
 static char *opt_passwd;
+static char *opt_file;
 
 int main(int argc, char *argv[])
 {
@@ -91,9 +92,43 @@ int main(int argc, char *argv[])
       else
       {
         if (opt_verbose)
+        {
           printf("key: %s\nflags: %x\nlength: %zu\nvalue: ",
                  argv[optind], flags, string_length);
-        printf("%.*s\n", (int)string_length, string);
+        }
+
+        if (opt_file)
+        {
+          FILE *fp;
+          size_t written;
+
+          fp= fopen(opt_file, "w");
+          if (!fp)
+          {
+            perror("fopen");
+            return_code= -1;
+            break;
+          }
+
+          written= fwrite(string, 1, string_length, fp);
+          if (written != string_length) 
+          {
+            fprintf(stderr, "error writing file (written %zu, should be %zu)\n", written, string_length);
+            return_code= -1;
+            break;
+          }
+
+          if (fclose(fp))
+          {
+            fprintf(stderr, "error closing file\n");
+            return_code= -1;
+            break;
+          }
+        }
+        else
+        {
+            printf("%.*s\n", (int)string_length, string);
+        }
         free(string);
       }
     }
@@ -102,7 +137,9 @@ int main(int argc, char *argv[])
       fprintf(stderr, "memcat: %s: memcache error %s",
               argv[optind], memcached_strerror(memc, rc));
       if (memc->cached_errno)
+      {
 	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
+      }
       fprintf(stderr, "\n");
 
       return_code= -1;
@@ -151,6 +188,7 @@ void options_parse(int argc, char *argv[])
       {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
       {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
       {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
+      {(OPTIONSTRING)"file", required_argument, NULL, OPT_FILE},
       {0, 0, 0, 0},
     };
 
@@ -188,6 +226,9 @@ void options_parse(int argc, char *argv[])
       break;
     case OPT_PASSWD:
       opt_passwd= optarg;
+      break;
+    case OPT_FILE:
+      opt_file= optarg;
       break;
     case '?':
       /* getopt_long already printed an error message. */
