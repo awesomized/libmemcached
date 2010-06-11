@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <libmemcached/memcached.h>
+#include <libmemcached/util.h>
 #include <unistd.h>
 #include "server.h"
 
@@ -73,15 +74,22 @@ void server_startup(server_startup_st *construct)
         if (x == 0)
         {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
-                    MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
+		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }
         else
         {
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u",
-                    MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
+		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }
-        fprintf(stderr, "STARTING SERVER: %s\n", buffer);
-        status= system(buffer);
+	if (libmemcached_ping("localhost", (in_port_t)(x + TEST_PORT_BASE), NULL))
+	{
+	  fprintf(stderr, "Server on port %u already exists\n", x + TEST_PORT_BASE);
+	}
+	else
+	{
+	  status= system(buffer);
+	  fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
+	}
         count= sprintf(end_ptr, "localhost:%u,", x + TEST_PORT_BASE);
         end_ptr+= count;
       }
