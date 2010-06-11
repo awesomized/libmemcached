@@ -1,3 +1,14 @@
+/* LibMemcached
+ * Copyright (C) 2010 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: connects to a host, and makes sure it is alive.
+ *
+ */
+
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #include "libmemcached/common.h"
 #include "libmemcached/memcached_util.h"

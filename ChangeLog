@@ -1,5 +1,6 @@
 0.41
   * Added --file for memcat.
+  * Added limemcached_ping() to libmemcached_util
 
 0.40 Thu Apr 22 19:01:25 PDT 2010
   * Placed retry logic in for busted resolvers

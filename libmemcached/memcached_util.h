@@ -7,7 +7,7 @@
  *
  * Summary: Connection pool library.
  *
- * Author: Trond Norbye
+ * Author: Trond Norbye, Brian Aker
  *
  */
 
@@ -15,6 +15,7 @@
 #ifndef __LIBMEMCACHED__MEMCACHED_UTIL_H__
 #define __LIBMEMCACHED__MEMCACHED_UTIL_H__
 
+#include <libmemcached/util/ping.h>
 #include <libmemcached/util/pool.h>
 
 #endif /* __LIBMEMCACHED__MEMCACHED_UTIL_H__ */

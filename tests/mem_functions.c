@@ -3145,6 +3145,8 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
     char *hostname = memc->hosts[server_idx].hostname;
     in_port_t port = memc->hosts[server_idx].port;
     fprintf(fp, "key %s is on host /%s:%u\n", key, hostname, port);
+    memcached_server_instance_st instance=
+      memcached_server_instance_by_position(memc, host_index);
   }
   fclose(fp);
 #endif
@@ -4421,6 +4423,24 @@ static test_return_t connection_pool_test(memcached_st *memc)
 
 
   test_true(memcached_pool_destroy(pool) == memc);
+  return TEST_SUCCESS;
+}
+
+static test_return_t ping_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  // Test both the version that returns a code, and the one that does not.
+  test_true(libmemcached_ping(memcached_server_name(instance),
+                              memcached_server_port(instance), NULL));
+
+  test_true(libmemcached_ping(memcached_server_name(instance),
+                              memcached_server_port(instance), &rc));
+
+  test_true(rc == MEMCACHED_SUCCESS);
+
   return TEST_SUCCESS;
 }
 #endif
@@ -6088,6 +6108,7 @@ test_st tests[] ={
   {"analyzer", 1, (test_callback_fn)analyzer_test},
 #ifdef HAVE_LIBMEMCACHEDUTIL
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
+  {"ping", 1, (test_callback_fn)ping_test },
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},
