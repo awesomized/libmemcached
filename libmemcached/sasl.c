@@ -20,7 +20,10 @@ void memcached_set_sasl_callbacks(memcached_st *ptr,
 
 const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
 {
-  return ptr->sasl->callbacks;
+  if (ptr->sasl)
+    return ptr->sasl->callbacks;
+
+  return NULL;
 }
 
 /**

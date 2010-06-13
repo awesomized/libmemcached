@@ -373,7 +373,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       }
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-      if (ptr->fd != -1 && ptr->root->sasl.callbacks != NULL)
+      if (ptr->fd != -1 && ptr->root->sasl && ptr->root->sasl->callbacks)
       {
         memcached_return rc= memcached_sasl_authenticate_connection(ptr);
         if (rc != MEMCACHED_SUCCESS)
