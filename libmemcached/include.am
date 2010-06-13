@@ -121,6 +121,7 @@ libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_LI
 if BUILD_LIBMEMCACHEDUTIL
 nobase_include_HEADERS+= \
 			 libmemcached/memcached_util.h \
+			 libmemcached/util.h \
 			 libmemcached/util/ping.h \
 			 libmemcached/util/pool.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
