@@ -92,3 +92,15 @@ echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
 echo ""
 echo "---"
 
+case "$host_os" in
+  *freebsd*)
+    echo "*****"
+    echo "*"
+    echo "*  NOTE: You are on FreeBSD. BSD make will not work."
+    echo "*"
+    echo "*   use 'gmake' To build libmemcached"
+    echo "*"
+    echo "*****"
+  ;;
+esac
+
