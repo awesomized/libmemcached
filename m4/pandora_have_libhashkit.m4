@@ -20,7 +20,8 @@ AC_DEFUN([_PANDORA_SEARCH_LIBHASHKIT],[
     AC_LIB_HAVE_LINKFLAGS(hashkit,,[
       #include <libhashkit/hashkit.h>
     ],[
-      hashkit_st *kit = hashkit_create(NULL);
+      hashkit_st foo;
+      hashkit_st *kit = hashkit_create(&foo);
       hashkit_free(kit);
     ])
   ],[

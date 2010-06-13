@@ -4,7 +4,7 @@ dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Which version of the canonical setup we're using
-AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.131])
+AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.134])
 
 AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
   AC_ARG_ENABLE([fat-binaries],
@@ -77,9 +77,9 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AC_CANONICAL_TARGET
   
   m4_if(PCT_DONT_SUPRESS_INCLUDE,yes,[
-    AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects foreign)
+    AM_INIT_AUTOMAKE(-Wall -Werror -Wno-portability subdir-objects foreign)
   ],[
-    AM_INIT_AUTOMAKE(-Wall -Werror nostdinc subdir-objects foreign)
+    AM_INIT_AUTOMAKE(-Wall -Werror -Wno-portability nostdinc subdir-objects foreign)
   ])
 
   m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -177,6 +177,8 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   ])
 
   AC_CHECK_LIBM
+  dnl Bug on FreeBSD - LIBM check doesn't set the damn variable
+  AC_SUBST([LIBM])
   
   AC_CHECK_FUNC(setsockopt, [], [AC_CHECK_LIB(socket, setsockopt)])
   AC_CHECK_FUNC(bind, [], [AC_CHECK_LIB(bind, bind)])
