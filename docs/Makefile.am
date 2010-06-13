@@ -289,43 +289,45 @@ HTML_FILES= \
 	    memstat.html
 
 POD_FILES= \
-	     hashkit_create.pod \
-	     hashkit_functions.pod \
-	     hashkit_value.pod \
-	     libmemcached.pod \
-	     libmemcached_examples.pod \
-	     libmemcachedutil.pod \
-	     memcached_analyze.pod \
-	     memcached_auto.pod \
-	     memcached_behavior.pod \
-	     memcached_callback.pod \
-	     memcached_create.pod \
-	     memcached_delete.pod \
-	     memcached_dump.pod \
-	     memcached_flush.pod \
-	     memcached_flush_buffers.pod \
-	     memcached_generate_hash_value.pod \
-	     memcached_get.pod \
-	     memcached_memory_allocators.pod \
-	     memcached_pool.pod \
-	     memcached_quit.pod \
-	     memcached_server_st.pod \
-	     memcached_servers.pod \
-	     memcached_set.pod \
-	     memcached_stats.pod \
-	     memcached_strerror.pod \
-	     memcached_user_data.pod \
-	     memcached_verbosity.pod \
-	     memcached_version.pod \
-	     memcapable.pod \
-	     memcat.pod \
-	     memcp.pod \
-	     memdump.pod \
-	     memerror.pod \
-	     memflush.pod \
-	     memrm.pod \
-	     memslap.pod \
-	     memstat.pod
+	   hashkit_create.pod \
+	   hashkit_functions.pod \
+	   hashkit_value.pod \
+	   libmemcached.pod \
+	   libmemcached_examples.pod \
+	   libmemcachedutil.pod \
+	   memcached_analyze.pod \
+	   memcached_auto.pod \
+	   memcached_behavior.pod \
+	   memcached_callback.pod \
+	   memcached_create.pod \
+	   memcached_delete.pod \
+	   memcached_dump.pod \
+	   memcached_flush.pod \
+	   memcached_flush_buffers.pod \
+	   memcached_generate_hash_value.pod \
+	   memcached_get.pod \
+	   memcached_memory_allocators.pod \
+	   memcached_pool.pod \
+	   memcached_quit.pod \
+	   memcached_result_st.pod \
+	   memcached_sasl.pod \
+	   memcached_server_st.pod \
+	   memcached_servers.pod \
+	   memcached_set.pod \
+	   memcached_stats.pod \
+	   memcached_strerror.pod \
+	   memcached_user_data.pod \
+	   memcached_verbosity.pod \
+	   memcached_version.pod \
+	   memcapable.pod \
+	   memcat.pod \
+	   memcp.pod \
+	   memdump.pod \
+	   memerror.pod \
+	   memflush.pod \
+	   memrm.pod \
+	   memslap.pod \
+	   memstat.pod
 EXTRA_DIST+= $(POD_FILES)
 
 man_MANS = \

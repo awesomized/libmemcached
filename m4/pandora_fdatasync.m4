@@ -11,7 +11,7 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([PANDORA_WORKING_FDATASYNC],[
   AC_CACHE_CHECK([working fdatasync],[ac_cv_func_fdatasync],[
     AC_LANG_PUSH(C++)
-    AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <unistd.h>
       ]],[[
 fdatasync(4);

@@ -13,7 +13,7 @@ AC_DEFUN([_PANDORA_SEARCH_SASL],[
     [AS_HELP_STRING([--disable-sasl],
       [Build with sasl support @<:@default=on@:>@])],
     [ac_enable_sasl="$enableval"],
-    [ac_enable_sasl="no"])
+    [ac_enable_sasl="yes"])
 
   AS_IF([test "x$ac_enable_sasl" = "xyes"],
     [

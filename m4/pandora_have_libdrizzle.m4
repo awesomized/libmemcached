@@ -36,20 +36,26 @@ AC_DEFUN([PANDORA_HAVE_LIBDRIZZLE],[
 
 AC_DEFUN([PANDORA_REQUIRE_LIBDRIZZLE],[
   AC_REQUIRE([PANDORA_HAVE_LIBDRIZZLE])
-  AS_IF([test "x${ac_cv_libdrizzle}" = "xno"],
-      AC_MSG_ERROR([libdrizzle is required for ${PACKAGE}]))
+  AS_IF([test "x${ac_cv_libdrizzle}" = "xno"],[
+    AC_MSG_ERROR([libdrizzle is required for ${PACKAGE}])
+  ],[
+    dnl We need at least 0.8 on Solaris non-sparc
+    AS_IF([test "$target_cpu" != "sparc" -a "x${TARGET_SOLARIS}" = "xtrue"],[
+      PANDORA_LIBDRIZZLE_RECENT
+    ])
+  ])
 ])
 
-AC_DEFUN([PANDORA_LIBDRIZZLE_NOVCOL],[
-  AC_CACHE_CHECK([if libdrizzle still has virtual columns],
-    [pandora_cv_libdrizzle_vcol],
+AC_DEFUN([PANDORA_LIBDRIZZLE_RECENT],[
+  AC_CACHE_CHECK([if libdrizzle is recent enough],
+    [pandora_cv_libdrizzle_recent],
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <libdrizzle/drizzle.h>
-int foo= DRIZZLE_COLUMN_TYPE_DRIZZLE_VIRTUAL;
+drizzle_con_options_t foo= DRIZZLE_CON_EXPERIMENTAL;
     ]])],
-    [pandora_cv_libdrizzle_vcol=yes],
-    [pandora_cv_libdrizzle_vcol=no])])
-  AS_IF([test "$pandora_cv_libdrizzle_vcol" = "yes"],[
-    AC_MSG_ERROR([Your version of libdrizzle is too old. ${PACKAGE} requires at least version 0.4])
+    [pandora_cv_libdrizzle_recent=yes],
+    [pandora_cv_libdrizzle_recent=no])])
+  AS_IF([test "$pandora_cv_libdrizzle_recent" = "no"],[
+    AC_MSG_ERROR([Your version of libdrizzle is too old. ${PACKAGE} requires at least version 0.8])
   ])
 ])

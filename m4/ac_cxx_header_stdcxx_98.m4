@@ -1,12 +1,28 @@
-dnl Copyright © 2008 Benjamin Kosnik <bkoz@redhat.com>
-
-dnl Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved.
-
+# ===========================================================================
+#        http://autoconf-archive.cryp.to/ac_cxx_header_stdcxx_98.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AC_CXX_HEADER_STDCXX_98
+#
+# DESCRIPTION
+#
+#   Check for complete library coverage of the C++1998/2003 standard.
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Benjamin Kosnik <bkoz@redhat.com>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved.
 
 AC_DEFUN([AC_CXX_HEADER_STDCXX_98], [
   AC_CACHE_CHECK(for ISO C++ 98 include files,
   ac_cv_cxx_stdcxx_98,
-  [AC_LANG_PUSH(C++)
+  [AC_LANG_SAVE
+  AC_LANG_CPLUSPLUS
   AC_TRY_COMPILE([
     #include <cassert>
     #include <cctype>
@@ -59,7 +75,7 @@ AC_DEFUN([AC_CXX_HEADER_STDCXX_98], [
     #include <vector>
   ],,
   ac_cv_cxx_stdcxx_98=yes, ac_cv_cxx_stdcxx_98=no)
-  AC_LANG_POP()
+  AC_LANG_RESTORE
   ])
   if test "$ac_cv_cxx_stdcxx_98" = yes; then
     AC_DEFINE(STDCXX_98_HEADERS,,[Define if ISO C++ 1998 header files are present. ])
