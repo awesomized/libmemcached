@@ -23,7 +23,7 @@
  * Create the DTrace probes on the system using it (to support both Solaris
  * and MacOS X
  */
-#include "dtrace_probes.h"
+#include "libmemcached/dtrace_probes.h"
 
 #else
 /*
