@@ -161,10 +161,10 @@ endif
 SUFFIXES+= .d
 
 libmemcached/dtrace_probes.h: libmemcached/libmemcached_probes.d
-	$(DTRACE) $(DTRACEFLAGS) -h -o libmemcached/dtrace_probes.h -s libmemcached/libmemcached_probes.d
+	$(DTRACE) $(DTRACEFLAGS) -h -o libmemcached/dtrace_probes.h -s ${top_srcdir}/libmemcached/libmemcached_probes.d
 
 libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d  config.h
 
 .d.o:
-	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep '^pic_object' libmemcached/*.lo | cut -f 2 -d\' | sed 's/^/libmemcached\//'`
+	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s ${top_srcdir}/libmemcached/libmemcached_probes.d `grep '^pic_object' libmemcached/*.lo | cut -f 2 -d\' | sed 's/^/libmemcached\//'`
 
