@@ -150,10 +150,11 @@ endif
 
 if HAVE_DTRACE
 BUILT_SOURCES+= libmemcached/dtrace_probes.h
-libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
+CLEANFILES+= libmemcached/dtrace_probes.h
 endif
 
 if DTRACE_NEEDS_OBJECTS
+libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
 libmemcached_libmemcached_la_DEPENDENCIES += libmemcached/libmemcached_probes.o
 endif
 
@@ -162,7 +163,8 @@ SUFFIXES+= .d
 libmemcached/dtrace_probes.h: libmemcached/libmemcached_probes.d
 	$(DTRACE) $(DTRACEFLAGS) -h -o libmemcached/dtrace_probes.h -s libmemcached/libmemcached_probes.d
 
-libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d $(libmemcached_libmemcached_la_OBJECTS)
-	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/.libs/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep '^pic_object' *.lo | cut -f 2 -d\'`
-	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep non_pic_object *.lo | cut -f 2 -d\' `
+libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d  config.h
+
+.d.o:
+	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s libmemcached/libmemcached_probes.d `grep '^pic_object' libmemcached/*.lo | cut -f 2 -d\' | sed 's/^/libmemcached\//'`
 
