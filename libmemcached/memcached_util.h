@@ -17,5 +17,6 @@
 
 #include <libmemcached/util/ping.h>
 #include <libmemcached/util/pool.h>
+#include <libmemcached/util/version.h>
 
 #endif /* __LIBMEMCACHED__MEMCACHED_UTIL_H__ */

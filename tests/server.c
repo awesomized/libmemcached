@@ -81,7 +81,7 @@ void server_startup(server_startup_st *construct)
           sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u",
 		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }
-	if (libmemcached_ping("localhost", (in_port_t)(x + TEST_PORT_BASE), NULL))
+	if (libmemcached_util_ping("localhost", (in_port_t)(x + TEST_PORT_BASE), NULL))
 	{
 	  fprintf(stderr, "Server on port %u already exists\n", x + TEST_PORT_BASE);
 	}

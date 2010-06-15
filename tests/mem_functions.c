@@ -3592,7 +3592,6 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
   memcached_st *memc_clone;
-  memcached_server_instance_st instance;
 
   memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
@@ -3600,9 +3599,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  instance= memcached_server_instance_by_position(memc_clone, 0);
-
-  if (instance->major_version >= 1 && instance->minor_version > 2)
+  if (libmemcached_util_version_check(memc_clone, 1, 2, 0))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
@@ -3728,7 +3725,6 @@ static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
   memcached_st *memc_clone;
-  memcached_server_instance_st instance;
 
   memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
@@ -3736,9 +3732,7 @@ static test_return_t pre_binary(memcached_st *memc)
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  instance= memcached_server_instance_by_position(memc_clone, 0);
-
-  if (instance->major_version >= 1 && instance->minor_version > 2)
+  if (libmemcached_util_version_check(memc_clone, 1, 2, 0))
   {
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
     test_true(rc == MEMCACHED_SUCCESS);
@@ -4072,13 +4066,7 @@ static test_return_t enable_cas(memcached_st *memc)
 {
   unsigned int set= 1;
 
-  memcached_server_instance_st instance=
-    memcached_server_instance_by_position(memc, 0);
-
-  memcached_version(memc);
-
-  if ((instance->major_version >= 1 && (instance->minor_version == 2 && instance->micro_version >= 4))
-      || instance->minor_version > 2)
+  if (libmemcached_util_version_check(memc, 1, 2, 4))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
 
@@ -4097,7 +4085,9 @@ static test_return_t check_for_1_2_3(memcached_st *memc)
 
   if ((instance->major_version >= 1 && (instance->minor_version == 2 && instance->micro_version >= 4))
       || instance->minor_version > 2)
+  {
     return TEST_SUCCESS;
+  }
 
   return TEST_SKIPPED;
 }
@@ -4426,6 +4416,46 @@ static test_return_t connection_pool_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t util_version_test(memcached_st *memc)
+{
+  bool if_successful;
+
+  if_successful= libmemcached_util_version_check(memc, 0, 0, 0);
+  test_true(if_successful == true);
+
+  if_successful= libmemcached_util_version_check(memc, 9, 9, 9);
+  test_true(if_successful == false);
+
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  memcached_version(memc);
+
+  // We only use one binary when we test, so this should be just fine.
+  if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version);
+  test_true(if_successful == true);
+
+  if (instance->minor_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version -1);
+  else if (instance->micro_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version - 1, instance->minor_version);
+  else if (instance->major_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version -1, instance->micro_version, instance->minor_version);
+
+  test_true(if_successful == true);
+
+  if (instance->minor_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version +1);
+  else if (instance->micro_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version +1, instance->minor_version);
+  else if (instance->major_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version +1, instance->micro_version, instance->minor_version);
+
+  test_true(if_successful == false);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t ping_test(memcached_st *memc)
 {
   memcached_return_t rc;
@@ -4433,11 +4463,11 @@ static test_return_t ping_test(memcached_st *memc)
     memcached_server_instance_by_position(memc, 0);
 
   // Test both the version that returns a code, and the one that does not.
-  test_true(libmemcached_ping(memcached_server_name(instance),
-                              memcached_server_port(instance), NULL));
+  test_true(libmemcached_util_ping(memcached_server_name(instance),
+                                   memcached_server_port(instance), NULL));
 
-  test_true(libmemcached_ping(memcached_server_name(instance),
-                              memcached_server_port(instance), &rc));
+  test_true(libmemcached_util_ping(memcached_server_name(instance),
+                                   memcached_server_port(instance), &rc));
 
   test_true(rc == MEMCACHED_SUCCESS);
 
@@ -5549,12 +5579,8 @@ static test_return_t regression_bug_463297(memcached_st *memc)
   test_true(memc_clone != NULL);
   test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
 
-  memcached_server_instance_st instance=
-    memcached_server_instance_by_position(memc_clone, 0);
 
-  if (instance->major_version > 1 ||
-      (instance->major_version == 1 &&
-       instance->minor_version > 2))
+  if (libmemcached_util_version_check(memc_clone, 1, 1, 2))
   {
      /* Binary protocol doesn't support deferred delete */
      memcached_st *bin_clone= memcached_clone(NULL, memc);
@@ -6109,6 +6135,7 @@ test_st tests[] ={
 #ifdef HAVE_LIBMEMCACHEDUTIL
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
   {"ping", 1, (test_callback_fn)ping_test },
+  {"util_version", 1, (test_callback_fn)util_version_test },
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},

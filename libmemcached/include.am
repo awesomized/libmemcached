@@ -123,13 +123,15 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached_util.h \
 			 libmemcached/util.h \
 			 libmemcached/util/ping.h \
-			 libmemcached/util/pool.h
+			 libmemcached/util/pool.h \
+			 libmemcached/util/version.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 
 libmemcached_libmemcachedutil_la_SOURCES= \
 					  libmemcached/util/ping.c \
-					  libmemcached/util/pool.c
+					  libmemcached/util/pool.c \
+					  libmemcached/util/version.c
 libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
 libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info 0:0:0
 libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la

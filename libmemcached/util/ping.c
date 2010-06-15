@@ -13,7 +13,7 @@
 #include "libmemcached/memcached_util.h"
 
 
-bool libmemcached_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
 {
   memcached_return_t rc;
   memcached_st memc, *memc_ptr;
