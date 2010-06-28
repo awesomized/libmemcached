@@ -62,45 +62,50 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     timeout= -1;
 
   size_t loop_max= 5;
-  while (--loop_max)
+  while (--loop_max) // While loop is for ERESTART or EINTR
   {
     error= poll(&fds, 1, timeout);
 
     switch (error)
     {
-    case 1:
+    case 1: // Success!
       WATCHPOINT_IF_LABELED_NUMBER(read_or_write && loop_max < 4, "read() times we had to loop, decremented down from 5", loop_max);
       WATCHPOINT_IF_LABELED_NUMBER(!read_or_write && loop_max < 4, "write() times we had to loop, decremented down from 5", loop_max);
 
       return MEMCACHED_SUCCESS;
-    case 0:
+    case 0: // Timeout occured, we let the while() loop do its thing.
       return MEMCACHED_TIMEOUT;
     default:
       WATCHPOINT_ERRNO(errno);
+      switch (errno)
       {
-        switch (errno)
-        {
 #ifdef TARGET_OS_LINUX
-        case ERESTART:
+      case ERESTART:
 #endif
-        case EINTR:
-          continue;
-        default:
-          ptr->cached_errno= error;
-          memcached_quit_server(ptr, true);
-
-          return MEMCACHED_FAILURE;
+      case EINTR:
+        break;
+      default:
+        if (fds.revents & POLLERR)
+        {
+          int err;
+          socklen_t len= sizeof (err);
+          (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+          ptr->cached_errno= (err == 0) ? errno : err;
         }
+        else
+        {
+          ptr->cached_errno= errno;
+        }
+        memcached_quit_server(ptr, true);
+
+        return MEMCACHED_FAILURE;
       }
     }
   }
 
-  if (loop_max == 0 && error == 0)
-    return MEMCACHED_TIMEOUT;
-
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
-  ptr->cached_errno= error;
+  ptr->cached_errno= errno;
   memcached_quit_server(ptr, true);
 
   return MEMCACHED_FAILURE;
