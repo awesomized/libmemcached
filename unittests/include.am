@@ -1,0 +1,23 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+if HAVE_LIBGTEST
+UNITTEST_PROGRAM= unittests/unittests
+
+noinst_PROGRAMS += $(UNITTEST_PROGRAM)
+
+unittests_unittests_SOURCES= \
+			     unittests/strings.cc \
+			     unittests/main.cc
+unittests_unittests_LDADD= \
+			   tests/libserver.la \
+			   libmemcached/libmemcachedinternal.la \
+			   ${TESTS_LDADDS} ${LTLIBGTEST}
+endif
+
+# Shorthand
+unit: unittests-run
+
+unittests-run: $(UNITTEST_PROGRAM)
+	$(UNITTEST_PROGRAM)

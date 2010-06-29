@@ -181,3 +181,4 @@ tests/testapp
 tests/testhashkit
 tests/testplus
 tests/testudp
+unittests/unittests

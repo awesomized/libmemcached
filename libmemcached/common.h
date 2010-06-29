@@ -79,7 +79,7 @@ struct memcached_continuum_item_st
 typedef enum {
   MEM_NOT= -1,
   MEM_FALSE= false,
-  MEM_TRUE= true,
+  MEM_TRUE= true
 } memcached_ternary_t;
 
 

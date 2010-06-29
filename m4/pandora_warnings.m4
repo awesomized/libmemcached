@@ -145,7 +145,7 @@ uint16_t x= htons(80);
       m4_if(PW_LESS_WARNINGS,[no],[
         BASE_WARNINGS_FULL="-Wformat=2 ${W_CONVERSION} -Wstrict-aliasing"
         CC_WARNINGS_FULL="-Wswitch-default -Wswitch-enum -Wwrite-strings"
-        CXX_WARNINGS_FULL="-Weffc++ -Wold-style-cast"
+        CXX_WARNINGS_FULL="-Wold-style-cast"
         NO_OLD_STYLE_CAST="-Wno-old-style-cast"
         NO_EFF_CXX="-Wno-effc++"
       ],[
