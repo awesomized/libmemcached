@@ -5028,14 +5028,11 @@ static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
   // See if memcached is reachable.
   value= memcached_get(tl_memc_h, key, strlen(key), &len, &flags, &rc);
 
-  if (value)
-  {
-    free(value);
-    test_true(value); // Pointer won't be zero so this is fine.
-  }
-
+  test_false(value);
   test_true(len == 0);
   test_true(rc == MEMCACHED_ERRNO);
+
+  memcached_free(tl_memc_h);
 
   return TEST_SUCCESS;
 }
@@ -5054,12 +5051,7 @@ static test_return_t memcached_get_MEMCACHED_NOTFOUND(memcached_st *memc)
   // See if memcached is reachable.
   value= memcached_get(memc, key, strlen(key), &len, &flags, &rc);
 
-  if (value)
-  {
-    free(value);
-    test_true(value); // Pointer won't be zero so this is fine.
-  }
-
+  test_false(value);
   test_true(len == 0);
   test_true(rc == MEMCACHED_NOTFOUND);
 
@@ -5093,14 +5085,11 @@ static test_return_t memcached_get_by_key_MEMCACHED_ERRNO(memcached_st *memc)
   // See if memcached is reachable.
   value= memcached_get_by_key(tl_memc_h, key, strlen(key), key, strlen(key), &len, &flags, &rc);
 
-  if (value)
-  {
-    free(value);
-    test_true(value); // Pointer won't be zero so this is fine.
-  }
-
+  test_false(value);
   test_true(len == 0);
   test_true(rc == MEMCACHED_ERRNO);
+
+  memcached_free(tl_memc_h);
 
   return TEST_SUCCESS;
 }
@@ -5119,12 +5108,7 @@ static test_return_t memcached_get_by_key_MEMCACHED_NOTFOUND(memcached_st *memc)
   // See if memcached is reachable.
   value= memcached_get_by_key(memc, key, strlen(key), key, strlen(key), &len, &flags, &rc);
 
-  if (value)
-  {
-    free(value);
-    test_true(value); // Pointer won't be zero so this is fine.
-  }
-
+  test_false(value);
   test_true(len == 0);
   test_true(rc == MEMCACHED_NOTFOUND);
 

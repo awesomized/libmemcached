@@ -4,7 +4,7 @@
 
 TESTS_LDADDS = libmemcached/libmemcached.la
 
-VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes
+VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --track-fds=yes
 
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
