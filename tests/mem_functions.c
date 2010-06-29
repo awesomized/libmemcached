@@ -5018,7 +5018,7 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
   We are testing the error condition when we connect to a server via memcached_get() 
   but find that the server is not available.
 */
-static test_return_t memcached_get_MEMCACHED_SOME_ERRORS(memcached_st *memc)
+static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
 {
   (void)memc;
   memcached_st *tl_memc_h;
@@ -5032,7 +5032,7 @@ static test_return_t memcached_get_MEMCACHED_SOME_ERRORS(memcached_st *memc)
 
   // Create a handle.
   tl_memc_h= memcached_create(NULL);
-  servers= memcached_servers_parse("localhost:9898"); // This server should not exist
+  servers= memcached_servers_parse("localhost:9898,localhost:9899"); // This server should not exist
   memcached_server_push(tl_memc_h, servers);
   memcached_server_list_free(servers);
 
@@ -5046,7 +5046,7 @@ static test_return_t memcached_get_MEMCACHED_SOME_ERRORS(memcached_st *memc)
   }
 
   test_true(len == 0);
-  test_true(rc == MEMCACHED_SOME_ERRORS);
+  test_true(rc == MEMCACHED_ERRNO);
 
   return TEST_SUCCESS;
 }
@@ -5083,7 +5083,7 @@ static test_return_t memcached_get_MEMCACHED_NOTFOUND(memcached_st *memc)
   We are testing the error condition when we connect to a server via memcached_get_by_key() 
   but find that the server is not available.
 */
-static test_return_t memcached_get_by_key_MEMCACHED_SOME_ERRORS(memcached_st *memc)
+static test_return_t memcached_get_by_key_MEMCACHED_ERRNO(memcached_st *memc)
 {
   (void)memc;
   memcached_st *tl_memc_h;
@@ -5097,7 +5097,7 @@ static test_return_t memcached_get_by_key_MEMCACHED_SOME_ERRORS(memcached_st *me
 
   // Create a handle.
   tl_memc_h= memcached_create(NULL);
-  servers= memcached_servers_parse("localhost:9898"); // This server should not exist
+  servers= memcached_servers_parse("localhost:9898,localhost:9899"); // This server should not exist
   memcached_server_push(tl_memc_h, servers);
   memcached_server_list_free(servers);
 
@@ -5111,7 +5111,7 @@ static test_return_t memcached_get_by_key_MEMCACHED_SOME_ERRORS(memcached_st *me
   }
 
   test_true(len == 0);
-  test_true(rc == MEMCACHED_SOME_ERRORS);
+  test_true(rc == MEMCACHED_ERRNO);
 
   return TEST_SUCCESS;
 }
@@ -6332,9 +6332,9 @@ test_st hash_tests[] ={
 };
 
 test_st error_conditions[] ={
-  {"memcached_get_MEMCACHED_SOME_ERRORS", 0, (test_callback_fn)memcached_get_MEMCACHED_SOME_ERRORS },
+  {"memcached_get_MEMCACHED_ERRNO", 0, (test_callback_fn)memcached_get_MEMCACHED_ERRNO },
   {"memcached_get_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_MEMCACHED_NOTFOUND },
-  {"memcached_get_by_key_MEMCACHED_SOME_ERRORS", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_SOME_ERRORS },
+  {"memcached_get_by_key_MEMCACHED_ERRNO", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_ERRNO },
   {"memcached_get_by_key_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_NOTFOUND },
   {0, 0, (test_callback_fn)0}
 };

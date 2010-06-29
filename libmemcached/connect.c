@@ -1,8 +1,95 @@
+/* LibMemcached
+ * Copyright (C) 2006-2010 Brian Aker
+ * All rights reserved.
+ *
+ * Use and distribution licensed under the BSD license.  See
+ * the COPYING file in the parent directory for full text.
+ *
+ * Summary: Server IO, Not public!
+ *
+ */
+
 #include "common.h"
 #include <netdb.h>
 #include <poll.h>
 #include <sys/time.h>
 #include <time.h>
+
+static memcached_return_t connect_poll(memcached_server_st *ptr)
+{
+  struct pollfd fds[1];
+  fds[0].fd = ptr->fd;
+  fds[0].events = POLLOUT;
+
+  int timeout= ptr->root->connect_timeout;
+  if (ptr->root->flags.no_block == true)
+    timeout= -1;
+
+  int error;
+  size_t loop_max= 5;
+
+  while (--loop_max) // Should only loop on cases of ERESTART or EINTR
+  {
+    error= poll(fds, 1, timeout);
+
+    switch (error)
+    {
+    case 1:
+      {
+        int err;
+        socklen_t len= sizeof (err);
+        (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+
+        // We check the value to see what happened wth the socket.
+        if (err == 0)
+        {
+          return MEMCACHED_SUCCESS;
+        }
+        else
+        {
+          ptr->cached_errno= errno;
+
+          return MEMCACHED_ERRNO;
+        }
+      }
+    case 0:
+      return MEMCACHED_TIMEOUT;
+    default: // A real error occurred and we need to completely bail
+      WATCHPOINT_ERRNO(errno);
+      switch (errno)
+      {
+#ifdef TARGET_OS_LINUX
+      case ERESTART:
+#endif
+      case EINTR:
+        continue;
+      default:
+        if (fds[0].revents & POLLERR)
+        {
+          int err;
+          socklen_t len= sizeof (err);
+          (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+          ptr->cached_errno= (err == 0) ? errno : err;
+        }
+        else
+        {
+          ptr->cached_errno= errno;
+        }
+
+        (void)close(ptr->fd);
+        ptr->fd= -1;
+
+        return MEMCACHED_ERRNO;
+      }
+    }
+    WATCHPOINT_ASSERT(0); // Programming error
+  }
+
+  // This should only be possible from ERESTART or EINTR;
+  ptr->cached_errno= errno;
+
+  return MEMCACHED_ERRNO;
+}
 
 static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
@@ -265,6 +352,8 @@ test_connect:
 
 static memcached_return_t network_connect(memcached_server_st *ptr)
 {
+  bool timeout_error_occured= false;
+
   if (ptr->fd == -1)
   {
     struct addrinfo *use;
@@ -305,93 +394,39 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       (void)set_socket_options(ptr);
 
       /* connect to server */
-      if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) == -1))
+      if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) > -1))
       {
-        ptr->cached_errno= errno;
-        if (errno == EINPROGRESS || /* nonblocking mode - first return, */
-            errno == EALREADY) /* nonblocking mode - subsequent returns */
-        {
-          struct pollfd fds[1];
-          fds[0].fd = ptr->fd;
-          fds[0].events = POLLOUT;
+        break; // Success
+      }
 
-          int timeout= ptr->root->connect_timeout;
-          if (ptr->root->flags.no_block == true)
-            timeout= -1;
+      /* An error occurred */
+      ptr->cached_errno= errno;
+      if (errno == EINPROGRESS || /* nonblocking mode - first return, */
+          errno == EALREADY) /* nonblocking mode - subsequent returns */
+      {
+        memcached_return_t rc;
+        rc= connect_poll(ptr);
 
-          size_t loop_max= 5;
-          while (--loop_max)
-          {
-            int error= poll(fds, 1, timeout);
+        if (rc == MEMCACHED_TIMEOUT)
+          timeout_error_occured= true;
 
-            switch (error)
-            {
-            case 1:
-              loop_max= 1;
-              break;
-            case 0:
-              if (loop_max==1) 
-                return MEMCACHED_TIMEOUT;
-              continue;
-              // A real error occurred and we need to completely bail
-            default:
-              WATCHPOINT_ERRNO(errno);
-              switch (errno)
-              {
-#ifdef TARGET_OS_LINUX
-              case ERESTART:
-#endif
-              case EINTR:
-                continue;
-              default:
-                if (fds[0].revents & POLLERR)
-                {
-                  int err;
-                  socklen_t len= sizeof (err);
-                  (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-                  ptr->cached_errno= (err == 0) ? errno : err;
-                }
-
-                (void)close(ptr->fd);
-                ptr->fd= -1;
-
-                break;
-              }
-            }
-          }
-        }
-        else if (errno == EISCONN) /* we are connected :-) */
-        {
+        if (rc == MEMCACHED_SUCCESS)
           break;
-        }
-        else if (errno != EINTR)
-        {
-          (void)close(ptr->fd);
-          ptr->fd= -1;
-          break;
-        }
       }
-
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-      if (ptr->fd != -1 && ptr->root->sasl && ptr->root->sasl->callbacks)
+      else if (errno == EISCONN) /* we are connected :-) */
       {
-        memcached_return rc= memcached_sasl_authenticate_connection(ptr);
-        if (rc != MEMCACHED_SUCCESS)
-        {
-          (void)close(ptr->fd);
-          ptr->fd= -1;
-
-          return rc;
-        }
+        break;
       }
-#endif
-
-
-      if (ptr->fd != -1)
+      else if (errno == EINTR) // Special case, we retry ai_addr
       {
-        return MEMCACHED_SUCCESS;
+        (void)close(ptr->fd);
+        ptr->fd= -1;
+        continue;
       }
-      use = use->ai_next;
+
+      (void)close(ptr->fd);
+      ptr->fd= -1;
+      use= use->ai_next;
     }
   }
 
@@ -408,7 +443,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
         ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
     }
 
-    if (ptr->cached_errno == 0)
+    if (timeout_error_occured)
       return MEMCACHED_TIMEOUT;
 
     return MEMCACHED_ERRNO; /* The last error should be from connect() */
@@ -481,6 +516,17 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   case MEMCACHED_CONNECTION_UDP:
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+    if (ptr->fd != -1 && ptr->root->sasl && ptr->root->sasl->callbacks)
+    {
+      rc= memcached_sasl_authenticate_connection(ptr);
+      if (rc != MEMCACHED_SUCCESS)
+      {
+        (void)close(ptr->fd);
+        ptr->fd= -1;
+      }
+    }
+#endif
     break;
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     rc= unix_socket_connect(ptr);
