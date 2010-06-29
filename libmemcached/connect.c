@@ -470,6 +470,10 @@ void set_last_disconnected_host(memcached_server_write_instance_st ptr)
 memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
 {
   memcached_return_t rc= MEMCACHED_NO_SERVERS;
+
+  if (ptr->fd > -1)
+    return MEMCACHED_SUCCESS;
+
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
   /* both retry_timeout and server_failure_limit must be set in order to delay retrying a server on error. */

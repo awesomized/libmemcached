@@ -55,6 +55,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->server_failure_limit= (uint32_t)data;
     break;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    memcached_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     if (data)
     {
       ptr->flags.verify_key= false;
