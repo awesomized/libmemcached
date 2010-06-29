@@ -45,7 +45,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 
   if (ptr->flags.binary_protocol)
   {
-    likely (!expiration)
+    likely (! expiration)
     {
       rc= binary_delete(ptr, server_key, key, key_length, to_write);
     }

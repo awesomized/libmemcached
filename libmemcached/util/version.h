@@ -19,8 +19,8 @@ extern "C" {
 LIBMEMCACHED_API
   bool libmemcached_util_version_check(memcached_st *memc, 
                                        uint8_t major_version,
-                                       uint8_t micro_version,
-                                       uint8_t minor_version);
+                                       uint8_t minor_version,
+                                       uint8_t micro_version);
 
 #ifdef __cplusplus
 }

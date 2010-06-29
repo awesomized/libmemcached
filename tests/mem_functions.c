@@ -682,7 +682,6 @@ static test_return_t add_test(memcached_st *memc)
 */
 static test_return_t add_wrapper(memcached_st *memc)
 {
-  unsigned int x;
   unsigned int max= 10000;
 #ifdef __sun
   max= 10;
@@ -691,7 +690,7 @@ static test_return_t add_wrapper(memcached_st *memc)
   max= 10;
 #endif
 
-  for (x= 0; x < max; x++)
+  for (uint32_t x= 0; x < max; x++)
     add_test(memc);
 
   return TEST_SUCCESS;
@@ -3599,7 +3598,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  if (libmemcached_util_version_check(memc_clone, 1, 2, 0))
+  if (libmemcached_util_version_check(memc_clone, 1, 3, 0))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
@@ -3724,22 +3723,13 @@ static test_return_t pre_behavior_ketama_weighted(memcached_st *memc)
 static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
-  memcached_st *memc_clone;
 
-  memc_clone= memcached_clone(NULL, memc);
-  test_true(memc_clone);
-  // The memcached_version needs to be done on a clone, because the server
-  // will not toggle protocol on an connection.
-  memcached_version(memc_clone);
-
-  if (libmemcached_util_version_check(memc_clone, 1, 2, 0))
+  if (libmemcached_util_version_check(memc, 1, 3, 0))
   {
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
     test_true(rc == MEMCACHED_SUCCESS);
     test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
   }
-
-  memcached_free(memc_clone);
 
   return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
 }
@@ -4432,24 +4422,24 @@ static test_return_t util_version_test(memcached_st *memc)
   memcached_version(memc);
 
   // We only use one binary when we test, so this should be just fine.
-  if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version);
+  if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, instance->micro_version);
   test_true(if_successful == true);
 
-  if (instance->minor_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version -1);
-  else if (instance->micro_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version - 1, instance->minor_version);
+  if (instance->micro_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, instance->micro_version -1);
+  else if (instance->minor_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version - 1, instance->micro_version);
   else if (instance->major_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version -1, instance->micro_version, instance->minor_version);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version -1, instance->minor_version, instance->micro_version);
 
   test_true(if_successful == true);
 
-  if (instance->minor_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version, instance->minor_version +1);
-  else if (instance->micro_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->micro_version +1, instance->minor_version);
+  if (instance->micro_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, instance->micro_version +1);
+  else if (instance->minor_version > 0)
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version +1, instance->micro_version);
   else if (instance->major_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version +1, instance->micro_version, instance->minor_version);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version +1, instance->minor_version, instance->micro_version);
 
   test_true(if_successful == false);
 
@@ -5575,54 +5565,58 @@ static test_return_t regression_bug_447342(memcached_st *memc)
 
 static test_return_t regression_bug_463297(memcached_st *memc)
 {
-  memcached_st *memc_clone= memcached_clone(NULL, memc);
-  test_true(memc_clone != NULL);
-  test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
+  memcached_st *memc_clone= memcached_clone(NULL, memc); 
+  test_true(memc_clone != NULL); 
+  test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS); 
 
+  memcached_server_instance_st instance= 
+    memcached_server_instance_by_position(memc_clone, 0); 
 
-  if (libmemcached_util_version_check(memc_clone, 1, 1, 2))
+  if (instance->major_version > 1 || 
+      (instance->major_version == 1 && 
+       instance->minor_version > 2)) 
   {
-     /* Binary protocol doesn't support deferred delete */
-     memcached_st *bin_clone= memcached_clone(NULL, memc);
-     test_true(bin_clone != NULL);
-     test_true(memcached_behavior_set(bin_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1) == MEMCACHED_SUCCESS);
-     test_true(memcached_delete(bin_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
-     memcached_free(bin_clone);
+    /* Binary protocol doesn't support deferred delete */
+    memcached_st *bin_clone= memcached_clone(NULL, memc);
+    test_true(bin_clone != NULL);
+    test_true(memcached_behavior_set(bin_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1) == MEMCACHED_SUCCESS);
+    test_true(memcached_delete(bin_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
+    memcached_free(bin_clone);
 
-     memcached_quit(memc_clone);
+    memcached_quit(memc_clone);
 
-     /* If we know the server version, deferred delete should fail
-      * with invalid arguments */
-     test_true(memcached_delete(memc_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
+    /* If we know the server version, deferred delete should fail
+     * with invalid arguments */
+    test_true(memcached_delete(memc_clone, "foo", 3, 1) == MEMCACHED_INVALID_ARGUMENTS);
 
-     /* If we don't know the server version, we should get a protocol error */
-     memcached_return_t rc= memcached_delete(memc, "foo", 3, 1);
+    /* If we don't know the server version, we should get a protocol error */
+    memcached_return_t rc= memcached_delete(memc, "foo", 3, 1);
 
-     /* but there is a bug in some of the memcached servers (1.4) that treats
-      * the counter as noreply so it doesn't send the proper error message
-      */
-     test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+    /* but there is a bug in some of the memcached servers (1.4) that treats
+     * the counter as noreply so it doesn't send the proper error message
+   */
+    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
 
-     /* And buffered mode should be disabled and we should get protocol error */
-     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1) == MEMCACHED_SUCCESS);
-     rc= memcached_delete(memc, "foo", 3, 1);
-     test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+    /* And buffered mode should be disabled and we should get protocol error */
+    test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1) == MEMCACHED_SUCCESS);
+    rc= memcached_delete(memc, "foo", 3, 1);
+    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
 
-     /* Same goes for noreply... */
-     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1) == MEMCACHED_SUCCESS);
-     rc= memcached_delete(memc, "foo", 3, 1);
-     test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+    /* Same goes for noreply... */
+    test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1) == MEMCACHED_SUCCESS);
+    rc= memcached_delete(memc, "foo", 3, 1);
+    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
 
-     /* but a normal request should go through (and be buffered) */
-     test_true((rc= memcached_delete(memc, "foo", 3, 0)) == MEMCACHED_BUFFERED);
-     test_true(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
+    /* but a normal request should go through (and be buffered) */
+    test_true((rc= memcached_delete(memc, "foo", 3, 0)) == MEMCACHED_BUFFERED);
+    test_true(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
 
-     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0) == MEMCACHED_SUCCESS);
-     /* unbuffered noreply should be success */
-     test_true(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_SUCCESS);
-     /* unbuffered with reply should be not found... */
-     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 0) == MEMCACHED_SUCCESS);
-     test_true(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_NOTFOUND);
+    test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0) == MEMCACHED_SUCCESS);
+    /* unbuffered noreply should be success */
+    test_true(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_SUCCESS);
+    /* unbuffered with reply should be not found... */
+    test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 0) == MEMCACHED_SUCCESS);
+    test_true(memcached_delete(memc, "foo", 3, 0) == MEMCACHED_NOTFOUND);
   }
 
   memcached_free(memc_clone);
@@ -6080,6 +6074,7 @@ static test_return_t sasl_auth_test(memcached_st *memc)
 
 /* Clean the server before beginning testing */
 test_st tests[] ={
+  {"util_version", 1, (test_callback_fn)util_version_test },
   {"flush", 0, (test_callback_fn)flush_test },
   {"init", 0, (test_callback_fn)init_test },
   {"allocation", 0, (test_callback_fn)allocation_test },
@@ -6135,7 +6130,6 @@ test_st tests[] ={
 #ifdef HAVE_LIBMEMCACHEDUTIL
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
   {"ping", 1, (test_callback_fn)ping_test },
-  {"util_version", 1, (test_callback_fn)util_version_test },
 #endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},
