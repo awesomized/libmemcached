@@ -312,36 +312,35 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 {
   struct sockaddr_un servAddr;
 
-  if (ptr->fd == -1)
-  {
-    if ((ptr->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-    {
-      ptr->cached_errno= errno;
-      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
-    }
+  WATCHPOINT_ASSERT(ptr->fd == -1);
 
-    memset(&servAddr, 0, sizeof (struct sockaddr_un));
-    servAddr.sun_family= AF_UNIX;
-    strcpy(servAddr.sun_path, ptr->hostname); /* Copy filename */
+  if ((ptr->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+  {
+    ptr->cached_errno= errno;
+    return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+  }
+
+  memset(&servAddr, 0, sizeof (struct sockaddr_un));
+  servAddr.sun_family= AF_UNIX;
+  strcpy(servAddr.sun_path, ptr->hostname); /* Copy filename */
 
 test_connect:
-    if (connect(ptr->fd,
-                (struct sockaddr *)&servAddr,
-                sizeof(servAddr)) < 0)
+  if (connect(ptr->fd,
+              (struct sockaddr *)&servAddr,
+              sizeof(servAddr)) < 0)
+  {
+    switch (errno)
     {
-      switch (errno)
-      {
-      case EINPROGRESS:
-      case EALREADY:
-      case EINTR:
-        goto test_connect;
-      case EISCONN: /* We were spinning waiting on connect */
-        break;
-      default:
-        WATCHPOINT_ERRNO(errno);
-        ptr->cached_errno= errno;
-        return MEMCACHED_ERRNO;
-      }
+    case EINPROGRESS:
+    case EALREADY:
+    case EINTR:
+      goto test_connect;
+    case EISCONN: /* We were spinning waiting on connect */
+      break;
+    default:
+      WATCHPOINT_ERRNO(errno);
+      ptr->cached_errno= errno;
+      return MEMCACHED_ERRNO;
     }
   }
 
@@ -354,80 +353,76 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 {
   bool timeout_error_occured= false;
 
-  if (ptr->fd == -1)
+  
+  WATCHPOINT_ASSERT(ptr->fd == -1);
+  WATCHPOINT_ASSERT(ptr->cursor_active == 0);
+
+  if (! ptr->options.sockaddr_inited || (!(ptr->root->flags.use_cache_lookups)))
   {
-    struct addrinfo *use;
+    memcached_return_t rc;
 
-    WATCHPOINT_ASSERT(ptr->cursor_active == 0);
+    rc= set_hostinfo(ptr);
+    if (rc != MEMCACHED_SUCCESS)
+      return rc;
+    ptr->options.sockaddr_inited= true;
+  }
 
-    if (! ptr->options.sockaddr_inited ||
-        (!(ptr->root->flags.use_cache_lookups)))
+  struct addrinfo *use= ptr->address_info;
+  /* Create the socket */
+  while (use != NULL)
+  {
+    /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
+    if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET)
+    {
+      use= use->ai_next;
+      continue;
+    }
+
+    if ((ptr->fd= socket(use->ai_family,
+                         use->ai_socktype,
+                         use->ai_protocol)) < 0)
+    {
+      ptr->cached_errno= errno;
+      WATCHPOINT_ERRNO(errno);
+      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    }
+
+    (void)set_socket_options(ptr);
+
+    /* connect to server */
+    if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) > -1))
+    {
+      break; // Success
+    }
+
+    /* An error occurred */
+    ptr->cached_errno= errno;
+    if (errno == EINPROGRESS || /* nonblocking mode - first return, */
+        errno == EALREADY) /* nonblocking mode - subsequent returns */
     {
       memcached_return_t rc;
+      rc= connect_poll(ptr);
 
-      rc= set_hostinfo(ptr);
-      if (rc != MEMCACHED_SUCCESS)
-        return rc;
-      ptr->options.sockaddr_inited= true;
-    }
+      if (rc == MEMCACHED_TIMEOUT)
+        timeout_error_occured= true;
 
-    use= ptr->address_info;
-    /* Create the socket */
-    while (use != NULL)
-    {
-      /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
-      if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET)
-      {
-        use= use->ai_next;
-        continue;
-      }
-
-      if ((ptr->fd= socket(use->ai_family,
-                           use->ai_socktype,
-                           use->ai_protocol)) < 0)
-      {
-        ptr->cached_errno= errno;
-        WATCHPOINT_ERRNO(errno);
-        return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
-      }
-
-      (void)set_socket_options(ptr);
-
-      /* connect to server */
-      if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) > -1))
-      {
-        break; // Success
-      }
-
-      /* An error occurred */
-      ptr->cached_errno= errno;
-      if (errno == EINPROGRESS || /* nonblocking mode - first return, */
-          errno == EALREADY) /* nonblocking mode - subsequent returns */
-      {
-        memcached_return_t rc;
-        rc= connect_poll(ptr);
-
-        if (rc == MEMCACHED_TIMEOUT)
-          timeout_error_occured= true;
-
-        if (rc == MEMCACHED_SUCCESS)
-          break;
-      }
-      else if (errno == EISCONN) /* we are connected :-) */
-      {
+      if (rc == MEMCACHED_SUCCESS)
         break;
-      }
-      else if (errno == EINTR) // Special case, we retry ai_addr
-      {
-        (void)close(ptr->fd);
-        ptr->fd= -1;
-        continue;
-      }
-
+    }
+    else if (errno == EISCONN) /* we are connected :-) */
+    {
+      break;
+    }
+    else if (errno == EINTR) // Special case, we retry ai_addr
+    {
       (void)close(ptr->fd);
       ptr->fd= -1;
-      use= use->ai_next;
+      continue;
     }
+
+    (void)close(ptr->fd);
+    ptr->fd= -1;
+    use= use->ai_next;
   }
 
   if (ptr->fd == -1)
