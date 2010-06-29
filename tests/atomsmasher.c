@@ -12,10 +12,14 @@
 /*
   Sample test application.
 */
-#include "libmemcached/common.h"
+#include "config.h"
+
+#include "libmemcached/memcached.h"
+#include "libmemcached/watchpoint.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -25,14 +29,6 @@
 #include "server.h"
 #include "../clients/generator.h"
 #include "../clients/execute.h"
-
-#ifndef INT64_MAX
-#define INT64_MAX LONG_MAX
-#endif
-#ifndef INT32_MAX
-#define INT32_MAX INT_MAX
-#endif
-
 
 #include "test.h"
 

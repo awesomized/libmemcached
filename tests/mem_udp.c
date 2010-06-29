@@ -10,10 +10,13 @@
   Sample test application.
 */
 
+#include "config.h"
+
 #include "libmemcached/common.h"
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
@@ -24,14 +27,6 @@
 #include <time.h>
 
 #include "server.h"
-
-#ifndef INT64_MAX
-#define INT64_MAX LONG_MAX
-#endif
-#ifndef INT32_MAX
-#define INT32_MAX INT_MAX
-#endif
-
 
 #include "test.h"
 

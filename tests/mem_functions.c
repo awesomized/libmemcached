@@ -10,10 +10,11 @@
   Sample test application.
 */
 
-#include "libmemcached/common.h"
+#include "config.h"
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
@@ -22,19 +23,17 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+
+#include "libmemcached/common.h"
+
 #include "server.h"
 #include "clients/generator.h"
 #include "clients/execute.h"
 
-#ifndef INT64_MAX
-#define INT64_MAX LONG_MAX
-#endif
-#ifndef INT32_MAX
-#define INT32_MAX INT_MAX
-#endif
-
+#define SMALL_STRING_LEN 1024
 
 #include "test.h"
+
 
 #ifdef HAVE_LIBMEMCACHEDUTIL
 #include <pthread.h>
