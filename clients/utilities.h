@@ -11,6 +11,7 @@
 
 #include <getopt.h>
 #include <libmemcached/memcached.h>
+#include "libmemcached/watchpoint.h"
 #include "client_options.h"
 
 #if TIME_WITH_SYS_TIME

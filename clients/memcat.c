@@ -9,7 +9,8 @@
  *
  */
 
-#include "libmemcached/common.h"
+#include "config.h"
+
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>

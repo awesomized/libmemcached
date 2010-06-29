@@ -8,8 +8,8 @@
  * Summary:
  *
  */
+#include "config.h"
 
-#include "libmemcached/common.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>

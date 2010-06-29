@@ -11,8 +11,8 @@
  *          Brian Aker
  *          Toru Maesaka
  */
+#include "config.h"
 
-#include "libmemcached/common.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>

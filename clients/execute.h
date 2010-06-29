@@ -11,6 +11,9 @@
 
 #ifndef CLIENTS_EXECUTE_H
 #define CLIENTS_EXECUTE_H
+
+#include <stdio.h>
+
 #include "libmemcached/memcached.h"
 #include "generator.h"
 

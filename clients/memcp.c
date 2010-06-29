@@ -9,7 +9,8 @@
  *
  */
 
-#include "libmemcached/common.h"
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -54,7 +55,7 @@ static long strtol_wrapper(const char *nptr, int base, bool *error)
 
   /* Check for various possible errors */
 
-  if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+  if ((errno == ERANGE && (val == INTMAX_MAX || val == INTMAX_MIN))
       || (errno != 0 && val == 0))
   {
     *error= true;

@@ -14,8 +14,7 @@
   Return the number of rows set.
 */
 
-#include "libmemcached/common.h"
-
+#include "config.h"
 #include "execute.h"
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
@@ -108,12 +107,11 @@ unsigned int execute_mget(memcached_st *memc,
   rc= memcached_mget_execute(memc, keys, key_length,
                              (size_t)number_of, callbacks, &retrieved, 1);
 
-  likely (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND ||
+  if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND ||
           rc == MEMCACHED_BUFFERED || rc == MEMCACHED_END)
   {
     rc= memcached_fetch_execute(memc, callbacks, (void *)&retrieved, 1);
-    unlikely (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_NOTFOUND &&
-              rc != MEMCACHED_END)
+    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_END)
     {
       fprintf(stderr, "Failed to execute mget: %s\n",
               memcached_strerror(memc, rc));
