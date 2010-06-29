@@ -12,6 +12,7 @@ noinst_LTLIBRARIES =
 noinst_PROGRAMS =
 include_HEADERS =
 nobase_include_HEADERS =
+check_PROGRAMS = 
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST= \
@@ -40,6 +41,8 @@ include libhashkit/include.am
 include tests/include.am
 include example/include.am
 include support/include.am
+
+TESTS += ${check_PROGRAMS}
 
 check-local: test-no-outputdiff
 

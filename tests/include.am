@@ -10,6 +10,10 @@ DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
 
+if HAVE_LIBGTEST
+check_PROGRAMS += tests/unittests
+endif
+
 if BUILD_LIBMEMCACHEDUTIL
 TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 endif
@@ -37,6 +41,13 @@ tests_libserver_la_SOURCES= tests/server.c
 
 noinst_LTLIBRARIES+= tests/libtest.la
 tests_libtest_la_SOURCES= tests/test.c
+
+tests_unittests_SOURCES= \
+			 tests/main.cc
+tests_unittests_LDADD= \
+		       tests/libserver.la \
+		       libmemcached/libmemcachedinternal.la \
+		       ${TESTS_LDADDS} ${LTLIBGTEST}
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= tests/mem_functions.c
