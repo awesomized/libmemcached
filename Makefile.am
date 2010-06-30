@@ -45,8 +45,6 @@ include support/include.am
 
 TESTS += ${check_PROGRAMS}
 
-check-local: test-no-outputdiff
-
 
 fedora:
 	rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
