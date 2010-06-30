@@ -23,6 +23,10 @@
 #include <errno.h>
 #include <strings.h>
 #include <string.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <limits.h>
+
 
 #include <libmemcached/memcached.h>
 
@@ -55,7 +59,7 @@ static long strtol_wrapper(const char *nptr, int base, bool *error)
 
   /* Check for various possible errors */
 
-  if ((errno == ERANGE && (val == INTMAX_MAX || val == INTMAX_MIN))
+  if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
       || (errno != 0 && val == 0))
   {
     *error= true;
