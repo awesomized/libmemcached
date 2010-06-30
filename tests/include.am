@@ -89,10 +89,12 @@ tests_memplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_memplus_DEPENDENCIES = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
 tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES)
 
-test: unittests-run test-docs test-mem test-hash memcapable
+test: check
+
+check-local: test-docs test-mem test-hash memcapable
 	echo "Tests completed"
 
-test-x: test-docs test-plus test-mem test-hash memcapable test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
+test-x: check-local test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
 	echo "Tests completed"
 
 memcapable: clients/memcapable

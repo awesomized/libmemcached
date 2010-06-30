@@ -3,21 +3,17 @@
 # All paths should be given relative to the root
 
 if HAVE_LIBGTEST
-UNITTEST_PROGRAM= unittests/unittests
-
-noinst_PROGRAMS += $(UNITTEST_PROGRAM)
+check_PROGRAMS += unittests/unittests
+endif
 
 unittests_unittests_SOURCES= \
-			     unittests/strings.cc \
-			     unittests/main.cc
+			     unittests/main.cc \
+			     unittests/strings.cc
+
 unittests_unittests_LDADD= \
 			   tests/libserver.la \
 			   libmemcached/libmemcachedinternal.la \
 			   ${TESTS_LDADDS} ${LTLIBGTEST}
-endif
-
 # Shorthand
-unit: unittests-run
+unit: check-TESTS
 
-unittests-run: $(UNITTEST_PROGRAM)
-	$(UNITTEST_PROGRAM)
