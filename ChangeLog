@@ -1,4 +1,4 @@
-0.41
+0.41 Wed Jun 30 13:15:19 PDT 2010
   * Added --file for memcat.
   * Added limemcached_ping() to libmemcached_util
   * Bugfix for some cases where connect would have issues with timeout.
