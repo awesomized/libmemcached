@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 #include "libmemcached/memcached.h"
+
 #include "test.h"
 
 static void world_stats_print(world_stats_st *stats)

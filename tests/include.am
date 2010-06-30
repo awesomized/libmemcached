@@ -87,7 +87,7 @@ tests_hashplus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 tests_memplus_SOURCES = tests/mem_plus.cc
 tests_memplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_memplus_DEPENDENCIES = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
-tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES)
+tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES) $(LIBSASL)
 
 test: check
 
