@@ -82,10 +82,14 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libhashkit.la
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
-%{_libdir}/libhashkit.so.*
-%{_libdir}/libmemcached.so.*
-%{_libdir}/libmemcachedutil.so.*
-%{_libdir}/libmemcachedprotocol.so.*
+%{_libdir}/libhashkit.so.0.0.0
+%{_libdir}/libmemcached.so.5.0.1
+%{_libdir}/libmemcachedutil.so.1.0.0
+%{_libdir}/libmemcachedprotocol.so.0.0.0
+%{_libdir}/libhashkit.so.0
+%{_libdir}/libmemcached.so.5
+%{_libdir}/libmemcachedprotocol.so.0
+%{_libdir}/libmemcachedutil.so.1
 %{_mandir}/man1/memcapable.1.gz
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
