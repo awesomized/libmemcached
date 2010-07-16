@@ -26,6 +26,8 @@
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 #include <unistd.h>
+#include <time.h>
+
 #include "server.h"
 
 void server_startup(server_startup_st *construct)
@@ -92,6 +94,39 @@ void server_startup(server_startup_st *construct)
         end_ptr+= count;
       }
       *end_ptr= 0;
+
+      for (uint32_t x= 0; x < construct->count; x++)
+      {
+        uint32_t counter= 3;
+        char buffer[1024]; /* Nothing special for number */
+
+        snprintf(buffer, sizeof(buffer), "/tmp/%umemc.pid", x);
+
+        while (--counter)
+        {
+          int memcached_pid;
+
+          FILE *file;
+          file= fopen(buffer, "r");
+          if (file == NULL)
+          {
+            struct timespec req= { .tv_sec= 0, .tv_nsec= 5000 };
+            nanosleep(&req, NULL);
+
+            continue;
+          }
+          char *found= fgets(buffer, sizeof(buffer), file);
+          if (!found)
+          {
+            abort();
+          }
+          // Yes, we currently pitch this and don't make use of it.
+          memcached_pid= atoi(buffer);
+          fclose(file);
+        }
+
+
+      }
 
       construct->server_list= strdup(server_string_buffer);
     }
