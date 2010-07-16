@@ -30,8 +30,6 @@
 
 void server_startup(server_startup_st *construct)
 {
-  unsigned int x;
-
   if ((construct->server_list= getenv("MEMCACHED_SERVERS")))
   {
     printf("servers %s\n", construct->server_list);
@@ -46,7 +44,7 @@ void server_startup(server_startup_st *construct)
       char *end_ptr;
       end_ptr= server_string_buffer;
 
-      for (x= 0; x < construct->count; x++)
+      for (uint32_t x= 0; x < construct->count; x++)
       {
         char buffer[1024]; /* Nothing special for number */
         int count;
@@ -105,7 +103,7 @@ void server_startup(server_startup_st *construct)
 
   srandom((unsigned int)time(NULL));
 
-  for (x= 0; x < memcached_server_list_count(construct->servers); x++)
+  for (uint32_t x= 0; x < memcached_server_list_count(construct->servers); x++)
   {
     printf("\t%s : %d\n", memcached_server_name(&construct->servers[x]), memcached_server_port(&construct->servers[x]));
     assert(construct->servers[x].fd == -1);
@@ -117,11 +115,9 @@ void server_startup(server_startup_st *construct)
 
 void server_shutdown(server_startup_st *construct)
 {
-  unsigned int x;
-
   if (construct->server_list)
   {
-    for (x= 0; x < construct->count; x++)
+    for (uint32_t x= 0; x < construct->count; x++)
     {
       char buffer[1024]; /* Nothing special for number */
       sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
