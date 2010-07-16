@@ -5725,6 +5725,38 @@ static test_return_t test_cull_servers(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static memcached_return_t stat_printer(memcached_server_instance_st server,
+                                       const char *key, size_t key_length,
+                                       const char *value, size_t value_length,
+                                       void *context)
+{
+  (void)server;
+  (void)context;
+  (void)key;
+  (void)key_length;
+  (void)value;
+  (void)value_length;
+
+  return MEMCACHED_SUCCESS;
+}
+
+static test_return_t memcached_stat_execute_test(memcached_st *memc)
+{
+  memcached_return_t rc= memcached_stat_execute(memc, NULL, stat_printer, NULL);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_stat_execute(memc, "slabs", stat_printer, NULL);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_stat_execute(memc, "items", stat_printer, NULL);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_stat_execute(memc, "sizes", stat_printer, NULL);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  return TEST_SUCCESS;
+}
+
 /*
  * This test ensures that the failure counter isn't incremented during
  * normal termination of the memcached instance.
@@ -6118,6 +6150,7 @@ test_st tests[] ={
   {"verbosity", 1, (test_callback_fn)test_verbosity},
   {"test_server_failure", 1, (test_callback_fn)test_server_failure},
   {"cull_servers", 1, (test_callback_fn)test_cull_servers},
+  {"memcached_stat_execute", 1, (test_callback_fn)memcached_stat_execute_test},
   {0, 0, 0}
 };
 

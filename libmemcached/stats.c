@@ -29,6 +29,13 @@ static const char *memcached_stat_keys[] = {
   NULL
 };
 
+struct local_context
+{
+  memcached_stat_fn func;
+  void *context;
+  const char *args;
+};
+
 
 static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char *value)
 {
@@ -228,8 +235,9 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 }
 
 static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
-                                             char *args,
-                                             memcached_server_write_instance_st instance)
+                                             const char *args,
+                                             memcached_server_write_instance_st instance,
+                                             struct local_context *check)
 {
   memcached_return_t rc;
 
@@ -286,10 +294,23 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
       return rc;
     }
 
-    unlikely((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
+    if (memc_stat)
     {
-      WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
-      WATCHPOINT_ASSERT(0);
+      unlikely((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
+      {
+        WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+        WATCHPOINT_ASSERT(0);
+      }
+    }
+    
+    if (check && check->func)
+    {
+      size_t key_length= strlen(buffer);
+
+      check->func(instance,
+                  buffer, key_length,
+                  buffer+key_length+1, strlen(buffer+key_length+1),
+                  check->context);
     }
   } while (1);
 
@@ -302,8 +323,9 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 }
 
 static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
-                                            char *args,
-                                            memcached_server_write_instance_st instance)
+                                            const char *args,
+                                            memcached_server_write_instance_st instance,
+                                            struct local_context *check)
 {
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -343,10 +365,21 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
       value= string_ptr;
       value[(size_t)(end_ptr-string_ptr)]= 0;
       string_ptr= end_ptr + 2;
-      unlikely((set_data(memc_stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)
+      if (memc_stat)
       {
-        WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
-        WATCHPOINT_ASSERT(0);
+        unlikely((set_data(memc_stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)
+        {
+          WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+          WATCHPOINT_ASSERT(0);
+        }
+      }
+
+      if (check && check->func)
+      {
+        check->func(instance,
+                    key, strlen(key),
+                    value, strlen(value),
+                    check->context);
       }
     }
     else
@@ -394,11 +427,11 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 
     if (ptr->flags.binary_protocol)
     {
-      temp_return= binary_stats_fetch(stat_instance, args, instance);
+      temp_return= binary_stats_fetch(stat_instance, args, instance, NULL);
     }
     else
     {
-      temp_return= ascii_stats_fetch(stat_instance, args, instance);
+      temp_return= ascii_stats_fetch(stat_instance, args, instance, NULL);
     }
 
     if (temp_return != MEMCACHED_SUCCESS)
@@ -428,11 +461,11 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
 
   if (memc.flags.binary_protocol)
   {
-    rc= binary_stats_fetch(memc_stat, args, instance);
+    rc= binary_stats_fetch(memc_stat, args, instance, NULL);
   }
   else
   {
-    rc= ascii_stats_fetch(memc_stat, args, instance);
+    rc= ascii_stats_fetch(memc_stat, args, instance, NULL);
   }
 
   memcached_free(&memc);
@@ -488,4 +521,32 @@ void memcached_stat_free(const memcached_st *ptr, memcached_stat_st *memc_stat)
   {
     free(memc_stat);
   }
+}
+
+static memcached_return_t call_stat_fn(memcached_st *ptr,
+                                       memcached_server_write_instance_st instance,
+                                       void *context)
+{
+  memcached_return_t rc;
+  struct local_context *check= (struct local_context *)context;
+
+  if (ptr->flags.binary_protocol)
+  {
+    rc= binary_stats_fetch(NULL, check->args, instance, check);
+  }
+  else
+  {
+    rc= ascii_stats_fetch(NULL, check->args, instance, check);
+  }
+
+  return rc;
+}
+
+memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args,  memcached_stat_fn func, void *context)
+{
+  memcached_version(memc);
+
+ struct local_context check= { .func= func, .context= context, .args= args };
+
+ return memcached_server_execute(memc, call_stat_fn, (void *)&check);
 }

@@ -172,6 +172,26 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
+memcached_return_t memcached_server_execute(memcached_st *ptr,
+                                            memcached_server_execute_fn callback,
+                                            void *context)
+{
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  {
+    memcached_server_write_instance_st instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    unsigned int iferror;
+
+    iferror= (*callback)(ptr, instance, context);
+
+    if (iferror)
+      continue;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
                                                      const char *key,
                                                      size_t key_length,

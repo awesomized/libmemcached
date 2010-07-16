@@ -62,6 +62,9 @@ LIBMEMCACHED_API
 char ** memcached_stat_get_keys(const memcached_st *ptr, memcached_stat_st *memc_stat,
                                 memcached_return_t *error);
 
+LIBMEMCACHED_API
+memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args,  memcached_stat_fn func, void *context);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
