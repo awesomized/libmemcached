@@ -5725,6 +5725,7 @@ static test_return_t test_cull_servers(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
 static memcached_return_t stat_printer(memcached_server_instance_st server,
                                        const char *key, size_t key_length,
                                        const char *value, size_t value_length,

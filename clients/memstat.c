@@ -56,36 +56,22 @@ static struct option long_options[]=
 };
 
 
-static memcached_return_t server_print_callback(const memcached_st *memc,
-                                                memcached_server_instance_st instance,
-                                                void *context)
+static memcached_return_t stat_printer(memcached_server_instance_st instance,
+                                       const char *key, size_t key_length,
+                                       const char *value, size_t value_length,
+                                       void *context)
 {
-  memcached_stat_st server_stat;
-  memcached_return_t rc;
-  char **list;
-  char **ptr;
-
+  static memcached_server_instance_st last= NULL;
   (void)context;
 
-  rc= memcached_stat_servername(&server_stat, NULL,
-                                memcached_server_name(instance),
-                                memcached_server_port(instance));
-
-  list= memcached_stat_get_keys(memc, &server_stat, &rc);
-
-  printf("Server: %s (%u)\n", memcached_server_name(instance),
-         (uint32_t)memcached_server_port(instance));
-
-  for (ptr= list; *ptr; ptr++)
+  if (last != instance)
   {
-    char *value= memcached_stat_get_value(memc, &server_stat, *ptr, &rc);
-
-    printf("\t %s: %s\n", *ptr, value);
-    free(value);
+    printf("Server: %s (%u)\n", memcached_server_name(instance),
+           (uint32_t)memcached_server_port(instance));
+    last= instance;
   }
 
-  free(list);
-  printf("\n");
+  printf("\t %.*s: %.*s\n", (int)key_length, key, (int)value_length, value);
 
   return MEMCACHED_SUCCESS;
 }
@@ -140,12 +126,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    memcached_server_fn callbacks[1];
-
-    callbacks[0]= server_print_callback;
-    rc= memcached_server_cursor(memc, callbacks,
-                                NULL, 1);
-
+    rc= memcached_stat_execute(memc, NULL, stat_printer, NULL);
   }
 
   free(opt_servers);
