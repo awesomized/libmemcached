@@ -61,6 +61,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
    * compatibility.
  */
   if (ptr->root->flags.binary_protocol == false)
+  {
     while (memcached_server_response_count(ptr) > 1)
     {
       memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
@@ -75,6 +76,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                 rc != MEMCACHED_DATA_EXISTS)
         return rc;
     }
+  }
 
   return memcached_read_one_response(ptr, buffer, buffer_length, result);
 }

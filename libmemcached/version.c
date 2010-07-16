@@ -13,10 +13,19 @@ memcached_return_t memcached_version(memcached_st *ptr)
   if (ptr->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
+  bool was_blocking= ptr->flags.no_block;
+  memcached_return_t rc;
+
+  ptr->flags.no_block= false;
+
   if (ptr->flags.binary_protocol)
-    return memcached_version_binary(ptr);
+    rc= memcached_version_binary(ptr);
   else
-    return memcached_version_textual(ptr);      
+    rc= memcached_version_textual(ptr);      
+
+  ptr->flags.no_block= was_blocking;
+
+  return rc;
 }
 
 static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
