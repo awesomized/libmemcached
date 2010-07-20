@@ -4425,20 +4425,20 @@ static test_return_t util_version_test(memcached_st *memc)
   test_true(if_successful == true);
 
   if (instance->micro_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, instance->micro_version -1);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, (uint8_t)(instance->micro_version -1));
   else if (instance->minor_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version - 1, instance->micro_version);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, (uint8_t)(instance->minor_version - 1), instance->micro_version);
   else if (instance->major_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version -1, instance->minor_version, instance->micro_version);
+    if_successful= libmemcached_util_version_check(memc, (uint8_t)(instance->major_version -1), instance->minor_version, instance->micro_version);
 
   test_true(if_successful == true);
 
   if (instance->micro_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, instance->micro_version +1);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, (uint8_t)(instance->micro_version +1));
   else if (instance->minor_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version +1, instance->micro_version);
+    if_successful= libmemcached_util_version_check(memc, instance->major_version, (uint8_t)(instance->minor_version +1), instance->micro_version);
   else if (instance->major_version > 0)
-    if_successful= libmemcached_util_version_check(memc, instance->major_version +1, instance->minor_version, instance->micro_version);
+    if_successful= libmemcached_util_version_check(memc, (uint8_t)(instance->major_version +1), instance->minor_version, instance->micro_version);
 
   test_true(if_successful == false);
 
