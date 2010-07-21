@@ -50,8 +50,6 @@ DETECT_BYTEORDER
 ENABLE_UTILLIB
 SETSOCKOPT_SANITY
 ENABLE_HSIEH_HASH
-REQUIRE_POD2MAN
-REQUIRE_PODCHECKER
 PROTOCOL_BINARY_TEST
 WITH_MEMCACHED
 ENABLE_DEPRECATED
@@ -72,6 +70,20 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
             AC_DEFINE([USE_ATOMIC_H],
 	              [1],
                       [Define to true if you want to use functions from atomic.h])])])
+
+AC_ARG_WITH([docs],
+  [AS_HELP_STRING([--with-docs],
+    [Generate documentation (yes|no) @<:@default=yes@:>@])],
+  [with_docs=$withval],
+  [with_docs=yes])
+
+AS_IF([test "$with_docs" = "yes"],
+  [
+    REQUIRE_POD2MAN
+    REQUIRE_PODCHECKER
+  ])
+AM_CONDITIONAL(BUILD_DOCS, test "$with_docs" = "yes")
+
 
 AC_CONFIG_FILES([
   Makefile
@@ -109,3 +121,13 @@ case "$host_os" in
   ;;
 esac
 
+AS_IF(test "$with_docs" = "no",
+  [
+    echo "*****"
+    echo "*"
+    echo "*  WARNING: You are not generating any documentation."
+    echo "*           Please don't ship libmemcached to an end user"
+    echo "*           without documentation..."
+    echo "*"
+    echo "*****"
+  ])

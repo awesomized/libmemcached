@@ -12,7 +12,7 @@ noinst_LTLIBRARIES =
 noinst_PROGRAMS =
 include_HEADERS =
 nobase_include_HEADERS =
-check_PROGRAMS = 
+check_PROGRAMS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST= \
@@ -30,8 +30,11 @@ EXTRA_DIST= \
 	    m4/po.m4 \
 	    m4/progtest.m4
 
-
+TEST_DOCS=
+if BUILD_DOCS
 SUBDIRS = docs
+TEST_DOCS+=test-docs
+endif
 
 test-docs:
 	(cd docs && $(MAKE) test-docs)
@@ -84,7 +87,7 @@ lcov: lcov-clean check
 	genhtml -o lcov --function-coverage -t libmemcached libmemcached/lcov.out
 
 lcov-clean: clean
-	rm -rf lcov */lcov.out 
+	rm -rf lcov */lcov.out
 	find . -name '*.gcno' | xargs rm -f
 	find . -name '*.gcda' | xargs rm -f
 
