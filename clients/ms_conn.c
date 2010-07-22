@@ -800,7 +800,7 @@ static int ms_network_connect(ms_conn_t *c,
 #ifdef AI_ADDRCONFIG
   hints.ai_flags= AI_PASSIVE | AI_ADDRCONFIG;
 #else
-+  hints.ai_flags= AI_PASSIVE;
+  hints.ai_flags= AI_PASSIVE;
 #endif /* AI_ADDRCONFIG */
   if (is_udp)
   {
