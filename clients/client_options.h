@@ -38,6 +38,7 @@ typedef enum {
   OPT_UDP,
   OPT_USERNAME,
   OPT_PASSWD,
+  OPT_STAT_ARGS,
   OPT_FILE= 'f'
 } memcached_options;
 

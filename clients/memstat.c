@@ -41,10 +41,12 @@ static int opt_verbose= 0;
 static int opt_displayflag= 0;
 static int opt_analyze= 0;
 static char *opt_servers= NULL;
+static char *stat_args= NULL;
 static char *analyze_mode= NULL;
 
 static struct option long_options[]=
 {
+  {(OPTIONSTRING)"args", required_argument, NULL, OPT_STAT_ARGS},
   {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
   {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
   {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
@@ -126,7 +128,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    rc= memcached_stat_execute(memc, NULL, stat_printer, NULL);
+    rc= memcached_stat_execute(memc, stat_args, stat_printer, NULL);
   }
 
   free(opt_servers);
@@ -331,6 +333,9 @@ static void options_parse(int argc, char *argv[])
       break;
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
+      break;
+    case OPT_STAT_ARGS:
+      stat_args= strdup(optarg);
       break;
     case OPT_ANALYZE: /* --analyze or -a */
       opt_analyze= OPT_ANALYZE;

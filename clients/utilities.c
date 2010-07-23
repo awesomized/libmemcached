@@ -61,6 +61,7 @@ static const char *lookup_help(memcached_options option)
   case OPT_USERNAME: return "Username to use for SASL authentication";
   case OPT_PASSWD: return "Password to use for SASL authentication";
   case OPT_FILE: return "Path to file in which to save result";
+  case OPT_STAT_ARGS: return "Argument for statistics";
   default: WATCHPOINT_ASSERT(0);
   };
 
