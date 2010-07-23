@@ -73,12 +73,12 @@ void server_startup(server_startup_st *construct)
 
         if (x == 0)
         {
-          sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
+          sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
 		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }
         else
         {
-          sprintf(buffer, "%s -d -P /tmp/%umemc.pid -t 1 -p %u -U %u",
+          sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u",
 		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
         }
 	if (libmemcached_util_ping("localhost", (in_port_t)(x + TEST_PORT_BASE), NULL))
