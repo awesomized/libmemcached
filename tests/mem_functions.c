@@ -2781,7 +2781,7 @@ static test_return_t user_supplied_bug16(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-#ifndef __sun
+#if !defined(__sun) && !defined(__OpenBSD__)
 /* Check the validity of chinese key*/
 static test_return_t user_supplied_bug17(memcached_st *memc)
 {
@@ -6216,7 +6216,7 @@ test_st user_tests[] ={
   {"user_supplied_bug14", 1, (test_callback_fn)user_supplied_bug14 },
   {"user_supplied_bug15", 1, (test_callback_fn)user_supplied_bug15 },
   {"user_supplied_bug16", 1, (test_callback_fn)user_supplied_bug16 },
-#ifndef __sun
+#if !defined(__sun) && !defined(__OpenBSD__)
   /*
   ** It seems to be something weird with the character sets..
   ** value_fetch is unable to parse the value line (iscntrl "fails"), so I
