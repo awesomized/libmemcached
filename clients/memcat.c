@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
   int return_code= 0;
 
   options_parse(argc, argv);
+  initialize_sockets();
 
   if (!opt_servers)
   {

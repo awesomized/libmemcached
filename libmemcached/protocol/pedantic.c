@@ -2,7 +2,6 @@
 #include "libmemcached/protocol/common.h"
 
 #include <sys/types.h>
-#include <netinet/in.h>
 #include <inttypes.h>
 
 #define ensure(a) if (!(a)) { return false; }

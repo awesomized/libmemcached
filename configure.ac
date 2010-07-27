@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # libmemcached
-# Copyright (C) 2008 Brian Aker, Monty Taylor
+# Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
 # All rights reserved.
 #
 # Use and distribution licensed under the BSD license.  See
@@ -34,6 +34,54 @@ AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 
 HASHKIT_LIBRARY_VERSION=0:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
+
+AH_TOP([
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#ifdef _SYS_FEATURE_TESTS_H
+#error "You should include config.h as your first include file"
+#endif
+
+#ifdef WIN32
+#define _WIN32_WINNT 0x0501
+#endif
+])
+
+AH_BOTTOM([
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
+#ifdef HAVE_FNMATCH_H
+#include <fnmatch.h>
+#endif
+
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#else
+#include "poll/poll.h"
+#endif
+
+/* To hide the platform differences between MS Windows and Unix, I am
+ * going to use the Microsoft way and #define the Microsoft-specific
+ * functions to the unix way. Microsoft use a separate subsystem for sockets,
+ * but Unix normally just use a filedescriptor on the same functions. It is
+ * a lot easier to map back to the unix way with macros than going the other
+ * way without side effect ;-)
+ */
+#ifdef WIN32
+#include "win32/wrappers.h"
+#define get_socket_errno() WSAGetLastError()
+#else
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define closesocket(a) close(a)
+#define get_socket_errno() errno
+#endif
+
+#endif
+])
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
@@ -84,6 +132,30 @@ AS_IF([test "$with_docs" = "yes"],
   ])
 AM_CONDITIONAL(BUILD_DOCS, test "$with_docs" = "yes")
 
+AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
+AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
+AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
+AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
+      AM_LDFLAGS="$AM_LDFLAGS -lws2_32")
+
+#
+# Some platforms define EWOULDBLOCK == EAGAIN, causing our switch for error
+# codes to be illegal (POSIX.1-2001 allows both return codes from recv, so
+# we need to test both if they differ...)
+#
+AC_MSG_CHECKING([if EWOULDBLOCK == EAGAIN])
+AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM([
+#include <errno.h>
+     ], [dnl
+   return EAGAIN == EWOULDBLOCK ? 0 : 1;
+     ])
+  ],[
+   AC_MSG_RESULT([yes])
+  ], [
+   AC_MSG_RESULT([no])
+   AC_DEFINE([USE_EAGAIN], [1], [Define to true if you need to test for eagain])
+  ])
 
 AC_CONFIG_FILES([
   Makefile

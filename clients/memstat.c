@@ -17,7 +17,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/mman.h>
 #include <fcntl.h>
 #include <string.h>
 #include <getopt.h>
@@ -83,6 +82,7 @@ int main(int argc, char *argv[])
   memcached_server_st *servers;
 
   options_parse(argc, argv);
+  initialize_sockets();
 
   if (! opt_servers)
   {

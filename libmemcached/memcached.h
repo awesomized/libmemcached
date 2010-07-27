@@ -14,8 +14,6 @@
 #define __LIBMEMCACHED_MEMCACHED_H__
 
 #include <inttypes.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -26,6 +24,7 @@
 
 #include <libmemcached/visibility.h>
 #include <libmemcached/configure.h>
+#include <libmemcached/platform.h>
 #include <libmemcached/constants.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>

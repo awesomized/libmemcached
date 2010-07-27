@@ -39,6 +39,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached.hpp \
 			 libmemcached/memcached/protocol_binary.h \
 			 libmemcached/parse.h \
+                         libmemcached/platform.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
@@ -65,7 +66,7 @@ libmemcached_libmemcachedprotocol_la_SOURCES =  \
 						libmemcached/protocol/pedantic.c \
 						libmemcached/protocol/protocol_handler.c
 
-libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}
+libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} ${PTHREAD} -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}
 
 noinst_LTLIBRARIES+= \
 		     libmemcached/libmemcachedcallbacks.la
@@ -133,7 +134,7 @@ libmemcached_libmemcachedutil_la_SOURCES= \
 					  libmemcached/util/pool.c \
 					  libmemcached/util/version.c
 libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
-libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
+libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} ${LIBPTHREAD} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
 libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la
 
 if BUILD_BYTEORDER

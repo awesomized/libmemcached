@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
@@ -59,11 +58,11 @@ raw_response_handler(const void *cookie,
                                      num_bytes);
       if (nw == -1)
       {
-        if (errno == EWOULDBLOCK)
+        if (get_socket_errno() == EWOULDBLOCK)
         {
           break;
         }
-        else if (errno != EINTR)
+        else if (get_socket_errno() != EINTR)
         {
           client->error= errno;
           return PROTOCOL_BINARY_RESPONSE_EIO;

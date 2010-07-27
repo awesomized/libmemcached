@@ -12,8 +12,6 @@
 #include "common.h"
 #include <time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
 
 static bool set_flag(uint64_t data)
 {

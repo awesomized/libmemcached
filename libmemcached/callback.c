@@ -11,8 +11,6 @@
 
 #include "common.h"
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
 
 /*
   These functions provide data and function callback support

@@ -22,7 +22,9 @@ bin_PROGRAMS+= \
 	clients/memstat
 
 if HAVE_LIBEVENT
+if !BUILD_WIN32_WRAPPERS
   bin_PROGRAMS+= clients/memslap
+endif
 endif
 
 noinst_HEADERS+= \
@@ -77,8 +79,9 @@ clients_memslap_SOURCES= \
 clients_memslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS)
 
 clients_memcapable_SOURCES= clients/memcapable.c
+clients_memcapable_LDADD= $(CLIENTS_LDADDS)
 if BUILD_BYTEORDER
-clients_memcapable_LDADD= libmemcached/libbyteorder.la
+clients_memcapable_LDADD+= libmemcached/libbyteorder.la
 endif
 
 test-start-server:

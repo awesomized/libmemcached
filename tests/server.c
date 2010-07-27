@@ -26,7 +26,7 @@
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
 
 #include "server.h"
 
@@ -110,9 +110,10 @@ void server_startup(server_startup_st *construct)
           file= fopen(buffer, "r");
           if (file == NULL)
           {
+#ifndef WIN32
             struct timespec req= { .tv_sec= 0, .tv_nsec= 5000 };
             nanosleep(&req, NULL);
-
+#endif
             continue;
           }
           char *found= fgets(buffer, sizeof(buffer), file);
