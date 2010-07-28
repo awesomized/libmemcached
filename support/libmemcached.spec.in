@@ -83,7 +83,7 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
 %{_libdir}/libhashkit.so.0.0.0
-%{_libdir}/libmemcached.so.5.0.1
+%{_libdir}/libmemcached.so.5.0.2
 %{_libdir}/libmemcachedutil.so.1.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
 %{_libdir}/libhashkit.so.0

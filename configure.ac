@@ -7,7 +7,7 @@
 # the COPYING file in this directory for full text.
 
 AC_PREREQ(2.59)
-AC_INIT([libmemcached],[0.42],[http://libmemcached.org/])
+AC_INIT([libmemcached],[0.43],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 
@@ -16,7 +16,7 @@ PANDORA_CANONICAL_TARGET
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=1:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=5:1:0
+MEMCACHED_LIBRARY_VERSION=5:2:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
