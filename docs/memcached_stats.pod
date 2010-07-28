@@ -30,6 +30,12 @@ C Client Library for memcached (libmemcached, -lmemcached)
                              memcached_stat_st *stat, 
                              memcached_return_t *error);
 
+  memcached_return_t
+    memcached_stat_execute (memcached_st *memc,
+                            const char *args,
+                            memcached_stat_fn func,
+                            void *context);
+
 =head1 DESCRIPTION
 
 libmemcached(3) has the ability to query a memcached server (or collection
@@ -37,6 +43,12 @@ of servers) for their current state. Queries to find state return a
 C<memcached_stat_st> structure. You are responsible for freeing this structure.
 While it is possible to access the structure directly it is not advisable.
 <memcached_stat_get_value() has been provided to query the structure.
+
+memcached_stat_execute() uses the servers found in C<memcached_stat_st> and 
+executes a "stat" command on each server. args is an optional argument that 
+can be passed in to modify the behavior of "stats". You will need to supply
+a callback function that will be supplied each pair of values returned by
+the memcached server.
 
 memcached_stat() fetches an array of C<memcached_stat_st> structures containing
 the state of all available memcached servers. The return value must be freed

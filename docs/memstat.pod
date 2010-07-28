@@ -12,7 +12,9 @@ B<memstat> dumps the state of memcached(1) servers.
 It displays all data to stdout.
 
 You can specify servers via the B<--servers> option or via the
-environment variable C<MEMCACHED_SERVERS>.
+environment variable C<MEMCACHED_SERVERS>. B<--args> can be used
+to specify the "argument" sent to the stats command (ie slab, size, items,
+etc..).
 
 For a full list of operations run the tool with the B<--help> option.
 

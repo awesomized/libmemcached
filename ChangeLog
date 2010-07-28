@@ -1,4 +1,5 @@
-0.43
+0.43 Wed Jul 28 16:29:47 PDT 2010
+  * Added --args to memstat so that a greater range of values can be returned.
   * Prelimanary support for Windows.
   * memcached_stat_execute() merged. 
 

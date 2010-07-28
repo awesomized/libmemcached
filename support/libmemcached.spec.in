@@ -242,6 +242,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_set_sasl_callbacks.3.gz
 %{_mandir}/man3/memcached_set_user_data.3.gz
 %{_mandir}/man3/memcached_stat.3.gz
+%{_mandir}/man3/memcached_stat_execute.3.gz
 %{_mandir}/man3/memcached_stat_get_keys.3.gz
 %{_mandir}/man3/memcached_stat_get_value.3.gz
 %{_mandir}/man3/memcached_stat_servername.3.gz

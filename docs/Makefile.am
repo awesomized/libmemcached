@@ -138,7 +138,8 @@ BUILT_SOURCES += ${SET_PAGES}
 
 STATS_PAGES= \
 	     memcached_stat.pop \
-	     memcached_stat_get_keys.pop .pop\
+	     memcached_stat_execute.pop\
+	     memcached_stat_get_keys.pop\
 	     memcached_stat_get_value.pop \
 	     memcached_stat_servername.pop
 BUILT_SOURCES += ${STATS_PAGES}
@@ -271,6 +272,7 @@ HTML_FILES= \
 	    memcached_set_memory_allocators.html \
 	    memcached_set.html \
 	    memcached_set_user_data.html \
+	    memcached_stat_execute.html \
 	    memcached_stat_get_keys.html \
 	    memcached_stat_get_value.html \
 	    memcached_stat.html \
@@ -402,6 +404,7 @@ man_MANS = \
 	   memcached_set_memory_allocators.3 \
 	   memcached_set_user_data.3 \
 	   memcached_stat.3 \
+	   memcached_stat_execute.3 \
 	   memcached_stat_get_keys.3 \
 	   memcached_stat_get_value.3 \
 	   memcached_stat_servername.3 \
