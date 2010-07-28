@@ -132,6 +132,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/memcached.hpp
 %{_includedir}/libmemcached/memcached_util.h
 %{_includedir}/libmemcached/parse.h
+%{_includedir}/libmemcached/platform.h
 %{_includedir}/libmemcached/protocol/cache.h
 %{_includedir}/libmemcached/protocol/callback.h
 %{_includedir}/libmemcached/protocol_handler.h

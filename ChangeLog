@@ -1,4 +1,5 @@
 0.43
+  * Prelimanary support for Windows.
   * memcached_stat_execute() merged. 
 
 0.42 Tue Jul  6 12:29:50 PDT 2010
