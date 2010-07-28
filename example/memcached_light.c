@@ -26,9 +26,6 @@
 #include "config.h"
 #include <assert.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/tcp.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -45,7 +42,7 @@
 extern memcached_binary_protocol_callback_st interface_v0_impl;
 extern memcached_binary_protocol_callback_st interface_v1_impl;
 
-static int server_sockets[1024];
+static memcached_socket_t server_sockets[1024];
 static int num_server_sockets= 0;
 
 struct connection
@@ -75,7 +72,7 @@ typedef struct options_st options_st;
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the client
  */
-static void drive_client(int fd, short which, void *arg)
+static void drive_client(memcached_socket_t fd, short which, void *arg)
 {
   (void)which;
   struct connection *client= arg;
@@ -86,7 +83,7 @@ static void drive_client(int fd, short which, void *arg)
   if (events & MEMCACHED_PROTOCOL_ERROR_EVENT)
   {
     memcached_protocol_client_destroy(c);
-    (void)close(fd);
+    closesocket(fd);
   } else {
     short flags = 0;
     if (events & MEMCACHED_PROTOCOL_WRITE_EVENT)
@@ -99,14 +96,14 @@ static void drive_client(int fd, short which, void *arg)
       flags|= EV_READ;
     }
 
-    event_set(&client->event, fd, flags, drive_client, client);
+    event_set(&client->event, (intptr_t)fd, flags, drive_client, client);
     event_base_set(event_base, &client->event);
 
     if (event_add(&client->event, 0) == -1)
     {
       (void)fprintf(stderr, "Failed to add event for %d\n", fd);
       memcached_protocol_client_destroy(c);
-      (void)close(fd);
+      closesocket(fd);
     }
   }
 }
@@ -117,47 +114,49 @@ static void drive_client(int fd, short which, void *arg)
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the server
  */
-static void accept_handler(int fd, short which, void *arg)
+static void accept_handler(memcached_socket_t fd, short which, void *arg)
 {
   (void)which;
   struct connection *server= arg;
   /* accept new client */
   struct sockaddr_storage addr;
   socklen_t addrlen= sizeof(addr);
-  int sock= accept(fd, (struct sockaddr *)&addr, &addrlen);
+  memcached_socket_t sock= accept(fd, (struct sockaddr *)&addr, &addrlen);
 
-  if (sock == -1)
+  if (sock == INVALID_SOCKET)
   {
     perror("Failed to accept client");
     return ;
   }
 
+#ifndef WIN32
   if (sock >= maxconns)
   {
     (void)fprintf(stderr, "Client outside socket range (specified with -c)\n");
-    (void)close(sock);
+    closesocket(sock);
     return ;
   }
+#endif
 
   struct memcached_protocol_client_st* c;
   c= memcached_protocol_create_client(server->userdata, sock);
   if (c == NULL)
   {
     (void)fprintf(stderr, "Failed to create client\n");
-    (void)close(sock);
+    closesocket(sock);
   }
   else
   {
     struct connection *client = &socket_userdata_map[sock];
     client->userdata= c;
 
-    event_set(&client->event, sock, EV_READ, drive_client, client);
+    event_set(&client->event, (intptr_t)sock, EV_READ, drive_client, client);
     event_base_set(event_base, &client->event);
     if (event_add(&client->event, 0) == -1)
     {
       (void)fprintf(stderr, "Failed to add event for %d\n", sock);
       memcached_protocol_client_destroy(c);
-      (void)close(sock);
+      closesocket(sock);
     }
   }
 }
@@ -188,18 +187,28 @@ static int server_socket(const char *port)
 
   for (struct addrinfo *next= ai; next; next= next->ai_next)
   {
-    int sock= socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
-    if (sock == -1)
+    memcached_socket_t sock= socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+    if (sock == INVALID_SOCKET)
     {
       perror("Failed to create socket");
       continue;
     }
 
-    int flags= fcntl(sock, F_GETFL, 0);
+    int flags;
+#ifdef WIN32
+    u_long arg = 1;
+    if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR)
+    {
+      perror("Failed to set nonblocking io");
+      closesocket(sock);
+      continue;
+    }
+#else
+    flags= fcntl(sock, F_GETFL, 0);
     if (flags == -1)
     {
       perror("Failed to get socket flags");
-      close(sock);
+      closesocket(sock);
       continue;
     }
 
@@ -208,10 +217,11 @@ static int server_socket(const char *port)
       if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
       {
         perror("Failed to set socket to nonblocking mode");
-        close(sock);
+        closesocket(sock);
         continue;
       }
     }
+#endif
 
     flags= 1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, sizeof(flags)) != 0)
@@ -226,21 +236,21 @@ static int server_socket(const char *port)
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (void *)&flags, sizeof(flags)) != 0)
       perror("Failed to set TCP_NODELAY");
 
-    if (bind(sock, next->ai_addr, next->ai_addrlen) == -1)
+    if (bind(sock, next->ai_addr, next->ai_addrlen) == SOCKET_ERROR)
     {
-      if (errno != EADDRINUSE)
+      if (get_socket_errno() != EADDRINUSE)
       {
         perror("bind()");
         freeaddrinfo(ai);
       }
-      close(sock);
+      closesocket(sock);
       continue;
     }
 
-    if (listen(sock, 1024) == -1)
+    if (listen(sock, 1024) == SOCKET_ERROR)
     {
       perror("listen()");
-      close(sock);
+      closesocket(sock);
       continue;
     }
 
@@ -401,7 +411,7 @@ int main(int argc, char **argv)
 
     if (pid_file == NULL)
     {
-      perror(strerror(errno));
+      perror(strerror(get_socket_errno()));
       abort();
     }
 
@@ -446,13 +456,13 @@ int main(int argc, char **argv)
   {
     struct connection *conn= &socket_userdata_map[server_sockets[xx]];
     conn->userdata= protocol_handle;
-    event_set(&conn->event, server_sockets[xx], EV_READ | EV_PERSIST,
+    event_set(&conn->event, (intptr_t)server_sockets[xx], EV_READ | EV_PERSIST,
               accept_handler, conn);
     event_base_set(event_base, &conn->event);
     if (event_add(&conn->event, 0) == -1)
     {
       fprintf(stderr, "Failed to add event for %d\n", server_sockets[xx]);
-      close(server_sockets[xx]);
+      closesocket(server_sockets[xx]);
     }
   }
 

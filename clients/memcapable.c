@@ -14,11 +14,6 @@
 #include "config.h"
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
@@ -29,11 +24,12 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <poll.h>
 #include <ctype.h>
 
+#include <libmemcached/memcached.h>
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
+#include "utilities.h"
 
 #ifdef linux
 /* /usr/include/netinet/in.h defines macros from ntohs() to _bswap_nn to
@@ -48,7 +44,7 @@
 /* Should we generate coredumps when we enounter an error (-c) */
 static bool do_core= false;
 /* connection to the server */
-static int sock;
+static memcached_socket_t sock;
 /* Should the output from test failures be verbose or quiet? */
 static bool verbose= false;
 
@@ -112,14 +108,23 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port)
  * Set the socket in nonblocking mode
  * @return -1 if failure, the socket otherwise
  */
-static int set_noblock(void)
+static memcached_socket_t set_noblock(void)
 {
+#ifdef WIN32
+  u_long arg = 1;
+  if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR)
+  {
+    perror("Failed to set nonblocking io");
+    closesocket(sock);
+    return INVALID_SOCKET;
+  }
+#else
   int flags= fcntl(sock, F_GETFL, 0);
   if (flags == -1)
   {
     perror("Failed to get socket flags");
-    close(sock);
-    return -1;
+    closesocket(sock);
+    return INVALID_SOCKET;
   }
 
   if ((flags & O_NONBLOCK) != O_NONBLOCK)
@@ -127,11 +132,11 @@ static int set_noblock(void)
     if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
     {
       perror("Failed to set socket to nonblocking mode");
-      close(sock);
-      return -1;
+      closesocket(sock);
+      return INVALID_SOCKET;
     }
   }
-
+#endif
   return sock;
 }
 
@@ -141,28 +146,30 @@ static int set_noblock(void)
  * @param port the port number (or service) to connect to
  * @return positive integer if success, -1 otherwise
  */
-static int connect_server(const char *hostname, const char *port)
+static memcached_socket_t connect_server(const char *hostname, const char *port)
 {
   struct addrinfo *ai= lookuphost(hostname, port);
-  sock= -1;
+  sock= INVALID_SOCKET;
   if (ai != NULL)
   {
-    if ((sock=socket(ai->ai_family, ai->ai_socktype,
-                     ai->ai_protocol)) != -1)
+    if ((sock= socket(ai->ai_family, ai->ai_socktype,
+                      ai->ai_protocol)) != INVALID_SOCKET)
     {
-      if (connect(sock, ai->ai_addr, ai->ai_addrlen) == -1)
+      if (connect(sock, ai->ai_addr, ai->ai_addrlen) == SOCKET_ERROR)
       {
         fprintf(stderr, "Failed to connect socket: %s\n",
-                strerror(errno));
-        close(sock);
-        sock= -1;
+                strerror(get_socket_errno()));
+        closesocket(sock);
+        sock= INVALID_SOCKET;
       }
       else
       {
         sock= set_noblock();
       }
-    } else
-      fprintf(stderr, "Failed to create socket: %s\n", strerror(errno));
+    }
+    else
+      fprintf(stderr, "Failed to create socket: %s\n",
+              strerror(get_socket_errno()));
 
     freeaddrinfo(ai);
   }
@@ -170,28 +177,29 @@ static int connect_server(const char *hostname, const char *port)
   return sock;
 }
 
-static ssize_t timeout_io_op(int fd, short direction, void *buf, size_t len)
+static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, size_t len)
 {
   ssize_t ret;
 
   if (direction == POLLOUT)
-    ret= write(fd, buf, len);
+     ret= send(fd, buf, len, 0);
   else
-    ret= read(fd, buf, len);
+     ret= recv(fd, buf, len, 0);
 
-  if (ret == -1 && errno == EWOULDBLOCK) {
+  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) {
     struct pollfd fds= {
       .events= direction,
       .fd= fd
     };
+
     int err= poll(&fds, 1, timeout * 1000);
 
     if (err == 1)
     {
       if (direction == POLLOUT)
-        ret= write(fd, buf, len);
+         ret= send(fd, buf, len, 0);
       else
-        ret= read(fd, buf, len);
+         ret= recv(fd, buf, len, 0);
     }
     else if (err == 0)
     {
@@ -245,7 +253,7 @@ static enum test_return retry_write(const void* buf, size_t len)
     size_t num_bytes= len - offset;
     ssize_t nw= timeout_io_op(sock, POLLOUT, (void*)(ptr + offset), num_bytes);
     if (nw == -1)
-      verify(errno == EINTR || errno == EAGAIN);
+      verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
     else
       offset+= (size_t)nw;
   } while (offset < len);
@@ -295,7 +303,7 @@ static enum test_return retry_read(void *buf, size_t len)
     ssize_t nr= timeout_io_op(sock, POLLIN, ((char*) buf) + offset, len - offset);
     switch (nr) {
     case -1 :
-      verify(errno == EINTR || errno == EAGAIN);
+      verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
     case 0:
       return TEST_FAIL;
@@ -1891,11 +1899,12 @@ int main(int argc, char **argv)
     }
   }
 
+  initialize_sockets();
   sock= connect_server(hostname, port);
-  if (sock == -1)
+  if (sock == INVALID_SOCKET)
   {
     fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
-            hostname, port, strerror(errno));
+            hostname, port, strerror(get_socket_errno()));
     return 1;
   }
 
@@ -1920,18 +1929,18 @@ int main(int argc, char **argv)
     fprintf(stderr, "%s\n", status_msg[ret]);
     if (reconnect)
     {
-      (void) close(sock);
-      if ((sock=connect_server(hostname, port)) == -1)
+      closesocket(sock);
+      if ((sock= connect_server(hostname, port)) == INVALID_SOCKET)
       {
         fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
-                hostname, port, strerror(errno));
+                hostname, port, strerror(get_socket_errno()));
         fprintf(stderr, "%d of %d tests failed\n", failed, total);
         return 1;
       }
     }
   }
 
-  (void) close(sock);
+  closesocket(sock);
   if (failed == 0)
     fprintf(stdout, "All tests passed\n");
   else

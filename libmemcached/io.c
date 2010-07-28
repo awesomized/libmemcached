@@ -11,8 +11,6 @@
 
 
 #include "common.h"
-#include <sys/select.h>
-#include <poll.h>
 
 typedef enum {
   MEM_READ,
@@ -76,8 +74,8 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     case 0: // Timeout occured, we let the while() loop do its thing.
       return MEMCACHED_TIMEOUT;
     default:
-      WATCHPOINT_ERRNO(errno);
-      switch (errno)
+      WATCHPOINT_ERRNO(get_socket_errno());
+      switch (get_socket_errno())
       {
 #ifdef TARGET_OS_LINUX
       case ERESTART:
@@ -90,11 +88,11 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
           int err;
           socklen_t len= sizeof (err);
           (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          ptr->cached_errno= (err == 0) ? errno : err;
+          ptr->cached_errno= (err == 0) ? get_socket_errno() : err;
         }
         else
         {
-          ptr->cached_errno= errno;
+          ptr->cached_errno= get_socket_errno();
         }
         memcached_quit_server(ptr, true);
 
@@ -105,7 +103,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
   /* Imposssible for anything other then -1 */
   WATCHPOINT_ASSERT(error == -1);
-  ptr->cached_errno= errno;
+  ptr->cached_errno= get_socket_errno();
   memcached_quit_server(ptr, true);
 
   return MEMCACHED_FAILURE;
@@ -133,9 +131,10 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
   if (ptr->read_buffer_length != MEMCACHED_MAX_BUFFER)
   {
     /* Just try a single read to grab what's available */
-    ssize_t nr= read(ptr->fd,
+    ssize_t nr= recv(ptr->fd,
                      ptr->read_ptr + ptr->read_data_length,
-                     MEMCACHED_MAX_BUFFER - ptr->read_data_length);
+                     MEMCACHED_MAX_BUFFER - ptr->read_data_length,
+                     0);
 
     if (nr > 0)
     {
@@ -247,10 +246,10 @@ void memcached_io_preread(memcached_st *ptr)
     {
       size_t data_read;
 
-      data_read= read(ptr->hosts[x].fd,
+      data_read= recv(ptr->hosts[x].fd,
                       ptr->hosts[x].read_ptr + ptr->hosts[x].read_data_length,
-                      MEMCACHED_MAX_BUFFER - ptr->hosts[x].read_data_length);
-      if (data_read == -1)
+                      MEMCACHED_MAX_BUFFER - ptr->hosts[x].read_data_length, 0);
+      if (data_read == SOCKET_ERROR)
         continue;
 
       ptr->hosts[x].read_buffer_length+= data_read;
@@ -275,18 +274,21 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 
       while (1)
       {
-        data_read= read(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER);
+        data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, 0);
         if (data_read > 0)
         {
           break;
         }
-        else if (data_read == -1)
+        else if (data_read == SOCKET_ERROR)
         {
-          ptr->cached_errno= errno;
+          ptr->cached_errno= get_socket_errno();
           memcached_return_t rc= MEMCACHED_ERRNO;
-          switch (errno)
+          switch (get_socket_errno())
           {
+          case EWOULDBLOCK:
+#ifdef USE_EAGAIN
           case EAGAIN:
+#endif
           case EINTR:
 #ifdef TARGET_OS_LINUX
           case ERESTART:
@@ -314,7 +316,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             for blocking I/O we do not return 0 and for non-blocking case
             it will return EGAIN if data is not immediatly available.
           */
-          WATCHPOINT_STRING("We had a zero length read()");
+          WATCHPOINT_STRING("We had a zero length recv()");
           memcached_quit_server(ptr, true);
           *nread= -1;
           return MEMCACHED_UNKNOWN_READ_FAILURE;
@@ -360,7 +362,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   size_t original_length;
   const char* buffer_ptr;
 
-  WATCHPOINT_ASSERT(ptr->fd != -1);
+  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   original_length= length;
   buffer_ptr= buffer;
@@ -403,7 +405,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       memcached_return_t rc;
       ssize_t sent_length;
 
-      WATCHPOINT_ASSERT(ptr->fd != -1);
+      WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
       sent_length= io_flush(ptr, &rc);
       if (sent_length == -1)
         return -1;
@@ -419,7 +421,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   if (with_flush)
   {
     memcached_return_t rc;
-    WATCHPOINT_ASSERT(ptr->fd != -1);
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     if (io_flush(ptr, &rc) == -1)
     {
       return -1;
@@ -468,22 +470,22 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
 
 memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr)
 {
-  if (ptr->fd == -1)
+  if (ptr->fd == INVALID_SOCKET)
   {
     return MEMCACHED_SUCCESS;
   }
 
   /* in case of death shutdown to avoid blocking at close() */
-  if (shutdown(ptr->fd, SHUT_RDWR) == -1 && errno != ENOTCONN)
+  if (shutdown(ptr->fd, SHUT_RDWR) == SOCKET_ERROR && get_socket_errno() != ENOTCONN)
   {
     WATCHPOINT_NUMBER(ptr->fd);
-    WATCHPOINT_ERRNO(errno);
-    WATCHPOINT_ASSERT(errno);
+    WATCHPOINT_ERRNO(get_socket_errno());
+    WATCHPOINT_ASSERT(get_socket_errno());
   }
 
-  if (close(ptr->fd) == -1)
+  if (closesocket(ptr->fd) == SOCKET_ERROR)
   {
-    WATCHPOINT_ERRNO(errno);
+    WATCHPOINT_ERRNO(get_socket_errno());
   }
 
   return MEMCACHED_SUCCESS;
@@ -534,7 +536,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
   int err= poll(fds, host_index, memc->poll_timeout);
   switch (err) {
   case -1:
-    memc->cached_errno = errno;
+    memc->cached_errno = get_socket_errno();
     /* FALLTHROUGH */
   case 0:
     break;
@@ -568,7 +570,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
  */
   {
     memcached_return_t rc;
-    WATCHPOINT_ASSERT(ptr->fd != -1);
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     rc= memcached_purge(ptr);
 
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
@@ -581,7 +583,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
 
   *error= MEMCACHED_SUCCESS;
 
-  WATCHPOINT_ASSERT(ptr->fd != -1);
+  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   // UDP Sanity check, make sure that we are not sending somthing too big
   if (ptr->type == MEMCACHED_CONNECTION_UDP && write_length > MAX_UDP_DATAGRAM_LENGTH)
@@ -601,23 +603,26 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   return_length= 0;
   while (write_length)
   {
-    WATCHPOINT_ASSERT(ptr->fd != -1);
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
     sent_length= 0;
     if (ptr->type == MEMCACHED_CONNECTION_UDP)
       increment_udp_message_id(ptr);
-    sent_length= write(ptr->fd, local_write_ptr, write_length);
 
-    if (sent_length == -1)
+    sent_length= send(ptr->fd, local_write_ptr, write_length, 0);
+    if (sent_length == SOCKET_ERROR)
     {
-      ptr->cached_errno= errno;
-      WATCHPOINT_ERRNO(errno);
-      WATCHPOINT_NUMBER(errno);
-      switch (errno)
+      ptr->cached_errno= get_socket_errno();
+      WATCHPOINT_ERRNO(get_socket_errno());
+      WATCHPOINT_NUMBER(get_socket_errno());
+      switch (get_socket_errno())
       {
       case ENOBUFS:
         continue;
+      case EWOULDBLOCK:
+#ifdef USE_EAGAIN
       case EAGAIN:
+#endif
         {
           /*
            * We may be blocked on write because the input buffer

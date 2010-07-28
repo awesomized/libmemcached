@@ -2945,6 +2945,11 @@ static void fail(int unused __attribute__((unused)))
 
 static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
 {
+#ifdef WIN32
+  (void)memc;
+  (void)key_count;
+  return TEST_SKIPPED;
+#else
   memcached_return_t rc;
   unsigned int x;
   char **keys;
@@ -2993,6 +2998,7 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   memcached_free(memc_clone);
 
   return TEST_SUCCESS;
+#endif
 }
 
 static test_return_t user_supplied_bug21(memcached_st *memc)

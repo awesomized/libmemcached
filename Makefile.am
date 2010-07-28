@@ -45,6 +45,8 @@ include unittests/include.am
 include tests/include.am
 include example/include.am
 include support/include.am
+include poll/include.am
+include win32/include.am
 
 TESTS += ${check_PROGRAMS}
 

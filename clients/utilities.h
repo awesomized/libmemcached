@@ -51,3 +51,4 @@ void help_command(const char *command_name, const char *description,
 void process_hash_option(memcached_st *memc, char *opt_hash);
 bool initialize_sasl(memcached_st *memc, char *user, char *password);
 void shutdown_sasl(void);
+void initialize_sockets(void);

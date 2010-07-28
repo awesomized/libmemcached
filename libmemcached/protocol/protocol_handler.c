@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
@@ -29,7 +28,7 @@
  * @return the number of bytes transferred of -1 upon error
  */
 static ssize_t default_recv(const void *cookie,
-                            int sock,
+                            memcached_socket_t sock,
                             void *buf,
                             size_t nbytes)
 {
@@ -49,7 +48,7 @@ static ssize_t default_recv(const void *cookie,
  * @return the number of bytes transferred of -1 upon error
  */
 static ssize_t default_send(const void *cookie,
-                            int fd,
+                            memcached_socket_t fd,
                             const void *buf,
                             size_t nbytes)
 {
@@ -79,13 +78,13 @@ static bool drain_output(struct memcached_protocol_client_st *client)
 
     if (len == -1)
     {
-      if (errno == EWOULDBLOCK)
+      if (get_socket_errno() == EWOULDBLOCK)
       {
         return true;
       }
-      else if (errno != EINTR)
+      else if (get_socket_errno() != EINTR)
       {
-        client->error= errno;
+        client->error= get_socket_errno();
         return false;
       }
     }
@@ -270,7 +269,7 @@ void memcached_protocol_destroy_instance(struct memcached_protocol_st *instance)
   free(instance);
 }
 
-struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, int sock)
+struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, memcached_socket_t sock)
 {
   struct memcached_protocol_client_st *ret= calloc(1, sizeof(*ret));
   if (ret != NULL)
@@ -343,9 +342,9 @@ memcached_protocol_event_t memcached_protocol_client_work(struct memcached_proto
     }
     else
     {
-      if (errno != EWOULDBLOCK)
+      if (get_socket_errno() != EWOULDBLOCK)
       {
-        client->error= errno;
+        client->error= get_socket_errno();
         /* mark this client as terminated! */
         return MEMCACHED_PROTOCOL_ERROR_EVENT;
       }

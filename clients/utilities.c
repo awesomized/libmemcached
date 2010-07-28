@@ -216,3 +216,16 @@ void shutdown_sasl(void)
     sasl_done();
 #endif
 }
+
+void initialize_sockets(void)
+{
+  /* Define the function for all platforms to avoid #ifdefs in each program */
+#ifdef WIN32
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2,0), &wsaData) != 0)
+  {
+    fprintf(stderr, "Socket Initialization Error. Program aborted\n");
+    exit(EXIT_FAILURE);
+  }
+#endif
+}

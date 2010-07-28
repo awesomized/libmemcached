@@ -24,7 +24,7 @@ struct memcached_server_st {
   uint32_t cursor_active;
   in_port_t port;
   int cached_errno;
-  int fd;
+  memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
   uint32_t weight;

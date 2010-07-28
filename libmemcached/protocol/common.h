@@ -7,7 +7,6 @@
 # include <stdbool.h>
 #endif
 #include <assert.h>
-#include <netinet/in.h>
 
 /* Define this here, which will turn on the visibilty controls while we're
  * building libmemcached.
@@ -99,7 +98,7 @@ enum ascii_cmd {
 
 struct memcached_protocol_client_st {
   memcached_protocol_st *root;
-  int sock;
+  memcached_socket_t sock;
   int error;
 
   /* Linked list of data to send */
