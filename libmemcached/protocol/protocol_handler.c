@@ -28,7 +28,7 @@
  * @return the number of bytes transferred of -1 upon error
  */
 static ssize_t default_recv(const void *cookie,
-                            SOCKET sock,
+                            memcached_socket_t sock,
                             void *buf,
                             size_t nbytes)
 {
@@ -48,7 +48,7 @@ static ssize_t default_recv(const void *cookie,
  * @return the number of bytes transferred of -1 upon error
  */
 static ssize_t default_send(const void *cookie,
-                            SOCKET fd,
+                            memcached_socket_t fd,
                             const void *buf,
                             size_t nbytes)
 {
@@ -269,7 +269,7 @@ void memcached_protocol_destroy_instance(struct memcached_protocol_st *instance)
   free(instance);
 }
 
-struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, SOCKET sock)
+struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, memcached_socket_t sock)
 {
   struct memcached_protocol_client_st *ret= calloc(1, sizeof(*ret));
   if (ret != NULL)

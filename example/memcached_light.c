@@ -42,7 +42,7 @@
 extern memcached_binary_protocol_callback_st interface_v0_impl;
 extern memcached_binary_protocol_callback_st interface_v1_impl;
 
-static SOCKET server_sockets[1024];
+static memcached_socket_t server_sockets[1024];
 static int num_server_sockets= 0;
 
 struct connection
@@ -72,7 +72,7 @@ typedef struct options_st options_st;
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the client
  */
-static void drive_client(SOCKET fd, short which, void *arg)
+static void drive_client(memcached_socket_t fd, short which, void *arg)
 {
   (void)which;
   struct connection *client= arg;
@@ -114,14 +114,14 @@ static void drive_client(SOCKET fd, short which, void *arg)
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the server
  */
-static void accept_handler(SOCKET fd, short which, void *arg)
+static void accept_handler(memcached_socket_t fd, short which, void *arg)
 {
   (void)which;
   struct connection *server= arg;
   /* accept new client */
   struct sockaddr_storage addr;
   socklen_t addrlen= sizeof(addr);
-  SOCKET sock= accept(fd, (struct sockaddr *)&addr, &addrlen);
+  memcached_socket_t sock= accept(fd, (struct sockaddr *)&addr, &addrlen);
 
   if (sock == INVALID_SOCKET)
   {
@@ -187,7 +187,7 @@ static int server_socket(const char *port)
 
   for (struct addrinfo *next= ai; next; next= next->ai_next)
   {
-    SOCKET sock= socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+    memcached_socket_t sock= socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
     if (sock == INVALID_SOCKET)
     {
       perror("Failed to create socket");

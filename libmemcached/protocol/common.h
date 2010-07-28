@@ -98,7 +98,7 @@ enum ascii_cmd {
 
 struct memcached_protocol_client_st {
   memcached_protocol_st *root;
-  SOCKET sock;
+  memcached_socket_t sock;
   int error;
 
   /* Linked list of data to send */

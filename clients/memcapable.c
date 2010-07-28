@@ -44,7 +44,7 @@
 /* Should we generate coredumps when we enounter an error (-c) */
 static bool do_core= false;
 /* connection to the server */
-static SOCKET sock;
+static memcached_socket_t sock;
 /* Should the output from test failures be verbose or quiet? */
 static bool verbose= false;
 
@@ -108,7 +108,7 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port)
  * Set the socket in nonblocking mode
  * @return -1 if failure, the socket otherwise
  */
-static SOCKET set_noblock(void)
+static memcached_socket_t set_noblock(void)
 {
 #ifdef WIN32
   u_long arg = 1;
@@ -146,7 +146,7 @@ static SOCKET set_noblock(void)
  * @param port the port number (or service) to connect to
  * @return positive integer if success, -1 otherwise
  */
-static SOCKET connect_server(const char *hostname, const char *port)
+static memcached_socket_t connect_server(const char *hostname, const char *port)
 {
   struct addrinfo *ai= lookuphost(hostname, port);
   sock= INVALID_SOCKET;
@@ -177,7 +177,7 @@ static SOCKET connect_server(const char *hostname, const char *port)
   return sock;
 }
 
-static ssize_t timeout_io_op(SOCKET fd, short direction, void *buf, size_t len)
+static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, size_t len)
 {
   ssize_t ret;
 

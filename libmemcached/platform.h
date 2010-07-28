@@ -16,8 +16,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 typedef short in_port_t;
+typedef SOCKET memcached_socket_t;
 #else
-typedef int SOCKET;
+typedef int memcached_socket_t;
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>

@@ -49,7 +49,7 @@ extern "C" {
  *         or -1 upon error (errno should contain more information)
  */
 typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie,
-                                                SOCKET fd,
+                                                memcached_socket_t fd,
                                                 void *buf,
                                                 size_t nbuf);
 
@@ -65,7 +65,7 @@ typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie,
  *         or -1 upon error (errno should contain more information)
  */
 typedef ssize_t (*memcached_protocol_send_func)(const void *cookie,
-                                                SOCKET fd,
+                                                memcached_socket_t fd,
                                                 const void *buf,
                                                 size_t nbuf);
 
@@ -140,7 +140,7 @@ void memached_protocol_set_io_functions(memcached_protocol_st *instance,
  * @return NULL if allocation fails, otherwise an instance
  */
 LIBMEMCACHED_API
-memcached_protocol_client_st *memcached_protocol_create_client(memcached_protocol_st *instance, SOCKET sock);
+memcached_protocol_client_st *memcached_protocol_create_client(memcached_protocol_st *instance, memcached_socket_t sock);
 
 /**
  * Destroy a client handle.
@@ -192,7 +192,7 @@ memcached_protocol_event_t memcached_protocol_client_work(memcached_protocol_cli
  * @return the socket handle
  */
 LIBMEMCACHED_API
-SOCKET memcached_protocol_client_get_socket(memcached_protocol_client_st *client);
+memcached_socket_t memcached_protocol_client_get_socket(memcached_protocol_client_st *client);
 
 /**
  * Get the error id socket attached to a client handle
