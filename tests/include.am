@@ -91,7 +91,7 @@ tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES) $(LIBSASL)
 
 test: check
 
-check-local: test-docs test-mem test-hash memcapable
+check-local: $(TEST_DOCS) test-mem test-hash memcapable
 	@echo "Tests completed"
 
 test-x: check-local test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
