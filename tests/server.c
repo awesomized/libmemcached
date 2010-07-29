@@ -51,6 +51,23 @@ void server_startup(server_startup_st *construct)
         char buffer[1024]; /* Nothing special for number */
         int count;
         int status;
+        in_port_t port;
+
+        {
+          char *var;
+          char variable_buffer[1024];
+
+          snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
+
+          if ((var= getenv(variable_buffer)))
+          {
+            port= (in_port_t)atoi(var);
+          }
+          else
+          {
+            port= (in_port_t)(x + TEST_PORT_BASE);
+          }
+        }
 
         sprintf(buffer, "/tmp/%umemc.pid", x);
         if (access(buffer, F_OK) == 0)
@@ -74,23 +91,23 @@ void server_startup(server_startup_st *construct)
         if (x == 0)
         {
           sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
-		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
+		  MEMCACHED_BINARY, x, port, port);
         }
         else
         {
           sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u",
-		  MEMCACHED_BINARY, x, x + TEST_PORT_BASE, x + TEST_PORT_BASE);
+		  MEMCACHED_BINARY, x, port, port);
         }
-	if (libmemcached_util_ping("localhost", (in_port_t)(x + TEST_PORT_BASE), NULL))
+	if (libmemcached_util_ping("localhost", port, NULL))
 	{
-	  fprintf(stderr, "Server on port %u already exists\n", x + TEST_PORT_BASE);
+	  fprintf(stderr, "Server on port %u already exists\n", port);
 	}
 	else
 	{
 	  status= system(buffer);
 	  fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
 	}
-        count= sprintf(end_ptr, "localhost:%u,", x + TEST_PORT_BASE);
+        count= sprintf(end_ptr, "localhost:%u,", port);
         end_ptr+= count;
       }
       *end_ptr= 0;
