@@ -140,25 +140,7 @@ AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
 AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
       AM_LDFLAGS="$AM_LDFLAGS -lws2_32")
-
-#
-# Some platforms define EWOULDBLOCK == EAGAIN, causing our switch for error
-# codes to be illegal (POSIX.1-2001 allows both return codes from recv, so
-# we need to test both if they differ...)
-#
-AC_MSG_CHECKING([if EWOULDBLOCK == EAGAIN])
-AC_RUN_IFELSE(
-  [AC_LANG_PROGRAM([
-#include <errno.h>
-     ], [dnl
-   return EAGAIN == EWOULDBLOCK ? 0 : 1;
-     ])
-  ],[
-   AC_MSG_RESULT([yes])
-  ], [
-   AC_MSG_RESULT([no])
-   AC_DEFINE([USE_EAGAIN], [1], [Define to true if you need to test for eagain])
-  ])
+DETECT_EAGAIN
 
 AC_CONFIG_FILES([
   Makefile
