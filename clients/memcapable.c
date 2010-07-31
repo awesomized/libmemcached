@@ -1861,6 +1861,9 @@ struct testcase testcases[]= {
   { NULL, NULL}
 };
 
+const int ascii_tests = 1;
+const int binary_tests = 2;
+
 int main(int argc, char **argv)
 {
   static const char * const status_msg[]= {"[skip]", "[pass]", "[pass]", "[FAIL]"};
@@ -1869,10 +1872,18 @@ int main(int argc, char **argv)
   const char *hostname= "localhost";
   const char *port= "11211";
   int cmd;
+  int tests = ascii_tests | binary_tests;
 
-  while ((cmd= getopt(argc, argv, "t:vch:p:?")) != EOF)
+
+  while ((cmd= getopt(argc, argv, "t:vch:p:?ab")) != EOF)
   {
     switch (cmd) {
+    case 'a':
+      tests = ascii_tests;
+      break;
+    case 'b':
+      tests = binary_tests;
+      break;
     case 't':
       timeout= atoi(optarg);
       if (timeout == 0)
@@ -1890,10 +1901,12 @@ int main(int argc, char **argv)
     case 'p': port= optarg;
       break;
     default:
-      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n]\n"
+      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n] [-a] [-b]\n"
               "\t-c\tGenerate coredump if a test fails\n"
               "\t-v\tVerbose test output (print out the assertion)\n"
-              "\t-t n\tSet the timeout for io-operations to n seconds\n",
+              "\t-t n\tSet the timeout for io-operations to n seconds\n"
+              "\t-a\tOnly test the ascii protocol\n"
+              "\t-b\tOnly test the binary protocol\n",
               argv[0]);
       return 1;
     }
@@ -1910,6 +1923,11 @@ int main(int argc, char **argv)
 
   for (int ii= 0; testcases[ii].description != NULL; ++ii)
   {
+    if ((testcases[ii].description[0] == 'a' && (tests & ascii_tests) == 0) ||
+        (testcases[ii].description[0] == 'b' && (tests & binary_tests) == 0))
+    {
+      continue;
+    }
     ++total;
     fprintf(stdout, "%-40s", testcases[ii].description);
     fflush(stdout);
