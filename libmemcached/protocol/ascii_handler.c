@@ -146,8 +146,8 @@ ascii_get_response_handler(const void *cookie,
 
   if (client->ascii_command == GETS_CMD)
   {
-    snprintf(dest, sizeof(buffer) - used, " %u %u %llu\r\n", flags,
-             bodylen, (unsigned long long)cas);
+    snprintf(dest, sizeof(buffer) - used, " %u %u %" PRIu64 "\r\n", flags,
+             bodylen, cas);
   }
   else
   {
@@ -440,8 +440,7 @@ static void process_arithmetic(memcached_protocol_client_st *client,
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS)
   {
     char buffer[80];
-    snprintf(buffer, sizeof(buffer), "%llu\r\n",
-             (unsigned long long)result);
+    snprintf(buffer, sizeof(buffer), "%"PRIu64"\r\n", result);
     spool_string(client, buffer);
   }
   else
