@@ -139,7 +139,10 @@ AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
 AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
-      AM_LDFLAGS="$AM_LDFLAGS -lws2_32")
+      [AM_LDFLAGS="$AM_LDFLAGS -lws2_32"
+       AM_CFLAGS="$AM_CFLAGS $NO_WERROR"
+       AM_CXXFLAGS="$AM_CXXFLAGS $NO_WERROR"
+      ])
 DETECT_EAGAIN
 
 AC_CONFIG_FILES([
