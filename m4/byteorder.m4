@@ -2,7 +2,7 @@ AC_DEFUN([DETECT_BYTEORDER],
 [
     AC_REQUIRE([AC_C_BIGENDIAN])
     AC_CACHE_CHECK([for htonll], [ac_cv_have_htonll],
-        [AC_TRY_COMPILE([
+        [AC_TRY_LINK([
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <inttypes.h>
