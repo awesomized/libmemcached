@@ -80,7 +80,6 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
         return MEMCACHED_ERRNO;
       }
     }
-    WATCHPOINT_ASSERT(0); // Programming error
   }
 
   // This should only be possible from ERESTART or EINTR;
