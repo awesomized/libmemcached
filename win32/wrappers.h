@@ -12,12 +12,18 @@
 #ifndef WIN32_WRAPPERS_H
 #define WIN32_WRAPPERS_H 1
 
+#include <inttypes.h>
+
 /*
  * One of the Windows headers define interface as a macro, but that
  * is causing problems with the member named "interface" in some of the
  * structs.
  */
 #undef interface
+
+#undef malloc
+#undef realloc
+
 
 /*
  * WinSock use a separate range for error codes. Let's just map to the
