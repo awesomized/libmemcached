@@ -17,18 +17,44 @@
 
 #include "config.h"
 
+#include <assert.h>
+#include <limits.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
-#include <assert.h>
-#include <signal.h>
+#include <unistd.h>
+
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
-#include <unistd.h>
-#include <sys/time.h>
 
 #include "server.h"
+
+static void kill_file(const char *file_buffer)
+{
+  FILE *fp= fopen(file_buffer, "r");
+
+  if (fp != NULL)
+  {
+    char pid_buffer[1024];
+
+    if (fgets(pid_buffer, sizeof(pid_buffer), fp) != NULL)
+    {
+      pid_t pid= (pid_t)atoi(pid_buffer);
+      if (pid != 0)
+      {
+        if (kill(pid, SIGTERM) == -1)
+        {
+          perror(file_buffer);
+        }
+      }
+    }
+
+    fclose(fp);
+  }
+}
 
 void server_startup(server_startup_st *construct)
 {
@@ -48,7 +74,6 @@ void server_startup(server_startup_st *construct)
 
       for (uint32_t x= 0; x < construct->count; x++)
       {
-        char buffer[1024]; /* Nothing special for number */
         int count;
         int status;
         in_port_t port;
@@ -69,34 +94,36 @@ void server_startup(server_startup_st *construct)
           }
         }
 
-        sprintf(buffer, "/tmp/%umemc.pid", x);
-        if (access(buffer, F_OK) == 0)
+        char buffer[PATH_MAX];
+
+        snprintf(buffer, sizeof(buffer), "/tmp/%umemc.pid", x);
+
+        uint32_t counter= 3;
+        while (--counter)
         {
-          FILE *fp= fopen(buffer, "r");
-          remove(buffer);
-
-          if (fp != NULL)
+          if (access(buffer, F_OK) == 0)
           {
-            if (fgets(buffer, sizeof(buffer), fp) != NULL)
-            {
-              pid_t pid= (pid_t)atoi(buffer);
-              if (pid != 0)
-                kill(pid, SIGTERM);
-            }
-
-            fclose(fp);
+            kill_file(buffer);
+#ifndef WIN32
+            struct timespec req= { .tv_sec= 0, .tv_nsec= 5000 };
+            nanosleep(&req, NULL);
+#endif
+          }
+          else
+          {
+            break;
           }
         }
 
         if (x == 0)
         {
-          sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
-		  MEMCACHED_BINARY, x, port, port);
+          snprintf(buffer, sizeof(buffer), "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
+                   MEMCACHED_BINARY, x, port, port);
         }
         else
         {
-          sprintf(buffer, "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u",
-		  MEMCACHED_BINARY, x, port, port);
+          snprintf(buffer, sizeof(buffer), "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u",
+                   MEMCACHED_BINARY, x, port, port);
         }
 	if (libmemcached_util_ping("localhost", port, NULL))
 	{
@@ -115,10 +142,11 @@ void server_startup(server_startup_st *construct)
       for (uint32_t x= 0; x < construct->count; x++)
       {
         uint32_t counter= 3;
-        char buffer[1024]; /* Nothing special for number */
+        char buffer[PATH_MAX]; /* Nothing special for number */
 
         snprintf(buffer, sizeof(buffer), "/tmp/%umemc.pid", x);
 
+        bool was_started= false;
         while (--counter)
         {
           int memcached_pid;
@@ -135,15 +163,20 @@ void server_startup(server_startup_st *construct)
           }
           char *found= fgets(buffer, sizeof(buffer), file);
           if (!found)
-          {
-            abort();
-          }
+            continue;
+          
           // Yes, we currently pitch this and don't make use of it.
           memcached_pid= atoi(buffer);
           fclose(file);
+          was_started= true;
+          break;
         }
 
-
+        if (was_started == false)
+        {
+          fprintf(stderr, "Failed to open buffer %s\n", buffer);
+          abort();
+        }
       }
 
       construct->server_list= strdup(server_string_buffer);
@@ -172,13 +205,9 @@ void server_shutdown(server_startup_st *construct)
   {
     for (uint32_t x= 0; x < construct->count; x++)
     {
-      char buffer[1024]; /* Nothing special for number */
-      sprintf(buffer, "cat /tmp/%umemc.pid | xargs kill", x);
-      /* We have to check the return value of this or the compiler will yell */
-      int sys_ret= system(buffer);
-      assert(sys_ret != -1);
-      sprintf(buffer, "/tmp/%umemc.pid", x);
-      unlink(buffer);
+      char file_buffer[PATH_MAX]; /* Nothing special for number */
+      snprintf(file_buffer, sizeof(file_buffer), "/tmp/%umemc.pid", x);
+      kill_file(file_buffer);
     }
 
     free(construct->server_list);
