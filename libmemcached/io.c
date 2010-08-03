@@ -613,8 +613,10 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     if (sent_length == SOCKET_ERROR)
     {
       ptr->cached_errno= get_socket_errno();
+#if 0 // @todo I should look at why we hit this bit of code hard frequently
       WATCHPOINT_ERRNO(get_socket_errno());
       WATCHPOINT_NUMBER(get_socket_errno());
+#endif
       switch (get_socket_errno())
       {
       case ENOBUFS:
