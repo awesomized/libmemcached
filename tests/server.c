@@ -15,6 +15,8 @@
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10
 
+#define PID_FILE_BASE "/tmp/%ulibmemcached_memc.pid"
+
 #include "config.h"
 
 #include <assert.h>
@@ -32,11 +34,22 @@
 
 #include "server.h"
 
+static struct timespec global_sleep_value= { .tv_sec= 0, .tv_nsec= 50000 };
+
+static void global_sleep(void)
+{
+#ifdef WIN32
+  sleep(1);
+#else
+  nanosleep(&global_sleep_value, NULL);
+#endif
+}
+
 static void kill_file(const char *file_buffer)
 {
   FILE *fp= fopen(file_buffer, "r");
 
-  if (fp != NULL)
+  while ((fp= fopen(file_buffer, "r")))
   {
     char pid_buffer[1024];
 
@@ -47,10 +60,20 @@ static void kill_file(const char *file_buffer)
       {
         if (kill(pid, SIGTERM) == -1)
         {
-          perror(file_buffer);
+          remove(file_buffer); // If this happens we may be dealing with a dead server that left its pid file.
+        }
+        else
+        {
+          uint32_t counter= 3;
+          while ((kill(pid, 0) == 0) && --counter)
+          {
+            global_sleep();
+          }
         }
       }
     }
+
+    global_sleep();
 
     fclose(fp);
   }
@@ -95,34 +118,17 @@ void server_startup(server_startup_st *construct)
         }
 
         char buffer[PATH_MAX];
-
-        snprintf(buffer, sizeof(buffer), "/tmp/%umemc.pid", x);
-
-        uint32_t counter= 3;
-        while (--counter)
-        {
-          if (access(buffer, F_OK) == 0)
-          {
-            kill_file(buffer);
-#ifndef WIN32
-            struct timespec req= { .tv_sec= 0, .tv_nsec= 5000 };
-            nanosleep(&req, NULL);
-#endif
-          }
-          else
-          {
-            break;
-          }
-        }
+        snprintf(buffer, sizeof(buffer), PID_FILE_BASE, x);
+        kill_file(buffer);
 
         if (x == 0)
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u -m 128",
+          snprintf(buffer, sizeof(buffer), "%s -d -u root -P "PID_FILE_BASE" -t 1 -p %u -U %u -m 128",
                    MEMCACHED_BINARY, x, port, port);
         }
         else
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -u root -P /tmp/%umemc.pid -t 1 -p %u -U %u",
+          snprintf(buffer, sizeof(buffer), "%s -d -u root -P "PID_FILE_BASE" -t 1 -p %u -U %u",
                    MEMCACHED_BINARY, x, port, port);
         }
 	if (libmemcached_util_ping("localhost", port, NULL))
@@ -139,45 +145,63 @@ void server_startup(server_startup_st *construct)
       }
       *end_ptr= 0;
 
+
+      int *pids= calloc(construct->count, sizeof(int));
       for (uint32_t x= 0; x < construct->count; x++)
       {
-        uint32_t counter= 3;
         char buffer[PATH_MAX]; /* Nothing special for number */
 
-        snprintf(buffer, sizeof(buffer), "/tmp/%umemc.pid", x);
+        snprintf(buffer, sizeof(buffer), PID_FILE_BASE, x);
+
+        uint32_t counter= 3000; // Absurd, just to catch run away process
+        while (pids[x] <= 0  && --counter)
+        {
+          FILE *file= fopen(buffer, "r");
+          if (file)
+          {
+            char pid_buffer[1024];
+            char *found= fgets(pid_buffer, sizeof(pid_buffer), file);
+
+            if (found)
+            {
+              pids[x]= atoi(pid_buffer);
+              fclose(file);
+
+              if (pids[x] > 0)
+                break;
+            }
+            fclose(file);
+          }
+          global_sleep();
+        }
 
         bool was_started= false;
-        while (--counter)
+        if (pids[x] > 0)
         {
-          int memcached_pid;
-
-          FILE *file;
-          file= fopen(buffer, "r");
-          if (file == NULL)
+          counter= 30;
+          while (--counter)
           {
-#ifndef WIN32
-            struct timespec req= { .tv_sec= 0, .tv_nsec= 5000 };
-            nanosleep(&req, NULL);
-#endif
-            continue;
+            if (kill(pids[x], 0) == 0)
+            {
+              was_started= true;
+              break;
+            }
+            global_sleep();
           }
-          char *found= fgets(buffer, sizeof(buffer), file);
-          if (!found)
-            continue;
-          
-          // Yes, we currently pitch this and don't make use of it.
-          memcached_pid= atoi(buffer);
-          fclose(file);
-          was_started= true;
-          break;
         }
 
         if (was_started == false)
         {
-          fprintf(stderr, "Failed to open buffer %s\n", buffer);
+          fprintf(stderr, "Failed to open buffer %s(%d)\n", buffer, pids[x]);
+          for (uint32_t y= 0; y < construct->count; y++)
+          {
+            if (pids[y] > 0)
+              kill(pids[y], SIGTERM);
+          }
           abort();
         }
       }
+      free(pids);
 
       construct->server_list= strdup(server_string_buffer);
     }
@@ -206,7 +230,7 @@ void server_shutdown(server_startup_st *construct)
     for (uint32_t x= 0; x < construct->count; x++)
     {
       char file_buffer[PATH_MAX]; /* Nothing special for number */
-      snprintf(file_buffer, sizeof(file_buffer), "/tmp/%umemc.pid", x);
+      snprintf(file_buffer, sizeof(file_buffer), PID_FILE_BASE, x);
       kill_file(file_buffer);
     }
 
