@@ -303,6 +303,7 @@ static enum test_return retry_read(void *buf, size_t len)
     ssize_t nr= timeout_io_op(sock, POLLIN, ((char*) buf) + offset, len - offset);
     switch (nr) {
     case -1 :
+       fprintf(stderr, "Errno: %d %s\n", get_socket_errno(), strerror(errno));
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
     case 0:
@@ -321,7 +322,7 @@ static enum test_return retry_read(void *buf, size_t len)
  */
 static enum test_return recv_packet(response *rsp)
 {
-  execute(retry_read(rsp, sizeof (protocol_binary_response_no_extras)));
+  execute(retry_read(rsp, sizeof(protocol_binary_response_no_extras)));
 
   /* Fix the byte order in the packet header */
   rsp->plain.message.header.response.keylen=
@@ -693,10 +694,12 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
   cmd.plain.message.header.request.cas=
           htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
+  execute(send_binary_noop());
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS));
+  execute(receive_binary_noop());
 
-  return test_binary_noop();
+  return TEST_PASS;
 }
 
 static enum test_return test_binary_set(void)
@@ -733,7 +736,9 @@ static enum test_return test_binary_add_impl(const char* key, uint8_t cc)
       else
         expected_result= PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
 
+      execute(send_binary_noop());
       execute(recv_packet(&rsp));
+      execute(receive_binary_noop());
       verify(validate_response_header(&rsp, cc, expected_result));
     }
     else
@@ -790,7 +795,9 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
       else
         expected_result=PROTOCOL_BINARY_RESPONSE_SUCCESS;
 
+      execute(send_binary_noop());
       execute(recv_packet(&rsp));
+      execute(receive_binary_noop());
       verify(validate_response_header(&rsp, cc, expected_result));
 
       if (ii == 0)
@@ -817,7 +824,9 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
   cmd.plain.message.header.request.cas=
           htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
+  execute(send_binary_noop());
   execute(recv_packet(&rsp));
+  execute(receive_binary_noop());
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS));
 
   return TEST_PASS;
@@ -841,8 +850,10 @@ static enum test_return test_binary_delete_impl(const char *key, uint8_t cc)
 
   /* The delete shouldn't work the first time, because the item isn't there */
   execute(send_packet(&cmd));
+  execute(send_binary_noop());
   execute(recv_packet(&rsp));
   verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_ENOENT));
+  execute(receive_binary_noop());
   execute(binary_set_item(key, key));
 
   /* The item should be present now, resend*/
