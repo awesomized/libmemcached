@@ -1869,8 +1869,10 @@ int main(int argc, char **argv)
   const char *hostname= "localhost";
   const char *port= "11211";
   int cmd;
+  bool prompt= false;
+  const char *testname= NULL;
 
-  while ((cmd= getopt(argc, argv, "t:vch:p:?")) != EOF)
+  while ((cmd= getopt(argc, argv, "t:vch:p:PT:?")) != EOF)
   {
     switch (cmd) {
     case 't':
@@ -1889,11 +1891,21 @@ int main(int argc, char **argv)
       break;
     case 'p': port= optarg;
       break;
+    case 'P': prompt= true;
+      break;
+    case 'T': testname= optarg;
+       break;
     default:
-      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n]\n"
+      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n]"
+              " [-P] [-T testname]'\n"
               "\t-c\tGenerate coredump if a test fails\n"
               "\t-v\tVerbose test output (print out the assertion)\n"
-              "\t-t n\tSet the timeout for io-operations to n seconds\n",
+              "\t-t n\tSet the timeout for io-operations to n seconds\n"
+              "\t-P\tPrompt the user before starting a test.\n"
+              "\t\t\t\"skip\" will skip the test\n"
+              "\t\t\t\"quit\" will terminate memcapable\n"
+              "\t\t\tEverything else will start the test\n"
+              "\t-T n\tJust run the test named n\n",
               argv[0]);
       return 1;
     }
@@ -1910,9 +1922,31 @@ int main(int argc, char **argv)
 
   for (int ii= 0; testcases[ii].description != NULL; ++ii)
   {
+    if (testname != NULL && strcmp(testcases[ii].description, testname) != 0)
+       continue;
+
     ++total;
     fprintf(stdout, "%-40s", testcases[ii].description);
     fflush(stdout);
+
+    if (prompt)
+    {
+      fprintf(stdout, "\nPress <return> when you are ready? ");
+      char buffer[80] = {0};
+      (void)fgets(buffer, sizeof(buffer), stdin);
+      if (strncmp(buffer, "skip", 4) == 0)
+      {
+        fprintf(stdout, "%-40s%s\n", testcases[ii].description,
+                status_msg[TEST_SKIP]);
+        fflush(stdout);
+        continue;
+      }
+      if (strncmp(buffer, "quit", 4) == 0)
+        exit(0);
+
+      fprintf(stdout, "%-40s", testcases[ii].description);
+      fflush(stdout);
+    }
 
     bool reconnect= false;
     enum test_return ret= testcases[ii].function();
