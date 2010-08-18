@@ -14,6 +14,10 @@ if BUILD_LIBMEMCACHEDUTIL
 TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 endif
 
+EXTRA_DIST+= \
+	     tests/cpp_example.cc \
+	     tests/output_plus.res
+
 noinst_HEADERS+= \
 		 tests/hash_results.h \
 		 tests/ketama_test_cases.h \
