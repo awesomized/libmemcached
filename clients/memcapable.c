@@ -1944,16 +1944,17 @@ int main(int argc, char **argv)
     {
       fprintf(stdout, "\nPress <return> when you are ready? ");
       char buffer[80] = {0};
-      (void)fgets(buffer, sizeof(buffer), stdin);
-      if (strncmp(buffer, "skip", 4) == 0)
-      {
-        fprintf(stdout, "%-40s%s\n", testcases[ii].description,
-                status_msg[TEST_SKIP]);
-        fflush(stdout);
-        continue;
+      if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+        if (strncmp(buffer, "skip", 4) == 0)
+        {
+          fprintf(stdout, "%-40s%s\n", testcases[ii].description,
+                  status_msg[TEST_SKIP]);
+          fflush(stdout);
+          continue;
+        }
+        if (strncmp(buffer, "quit", 4) == 0)
+          exit(0);
       }
-      if (strncmp(buffer, "quit", 4) == 0)
-        exit(0);
 
       fprintf(stdout, "%-40s", testcases[ii].description);
       fflush(stdout);
