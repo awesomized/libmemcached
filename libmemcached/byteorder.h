@@ -27,10 +27,13 @@
 #include "libmemcached/memcached.h"
 
 #ifndef HAVE_HTONLL
+#define ntohll(a) memcached_ntohll(a)
+#define htonll(a) memcached_htonll(a)
+
 LIBMEMCACHED_LOCAL
-uint64_t ntohll(uint64_t);
+uint64_t memcached_ntohll(uint64_t);
 LIBMEMCACHED_LOCAL
-uint64_t htonll(uint64_t);
+uint64_t memcached_htonll(uint64_t);
 #endif
 
 #ifdef linux
