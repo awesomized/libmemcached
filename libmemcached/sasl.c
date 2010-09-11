@@ -221,7 +221,7 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
                                                 const char *password)
 {
   if (ptr == NULL || username == NULL ||
-      password == NULL || ptr->sasl->callbacks != NULL)
+      password == NULL || ptr->sasl != NULL)
   {
     return MEMCACHED_FAILURE;
   }
