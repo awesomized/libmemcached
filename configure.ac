@@ -16,7 +16,7 @@ PANDORA_CANONICAL_TARGET
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=1:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=5:1:0
+MEMCACHED_LIBRARY_VERSION=6:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
