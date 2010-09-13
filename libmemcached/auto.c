@@ -60,7 +60,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
-  } 
+  }
   else if (! strncmp(buffer, "CLIENT_ERROR\r\n", 14))
   {
     *value= 0;
@@ -116,12 +116,12 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.body.initial= htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  struct __write_vector_st vector[]= 
+  struct libmemcached_io_vector_st vector[]=
   {
     { .length= sizeof(request.bytes), .buffer= request.bytes },
     { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
     { .length= key_length, .buffer= key }
-  }; 
+  };
 
   memcached_return_t rc;
   if ((rc= memcached_vdo(instance, vector, 3, true)) != MEMCACHED_SUCCESS)

@@ -17,14 +17,14 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_do(memcached_server_write_instance_st ptr, 
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
                                 const void *commmand,
                                 size_t command_length,
                                 bool with_flush);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
-                                 const struct __write_vector_st *vector, size_t count,
+                                 const struct libmemcached_io_vector_st *vector, size_t count,
                                  bool with_flush);
 
 #ifdef __cplusplus

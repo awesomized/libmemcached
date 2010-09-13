@@ -175,12 +175,12 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
       memcached_io_write(instance, NULL, 0, true);
   }
 
-  struct __write_vector_st vector[]= 
+  struct libmemcached_io_vector_st vector[]=
   {
     { .length= sizeof(request.bytes), .buffer= request.bytes},
     { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
     { .length= key_length, .buffer= key },
-  }; 
+  };
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
 

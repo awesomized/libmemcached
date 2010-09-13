@@ -258,11 +258,11 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
     request.message.header.request.keylen= htons((uint16_t)len);
     request.message.header.request.bodylen= htonl((uint32_t) len);
 
-    struct __write_vector_st vector[]= 
+    struct libmemcached_io_vector_st vector[]=
     {
       { .length= sizeof(request.bytes), .buffer= request.bytes },
       { .length= len, .buffer= args }
-    }; 
+    };
 
     if (memcached_vdo(instance, vector, 2, true) != MEMCACHED_SUCCESS)
     {
@@ -302,7 +302,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
         WATCHPOINT_ASSERT(0);
       }
     }
-    
+
     if (check && check->func)
     {
       size_t key_length= strlen(buffer);

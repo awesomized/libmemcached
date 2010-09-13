@@ -440,7 +440,7 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
 }
 
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
-                            const struct __write_vector_st *vector,
+                            const struct libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush)
 {
   ssize_t total= 0;
