@@ -124,7 +124,7 @@ struct memcached_st {
   memcached_trigger_key_fn get_key_failure;
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
-  struct memcached_sasl_st *sasl;
+  struct memcached_sasl_st sasl;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   struct {
     bool is_allocated:1;

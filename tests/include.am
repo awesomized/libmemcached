@@ -47,7 +47,11 @@ tests_testapp_DEPENDENCIES= \
 			    tests/libtest.la \
 			    libmemcached/libmemcachedinternal.la \
 			    $(TESTS_LDADDS)
-tests_testapp_LDADD= $(tests_testapp_DEPENDENCIES) $(LIBSASL)
+tests_testapp_LDADD= clients/libgenexec.la \
+		     tests/libserver.la \
+		     tests/libtest.la \
+		     libmemcached/libmemcachedinternal.la \
+		     $(TESTS_LDADDS) $(LIBSASL)
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)

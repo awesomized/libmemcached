@@ -5,13 +5,13 @@
  * Use and distribution licensed under the BSD license.  See
  * the COPYING file in the parent directory for full text.
  *
- * Summary: 
+ * Summary:
  *
  */
 
 #include "common.h"
 
-memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const void *command, 
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const void *command,
                                 size_t command_length, bool with_flush)
 {
   memcached_return_t rc;
@@ -51,7 +51,7 @@ memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const vo
 }
 
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
-                                 const struct __write_vector_st *vector, size_t count,
+                                 const struct libmemcached_io_vector_st *vector, size_t count,
                                  bool with_flush)
 {
   memcached_return_t rc;

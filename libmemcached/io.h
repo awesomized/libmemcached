@@ -40,7 +40,7 @@ struct udp_datagram_header_st
   uint16_t reserved;
 };
 
-struct __write_vector_st
+struct libmemcached_io_vector_st
 {
   size_t length;
   const void *buffer;
@@ -48,7 +48,7 @@ struct __write_vector_st
 
 LIBMEMCACHED_LOCAL
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
-                            const struct __write_vector_st *vector,
+                            const struct libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush);
 
 LIBMEMCACHED_LOCAL

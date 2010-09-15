@@ -155,12 +155,12 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     }
     else
     {
-      struct __write_vector_st vector[]= 
+      struct libmemcached_io_vector_st vector[]=
       {
         { .length= write_length, .buffer= buffer },
         { .length= value_length, .buffer= value },
         { .length= 2, .buffer= "\r\n" }
-      }; 
+      };
 
       if (ptr->flags.buffer_requests && verb == SET_OP)
       {
@@ -492,13 +492,13 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
   }
 
-  struct __write_vector_st vector[]= 
+  struct libmemcached_io_vector_st vector[]=
   {
     { .length= send_length, .buffer= request.bytes },
     { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
     { .length= key_length, .buffer= key },
     { .length= value_length, .buffer= value }
-  }; 
+  };
 
   /* write the header */
   memcached_return_t rc;

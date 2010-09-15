@@ -16,7 +16,7 @@
 #if defined(DEBUG)
 
 #ifdef TARGET_OS_LINUX
-static inline void __stack_dump(void)
+static inline void libmemcached_stack_dump(void)
 {
   void *array[10];
   int size;
@@ -35,12 +35,21 @@ static inline void __stack_dump(void)
   fflush(stderr);
 }
 
+#elif defined(__sun)
+#include <ucontext.h>
+
+static inline void libmemcached_stack_dump(void)
+{
+   fflush(stderr);
+   printstack(fileno(stderr));
+}
+
 #else
 
-static inline void __stack_dump(void)
+static inline void libmemcached_stack_dump(void)
 { }
 
-#endif // __stack_dump()
+#endif // libmemcached_stack_dump()
 
 #include <assert.h>
 
@@ -53,9 +62,9 @@ static inline void __stack_dump(void)
 #define WATCHPOINT_LABELED_NUMBER(A,B) do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s:%zu\n", __FILE__, __LINE__,__func__,(A),(size_t)(B));fflush(stdout); } while (0)
 #define WATCHPOINT_IF_LABELED_NUMBER(A,B,C) do { if(A) {fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s:%zu\n", __FILE__, __LINE__,__func__,(B),(size_t)(C));fflush(stdout);} } while (0)
 #define WATCHPOINT_ERRNO(A) do { fprintf(stderr, "\nWATCHPOINT %s:%d (%s) %s\n", __FILE__, __LINE__,__func__, strerror(A));fflush(stdout); } while (0)
-#define WATCHPOINT_ASSERT_PRINT(A,B,C) do { if(!(A)){fprintf(stderr, "\nWATCHPOINT ASSERT %s:%d (%s) ", __FILE__, __LINE__,__func__);fprintf(stderr, (B),(C));fprintf(stderr,"\n");fflush(stdout); __stack_dump(); } assert((A)); } while (0)
-#define WATCHPOINT_ASSERT(A) do { if (! (A)) {__stack_dump();} assert((A)); } while (0)
-#define WATCHPOINT_ASSERT_INITIALIZED(A) do { if (! (A)) { __stack_dump(); } assert(memcached_is_initialized((A))); } while (0);
+#define WATCHPOINT_ASSERT_PRINT(A,B,C) do { if(!(A)){fprintf(stderr, "\nWATCHPOINT ASSERT %s:%d (%s) ", __FILE__, __LINE__,__func__);fprintf(stderr, (B),(C));fprintf(stderr,"\n");fflush(stdout); libmemcached_stack_dump(); } assert((A)); } while (0)
+#define WATCHPOINT_ASSERT(A) do { if (! (A)) {libmemcached_stack_dump();} assert((A)); } while (0)
+#define WATCHPOINT_ASSERT_INITIALIZED(A) do { if (! (A)) { libmemcached_stack_dump(); } assert(memcached_is_initialized((A))); } while (0);
 #define WATCHPOINT_SET(A) do { A; } while(0);
 
 #else

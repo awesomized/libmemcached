@@ -9,10 +9,6 @@
 #ifndef HASHKIT_COMMON_H
 #define HASHKIT_COMMON_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "config.h"
 
 #include <assert.h>
@@ -22,6 +18,10 @@ extern "C" {
 #include <math.h>
 
 #include "hashkit.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 HASHKIT_LOCAL
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);

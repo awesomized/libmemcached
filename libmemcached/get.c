@@ -1,5 +1,5 @@
 /* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker 
+ * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
  * Use and distribution licensed under the BSD license.  See
@@ -227,13 +227,13 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     instance= memcached_server_instance_fetch(ptr, server_key);
 
-    struct __write_vector_st vector[]=  
-    { 
-      { .length= get_command_length, .buffer= get_command }, 
-      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key }, 
-      { .length= key_length[x], .buffer= keys[x] }, 
-      { .length= 1, .buffer= " " } 
-    };  
+    struct libmemcached_io_vector_st vector[]=
+    {
+      { .length= get_command_length, .buffer= get_command },
+      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+      { .length= key_length[x], .buffer= keys[x] },
+      { .length= 1, .buffer= " " }
+    };
 
 
     if (memcached_server_response_count(instance) == 0)
@@ -399,12 +399,12 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + ptr->prefix_key_length));
 
-    struct __write_vector_st vector[]= 
+    struct libmemcached_io_vector_st vector[]=
     {
       { .length= sizeof(request.bytes), .buffer= request.bytes },
       { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
       { .length= key_length[x], .buffer= keys[x] }
-    }; 
+    };
 
     if (memcached_io_writev(instance, vector, 3, flush) == -1)
     {
@@ -533,12 +533,12 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * that we might have processed some of the responses etc. For now,
        * just make sure we work _correctly_
      */
-      struct __write_vector_st vector[]= 
+      struct libmemcached_io_vector_st vector[]=
       {
         { .length= sizeof(request.bytes), .buffer= request.bytes },
         { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
         { .length= key_length[x], .buffer= keys[x] }
-      }; 
+      };
 
       if (memcached_io_writev(instance, vector, 3, true) == -1)
       {

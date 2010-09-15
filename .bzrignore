@@ -72,6 +72,7 @@ libmemcached-0.37-1.x86_64.rpm
 libmemcached-?.??/
 libmemcached.pop
 libmemcached/configure.h
+libmemcached/dtrace_probes.h
 libmemcached/memcached_configure.h
 libmemcached_examples.pop
 libmemcachedutil.pop

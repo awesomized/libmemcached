@@ -80,7 +80,6 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
         return MEMCACHED_ERRNO;
       }
     }
-    WATCHPOINT_ASSERT(0); // Programming error
   }
 
   // This should only be possible from ERESTART or EINTR;
@@ -537,7 +536,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    if (ptr->fd != INVALID_SOCKET && ptr->root->sasl && ptr->root->sasl->callbacks)
+    if (ptr->fd != INVALID_SOCKET && ptr->root->sasl.callbacks)
     {
       rc= memcached_sasl_authenticate_connection(ptr);
       if (rc != MEMCACHED_SUCCESS)
