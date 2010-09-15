@@ -83,11 +83,11 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
 %{_libdir}/libhashkit.so.0.0.0
-%{_libdir}/libmemcached.so.5.0.2
+%{_libdir}/libmemcached.so.6.0.0
 %{_libdir}/libmemcachedutil.so.1.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
 %{_libdir}/libhashkit.so.0
-%{_libdir}/libmemcached.so.5
+%{_libdir}/libmemcached.so.6
 %{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.1
 %{_mandir}/man1/memcapable.1.gz
