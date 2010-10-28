@@ -262,6 +262,11 @@ in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
 When enabled a host which is problematic will only be checked for usage
 based on the amount of time set by this behavior.
 
+=item MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
+
+When enabled the prefix key will be added to the key when determining
+server by hash.
+
 =back
 
 =head1 RETURN
