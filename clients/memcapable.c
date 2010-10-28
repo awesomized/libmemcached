@@ -1316,6 +1316,41 @@ static enum test_return test_ascii_add_noreply(void)
   return test_ascii_add_impl("test_ascii_add_noreply", true);
 }
 
+static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_t *ndata)
+{
+  char buffer[1024];
+
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "VALUE ", 6) == 0);
+  char *end= strchr(buffer + 6, ' ');
+  verify(end != NULL);
+  *end= '\0';
+  *key= strdup(buffer + 6);
+  verify(*key != NULL);
+  char *ptr= end + 1;
+
+  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(ptr != end);
+  verify(val == 0);
+  verify(end != NULL);
+  *ndata = (ssize_t)strtoul(end, &end, 10); /* size */
+  verify(ptr != end);
+  verify(end != NULL);
+  while (*end != '\n' && isspace(*end))
+    ++end;
+  verify(*end == '\n');
+
+  *value= malloc((size_t)*ndata);
+  verify(*value != NULL);
+
+  execute(retry_read(*value, (size_t)*ndata));
+
+  execute(retry_read(buffer, 2));
+  verify(memcmp(buffer, "\r\n", 2) == 0);
+
+  return TEST_PASS;
+}
+
 static enum test_return ascii_get_value(const char *key, const char *value)
 {
 
@@ -1584,25 +1619,59 @@ static enum test_return test_ascii_gets(void)
 
 static enum test_return test_ascii_mget(void)
 {
-  execute(ascii_set_item("test_ascii_mget1", "value"));
-  execute(ascii_set_item("test_ascii_mget2", "value"));
-  execute(ascii_set_item("test_ascii_mget3", "value"));
-  execute(ascii_set_item("test_ascii_mget4", "value"));
-  execute(ascii_set_item("test_ascii_mget5", "value"));
+  const uint32_t nkeys= 5;
+  const char * const keys[]= {
+    "test_ascii_mget1",
+    "test_ascii_mget2",
+    /* test_ascii_mget_3 does not exist :) */
+    "test_ascii_mget4",
+    "test_ascii_mget5",
+    "test_ascii_mget6"
+  };
 
+  for (uint32_t x= 0; x < nkeys; ++x)
+    execute(ascii_set_item(keys[x], "value"));
+
+  /* Ask for a key that doesn't exist as well */
   execute(send_string("get test_ascii_mget1 test_ascii_mget2 test_ascii_mget3 "
                       "test_ascii_mget4 test_ascii_mget5 "
                       "test_ascii_mget6\r\n"));
-  execute(ascii_get_value("test_ascii_mget1", "value"));
-  execute(ascii_get_value("test_ascii_mget2", "value"));
-  execute(ascii_get_value("test_ascii_mget3", "value"));
-  execute(ascii_get_value("test_ascii_mget4", "value"));
-  execute(ascii_get_value("test_ascii_mget5", "value"));
+
+  char *returned[nkeys];
+
+  for (uint32_t x= 0; x < nkeys; ++x)
+  {
+    ssize_t nbytes = 0;
+    char *v= NULL;
+    execute(ascii_get_unknown_value(&returned[x], &v, &nbytes));
+    verify(nbytes == 5);
+    verify(memcmp(v, "value", 5) == 0);
+    free(v);
+  }
 
   char buffer[5];
   execute(retry_read(buffer, 5));
   verify(memcmp(buffer, "END\r\n", 5) == 0);
- return TEST_PASS;
+
+  /* verify that we got all the keys we expected */
+  for (uint32_t x= 0; x < nkeys; ++x)
+  {
+    bool found= false;
+    for (uint32_t y= 0; y < nkeys; ++y)
+    {
+      if (strcmp(keys[x], returned[y]) == 0)
+      {
+        found = true;
+        break;
+      }
+    }
+    verify(found);
+  }
+
+  for (uint32_t x= 0; x < nkeys; ++x)
+    free(returned[x]);
+
+  return TEST_PASS;
 }
 
 static enum test_return test_ascii_incr_impl(const char* key, bool noreply)
