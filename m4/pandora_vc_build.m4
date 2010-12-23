@@ -1,5 +1,5 @@
-dnl  Copyright (C) 2009 Sun Microsystems
-dnl This file is free software; Sun Microsystems
+dnl  Copyright (C) 2009 Sun Microsystems, Inc.
+dnl This file is free software; Sun Microsystems, Inc.
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
@@ -53,6 +53,9 @@ AC_DEFUN([PANDORA_BUILDING_FROM_VC],[
         PANDORA_VC_REVNO="${PANDORA_BZR_REVNO}"
         PANDORA_VC_REVID=`bzr log -r-1 --show-ids | grep revision-id | cut -f2 -d' ' | head -1`
         PANDORA_VC_BRANCH=`bzr nick`
+        if test "x${vcs_changelog}" = "xyes"; then
+          bzr log --gnu > ChangeLog
+        fi
       fi
     fi
 
