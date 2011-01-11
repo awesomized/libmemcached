@@ -185,3 +185,4 @@ tests/testhashkit
 tests/testplus
 tests/testudp
 unittests/unittests
+config/top.h

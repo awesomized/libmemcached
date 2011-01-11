@@ -11,7 +11,7 @@ AC_INIT([libmemcached],[0.44],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 
-PANDORA_CANONICAL_TARGET
+PANDORA_CANONICAL_TARGET(no-vc-changelog)
 
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=1:0:0

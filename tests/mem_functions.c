@@ -5437,7 +5437,7 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   memcached_server_instance_st instance_one;
   memcached_server_instance_st instance_two;
 
-  if (memcached_server_count(memc) < 3 || pre_replication(memc) != MEMCACHED_SUCCESS)
+  if (memcached_server_count(memc) < 3 || pre_replication(memc) != TEST_SUCCESS)
     return TEST_SKIPPED;
 
   memcached_return_t rc;

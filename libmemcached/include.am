@@ -161,6 +161,7 @@ endif
 if DTRACE_NEEDS_OBJECTS
 libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
 libmemcached_libmemcached_la_DEPENDENCIES += libmemcached/libmemcached_probes.o
+libmemcached_libmemcached_la_LIBADD += libmemcached/libmemcached_probes.o
 CLEANFILES+= libmemcached/libmemcached_probes.o
 endif
 
@@ -172,5 +173,5 @@ libmemcached/dtrace_probes.h: libmemcached/libmemcached_probes.d
 libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d ${libmemcached_libmemcached_la_OBJECTS} config.h
 
 .d.o:
-	$(DTRACE) $(DTRACEFLAGS) -o libmemcached/libmemcached_probes.o -G -s ${top_srcdir}/libmemcached/libmemcached_probes.d `grep '^pic_object' ${top_builddir}/libmemcached/*.lo | cut -f 2 -d\' | sed "s/^/${top_builddir}\/libmemcached\//"`
+	$(DTRACE) $(DTRACEFLAGS) -o $@ -G -s $< `grep '^pic_object' ${top_builddir}/libmemcached/*.lo | cut -f 2 -d\' | sed "s/^/${top_builddir}\/libmemcached\//"`
 
