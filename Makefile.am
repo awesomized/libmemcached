@@ -93,5 +93,6 @@ lcov-clean: clean
 	find . -name '*.gcno' | xargs rm -f
 	find . -name '*.gcda' | xargs rm -f
 
+CLEANFILES+= config/top.h
 
 
