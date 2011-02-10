@@ -29,7 +29,8 @@ static memcached_return_t check_server_version(const memcached_st *ptr __attribu
   /* Do Nothing */
   struct local_context *check= (struct local_context *)context;
 
-  if (instance->major_version >= check->major_version &&
+  if (instance->major_version != UINT8_MAX &&
+      instance->major_version >= check->major_version &&
       instance->minor_version >= check->minor_version &&
       instance->micro_version >= check->micro_version )
   {
