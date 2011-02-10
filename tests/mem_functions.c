@@ -97,6 +97,23 @@ static memcached_return_t  server_display_function(const memcached_st *ptr __att
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return_t dump_server_information(const memcached_st *ptr __attribute__((unused)),
+                                                  const memcached_server_st *instance,
+                                                  void *context)
+{
+  /* Do Nothing */
+  FILE *stream= (FILE *)context;
+
+  fprintf(stream, "Memcached Server: %s %u Version %d.%d.%d\n", 
+          memcached_server_name(instance),
+          memcached_server_port(instance),
+          instance->major_version,
+          instance->minor_version,
+          instance->micro_version);
+
+  return MEMCACHED_SUCCESS;
+}
+
 static test_return_t server_sort_test(memcached_st *ptr __attribute__((unused)))
 {
   size_t bigger= 0; /* Prime the value for the test_true in server_display_function */
@@ -4419,6 +4436,17 @@ static test_return_t util_version_test(memcached_st *memc)
   test_true(if_successful == true);
 
   if_successful= libmemcached_util_version_check(memc, 9, 9, 9);
+
+  if (! if_successful)
+  {
+    memcached_server_fn callbacks[1];
+    memcached_version(memc);
+
+    memcached_version(memc);
+
+    callbacks[0]= dump_server_information;
+    memcached_server_cursor(memc, callbacks, (void *)stderr,  1);
+  }
   test_true(if_successful == false);
 
   memcached_server_instance_st instance=
@@ -5036,7 +5064,7 @@ static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
 
   test_false(value);
   test_true(len == 0);
-  test_true(rc == MEMCACHED_ERRNO);
+  test_false(rc == MEMCACHED_SUCCESS);
 
   memcached_free(tl_memc_h);
 
@@ -5093,7 +5121,7 @@ static test_return_t memcached_get_by_key_MEMCACHED_ERRNO(memcached_st *memc)
 
   test_false(value);
   test_true(len == 0);
-  test_true(rc == MEMCACHED_ERRNO);
+  test_false(rc == MEMCACHED_SUCCESS);
 
   memcached_free(tl_memc_h);
 
