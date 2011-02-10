@@ -106,12 +106,12 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     {
       int check_length;
       check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                    "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
+                                    "%s %.*s%.*s %u %llu %lu %llu%s\r\n",
                                     storage_op_string(verb),
                                     (int)ptr->prefix_key_length,
                                     ptr->prefix_key,
                                     (int)key_length, key, flags,
-                                    (unsigned long long)expiration, value_length,
+                                    (unsigned long long)expiration, (unsigned long)value_length,
                                     (unsigned long long)cas,
                                     (ptr->flags.no_reply) ? " noreply" : "");
       if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || check_length < 0)
@@ -144,9 +144,9 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
       write_length= (size_t)(buffer_ptr - buffer);
       int check_length;
       check_length= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer),
-                                    "%u %llu %zu%s\r\n",
+                                    "%u %llu %lu%s\r\n",
                                     flags,
-                                    (unsigned long long)expiration, value_length,
+                                    (unsigned long long)expiration, (unsigned long)value_length,
                                     ptr->flags.no_reply ? " noreply" : "");
       if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer) || check_length < 0)
       {
