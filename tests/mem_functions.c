@@ -4439,6 +4439,8 @@ static test_return_t util_version_test(memcached_st *memc)
 
 //  if (! if_successful)
   {
+    fprintf(stderr, "\n----------------------------------------------------------------------\n");
+    fprintf(stderr, "\nDumping Server Information\n");
     memcached_server_fn callbacks[1];
     memcached_version(memc);
 
@@ -4446,6 +4448,7 @@ static test_return_t util_version_test(memcached_st *memc)
 
     callbacks[0]= dump_server_information;
     memcached_server_cursor(memc, callbacks, (void *)stderr,  1);
+    fprintf(stderr, "\n----------------------------------------------------------------------\n");
   }
   test_true(if_successful == false);
 

@@ -48,6 +48,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     rrc= memcached_do(instance, command, send_length, true);
     if (rrc != MEMCACHED_SUCCESS)
     {
+      instance->major_version= instance->minor_version= instance->micro_version= 0;
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -55,6 +56,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     rrc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rrc != MEMCACHED_SUCCESS)
     {
+      instance->major_version= instance->minor_version= instance->micro_version= 0;
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -64,12 +66,33 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     response_ptr++;
 
     instance->major_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    if (errno == ERANGE)
+    {
+      instance->major_version= instance->minor_version= instance->micro_version= 0;
+      rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
+
     response_ptr= index(response_ptr, '.');
     response_ptr++;
+
     instance->minor_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    if (errno == ERANGE)
+    {
+      instance->major_version= instance->minor_version= instance->micro_version= 0;
+      rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
+
     response_ptr= index(response_ptr, '.');
     response_ptr++;
     instance->micro_version= (uint8_t)strtol(response_ptr, (char **)NULL, 10);
+    if (errno == ERANGE)
+    {
+      instance->major_version= instance->minor_version= instance->micro_version= 0;
+      rc= MEMCACHED_SOME_ERRORS;
+      continue;
+    }
   }
 
   return rc;

@@ -47,10 +47,12 @@ bool libmemcached_util_version_check(memcached_st *memc,
                                      uint8_t micro_version)
 {
   memcached_server_fn callbacks[1];
-  memcached_version(memc);
+  memcached_return_t rc= memcached_version(memc);
+
+  if (rc != MEMCACHED_SUCCESS)
+    return false;
 
   struct local_context check= { .major_version= major_version, .minor_version= minor_version, .micro_version= micro_version, .truth= true };
-  memcached_version(memc);
 
   callbacks[0]= check_server_version;
   memcached_server_cursor(memc, callbacks, (void *)&check,  1);
