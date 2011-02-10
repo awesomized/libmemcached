@@ -32,9 +32,9 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->state.is_dead= false;
   WATCHPOINT_SET(self->io_wait_count.read= 0);
   WATCHPOINT_SET(self->io_wait_count.write= 0);
-  self->major_version= 0;
-  self->micro_version= 0;
-  self->minor_version= 0;
+  self->major_version= UINT8_MAX;
+  self->micro_version= UINT8_MAX;
+  self->minor_version= UINT8_MAX;
   self->type= type;
   self->read_ptr= self->read_buffer;
   self->cached_server_error= NULL;

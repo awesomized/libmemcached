@@ -4440,11 +4440,8 @@ static test_return_t util_version_test(memcached_st *memc)
 //  if (! if_successful)
   {
     fprintf(stderr, "\n----------------------------------------------------------------------\n");
-    fprintf(stderr, "\nDumping Server Information\n");
+    fprintf(stderr, "\nDumping Server Information\n\n");
     memcached_server_fn callbacks[1];
-    memcached_version(memc);
-
-    memcached_version(memc);
 
     callbacks[0]= dump_server_information;
     memcached_server_cursor(memc, callbacks, (void *)stderr,  1);
@@ -5613,19 +5610,19 @@ static test_return_t regression_bug_463297(memcached_st *memc)
     memcached_return_t rc= memcached_delete(memc, "foo", 3, 1);
 
     /* but there is a bug in some of the memcached servers (1.4) that treats
-     * the counter as noreply so it doesn't send the proper error message
-   */
-    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+     * the counter as noreply so it doesn't send the proper error message 
+     */
+    test_true_got(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR || rc == MEMCACHED_INVALID_ARGUMENTS, memcached_strerror(NULL, rc));
 
     /* And buffered mode should be disabled and we should get protocol error */
     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1) == MEMCACHED_SUCCESS);
     rc= memcached_delete(memc, "foo", 3, 1);
-    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+    test_true_got(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR || rc == MEMCACHED_INVALID_ARGUMENTS, memcached_strerror(NULL, rc));
 
     /* Same goes for noreply... */
     test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1) == MEMCACHED_SUCCESS);
     rc= memcached_delete(memc, "foo", 3, 1);
-    test_true(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR);
+    test_true_got(rc == MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_NOTFOUND || rc == MEMCACHED_CLIENT_ERROR || rc == MEMCACHED_INVALID_ARGUMENTS, memcached_strerror(NULL, rc));
 
     /* but a normal request should go through (and be buffered) */
     test_true((rc= memcached_delete(memc, "foo", 3, 0)) == MEMCACHED_BUFFERED);

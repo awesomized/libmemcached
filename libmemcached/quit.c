@@ -71,6 +71,10 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   ptr->options.is_shutting_down= false;
   memcached_server_response_reset(ptr);
 
+  // We reset the version so that if we end up talking to a different server
+  // we don't have stale server version information.
+  ptr->major_version= ptr->minor_version= ptr->micro_version= UINT8_MAX;
+
   if (io_death)
   {
     ptr->server_failure_counter++;

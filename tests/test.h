@@ -153,7 +153,7 @@ const char *test_strerror(test_return_t code);
 do \
 { \
   if (1) { \
-    fprintf(stderr, "\nFailed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\nFailed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -163,7 +163,17 @@ do \
 do \
 { \
   if (! (A)) { \
-    fprintf(stderr, "\nAssertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\nAssertion failed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_true_got(A,B) \
+do \
+{ \
+  if (! (A)) { \
+    fprintf(stderr, "\nAssertion failed at %s:%d: \"%s\" received \"%s\"\n", __FILE__, __LINE__, #A, (B));\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -173,7 +183,7 @@ do \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "\nAssertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\nAssertion failed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
     create_core(); \
     return TEST_FAILURE; \
   } \
