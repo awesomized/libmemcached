@@ -227,6 +227,12 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
     return NULL;
   }
 
+  if (length >= SMALL_STRING_LEN || length < 0)
+  {
+    *error= MEMCACHED_FAILURE;
+    return NULL;
+  }
+
   ret= libmemcached_malloc(ptr, (size_t) (length + 1));
   memcpy(ret, buffer, (size_t) length);
   ret[length]= '\0';
@@ -329,7 +335,7 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
 {
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  size_t send_length;
+  int send_length;
 
   if (args)
     send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
@@ -338,10 +344,10 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
     send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                    "stats\r\n");
 
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(instance, buffer, send_length, true);
+  rc= memcached_do(instance, buffer, (size_t)send_length, true);
   if (rc != MEMCACHED_SUCCESS)
     goto error;
 

@@ -18,7 +18,6 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                                          uint64_t offset,
                                          uint64_t *value)
 {
-  size_t send_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
@@ -34,16 +33,17 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
-  send_length= (size_t)snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                "%s %.*s%.*s %" PRIu64 "%s\r\n", verb,
-                                (int)ptr->prefix_key_length,
-                                ptr->prefix_key,
-                                (int)key_length, key,
-                                offset, no_reply ? " noreply" : "");
-  unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  int send_length;
+  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                        "%s %.*s%.*s %" PRIu64 "%s\r\n", verb,
+                        (int)ptr->prefix_key_length,
+                        ptr->prefix_key,
+                        (int)key_length, key,
+                        offset, no_reply ? " noreply" : "");
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     return MEMCACHED_WRITE_FAILURE;
 
-  rc= memcached_do(instance, buffer, send_length, true);
+  rc= memcached_do(instance, buffer, (size_t)send_length, true);
   if (no_reply || rc != MEMCACHED_SUCCESS)
     return rc;
 

@@ -206,15 +206,20 @@ static memcached_return_t update_continuum(memcached_st *ptr)
            pointer_index++)
       {
         char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
-        size_t sort_host_length;
+        int sort_host_length;
 
         // Spymemcached ketema key format is: hostname/ip:port-index
         // If hostname is not available then: /ip:port-index
-        sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                            "/%s:%u-%u",
-                                            list[host_index].hostname,
-                                            (uint32_t)list[host_index].port,
-                                            pointer_index);
+        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                   "/%s:%u-%u",
+                                   list[host_index].hostname,
+                                   (uint32_t)list[host_index].port,
+                                   pointer_index);
+
+        if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
+        {
+          return MEMCACHED_FAILURE;
+        }
 #ifdef DEBUG
         printf("update_continuum: key is %s\n", sort_host);
 #endif
@@ -225,14 +230,14 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, sort_host_length, x);
+             value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, sort_host_length);
+          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }
@@ -245,22 +250,27 @@ static memcached_return_t update_continuum(memcached_st *ptr)
            pointer_index++)
       {
         char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
-        size_t sort_host_length;
+        int sort_host_length;
 
         if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
         {
-          sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                              "%s-%u",
-                                              list[host_index].hostname,
-                                              pointer_index - 1);
+          sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                     "%s-%u",
+                                     list[host_index].hostname,
+                                     pointer_index - 1);
         }
         else
         {
-          sort_host_length= (size_t) snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
-                                              "%s:%u-%u",
-                                              list[host_index].hostname,
-                                              (uint32_t)list[host_index].port,
-                                              pointer_index - 1);
+          sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+                                     "%s:%u-%u",
+                                     list[host_index].hostname,
+                                     (uint32_t)list[host_index].port,
+                                     pointer_index - 1);
+        }
+
+        if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
+        {
+          return MEMCACHED_FAILURE;
         }
 
         WATCHPOINT_ASSERT(sort_host_length);
@@ -269,14 +279,14 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, sort_host_length, x);
+             value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
              ptr->continuum[continuum_index].index= host_index;
              ptr->continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, sort_host_length);
+          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
           ptr->continuum[continuum_index].index= host_index;
           ptr->continuum[continuum_index++].value= value;
         }

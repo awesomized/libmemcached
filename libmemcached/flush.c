@@ -21,29 +21,37 @@ memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
 static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
                                                   time_t expiration)
 {
-  unsigned int x;
-  size_t send_length;
-  memcached_return_t rc;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
   unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  for (x= 0; x < memcached_server_count(ptr); x++)
+  for (unsigned int x= 0; x < memcached_server_count(ptr); x++)
   {
+    memcached_return_t rc;
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
     bool no_reply= ptr->flags.no_reply;
     memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
+    int send_length;
     if (expiration)
-      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                                     "flush_all %llu%s\r\n",
-                                     (unsigned long long)expiration, no_reply ? " noreply" : "");
+    {
+      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                            "flush_all %llu%s\r\n",
+                            (unsigned long long)expiration, no_reply ? " noreply" : "");
+    }
     else
-      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                                     "flush_all%s\r\n", no_reply ? " noreply" : "");
+    {
+      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+                            "flush_all%s\r\n", no_reply ? " noreply" : "");
+    }
 
-    rc= memcached_do(instance, buffer, send_length, true);
+    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
+    {
+      return MEMCACHED_FAILURE;
+    }
+
+    rc= memcached_do(instance, buffer, (size_t)send_length, true);
 
     if (rc == MEMCACHED_SUCCESS && !no_reply)
       (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);

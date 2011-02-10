@@ -104,15 +104,24 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
 
     if (cas)
     {
-      write_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                      "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
-                                      storage_op_string(verb),
-                                      (int)ptr->prefix_key_length,
-                                      ptr->prefix_key,
-                                      (int)key_length, key, flags,
-                                      (unsigned long long)expiration, value_length,
-                                      (unsigned long long)cas,
-                                      (ptr->flags.no_reply) ? " noreply" : "");
+      int check_length;
+      check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                                    "%s %.*s%.*s %u %llu %zu %llu%s\r\n",
+                                    storage_op_string(verb),
+                                    (int)ptr->prefix_key_length,
+                                    ptr->prefix_key,
+                                    (int)key_length, key, flags,
+                                    (unsigned long long)expiration, value_length,
+                                    (unsigned long long)cas,
+                                    (ptr->flags.no_reply) ? " noreply" : "");
+      if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || check_length < 0)
+      {
+        rc= MEMCACHED_WRITE_FAILURE;
+        memcached_io_reset(instance);
+
+        return rc;
+      }
+      write_length= check_length;
     }
     else
     {
@@ -133,11 +142,22 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
       buffer_ptr++;
 
       write_length= (size_t)(buffer_ptr - buffer);
-      write_length+= (size_t) snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                       "%u %llu %zu%s\r\n",
-                                       flags,
-                                       (unsigned long long)expiration, value_length,
-                                       ptr->flags.no_reply ? " noreply" : "");
+      int check_length;
+      check_length= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer),
+                                    "%u %llu %zu%s\r\n",
+                                    flags,
+                                    (unsigned long long)expiration, value_length,
+                                    ptr->flags.no_reply ? " noreply" : "");
+      if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer) || check_length < 0)
+      {
+        rc= MEMCACHED_WRITE_FAILURE;
+        memcached_io_reset(instance);
+
+        return rc;
+      }
+
+      write_length+= (size_t)check_length;
+      WATCHPOINT_ASSERT(write_length < MEMCACHED_DEFAULT_COMMAND_SIZE);
     }
 
     if (ptr->flags.use_udp && ptr->flags.buffer_requests)
