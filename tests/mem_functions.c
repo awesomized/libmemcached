@@ -4437,7 +4437,7 @@ static test_return_t util_version_test(memcached_st *memc)
 
   if_successful= libmemcached_util_version_check(memc, 9, 9, 9);
 
-  if (! if_successful)
+//  if (! if_successful)
   {
     memcached_server_fn callbacks[1];
     memcached_version(memc);
