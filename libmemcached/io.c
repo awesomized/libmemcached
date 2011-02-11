@@ -408,7 +408,6 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       sent_length= io_flush(ptr, &rc);
       if (sent_length == -1)
       {
-        fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
         return -1;
       }
 
@@ -658,7 +657,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       default:
         memcached_quit_server(ptr, true);
         *error= MEMCACHED_ERRNO;
-        fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
+        fprintf(stderr, "%s:%d (%s)(%s)\n", __FILE__, __LINE__,__func__, strerror(errno));fflush(stdout);
         return -1;
       }
     }
