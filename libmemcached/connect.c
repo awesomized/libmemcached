@@ -19,16 +19,12 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
   fds[0].fd = ptr->fd;
   fds[0].events = POLLOUT;
 
-  int timeout= ptr->root->connect_timeout;
-  if (ptr->root->flags.no_block == true)
-    timeout= -1;
-
   int error;
   size_t loop_max= 5;
 
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
-    error= poll(fds, 1, timeout);
+    error= poll(fds, 1, ptr->root->connect_timeout);
 
     switch (error)
     {

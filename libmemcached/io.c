@@ -55,14 +55,10 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
       return MEMCACHED_FAILURE;
   }
 
-  int timeout= ptr->root->poll_timeout;
-  if (ptr->root->flags.no_block == false)
-    timeout= -1;
-
   size_t loop_max= 5;
   while (--loop_max) // While loop is for ERESTART or EINTR
   {
-    error= poll(&fds, 1, timeout);
+    error= poll(&fds, 1, ptr->root->poll_timeout);
 
     switch (error)
     {
