@@ -1,3 +1,6 @@
+  * Bug lp:633247
+
+
 0.45 Tue Feb  8 16:02:06 PST 2011
   * Add support for systemtap
 

@@ -92,10 +92,10 @@ static void send_command_usage(memcached_protocol_client_st *client)
  */
 static protocol_binary_response_status
 ascii_version_response_handler(const void *cookie,
-                         const void *text,
-                         uint32_t textlen)
+                               const void *text,
+                               uint32_t textlen)
 {
-  memcached_protocol_client_st *client= (void*)cookie;
+  memcached_protocol_client_st *client= (memcached_protocol_client_st*)cookie;
   spool_string(client, "VERSION ");
   client->root->spool(client, text, textlen);
   spool_string(client, "\r\n");

@@ -95,7 +95,9 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
   char str_port[NI_MAXSERV];
   uint32_t counter= 5;
 
-  snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
+  int length= snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
+  if (length >= NI_MAXSERV || length < 0)
+    return MEMCACHED_FAILURE;
 
   memset(&hints, 0, sizeof(hints));
 

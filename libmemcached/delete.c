@@ -20,7 +20,6 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
                                            time_t expiration)
 {
   bool to_write;
-  size_t send_length;
   memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
@@ -56,6 +55,8 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   }
   else
   {
+    int send_length;
+
     unlikely (expiration)
     {
        if ((instance->major_version == 1 &&
@@ -89,25 +90,25 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
                 no_reply= false;
              }
           }
-          send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                         "delete %.*s%.*s %u%s\r\n",
-                                         (int)ptr->prefix_key_length,
-                                         ptr->prefix_key,
-                                         (int) key_length, key,
-                                         (uint32_t)expiration,
-                                         no_reply ? " noreply" :"" );
+          send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                                "delete %.*s%.*s %u%s\r\n",
+                                (int)ptr->prefix_key_length,
+                                ptr->prefix_key,
+                                (int) key_length, key,
+                                (uint32_t)expiration,
+                                no_reply ? " noreply" :"" );
        }
     }
     else
     {
-      send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                     "delete %.*s%.*s%s\r\n",
-                                     (int)ptr->prefix_key_length,
-                                     ptr->prefix_key,
-                                     (int)key_length, key, no_reply ? " noreply" :"");
+      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                            "delete %.*s%.*s%s\r\n",
+                            (int)ptr->prefix_key_length,
+                            ptr->prefix_key,
+                            (int)key_length, key, no_reply ? " noreply" :"");
     }
 
-    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     {
       rc= MEMCACHED_WRITE_FAILURE;
       goto error;
@@ -121,7 +122,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
         memcached_io_write(instance, NULL, 0, true);
     }
 
-    rc= memcached_do(instance, buffer, send_length, to_write);
+    rc= memcached_do(instance, buffer, (size_t)send_length, to_write);
   }
 
   if (rc != MEMCACHED_SUCCESS)

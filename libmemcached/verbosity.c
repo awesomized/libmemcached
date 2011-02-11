@@ -41,17 +41,17 @@ static memcached_return_t _set_verbosity(const memcached_st *ptr __attribute__((
 
 memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
 {
-  size_t send_length;
+  int send_length;
   memcached_server_fn callbacks[1];
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
                                  "verbosity %u\r\n", verbosity);
-  unlikely (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     return MEMCACHED_WRITE_FAILURE;
 
-  struct context_st context = { .length= send_length, .buffer= buffer };
+  struct context_st context = { .length= (size_t)send_length, .buffer= buffer };
 
   callbacks[0]= _set_verbosity;
 
