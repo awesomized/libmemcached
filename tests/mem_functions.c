@@ -1031,7 +1031,7 @@ static test_return_t set_test3(memcached_st *memc)
   {
     char key[16];
 
-    sprintf(key, "foo%u", x);
+    snprintf(key, sizeof(key), "foo%u", x);
 
     rc= memcached_set(memc, key, strlen(key),
                       value, value_length,
@@ -3162,7 +3162,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
   for (int x= 0; x < 10000; x++)
   {
     char key[10];
-    sprintf(key, "%d", x);
+    snprintf(key, sizeof(key), "%d", x);
 
     uint32_t server_idx = memcached_generate_hash(memc, key, strlen(key));
     char *hostname = memc->hosts[server_idx].hostname;
@@ -3622,7 +3622,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  if (libmemcached_util_version_check(memc_clone, 1, 3, 0))
+  if (libmemcached_util_version_check(memc_clone, 1, 4, 4))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
@@ -3748,7 +3748,7 @@ static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
 
-  if (libmemcached_util_version_check(memc, 1, 3, 0))
+  if (libmemcached_util_version_check(memc, 1, 4, 4))
   {
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
     test_true(rc == MEMCACHED_SUCCESS);

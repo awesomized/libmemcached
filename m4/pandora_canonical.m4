@@ -328,7 +328,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 #error "You should include config.h as your first include file"
 #endif
 
-#include "config/top.h"
 ])
   mkdir -p config
   cat > config/top.h.stamp <<EOF_CONFIG_TOP

@@ -27,7 +27,7 @@
 #  define  atomic_dec_size_nv(X, Y) atomic_add_32((X), (Y))
 # endif
 # undef _KERNEL
-#else
+#elif HAVE_GCC_ATOMIC_BUILTINS
 # define atomic_add_8(X, Y)  __sync_fetch_and_add((X), (Y))
 # define atomic_add_16(X, Y) __sync_fetch_and_add((X), (Y))
 # define atomic_add_32(X, Y) __sync_fetch_and_add((X), (Y))
@@ -45,6 +45,25 @@
 # define atomic_dec_16_nv(X) __sync_fetch_and_sub((X), 1)
 # define atomic_dec_32_nv(X) __sync_fetch_and_sub((X), 1)
 # define atomic_dec_size_nv(X) __sync_fetch_and_sub((X), 1)
+#else
+#warning "Atomic operators not found so memslap will not work correctly"
+# define atomic_add_8(X, Y)
+# define atomic_add_16(X, Y)
+# define atomic_add_32(X, Y)
+# define atomic_add_size(X, Y)
+# define atomic_dec_8(X)
+# define atomic_dec_16(X)
+# define atomic_dec_32(X)
+# define atomic_dec_size(X)
+/* The same as above, but these return the new value instead of void */
+# define atomic_add_8_nv(X, Y)
+# define atomic_add_16_nv(X, Y)
+# define atomic_add_32_nv(X, Y)
+# define atomic_add_size_nv(X, Y)
+# define atomic_dec_8_nv(X)
+# define atomic_dec_16_nv(X)
+# define atomic_dec_32_nv(X)
+# define atomic_dec_size_nv(X)
 #endif /* defined(__SUNPRO_C) */
 
 #endif /* CLIENTS_MS_ATOMIC_H */

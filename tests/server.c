@@ -97,7 +97,6 @@ void server_startup(server_startup_st *construct)
 
       for (uint32_t x= 0; x < construct->count; x++)
       {
-        int count;
         int status;
         in_port_t port;
 
@@ -140,7 +139,15 @@ void server_startup(server_startup_st *construct)
 	  status= system(buffer);
 	  fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
 	}
-        count= sprintf(end_ptr, "localhost:%u,", port);
+        int count;
+        size_t remaining_length= sizeof(server_string_buffer) - (size_t)(end_ptr -server_string_buffer);
+        count= snprintf(end_ptr, remaining_length,  "localhost:%u,", port);
+
+        if ((size_t)count >= remaining_length || count < 0)
+        {
+          fprintf(stderr, "server names grew to be larger then buffer allowed\n");
+          abort();
+        }
         end_ptr+= count;
       }
       *end_ptr= 0;

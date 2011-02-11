@@ -706,45 +706,69 @@ static void ms_print_memslap_stats(struct timeval *start_time,
   char buf[1024];
   char *pos= buf;
 
-  pos+= sprintf(pos, "cmd_get: %zu\n",
-                ms_stats.cmd_get);
-  pos+= sprintf(pos, "cmd_set: %zu\n",
-                ms_stats.cmd_set);
-  pos+= sprintf(pos, "get_misses: %zu\n",
-                ms_stats.get_misses);
+  pos+= snprintf(pos,
+                 sizeof(buf), "cmd_get: %lu\n",
+                 (unsigned long) ms_stats.cmd_get);
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "cmd_set: %lu\n",
+                 (unsigned long) ms_stats.cmd_set);
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "get_misses: %lu\n",
+                 (unsigned long) ms_stats.get_misses);
 
   if (ms_setting.verify_percent > 0)
   {
-    pos+= sprintf(pos, "verify_misses: %zu\n",
-                  ms_stats.vef_miss);
-    pos+= sprintf(pos, "verify_failed: %zu\n",
-                  ms_stats.vef_failed);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "verify_misses: %lu\n",
+                   (unsigned long) ms_stats.vef_miss);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "verify_failed: %lu\n",
+                   (unsigned long) ms_stats.vef_failed);
   }
 
   if (ms_setting.exp_ver_per > 0)
   {
-    pos+= sprintf(pos, "expired_get: %zu\n",
-                  ms_stats.exp_get);
-    pos+= sprintf(pos, "unexpired_unget: %zu\n",
-                  ms_stats.unexp_unget);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "expired_get: %lu\n",
+                   (unsigned long) ms_stats.exp_get);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "unexpired_unget: %lu\n",
+                   (unsigned long) ms_stats.unexp_unget);
   }
 
-  pos+= sprintf(pos,
-                "written_bytes: %zu\n",
-                ms_stats.bytes_written);
-  pos+= sprintf(pos, "read_bytes: %zu\n",
-                ms_stats.bytes_read);
-  pos+= sprintf(pos, "object_bytes: %zu\n",
-                ms_stats.obj_bytes);
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "written_bytes: %lu\n",
+                 (unsigned long) ms_stats.bytes_written);
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "read_bytes: %lu\n",
+                 (unsigned long) ms_stats.bytes_read);
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "object_bytes: %lu\n",
+                 (unsigned long) ms_stats.obj_bytes);
 
   if (ms_setting.udp || ms_setting.facebook_test)
   {
-    pos+= sprintf(pos, "packet_disorder: %zu\n",
-                  ms_stats.pkt_disorder);
-    pos+= sprintf(pos, "packet_drop: %zu\n",
-                  ms_stats.pkt_drop);
-    pos+= sprintf(pos, "udp_timeout: %zu\n",
-                  ms_stats.udp_timeout);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "packet_disorder: %lu\n",
+                   (unsigned long) ms_stats.pkt_disorder);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "packet_drop: %lu\n",
+                   (unsigned long)ms_stats.pkt_drop);
+    pos+= snprintf(pos,
+                   sizeof(buf) - (size_t)(pos -buf),
+                   "udp_timeout: %lu\n",
+                   (unsigned long)ms_stats.udp_timeout);
   }
 
   if (ms_setting.stat_freq > 0)
@@ -755,17 +779,18 @@ static void ms_print_memslap_stats(struct timeval *start_time,
   }
 
   int64_t time_diff= ms_time_diff(start_time, end_time);
-  pos+= sprintf(
-    pos,
-    "\nRun time: %.1fs Ops: %llu TPS: %.0Lf Net_rate: %.1fM/s\n",
-    (double)time_diff / 1000000,
-    (unsigned long long)(ms_stats.cmd_get + ms_stats.cmd_set),
-    (ms_stats.cmd_get
-                 + ms_stats.cmd_set) / ((long double)time_diff / 1000000),
-    (double)(
-      ms_stats.bytes_written
-      + ms_stats.bytes_read) / 1024 / 1024
-    / ((double)time_diff / 1000000));
+  pos+= snprintf(pos,
+                 sizeof(buf) - (size_t)(pos -buf),
+                 "\nRun time: %.1fs Ops: %llu TPS: %.0Lf Net_rate: %.1fM/s\n",
+                 (double)time_diff / 1000000,
+                 (unsigned long long)(ms_stats.cmd_get + ms_stats.cmd_set),
+                 (ms_stats.cmd_get
+                  + ms_stats.cmd_set) / ((long double)time_diff / 1000000),
+                 (double)(
+                          ms_stats.bytes_written
+                          + ms_stats.bytes_read) / 1024 / 1024
+                 / ((double)time_diff / 1000000));
+  assert(pos <= buf);
 
   fprintf(stdout, "%s", buf);
   fflush(stdout);
