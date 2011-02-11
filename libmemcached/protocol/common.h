@@ -93,7 +93,7 @@ enum ascii_cmd {
   VERSION_CMD,
   QUIT_CMD,
   VERBOSITY_CMD,
-  UNKNOWN_CMD,
+  UNKNOWN_CMD
 };
 
 struct memcached_protocol_client_st {
