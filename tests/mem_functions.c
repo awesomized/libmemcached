@@ -3622,7 +3622,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  if (libmemcached_util_version_check(memc_clone, 1, 3, 0))
+  if (libmemcached_util_version_check(memc_clone, 1, 4, 4))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
@@ -3748,7 +3748,7 @@ static test_return_t pre_binary(memcached_st *memc)
 {
   memcached_return_t rc= MEMCACHED_FAILURE;
 
-  if (libmemcached_util_version_check(memc, 1, 3, 0))
+  if (libmemcached_util_version_check(memc, 1, 4, 4))
   {
     rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
     test_true(rc == MEMCACHED_SUCCESS);
