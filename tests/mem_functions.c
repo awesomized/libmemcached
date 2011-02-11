@@ -1031,7 +1031,7 @@ static test_return_t set_test3(memcached_st *memc)
   {
     char key[16];
 
-    sprintf(key, "foo%u", x);
+    snprintf(key, sizeof(key), "foo%u", x);
 
     rc= memcached_set(memc, key, strlen(key),
                       value, value_length,
@@ -3162,7 +3162,7 @@ static test_return_t output_ketama_weighted_keys(memcached_st *trash)
   for (int x= 0; x < 10000; x++)
   {
     char key[10];
-    sprintf(key, "%d", x);
+    snprintf(key, sizeof(key), "%d", x);
 
     uint32_t server_idx = memcached_generate_hash(memc, key, strlen(key));
     char *hostname = memc->hosts[server_idx].hostname;

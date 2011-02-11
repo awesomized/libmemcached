@@ -2886,13 +2886,14 @@ static int ms_build_ascii_write_buf_set(ms_conn_t *c, ms_task_item_t *item)
   int write_len;
   char *buffer= c->wbuf;
 
-  write_len= sprintf(buffer,
-                     " %u %d %d\r\n",
-                     0,
-                     item->exp_time,
-                     item->value_size);
+  write_len= snprintf(buffer,
+                      c->wsize,
+                      " %u %d %d\r\n",
+                      0,
+                      item->exp_time,
+                      item->value_size);
 
-  if (write_len > c->wsize)
+  if (write_len > c->wsize || write_len < 0)
   {
     /* ought to be always enough. just fail for simplicity */
     fprintf(stderr, "output command line too long.\n");

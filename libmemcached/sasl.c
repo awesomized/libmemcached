@@ -30,7 +30,7 @@ const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
  * @param raddr remote address (out)
  * @return true on success false otherwise (errno contains more info)
  */
-static bool resolve_names(int fd, char *laddr, char *raddr)
+static bool resolve_names(int fd, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
 {
   char host[NI_MAXHOST];
   char port[NI_MAXSERV];
@@ -44,7 +44,7 @@ static bool resolve_names(int fd, char *laddr, char *raddr)
     return false;
   }
 
-  (void)sprintf(laddr, "%s;%s", host, port);
+  (void)snprintf(laddr, laddr_length, "%s;%s", host, port);
   salen= sizeof(saddr);
 
   if ((getpeername(fd, (struct sockaddr *)&saddr, &salen) < 0) ||
@@ -54,7 +54,7 @@ static bool resolve_names(int fd, char *laddr, char *raddr)
     return false;
   }
 
-  (void)sprintf(raddr, "%s;%s", host, port);
+  (void)snprintf(raddr, raddr_length, "%s;%s", host, port);
 
   return true;
 }
@@ -108,7 +108,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
   char laddr[NI_MAXHOST + NI_MAXSERV];
   char raddr[NI_MAXHOST + NI_MAXSERV];
 
-  unlikely (!resolve_names(server->fd, laddr, raddr))
+  unlikely (!resolve_names(server->fd, laddr, sizeof(laddr), raddr, sizeof(raddr)))
   {
     server->cached_errno= errno;
     return MEMCACHED_ERRNO;

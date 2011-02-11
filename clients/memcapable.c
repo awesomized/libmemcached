@@ -1267,8 +1267,7 @@ static enum test_return test_ascii_set_impl(const char* key, bool noreply)
 {
   /* @todo add tests for bogus format! */
   char buffer[1024];
-  sprintf(buffer, "set %s 0 0 5%s\r\nvalue\r\n", key,
-          noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "set %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
   if (!noreply)
@@ -1291,8 +1290,7 @@ static enum test_return test_ascii_add_impl(const char* key, bool noreply)
 {
   /* @todo add tests for bogus format! */
   char buffer[1024];
-  sprintf(buffer, "add %s 0 0 5%s\r\nvalue\r\n", key,
-          noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "add %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
   if (!noreply)
@@ -1394,7 +1392,7 @@ static enum test_return ascii_get_item(const char *key, const char *value,
     datasize= strlen(value);
 
   verify(datasize < sizeof(buffer));
-  sprintf(buffer, "get %s\r\n", key);
+  snprintf(buffer, sizeof(buffer), "get %s\r\n", key);
   execute(send_string(buffer));
 
   if (exist)
@@ -1455,7 +1453,7 @@ static enum test_return ascii_gets_item(const char *key, const char *value,
     datasize= strlen(value);
 
   verify(datasize < sizeof(buffer));
-  sprintf(buffer, "gets %s\r\n", key);
+  snprintf(buffer, sizeof(buffer), "gets %s\r\n", key);
   execute(send_string(buffer));
 
   if (exist)
@@ -1471,7 +1469,7 @@ static enum test_return ascii_set_item(const char *key, const char *value)
 {
   char buffer[300];
   size_t len= strlen(value);
-  sprintf(buffer, "set %s 0 0 %u\r\n", key, (unsigned int)len);
+  snprintf(buffer, sizeof(buffer), "set %s 0 0 %u\r\n", key, (unsigned int)len);
   execute(send_string(buffer));
   execute(retry_write(value, len));
   execute(send_string("\r\n"));
@@ -1482,8 +1480,7 @@ static enum test_return ascii_set_item(const char *key, const char *value)
 static enum test_return test_ascii_replace_impl(const char* key, bool noreply)
 {
   char buffer[1024];
-  sprintf(buffer, "replace %s 0 0 5%s\r\nvalue\r\n", key,
-          noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "replace %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
   if (noreply)
@@ -1523,8 +1520,7 @@ static enum test_return test_ascii_cas_impl(const char* key, bool noreply)
   execute(ascii_set_item(key, "value"));
   execute(ascii_gets_item(key, "value", true, &cas));
 
-  sprintf(buffer, "cas %s 0 0 6 %lu%s\r\nvalue2\r\n", key, cas,
-          noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "cas %s 0 0 6 %lu%s\r\nvalue2\r\n", key, cas, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
   if (noreply)
@@ -1564,7 +1560,7 @@ static enum test_return test_ascii_delete_impl(const char *key, bool noreply)
   execute(receive_error_response());
 
   char buffer[1024];
-  sprintf(buffer, "delete %s%s\r\n", key, noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "delete %s%s\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
   if (noreply)
@@ -1677,7 +1673,7 @@ static enum test_return test_ascii_mget(void)
 static enum test_return test_ascii_incr_impl(const char* key, bool noreply)
 {
   char cmd[300];
-  sprintf(cmd, "incr %s 1%s\r\n", key, noreply ? " noreply" : "");
+  snprintf(cmd, sizeof(cmd), "incr %s 1%s\r\n", key, noreply ? " noreply" : "");
 
   execute(ascii_set_item(key, "0"));
   for (int x= 1; x < 11; ++x)
@@ -1713,7 +1709,7 @@ static enum test_return test_ascii_incr_noreply(void)
 static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
 {
   char cmd[300];
-  sprintf(cmd, "decr %s 1%s\r\n", key, noreply ? " noreply" : "");
+  snprintf(cmd, sizeof(cmd), "decr %s 1%s\r\n", key, noreply ? " noreply" : "");
 
   execute(ascii_set_item(key, "9"));
   for (int x= 8; x > -1; --x)
@@ -1815,10 +1811,10 @@ static enum test_return test_ascii_concat_impl(const char *key,
     value="hello";
 
   char cmd[400];
-  sprintf(cmd, "%s %s 0 0 %u%s\r\n%s\r\n",
-          append ? "append" : "prepend",
-          key, (unsigned int)strlen(value), noreply ? " noreply" : "",
-          value);
+  snprintf(cmd, sizeof(cmd), "%s %s 0 0 %u%s\r\n%s\r\n",
+           append ? "append" : "prepend",
+           key, (unsigned int)strlen(value), noreply ? " noreply" : "",
+           value);
   execute(send_string(cmd));
 
   if (noreply)
@@ -1828,10 +1824,10 @@ static enum test_return test_ascii_concat_impl(const char *key,
 
   execute(ascii_get_item(key, "hello world", true));
 
-  sprintf(cmd, "%s %s_notfound 0 0 %u%s\r\n%s\r\n",
-          append ? "append" : "prepend",
-          key, (unsigned int)strlen(value), noreply ? " noreply" : "",
-          value);
+  snprintf(cmd, sizeof(cmd), "%s %s_notfound 0 0 %u%s\r\n%s\r\n",
+           append ? "append" : "prepend",
+           key, (unsigned int)strlen(value), noreply ? " noreply" : "",
+           value);
   execute(send_string(cmd));
 
   if (noreply)
