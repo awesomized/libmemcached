@@ -4448,7 +4448,8 @@ static test_return_t util_version_test(memcached_st *memc)
 
   if_successful= libmemcached_util_version_check(memc, 9, 9, 9);
 
-  if (! if_successful)
+  // We expect failure
+  if (if_successful)
   {
     fprintf(stderr, "\n----------------------------------------------------------------------\n");
     fprintf(stderr, "\nDumping Server Information\n\n");
