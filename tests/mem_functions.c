@@ -104,7 +104,7 @@ static memcached_return_t dump_server_information(const memcached_st *ptr __attr
   /* Do Nothing */
   FILE *stream= (FILE *)context;
 
-  fprintf(stream, "Memcached Server: %s %u Version %d.%d.%d\n", 
+  fprintf(stream, "Memcached Server: %s %u Version %u.%u.%u\n", 
           memcached_server_name(instance),
           memcached_server_port(instance),
           instance->major_version,
@@ -4363,14 +4363,15 @@ static void* connection_release(void *arg)
   return arg;
 }
 
+#define POOL_SIZE 10
 static test_return_t connection_pool_test(memcached_st *memc)
 {
-  memcached_pool_st* pool= memcached_pool_create(memc, 5, 10);
+  memcached_pool_st* pool= memcached_pool_create(memc, 5, POOL_SIZE);
   test_true(pool != NULL);
-  memcached_st* mmc[10];
+  memcached_st *mmc[POOL_SIZE];
   memcached_return_t rc;
 
-  for (size_t x= 0; x < 10; ++x)
+  for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     mmc[x]= memcached_pool_pop(pool, false, &rc);
     test_true(mmc[x] != NULL);
@@ -4397,7 +4398,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   rc= memcached_set(mmc[0], key, keylen, "0", 1, 0, 0);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  for (size_t x= 0; x < 10; ++x)
+  for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     uint64_t number_value;
     rc= memcached_increment(mmc[x], key, keylen, 1, &number_value);
@@ -4406,7 +4407,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   }
 
   // Release them..
-  for (size_t x= 0; x < 10; ++x)
+  for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     test_true(memcached_pool_push(pool, mmc[x]) == MEMCACHED_SUCCESS);
   }
@@ -4433,8 +4434,8 @@ static test_return_t connection_pool_test(memcached_st *memc)
   test_true(memcached_behavior_get(mmc[0], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == 9999);
   test_true(memcached_pool_push(pool, mmc[0]) == MEMCACHED_SUCCESS);
 
-
   test_true(memcached_pool_destroy(pool) == memc);
+
   return TEST_SUCCESS;
 }
 
@@ -4447,7 +4448,7 @@ static test_return_t util_version_test(memcached_st *memc)
 
   if_successful= libmemcached_util_version_check(memc, 9, 9, 9);
 
-//  if (! if_successful)
+  if (! if_successful)
   {
     fprintf(stderr, "\n----------------------------------------------------------------------\n");
     fprintf(stderr, "\nDumping Server Information\n\n");
