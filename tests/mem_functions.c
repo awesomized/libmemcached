@@ -1700,7 +1700,7 @@ static test_return_t mget_execute(memcached_st *memc)
   {
     char k[251];
 
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
     keys[x]= strdup(k);
     test_true(keys[x] != NULL);
     rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
@@ -2071,7 +2071,9 @@ static test_return_t fetch_all_results(memcached_st *memc)
     free(return_value);
   }
 
-  return ((rc == MEMCACHED_END) || (rc == MEMCACHED_SUCCESS)) ? TEST_SUCCESS : TEST_FAILURE;
+  test_true_got(rc == MEMCACHED_END || rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+
+  return TEST_SUCCESS;
 }
 
 /* Test case provided by Cal Haldenbrand */
@@ -3466,7 +3468,7 @@ static test_return_t mget_read(memcached_st *memc)
   memcached_return_t rc;
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
   test_true(fetch_all_results(memc) == TEST_SUCCESS);
 
   return TEST_SUCCESS;
@@ -3477,7 +3479,7 @@ static test_return_t mget_read_result(memcached_st *memc)
   memcached_return_t rc;
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
   /* Turn this into a help function */
   {
     memcached_result_st results_obj;
@@ -3504,7 +3506,7 @@ static test_return_t mget_read_function(memcached_st *memc)
   memcached_execute_fn callbacks[1];
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
   callbacks[0]= &callback_counter;
   counter= 0;
@@ -3552,7 +3554,7 @@ static test_return_t add_host_test1(memcached_st *memc)
   {
     char buffer[SMALL_STRING_LEN];
 
-    snprintf(buffer, SMALL_STRING_LEN, "%zu.example.com", 400+x);
+    snprintf(buffer, SMALL_STRING_LEN, "%lu.example.com", (unsigned long)(400 +x));
     servers= memcached_server_list_append_with_weight(servers, buffer, 401, 0,
                                      &rc);
     test_true(rc == MEMCACHED_SUCCESS);
@@ -4168,7 +4170,11 @@ static test_return_t noreply_test(memcached_st *memc)
     for (size_t x= 0; x < 100; ++x)
     {
       char key[10];
-      size_t len= (size_t)sprintf(key, "%zu", x);
+      int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
+      test_false((size_t)check_length >= sizeof(key) || check_length < 0);
+
+      size_t len= (size_t)check_length;
+
       switch (count)
       {
       case 0:
@@ -4216,7 +4222,11 @@ static test_return_t noreply_test(memcached_st *memc)
     {
       char key[10];
 
-      size_t len= (size_t)sprintf(key, "%zu", x);
+      int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
+
+      test_false((size_t)check_length >= sizeof(key) || check_length < 0);
+
+      size_t len= (size_t)check_length;
       size_t length;
       uint32_t flags;
       char* value=memcached_get(memc, key, strlen(key),
@@ -5324,7 +5334,7 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   {
      char k[251];
 
-     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
+     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
      keys[x]= strdup(k);
      test_true(keys[x] != NULL);
   }
@@ -5481,7 +5491,7 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   {
     char k[251];
 
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
     keys[x]= strdup(k);
     test_true(keys[x] != NULL);
     rc= memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0);
@@ -5878,7 +5888,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   for (size_t x= 0; x < max_keys; ++x)
   {
     char k[251];
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%zu", x);
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
     keys[x]= strdup(k);
     assert(keys[x] != NULL);
     rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
