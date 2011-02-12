@@ -65,6 +65,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   }
 
   ptr->fd= -1;
+  ptr->io_bytes_sent= 0;
   ptr->write_buffer_offset= (size_t) ((ptr->type == MEMCACHED_CONNECTION_UDP) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
   ptr->read_buffer_length= 0;
   ptr->read_ptr= ptr->read_buffer;

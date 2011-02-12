@@ -144,7 +144,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      size_t number_of_keys,
                                                      bool mget_mode)
 {
-  memcached_return_t rc= MEMCACHED_NOTFOUND;
+  bool failures_occured_in_sending= false;
   const char *get_command= "get ";
   uint8_t get_command_length= 4;
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
@@ -211,6 +211,8 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
+  memcached_return_t rc= MEMCACHED_SUCCESS;
+  size_t hosts_connected= 0;
   for (uint32_t x= 0; x < number_of_keys; x++)
   {
     memcached_server_write_instance_st instance;
@@ -241,11 +243,14 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       rc= memcached_connect(instance);
 
       if (rc != MEMCACHED_SUCCESS)
+      {
         continue;
+      }
+      hosts_connected++;
 
       if ((memcached_io_writev(instance, vector, 4, false)) == -1)
       {
-        rc= MEMCACHED_SOME_ERRORS;
+        failures_occured_in_sending= true;
         continue;
       }
       WATCHPOINT_ASSERT(instance->cursor_active == 0);
@@ -257,15 +262,27 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       if ((memcached_io_writev(instance, (vector + 1), 3, false)) == -1)
       {
         memcached_server_response_reset(instance);
-        rc= MEMCACHED_SOME_ERRORS;
+        failures_occured_in_sending= true;
         continue;
       }
     }
   }
 
+  if (hosts_connected == 0)
+  {
+    LIBMEMCACHED_MEMCACHED_MGET_END();
+
+    if (rc != MEMCACHED_SUCCESS)
+      return rc;
+
+    return MEMCACHED_NO_SERVERS;
+  }
+
+
   /*
     Should we muddle on if some servers are dead?
   */
+  bool success_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_write_instance_st instance=
@@ -276,13 +293,24 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       /* We need to do something about non-connnected hosts in the future */
       if ((memcached_io_write(instance, "\r\n", 2, true)) == -1)
       {
-        rc= MEMCACHED_SOME_ERRORS;
+        failures_occured_in_sending= true;
+      }
+      else
+      {
+        success_happened= true;
       }
     }
   }
 
   LIBMEMCACHED_MEMCACHED_MGET_END();
-  return rc;
+
+  if (failures_occured_in_sending && success_happened)
+    return MEMCACHED_SOME_ERRORS;
+
+  if (success_happened)
+    return MEMCACHED_SUCCESS;
+
+  return MEMCACHED_FAILURE;
 }
 
 memcached_return_t memcached_mget_by_key(memcached_st *ptr,
