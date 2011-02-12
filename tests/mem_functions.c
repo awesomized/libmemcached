@@ -3476,12 +3476,14 @@ static test_return_t mget_read(memcached_st *memc)
 {
   memcached_return_t rc;
 
+  if (! libmemcached_util_version_check(memc, 1, 4, 4))
+    return TEST_SKIPPED;
+
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
-  if (rc == MEMCACHED_SOME_ERRORS)
-  {
-    return TEST_SUCCESS;
-  }
-  else if (rc == MEMCACHED_SUCCESS)
+
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+
+  // Go fetch the keys and test to see if all of them were returned
   {
     size_t keys_returned;
     test_true(fetch_all_results(memc, &keys_returned) == TEST_SUCCESS);
@@ -3490,7 +3492,6 @@ static test_return_t mget_read(memcached_st *memc)
     test_true_got(global_count == keys_returned, buffer);
   }
 
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
   return TEST_SUCCESS;
 }
@@ -3499,12 +3500,13 @@ static test_return_t mget_read_result(memcached_st *memc)
 {
   memcached_return_t rc;
 
+  if (! libmemcached_util_version_check(memc, 1, 4, 4))
+    return TEST_SKIPPED;
+
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
-  if (rc == MEMCACHED_SOME_ERRORS)
-    return TEST_SUCCESS;
-
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+
   /* Turn this into a help function */
   {
     memcached_result_st results_obj;
@@ -3530,10 +3532,10 @@ static test_return_t mget_read_function(memcached_st *memc)
   size_t counter;
   memcached_execute_fn callbacks[1];
 
-  rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
+  if (! libmemcached_util_version_check(memc, 1, 4, 4))
+    return TEST_SKIPPED;
 
-  if (rc == MEMCACHED_SOME_ERRORS)
-    return TEST_SUCCESS;
+  rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
