@@ -3476,11 +3476,12 @@ static test_return_t mget_read(memcached_st *memc)
 {
   memcached_return_t rc;
 
-  rc= memcached_flush_buffers(memc);
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
-
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
-  if (rc == MEMCACHED_SUCCESS || MEMCACHED_SOME_ERRORS)
+  if (rc == MEMCACHED_SOME_ERRORS)
+  {
+    return TEST_SUCCESS;
+  }
+  else if (rc == MEMCACHED_SUCCESS)
   {
     size_t keys_returned;
     test_true(fetch_all_results(memc, &keys_returned) == TEST_SUCCESS);
@@ -3499,6 +3500,10 @@ static test_return_t mget_read_result(memcached_st *memc)
   memcached_return_t rc;
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
+
+  if (rc == MEMCACHED_SOME_ERRORS)
+    return TEST_SUCCESS;
+
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
   /* Turn this into a help function */
   {
@@ -3526,6 +3531,10 @@ static test_return_t mget_read_function(memcached_st *memc)
   memcached_execute_fn callbacks[1];
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
+
+  if (rc == MEMCACHED_SOME_ERRORS)
+    return TEST_SUCCESS;
+
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
   callbacks[0]= &callback_counter;
