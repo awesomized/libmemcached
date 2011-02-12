@@ -654,10 +654,11 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
           fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
           return -1;
         }
+      case ENOTCONN:
       default:
+        fprintf(stderr, "%s:%d (%s)(%s)\n", __FILE__, __LINE__,__func__, strerror(errno));fflush(stdout);
         memcached_quit_server(ptr, true);
         *error= MEMCACHED_ERRNO;
-        fprintf(stderr, "%s:%d (%s)(%s)\n", __FILE__, __LINE__,__func__, strerror(errno));fflush(stdout);
         return -1;
       }
     }
