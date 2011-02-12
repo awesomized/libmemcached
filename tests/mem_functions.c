@@ -3361,7 +3361,9 @@ static test_return_t generate_large_pairs(memcached_st *memc __attribute__((unus
 
 static test_return_t generate_data(memcached_st *memc)
 {
-  execute_set(memc, global_pairs, global_count);
+  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+
+  test_true(check_execute == global_count);
 
   return TEST_SUCCESS;
 }
@@ -3371,7 +3373,9 @@ static test_return_t generate_data_with_stats(memcached_st *memc)
   memcached_stat_st *stat_p;
   memcached_return_t rc;
   uint32_t host_index= 0;
-  execute_set(memc, global_pairs, global_count);
+  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+
+  test_true(check_execute == global_count);
 
   //TODO: hosts used size stats
   stat_p= memcached_stat(memc, NULL, &rc);
@@ -5983,7 +5987,7 @@ static test_return_t regression_bug_583031(memcached_st *unused)
 
     (void)memcached_get(memc, "dsf", 3, &length, &flags, &rc);
 
-    test_true(rc == MEMCACHED_TIMEOUT);
+    test_true_got(rc == MEMCACHED_TIMEOUT, memcached_strerror(NULL, rc));
 
     memcached_free(memc);
 
