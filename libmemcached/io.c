@@ -12,6 +12,8 @@
 
 #include "common.h"
 
+#include <assert.h>
+
 typedef enum {
   MEM_READ,
   MEM_WRITE
@@ -617,6 +619,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     if (ptr->type == MEMCACHED_CONNECTION_UDP)
       increment_udp_message_id(ptr);
 
+    assert(ptr->fd != -1);
     sent_length= send(ptr->fd, local_write_ptr, write_length, 0);
     if (sent_length == SOCKET_ERROR)
     {
@@ -655,6 +658,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
           return -1;
         }
       case ENOTCONN:
+      case EPIPE:
       default:
         fprintf(stderr, "%s:%d (%s)(%s)\n", __FILE__, __LINE__,__func__, strerror(errno));fflush(stdout);
         memcached_quit_server(ptr, true);
