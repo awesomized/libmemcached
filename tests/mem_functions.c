@@ -3476,6 +3476,9 @@ static test_return_t mget_read(memcached_st *memc)
 {
   memcached_return_t rc;
 
+  rc= memcached_flush_buffers(memc);
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
   if (rc == MEMCACHED_SUCCESS || MEMCACHED_SOME_ERRORS)
   {

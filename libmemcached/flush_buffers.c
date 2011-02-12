@@ -17,8 +17,11 @@ memcached_return_t memcached_flush_buffers(memcached_st *memc)
         WATCHPOINT_ERROR(ret);
         return ret;
       }
+
       if (memcached_io_write(instance, NULL, 0, true) == -1)
+      {
         ret= MEMCACHED_SOME_ERRORS;
+      }
     }
   }
 
