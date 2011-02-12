@@ -245,6 +245,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
       if ((memcached_io_writev(instance, vector, 4, false)) == -1)
       {
+        fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
         rc= MEMCACHED_SOME_ERRORS;
         continue;
       }
@@ -257,6 +258,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       if ((memcached_io_writev(instance, (vector + 1), 3, false)) == -1)
       {
         memcached_server_response_reset(instance);
+        fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
         rc= MEMCACHED_SOME_ERRORS;
         continue;
       }
@@ -276,6 +278,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       /* We need to do something about non-connnected hosts in the future */
       if ((memcached_io_write(instance, "\r\n", 2, true)) == -1)
       {
+        fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
         rc= MEMCACHED_SOME_ERRORS;
       }
     }
@@ -409,6 +412,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     if (memcached_io_writev(instance, vector, 3, flush) == -1)
     {
       memcached_server_response_reset(instance);
+      fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
       rc= MEMCACHED_SOME_ERRORS;
       continue;
     }
@@ -418,6 +422,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     memcached_server_response_increment(instance);
     if ((x > 0 && x == ptr->io_key_prefetch) && memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
     {
+      fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
       rc= MEMCACHED_SOME_ERRORS;
     }
   }
@@ -443,6 +448,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
         {
           memcached_server_response_reset(instance);
           memcached_io_reset(instance);
+          fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
           rc= MEMCACHED_SOME_ERRORS;
         }
 
@@ -451,6 +457,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
         {
           memcached_server_response_reset(instance);
           memcached_io_reset(instance);
+          fprintf(stderr, "%s:%d (%s)\n", __FILE__, __LINE__,__func__);fflush(stdout);
           rc= MEMCACHED_SOME_ERRORS;
         }
       }
