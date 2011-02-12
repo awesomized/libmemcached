@@ -2054,7 +2054,7 @@ static test_return_t MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t fetch_all_results(memcached_st *memc)
+static test_return_t fetch_all_results(memcached_st *memc, size_t *keys_returned)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
   char return_key[MEMCACHED_MAX_KEY];
@@ -2063,12 +2063,15 @@ static test_return_t fetch_all_results(memcached_st *memc)
   size_t return_value_length;
   uint32_t flags;
 
+  *keys_returned= 0;
+
   while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
                                         &return_value_length, &flags, &rc)))
   {
     test_true(return_value);
     test_true(rc == MEMCACHED_SUCCESS);
     free(return_value);
+    *keys_returned= *keys_returned +1;
   }
 
   test_true_got(rc == MEMCACHED_END || rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
@@ -2211,7 +2214,8 @@ static test_return_t user_supplied_bug3(memcached_st *memc)
   rc= memcached_mget(memc, (const char **)keys, key_lengths, KEY_COUNT);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  test_true(fetch_all_results(memc) == TEST_SUCCESS);
+  size_t keys_returned;
+  test_true(fetch_all_results(memc, &keys_returned) == TEST_SUCCESS);
 
   for (x= 0; x < KEY_COUNT; x++)
     free(keys[x]);
@@ -3007,7 +3011,8 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   alarm(0);
   signal(SIGALRM, oldalarm);
 
-  test_true(fetch_all_results(memc) == TEST_SUCCESS);
+  size_t keys_returned;
+  test_true(fetch_all_results(memc, &keys_returned) == TEST_SUCCESS);
 
   for (x= 0; x < key_count; x++)
     free(keys[x]);
@@ -3472,8 +3477,16 @@ static test_return_t mget_read(memcached_st *memc)
   memcached_return_t rc;
 
   rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
+  if (rc == MEMCACHED_SUCCESS || MEMCACHED_SOME_ERRORS)
+  {
+    size_t keys_returned;
+    test_true(fetch_all_results(memc, &keys_returned) == TEST_SUCCESS);
+    char buffer[30];
+    snprintf(buffer, sizeof(buffer), "%lu", (unsigned long)keys_returned);
+    test_true_got(global_count == keys_returned, buffer);
+  }
+
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
-  test_true(fetch_all_results(memc) == TEST_SUCCESS);
 
   return TEST_SUCCESS;
 }
