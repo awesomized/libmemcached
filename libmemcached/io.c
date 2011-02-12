@@ -660,9 +660,11 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       case ENOTCONN:
       case EPIPE:
       default:
+        fprintf(stderr, "%s %u  %u %u\n", ptr->hostname, ptr->port, ptr->io_bytes_sent, ptr->server_failure_counter);
         fprintf(stderr, "%s:%d (%s)(%s)\n", __FILE__, __LINE__,__func__, strerror(errno));fflush(stdout);
         memcached_quit_server(ptr, true);
         *error= MEMCACHED_ERRNO;
+        assert(ptr->fd == -1);
         return -1;
       }
     }
