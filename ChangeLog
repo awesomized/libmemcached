@@ -1,5 +1,8 @@
-  * Bug lp:633247
-
+0.46 Mon Feb 14 10:28:01 PST 2011
+  * Fixes a number of corner case bugs.
+  * Fixes related to OpenBSD.
+  * Better testing for protocol version.
+  * Removes special case infinite wait on blocking setup.
 
 0.45 Tue Feb  8 16:02:06 PST 2011
   * Add support for systemtap
