@@ -41,8 +41,12 @@ static hashkit_return_t _set_function(struct hashkit_function_st *self, hashkit_
     return HASHKIT_FAILURE;
 #endif
   case HASHKIT_HASH_MURMUR:
+#ifdef HAVE_MURMUR_HASH
     self->function= hashkit_murmur;
     break;    
+#else
+    return HASHKIT_FAILURE;
+#endif
   case HASHKIT_HASH_JENKINS:
     self->function= hashkit_jenkins;
     break;    
@@ -126,10 +130,12 @@ static hashkit_hash_algorithm_t get_function_type(const hashkit_hash_fn function
     return HASHKIT_HASH_HSIEH;
   }
 #endif
+#ifdef HAVE_MURMUR_HASH
   else if (function == hashkit_murmur)
   {
     return HASHKIT_HASH_MURMUR;
   }
+#endif
   else if (function == hashkit_jenkins)
   {
     return HASHKIT_HASH_JENKINS;

@@ -3672,9 +3672,13 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
 
 static test_return_t pre_murmur(memcached_st *memc)
 {
+#ifdef HAVE_MURMUR_HASH
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR);
-
   return TEST_SUCCESS;
+#else
+  (void) memc;
+  return TEST_SKIPPED;
+#endif
 }
 
 static test_return_t pre_jenkins(memcached_st *memc)
@@ -4831,6 +4835,19 @@ static test_return_t hsieh_avaibility_test (memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t murmur_avaibility_test (memcached_st *memc)
+{
+  memcached_return_t expected_rc= MEMCACHED_FAILURE;
+#ifdef HAVE_MURMUR_HASH
+  expected_rc= MEMCACHED_SUCCESS;
+#endif
+  memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
+                                                (uint64_t)MEMCACHED_HASH_MURMUR);
+  test_true(rc == expected_rc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t one_at_a_time_run (memcached_st *memc __attribute__((unused)))
 {
   uint32_t x;
@@ -4963,6 +4980,7 @@ static test_return_t hsieh_run (memcached_st *memc __attribute__((unused)))
 static test_return_t murmur_run (memcached_st *memc __attribute__((unused)))
 {
 #ifdef WORDS_BIGENDIAN
+  (void)murmur_values;
   return TEST_SKIPPED;
 #else
   uint32_t x;
@@ -6391,6 +6409,11 @@ test_st hsieh_availability[] ={
   {0, 0, (test_callback_fn)0}
 };
 
+test_st murmur_availability[] ={
+  {"murmur_avaibility_test", 0, (test_callback_fn)murmur_avaibility_test},
+  {0, 0, (test_callback_fn)0}
+};
+
 #if 0
 test_st hash_sanity[] ={
   {"hash sanity", 0, (test_callback_fn)hash_sanity_test},
@@ -6432,6 +6455,7 @@ collection_st collection[] ={
   {"hash_sanity", 0, 0, hash_sanity},
 #endif
   {"hsieh_availability", 0, 0, hsieh_availability},
+  {"murmur_availability", 0, 0, murmur_availability},
   {"block", 0, 0, tests},
   {"binary", (test_callback_fn)pre_binary, 0, tests},
   {"nonblock", (test_callback_fn)pre_nonblock, 0, tests},

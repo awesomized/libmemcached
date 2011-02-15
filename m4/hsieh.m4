@@ -4,7 +4,7 @@ dnl ---------------------------------------------------------------------------
 AC_DEFUN([ENABLE_HSIEH_HASH],
   [AC_ARG_ENABLE([hsieh_hash],
     [AS_HELP_STRING([--enable-hsieh_hash],
-      [build with support for hsieh hashing. @<:default=off@:>@])],
+      [build with support for hsieh hashing. @<:@default=off@:>@])],
     [ac_cv_enable_hsieh_hash=yes],
     [ac_cv_enable_hsieh_hash=no])
 

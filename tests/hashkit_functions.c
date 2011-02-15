@@ -251,6 +251,7 @@ static test_return_t hsieh_run (hashkit_st *hashk __attribute__((unused)))
 static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
 {
 #ifdef WORDS_BIGENDIAN
+  (void)murmur_values;
   return TEST_SKIPPED;
 #else
   uint32_t x;
@@ -260,7 +261,11 @@ static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
   {
     uint32_t hash_val;
 
+#ifdef HAVE_MURMUR_HASH
     hash_val= libhashkit_murmur(*ptr, strlen(*ptr));
+#else
+    hash_val= 1;
+#endif
     assert(murmur_values[x] == hash_val);
   }
 
@@ -319,8 +324,15 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     rc= hashkit_set_function(hashk, algo);
 
     /* Hsieh is disabled most of the time for patent issues */
+#ifndef HAVE_HSIEH_HASH
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
       continue;
+#endif
+
+#ifndef HAVE_MURMUR_HASH
+    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_MURMUR)
+      continue;
+#endif
 
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_CUSTOM)
       continue;

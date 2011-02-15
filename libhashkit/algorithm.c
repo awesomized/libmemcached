@@ -45,10 +45,12 @@ uint32_t libhashkit_hsieh(const char *key, size_t key_length)
 }
 #endif
 
+#ifdef HAVE_MURMUR_HASH
 uint32_t libhashkit_murmur(const char *key, size_t key_length)
 {
   return hashkit_murmur(key, key_length, NULL);
 }
+#endif
 
 uint32_t libhashkit_jenkins(const char *key, size_t key_length)
 {

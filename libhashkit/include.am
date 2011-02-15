@@ -40,12 +40,15 @@ libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/jenkins.c \
 				  libhashkit/ketama.c \
 				  libhashkit/md5.c \
-				  libhashkit/murmur.c \
 				  libhashkit/one_at_a_time.c \
 				  libhashkit/strerror.c
 
 if INCLUDE_HSIEH_SRC
 libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.c
+endif
+
+if INCLUDE_MURMUR_SRC
+libhashkit_libhashkit_la_SOURCES+= libhashkit/murmur.c
 endif
 
 libhashkit_libhashkit_la_CFLAGS= \
