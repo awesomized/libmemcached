@@ -18,6 +18,7 @@
 #include <event.h>
 #include <fcntl.h>
 #include <netinet/tcp.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
