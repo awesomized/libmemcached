@@ -47,6 +47,9 @@ struct libmemcached_io_vector_st
 };
 
 LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);
+
+LIBMEMCACHED_LOCAL
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
                             const struct libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush);

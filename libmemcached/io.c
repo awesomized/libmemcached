@@ -105,6 +105,11 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   return MEMCACHED_FAILURE;
 }
 
+memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
+{
+  return io_wait(ptr, MEM_WRITE);
+}
+
 /**
  * Try to fill the input buffer for a server with as much
  * data as possible.

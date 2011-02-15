@@ -313,11 +313,20 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
         /* REFACTOR */
         /* We just try the first host, and if it is down we return zero */
         if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
+        {
           return 0;
+        }
 
-        if (getsockopt(instance->fd, SOL_SOCKET,
-                       SO_SNDBUF, &sock_size, &sock_length))
+        if (memcached_io_wait_for_write(instance) != MEMCACHED_SUCCESS)
+        {
+          return 0;
+        }
+
+        if (getsockopt(instance->fd, SOL_SOCKET, SO_SNDBUF, &sock_size, &sock_length) < 0)
+        {
+          ptr->cached_errno= errno;
           return 0; /* Zero means error */
+        }
       }
 
       return (uint64_t) sock_size;
@@ -340,11 +349,20 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       {
         /* We just try the first host, and if it is down we return zero */
         if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
+        {
           return 0;
+        }
 
-        if (getsockopt(instance->fd, SOL_SOCKET,
-                       SO_RCVBUF, &sock_size, &sock_length))
+        if (memcached_io_wait_for_write(instance) != MEMCACHED_SUCCESS)
+        {
+          return 0;
+        }
+
+        if (getsockopt(instance->fd, SOL_SOCKET, SO_RCVBUF, &sock_size, &sock_length) < 0)
+        {
+          ptr->cached_errno= errno;
           return 0; /* Zero means error */
+        }
 
       }
 
