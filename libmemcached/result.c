@@ -92,7 +92,14 @@ memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
                                               const char *value,
                                               size_t length)
 {
-  return memcached_string_append(&ptr->value, value, length);
+  memcached_return_t rc= memcached_string_append(&ptr->value, value, length);
+
+  if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+  {
+    ((memcached_st *)ptr->root)->cached_errno= errno;
+  }
+
+      return rc;
 }
 
 const char *memcached_result_key_value(const memcached_result_st *self)

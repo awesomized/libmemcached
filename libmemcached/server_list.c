@@ -37,6 +37,7 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   new_host_list= (memcached_server_write_instance_st)realloc(ptr, sizeof(memcached_server_st) * count);
   if (!new_host_list)
   {
+    ptr->cached_errno= errno;
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
   }

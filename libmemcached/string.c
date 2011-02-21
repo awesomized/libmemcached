@@ -32,7 +32,9 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     new_value= libmemcached_realloc(string->root, string->string, new_size);
 
     if (new_value == NULL)
+    {
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    }
 
     string->string= new_value;
     string->end= string->string + current_offset;
@@ -80,7 +82,12 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
   rc=  _string_check(self, initial_size);
   if (rc != MEMCACHED_SUCCESS)
   {
+    if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+    {
+      ((memcached_st *)memc)->cached_errno= errno;
+    }
     libmemcached_free(memc, self);
+
     return NULL;
   }
 
@@ -99,7 +106,9 @@ memcached_return_t memcached_string_append_character(memcached_string_st *string
   rc=  _string_check(string, 1);
 
   if (rc != MEMCACHED_SUCCESS)
+  {
     return rc;
+  }
 
   *string->end= character;
   string->end++;
@@ -115,7 +124,9 @@ memcached_return_t memcached_string_append(memcached_string_st *string,
   rc= _string_check(string, length);
 
   if (rc != MEMCACHED_SUCCESS)
+  {
     return rc;
+  }
 
   WATCHPOINT_ASSERT(length <= string->current_size);
   WATCHPOINT_ASSERT(string->string);
