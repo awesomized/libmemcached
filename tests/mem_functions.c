@@ -5902,6 +5902,53 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+ * This tests ensures expected disconnections (for some behavior changes
+ * for instance) do not wrongly increase failure counter
+ */
+static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
+{
+  memcached_return rc;
+
+  memcached_st *memc_clone;
+  memc_clone= memcached_clone(NULL, memc);
+  test_true(memc_clone);
+
+  /* Set value to force connection to the server */
+  const char *key= "marmotte";
+  const char *value= "milka";
+  char *string = NULL;
+  size_t string_length;
+  uint32_t flags;
+
+  rc= memcached_set(memc_clone, key, strlen(key),
+                    value, strlen(value),
+                    (time_t)0, (uint32_t)0);
+  test_true_got(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
+
+
+  /* put failure limit to 1 */
+  rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* Put a retry timeout to effectively activate failure_limit effect */
+  rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+  /* change behavior that triggers memcached_quit()*/
+  rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
+  assert(rc == MEMCACHED_SUCCESS);
+
+
+  /* Check if we still are connected */
+  string= memcached_get(memc_clone, key, strlen(key),
+                        &string_length, &flags, &rc);
+
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_true(string);
+  free(string);
+
+  return TEST_SUCCESS;
+}
+
 
 
 
@@ -6326,6 +6373,7 @@ test_st user_tests[] ={
   {"user_supplied_bug20", 1, (test_callback_fn)user_supplied_bug20 },
   {"user_supplied_bug21", 1, (test_callback_fn)user_supplied_bug21 },
   {"wrong_failure_counter_test", 1, (test_callback_fn)wrong_failure_counter_test},
+  {"wrong_failure_counter_two_test", 1, (test_callback_fn)wrong_failure_counter_two_test},
   {0, 0, (test_callback_fn)0}
 };
 
