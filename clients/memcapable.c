@@ -1937,9 +1937,19 @@ struct testcase testcases[]= {
   { NULL, NULL}
 };
 
+const int ascii_tests = 1;
+const int binary_tests = 2;
+
+struct test_type_st
+{
+  bool ascii;
+  bool binary;
+};
+
 int main(int argc, char **argv)
 {
   static const char * const status_msg[]= {"[skip]", "[pass]", "[pass]", "[FAIL]"};
+  struct test_type_st tests= { true, true };
   int total= 0;
   int failed= 0;
   const char *hostname= "localhost";
@@ -1948,9 +1958,19 @@ int main(int argc, char **argv)
   bool prompt= false;
   const char *testname= NULL;
 
-  while ((cmd= getopt(argc, argv, "t:vch:p:PT:?")) != EOF)
+
+
+  while ((cmd= getopt(argc, argv, "t:vch:p:PT:?ab")) != EOF)
   {
     switch (cmd) {
+    case 'a':
+      tests.ascii= true;
+      tests.binary= false;
+      break;
+    case 'b':
+      tests.ascii= false;
+      tests.binary= true;
+      break;
     case 't':
       timeout= atoi(optarg);
       if (timeout == 0)
@@ -1972,8 +1992,7 @@ int main(int argc, char **argv)
     case 'T': testname= optarg;
        break;
     default:
-      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n]"
-              " [-P] [-T testname]'\n"
+      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n] [-P] [-T testname]'\n"
               "\t-c\tGenerate coredump if a test fails\n"
               "\t-v\tVerbose test output (print out the assertion)\n"
               "\t-t n\tSet the timeout for io-operations to n seconds\n"
@@ -1981,7 +2000,9 @@ int main(int argc, char **argv)
               "\t\t\t\"skip\" will skip the test\n"
               "\t\t\t\"quit\" will terminate memcapable\n"
               "\t\t\tEverything else will start the test\n"
-              "\t-T n\tJust run the test named n\n",
+              "\t-T n\tJust run the test named n\n"
+              "\t-a\tOnly test the ascii protocol\n"
+              "\t-b\tOnly test the binary protocol\n",
               argv[0]);
       return 1;
     }
@@ -2001,6 +2022,11 @@ int main(int argc, char **argv)
     if (testname != NULL && strcmp(testcases[ii].description, testname) != 0)
        continue;
 
+    if ((testcases[ii].description[0] == 'a' && (tests.ascii) == 0) ||
+        (testcases[ii].description[0] == 'b' && (tests.binary) == 0))
+    {
+      continue;
+    }
     ++total;
     fprintf(stdout, "%-40s", testcases[ii].description);
     fflush(stdout);
