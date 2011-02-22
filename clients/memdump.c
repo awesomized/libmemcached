@@ -43,10 +43,11 @@ static char *opt_username;
 static char *opt_passwd;
 
 /* Print the keys and counter how many were found */
-static memcached_return_t key_printer(const memcached_st *ptr __attribute__((unused)),
+static memcached_return_t key_printer(const memcached_st *ptr,
                                       const char *key, size_t key_length,
-                                      void *context __attribute__((unused)))
+                                      void *context)
 {
+  (void)ptr;(void)context;
   printf("%.*s\n", (uint32_t)key_length, key);
 
   return MEMCACHED_SUCCESS;

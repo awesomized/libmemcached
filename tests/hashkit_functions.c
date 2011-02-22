@@ -31,10 +31,11 @@ struct hash_test_st
   bool _unused;
 };
 
-static test_return_t init_test(void *not_used __attribute__((unused)))
+static test_return_t init_test(void *not_used)
 {
   hashkit_st hashk;
   hashkit_st *hashk_ptr;
+  (void)not_used;
 
   hashk_ptr= hashkit_create(&hashk);
   test_true(hashk_ptr);
@@ -46,9 +47,10 @@ static test_return_t init_test(void *not_used __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t allocation_test(void *not_used __attribute__((unused)))
+static test_return_t allocation_test(void *not_used)
 {
   hashkit_st *hashk_ptr;
+  (void)not_used;
 
   hashk_ptr= hashkit_create(NULL);
   test_true(hashk_ptr);
@@ -115,10 +117,11 @@ static test_return_t clone_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-static test_return_t one_at_a_time_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t one_at_a_time_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -131,10 +134,11 @@ static test_return_t one_at_a_time_run (hashkit_st *hashk __attribute__((unused)
   return TEST_SUCCESS;
 }
 
-static test_return_t md5_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t md5_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -147,10 +151,11 @@ static test_return_t md5_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t crc_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t crc_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -163,10 +168,11 @@ static test_return_t crc_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1_64_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t fnv1_64_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -179,10 +185,11 @@ static test_return_t fnv1_64_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1a_64_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t fnv1a_64_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -195,11 +202,11 @@ static test_return_t fnv1a_64_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1_32_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t fnv1_32_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
-
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -212,10 +219,11 @@ static test_return_t fnv1_32_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1a_32_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t fnv1a_32_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -228,10 +236,11 @@ static test_return_t fnv1a_32_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t hsieh_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t hsieh_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -248,8 +257,10 @@ static test_return_t hsieh_run (hashkit_st *hashk __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t murmur_run (hashkit_st *hashk)
 {
+  (void)hashk;
+
 #ifdef WORDS_BIGENDIAN
   return TEST_SKIPPED;
 #else
@@ -268,11 +279,11 @@ static test_return_t murmur_run (hashkit_st *hashk __attribute__((unused)))
 #endif
 }
 
-static test_return_t jenkins_run (hashkit_st *hashk __attribute__((unused)))
+static test_return_t jenkins_run (hashkit_st *hashk)
 {
   uint32_t x;
   const char **ptr;
-
+  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
@@ -309,7 +320,7 @@ static test_return_t hashkit_digest_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
   {
     hashkit_return_t rc;
     uint32_t x;
@@ -415,7 +426,7 @@ static test_return_t hashkit_set_custom_function_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
   {
     hashkit_return_t rc;
 
@@ -447,7 +458,7 @@ static test_return_t hashkit_set_custom_distribution_function_test(hashkit_st *h
 
 static test_return_t hashkit_get_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++) 
+  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
   {
     hashkit_return_t rc;
 

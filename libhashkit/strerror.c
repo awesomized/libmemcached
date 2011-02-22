@@ -8,8 +8,9 @@
 
 #include "common.h"
 
-const char *hashkit_strerror(hashkit_st *ptr __attribute__((unused)), hashkit_return_t rc)
+const char *hashkit_strerror(hashkit_st *ptr, hashkit_return_t rc)
 {
+  (void)ptr;
   switch (rc)
   {
   case HASHKIT_SUCCESS:

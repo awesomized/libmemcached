@@ -1,5 +1,5 @@
 /*
-  This Library has been modified from its original form by 
+  This Library has been modified from its original form by
   Brian Aker (brian@tangent.org)
 
   See below for original Copyright.
@@ -125,7 +125,7 @@ Rotation is separate from addition to prevent recomputation.
   }
 
 
-/* 
+/*
   Just a simple method for getting the signature
   result must be == 16
 */
@@ -352,9 +352,10 @@ unsigned int len)
    (((UINT4)input[j+2]) << 16) | (((UINT4)input[j+3]) << 24);
 }
 
-uint32_t hashkit_md5(const char *key, size_t key_length, void *context __attribute__((unused)))
+uint32_t hashkit_md5(const char *key, size_t key_length, void *context)
 {
   unsigned char results[16];
+  (void)context;
 
   md5_signature((unsigned char*)key, (unsigned int)key_length, results);
 

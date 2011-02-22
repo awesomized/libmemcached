@@ -79,7 +79,6 @@ AH_BOTTOM([
 #define closesocket(a) close(a)
 #define get_socket_errno() errno
 #endif
-
 #endif
 ])
 

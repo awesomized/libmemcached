@@ -71,9 +71,10 @@ static const char *lookup_help(memcached_options option)
 
 void help_command(const char *command_name, const char *description,
                   const struct option *long_options,
-                  memcached_programs_help_st *options __attribute__((unused)))
+                  memcached_programs_help_st *options)
 {
   unsigned int x;
+  (void)options;
 
   printf("%s v%u.%u\n\n", command_name, 1U, 0U);
   printf("\t%s\n\n", description);

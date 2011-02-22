@@ -22,12 +22,13 @@ struct local_context
   bool truth;
 };
 
-static memcached_return_t check_server_version(const memcached_st *ptr __attribute__((unused)),
+static memcached_return_t check_server_version(const memcached_st *ptr,
                                                const memcached_server_st *instance,
                                                void *context)
 {
   /* Do Nothing */
   struct local_context *check= (struct local_context *)context;
+  (void)ptr;
 
   if (instance->major_version != UINT8_MAX &&
       instance->major_version >= check->major_version &&
@@ -42,7 +43,7 @@ static memcached_return_t check_server_version(const memcached_st *ptr __attribu
   return MEMCACHED_FAILURE;
 }
 
-bool libmemcached_util_version_check(memcached_st *memc, 
+bool libmemcached_util_version_check(memcached_st *memc,
                                      uint8_t major_version,
                                      uint8_t minor_version,
                                      uint8_t micro_version)

@@ -1,12 +1,12 @@
 #include "common.h"
 
-struct context_st 
+struct context_st
 {
   size_t length;
   const char *buffer;
 };
 
-static memcached_return_t _set_verbosity(const memcached_st *ptr __attribute__((unused)),
+static memcached_return_t _set_verbosity(const memcached_st *ptr,
                                          const memcached_server_st *server,
                                          void *context)
 {
@@ -16,6 +16,7 @@ static memcached_return_t _set_verbosity(const memcached_st *ptr __attribute__((
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
   struct context_st *execute= (struct context_st *)context;
+  (void)ptr;
 
   memc_ptr= memcached_create(&local_memc);
 
@@ -46,7 +47,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
+  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                  "verbosity %u\r\n", verbosity);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     return MEMCACHED_WRITE_FAILURE;

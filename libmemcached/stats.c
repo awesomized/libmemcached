@@ -162,7 +162,8 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
              strcmp("reclaimed", key) == 0))
   {
     WATCHPOINT_STRING(key);
-    return MEMCACHED_UNKNOWN_STAT_KEY;
+    /* return MEMCACHED_UNKNOWN_STAT_KEY; */
+    return MEMCACHED_SUCCESS;
   }
 
   return MEMCACHED_SUCCESS;
