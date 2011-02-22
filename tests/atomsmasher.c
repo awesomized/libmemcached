@@ -43,21 +43,23 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-static test_return_t cleanup_pairs(memcached_st *memc __attribute__((unused)))
+static test_return_t cleanup_pairs(memcached_st *memc)
 {
+  (void)memc;
   pairs_free(global_pairs);
 
   return 0;
 }
 
-static test_return_t generate_pairs(memcached_st *memc __attribute__((unused)))
+static test_return_t generate_pairs(memcached_st *memc)
 {
+  (void)memc;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
 
   for (size_t x= 0; x < global_count; x++)
   {
-    global_keys[x]= global_pairs[x].key; 
+    global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
@@ -97,12 +99,12 @@ infinite:
         WATCHPOINT_ERROR(rc);
         WATCHPOINT_ASSERT(rc);
       }
-    } 
+    }
     else
     {
-      rc= memcached_set(memc, global_pairs[test_bit].key, 
+      rc= memcached_set(memc, global_pairs[test_bit].key,
                         global_pairs[test_bit].key_length,
-                        global_pairs[test_bit].value, 
+                        global_pairs[test_bit].value,
                         global_pairs[test_bit].value_length,
                         0, 0);
       if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
@@ -126,7 +128,7 @@ static test_return_t pre_nonblock(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-/* 
+/*
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
 */
@@ -139,12 +141,12 @@ static test_return_t add_test(memcached_st *memc)
 
   setting_value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
 
-  rc= memcached_set(memc, key, strlen(key), 
+  rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   memcached_quit(memc);
-  rc= memcached_add(memc, key, strlen(key), 
+  rc= memcached_add(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
 
@@ -192,8 +194,9 @@ struct benchmark_state_st
   memcached_st *clone;
 } benchmark_state;
 
-static test_return_t memcached_create_benchmark(memcached_st *memc __attribute__((unused)))
+static test_return_t memcached_create_benchmark(memcached_st *memc)
 {
+  (void)memc;
   benchmark_state.create_init= true;
 
   for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
@@ -222,8 +225,9 @@ static test_return_t memcached_clone_benchmark(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t pre_allocate(memcached_st *memc __attribute__((unused)))
+static test_return_t pre_allocate(memcached_st *memc)
 {
+  (void)memc;
   memset(&benchmark_state, 0, sizeof(benchmark_state));
 
   benchmark_state.create= (memcached_st *)calloc(BENCHMARK_TEST_LOOP, sizeof(memcached_st));
@@ -234,8 +238,9 @@ static test_return_t pre_allocate(memcached_st *memc __attribute__((unused)))
   return TEST_SUCCESS;
 }
 
-static test_return_t post_allocate(memcached_st *memc __attribute__((unused)))
+static test_return_t post_allocate(memcached_st *memc)
 {
+  (void)memc;
   for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
     if (benchmark_state.create_init)

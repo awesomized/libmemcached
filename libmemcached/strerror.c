@@ -1,7 +1,8 @@
 #include "common.h"
 
-const char *memcached_strerror(memcached_st *ptr __attribute__((unused)), memcached_return_t rc)
+const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc)
 {
+  (void)ptr;
   switch (rc)
   {
   case MEMCACHED_SUCCESS:

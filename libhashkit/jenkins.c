@@ -56,10 +56,11 @@ use a bitmask.  For example, if you need only 10 bits, do
 In which case, the hash table should have hashsize(10) elements.
 */
 
-uint32_t hashkit_jenkins(const char *key, size_t length, void *context __attribute__((unused)))
+uint32_t hashkit_jenkins(const char *key, size_t length, void *context)
 {
   uint32_t a,b,c;                                          /* internal state */
   union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */
+  (void)context;
 
   /* Set up the internal state */
   a = b = c = 0xdeadbeef + ((uint32_t)length) + JENKINS_INITVAL;
@@ -82,7 +83,7 @@ uint32_t hashkit_jenkins(const char *key, size_t length, void *context __attribu
     }
 
     /*----------------------------- handle the last (probably partial) block */
-    /* 
+    /*
      * "k[2]&0xffffff" actually reads beyond the end of the string, but
      * then masks off the part it's not allowed to read.  Because the
      * string is aligned, the masked-off tail is in the same word as the
@@ -109,7 +110,7 @@ uint32_t hashkit_jenkins(const char *key, size_t length, void *context __attribu
     default: return c;
     }
 
-  } 
+  }
   else if ((u.i & 0x1) == 0)
   {
     const uint16_t *k = (const uint16_t *)key;         /* read 16-bit chunks */
@@ -159,7 +160,7 @@ uint32_t hashkit_jenkins(const char *key, size_t length, void *context __attribu
     default: return c;
     }
 
-  } 
+  }
   else
   {                        /* need to read the key one byte at a time */
 #endif /* little endian */

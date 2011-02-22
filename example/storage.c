@@ -165,7 +165,8 @@ void update_cas(struct item* item)
   item->cas= ++cas;
 }
 
-void release_item(struct item* item __attribute__((unused)))
+void release_item(struct item* item)
 {
+  (void)item;
   /* EMPTY */
 }

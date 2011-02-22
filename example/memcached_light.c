@@ -287,8 +287,8 @@ static const char* comcode2str(uint8_t cmd)
 /**
  * Print out the command we are about to execute
  */
-static void pre_execute(const void *cookie __attribute__((unused)),
-                        protocol_binary_request_header *header __attribute__((unused)))
+static void pre_execute(const void *cookie,
+                        protocol_binary_request_header *header)
 {
   if (verbose)
   {
@@ -303,8 +303,8 @@ static void pre_execute(const void *cookie __attribute__((unused)),
 /**
  * Print out the command we just executed
  */
-static void post_execute(const void *cookie __attribute__((unused)),
-                         protocol_binary_request_header *header __attribute__((unused)))
+static void post_execute(const void *cookie,
+                         protocol_binary_request_header *header)
 {
   if (verbose)
   {

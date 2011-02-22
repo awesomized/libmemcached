@@ -13,10 +13,11 @@ http://en.wikipedia.org/wiki/Jenkins_hash_function
 
 #include "common.h"
 
-uint32_t hashkit_one_at_a_time(const char *key, size_t key_length, void *context __attribute__((unused)))
+uint32_t hashkit_one_at_a_time(const char *key, size_t key_length, void *context)
 {
   const char *ptr= key;
   uint32_t value= 0;
+  (void)context;
 
   while (key_length--)
   {

@@ -310,8 +310,8 @@ memcached_return_t memcached_cas(memcached_st *ptr,
 }
 
 memcached_return_t memcached_set_by_key(memcached_st *ptr,
-                                        const char *master_key __attribute__((unused)),
-                                        size_t master_key_length __attribute__((unused)),
+                                        const char *master_key,
+                                        size_t master_key_length,
                                         const char *key, size_t key_length,
                                         const char *value, size_t value_length,
                                         time_t expiration,

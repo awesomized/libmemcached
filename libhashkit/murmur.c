@@ -1,4 +1,4 @@
-/* 
+/*
   "Murmur" hash provided by Austin, tanjent@gmail.com
   http://murmurhash.googlepages.com/
 
@@ -17,9 +17,9 @@
 
 #include "common.h"
 
-uint32_t hashkit_murmur(const char *key, size_t length, void *context __attribute__((unused)))
+uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 {
-  /* 
+  /*
     'm' and 'r' are mixing constants generated offline.  They're not
     really 'magic', they just happen to work well.
   */
@@ -36,16 +36,17 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context __attribut
   // Mix 4 bytes at a time into the hash
 
   const unsigned char * data= (const unsigned char *)key;
+  (void)context;
 
   while(length >= 4)
   {
     unsigned int k = *(unsigned int *)data;
 
-    k *= m; 
-    k ^= k >> r; 
-    k *= m; 
+    k *= m;
+    k ^= k >> r;
+    k *= m;
 
-    h *= m; 
+    h *= m;
     h ^= k;
 
     data += 4;
@@ -63,9 +64,9 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context __attribut
   default: break;
   };
 
-  /* 
+  /*
     Do a few final mixes of the hash to ensure the last few bytes are
-    well-incorporated.  
+    well-incorporated.
   */
 
   h ^= h >> 13;
