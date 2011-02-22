@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: libmemcached
 Description: libmemcached C library.
 Version: @VERSION@
-Libs: -L${libdir} -lmemcached
+Libs: @LTLIBSASL@ @LTLIBSASL2@ -L${libdir} -lmemcached
 Cflags: -I${includedir}
