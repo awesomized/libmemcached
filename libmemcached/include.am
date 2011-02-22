@@ -149,7 +149,7 @@ libmemcached_libmemcachedprotocol_la_DEPENDENCIES=libmemcached/libbyteorder.la
 endif
 
 if HAVE_SASL
-libmemcached_libmemcached_la_LDFLAGS+= $(LIBSASL)
+libmemcached_libmemcached_la_LDFLAGS+= $(LTLIBSASL) $(LTLIBSASL2)
 libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.c
 endif
 
