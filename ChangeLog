@@ -1,3 +1,11 @@
+0.47 Wed Feb 23 18:46:48 PST 2011
+  * Additional fixes for OpenBSD.
+  * Bug fix 677609, 456080.
+  * SIGPIPE fix for Linux send(). 
+  * memcapable can now test ascii or binary based on flags.
+  * Additional build fixes for SASL.
+
+
 0.46 Mon Feb 14 10:28:01 PST 2011
   * Fixes a number of corner case bugs.
   * Fixes related to OpenBSD.
