@@ -619,11 +619,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       increment_udp_message_id(ptr);
 
     WATCHPOINT_ASSERT(ptr->fd != -1);
-#if defined(__MACH__) && defined(__APPLE__) || defined(__FreeBSD__)
-    sent_length= send(ptr->fd, local_write_ptr, write_length, 0);
-#else
     sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
-#endif
     if (sent_length == SOCKET_ERROR)
     {
       ptr->cached_errno= get_socket_errno();

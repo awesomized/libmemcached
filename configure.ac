@@ -79,6 +79,15 @@ AH_BOTTOM([
 #define closesocket(a) close(a)
 #define get_socket_errno() errno
 #endif
+
+#ifndef HAVE_MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
+
+#ifndef HAVE_MSG_DONTWAIT
+#define MSG_DONTWAIT 0
+#endif
+
 #endif
 ])
 
@@ -144,6 +153,7 @@ AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
        AM_CXXFLAGS="$AM_CXXFLAGS $NO_WERROR"
       ])
 DETECT_EAGAIN
+SOCKET_SEND_FLAGS
 
 AC_CONFIG_FILES([
   Makefile
