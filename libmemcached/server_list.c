@@ -42,8 +42,11 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
     return NULL;
   }
 
-  /* TODO: Check return type */
+  /* @todo Check return type */
   memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
+
+  // Handset allocated since 
+  new_host_list->options.is_allocated= true;
 
   /* Backwards compatibility hack */
   memcached_servers_set_count(new_host_list, count);

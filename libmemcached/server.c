@@ -115,7 +115,14 @@ void memcached_server_free(memcached_server_st *self)
 
   if (memcached_is_allocated(self))
   {
-    libmemcached_free(self->root, self);
+    if (self->root)
+    {
+      libmemcached_free(self->root, self);
+    }
+    else
+    {
+      free(self);
+    }
   }
   else
   {

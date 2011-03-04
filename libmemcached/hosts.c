@@ -337,7 +337,9 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
             || ((list[x].type == MEMCACHED_CONNECTION_UDP)
             && ! (ptr->flags.use_udp)) )
+    {
       return MEMCACHED_INVALID_HOST_PROTOCOL;
+    }
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 

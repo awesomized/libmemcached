@@ -6122,6 +6122,16 @@ static test_return_t regression_bug_583031(memcached_st *unused)
     return TEST_SUCCESS;
 }
 
+// Look for memory leak
+static test_return_t regression_bug_728286(memcached_st *unused)
+{
+  (void)unused;
+  memcached_server_st *servers = memcached_servers_parse("1.2.3.4:99");
+  memcached_server_free(servers);
+
+  return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -6439,6 +6449,7 @@ test_st regression_tests[]= {
   {"lp:490486", 1, (test_callback_fn)regression_bug_490486 },
   {"lp:583031", 1, (test_callback_fn)regression_bug_583031 },
   {"lp:?", 1, (test_callback_fn)regression_bug_ },
+  {"lp:728286", 1, (test_callback_fn)regression_bug_728286 },
   {0, 0, (test_callback_fn)0}
 };
 
