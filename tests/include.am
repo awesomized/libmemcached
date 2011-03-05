@@ -1,8 +1,17 @@
 # vim:ft=automake
+# Copyright (C) 2011 Data Differential
+# All rights reserved.
+#
+# Use and distribution licensed under the BSD license.  See
+# the COPYING file in the parent directory for full text.
+#
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-TESTS_LDADDS = libmemcached/libmemcached.la
+TESTS_LDADDS= \
+	      libmemcached/libmemcached.la \
+	      libtest/libserver.la \
+	      libtest/libtest.la
 
 VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --track-fds=yes
 
@@ -22,9 +31,7 @@ noinst_HEADERS+= \
 		 tests/hash_results.h \
 		 tests/ketama_test_cases.h \
 		 tests/ketama_test_cases_spy.h \
-		 tests/libmemcached_world.h \
-		 tests/server.h \
-		 tests/test.h
+		 tests/libmemcached_world.h
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
@@ -36,55 +43,44 @@ noinst_PROGRAMS+= \
 		  tests/testplus \
 		  tests/testudp
 
-noinst_LTLIBRARIES+= tests/libserver.la
-tests_libserver_la_SOURCES= tests/server.c
-
-noinst_LTLIBRARIES+= tests/libtest.la
-tests_libtest_la_SOURCES= tests/test.c
-
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= tests/mem_functions.c
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \
 			    clients/libgenexec.la \
-			    tests/libserver.la \
-			    tests/libtest.la \
 			    libmemcached/libmemcachedinternal.la \
 			    $(TESTS_LDADDS)
+
 tests_testapp_LDADD= clients/libgenexec.la \
-		     tests/libserver.la \
-		     tests/libtest.la \
 		     libmemcached/libmemcachedinternal.la \
 		     $(TESTS_LDADDS) $(LIBSASL)
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_testplus_DEPENDENCIES= tests/libtest.la tests/libserver.la $(TESTS_LDADDS)
+tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 
 tests_atomsmasher_SOURCES= tests/atomsmasher.c
 tests_atomsmasher_DEPENDENCIES= \
 				clients/libgenexec.la \
-				tests/libserver.la \
-				tests/libtest.la \
 				$(TESTS_LDADDS)
+
 tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.c
 tests_testudp_DEPENDENCIES= \
 			    clients/libgenexec.la \
-			    tests/libserver.la \
-			    tests/libtest.la \
 			    $(TESTS_LDADDS)
+
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 
 tests_startservers_SOURCES= tests/start.c
-tests_startservers_DEPENDENCIES= tests/libserver.la $(TESTS_LDADDS)
+tests_startservers_DEPENDENCIES= $(TESTS_LDADDS)
 tests_startservers_LDADD= $(tests_startservers_DEPENDENCIES) $(LIBSASL)
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.c
-tests_testhashkit_DEPENDENCIES = tests/libtest.la libhashkit/libhashkit.la
+tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_hashplus_SOURCES = tests/hash_plus.cc
@@ -94,7 +90,7 @@ tests_hashplus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
 tests_memplus_SOURCES = tests/mem_plus.cc
 tests_memplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memplus_DEPENDENCIES = tests/libtest.la tests/libserver.la libmemcached/libmemcached.la
+tests_memplus_DEPENDENCIES = $(TESTS_LDADDS)
 tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES) $(LIBSASL)
 
 test: check

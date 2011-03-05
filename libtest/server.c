@@ -32,7 +32,7 @@
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 
-#include "server.h"
+#include <libtest/server.h>
 
 static struct timespec global_sleep_value= { .tv_sec= 0, .tv_nsec= 50000 };
 

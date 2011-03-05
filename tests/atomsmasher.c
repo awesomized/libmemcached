@@ -26,11 +26,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
-#include "server.h"
 #include "../clients/generator.h"
 #include "../clients/execute.h"
 
-#include "test.h"
+#include <libtest/server.h>
+#include <libtest/test.h>
 
 /* Number of items generated for tests */
 #define GLOBAL_COUNT 100000

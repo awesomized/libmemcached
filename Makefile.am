@@ -41,6 +41,7 @@ test-docs:
 	(cd docs && $(MAKE) test-docs)
 include libmemcached/include.am
 include clients/include.am
+include libtest/include.am
 include libhashkit/include.am
 include unittests/include.am
 include tests/include.am
