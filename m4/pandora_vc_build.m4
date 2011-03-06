@@ -60,6 +60,7 @@ AC_DEFUN([PANDORA_BUILDING_FROM_VC],[
         PANDORA_VC_REVNO="${PANDORA_BZR_REVNO}"
         PANDORA_VC_REVID=`bzr log -r-1 --show-ids | grep revision-id | cut -f2 -d' ' | head -1`
         PANDORA_VC_BRANCH=`bzr nick`
+        PANDORA_VC_TAG=`bzr tags -r-1 | cut -f1 -d' ' | head -1`
         if test "x${vc_changelog}" = "xyes"; then
           bzr log --gnu > ChangeLog
         fi
@@ -75,6 +76,7 @@ AC_DEFUN([PANDORA_BUILDING_FROM_VC],[
 PANDORA_VC_REVNO=${PANDORA_VC_REVNO}
 PANDORA_VC_REVID=${PANDORA_VC_REVID}
 PANDORA_VC_BRANCH=${PANDORA_VC_BRANCH}
+PANDORA_VC_TAG=${PANDORA_VC_TAG}
 PANDORA_RELEASE_DATE=${PANDORA_RELEASE_DATE}
 PANDORA_RELEASE_NODOTS_DATE=${PANDORA_RELEASE_NODOTS_DATE}
 EOF
@@ -100,6 +102,8 @@ AC_DEFUN([PANDORA_VC_VERSION],[
     _PANDORA_READ_FROM_FILE([PANDORA_VC_REVID],${srcdir}/config/pandora_vc_revinfo)
     _PANDORA_READ_FROM_FILE([PANDORA_VC_BRANCH],
                             ${srcdir}/config/pandora_vc_revinfo)
+    _PANDORA_READ_FROM_FILE([PANDORA_VC_TAG],
+                            ${srcdir}/config/pandora_vc_revinfo)
     _PANDORA_READ_FROM_FILE([PANDORA_RELEASE_DATE],
                             ${srcdir}/config/pandora_vc_revinfo)
     _PANDORA_READ_FROM_FILE([PANDORA_RELEASE_NODOTS_DATE],
@@ -111,7 +115,11 @@ AC_DEFUN([PANDORA_VC_VERSION],[
     PANDORA_RELEASE_COMMENT="trunk"
   ])
     
-  PANDORA_RELEASE_VERSION="${PANDORA_RELEASE_DATE}.${PANDORA_VC_REVNO}"
+  AS_IF([test "x${PANDORA_VC_TAG}" = "x"],[
+    PANDORA_RELEASE_VERSION="${PANDORA_RELEASE_DATE}.${PANDORA_VC_REVNO}"
+  ],[
+    PANDORA_RELEASE_VERSION="${PANDORA_VC_TAG}"
+  ])
   PANDORA_RELEASE_ID="${PANDORA_RELEASE_NODOTS_DATE}${PANDORA_VC_REVNO}"
 
   VERSION="${PANDORA_RELEASE_VERSION}"
