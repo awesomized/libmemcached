@@ -5,9 +5,11 @@ SUFFIXES =
 PHONY =
 TESTS =
 CLEANFILES =
+DISTCLEANFILES =
 bin_PROGRAMS =
 noinst_HEADERS =
 lib_LTLIBRARIES =
+man_MANS =
 noinst_LTLIBRARIES =
 noinst_PROGRAMS =
 include_HEADERS =
@@ -31,14 +33,6 @@ EXTRA_DIST= \
 	    m4/po.m4 \
 	    m4/progtest.m4
 
-TEST_DOCS=
-if BUILD_DOCS
-SUBDIRS = docs
-TEST_DOCS+=test-docs
-endif
-
-test-docs:
-	(cd docs && $(MAKE) test-docs)
 include libmemcached/include.am
 include clients/include.am
 include libhashkit/include.am
@@ -80,6 +74,9 @@ merge-clean:
 	find ./ | $(GREP) \.rpm | xargs rm -f
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
+
+clean-local:
+	-rm -rf docs/_build docs/doctrees
 
 lcov: lcov-clean check
 	@echo
