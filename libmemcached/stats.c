@@ -405,9 +405,20 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   memcached_return_t rc;
   memcached_stat_st *stats;
 
+  if (! ptr)
+  {
+    WATCHPOINT_ASSERT(memc_ptr);
+    return NULL;
+  }
+
+  WATCHPOINT_ASSERT(error);
+
+
   unlikely (ptr->flags.use_udp)
   {
-    *error= MEMCACHED_NOT_SUPPORTED;
+    if (error)
+      *error= MEMCACHED_NOT_SUPPORTED;
+
     return NULL;
   }
 
@@ -415,7 +426,9 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 
   if (! stats)
   {
-    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    if (error)
+      *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
     return NULL;
   }
 
@@ -445,7 +458,9 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
       rc= MEMCACHED_SOME_ERRORS;
   }
 
-  *error= rc;
+  if (error)
+    *error= rc;
+
   return stats;
 }
 

@@ -6133,6 +6133,20 @@ static test_return_t regression_bug_728286(memcached_st *unused)
   return TEST_SUCCESS;
 }
 
+static test_return_t regression_bug_581030(memcached_st *unused)
+{
+  (void)unused;
+
+#ifndef DEBUG
+  memcached_stat_st *local_stat= memcached_stat(NULL, NULL, NULL);
+  test_false(local_stat);
+
+  memcached_stat_free(NULL, NULL);
+#endif
+
+  return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -6451,6 +6465,7 @@ test_st regression_tests[]= {
   {"lp:583031", 1, (test_callback_fn)regression_bug_583031 },
   {"lp:?", 1, (test_callback_fn)regression_bug_ },
   {"lp:728286", 1, (test_callback_fn)regression_bug_728286 },
+  {"lp:581030", 1, (test_callback_fn)regression_bug_581030 },
   {0, 0, (test_callback_fn)0}
 };
 
