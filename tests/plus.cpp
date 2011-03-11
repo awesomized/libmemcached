@@ -12,9 +12,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
-#include "server.h"
 
-#include "test.h"
+#include <libtest/server.h>
+
+#include <libtest/test.h>
 
 #include <string>
 #include <iostream>

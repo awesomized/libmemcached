@@ -1,7 +1,8 @@
 /*
   C++ to libhashkit
 */
-#include "test.h"
+#include <libtest/test.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

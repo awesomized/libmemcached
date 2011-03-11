@@ -12,7 +12,7 @@ unittests_unittests_SOURCES= \
 
 unittests_unittests_CXXFLAGS= ${AM_CXXFLAGS} ${NO_WERROR} ${NO_EFF_CXX}
 unittests_unittests_LDADD= \
-			   tests/libserver.la \
+			   libtest/libserver.la \
 			   libmemcached/libmemcachedinternal.la \
 			   ${TESTS_LDADDS} ${LTLIBGTEST}
 # Shorthand

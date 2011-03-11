@@ -81,6 +81,7 @@ MEMCACHED_CALLBACK_PREFIX_KEY
  not the master key. MEMCACHED_FAILURE will be returned if no key is set. In the case
  of a key which is too long MEMCACHED_BAD_KEY_PROVIDED will be returned.
  
+ If you set a value with the value being NULL then the prefix key is disabled.
 
 
 MEMCACHED_CALLBACK_USER_DATA

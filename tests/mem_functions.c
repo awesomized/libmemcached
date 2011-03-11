@@ -26,13 +26,14 @@
 
 #include "libmemcached/common.h"
 
-#include "server.h"
+#include <libtest/server.h>
+
 #include "clients/generator.h"
 #include "clients/execute.h"
 
 #define SMALL_STRING_LEN 1024
 
-#include "test.h"
+#include <libtest/test.h>
 
 
 #ifdef HAVE_LIBMEMCACHEDUTIL

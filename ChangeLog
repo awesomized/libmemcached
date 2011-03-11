@@ -1,3 +1,8 @@
+0.48
+  * Fix memory leak in server parse.
+  * Move test framework out to be its own library (easier to work with Gearman).
+
+
 0.47 Wed Feb 23 18:46:48 PST 2011
   * Additional fixes for OpenBSD.
   * Bug fix 677609, 456080.

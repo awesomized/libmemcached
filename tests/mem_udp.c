@@ -26,9 +26,8 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "server.h"
-
-#include "test.h"
+#include <libtest/server.h>
+#include <libtest/test.h>
 
 #define SERVERS_TO_CREATE 5
 

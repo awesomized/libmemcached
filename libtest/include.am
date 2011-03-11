@@ -1,0 +1,20 @@
+# vim:ft=automake
+# Copyright (C) 2011 Data Differential (http://datadifferential.com/)
+# All rights reserved.
+#
+# Use and distribution licensed under the BSD license.  See
+# the COPYING file in the parent directory for full text.
+#
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+noinst_HEADERS+= \
+		 libtest/server.h \
+		 libtest/test.h
+
+noinst_LTLIBRARIES+= libtest/libserver.la
+libtest_libserver_la_SOURCES= libtest/server.c
+
+noinst_LTLIBRARIES+= libtest/libtest.la
+libtest_libtest_la_SOURCES= libtest/test.c
+

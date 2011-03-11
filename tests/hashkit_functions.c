@@ -15,7 +15,7 @@
 
 #include <libhashkit/hashkit.h>
 
-#include "test.h"
+#include <libtest/test.h>
 
 #include "hash_results.h"
 

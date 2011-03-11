@@ -186,3 +186,4 @@ tests/testplus
 tests/testudp
 unittests/unittests
 config/top.h
+libmemcached/generated_probes.h
