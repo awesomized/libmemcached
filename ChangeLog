@@ -1,4 +1,4 @@
-0.48
+0.48 Tue Mar 15 23:05:18 PDT 2011
   * Fix memory leak in server parse.
   * Move test framework out to be its own library (easier to work with Gearman).
 
