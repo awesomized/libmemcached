@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
   if (sasl_client_init(NULL) != SASL_OK)
   {
      fprintf(stderr, "Failed to initialize sasl library!\n");
-     return 1;
+     return EXIT_FAILURE;
   }
 #endif
 
@@ -357,7 +357,7 @@ cleanup:
     if (error != TEST_SUCCESS)
     {
       fprintf(stderr, "Failure during shutdown.\n");
-      stats.failed++; // We do this to make our exit code return 1
+      stats.failed++; // We do this to make our exit code return EXIT_FAILURE
     }
   }
 

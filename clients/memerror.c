@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   options_parse(argc, argv);
 
   if (argc != 2)
-    return 1;
+    return EXIT_FAILURE;
 
   value= strtoul(argv[1], (char **) NULL, 10);
 
@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
   else
   {
     fprintf(stderr, "Unknown Error Code\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

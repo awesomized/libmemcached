@@ -314,18 +314,18 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
         /* We just try the first host, and if it is down we return zero */
         if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
         {
-          return 0;
+          return EXIT_SUCCESS;
         }
 
         if (memcached_io_wait_for_write(instance) != MEMCACHED_SUCCESS)
         {
-          return 0;
+          return EXIT_SUCCESS;
         }
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_SNDBUF, &sock_size, &sock_length) < 0)
         {
           ptr->cached_errno= errno;
-          return 0; /* Zero means error */
+          return EXIT_SUCCESS; /* Zero means error */
         }
       }
 
@@ -350,18 +350,18 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
         /* We just try the first host, and if it is down we return zero */
         if ((memcached_connect(instance)) != MEMCACHED_SUCCESS)
         {
-          return 0;
+          return EXIT_SUCCESS;
         }
 
         if (memcached_io_wait_for_write(instance) != MEMCACHED_SUCCESS)
         {
-          return 0;
+          return EXIT_SUCCESS;
         }
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_RCVBUF, &sock_size, &sock_length) < 0)
         {
           ptr->cached_errno= errno;
-          return 0; /* Zero means error */
+          return EXIT_SUCCESS; /* Zero means error */
         }
 
       }
@@ -385,7 +385,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
-    return 0;
+    return EXIT_SUCCESS;
   }
 
   /* NOTREACHED */

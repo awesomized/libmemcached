@@ -180,7 +180,7 @@ static int server_socket(const char *port)
     else
       perror("getaddrinfo()");
 
-    return 1;
+    return EXIT_FAILURE;
   }
 
   struct linger ling= {0, 0};
@@ -343,7 +343,7 @@ static protocol_binary_response_status unknown(const void *cookie,
  *
  * @param argc number of items in the argument vector
  * @param argv argument vector
- * @return 0 on success, 1 otherwise
+ * @return EXIT_SUCCESS on success, 1 otherwise
  */
 int main(int argc, char **argv)
 {
@@ -356,7 +356,7 @@ int main(int argc, char **argv)
   if (event_base == NULL)
   {
     fprintf(stderr, "Failed to create an instance of libevent\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   /*
@@ -389,14 +389,14 @@ int main(int argc, char **argv)
     default:
       (void)fprintf(stderr, "Usage: %s [-p port] [-v] [-1] [-c #clients] [-P pidfile]\n",
                     argv[0]);
-      return 1;
+      return EXIT_FAILURE;
     }
   }
 
   if (! initialize_storage())
   {
     /* Error message already printed */
-    return 1;
+    return EXIT_FAILURE;
   }
 
   if (! global_options.has_port)
@@ -423,7 +423,7 @@ int main(int argc, char **argv)
   if (num_server_sockets == 0)
   {
     fprintf(stderr, "I don't have any server sockets\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   /*
@@ -439,14 +439,14 @@ int main(int argc, char **argv)
   if ((protocol_handle= memcached_protocol_create_instance()) == NULL)
   {
     fprintf(stderr, "Failed to allocate protocol handle\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   socket_userdata_map= calloc((size_t)(maxconns), sizeof(struct connection));
   if (socket_userdata_map == NULL)
   {
     fprintf(stderr, "Failed to allocate room for connections\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   memcached_binary_protocol_set_callbacks(protocol_handle, interface);
@@ -470,5 +470,5 @@ int main(int argc, char **argv)
   event_base_loop(event_base, 0);
 
   /* NOTREACHED */
-  return 0;
+  return EXIT_SUCCESS;
 }

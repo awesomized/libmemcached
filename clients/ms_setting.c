@@ -195,7 +195,7 @@ static void ms_get_serverlist(char *str)
 /**
  * used to get the CPU count of the current system
  *
- * @return return the cpu count if get, else return 1
+ * @return return the cpu count if get, else return EXIT_FAILURE
  */
 static uint32_t ms_get_cpu_count()
 {
@@ -223,7 +223,7 @@ static uint32_t ms_get_cpu_count()
 #endif
 
   /* the system with one cpu at least */
-  return 1;
+  return EXIT_FAILURE;
 } /* ms_get_cpu_count */
 
 
@@ -262,7 +262,7 @@ ms_conf_type_t ms_get_conf_type(char *line)
  *
  * @param line, string of one line
  *
- * @return if success, return 1, else return 0
+ * @return if success, return EXIT_FAILURE, else return EXIT_SUCCESS
  */
 static int ms_is_line_data(char *line)
 {
@@ -275,9 +275,9 @@ static int ms_is_line_data(char *line)
     begin_ptr++;
   }
   if ((begin_ptr[0] == '\0') || (begin_ptr[0] == '#'))
-    return 0;
+    return EXIT_SUCCESS;
 
-  return 1;
+  return EXIT_FAILURE;
 } /* ms_is_line_data */
 
 
@@ -287,14 +287,14 @@ static int ms_is_line_data(char *line)
  * @param line, string of one line
  * @param nread, length of the line
  *
- * @return if it's EOF or not line data, return 0, else return 1
+ * @return if it's EOF or not line data, return EXIT_SUCCESS, else return EXIT_FAILURE
  */
 static int ms_read_is_data(char *line, ssize_t nread)
 {
   if ((nread == EOF) || ! ms_is_line_data(line))
-    return 0;
+    return EXIT_SUCCESS;
 
-  return 1;
+  return EXIT_FAILURE;
 } /* ms_read_is_data */
 
 
@@ -575,7 +575,7 @@ static void ms_calc_avg_size()
  * @param distr, pointer of distribution structure array
  * @param length, length of the array
  *
- * @return always return 0
+ * @return always return EXIT_SUCCESS
  */
 static int ms_shuffle_distr(ms_distr_t *distr, int length)
 {
@@ -614,7 +614,7 @@ static int ms_shuffle_distr(ms_distr_t *distr, int length)
     } /* switch */
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 } /* ms_shuffle_distr */
 
 

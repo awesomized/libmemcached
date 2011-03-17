@@ -48,7 +48,7 @@ static test_return_t cleanup_pairs(memcached_st *memc)
   (void)memc;
   pairs_free(global_pairs);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 static test_return_t generate_pairs(memcached_st *memc)
@@ -63,7 +63,7 @@ static test_return_t generate_pairs(memcached_st *memc)
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 static test_return_t drizzle(memcached_st *memc)
@@ -160,7 +160,7 @@ static test_return_t add_test(memcached_st *memc)
     test_true(rc == MEMCACHED_NOTSTORED);
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 /*
@@ -173,7 +173,7 @@ static test_return_t many_adds(memcached_st *memc)
   {
     add_test(memc);
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 test_st smash_tests[] ={

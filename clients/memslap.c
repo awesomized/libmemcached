@@ -659,7 +659,7 @@ static int ms_check_para()
     return -1;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 } /* ms_check_para */
 
 
@@ -904,5 +904,5 @@ int main(int argc, char *argv[])
   ms_global_struct_destroy();
   ms_setting_cleanup();
 
-  return 0;
+  return EXIT_SUCCESS;
 } /* main */

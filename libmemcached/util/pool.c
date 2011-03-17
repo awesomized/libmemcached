@@ -68,7 +68,7 @@ static int grow_pool(memcached_pool_st* pool)
   pool->mmc[++pool->firstfree] = obj;
   pool->current_size++;
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 memcached_pool_st *memcached_pool_create(memcached_st* mmc,

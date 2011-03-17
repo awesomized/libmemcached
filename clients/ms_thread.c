@@ -146,7 +146,7 @@ static void ms_clock_handler(const int fd, const short which, void *arg)
  *
  * @param cpu, cpu index
  *
- * @return if success, return 0, else return -1
+ * @return if success, return EXIT_SUCCESS, else return -1
  */
 static uint32_t ms_set_thread_cpu_affinity(uint32_t cpu)
 {
@@ -175,7 +175,7 @@ static uint32_t ms_set_thread_cpu_affinity(uint32_t cpu)
  *
  * @param thread_ctx, pointer of the thread context structure
  *
- * @return if success, return 0, else return -1
+ * @return if success, return EXIT_SUCCESS, else return -1
  */
 static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
 {
@@ -231,7 +231,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
     }
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 } /* ms_setup_thread */
 
 

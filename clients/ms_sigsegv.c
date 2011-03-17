@@ -61,7 +61,7 @@ static void ms_signal_int(int signum, siginfo_t *info, void *ptr)
 /**
  * redirect signal seg
  *
- * @return if success, return 0, else return -1
+ * @return if success, return EXIT_SUCCESS, else return -1
  */
 int ms_setup_sigsegv(void)
 {
@@ -73,7 +73,7 @@ int ms_setup_sigsegv(void)
   if (sigaction(SIGSEGV, &action, NULL) < 0)
   {
     perror("sigaction");
-    return 0;
+    return EXIT_SUCCESS;
   }
 
   return -1;
@@ -83,7 +83,7 @@ int ms_setup_sigsegv(void)
 /**
  * redirect signal pipe
  *
- * @return if success, return 0, else return -1
+ * @return if success, return EXIT_SUCCESS, else return -1
  */
 int ms_setup_sigpipe(void)
 {
@@ -97,7 +97,7 @@ int ms_setup_sigpipe(void)
 /**
  * redirect signal int
  *
- * @return if success, return 0, else return -1
+ * @return if success, return EXIT_SUCCESS, else return -1
  */
 int ms_setup_sigint(void)
 {
@@ -109,7 +109,7 @@ int ms_setup_sigint(void)
   if (sigaction(SIGINT, &action_3, NULL) < 0)
   {
     perror("sigaction");
-    return 0;
+    return EXIT_SUCCESS;
   }
 
   return -1;

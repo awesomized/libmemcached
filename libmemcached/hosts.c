@@ -92,9 +92,9 @@ static int continuum_item_cmp(const void *t1, const void *t2)
   /* Why 153? Hmmm... */
   WATCHPOINT_ASSERT(ct1->value != 153);
   if (ct1->value == ct2->value)
-    return 0;
+    return EXIT_SUCCESS;
   else if (ct1->value > ct2->value)
-    return 1;
+    return EXIT_FAILURE;
   else
     return -1;
 }

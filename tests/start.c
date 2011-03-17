@@ -25,5 +25,5 @@ int main(void)
 
   server_startup(&construct);
 
-  return 0;
+  return EXIT_SUCCESS;
 }

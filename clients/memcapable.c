@@ -623,7 +623,7 @@ static enum test_return test_binary_quit_impl(uint8_t cc)
                                     PROTOCOL_BINARY_RESPONSE_SUCCESS));
   }
 
-  /* Socket should be closed now, read should return 0 */
+  /* Socket should be closed now, read should return EXIT_SUCCESS */
   verify(timeout_io_op(sock, POLLIN, rsp.bytes, sizeof(rsp.bytes)) == 0);
 
   return TEST_PASS_RECONNECT;
@@ -1211,7 +1211,7 @@ static enum test_return test_ascii_quit(void)
   /* Verify that quit works */
   execute(send_string("quit\r\n"));
 
-  /* Socket should be closed now, read should return 0 */
+  /* Socket should be closed now, read should return EXIT_SUCCESS */
   char buffer[80];
   verify(timeout_io_op(sock, POLLIN, buffer, sizeof(buffer)) == 0);
   return TEST_PASS_RECONNECT;
@@ -1976,7 +1976,7 @@ int main(int argc, char **argv)
       if (timeout == 0)
       {
         fprintf(stderr, "Invalid timeout. Please specify a number for -t\n");
-        return 1;
+        return EXIT_FAILURE;
       }
       break;
     case 'v': verbose= true;
@@ -2004,7 +2004,7 @@ int main(int argc, char **argv)
               "\t-a\tOnly test the ascii protocol\n"
               "\t-b\tOnly test the binary protocol\n",
               argv[0]);
-      return 1;
+      return EXIT_FAILURE;
     }
   }
 
@@ -2014,7 +2014,7 @@ int main(int argc, char **argv)
   {
     fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
             hostname, port, strerror(get_socket_errno()));
-    return 1;
+    return EXIT_FAILURE;
   }
 
   for (int ii= 0; testcases[ii].description != NULL; ++ii)
@@ -2072,7 +2072,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
                 hostname, port, strerror(get_socket_errno()));
         fprintf(stderr, "%d of %d tests failed\n", failed, total);
-        return 1;
+        return EXIT_FAILURE;
       }
     }
   }

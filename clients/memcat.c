@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   if (!initialize_sasl(memc, opt_username, opt_passwd))
   {
     memcached_free(memc);
-    return 1;
+    return EXIT_FAILURE;
   }
 
   while (optind < argc)
