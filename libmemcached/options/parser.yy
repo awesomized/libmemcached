@@ -102,7 +102,7 @@ statement:
 expression:
           SERVER '=' server
           { 
-            (void) memcached_server_add(parser->memc, $3.c_str, $3.port);
+            (void) memcached_server_add_parsed(parser->memc, $3.c_str, $3.length, $3.port, 0);
           }
         | SERVERS '=' server_list
           { }
@@ -119,11 +119,11 @@ expression:
 server_list:
           server
           {
-            (void) memcached_server_add(parser->memc, $1.c_str, $1.port);
+            (void) memcached_server_add_parsed(parser->memc, $1.c_str, $1.length, $1.port, 0);
           }
         | server_list ',' server
           {
-            (void) memcached_server_add(parser->memc, $3.c_str, $3.port);
+            (void) memcached_server_add_parsed(parser->memc, $3.c_str, $3.length, $3.port, 0);
           }
         ;
 

@@ -84,7 +84,7 @@ test_return_t servers_test(memcached_st *junk)
 
   scanner_string_st test_strings[]= {
     { STRING_WITH_LEN("--servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225") },
-    { STRING_WITH_LEN("--servers=a.example.com:80,localhost:80,b.example.com") },
+    { STRING_WITH_LEN("--servers=a.example.com:81,localhost:82,b.example.com") },
     { STRING_WITH_LEN("--servers=localhost,localhost:80") },
     { NULL, 0}
   };
@@ -98,7 +98,7 @@ test_return_t servers_test(memcached_st *junk)
 
     memcached_server_fn callbacks[1];
     callbacks[0]= server_print_callback;
-    memcached_server_cursor(memc, callbacks, memc,  1);
+    memcached_server_cursor(memc, callbacks, NULL,  1);
 
     memcached_servers_reset(memc);
   }
