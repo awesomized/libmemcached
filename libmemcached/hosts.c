@@ -17,6 +17,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      in_port_t port,
                                      uint32_t weight,
                                      memcached_connection_t type);
+
 static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)

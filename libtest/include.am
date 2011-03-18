@@ -10,7 +10,8 @@
 
 noinst_HEADERS+= \
 		 libtest/server.h \
-		 libtest/test.h
+		 libtest/test.h \
+		 libtest/visibility.h
 
 noinst_LTLIBRARIES+= libtest/libserver.la
 libtest_libserver_la_SOURCES= libtest/server.c

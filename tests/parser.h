@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Gearmand client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,33 +35,20 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#include <iostream>
+#include <libtest/test.h>
 
-#include <libmemcached/memcached.h>
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
-int main(int argc, char *argv[])
-{
+LIBTEST_INTERNAL_API
+test_return_t server_test(memcached_st *memc);
 
-  if (argc != 2)
-  {
-    std::cerr << "Wrong number of arguments" << std::endl;
-    return EXIT_FAILURE;
-  }
+LIBTEST_INTERNAL_API
+test_return_t servers_test(memcached_st *memc);
 
-  memcached_st *memc;
-
-  memc= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_parse_options(memc, argv[1], strlen(argv[1]));
-  memcached_free(memc);
-
-  if (rc != MEMCACHED_SUCCESS)
-  {
-    std::cerr << "Failed to parse options" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  return EXIT_SUCCESS;
+#ifdef	__cplusplus
 }
+#endif

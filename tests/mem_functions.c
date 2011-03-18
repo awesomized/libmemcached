@@ -34,6 +34,8 @@
 #define SMALL_STRING_LEN 1024
 
 #include <libtest/test.h>
+#include "tests/parser.h"
+#include "tests/print.h"
 
 
 #ifdef HAVE_LIBMEMCACHEDUTIL
@@ -187,21 +189,6 @@ static test_return_t server_sort2_test(memcached_st *ptr)
   memcached_free(local_memc);
 
   return TEST_SUCCESS;
-}
-
-static memcached_return_t server_print_callback(const memcached_st *ptr,
-                                                const memcached_server_st *server,
-                                                void *context)
-{
-  (void)server; // Just in case we aren't printing.
-  (void)ptr;
-  (void)context;
-
-#if 0
-  fprintf(stderr, "%s(%d)", memcached_server_name(server), memcached_server_port(server));
-#endif
-
-  return MEMCACHED_SUCCESS;
 }
 
 static test_return_t memcached_server_remove_test(memcached_st *ptr)
@@ -6561,6 +6548,13 @@ test_st error_conditions[] ={
   {0, 0, (test_callback_fn)0}
 };
 
+
+test_st parser_tests[] ={
+  {"server", 0, (test_callback_fn)server_test },
+  {"servers", 0, (test_callback_fn)servers_test },
+  {0, 0, (test_callback_fn)0}
+};
+
 collection_st collection[] ={
 #if 0
   {"hash_sanity", 0, 0, hash_sanity},
@@ -6623,6 +6617,7 @@ collection_st collection[] ={
   {"behaviors", 0, 0, behavior_tests},
   {"regression_binary_vs_block", (test_callback_fn)key_setup, (test_callback_fn)key_teardown, regression_binary_vs_block},
   {"error_conditions", 0, 0, error_conditions},
+  {"parser", 0, 0, parser_tests},
   {0, 0, 0, 0}
 };
 

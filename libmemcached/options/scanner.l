@@ -52,12 +52,13 @@ static void get_lex_chars(char* buffer, int& result, int max_size, struct type_s
 
 %%
 
-[=] { return EQ; }
-[,] { return COMMA; }
 
-[0-9]+ { yylval->number = atoi(yytext); return (NUMBER); }
+=|,       { return yytext[0];}
 
-([0-9]*.[0-9]+) { yylval->double_number = atof(yytext); return (FLOAT); }
+
+[[:digit:]]+ { yylval->number = atoi(yytext); return (NUMBER); }
+
+([[:digit:]]*.[:digit:]+) { yylval->double_number = atof(yytext); return (FLOAT); }
 
 [ \t\r\n] ; /* skip whitespace */
 
@@ -68,22 +69,32 @@ static void get_lex_chars(char* buffer, int& result, int max_size, struct type_s
 "--VERIFY_KEY"                 { return VERIFY_KEY; }
 "--VERIFY-KEY"                 { return VERIFY_KEY; }
 
-[A-Za-z][A-Za-z0-9_]*[:]    { 
-                              yylval->string.c_str = yytext;
-                              yylval->string.length = yyleng;
-                              return SERVER_WITH_PORT;
-                            }
+[[:alnum:]][[:alnum:].]*[[:alpha:]]: { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return SERVER_WITH_PORT;
+    }
 
-[A-Za-z][A-Za-z0-9_]*   { 
-                          yylval->string.c_str = yytext;
-                          yylval->string.length = yyleng;
-                          return IDENTIFIER;
-                        }
-[-] ;
+[[:alnum:]][[:alnum:].]*[[:alpha:]] { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return IDENTIFIER;
+    }
+[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}: { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return IPADDRESS_WITH_PORT;
+    }
 
-.                     {
-                        std::cerr << "Near " <<  yytext << std::endl;
-                        return UNKNOWN;
-                      }
+[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}  { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return IPADDRESS;
+    }
+
+. {
+      std::cerr << "Near " <<  yytext << std::endl;
+      return UNKNOWN;
+    }
 
 %%

@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Gearmand client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,33 +35,35 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#include <iostream>
-
-#include <libmemcached/memcached.h>
-
-int main(int argc, char *argv[])
-{
-
-  if (argc != 2)
-  {
-    std::cerr << "Wrong number of arguments" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  memcached_st *memc;
-
-  memc= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_parse_options(memc, argv[1], strlen(argv[1]));
-  memcached_free(memc);
-
-  if (rc != MEMCACHED_SUCCESS)
-  {
-    std::cerr << "Failed to parse options" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  return EXIT_SUCCESS;
-}
+#if defined(BUILDING_LIBTEST)
+# if defined(HAVE_VISIBILITY)
+#  define LIBTEST_API __attribute__ ((visibility("default")))
+#  define LIBTEST_INTERNAL_API __attribute__ ((visibility("hidden")))
+#  define LIBTEST_API_DEPRECATED __attribute__ ((deprecated,visibility("default")))
+#  define LIBTEST_LOCAL  __attribute__ ((visibility("hidden")))
+# elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+#  define LIBTEST_API __global
+#  define LIBTEST_INTERNAL_API __hidden
+#  define LIBTEST_API_DEPRECATED __global
+#  define LIBTEST_LOCAL __hidden
+# elif defined(_MSC_VER)
+#  define LIBTEST_API extern __declspec(dllexport)
+#  define LIBTEST_INTERNAL_API extern __declspec(dllexport)
+#  define LIBTEST_DEPRECATED_API extern __declspec(dllexport)
+#  define LIBTEST_LOCAL
+# endif /* defined(HAVE_VISIBILITY) */
+#else  /* defined(BUILDING_LIBTEST) */
+# if defined(_MSC_VER)
+#  define LIBTEST_API extern __declspec(dllimport)
+#  define LIBTEST_INTERNAL_API extern __declspec(dllimport)
+#  define LIBTEST_API_DEPRECATED extern __declspec(dllimport)
+#  define LIBTEST_LOCAL
+# else
+#  define LIBTEST_API
+#  define LIBTEST_INTERNAL_API
+#  define LIBTEST_API_DEPRECATED
+#  define LIBTEST_LOCAL
+# endif /* defined(_MSC_VER) */
+#endif /* defined(BUILDING_LIBTEST) */

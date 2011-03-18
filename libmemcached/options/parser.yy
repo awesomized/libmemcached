@@ -72,18 +72,20 @@ inline int libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner,
 %start statement
 %verbose
 
-%token EQ
 %token SERVER
 %token SERVERS
 %token TCPNODELAY
 %token UNKNOWN
 %token VERIFY_KEY
-%token COMMA
+%nonassoc ','
+%nonassoc '='
 
 %token <number> NUMBER
 %token <number> FLOAT
 %token <string> IDENTIFIER
 %token <string> SERVER_WITH_PORT
+%token <string> IPADDRESS
+%token <string> IPADDRESS_WITH_PORT
 
 %type <server> server
 
@@ -98,11 +100,11 @@ statement:
 
 
 expression:
-          SERVER EQ server
+          SERVER '=' server
           { 
             (void) memcached_server_add(parser->memc, $3.c_str, $3.port);
           }
-        | SERVERS EQ server_list
+        | SERVERS '=' server_list
           { }
         | TCPNODELAY
           {
@@ -119,7 +121,7 @@ server_list:
           {
             (void) memcached_server_add(parser->memc, $1.c_str, $1.port);
           }
-        | server_list COMMA server
+        | server_list ',' server
           {
             (void) memcached_server_add(parser->memc, $3.c_str, $3.port);
           }
@@ -129,13 +131,25 @@ server:
           SERVER_WITH_PORT NUMBER
           {
             $$.c_str= $1.c_str;
-            $$.length= $1.length;
+            $$.length= $1.length -1;
             $$.port= $2;
           }
         | IDENTIFIER
           {
             $$.c_str= $1.c_str;
             $$.length= $1.length;
-            $$.port= 80;
+            $$.port= MEMCACHED_DEFAULT_PORT;
+          }
+        | IPADDRESS_WITH_PORT NUMBER
+          {
+            $$.c_str= $1.c_str;
+            $$.length= $1.length -1;
+            $$.port= $2;
+          }
+        | IPADDRESS
+          {
+            $$.c_str= $1.c_str;
+            $$.length= $1.length;
+            $$.port= MEMCACHED_DEFAULT_PORT;
           }
         ;

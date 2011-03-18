@@ -9,6 +9,7 @@
  *
  */
 
+#pragma once
 #ifndef __LIBMEMCACHED_CONSTANTS_H__
 #define __LIBMEMCACHED_CONSTANTS_H__
 
