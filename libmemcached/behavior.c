@@ -227,6 +227,9 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
         }
       }
       break;
+  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
+    ptr->flags.load_from_file= set_flag(data);
+    break;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     /* Shouldn't get here */
@@ -382,6 +385,8 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.cork;
   case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
     return ptr->flags.tcp_keepalive;
+  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
+    return ptr->flags.load_from_file;
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */

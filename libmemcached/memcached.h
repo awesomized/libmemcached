@@ -43,6 +43,7 @@
 #include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
 #include <libmemcached/hash.h>
+#include <libmemcached/options.h>
 #include <libmemcached/parse.h>
 #include <libmemcached/quit.h>
 #include <libmemcached/result.h>
@@ -82,6 +83,7 @@ struct memcached_st {
     bool use_udp:1;
     bool verify_key:1;
     bool tcp_keepalive:1;
+    bool load_from_file:1;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;

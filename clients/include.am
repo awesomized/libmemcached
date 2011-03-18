@@ -18,6 +18,7 @@ bin_PROGRAMS+= \
 	clients/memdump \
 	clients/memerror \
 	clients/memflush \
+	clients/memparse \
 	clients/memrm \
 	clients/memstat
 
@@ -49,6 +50,9 @@ clients_libgenexec_la_SOURCES= clients/generator.c clients/execute.c
 
 clients_memcat_SOURCES= clients/memcat.c
 clients_memcat_LDADD= $(CLIENTS_LDADDS)
+
+clients_memparse_SOURCES= clients/memparse.cc
+clients_memparse_LDADD= $(CLIENTS_LDADDS)
 
 clients_memcp_SOURCES= clients/memcp.c
 clients_memcp_LDADD= $(CLIENTS_LDADDS)

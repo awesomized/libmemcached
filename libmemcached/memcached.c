@@ -34,7 +34,9 @@ static const memcached_st global_copy= {
     .use_sort_hosts= false,
     .use_udp= false,
     .verify_key= false,
-    .tcp_keepalive= false
+    .tcp_keepalive= false,
+    .load_from_file= false
+
   }
 };
 
