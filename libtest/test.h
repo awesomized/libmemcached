@@ -227,6 +227,16 @@ do \
   } \
 } while (0)
 
+#define test_false_with(A,B) \
+do \
+{ \
+  if ((A)) { \
+    fprintf(stderr, "\nAssertion failed at %s:%d: %s with %s\n", __FILE__, __LINE__, #A, (B));\
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
 #define test_strcmp(A,B) \
 do \
 { \

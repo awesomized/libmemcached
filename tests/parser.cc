@@ -103,6 +103,89 @@ test_return_t servers_test(memcached_st *junk)
     memcached_servers_reset(memc);
   }
 
+  scanner_string_st bad_test_strings[]= {
+    { STRING_WITH_LEN("-servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225") },
+    { STRING_WITH_LEN("-- servers=a.example.com:81,localhost:82,b.example.com") },
+    { STRING_WITH_LEN("--servers=localhost80") },
+    { NULL, 0}
+  };
+
+  for (scanner_string_st *ptr= bad_test_strings; ptr->size; ptr++)
+  {
+    memcached_return_t rc;
+    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+
+    test_false_with(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
+
+    memcached_server_fn callbacks[1];
+    callbacks[0]= server_print_callback;
+    memcached_server_cursor(memc, callbacks, NULL,  1);
+
+    memcached_servers_reset(memc);
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t behavior_parser_test(memcached_st *junk)
+{
+  (void)junk;
+  return TEST_SUCCESS;
+}
+
+test_return_t parser_hash_test(memcached_st *junk)
+{
+  (void)junk;
+  memcached_return_t rc;
+  memcached_st *memc;
+  memc= memcached_create(NULL);
+
+  scanner_string_st test_strings[]= {
+    { STRING_WITH_LEN("--HASH=MD5") },
+    { STRING_WITH_LEN("--HASH=CRC") },
+    { STRING_WITH_LEN("--HASH=FNV1_64") },
+    { STRING_WITH_LEN("--HASH=FNV1A_64") },
+    { STRING_WITH_LEN("--HASH=FNV1_32") },
+    { STRING_WITH_LEN("--HASH=FNV1A_32") },
+    { STRING_WITH_LEN("--HASH=HSIEH") },
+    { STRING_WITH_LEN("--HASH=MURMUR") },
+    { STRING_WITH_LEN("--HASH=JENKINS") },
+    { NULL, 0}
+  };
+
+  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
+  {
+    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t parser_distribution_test(memcached_st *junk)
+{
+  (void)junk;
+  memcached_return_t rc;
+  memcached_st *memc;
+  memc= memcached_create(NULL);
+
+  scanner_string_st test_strings[]= {
+    { STRING_WITH_LEN("--DISTRIBUTION=consistent") },
+    { STRING_WITH_LEN("--DISTRIBUTION=random") },
+    { STRING_WITH_LEN("--DISTRIBUTION=modula") },
+    { NULL, 0}
+  };
+
+  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
+  {
+    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
+  }
+
   memcached_free(memc);
 
   return TEST_SUCCESS;

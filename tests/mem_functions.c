@@ -6298,6 +6298,9 @@ test_st error_conditions[] ={
 
 
 test_st parser_tests[] ={
+  {"behavior", 0, (test_callback_fn)behavior_parser_test },
+  {"distribtions", 0, (test_callback_fn)parser_distribution_test },
+  {"hash", 0, (test_callback_fn)parser_hash_test },
   {"server", 0, (test_callback_fn)server_test },
   {"servers", 0, (test_callback_fn)servers_test },
   {0, 0, (test_callback_fn)0}

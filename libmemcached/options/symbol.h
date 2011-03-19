@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <libmemcached/constants.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/server.h>
 
@@ -46,6 +47,8 @@ union YYSTYPE
   string_t string;
   server_t server;
   double double_number;
+  memcached_server_distribution_t distribution;
+  memcached_hash_t hash;
 };
 
 typedef union YYSTYPE YYSTYPE;
