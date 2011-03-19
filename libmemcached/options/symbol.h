@@ -49,6 +49,7 @@ union YYSTYPE
   double double_number;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
+  memcached_behavior_t behavior;
 };
 
 typedef union YYSTYPE YYSTYPE;

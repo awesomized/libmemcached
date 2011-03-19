@@ -129,6 +129,79 @@ test_return_t servers_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
+scanner_string_st test_number_options[]= {
+  { STRING_WITH_LEN("--CONNECT_TIMEOUT=456") },
+  { STRING_WITH_LEN("--IO_MSG_WATERMARK=456") },
+  { STRING_WITH_LEN("--IO_BYTES_WATERMARK=456") },
+  { STRING_WITH_LEN("--IO_KEY_PREFETCH=456") },
+  { STRING_WITH_LEN("--NUMBER_OF_REPLICAS=456") },
+  { STRING_WITH_LEN("--POLL_TIMEOUT=456") },
+  { STRING_WITH_LEN("--RCV_TIMEOUT=456") },
+  { STRING_WITH_LEN("--RETRY_TIMEOUT=456") },
+  { STRING_WITH_LEN("--SERVER_FAILURE_LIMIT=456") },
+  { STRING_WITH_LEN("--SND_TIMEOUT=456") },
+  { STRING_WITH_LEN("--SOCKET_RECV_SIZE=456") },
+  { STRING_WITH_LEN("--SOCKET_SEND_SIZE=456") },
+  { NULL, 0}
+};
+
+scanner_string_st test_boolean_options[]= {
+  { STRING_WITH_LEN("--AUTO_EJECT_HOSTS") },
+  { STRING_WITH_LEN("--BINARY_PROTOCOL") },
+  { STRING_WITH_LEN("--BUFFER_REQUESTS") },
+  { STRING_WITH_LEN("--CACHE_LOOKUPS") },
+  { STRING_WITH_LEN("--CORK") },
+  { STRING_WITH_LEN("--HASH_WITH_PREFIX_KEY") },
+  { STRING_WITH_LEN("--KETAMA") },
+  { STRING_WITH_LEN("--KETAMA_WEIGHTED") },
+  { STRING_WITH_LEN("--NOREPLY") },
+  { STRING_WITH_LEN("--RANDOMIZE_REPLICA_READ") },
+  { STRING_WITH_LEN("--SORT_HOSTS") },
+  { STRING_WITH_LEN("--SUPPORT_CAS") },
+  { STRING_WITH_LEN("--TCP_NODELAY") },
+  { STRING_WITH_LEN("--TCP_KEEPALIVE") },
+  { STRING_WITH_LEN("--TCP_KEEPIDLE") },
+  { STRING_WITH_LEN("--USE_UDP") },
+  { STRING_WITH_LEN("--VERIFY_KEY") },
+  { NULL, 0}
+};
+
+test_return_t parser_number_options_test(memcached_st *junk)
+{
+  (void)junk;
+  memcached_st *memc;
+  memc= memcached_create(NULL);
+
+  for (scanner_string_st *ptr= test_number_options; ptr->size; ptr++)
+  {
+    memcached_return_t rc;
+    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t parser_boolean_options_test(memcached_st *junk)
+{
+  (void)junk;
+  memcached_st *memc;
+  memc= memcached_create(NULL);
+
+  for (scanner_string_st *ptr= test_boolean_options; ptr->size; ptr++)
+  {
+    memcached_return_t rc;
+    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 test_return_t behavior_parser_test(memcached_st *junk)
 {
   (void)junk;

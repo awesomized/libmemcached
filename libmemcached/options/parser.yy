@@ -127,6 +127,8 @@ inline int libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner,
 %type <server> server
 %type <distribution> distribution
 %type <hash> hash
+%type <behavior> behavior_boolean
+%type <behavior> behavior_number
 
 %%
 
@@ -150,30 +152,6 @@ expression:
         ;
 
 behaviors:
-          AUTO_EJECT_HOSTS
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, 1);
-          }
-        | BINARY_PROTOCOL
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-          }
-        | BUFFER_REQUESTS
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
-          }
-        | CACHE_LOOKUPS
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_CACHE_LOOKUPS, 1);
-          }
-        | CONNECT_TIMEOUT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, $3);
-          }
-        | _CORK
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_CORK, 1);
-          }
         | DISTRIBUTION '=' distribution
           {
             memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3);
@@ -182,105 +160,144 @@ behaviors:
           {
             memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3);
           }
-        | HASH_WITH_PREFIX_KEY
+        | KETAMA_HASH '=' hash
           {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY, 1);
+            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3);
           }
-        | IO_BYTES_WATERMARK '=' NUMBER
+        | behavior_number '=' NUMBER
           {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, $3);
+            memcached_behavior_set(parser->memc, $1, $3);
           }
-        | IO_KEY_PREFETCH '=' NUMBER
+        | behavior_boolean
           {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH, $3);
-          }
-        | IO_MSG_WATERMARK '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, $3);
-          }
-        | KETAMA
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_KETAMA, true);
-          }
-        | KETAMA_HASH
-          {
-          }
-        | KETAMA_WEIGHTED
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, true);
-          }
-        | NOREPLY
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_NOREPLY, 1);
-          }
-        | NUMBER_OF_REPLICAS '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, $3);
-          }
-        | POLL_TIMEOUT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, $3);
-          }
-        |  RANDOMIZE_REPLICA_READ
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, true);
-          }
-        |  RCV_TIMEOUT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, $3);
-          }
-        |  RETRY_TIMEOUT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, $3);
-          }
-        |  SERVER_FAILURE_LIMIT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, $3);
-          }
-        |  SND_TIMEOUT '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, $3);
-          }
-        |  SOCKET_RECV_SIZE '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, $3);
-          }
-        |  SOCKET_SEND_SIZE '=' NUMBER
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, $3);
-          }
-        |  SORT_HOSTS
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, true);
-          }
-        |  SUPPORT_CAS
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true);
-          }
-        |  _TCP_NODELAY
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
-          }
-        |  _TCP_KEEPALIVE
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_TCP_KEEPALIVE, true);
-          }
-        |  _TCP_KEEPIDLE
-          {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_TCP_KEEPIDLE, true);
+            memcached_behavior_set(parser->memc, $1, true);
           }
         |  USER_DATA
           {
           }
+        ;
+
+behavior_number:
+          CONNECT_TIMEOUT
+          {
+            $$= MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT;
+          }
+        | IO_MSG_WATERMARK
+          {
+            $$= MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK;
+          }
+        | IO_BYTES_WATERMARK
+          {
+            $$= MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK;
+          }
+        | IO_KEY_PREFETCH
+          {
+            $$= MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH;
+          }
+        | NUMBER_OF_REPLICAS
+          {
+            $$= MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS;
+          }
+        | POLL_TIMEOUT
+          {
+            $$= MEMCACHED_BEHAVIOR_POLL_TIMEOUT;
+          }
+        |  RCV_TIMEOUT
+          {
+            $$= MEMCACHED_BEHAVIOR_RCV_TIMEOUT;
+          }
+        |  RETRY_TIMEOUT
+          {
+            $$= MEMCACHED_BEHAVIOR_RETRY_TIMEOUT;
+          }
+        |  SERVER_FAILURE_LIMIT
+          {
+            $$= MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT;
+          }
+        |  SND_TIMEOUT
+          {
+            $$= MEMCACHED_BEHAVIOR_SND_TIMEOUT;
+          }
+        |  SOCKET_RECV_SIZE
+          {
+            $$= MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE;
+          }
+        |  SOCKET_SEND_SIZE
+          {
+            $$= MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE;
+          }
+        ;
+
+behavior_boolean: 
+          AUTO_EJECT_HOSTS
+          {
+            $$= MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS;
+          }
+        | BINARY_PROTOCOL
+          {
+            $$= MEMCACHED_BEHAVIOR_BINARY_PROTOCOL;
+          }
+        | BUFFER_REQUESTS
+          {
+            $$= MEMCACHED_BEHAVIOR_BUFFER_REQUESTS;
+          }
+        | CACHE_LOOKUPS
+          {
+            $$= MEMCACHED_BEHAVIOR_CACHE_LOOKUPS;
+          }
+        | _CORK
+          {
+            $$= MEMCACHED_BEHAVIOR_CORK;
+          }
+        | HASH_WITH_PREFIX_KEY
+          {
+            $$= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
+          }
+        | KETAMA
+          {
+            $$= MEMCACHED_BEHAVIOR_KETAMA;
+          }
+        | KETAMA_WEIGHTED
+          {
+            $$= MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED;
+          }
+        | NOREPLY
+          {
+            $$= MEMCACHED_BEHAVIOR_NOREPLY;
+          }
+        |  RANDOMIZE_REPLICA_READ
+          {
+            $$= MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ;
+          }
+        |  SORT_HOSTS
+          {
+            $$= MEMCACHED_BEHAVIOR_SORT_HOSTS;
+          }
+        |  SUPPORT_CAS
+          {
+            $$= MEMCACHED_BEHAVIOR_SUPPORT_CAS;
+          }
+        |  _TCP_NODELAY
+          {
+            $$= MEMCACHED_BEHAVIOR_TCP_NODELAY;
+          }
+        |  _TCP_KEEPALIVE
+          {
+            $$= MEMCACHED_BEHAVIOR_TCP_KEEPALIVE;
+          }
+        |  _TCP_KEEPIDLE
+          {
+            $$= MEMCACHED_BEHAVIOR_TCP_KEEPIDLE;
+          }
         |  USE_UDP
           {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_USE_UDP, true);
+            $$= MEMCACHED_BEHAVIOR_USE_UDP;
           }
         |  VERIFY_KEY
           {
-            memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, true);
+            $$= MEMCACHED_BEHAVIOR_VERIFY_KEY;
           }
-        ;
+
 
 server_list:
            server

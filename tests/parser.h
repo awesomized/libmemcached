@@ -53,10 +53,16 @@ LIBTEST_INTERNAL_API
 test_return_t behavior_parser_test(memcached_st *junk);
 
 LIBTEST_INTERNAL_API
+test_return_t parser_number_options_test(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
 test_return_t parser_distribution_test(memcached_st *junk);
 
 LIBTEST_INTERNAL_API
 test_return_t parser_hash_test(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+test_return_t parser_boolean_options_test(memcached_st *junk);
 
 #ifdef	__cplusplus
 }
