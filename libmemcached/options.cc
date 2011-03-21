@@ -66,10 +66,28 @@ memcached_return_t memcached_parse_options(memcached_st *self, char const *optio
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename)
+memcached_return_t memcached_parse_file_options(memcached_st *self, const char *filename)
 {
-  (void)ptr;
-  (void)filename;
+  FILE *fp= fopen(filename, "r");
+  
+  if (! fp)
+    return memcached_set_errno(self, errno, NULL);
 
-  return MEMCACHED_SUCCESS;
+  char buffer[BUFSIZ];
+  memcached_return_t rc= MEMCACHED_INVALID_ARGUMENTS;
+  while (fgets(buffer, sizeof(buffer), fp))
+  {
+    size_t length= strlen(buffer);
+    
+    if (length == 1 and buffer[0] == '\n')
+      continue;
+
+    rc= memcached_parse_options(self, buffer, length);
+
+    if (rc != MEMCACHED_SUCCESS)
+      break;
+  }
+  fclose(fp);
+
+  return rc;
 }

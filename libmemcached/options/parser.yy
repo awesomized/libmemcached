@@ -60,6 +60,8 @@ inline void libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner
 %token SERVER
 %token SERVERS
 %token UNKNOWN
+%token COMMENT
+%token EMPTY_LINE
 
 %token DASH_OPTION
 
@@ -142,6 +144,10 @@ statement:
          DASH_OPTION expression
           { }
         | statement ' ' DASH_OPTION expression
+          { }
+        | COMMENT
+          { }
+        | EMPTY_LINE
           { }
         ;
 

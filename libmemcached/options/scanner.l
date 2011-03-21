@@ -81,6 +81,10 @@ static void get_lex_chars(char* buffer, int& result, int max_size, struct type_s
 
 [\t\r\n] ; /* skip whitespace */
 
+^#.*$ {
+      return COMMENT;
+    }
+
 "--" { return DASH_OPTION; }
 
 SERVER                          { return SERVER; }
@@ -195,7 +199,7 @@ JENKINS			{ return JENKINS; }
       return STRING;
     }
 
-\"[[:alnum:]]*\" { 
+\".*\" { 
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return QUOTED_STRING;

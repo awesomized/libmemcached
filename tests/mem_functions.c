@@ -6320,6 +6320,7 @@ test_st parser_tests[] ={
   {"server", 0, (test_callback_fn)server_test },
   {"servers", 0, (test_callback_fn)servers_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
+  {"memcached_parse_file_options", 0, (test_callback_fn)memcached_parse_file_options_test },
   {0, 0, (test_callback_fn)0}
 };
 
