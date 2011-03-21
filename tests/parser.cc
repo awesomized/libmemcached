@@ -347,3 +347,34 @@ test_return_t memcached_parse_file_options_test(memcached_st *junk)
 
   return TEST_SUCCESS;
 }
+
+test_return_t memcached_check_options_test(memcached_st *junk)
+{
+  (void)junk;
+
+  memcached_return_t rc;
+
+  rc= memcached_check_options(STRING_WITH_LEN("--server=localhost"), NULL, 0);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= memcached_check_options(STRING_WITH_LEN("--dude=localhost"), NULL, 0);
+  test_false(rc == MEMCACHED_SUCCESS);
+  test_true(rc == MEMCACHED_PARSE_ERROR);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t memcached_create_with_options_test(memcached_st *junk)
+{
+  (void)junk;
+
+  memcached_st *memc_ptr;
+  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--server=localhost"));
+  test_true(memc_ptr);
+  memcached_free(memc_ptr);
+
+  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--dude=localhost"));
+  test_false(memc_ptr);
+
+  return TEST_SUCCESS;
+}

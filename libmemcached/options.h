@@ -42,6 +42,9 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
+  memcached_return_t memcached_check_options(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size);
+
+LIBMEMCACHED_API
   memcached_return_t memcached_parse_options(memcached_st *ptr, const char *option_string, size_t length);
 
 LIBMEMCACHED_API

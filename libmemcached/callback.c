@@ -39,7 +39,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
         memcached_array_free(ptr->prefix_key);
         ptr->prefix_key= memcached_strcpy(ptr, (const char *)data, strlen((const char*)data));
 
-        f (! ptr->prefix_key)
+        if (! ptr->prefix_key)
           return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
       }
       else

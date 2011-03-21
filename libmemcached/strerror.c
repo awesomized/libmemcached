@@ -91,6 +91,8 @@ const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc)
     return "AUTHENTICATION FAILURE";
   case MEMCACHED_AUTH_CONTINUE:
     return "CONTINUE AUTHENTICATION";
+  case MEMCACHED_PARSE_ERROR:
+    return "ERROR OCCURED WHILE PARSING";
   case MEMCACHED_MAXIMUM_RETURN:
     return "Gibberish returned!";
   default:

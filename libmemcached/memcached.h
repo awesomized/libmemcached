@@ -86,6 +86,7 @@ struct memcached_st {
     bool verify_key:1;
     bool tcp_keepalive:1;
     bool load_from_file:1;
+    bool ping_service:1;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
@@ -145,6 +146,9 @@ void memcached_servers_reset(memcached_st *ptr);
 
 LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_create_with_options(const char *string, size_t length);
 
 LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);

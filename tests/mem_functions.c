@@ -401,10 +401,10 @@ static test_return_t error_test(memcached_st *memc)
                         2300930706U, 2943759320U, 674306647U, 2400528935U,
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
-                        1769812374U, 2302537950U, 1110330676U };
+                        1769812374U, 2302537950U, 1110330676U, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  test_true(MEMCACHED_MAXIMUM_RETURN == 43);
+  test_true(MEMCACHED_MAXIMUM_RETURN == 44);
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
@@ -6320,11 +6320,12 @@ test_st parser_tests[] ={
   {"boolean_options", 0, (test_callback_fn)parser_boolean_options_test },
   {"distribtions", 0, (test_callback_fn)parser_distribution_test },
   {"hash", 0, (test_callback_fn)parser_hash_test },
+  {"memcached_check_options", 0, (test_callback_fn)memcached_check_options_test },
+  {"memcached_parse_file_options", 0, (test_callback_fn)memcached_parse_file_options_test },
   {"number_options", 0, (test_callback_fn)parser_number_options_test },
+  {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
   {"server", 0, (test_callback_fn)server_test },
   {"servers", 0, (test_callback_fn)servers_test },
-  {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
-  {"memcached_parse_file_options", 0, (test_callback_fn)memcached_parse_file_options_test },
   {0, 0, (test_callback_fn)0}
 };
 

@@ -35,8 +35,8 @@ static const memcached_st global_copy= {
     .use_udp= false,
     .verify_key= false,
     .tcp_keepalive= false,
-    .load_from_file= false
-
+    .load_from_file= false,
+    .ping_service= false
   }
 };
 
@@ -174,6 +174,18 @@ memcached_st *memcached_create(memcached_st *ptr)
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->result);
 
   return ptr;
+}
+
+memcached_st *memcached_create_with_options(const char *string, size_t length)
+{
+  memcached_st *self= memcached_create(NULL);
+
+  if (! self)
+    return NULL;
+
+  memcached_parse_options(self, string, length);
+
+  return self;
 }
 
 void memcached_reset(memcached_st *ptr)

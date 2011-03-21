@@ -42,6 +42,23 @@
 
 int libmemcached_parse(type_st *, yyscan_t *);
 
+memcached_return_t memcached_check_options(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size)
+{
+  memcached_st memc;
+  if (! memcached_create(&memc))
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+  memcached_return_t rc= memcached_parse_options(&memc, option_string, length);
+  if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
+  {
+    strncpy(error_buffer, error_buffer_size, memcached_last_error_message(&memc));
+  }
+
+  memcached_free(&memc);
+
+  return rc;
+}
+
 memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
 {
   type_st pp;
@@ -61,7 +78,7 @@ memcached_return_t memcached_parse_options(memcached_st *self, char const *optio
   libmemcached_lex_destroy(pp.yyscanner);
 
   if (not success)
-    return MEMCACHED_INVALID_ARGUMENTS;
+    return memcached_set_error(self, MEMCACHED_PARSE_ERROR, NULL);
 
   return MEMCACHED_SUCCESS;
 }
@@ -83,7 +100,6 @@ memcached_return_t memcached_parse_file_options(memcached_st *self, const char *
       continue;
 
     rc= memcached_parse_options(self, buffer, length);
-
     if (rc != MEMCACHED_SUCCESS)
       break;
   }
