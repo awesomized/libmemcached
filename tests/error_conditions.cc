@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,41 +35,36 @@
  *
  */
 
-#include "common.h"
+#include <config.h>
 
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/scanner.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/is.h>
+#include <libtest/test.h>
+#include <tests/error_conditions.h>
 
-int libmemcached_parse(type_st *, yyscan_t *);
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
-memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
+test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *junk)
 {
-  type_st pp;
+  (void)junk;
+  memcached_st *memc_ptr;
 
-  memset(&pp, 0, sizeof(type_st));
+  memc_ptr= memcached_create(NULL);
+  test_true(memc_ptr);
 
-  WATCHPOINT_ASSERT(self);
-  if (! self)
-    return MEMCACHED_INVALID_ARGUMENTS;
+  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
+  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
-  pp.buf= option_string;
-  pp.memc= self;
-  pp.length= length;
-  libmemcached_lex_init(&pp.yyscanner);
-  libmemcached_set_extra(&pp, pp.yyscanner);
-  bool success= libmemcached_parse(&pp, pp.yyscanner)  == 0;
-  libmemcached_lex_destroy(pp.yyscanner);
+  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
+  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
-  if (not success)
-    return MEMCACHED_INVALID_ARGUMENTS;
+  memcached_free(memc_ptr);
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
 
-memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename)
-{
-  (void)ptr;
-  (void)filename;
-
-  return MEMCACHED_SUCCESS;
+#ifdef	__cplusplus
 }
+#endif

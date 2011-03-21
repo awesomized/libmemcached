@@ -36,6 +36,8 @@
 #include <libtest/test.h>
 #include "tests/parser.h"
 #include "tests/replication.h"
+#include "tests/basic.h"
+#include "tests/error_conditions.h"
 #include "tests/print.h"
 
 
@@ -6101,6 +6103,16 @@ test_st behavior_tests[] ={
   {0, 0, 0}
 };
 
+test_st basic_tests[] ={
+  {"init", 1, (test_callback_fn)basic_init_test},
+  {"clone", 1, (test_callback_fn)basic_clone_test},
+  {"reset", 1, (test_callback_fn)basic_reset_stack_test},
+  {"reset heap", 1, (test_callback_fn)basic_reset_heap_test},
+  {"reset stack clone", 1, (test_callback_fn)basic_reset_stack_clone_test},
+  {"reset heap clone", 1, (test_callback_fn)basic_reset_heap_clone_test},
+  {0, 0, 0}
+};
+
 test_st regression_binary_vs_block[] ={
   {"block add", 1, (test_callback_fn)block_add_regression},
   {"binary add", 1, (test_callback_fn)binary_add_regression},
@@ -6289,10 +6301,12 @@ test_st hash_tests[] ={
 };
 
 test_st error_conditions[] ={
-  {"memcached_get_MEMCACHED_ERRNO", 0, (test_callback_fn)memcached_get_MEMCACHED_ERRNO },
-  {"memcached_get_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_MEMCACHED_NOTFOUND },
-  {"memcached_get_by_key_MEMCACHED_ERRNO", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_ERRNO },
-  {"memcached_get_by_key_MEMCACHED_NOTFOUND", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_NOTFOUND },
+  {"memcached_get(MEMCACHED_ERRNO)", 0, (test_callback_fn)memcached_get_MEMCACHED_ERRNO },
+  {"memcached_get(MEMCACHED_NOTFOUND)", 0, (test_callback_fn)memcached_get_MEMCACHED_NOTFOUND },
+  {"memcached_get_by_key(MEMCACHED_ERRNO)", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_ERRNO },
+  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_NOTFOUND },
+  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", 0, (test_callback_fn)memcached_get_by_key_MEMCACHED_NOTFOUND },
+  {"memcached_increment(MEMCACHED_NO_SERVERS)", 0, (test_callback_fn)memcached_increment_MEMCACHED_NO_SERVERS },
   {0, 0, (test_callback_fn)0}
 };
 
@@ -6305,6 +6319,7 @@ test_st parser_tests[] ={
   {"number_options", 0, (test_callback_fn)parser_number_options_test },
   {"server", 0, (test_callback_fn)server_test },
   {"servers", 0, (test_callback_fn)servers_test },
+  {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
   {0, 0, (test_callback_fn)0}
 };
 
@@ -6312,6 +6327,7 @@ collection_st collection[] ={
 #if 0
   {"hash_sanity", 0, 0, hash_sanity},
 #endif
+  {"basic", 0, 0, basic_tests},
   {"hsieh_availability", 0, 0, hsieh_availability},
   {"murmur_availability", 0, 0, murmur_availability},
   {"block", 0, 0, tests},

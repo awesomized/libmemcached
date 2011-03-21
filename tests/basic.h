@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,41 +35,32 @@
  *
  */
 
-#include "common.h"
+#pragma once
 
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/scanner.h>
+#include <libtest/visibility.h>
 
-int libmemcached_parse(type_st *, yyscan_t *);
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
-memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
-{
-  type_st pp;
+LIBTEST_INTERNAL_API
+test_return_t basic_init_test(memcached_st *junk);
 
-  memset(&pp, 0, sizeof(type_st));
+LIBTEST_INTERNAL_API
+test_return_t basic_clone_test(memcached_st *memc);
 
-  WATCHPOINT_ASSERT(self);
-  if (! self)
-    return MEMCACHED_INVALID_ARGUMENTS;
+LIBTEST_INTERNAL_API
+test_return_t basic_reset_stack_test(memcached_st *junk);
 
-  pp.buf= option_string;
-  pp.memc= self;
-  pp.length= length;
-  libmemcached_lex_init(&pp.yyscanner);
-  libmemcached_set_extra(&pp, pp.yyscanner);
-  bool success= libmemcached_parse(&pp, pp.yyscanner)  == 0;
-  libmemcached_lex_destroy(pp.yyscanner);
+LIBTEST_INTERNAL_API
+test_return_t basic_reset_heap_test(memcached_st *junk);
 
-  if (not success)
-    return MEMCACHED_INVALID_ARGUMENTS;
+LIBTEST_INTERNAL_API
+test_return_t basic_reset_stack_clone_test(memcached_st *memc);
 
-  return MEMCACHED_SUCCESS;
+LIBTEST_INTERNAL_API
+test_return_t basic_reset_heap_clone_test(memcached_st *memc);
+
+#ifdef	__cplusplus
 }
-
-memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename)
-{
-  (void)ptr;
-  (void)filename;
-
-  return MEMCACHED_SUCCESS;
-}
+#endif

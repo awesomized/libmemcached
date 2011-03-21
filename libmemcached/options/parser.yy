@@ -30,12 +30,12 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <libmemcached/options/scanner.h>
 
-inline int libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner, const char *str)
+inline void libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner, const char *str)
 {
-#if 0
-  std::cerr << str << std::endl;
-#endif
-  return 0;
+  memcached_string_t local_string;
+  local_string.size= strlen(str);
+  local_string.c_str= str;
+  memcached_set_error(parser->memc, MEMCACHED_FAILURE, &local_string);
 }
 
 
@@ -98,6 +98,9 @@ inline int libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner,
 %token USE_UDP
 %token VERIFY_KEY
 
+/* Callbacks */
+%token PREFIX_KEY
+
 /* Hash types */
 %token MD5
 %token CRC
@@ -119,12 +122,15 @@ inline int libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner,
 
 %token <number> NUMBER
 %token <number> FLOAT
-%token <string> IDENTIFIER
-%token <string> SERVER_WITH_PORT
+%token <string> HOSTNAME
+%token <string> HOSTNAME_WITH_PORT
 %token <string> IPADDRESS
 %token <string> IPADDRESS_WITH_PORT
+%token <string> STRING
+%token <string> QUOTED_STRING
 
 %type <server> server
+%type <string> string
 %type <distribution> distribution
 %type <hash> hash
 %type <behavior> behavior_boolean
@@ -152,6 +158,10 @@ expression:
         ;
 
 behaviors:
+          PREFIX_KEY '=' string
+          {
+            memcached_callback_set(parser->memc, MEMCACHED_CALLBACK_PREFIX_KEY, std::string($3.c_str, $3.length).c_str());
+          }
         | DISTRIBUTION '=' distribution
           {
             memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3);
@@ -311,13 +321,19 @@ server_list:
         ;
 
 server:
-          SERVER_WITH_PORT NUMBER
+          HOSTNAME_WITH_PORT NUMBER
           {
             $$.c_str= $1.c_str;
             $$.length= $1.length -1;
             $$.port= $2;
           }
-        | IDENTIFIER
+        | HOSTNAME
+          {
+            $$.c_str= $1.c_str;
+            $$.length= $1.length;
+            $$.port= MEMCACHED_DEFAULT_PORT;
+          }
+        | STRING /* a match can be against "localhost" which is just a string */
           {
             $$.c_str= $1.c_str;
             $$.length= $1.length;
@@ -373,6 +389,18 @@ hash:
         | JENKINS
           {
             $$= MEMCACHED_HASH_JENKINS;
+          }
+        ;
+
+string:
+          STRING
+          {
+            $$= $1;
+          }
+        | QUOTED_STRING
+          {
+            $$.c_str= $1.c_str +1;
+            $$.length= $1.length -2;
           }
         ;
 

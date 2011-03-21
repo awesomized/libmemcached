@@ -28,6 +28,8 @@
 #include <libmemcached/constants.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>
+#include <libmemcached/array.h>
+#include <libmemcached/error.h>
 #include <libmemcached/stats.h>
 #include <libhashkit/hashkit.h>
 // Everything above this line must be in the order specified.
@@ -127,6 +129,7 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
+  struct memcached_error_st *error_messages;
   char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
   struct {
     bool is_allocated:1;
@@ -146,6 +149,9 @@ memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
+
+LIBMEMCACHED_API
+void memcached_reset(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_reset_last_disconnected_server(memcached_st *ptr);

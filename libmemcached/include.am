@@ -17,6 +17,7 @@ noinst_HEADERS+= \
 		 libmemcached/do.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
+		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
@@ -26,6 +27,7 @@ noinst_HEADERS+= \
 nobase_include_HEADERS+= \
 			 libmemcached/allocators.h \
 			 libmemcached/analyze.h \
+			 libmemcached/array.h \
 			 libmemcached/auto.h \
 			 libmemcached/behavior.h \
 			 libmemcached/callback.h \
@@ -33,6 +35,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/constants.h \
 			 libmemcached/delete.h \
 			 libmemcached/dump.h \
+			 libmemcached/error.h \
 			 libmemcached/exception.hpp \
 			 libmemcached/fetch.h \
 			 libmemcached/flush.h \
@@ -92,22 +95,24 @@ libmemcached_libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
 libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/allocators.c \
 				       libmemcached/analyze.c \
+				       libmemcached/array.c \
 				       libmemcached/auto.c \
 				       libmemcached/behavior.c \
 				       libmemcached/connect.c \
 				       libmemcached/delete.c \
 				       libmemcached/do.c \
 				       libmemcached/dump.c \
+				       libmemcached/error.c \
 				       libmemcached/fetch.c \
 				       libmemcached/flush.c \
 				       libmemcached/flush_buffers.c \
 				       libmemcached/get.c \
 				       libmemcached/hash.c \
-				       libmemcached/options.cc \
 				       libmemcached/hosts.c \
 				       libmemcached/io.c \
 				       libmemcached/key.c \
 				       libmemcached/memcached.c \
+				       libmemcached/options.cc \
 				       libmemcached/parse.c \
 				       libmemcached/purge.c \
 				       libmemcached/quit.c \

@@ -16,7 +16,7 @@
 #ifndef __LIBMEMCACHED_COMMON_H__
 #define __LIBMEMCACHED_COMMON_H__
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,6 +47,7 @@
 
 #include "libmemcached/memcached.h"
 #include "libmemcached/watchpoint.h"
+#include "libmemcached/is.h"
 
 typedef struct memcached_server_st * memcached_server_write_instance_st;
 
@@ -114,16 +115,6 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_server_response_increment(A) (A)->cursor_active++
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
-
-// These are private 
-#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
-#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
-#define memcached_is_purging(__object) ((__object)->state.is_purging)
-#define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
-#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
-#define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
-#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated(= (__value))
 
 LIBMEMCACHED_LOCAL
 void set_last_disconnected_host(memcached_server_write_instance_st ptr);

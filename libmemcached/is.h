@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,41 +35,14 @@
  *
  */
 
-#include "common.h"
+#pragma once
 
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/scanner.h>
-
-int libmemcached_parse(type_st *, yyscan_t *);
-
-memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
-{
-  type_st pp;
-
-  memset(&pp, 0, sizeof(type_st));
-
-  WATCHPOINT_ASSERT(self);
-  if (! self)
-    return MEMCACHED_INVALID_ARGUMENTS;
-
-  pp.buf= option_string;
-  pp.memc= self;
-  pp.length= length;
-  libmemcached_lex_init(&pp.yyscanner);
-  libmemcached_set_extra(&pp, pp.yyscanner);
-  bool success= libmemcached_parse(&pp, pp.yyscanner)  == 0;
-  libmemcached_lex_destroy(pp.yyscanner);
-
-  if (not success)
-    return MEMCACHED_INVALID_ARGUMENTS;
-
-  return MEMCACHED_SUCCESS;
-}
-
-memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename)
-{
-  (void)ptr;
-  (void)filename;
-
-  return MEMCACHED_SUCCESS;
-}
+/* These are private */ 
+#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
+#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
+#define memcached_is_purging(__object) ((__object)->state.is_purging)
+#define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
+#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
+#define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
+#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
+#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))

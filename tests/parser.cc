@@ -42,164 +42,271 @@
 #include "tests/parser.h"
 #include "tests/print.h"
 
+enum scanner_type_t
+{
+  NIL,
+  UNSIGNED,
+  SIGNED,
+  ARRAY
+};
+
+
 struct scanner_string_st {
-  const char *c_ptr;
+  const char *c_str;
   size_t size;
 };
+
+static inline scanner_string_st scanner_string(const char *arg, size_t arg_size)
+{
+  scanner_string_st local= { arg, arg_size };
+  return local;
+}
+
+#define make_scanner_string(X) scanner_string((X), static_cast<size_t>(sizeof(X) - 1))
+
+static struct scanner_string_st scanner_string_null= { 0, 0};
+
+struct scanner_variable_t {
+  enum scanner_type_t type;
+  struct scanner_string_st option;
+  struct scanner_string_st result;
+  test_return_t (*check_func)(memcached_st *memc, const scanner_string_st &hostname);
+};
+
+// Check and make sure the first host is what we expect it to be
+static test_return_t __check_host(memcached_st *memc, const scanner_string_st &hostname)
+{
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  test_true(instance);
+
+  const char *first_hostname = memcached_server_name(instance);
+  test_true(first_hostname);
+  test_strcmp(first_hostname, hostname.c_str);
+
+  return TEST_SUCCESS;
+}
+
+// Check and make sure the prefix_key is what we expect it to be
+static test_return_t __check_prefix_key(memcached_st *memc, const scanner_string_st &hostname)
+{
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  test_true(instance);
+
+  const char *first_hostname = memcached_server_name(instance);
+  test_true(first_hostname);
+  test_strcmp(first_hostname, hostname.c_str);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_IO_MSG_WATERMARK(memcached_st *memc, const scanner_string_st &value)
+{
+  uint64_t value_number;
+
+  value_number= atoll(value.c_str);
+
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK) == value_number);
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_AUTO_EJECT_HOSTS(memcached_st *memc, const scanner_string_st &value)
+{
+  (void)value;
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS));
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_CACHE_LOOKUPS(memcached_st *memc, const scanner_string_st &value)
+{
+  (void)value;
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_CACHE_LOOKUPS));
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_NOREPLY(memcached_st *memc, const scanner_string_st &value)
+{
+  (void)value;
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY));
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_VERIFY_KEY(memcached_st *memc, const scanner_string_st &value)
+{
+  (void)value;
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY));
+  return TEST_SUCCESS;
+}
+
+static test_return_t __check_distribution_RANDOM(memcached_st *memc, const scanner_string_st &value)
+{
+  (void)value;
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION) == MEMCACHED_DISTRIBUTION_RANDOM);
+  return TEST_SUCCESS;
+}
+
+scanner_variable_t test_server_strings[]= {
+  { ARRAY, make_scanner_string("--server=localhost"), make_scanner_string("localhost"), __check_host },
+  { ARRAY, make_scanner_string("--server=10.0.2.1"), make_scanner_string("10.0.2.1"), __check_host },
+  { ARRAY, make_scanner_string("--server=example.com"), make_scanner_string("example.com"), __check_host },
+  { ARRAY, make_scanner_string("--server=localhost:30"), make_scanner_string("localhost"), __check_host },
+  { ARRAY, make_scanner_string("--server=10.0.2.1:20"), make_scanner_string("10.0.2.1"), __check_host },
+  { ARRAY, make_scanner_string("--server=example.com:1024"), make_scanner_string("example.com"), __check_host },
+  { NIL, scanner_string_null, scanner_string_null, NULL }
+};
+
+scanner_variable_t test_servers_strings[]= {
+  { ARRAY, make_scanner_string("--servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225"), scanner_string_null, NULL },
+  { ARRAY, make_scanner_string("--servers=a.example.com:81,localhost:82,b.example.com"), scanner_string_null, NULL },
+  { ARRAY, make_scanner_string("--servers=localhost,localhost:80"), scanner_string_null, NULL },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+
+scanner_variable_t bad_test_strings[]= {
+  { ARRAY, make_scanner_string("-servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225"), scanner_string_null, NULL },
+  { ARRAY, make_scanner_string("-- servers=a.example.com:81,localhost:82,b.example.com"), scanner_string_null, NULL },
+  { ARRAY, make_scanner_string("--servers=localhost+80"), scanner_string_null, NULL},
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+scanner_variable_t test_number_options[]= {
+  { ARRAY,  make_scanner_string("--CONNECT_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
+  { ARRAY,  make_scanner_string("--IO_BYTES_WATERMARK=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO_KEY_PREFETCH=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--NUMBER_OF_REPLICAS=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--POLL_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--RCV_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--RETRY_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SERVER_FAILURE_LIMIT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SND_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SOCKET_RECV_SIZE=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SOCKET_SEND_SIZE=456"), scanner_string_null, NULL },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+scanner_variable_t test_boolean_options[]= {
+  { ARRAY,  make_scanner_string("--AUTO_EJECT_HOSTS"), scanner_string_null, __check_AUTO_EJECT_HOSTS },
+  { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--CACHE_LOOKUPS"), scanner_string_null, __check_CACHE_LOOKUPS },
+  { ARRAY,  make_scanner_string("--CORK"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--KETAMA"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--KETAMA_WEIGHTED"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },
+  { ARRAY,  make_scanner_string("--RANDOMIZE_REPLICA_READ"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SORT_HOSTS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SUPPORT_CAS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP_NODELAY"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP_KEEPALIVE"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP_KEEPIDLE"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--USE_UDP"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--VERIFY_KEY"), scanner_string_null, __check_VERIFY_KEY },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+scanner_variable_t prefix_key_strings[]= {
+  { ARRAY, make_scanner_string("--PREFIX_KEY=foo"), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--PREFIX-KEY=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--PREFIX-KEY=\"This is a very long key\""), make_scanner_string("This is a very long key"), __check_prefix_key },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+scanner_variable_t distribution_strings[]= {
+  { ARRAY,  make_scanner_string("--DISTRIBUTION=consistent"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--DISTRIBUTION=random"), scanner_string_null, __check_distribution_RANDOM },
+  { ARRAY,  make_scanner_string("--DISTRIBUTION=modula"), scanner_string_null, NULL },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+scanner_variable_t hash_strings[]= {
+  { ARRAY,  make_scanner_string("--HASH=MD5"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=CRC"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1_64"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1A_64"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1_32"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1A_32"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=MURMUR"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=JENKINS"), scanner_string_null, NULL },
+  { NIL, scanner_string_null, scanner_string_null, NULL}
+};
+
+
+static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= true)
+{
+  (void)test_true;
+  memcached_st *memc;
+  memc= memcached_create(NULL);
+
+  for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
+  {
+    memcached_return_t rc;
+    rc= memcached_parse_options(memc, ptr->option.c_str, ptr->option.size);
+    if (test_true)
+    {
+      test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc));
+
+      if (ptr->check_func)
+      {
+        (*ptr->check_func)(memc, ptr->result);
+      }
+    }
+    else
+    {
+      test_false_with(rc == MEMCACHED_SUCCESS, ptr->option.c_str);
+    }
+    memcached_reset(memc);
+  }
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
 
 test_return_t server_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_return_t rc;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
-
-  scanner_string_st test_strings[]= {
-    { STRING_WITH_LEN("--server=localhost") },
-    { STRING_WITH_LEN("--server=10.0.2.1") },
-    { STRING_WITH_LEN("--server=example.com") },
-    { STRING_WITH_LEN("--server=localhost:30") },
-    { STRING_WITH_LEN("--server=10.0.2.1:20") },
-    { STRING_WITH_LEN("--server=example.com:1024") },
-    { NULL, 0}
-  };
-
-  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
-  {
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-    test_true(rc == MEMCACHED_SUCCESS);
-    memcached_servers_reset(memc);
-  }
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
+  return _test_option(test_server_strings);
 }
 
 test_return_t servers_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
 
-  scanner_string_st test_strings[]= {
-    { STRING_WITH_LEN("--servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225") },
-    { STRING_WITH_LEN("--servers=a.example.com:81,localhost:82,b.example.com") },
-    { STRING_WITH_LEN("--servers=localhost,localhost:80") },
-    { NULL, 0}
-  };
-
-  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
+  test_return_t rc;
+  if ((rc= _test_option(test_server_strings)) != TEST_SUCCESS)
   {
-    memcached_return_t rc;
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
+    return rc;
+  }
 
-    test_true(rc == MEMCACHED_SUCCESS);
-
+#if 0
     memcached_server_fn callbacks[1];
     callbacks[0]= server_print_callback;
     memcached_server_cursor(memc, callbacks, NULL,  1);
+#endif
 
-    memcached_servers_reset(memc);
-  }
-
-  scanner_string_st bad_test_strings[]= {
-    { STRING_WITH_LEN("-servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225") },
-    { STRING_WITH_LEN("-- servers=a.example.com:81,localhost:82,b.example.com") },
-    { STRING_WITH_LEN("--servers=localhost80") },
-    { NULL, 0}
-  };
-
-  for (scanner_string_st *ptr= bad_test_strings; ptr->size; ptr++)
+  if ((rc= _test_option(bad_test_strings, false)) != TEST_SUCCESS)
   {
-    memcached_return_t rc;
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-
-    test_false_with(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
-
-    memcached_server_fn callbacks[1];
-    callbacks[0]= server_print_callback;
-    memcached_server_cursor(memc, callbacks, NULL,  1);
-
-    memcached_servers_reset(memc);
+    return rc;
   }
-
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-scanner_string_st test_number_options[]= {
-  { STRING_WITH_LEN("--CONNECT_TIMEOUT=456") },
-  { STRING_WITH_LEN("--IO_MSG_WATERMARK=456") },
-  { STRING_WITH_LEN("--IO_BYTES_WATERMARK=456") },
-  { STRING_WITH_LEN("--IO_KEY_PREFETCH=456") },
-  { STRING_WITH_LEN("--NUMBER_OF_REPLICAS=456") },
-  { STRING_WITH_LEN("--POLL_TIMEOUT=456") },
-  { STRING_WITH_LEN("--RCV_TIMEOUT=456") },
-  { STRING_WITH_LEN("--RETRY_TIMEOUT=456") },
-  { STRING_WITH_LEN("--SERVER_FAILURE_LIMIT=456") },
-  { STRING_WITH_LEN("--SND_TIMEOUT=456") },
-  { STRING_WITH_LEN("--SOCKET_RECV_SIZE=456") },
-  { STRING_WITH_LEN("--SOCKET_SEND_SIZE=456") },
-  { NULL, 0}
-};
-
-scanner_string_st test_boolean_options[]= {
-  { STRING_WITH_LEN("--AUTO_EJECT_HOSTS") },
-  { STRING_WITH_LEN("--BINARY_PROTOCOL") },
-  { STRING_WITH_LEN("--BUFFER_REQUESTS") },
-  { STRING_WITH_LEN("--CACHE_LOOKUPS") },
-  { STRING_WITH_LEN("--CORK") },
-  { STRING_WITH_LEN("--HASH_WITH_PREFIX_KEY") },
-  { STRING_WITH_LEN("--KETAMA") },
-  { STRING_WITH_LEN("--KETAMA_WEIGHTED") },
-  { STRING_WITH_LEN("--NOREPLY") },
-  { STRING_WITH_LEN("--RANDOMIZE_REPLICA_READ") },
-  { STRING_WITH_LEN("--SORT_HOSTS") },
-  { STRING_WITH_LEN("--SUPPORT_CAS") },
-  { STRING_WITH_LEN("--TCP_NODELAY") },
-  { STRING_WITH_LEN("--TCP_KEEPALIVE") },
-  { STRING_WITH_LEN("--TCP_KEEPIDLE") },
-  { STRING_WITH_LEN("--USE_UDP") },
-  { STRING_WITH_LEN("--VERIFY_KEY") },
-  { NULL, 0}
-};
-
 test_return_t parser_number_options_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
-
-  for (scanner_string_st *ptr= test_number_options; ptr->size; ptr++)
-  {
-    memcached_return_t rc;
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
-  }
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
+  return _test_option(test_number_options);
 }
 
 test_return_t parser_boolean_options_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
-
-  for (scanner_string_st *ptr= test_boolean_options; ptr->size; ptr++)
-  {
-    memcached_return_t rc;
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
-  }
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
+  return _test_option(test_boolean_options);
 }
 
 test_return_t behavior_parser_test(memcached_st *junk)
@@ -211,55 +318,17 @@ test_return_t behavior_parser_test(memcached_st *junk)
 test_return_t parser_hash_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_return_t rc;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
-
-  scanner_string_st test_strings[]= {
-    { STRING_WITH_LEN("--HASH=MD5") },
-    { STRING_WITH_LEN("--HASH=CRC") },
-    { STRING_WITH_LEN("--HASH=FNV1_64") },
-    { STRING_WITH_LEN("--HASH=FNV1A_64") },
-    { STRING_WITH_LEN("--HASH=FNV1_32") },
-    { STRING_WITH_LEN("--HASH=FNV1A_32") },
-    { STRING_WITH_LEN("--HASH=HSIEH") },
-    { STRING_WITH_LEN("--HASH=MURMUR") },
-    { STRING_WITH_LEN("--HASH=JENKINS") },
-    { NULL, 0}
-  };
-
-  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
-  {
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
-  }
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
+  return _test_option(hash_strings);
 }
 
 test_return_t parser_distribution_test(memcached_st *junk)
 {
   (void)junk;
-  memcached_return_t rc;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
+  return _test_option(distribution_strings);
+}
 
-  scanner_string_st test_strings[]= {
-    { STRING_WITH_LEN("--DISTRIBUTION=consistent") },
-    { STRING_WITH_LEN("--DISTRIBUTION=random") },
-    { STRING_WITH_LEN("--DISTRIBUTION=modula") },
-    { NULL, 0}
-  };
-
-  for (scanner_string_st *ptr= test_strings; ptr->size; ptr++)
-  {
-    rc= memcached_parse_options(memc, ptr->c_ptr, ptr->size);
-    test_true_got(rc == MEMCACHED_SUCCESS, ptr->c_ptr);
-  }
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
+test_return_t parser_key_prefix_test(memcached_st *junk)
+{
+  (void)junk;
+  return _test_option(distribution_strings);
 }

@@ -148,6 +148,9 @@ USER-DATA			{ return USER_DATA; }
 USE_UDP			        { return USE_UDP; }
 USE-UDP	       		        { return USE_UDP; }
 
+PREFIX-KEY	       		        { return PREFIX_KEY; }
+PREFIX_KEY	       		        { return PREFIX_KEY; }
+
 CONSISTENT      { return CONSISTENT; }
 MODULA          { return MODULA; }
 RANDOM          { return RANDOM; }
@@ -165,14 +168,15 @@ JENKINS			{ return JENKINS; }
 [[:alnum:]][[:alnum:].]*[[:alpha:]]: { 
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
-      return SERVER_WITH_PORT;
+      return HOSTNAME_WITH_PORT;
     }
 
-[[:alnum:]][[:alnum:].]*[[:alpha:]] { 
+[[:alnum:]]+"."[[:alpha:].]+ { 
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
-      return IDENTIFIER;
+      return HOSTNAME;
     }
+
 [[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}: { 
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
@@ -183,6 +187,18 @@ JENKINS			{ return JENKINS; }
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return IPADDRESS;
+    }
+
+[[:alnum:]]+ { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return STRING;
+    }
+
+\"[[:alnum:]]*\" { 
+      yylval->string.c_str = yytext;
+      yylval->string.length = yyleng;
+      return QUOTED_STRING;
     }
 
 .   {

@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,41 +35,31 @@
  *
  */
 
-#include "common.h"
+#pragma once
 
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/scanner.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int libmemcached_parse(type_st *, yyscan_t *);
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str);
 
-memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
-{
-  type_st pp;
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
 
-  memset(&pp, 0, sizeof(type_st));
+LIBMEMCACHED_LOCAL
+  void memcached_error_free(memcached_st *error);
 
-  WATCHPOINT_ASSERT(self);
-  if (! self)
-    return MEMCACHED_INVALID_ARGUMENTS;
+LIBMEMCACHED_API
+  const char *memcached_last_error_message(memcached_st *memc);
 
-  pp.buf= option_string;
-  pp.memc= self;
-  pp.length= length;
-  libmemcached_lex_init(&pp.yyscanner);
-  libmemcached_set_extra(&pp, pp.yyscanner);
-  bool success= libmemcached_parse(&pp, pp.yyscanner)  == 0;
-  libmemcached_lex_destroy(pp.yyscanner);
+LIBMEMCACHED_API
+  memcached_return_t memcached_last_error(memcached_st *memc);
 
-  if (not success)
-    return MEMCACHED_INVALID_ARGUMENTS;
+LIBMEMCACHED_API
+  memcached_return_t memcached_last_error_errno(memcached_st *memc);
 
-  return MEMCACHED_SUCCESS;
-}
 
-memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename)
-{
-  (void)ptr;
-  (void)filename;
-
-  return MEMCACHED_SUCCESS;
-}
+#ifdef __cplusplus
+} // extern "C"
+#endif

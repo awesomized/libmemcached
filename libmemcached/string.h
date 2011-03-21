@@ -34,6 +34,11 @@ struct memcached_string_st {
   } options;
 };
 
+struct memcached_string_t {
+  size_t size;
+  const char *c_str;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -79,5 +84,11 @@ void memcached_string_set_length(memcached_string_st *self, size_t length);
 }
 #endif
 
+
+#ifdef __cplusplus
+#define memcached_string_with_size(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
+#else
+#define memcached_string_with_size(X) (X), ((size_t)((sizeof(X) - 1)))
+#endif
 
 #endif /* __LIBMEMCACHED_STRING_H__ */
