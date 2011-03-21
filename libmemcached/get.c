@@ -232,7 +232,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     struct libmemcached_io_vector_st vector[]=
     {
       { .length= get_command_length, .buffer= get_command },
-      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+      { .length= memcached_array_size(ptr->prefix_key), .buffer= memcached_array_string(ptr->prefix_key) },
       { .length= key_length[x], .buffer= keys[x] },
       { .length= 1, .buffer= " " }
     };
@@ -423,14 +423,14 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       return vk;
     }
 
-    request.message.header.request.keylen= htons((uint16_t)(key_length[x] + ptr->prefix_key_length));
+    request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->prefix_key)));
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-    request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + ptr->prefix_key_length));
+    request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + memcached_array_size(ptr->prefix_key)));
 
     struct libmemcached_io_vector_st vector[]=
     {
       { .length= sizeof(request.bytes), .buffer= request.bytes },
-      { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+      { .length= memcached_array_size(ptr->prefix_key), .buffer= memcached_array_string(ptr->prefix_key) },
       { .length= key_length[x], .buffer= keys[x] }
     };
 
@@ -545,9 +545,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
         .message.header.request= {
           .magic= PROTOCOL_BINARY_REQ,
           .opcode= PROTOCOL_BINARY_CMD_GETK,
-          .keylen= htons((uint16_t)(key_length[x] + ptr->prefix_key_length)),
+          .keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->prefix_key))),
           .datatype= PROTOCOL_BINARY_RAW_BYTES,
-          .bodylen= htonl((uint32_t)(key_length[x] + ptr->prefix_key_length))
+          .bodylen= htonl((uint32_t)(key_length[x] + memcached_array_size(ptr->prefix_key)))
         }
       };
 
@@ -564,7 +564,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       struct libmemcached_io_vector_st vector[]=
       {
         { .length= sizeof(request.bytes), .buffer= request.bytes },
-        { .length= ptr->prefix_key_length, .buffer= ptr->prefix_key },
+        { .length= memcached_array_size(ptr->prefix_key), .buffer= memcached_array_string(ptr->prefix_key) },
         { .length= key_length[x], .buffer= keys[x] }
       };
 

@@ -109,7 +109,6 @@ struct memcached_st {
   int recv_size;
   void *user_data;
   time_t next_distribution_rebuild; // Ketama
-  size_t prefix_key_length;
   uint32_t number_of_replicas;
   hashkit_st distribution_hashkit;
   memcached_result_st result;
@@ -130,7 +129,7 @@ struct memcached_st {
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
   struct memcached_error_st *error_messages;
-  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
+  struct memcached_array_st *prefix_key;
   struct {
     bool is_allocated:1;
   } options;

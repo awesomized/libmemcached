@@ -74,14 +74,14 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
 
   if (ptr->flags.hash_with_prefix_key)
   {
-    size_t temp_length= ptr->prefix_key_length + key_length;
+    size_t temp_length= memcached_array_size(ptr->prefix_key) + key_length;
     char temp[temp_length];
 
     if (temp_length > MEMCACHED_MAX_KEY -1)
       return EXIT_SUCCESS;
 
-    strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
-    strncpy(temp + ptr->prefix_key_length, key, key_length);
+    strncpy(temp, memcached_array_string(ptr->prefix_key), memcached_array_size(ptr->prefix_key));
+    strncpy(temp + memcached_array_size(ptr->prefix_key), key, key_length);
 
     return generate_hash(ptr, temp, temp_length);
   }

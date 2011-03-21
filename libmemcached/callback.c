@@ -31,25 +31,21 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
         size_t key_length= strlen(key);
 
         if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-        {
-          return MEMCACHED_BAD_KEY_PROVIDED;
-        }
+          return memcached_set_error(ptr, MEMCACHED_BAD_KEY_PROVIDED, NULL);
 
-        if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1)
-            || (strncpy(ptr->prefix_key, key, MEMCACHED_PREFIX_KEY_MAX_SIZE) == NULL))
-        {
-          ptr->prefix_key_length= 0;
-          return MEMCACHED_BAD_KEY_PROVIDED;
-        }
-        else
-        {
-          ptr->prefix_key_length= key_length;
-        }
+        if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
+          return memcached_set_error(ptr, MEMCACHED_KEY_TOO_BIG, NULL);
+
+        memcached_array_free(ptr->prefix_key);
+        ptr->prefix_key= memcached_strcpy(ptr, (const char *)data, strlen((const char*)data));
+
+        f (! ptr->prefix_key)
+          return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
       }
       else
       {
-        ptr->prefix_key[0]= 0;
-        ptr->prefix_key_length= 0;
+        memcached_array_free(ptr->prefix_key);
+        ptr->prefix_key= NULL;
       }
 
       break;
@@ -124,10 +120,10 @@ void *memcached_callback_get(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      if (ptr->prefix_key_length)
+      if (ptr->prefix_key)
       {
         *error= MEMCACHED_SUCCESS;
-        return (void *)ptr->prefix_key;
+        return (void *)memcached_array_string(ptr->prefix_key);
       }
       else
       {

@@ -115,7 +115,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     key= result->item_key;
     result->key_length= 0;
 
-    for (prefix_length= ptr->root->prefix_key_length; !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
+    for (prefix_length= memcached_array_size(ptr->root->prefix_key); !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
     {
       if (prefix_length == 0)
       {

@@ -3956,9 +3956,10 @@ static test_return_t set_prefix(memcached_st *memc)
 
   /* Test a clean set */
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)key);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc));
 
   value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  test_true(value);
   test_true(memcmp(value, key, 4) == 0);
   test_true(rc == MEMCACHED_SUCCESS);
 
@@ -3967,6 +3968,7 @@ static test_return_t set_prefix(memcached_st *memc)
   test_true(rc == MEMCACHED_SUCCESS);
 
   value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  test_false(value);
   test_true(rc == MEMCACHED_FAILURE);
 
   /* Now setup for main test */
@@ -3974,6 +3976,7 @@ static test_return_t set_prefix(memcached_st *memc)
   test_true(rc == MEMCACHED_SUCCESS);
 
   value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  test_true(value);
   test_true(rc == MEMCACHED_SUCCESS);
   test_true(memcmp(value, key, 4) == 0);
 
@@ -3986,6 +3989,7 @@ static test_return_t set_prefix(memcached_st *memc)
     test_true(rc == MEMCACHED_SUCCESS);
 
     value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+    test_false(value);
     test_true(rc == MEMCACHED_FAILURE);
     test_true(value == NULL);
 

@@ -66,6 +66,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include "libmemcached/io.h"
 #include "libmemcached/do.h"
 #include "libmemcached/internal.h"
+#include "libmemcached/array.h"
 #include "libmemcached/libmemcached_probes.h"
 #include "libmemcached/memcached/protocol_binary.h"
 #include "libmemcached/byteorder.h"

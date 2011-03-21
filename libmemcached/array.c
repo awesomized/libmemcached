@@ -35,30 +35,66 @@
  *
  */
 
-#include <config.h>
-
 #include "libmemcached/common.h"
 
 struct memcached_array_st
 {
+  memcached_st *root;
   size_t size;
   char c_str[];
 };
 
-memcached_array_st *memcached_strcpy(const char *str, size_t str_length)
+memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_array_st *original)
 {
-  memcached_array_st *array= (struct memcached_array_st *)malloc(sizeof(struct memcached_array_st) +str_length +1);
+  if (! original)
+    return NULL;
 
-  array->size= str_length;
+  return memcached_strcpy(memc, original->c_str, original->size);
+}
+
+memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t str_length)
+{
+  memcached_array_st *array= (struct memcached_array_st *)libmemcached_malloc(memc, sizeof(struct memcached_array_st) +str_length +1);
+
+  if (! array)
+    return NULL;
+
+  array->root= memc;
+  array->size= str_length -1; // We don't count the NULL ending
   memcpy(array->c_str, str, str_length);
-  array->c_str[str_length]= 0;
+  array->c_str[str_length +1]= 0;
 
   return array;
 }
 
 void memcached_array_free(memcached_array_st *array)
 {
-  WATCHPOINT_ASSERT(array);
-  if (array)
+  if (! array)
+    return;
+
+  WATCHPOINT_ASSERT(array->root);
+  if (array && array->root)
+  {
+    libmemcached_free(array->root, array);
+  }
+  else if (array)
+  {
     free(array);
+  }
+}
+
+size_t memcached_array_size(memcached_array_st *array)
+{
+  if (! array)
+    return 0;
+
+  return array->size;
+}
+
+const char *memcached_array_string(memcached_array_st *array)
+{
+  if (! array)
+    return NULL;
+
+  return array->c_str;
 }

@@ -80,7 +80,6 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->user_data= NULL;
   self->next_distribution_rebuild= 0;
-  self->prefix_key_length= 0;
   self->number_of_replicas= 0;
   hash_ptr= hashkit_create(&self->distribution_hashkit);
   if (! hash_ptr)
@@ -98,6 +97,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->sasl.is_allocated= false;
 
   self->error_messages= NULL;
+  self->prefix_key= NULL;
 
   return true;
 }
@@ -117,6 +117,9 @@ static void _free(memcached_st *ptr, bool release_st)
 
   if (ptr->continuum)
     libmemcached_free(ptr, ptr->continuum);
+
+  memcached_array_free(ptr->prefix_key);
+  ptr->prefix_key= NULL;
 
   memcached_error_free(ptr);
 
@@ -290,11 +293,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
 
-  if (source->prefix_key_length)
-  {
-    strcpy(new_clone->prefix_key, source->prefix_key);
-    new_clone->prefix_key_length= source->prefix_key_length;
-  }
+  new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)
