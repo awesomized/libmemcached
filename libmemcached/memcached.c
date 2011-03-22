@@ -35,7 +35,6 @@ static const memcached_st global_copy= {
     .use_udp= false,
     .verify_key= false,
     .tcp_keepalive= false,
-    .load_from_file= false,
     .ping_service= false
   }
 };
@@ -98,6 +97,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->error_messages= NULL;
   self->prefix_key= NULL;
+  self->configure.filename= NULL;
 
   return true;
 }
@@ -128,6 +128,12 @@ static void _free(memcached_st *ptr, bool release_st)
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
     memcached_destroy_sasl_auth_data(ptr);
 #endif
+  }
+
+  if (release_st)
+  {
+    memcached_array_free(ptr->configure.filename);
+    ptr->configure.filename= NULL;
   }
 
   if (memcached_is_allocated(ptr) && release_st)
@@ -183,21 +189,37 @@ memcached_st *memcached_create_with_options(const char *string, size_t length)
   if (! self)
     return NULL;
 
-  memcached_parse_options(self, string, length);
+  memcached_return_t rc;
+  if ((rc= memcached_parse_configuration(self, string, length)) != MEMCACHED_SUCCESS)
+  {
+    return self;
+  }
+
+  if (memcached_parse_filename(self))
+  {
+    rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
+  }
 
   return self;
 }
 
-void memcached_reset(memcached_st *ptr)
+memcached_return_t memcached_reset(memcached_st *ptr)
 {
   WATCHPOINT_ASSERT(ptr);
   if (! ptr)
-    return;
+    return MEMCACHED_INVALID_ARGUMENTS;
 
   bool stored_is_allocated= memcached_is_allocated(ptr);
   _free(ptr, false);
   memcached_create(ptr);
   memcached_set_allocated(ptr, stored_is_allocated);
+
+  if (ptr->configure.filename)
+  {
+    return memcached_parse_configure_file(ptr, memcached_param_array(ptr->configure.filename));
+  }
+
+  return MEMCACHED_SUCCESS;
 }
 
 void memcached_servers_reset(memcached_st *ptr)

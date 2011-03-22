@@ -246,7 +246,7 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= t
   for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
   {
     memcached_return_t rc;
-    rc= memcached_parse_options(memc, ptr->option.c_str, ptr->option.size);
+    rc= memcached_parse_configuration(memc, ptr->option.c_str, ptr->option.size);
     if (test_true)
     {
       test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc));
@@ -333,7 +333,7 @@ test_return_t parser_key_prefix_test(memcached_st *junk)
   return _test_option(distribution_strings);
 }
 
-test_return_t memcached_parse_file_options_test(memcached_st *junk)
+test_return_t memcached_parse_configure_file_test(memcached_st *junk)
 {
   (void)junk;
   memcached_st memc;
@@ -341,23 +341,52 @@ test_return_t memcached_parse_file_options_test(memcached_st *junk)
 
   test_true(memc_ptr);
 
-  memcached_return_t rc= memcached_parse_file_options(memc_ptr, "support/example.cnf");
-  test_true_got(rc == MEMCACHED_SUCCESS, rc == MEMCACHED_INVALID_ARGUMENTS ? memcached_last_error_message(&memc) : memcached_strerror(NULL, rc));
+  memcached_return_t rc= memcached_parse_configure_file(memc_ptr, memcached_string_with_size("support/example.cnf"));
+  test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc_ptr) ? memcached_last_error_message(memc_ptr) : memcached_strerror(NULL, rc));
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;
 }
 
-test_return_t memcached_check_options_test(memcached_st *junk)
+test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
+{
+  (void)junk;
+
+  memcached_st *memc_ptr;
+  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
+  test_true(memc_ptr);
+  memcached_free(memc_ptr);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *junk)
+{
+  (void)junk;
+  memcached_return_t rc;
+
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""), NULL, 0);
+  test_true(rc == MEMCACHED_SUCCESS);
+
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=support/example.cnf"), NULL, 0);
+  test_false(rc == MEMCACHED_SUCCESS);
+
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"bad-path/example.cnf\""), NULL, 0);
+  test_true_got(rc == MEMCACHED_ERRNO, memcached_strerror(NULL, rc));
+
+  return TEST_SUCCESS;
+}
+
+test_return_t libmemcached_check_configuration_test(memcached_st *junk)
 {
   (void)junk;
 
   memcached_return_t rc;
 
-  rc= memcached_check_options(STRING_WITH_LEN("--server=localhost"), NULL, 0);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost"), NULL, 0);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  rc= memcached_check_options(STRING_WITH_LEN("--dude=localhost"), NULL, 0);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--dude=localhost"), NULL, 0);
   test_false(rc == MEMCACHED_SUCCESS);
   test_true(rc == MEMCACHED_PARSE_ERROR);
 

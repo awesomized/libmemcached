@@ -62,9 +62,18 @@ memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t
   array->root= memc;
   array->size= str_length -1; // We don't count the NULL ending
   memcpy(array->c_str, str, str_length);
-  array->c_str[str_length +1]= 0;
+  array->c_str[str_length]= 0;
 
   return array;
+}
+
+memcached_string_t memcached_array_to_string(memcached_array_st *array)
+{
+  memcached_string_t tmp;
+  tmp.c_str= array->c_str;
+  tmp.size= array->size;
+
+  return tmp;
 }
 
 void memcached_array_free(memcached_array_st *array)

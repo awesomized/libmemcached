@@ -56,13 +56,17 @@ size_t memcached_array_size(memcached_array_st *array);
 LIBMEMCACHED_LOCAL
 const char *memcached_array_string(memcached_array_st *array);
 
-#ifdef __cplusplus
-#define memcached_print_array(X) static_cast<int>(memcached_array_size(X)), memcached_array_string(X)
-#else
-#define memcached_print_array(X) (int)memcached_array_size((X)), memcached_array_string((X))
-#endif
-
+LIBMEMCACHED_LOCAL
+memcached_string_t memcached_array_to_string(memcached_array_st *array);
 
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
+#ifdef __cplusplus
+#define memcached_print_array(X) static_cast<int>(memcached_array_size(X)), memcached_array_string(X)
+#define memcached_param_array(X) memcached_array_string(X), memcached_array_size(X)
+#else
+#define memcached_print_array(X) (int)memcached_array_size((X)), memcached_array_string((X))
+#define memcached_param_array(X) memcached_array_string(X), memcached_array_size(X)
 #endif

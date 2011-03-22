@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
   memc= memcached_create(NULL);
 
-  memcached_return_t rc= memcached_parse_options(memc, argv[1], strlen(argv[1]));
+  memcached_return_t rc= memcached_parse_configuration(memc, argv[1], strlen(argv[1]));
   memcached_free(memc);
 
   if (rc != MEMCACHED_SUCCESS)

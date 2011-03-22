@@ -85,7 +85,6 @@ struct memcached_st {
     bool use_udp:1;
     bool verify_key:1;
     bool tcp_keepalive:1;
-    bool load_from_file:1;
     bool ping_service:1;
   } flags;
   memcached_server_distribution_t distribution;
@@ -132,6 +131,9 @@ struct memcached_st {
   struct memcached_error_st *error_messages;
   struct memcached_array_st *prefix_key;
   struct {
+    struct memcached_array_st *filename;
+  } configure;
+  struct {
     bool is_allocated:1;
   } options;
 
@@ -154,7 +156,7 @@ LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
 
 LIBMEMCACHED_API
-void memcached_reset(memcached_st *ptr);
+memcached_return_t memcached_reset(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_reset_last_disconnected_server(memcached_st *ptr);

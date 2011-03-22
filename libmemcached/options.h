@@ -42,13 +42,22 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_check_options(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size);
+  memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_parse_options(memcached_st *ptr, const char *option_string, size_t length);
+  memcached_return_t memcached_parse_configuration(memcached_st *ptr, const char *option_string, size_t length);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_parse_file_options(memcached_st *ptr, const char *filename);
+  memcached_return_t memcached_parse_configure_file(memcached_st *ptr, const char *filename, size_t filename_length);
+
+LIBMEMCACHED_API
+  void memcached_set_configuration_file(memcached_st *self, const char *filename, size_t filename_length);
+
+LIBMEMCACHED_API
+  const char *memcached_parse_filename(memcached_st *memc);
+
+LIBMEMCACHED_LOCAL
+  size_t memcached_parse_filename_length(memcached_st *memc);
 
 #ifdef __cplusplus
 }

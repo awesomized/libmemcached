@@ -42,32 +42,77 @@
 
 int libmemcached_parse(type_st *, yyscan_t *);
 
-memcached_return_t memcached_check_options(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size)
+const char *memcached_parse_filename(memcached_st *memc)
 {
-  memcached_st memc;
-  if (! memcached_create(&memc))
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  return memcached_array_string(memc->configure.filename);
+}
 
-  memcached_return_t rc= memcached_parse_options(&memc, option_string, length);
-  if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
+size_t memcached_parse_filename_length(memcached_st *memc)
+{
+  return memcached_array_size(memc->configure.filename);
+}
+
+static memcached_return_t _parse_file_options(memcached_st *self, memcached_string_t *filename)
+{
+  FILE *fp= fopen(filename->c_str, "r");
+  if (! fp)
+    return memcached_set_errno(self, errno, NULL);
+
+  char buffer[BUFSIZ];
+  memcached_return_t rc= MEMCACHED_INVALID_ARGUMENTS;
+  while (fgets(buffer, sizeof(buffer), fp))
   {
-    strncpy(error_buffer, error_buffer_size, memcached_last_error_message(&memc));
-  }
+    size_t length= strlen(buffer);
+    
+    if (length == 1 and buffer[0] == '\n')
+      continue;
 
-  memcached_free(&memc);
+    rc= memcached_parse_configuration(self, buffer, length);
+    if (rc != MEMCACHED_SUCCESS)
+      break;
+  }
+  fclose(fp);
 
   return rc;
 }
 
-memcached_return_t memcached_parse_options(memcached_st *self, char const *option_string, size_t length)
+memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size)
+{
+  memcached_st memc, *memc_ptr;
+
+  if (! (memc_ptr= memcached_create(&memc)))
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+  memcached_return_t rc= memcached_parse_configuration(memc_ptr, option_string, length);
+  if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
+  {
+    strncpy(error_buffer, error_buffer_size, memcached_last_error_message(memc_ptr));
+  }
+
+  if (rc== MEMCACHED_SUCCESS && memcached_behavior_get(memc_ptr, MEMCACHED_BEHAVIOR_LOAD_FROM_FILE))
+  {
+    memcached_string_t filename= memcached_array_to_string(memc_ptr->configure.filename);
+    rc= _parse_file_options(memc_ptr, &filename);
+
+    if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
+    {
+      strncpy(error_buffer, error_buffer_size, memcached_last_error_message(memc_ptr));
+    }
+  }
+
+  memcached_free(memc_ptr);
+
+  return rc;
+}
+
+memcached_return_t memcached_parse_configuration(memcached_st *self, char const *option_string, size_t length)
 {
   type_st pp;
-
   memset(&pp, 0, sizeof(type_st));
 
   WATCHPOINT_ASSERT(self);
   if (! self)
-    return MEMCACHED_INVALID_ARGUMENTS;
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
 
   pp.buf= option_string;
   pp.memc= self;
@@ -83,27 +128,23 @@ memcached_return_t memcached_parse_options(memcached_st *self, char const *optio
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_parse_file_options(memcached_st *self, const char *filename)
+void memcached_set_configuration_file(memcached_st *self, const char *filename, size_t filename_length)
 {
-  FILE *fp= fopen(filename, "r");
+  memcached_array_free(self->configure.filename);
+  self->configure.filename= memcached_strcpy(self, filename, filename_length);
+}
+
+memcached_return_t memcached_parse_configure_file(memcached_st *self, const char *filename, size_t filename_length)
+{
+  if (! self)
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
+
+  if (! filename || filename_length == 0)
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
   
-  if (! fp)
-    return memcached_set_errno(self, errno, NULL);
+  memcached_string_t tmp;
+  tmp.c_str= filename;
+  tmp.size= filename_length;
 
-  char buffer[BUFSIZ];
-  memcached_return_t rc= MEMCACHED_INVALID_ARGUMENTS;
-  while (fgets(buffer, sizeof(buffer), fp))
-  {
-    size_t length= strlen(buffer);
-    
-    if (length == 1 and buffer[0] == '\n')
-      continue;
-
-    rc= memcached_parse_options(self, buffer, length);
-    if (rc != MEMCACHED_SUCCESS)
-      break;
-  }
-  fclose(fp);
-
-  return rc;
+  return _parse_file_options(self, &tmp);
 }

@@ -57,11 +57,12 @@ inline void libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner
 %start statement
 %verbose
 
+%token COMMENT
+%token CONFIGURE_FILE
+%token EMPTY_LINE
 %token SERVER
 %token SERVERS
 %token UNKNOWN
-%token COMMENT
-%token EMPTY_LINE
 
 %token DASH_OPTION
 
@@ -159,6 +160,10 @@ expression:
           }
         | SERVERS '=' server_list
           {
+          }
+        | CONFIGURE_FILE '=' string
+          {
+            memcached_set_configuration_file(parser->memc, $3.c_str, $3.length);
           }
         | behaviors
         ;

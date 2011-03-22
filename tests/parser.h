@@ -68,13 +68,19 @@ LIBTEST_INTERNAL_API
 test_return_t parser_key_prefix_test(memcached_st *junk);
 
 LIBTEST_INTERNAL_API
-test_return_t memcached_parse_file_options_test(memcached_st *junk);
+test_return_t memcached_parse_configure_file_test(memcached_st *junk);
 
 LIBTEST_INTERNAL_API
-  test_return_t memcached_check_options_test(memcached_st *junk);
+  test_return_t libmemcached_check_configuration_test(memcached_st *junk);
 
 LIBTEST_INTERNAL_API
   test_return_t memcached_create_with_options_test(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+  test_return_t memcached_create_with_options_with_filename(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+  test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *junk);
 
 #ifdef	__cplusplus
 }
