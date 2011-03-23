@@ -179,10 +179,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_callback_set(parser->memc, MEMCACHED_CALLBACK_PREFIX_KEY, std::string($3.c_str, $3.length).c_str())) != MEMCACHED_SUCCESS)
             {
-              std::string error_message("--PREFIX-KEY");
-              error_message.append($3.c_str, $3.length);
-              memcached_string_t tmp= memcached_string_make(error_message.c_str(), error_message.size());
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--PREFIX-KEY" << $3;
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -191,8 +190,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3)) != MEMCACHED_SUCCESS)
             {
-              memcached_string_t tmp=  memcached_string_make(memcached_string_with_size("--DISTRIBUTION"));
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--DISTRIBUTION=" << libmemcached_string_distribution($3);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -201,11 +201,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              std::string buffer;
-              buffer+= "--HASH=";
-              buffer+= libmemcached_string_hash($3);
-              memcached_string_t tmp=  memcached_string_make(buffer.c_str(), buffer.size());
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--HASH=" << libmemcached_string_hash($3);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR; 
             }
           }
@@ -214,8 +212,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              memcached_string_t tmp=  memcached_string_make(memcached_string_with_size("--KETAMA-HASH"));
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--KETAMA-HASH=" << libmemcached_string_hash($3);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -224,8 +223,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_behavior_set(parser->memc, $1, $3)) != MEMCACHED_SUCCESS)
             {
-              memcached_string_t tmp= memcached_string_make(libmemcached_string_behavior($1), strlen(libmemcached_string_behavior($1)));
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--" << libmemcached_string_behavior($1) << "=" << $3;
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -234,8 +234,9 @@ behaviors:
             memcached_return_t rc;
             if ((rc= memcached_behavior_set(parser->memc, $1, true)) != MEMCACHED_SUCCESS)
             {
-              memcached_string_t tmp= memcached_string_make(libmemcached_string_behavior($1), strlen(libmemcached_string_behavior($1)));
-              memcached_set_error(parser->memc, rc, &tmp);
+              std::stringstream ss;
+              ss << "--" << libmemcached_string_behavior($1);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -374,8 +375,7 @@ server_list:
             {
               std::stringstream ss;
               ss << "--SERVER=" << $1;
-              memcached_string_t tmp=  memcached_string_make(ss.str().c_str(), ss.str().length());
-              memcached_set_error(parser->memc, rc, &tmp);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -386,8 +386,7 @@ server_list:
             {
               std::stringstream ss;
               ss << "--SERVERS=" << $3;
-              memcached_string_t tmp=  memcached_string_make(ss.str().c_str(), ss.str().length());
-              memcached_set_error(parser->memc, rc, &tmp);
+              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }

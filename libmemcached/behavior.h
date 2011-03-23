@@ -46,6 +46,9 @@ bool _is_auto_eject_host(const memcached_st *ptr);
 LIBMEMCACHED_LOCAL
   const char *libmemcached_string_behavior(const memcached_behavior_t flag);
 
+LIBMEMCACHED_LOCAL
+  const char *libmemcached_string_distribution(const memcached_server_distribution_t flag);
+
 #ifdef __cplusplus
 }
 #endif

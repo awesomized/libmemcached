@@ -489,6 +489,20 @@ const char *libmemcached_string_behavior(const memcached_behavior_t flag)
   case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE: return "MEMCACHED_BEHAVIOR_TCP_KEEPIDLE";
   case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE: return "MEMCACHED_BEHAVIOR_LOAD_FROM_FILE";
   default:
-  case MEMCACHED_BEHAVIOR_MAX: return "INVALID BEHAVIOR";
+  case MEMCACHED_BEHAVIOR_MAX: return "INVALID memcached_behavior_t";
+  }
+}
+
+const char *libmemcached_string_distribution(const memcached_server_distribution_t flag)
+{
+  switch (flag)
+  {
+  case MEMCACHED_DISTRIBUTION_MODULA: return "MEMCACHED_DISTRIBUTION_MODULA";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT: return "MEMCACHED_DISTRIBUTION_CONSISTENT";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA: return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA";
+  case MEMCACHED_DISTRIBUTION_RANDOM: return "MEMCACHED_DISTRIBUTION_RANDOM";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY: return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY";
+  default:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX: return "INVALID memcached_server_distribution_t";
   }
 }
