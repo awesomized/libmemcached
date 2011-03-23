@@ -159,7 +159,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 "--PREFIX-KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 "--PREFIX_KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 
-INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
+INCLUDE           { yyextra->begin= yytext; std::cerr << "Found INCLUDE" << std::endl; return INCLUDE; }
 RESET           { yyextra->begin= yytext; return RESET; }
 DEBUG           { yyextra->begin= yytext; return DEBUG; }
 SERVERS           { yyextra->begin= yytext; return SERVERS; }
@@ -194,7 +194,7 @@ JENKINS			{ return JENKINS; }
       return HOSTNAME_WITH_PORT;
     }
 
-[[:alnum:]]+"."[[:alpha:].]+ { 
+[[:alnum:]]+"."[[:alpha:].]+[[:alnum:]] { 
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return HOSTNAME;

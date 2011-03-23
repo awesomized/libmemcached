@@ -174,6 +174,9 @@ scanner_variable_t bad_test_strings[]= {
   { ARRAY, make_scanner_string("-servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225"), scanner_string_null, NULL },
   { ARRAY, make_scanner_string("-- servers=a.example.com:81,localhost:82,b.example.com"), scanner_string_null, NULL },
   { ARRAY, make_scanner_string("--servers=localhost+80"), scanner_string_null, NULL},
+  { ARRAY, make_scanner_string("--servers=localhost.com."), scanner_string_null, NULL},
+  { ARRAY, make_scanner_string("--server=localhost.com."), scanner_string_null, NULL},
+  { ARRAY, make_scanner_string("--server=localhost.com.:80"), scanner_string_null, NULL},
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 

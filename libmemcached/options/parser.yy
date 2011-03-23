@@ -63,7 +63,14 @@ inline void parser_abort_func(Context *context, const char *error)
   std::string error_message;
   error_message+= context->begin;
   error_message+= " (";
-  error_message+= memcached_strerror(NULL, context->rc);
+  if (context->rc == MEMCACHED_PARSE_ERROR and error)
+  {
+    error_message+= error;
+  }
+  else
+  {
+    error_message+= memcached_strerror(NULL, context->rc);
+  }
   error_message+= ")";
 
   memcached_set_error_string(context->memc, context->rc, error_message.c_str(), error_message.size());
@@ -159,6 +166,7 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 %token <string> IPADDRESS_WITH_PORT
 %token <string> STRING
 %token <string> QUOTED_STRING
+%token <string> FILE_PATH
 
 %type <server> server
 %type <string> string
@@ -170,8 +178,8 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 %%
 
 begin:
-          statement 
-        | statement ' ' statement
+          statement
+        | begin ' ' statement
         ;
 
 statement:
@@ -206,8 +214,9 @@ statement:
           {
             yydebug= 0;
           }
-        | INCLUDE string
+        | INCLUDE FILE_PATH
           {
+            std::cerr << "Got into INCLUDE" << std::endl;
             if ((context->rc= memcached_parse_configure_file(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
