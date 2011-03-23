@@ -68,9 +68,8 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 %token EMPTY_LINE
 %token SERVER
 %token SERVERS
+%token UNKNOWN_OPTION
 %token UNKNOWN
-
-%token DASH_OPTION
 
 /* All behavior options */
 %token AUTO_EJECT_HOSTS
@@ -148,9 +147,9 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 %%
 
 statement:
-         DASH_OPTION expression
+         expression
           { }
-        | statement ' ' DASH_OPTION expression
+        | statement ' ' expression
           { }
         | COMMENT
           { }

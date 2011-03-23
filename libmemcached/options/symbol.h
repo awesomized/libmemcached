@@ -45,6 +45,7 @@ union YYSTYPE
 {
   long long number;  
   string_t string;
+  string_t option;
   server_t server;
   double double_number;
   memcached_server_distribution_t distribution;

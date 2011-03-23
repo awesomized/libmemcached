@@ -47,7 +47,6 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 {
   if (context->pos >= context->length)
   {
-    std::cerr << "YY_NULL" << std::endl;
     result= YY_NULL;
   }
   else
@@ -84,85 +83,87 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 
 [[:digit:]]+ { yylval->number = atoi(yytext); return (NUMBER); }
 
-([[:digit:]]*.[:digit:]+) { yylval->double_number = atof(yytext); return (FLOAT); }
-
 [\t\r\n] ; /* skip whitespace */
 
 ^#.*$ {
       return COMMENT;
     }
 
-"--" { yyextra->begin= yytext; return DASH_OPTION; }
+"--SERVER"                          { yyextra->begin= yytext; return SERVER; }
+"--SERVERS"                        { yyextra->begin= yytext; return SERVERS; }
 
-SERVER                          { return SERVER; }
-SERVERS                         { return SERVERS; }
+"--VERIFY_KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
+"--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
+"--AUTO_EJECT_HOSTS"	        { yyextra->begin= yytext; return AUTO_EJECT_HOSTS; }
+"--AUTO-EJECT_HOSTS"	        { yyextra->begin= yytext; return AUTO_EJECT_HOSTS; }
+"--BINARY_PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
+"--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
+"--BUFFER_REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
+"--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
+"--CACHE_LOOKUPS"			{ yyextra->begin= yytext; return CACHE_LOOKUPS; }
+"--CACHE-LOOKUPS"			{ yyextra->begin= yytext; return CACHE_LOOKUPS; }
+"--CONFIGURE_FILE"			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
+"--CONFIGURE-FILE"			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
+"--CONNECT_TIMEOUT"			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
+"--CONNECT-TIMEOUT"			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
+"--CORK"			        { yyextra->begin= yytext; return _CORK; }
+"--DISTRIBUTION"			{ yyextra->begin= yytext; return DISTRIBUTION; }
+"--HASH"			        { yyextra->begin= yytext; return HASH; }
+"--HASH_WITH_PREFIX_KEY"	        { yyextra->begin= yytext; return HASH_WITH_PREFIX_KEY; }
+"--HASH-WITH-PREFIX_KEY"	        { yyextra->begin= yytext; return HASH_WITH_PREFIX_KEY; }
+"--IO_BYTES_WATERMARK"	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
+"--IO-BYTES-WATERMARK"	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
+"--IO_KEY_PREFETCH"			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
+"--IO-KEY-PREFETCH"			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
+"--IO_MSG_WATERMARK"	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
+"--IO-MSG-WATERMARK"	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
+"--KETAMA"			        { yyextra->begin= yytext; return KETAMA; }
+"--KETAMA_HASH"			{ yyextra->begin= yytext; return KETAMA_HASH; }
+"--KETAMA-HASH"			{ yyextra->begin= yytext; return KETAMA_HASH; }
+"--KETAMA_WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
+"--KETAMA-WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
+"--NOREPLY"                         { yyextra->begin= yytext; return NOREPLY; }
+"--NUMBER_OF_REPLICAS"	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
+"--NUMBER-OF-REPLICAS"	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
+"--POLL_TIMEOUT"			{ yyextra->begin= yytext; return POLL_TIMEOUT; }
+"--POLL-TIMEOUT"			{ yyextra->begin= yytext; return POLL_TIMEOUT; }
+"--RANDOMIZE_REPLICA_READ"	        { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
+"--RANDOMIZE-REPLICA-READ"	        { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
+"--RCV_TIMEOUT"			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
+"--RCV-TIMEOUT"			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
+"--RETRY_TIMEOUT"			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
+"--RETRY-TIMEOUT"			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
+"--SERVER_FAILURE_LIMIT"	        { yyextra->begin= yytext; return SERVER_FAILURE_LIMIT; }
+"--SERVER-FAILURE-LIMIT"	        { yyextra->begin= yytext; return SERVER_FAILURE_LIMIT; }
+"--SND_TIMEOUT"			{ yyextra->begin= yytext; return SND_TIMEOUT; }
+"--SND-TIMEOUT"			{ yyextra->begin= yytext; return SND_TIMEOUT; }
+"--SOCKET_RECV_SIZE"	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
+"--SOCKET-RECV-SIZE"	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
+"--SOCKET_SEND_SIZE"	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
+"--SOCKET-SEND-SIZE"	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
+"--SORT_HOSTS"			{ yyextra->begin= yytext; return SORT_HOSTS; }
+"--SORT-HOSTS"			{ yyextra->begin= yytext; return SORT_HOSTS; }
+"--SUPPORT_CAS"			{ yyextra->begin= yytext; return SUPPORT_CAS; }
+"--SUPPORT-CAS"			{ yyextra->begin= yytext; return SUPPORT_CAS; }
+"--TCP_NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
+"--TCP-NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
+"--TCP_KEEPALIVE"			{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
+"--TCP-KEEPALIVE"			{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
+"--TCP_KEEPIDLE"			{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
+"--TCP-KEEPIDLE"			{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
+"--USER_DATA"			{ yyextra->begin= yytext; return USER_DATA; }
+"--USER-DATA"			{ yyextra->begin= yytext; return USER_DATA; }
+"--USE_UDP"			        { yyextra->begin= yytext; return USE_UDP; }
+"--USE-UDP"	       		        { yyextra->begin= yytext; return USE_UDP; }
 
-VERIFY_KEY                      { return VERIFY_KEY; }
-VERIFY-KEY                      { return VERIFY_KEY; }
-AUTO_EJECT_HOSTS	        { return AUTO_EJECT_HOSTS; }
-AUTO-EJECT_HOSTS	        { return AUTO_EJECT_HOSTS; }
-BINARY_PROTOCOL			{ return BINARY_PROTOCOL; }
-BINARY-PROTOCOL			{ return BINARY_PROTOCOL; }
-BUFFER_REQUESTS			{ return BUFFER_REQUESTS; }
-BUFFER-REQUESTS			{ return BUFFER_REQUESTS; }
-CACHE_LOOKUPS			{ return CACHE_LOOKUPS; }
-CACHE-LOOKUPS			{ return CACHE_LOOKUPS; }
-CONFIGURE_FILE			{ return CONFIGURE_FILE; }
-CONFIGURE-FILE			{ return CONFIGURE_FILE; }
-CONNECT_TIMEOUT			{ return CONNECT_TIMEOUT; }
-CONNECT-TIMEOUT			{ return CONNECT_TIMEOUT; }
-CORK			        { return _CORK; }
-DISTRIBUTION			{ return DISTRIBUTION; }
-HASH			        { return HASH; }
-HASH_WITH_PREFIX_KEY	        { return HASH_WITH_PREFIX_KEY; }
-HASH-WITH-PREFIX_KEY	        { return HASH_WITH_PREFIX_KEY; }
-IO_BYTES_WATERMARK	        { return IO_BYTES_WATERMARK; }
-IO-BYTES-WATERMARK	        { return IO_BYTES_WATERMARK; }
-IO_KEY_PREFETCH			{ return IO_KEY_PREFETCH; }
-IO-KEY-PREFETCH			{ return IO_KEY_PREFETCH; }
-IO_MSG_WATERMARK	        { return IO_MSG_WATERMARK; }
-IO-MSG-WATERMARK	        { return IO_MSG_WATERMARK; }
-KETAMA			        { return KETAMA; }
-KETAMA_HASH			{ return KETAMA_HASH; }
-KETAMA-HASH			{ return KETAMA_HASH; }
-KETAMA_WEIGHTED			{ return KETAMA_WEIGHTED; }
-KETAMA-WEIGHTED			{ return KETAMA_WEIGHTED; }
-NOREPLY                         { return NOREPLY; }
-NUMBER_OF_REPLICAS	        { return NUMBER_OF_REPLICAS; }
-NUMBER-OF-REPLICAS	        { return NUMBER_OF_REPLICAS; }
-POLL_TIMEOUT			{ return POLL_TIMEOUT; }
-POLL-TIMEOUT			{ return POLL_TIMEOUT; }
-RANDOMIZE_REPLICA_READ	        { return RANDOMIZE_REPLICA_READ; }
-RANDOMIZE-REPLICA-READ	        { return RANDOMIZE_REPLICA_READ; }
-RCV_TIMEOUT			{ return RCV_TIMEOUT; }
-RCV-TIMEOUT			{ return RCV_TIMEOUT; }
-RETRY_TIMEOUT			{ return RETRY_TIMEOUT; }
-RETRY-TIMEOUT			{ return RETRY_TIMEOUT; }
-SERVER_FAILURE_LIMIT	        { return SERVER_FAILURE_LIMIT; }
-SERVER-FAILURE-LIMIT	        { return SERVER_FAILURE_LIMIT; }
-SND_TIMEOUT			{ return SND_TIMEOUT; }
-SND-TIMEOUT			{ return SND_TIMEOUT; }
-SOCKET_RECV_SIZE	        { return SOCKET_RECV_SIZE; }
-SOCKET-RECV-SIZE	        { return SOCKET_RECV_SIZE; }
-SOCKET_SEND_SIZE	        { return SOCKET_SEND_SIZE; }
-SOCKET-SEND-SIZE	        { return SOCKET_SEND_SIZE; }
-SORT_HOSTS			{ return SORT_HOSTS; }
-SORT-HOSTS			{ return SORT_HOSTS; }
-SUPPORT_CAS			{ return SUPPORT_CAS; }
-SUPPORT-CAS			{ return SUPPORT_CAS; }
-TCP_NODELAY			{ return _TCP_NODELAY; }
-TCP-NODELAY			{ return _TCP_NODELAY; }
-TCP_KEEPALIVE			{ return _TCP_KEEPALIVE; }
-TCP-KEEPALIVE			{ return _TCP_KEEPALIVE; }
-TCP_KEEPIDLE			{ return _TCP_KEEPIDLE; }
-TCP-KEEPIDLE			{ return _TCP_KEEPIDLE; }
-USER_DATA			{ return USER_DATA; }
-USER-DATA			{ return USER_DATA; }
-USE_UDP			        { return USE_UDP; }
-USE-UDP	       		        { return USE_UDP; }
+"--PREFIX-KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
+"--PREFIX_KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 
-PREFIX-KEY	       		        { return PREFIX_KEY; }
-PREFIX_KEY	       		        { return PREFIX_KEY; }
+"--"[[:alnum:]]*   {
+      std::cerr << "Started at " << yytext << std::endl;
+      yyextra->begin= yytext;
+      return UNKNOWN_OPTION;
+    }
 
 CONSISTENT      { return CONSISTENT; }
 MODULA          { return MODULA; }
@@ -215,6 +216,7 @@ JENKINS			{ return JENKINS; }
     }
 
 .   {
+      yyextra->begin= yytext;
       return UNKNOWN;
     }
 
