@@ -6325,6 +6325,7 @@ test_st parser_tests[] ={
   {"libmemcached_check_configuration_with_filename", 0, (test_callback_fn)libmemcached_check_configuration_with_filename_test },
   {"memcached_parse_configure_file", 0, (test_callback_fn)memcached_parse_configure_file_test },
   {"number_options", 0, (test_callback_fn)parser_number_options_test },
+  {"randomly generated options", 0, (test_callback_fn)random_statement_build_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
   {"server", 0, (test_callback_fn)server_test },
   {"servers", 0, (test_callback_fn)servers_test },

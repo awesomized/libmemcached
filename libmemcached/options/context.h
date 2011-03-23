@@ -39,11 +39,34 @@
 
 #include <libmemcached/memcached.h>
 
-struct type_st
+class Context
 {
-  void *yyscanner;
-  char *buf;
-  int pos;
-  int length;
+public:
+  Context(const char *option_string, size_t option_string_length, memcached_st *memc_arg) :
+    scanner(NULL),
+    begin(NULL),
+    pos(0),
+    memc(NULL)
+  {
+    buf= option_string;
+    length= option_string_length;
+    memc= memc_arg;
+    init_scanner();
+  }
+
+  ~Context()
+  {
+    destroy_scanner();
+  }
+
+  void *scanner;
+  const char *buf;
+  const char *begin;
+  size_t pos;
+  size_t length;
   memcached_st *memc;
+
+protected:
+  void init_scanner();   
+  void destroy_scanner();
 }; 

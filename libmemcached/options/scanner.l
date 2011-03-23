@@ -24,10 +24,15 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-fpermissive"
 
+#include <iostream>
+
+#include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
-#include <libmemcached/options/type.h>
+
+#define YY_EXTRA_TYPE Context*
+#define YY_USER_ACTION yylloc->first_line = yylineno;
 
 }
 
@@ -38,18 +43,19 @@
 
 #define PARAM yyget_extra(yyscanner)
 
-static void get_lex_chars(char* buffer, int& result, int max_size, struct type_st *parser)
+static void get_lex_chars(char* buffer, int& result, int max_size, Context *context)
 {
-  if (parser->pos >= parser->length)
+  if (context->pos >= context->length)
   {
-    result = YY_NULL;
+    std::cerr << "YY_NULL" << std::endl;
+    result= YY_NULL;
   }
   else
   {
-    result = parser->length - parser->pos;
+    result= context->length - context->pos;
     result > (int)max_size ? result = max_size : 0;
-    memcpy(buffer, parser->buf + parser->pos, result);
-    parser->pos += result;
+    memcpy(buffer, context->buf + context->pos, result);
+    context->pos += result;
   }
 }
 
@@ -58,12 +64,13 @@ static void get_lex_chars(char* buffer, int& result, int max_size, struct type_s
 
 %}
 
-%option bison-locations
 %option bison-bridge
+%option bison-locations
 %option case-insensitive
 %option debug
 %option nounput
 %option noyywrap
+%option yylineno
 %option outfile="libmemcached/options/scanner.cc" header-file="libmemcached/options/scanner.h"
 %option perf-report
 %option prefix="libmemcached_"
@@ -85,7 +92,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, struct type_s
       return COMMENT;
     }
 
-"--" { return DASH_OPTION; }
+"--" { yyextra->begin= yytext; return DASH_OPTION; }
 
 SERVER                          { return SERVER; }
 SERVERS                         { return SERVERS; }
@@ -212,3 +219,14 @@ JENKINS			{ return JENKINS; }
     }
 
 %%
+
+void Context::init_scanner()
+{
+  yylex_init(&scanner);
+  yyset_extra(this, scanner);
+}
+
+void Context::destroy_scanner()
+{
+  yylex_destroy(scanner);
+}

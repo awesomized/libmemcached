@@ -18,6 +18,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+%error-verbose
+%debug
+%defines
+%expect 0
+%output "libmemcached/options/parser.cc"
+%defines "libmemcached/options/parser.h"
+%lex-param { yyscan_t *scanner }
+%name-prefix="libmemcached_"
+%parse-param { Context *parser }
+%parse-param { yyscan_t *scanner }
+%locations
+%pure-parser
+%require "2.2"
+%start statement
+%verbose
+
 %{
 
 #include <config.h>
@@ -27,39 +43,25 @@
 #include <sstream>
 #include <string>
 
-#include <libmemcached/options/type.h>
+#include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <libmemcached/options/scanner.h>
 
-inline void libmemcached_error(YYLTYPE *locp, type_st *parser, yyscan_t *scanner, const char *str)
+int libmemcached_lex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
+
+inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
 {
   memcached_string_t local_string;
-  local_string.size= strlen(str);
-  local_string.c_str= str;
-  memcached_set_error(parser->memc, MEMCACHED_FAILURE, &local_string);
+  std::cerr << " Error " << error << std::endl;
+  local_string.size= strlen(context->begin);
+  local_string.c_str= context->begin;
+  memcached_set_error(context->memc, MEMCACHED_PARSE_ERROR, &local_string);
 }
 
-
 %}
-
-%error-verbose
-%debug
-%defines
-%expect 0
-%output "libmemcached/options/parser.cc"
-%defines "libmemcached/options/parser.h"
-%lex-param { yyscan_t *scanner }
-%name-prefix="libmemcached_"
-%parse-param { type_st *parser }
-%parse-param { yyscan_t *scanner }
-%locations
-%pure-parser
-%require "2.2"
-%start statement
-%verbose
 
 %token COMMENT
 %token CONFIGURE_FILE

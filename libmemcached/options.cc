@@ -40,7 +40,7 @@
 #include <libmemcached/options/parser.h>
 #include <libmemcached/options/scanner.h>
 
-int libmemcached_parse(type_st *, yyscan_t *);
+int libmemcached_parse(Context*, yyscan_t *);
 
 const char *memcached_parse_filename(memcached_st *memc)
 {
@@ -107,23 +107,16 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
 
 memcached_return_t memcached_parse_configuration(memcached_st *self, char const *option_string, size_t length)
 {
-  type_st pp;
-  memset(&pp, 0, sizeof(type_st));
-
   WATCHPOINT_ASSERT(self);
   if (! self)
     return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
 
-  pp.buf= option_string;
-  pp.memc= self;
-  pp.length= length;
-  libmemcached_lex_init(&pp.yyscanner);
-  libmemcached_set_extra(&pp, pp.yyscanner);
-  bool success= libmemcached_parse(&pp, pp.yyscanner)  == 0;
-  libmemcached_lex_destroy(pp.yyscanner);
+  Context context(option_string, length, self);
+
+  bool success= libmemcached_parse(&context, context.scanner)  == 0;
 
   if (not success)
-    return memcached_set_error(self, MEMCACHED_PARSE_ERROR, NULL);
+    return MEMCACHED_PARSE_ERROR;
 
   return MEMCACHED_SUCCESS;
 }

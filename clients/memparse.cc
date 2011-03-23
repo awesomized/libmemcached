@@ -44,23 +44,26 @@
 int main(int argc, char *argv[])
 {
 
-  if (argc != 2)
+  if (argc < 2)
   {
-    std::cerr << "Wrong number of arguments" << std::endl;
+    std::cerr << "No arguments provided." << std::endl;
     return EXIT_FAILURE;
   }
 
-  memcached_st *memc;
-
-  memc= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_parse_configuration(memc, argv[1], strlen(argv[1]));
-  memcached_free(memc);
-
-  if (rc != MEMCACHED_SUCCESS)
+  for (int x= 1; x < argc; x++)
   {
-    std::cerr << "Failed to parse options" << std::endl;
-    return EXIT_FAILURE;
+    memcached_return_t rc;
+    memcached_st *memc_ptr= memcached_create(NULL);
+    
+    rc= memcached_parse_configuration(memc_ptr, argv[x], strlen(argv[x]));
+
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      std::cerr << "Failed to parse options:" << argv[x] << std::endl;
+      memcached_error_print(memc_ptr);
+      return EXIT_FAILURE;
+    }
+    memcached_free(memc_ptr);
   }
 
   return EXIT_SUCCESS;

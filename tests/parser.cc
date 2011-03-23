@@ -37,7 +37,9 @@
 
 #include <config.h>
 
+#include <vector>
 #include <iostream>
+#include <string>
 
 #include <libmemcached/memcached.h>
 
@@ -411,6 +413,59 @@ test_return_t memcached_create_with_options_test(memcached_st *junk)
 
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--dude=localhost"));
   test_false(memc_ptr);
+
+  return TEST_SUCCESS;
+}
+
+#define RANDOM_STRINGS 10
+test_return_t random_statement_build_test(memcached_st *junk)
+{
+  (void)junk;
+  std::vector<scanner_string_st *> option_list;
+
+  for (scanner_variable_t *ptr= test_server_strings; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+#if 0
+  for (scanner_variable_t *ptr= test_servers_strings; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+#endif
+
+  for (scanner_variable_t *ptr= test_number_options; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+  for (scanner_variable_t *ptr= test_boolean_options; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+  for (scanner_variable_t *ptr= prefix_key_strings; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+  for (scanner_variable_t *ptr= distribution_strings; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+  for (scanner_variable_t *ptr= hash_strings; ptr->type != NIL; ptr++)
+    option_list.push_back(&ptr->option);
+
+  for (uint32_t x= 0; x < RANDOM_STRINGS; x++)
+  {
+    std::string random_options;
+
+    uint32_t number_of= random() % option_list.size();
+    for (uint32_t options= 0; options < number_of; options++)
+    {
+      random_options+= option_list[random() % option_list.size()]->c_str;
+      random_options+= " ";
+    }
+    random_options.resize(random_options.size() -1);
+
+    memcached_return_t rc;
+    rc= libmemcached_check_configuration(random_options.c_str(), random_options.size(), NULL, 0);
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      std::cerr << "Failed to parse: (" << random_options << ")" << std::endl;
+      std::cerr << "\t " << memcached_strerror(NULL, rc) << std::endl;
+    }
+  }
 
   return TEST_SUCCESS;
 }

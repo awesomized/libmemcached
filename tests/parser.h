@@ -82,6 +82,9 @@ LIBTEST_INTERNAL_API
 LIBTEST_INTERNAL_API
   test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *junk);
 
+LIBTEST_INTERNAL_API
+  test_return_t random_statement_build_test(memcached_st *junk);
+
 #ifdef	__cplusplus
 }
 #endif
