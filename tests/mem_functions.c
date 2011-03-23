@@ -4594,7 +4594,7 @@ static test_return_t hash_sanity_test (memcached_st *memc)
 
 static test_return_t hsieh_avaibility_test (memcached_st *memc)
 {
-  memcached_return_t expected_rc= MEMCACHED_FAILURE;
+  memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
 #ifdef HAVE_HSIEH_HASH
   expected_rc= MEMCACHED_SUCCESS;
 #endif
@@ -4607,7 +4607,7 @@ static test_return_t hsieh_avaibility_test (memcached_st *memc)
 
 static test_return_t murmur_avaibility_test (memcached_st *memc)
 {
-  memcached_return_t expected_rc= MEMCACHED_FAILURE;
+  memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
 #ifdef HAVE_MURMUR_HASH
   expected_rc= MEMCACHED_SUCCESS;
 #endif

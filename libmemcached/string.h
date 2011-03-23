@@ -80,6 +80,9 @@ char *memcached_string_value_mutable(const memcached_string_st *self);
 LIBMEMCACHED_LOCAL
 void memcached_string_set_length(memcached_string_st *self, size_t length);
 
+LIBMEMCACHED_LOCAL
+memcached_string_t memcached_string_make(const char *str, size_t length);
+
 #ifdef __cplusplus
 }
 #endif

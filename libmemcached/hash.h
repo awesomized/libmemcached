@@ -35,6 +35,9 @@ uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const ch
 LIBMEMCACHED_API
 void memcached_autoeject(memcached_st *ptr);
 
+LIBMEMCACHED_API
+  const char * libmemcached_string_hash(memcached_hash_t type);
+
 #ifdef __cplusplus
 }
 #endif

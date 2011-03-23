@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  uTest Framework
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -36,36 +36,18 @@
  */
 
 #pragma once
+#include <libtest/visibility.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str);
+LIBTEST_INTERNAL_API
+  void push_failed_test(const char *collection, const char *test);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length);
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
-
-LIBMEMCACHED_LOCAL
-  void memcached_error_free(memcached_st *error);
-
-LIBMEMCACHED_API
-  const char *memcached_last_error_message(memcached_st *memc);
-
-LIBMEMCACHED_API
-  void memcached_error_print(const memcached_st *self);
-
-LIBMEMCACHED_API
-  memcached_return_t memcached_last_error(memcached_st *memc);
-
-LIBMEMCACHED_API
-  memcached_return_t memcached_last_error_errno(memcached_st *memc);
-
+LIBTEST_INTERNAL_API
+  void print_failed_test(void);
 
 #ifdef __cplusplus
-} // extern "C"
+}
 #endif

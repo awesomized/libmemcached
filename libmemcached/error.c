@@ -64,13 +64,25 @@ static memcached_error_st *_set(memcached_st *memc, memcached_string_t *str)
   {
     error->size= str->size;
     memcpy(error->c_str, str->c_str, str->size);
+    error->c_str[str->size]= 0;
   }
-  error->c_str[(str ? str->size :0)]= 0;
+  else
+  {
+    error->size= 0;
+  }
 
   error->next= memc->error_messages;
   memc->error_messages= error;
 
   return error;
+}
+
+memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length)
+{
+  memcached_string_t tmp;
+  tmp.c_str= str;
+  tmp.size= length;
+  return memcached_set_error(memc, rc, &tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str)
@@ -100,6 +112,31 @@ memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memc
   }
 
   return error->rc;
+}
+
+static void _error_print(const memcached_error_st *error)
+{
+  if (! error)
+    return;
+
+  if (! error->size)
+  {
+    fprintf(stderr, "%s\n", memcached_strerror(NULL, error->rc) );
+  }
+  else
+  {
+    fprintf(stderr, "%s %s\n", memcached_strerror(NULL, error->rc), error->c_str);
+  }
+
+  _error_print(error->next);
+}
+
+void memcached_error_print(const memcached_st *self)
+{
+  if (! self)
+    return;
+
+  _error_print(self->error_messages);
 }
 
 static void _error_free(memcached_error_st *error)
@@ -135,7 +172,7 @@ const char *memcached_last_error_message(memcached_st *memc)
   if (! memc->error_messages)
     return memcached_strerror(memc, MEMCACHED_SUCCESS);
 
-  if (! memc->error_messages->c_str)
+  if (! memc->error_messages->size)
   {
     return memcached_strerror(memc, memc->error_messages->rc);
   }

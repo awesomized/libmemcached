@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  uTest Framework
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,37 +35,41 @@
  *
  */
 
-#pragma once
+#include <config.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <libtest/failed.h>
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str);
+#include <iostream>
+#include <string>
+#include <vector>
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length);
+struct failed_test_names_st
+{
+  failed_test_names_st(const char *collection_arg, const char *test_arg) :
+    collection(collection_arg),
+    test(test_arg)
+  {
+  }
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
+  std::string collection;
+  std::string test;
+};
 
-LIBMEMCACHED_LOCAL
-  void memcached_error_free(memcached_st *error);
+typedef std::vector<failed_test_names_st> Failures;
 
-LIBMEMCACHED_API
-  const char *memcached_last_error_message(memcached_st *memc);
+static Failures failures;
 
-LIBMEMCACHED_API
-  void memcached_error_print(const memcached_st *self);
+void push_failed_test(const char *collection, const char *test)
+{
+  failures.push_back(failed_test_names_st(collection, test));
+}
 
-LIBMEMCACHED_API
-  memcached_return_t memcached_last_error(memcached_st *memc);
+void print_failed_test(void)
+{
+  for (Failures::iterator iter= failures.begin(); iter != failures.end(); iter++)
+  {
+    std::cerr << "\t" << (*iter).collection << " " << (*iter).test << std::endl;
+  }
+  std::cerr << std::endl;
+}
 
-LIBMEMCACHED_API
-  memcached_return_t memcached_last_error_errno(memcached_st *memc);
-
-
-#ifdef __cplusplus
-} // extern "C"
-#endif

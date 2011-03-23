@@ -19,6 +19,8 @@ typedef enum {
   HASHKIT_SUCCESS,
   HASHKIT_FAILURE,
   HASHKIT_MEMORY_ALLOCATION_FAILURE,
+  HASHKIT_INVALID_HASH,
+  HASHKIT_INVALID_ARGUMENT,
   HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
 } hashkit_return_t;
 

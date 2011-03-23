@@ -27,6 +27,7 @@
 #include <libmemcached/memcached.h>
 
 #include <libtest/test.h>
+#include <libtest/failed.h>
 
 static void world_stats_print(world_stats_st *stats)
 {
@@ -298,6 +299,9 @@ skip_pre:
         stats.success++;
         break;
       case TEST_FAILURE:
+#if 0
+        push_failed_test(next->name, run->name);
+#endif
         stats.failed++;
         failed= true;
         break;
@@ -343,6 +347,9 @@ cleanup:
   if (stats.collection_failed || stats.collection_skipped)
   {
     fprintf(stderr, "Some test failures and/or skipped test occurred.\n\n");
+#if 0
+    print_failed_test();
+#endif
   }
   else
   {

@@ -51,9 +51,10 @@ static hashkit_return_t _set_function(struct hashkit_function_st *self, hashkit_
     self->function= hashkit_jenkins;
     break;    
   case HASHKIT_HASH_CUSTOM:
+    return HASHKIT_INVALID_ARGUMENT;
   case HASHKIT_HASH_MAX:
   default:
-    return HASHKIT_FAILURE;
+    return HASHKIT_INVALID_HASH;
   }
 
   self->context= NULL;

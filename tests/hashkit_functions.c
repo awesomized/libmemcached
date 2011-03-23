@@ -345,10 +345,10 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
       continue;
 #endif
 
-    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_CUSTOM)
+    if (rc == HASHKIT_INVALID_ARGUMENT && algo == HASHKIT_HASH_CUSTOM)
       continue;
 
-    test_true(rc == HASHKIT_SUCCESS);
+    test_true_got(rc == HASHKIT_SUCCESS, hashkit_strerror(NULL, rc));
 
     switch (algo)
     {
@@ -448,7 +448,7 @@ static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
       continue;
 
-    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_CUSTOM)
+    if (rc == HASHKIT_INVALID_ARGUMENT && algo == HASHKIT_HASH_CUSTOM)
       continue;
 
     test_true(rc == HASHKIT_SUCCESS);

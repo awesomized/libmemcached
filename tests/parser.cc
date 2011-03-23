@@ -37,6 +37,8 @@
 
 #include <config.h>
 
+#include <iostream>
+
 #include <libmemcached/memcached.h>
 
 #include "tests/parser.h"
@@ -194,7 +196,9 @@ scanner_variable_t test_boolean_options[]= {
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--CACHE_LOOKUPS"), scanner_string_null, __check_CACHE_LOOKUPS },
+#if 0 // Not all platforms support
   { ARRAY,  make_scanner_string("--CORK"), scanner_string_null, NULL },
+#endif
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--KETAMA"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--KETAMA_WEIGHTED"), scanner_string_null, NULL },
@@ -225,14 +229,14 @@ scanner_variable_t distribution_strings[]= {
 };
 
 scanner_variable_t hash_strings[]= {
-  { ARRAY,  make_scanner_string("--HASH=MD5"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=CRC"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=FNV1_64"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1A_32"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1A_64"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1_32"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=FNV1A_32"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=MURMUR"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=FNV1_64"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=JENKINS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=MD5"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH=MURMUR"), scanner_string_null, NULL },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
@@ -249,7 +253,10 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= t
     rc= memcached_parse_configuration(memc, ptr->option.c_str, ptr->option.size);
     if (test_true)
     {
-      test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc));
+      if (rc != MEMCACHED_SUCCESS)
+        memcached_error_print(memc);
+
+      test_true(rc == MEMCACHED_SUCCESS);
 
       if (ptr->check_func)
       {
