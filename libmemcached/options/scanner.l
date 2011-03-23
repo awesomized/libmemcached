@@ -159,11 +159,12 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 "--PREFIX-KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 "--PREFIX_KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 
-INCLUDE           { yyextra->begin= yytext; std::cerr << "Found INCLUDE" << std::endl; return INCLUDE; }
+INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
 RESET           { yyextra->begin= yytext; return RESET; }
 DEBUG           { yyextra->begin= yytext; return DEBUG; }
 SERVERS           { yyextra->begin= yytext; return SERVERS; }
 END           { yyextra->begin= yytext; return END; }
+ERROR           { yyextra->begin= yytext; return ERROR; }
 
 TRUE           { return TRUE; }
 FALSE           { return FALSE; }
@@ -241,3 +242,4 @@ void Context::destroy_scanner()
 {
   yylex_destroy(scanner);
 }
+

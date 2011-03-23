@@ -61,6 +61,7 @@ inline void parser_abort_func(Context *context, const char *error)
     context->rc= MEMCACHED_PARSE_ERROR;
 
   std::string error_message;
+  error_message+= "Error occured while parsing: ";
   error_message+= context->begin;
   error_message+= " (";
   if (context->rc == MEMCACHED_PARSE_ERROR and error)
@@ -82,10 +83,17 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
     parser_abort_func(context, error);
 }
 
+int libmemcached_parse(Context*, yyscan_t *);
+void Context::start() 
+{
+  libmemcached_parse(this, scanner);
+}
+
 %}
 
 %token COMMENT
 %token END
+%token ERROR
 %token RESET
 %token DEBUG
 %token INCLUDE
@@ -194,30 +202,22 @@ statement:
             context->set_end();
             YYACCEPT;
           }
+        | ERROR
+          {
+            context->rc= MEMCACHED_PARSE_USER_ERROR;
+            parser_abort(context, NULL);
+          }
         | RESET
           {
             memcached_reset(context->memc);
-          }
-        | RESET SERVERS
-          {
-            memcached_servers_reset(context->memc);
           }
         | DEBUG
           {
             yydebug= 1;
           }
-        | DEBUG TRUE
+        | INCLUDE ' ' string
           {
-            yydebug= 1;
-          }
-        | DEBUG FALSE
-          {
-            yydebug= 0;
-          }
-        | INCLUDE FILE_PATH
-          {
-            std::cerr << "Got into INCLUDE" << std::endl;
-            if ((context->rc= memcached_parse_configure_file(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_parse_configure_file(context->memc, $3.c_str, $3.length)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
             }
@@ -434,7 +434,7 @@ server:
           HOSTNAME_WITH_PORT NUMBER
           {
             $$.c_str= $1.c_str;
-            $$.length= $1.length -1;
+            $$.length= $1.length -1; // -1 to remove :
             $$.port= $2;
           }
         | HOSTNAME
@@ -452,7 +452,7 @@ server:
         | IPADDRESS_WITH_PORT NUMBER
           {
             $$.c_str= $1.c_str;
-            $$.length= $1.length -1;
+            $$.length= $1.length -1; // -1 to remove :
             $$.port= $2;
           }
         | IPADDRESS
@@ -509,8 +509,8 @@ string:
           }
         | QUOTED_STRING
           {
-            $$.c_str= $1.c_str +1;
-            $$.length= $1.length -2;
+            $$.c_str= $1.c_str +1; // +1 to move use passed the initial quote
+            $$.length= $1.length -1; // -1 removes the end quote
           }
         ;
 

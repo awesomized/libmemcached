@@ -63,6 +63,8 @@ public:
     return _end;
   }
 
+  void start();
+
   void set_end()
   {
     rc= MEMCACHED_SUCCESS;

@@ -422,6 +422,50 @@ test_return_t memcached_create_with_options_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
+test_return_t test_include_keyword(memcached_st *junk)
+{
+  (void)junk;
+  char buffer[BUFSIZ];
+  memcached_return_t rc;
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t test_end_keyword(memcached_st *junk)
+{
+  (void)junk;
+  char buffer[BUFSIZ];
+  memcached_return_t rc;
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost END bad keywords"), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t test_reset_keyword(memcached_st *junk)
+{
+  (void)junk;
+  char buffer[BUFSIZ];
+  memcached_return_t rc;
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t test_error_keyword(memcached_st *junk)
+{
+  (void)junk;
+  char buffer[BUFSIZ];
+  memcached_return_t rc;
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost ERROR --server=bad.com"), buffer, sizeof(buffer));
+  test_true_got(rc != MEMCACHED_SUCCESS, buffer);
+
+  return TEST_SUCCESS;
+}
+
 #define RANDOM_STRINGS 50
 test_return_t random_statement_build_test(memcached_st *junk)
 {

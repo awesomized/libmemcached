@@ -401,10 +401,10 @@ static test_return_t error_test(memcached_st *memc)
                         2300930706U, 2943759320U, 674306647U, 2400528935U,
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
-                        1769812374U, 2302537950U, 1110330676U, 3365377466U };
+                        1769812374U, 2302537950U, 1110330676U, 3365377466U, 
+                        1336171666U, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  test_true(MEMCACHED_MAXIMUM_RETURN == 44);
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
   {
     uint32_t hash_val;
@@ -418,6 +418,7 @@ static test_return_t error_test(memcached_st *memc)
     }
     test_true(values[rc] == hash_val);
   }
+  test_true(MEMCACHED_MAXIMUM_RETURN == 45);
 
   return TEST_SUCCESS;
 }

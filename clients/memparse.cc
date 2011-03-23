@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
 
     if (rc != MEMCACHED_SUCCESS)
     {
-      std::cerr << "Failed to parse options:" << argv[x] << std::endl;
-      std::cerr << "\t" << buffer << std::endl;
+      std::cerr << "Failed to parse argument #" << x << " " << argv[x] << std::endl;
+      std::cerr << "Error message from parser was:\t" << buffer << std::endl;
       return EXIT_FAILURE;
     }
   }

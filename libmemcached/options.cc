@@ -37,10 +37,9 @@
 
 #include "common.h"
 
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/scanner.h>
+#include <iostream>
 
-int libmemcached_parse(Context*, yyscan_t *);
+#include <libmemcached/options/context.h>
 
 const char *memcached_parse_filename(memcached_st *memc)
 {
@@ -54,9 +53,15 @@ size_t memcached_parse_filename_length(memcached_st *memc)
 
 static memcached_return_t _parse_file_options(memcached_st *self, memcached_string_t *filename)
 {
-  FILE *fp= fopen(filename->c_str, "r");
+  std::string real_name(filename->c_str, filename->size);
+  FILE *fp= fopen(real_name.c_str(), "r");
   if (! fp)
-    return memcached_set_errno(self, errno, NULL);
+  {
+    memcached_string_t tmp;
+    tmp.c_str= real_name.c_str();
+    tmp.size= real_name.size();
+    return memcached_set_errno(self, errno, &tmp);
+  }
 
   char buffer[BUFSIZ];
   memcached_return_t rc= MEMCACHED_INVALID_ARGUMENTS;
@@ -76,7 +81,7 @@ static memcached_return_t _parse_file_options(memcached_st *self, memcached_stri
   return rc;
 }
 
-memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, const char *error_buffer, size_t error_buffer_size)
+memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
 {
   memcached_st memc, *memc_ptr;
 
@@ -114,7 +119,7 @@ memcached_return_t memcached_parse_configuration(memcached_st *self, char const 
   memcached_return_t rc;
   Context context(option_string, length, self, rc);
 
-  libmemcached_parse(&context, context.scanner);
+  context.start();
 
   return rc;
 }

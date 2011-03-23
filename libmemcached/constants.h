@@ -75,6 +75,7 @@ typedef enum {
   MEMCACHED_AUTH_FAILURE,
   MEMCACHED_AUTH_CONTINUE,
   MEMCACHED_PARSE_ERROR,
+  MEMCACHED_PARSE_USER_ERROR,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 } memcached_return_t;
 

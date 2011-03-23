@@ -85,6 +85,18 @@ LIBTEST_INTERNAL_API
 LIBTEST_INTERNAL_API
   test_return_t random_statement_build_test(memcached_st *junk);
 
+LIBTEST_INTERNAL_API
+test_return_t test_include_keyword(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+test_return_t test_end_keyword(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+test_return_t test_reset_keyword(memcached_st *junk);
+
+LIBTEST_INTERNAL_API
+test_return_t test_error_keyword(memcached_st *junk);
+
 #ifdef	__cplusplus
 }
 #endif
