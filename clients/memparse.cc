@@ -52,18 +52,16 @@ int main(int argc, char *argv[])
 
   for (int x= 1; x < argc; x++)
   {
+    char buffer[BUFSIZ];
     memcached_return_t rc;
-    memcached_st *memc_ptr= memcached_create(NULL);
-    
-    rc= memcached_parse_configuration(memc_ptr, argv[x], strlen(argv[x]));
+    rc= libmemcached_check_configuration(argv[x], strlen(argv[x]), buffer, sizeof(buffer));
 
     if (rc != MEMCACHED_SUCCESS)
     {
       std::cerr << "Failed to parse options:" << argv[x] << std::endl;
-      memcached_error_print(memc_ptr);
+      std::cerr << "\t" << buffer << std::endl;
       return EXIT_FAILURE;
     }
-    memcached_free(memc_ptr);
   }
 
   return EXIT_SUCCESS;

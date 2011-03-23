@@ -52,14 +52,24 @@
 
 int libmemcached_lex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
 
-inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
+inline void parser_abort(Context *context, const char *error)
 {
-  memcached_string_t local_string;
-  local_string.size= strlen(context->begin);
-  local_string.c_str= context->begin;
+  (void)error;
   if (context->rc == MEMCACHED_SUCCESS)
     context->rc= MEMCACHED_PARSE_ERROR;
-  memcached_set_error(context->memc, context->rc, &local_string);
+
+  std::string error_message;
+  error_message+= context->begin;
+  error_message+= " (";
+  error_message+= memcached_strerror(NULL, context->rc);
+  error_message+= ")";
+
+  memcached_set_error_string(context->memc, context->rc, error_message.c_str(), error_message.size());
+}
+
+inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
+{
+  parser_abort(context, error);
 }
 
 %}
@@ -164,7 +174,7 @@ expression:
           { 
             if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);
             }
           }
         | SERVERS '=' server_list
@@ -182,42 +192,42 @@ behaviors:
           {
             if ((context->rc= memcached_callback_set(context->memc, MEMCACHED_CALLBACK_PREFIX_KEY, std::string($3.c_str, $3.length).c_str())) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         | DISTRIBUTION '=' distribution
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         | HASH '=' hash
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              YYERROR; 
+              parser_abort(context, NULL);; 
             }
           }
         | KETAMA_HASH '=' hash
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         | behavior_number '=' NUMBER
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, $3)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         | behavior_boolean
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, true)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         |  USER_DATA
@@ -352,14 +362,14 @@ server_list:
           {
             if ((context->rc= memcached_server_add_parsed(context->memc, $1.c_str, $1.length, $1.port, 0)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         | server_list ',' server
           {
             if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
             {
-              YYERROR;
+              parser_abort(context, NULL);;
             }
           }
         ;
