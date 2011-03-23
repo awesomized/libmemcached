@@ -90,7 +90,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
     }
 
 "--SERVER"                          { yyextra->begin= yytext; return SERVER; }
-"--SERVERS"                        { yyextra->begin= yytext; return SERVERS; }
+"--SERVERS"                        { yyextra->begin= yytext; return SERVERS_OPTION; }
 
 "--VERIFY_KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
 "--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
@@ -158,6 +158,16 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 
 "--PREFIX-KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 "--PREFIX_KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
+
+INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
+RESET           { yyextra->begin= yytext; return RESET; }
+DEBUG           { yyextra->begin= yytext; return DEBUG; }
+SERVERS           { yyextra->begin= yytext; return SERVERS; }
+END           { yyextra->begin= yytext; return END; }
+
+TRUE           { return TRUE; }
+FALSE           { return FALSE; }
+
 
 "--"[[:alnum:]]*   {
       yyextra->begin= yytext;

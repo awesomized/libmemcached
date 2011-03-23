@@ -48,13 +48,25 @@ public:
     begin(NULL),
     pos(0),
     memc(NULL),
-    rc(rc_arg)
+    rc(rc_arg),
+    _end(false)
   {
     buf= option_string;
     length= option_string_length;
     memc= memc_arg;
     init_scanner();
     rc= MEMCACHED_SUCCESS;
+  }
+
+  bool end()
+  {
+    return _end;
+  }
+
+  void set_end()
+  {
+    rc= MEMCACHED_SUCCESS;
+    _end= true;
   }
 
   ~Context()
@@ -73,4 +85,7 @@ public:
 protected:
   void init_scanner();   
   void destroy_scanner();
+
+private:
+  bool _end;
 }; 

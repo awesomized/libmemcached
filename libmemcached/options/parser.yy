@@ -31,7 +31,7 @@
 %locations
 %pure-parser
 %require "2.2"
-%start statement
+%start begin
 %verbose
 
 %{
@@ -52,7 +52,9 @@
 
 int libmemcached_lex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
 
-inline void parser_abort(Context *context, const char *error)
+#define parser_abort(A, B) do { parser_abort_func((A), (B)); YYABORT; } while (0) 
+
+inline void parser_abort_func(Context *context, const char *error)
 {
   (void)error;
   if (context->rc == MEMCACHED_SUCCESS)
@@ -69,16 +71,22 @@ inline void parser_abort(Context *context, const char *error)
 
 inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
 {
-  parser_abort(context, error);
+  if (not context->end())
+    parser_abort_func(context, error);
 }
 
 %}
 
 %token COMMENT
+%token END
+%token RESET
+%token DEBUG
+%token INCLUDE
 %token CONFIGURE_FILE
 %token EMPTY_LINE
 %token SERVER
 %token SERVERS
+%token SERVERS_OPTION
 %token UNKNOWN_OPTION
 %token UNKNOWN
 
@@ -136,6 +144,10 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 %token MODULA
 %token RANDOM
 
+/* Boolean values */
+%token <boolean> TRUE
+%token <boolean> FALSE
+
 %nonassoc ','
 %nonassoc '='
 
@@ -157,15 +169,50 @@ inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanne
 
 %%
 
+begin:
+          statement 
+        | statement ' ' statement
+        ;
+
 statement:
          expression
-          { }
-        | statement ' ' expression
           { }
         | COMMENT
           { }
         | EMPTY_LINE
           { }
+        | END
+          {
+            context->set_end();
+            YYACCEPT;
+          }
+        | RESET
+          {
+            memcached_reset(context->memc);
+          }
+        | RESET SERVERS
+          {
+            memcached_servers_reset(context->memc);
+          }
+        | DEBUG
+          {
+            yydebug= 1;
+          }
+        | DEBUG TRUE
+          {
+            yydebug= 1;
+          }
+        | DEBUG FALSE
+          {
+            yydebug= 0;
+          }
+        | INCLUDE string
+          {
+            if ((context->rc= memcached_parse_configure_file(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);
+            }
+          }
         ;
 
 
@@ -177,7 +224,7 @@ expression:
               parser_abort(context, NULL);
             }
           }
-        | SERVERS '=' server_list
+        | SERVERS_OPTION '=' server_list
           {
           }
         | CONFIGURE_FILE '=' string

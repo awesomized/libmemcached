@@ -51,6 +51,7 @@ union YYSTYPE
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;
   memcached_behavior_t behavior;
+  bool boolean;
 };
 
 typedef union YYSTYPE YYSTYPE;
