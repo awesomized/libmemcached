@@ -26,7 +26,7 @@
 %defines "libmemcached/options/parser.h"
 %lex-param { yyscan_t *scanner }
 %name-prefix="libmemcached_"
-%parse-param { Context *parser }
+%parse-param { Context *context }
 %parse-param { yyscan_t *scanner }
 %locations
 %pure-parser
@@ -55,10 +55,11 @@ int libmemcached_lex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
 inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
 {
   memcached_string_t local_string;
-  std::cerr << " Error " << error << std::endl;
   local_string.size= strlen(context->begin);
   local_string.c_str= context->begin;
-  memcached_set_error(context->memc, MEMCACHED_PARSE_ERROR, &local_string);
+  if (context->rc == MEMCACHED_SUCCESS)
+    context->rc= MEMCACHED_PARSE_ERROR;
+  memcached_set_error(context->memc, context->rc, &local_string);
 }
 
 %}
@@ -161,15 +162,17 @@ statement:
 expression:
           SERVER '=' server
           { 
-            if (memcached_server_add_parsed(parser->memc, $3.c_str, $3.length, $3.port, 0) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
+            {
               YYERROR;
+            }
           }
         | SERVERS '=' server_list
           {
           }
         | CONFIGURE_FILE '=' string
           {
-            memcached_set_configuration_file(parser->memc, $3.c_str, $3.length);
+            memcached_set_configuration_file(context->memc, $3.c_str, $3.length);
           }
         | behaviors
         ;
@@ -177,67 +180,43 @@ expression:
 behaviors:
           PREFIX_KEY '=' string
           {
-            memcached_return_t rc;
-            if ((rc= memcached_callback_set(parser->memc, MEMCACHED_CALLBACK_PREFIX_KEY, std::string($3.c_str, $3.length).c_str())) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_callback_set(context->memc, MEMCACHED_CALLBACK_PREFIX_KEY, std::string($3.c_str, $3.length).c_str())) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--PREFIX-KEY" << $3;
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
         | DISTRIBUTION '=' distribution
           {
-            memcached_return_t rc;
-            if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--DISTRIBUTION=" << libmemcached_string_distribution($3);
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
         | HASH '=' hash
           {
-            memcached_return_t rc;
-            if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_HASH, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--HASH=" << libmemcached_string_hash($3);
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR; 
             }
           }
         | KETAMA_HASH '=' hash
           {
-            memcached_return_t rc;
-            if ((rc= memcached_behavior_set(parser->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--KETAMA-HASH=" << libmemcached_string_hash($3);
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
         | behavior_number '=' NUMBER
           {
-            memcached_return_t rc;
-            if ((rc= memcached_behavior_set(parser->memc, $1, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, $1, $3)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--" << libmemcached_string_behavior($1) << "=" << $3;
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
         | behavior_boolean
           {
-            memcached_return_t rc;
-            if ((rc= memcached_behavior_set(parser->memc, $1, true)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, $1, true)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--" << libmemcached_string_behavior($1);
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
@@ -371,23 +350,15 @@ behavior_boolean:
 server_list:
            server
           {
-            memcached_return_t rc;
-            if ((rc= memcached_server_add_parsed(parser->memc, $1.c_str, $1.length, $1.port, 0)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_server_add_parsed(context->memc, $1.c_str, $1.length, $1.port, 0)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--SERVER=" << $1;
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }
         | server_list ',' server
           {
-            memcached_return_t rc;
-            if ((rc= memcached_server_add_parsed(parser->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
             {
-              std::stringstream ss;
-              ss << "--SERVERS=" << $3;
-              memcached_set_error_string(parser->memc, rc, ss.str().c_str(), ss.str().length());
               YYERROR;
             }
           }

@@ -86,7 +86,7 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
   memcached_return_t rc= memcached_parse_configuration(memc_ptr, option_string, length);
   if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
   {
-    strncpy(error_buffer, error_buffer_size, memcached_last_error_message(memc_ptr));
+    strncpy(error_buffer, memcached_last_error_message(memc_ptr), error_buffer_size);
   }
 
   if (rc== MEMCACHED_SUCCESS && memcached_behavior_get(memc_ptr, MEMCACHED_BEHAVIOR_LOAD_FROM_FILE))
@@ -96,7 +96,7 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
 
     if (rc != MEMCACHED_SUCCESS && error_buffer && error_buffer_size)
     {
-      strncpy(error_buffer, error_buffer_size, memcached_last_error_message(memc_ptr));
+      strncpy(error_buffer, memcached_last_error_message(memc_ptr), error_buffer_size);
     }
   }
 
@@ -111,14 +111,12 @@ memcached_return_t memcached_parse_configuration(memcached_st *self, char const 
   if (! self)
     return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
 
-  Context context(option_string, length, self);
+  memcached_return_t rc;
+  Context context(option_string, length, self, rc);
 
-  bool success= libmemcached_parse(&context, context.scanner)  == 0;
+  libmemcached_parse(&context, context.scanner);
 
-  if (not success)
-    return MEMCACHED_PARSE_ERROR;
-
-  return MEMCACHED_SUCCESS;
+  return rc;
 }
 
 void memcached_set_configuration_file(memcached_st *self, const char *filename, size_t filename_length)

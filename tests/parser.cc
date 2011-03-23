@@ -363,7 +363,7 @@ test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
 
   memcached_st *memc_ptr;
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
-  test_true(memc_ptr);
+  test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;
@@ -373,15 +373,16 @@ test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *
 {
   (void)junk;
   memcached_return_t rc;
+  char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""), NULL, 0);
-  test_true(rc == MEMCACHED_SUCCESS);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=support/example.cnf"), NULL, 0);
-  test_false(rc == MEMCACHED_SUCCESS);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer));
+  test_false_with(rc == MEMCACHED_SUCCESS, buffer);
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"bad-path/example.cnf\""), NULL, 0);
-  test_true_got(rc == MEMCACHED_ERRNO, memcached_strerror(NULL, rc));
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_ERRNO, buffer);
 
   return TEST_SUCCESS;
 }
@@ -391,12 +392,13 @@ test_return_t libmemcached_check_configuration_test(memcached_st *junk)
   (void)junk;
 
   memcached_return_t rc;
+  char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost"), NULL, 0);
-  test_true(rc == MEMCACHED_SUCCESS);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost"), buffer, sizeof(buffer));
+  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--dude=localhost"), NULL, 0);
-  test_false(rc == MEMCACHED_SUCCESS);
+  rc= libmemcached_check_configuration(STRING_WITH_LEN("--dude=localhost"), buffer, sizeof(buffer));
+  test_false_with(rc == MEMCACHED_SUCCESS, buffer);
   test_true(rc == MEMCACHED_PARSE_ERROR);
 
   return TEST_SUCCESS;
@@ -408,16 +410,16 @@ test_return_t memcached_create_with_options_test(memcached_st *junk)
 
   memcached_st *memc_ptr;
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--server=localhost"));
-  test_true(memc_ptr);
+  test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
   memcached_free(memc_ptr);
 
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--dude=localhost"));
-  test_false(memc_ptr);
+  test_false_with(memc_ptr, memcached_last_error_message(memc_ptr));
 
   return TEST_SUCCESS;
 }
 
-#define RANDOM_STRINGS 10
+#define RANDOM_STRINGS 50
 test_return_t random_statement_build_test(memcached_st *junk)
 {
   (void)junk;
@@ -459,12 +461,14 @@ test_return_t random_statement_build_test(memcached_st *junk)
     random_options.resize(random_options.size() -1);
 
     memcached_return_t rc;
-    rc= libmemcached_check_configuration(random_options.c_str(), random_options.size(), NULL, 0);
-    if (rc != MEMCACHED_SUCCESS)
+    memcached_st *memc_ptr= memcached_create(NULL);
+    rc= memcached_parse_configuration(memc_ptr, random_options.c_str(), random_options.size());
+    if (rc == MEMCACHED_PARSE_ERROR)
     {
-      std::cerr << "Failed to parse: (" << random_options << ")" << std::endl;
-      std::cerr << "\t " << memcached_strerror(NULL, rc) << std::endl;
+      std::cerr << std::endl << "Failed to parse(" << memcached_strerror(NULL, rc) << "): " << random_options << std::endl;
+      memcached_error_print(memc_ptr);
     }
+    memcached_free(memc_ptr);
   }
 
   return TEST_SUCCESS;

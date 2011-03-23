@@ -42,16 +42,19 @@
 class Context
 {
 public:
-  Context(const char *option_string, size_t option_string_length, memcached_st *memc_arg) :
+  Context(const char *option_string, size_t option_string_length, memcached_st *memc_arg,
+          memcached_return_t &rc_arg) :
     scanner(NULL),
     begin(NULL),
     pos(0),
-    memc(NULL)
+    memc(NULL),
+    rc(rc_arg)
   {
     buf= option_string;
     length= option_string_length;
     memc= memc_arg;
     init_scanner();
+    rc= MEMCACHED_SUCCESS;
   }
 
   ~Context()
@@ -65,6 +68,7 @@ public:
   size_t pos;
   size_t length;
   memcached_st *memc;
+  memcached_return_t &rc;
 
 protected:
   void init_scanner();   

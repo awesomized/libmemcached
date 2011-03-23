@@ -160,7 +160,6 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 "--PREFIX_KEY"	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
 
 "--"[[:alnum:]]*   {
-      std::cerr << "Started at " << yytext << std::endl;
       yyextra->begin= yytext;
       return UNKNOWN_OPTION;
     }
@@ -191,13 +190,13 @@ JENKINS			{ return JENKINS; }
       return HOSTNAME;
     }
 
-[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}: { 
+(([[:digit:]]{1,3}"."){3}([[:digit:]]{1,3})): {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return IPADDRESS_WITH_PORT;
     }
 
-[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}"."[[:digit:]]{1,3}  { 
+(([[:digit:]]{1,3}"."){3}([[:digit:]]{1,3})) {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return IPADDRESS;
@@ -209,7 +208,7 @@ JENKINS			{ return JENKINS; }
       return STRING;
     }
 
-\".*\" { 
+(\".*\") {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return QUOTED_STRING;
