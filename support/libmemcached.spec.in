@@ -82,11 +82,11 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libhashkit.la
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
-%{_libdir}/libhashkit.so.0.0.0
+%{_libdir}/libhashkit.so.1.0.0
 %{_libdir}/libmemcached.so.6.0.0
 %{_libdir}/libmemcachedutil.so.1.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
-%{_libdir}/libhashkit.so.0
+%{_libdir}/libhashkit.so.1
 %{_libdir}/libmemcached.so.6
 %{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.1
@@ -104,10 +104,6 @@ you will need to install %{name}-devel.
 %files devel
 %defattr (-,root,root,-) 
 %doc examples
-%{_includedir}/libmemcached/allocators.h
-%{_includedir}/libmemcached/delete.h
-%{_includedir}/libmemcached/fetch.h
-%{_includedir}/libmemcached/flush.h
 %{_includedir}/libhashkit/algorithm.h
 %{_includedir}/libhashkit/behavior.h
 %{_includedir}/libhashkit/configure.h
@@ -117,20 +113,28 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit/strerror.h
 %{_includedir}/libhashkit/types.h
 %{_includedir}/libhashkit/visibility.h
+%{_includedir}/libmemcached/allocators.h
 %{_includedir}/libmemcached/analyze.h
+%{_includedir}/libmemcached/array.h
 %{_includedir}/libmemcached/auto.h
 %{_includedir}/libmemcached/behavior.h
 %{_includedir}/libmemcached/callback.h
 %{_includedir}/libmemcached/configure.h
 %{_includedir}/libmemcached/constants.h
+%{_includedir}/libmemcached/delete.h
 %{_includedir}/libmemcached/dump.h
+%{_includedir}/libmemcached/error.h
 %{_includedir}/libmemcached/exception.hpp
+%{_includedir}/libmemcached/fetch.h
+%{_includedir}/libmemcached/flush.h
 %{_includedir}/libmemcached/flush_buffers.h
 %{_includedir}/libmemcached/get.h
 %{_includedir}/libmemcached/hash.h
 %{_includedir}/libmemcached/memcached.h
 %{_includedir}/libmemcached/memcached.hpp
+%{_includedir}/libmemcached/memcached/protocol_binary.h
 %{_includedir}/libmemcached/memcached_util.h
+%{_includedir}/libmemcached/options.h
 %{_includedir}/libmemcached/parse.h
 %{_includedir}/libmemcached/platform.h
 %{_includedir}/libmemcached/protocol/cache.h
@@ -154,7 +158,6 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/version.h
 %{_includedir}/libmemcached/visibility.h
 %{_includedir}/libmemcached/watchpoint.h
-%{_includedir}/libmemcached/memcached/protocol_binary.h
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedprotocol.so
