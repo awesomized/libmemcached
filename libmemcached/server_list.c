@@ -24,7 +24,9 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   if (hostname == NULL || error == NULL)
     return NULL;
 
-  if (! port)
+  if (hostname[0] == '/')
+    port = 0;
+  else if (! port)
     port= MEMCACHED_DEFAULT_PORT;
 
   /* Increment count for hosts */
@@ -43,7 +45,7 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   }
 
   /* @todo Check return type */
-  memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, MEMCACHED_CONNECTION_TCP);
+  memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET);
 
   // Handset allocated since 
   new_host_list->options.is_allocated= true;
