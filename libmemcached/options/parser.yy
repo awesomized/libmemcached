@@ -95,7 +95,7 @@ void Context::start()
 %token END
 %token ERROR
 %token RESET
-%token DEBUG
+%token PARSER_DEBUG
 %token INCLUDE
 %token CONFIGURE_FILE
 %token EMPTY_LINE
@@ -211,7 +211,7 @@ statement:
           {
             memcached_reset(context->memc);
           }
-        | DEBUG
+        | PARSER_DEBUG
           {
             yydebug= 1;
           }

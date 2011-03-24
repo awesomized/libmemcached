@@ -161,7 +161,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 
 INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
 RESET           { yyextra->begin= yytext; return RESET; }
-DEBUG           { yyextra->begin= yytext; return DEBUG; }
+DEBUG           { yyextra->begin= yytext; return PARSER_DEBUG; }
 SERVERS           { yyextra->begin= yytext; return SERVERS; }
 END           { yyextra->begin= yytext; return END; }
 ERROR           { yyextra->begin= yytext; return ERROR; }
