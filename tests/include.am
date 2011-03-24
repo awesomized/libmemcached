@@ -35,7 +35,8 @@ noinst_HEADERS+= \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached_world.h \
 		 tests/parser.h \
-		 tests/print.h
+		 tests/print.h \
+		 tests/replication.h
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
