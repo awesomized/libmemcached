@@ -28,6 +28,8 @@
 #include <libmemcached/constants.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>
+#include <libmemcached/array.h>
+#include <libmemcached/error.h>
 #include <libmemcached/stats.h>
 #include <libhashkit/hashkit.h>
 // Everything above this line must be in the order specified.
@@ -43,6 +45,7 @@
 #include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
 #include <libmemcached/hash.h>
+#include <libmemcached/options.h>
 #include <libmemcached/parse.h>
 #include <libmemcached/quit.h>
 #include <libmemcached/result.h>
@@ -82,6 +85,7 @@ struct memcached_st {
     bool use_udp:1;
     bool verify_key:1;
     bool tcp_keepalive:1;
+    bool ping_service:1;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
@@ -105,7 +109,6 @@ struct memcached_st {
   int recv_size;
   void *user_data;
   time_t next_distribution_rebuild; // Ketama
-  size_t prefix_key_length;
   uint32_t number_of_replicas;
   hashkit_st distribution_hashkit;
   memcached_result_st result;
@@ -125,7 +128,11 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
-  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
+  struct memcached_error_st *error_messages;
+  struct memcached_array_st *prefix_key;
+  struct {
+    struct memcached_array_st *filename;
+  } configure;
   struct {
     bool is_allocated:1;
   } options;
@@ -143,7 +150,13 @@ LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
+memcached_st *memcached_create_with_options(const char *string, size_t length);
+
+LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_reset(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_reset_last_disconnected_server(memcached_st *ptr);

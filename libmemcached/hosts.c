@@ -17,6 +17,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      in_port_t port,
                                      uint32_t weight,
                                      memcached_connection_t type);
+
 static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
@@ -448,4 +449,21 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   memcached_servers_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
+}
+
+memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
+                                               const char *hostname,
+                                               size_t hostname_length,
+                                               in_port_t port,
+                                               uint32_t weight)
+{
+  char buffer[NI_MAXHOST];
+
+  memcpy(buffer, hostname, hostname_length);
+  buffer[hostname_length]= 0;
+
+  return server_add(ptr, buffer,
+                    port,
+                    weight,
+                    MEMCACHED_CONNECTION_TCP);
 }

@@ -9,6 +9,7 @@
  *
  */
 
+#pragma once
 #ifndef __LIBMEMCACHED_STRING_H__
 #define __LIBMEMCACHED_STRING_H__
 
@@ -31,6 +32,11 @@ struct memcached_string_st {
     bool is_allocated:1;
     bool is_initialized:1;
   } options;
+};
+
+struct memcached_string_t {
+  size_t size;
+  const char *c_str;
 };
 
 #ifdef __cplusplus
@@ -74,9 +80,18 @@ char *memcached_string_value_mutable(const memcached_string_st *self);
 LIBMEMCACHED_LOCAL
 void memcached_string_set_length(memcached_string_st *self, size_t length);
 
+LIBMEMCACHED_LOCAL
+memcached_string_t memcached_string_make(const char *str, size_t length);
+
 #ifdef __cplusplus
 }
 #endif
 
+
+#ifdef __cplusplus
+#define memcached_string_with_size(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
+#else
+#define memcached_string_with_size(X) (X), ((size_t)((sizeof(X) - 1)))
+#endif
 
 #endif /* __LIBMEMCACHED_STRING_H__ */

@@ -74,14 +74,14 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
 
   if (ptr->flags.hash_with_prefix_key)
   {
-    size_t temp_length= ptr->prefix_key_length + key_length;
+    size_t temp_length= memcached_array_size(ptr->prefix_key) + key_length;
     char temp[temp_length];
 
     if (temp_length > MEMCACHED_MAX_KEY -1)
       return 0;
 
-    strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
-    strncpy(temp + ptr->prefix_key_length, key, key_length);
+    strncpy(temp, memcached_array_string(ptr->prefix_key), memcached_array_size(ptr->prefix_key));
+    strncpy(temp + memcached_array_size(ptr->prefix_key), key, key_length);
 
     return generate_hash(ptr, temp, temp_length);
   }
@@ -135,4 +135,24 @@ memcached_return_t memcached_set_hashkit(memcached_st *self, hashkit_st *hashk)
   hashkit_clone(&self->hashkit, hashk);
 
   return MEMCACHED_SUCCESS;
+}
+
+const char * libmemcached_string_hash(memcached_hash_t type)
+{
+  switch (type)
+  {
+  case MEMCACHED_HASH_DEFAULT: return "MEMCACHED_HASH_DEFAULT";
+  case MEMCACHED_HASH_MD5: return "MEMCACHED_HASH_MD5";
+  case MEMCACHED_HASH_CRC: return "MEMCACHED_HASH_CRC";
+  case MEMCACHED_HASH_FNV1_64: return "MEMCACHED_HASH_FNV1_64";
+  case MEMCACHED_HASH_FNV1A_64: return "MEMCACHED_HASH_FNV1A_64";
+  case MEMCACHED_HASH_FNV1_32: return "MEMCACHED_HASH_FNV1_32";
+  case MEMCACHED_HASH_FNV1A_32: return "MEMCACHED_HASH_FNV1A_32";
+  case MEMCACHED_HASH_HSIEH: return "MEMCACHED_HASH_HSIEH";
+  case MEMCACHED_HASH_MURMUR: return "MEMCACHED_HASH_MURMUR";
+  case MEMCACHED_HASH_JENKINS: return "MEMCACHED_HASH_JENKINS";
+  case MEMCACHED_HASH_CUSTOM: return "MEMCACHED_HASH_CUSTOM";
+  default:
+  case MEMCACHED_HASH_MAX: return "INVALID memcached_hash_t";
+  }
 }

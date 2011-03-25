@@ -47,7 +47,7 @@ static void global_sleep(void)
 
 static void kill_file(const char *file_buffer)
 {
-  FILE *fp= fopen(file_buffer, "r");
+  FILE *fp;
 
   while ((fp= fopen(file_buffer, "r")))
   {

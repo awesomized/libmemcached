@@ -400,21 +400,21 @@ error:
     return rc;
 }
 
-memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error)
+memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_return_t *error)
 {
   memcached_return_t rc;
   memcached_stat_st *stats;
 
-  if (! ptr)
+  if (! self)
   {
-    WATCHPOINT_ASSERT(memc_ptr);
+    WATCHPOINT_ASSERT(self);
     return NULL;
   }
 
   WATCHPOINT_ASSERT(error);
 
 
-  unlikely (ptr->flags.use_udp)
+  unlikely (self->flags.use_udp)
   {
     if (error)
       *error= MEMCACHED_NOT_SUPPORTED;
@@ -422,7 +422,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
     return NULL;
   }
 
-  stats= libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(memcached_stat_st));
+  stats= libmemcached_calloc(self, memcached_server_count(self), sizeof(memcached_stat_st));
 
   if (! stats)
   {
@@ -433,7 +433,7 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
   }
 
   rc= MEMCACHED_SUCCESS;
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(self); x++)
   {
     memcached_return_t temp_return;
     memcached_server_write_instance_st instance;
@@ -441,11 +441,11 @@ memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_retur
 
     stat_instance= stats + x;
 
-    stat_instance->root= ptr;
+    stat_instance->root= self;
 
-    instance= memcached_server_instance_fetch(ptr, x);
+    instance= memcached_server_instance_fetch(self, x);
 
-    if (ptr->flags.binary_protocol)
+    if (self->flags.binary_protocol)
     {
       temp_return= binary_stats_fetch(stat_instance, args, instance, NULL);
     }

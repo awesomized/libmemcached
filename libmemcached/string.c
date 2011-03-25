@@ -212,3 +212,12 @@ void memcached_string_set_length(memcached_string_st *self, size_t length)
 {
   self->end= self->string + length;
 }
+
+memcached_string_t memcached_string_make(const char *str, size_t length)
+{
+  memcached_string_t tmp;
+  tmp.c_str= str;
+  tmp.size= length;
+
+  return tmp;
+}

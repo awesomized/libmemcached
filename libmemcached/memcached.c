@@ -34,7 +34,8 @@ static const memcached_st global_copy= {
     .use_sort_hosts= false,
     .use_udp= false,
     .verify_key= false,
-    .tcp_keepalive= false
+    .tcp_keepalive= false,
+    .ping_service= false
   }
 };
 
@@ -78,7 +79,6 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->user_data= NULL;
   self->next_distribution_rebuild= 0;
-  self->prefix_key_length= 0;
   self->number_of_replicas= 0;
   hash_ptr= hashkit_create(&self->distribution_hashkit);
   if (! hash_ptr)
@@ -95,7 +95,51 @@ static inline bool _memcached_init(memcached_st *self)
   self->sasl.callbacks= NULL;
   self->sasl.is_allocated= false;
 
+  self->error_messages= NULL;
+  self->prefix_key= NULL;
+  self->configure.filename= NULL;
+
   return true;
+}
+
+static void _free(memcached_st *ptr, bool release_st)
+{
+  /* If we have anything open, lets close it now */
+  memcached_quit(ptr);
+  memcached_server_list_free(memcached_server_list(ptr));
+  memcached_result_free(&ptr->result);
+
+  if (ptr->last_disconnected_server)
+    memcached_server_free(ptr->last_disconnected_server);
+
+  if (ptr->on_cleanup)
+    ptr->on_cleanup(ptr);
+
+  if (ptr->continuum)
+    libmemcached_free(ptr, ptr->continuum);
+
+  memcached_array_free(ptr->prefix_key);
+  ptr->prefix_key= NULL;
+
+  memcached_error_free(ptr);
+
+  if (ptr->sasl.callbacks)
+  {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+    memcached_destroy_sasl_auth_data(ptr);
+#endif
+  }
+
+  if (release_st)
+  {
+    memcached_array_free(ptr->configure.filename);
+    ptr->configure.filename= NULL;
+  }
+
+  if (memcached_is_allocated(ptr) && release_st)
+  {
+    libmemcached_free(ptr, ptr);
+  }
 }
 
 memcached_st *memcached_create(memcached_st *ptr)
@@ -138,6 +182,46 @@ memcached_st *memcached_create(memcached_st *ptr)
   return ptr;
 }
 
+memcached_st *memcached_create_with_options(const char *string, size_t length)
+{
+  memcached_st *self= memcached_create(NULL);
+
+  if (! self)
+    return NULL;
+
+  memcached_return_t rc;
+  if ((rc= memcached_parse_configuration(self, string, length)) != MEMCACHED_SUCCESS)
+  {
+    return self;
+  }
+
+  if (memcached_parse_filename(self))
+  {
+    rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
+  }
+
+  return self;
+}
+
+memcached_return_t memcached_reset(memcached_st *ptr)
+{
+  WATCHPOINT_ASSERT(ptr);
+  if (! ptr)
+    return MEMCACHED_INVALID_ARGUMENTS;
+
+  bool stored_is_allocated= memcached_is_allocated(ptr);
+  _free(ptr, false);
+  memcached_create(ptr);
+  memcached_set_allocated(ptr, stored_is_allocated);
+
+  if (ptr->configure.filename)
+  {
+    return memcached_parse_configure_file(ptr, memcached_param_array(ptr->configure.filename));
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 void memcached_servers_reset(memcached_st *ptr)
 {
   memcached_server_list_free(memcached_server_list(ptr));
@@ -163,31 +247,7 @@ void memcached_reset_last_disconnected_server(memcached_st *ptr)
 
 void memcached_free(memcached_st *ptr)
 {
-  /* If we have anything open, lets close it now */
-  memcached_quit(ptr);
-  memcached_server_list_free(memcached_server_list(ptr));
-  memcached_result_free(&ptr->result);
-
-  if (ptr->last_disconnected_server)
-    memcached_server_free(ptr->last_disconnected_server);
-
-  if (ptr->on_cleanup)
-    ptr->on_cleanup(ptr);
-
-  if (ptr->continuum)
-    libmemcached_free(ptr, ptr->continuum);
-
-  if (ptr->sasl.callbacks)
-  {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    memcached_destroy_sasl_auth_data(ptr);
-#endif
-  }
-
-  if (memcached_is_allocated(ptr))
-  {
-    libmemcached_free(ptr, ptr);
-  }
+  _free(ptr, true);
 }
 
 /*
@@ -267,11 +327,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
 
-  if (source->prefix_key_length)
-  {
-    strcpy(new_clone->prefix_key, source->prefix_key);
-    new_clone->prefix_key_length= source->prefix_key_length;
-  }
+  new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)
