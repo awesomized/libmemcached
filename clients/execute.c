@@ -116,7 +116,7 @@ unsigned int execute_mget(memcached_st *memc,
       fprintf(stderr, "Failed to execute mget: %s\n",
               memcached_strerror(memc, rc));
       memcached_quit(memc);
-      return EXIT_SUCCESS;
+      return 0;
     }
   }
   else
@@ -124,7 +124,7 @@ unsigned int execute_mget(memcached_st *memc,
     fprintf(stderr, "Failed to execute mget: %s\n",
             memcached_strerror(memc, rc));
     memcached_quit(memc);
-    return EXIT_SUCCESS;
+    return 0;
   }
 
   return retrieved;

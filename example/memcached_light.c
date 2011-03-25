@@ -180,7 +180,7 @@ static int server_socket(const char *port)
     else
       perror("getaddrinfo()");
 
-    return EXIT_FAILURE;
+    return 0;
   }
 
   struct linger ling= {0, 0};

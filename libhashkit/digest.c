@@ -35,13 +35,13 @@ uint32_t libhashkit_digest(const char *key, size_t key_length, hashkit_hash_algo
 #ifdef HAVE_HSIEH_HASH
     return libhashkit_hsieh(key, key_length);
 #else
-    return EXIT_FAILURE;
+    return 1;
 #endif
   case HASHKIT_HASH_MURMUR:
 #ifdef HAVE_MURMUR_HASH
     return libhashkit_murmur(key, key_length);
 #else
-    return EXIT_FAILURE;
+    return 1;
 #endif
   case HASHKIT_HASH_JENKINS:
     return libhashkit_jenkins(key, key_length);
@@ -56,5 +56,5 @@ uint32_t libhashkit_digest(const char *key, size_t key_length, hashkit_hash_algo
     break;
   }
 
-  return EXIT_FAILURE;
+  return 1;
 }

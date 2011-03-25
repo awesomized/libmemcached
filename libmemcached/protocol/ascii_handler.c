@@ -34,7 +34,7 @@ static uint16_t parse_ascii_key(char **start)
 
   if (len == 0 || len > 240 || (*c != '\0' && *c != '\r' && iscntrl(*c)))
   {
-    return EXIT_SUCCESS;
+    return 0;
   }
 
   return len;
@@ -558,7 +558,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
   {
     /* Keep on reading */
     recover_tokenize_command(start, *end);
-    return EXIT_FAILURE;
+    return 1;
   }
 
   void *data= (*end) + 1;
@@ -658,7 +658,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
 
   *end += nbytes + 2;
 
-  return EXIT_SUCCESS;
+  return 0;
 }
 
 static int process_cas_command(memcached_protocol_client_st *client,
