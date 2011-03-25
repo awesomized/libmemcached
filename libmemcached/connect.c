@@ -335,7 +335,7 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 
   memset(&servAddr, 0, sizeof (struct sockaddr_un));
   servAddr.sun_family= AF_UNIX;
-  strcpy(servAddr.sun_path, ptr->hostname); /* Copy filename */
+  strncpy(servAddr.sun_path, ptr->hostname, sizeof(servAddr.sun_path)); /* Copy filename */
 
 test_connect:
   if (connect(ptr->fd,
