@@ -11,7 +11,7 @@
 
 void memcached_quit_server(memcached_server_st *ptr, bool io_death)
 {
-  if (ptr->fd != -1)
+  if (ptr->fd != INVALID_SOCKET)
   {
     if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP && ptr->options.is_shutting_down == false)
     {
@@ -30,7 +30,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       }
       else
       {
-        rc= memcached_do(ptr, "quit\r\n", strlen("quit\r\n"), true);
+        rc= memcached_do(ptr, "quit\r\n", sizeof("quit\r\n") -1, true);
       }
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
@@ -64,7 +64,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
     memcached_io_close(ptr);
   }
 
-  ptr->fd= -1;
+  ptr->fd= INVALID_SOCKET;
   ptr->io_bytes_sent= 0;
   ptr->write_buffer_offset= (size_t) ((ptr->type == MEMCACHED_CONNECTION_UDP) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
   ptr->read_buffer_length= 0;
@@ -85,14 +85,9 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
 
 void memcached_quit(memcached_st *ptr)
 {
-  uint32_t x;
-
-  if (memcached_server_count(ptr) == 0)
-    return;
-
   if (memcached_server_count(ptr))
   {
-    for (x= 0; x < memcached_server_count(ptr); x++)
+    for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
     {
       memcached_server_write_instance_st instance=
         memcached_server_instance_fetch(ptr, x);

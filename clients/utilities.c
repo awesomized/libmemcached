@@ -149,7 +149,7 @@ static int get_password(sasl_conn_t *conn, void *context, int id,
                         sasl_secret_t **psecret)
 {
   (void)context;
-  static sasl_secret_t* x;
+  static sasl_secret_t* ptr;
 
   if (!conn || ! psecret || id != SASL_CB_PASS)
     return SASL_BADPARAM;
@@ -161,14 +161,15 @@ static int get_password(sasl_conn_t *conn, void *context, int id,
   }
 
   size_t len= strlen(passwd);
-  x = realloc(x, sizeof(sasl_secret_t) + len);
-  if (!x)
+  ptr= malloc(sizeof(sasl_secret_t) + len +1);
+  if (! ptr)
     return SASL_NOMEM;
 
-  x->len = len;
-  strcpy((void *)x->data, passwd);
+  ptr->len= len;
+  memcpy(ptr->data, passwd, len);
+  ptr->data[len]= 0;
 
-  *psecret = x;
+  *psecret= ptr;
   return SASL_OK;
 }
 

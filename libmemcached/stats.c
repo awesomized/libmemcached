@@ -178,49 +178,49 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 
   *error= MEMCACHED_SUCCESS;
 
-  if (!memcmp("pid", key, strlen("pid")))
+  if (!memcmp("pid", key, sizeof("pid") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->pid);
-  else if (!memcmp("uptime", key, strlen("uptime")))
+  else if (!memcmp("uptime", key, sizeof("uptime") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->uptime);
-  else if (!memcmp("time", key, strlen("time")))
+  else if (!memcmp("time", key, sizeof("time") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->time);
-  else if (!memcmp("version", key, strlen("version")))
+  else if (!memcmp("version", key, sizeof("version") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%s", memc_stat->version);
-  else if (!memcmp("pointer_size", key, strlen("pointer_size")))
+  else if (!memcmp("pointer_size", key, sizeof("pointer_size") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->pointer_size);
-  else if (!memcmp("rusage_user", key, strlen("rusage_user")))
+  else if (!memcmp("rusage_user", key, sizeof("rusage_user") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u.%u", memc_stat->rusage_user_seconds, memc_stat->rusage_user_microseconds);
-  else if (!memcmp("rusage_system", key, strlen("rusage_system")))
+  else if (!memcmp("rusage_system", key, sizeof("rusage_system") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u.%u", memc_stat->rusage_system_seconds, memc_stat->rusage_system_microseconds);
-  else if (!memcmp("curr_items", key, strlen("curr_items")))
+  else if (!memcmp("curr_items", key, sizeof("curr_items") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->curr_items);
-  else if (!memcmp("total_items", key, strlen("total_items")))
+  else if (!memcmp("total_items", key, sizeof("total_items") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->total_items);
-  else if (!memcmp("curr_connections", key, strlen("curr_connections")))
+  else if (!memcmp("curr_connections", key, sizeof("curr_connections") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->curr_connections);
-  else if (!memcmp("total_connections", key, strlen("total_connections")))
+  else if (!memcmp("total_connections", key, sizeof("total_connections") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->total_connections);
-  else if (!memcmp("connection_structures", key, strlen("connection_structures")))
+  else if (!memcmp("connection_structures", key, sizeof("connection_structures") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->connection_structures);
-  else if (!memcmp("cmd_get", key, strlen("cmd_get")))
+  else if (!memcmp("cmd_get", key, sizeof("cmd_get") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->cmd_get);
-  else if (!memcmp("cmd_set", key, strlen("cmd_set")))
+  else if (!memcmp("cmd_set", key, sizeof("cmd_set") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->cmd_set);
-  else if (!memcmp("get_hits", key, strlen("get_hits")))
+  else if (!memcmp("get_hits", key, sizeof("get_hits") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->get_hits);
-  else if (!memcmp("get_misses", key, strlen("get_misses")))
+  else if (!memcmp("get_misses", key, sizeof("get_misses") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->get_misses);
-  else if (!memcmp("evictions", key, strlen("evictions")))
+  else if (!memcmp("evictions", key, sizeof("evictions") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->evictions);
-  else if (!memcmp("bytes_read", key, strlen("bytes_read")))
+  else if (!memcmp("bytes_read", key, sizeof("bytes_read") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_read);
-  else if (!memcmp("bytes_written", key, strlen("bytes_written")))
+  else if (!memcmp("bytes_written", key, sizeof("bytes_written") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_written);
-  else if (!memcmp("bytes", key, strlen("bytes")))
+  else if (!memcmp("bytes", key, sizeof("bytes") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes);
-  else if (!memcmp("limit_maxbytes", key, strlen("limit_maxbytes")))
+  else if (!memcmp("limit_maxbytes", key, sizeof("limit_maxbytes") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->limit_maxbytes);
-  else if (!memcmp("threads", key, strlen("threads")))
+  else if (! memcmp("threads", key, sizeof("threads") -1))
     length= snprintf(buffer, SMALL_STRING_LEN,"%u", memc_stat->threads);
   else
   {

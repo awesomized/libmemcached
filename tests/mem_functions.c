@@ -784,8 +784,8 @@ static memcached_return_t  server_function(const memcached_st *ptr,
 
 static test_return_t memcached_server_cursor_test(memcached_st *memc)
 {
-  char context[8];
-  strcpy(context, "foo bad");
+  char context[10];
+  strncpy(context, "foo bad", sizeof(context));
   memcached_server_fn callbacks[1];
 
   callbacks[0]= server_function;
@@ -4001,13 +4001,13 @@ static test_return_t set_prefix(memcached_st *memc)
 
     /* Test a long key for failure */
     /* TODO, extend test to determine based on setting, what result should be */
-    strcpy(long_key, "Thisismorethentheallottednumberofcharacters");
+    strncpy(long_key, "Thisismorethentheallottednumberofcharacters", sizeof(long_key));
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
     //test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
     test_true(rc == MEMCACHED_SUCCESS);
 
     /* Now test a key with spaces (which will fail from long key, since bad key is not set) */
-    strcpy(long_key, "This is more then the allotted number of characters");
+    strncpy(long_key, "This is more then the allotted number of characters", sizeof(long_key));
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
     test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
 
@@ -4015,7 +4015,7 @@ static test_return_t set_prefix(memcached_st *memc)
     rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, 1);
     test_true(rc == MEMCACHED_SUCCESS);
 
-    strcpy(long_key, "dog cat");
+    strncpy(long_key, "dog cat", sizeof(long_key));
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, long_key);
     test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
   }
@@ -5967,9 +5967,11 @@ static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
   /* put failure limit to 1 */
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
   assert(rc == MEMCACHED_SUCCESS);
+
   /* Put a retry timeout to effectively activate failure_limit effect */
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1);
   assert(rc == MEMCACHED_SUCCESS);
+
   /* change behavior that triggers memcached_quit()*/
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
   assert(rc == MEMCACHED_SUCCESS);

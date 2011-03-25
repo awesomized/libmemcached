@@ -27,9 +27,9 @@ static int continuum_points_cmp(const void *t1, const void *t2)
   hashkit_continuum_point_st *ct2= (hashkit_continuum_point_st *)t2;
 
   if (ct1->value == ct2->value)
-    return EXIT_SUCCESS;
+    return 0;
   else if (ct1->value > ct2->value)
-    return EXIT_FAILURE;
+    return 1;
   else
     return -1;
 }
@@ -71,7 +71,7 @@ int update_continuum(hashkit_st *hashkit)
     live_servers= (uint32_t)hashkit->list_size;
 
   if (live_servers == 0)
-    return EXIT_SUCCESS;
+    return 0;
 
   if (hashkit->weight_fn == NULL)
   {
@@ -159,6 +159,6 @@ int update_continuum(hashkit_st *hashkit)
   qsort(hashkit->continuum, hashkit->continuum_points_count, sizeof(hashkit_continuum_point_st),
         continuum_points_cmp);
 
-  return EXIT_SUCCESS;
+  return 0;
 }
 #endif

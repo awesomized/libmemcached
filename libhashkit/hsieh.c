@@ -23,7 +23,7 @@ uint32_t hashkit_hsieh(const char *key, size_t key_length, void *context __attri
   int rem;
 
   if (key_length <= 0 || key == NULL)
-    return EXIT_SUCCESS;
+    return 0;
 
   rem = key_length & 3;
   key_length >>= 2;

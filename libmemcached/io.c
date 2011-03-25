@@ -314,7 +314,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             and protocol enforcement happens at memcached_response()
             looking for '\n'. We do not care for UDB which requests 8 bytes
             at once. Generally, this means that connection went away. Since
-            for blocking I/O we do not return EXIT_SUCCESS and for non-blocking case
+            for blocking I/O we do not return 0 and for non-blocking case
             it will return EGAIN if data is not immediatly available.
           */
           WATCHPOINT_STRING("We had a zero length recv()");
@@ -600,7 +600,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
 
   if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
                                         && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
-    return EXIT_SUCCESS;
+    return 0;
 
   /* Looking for memory overflows */
 #if defined(DEBUG)

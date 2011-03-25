@@ -225,8 +225,8 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
 
   sasl_callback_t *cb= libmemcached_calloc(ptr, 4, sizeof(sasl_callback_t));
   char *name= libmemcached_malloc(ptr, strlen(username) + 1);
-  sasl_secret_t *secret= libmemcached_malloc(ptr, strlen(password) + 1 + sizeof(*secret))
-;
+  size_t password_length= strlen(password);
+  sasl_secret_t *secret= libmemcached_malloc(ptr, password_length +1 + sizeof(*secret));
   if (cb == NULL || name == NULL || secret == NULL)
   {
     libmemcached_free(ptr, cb);
@@ -236,11 +236,12 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
   }
 
   secret->len= strlen(password);
-  strcpy((void*)secret->data, password);
+  memcpy(secret->data, password, password_length);
+  secret->data[password_length]= 0;
 
   cb[0].id= SASL_CB_USER;
   cb[0].proc= get_username;
-  cb[0].context= strcpy(name, username);
+  cb[0].context= strncpy(name, username, sizeof(cb[0].context));
   cb[1].id= SASL_CB_AUTHNAME;
   cb[1].proc= get_username;
   cb[1].context= name;
@@ -346,7 +347,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
         libmemcached_free(clone, cb);
         return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
       }
-      strcpy(cb[x].context, source->sasl.callbacks[x].context);
+      strncpy(cb[x].context, source->sasl.callbacks[x].context, sizeof(cb[x].context));
     }
     else
     {

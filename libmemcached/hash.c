@@ -70,7 +70,7 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
   WATCHPOINT_ASSERT(memcached_server_count(ptr));
 
   if (memcached_server_count(ptr) == 1)
-    return EXIT_SUCCESS;
+    return 0;
 
   if (ptr->flags.hash_with_prefix_key)
   {
@@ -78,7 +78,7 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
     char temp[temp_length];
 
     if (temp_length > MEMCACHED_MAX_KEY -1)
-      return EXIT_SUCCESS;
+      return 0;
 
     strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
     strncpy(temp + ptr->prefix_key_length, key, key_length);
