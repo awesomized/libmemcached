@@ -5967,9 +5967,11 @@ static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
   /* put failure limit to 1 */
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
   assert(rc == MEMCACHED_SUCCESS);
+
   /* Put a retry timeout to effectively activate failure_limit effect */
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1);
   assert(rc == MEMCACHED_SUCCESS);
+
   /* change behavior that triggers memcached_quit()*/
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
   assert(rc == MEMCACHED_SUCCESS);

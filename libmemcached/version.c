@@ -31,7 +31,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   char *response_ptr;
   const char *command= "version\r\n";
 
-  send_length= strlen(command);
+  send_length= sizeof("version\r\n") -1;
 
   rc= MEMCACHED_SUCCESS;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
