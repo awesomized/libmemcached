@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,38 +35,12 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#define BUILDING_LIBMEMCACHED
+class Conext;
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
-#include <libtest/test.h>
-#include <tests/error_conditions.h>
+namespace parser {
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+void abort_func(Context *context, const char *error);
 
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *junk)
-{
-  (void)junk;
-  memcached_st *memc_ptr;
-
-  memc_ptr= memcached_create(NULL);
-  test_true(memc_ptr);
-
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_free(memc_ptr);
-
-  return TEST_SUCCESS;
 }
-
-#ifdef	__cplusplus
-}
-#endif

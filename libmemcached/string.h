@@ -80,18 +80,22 @@ char *memcached_string_value_mutable(const memcached_string_st *self);
 LIBMEMCACHED_LOCAL
 void memcached_string_set_length(memcached_string_st *self, size_t length);
 
-LIBMEMCACHED_LOCAL
-memcached_string_t memcached_string_make(const char *str, size_t length);
-
 #ifdef __cplusplus
 }
 #endif
 
+#ifdef BUILDING_LIBMEMCACHED
 
 #ifdef __cplusplus
 #define memcached_string_with_size(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
+#define memcached_string_make(X) (static_cast<size_t>((sizeof(X) - 1))), (X)
 #else
 #define memcached_string_with_size(X) (X), ((size_t)((sizeof(X) - 1)))
+#define memcached_string_make(X) (((size_t)((sizeof(X) - 1))), (X)
+#endif
+
+#define memcached_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
+
 #endif
 
 #endif /* __LIBMEMCACHED_STRING_H__ */

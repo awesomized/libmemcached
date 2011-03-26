@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  Gearmand client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,37 +35,34 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#define BUILDING_LIBMEMCACHED
-
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
 #include <libtest/test.h>
-#include <tests/error_conditions.h>
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *junk)
-{
-  (void)junk;
-  memcached_st *memc_ptr;
+LIBTEST_INTERNAL_API
+test_return_t string_static_null(memcached_st *memc);
 
-  memc_ptr= memcached_create(NULL);
-  test_true(memc_ptr);
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_null(memcached_st *memc);
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_with_size(memcached_st *memc);
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_with_size_toobig(memcached_st *memc);
 
-  memcached_free(memc_ptr);
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_append(memcached_st *memc);
 
-  return TEST_SUCCESS;
-}
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_append_toobig(memcached_st *memc);
+
+LIBTEST_INTERNAL_API
+test_return_t string_alloc_append_multiple(memcached_st *memc);
 
 #ifdef	__cplusplus
 }

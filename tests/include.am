@@ -36,7 +36,9 @@ noinst_HEADERS+= \
 		 tests/libmemcached_world.h \
 		 tests/parser.h \
 		 tests/print.h \
-		 tests/replication.h
+		 tests/replication.h \
+		 tests/string.h
+  
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
@@ -55,7 +57,8 @@ tests_testapp_SOURCES= \
 		       tests/mem_functions.c \
 		       tests/parser.cc \
 		       tests/print.cc \
-		       tests/replication.cc
+		       tests/replication.cc \
+		       tests/string.cc
 
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \
@@ -243,7 +246,7 @@ UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem: tests/testapp
+test-mem: tests/testapp support/example.cnf
 	$(MEM_COMMAND)
 
 test-udp: tests/testudp

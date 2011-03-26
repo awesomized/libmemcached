@@ -89,6 +89,7 @@ libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
+					      libmemcached/error.c \
 					      libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
@@ -103,7 +104,6 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/delete.c \
 				       libmemcached/do.c \
 				       libmemcached/dump.c \
-				       libmemcached/error.c \
 				       libmemcached/fetch.c \
 				       libmemcached/flush.c \
 				       libmemcached/flush_buffers.c \

@@ -16,10 +16,6 @@
 
 #include "libmemcached/memcached.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MAX_UDP_DATAGRAM_LENGTH 1400
 #define UDP_DATAGRAM_HEADER_LENGTH 8
 #define UDP_REQUEST_ID_MSG_SIG_DIGITS 10
@@ -45,6 +41,10 @@ struct libmemcached_io_vector_st
   size_t length;
   const void *buffer;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);

@@ -47,6 +47,7 @@
 #include "libmemcached/memcached.h"
 #include "libmemcached/watchpoint.h"
 #include "libmemcached/is.h"
+#include "libmemcached/prefix_key.h"
 
 typedef struct memcached_server_st * memcached_server_write_instance_st;
 

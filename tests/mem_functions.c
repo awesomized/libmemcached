@@ -35,6 +35,7 @@
 
 #include <libtest/test.h>
 #include "tests/parser.h"
+#include "tests/string.h"
 #include "tests/replication.h"
 #include "tests/basic.h"
 #include "tests/error_conditions.h"
@@ -3229,118 +3230,6 @@ static test_return_t result_alloc(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t string_static_null(memcached_st *memc)
-{
-  memcached_string_st string;
-  memcached_string_st *string_ptr;
-
-  string_ptr= memcached_string_create(memc, &string, 0);
-  test_true(string.options.is_initialized == true);
-  test_true(string_ptr);
-
-  /* The following two better be the same! */
-  test_true(memcached_is_allocated(string_ptr) == false);
-  test_true(memcached_is_allocated(&string) == false);
-  test_true(&string == string_ptr);
-
-  test_true(string.options.is_initialized == true);
-  test_true(memcached_is_initialized(&string) == true);
-  memcached_string_free(&string);
-  test_true(memcached_is_initialized(&string) == false);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t string_alloc_null(memcached_st *memc)
-{
-  memcached_string_st *string;
-
-  string= memcached_string_create(memc, NULL, 0);
-  test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
-  memcached_string_free(string);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t string_alloc_with_size(memcached_st *memc)
-{
-  memcached_string_st *string;
-
-  string= memcached_string_create(memc, NULL, 1024);
-  test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
-  memcached_string_free(string);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t string_alloc_with_size_toobig(memcached_st *memc)
-{
-  memcached_string_st *string;
-
-  string= memcached_string_create(memc, NULL, SIZE_MAX);
-  test_true(string == NULL);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t string_alloc_append(memcached_st *memc)
-{
-  unsigned int x;
-  char buffer[SMALL_STRING_LEN];
-  memcached_string_st *string;
-
-  /* Ring the bell! */
-  memset(buffer, 6, SMALL_STRING_LEN);
-
-  string= memcached_string_create(memc, NULL, 100);
-  test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
-
-  for (x= 0; x < 1024; x++)
-  {
-    memcached_return_t rc;
-    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
-    test_true(rc == MEMCACHED_SUCCESS);
-  }
-  test_true(memcached_is_allocated(string) == true);
-  memcached_string_free(string);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t string_alloc_append_toobig(memcached_st *memc)
-{
-  memcached_return_t rc;
-  unsigned int x;
-  char buffer[SMALL_STRING_LEN];
-  memcached_string_st *string;
-
-  /* Ring the bell! */
-  memset(buffer, 6, SMALL_STRING_LEN);
-
-  string= memcached_string_create(memc, NULL, 100);
-  test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
-
-  for (x= 0; x < 1024; x++)
-  {
-    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
-    test_true(rc == MEMCACHED_SUCCESS);
-  }
-  rc= memcached_string_append(string, buffer, SIZE_MAX);
-  test_true(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
-  test_true(memcached_is_allocated(string) == true);
-  memcached_string_free(string);
-
-  return TEST_SUCCESS;
-}
-
 static test_return_t cleanup_pairs(memcached_st *memc)
 {
   (void)memc;
@@ -6138,6 +6027,7 @@ test_st string_tests[] ={
   {"string alloc with malloc failure", 0, (test_callback_fn)string_alloc_with_size_toobig },
   {"string append", 0, (test_callback_fn)string_alloc_append },
   {"string append failure (too big)", 0, (test_callback_fn)string_alloc_append_toobig },
+  {"string_alloc_append_multiple", 0, (test_callback_fn)string_alloc_append_multiple },
   {0, 0, (test_callback_fn)0}
 };
 

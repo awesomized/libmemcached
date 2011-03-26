@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,38 +35,35 @@
  *
  */
 
-#include <config.h>
+#include <libmemcached/common.h>
+#include <libmemcached/options/context.h>
+#include <libmemcached/options/build.h>
 
-#define BUILDING_LIBMEMCACHED
+namespace parser {
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
-#include <libtest/test.h>
-#include <tests/error_conditions.h>
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *junk)
+void abort_func(Context *context, const char *error)
 {
-  (void)junk;
-  memcached_st *memc_ptr;
+  if (context->rc == MEMCACHED_SUCCESS)
+    context->rc= MEMCACHED_PARSE_ERROR;
 
-  memc_ptr= memcached_create(NULL);
-  test_true(memc_ptr);
+  memcached_string_st *error_string= memcached_string_create(context->memc, NULL, 1024);
+  memcached_string_append(error_string, memcached_string_with_size("Error occured while parsing: "));
+  memcached_string_append(error_string, memcached_string_make_from_cstr(context->begin));
+  memcached_string_append(error_string, memcached_string_with_size(" ("));
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
+  if (context->rc == MEMCACHED_PARSE_ERROR and error)
+  {
+    memcached_string_append(error_string, memcached_string_make_from_cstr(error));
+  }
+  else
+  {
+    memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, context->rc)));
+  }
+  memcached_string_append(error_string, memcached_string_with_size(")"));
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
+  memcached_set_error_string(context->memc, context->rc, memcached_string_value(error_string), memcached_string_length(error_string));
 
-  memcached_free(memc_ptr);
-
-  return TEST_SUCCESS;
+  memcached_string_free(error_string);
 }
 
-#ifdef	__cplusplus
-}
-#endif
+} // namespace parser

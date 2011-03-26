@@ -41,6 +41,7 @@
 #include <iostream>
 #include <string>
 
+#define BUILDING_LIBMEMCACHED
 #include <libmemcached/memcached.h>
 
 #include "tests/parser.h"
@@ -345,15 +346,21 @@ test_return_t parser_key_prefix_test(memcached_st *junk)
   return _test_option(distribution_strings);
 }
 
+#define SUPPORT_EXAMPLE_CNF "support/example.cnf"
+
 test_return_t memcached_parse_configure_file_test(memcached_st *junk)
 {
   (void)junk;
+
+  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
+    return TEST_SKIPPED;
+
   memcached_st memc;
   memcached_st *memc_ptr= memcached_create(&memc);
 
   test_true(memc_ptr);
 
-  memcached_return_t rc= memcached_parse_configure_file(memc_ptr, memcached_string_with_size("support/example.cnf"));
+  memcached_return_t rc= memcached_parse_configure_file(memc_ptr, memcached_string_with_size(SUPPORT_EXAMPLE_CNF));
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc_ptr) ? memcached_last_error_message(memc_ptr) : memcached_strerror(NULL, rc));
   memcached_free(memc_ptr);
 
@@ -363,6 +370,8 @@ test_return_t memcached_parse_configure_file_test(memcached_st *junk)
 test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
 {
   (void)junk;
+  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
+    return TEST_SKIPPED;
 
   memcached_st *memc_ptr;
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
@@ -375,6 +384,10 @@ test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
 test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *junk)
 {
   (void)junk;
+
+  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
+    return TEST_SKIPPED;
+
   memcached_return_t rc;
   char buffer[BUFSIZ];
 
@@ -424,6 +437,9 @@ test_return_t memcached_create_with_options_test(memcached_st *junk)
 
 test_return_t test_include_keyword(memcached_st *junk)
 {
+  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
+    return TEST_SKIPPED;
+
   (void)junk;
   char buffer[BUFSIZ];
   memcached_return_t rc;
