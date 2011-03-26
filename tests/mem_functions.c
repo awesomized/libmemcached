@@ -845,7 +845,7 @@ static test_return_t bad_key_test(memcached_st *memc)
     rc= memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
     test_true(rc == MEMCACHED_SUCCESS);
 
-    char *longkey= malloc(max_keylen + 1);
+    char *longkey= (char *)malloc(max_keylen + 1);
     if (longkey != NULL)
     {
       memset(longkey, 'a', max_keylen + 1);

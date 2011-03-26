@@ -47,11 +47,12 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached/protocol_binary.h \
 			 libmemcached/options.h \
 			 libmemcached/parse.h \
-                         libmemcached/platform.h \
+			 libmemcached/prefix_key.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
 			 libmemcached/quit.h \
+                         libmemcached/platform.h \
 			 libmemcached/result.h \
                          libmemcached/sasl.h \
 			 libmemcached/server.h \
@@ -114,6 +115,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/memcached.c \
 				       libmemcached/options.cc \
 				       libmemcached/parse.c \
+				       libmemcached/prefix_key.cc \
 				       libmemcached/purge.c \
 				       libmemcached/quit.c \
 				       libmemcached/response.c \

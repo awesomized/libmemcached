@@ -35,7 +35,7 @@
  *
  */
 
-#include "common.h"
+#include "libmemcached/common.h"
 
 #include <iostream>
 
@@ -53,15 +53,20 @@ size_t memcached_parse_filename_length(memcached_st *memc)
 
 static memcached_return_t _parse_file_options(memcached_st *self, memcached_string_t *filename)
 {
-  std::string real_name(filename->c_str, filename->size);
-  FILE *fp= fopen(real_name.c_str(), "r");
+  memcached_array_st *real_name= memcached_strcpy(self, filename->c_str, filename->size);
+
+  if (not real_name)
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+
+  FILE *fp= fopen(memcached_array_string(real_name), "r");
   if (! fp)
   {
-    memcached_string_t tmp;
-    tmp.c_str= real_name.c_str();
-    tmp.size= real_name.size();
-    return memcached_set_errno(self, errno, &tmp);
+    memcached_string_t error_message= memcached_array_to_string(real_name);
+    memcached_return_t rc=  memcached_set_errno(self, errno, &error_message);
+    memcached_array_free(real_name);
+    return rc;
   }
+  memcached_array_free(real_name);
 
   char buffer[BUFSIZ];
   memcached_return_t rc= MEMCACHED_INVALID_ARGUMENTS;

@@ -30,7 +30,6 @@
 #include <libmemcached/options/symbol.h>
 
 #define YY_EXTRA_TYPE Context*
-#define YY_USER_ACTION yylloc->first_line = yylineno;
 
 }
 
@@ -62,12 +61,10 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 %}
 
 %option bison-bridge
-%option bison-locations
 %option case-insensitive
 %option debug
 %option nounput
 %option noyywrap
-%option yylineno
 %option outfile="libmemcached/options/scanner.cc" header-file="libmemcached/options/scanner.h"
 %option perf-report
 %option prefix="libmemcached_"

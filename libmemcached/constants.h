@@ -30,7 +30,7 @@
 #define MEMCACHED_VERSION_STRING_LENGTH 24
 
 
-typedef enum {
+enum memcached_return_t {
   MEMCACHED_SUCCESS,
   MEMCACHED_FAILURE,
   MEMCACHED_HOST_LOOKUP_FAILURE,
@@ -77,7 +77,11 @@ typedef enum {
   MEMCACHED_PARSE_ERROR,
   MEMCACHED_PARSE_USER_ERROR,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
-} memcached_return_t;
+};
+
+#ifndef __cplusplus
+typedef enum memcached_return_t memcached_return_t;
+#endif
 
 
 typedef enum {

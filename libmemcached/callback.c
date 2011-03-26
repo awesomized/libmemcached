@@ -9,7 +9,7 @@
  *
  */
 
-#include "common.h"
+#include "libmemcached/common.h"
 #include <sys/types.h>
 
 /*
@@ -24,31 +24,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      char *key= (char *)data;
-
-      if (key)
-      {
-        size_t key_length= strlen(key);
-
-        if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-          return memcached_set_error(ptr, MEMCACHED_BAD_KEY_PROVIDED, NULL);
-
-        if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
-          return memcached_set_error(ptr, MEMCACHED_KEY_TOO_BIG, NULL);
-
-        memcached_array_free(ptr->prefix_key);
-        ptr->prefix_key= memcached_strcpy(ptr, (const char *)data, strlen((const char*)data));
-
-        if (! ptr->prefix_key)
-          return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
-      }
-      else
-      {
-        memcached_array_free(ptr->prefix_key);
-        ptr->prefix_key= NULL;
-      }
-
-      break;
+      return memcached_set_prefix_key(ptr, (char*)data, data ? strlen((char*)data) : 0);
     }
   case MEMCACHED_CALLBACK_USER_DATA:
     {

@@ -28,7 +28,6 @@
 %name-prefix="libmemcached_"
 %parse-param { Context *context }
 %parse-param { yyscan_t *scanner }
-%locations
 %pure-parser
 %require "2.2"
 %start begin
@@ -38,8 +37,7 @@
 
 #include <config.h>
 
-#include <cstdint>
-#include <sstream>
+#include <stdint.h>
 
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
@@ -48,7 +46,7 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <libmemcached/options/scanner.h>
 
-int libmemcached_lex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
+int libmemcached_lex(YYSTYPE* lvalp, void* scanner);
 
 #define parser_abort(A, B) do { parser_abort_func((A), (B)); YYABORT; } while (0) 
 
@@ -75,7 +73,7 @@ inline void parser_abort_func(Context *context, const char *error)
   memcached_set_error_string(context->memc, context->rc, error_message.c_str(), error_message.size());
 }
 
-inline void libmemcached_error(YYLTYPE *locp, Context *context, yyscan_t *scanner, const char *error)
+inline void libmemcached_error(Context *context, yyscan_t *scanner, const char *error)
 {
   if (not context->end())
     parser_abort_func(context, error);

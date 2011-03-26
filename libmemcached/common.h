@@ -13,8 +13,7 @@
   Common include file for libmemached
 */
 
-#ifndef __LIBMEMCACHED_COMMON_H__
-#define __LIBMEMCACHED_COMMON_H__
+#pragma once
 
 #include <config.h>
 
@@ -71,6 +70,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include "libmemcached/memcached/protocol_binary.h"
 #include "libmemcached/byteorder.h"
 #include "libmemcached/response.h"
+#include "libmemcached/prefix_key.h"
 
 /* string value */
 struct memcached_continuum_item_st
@@ -217,5 +217,3 @@ static inline void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, s
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __LIBMEMCACHED_COMMON_H__ */
