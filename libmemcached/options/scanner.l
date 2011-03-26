@@ -24,8 +24,6 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-fpermissive"
 
-#include <iostream>
-
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
 #include <libmemcached/options/string.h>

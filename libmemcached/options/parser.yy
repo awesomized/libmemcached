@@ -38,10 +38,8 @@
 
 #include <config.h>
 
-#include <stdint.h>
-#include <iostream>
+#include <cstdint>
 #include <sstream>
-#include <string>
 
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
