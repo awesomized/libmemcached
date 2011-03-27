@@ -45,6 +45,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
 			 libmemcached/memcached/protocol_binary.h \
+			 libmemcached/memcached/vbucket.h \
 			 libmemcached/options.h \
 			 libmemcached/parse.h \
 			 libmemcached/prefix_key.h \

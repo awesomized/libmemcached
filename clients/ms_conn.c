@@ -3288,7 +3288,7 @@ static void ms_add_bin_header(ms_conn_t *c,
 
   header->request.extlen= (uint8_t)hdr_len;
   header->request.datatype= (uint8_t)PROTOCOL_BINARY_RAW_BYTES;
-  header->request.reserved= 0;
+  header->request.vbucket= 0;
 
   header->request.bodylen= htonl(body_len);
   header->request.opaque= 0;
