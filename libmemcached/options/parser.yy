@@ -221,30 +221,30 @@ expression:
         ;
 
 behaviors:
-          PREFIX_KEY '=' string
+          PREFIX_KEY string
           {
-            if ((context->rc= memcached_set_prefix_key(context->memc, $3.c_str, $3.length)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_set_prefix_key(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }
           }
-        | DISTRIBUTION '=' distribution
+        | DISTRIBUTION distribution
           {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }
           }
-        | HASH '=' hash
+        | HASH hash
           {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);; 
             }
           }
-        | KETAMA_HASH '=' hash
+        | KETAMA_HASH hash
           {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }
