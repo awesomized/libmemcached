@@ -60,6 +60,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 
 %}
 
+%option 8bit
 %option bison-bridge
 %option case-insensitive
 %option debug
@@ -67,7 +68,7 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 %option noyywrap
 %option outfile="libmemcached/options/scanner.cc" header-file="libmemcached/options/scanner.h"
 %option perf-report
-%option prefix="libmemcached_"
+%option prefix="config_"
 %option reentrant
 
 %%

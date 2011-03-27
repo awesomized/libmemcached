@@ -374,7 +374,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 {
   memcached_return_t rc= MEMCACHED_NOTFOUND;
 
-  int flush= number_of_keys == 1;
+  bool flush= (number_of_keys == 1);
 
   /*
     If a server fails we warn about errors and start all over with sending keys
