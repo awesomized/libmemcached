@@ -1,5 +1,6 @@
 *.exe
 *.lo
+*.output
 *.pop
 *.rpm
 */*.l[oa]
@@ -25,6 +26,7 @@ clients/memcp
 clients/memdump
 clients/memerror
 clients/memflush
+clients/memparse
 clients/memrm
 clients/memslap
 clients/memstat
@@ -77,14 +79,6 @@ libmemcached/configure.h
 libmemcached/dtrace_probes.h
 libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
-libmemcached/options/parser.cc
-libmemcached/options/parser.h
-libmemcached/options/parser.output
-libmemcached/options/parsers.cc
-libmemcached/options/parsers.h
-libmemcached/options/parsers.output
-libmemcached/options/scanner.cc
-libmemcached/options/scanner.h
 libmemcached_examples.pop
 libmemcachedutil.pop
 libtool
@@ -196,4 +190,3 @@ tests/testhashkit
 tests/testplus
 tests/testudp
 unittests/unittests
-clients/memparse
