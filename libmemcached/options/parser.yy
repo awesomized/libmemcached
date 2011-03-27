@@ -203,19 +203,19 @@ statement:
 
 
 expression:
-          SERVER '=' server
+          SERVER server
           { 
-            if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_server_add_parsed(context->memc, $2.c_str, $2.length, $2.port, 0)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
             }
           }
-        | SERVERS_OPTION '=' server_list
+        | SERVERS_OPTION server_list
           {
           }
-        | CONFIGURE_FILE '=' string
+        | CONFIGURE_FILE string
           {
-            memcached_set_configuration_file(context->memc, $3.c_str, $3.length);
+            memcached_set_configuration_file(context->memc, $2.c_str, $2.length);
           }
         | behaviors
         ;
@@ -249,9 +249,9 @@ behaviors:
               parser_abort(context, NULL);;
             }
           }
-        | behavior_number '=' NUMBER
+        | behavior_number NUMBER
           {
-            if ((context->rc= memcached_behavior_set(context->memc, $1, $3)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_behavior_set(context->memc, $1, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }
