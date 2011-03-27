@@ -5615,6 +5615,7 @@ static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
   test_true(string);
   free(string);
+  memcached_free(memc_clone);
 
   return TEST_SUCCESS;
 }

@@ -521,11 +521,10 @@ test_return_t random_statement_build_test(memcached_st *junk)
       random_options+= option_list[random() % option_list.size()]->c_str;
       random_options+= " ";
     }
-    random_options.resize(random_options.size() -1);
 
     memcached_return_t rc;
     memcached_st *memc_ptr= memcached_create(NULL);
-    rc= memcached_parse_configuration(memc_ptr, random_options.c_str(), random_options.size());
+    rc= memcached_parse_configuration(memc_ptr, random_options.c_str(), random_options.size() -1);
     if (rc == MEMCACHED_PARSE_ERROR)
     {
       std::cerr << std::endl << "Failed to parse(" << memcached_strerror(NULL, rc) << "): " << random_options << std::endl;
