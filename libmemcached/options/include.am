@@ -9,10 +9,6 @@ DISTCLEANFILES+= \
 		 libmemcached/options/scanner.cc \
 		 libmemcached/options/scanner.h
 
-EXTRA_DIST+= \
-	     libmemcached/options/scanner.l \
-	     libmemcached/options/parser.yy
-
 noinst_HEADERS+= \
 		 libmemcached/options/build.h \
 		 libmemcached/options/context.h \
@@ -27,13 +23,4 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/options/parser.cc \
 				       libmemcached/options/scanner.cc
 
-libmemcached/options/parser.h: libmemcached/options/parser.cc
-
-libmemcached/options/parser.cc: libmemcached/options/parser.yy libmemcached/options/scanner.l libmemcached/options/scanner.h
-	$(AM_V_YACC)$(am__skipyacc) $(YACC) $(YLFLAGS) $(AM_YFLAGS) -o $@ $<
-
-libmemcached/options/scanner.h: libmemcached/options/scanner.cc
-
-libmemcached/options/scanner.cc: libmemcached/options/scanner.l libmemcached/options/parser.yy
-	$(AM_V_GEN)$(LEX) $<
-
+include libmemcached/options/parser.am
