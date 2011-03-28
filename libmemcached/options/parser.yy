@@ -88,14 +88,12 @@ void Context::start()
 %token BUFFER_REQUESTS
 %token CACHE_LOOKUPS
 %token CONNECT_TIMEOUT
-%token _CORK
 %token DISTRIBUTION
 %token HASH
 %token HASH_WITH_PREFIX_KEY
 %token IO_BYTES_WATERMARK
 %token IO_KEY_PREFETCH
 %token IO_MSG_WATERMARK
-%token KETAMA
 %token KETAMA_HASH
 %token KETAMA_WEIGHTED
 %token NOREPLY
@@ -235,18 +233,22 @@ behaviors:
               parser_abort(context, NULL);;
             }
           }
+        | DISTRIBUTION distribution ',' hash
+          {
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);;
+            }
+            if ((context->rc= memcached_behavior_set_distribution_hash(context->memc, $4)) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);;
+            }
+          }
         | HASH hash
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);; 
-            }
-          }
-        | KETAMA_HASH hash
-          {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, $2)) != MEMCACHED_SUCCESS)
-            {
-              parser_abort(context, NULL);;
             }
           }
         | behavior_number NUMBER
@@ -336,17 +338,9 @@ behavior_boolean:
           {
             $$= MEMCACHED_BEHAVIOR_CACHE_LOOKUPS;
           }
-        | _CORK
-          {
-            $$= MEMCACHED_BEHAVIOR_CORK;
-          }
         | HASH_WITH_PREFIX_KEY
           {
             $$= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
-          }
-        | KETAMA
-          {
-            $$= MEMCACHED_BEHAVIOR_KETAMA;
           }
         | KETAMA_WEIGHTED
           {

@@ -102,7 +102,6 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 "--CONFIGURE-FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
 "--CONNECT_TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
 "--CONNECT-TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
-"--CORK"			        { yyextra->begin= yytext; return _CORK; }
 "--DISTRIBUTION="			{ yyextra->begin= yytext; return DISTRIBUTION; }
 "--HASH="			        { yyextra->begin= yytext; return HASH; }
 "--HASH_WITH_PREFIX_KEY"	        { yyextra->begin= yytext; return HASH_WITH_PREFIX_KEY; }
@@ -113,9 +112,6 @@ static void get_lex_chars(char* buffer, int& result, int max_size, Context *cont
 "--IO-KEY-PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
 "--IO_MSG_WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
 "--IO-MSG-WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
-"--KETAMA"			        { yyextra->begin= yytext; return KETAMA; }
-"--KETAMA_HASH="			{ yyextra->begin= yytext; return KETAMA_HASH; }
-"--KETAMA-HASH="			{ yyextra->begin= yytext; return KETAMA_HASH; }
 "--KETAMA_WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
 "--KETAMA-WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
 "--NOREPLY"                         { yyextra->begin= yytext; return NOREPLY; }

@@ -27,6 +27,7 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
   switch (ptr->distribution)
   {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     {

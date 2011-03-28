@@ -202,11 +202,7 @@ scanner_variable_t test_boolean_options[]= {
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--CACHE_LOOKUPS"), scanner_string_null, __check_CACHE_LOOKUPS },
-#if 0 // Not all platforms support
-  { ARRAY,  make_scanner_string("--CORK"), scanner_string_null, NULL },
-#endif
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--KETAMA"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--KETAMA_WEIGHTED"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },
   { ARRAY,  make_scanner_string("--RANDOMIZE_REPLICA_READ"), scanner_string_null, NULL },
@@ -229,6 +225,8 @@ scanner_variable_t prefix_key_strings[]= {
 
 scanner_variable_t distribution_strings[]= {
   { ARRAY,  make_scanner_string("--DISTRIBUTION=consistent"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--DISTRIBUTION=consistent,CRC"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--DISTRIBUTION=consistent,MD5"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--DISTRIBUTION=random"), scanner_string_null, __check_distribution_RANDOM },
   { ARRAY,  make_scanner_string("--DISTRIBUTION=modula"), scanner_string_null, NULL },
   { NIL, scanner_string_null, scanner_string_null, NULL}

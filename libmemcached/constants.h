@@ -84,14 +84,19 @@ typedef enum memcached_return_t memcached_return_t;
 #endif
 
 
-typedef enum {
+enum memcached_server_distribution_t {
   MEMCACHED_DISTRIBUTION_MODULA,
   MEMCACHED_DISTRIBUTION_CONSISTENT,
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA,
   MEMCACHED_DISTRIBUTION_RANDOM,
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY,
+  MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED,
   MEMCACHED_DISTRIBUTION_CONSISTENT_MAX
-} memcached_server_distribution_t;
+};
+
+#ifndef __cplusplus
+typedef enum memcached_server_distribution_t memcached_server_distribution_t;
+#endif
 
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,

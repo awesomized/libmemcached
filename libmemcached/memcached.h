@@ -72,7 +72,6 @@ struct memcached_st {
     bool binary_protocol:1;
     bool buffer_requests:1;
     bool hash_with_prefix_key:1;
-    bool ketama_weighted:1;
     bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
@@ -84,7 +83,6 @@ struct memcached_st {
     bool use_udp:1;
     bool verify_key:1;
     bool tcp_keepalive:1;
-    bool ping_service:1;
   } flags;
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
@@ -109,6 +107,7 @@ struct memcached_st {
   memcached_result_st result;
 
   struct {
+    bool weighted;
     uint32_t continuum_count; // Ketama
     uint32_t continuum_points_counter; // Ketama
     time_t next_distribution_rebuild; // Ketama

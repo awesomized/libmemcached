@@ -22,7 +22,6 @@ static const memcached_st global_copy= {
     .binary_protocol= false,
     .buffer_requests= false,
     .hash_with_prefix_key= false,
-    .ketama_weighted= false,
     .no_block= false,
     .no_reply= false,
     .randomize_replica_read= false,
@@ -34,7 +33,6 @@ static const memcached_st global_copy= {
     .use_udp= false,
     .verify_key= false,
     .tcp_keepalive= false,
-    .ping_service= false
   }
 };
 
@@ -50,7 +48,11 @@ static inline bool _memcached_init(memcached_st *self)
   if (! hash_ptr)
     return false;
 
+  self->ketama.continuum= NULL;
+  self->ketama.continuum_count= 0;
   self->ketama.continuum_points_counter= 0;
+  self->ketama.next_distribution_rebuild= 0;
+  self->ketama.weighted= false;
 
   self->number_of_hosts= 0;
   self->servers= NULL;
@@ -70,18 +72,15 @@ static inline bool _memcached_init(memcached_st *self)
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= 0;
-  self->ketama.continuum_count= 0;
 
   self->send_size= -1;
   self->recv_size= -1;
 
   self->user_data= NULL;
-  self->ketama.next_distribution_rebuild= 0;
   self->number_of_replicas= 0;
   hash_ptr= hashkit_create(&self->distribution_hashkit);
   if (! hash_ptr)
     return false;
-  self->ketama.continuum= NULL;
 
   self->allocators= memcached_allocators_return_default();
 

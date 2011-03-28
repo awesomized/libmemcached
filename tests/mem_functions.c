@@ -318,7 +318,7 @@ static test_return_t clone_test(memcached_st *memc)
       test_true(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
       test_true(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);
       test_true(memc_clone->flags.verify_key == memc->flags.verify_key);
-      test_true(memc_clone->flags.ketama_weighted == memc->flags.ketama_weighted);
+      test_true(memc_clone->ketama.weighted == memc->ketama.weighted);
       test_true(memc_clone->flags.binary_protocol == memc->flags.binary_protocol);
       test_true(memc_clone->flags.hash_with_prefix_key == memc->flags.hash_with_prefix_key);
       test_true(memc_clone->flags.no_reply == memc->flags.no_reply);

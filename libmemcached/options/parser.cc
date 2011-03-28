@@ -157,58 +157,56 @@ void Context::start()
      BUFFER_REQUESTS = 273,
      CACHE_LOOKUPS = 274,
      CONNECT_TIMEOUT = 275,
-     _CORK = 276,
-     DISTRIBUTION = 277,
-     HASH = 278,
-     HASH_WITH_PREFIX_KEY = 279,
-     IO_BYTES_WATERMARK = 280,
-     IO_KEY_PREFETCH = 281,
-     IO_MSG_WATERMARK = 282,
-     KETAMA = 283,
-     KETAMA_HASH = 284,
-     KETAMA_WEIGHTED = 285,
-     NOREPLY = 286,
-     NUMBER_OF_REPLICAS = 287,
-     POLL_TIMEOUT = 288,
-     RANDOMIZE_REPLICA_READ = 289,
-     RCV_TIMEOUT = 290,
-     RETRY_TIMEOUT = 291,
-     SERVER_FAILURE_LIMIT = 292,
-     SND_TIMEOUT = 293,
-     SOCKET_RECV_SIZE = 294,
-     SOCKET_SEND_SIZE = 295,
-     SORT_HOSTS = 296,
-     SUPPORT_CAS = 297,
-     _TCP_NODELAY = 298,
-     _TCP_KEEPALIVE = 299,
-     _TCP_KEEPIDLE = 300,
-     USER_DATA = 301,
-     USE_UDP = 302,
-     VERIFY_KEY = 303,
-     PREFIX_KEY = 304,
-     MD5 = 305,
-     CRC = 306,
-     FNV1_64 = 307,
-     FNV1A_64 = 308,
-     FNV1_32 = 309,
-     FNV1A_32 = 310,
-     HSIEH = 311,
-     MURMUR = 312,
-     JENKINS = 313,
-     CONSISTENT = 314,
-     MODULA = 315,
-     RANDOM = 316,
-     TRUE = 317,
-     FALSE = 318,
-     NUMBER = 319,
-     FLOAT = 320,
-     HOSTNAME = 321,
-     HOSTNAME_WITH_PORT = 322,
-     IPADDRESS = 323,
-     IPADDRESS_WITH_PORT = 324,
-     STRING = 325,
-     QUOTED_STRING = 326,
-     FILE_PATH = 327
+     DISTRIBUTION = 276,
+     HASH = 277,
+     HASH_WITH_PREFIX_KEY = 278,
+     IO_BYTES_WATERMARK = 279,
+     IO_KEY_PREFETCH = 280,
+     IO_MSG_WATERMARK = 281,
+     KETAMA_HASH = 282,
+     KETAMA_WEIGHTED = 283,
+     NOREPLY = 284,
+     NUMBER_OF_REPLICAS = 285,
+     POLL_TIMEOUT = 286,
+     RANDOMIZE_REPLICA_READ = 287,
+     RCV_TIMEOUT = 288,
+     RETRY_TIMEOUT = 289,
+     SERVER_FAILURE_LIMIT = 290,
+     SND_TIMEOUT = 291,
+     SOCKET_RECV_SIZE = 292,
+     SOCKET_SEND_SIZE = 293,
+     SORT_HOSTS = 294,
+     SUPPORT_CAS = 295,
+     _TCP_NODELAY = 296,
+     _TCP_KEEPALIVE = 297,
+     _TCP_KEEPIDLE = 298,
+     USER_DATA = 299,
+     USE_UDP = 300,
+     VERIFY_KEY = 301,
+     PREFIX_KEY = 302,
+     MD5 = 303,
+     CRC = 304,
+     FNV1_64 = 305,
+     FNV1A_64 = 306,
+     FNV1_32 = 307,
+     FNV1A_32 = 308,
+     HSIEH = 309,
+     MURMUR = 310,
+     JENKINS = 311,
+     CONSISTENT = 312,
+     MODULA = 313,
+     RANDOM = 314,
+     TRUE = 315,
+     FALSE = 316,
+     NUMBER = 317,
+     FLOAT = 318,
+     HOSTNAME = 319,
+     HOSTNAME_WITH_PORT = 320,
+     IPADDRESS = 321,
+     IPADDRESS_WITH_PORT = 322,
+     STRING = 323,
+     QUOTED_STRING = 324,
+     FILE_PATH = 325
    };
 #endif
 
@@ -225,7 +223,7 @@ void Context::start()
 
 
 /* Line 264 of yacc.c  */
-#line 229 "libmemcached/options/parser.cc"
+#line 227 "libmemcached/options/parser.cc"
 
 #ifdef short
 # undef short
@@ -438,22 +436,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  79
+#define YYFINAL  75
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   76
+#define YYLAST   73
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  76
+#define YYNTOKENS  74
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  72
+#define YYNRULES  70
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  88
+#define YYNSTATES  86
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   327
+#define YYMAXUTOK   325
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -464,10 +462,10 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,    75,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,    64,     2,     2,     2,     2,     2,
+       2,     2,    73,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,    62,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    65,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    63,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -492,8 +490,8 @@ static const yytype_uint8 yytranslate[] =
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,    61,    62,    63,    66,
-      67,    68,    69,    70,    71,    72,    73,    74
+      55,    56,    57,    58,    59,    60,    61,    64,    65,    66,
+      67,    68,    69,    70,    71,    72
 };
 
 #if YYDEBUG
@@ -502,48 +500,47 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyprhs[] =
 {
        0,     0,     3,     5,     9,    11,    13,    15,    17,    19,
-      21,    23,    27,    30,    33,    36,    38,    41,    44,    47,
-      50,    53,    55,    57,    59,    61,    63,    65,    67,    69,
-      71,    73,    75,    77,    79,    81,    83,    85,    87,    89,
-      91,    93,    95,    97,    99,   101,   103,   105,   107,   109,
-     111,   113,   115,   117,   121,   124,   126,   128,   131,   133,
-     135,   137,   139,   141,   143,   145,   147,   149,   151,   153,
-     155,   157,   159
+      21,    23,    27,    30,    33,    36,    38,    41,    44,    49,
+      52,    55,    57,    59,    61,    63,    65,    67,    69,    71,
+      73,    75,    77,    79,    81,    83,    85,    87,    89,    91,
+      93,    95,    97,    99,   101,   103,   105,   107,   109,   111,
+     113,   115,   119,   122,   124,   126,   129,   131,   133,   135,
+     137,   139,   141,   143,   145,   147,   149,   151,   153,   155,
+     157
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      77,     0,    -1,    78,    -1,    77,    75,    78,    -1,    79,
+      75,     0,    -1,    76,    -1,    75,    73,    76,    -1,    77,
       -1,     3,    -1,    10,    -1,     4,    -1,     5,    -1,     6,
-      -1,     7,    -1,     8,    75,    86,    -1,    11,    84,    -1,
-      13,    83,    -1,     9,    86,    -1,    80,    -1,    49,    86,
-      -1,    22,    87,    -1,    23,    85,    -1,    29,    85,    -1,
-      81,    66,    -1,    82,    -1,    46,    -1,    20,    -1,    27,
-      -1,    25,    -1,    26,    -1,    32,    -1,    33,    -1,    35,
-      -1,    36,    -1,    37,    -1,    38,    -1,    39,    -1,    40,
-      -1,    16,    -1,    17,    -1,    18,    -1,    19,    -1,    21,
-      -1,    24,    -1,    28,    -1,    30,    -1,    31,    -1,    34,
-      -1,    41,    -1,    42,    -1,    43,    -1,    44,    -1,    45,
-      -1,    47,    -1,    48,    -1,    84,    -1,    83,    64,    84,
-      -1,    69,    66,    -1,    68,    -1,    72,    -1,    71,    66,
-      -1,    70,    -1,    50,    -1,    51,    -1,    52,    -1,    53,
-      -1,    54,    -1,    55,    -1,    56,    -1,    57,    -1,    58,
-      -1,    72,    -1,    73,    -1,    59,    -1,    60,    -1,    61,
-      -1
+      -1,     7,    -1,     8,    73,    84,    -1,    11,    82,    -1,
+      13,    81,    -1,     9,    84,    -1,    78,    -1,    47,    84,
+      -1,    21,    85,    -1,    21,    85,    62,    83,    -1,    22,
+      83,    -1,    79,    64,    -1,    80,    -1,    44,    -1,    20,
+      -1,    26,    -1,    24,    -1,    25,    -1,    30,    -1,    31,
+      -1,    33,    -1,    34,    -1,    35,    -1,    36,    -1,    37,
+      -1,    38,    -1,    16,    -1,    17,    -1,    18,    -1,    19,
+      -1,    23,    -1,    28,    -1,    29,    -1,    32,    -1,    39,
+      -1,    40,    -1,    41,    -1,    42,    -1,    43,    -1,    45,
+      -1,    46,    -1,    82,    -1,    81,    62,    82,    -1,    67,
+      64,    -1,    66,    -1,    70,    -1,    69,    64,    -1,    68,
+      -1,    48,    -1,    49,    -1,    50,    -1,    51,    -1,    52,
+      -1,    53,    -1,    54,    -1,    55,    -1,    56,    -1,    70,
+      -1,    71,    -1,    57,    -1,    58,    -1,    59,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   166,   166,   167,   171,   173,   175,   177,   182,   187,
-     191,   195,   206,   213,   216,   220,   224,   231,   238,   245,
-     252,   259,   266,   272,   276,   280,   284,   288,   292,   296,
-     300,   304,   308,   312,   316,   323,   327,   331,   335,   339,
-     343,   347,   351,   355,   359,   363,   367,   371,   375,   379,
-     383,   387,   394,   401,   411,   417,   423,   429,   435,   444,
-     448,   452,   456,   460,   464,   468,   472,   476,   483,   487,
-     495,   499,   503
+       0,   164,   164,   165,   169,   171,   173,   175,   180,   185,
+     189,   193,   204,   211,   214,   218,   222,   229,   236,   247,
+     254,   261,   268,   274,   278,   282,   286,   290,   294,   298,
+     302,   306,   310,   314,   318,   325,   329,   333,   337,   341,
+     345,   349,   353,   357,   361,   365,   369,   373,   377,   381,
+     388,   395,   405,   411,   417,   423,   429,   438,   442,   446,
+     450,   454,   458,   462,   466,   470,   477,   481,   489,   493,
+     497
 };
 #endif
 
@@ -556,21 +553,21 @@ static const char *const yytname[] =
   "PARSER_DEBUG", "INCLUDE", "CONFIGURE_FILE", "EMPTY_LINE", "SERVER",
   "SERVERS", "SERVERS_OPTION", "UNKNOWN_OPTION", "UNKNOWN",
   "AUTO_EJECT_HOSTS", "BINARY_PROTOCOL", "BUFFER_REQUESTS",
-  "CACHE_LOOKUPS", "CONNECT_TIMEOUT", "_CORK", "DISTRIBUTION", "HASH",
+  "CACHE_LOOKUPS", "CONNECT_TIMEOUT", "DISTRIBUTION", "HASH",
   "HASH_WITH_PREFIX_KEY", "IO_BYTES_WATERMARK", "IO_KEY_PREFETCH",
-  "IO_MSG_WATERMARK", "KETAMA", "KETAMA_HASH", "KETAMA_WEIGHTED",
-  "NOREPLY", "NUMBER_OF_REPLICAS", "POLL_TIMEOUT",
-  "RANDOMIZE_REPLICA_READ", "RCV_TIMEOUT", "RETRY_TIMEOUT",
-  "SERVER_FAILURE_LIMIT", "SND_TIMEOUT", "SOCKET_RECV_SIZE",
-  "SOCKET_SEND_SIZE", "SORT_HOSTS", "SUPPORT_CAS", "_TCP_NODELAY",
-  "_TCP_KEEPALIVE", "_TCP_KEEPIDLE", "USER_DATA", "USE_UDP", "VERIFY_KEY",
-  "PREFIX_KEY", "MD5", "CRC", "FNV1_64", "FNV1A_64", "FNV1_32", "FNV1A_32",
-  "HSIEH", "MURMUR", "JENKINS", "CONSISTENT", "MODULA", "RANDOM", "TRUE",
-  "FALSE", "','", "'='", "NUMBER", "FLOAT", "HOSTNAME",
-  "HOSTNAME_WITH_PORT", "IPADDRESS", "IPADDRESS_WITH_PORT", "STRING",
-  "QUOTED_STRING", "FILE_PATH", "' '", "$accept", "begin", "statement",
-  "expression", "behaviors", "behavior_number", "behavior_boolean",
-  "server_list", "server", "hash", "string", "distribution", 0
+  "IO_MSG_WATERMARK", "KETAMA_HASH", "KETAMA_WEIGHTED", "NOREPLY",
+  "NUMBER_OF_REPLICAS", "POLL_TIMEOUT", "RANDOMIZE_REPLICA_READ",
+  "RCV_TIMEOUT", "RETRY_TIMEOUT", "SERVER_FAILURE_LIMIT", "SND_TIMEOUT",
+  "SOCKET_RECV_SIZE", "SOCKET_SEND_SIZE", "SORT_HOSTS", "SUPPORT_CAS",
+  "_TCP_NODELAY", "_TCP_KEEPALIVE", "_TCP_KEEPIDLE", "USER_DATA",
+  "USE_UDP", "VERIFY_KEY", "PREFIX_KEY", "MD5", "CRC", "FNV1_64",
+  "FNV1A_64", "FNV1_32", "FNV1A_32", "HSIEH", "MURMUR", "JENKINS",
+  "CONSISTENT", "MODULA", "RANDOM", "TRUE", "FALSE", "','", "'='",
+  "NUMBER", "FLOAT", "HOSTNAME", "HOSTNAME_WITH_PORT", "IPADDRESS",
+  "IPADDRESS_WITH_PORT", "STRING", "QUOTED_STRING", "FILE_PATH", "' '",
+  "$accept", "begin", "statement", "expression", "behaviors",
+  "behavior_number", "behavior_boolean", "server_list", "server", "hash",
+  "string", "distribution", 0
 };
 #endif
 
@@ -585,35 +582,35 @@ static const yytype_uint16 yytoknum[] =
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
      295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
      305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
-     315,   316,   317,   318,    44,    61,   319,   320,   321,   322,
-     323,   324,   325,   326,   327,    32
+     315,   316,    44,    61,   317,   318,   319,   320,   321,   322,
+     323,   324,   325,    32
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    76,    77,    77,    78,    78,    78,    78,    78,    78,
-      78,    78,    79,    79,    79,    79,    80,    80,    80,    80,
-      80,    80,    80,    81,    81,    81,    81,    81,    81,    81,
-      81,    81,    81,    81,    81,    82,    82,    82,    82,    82,
-      82,    82,    82,    82,    82,    82,    82,    82,    82,    82,
-      82,    82,    83,    83,    84,    84,    84,    84,    84,    85,
-      85,    85,    85,    85,    85,    85,    85,    85,    86,    86,
-      87,    87,    87
+       0,    74,    75,    75,    76,    76,    76,    76,    76,    76,
+      76,    76,    77,    77,    77,    77,    78,    78,    78,    78,
+      78,    78,    78,    79,    79,    79,    79,    79,    79,    79,
+      79,    79,    79,    79,    79,    80,    80,    80,    80,    80,
+      80,    80,    80,    80,    80,    80,    80,    80,    80,    80,
+      81,    81,    82,    82,    82,    82,    82,    83,    83,    83,
+      83,    83,    83,    83,    83,    83,    84,    84,    85,    85,
+      85
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     3,     1,     1,     1,     1,     1,     1,
-       1,     3,     2,     2,     2,     1,     2,     2,     2,     2,
+       1,     3,     2,     2,     2,     1,     2,     2,     4,     2,
        2,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     3,     2,     1,     1,     2,     1,     1,
+       1,     3,     2,     1,     1,     2,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1
+       1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -622,44 +619,44 @@ static const yytype_uint8 yyr2[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     5,     7,     8,     9,    10,     0,     0,     6,     0,
-       0,    35,    36,    37,    38,    23,    39,     0,     0,    40,
-      25,    26,    24,    41,     0,    42,    43,    27,    28,    44,
-      29,    30,    31,    32,    33,    34,    45,    46,    47,    48,
-      49,    22,    50,    51,     0,     0,     2,     4,    15,     0,
-      21,     0,    68,    69,    14,    55,     0,    58,     0,    56,
-      12,    13,    52,    70,    71,    72,    17,    59,    60,    61,
-      62,    63,    64,    65,    66,    67,    18,    19,    16,     1,
-       0,    20,    11,    54,    57,     0,     3,    53
+       0,    35,    36,    37,    38,    23,     0,     0,    39,    25,
+      26,    24,    40,    41,    27,    28,    42,    29,    30,    31,
+      32,    33,    34,    43,    44,    45,    46,    47,    22,    48,
+      49,     0,     0,     2,     4,    15,     0,    21,     0,    66,
+      67,    14,    53,     0,    56,     0,    54,    12,    13,    50,
+      68,    69,    70,    17,    57,    58,    59,    60,    61,    62,
+      63,    64,    65,    19,    16,     1,     0,    20,    11,    52,
+      55,     0,     0,     3,    51,    18
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,    45,    46,    47,    48,    49,    50,    61,    60,    76,
-      54,    66
+      -1,    42,    43,    44,    45,    46,    47,    58,    57,    73,
+      51,    63
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -65
+#define YYPACT_NINF -63
 static const yytype_int8 yypact[] =
 {
-      -1,   -65,   -65,   -65,   -65,   -65,   -64,   -59,   -65,    -7,
-      -7,   -65,   -65,   -65,   -65,   -65,   -65,     9,     1,   -65,
-     -65,   -65,   -65,   -65,     1,   -65,   -65,   -65,   -65,   -65,
-     -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,
-     -65,   -65,   -65,   -65,   -59,     0,   -65,   -65,   -65,   -17,
-     -65,   -59,   -65,   -65,   -65,   -65,   -16,   -65,     5,   -65,
-     -65,     2,   -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,
-     -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,   -65,
-      -1,   -65,   -65,   -65,   -65,    -7,   -65,   -65
+      -1,   -63,   -63,   -63,   -63,   -63,   -62,   -57,   -63,    -7,
+      -7,   -63,   -63,   -63,   -63,   -63,     9,     1,   -63,   -63,
+     -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,
+     -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,   -63,
+     -63,   -57,     0,   -63,   -63,   -63,   -38,   -63,   -57,   -63,
+     -63,   -63,   -63,   -17,   -63,   -16,   -63,   -63,     2,   -63,
+     -63,   -63,   -63,     7,   -63,   -63,   -63,   -63,   -63,   -63,
+     -63,   -63,   -63,   -63,   -63,   -63,    -1,   -63,   -63,   -63,
+     -63,    -7,     1,   -63,   -63,   -63
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -65,   -65,    -8,   -65,   -65,   -65,   -65,   -65,    -9,    49,
-      16,   -65
+     -63,   -63,    -6,   -63,   -63,   -63,   -63,   -63,    -9,   -11,
+      17,   -63
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -669,26 +666,26 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      79,    62,     1,     2,     3,     4,     5,     6,     7,     8,
-       9,    51,    10,    52,    53,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-      36,    37,    38,    39,    40,    41,    42,    43,    44,    81,
-      83,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-      78,    55,    56,    57,    58,    59,    85,    82,    63,    64,
-      65,    84,    86,    77,     0,    80,    87
+      75,    59,     1,     2,     3,     4,     5,     6,     7,     8,
+       9,    48,    10,    49,    50,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,    20,    21,    77,    22,    23,    24,
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    37,    38,    39,    40,    41,    79,    80,    64,
+      65,    66,    67,    68,    69,    70,    71,    72,    74,    52,
+      53,    54,    55,    56,    81,    78,    60,    61,    62,    82,
+      83,    85,    84,    76
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
        0,    10,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,    75,    13,    72,    73,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      11,    73,    13,    70,    71,    16,    17,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    64,    28,    29,    30,
       31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,    49,    66,
-      66,    50,    51,    52,    53,    54,    55,    56,    57,    58,
-      44,    68,    69,    70,    71,    72,    64,    51,    59,    60,
-      61,    66,    80,    24,    -1,    75,    85
+      41,    42,    43,    44,    45,    46,    47,    64,    64,    48,
+      49,    50,    51,    52,    53,    54,    55,    56,    41,    66,
+      67,    68,    69,    70,    62,    48,    57,    58,    59,    62,
+      76,    82,    81,    73
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -697,13 +694,13 @@ static const yytype_uint8 yystos[] =
 {
        0,     3,     4,     5,     6,     7,     8,     9,    10,    11,
       13,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    47,    48,    49,    77,    78,    79,    80,    81,
-      82,    75,    72,    73,    86,    68,    69,    70,    71,    72,
-      84,    83,    84,    59,    60,    61,    87,    50,    51,    52,
-      53,    54,    55,    56,    57,    58,    85,    85,    86,     0,
-      75,    66,    86,    66,    66,    64,    78,    84
+      25,    26,    28,    29,    30,    31,    32,    33,    34,    35,
+      36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
+      46,    47,    75,    76,    77,    78,    79,    80,    73,    70,
+      71,    84,    66,    67,    68,    69,    70,    82,    81,    82,
+      57,    58,    59,    85,    48,    49,    50,    51,    52,    53,
+      54,    55,    56,    83,    84,     0,    73,    64,    84,    64,
+      64,    62,    62,    76,    82,    83
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1538,28 +1535,28 @@ yyreduce:
         case 4:
 
 /* Line 1464 of yacc.c  */
-#line 172 "libmemcached/options/parser.yy"
+#line 170 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 174 "libmemcached/options/parser.yy"
+#line 172 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 176 "libmemcached/options/parser.yy"
+#line 174 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 178 "libmemcached/options/parser.yy"
+#line 176 "libmemcached/options/parser.yy"
     {
             context->set_end();
             YYACCEPT;
@@ -1569,7 +1566,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 183 "libmemcached/options/parser.yy"
+#line 181 "libmemcached/options/parser.yy"
     {
             context->rc= MEMCACHED_PARSE_USER_ERROR;
             parser_abort(context, NULL);
@@ -1579,7 +1576,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 188 "libmemcached/options/parser.yy"
+#line 186 "libmemcached/options/parser.yy"
     {
             memcached_reset(context->memc);
           ;}
@@ -1588,7 +1585,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 192 "libmemcached/options/parser.yy"
+#line 190 "libmemcached/options/parser.yy"
     {
             yydebug= 1;
           ;}
@@ -1597,7 +1594,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 196 "libmemcached/options/parser.yy"
+#line 194 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_parse_configure_file(context->memc, (yyvsp[(3) - (3)].string).c_str, (yyvsp[(3) - (3)].string).length)) != MEMCACHED_SUCCESS)
             {
@@ -1609,7 +1606,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 207 "libmemcached/options/parser.yy"
+#line 205 "libmemcached/options/parser.yy"
     { 
             if ((context->rc= memcached_server_add_parsed(context->memc, (yyvsp[(2) - (2)].server).c_str, (yyvsp[(2) - (2)].server).length, (yyvsp[(2) - (2)].server).port, 0)) != MEMCACHED_SUCCESS)
             {
@@ -1621,7 +1618,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 214 "libmemcached/options/parser.yy"
+#line 212 "libmemcached/options/parser.yy"
     {
           ;}
     break;
@@ -1629,7 +1626,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 217 "libmemcached/options/parser.yy"
+#line 215 "libmemcached/options/parser.yy"
     {
             memcached_set_configuration_file(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).length);
           ;}
@@ -1638,7 +1635,7 @@ yyreduce:
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 225 "libmemcached/options/parser.yy"
+#line 223 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_set_prefix_key(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).length)) != MEMCACHED_SUCCESS)
             {
@@ -1650,7 +1647,7 @@ yyreduce:
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 232 "libmemcached/options/parser.yy"
+#line 230 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, (yyvsp[(2) - (2)].distribution))) != MEMCACHED_SUCCESS)
             {
@@ -1662,7 +1659,23 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 239 "libmemcached/options/parser.yy"
+#line 237 "libmemcached/options/parser.yy"
+    {
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, (yyvsp[(2) - (4)].distribution))) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);;
+            }
+            if ((context->rc= memcached_behavior_set_distribution_hash(context->memc, (yyvsp[(4) - (4)].hash))) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);;
+            }
+          ;}
+    break;
+
+  case 19:
+
+/* Line 1464 of yacc.c  */
+#line 248 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, (yyvsp[(2) - (2)].hash))) != MEMCACHED_SUCCESS)
             {
@@ -1671,22 +1684,10 @@ yyreduce:
           ;}
     break;
 
-  case 19:
-
-/* Line 1464 of yacc.c  */
-#line 246 "libmemcached/options/parser.yy"
-    {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, (yyvsp[(2) - (2)].hash))) != MEMCACHED_SUCCESS)
-            {
-              parser_abort(context, NULL);;
-            }
-          ;}
-    break;
-
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 253 "libmemcached/options/parser.yy"
+#line 255 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, (yyvsp[(1) - (2)].behavior), (yyvsp[(2) - (2)].number))) != MEMCACHED_SUCCESS)
             {
@@ -1698,7 +1699,7 @@ yyreduce:
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 260 "libmemcached/options/parser.yy"
+#line 262 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, (yyvsp[(1) - (1)].behavior), true)) != MEMCACHED_SUCCESS)
             {
@@ -1710,7 +1711,7 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 267 "libmemcached/options/parser.yy"
+#line 269 "libmemcached/options/parser.yy"
     {
           ;}
     break;
@@ -1718,7 +1719,7 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 273 "libmemcached/options/parser.yy"
+#line 275 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT;
           ;}
@@ -1727,7 +1728,7 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 277 "libmemcached/options/parser.yy"
+#line 279 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK;
           ;}
@@ -1736,7 +1737,7 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 281 "libmemcached/options/parser.yy"
+#line 283 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK;
           ;}
@@ -1745,7 +1746,7 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 285 "libmemcached/options/parser.yy"
+#line 287 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH;
           ;}
@@ -1754,7 +1755,7 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 289 "libmemcached/options/parser.yy"
+#line 291 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS;
           ;}
@@ -1763,7 +1764,7 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 293 "libmemcached/options/parser.yy"
+#line 295 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_POLL_TIMEOUT;
           ;}
@@ -1772,7 +1773,7 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 297 "libmemcached/options/parser.yy"
+#line 299 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_RCV_TIMEOUT;
           ;}
@@ -1781,7 +1782,7 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 301 "libmemcached/options/parser.yy"
+#line 303 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_RETRY_TIMEOUT;
           ;}
@@ -1790,7 +1791,7 @@ yyreduce:
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 305 "libmemcached/options/parser.yy"
+#line 307 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT;
           ;}
@@ -1799,7 +1800,7 @@ yyreduce:
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 309 "libmemcached/options/parser.yy"
+#line 311 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SND_TIMEOUT;
           ;}
@@ -1808,7 +1809,7 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 313 "libmemcached/options/parser.yy"
+#line 315 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE;
           ;}
@@ -1817,7 +1818,7 @@ yyreduce:
   case 34:
 
 /* Line 1464 of yacc.c  */
-#line 317 "libmemcached/options/parser.yy"
+#line 319 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE;
           ;}
@@ -1826,7 +1827,7 @@ yyreduce:
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 324 "libmemcached/options/parser.yy"
+#line 326 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS;
           ;}
@@ -1835,7 +1836,7 @@ yyreduce:
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 328 "libmemcached/options/parser.yy"
+#line 330 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_BINARY_PROTOCOL;
           ;}
@@ -1844,7 +1845,7 @@ yyreduce:
   case 37:
 
 /* Line 1464 of yacc.c  */
-#line 332 "libmemcached/options/parser.yy"
+#line 334 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_BUFFER_REQUESTS;
           ;}
@@ -1853,7 +1854,7 @@ yyreduce:
   case 38:
 
 /* Line 1464 of yacc.c  */
-#line 336 "libmemcached/options/parser.yy"
+#line 338 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_CACHE_LOOKUPS;
           ;}
@@ -1862,124 +1863,106 @@ yyreduce:
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 340 "libmemcached/options/parser.yy"
+#line 342 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_CORK;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
           ;}
     break;
 
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 344 "libmemcached/options/parser.yy"
+#line 346 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED;
           ;}
     break;
 
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 348 "libmemcached/options/parser.yy"
+#line 350 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_KETAMA;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_NOREPLY;
           ;}
     break;
 
   case 42:
 
 /* Line 1464 of yacc.c  */
-#line 352 "libmemcached/options/parser.yy"
+#line 354 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ;
           ;}
     break;
 
   case 43:
 
 /* Line 1464 of yacc.c  */
-#line 356 "libmemcached/options/parser.yy"
+#line 358 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_NOREPLY;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_SORT_HOSTS;
           ;}
     break;
 
   case 44:
 
 /* Line 1464 of yacc.c  */
-#line 360 "libmemcached/options/parser.yy"
+#line 362 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_SUPPORT_CAS;
           ;}
     break;
 
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 364 "libmemcached/options/parser.yy"
+#line 366 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_SORT_HOSTS;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_NODELAY;
           ;}
     break;
 
   case 46:
 
 /* Line 1464 of yacc.c  */
-#line 368 "libmemcached/options/parser.yy"
+#line 370 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_SUPPORT_CAS;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPALIVE;
           ;}
     break;
 
   case 47:
 
 /* Line 1464 of yacc.c  */
-#line 372 "libmemcached/options/parser.yy"
+#line 374 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_NODELAY;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPIDLE;
           ;}
     break;
 
   case 48:
 
 /* Line 1464 of yacc.c  */
-#line 376 "libmemcached/options/parser.yy"
+#line 378 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPALIVE;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_USE_UDP;
           ;}
     break;
 
   case 49:
 
 /* Line 1464 of yacc.c  */
-#line 380 "libmemcached/options/parser.yy"
+#line 382 "libmemcached/options/parser.yy"
     {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPIDLE;
+            (yyval.behavior)= MEMCACHED_BEHAVIOR_VERIFY_KEY;
           ;}
     break;
 
   case 50:
 
 /* Line 1464 of yacc.c  */
-#line 384 "libmemcached/options/parser.yy"
-    {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_USE_UDP;
-          ;}
-    break;
-
-  case 51:
-
-/* Line 1464 of yacc.c  */
-#line 388 "libmemcached/options/parser.yy"
-    {
-            (yyval.behavior)= MEMCACHED_BEHAVIOR_VERIFY_KEY;
-          ;}
-    break;
-
-  case 52:
-
-/* Line 1464 of yacc.c  */
-#line 395 "libmemcached/options/parser.yy"
+#line 389 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_server_add_parsed(context->memc, (yyvsp[(1) - (1)].server).c_str, (yyvsp[(1) - (1)].server).length, (yyvsp[(1) - (1)].server).port, 0)) != MEMCACHED_SUCCESS)
             {
@@ -1988,10 +1971,10 @@ yyreduce:
           ;}
     break;
 
-  case 53:
+  case 51:
 
 /* Line 1464 of yacc.c  */
-#line 402 "libmemcached/options/parser.yy"
+#line 396 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_server_add_parsed(context->memc, (yyvsp[(3) - (3)].server).c_str, (yyvsp[(3) - (3)].server).length, (yyvsp[(3) - (3)].server).port, 0)) != MEMCACHED_SUCCESS)
             {
@@ -2000,10 +1983,10 @@ yyreduce:
           ;}
     break;
 
-  case 54:
+  case 52:
 
 /* Line 1464 of yacc.c  */
-#line 412 "libmemcached/options/parser.yy"
+#line 406 "libmemcached/options/parser.yy"
     {
             (yyval.server).c_str= (yyvsp[(1) - (2)].string).c_str;
             (yyval.server).length= (yyvsp[(1) - (2)].string).length -1; // -1 to remove :
@@ -2011,7 +1994,18 @@ yyreduce:
           ;}
     break;
 
-  case 55:
+  case 53:
+
+/* Line 1464 of yacc.c  */
+#line 412 "libmemcached/options/parser.yy"
+    {
+            (yyval.server).c_str= (yyvsp[(1) - (1)].string).c_str;
+            (yyval.server).length= (yyvsp[(1) - (1)].string).length;
+            (yyval.server).port= MEMCACHED_DEFAULT_PORT;
+          ;}
+    break;
+
+  case 54:
 
 /* Line 1464 of yacc.c  */
 #line 418 "libmemcached/options/parser.yy"
@@ -2022,10 +2016,21 @@ yyreduce:
           ;}
     break;
 
-  case 56:
+  case 55:
 
 /* Line 1464 of yacc.c  */
 #line 424 "libmemcached/options/parser.yy"
+    {
+            (yyval.server).c_str= (yyvsp[(1) - (2)].string).c_str;
+            (yyval.server).length= (yyvsp[(1) - (2)].string).length -1; // -1 to remove :
+            (yyval.server).port= (yyvsp[(2) - (2)].number);
+          ;}
+    break;
+
+  case 56:
+
+/* Line 1464 of yacc.c  */
+#line 430 "libmemcached/options/parser.yy"
     {
             (yyval.server).c_str= (yyvsp[(1) - (1)].string).c_str;
             (yyval.server).length= (yyvsp[(1) - (1)].string).length;
@@ -2036,147 +2041,125 @@ yyreduce:
   case 57:
 
 /* Line 1464 of yacc.c  */
-#line 430 "libmemcached/options/parser.yy"
+#line 439 "libmemcached/options/parser.yy"
     {
-            (yyval.server).c_str= (yyvsp[(1) - (2)].string).c_str;
-            (yyval.server).length= (yyvsp[(1) - (2)].string).length -1; // -1 to remove :
-            (yyval.server).port= (yyvsp[(2) - (2)].number);
+            (yyval.hash)= MEMCACHED_HASH_MD5;
           ;}
     break;
 
   case 58:
 
 /* Line 1464 of yacc.c  */
-#line 436 "libmemcached/options/parser.yy"
+#line 443 "libmemcached/options/parser.yy"
     {
-            (yyval.server).c_str= (yyvsp[(1) - (1)].string).c_str;
-            (yyval.server).length= (yyvsp[(1) - (1)].string).length;
-            (yyval.server).port= MEMCACHED_DEFAULT_PORT;
+            (yyval.hash)= MEMCACHED_HASH_CRC;
           ;}
     break;
 
   case 59:
 
 /* Line 1464 of yacc.c  */
-#line 445 "libmemcached/options/parser.yy"
+#line 447 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_MD5;
+            (yyval.hash)= MEMCACHED_HASH_FNV1_64;
           ;}
     break;
 
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 449 "libmemcached/options/parser.yy"
+#line 451 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_CRC;
+            (yyval.hash)= MEMCACHED_HASH_FNV1A_64;
           ;}
     break;
 
   case 61:
 
 /* Line 1464 of yacc.c  */
-#line 453 "libmemcached/options/parser.yy"
+#line 455 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_FNV1_64;
+            (yyval.hash)= MEMCACHED_HASH_FNV1_32;
           ;}
     break;
 
   case 62:
 
 /* Line 1464 of yacc.c  */
-#line 457 "libmemcached/options/parser.yy"
+#line 459 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_FNV1A_64;
+            (yyval.hash)= MEMCACHED_HASH_FNV1A_32;
           ;}
     break;
 
   case 63:
 
 /* Line 1464 of yacc.c  */
-#line 461 "libmemcached/options/parser.yy"
+#line 463 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_FNV1_32;
+            (yyval.hash)= MEMCACHED_HASH_HSIEH;
           ;}
     break;
 
   case 64:
 
 /* Line 1464 of yacc.c  */
-#line 465 "libmemcached/options/parser.yy"
+#line 467 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_FNV1A_32;
+            (yyval.hash)= MEMCACHED_HASH_MURMUR;
           ;}
     break;
 
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 469 "libmemcached/options/parser.yy"
+#line 471 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_HSIEH;
+            (yyval.hash)= MEMCACHED_HASH_JENKINS;
           ;}
     break;
 
   case 66:
 
 /* Line 1464 of yacc.c  */
-#line 473 "libmemcached/options/parser.yy"
+#line 478 "libmemcached/options/parser.yy"
     {
-            (yyval.hash)= MEMCACHED_HASH_MURMUR;
+            (yyval.string)= (yyvsp[(1) - (1)].string);
           ;}
     break;
 
   case 67:
 
 /* Line 1464 of yacc.c  */
-#line 477 "libmemcached/options/parser.yy"
-    {
-            (yyval.hash)= MEMCACHED_HASH_JENKINS;
-          ;}
-    break;
-
-  case 68:
-
-/* Line 1464 of yacc.c  */
-#line 484 "libmemcached/options/parser.yy"
-    {
-            (yyval.string)= (yyvsp[(1) - (1)].string);
-          ;}
-    break;
-
-  case 69:
-
-/* Line 1464 of yacc.c  */
-#line 488 "libmemcached/options/parser.yy"
+#line 482 "libmemcached/options/parser.yy"
     {
             (yyval.string).c_str= (yyvsp[(1) - (1)].string).c_str +1; // +1 to move use passed the initial quote
             (yyval.string).length= (yyvsp[(1) - (1)].string).length -1; // -1 removes the end quote
           ;}
     break;
 
-  case 70:
+  case 68:
 
 /* Line 1464 of yacc.c  */
-#line 496 "libmemcached/options/parser.yy"
+#line 490 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_CONSISTENT;
           ;}
     break;
 
-  case 71:
+  case 69:
 
 /* Line 1464 of yacc.c  */
-#line 500 "libmemcached/options/parser.yy"
+#line 494 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_MODULA;
           ;}
     break;
 
-  case 72:
+  case 70:
 
 /* Line 1464 of yacc.c  */
-#line 504 "libmemcached/options/parser.yy"
+#line 498 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_RANDOM;
           ;}
@@ -2185,7 +2168,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2189 "libmemcached/options/parser.cc"
+#line 2172 "libmemcached/options/parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
