@@ -2944,7 +2944,7 @@ static test_return_t user_supplied_bug18(memcached_st *trash)
   /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
    * us test the boundary wraparound.
    */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
 
   /* verify the standard ketama set. */
   for (x= 0; x < 99; x++)
@@ -3105,7 +3105,7 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
 
   instance= memcached_server_instance_by_position(memc, 2);
   ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) + 15;
-  memc->next_distribution_rebuild= time(NULL) - 1;
+  memc->ketama.next_distribution_rebuild= time(NULL) - 1;
 
   /*
     This would not work if there were only two hosts.
@@ -3119,7 +3119,7 @@ static test_return_t auto_eject_hosts(memcached_st *trash)
 
   /* and re-added when it's back. */
   ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) - 1;
-  memc->next_distribution_rebuild= time(NULL) - 1;
+  memc->ketama.next_distribution_rebuild= time(NULL) - 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
                          memc->distribution);
   for (size_t x= 0; x < 99; x++)
@@ -4920,7 +4920,7 @@ static test_return_t ketama_compatibility_libmemcached(memcached_st *trash)
   /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
    * us test the boundary wraparound.
    */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
 
   /* verify the standard ketama set. */
   for (x= 0; x < 99; x++)
@@ -4943,7 +4943,6 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
 {
   memcached_return_t rc;
   uint64_t value;
-  int x;
   memcached_server_st *server_pool;
   memcached_st *memc;
 
@@ -4979,10 +4978,10 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
   /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
    * us test the boundary wraparound.
    */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->continuum[0].index);
+  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
 
   /* verify the standard ketama set. */
-  for (x= 0; x < 99; x++)
+  for (uint32_t x= 0; x < 99; x++)
   {
     uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases_spy[x].key, strlen(ketama_test_cases_spy[x].key));
 

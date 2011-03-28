@@ -94,20 +94,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
   case MEMCACHED_BEHAVIOR_KETAMA:
     {
-      if (data)
-      {
-        (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_MD5);
-        (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_MD5);
-        (void)memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
-      }
-      else
-      {
-        (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_DEFAULT);
-        (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_DEFAULT);
-        (void)memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_MODULA);
-      }
+      if (data) // Turn on
+        return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
 
-      break;
+      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_MODULA);
     }
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
     {

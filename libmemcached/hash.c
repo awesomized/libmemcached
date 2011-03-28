@@ -30,13 +30,13 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     {
-      uint32_t num= ptr->continuum_points_counter;
+      uint32_t num= ptr->ketama.continuum_points_counter;
       WATCHPOINT_ASSERT(ptr->continuum);
 
       hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;
-      begin= left= ptr->continuum;
-      end= right= ptr->continuum + num;
+      begin= left= ptr->ketama.continuum;
+      end= right= ptr->ketama.continuum + num;
 
       while (left < right)
       {
@@ -93,12 +93,12 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
 
 static inline void _regen_for_auto_eject(memcached_st *ptr)
 {
-  if (_is_auto_eject_host(ptr) && ptr->next_distribution_rebuild)
+  if (_is_auto_eject_host(ptr) && ptr->ketama.next_distribution_rebuild)
   {
     struct timeval now;
 
     if (gettimeofday(&now, NULL) == 0 &&
-        now.tv_sec > ptr->next_distribution_rebuild)
+        now.tv_sec > ptr->ketama.next_distribution_rebuild)
     {
       run_distribution(ptr);
     }

@@ -51,7 +51,7 @@ static inline bool _memcached_init(memcached_st *self)
   if (! hash_ptr)
     return false;
 
-  self->continuum_points_counter= 0;
+  self->ketama.continuum_points_counter= 0;
 
   self->number_of_hosts= 0;
   self->servers= NULL;
@@ -72,18 +72,18 @@ static inline bool _memcached_init(memcached_st *self)
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= 0;
-  self->continuum_count= 0;
+  self->ketama.continuum_count= 0;
 
   self->send_size= -1;
   self->recv_size= -1;
 
   self->user_data= NULL;
-  self->next_distribution_rebuild= 0;
+  self->ketama.next_distribution_rebuild= 0;
   self->number_of_replicas= 0;
   hash_ptr= hashkit_create(&self->distribution_hashkit);
   if (! hash_ptr)
     return false;
-  self->continuum= NULL;
+  self->ketama.continuum= NULL;
 
   self->allocators= memcached_allocators_return_default();
 
@@ -115,8 +115,8 @@ static void _free(memcached_st *ptr, bool release_st)
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
 
-  if (ptr->continuum)
-    libmemcached_free(ptr, ptr->continuum);
+  if (ptr->ketama.continuum)
+    libmemcached_free(ptr, ptr->ketama.continuum);
 
   memcached_array_free(ptr->prefix_key);
   ptr->prefix_key= NULL;
