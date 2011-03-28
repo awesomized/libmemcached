@@ -119,7 +119,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
   if (gettimeofday(&now, NULL) != 0)
   {
-    ptr->cached_errno = errno;
+    memcached_set_errno(ptr, errno, NULL);
     return MEMCACHED_ERRNO;
   }
 

@@ -68,7 +68,6 @@ static inline bool _memcached_init(memcached_st *self)
   self->tcp_keepidle= 0;
 
   self->io_key_prefetch= 0;
-  self->cached_errno= 0;
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= 0;

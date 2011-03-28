@@ -63,7 +63,7 @@ LIBMEMCACHED_API
   memcached_return_t memcached_last_error(memcached_st *memc);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_last_error_errno(memcached_st *memc);
+  int memcached_last_error_errno(memcached_st *memc);
 
 
 #ifdef __cplusplus

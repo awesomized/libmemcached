@@ -541,7 +541,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
   int err= poll(fds, host_index, memc->poll_timeout);
   switch (err) {
   case -1:
-    memc->cached_errno = get_socket_errno();
+    memcached_set_errno(memc, get_socket_errno(), NULL);
     /* FALLTHROUGH */
   case 0:
     break;

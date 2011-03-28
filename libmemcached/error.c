@@ -191,13 +191,13 @@ memcached_return_t memcached_last_error(memcached_st *memc)
   return memc->error_messages->rc;
 }
 
-memcached_return_t memcached_last_error_errno(memcached_st *memc)
+int memcached_last_error_errno(memcached_st *memc)
 {
   if (! memc)
-    return MEMCACHED_INVALID_ARGUMENTS;
+    return 0;
 
   if (! memc->error_messages)
-    return MEMCACHED_SUCCESS;
+    return 0;
 
   return memc->error_messages->local_errno;
 }

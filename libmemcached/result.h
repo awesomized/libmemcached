@@ -17,7 +17,7 @@ struct memcached_result_st {
   time_t item_expiration;
   size_t key_length;
   uint64_t item_cas;
-  const memcached_st *root;
+  memcached_st *root;
   memcached_string_st value;
   char item_key[MEMCACHED_MAX_KEY];
   struct {

@@ -75,7 +75,7 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
 
     self->options.is_allocated= true;
   }
-  self->root= memc;
+  self->root= (memcached_st *)memc;
 
   _init_string(self);
 
@@ -84,7 +84,7 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
   {
     if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
     {
-      ((memcached_st *)memc)->cached_errno= errno;
+      memcached_set_errno(self->root, errno, NULL);
     }
     libmemcached_free(memc, self);
 

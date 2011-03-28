@@ -198,7 +198,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
         switch (enabled)
         {
         case MEM_FALSE:
-          return ptr->cached_errno ? MEMCACHED_ERRNO : MEMCACHED_FAILURE ;
+          return memcached_last_error_errno(ptr) ? MEMCACHED_ERRNO : MEMCACHED_FAILURE ;
         case MEM_TRUE:
           {
             enabled= test_cork(instance, false);
@@ -321,7 +321,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_SNDBUF, &sock_size, &sock_length) < 0)
         {
-          ptr->cached_errno= errno;
+          memcached_set_errno(ptr, errno, NULL);
           return 0; /* Zero means error */
         }
       }
@@ -357,7 +357,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_RCVBUF, &sock_size, &sock_length) < 0)
         {
-          ptr->cached_errno= errno;
+          memcached_set_errno(ptr, errno, NULL);
           return 0; /* Zero means error */
         }
 

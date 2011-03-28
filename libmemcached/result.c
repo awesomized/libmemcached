@@ -18,7 +18,7 @@
 #include "common.h"
 
 static inline void _result_init(memcached_result_st *self,
-                                const memcached_st *memc)
+                                memcached_st *memc)
 {
   self->item_flags= 0;
   self->item_expiration= 0;
@@ -50,9 +50,8 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
 
   ptr->options.is_initialized= true;
 
-  _result_init(ptr, memc);
+  _result_init(ptr, (memcached_st *)memc);
 
-  ptr->root= memc;
   WATCHPOINT_SET(ptr->value.options.is_initialized= false);
   memcached_string_create(memc, &ptr->value, 0);
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->value);
@@ -96,7 +95,7 @@ memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
 
   if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
   {
-    ((memcached_st *)ptr->root)->cached_errno= errno;
+    memcached_set_errno(ptr->root, errno, NULL);
   }
 
       return rc;

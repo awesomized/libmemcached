@@ -27,7 +27,7 @@ struct memcached_string_st {
   char *end;
   char *string;
   size_t current_size;
-  const memcached_st *root;
+  memcached_st *root;
   struct {
     bool is_allocated:1;
     bool is_initialized:1;
