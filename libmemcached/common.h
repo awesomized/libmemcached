@@ -1,11 +1,38 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  LibMemcached
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
+ *  All rights reserved.
  *
- * Summary:
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -80,14 +107,6 @@ struct memcached_continuum_item_st
   uint32_t value;
 };
 
-/* Yum, Fortran.... can you make the reference? */
-typedef enum {
-  MEM_NOT= -1,
-  MEM_FALSE= false,
-  MEM_TRUE= true
-} memcached_ternary_t;
-
-
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 
 #define likely(x)       if((x))
@@ -155,44 +174,6 @@ static inline memcached_return_t memcached_validate_key_length(size_t key_length
   }
 
   return MEMCACHED_SUCCESS;
-}
-
-#ifdef TCP_CORK
-  #define CORK TCP_CORK
-#elif defined TCP_NOPUSH
-  #define CORK TCP_NOPUSH
-#endif
-
-/*
-  test_cork() tries to enable TCP_CORK. IF TCP_CORK is not an option
-  on the system it returns false but sets errno to 0. Otherwise on
-  failure errno is set.
-*/
-static inline memcached_ternary_t test_cork(memcached_server_st *ptr, int enable)
-{
-#ifdef CORK
-  if (ptr->type != MEMCACHED_CONNECTION_TCP)
-    return MEM_FALSE;
-
-  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
-                      &enable, (socklen_t)sizeof(int));
-  if (! err)
-  {
-    return MEM_TRUE;
-  }
-
-  perror(strerror(errno));
-  ptr->cached_errno= errno;
-
-  return MEM_FALSE;
-#else
-  (void)ptr;
-  (void)enable;
-
-  ptr->cached_errno= 0;
-
-  return MEM_NOT;
-#endif
 }
 
 static inline void libmemcached_free(const memcached_st *ptr, void *mem)

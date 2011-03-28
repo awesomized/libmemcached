@@ -91,6 +91,10 @@ AH_BOTTOM([
 #define MSG_DONTWAIT 0
 #endif
 
+#ifndef HAVE_MSG_MORE
+#define MSG_MORE 0
+#endif
+
 #endif
 ])
 

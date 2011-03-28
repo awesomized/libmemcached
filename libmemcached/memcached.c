@@ -21,7 +21,6 @@ static const memcached_st global_copy= {
     .auto_eject_hosts= false,
     .binary_protocol= false,
     .buffer_requests= false,
-    .cork= false,
     .hash_with_prefix_key= false,
     .ketama_weighted= false,
     .no_block= false,

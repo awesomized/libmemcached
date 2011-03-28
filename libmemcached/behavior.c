@@ -169,55 +169,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       break;
   case MEMCACHED_BEHAVIOR_CORK:
       {
-        memcached_server_write_instance_st instance;
-        bool action= set_flag(data);
-
-        if (action == false)
-        {
-          ptr->flags.cork= set_flag(false);
-          return MEMCACHED_SUCCESS;
-        }
-
-        instance= memcached_server_instance_fetch(ptr, 0);
-        if (! instance)
-          return MEMCACHED_NO_SERVERS;
-
-
-        /* We just try the first host, and if it is down we return zero */
-        memcached_return_t rc;
-        rc= memcached_connect(instance);
-        if (rc != MEMCACHED_SUCCESS)
-        {
-          return rc;
-        }
-
-        /* Now we test! */
-        memcached_ternary_t enabled;
-        enabled= test_cork(instance, true);
-
-        switch (enabled)
-        {
-        case MEM_FALSE:
-          return memcached_last_error_errno(ptr) ? MEMCACHED_ERRNO : MEMCACHED_FAILURE ;
-        case MEM_TRUE:
-          {
-            enabled= test_cork(instance, false);
-
-            if (enabled == false) // Possible bug in OS?
-            {
-              memcached_quit_server(instance, false); // We should reset everything on this error.
-              return MEMCACHED_ERRNO;  // Errno will be true because we will have already set it.
-            }
-            ptr->flags.cork= true;
-            ptr->flags.tcp_nodelay= true;
-            memcached_quit(ptr); // We go on and reset the connections.
-          }
-          break;
-        case MEM_NOT:
-        default:
-          return memcached_set_error_string(ptr, MEMCACHED_NOT_SUPPORTED, 
-                                            memcached_string_with_size("MEMCACHED_BEHAVIOR_CORK is not supported on this platform."));
-        }
+#ifdef HAVE_MSG_MORE
+      break;
+#else
+      return memcached_set_error_string(ptr, MEMCACHED_NOT_SUPPORTED, 
+                                        memcached_string_with_size("MEMCACHED_BEHAVIOR_CORK is not supported on this platform."));
+#endif
       }
       break;
   case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
@@ -377,7 +334,11 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
     return ptr->flags.randomize_replica_read;
   case MEMCACHED_BEHAVIOR_CORK:
-    return ptr->flags.cork;
+#ifdef HAVE_MSG_MORE
+    return true;
+#else
+    return false;
+#endif
   case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
     return ptr->flags.tcp_keepalive;
   case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:

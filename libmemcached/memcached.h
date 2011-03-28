@@ -71,7 +71,6 @@ struct memcached_st {
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
     bool buffer_requests:1;
-    bool cork:1;
     bool hash_with_prefix_key:1;
     bool ketama_weighted:1;
     bool no_block:1; // Don't block
