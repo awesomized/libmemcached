@@ -3,17 +3,17 @@
  *  Libmemcached Scanner and Parser
  *
  *  Copyright (C) 2011 DataDifferental, http://datadifferential.com
- *  
+ * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
  *  published by the Free Software Foundation, either version 3 of the
  *  License, or (at your option) any later version.
- *  
+ * 
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Affero General Public License for more details.
- *  
+ * 
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,6 @@
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-fpermissive"
 
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
@@ -40,19 +39,19 @@
 
 #define PARAM yyget_extra(yyscanner)
 
-static void get_lex_chars(char* buffer, int& result, int max_size, Context *context)
-{
-  if (context->pos >= context->length)
-  {
-    result= YY_NULL;
-  }
-  else
-  {
-    result= context->length - context->pos;
-    result > (int)max_size ? result = max_size : 0;
-    memcpy(buffer, context->buf + context->pos, result);
-    context->pos += result;
-  }
+#define get_lex_chars(buffer, result, max_size, context) \
+{ \
+  if (context->pos >= context->length) \
+  { \
+    result= YY_NULL; \
+  } \
+  else \
+  { \
+    result= context->length - context->pos; \
+    result > max_size ? result = max_size : 0; \
+    memcpy(buffer, context->buf + context->pos, result); \
+    context->pos += result; \
+  } \
 }
 
 
@@ -181,13 +180,13 @@ HSIEH			{ return HSIEH; }
 MURMUR			{ return MURMUR; }
 JENKINS			{ return JENKINS; }
 
-[[:alnum:]][[:alnum:].]*[[:alpha:]]: { 
+[[:alnum:]][[:alnum:].]*[[:alpha:]]: {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return HOSTNAME_WITH_PORT;
     }
 
-[[:alnum:]]+"."[[:alpha:].]+[[:alnum:]] { 
+[[:alnum:]]+"."[[:alpha:].]+[[:alnum:]] {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return HOSTNAME;
@@ -205,7 +204,7 @@ JENKINS			{ return JENKINS; }
       return IPADDRESS;
     }
 
-[[:alnum:]]+ { 
+[[:alnum:]]+ {
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
       return STRING;

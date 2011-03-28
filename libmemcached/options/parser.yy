@@ -59,13 +59,6 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
     parser::abort_func(context, error);
 }
 
-int config_parse(Context*, yyscan_t *);
-
-void Context::start() 
-{
-  config_parse(this, scanner);
-}
-
 %}
 
 %token COMMENT
@@ -499,3 +492,11 @@ distribution:
             $$= MEMCACHED_DISTRIBUTION_RANDOM;
           }
         ;
+
+%% 
+
+void Context::start() 
+{
+  config_parse(this, (void **)scanner);
+}
+
