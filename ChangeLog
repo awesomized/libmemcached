@@ -1,3 +1,8 @@
+0.49
+  * Fix calls to auto methods so that if value is not passed in nothing bad happens.
+  * New parser calls for generating memcached_st objects.
+  * New error system.
+
 0.48 Tue Mar 15 23:05:18 PDT 2011
   * Fix memory leak in server parse.
   * Move test framework out to be its own library (easier to work with Gearman).

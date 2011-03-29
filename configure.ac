@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# libmemcached
+# LibmemcacheD
+# Copyright (C) 2011 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
 # All rights reserved.
 #
@@ -12,6 +13,8 @@ AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 
 PANDORA_CANONICAL_TARGET(no-vc-changelog)
+AC_CHECK_PROGS([YACC], ['bison'], [:])
+AC_CHECK_PROGS([LEX], ['flex'], [:])
 
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=1:0:0
@@ -32,7 +35,7 @@ AC_SUBST(MEMCACHED_PROTOCAL_LIBRARY_VERSION)
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 
 
-HASHKIT_LIBRARY_VERSION=0:0:0
+HASHKIT_LIBRARY_VERSION=1:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
 AH_TOP([
@@ -88,6 +91,10 @@ AH_BOTTOM([
 #define MSG_DONTWAIT 0
 #endif
 
+#ifndef HAVE_MSG_MORE
+#define MSG_MORE 0
+#endif
+
 #endif
 ])
 
@@ -102,7 +109,6 @@ my_saved_libs="$LIBS"
 LIBS=
 PANDORA_REQUIRE_PTHREAD
 LIBS="$my_saved_libs"
-PANDORA_CXX_DEMANGLE
 
 dnl Specialty checks
 DETECT_BYTEORDER

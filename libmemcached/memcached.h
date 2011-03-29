@@ -1,12 +1,37 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: interface for memcached server
- * Description: main include file for libmemcached
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -28,6 +53,8 @@
 #include <libmemcached/constants.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>
+#include <libmemcached/array.h>
+#include <libmemcached/error.h>
 #include <libmemcached/stats.h>
 #include <libhashkit/hashkit.h>
 // Everything above this line must be in the order specified.
@@ -43,6 +70,7 @@
 #include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
 #include <libmemcached/hash.h>
+#include <libmemcached/options.h>
 #include <libmemcached/parse.h>
 #include <libmemcached/quit.h>
 #include <libmemcached/result.h>
@@ -63,14 +91,13 @@ struct memcached_st {
     bool is_processing_input:1;
     bool is_time_for_rebuild:1;
   } state;
+
   struct {
     // Everything below here is pretty static.
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
     bool buffer_requests:1;
-    bool cork:1;
     bool hash_with_prefix_key:1;
-    bool ketama_weighted:1;
     bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
@@ -83,9 +110,9 @@ struct memcached_st {
     bool verify_key:1;
     bool tcp_keepalive:1;
   } flags;
+
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
-  uint32_t continuum_points_counter; // Ketama
   uint32_t number_of_hosts;
   memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;
@@ -96,20 +123,25 @@ struct memcached_st {
   uint32_t io_bytes_watermark;
   uint32_t io_key_prefetch;
   uint32_t tcp_keepidle;
-  int cached_errno;
   int32_t poll_timeout;
   int32_t connect_timeout;
   int32_t retry_timeout;
-  uint32_t continuum_count; // Ketama
   int send_size;
   int recv_size;
   void *user_data;
-  time_t next_distribution_rebuild; // Ketama
-  size_t prefix_key_length;
   uint32_t number_of_replicas;
   hashkit_st distribution_hashkit;
   memcached_result_st result;
-  memcached_continuum_item_st *continuum; // Ketama
+
+  struct {
+    bool weighted;
+    uint32_t continuum_count; // Ketama
+    uint32_t continuum_points_counter; // Ketama
+    time_t next_distribution_rebuild; // Ketama
+    memcached_continuum_item_st *continuum; // Ketama
+  } ketama;
+
+  struct memcached_virtual_bucket_t *virtual_bucket;
 
   struct _allocators_st {
     memcached_calloc_fn calloc;
@@ -125,7 +157,11 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
-  char prefix_key[MEMCACHED_PREFIX_KEY_MAX_SIZE];
+  struct memcached_error_st *error_messages;
+  struct memcached_array_st *prefix_key;
+  struct {
+    struct memcached_array_st *filename;
+  } configure;
   struct {
     bool is_allocated:1;
   } options;
@@ -143,7 +179,13 @@ LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
+memcached_st *memcached_create_with_options(const char *string, size_t length);
+
+LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_reset(memcached_st *ptr);
 
 LIBMEMCACHED_API
 void memcached_reset_last_disconnected_server(memcached_st *ptr);

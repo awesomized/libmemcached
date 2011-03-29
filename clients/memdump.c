@@ -100,8 +100,8 @@ int main(int argc, char *argv[])
   if (rc != MEMCACHED_SUCCESS)
   {
     fprintf(stderr, "memdump: memcache error %s", memcached_strerror(memc, rc));
-    if (memc->cached_errno)
-      fprintf(stderr, " system error %s", strerror(memc->cached_errno));
+    if (memcached_last_error_errno(memc))
+      fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
     fprintf(stderr, "\n");
   }
 

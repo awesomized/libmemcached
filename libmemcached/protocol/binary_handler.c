@@ -39,7 +39,7 @@ raw_response_handler(const void *cookie,
 
   if (!client->root->drain(client))
   {
-    return PROTOCOL_BINARY_RESPONSE_EIO;
+    return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
   }
 
   size_t len= sizeof(*response) + htonl(response->response.bodylen);
@@ -65,7 +65,7 @@ raw_response_handler(const void *cookie,
         else if (get_socket_errno() != EINTR)
         {
           client->error= errno;
-          return PROTOCOL_BINARY_RESPONSE_EIO;
+          return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
         }
       }
       else
@@ -700,7 +700,7 @@ quit_command_handler(const void *cookie,
   }
 
   /* I need a better way to signal to close the connection */
-  return PROTOCOL_BINARY_RESPONSE_EIO;
+  return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
 }
 
 /**
@@ -970,8 +970,8 @@ static protocol_binary_response_status execute_command(memcached_protocol_client
   }
 
   if (rval != PROTOCOL_BINARY_RESPONSE_SUCCESS &&
-      rval != PROTOCOL_BINARY_RESPONSE_EIO &&
-      rval != PROTOCOL_BINARY_RESPONSE_PAUSE)
+      rval != PROTOCOL_BINARY_RESPONSE_EINTERNAL &&
+      rval != PROTOCOL_BINARY_RESPONSE_NOT_SUPPORTED)
   {
     protocol_binary_response_no_extras response= {
       .message= {
@@ -1018,12 +1018,12 @@ memcached_protocol_event_t memcached_binary_protocol_process_data(memcached_prot
     client->current_command= header;
     protocol_binary_response_status rv= execute_command(client, header);
 
-    if (rv == PROTOCOL_BINARY_RESPONSE_EIO)
+    if (rv == PROTOCOL_BINARY_RESPONSE_EINTERNAL)
     {
       *length= len;
       *endptr= (void*)header;
       return MEMCACHED_PROTOCOL_ERROR_EVENT;
-    } else if (rv == PROTOCOL_BINARY_RESPONSE_PAUSE)
+    } else if (rv == PROTOCOL_BINARY_RESPONSE_NOT_SUPPORTED)
       return MEMCACHED_PROTOCOL_PAUSE_EVENT;
 
     ssize_t total= (ssize_t)(sizeof(*header) + ntohl(header->request.bodylen));

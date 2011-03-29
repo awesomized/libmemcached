@@ -1,6 +1,8 @@
 *.exe
 *.lo
+*.output
 *.pop
+*.rpm
 */*.l[oa]
 */*/*.l[oa]
 */*/.deps
@@ -24,6 +26,7 @@ clients/memcp
 clients/memdump
 clients/memerror
 clients/memflush
+clients/memparse
 clients/memrm
 clients/memslap
 clients/memstat
@@ -40,6 +43,7 @@ config/ltmain.sh
 config/missing
 config/pandora_vc_revinfo
 config/plugin.ac
+config/top.h
 configure
 docs/*.[13]
 docs/*.html
@@ -73,6 +77,7 @@ libmemcached-?.??/
 libmemcached.pop
 libmemcached/configure.h
 libmemcached/dtrace_probes.h
+libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
 libmemcached_examples.pop
 libmemcachedutil.pop
@@ -185,5 +190,3 @@ tests/testhashkit
 tests/testplus
 tests/testudp
 unittests/unittests
-config/top.h
-libmemcached/generated_probes.h

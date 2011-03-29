@@ -1,16 +1,43 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  LibMemcached
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
+ *  All rights reserved.
  *
- * Summary: Server IO, Not public!
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
 
-#include "common.h"
+#include "libmemcached/common.h"
 
 typedef enum {
   MEM_READ,
@@ -18,6 +45,7 @@ typedef enum {
 } memc_read_or_write;
 
 static ssize_t io_flush(memcached_server_write_instance_st ptr,
+                        const bool with_flush,
                         memcached_return_t *error);
 static void increment_udp_message_id(memcached_server_write_instance_st ptr);
 
@@ -199,40 +227,6 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
   return false;
 }
 
-static inline void memcached_io_cork_push(memcached_server_st *ptr)
-{
-  (void)ptr;
-#ifdef CORK
-  if (ptr->root->flags.cork == false || ptr->state.is_corked)
-    return;
-
-  int enable= 1;
-  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
-                      &enable, (socklen_t)sizeof(int));
-  if (! err)
-    ptr->state.is_corked= true;
-
-  WATCHPOINT_ASSERT(ptr->state.is_corked == true);
-#endif
-}
-
-static inline void memcached_io_cork_pop(memcached_server_st *ptr)
-{
-  (void)ptr;
-#ifdef CORK
-  if (ptr->root->flags.cork == false || ptr->state.is_corked == false)
-    return;
-
-  int enable= 0;
-  int err= setsockopt(ptr->fd, IPPROTO_TCP, CORK,
-                      &enable, (socklen_t)sizeof(int));
-  if (! err)
-    ptr->state.is_corked= false;
-
-  WATCHPOINT_ASSERT(ptr->state.is_corked == false);
-#endif
-}
-
 #if 0 // Dead code, this should be removed.
 void memcached_io_preread(memcached_st *ptr)
 {
@@ -368,12 +362,6 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   original_length= length;
   buffer_ptr= buffer;
 
-  /* more writable data is coming if a flush isn't required, so delay send */
-  if (! with_flush)
-  {
-    memcached_io_cork_push(ptr);
-  }
-
   while (length)
   {
     char *write_ptr;
@@ -409,7 +397,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       ssize_t sent_length;
 
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-      sent_length= io_flush(ptr, &rc);
+      sent_length= io_flush(ptr, with_flush, &rc);
       if (sent_length == -1)
       {
         return -1;
@@ -427,12 +415,10 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   {
     memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    if (io_flush(ptr, &rc) == -1)
+    if (io_flush(ptr, with_flush, &rc) == -1)
     {
       return -1;
     }
-
-    memcached_io_cork_pop(ptr);
   }
 
   return (ssize_t) original_length;
@@ -541,7 +527,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
   int err= poll(fds, host_index, memc->poll_timeout);
   switch (err) {
   case -1:
-    memc->cached_errno = get_socket_errno();
+    memcached_set_errno(memc, get_socket_errno(), NULL);
     /* FALLTHROUGH */
   case 0:
     break;
@@ -566,6 +552,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 }
 
 static ssize_t io_flush(memcached_server_write_instance_st ptr,
+                        const bool with_flush,
                         memcached_return_t *error)
 {
   /*
@@ -618,8 +605,16 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     if (ptr->type == MEMCACHED_CONNECTION_UDP)
       increment_udp_message_id(ptr);
 
-    WATCHPOINT_ASSERT(ptr->fd != -1);
-    sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+    if (with_flush)
+    {
+      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
+    }
+    else
+    {
+      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
+    }
+
     if (sent_length == SOCKET_ERROR)
     {
       ptr->cached_errno= get_socket_errno();

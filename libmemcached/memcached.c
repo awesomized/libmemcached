@@ -1,15 +1,42 @@
-/* LibMemcached
- * Copyright (C) 2006-2010 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary:
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#include "common.h"
+#include <libmemcached/common.h>
+#include <libmemcached/virtual_bucket.h>
 
 static const memcached_st global_copy= {
   .state= {
@@ -21,9 +48,7 @@ static const memcached_st global_copy= {
     .auto_eject_hosts= false,
     .binary_protocol= false,
     .buffer_requests= false,
-    .cork= false,
     .hash_with_prefix_key= false,
-    .ketama_weighted= false,
     .no_block= false,
     .no_reply= false,
     .randomize_replica_read= false,
@@ -34,14 +59,15 @@ static const memcached_st global_copy= {
     .use_sort_hosts= false,
     .use_udp= false,
     .verify_key= false,
-    .tcp_keepalive= false
-  }
+    .tcp_keepalive= false,
+  },
 };
 
 static inline bool _memcached_init(memcached_st *self)
 {
   self->state= global_copy.state;
   self->flags= global_copy.flags;
+  self->virtual_bucket= NULL;
 
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
@@ -50,7 +76,11 @@ static inline bool _memcached_init(memcached_st *self)
   if (! hash_ptr)
     return false;
 
-  self->continuum_points_counter= 0;
+  self->ketama.continuum= NULL;
+  self->ketama.continuum_count= 0;
+  self->ketama.continuum_points_counter= 0;
+  self->ketama.next_distribution_rebuild= 0;
+  self->ketama.weighted= false;
 
   self->number_of_hosts= 0;
   self->servers= NULL;
@@ -67,23 +97,18 @@ static inline bool _memcached_init(memcached_st *self)
   self->tcp_keepidle= 0;
 
   self->io_key_prefetch= 0;
-  self->cached_errno= 0;
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= 0;
-  self->continuum_count= 0;
 
   self->send_size= -1;
   self->recv_size= -1;
 
   self->user_data= NULL;
-  self->next_distribution_rebuild= 0;
-  self->prefix_key_length= 0;
   self->number_of_replicas= 0;
   hash_ptr= hashkit_create(&self->distribution_hashkit);
   if (! hash_ptr)
     return false;
-  self->continuum= NULL;
 
   self->allocators= memcached_allocators_return_default();
 
@@ -95,7 +120,53 @@ static inline bool _memcached_init(memcached_st *self)
   self->sasl.callbacks= NULL;
   self->sasl.is_allocated= false;
 
+  self->error_messages= NULL;
+  self->prefix_key= NULL;
+  self->configure.filename= NULL;
+
   return true;
+}
+
+static void _free(memcached_st *ptr, bool release_st)
+{
+  /* If we have anything open, lets close it now */
+  memcached_quit(ptr);
+  memcached_server_list_free(memcached_server_list(ptr));
+  memcached_result_free(&ptr->result);
+
+  memcached_virtual_bucket_free(ptr);
+
+  if (ptr->last_disconnected_server)
+    memcached_server_free(ptr->last_disconnected_server);
+
+  if (ptr->on_cleanup)
+    ptr->on_cleanup(ptr);
+
+  if (ptr->ketama.continuum)
+    libmemcached_free(ptr, ptr->ketama.continuum);
+
+  memcached_array_free(ptr->prefix_key);
+  ptr->prefix_key= NULL;
+
+  memcached_error_free(ptr);
+
+  if (ptr->sasl.callbacks)
+  {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+    memcached_destroy_sasl_auth_data(ptr);
+#endif
+  }
+
+  if (release_st)
+  {
+    memcached_array_free(ptr->configure.filename);
+    ptr->configure.filename= NULL;
+  }
+
+  if (memcached_is_allocated(ptr) && release_st)
+  {
+    libmemcached_free(ptr, ptr);
+  }
 }
 
 memcached_st *memcached_create(memcached_st *ptr)
@@ -138,6 +209,46 @@ memcached_st *memcached_create(memcached_st *ptr)
   return ptr;
 }
 
+memcached_st *memcached_create_with_options(const char *string, size_t length)
+{
+  memcached_st *self= memcached_create(NULL);
+
+  if (! self)
+    return NULL;
+
+  memcached_return_t rc;
+  if ((rc= memcached_parse_configuration(self, string, length)) != MEMCACHED_SUCCESS)
+  {
+    return self;
+  }
+
+  if (memcached_parse_filename(self))
+  {
+    rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
+  }
+
+  return self;
+}
+
+memcached_return_t memcached_reset(memcached_st *ptr)
+{
+  WATCHPOINT_ASSERT(ptr);
+  if (! ptr)
+    return MEMCACHED_INVALID_ARGUMENTS;
+
+  bool stored_is_allocated= memcached_is_allocated(ptr);
+  _free(ptr, false);
+  memcached_create(ptr);
+  memcached_set_allocated(ptr, stored_is_allocated);
+
+  if (ptr->configure.filename)
+  {
+    return memcached_parse_configure_file(ptr, memcached_param_array(ptr->configure.filename));
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 void memcached_servers_reset(memcached_st *ptr)
 {
   memcached_server_list_free(memcached_server_list(ptr));
@@ -163,31 +274,7 @@ void memcached_reset_last_disconnected_server(memcached_st *ptr)
 
 void memcached_free(memcached_st *ptr)
 {
-  /* If we have anything open, lets close it now */
-  memcached_quit(ptr);
-  memcached_server_list_free(memcached_server_list(ptr));
-  memcached_result_free(&ptr->result);
-
-  if (ptr->last_disconnected_server)
-    memcached_server_free(ptr->last_disconnected_server);
-
-  if (ptr->on_cleanup)
-    ptr->on_cleanup(ptr);
-
-  if (ptr->continuum)
-    libmemcached_free(ptr, ptr->continuum);
-
-  if (ptr->sasl.callbacks)
-  {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    memcached_destroy_sasl_auth_data(ptr);
-#endif
-  }
-
-  if (memcached_is_allocated(ptr))
-  {
-    libmemcached_free(ptr, ptr);
-  }
+  _free(ptr, true);
 }
 
 /*
@@ -267,11 +354,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
 
-  if (source->prefix_key_length)
-  {
-    strcpy(new_clone->prefix_key, source->prefix_key);
-    new_clone->prefix_key_length= source->prefix_key_length;
-  }
+  new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)

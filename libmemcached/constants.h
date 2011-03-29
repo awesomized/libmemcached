@@ -9,6 +9,7 @@
  *
  */
 
+#pragma once
 #ifndef __LIBMEMCACHED_CONSTANTS_H__
 #define __LIBMEMCACHED_CONSTANTS_H__
 
@@ -29,7 +30,7 @@
 #define MEMCACHED_VERSION_STRING_LENGTH 24
 
 
-typedef enum {
+enum memcached_return_t {
   MEMCACHED_SUCCESS,
   MEMCACHED_FAILURE,
   MEMCACHED_HOST_LOOKUP_FAILURE,
@@ -73,18 +74,30 @@ typedef enum {
   MEMCACHED_AUTH_PROBLEM,
   MEMCACHED_AUTH_FAILURE,
   MEMCACHED_AUTH_CONTINUE,
+  MEMCACHED_PARSE_ERROR,
+  MEMCACHED_PARSE_USER_ERROR,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
-} memcached_return_t;
+};
+
+#ifndef __cplusplus
+typedef enum memcached_return_t memcached_return_t;
+#endif
 
 
-typedef enum {
+enum memcached_server_distribution_t {
   MEMCACHED_DISTRIBUTION_MODULA,
   MEMCACHED_DISTRIBUTION_CONSISTENT,
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA,
   MEMCACHED_DISTRIBUTION_RANDOM,
   MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY,
+  MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED,
+  MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET,
   MEMCACHED_DISTRIBUTION_CONSISTENT_MAX
-} memcached_server_distribution_t;
+};
+
+#ifndef __cplusplus
+typedef enum memcached_server_distribution_t memcached_server_distribution_t;
+#endif
 
 typedef enum {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
@@ -121,6 +134,7 @@ typedef enum {
   MEMCACHED_BEHAVIOR_CORK,
   MEMCACHED_BEHAVIOR_TCP_KEEPALIVE,
   MEMCACHED_BEHAVIOR_TCP_KEEPIDLE,
+  MEMCACHED_BEHAVIOR_LOAD_FROM_FILE,
   MEMCACHED_BEHAVIOR_MAX
 } memcached_behavior_t;
 

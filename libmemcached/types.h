@@ -16,6 +16,8 @@ typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_analysis_st memcached_analysis_st;
 typedef struct memcached_result_st memcached_result_st;
+typedef struct memcached_array_st memcached_array_st;
+typedef struct memcached_error_st memcached_error_st;
 
 // All of the flavors of memcache_server_st
 typedef struct memcached_server_st memcached_server_st;
@@ -26,6 +28,7 @@ typedef struct memcached_callback_st memcached_callback_st;
 
 // The following two structures are internal, and never exposed to users.
 typedef struct memcached_string_st memcached_string_st;
+typedef struct memcached_string_t memcached_string_t;
 typedef struct memcached_continuum_item_st memcached_continuum_item_st;
 
 

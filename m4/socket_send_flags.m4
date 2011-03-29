@@ -38,10 +38,27 @@ int flags= MSG_DONTWAIT;
    AC_LANG_POP
   ])
 
+  AC_CACHE_CHECK([for MSG_MORE], [ac_cv_msg_more], [
+    AC_LANG_PUSH([C])
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -I${srcdir}"
+    AC_TRY_LINK([
+#include <sys/socket.h>
+                   ], [
+int flags= MSG_MORE;
+                   ],
+                   [ ac_cv_msg_more=yes ],
+                   [ ac_cv_msg_more=no ])
+   CFLAGS="$save_CFLAGS"
+   AC_LANG_POP
+  ])
+
   AS_IF([test "x$ac_cv_msg_nosignal" = "xyes"],[
         AC_DEFINE(HAVE_MSG_NOSIGNAL, 1, [Define to 1 if you have a MSG_NOSIGNAL])])
   AS_IF([test "x$ac_cv_msg_dontwait" = "xyes"],[
         AC_DEFINE(HAVE_MSG_DONTWAIT, 1, [Define to 1 if you have a MSG_DONTWAIT])])
+  AS_IF([test "x$ac_cv_msg_more" = "xyes"],[
+        AC_DEFINE(HAVE_MSG_MORE, 1, [Define to 1 if you have a HAVE_MSG_MORE])])
 ])
 
 dnl ---------------------------------------------------------------------------

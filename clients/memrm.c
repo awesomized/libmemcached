@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
     {
       fprintf(stderr, "memrm: %s: memcache error %s",
 	      argv[optind], memcached_strerror(memc, rc));
-      if (memc->cached_errno)
-	fprintf(stderr, " system error %s", strerror(memc->cached_errno));
+      if (memcached_last_error_errno(memc))
+	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
       fprintf(stderr, "\n");
 
       return_code= -1;
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 
   if (opt_servers)
     free(opt_servers);
+
   if (opt_hash)
     free(opt_hash);
 

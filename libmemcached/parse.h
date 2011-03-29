@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __LIBMEMCACHED_PARSE_H__
-#define __LIBMEMCACHED_PARSE_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,5 +21,3 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __LIBMEMCACHED_PARSE_H__ */

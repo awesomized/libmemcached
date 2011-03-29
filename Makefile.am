@@ -15,6 +15,7 @@ nobase_include_HEADERS =
 check_PROGRAMS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
+DISTCLEANFILES=
 EXTRA_DIST= \
 	    ${srcdir}/m4/pandora_*.m4 \
 	    .quickly \

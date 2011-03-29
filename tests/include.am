@@ -28,10 +28,18 @@ EXTRA_DIST+= \
 	     tests/output_plus.res
 
 noinst_HEADERS+= \
+		 tests/basic.h \
+		 tests/error_conditions.h \
 		 tests/hash_results.h \
 		 tests/ketama_test_cases.h \
 		 tests/ketama_test_cases_spy.h \
-		 tests/libmemcached_world.h
+		 tests/libmemcached_world.h \
+		 tests/parser.h \
+		 tests/print.h \
+		 tests/replication.h \
+		 tests/string.h \
+		 tests/virtual_buckets.h
+
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
@@ -44,7 +52,16 @@ noinst_PROGRAMS+= \
 		  tests/testudp
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testapp_SOURCES= tests/mem_functions.c
+tests_testapp_SOURCES= \
+		       tests/basic.cc \
+		       tests/error_conditions.cc \
+		       tests/mem_functions.c \
+		       tests/parser.cc \
+		       tests/print.cc \
+		       tests/replication.cc \
+		       tests/string.cc \
+		       tests/virtual_buckets.cc
+
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \
 			    clients/libgenexec.la \
@@ -231,7 +248,7 @@ UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem: tests/testapp
+test-mem: tests/testapp support/example.cnf
 	$(MEM_COMMAND)
 
 test-udp: tests/testudp

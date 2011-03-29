@@ -17,6 +17,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      in_port_t port,
                                      uint32_t weight,
                                      memcached_connection_t type);
+
 static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
@@ -58,7 +59,9 @@ memcached_return_t run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
     return update_continuum(ptr);
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
   case MEMCACHED_DISTRIBUTION_MODULA:
     break;
   case MEMCACHED_DISTRIBUTION_RANDOM:
@@ -118,7 +121,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
   if (gettimeofday(&now, NULL) != 0)
   {
-    ptr->cached_errno = errno;
+    memcached_set_errno(ptr, errno, NULL);
     return MEMCACHED_ERRNO;
   }
 
@@ -129,15 +132,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   if (is_auto_ejecting)
   {
     live_servers= 0;
-    ptr->next_distribution_rebuild= 0;
+    ptr->ketama.next_distribution_rebuild= 0;
     for (host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
     {
       if (list[host_index].next_retry <= now.tv_sec)
         live_servers++;
       else
       {
-        if (ptr->next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->next_distribution_rebuild)
-          ptr->next_distribution_rebuild= list[host_index].next_retry;
+        if (ptr->ketama.next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->ketama.next_distribution_rebuild)
+          ptr->ketama.next_distribution_rebuild= list[host_index].next_retry;
       }
     }
   }
@@ -152,18 +155,18 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   if (live_servers == 0)
     return MEMCACHED_SUCCESS;
 
-  if (live_servers > ptr->continuum_count)
+  if (live_servers > ptr->ketama.continuum_count)
   {
     memcached_continuum_item_st *new_ptr;
 
-    new_ptr= libmemcached_realloc(ptr, ptr->continuum,
+    new_ptr= libmemcached_realloc(ptr, ptr->ketama.continuum,
                                   sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server);
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
-    ptr->continuum= new_ptr;
-    ptr->continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
+    ptr->ketama.continuum= new_ptr;
+    ptr->ketama.continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
   }
 
   if (is_ketama_weighted)
@@ -231,15 +234,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
              value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
-             ptr->continuum[continuum_index].index= host_index;
-             ptr->continuum[continuum_index++].value= value;
+             ptr->ketama.continuum[continuum_index].index= host_index;
+             ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
         {
           value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
-          ptr->continuum[continuum_index].index= host_index;
-          ptr->continuum[continuum_index++].value= value;
+          ptr->ketama.continuum[continuum_index].index= host_index;
+          ptr->ketama.continuum[continuum_index++].value= value;
         }
       }
     }
@@ -280,15 +283,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
              value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
-             ptr->continuum[continuum_index].index= host_index;
-             ptr->continuum[continuum_index++].value= value;
+             ptr->ketama.continuum[continuum_index].index= host_index;
+             ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
         {
           value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
-          ptr->continuum[continuum_index].index= host_index;
-          ptr->continuum[continuum_index++].value= value;
+          ptr->ketama.continuum[continuum_index].index= host_index;
+          ptr->ketama.continuum[continuum_index++].value= value;
         }
       }
     }
@@ -299,8 +302,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   WATCHPOINT_ASSERT(ptr);
   WATCHPOINT_ASSERT(ptr->continuum);
   WATCHPOINT_ASSERT(memcached_server_count(ptr) * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
-  ptr->continuum_points_counter= pointer_counter;
-  qsort(ptr->continuum, ptr->continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
+  ptr->ketama.continuum_points_counter= pointer_counter;
+  qsort(ptr->ketama.continuum, ptr->ketama.continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
 #ifdef DEBUG
   for (pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
@@ -448,4 +451,21 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   memcached_servers_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
+}
+
+memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
+                                               const char *hostname,
+                                               size_t hostname_length,
+                                               in_port_t port,
+                                               uint32_t weight)
+{
+  char buffer[NI_MAXHOST];
+
+  memcpy(buffer, hostname, hostname_length);
+  buffer[hostname_length]= 0;
+
+  return server_add(ptr, buffer,
+                    port,
+                    weight,
+                    MEMCACHED_CONNECTION_TCP);
 }

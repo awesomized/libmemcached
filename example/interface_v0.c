@@ -52,7 +52,7 @@ static protocol_binary_response_status quit_command_handler(const void *cookie,
     response_handler(cookie, header, (void*)&response);
 
   /* I need a better way to signal to close the connection */
-  return PROTOCOL_BINARY_RESPONSE_EIO;
+  return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
 }
 
 static protocol_binary_response_status get_command_handler(const void *cookie,

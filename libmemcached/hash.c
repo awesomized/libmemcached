@@ -1,15 +1,43 @@
-/* LibMemcached
- * Copyright (C) 2006-2010 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: 
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#include "common.h"
+
+#include <libmemcached/common.h>
+#include <libmemcached/virtual_bucket.h>
 
 
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm)
@@ -27,16 +55,17 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
   switch (ptr->distribution)
   {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     {
-      uint32_t num= ptr->continuum_points_counter;
+      uint32_t num= ptr->ketama.continuum_points_counter;
       WATCHPOINT_ASSERT(ptr->continuum);
 
       hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;
-      begin= left= ptr->continuum;
-      end= right= ptr->continuum + num;
+      begin= left= ptr->ketama.continuum;
+      end= right= ptr->ketama.continuum + num;
 
       while (left < right)
       {
@@ -54,8 +83,12 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
     return hash % memcached_server_count(ptr);
   case MEMCACHED_DISTRIBUTION_RANDOM:
     return (uint32_t) random() % memcached_server_count(ptr);
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+    {
+      return memcached_virtual_bucket_get(ptr, hash);
+    }
   default:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
     WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
     return hash % memcached_server_count(ptr);
   }
@@ -74,14 +107,14 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
 
   if (ptr->flags.hash_with_prefix_key)
   {
-    size_t temp_length= ptr->prefix_key_length + key_length;
+    size_t temp_length= memcached_array_size(ptr->prefix_key) + key_length;
     char temp[temp_length];
 
     if (temp_length > MEMCACHED_MAX_KEY -1)
       return 0;
 
-    strncpy(temp, ptr->prefix_key, ptr->prefix_key_length);
-    strncpy(temp + ptr->prefix_key_length, key, key_length);
+    strncpy(temp, memcached_array_string(ptr->prefix_key), memcached_array_size(ptr->prefix_key));
+    strncpy(temp + memcached_array_size(ptr->prefix_key), key, key_length);
 
     return generate_hash(ptr, temp, temp_length);
   }
@@ -93,12 +126,12 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
 
 static inline void _regen_for_auto_eject(memcached_st *ptr)
 {
-  if (_is_auto_eject_host(ptr) && ptr->next_distribution_rebuild)
+  if (_is_auto_eject_host(ptr) && ptr->ketama.next_distribution_rebuild)
   {
     struct timeval now;
 
     if (gettimeofday(&now, NULL) == 0 &&
-        now.tv_sec > ptr->next_distribution_rebuild)
+        now.tv_sec > ptr->ketama.next_distribution_rebuild)
     {
       run_distribution(ptr);
     }
@@ -135,4 +168,24 @@ memcached_return_t memcached_set_hashkit(memcached_st *self, hashkit_st *hashk)
   hashkit_clone(&self->hashkit, hashk);
 
   return MEMCACHED_SUCCESS;
+}
+
+const char * libmemcached_string_hash(memcached_hash_t type)
+{
+  switch (type)
+  {
+  case MEMCACHED_HASH_DEFAULT: return "MEMCACHED_HASH_DEFAULT";
+  case MEMCACHED_HASH_MD5: return "MEMCACHED_HASH_MD5";
+  case MEMCACHED_HASH_CRC: return "MEMCACHED_HASH_CRC";
+  case MEMCACHED_HASH_FNV1_64: return "MEMCACHED_HASH_FNV1_64";
+  case MEMCACHED_HASH_FNV1A_64: return "MEMCACHED_HASH_FNV1A_64";
+  case MEMCACHED_HASH_FNV1_32: return "MEMCACHED_HASH_FNV1_32";
+  case MEMCACHED_HASH_FNV1A_32: return "MEMCACHED_HASH_FNV1A_32";
+  case MEMCACHED_HASH_HSIEH: return "MEMCACHED_HASH_HSIEH";
+  case MEMCACHED_HASH_MURMUR: return "MEMCACHED_HASH_MURMUR";
+  case MEMCACHED_HASH_JENKINS: return "MEMCACHED_HASH_JENKINS";
+  case MEMCACHED_HASH_CUSTOM: return "MEMCACHED_HASH_CUSTOM";
+  default:
+  case MEMCACHED_HASH_MAX: return "INVALID memcached_hash_t";
+  }
 }

@@ -2,6 +2,10 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+libmemcached_libmemcached_la_SOURCES =
+
+include libmemcached/options/include.am
+
 EXTRA_DIST+= \
 	     libmemcached/configure.h.in \
 	     libmemcached/libmemcached_probes.d \
@@ -13,15 +17,18 @@ noinst_HEADERS+= \
 		 libmemcached/do.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
+		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
-		 libmemcached/response.h
+		 libmemcached/response.h \
+		 libmemcached/virtual_bucket.h
 
 nobase_include_HEADERS+= \
 			 libmemcached/allocators.h \
 			 libmemcached/analyze.h \
+			 libmemcached/array.h \
 			 libmemcached/auto.h \
 			 libmemcached/behavior.h \
 			 libmemcached/callback.h \
@@ -29,6 +36,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/constants.h \
 			 libmemcached/delete.h \
 			 libmemcached/dump.h \
+			 libmemcached/error.h \
 			 libmemcached/exception.hpp \
 			 libmemcached/fetch.h \
 			 libmemcached/flush.h \
@@ -38,12 +46,15 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
 			 libmemcached/memcached/protocol_binary.h \
+			 libmemcached/memcached/vbucket.h \
+			 libmemcached/options.h \
 			 libmemcached/parse.h \
-                         libmemcached/platform.h \
+			 libmemcached/prefix_key.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
 			 libmemcached/quit.h \
+                         libmemcached/platform.h \
 			 libmemcached/result.h \
                          libmemcached/sasl.h \
 			 libmemcached/server.h \
@@ -80,13 +91,15 @@ libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
+					      libmemcached/error.c \
 					      libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
-libmemcached_libmemcached_la_SOURCES = \
+libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/allocators.c \
 				       libmemcached/analyze.c \
+				       libmemcached/array.c \
 				       libmemcached/auto.c \
 				       libmemcached/behavior.c \
 				       libmemcached/connect.c \
@@ -102,7 +115,9 @@ libmemcached_libmemcached_la_SOURCES = \
 				       libmemcached/io.c \
 				       libmemcached/key.c \
 				       libmemcached/memcached.c \
+				       libmemcached/options.cc \
 				       libmemcached/parse.c \
+				       libmemcached/prefix_key.cc \
 				       libmemcached/purge.c \
 				       libmemcached/quit.c \
 				       libmemcached/response.c \
@@ -113,7 +128,10 @@ libmemcached_libmemcached_la_SOURCES = \
 				       libmemcached/storage.c \
 				       libmemcached/strerror.c \
 				       libmemcached/verbosity.c \
-				       libmemcached/version.c
+				       libmemcached/version.c \
+				       libmemcached/virtual_bucket.c
+
+libmemcached/options.cc: libmemcached/options/parser.h
 
 
 libmemcached_libmemcached_la_DEPENDENCIES= libmemcached/libmemcachedcallbacks.la libmemcached/libmemcachedinternal.la libhashkit/libhashkitinc.la
