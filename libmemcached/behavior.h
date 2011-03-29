@@ -49,6 +49,13 @@ LIBMEMCACHED_LOCAL
 LIBMEMCACHED_LOCAL
   const char *libmemcached_string_distribution(const memcached_server_distribution_t flag);
 
+LIBMEMCACHED_API
+  memcached_return_t memcached_bucket_set(memcached_st *self,
+                                          const uint32_t *host_map,
+                                          const uint32_t *forward_map,
+                                          const uint32_t buckets,
+                                          const uint32_t replicas);
+
 #ifdef __cplusplus
 }
 #endif

@@ -61,6 +61,7 @@ memcached_return_t run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
     return update_continuum(ptr);
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
   case MEMCACHED_DISTRIBUTION_MODULA:
     break;
   case MEMCACHED_DISTRIBUTION_RANDOM:

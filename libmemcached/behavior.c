@@ -9,7 +9,9 @@
  *
  */
 
-#include "common.h"
+#include <libmemcached/common.h>
+#include <libmemcached/virtual_bucket.h>
+
 #include <time.h>
 #include <sys/types.h>
 
@@ -462,7 +464,40 @@ const char *libmemcached_string_distribution(const memcached_server_distribution
   case MEMCACHED_DISTRIBUTION_RANDOM: return "MEMCACHED_DISTRIBUTION_RANDOM";
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY: return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY";
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED: return "MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED";
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET: return "MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET";
   default:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX: return "INVALID memcached_server_distribution_t";
   }
+}
+
+memcached_return_t memcached_bucket_set(memcached_st *self,
+                                        const uint32_t *host_map,
+                                        const uint32_t *forward_map,
+                                        const uint32_t buckets,
+                                        const uint32_t replicas)
+{
+  memcached_return_t rc;
+
+  if (! self)
+    return MEMCACHED_INVALID_ARGUMENTS;
+
+  if (! host_map)
+    return MEMCACHED_INVALID_ARGUMENTS;
+
+  memcached_server_distribution_t old;
+  old= memcached_behavior_get_distribution(self);
+
+  rc =memcached_behavior_set_distribution(self, MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
+
+  rc= memcached_virtual_bucket_create(self, host_map, forward_map, buckets, replicas);
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    memcached_behavior_set_distribution(self, old);
+  }
+
+  return rc;
 }

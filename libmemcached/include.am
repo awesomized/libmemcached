@@ -22,7 +22,8 @@ noinst_HEADERS+= \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
-		 libmemcached/response.h
+		 libmemcached/response.h \
+		 libmemcached/virtual_bucket.h
 
 nobase_include_HEADERS+= \
 			 libmemcached/allocators.h \
@@ -127,7 +128,8 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/storage.c \
 				       libmemcached/strerror.c \
 				       libmemcached/verbosity.c \
-				       libmemcached/version.c
+				       libmemcached/version.c \
+				       libmemcached/virtual_bucket.c
 
 libmemcached/options.cc: libmemcached/options/parser.h
 

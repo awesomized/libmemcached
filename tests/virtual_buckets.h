@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached Client and Server 
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,37 +35,19 @@
  *
  */
 
-#ifndef __MEMCACHED_HASH_H__
-#define __MEMCACHED_HASH_H__
+#pragma once
 
-#ifdef __cplusplus
+#include <libtest/test.h>
+
+struct memcached_st;
+
+#ifdef	__cplusplus
 extern "C" {
 #endif
 
-/* The two public hash bits */
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm);
+LIBTEST_INTERNAL_API
+test_return_t virtual_back_map(memcached_st *);
 
-LIBMEMCACHED_API
-const hashkit_st *memcached_get_hashkit(const memcached_st *ptr);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_set_hashkit(memcached_st *ptr, hashkit_st *hashk);
-
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length);
-
-LIBMEMCACHED_LOCAL
-uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const char *key, size_t key_length);
-
-LIBMEMCACHED_API
-void memcached_autoeject(memcached_st *ptr);
-
-LIBMEMCACHED_API
-  const char * libmemcached_string_hash(memcached_hash_t type);
-
-#ifdef __cplusplus
+#ifdef	__cplusplus
 }
 #endif
-
-#endif /* __MEMCACHED_HASH_H__ */

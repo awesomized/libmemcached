@@ -40,6 +40,7 @@
 #include "tests/basic.h"
 #include "tests/error_conditions.h"
 #include "tests/print.h"
+#include "tests/virtual_buckets.h"
 
 
 #ifdef HAVE_LIBMEMCACHEDUTIL
@@ -209,6 +210,7 @@ static test_return_t memcached_server_remove_test(memcached_st *ptr)
   memc= memcached_create(&local_memc);
 
   servers= memcached_servers_parse(server_string);
+  assert(servers);
 
   rc= memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
@@ -4961,6 +4963,7 @@ static test_return_t ketama_compatibility_spymemcached(memcached_st *trash)
   test_true(memcached_behavior_get_distribution(memc) == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY);
 
   server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
+  assert(server_pool);
   memcached_server_push(memc, server_pool);
 
   /* verify that the server list was parsed okay. */
@@ -5761,6 +5764,7 @@ static test_return_t regression_bug_728286(memcached_st *unused)
 {
   (void)unused;
   memcached_server_st *servers = memcached_servers_parse("1.2.3.4:99");
+  assert(servers);
   memcached_server_free(servers);
 
   return TEST_SUCCESS;
@@ -6225,6 +6229,11 @@ test_st parser_tests[] ={
   {0, 0, (test_callback_fn)0}
 };
 
+test_st virtual_bucket_tests[] ={
+  {"basic", 0, (test_callback_fn)virtual_back_map },
+  {0, 0, (test_callback_fn)0}
+};
+
 collection_st collection[] ={
 #if 0
   {"hash_sanity", 0, 0, hash_sanity},
@@ -6289,6 +6298,7 @@ collection_st collection[] ={
   {"regression_binary_vs_block", (test_callback_fn)key_setup, (test_callback_fn)key_teardown, regression_binary_vs_block},
   {"error_conditions", 0, 0, error_conditions},
   {"parser", 0, 0, parser_tests},
+  {"virtual buckets", 0, 0, virtual_bucket_tests},
   {0, 0, 0, 0}
 };
 

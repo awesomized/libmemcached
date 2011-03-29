@@ -37,8 +37,9 @@ noinst_HEADERS+= \
 		 tests/parser.h \
 		 tests/print.h \
 		 tests/replication.h \
-		 tests/string.h
-  
+		 tests/string.h \
+		 tests/virtual_buckets.h
+
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
@@ -58,7 +59,8 @@ tests_testapp_SOURCES= \
 		       tests/parser.cc \
 		       tests/print.cc \
 		       tests/replication.cc \
-		       tests/string.cc
+		       tests/string.cc \
+		       tests/virtual_buckets.cc
 
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \

@@ -3,7 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,37 +35,25 @@
  *
  */
 
-#ifndef __MEMCACHED_HASH_H__
-#define __MEMCACHED_HASH_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* The two public hash bits */
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm);
-
-LIBMEMCACHED_API
-const hashkit_st *memcached_get_hashkit(const memcached_st *ptr);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_set_hashkit(memcached_st *ptr, hashkit_st *hashk);
-
-LIBMEMCACHED_API
-uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length);
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
+                                                   const uint32_t *host_map,
+                                                   const uint32_t *forward_map,
+                                                   const uint32_t buckets,
+                                                   const uint32_t replicas);
 
 LIBMEMCACHED_LOCAL
-uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const char *key, size_t key_length);
+uint32_t memcached_virtual_bucket_get(const memcached_st *self, uint32_t digest);
 
-LIBMEMCACHED_API
-void memcached_autoeject(memcached_st *ptr);
-
-LIBMEMCACHED_API
-  const char * libmemcached_string_hash(memcached_hash_t type);
+LIBMEMCACHED_LOCAL
+void memcached_virtual_bucket_free(memcached_st *self);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __MEMCACHED_HASH_H__ */
