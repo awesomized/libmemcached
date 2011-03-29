@@ -56,7 +56,7 @@ static inline libtest_string_t libtest_string(const char *arg, size_t arg_size)
 
 static libtest_string_t libtest_string_t_null= { 0, 0};
 
-bool libtest_string_is_null(const libtest_string_t &string)
+static bool libtest_string_is_null(const libtest_string_t &string)
 {
   if (string.c_str == 0 and string.size == 0)
     return true;
