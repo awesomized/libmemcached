@@ -6,7 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 uint32_t libhashkit_one_at_a_time(const char *key, size_t key_length)
 {

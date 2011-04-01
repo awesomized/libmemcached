@@ -212,35 +212,5 @@ uint32_t memcached_server_count(const memcached_st *);
 } // extern "C"
 #endif
 
-
-#ifdef __cplusplus
-class Memcached : private memcached_st {
-public:
-
-  Memcached()
-  {
-    memcached_create(this);
-  }
-
-  ~Memcached()
-  {
-    memcached_free(this);
-  }
-
-  Memcached(const Memcached& source)
-  {
-    memcached_clone(this, &source);
-  }
-
-  Memcached& operator=(const Memcached& source)
-  {
-    memcached_free(this);
-    memcached_clone(this, &source);
-
-    return *this;
-  }
-};
-#endif
-
 #endif /* __LIBMEMCACHED_MEMCACHED_H__ */
 
