@@ -12,13 +12,12 @@
 /*
   This is a partial implementation for fetching/creating memcached_server_st objects.
 */
-#include "common.h"
+#include <libmemcached/common.h>
 
 static inline void _server_init(memcached_server_st *self, const memcached_st *root,
                                 const char *hostname, in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
 {
-  self->options.sockaddr_inited= false;
   self->options.is_shutting_down= false;
   self->number_of_hosts= 0;
   self->cursor_active= 0;
@@ -42,6 +41,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->read_data_length= 0;
   self->write_buffer_offset= 0;
   self->address_info= NULL;
+  self->address_info_next= NULL;
 
   if (root)
   {

@@ -12,6 +12,7 @@
  * @brief Libmemcached C++ interface
  */
 
+#pragma once
 #ifndef LIBMEMCACHEDPP_H
 #define LIBMEMCACHEDPP_H
 

@@ -17,7 +17,6 @@ struct memcached_server_st {
   struct {
     bool is_allocated:1;
     bool is_initialized:1;
-    bool sockaddr_inited:1;
     bool is_shutting_down:1;
   } options;
   uint32_t number_of_hosts;
@@ -46,6 +45,7 @@ struct memcached_server_st {
   size_t read_data_length;
   size_t write_buffer_offset;
   struct addrinfo *address_info;
+  struct addrinfo *address_info_next;
   time_t next_retry;
   const memcached_st *root;
   uint64_t limit_maxbytes;

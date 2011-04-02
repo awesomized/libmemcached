@@ -5752,7 +5752,7 @@ static test_return_t regression_bug_583031(memcached_st *unused)
 
     (void)memcached_get(memc, "dsf", 3, &length, &flags, &rc);
 
-    test_true_got(rc == MEMCACHED_TIMEOUT || rc == MEMCACHED_ERRNO, memcached_strerror(memc, rc));
+    test_true_got(rc == MEMCACHED_TIMEOUT || rc == MEMCACHED_ERRNO || rc == MEMCACHED_FAILURE, memcached_strerror(memc, rc));
 
     memcached_free(memc);
 

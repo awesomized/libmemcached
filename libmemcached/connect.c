@@ -86,10 +86,15 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 
 static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
-  struct addrinfo *ai;
   struct addrinfo hints;
   char str_port[NI_MAXSERV];
-  uint32_t counter= 5;
+
+  if (server->address_info)
+  {
+    freeaddrinfo(server->address_info);
+    server->address_info= NULL;
+    server->address_info_next= NULL;
+  }
 
   int length= snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
   if (length >= NI_MAXSERV || length < 0)
@@ -97,7 +102,9 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
 
   memset(&hints, 0, sizeof(hints));
 
- // hints.ai_family= AF_INET;
+#if 0
+  hints.ai_family= AF_INET;
+#endif
   if (server->type == MEMCACHED_CONNECTION_UDP)
   {
     hints.ai_protocol= IPPROTO_UDP;
@@ -109,9 +116,10 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
+  uint32_t counter= 5;
   while (--counter)
   {
-    int e= getaddrinfo(server->hostname, str_port, &hints, &ai);
+    int e= getaddrinfo(server->hostname, str_port, &hints, &server->address_info);
 
     if (e == 0)
     {
@@ -137,12 +145,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     }
   }
 
-  if (server->address_info)
-  {
-    freeaddrinfo(server->address_info);
-    server->address_info= NULL;
-  }
-  server->address_info= ai;
+  server->address_info_next= server->address_info;
 
   return MEMCACHED_SUCCESS;
 }
@@ -370,34 +373,29 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
 {
   bool timeout_error_occured= false;
 
-
   WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
   WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
-  if (! ptr->options.sockaddr_inited || (!(ptr->root->flags.use_cache_lookups)))
+  if (! ptr->address_info)
   {
-    memcached_return_t rc;
-
-    rc= set_hostinfo(ptr);
+    memcached_return_t rc= set_hostinfo(ptr);
     if (rc != MEMCACHED_SUCCESS)
       return rc;
-    ptr->options.sockaddr_inited= true;
   }
 
-  struct addrinfo *use= ptr->address_info;
   /* Create the socket */
-  while (use != NULL)
+  while (ptr->address_info_next && ptr->fd == INVALID_SOCKET)
   {
     /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
-    if (ptr->type == MEMCACHED_CONNECTION_UDP && use->ai_family != AF_INET)
+    if (ptr->type == MEMCACHED_CONNECTION_UDP && ptr->address_info_next->ai_family != AF_INET)
     {
-      use= use->ai_next;
+      ptr->address_info_next= ptr->address_info_next->ai_next;
       continue;
     }
 
-    if ((ptr->fd= socket(use->ai_family,
-                         use->ai_socktype,
-                         use->ai_protocol)) < 0)
+    if ((ptr->fd= socket(ptr->address_info_next->ai_family,
+                         ptr->address_info_next->ai_socktype,
+                         ptr->address_info_next->ai_protocol)) < 0)
     {
       ptr->cached_errno= get_socket_errno();
       WATCHPOINT_ERRNO(get_socket_errno());
@@ -407,40 +405,43 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     (void)set_socket_options(ptr);
 
     /* connect to server */
-    if ((connect(ptr->fd, use->ai_addr, use->ai_addrlen) != SOCKET_ERROR))
+    if ((connect(ptr->fd, ptr->address_info_next->ai_addr, ptr->address_info_next->ai_addrlen) != SOCKET_ERROR))
     {
       break; // Success
     }
 
     /* An error occurred */
     ptr->cached_errno= get_socket_errno();
-    if (ptr->cached_errno == EWOULDBLOCK ||
-        ptr->cached_errno == EINPROGRESS || /* nonblocking mode - first return, */
-        ptr->cached_errno == EALREADY) /* nonblocking mode - subsequent returns */
+    switch (ptr->cached_errno) 
     {
-      memcached_return_t rc;
-      rc= connect_poll(ptr);
+    case EWOULDBLOCK:
+    case EINPROGRESS: // nonblocking mode - first return
+    case EALREADY: // nonblocking mode - subsequent returns
+      {
+        memcached_return_t rc;
+        rc= connect_poll(ptr);
 
-      if (rc == MEMCACHED_TIMEOUT)
-        timeout_error_occured= true;
+        if (rc == MEMCACHED_TIMEOUT)
+          timeout_error_occured= true;
 
-      if (rc == MEMCACHED_SUCCESS)
-        break;
-    }
-    else if (get_socket_errno() == EISCONN) /* we are connected :-) */
-    {
+        if (rc == MEMCACHED_SUCCESS)
+          break;
+      }
+
+    case EISCONN: // we are connected :-)
       break;
-    }
-    else if (get_socket_errno() == EINTR) // Special case, we retry ai_addr
-    {
+
+    case EINTR: // Special case, we retry ai_addr
       (void)closesocket(ptr->fd);
       ptr->fd= INVALID_SOCKET;
       continue;
-    }
 
-    (void)closesocket(ptr->fd);
-    ptr->fd= INVALID_SOCKET;
-    use= use->ai_next;
+    default:
+      (void)closesocket(ptr->fd);
+      ptr->fd= INVALID_SOCKET;
+      ptr->address_info_next= ptr->address_info_next->ai_next;
+      break;
+    }
   }
 
   if (ptr->fd == INVALID_SOCKET)

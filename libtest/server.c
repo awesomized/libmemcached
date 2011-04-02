@@ -28,6 +28,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
@@ -43,6 +44,27 @@ static void global_sleep(void)
 #else
   nanosleep(&global_sleep_value, NULL);
 #endif
+}
+
+static bool wait_for_file(const char *filename)
+{
+  uint32_t timeout= 6;
+  uint32_t waited;
+  uint32_t this_wait;
+  uint32_t retry;
+
+  for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
+  {
+    if ((! access(filename, R_OK)) || (waited >= timeout))
+    {
+      return true;
+    }
+
+    this_wait= retry * retry / 3 + 1;
+    sleep(this_wait);
+  }
+
+  return false;
 }
 
 static void kill_file(const char *file_buffer)
@@ -179,7 +201,21 @@ void server_startup(server_startup_st *construct)
             }
             fclose(file);
           }
-          global_sleep();
+          switch (errno)
+          {
+          default:
+            fprintf(stderr, "%s\n", strerror(errno));
+            abort();
+          case ENOENT:
+          case EINTR:
+          case EACCES:
+            break;
+          }
+
+          if (! wait_for_file(buffer))
+          {
+            abort();
+          }
         }
 
         bool was_started= false;
