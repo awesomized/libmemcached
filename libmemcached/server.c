@@ -26,7 +26,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->fd= -1;
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
-  self->weight= weight;
+  self->weight= weight ? weight : 1; // 1 is the default weight value
   self->state.is_corked= false;
   self->state.is_dead= false;
   WATCHPOINT_SET(self->io_wait_count.read= 0);

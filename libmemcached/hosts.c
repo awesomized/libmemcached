@@ -109,7 +109,6 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint32_t pointer_counter= 0;
   uint32_t pointer_per_server= MEMCACHED_POINTS_PER_SERVER;
   uint32_t pointer_per_hash= 1;
-  uint64_t total_weight= 0;
   uint32_t live_servers= 0;
   struct timeval now;
 
@@ -163,16 +162,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     ptr->ketama.continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
   }
 
+  uint64_t total_weight= 0;
   if (is_ketama_weighted)
   {
     for (uint32_t host_index = 0; host_index < memcached_server_count(ptr); ++host_index)
     {
-      if (list[host_index].weight == 0)
-      {
-        list[host_index].weight = 1;
-      }
       if (! is_auto_ejecting || list[host_index].next_retry <= now.tv_sec)
+      {
         total_weight += list[host_index].weight;
+      }
     }
   }
 
