@@ -52,12 +52,21 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
     self->next_retry= 0;
   }
 
+  if (self->weight > 1 && root)
+  {
+    ((memcached_st *)root)->ketama.weighted= true;
+  }
+
   self->root= root;
   self->limit_maxbytes= 0;
   if (hostname == NULL)
+  {
     self->hostname[0]= 0;
+  }
   else
+  {
     strncpy(self->hostname, hostname, NI_MAXHOST - 1);
+  }
 }
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
@@ -246,8 +255,6 @@ void memcached_server_list_free(memcached_server_list_st self)
   if (self == NULL)
     return;
 
-  const memcached_st *root= self->root;
-
   for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
   {
     if (self[x].address_info)
@@ -257,6 +264,7 @@ void memcached_server_list_free(memcached_server_list_st self)
     }
   }
 
+  const memcached_st *root= self->root;
   if (root)
   {
     libmemcached_free(root, self);
