@@ -125,13 +125,6 @@ static test_return_t __check_AUTO_EJECT_HOSTS(memcached_st *memc, const scanner_
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_CACHE_LOOKUPS(memcached_st *memc, const scanner_string_st &value)
-{
-  (void)value;
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_CACHE_LOOKUPS));
-  return TEST_SUCCESS;
-}
-
 static test_return_t __check_NOREPLY(memcached_st *memc, const scanner_string_st &value)
 {
   (void)value;
@@ -201,7 +194,6 @@ scanner_variable_t test_boolean_options[]= {
   { ARRAY,  make_scanner_string("--AUTO_EJECT_HOSTS"), scanner_string_null, __check_AUTO_EJECT_HOSTS },
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--CACHE_LOOKUPS"), scanner_string_null, __check_CACHE_LOOKUPS },
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--KETAMA_WEIGHTED"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },

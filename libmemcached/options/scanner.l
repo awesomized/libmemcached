@@ -95,8 +95,6 @@
 "--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
 "--BUFFER_REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
 "--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
-"--CACHE_LOOKUPS"			{ yyextra->begin= yytext; return CACHE_LOOKUPS; }
-"--CACHE-LOOKUPS"			{ yyextra->begin= yytext; return CACHE_LOOKUPS; }
 "--CONFIGURE_FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
 "--CONFIGURE-FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
 "--CONNECT_TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }

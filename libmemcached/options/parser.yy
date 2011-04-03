@@ -79,7 +79,6 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token AUTO_EJECT_HOSTS
 %token BINARY_PROTOCOL
 %token BUFFER_REQUESTS
-%token CACHE_LOOKUPS
 %token CONNECT_TIMEOUT
 %token DISTRIBUTION
 %token HASH
@@ -326,10 +325,6 @@ behavior_boolean:
         | BUFFER_REQUESTS
           {
             $$= MEMCACHED_BEHAVIOR_BUFFER_REQUESTS;
-          }
-        | CACHE_LOOKUPS
-          {
-            $$= MEMCACHED_BEHAVIOR_CACHE_LOOKUPS;
           }
         | HASH_WITH_PREFIX_KEY
           {

@@ -9,7 +9,8 @@
  *
  */
 
-#include "common.h"
+#include <libmemcached/common.h>
+#include <assert.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -89,6 +90,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
   struct addrinfo hints;
   char str_port[NI_MAXSERV];
 
+  assert(! server->address_info); // We cover the case where a programming mistake has been made.
   if (server->address_info)
   {
     freeaddrinfo(server->address_info);

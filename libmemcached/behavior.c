@@ -115,13 +115,14 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     return memcached_behavior_set_key_hash(ptr, (memcached_hash_t)(data));
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
     return memcached_behavior_set_distribution_hash(ptr, (memcached_hash_t)(data));
+
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
-    ptr->flags.use_cache_lookups= set_flag(data);
-    memcached_quit(ptr);
-    break;
+    return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
+                                      memcached_string_with_size("MEMCACHED_BEHAVIOR_CACHE_LOOKUPS has been deprecated."));
+
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     if (ptr->flags.binary_protocol)
-      return memcached_set_error_string(ptr, MEMCACHED_FAILURE, 
+      return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS, 
                                         memcached_string_with_size("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
     ptr->flags.verify_key= set_flag(data);
     break;
@@ -154,7 +155,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     memcached_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
-    return memcached_set_error_string(ptr, MEMCACHED_FAILURE, 
+    return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
                                       memcached_string_with_size("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     ptr->flags.hash_with_prefix_key= set_flag(data);
@@ -171,12 +172,8 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       break;
   case MEMCACHED_BEHAVIOR_CORK:
       {
-#ifdef HAVE_MSG_MORE
-      break;
-#else
-      return memcached_set_error_string(ptr, MEMCACHED_NOT_SUPPORTED, 
-                                        memcached_string_with_size("MEMCACHED_BEHAVIOR_CORK is not supported on this platform."));
-#endif
+        return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
+                                          memcached_string_with_size("MEMCACHED_BEHAVIOR_CORK is now incorporated into the driver by default."));
       }
       break;
   case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
@@ -215,8 +212,10 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.binary_protocol;
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
     return ptr->flags.support_cas;
+
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
-    return ptr->flags.use_cache_lookups;
+    return true;
+
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     return ptr->flags.no_block;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
@@ -325,8 +324,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       return (uint64_t) sock_size;
     }
   case MEMCACHED_BEHAVIOR_USER_DATA:
-    return memcached_set_error_string(ptr, MEMCACHED_FAILURE, 
-                                      memcached_string_with_size("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
+    memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
+                               memcached_string_with_size("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
+    return 0;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     return ptr->flags.hash_with_prefix_key;
   case MEMCACHED_BEHAVIOR_NOREPLY:

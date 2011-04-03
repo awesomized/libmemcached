@@ -76,6 +76,7 @@ enum memcached_return_t {
   MEMCACHED_AUTH_CONTINUE,
   MEMCACHED_PARSE_ERROR,
   MEMCACHED_PARSE_USER_ERROR,
+  MEMCACHED_DEPRECATED,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 };
 
