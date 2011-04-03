@@ -104,18 +104,12 @@ static int continuum_item_cmp(const void *t1, const void *t2)
 
 static memcached_return_t update_continuum(memcached_st *ptr)
 {
-  uint32_t host_index;
   uint32_t continuum_index= 0;
-  uint32_t value;
   memcached_server_st *list;
-  uint32_t pointer_index;
   uint32_t pointer_counter= 0;
   uint32_t pointer_per_server= MEMCACHED_POINTS_PER_SERVER;
   uint32_t pointer_per_hash= 1;
   uint64_t total_weight= 0;
-  uint64_t is_ketama_weighted= 0;
-  uint64_t is_auto_ejecting= 0;
-  uint32_t points_per_server= 0;
   uint32_t live_servers= 0;
   struct timeval now;
 
@@ -125,15 +119,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     return MEMCACHED_ERRNO;
   }
 
-  list = memcached_server_list(ptr);
+  list= memcached_server_list(ptr);
 
   /* count live servers (those without a retry delay set) */
-  is_auto_ejecting= _is_auto_eject_host(ptr);
+  bool is_auto_ejecting= _is_auto_eject_host(ptr);
   if (is_auto_ejecting)
   {
     live_servers= 0;
     ptr->ketama.next_distribution_rebuild= 0;
-    for (host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
+    for (uint32_t host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
     {
       if (list[host_index].next_retry <= now.tv_sec)
         live_servers++;
@@ -149,8 +143,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     live_servers= memcached_server_count(ptr);
   }
 
-  is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
+  uint64_t is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
+  uint32_t points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
   if (live_servers == 0)
     return MEMCACHED_SUCCESS;
@@ -171,7 +165,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
   if (is_ketama_weighted)
   {
-    for (host_index = 0; host_index < memcached_server_count(ptr); ++host_index)
+    for (uint32_t host_index = 0; host_index < memcached_server_count(ptr); ++host_index)
     {
       if (list[host_index].weight == 0)
       {
@@ -182,7 +176,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     }
   }
 
-  for (host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
+  for (uint32_t host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
   {
     if (is_auto_ejecting && list[host_index].next_retry > now.tv_sec)
       continue;
@@ -204,7 +198,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
     if (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY)
     {
-      for (pointer_index= 0;
+      for (uint32_t pointer_index= 0;
            pointer_index < pointer_per_server / pointer_per_hash;
            pointer_index++)
       {
@@ -233,14 +227,14 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
+            uint32_t value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
              ptr->ketama.continuum[continuum_index].index= host_index;
              ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }
@@ -248,7 +242,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     }
     else
     {
-      for (pointer_index= 1;
+      for (uint32_t pointer_index= 1;
            pointer_index <= pointer_per_server / pointer_per_hash;
            pointer_index++)
       {
@@ -282,14 +276,14 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
+             uint32_t value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
              ptr->ketama.continuum[continuum_index].index= host_index;
              ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
         {
-          value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }
@@ -306,7 +300,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   qsort(ptr->ketama.continuum, ptr->ketama.continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
 #ifdef DEBUG
-  for (pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
+  for (uint32_t pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
   {
     WATCHPOINT_ASSERT(ptr->continuum[pointer_index].value <= ptr->continuum[pointer_index + 1].value);
   }
