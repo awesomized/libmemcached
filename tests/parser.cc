@@ -447,7 +447,7 @@ test_return_t test_error_keyword(memcached_st*)
   return TEST_SUCCESS;
 }
 
-#define RANDOM_STRINGS 50
+#define RANDOM_STRINGS 100
 test_return_t random_statement_build_test(memcached_st*)
 {
   std::vector<scanner_string_st *> option_list;
