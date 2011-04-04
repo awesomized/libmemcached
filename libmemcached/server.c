@@ -19,6 +19,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
                                 uint32_t weight, memcached_connection_t type)
 {
   self->options.is_shutting_down= false;
+  self->options.is_dead= false;
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
@@ -27,8 +28,6 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
   self->weight= weight ? weight : 1; // 1 is the default weight value
-  self->state.is_corked= false;
-  self->state.is_dead= false;
   WATCHPOINT_SET(self->io_wait_count.read= 0);
   WATCHPOINT_SET(self->io_wait_count.write= 0);
   self->major_version= UINT8_MAX;

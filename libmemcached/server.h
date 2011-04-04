@@ -18,6 +18,7 @@ struct memcached_server_st {
     bool is_allocated:1;
     bool is_initialized:1;
     bool is_shutting_down:1;
+    bool is_dead:1;
   } options;
   uint32_t number_of_hosts;
   uint32_t cursor_active;
@@ -27,10 +28,6 @@ struct memcached_server_st {
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
   uint32_t weight;
-  struct { // Place any "state" sort variables in here.
-    bool is_corked:1;
-    bool is_dead:1;
-  } state;
   struct {
     uint32_t read;
     uint32_t write;

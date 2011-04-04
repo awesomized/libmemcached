@@ -5471,7 +5471,7 @@ static test_return_t test_cull_servers(memcached_st *memc)
   uint32_t count = memcached_server_count(memc);
 
   // Do not do this in your code, it is not supported.
-  memc->servers[1].state.is_dead= true;
+  memc->servers[1].options.is_dead= true;
   memc->state.is_time_for_rebuild= true;
 
   uint32_t new_count= memcached_server_count(memc);
