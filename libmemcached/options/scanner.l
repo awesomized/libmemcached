@@ -47,8 +47,8 @@
   } \
   else \
   { \
-    result= context->length - context->pos; \
-    result > max_size ? result = max_size : 0; \
+    result= (int)(context->length - context->pos); \
+    (size_t)result > (size_t)max_size ? result= max_size : 0; \
     memcpy(buffer, context->buf + context->pos, result); \
     context->pos += result; \
   } \
