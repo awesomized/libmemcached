@@ -3,9 +3,9 @@
 */
 #include <libtest/test.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <libhashkit/hashkit.h>
 
@@ -69,7 +69,7 @@ static test_return_t digest_test(void *obj)
   return TEST_SUCCESS;
 }
 
-static test_return_t set_function_test(void *obj)
+static test_return_t set_function_test(void *)
 {
   Hashkit hashk;
   hashkit_hash_algorithm_t algo_list[]= { 
@@ -84,21 +84,15 @@ static test_return_t set_function_test(void *obj)
     HASHKIT_HASH_JENKINS,
     HASHKIT_HASH_MAX
   };
-  hashkit_hash_algorithm_t *algo;
-  (void)obj;
 
 
-  for (algo= algo_list; *algo != HASHKIT_HASH_MAX; algo++)
+  for (hashkit_hash_algorithm_t *algo= algo_list; *algo != HASHKIT_HASH_MAX; algo++)
   {
-    hashkit_return_t rc;
-    uint32_t x;
-    const char **ptr;
-    uint32_t *list;
-
-    rc= hashk.set_function(*algo);
+    hashkit_return_t rc= hashk.set_function(*algo);
 
     test_true(rc == HASHKIT_SUCCESS);
 
+    uint32_t *list;
     switch (*algo)
     {
     case HASHKIT_HASH_DEFAULT:
@@ -123,9 +117,18 @@ static test_return_t set_function_test(void *obj)
       list= fnv1a_32_values;
       break;
     case HASHKIT_HASH_HSIEH:
+#ifndef HAVE_HSIEH_HASH
+      continue;
+#endif
       list= hsieh_values;
       break;
     case HASHKIT_HASH_MURMUR:
+#ifdef WORDS_BIGENDIAN
+      continue;
+#endif
+#ifndef HAVE_MURMUR_HASH
+      continue;
+#endif
       list= murmur_values;
       break;
     case HASHKIT_HASH_JENKINS:
@@ -139,12 +142,16 @@ static test_return_t set_function_test(void *obj)
     }
 
     // Now we make sure we did set the hash correctly.
+    uint32_t x;
+    const char **ptr;
     for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
     {
       uint32_t hash_val;
 
       hash_val= hashk.digest(*ptr, strlen(*ptr));
-      test_true(list[x] == hash_val);
+      char buffer[1024];
+      snprintf(buffer, sizeof(buffer), "%lu %lus %s", (unsigned long)list[x], (unsigned long)hash_val, libhashkit_string_hash(*algo));
+      test_true_got(list[x] == hash_val, buffer);
     }
   }
 
@@ -158,7 +165,7 @@ static test_return_t set_distribution_function_test(void *obj)
   (void)obj;
 
   rc= hashk.set_distribution_function(HASHKIT_HASH_CUSTOM);
-  test_true(rc == HASHKIT_FAILURE);
+  test_true_got(rc == HASHKIT_FAILURE or rc == HASHKIT_INVALID_ARGUMENT, hashkit_strerror(NULL, rc));
 
   rc= hashk.set_distribution_function(HASHKIT_HASH_JENKINS);
   test_true(rc == HASHKIT_SUCCESS);

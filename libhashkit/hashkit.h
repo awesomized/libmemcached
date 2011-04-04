@@ -22,12 +22,10 @@
 #include <libhashkit/behavior.h>
 #include <libhashkit/digest.h>
 #include <libhashkit/function.h>
+#include <libhashkit/str_algorithm.h>
 #include <libhashkit/strerror.h>
 
 #ifdef __cplusplus
-
-#include <string>
-
 extern "C" {
 #endif
 
@@ -67,57 +65,63 @@ struct hashkit_st
 };
 
 #ifdef __cplusplus
-class Hashkit : private hashkit_st {
+
+#include <string>
+
+class Hashkit {
 
 public:
 
   Hashkit()
   {
-    hashkit_create(this);
+    hashkit_create(&self);
   }
 
   Hashkit(const Hashkit& source)
   {
-    hashkit_clone(this, &source);
+    hashkit_clone(&self, &source.self);
   }
 
   Hashkit& operator=(const Hashkit& source)
   {
-    hashkit_free(this);
-    hashkit_clone(this, &source);
+    hashkit_free(&self);
+    hashkit_clone(&self, &source.self);
 
     return *this;
   }
 
   friend bool operator==(const Hashkit &left, const Hashkit &right)
   {
-    return hashkit_compare(&left, &right);
+    return hashkit_compare(&left.self, &right.self);
   }
 
   uint32_t digest(std::string& str)
   {
-    return hashkit_digest(this, str.c_str(), str.length());
+    return hashkit_digest(&self, str.c_str(), str.length());
   }
 
   uint32_t digest(const char *key, size_t key_length)
   {
-    return hashkit_digest(this, key, key_length);
+    return hashkit_digest(&self, key, key_length);
   }
 
   hashkit_return_t set_function(hashkit_hash_algorithm_t hash_algorithm)
   {
-    return hashkit_set_function(this, hash_algorithm);
+    return hashkit_set_function(&self, hash_algorithm);
   }
 
   hashkit_return_t set_distribution_function(hashkit_hash_algorithm_t hash_algorithm)
   {
-    return hashkit_set_function(this, hash_algorithm);
+    return hashkit_set_function(&self, hash_algorithm);
   }
 
   ~Hashkit()
   {
-    hashkit_free(this);
+    hashkit_free(&self);
   }
+private:
+
+  hashkit_st self;
 };
 #endif
 

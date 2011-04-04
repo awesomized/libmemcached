@@ -23,6 +23,7 @@ nobase_include_HEADERS+= \
 			 libhashkit/function.h \
 			 libhashkit/hashkit.h \
 			 libhashkit/strerror.h \
+			 libhashkit/str_algorithm.h \
 			 libhashkit/types.h \
 			 libhashkit/visibility.h
 
@@ -33,14 +34,15 @@ libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/algorithm.c \
 				  libhashkit/behavior.c \
 				  libhashkit/crc32.c \
-				  libhashkit/fnv.c \
 				  libhashkit/digest.c \
+				  libhashkit/fnv.c \
 				  libhashkit/function.c \
 				  libhashkit/hashkit.c \
 				  libhashkit/jenkins.c \
 				  libhashkit/ketama.c \
 				  libhashkit/md5.c \
 				  libhashkit/one_at_a_time.c \
+				  libhashkit/str_algorithm.c \
 				  libhashkit/strerror.c
 
 if INCLUDE_HSIEH_SRC

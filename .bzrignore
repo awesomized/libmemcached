@@ -172,6 +172,7 @@ memflush.pop
 memrm.pop
 memslap.pop
 memstat.pop
+out
 patch
 patch2
 stamp-h1
@@ -181,6 +182,7 @@ support/libmemcached-fc.spec
 support/libmemcached.pc
 support/libmemcached.spec
 tests/atomsmasher
+tests/hash_plus
 tests/hashplus
 tests/memplus
 tests/output.cmp

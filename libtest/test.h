@@ -242,7 +242,7 @@ do \
 { \
   if (strcmp((A), (B))) \
   { \
-    fprintf(stderr, "\n%s:%d: %s -> %s\n", __FILE__, __LINE__, (A), (B)); \
+    fprintf(stderr, "\n%s:%d: `%s` -> `%s`\n", __FILE__, __LINE__, (A), (B)); \
     create_core(); \
     return TEST_FAILURE; \
   } \

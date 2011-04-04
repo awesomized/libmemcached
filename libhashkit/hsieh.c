@@ -5,7 +5,7 @@
  * http://www.azillionmonkeys.com/qed/hash.html
 */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 #undef get16bits
 #if (defined(__GNUC__) && defined(__i386__))

@@ -22,3 +22,5 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/options/build.cc \
 				       libmemcached/options/parser.cc \
 				       libmemcached/options/scanner.cc
+
+include libmemcached/options/parser.am

@@ -10,8 +10,6 @@
 memcached_server_list_st memcached_servers_parse(const char *server_strings)
 {
   char *string;
-  in_port_t port;
-  uint32_t weight;
   const char *begin_ptr;
   const char *end_ptr;
   memcached_server_st *servers= NULL;
@@ -27,8 +25,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings)
   {
     char buffer[HUGE_STRING_LEN];
     char *ptr, *ptr2;
-    port= 0;
-    weight= 0;
+    uint32_t weight= 0;
 
     if (string)
     {
@@ -46,6 +43,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings)
 
     ptr= index(buffer, ':');
 
+    in_port_t port= 0;
     if (ptr)
     {
       ptr[0]= 0;
@@ -57,6 +55,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings)
       ptr2= index(ptr, ' ');
       if (! ptr2)
         ptr2= index(ptr, ':');
+
       if (ptr2)
       {
         ptr2++;

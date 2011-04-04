@@ -29,7 +29,7 @@ These notices must be retained in any copies of any part of this
 documentation and/or software.
 */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 #include <string.h>
 #include <sys/types.h>
