@@ -6219,7 +6219,8 @@ test_st parser_tests[] ={
   {"randomly generated options", 0, (test_callback_fn)random_statement_build_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
   {"server", 0, (test_callback_fn)server_test },
-  {"servers", 0, (test_callback_fn)servers_test },
+  {"bad server strings", 0, (test_callback_fn)servers_bad_test },
+  {"server with weights", 0, (test_callback_fn)server_with_weight_test },
   {0, 0, (test_callback_fn)0}
 };
 

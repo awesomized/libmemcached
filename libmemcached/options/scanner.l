@@ -75,17 +75,20 @@
 
 =|,|[ ]       { return yytext[0];}
 
-
 [[:digit:]]+ { yylval->number = atoi(yytext); return (NUMBER); }
 
+:[[:digit:]]{1,5} { yylval->server.port = atoi(yytext +1); return PORT; }
+
+"/?"[[:digit:]]{1,5} { yylval->server.weight = atoi(yytext +2); return WEIGHT_START; }
+
 [\t\r\n] ; /* skip whitespace */
+
 
 ^#.*$ {
       return COMMENT;
     }
 
-"--SERVER="                          { yyextra->begin= yytext; return SERVER; }
-"--SERVERS="                        { yyextra->begin= yytext; return SERVERS_OPTION; }
+"--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
 
 "--VERIFY_KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
 "--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
@@ -109,8 +112,6 @@
 "--IO-KEY-PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
 "--IO_MSG_WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
 "--IO-MSG-WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
-"--KETAMA_WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
-"--KETAMA-WEIGHTED"			{ yyextra->begin= yytext; return KETAMA_WEIGHTED; }
 "--NOREPLY"                         { yyextra->begin= yytext; return NOREPLY; }
 "--NUMBER_OF_REPLICAS="	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
 "--NUMBER-OF-REPLICAS="	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
@@ -178,33 +179,30 @@ HSIEH			{ return HSIEH; }
 MURMUR			{ return MURMUR; }
 JENKINS			{ return JENKINS; }
 
-[[:alnum:]][[:alnum:].]*[[:alpha:]]: {
-      yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
-      return HOSTNAME_WITH_PORT;
-    }
-
-[[:alnum:]]+"."[[:alpha:].]+[[:alnum:]] {
-      yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
-      return HOSTNAME;
-    }
-
-(([[:digit:]]{1,3}"."){3}([[:digit:]]{1,3})): {
-      yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
-      return IPADDRESS_WITH_PORT;
-    }
-
 (([[:digit:]]{1,3}"."){3}([[:digit:]]{1,3})) {
-      yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
+      yylval->server.port= MEMCACHED_DEFAULT_PORT;
+      yylval->server.weight= 1;
+      yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
+      if (yylval->server.c_str)
+        yylval->server.length= yyleng;
       return IPADDRESS;
     }
 
-[[:alnum:]]+ {
+[[:alnum:]]["."[:alnum:]_-]+[[:alnum:]] {
+      if (yyextra->is_server())
+      {
+        yylval->server.port= MEMCACHED_DEFAULT_PORT;
+        yylval->server.weight= 1;
+        yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
+        if (yylval->server.c_str)
+          yylval->server.length= yyleng;
+
+        return HOSTNAME;
+      }
+
       yylval->string.c_str = yytext;
       yylval->string.length = yyleng;
+
       return STRING;
     }
 

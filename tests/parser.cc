@@ -156,18 +156,18 @@ scanner_variable_t test_server_strings[]= {
   { NIL, scanner_string_null, scanner_string_null, NULL }
 };
 
-scanner_variable_t test_servers_strings[]= {
-  { ARRAY, make_scanner_string("--servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225"), scanner_string_null, NULL },
-  { ARRAY, make_scanner_string("--servers=a.example.com:81,localhost:82,b.example.com"), scanner_string_null, NULL },
-  { ARRAY, make_scanner_string("--servers=localhost,localhost:80"), scanner_string_null, NULL },
-  { NIL, scanner_string_null, scanner_string_null, NULL}
+scanner_variable_t test_server_strings_with_weights[]= {
+  { ARRAY, make_scanner_string("--server=10.0.2.1:30/?40"), make_scanner_string("10.0.2.1"), __check_host },
+  { ARRAY, make_scanner_string("--server=example.com:1024/?30"), make_scanner_string("example.com"), __check_host },
+  { ARRAY, make_scanner_string("--server=10.0.2.1/?20"), make_scanner_string("10.0.2.1"), __check_host },
+  { ARRAY, make_scanner_string("--server=example.com/?10"), make_scanner_string("example.com"), __check_host },
+  { NIL, scanner_string_null, scanner_string_null, NULL }
 };
-
 
 scanner_variable_t bad_test_strings[]= {
   { ARRAY, make_scanner_string("-servers=localhost:11221,localhost:11222,localhost:11223,localhost:11224,localhost:11225"), scanner_string_null, NULL },
   { ARRAY, make_scanner_string("-- servers=a.example.com:81,localhost:82,b.example.com"), scanner_string_null, NULL },
-  { ARRAY, make_scanner_string("--servers=localhost+80"), scanner_string_null, NULL},
+  { ARRAY, make_scanner_string("--servers=localhost:+80"), scanner_string_null, NULL},
   { ARRAY, make_scanner_string("--servers=localhost.com."), scanner_string_null, NULL},
   { ARRAY, make_scanner_string("--server=localhost.com."), scanner_string_null, NULL},
   { ARRAY, make_scanner_string("--server=localhost.com.:80"), scanner_string_null, NULL},
@@ -195,7 +195,6 @@ scanner_variable_t test_boolean_options[]= {
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--KETAMA_WEIGHTED"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },
   { ARRAY,  make_scanner_string("--RANDOMIZE_REPLICA_READ"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SORT_HOSTS"), scanner_string_null, NULL },
@@ -250,13 +249,17 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= t
     if (test_true)
     {
       if (rc != MEMCACHED_SUCCESS)
+      {
         memcached_error_print(memc);
+      }
 
       test_true(rc == MEMCACHED_SUCCESS);
 
       if (ptr->check_func)
       {
-        (*ptr->check_func)(memc, ptr->result);
+        test_return_t test_rc= (*ptr->check_func)(memc, ptr->result);
+        if (test_rc != TEST_SUCCESS)
+          return test_rc;
       }
     }
     else
@@ -270,28 +273,19 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= t
   return TEST_SUCCESS;
 }
 
-test_return_t server_test(memcached_st *junk)
+test_return_t server_test(memcached_st *)
 {
-  (void)junk;
   return _test_option(test_server_strings);
 }
 
-test_return_t servers_test(memcached_st *junk)
+test_return_t server_with_weight_test(memcached_st *)
 {
-  (void)junk;
+  return _test_option(test_server_strings_with_weights);
+}
 
+test_return_t servers_bad_test(memcached_st *)
+{
   test_return_t rc;
-  if ((rc= _test_option(test_server_strings)) != TEST_SUCCESS)
-  {
-    return rc;
-  }
-
-#if 0
-    memcached_server_fn callbacks[1];
-    callbacks[0]= server_print_callback;
-    memcached_server_cursor(memc, callbacks, NULL,  1);
-#endif
-
   if ((rc= _test_option(bad_test_strings, false)) != TEST_SUCCESS)
   {
     return rc;
@@ -300,48 +294,40 @@ test_return_t servers_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t parser_number_options_test(memcached_st *junk)
+test_return_t parser_number_options_test(memcached_st*)
 {
-  (void)junk;
   return _test_option(test_number_options);
 }
 
-test_return_t parser_boolean_options_test(memcached_st *junk)
+test_return_t parser_boolean_options_test(memcached_st*)
 {
-  (void)junk;
   return _test_option(test_boolean_options);
 }
 
-test_return_t behavior_parser_test(memcached_st *junk)
+test_return_t behavior_parser_test(memcached_st*)
 {
-  (void)junk;
   return TEST_SUCCESS;
 }
 
-test_return_t parser_hash_test(memcached_st *junk)
+test_return_t parser_hash_test(memcached_st*)
 {
-  (void)junk;
   return _test_option(hash_strings);
 }
 
-test_return_t parser_distribution_test(memcached_st *junk)
+test_return_t parser_distribution_test(memcached_st*)
 {
-  (void)junk;
   return _test_option(distribution_strings);
 }
 
-test_return_t parser_key_prefix_test(memcached_st *junk)
+test_return_t parser_key_prefix_test(memcached_st*)
 {
-  (void)junk;
   return _test_option(distribution_strings);
 }
 
 #define SUPPORT_EXAMPLE_CNF "support/example.cnf"
 
-test_return_t memcached_parse_configure_file_test(memcached_st *junk)
+test_return_t memcached_parse_configure_file_test(memcached_st*)
 {
-  (void)junk;
-
   if (access(SUPPORT_EXAMPLE_CNF, R_OK))
     return TEST_SKIPPED;
 
@@ -357,9 +343,8 @@ test_return_t memcached_parse_configure_file_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
+test_return_t memcached_create_with_options_with_filename(memcached_st*)
 {
-  (void)junk;
   if (access(SUPPORT_EXAMPLE_CNF, R_OK))
     return TEST_SKIPPED;
 
@@ -371,10 +356,8 @@ test_return_t memcached_create_with_options_with_filename(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *junk)
+test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*)
 {
-  (void)junk;
-
   if (access(SUPPORT_EXAMPLE_CNF, R_OK))
     return TEST_SKIPPED;
 
@@ -393,10 +376,8 @@ test_return_t libmemcached_check_configuration_with_filename_test(memcached_st *
   return TEST_SUCCESS;
 }
 
-test_return_t libmemcached_check_configuration_test(memcached_st *junk)
+test_return_t libmemcached_check_configuration_test(memcached_st*)
 {
-  (void)junk;
-
   memcached_return_t rc;
   char buffer[BUFSIZ];
 
@@ -410,10 +391,8 @@ test_return_t libmemcached_check_configuration_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t memcached_create_with_options_test(memcached_st *junk)
+test_return_t memcached_create_with_options_test(memcached_st*)
 {
-  (void)junk;
-
   memcached_st *memc_ptr;
   memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--server=localhost"));
   test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
@@ -425,12 +404,11 @@ test_return_t memcached_create_with_options_test(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t test_include_keyword(memcached_st *junk)
+test_return_t test_include_keyword(memcached_st*)
 {
   if (access(SUPPORT_EXAMPLE_CNF, R_OK))
     return TEST_SKIPPED;
 
-  (void)junk;
   char buffer[BUFSIZ];
   memcached_return_t rc;
   rc= libmemcached_check_configuration(STRING_WITH_LEN("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer));
@@ -439,9 +417,8 @@ test_return_t test_include_keyword(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t test_end_keyword(memcached_st *junk)
+test_return_t test_end_keyword(memcached_st*)
 {
-  (void)junk;
   char buffer[BUFSIZ];
   memcached_return_t rc;
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost END bad keywords"), buffer, sizeof(buffer));
@@ -450,9 +427,8 @@ test_return_t test_end_keyword(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t test_reset_keyword(memcached_st *junk)
+test_return_t test_reset_keyword(memcached_st*)
 {
-  (void)junk;
   char buffer[BUFSIZ];
   memcached_return_t rc;
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer));
@@ -461,9 +437,8 @@ test_return_t test_reset_keyword(memcached_st *junk)
   return TEST_SUCCESS;
 }
 
-test_return_t test_error_keyword(memcached_st *junk)
+test_return_t test_error_keyword(memcached_st*)
 {
-  (void)junk;
   char buffer[BUFSIZ];
   memcached_return_t rc;
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost ERROR --server=bad.com"), buffer, sizeof(buffer));
@@ -473,18 +448,12 @@ test_return_t test_error_keyword(memcached_st *junk)
 }
 
 #define RANDOM_STRINGS 50
-test_return_t random_statement_build_test(memcached_st *junk)
+test_return_t random_statement_build_test(memcached_st*)
 {
-  (void)junk;
   std::vector<scanner_string_st *> option_list;
 
   for (scanner_variable_t *ptr= test_server_strings; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);
-
-#if 0
-  for (scanner_variable_t *ptr= test_servers_strings; ptr->type != NIL; ptr++)
-    option_list.push_back(&ptr->option);
-#endif
 
   for (scanner_variable_t *ptr= test_number_options; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);

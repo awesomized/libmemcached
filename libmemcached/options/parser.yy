@@ -133,17 +133,16 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %nonassoc ','
 %nonassoc '='
 
-%token <number> NUMBER
 %token <number> FLOAT
-%token <string> HOSTNAME
-%token <string> HOSTNAME_WITH_PORT
-%token <string> IPADDRESS
-%token <string> IPADDRESS_WITH_PORT
+%token <number> NUMBER
+%token PORT
+%token WEIGHT_START
+%token <server> IPADDRESS
+%token <server> HOSTNAME
 %token <string> STRING
 %token <string> QUOTED_STRING
 %token <string> FILE_PATH
 
-%type <server> server
 %type <string> string
 %type <distribution> distribution
 %type <hash> hash
@@ -193,15 +192,21 @@ statement:
 
 
 expression:
-          SERVER server
-          { 
-            if ((context->rc= memcached_server_add_parsed(context->memc, $2.c_str, $2.length, $2.port, 0)) != MEMCACHED_SUCCESS)
+          SERVER HOSTNAME optional_port optional_weight
+          {
+            if ((context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $2.port, $2.weight)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
             }
+            context->unset_server();
           }
-        | SERVERS_OPTION server_list
+        | SERVER IPADDRESS optional_port optional_weight
           {
+            if ((context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $2.port, $2.weight)) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, NULL);
+            }
+            context->unset_server();
           }
         | CONFIGURE_FILE string
           {
@@ -330,10 +335,6 @@ behavior_boolean:
           {
             $$= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
           }
-        | KETAMA_WEIGHTED
-          {
-            $$= MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED;
-          }
         | NOREPLY
           {
             $$= MEMCACHED_BEHAVIOR_NOREPLY;
@@ -372,54 +373,16 @@ behavior_boolean:
           }
 
 
-server_list:
-           server
-          {
-            if ((context->rc= memcached_server_add_parsed(context->memc, $1.c_str, $1.length, $1.port, 0)) != MEMCACHED_SUCCESS)
-            {
-              parser_abort(context, NULL);;
-            }
-          }
-        | server_list ',' server
-          {
-            if ((context->rc= memcached_server_add_parsed(context->memc, $3.c_str, $3.length, $3.port, 0)) != MEMCACHED_SUCCESS)
-            {
-              parser_abort(context, NULL);;
-            }
-          }
+optional_port:
+          { }
+        | PORT
+          { };
         ;
 
-server:
-          HOSTNAME_WITH_PORT NUMBER
-          {
-            $$.c_str= $1.c_str;
-            $$.length= $1.length -1; // -1 to remove :
-            $$.port= $2;
-          }
-        | HOSTNAME
-          {
-            $$.c_str= $1.c_str;
-            $$.length= $1.length;
-            $$.port= MEMCACHED_DEFAULT_PORT;
-          }
-        | STRING /* a match can be against "localhost" which is just a string */
-          {
-            $$.c_str= $1.c_str;
-            $$.length= $1.length;
-            $$.port= MEMCACHED_DEFAULT_PORT;
-          }
-        | IPADDRESS_WITH_PORT NUMBER
-          {
-            $$.c_str= $1.c_str;
-            $$.length= $1.length -1; // -1 to remove :
-            $$.port= $2;
-          }
-        | IPADDRESS
-          {
-            $$.c_str= $1.c_str;
-            $$.length= $1.length;
-            $$.port= MEMCACHED_DEFAULT_PORT;
-          }
+optional_weight:
+          { }
+        | WEIGHT_START
+          { }
         ;
 
 hash:
