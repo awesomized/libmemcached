@@ -40,6 +40,7 @@
 struct memcached_error_st
 {
   memcached_st *root;
+  uint64_t query_id;
   struct memcached_error_st *next;
   memcached_return_t rc;
   int local_errno;
@@ -47,18 +48,27 @@ struct memcached_error_st
   char c_str[];
 };
 
-static memcached_error_st *_set(memcached_st *memc, memcached_string_t *str)
+static void _set(memcached_st *memc, memcached_string_t *str, const memcached_return_t rc, const int local_errno)
 {
+  WATCHPOINT_ASSERT(memc);
   if (! memc)
-    return NULL;
+    return;
+
+  if (memc->error_messages && memc->error_messages->query_id != memc->query_id)
+  {
+    memcached_error_free(memc);
+  }
 
   memcached_error_st *error;
   error= (struct memcached_error_st *)libmemcached_malloc(memc, sizeof(struct memcached_error_st) +(str ? str->size :0) +1); 
 
   if (! error)
-    return NULL;
+    return;
 
   error->root= memc;
+  error->query_id= memc->query_id;
+  error->rc= rc;
+  error->local_errno= local_errno;
 
   if (str)
   {
@@ -73,8 +83,6 @@ static memcached_error_st *_set(memcached_st *memc, memcached_string_t *str)
 
   error->next= memc->error_messages;
   memc->error_messages= error;
-
-  return error;
 }
 
 memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length)
@@ -90,28 +98,16 @@ memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc
   if (rc == MEMCACHED_SUCCESS)
     return MEMCACHED_SUCCESS;
 
-  memcached_error_st *error= _set(memc, str);
-
-  if (error)
-  {
-    error->local_errno= 0;
-    error->rc= rc;
-  }
+  _set(memc, str, rc, 0);
 
   return rc;
 }
 
 memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str)
 {
-  memcached_error_st *error= _set(memc, str);
+  _set(memc, str, MEMCACHED_ERRNO, local_errno);
 
-  if (error)
-  {
-    error->local_errno= local_errno;
-    error->rc= MEMCACHED_ERRNO;
-  }
-
-  return error->rc;
+  return MEMCACHED_ERRNO;
 }
 
 static void _error_print(const memcached_error_st *error)

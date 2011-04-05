@@ -65,7 +65,6 @@ LIBMEMCACHED_API
 LIBMEMCACHED_API
   int memcached_last_error_errno(memcached_st *memc);
 
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

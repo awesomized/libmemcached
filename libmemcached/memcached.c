@@ -87,6 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->snd_timeout= 0;
   self->rcv_timeout= 0;
   self->server_failure_limit= 0;
+  self->query_id= 0;
 
   /* TODO, Document why we picked these defaults */
   self->io_msg_watermark= 500;
