@@ -55,7 +55,6 @@ static const memcached_st global_copy= {
     .reuse_memory= false,
     .support_cas= false,
     .tcp_nodelay= false,
-    .use_cache_lookups= false,
     .use_sort_hosts= false,
     .use_udp= false,
     .verify_key= false,

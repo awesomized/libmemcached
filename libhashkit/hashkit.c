@@ -6,7 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 static const hashkit_st global_default_hash= {
   .base_hash= {

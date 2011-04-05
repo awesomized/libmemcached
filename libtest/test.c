@@ -10,7 +10,7 @@
   Sample test application.
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <unistd.h>
 

@@ -6,7 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 /* FNV hash'es lifted from Dustin Sallings work */
 static uint64_t FNV_64_INIT= UINT64_C(0xcbf29ce484222325);

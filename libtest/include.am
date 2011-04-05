@@ -7,6 +7,13 @@
 #
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
+#
+
+LIBUTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
+
+CLEANFILES+= \
+	     tests/var/log/* \
+	     tests/var/tmp/*
 
 noinst_HEADERS+= \
 		 libtest/failed.h \
@@ -23,3 +30,11 @@ libtest_libtest_la_SOURCES=\
 libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
 libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
 
+tests/var: tests/var/log tests/var/tmp
+	$(mkdir_p) tests/var
+
+tests/var/log:
+	$(mkdir_p) tests/var/log
+
+tests/var/tmp:
+	$(mkdir_p) tests/var/tmp

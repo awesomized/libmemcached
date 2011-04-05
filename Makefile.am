@@ -40,11 +40,12 @@ endif
 
 test-docs:
 	(cd docs && $(MAKE) test-docs)
+
+include libtest/include.am
+
 include libmemcached/include.am
 include clients/include.am
-include libtest/include.am
 include libhashkit/include.am
-include unittests/include.am
 include tests/include.am
 include example/include.am
 include support/include.am

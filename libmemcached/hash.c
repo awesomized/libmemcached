@@ -172,20 +172,5 @@ memcached_return_t memcached_set_hashkit(memcached_st *self, hashkit_st *hashk)
 
 const char * libmemcached_string_hash(memcached_hash_t type)
 {
-  switch (type)
-  {
-  case MEMCACHED_HASH_DEFAULT: return "MEMCACHED_HASH_DEFAULT";
-  case MEMCACHED_HASH_MD5: return "MEMCACHED_HASH_MD5";
-  case MEMCACHED_HASH_CRC: return "MEMCACHED_HASH_CRC";
-  case MEMCACHED_HASH_FNV1_64: return "MEMCACHED_HASH_FNV1_64";
-  case MEMCACHED_HASH_FNV1A_64: return "MEMCACHED_HASH_FNV1A_64";
-  case MEMCACHED_HASH_FNV1_32: return "MEMCACHED_HASH_FNV1_32";
-  case MEMCACHED_HASH_FNV1A_32: return "MEMCACHED_HASH_FNV1A_32";
-  case MEMCACHED_HASH_HSIEH: return "MEMCACHED_HASH_HSIEH";
-  case MEMCACHED_HASH_MURMUR: return "MEMCACHED_HASH_MURMUR";
-  case MEMCACHED_HASH_JENKINS: return "MEMCACHED_HASH_JENKINS";
-  case MEMCACHED_HASH_CUSTOM: return "MEMCACHED_HASH_CUSTOM";
-  default:
-  case MEMCACHED_HASH_MAX: return "INVALID memcached_hash_t";
-  }
+  return libhashkit_string_hash((hashkit_hash_algorithm_t)type);
 }

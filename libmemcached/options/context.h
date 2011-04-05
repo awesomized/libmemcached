@@ -49,8 +49,10 @@ public:
     pos(0),
     memc(NULL),
     rc(rc_arg),
+    _is_server(false),
     _end(false)
   {
+    _hostname[0]= 0;
     buf= option_string;
     length= option_string_length;
     memc= memc_arg;
@@ -71,6 +73,35 @@ public:
     _end= true;
   }
 
+  void set_server()
+  {
+    _is_server= true;
+  }
+
+  void unset_server()
+  {
+    _is_server= false;
+  }
+
+  bool is_server()
+  {
+    return _is_server;
+  }
+
+  const char *set_hostname(const char *str, size_t size)
+  {
+    size_t copy_length= std::min((size_t)NI_MAXHOST, size);
+    memcpy(_hostname, str, copy_length);
+    _hostname[copy_length]= 0;
+
+    return _hostname;
+  }
+
+  const char *hostname()
+  {
+    return _hostname;
+  }
+
   ~Context()
   {
     destroy_scanner();
@@ -89,5 +120,7 @@ protected:
   void destroy_scanner();
 
 private:
+  bool _is_server;
   bool _end;
+  char _hostname[NI_MAXHOST];
 }; 

@@ -12,14 +12,14 @@
 /*
   This is a partial implementation for fetching/creating memcached_server_st objects.
 */
-#include "common.h"
+#include <libmemcached/common.h>
 
 static inline void _server_init(memcached_server_st *self, const memcached_st *root,
                                 const char *hostname, in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
 {
-  self->options.sockaddr_inited= false;
   self->options.is_shutting_down= false;
+  self->options.is_dead= false;
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
@@ -27,9 +27,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->fd= -1;
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
-  self->weight= weight;
-  self->state.is_corked= false;
-  self->state.is_dead= false;
+  self->weight= weight ? weight : 1; // 1 is the default weight value
   WATCHPOINT_SET(self->io_wait_count.read= 0);
   WATCHPOINT_SET(self->io_wait_count.write= 0);
   self->major_version= UINT8_MAX;
@@ -42,6 +40,7 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
   self->read_data_length= 0;
   self->write_buffer_offset= 0;
   self->address_info= NULL;
+  self->address_info_next= NULL;
 
   if (root)
   {
@@ -52,12 +51,21 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
     self->next_retry= 0;
   }
 
+  if (self->weight > 1 && root)
+  {
+    ((memcached_st *)root)->ketama.weighted= true;
+  }
+
   self->root= root;
   self->limit_maxbytes= 0;
   if (hostname == NULL)
+  {
     self->hostname[0]= 0;
+  }
   else
+  {
     strncpy(self->hostname, hostname, NI_MAXHOST - 1);
+  }
 }
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
@@ -246,8 +254,6 @@ void memcached_server_list_free(memcached_server_list_st self)
   if (self == NULL)
     return;
 
-  const memcached_st *root= self->root;
-
   for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
   {
     if (self[x].address_info)
@@ -257,6 +263,7 @@ void memcached_server_list_free(memcached_server_list_st self)
     }
   }
 
+  const memcached_st *root= self->root;
   if (root)
   {
     libmemcached_free(root, self);

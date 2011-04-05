@@ -43,8 +43,7 @@ noinst_HEADERS+= \
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
-		  tests/hashplus \
-		  tests/memplus \
+		  tests/hash_plus \
 		  tests/startservers \
 		  tests/testapp \
 		  tests/testhashkit \
@@ -100,19 +99,15 @@ tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
 
-tests_hashplus_SOURCES = tests/hash_plus.cc
-tests_hashplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_hashplus_DEPENDENCIES = $(tests_testhashkit_DEPENDENCIES)
-tests_hashplus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
-
-tests_memplus_SOURCES = tests/mem_plus.cc
-tests_memplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memplus_DEPENDENCIES = $(TESTS_LDADDS)
-tests_memplus_LDADD = $(tests_memplus_DEPENDENCIES) $(LIBSASL)
+tests_hash_plus_SOURCES = tests/hash_plus.cc
+tests_hash_plus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_hash_plus_DEPENDENCIES = $(tests_testhashkit_DEPENDENCIES)
+tests_hash_plus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
+check_PROGRAMS+= tests/hash_plus
 
 test: check
 
-check-local: $(TEST_DOCS) test-mem test-hash memcapable
+check-local: tests/var $(TEST_DOCS) test-mem test-hash memcapable
 	@echo "Tests completed"
 
 test-x: check-local test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
@@ -238,8 +233,6 @@ MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
 
 TESTPLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
 
-MEMPLUS_COMMAND= tests/memplus $(COLLECTION) $(SUITE)
-
 HASHPLUS_COMMAND= tests/hashplus $(COLLECTION) $(SUITE)
 
 ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
@@ -248,7 +241,7 @@ UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem: tests/testapp support/example.cnf
+test-mem: tests/testapp
 	$(MEM_COMMAND)
 
 test-udp: tests/testudp
@@ -265,9 +258,6 @@ test-hash: tests/testhashkit
 
 test-hashplus: tests/hashplus
 	$(HASHPLUS_COMMAND)
-
-test-memplus: tests/memplus
-	$(MEMPLUS_COMMAND)
 
 pahole-mem: tests/testapp
 	$(PAHOLE_COMMAND)  $(MEM_COMMAND)
@@ -290,9 +280,6 @@ gdb-hash: tests/testhashkit
 gdb-hashplus: tests/hashplus
 	$(DEBUG_COMMAND) $(HASHPLUS_COMMAND)
 
-gdb-memplus: tests/memplus
-	$(DEBUG_COMMAND) $(MEMPLUS_COMMAND)
-
 gdb-memslap: clients/memslap
 	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
 
@@ -313,9 +300,6 @@ valgrind-hash: tests/testhashkit
 
 valgrind-hashplus: tests/hashplus
 	$(VALGRIND_COMMAND) $(HASHPLUS_COMMAND)
-
-valgrind-memplus: tests/memplus
-	$(VALGRIND_COMMAND) $(MEMPLUS_COMMAND)
 
 valgrind-memslap: clients/memslap
 	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)

@@ -231,7 +231,12 @@ static memcached_return_t server_display_unsort_function(const memcached_st *ptr
   uint32_t x= *((uint32_t *)(context));
   (void)ptr;
 
-  assert(test_ports[x] == server->port);
+  if (! (test_ports[x] == server->port))
+  {
+    fprintf(stderr, "%lu -> %lu\n", (unsigned long)test_ports[x], (unsigned long)server->port);
+    return MEMCACHED_FAILURE;
+  }
+
   *((uint32_t *)(context))= ++x;
 
   return MEMCACHED_SUCCESS;
@@ -405,7 +410,7 @@ static test_return_t error_test(memcached_st *memc)
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
                         1769812374U, 2302537950U, 1110330676U, 3365377466U, 
-                        1336171666U, 3365377466U };
+                        1336171666U, 3021258493U, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
   for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
@@ -421,7 +426,7 @@ static test_return_t error_test(memcached_st *memc)
     }
     test_true(values[rc] == hash_val);
   }
-  test_true(MEMCACHED_MAXIMUM_RETURN == 45);
+  test_true(MEMCACHED_MAXIMUM_RETURN == 46);
 
   return TEST_SUCCESS;
 }
@@ -2000,21 +2005,15 @@ static test_return_t MEMCACHED_BEHAVIOR_CORK_test(memcached_st *memc)
 {
   memcached_return_t rc;
   bool set= true;
-  bool value;
 
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CORK, set);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOT_SUPPORTED);
+  test_true(rc == MEMCACHED_DEPRECATED);
 
-  value= (bool)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_CORK);
-
-  if (rc == MEMCACHED_SUCCESS)
-  {
-    test_true((bool)value == set);
-  }
-  else
-  {
-    test_false((bool)value == set);
-  }
+  // Platform dependent
+#if 0
+  bool value= (bool)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_CORK);
+  test_false(value);
+#endif
 
   return TEST_SUCCESS;
 }
@@ -5477,7 +5476,7 @@ static test_return_t test_cull_servers(memcached_st *memc)
   uint32_t count = memcached_server_count(memc);
 
   // Do not do this in your code, it is not supported.
-  memc->servers[1].state.is_dead= true;
+  memc->servers[1].options.is_dead= true;
   memc->state.is_time_for_rebuild= true;
 
   uint32_t new_count= memcached_server_count(memc);
@@ -5752,7 +5751,7 @@ static test_return_t regression_bug_583031(memcached_st *unused)
 
     (void)memcached_get(memc, "dsf", 3, &length, &flags, &rc);
 
-    test_true_got(rc == MEMCACHED_TIMEOUT || rc == MEMCACHED_ERRNO, memcached_strerror(memc, rc));
+    test_true_got(rc == MEMCACHED_TIMEOUT || rc == MEMCACHED_ERRNO || rc == MEMCACHED_FAILURE, memcached_strerror(memc, rc));
 
     memcached_free(memc);
 
@@ -6225,7 +6224,8 @@ test_st parser_tests[] ={
   {"randomly generated options", 0, (test_callback_fn)random_statement_build_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },
   {"server", 0, (test_callback_fn)server_test },
-  {"servers", 0, (test_callback_fn)servers_test },
+  {"bad server strings", 0, (test_callback_fn)servers_bad_test },
+  {"server with weights", 0, (test_callback_fn)server_with_weight_test },
   {0, 0, (test_callback_fn)0}
 };
 
@@ -6301,8 +6301,6 @@ collection_st collection[] ={
   {"virtual buckets", 0, 0, virtual_bucket_tests},
   {0, 0, 0, 0}
 };
-
-#define SERVERS_TO_CREATE 5
 
 #include "libmemcached_world.h"
 

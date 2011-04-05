@@ -6,7 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include "common.h"
+#include <libhashkit/common.h>
 
 const char *hashkit_strerror(hashkit_st *ptr, hashkit_return_t rc)
 {

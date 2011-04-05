@@ -9,7 +9,7 @@
 #ifndef HASHKIT_COMMON_H
 #define HASHKIT_COMMON_H
 
-#include "config.h"
+#include <config.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "hashkit.h"
+#include <libhashkit/hashkit.h>
 
 #ifdef __cplusplus
 extern "C" {
