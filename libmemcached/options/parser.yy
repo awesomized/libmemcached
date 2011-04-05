@@ -40,7 +40,6 @@
 #include <stdint.h>
 
 #include <libmemcached/options/context.h>
-#include <libmemcached/options/build.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
 #include <libmemcached/visibility.h>
@@ -51,12 +50,12 @@
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
-#define parser_abort(A, B) do { parser::abort_func((A), (B)); YYABORT; } while (0) 
+#define parser_abort(A, B) do { (A)->abort((B)); YYABORT; } while (0) 
 
 inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 {
   if (not context->end())
-    parser::abort_func(context, error);
+    context->abort(error);
 }
 
 %}

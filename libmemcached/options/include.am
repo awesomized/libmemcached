@@ -10,7 +10,6 @@ DISTCLEANFILES+= \
 		 libmemcached/options/scanner.h
 
 noinst_HEADERS+= \
-		 libmemcached/options/build.h \
 		 libmemcached/options/context.h \
 		 libmemcached/options/parser.h \
 		 libmemcached/options/scanner.h \
@@ -19,7 +18,6 @@ noinst_HEADERS+= \
 		 libmemcached/options/symbol.h
 
 libmemcached_libmemcached_la_SOURCES+= \
-				       libmemcached/options/build.cc \
 				       libmemcached/options/parser.cc \
 				       libmemcached/options/scanner.cc
 
