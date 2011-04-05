@@ -6302,8 +6302,6 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-#define SERVERS_TO_CREATE 5
-
 #include "libmemcached_world.h"
 
 void get_world(world_st *world)
