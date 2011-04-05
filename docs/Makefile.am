@@ -61,6 +61,7 @@ GENERIC_PAGES= \
 	       memerror.pop \
 	       memflush.pop \
 	       memrm.pop \
+	       memaslap.pop \
 	       memslap.pop \
 	       memstat.pop
 BUILT_SOURCES += ${GENERIC_PAGES}
@@ -287,6 +288,7 @@ HTML_FILES= \
 	    memerror.html \
 	    memflush.html \
 	    memrm.html \
+	    memaslap.html \
 	    memslap.html \
 	    memstat.html
 
@@ -328,6 +330,7 @@ POD_FILES= \
 	   memerror.pod \
 	   memflush.pod \
 	   memrm.pod \
+	   memaslap.pod \
 	   memslap.pod \
 	   memstat.pod
 EXTRA_DIST+= $(POD_FILES)
@@ -418,6 +421,7 @@ man_MANS = \
 	   memerror.1 \
 	   memflush.1 \
 	   memrm.1 \
+	   memaslap.1 \
 	   memslap.1 \
 	   memstat.1
 
