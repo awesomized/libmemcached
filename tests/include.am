@@ -241,7 +241,7 @@ UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem: tests/testapp support/example.cnf
+test-mem: tests/testapp
 	$(MEM_COMMAND)
 
 test-udp: tests/testudp
