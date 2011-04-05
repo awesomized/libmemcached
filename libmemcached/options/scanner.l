@@ -21,6 +21,7 @@
 %top{
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <libmemcached/options/context.h>
