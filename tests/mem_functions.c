@@ -231,7 +231,12 @@ static memcached_return_t server_display_unsort_function(const memcached_st *ptr
   uint32_t x= *((uint32_t *)(context));
   (void)ptr;
 
-  assert(test_ports[x] == server->port);
+  if (! (test_ports[x] == server->port))
+  {
+    fprintf(stderr, "%lu -> %lu\n", (unsigned long)test_ports[x], (unsigned long)server->port);
+    return MEMCACHED_FAILURE;
+  }
+
   *((uint32_t *)(context))= ++x;
 
   return MEMCACHED_SUCCESS;
