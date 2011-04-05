@@ -15,9 +15,7 @@
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10
 
-#define PID_FILE_BASE "/tmp/%ulibmemcached_memc.pid"
-
-#include "config.h"
+#include <config.h>
 
 #include <assert.h>
 #include <limits.h>
@@ -117,10 +115,17 @@ void server_startup(server_startup_st *construct)
       char *end_ptr;
       end_ptr= server_string_buffer;
 
+      uint32_t port_base= 0;
       for (uint32_t x= 0; x < construct->count; x++)
       {
         int status;
-        in_port_t port;
+
+        snprintf(construct->pid_file[x], FILENAME_MAX, "/tmp/memcached.pidXXXXXX");
+        if (mkstemp(construct->pid_file[x]) == -1)
+        {
+          perror("mkstemp");
+          return;
+        }
 
         {
           char *var;
@@ -130,40 +135,47 @@ void server_startup(server_startup_st *construct)
 
           if ((var= getenv(variable_buffer)))
           {
-            port= (in_port_t)atoi(var);
+            construct->port[x]= (in_port_t)atoi(var);
           }
           else
           {
-            port= (in_port_t)(x + TEST_PORT_BASE);
+            do {
+              construct->port[x]= (in_port_t)(x + TEST_PORT_BASE + port_base);
+
+              if (libmemcached_util_ping("localhost", construct->port[x], NULL))
+              {
+                port_base++;
+                construct->port[x]= 0;
+              }
+            } while (construct->port[x] == 0);
           }
         }
 
-        char buffer[PATH_MAX];
-        snprintf(buffer, sizeof(buffer), PID_FILE_BASE, x);
-        kill_file(buffer);
-
+        char buffer[FILENAME_MAX];
         if (x == 0)
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -u root -P "PID_FILE_BASE" -t 1 -p %u -U %u -m 128",
-                   MEMCACHED_BINARY, x, port, port);
+          snprintf(buffer, sizeof(buffer), "%s -d -P %s -t 1 -p %u -U %u -m 128",
+                   MEMCACHED_BINARY, construct->pid_file[x], construct->port[x], construct->port[x]);
         }
         else
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -u root -P "PID_FILE_BASE" -t 1 -p %u -U %u",
-                   MEMCACHED_BINARY, x, port, port);
+          snprintf(buffer, sizeof(buffer), "%s -d -P %s -t 1 -p %u -U %u",
+                   MEMCACHED_BINARY, construct->pid_file[x], construct->port[x], construct->port[x]);
         }
-	if (libmemcached_util_ping("localhost", port, NULL))
+
+	if (libmemcached_util_ping("localhost", construct->port[x], NULL))
 	{
-	  fprintf(stderr, "Server on port %u already exists\n", port);
+	  fprintf(stderr, "Server on port %u already exists\n", construct->port[x]);
 	}
 	else
 	{
 	  status= system(buffer);
 	  fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
 	}
+
         int count;
         size_t remaining_length= sizeof(server_string_buffer) - (size_t)(end_ptr -server_string_buffer);
-        count= snprintf(end_ptr, remaining_length,  "localhost:%u,", port);
+        count= snprintf(end_ptr, remaining_length,  "localhost:%u,", construct->port[x]);
 
         if ((size_t)count >= remaining_length || count < 0)
         {
@@ -175,17 +187,20 @@ void server_startup(server_startup_st *construct)
       *end_ptr= 0;
 
 
-      int *pids= calloc(construct->count, sizeof(int));
       for (uint32_t x= 0; x < construct->count; x++)
       {
-        char buffer[PATH_MAX]; /* Nothing special for number */
-
-        snprintf(buffer, sizeof(buffer), PID_FILE_BASE, x);
-
-        uint32_t counter= 3000; // Absurd, just to catch run away process
-        while (pids[x] <= 0  && --counter)
+        if (! wait_for_file(construct->pid_file[x]))
         {
-          FILE *file= fopen(buffer, "r");
+          abort();
+        }
+      }
+
+      for (uint32_t x= 0; x < construct->count; x++)
+      {
+        uint32_t counter= 3000; // Absurd, just to catch run away process
+        while (construct->pids[x] <= 0  && --counter)
+        {
+          FILE *file= fopen(construct->pid_file[x], "r");
           if (file)
           {
             char pid_buffer[1024];
@@ -193,10 +208,10 @@ void server_startup(server_startup_st *construct)
 
             if (found)
             {
-              pids[x]= atoi(pid_buffer);
+              construct->pids[x]= atoi(pid_buffer);
               fclose(file);
 
-              if (pids[x] > 0)
+              if (construct->pids[x] > 0)
                 break;
             }
             fclose(file);
@@ -204,27 +219,30 @@ void server_startup(server_startup_st *construct)
           switch (errno)
           {
           default:
-            fprintf(stderr, "%s\n", strerror(errno));
+            fprintf(stderr, "%s -> fopen(%s)\n", construct->pid_file[x], strerror(errno));
             abort();
           case ENOENT:
           case EINTR:
           case EACCES:
             break;
+          case ENOTCONN:
+            continue;
           }
 
-          if (! wait_for_file(buffer))
+          // Safety 3rd, check to see if the file has gone away
+          if (! wait_for_file(construct->pid_file[x]))
           {
             abort();
           }
         }
 
         bool was_started= false;
-        if (pids[x] > 0)
+        if (construct->pids[x] > 0)
         {
           counter= 30;
           while (--counter)
           {
-            if (kill(pids[x], 0) == 0)
+            if (kill(construct->pids[x], 0) == 0)
             {
               was_started= true;
               break;
@@ -235,16 +253,15 @@ void server_startup(server_startup_st *construct)
 
         if (was_started == false)
         {
-          fprintf(stderr, "Failed to open buffer %s(%d)\n", buffer, pids[x]);
+          fprintf(stderr, "Failed to open buffer %s(%d)\n", construct->pid_file[x], construct->pids[x]);
           for (uint32_t y= 0; y < construct->count; y++)
           {
-            if (pids[y] > 0)
-              kill(pids[y], SIGTERM);
+            if (construct->pids[y] > 0)
+              kill(construct->pids[y], SIGTERM);
           }
           abort();
         }
       }
-      free(pids);
 
       construct->server_list= strdup(server_string_buffer);
     }
@@ -272,9 +289,7 @@ void server_shutdown(server_startup_st *construct)
   {
     for (uint32_t x= 0; x < construct->count; x++)
     {
-      char file_buffer[PATH_MAX]; /* Nothing special for number */
-      snprintf(file_buffer, sizeof(file_buffer), PID_FILE_BASE, x);
-      kill_file(file_buffer);
+      kill_file(construct->pid_file[x]);
     }
 
     free(construct->server_list);

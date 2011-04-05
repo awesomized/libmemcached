@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <unistd.h>
+
 /*
   Server startup and shutdown functions.
 */
@@ -19,6 +21,7 @@ extern "C" {
 #include <libmemcached/memcached.h>
 
 typedef struct server_startup_st server_startup_st;
+#define SERVERS_TO_CREATE 5
 
 struct server_startup_st
 {
@@ -26,6 +29,9 @@ struct server_startup_st
   uint8_t udp;
   memcached_server_st *servers;
   char *server_list;
+  char pid_file[SERVERS_TO_CREATE][FILENAME_MAX];
+  in_port_t port[SERVERS_TO_CREATE];
+  int pids[SERVERS_TO_CREATE];
 };
 
 void server_startup(server_startup_st *construct);
