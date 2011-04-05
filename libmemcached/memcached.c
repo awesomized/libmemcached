@@ -52,7 +52,6 @@ static const memcached_st global_copy= {
     .no_block= false,
     .no_reply= false,
     .randomize_replica_read= false,
-    .reuse_memory= false,
     .support_cas= false,
     .tcp_nodelay= false,
     .use_sort_hosts= false,
@@ -88,6 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->snd_timeout= 0;
   self->rcv_timeout= 0;
   self->server_failure_limit= 0;
+  self->query_id= 0;
 
   /* TODO, Document why we picked these defaults */
   self->io_msg_watermark= 500;
@@ -129,7 +129,7 @@ static inline bool _memcached_init(memcached_st *self)
 static void _free(memcached_st *ptr, bool release_st)
 {
   /* If we have anything open, lets close it now */
-  memcached_quit(ptr);
+  send_quit(ptr);
   memcached_server_list_free(memcached_server_list(ptr));
   memcached_result_free(&ptr->result);
 
@@ -236,9 +236,11 @@ memcached_return_t memcached_reset(memcached_st *ptr)
     return MEMCACHED_INVALID_ARGUMENTS;
 
   bool stored_is_allocated= memcached_is_allocated(ptr);
+  uint64_t query_id= ptr->query_id;
   _free(ptr, false);
   memcached_create(ptr);
   memcached_set_allocated(ptr, stored_is_allocated);
+  ptr->query_id= query_id;
 
   if (ptr->configure.filename)
   {

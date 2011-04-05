@@ -96,6 +96,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man1/memdump.1.gz
 %{_mandir}/man1/memerror.1.gz
 %{_mandir}/man1/memflush.1.gz
+%{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memrm.1.gz
 %{_mandir}/man1/memslap.1.gz
 %{_mandir}/man1/memstat.1.gz
@@ -121,6 +122,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/callback.h
 %{_includedir}/libmemcached/configure.h
 %{_includedir}/libmemcached/constants.h
+%{_includedir}/libhashkit/str_algorithm.h
+%{_includedir}/libmemcached/memcached/vbucket.h
 %{_includedir}/libmemcached/delete.h
 %{_includedir}/libmemcached/dump.h
 %{_includedir}/libmemcached/error.h

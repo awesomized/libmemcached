@@ -83,16 +83,23 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   }
 }
 
+void send_quit(memcached_st *ptr)
+{
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  {
+    memcached_server_write_instance_st instance=
+      memcached_server_instance_fetch(ptr, x);
+
+    memcached_quit_server(instance, false);
+  }
+}
+
 void memcached_quit(memcached_st *ptr)
 {
-  if (memcached_server_count(ptr))
+  if (initialize_query(ptr) != MEMCACHED_SUCCESS)
   {
-    for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
-    {
-      memcached_server_write_instance_st instance=
-        memcached_server_instance_fetch(ptr, x);
-
-      memcached_quit_server(instance, false);
-    }
+    return;
   }
+
+  send_quit(ptr);
 }

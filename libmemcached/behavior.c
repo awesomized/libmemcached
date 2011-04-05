@@ -55,7 +55,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->server_failure_limit= (uint32_t)data;
     break;
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
-    memcached_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
+    send_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     if (data)
     {
       ptr->flags.verify_key= false;
@@ -67,11 +67,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     ptr->flags.no_block= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     ptr->flags.buffer_requests= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USE_UDP:
     if (memcached_server_count(ptr))
@@ -86,11 +86,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     ptr->flags.tcp_nodelay= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
     ptr->flags.tcp_keepalive= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
@@ -144,15 +144,15 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     ptr->send_size= (int32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     ptr->recv_size= (int32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
     ptr->tcp_keepidle= (uint32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 

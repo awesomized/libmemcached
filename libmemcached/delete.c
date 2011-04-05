@@ -1,5 +1,42 @@
-#include "common.h"
-#include "memcached/protocol_binary.h"
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
+ *
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <libmemcached/common.h>
+#include <libmemcached/memcached/protocol_binary.h>
 
 memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
                                     time_t expiration)
@@ -20,12 +57,17 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
                                            time_t expiration)
 {
   bool to_write;
-  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
   memcached_server_write_instance_st instance;
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
+
+  memcached_return_t rc;
+  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
 
   rc= memcached_validate_key_length(key_length,
                                     ptr->flags.binary_protocol);

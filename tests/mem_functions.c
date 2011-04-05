@@ -319,8 +319,6 @@ static test_return_t clone_test(memcached_st *memc)
     { // Test all of the flags
       test_true(memc_clone->flags.no_block == memc->flags.no_block);
       test_true(memc_clone->flags.tcp_nodelay == memc->flags.tcp_nodelay);
-      test_true(memc_clone->flags.reuse_memory == memc->flags.reuse_memory);
-      test_true(memc_clone->flags.use_cache_lookups == memc->flags.use_cache_lookups);
       test_true(memc_clone->flags.support_cas == memc->flags.support_cas);
       test_true(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
       test_true(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);

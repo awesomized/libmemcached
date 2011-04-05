@@ -8,6 +8,10 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
 memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
 {
   memcached_return_t rc;
+  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
 
   LIBMEMCACHED_MEMCACHED_FLUSH_START();
   if (ptr->flags.binary_protocol)
