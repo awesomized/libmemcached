@@ -121,11 +121,13 @@ void server_startup(server_startup_st *construct)
         int status;
 
         snprintf(construct->pid_file[x], FILENAME_MAX, "/tmp/memcached.pidXXXXXX");
-        if (mkstemp(construct->pid_file[x]) == -1)
+        int fd;
+        if ((fd= mkstemp(construct->pid_file[x])) == -1)
         {
           perror("mkstemp");
           return;
         }
+        close(fd);
 
         {
           char *var;
