@@ -67,19 +67,21 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
 {
   bool to_write;
   size_t write_length;
-  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
   memcached_server_write_instance_st instance;
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
+  memcached_return_t rc;
+  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
+
   rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol);
   unlikely (rc != MEMCACHED_SUCCESS)
     return rc;
-
-  unlikely (memcached_server_count(ptr) == 0)
-    return MEMCACHED_NO_SERVERS;
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;

@@ -150,6 +150,12 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
   bool is_master_key_set= false;
 
+  memcached_return_t rc;
+  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
+
   unlikely (ptr->flags.use_udp)
     return MEMCACHED_NOT_SUPPORTED;
 
@@ -157,9 +163,6 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
   if (number_of_keys == 0)
     return MEMCACHED_NOTFOUND;
-
-  if (memcached_server_count(ptr) == 0)
-    return MEMCACHED_NO_SERVERS;
 
   if (ptr->flags.verify_key && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
     return MEMCACHED_BAD_KEY_PROVIDED;
@@ -211,7 +214,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     If a server fails we warn about errors and start all over with sending keys
     to the server.
   */
-  memcached_return_t rc= MEMCACHED_SUCCESS;
+  WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS);
   size_t hosts_connected= 0;
   for (uint32_t x= 0; x < number_of_keys; x++)
   {

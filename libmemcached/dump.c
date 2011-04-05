@@ -90,7 +90,16 @@ error:
 
 memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
-  /* No support for Binary protocol yet */
+  memcached_return_t rc;
+  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
+
+  /* 
+    No support for Binary protocol yet
+    @todo Fix this so that we just flush, switch to ascii, and then go back to binary.
+  */
   if (ptr->flags.binary_protocol)
     return MEMCACHED_FAILURE;
 

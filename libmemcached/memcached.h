@@ -101,10 +101,8 @@ struct memcached_st {
     bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
-    bool reuse_memory:1;
     bool support_cas:1;
     bool tcp_nodelay:1;
-    bool use_cache_lookups:1;
     bool use_sort_hosts:1;
     bool use_udp:1;
     bool verify_key:1;
@@ -129,6 +127,7 @@ struct memcached_st {
   int send_size;
   int recv_size;
   void *user_data;
+  uint64_t query_id;
   uint32_t number_of_replicas;
   hashkit_st distribution_hashkit;
   memcached_result_st result;

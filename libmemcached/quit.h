@@ -22,6 +22,9 @@ void memcached_quit(memcached_st *ptr);
 LIBMEMCACHED_LOCAL
 void memcached_quit_server(memcached_server_st *ptr, bool io_death);
 
+LIBMEMCACHED_LOCAL
+void send_quit(memcached_st *ptr);
+
 #ifdef __cplusplus
 }
 #endif
