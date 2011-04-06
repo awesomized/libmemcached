@@ -2,4 +2,4 @@ project = libmemcached
 version = 0.4.2
 template = pandora-build
 project-type = library
-pandora-version = 0.171
+pandora-version = 0.175
