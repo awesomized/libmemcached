@@ -1,14 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_increment, memcached_decrement, memcached_increment_with_initial, memcached_decrement_with_initial
+************************************************************************************************************
 
 
-memcached_increment, memcached_decrement,
-memcached_increment_with_initial, memcached_decrement_with_initial - Manipulate
-counters
+Manipulate counters
 
 
 *******

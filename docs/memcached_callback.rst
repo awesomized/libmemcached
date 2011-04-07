@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_callback_get, memcached_callback_set
+**********************************************
 
 
-memcached_callback_get, memcached_callback_set - Get and set a callback
+Get and set a callback
 
 
 *******

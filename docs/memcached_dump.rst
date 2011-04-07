@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_dump
+**************
 
 
-memcached_dump - get a list of keys found on memcached servers
+Get a list of keys found on memcached servers
 
 
 *******

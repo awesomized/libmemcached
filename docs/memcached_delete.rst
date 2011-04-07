@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_delete
+****************
 
 
-memcached_delete - Delete a key
+Delete a key
 
 
 *******

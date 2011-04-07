@@ -190,3 +190,10 @@ tests/testhashkit
 tests/testplus
 tests/testudp
 unittests/unittests
+clients/memaslap
+docs/doctest/
+docs/doctrees/
+docs/html/
+docs/man/
+tests/hash_plus
+tests/var/

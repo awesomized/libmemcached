@@ -1,15 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_result_create, memcached_result_free, memcached_result_key_value, memcached_result_key_length, memcached_result_value, memcached_result_length, memcached_result_flags, memcached_result_cas
+******************************************************************************************************************************************************************************************************
 
 
-memcached_result_create, memcached_result_free,
-memcached_result_key_value, memcached_result_key_length,
-memcached_result_value, memcached_result_length,
-memcached_result_flags, memcached_result_cas - Work with memcached_result_st
+Work with memcached_result_st
 
 
 *******

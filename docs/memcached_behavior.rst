@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_behavior_get, memcached_behavior_set
+**********************************************
 
 
-memcached_behavior_get, memcached_behavior_set - Manipulate behavior
+Manipulate behavior
 
 
 *******

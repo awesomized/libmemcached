@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_generate_hash_value
+*****************************
 
 
-memcached_generate_hash_value - Hash a key value
+Hash a key value
 
 
 *******

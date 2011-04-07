@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+libmemcached_examples
+*********************
 
 
-libmemcached_examples - Examples for libmemcached
+Examples for libmemcached
 
 
 ***********

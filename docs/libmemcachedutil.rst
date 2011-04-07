@@ -1,9 +1,8 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+libmemcachedutil
+****************
 
 
 libmemcachedutil - Utility library for libmemcached

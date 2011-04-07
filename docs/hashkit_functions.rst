@@ -1,15 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+hashkit_default, hashkit_fnv1_64, hashkit_fnv1a_64, hashkit_fnv1_32, hashkit_fnv1a_32, hashkit_crc32, hashkit_hsieh, hashkit_murmur, hashkit_jenkins, hashkit_md5
+*****************************************************************************************************************************************************************
 
 
-hashkit_default, hashkit_fnv1_64, hashkit_fnv1a_64, hashkit_fnv1_32,
-hashkit_fnv1a_32, hashkit_crc32, hashkit_hsieh, hashkit_murmur,
-hashkit_jenkins, hashkit_md5 - Various hash functions to use for
-calculating values for keys
+Various hash functions to use for calculating values for keys
 
 
 *******

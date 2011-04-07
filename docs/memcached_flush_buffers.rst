@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_flush_buffers
+***********************
 
 
-memcached_flush_buffers - Flush buffers and send buffered commands
+Flush buffers and send buffered commands
 
 
 *******

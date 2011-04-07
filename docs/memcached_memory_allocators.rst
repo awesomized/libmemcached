@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_set_memory_allocators, memcached_get_memory_allocators, memcached_set_memory_allocators_context
+*********************************************************************************************************
 
 
-memcached_set_memory_allocators, memcached_get_memory_allocators, memcached_set_memory_allocators_context - Manage memory allocator functions
+Manage memory allocator functions
 
 
 *******

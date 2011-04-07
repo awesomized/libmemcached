@@ -1,12 +1,10 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+hashkit_create, hashkit_clone, hashkit_free, hashkit_is_allocated
+*****************************************************************
 
 
-hashkit_create, hashkit_clone, hashkit_free, hashkit_is_allocated -
 Create and destroy hashkit objects
 
 

@@ -3,151 +3,142 @@
 # All paths should be given relative to the root
 
 EXTRA_DIST+= \
+	     docs/*.rst \
 	     docs/_static \
 	     docs/_templates \
 	     docs/conf.py \
-	     ${top_srcdir}/docs/*.rst
+	     docs/libmemcached.rst \
+	     docs/libmemcached_examples.rst \
+	     docs/libmemcachedutil.rst \
+	     docs/memaslap.rst \
+	     docs/memcached_analyze.rst \
+	     docs/memcached_dump.rst \
+	     docs/memcached_flush.rst \
+	     docs/memcached_flush_buffers.rst \
+	     docs/memcached_generate_hash_value.rst \
+	     docs/memcached_quit.rst \
+	     docs/memcached_strerror.rst \
+	     docs/memcached_verbosity.rst \
+	     docs/memcapable.rst \
+	     docs/memcat.rst \
+	     docs/memcp.rst \
+	     docs/memdump.rst \
+	     docs/memerror.rst \
+	     docs/memflush.rst \
+	     docs/memrm.rst \
+	     docs/memslap.rst \
+	     docs/memstat.rst
 
 AUTO_PAGES= \
-	    memcached_increment.pop \
-	    memcached_increment_with_initial.pop \
-	    memcached_decrement.pop \
-	    memcached_decrement_with_initial.pop
+	    memcached_increment.rst \
+	    memcached_increment_with_initial.rst \
+	    memcached_decrement.rst \
+	    memcached_decrement_with_initial.rst
 BUILT_SOURCES += ${AUTO_PAGES}
 
 BEHAVIOR_PAGES= \
-		memcached_behavior_get.pop \
-		memcached_behavior_set.pop
+		memcached_behavior_get.rst \
+		memcached_behavior_set.rst
 BUILT_SOURCES += ${BEHAVIOR_PAGES}
 
 CALLBACK_PAGES= \
-		memcached_callback_get.pop \
-		memcached_callback_set.pop
+		memcached_callback_get.rst \
+		memcached_callback_set.rst
 BUILT_SOURCES += ${CALLBACK_PAGES}
 
 CREATE_PAGES= \
-	      memcached_clone.pop \
-	      memcached_create.pop \
-	      memcached_free.pop \
-	      memcached_servers_reset.pop
+	      memcached_clone.rst \
+	      memcached_free.rst \
+	      memcached_servers_reset.rst
 BUILT_SOURCES += ${CREATE_PAGES}
 
 DELETE_PAGES= \
-	      memcached_delete.pop \
-	      memcached_delete_by_key.pop
+	      memcached_delete_by_key.rst
 BUILT_SOURCES += ${DELETE_PAGES}
 
-GENERIC_PAGES= \
-	       libmemcached.pop \
-	       libmemcached_examples.pop \
-	       libmemcachedutil.pop \
-	       memcached_analyze.pop \
-	       memcached_dump.pop \
-	       memcached_flush.pop \
-	       memcached_flush_buffers.pop \
-	       memcached_generate_hash_value.pop \
-	       memcached_quit.pop \
-	       memcached_strerror.pop \
-	       memcached_verbosity.pop \
-	       memcapable.pop \
-	       memcat.pop \
-	       memcp.pop \
-	       memdump.pop \
-	       memerror.pop \
-	       memflush.pop \
-	       memrm.pop \
-	       memaslap.pop \
-	       memslap.pop \
-	       memstat.pop
-BUILT_SOURCES += ${GENERIC_PAGES}
-
 GET_PAGES= \
-	   memcached_get.pop \
-	   memcached_get_by_key.pop \
-	   memcached_fetch_result.pop \
-	   memcached_fetch_execute.pop \
-	   memcached_mget.pop \
-	   memcached_mget_by_key.pop \
-	   memcached_mget_execute.pop \
-	   memcached_mget_execute_by_key.pop \
-	   memcached_fetch.pop
+	   memcached_get_by_key.rst \
+	   memcached_fetch_result.rst \
+	   memcached_fetch_execute.rst \
+	   memcached_mget.rst \
+	   memcached_mget_by_key.rst \
+	   memcached_mget_execute.rst \
+	   memcached_mget_execute_by_key.rst \
+	   memcached_fetch.rst
 BUILT_SOURCES += ${GET_PAGES}
 
 MEMORY_ALLOCATORS_PAGES= \
-			 memcached_get_memory_allocators.pop \
-			 memcached_set_memory_allocators.pop \
-			 memcached_set_memory_allocators_context.pop
+			 memcached_get_memory_allocators.rst \
+			 memcached_set_memory_allocators.rst \
+			 memcached_set_memory_allocators_context.rst
 BUILT_SOURCES += ${MEMORY_ALLOCATORS_PAGES}
 
 POOL_PAGES= \
-	    memcached_pool_behavior_get.pop \
-	    memcached_pool_behavior_set.pop \
-	    memcached_pool_create.pop \
-	    memcached_pool_destroy.pop \
-	    memcached_pool_pop.pop \
-	    memcached_pool_push.pop
+	    memcached_pool_behavior_get.rst \
+	    memcached_pool_behavior_set.rst \
+	    memcached_pool_create.rst \
+	    memcached_pool_destroy.rst \
+	    memcached_pool_rst.rst \
+	    memcached_pool_push.rst
 BUILT_SOURCES += ${POOL_PAGES}
 
 RESULT_PAGES= \
-	      memcached_result_cas.pop \
-	      memcached_result_create.pop \
-	      memcached_result_flags.pop \
-	      memcached_result_free.pop \
-	      memcached_result_key_length.pop \
-	      memcached_result_key_value.pop \
-	      memcached_result_length.pop \
-	      memcached_result_st.pop \
-	      memcached_result_value.pop
+	      memcached_result_cas.rst \
+	      memcached_result_create.rst \
+	      memcached_result_flags.rst \
+	      memcached_result_free.rst \
+	      memcached_result_key_length.rst \
+	      memcached_result_key_value.rst \
+	      memcached_result_length.rst \
+	      memcached_result_value.rst
 BUILT_SOURCES += ${RESULT_PAGES}
 
 
 SERVER_PAGES= \
-	      memcached_server_count.pop \
-	      memcached_server_cursor.pop \
-	      memcached_server_list.pop \
-	      memcached_server_add.pop \
-	      memcached_server_add_unix_socket.pop \
-	      memcached_server_push.pop
+	      memcached_server_count.rst \
+	      memcached_server_cursor.rst \
+	      memcached_server_list.rst \
+	      memcached_server_add.rst \
+	      memcached_server_add_unix_socket.rst \
+	      memcached_server_push.rst
 BUILT_SOURCES += ${SERVER_PAGES}
 
 SERVER_ST_PAGES= \
-		 memcached_server_list_free.pop \
-		 memcached_server_list_count.pop \
-		 memcached_server_list_append.pop \
-		 memcached_servers_parse.pop
+		 memcached_server_list_free.rst \
+		 memcached_server_list_count.rst \
+		 memcached_server_list_append.rst \
+		 memcached_servers_parse.rst
 BUILT_SOURCES += ${SERVER_ST_PAGES}
 
 SET_PAGES= \
-	   memcached_set.pop \
-	   memcached_set_by_key.pop \
-	   memcached_cas.pop \
-	   memcached_cas_by_key.pop \
-	   memcached_replace.pop \
-	   memcached_replace_by_key.pop \
-	   memcached_add.pop \
-	   memcached_add_by_key.pop \
-	   memcached_prepend.pop \
-	   memcached_prepend_by_key.pop \
-	   memcached_append.pop \
-	   memcached_append_by_key.pop
+	   memcached_set_by_key.rst \
+	   memcached_cas.rst \
+	   memcached_cas_by_key.rst \
+	   memcached_replace.rst \
+	   memcached_replace_by_key.rst \
+	   memcached_add.rst \
+	   memcached_add_by_key.rst \
+	   memcached_prepend.rst \
+	   memcached_prepend_by_key.rst \
+	   memcached_append.rst \
+	   memcached_append_by_key.rst
 BUILT_SOURCES += ${SET_PAGES}
 
 STATS_PAGES= \
-	     memcached_stat.pop \
-	     memcached_stat_execute.pop\
-	     memcached_stat_get_keys.pop\
-	     memcached_stat_get_value.pop \
-	     memcached_stat_servername.pop
+	     memcached_stat.rst \
+	     memcached_stat_execute.rst\
+	     memcached_stat_get_keys.rst\
+	     memcached_stat_get_value.rst \
+	     memcached_stat_servername.rst
 BUILT_SOURCES += ${STATS_PAGES}
 
 USER_DATA_PAGES= \
-		 memcached_get_user_data.pop \
-		 memcached_set_user_data.pop
+		 memcached_get_user_data.rst \
+		 memcached_set_user_data.rst
 BUILT_SOURCES += ${USER_DATA_PAGES}
 
 VERSION_PAGES= \
-	       memcached_version.pop \
-	       memcached_lib_version.pop
+	       memcached_lib_version.rst
 BUILT_SOURCES += ${VERSION_PAGES}
 
 
@@ -155,28 +146,34 @@ BUILT_SOURCES += ${VERSION_PAGES}
 # These are for libhashkit
 #
 HASHKIT_CREATE_PAGES= \
-		      hashkit_is_allocated.pop \
-		      hashkit_create.pop \
-		      hashkit_clone.pop \
-		      hashkit_free.pop
+		      hashkit_is_allocated.rst \
+		      hashkit_clone.rst \
+		      hashkit_free.rst
 BUILT_SOURCES += ${HASHKIT_CREATE_PAGES}
 
 HASHKIT_FUNCTIONS_PAGES= \
-			 hashkit_crc32.pop \
-			 hashkit_fnv1_32.pop \
-			 hashkit_fnv1_64.pop \
-			 hashkit_fnv1a_32.pop \
-			 hashkit_fnv1a_64.pop \
-			 hashkit_functions.pop \
-			 hashkit_hsieh.pop \
-			 hashkit_jenkins.pop \
-			 hashkit_md5.pop \
-			 hashkit_murmur.pop
+			 hashkit_crc32.rst \
+			 hashkit_fnv1_32.rst \
+			 hashkit_fnv1_64.rst \
+			 hashkit_fnv1a_32.rst \
+			 hashkit_fnv1a_64.rst \
+			 hashkit_hsieh.rst \
+			 hashkit_jenkins.rst \
+			 hashkit_md5.rst \
+			 hashkit_murmur.rst
 BUILT_SOURCES += ${HASHKIT_FUNCTIONS_PAGES}
 
 HASHKIT_ST_PAGES= \
-		  hashkit_value.pop
+		  docs/hashkit_value.rst
 BUILT_SOURCES += ${HASHKIT_ST_PAGES}
+
+SASL_PAGES= \
+	    memcached_destroy_sasl_auth_data.rst \
+	    memcached_get_sasl_callbacks.rst \
+	    memcached_sasl_set_auth_data.rst \
+	    memcached_set_sasl_callbacks.rst
+BUILT_SOURCES += ${SASL_PAGES}
+
 
 # Makefile for Sphinx documentation
 #
@@ -195,134 +192,275 @@ ALLSPHINXOPTS   = -d $(SPHINX_BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOP
 if HAVE_RECENT_SPHINX
 
 man_MANS+= \
-           docs/man/hashkit_create.3 \
-	   docs/man/hashkit_functions.3 \
-	   docs/man/hashkit_value.3 \
-	   docs/man/libmemcached_examples.3 \
-	   docs/man/libmemcached.3 \
-	   docs/man/libmemcachedutil.3 \
-	   docs/man/memcached_analyze.3 \
-	   docs/man/memcached_auto.3 \
-	   docs/man/memcached_behavior.3 \
-	   docs/man/memcached_callback.3 \
-	   docs/man/memcached_create.3 \
-	   docs/man/memcached_delete.3 \
-	   docs/man/memcached_dump.3 \
-	   docs/man/memcached_flush_buffers.3 \
-	   docs/man/memcached_flush.3 \
-	   docs/man/memcached_generate_hash_value.3 \
-	   docs/man/memcached_get.3 \
-	   docs/man/memcached_memory_allocators.3 \
-	   docs/man/memcached_pool.3 \
-	   docs/man/memcached_quit.3 \
-	   docs/man/memcached_result_st.3 \
-	   docs/man/memcached_sasl.3 \
-	   docs/man/memcached_servers.3 \
-	   docs/man/memcached_server_st.3 \
-	   docs/man/memcached_set.3 \
-	   docs/man/memcached_stats.3 \
-	   docs/man/memcached_strerror.3 \
-	   docs/man/memcached_user_data.3 \
-	   docs/man/memcached_verbosity.3 \
-	   docs/man/memcached_version.3 \
-	   docs/man/memcapable.1 \
-	   docs/man/memcat.1 \
-	   docs/man/memcp.1 \
-	   docs/man/memdump.1 \
-	   docs/man/memerror.1 \
-	   docs/man/memflush.1 \
-	   docs/man/memrm.1 \
-	   docs/man/memslap.1 \
-	   docs/man/memstat.1
+	   docs/hashkit_clone.3 \
+	   docs/hashkit_crc32.3 \
+	   docs/hashkit_create.3 \
+	   docs/hashkit_fnv1_32.3 \
+	   docs/hashkit_fnv1_64.3 \
+	   docs/hashkit_fnv1a_32.3 \
+	   docs/hashkit_fnv1a_64.3 \
+	   docs/hashkit_free.3 \
+	   docs/hashkit_functions.3 \
+	   docs/hashkit_hsieh.3 \
+	   docs/hashkit_is_allocated.3 \
+	   docs/hashkit_jenkins.3 \
+	   docs/hashkit_md5.3 \
+	   docs/hashkit_murmur.3 \
+	   docs/hashkit_value.3 \
+	   docs/libmemcached.3 \
+	   docs/libmemcached_examples.3 \
+	   docs/memaslap.1 \
+	   docs/memcached_add.3 \
+	   docs/memcached_add_by_key.3 \
+	   docs/memcached_analyze.3 \
+	   docs/memcached_append.3 \
+	   docs/memcached_append_by_key.3 \
+	   docs/memcached_behavior_get.3 \
+	   docs/memcached_behavior_set.3 \
+	   docs/memcached_callback_get.3 \
+	   docs/memcached_callback_set.3 \
+	   docs/memcached_cas.3 \
+	   docs/memcached_cas_by_key.3 \
+	   docs/memcached_clone.3 \
+	   docs/memcached_create.3 \
+	   docs/memcached_decrement.3 \
+	   docs/memcached_decrement_with_initial.3 \
+	   docs/memcached_delete.3 \
+	   docs/memcached_delete_by_key.3 \
+	   docs/memcached_destroy_sasl_auth_data.3 \
+	   docs/memcached_dump.3 \
+	   docs/memcached_fetch.3 \
+	   docs/memcached_fetch_execute.3 \
+	   docs/memcached_fetch_result.3 \
+	   docs/memcached_flush_buffers.3 \
+	   docs/memcached_free.3 \
+	   docs/memcached_generate_hash_value.3 \
+	   docs/memcached_get.3 \
+	   docs/memcached_get_by_key.3 \
+	   docs/memcached_get_memory_allocators.3 \
+	   docs/memcached_get_sasl_callbacks.3 \
+	   docs/memcached_get_user_data.3 \
+	   docs/memcached_increment.3 \
+	   docs/memcached_increment_with_initial.3 \
+	   docs/memcached_lib_version.3 \
+	   docs/memcached_mget.3 \
+	   docs/memcached_mget_by_key.3 \
+	   docs/memcached_mget_execute.3  \
+	   docs/memcached_mget_execute_by_key.3  \
+	   docs/memcached_prepend.3 \
+	   docs/memcached_prepend_by_key.3 \
+	   docs/memcached_quit.3 \
+	   docs/memcached_replace.3 \
+	   docs/memcached_replace_by_key.3 \
+	   docs/memcached_sasl_set_auth_data.3 \
+	   docs/memcached_server_add.3 \
+	   docs/memcached_server_count.3 \
+	   docs/memcached_server_cursor.3 \
+	   docs/memcached_server_list.3 \
+	   docs/memcached_server_list_append.3 \
+	   docs/memcached_server_list_count.3 \
+	   docs/memcached_server_list_free.3 \
+	   docs/memcached_server_push.3 \
+	   docs/memcached_servers_parse.3 \
+	   docs/memcached_set.3 \
+	   docs/memcached_set_by_key.3 \
+	   docs/memcached_set_memory_allocators.3 \
+	   docs/memcached_set_sasl_callbacks.3 \
+	   docs/memcached_set_user_data.3 \
+	   docs/memcached_stat.3 \
+	   docs/memcached_stat_execute.3 \
+	   docs/memcached_stat_get_keys.3 \
+	   docs/memcached_stat_get_value.3 \
+	   docs/memcached_stat_servername.3 \
+	   docs/memcached_strerror.3 \
+	   docs/memcached_verbosity.3 \
+	   docs/memcached_version.3 \
+	   docs/memcapable.1 \
+	   docs/memcat.1 \
+	   docs/memcp.1 \
+	   docs/memdump.1 \
+	   docs/memerror.1 \
+	   docs/memflush.1 \
+	   docs/memrm.1 \
+	   docs/memslap.1 \
+	   docs/memstat.1
 
 DISTCLEANFILES+= \
-                 docs/man/hashkit_create.3 \
-		 docs/man/hashkit_functions.3 \
-		 docs/man/hashkit_value.3 \
-		 docs/man/libmemcached_examples.3 \
-		 docs/man/libmemcached.3 \
-		 docs/man/libmemcachedutil.3 \
-		 docs/man/memcached_analyze.3 \
-		 docs/man/memcached_auto.3 \
-		 docs/man/memcached_behavior.3 \
-		 docs/man/memcached_callback.3 \
-		 docs/man/memcached_create.3 \
-	         docs/man/memcached_delete.3 \
-		 docs/man/memcached_dump.3 \
-		 docs/man/memcached_flush_buffers.3 \
-		 docs/man/memcached_flush.3 \
-		 docs/man/memcached_generate_hash_value.3 \
-		 docs/man/memcached_get.3 \
-		 docs/man/memcached_memory_allocators.3 \
-		 docs/man/memcached_pool.3 \
-		 docs/man/memcached_quit.3 \
-		 docs/man/memcached_result_st.3 \
-		 docs/man/memcached_sasl.3 \
-		 docs/man/memcached_servers.3 \
-		 docs/man/memcached_server_st.3 \
-		 docs/man/memcached_set.3 \
-		 docs/man/memcached_stats.3 \
-		 docs/man/memcached_strerror.3 \
-		 docs/man/memcached_user_data.3 \
-		 docs/man/memcached_verbosity.3 \
-		 docs/man/memcached_version.3 \
-		 docs/man/memcapable.1 \
-		 docs/man/memcat.1 \
-		 docs/man/memcp.1 \
-		 docs/man/memdump.1 \
-		 docs/man/memerror.1 \
-		 docs/man/memflush.1 \
-		 docs/man/memrm.1 \
-		 docs/man/memslap.1 \
-		 docs/man/memstat.1
+		 docs/hashkit_clone.3 \
+		 docs/hashkit_crc32.3 \
+		 docs/hashkit_create.3 \
+		 docs/hashkit_fnv1_32.3 \
+		 docs/hashkit_fnv1_64.3 \
+		 docs/hashkit_fnv1a_32.3 \
+		 docs/hashkit_fnv1a_64.3 \
+		 docs/hashkit_free.3 \
+		 docs/hashkit_functions.3 \
+		 docs/hashkit_hsieh.3 \
+		 docs/hashkit_is_allocated.3 \
+		 docs/hashkit_jenkins.3 \
+		 docs/hashkit_md5.3 \
+		 docs/hashkit_murmur.3 \
+		 docs/hashkit_value.3 \
+		 docs/libmemcached.3 \
+		 docs/libmemcached_examples.3 \
+		 docs/memaslap.1 \
+		 docs/memcached_add.3 \
+		 docs/memcached_add_by_key.3 \
+		 docs/memcached_analyze.3 \
+		 docs/memcached_append.3 \
+		 docs/memcached_append_by_key.3 \
+		 docs/memcached_behavior_get.3 \
+		 docs/memcached_behavior_set.3 \
+		 docs/memcached_callback_get.3 \
+		 docs/memcached_callback_set.3 \
+		 docs/memcached_cas.3 \
+		 docs/memcached_cas_by_key.3 \
+		 docs/memcached_clone.3 \
+		 docs/memcached_create.3 \
+		 docs/memcached_decrement.3 \
+		 docs/memcached_decrement_with_initial.3 \
+		 docs/memcached_delete.3 \
+		 docs/memcached_delete_by_key.3 \
+		 docs/memcached_destroy_sasl_auth_data.3 \
+		 docs/memcached_dump.3 \
+		 docs/memcached_fetch.3 \
+		 docs/memcached_fetch_execute.3 \
+		 docs/memcached_fetch_result.3 \
+		 docs/memcached_flush_buffers.3 \
+		 docs/memcached_free.3 \
+		 docs/memcached_generate_hash_value.3 \
+		 docs/memcached_get.3 \
+		 docs/memcached_get_by_key.3 \
+		 docs/memcached_get_memory_allocators.3 \
+		 docs/memcached_get_sasl_callbacks.3 \
+		 docs/memcached_get_user_data.3 \
+		 docs/memcached_increment.3 \
+		 docs/memcached_increment_with_initial.3 \
+		 docs/memcached_lib_version.3 \
+		 docs/memcached_mget.3 \
+		 docs/memcached_mget_by_key.3 \
+		 docs/memcached_mget_execute.3  \
+		 docs/memcached_mget_execute_by_key.3  \
+		 docs/memcached_prepend.3 \
+		 docs/memcached_prepend_by_key.3 \
+		 docs/memcached_quit.3 \
+		 docs/memcached_replace.3 \
+		 docs/memcached_replace_by_key.3 \
+		 docs/memcached_sasl_set_auth_data.3 \
+		 docs/memcached_server_add.3 \
+		 docs/memcached_server_count.3 \
+		 docs/memcached_server_cursor.3 \
+		 docs/memcached_server_list.3 \
+		 docs/memcached_server_list_append.3 \
+		 docs/memcached_server_list_count.3 \
+		 docs/memcached_server_list_free.3 \
+		 docs/memcached_server_push.3 \
+		 docs/memcached_servers_parse.3 \
+		 docs/memcached_set.3 \
+		 docs/memcached_set_by_key.3 \
+		 docs/memcached_set_memory_allocators.3 \
+		 docs/memcached_set_sasl_callbacks.3 \
+		 docs/memcached_set_user_data.3 \
+		 docs/memcached_stat.3 \
+		 docs/memcached_stat_execute.3 \
+		 docs/memcached_stat_get_keys.3 \
+		 docs/memcached_stat_get_value.3 \
+		 docs/memcached_stat_servername.3 \
+		 docs/memcached_strerror.3 \
+		 docs/memcached_verbosity.3 \
+		 docs/memcached_version.3 \
+		 docs/memcapable.1 \
+		 docs/memcat.1 \
+		 docs/memcp.1 \
+		 docs/memdump.1 \
+		 docs/memerror.1 \
+		 docs/memflush.1 \
+		 docs/memrm.1 \
+		 docs/memslap.1 \
+		 docs/memstat.1
 
-man_MANS+= \
-           memcached_destroy_sasl_auth_data.3 \
-           memcached_get_sasl_callbacks.3 \
-           memcached_sasl_set_auth_data.3 \
-           memcached_set_sasl_callbacks.3
 
-HTML_FILES+= \
-           memcached_destroy_sasl_auth_data.html \
-           memcached_get_sasl_callbacks.html \
-           memcached_sasl_set_auth_data.html \
-           memcached_set_sasl_callbacks.html
-
-SASL_PAGES= \
-           memcached_destroy_sasl_auth_data.rst \
-           memcached_get_sasl_callbacks.rst \
-           memcached_sasl_set_auth_data.rst \
-           memcached_set_sasl_callbacks.rst
-BUILT_SOURCES += ${SASL_PAGES}
-
+docs/man/hashkit_clone.3: man
+docs/man/hashkit_crc32.3: man
 docs/man/hashkit_create.3: man
+docs/man/hashkit_fnv1_32.3: man
+docs/man/hashkit_fnv1_64.3: man
+docs/man/hashkit_fnv1a_32.3: man
+docs/man/hashkit_fnv1a_64.3: man
+docs/man/hashkit_free.3: man
 docs/man/hashkit_functions.3: man
+docs/man/hashkit_hsieh.3: man
+docs/man/hashkit_is_allocated.3: man
+docs/man/hashkit_jenkins.3: man
+docs/man/hashkit_md5.3: man
+docs/man/hashkit_murmur.3: man
 docs/man/hashkit_value.3: man
-docs/man/libmemcached_examples.3: man
 docs/man/libmemcached.3: man
-docs/man/libmemcachedutil.3: man
+docs/man/libmemcached_examples.3: man
+docs/man/memaslap.1: man
+docs/man/memcached_add.3: man
+docs/man/memcached_add_by_key.3: man
 docs/man/memcached_analyze.3: man
-docs/man/memcached_auto.3: man
-docs/man/memcached_behavior.3: man
-docs/man/memcached_callback.3: man
+docs/man/memcached_append.3: man
+docs/man/memcached_append_by_key.3: man
+docs/man/memcached_behavior_get.3: man
+docs/man/memcached_behavior_set.3: man
+docs/man/memcached_callback_get.3: man
+docs/man/memcached_callback_set.3: man
+docs/man/memcached_cas.3: man
+docs/man/memcached_cas_by_key.3: man
+docs/man/memcached_clone.3: man
 docs/man/memcached_create.3: man
+docs/man/memcached_decrement.3: man
+docs/man/memcached_decrement_with_initial.3: man
 docs/man/memcached_delete.3: man
+docs/man/memcached_delete_by_key.3: man
+docs/man/memcached_destroy_sasl_auth_data.3: man
 docs/man/memcached_dump.3: man
+docs/man/memcached_fetch.3: man
+docs/man/memcached_fetch_execute.3: man
+docs/man/memcached_fetch_result.3: man
 docs/man/memcached_flush_buffers.3: man
-docs/man/memcached_flush.3: man
+docs/man/memcached_free.3: man
 docs/man/memcached_generate_hash_value.3: man
 docs/man/memcached_get.3: man
-docs/man/memcached_memory_allocators.3: man
-docs/man/memcached_pool.3: man
+docs/man/memcached_get_by_key.3: man
+docs/man/memcached_get_memory_allocators.3: man
+docs/man/memcached_get_sasl_callbacks.3: man
+docs/man/memcached_get_user_data.3: man
+docs/man/memcached_increment.3: man
+docs/man/memcached_increment_with_initial.3: man
+docs/man/memcached_lib_version.3: man
+docs/man/memcached_mget.3: man
+docs/man/memcached_mget_by_key.3: man
+docs/man/memcached_mget_execute.3: man
+docs/man/memcached_mget_execute_by_key.3: man
+docs/man/memcached_prepend.3: man
+docs/man/memcached_prepend_by_key.3: man
 docs/man/memcached_quit.3: man
-docs/man/memcached_result_st.3: man
-docs/man/memcached_sasl.3: man
-docs/man/memcached_servers.3: man
-docs/man/memcached_server_st.3: man
+docs/man/memcached_replace.3: man
+docs/man/memcached_replace_by_key.3: man
+docs/man/memcached_sasl_set_auth_data.3: man
+docs/man/memcached_server_add.3: man
+docs/man/memcached_server_count.3: man
+docs/man/memcached_server_cursor.3: man
+docs/man/memcached_server_list.3: man
+docs/man/memcached_server_list_append.3: man
+docs/man/memcached_server_list_count.3: man
+docs/man/memcached_server_list_free.3: man
+docs/man/memcached_server_push.3: man
+docs/man/memcached_servers_parse.3: man
 docs/man/memcached_set.3: man
-docs/man/memcached_stats.3: man
+docs/man/memcached_set_by_key.3: man
+docs/man/memcached_set_memory_allocators.3: man
+docs/man/memcached_set_sasl_callbacks.3: man
+docs/man/memcached_set_user_data.3: man
+docs/man/memcached_stat.3: man
+docs/man/memcached_stat_execute.3: man
+docs/man/memcached_stat_get_keys.3: man
+docs/man/memcached_stat_get_value.3: man
+docs/man/memcached_stat_servername.3: man
 docs/man/memcached_strerror.3: man
-docs/man/memcached_user_data.3: man
 docs/man/memcached_verbosity.3: man
 docs/man/memcached_version.3: man
 docs/man/memcapable.1: man
@@ -393,17 +531,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(SPHINX_BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(SPHINX_BUILDDIR)/qthelp/Drizzle.qhcp"
+	@echo "# qcollectiongenerator $(SPHINX_BUILDDIR)/qthelp/Libmemcached.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(SPHINX_BUILDDIR)/qthelp/Drizzle.qhc"
+	@echo "# assistant -collectionFile $(SPHINX_BUILDDIR)/qthelp/Libmemcached.qhc"
 
 devhelp:
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/Drizzle"
-	@echo "# ln -s $(SPHINX_BUILDDIR)/devhelp $$HOME/.local/share/devhelp/Drizzle"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/Libmemcached"
+	@echo "# ln -s $(SPHINX_BUILDDIR)/devhelp $$HOME/.local/share/devhelp/Libmemcached"
 	@echo "# devhelp"
 
 epub:
@@ -452,84 +590,79 @@ doctest:
 endif
 
 ${CREATE_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_create.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_create.rst $@
 
 ${SET_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_set.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_set.rst $@
 
 ${DELETE_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_delete.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_delete.rst $@
 
 ${AUTO_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_auto.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_auto.rst $@
 
 ${GET_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_get.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_get.rst $@
 
 ${SERVER_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_servers.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_servers.rst $@
 
 ${SERVER_ST_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_server_st.pod ${top_builddir}/docs/$@
-
-${GENERIC_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/$*.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_server_st.rst $@
 
 ${BEHAVIOR_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_behavior.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_behavior.rst $@
 
 ${CALLBACK_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_callback.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_callback.rst $@
 
 ${STATS_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_stats.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_stats.rst $@
 
 ${RESULT_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_result_st.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_result_st.rst $@
 
 ${VERSION_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_version.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_version.rst $@
 
 ${MEMORY_ALLOCATORS_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_memory_allocators.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_memory_allocators.rst $@
 
 ${USER_DATA_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_user_data.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_user_data.rst $@
 
 ${POOL_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_pool.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_pool.rst $@
 
 ${HASHKIT_CREATE_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/hashkit_create.pod ${top_builddir}/docs/$@
-
+	@cd docs && rm -f $@
+	@cd docs && cp hashkit_create.rst $@
 
 ${HASHKIT_FUNCTIONS_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/hashkit_functions.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp hashkit_functions.rst $@
 
 ${HASHKIT_ST_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/hashkit_value.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp hashkit_value.rst $@
 
 ${SASL_PAGES}:
-	@rm -f $@
-	ln -s ${top_srcdir}/docs/memcached_sasl.pod ${top_builddir}/docs/$@
+	@cd docs && rm -f $@
+	@cd docs && cp memcached_sasl.rst $@
 
 

@@ -1,13 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_get, memcached_mget, memcached_fetch, memcached_mget_execute, memcached_mget_execute_by_key
+*****************************************************************************************************
 
 
-memcached_get, memcached_mget, memcached_fetch, memcached_mget_execute,
-memcached_mget_execute_by_key - Get a value
+Get a value
 
 
 *******

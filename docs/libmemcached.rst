@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+libmemcached
+************
 
 
-libmemcached - Client library for memcached
+Client library for memcached
 
 
 *******

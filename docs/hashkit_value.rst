@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+hashkit_value
+*************
 
 
-hashkit_value - Generate a value for the given key
+Generate a value for the given key
 
 
 *******

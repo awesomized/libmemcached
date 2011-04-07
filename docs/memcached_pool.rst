@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_pool_create, memcached_pool_destroy, memcached_pool_push, memcached_pool_pop
+**************************************************************************************
 
 
-memcached_pool_create, memcached_pool_destroy, memcached_pool_push, memcached_pool_pop - Manage pools
+Manage pools
 
 
 *******

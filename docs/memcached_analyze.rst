@@ -1,9 +1,8 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_analyze
+*****************
 
 
 memcached_analyze - Analyze server information

@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_flush
+***************
 
 
-memcached_flush - wipe contents of memcached servers
+Wipe contents of memcached servers
 
 
 *******

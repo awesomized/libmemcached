@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_quit
+**************
 
 
-memcached_quit - Disconnect from all servers
+Disconnect from all servers
 
 
 *******

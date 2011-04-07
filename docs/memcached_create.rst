@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_create, memcached_free, memcached_clone, memcached_servers_reset
+**************************************************************************
 
 
-memcached_create, memcached_free, memcached_clone, memcached_servers_reset- Create a memcached_st structure
+Create a memcached_st structure
 
 
 *******
