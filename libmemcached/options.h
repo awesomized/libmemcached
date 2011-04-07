@@ -48,12 +48,12 @@ LIBMEMCACHED_API
   memcached_return_t memcached_parse_configuration(memcached_st *ptr, const char *option_string, size_t length);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_parse_configure_file(memcached_st *ptr, const char *filename, size_t filename_length);
-
-LIBMEMCACHED_API
   void memcached_set_configuration_file(memcached_st *self, const char *filename, size_t filename_length);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_parse_configure_file(memcached_st *ptr, const char *filename, size_t filename_length);
+
+LIBMEMCACHED_LOCAL
   const char *memcached_parse_filename(memcached_st *memc);
 
 LIBMEMCACHED_LOCAL
