@@ -3,11 +3,7 @@
 # All paths should be given relative to the root
 
 DISTCLEANFILES+= \
-		 libmemcached/options/parser.output \
-		 libmemcached/options/parser.cc \
-		 libmemcached/options/parser.h \
-		 libmemcached/options/scanner.cc \
-		 libmemcached/options/scanner.h
+		 libmemcached/options/parser.output
 
 noinst_HEADERS+= \
 		 libmemcached/options/context.h \
