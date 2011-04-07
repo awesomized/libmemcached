@@ -103,7 +103,6 @@ AC_SEARCH_LIBS(gethostbyname, nsl)
 
 AC_CHECK_FUNCS([getline])
 
-PANDORA_HAVE_LIBGTEST
 PANDORA_HAVE_LIBEVENT
 my_saved_libs="$LIBS"
 LIBS=
@@ -137,19 +136,6 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
 	              [1],
                       [Define to true if you want to use functions from atomic.h])])])
 
-AC_ARG_WITH([docs],
-  [AS_HELP_STRING([--with-docs],
-    [Generate documentation (yes|no) @<:@default=yes@:>@])],
-  [with_docs=$withval],
-  [with_docs=yes])
-
-AS_IF([test "$with_docs" = "yes"],
-  [
-    REQUIRE_POD2MAN
-    REQUIRE_PODCHECKER
-  ])
-AM_CONDITIONAL(BUILD_DOCS, test "$with_docs" = "yes")
-
 AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
@@ -163,7 +149,6 @@ SOCKET_SEND_FLAGS
 
 AC_CONFIG_FILES([
   Makefile
-  docs/Makefile
   libhashkit/configure.h
   libmemcached/configure.h
   support/libmemcached.pc
@@ -197,13 +182,3 @@ case "$host_os" in
   ;;
 esac
 
-AS_IF(test "$with_docs" = "no",
-  [
-    echo "*****"
-    echo "*"
-    echo "*  WARNING: You are not generating any documentation."
-    echo "*           Please don't ship libmemcached to an end user"
-    echo "*           without documentation..."
-    echo "*"
-    echo "*****"
-  ])

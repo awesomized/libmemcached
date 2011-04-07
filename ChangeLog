@@ -2,6 +2,7 @@
   * Fix calls to auto methods so that if value is not passed in nothing bad happens.
   * New parser calls for generating memcached_st objects.
   * New error system.
+  * Added new documentation system.
   * A behavior change has been now made that if you specify a weight for any
   server, we enable the weight flag and do weight balancing.
 
