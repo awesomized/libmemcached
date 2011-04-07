@@ -15,6 +15,7 @@ noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.h \
+		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
 		 libmemcached/is.h \
@@ -43,7 +44,6 @@ nobase_include_HEADERS+= \
 			 libmemcached/flush_buffers.h \
 			 libmemcached/get.h \
 			 libmemcached/hash.h \
-			 libmemcached/initialize_query.h \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
 			 libmemcached/memcached/protocol_binary.h \
