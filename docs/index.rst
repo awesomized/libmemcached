@@ -11,9 +11,25 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   hashkit_clone
    hashkit_create
    hashkit_functions
    hashkit_value
+   hashkit_crc32
+   hashkit_fnv1_32
+   hashkit_fnv1_64
+   hashkit_fnv1a_32
+   hashkit_fnv1a_64
+   hashkit_free
+   hashkit_hsieh
+   hashkit_is_allocated
+   hashkit_jenkins
+   hashkit_md5
+   hashkit_murmur
+   memcached_destroy_sasl_auth_data
+   memcached_get_sasl_callbacks
+   memcached_sasl_set_auth_data
+   memcached_set_sasl_callbacks
    libmemcached
    libmemcached_examples
    libmemcachedutil

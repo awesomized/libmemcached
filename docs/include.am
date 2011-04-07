@@ -285,6 +285,8 @@ man_MANS+= \
 	   docs/memslap.1 \
 	   docs/memstat.1
 
+man: man_MANS
+
 DISTCLEANFILES+= \
 		 docs/hashkit_clone.3 \
 		 docs/hashkit_crc32.3 \
