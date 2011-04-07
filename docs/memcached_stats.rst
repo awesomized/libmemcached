@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_stat, memcached_stat_servername, memcached_stat_get_value, memcached_stat_get_keys
+********************************************************************************************
 
 
-memcached_stat, memcached_stat_servername, memcached_stat_get_value, memcached_stat_get_keys - Get memcached statistics
+Get memcached statistics
 
 
 *******

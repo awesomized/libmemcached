@@ -1,13 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_set_sasl_callbacks, memcached_get_sasl_callbacks, memcached_sasl_set_auth_data, memcached_destroy_sasl_auth_data
+**************************************************************************************************************************
 
 
-memcached_set_sasl_callbacks, memcached_get_sasl_callbacks,
-memcached_sasl_set_auth_data, memcached_destroy_sasl_auth_data - SASL support
+SASL support
 
 
 *******

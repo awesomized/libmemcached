@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcp
+*****
 
 
-memcp - Copies files to a collection of memcached servers
+Copies files to a collection of memcached servers
 
 
 ********

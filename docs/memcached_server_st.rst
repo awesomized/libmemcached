@@ -1,13 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_server_list_free, memcached_server_list_append, memcached_server_list_count, memcached_servers_parse
+**************************************************************************************************************
 
 
-memcached_server_list_free, memcached_server_list_append,
-memcached_server_list_count, memcached_servers_parse - Manage server list
+Manage server list
 
 
 *******

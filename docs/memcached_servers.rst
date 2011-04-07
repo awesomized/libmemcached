@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect, memcached_server_cursor
+*********************************************************************************************************************************************************
 
 
-memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect, memcached_server_cursor - Manage server list
+Manage server list
 
 
 *******

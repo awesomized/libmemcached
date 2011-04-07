@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcapable
+**********
 
 
-memcapable - Check memcached server capabilities
+Check memcached server capabilities
 
 
 ********

@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memerror
+********
 
 
-memerror - Translate a memcached error code to a string
+Translate a memcached error code to a string
 
 
 ********

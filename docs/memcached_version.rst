@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_lib_version, memcached_version
+****************************************
 
 
-memcached_lib_version, memcached_version - Get library version
+Get library version
 
 
 *******

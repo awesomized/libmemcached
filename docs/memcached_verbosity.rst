@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_verbosity
+*******************
 
 
-memcached_verbosity - Modifiy verbosity of servers
+Modifiy verbosity of servers
 
 
 *******

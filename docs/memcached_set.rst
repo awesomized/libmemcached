@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_set, memcached_add, memcached_replace
+***********************************************
 
 
-memcached_set, memcached_add, memcached_replace - Store value on server
+Store value on server
 
 
 *******

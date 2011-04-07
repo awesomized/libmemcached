@@ -1,9 +1,8 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memstat
+*******
 
 
 memstat - Display the operating status of a single or group of memcached servers

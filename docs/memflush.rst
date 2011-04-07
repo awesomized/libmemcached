@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memflush
+********
 
 
-memflush - Reset a server or list of servers
+Reset a server or list of servers
 
 
 ********

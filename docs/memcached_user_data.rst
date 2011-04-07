@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_set_user_data, memcached_get_user_data
+************************************************
 
 
-memcached_set_user_data, memcached_get_user_data - Manage user specific data
+Manage user specific data
 
 
 *******

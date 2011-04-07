@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memdump
+*******
 
 
-memdump - Dump a list of keys from a server.
+Dump a list of keys from a server.
 
 
 ********

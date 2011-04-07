@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcat
+******
 
 
-memcat - Copy a set of keys to stdout
+Copy a set of keys to stdout
 
 
 ********

@@ -1,12 +1,11 @@
 .. highlight:: perl
 
 
-****
-NAME
-****
+memcached_strerror
+******************
 
 
-memcached_strerror - Get error string
+Get error string
 
 
 *******
