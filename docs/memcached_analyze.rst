@@ -5,7 +5,7 @@ memcached_analyze
 *****************
 
 
-memcached_analyze - Analyze server information
+Analyze server information
 
 
 *******
