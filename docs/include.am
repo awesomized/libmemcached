@@ -10,7 +10,6 @@ EXTRA_DIST+= \
 	     docs/libmemcached.rst \
 	     docs/libmemcached_examples.rst \
 	     docs/libmemcachedutil.rst \
-	     docs/memaslap.rst \
 	     docs/memcached_analyze.rst \
 	     docs/memcached_dump.rst \
 	     docs/memcached_flush.rst \
@@ -63,7 +62,6 @@ man_MANS+= \
 	   docs/man/hashkit_value.3 \
 	   docs/man/libmemcached.3 \
 	   docs/man/libmemcached_examples.3 \
-	   docs/man/memaslap.1 \
 	   docs/man/memcached_add.3 \
 	   docs/man/memcached_add_by_key.3 \
 	   docs/man/memcached_analyze.3 \
@@ -243,7 +241,6 @@ docs/man/hashkit_murmur.3: man
 docs/man/hashkit_value.3: man
 docs/man/libmemcached.3: man
 docs/man/libmemcached_examples.3: man
-docs/man/memaslap.1: man
 docs/man/memcached_add.3: man
 docs/man/memcached_add_by_key.3: man
 docs/man/memcached_analyze.3: man
