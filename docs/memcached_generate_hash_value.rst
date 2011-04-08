@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    uint32_t
      memcached_generate_hash_value (const char *key,

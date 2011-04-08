@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    const memcached_server_instance_st
      memcached_server_list (memcached_st *ptr);

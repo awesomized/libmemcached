@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    memcached_stat_st *memcached_stat (memcached_st *ptr,
                                       char *args,

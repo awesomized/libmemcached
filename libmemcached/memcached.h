@@ -156,7 +156,7 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
-  struct memcached_error_st *error_messages;
+  struct memcached_error_t *error_messages;
   struct memcached_array_st *prefix_key;
   struct {
     struct memcached_array_st *filename;

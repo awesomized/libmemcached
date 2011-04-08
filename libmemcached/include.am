@@ -92,7 +92,7 @@ libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
-					      libmemcached/error.c \
+					      libmemcached/error.cc \
 					      libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la

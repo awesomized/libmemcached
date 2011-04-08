@@ -336,8 +336,8 @@ test_return_t memcached_parse_configure_file_test(memcached_st*)
 
   test_true(memc_ptr);
 
-  memcached_return_t rc= memcached_parse_configure_file(memc_ptr, memcached_string_with_size(SUPPORT_EXAMPLE_CNF));
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc_ptr) ? memcached_last_error_message(memc_ptr) : memcached_strerror(NULL, rc));
+  memcached_set_configuration_file(memc_ptr, memcached_string_with_size(SUPPORT_EXAMPLE_CNF));
+  memcached_reset(memc_ptr);
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;
