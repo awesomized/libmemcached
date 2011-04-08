@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    memcached_return_t
      memcached_set (memcached_st *ptr,

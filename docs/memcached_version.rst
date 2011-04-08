@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    const char *
      memcached_lib_version (void) 

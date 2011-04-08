@@ -1,0 +1,187 @@
+.TH "LIBMEMCACHED" "3" "April 07, 2011" "0.47" "libmemcached"
+.SH NAME
+libmemcached \- libmemcached Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructeredText.
+.
+.sp
+Client library for memcached
+.SH LIBRARY
+.sp
+C Client Library for memcached (libmemcached, \-lmemcached)
+.SH SYNOPSIS
+.sp
+.nf
+.ft C
+#include <libmemcached/memcached.h>
+.ft P
+.fi
+.SH DESCRIPTION
+.sp
+"Memcached is a high\-performance, distributed memory object caching
+system, generic in nature, but intended for use in speeding up dynamic web
+applications by alleviating database load." \fI\%http://danga.com/memcached/\fP
+.sp
+\fBlibmemcached\fP is a small, thread\-safe client library for the
+memcached protocol. The code has all been written with an eye to allow
+for both web and embedded usage. It handles the work behind routing
+particular keys to specific servers that you specify (and values are
+matched based on server order as supplied by you). It implements both
+a modula and consistent method of object distribution.
+.sp
+There are multiple implemented routing and hashing methods. See the
+memcached_behavior_set() manpage.
+.sp
+All operations are performed against a \fBmemcached_st\fP structure.
+These structures can either be dynamically allocated or statically
+allocated and then initialized by memcached_create(). Functions have been
+written in order to encapsulate the \fBmemcached_st\fP. It is not
+recommended that you operate directly against the structure.
+.sp
+Nearly all functions return a \fBmemcached_return_t\fP value.
+This value can be translated to a printable string with memcached_strerror(3).
+.sp
+Partitioning based on keys is supported in the library. Using the key partioning
+functions it is possible to group sets of object onto servers.
+.sp
+\fBmemcached_st\fP structures are thread\-safe, but each thread must
+contain its own structure (that is, if you want to share these among
+threads you must provide your own locking). No global variables are
+used in this library.
+.sp
+If you are working with GNU autotools you will want to add the following to
+your configure.ac to properly include libmemcached in your application.
+.sp
+PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
+AC_SUBST(DEPS_CFLAGS)
+AC_SUBST(DEPS_LIBS)
+.sp
+Some features of the library must be enabled through memcached_behavior_set().
+.sp
+Hope you enjoy it!
+.SH CONSTANTS
+.sp
+A number of constants have been provided for in the library.
+.sp
+MEMCACHED_DEFAULT_PORT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+The default port used by memcached(3).
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MAX_KEY
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Default maximum size of a key (which includes the null pointer). Master keys
+have no limit, this only applies to keys used for storage.
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MAX_KEY
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Default size of key (which includes the null pointer).
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_STRIDE
+.INDENT 0.0
+.INDENT 3.5
+.sp
+This is the "stride" used in the consistent hash used between replicas.
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MAX_HOST_LENGTH
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Maximum allowed size of the hostname.
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_VERSION_STRING
+.INDENT 0.0
+.INDENT 3.5
+.sp
+String value of libmemcached version such as "1.23.4"
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MAJOR_VERSION
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Major version value. Such as 1.23.4, would be 1
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MINOR_VERSION
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Major version value. Such as 1.23.4, would be 23
+.UNINDENT
+.UNINDENT
+.sp
+MEMCACHED_MICRO_VERSION
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Major version value. Such as 1.23.4, would be 4
+.UNINDENT
+.UNINDENT
+.SH THREADS AND PROCESSES
+.sp
+When using threads or forked processes it is important to keep an instance
+of \fBmemcached_st\fP per process or thread. Without creating your own locking
+structures you can not share a single \fBmemcached_st\fP. You can though call
+memcached_quit(3) on a \fBmemcached_st\fP and then use the resulting cloned
+structure.
+.SH HOME
+.sp
+To find out more information please check:
+\fI\%https://launchpad.net/libmemcached\fP
+.SH AUTHOR
+.sp
+Brian Aker, <\fI\%brian@tangent.org\fP>
+.SH SEE ALSO
+.sp
+memcached(1) libmemcached_examples(3) libmemcached(1) memcat(1) memcp(1) memflush(1) memrm(1) memslap(1) memstat(1) memcached_fetch(3) memcached_replace(3) memcached_server_list_free(3) libmemcached_examples(3) memcached_clone(3) memcached_free(3) memcached_server_add(3) memcached_server_push(3) memcached_add(3) memcached_get(3) memcached_server_count(3) memcached_servers_parse(3) memcached_create(3) memcached_increment(3) memcached_server_list(3) memcached_set(3) memcached_decrement(3) memcached_mget(3) memcached_server_list_append(3) memcached_strerror(3) memcached_delete(3) memcached_quit(3) memcached_server_list_count(3) memcached_verbosity(3) memcached_server_add_unix_socket(3) memcached_result_create(3)  memcached_result_free(3)  memcached_result_key_value(3)  memcached_result_key_length(3)  memcached_result_value(3)  memcached_result_length(3)  memcached_result_flags(3)  memcached_result_cas(3) memcached_result_st(3) memcached_append(3) memcached_prepend(3) memcached_fetch_result(3) memerror(1) memcached_get_by_key(3) memcached_mget_by_key(3) memcached_delete_by_key(3) memcached_fetch_execute(3) memcached_callback_get(3) memcached_callback_set(3) memcached_version(3) memcached_lib_version(3) memcached_result_set_value(3) memcached_dump(3) memdump(1) memcached_set_memory_allocators(3) memcached_get_memory_allocators(3) memcached_get_user_data(3) memcached_set_user_data(3)
+.SH AUTHOR
+Brian Aker
+.SH COPYRIGHT
+2011, Brian Aker
+.\" Generated by docutils manpage writer.
+.\" 
+.

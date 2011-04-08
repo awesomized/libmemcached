@@ -160,8 +160,6 @@ test_return_t string_alloc_append_multiple(memcached_st *memc)
   memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, MEMCACHED_SUCCESS)));
   memcached_string_append(error_string, memcached_string_with_size(")"));
 
-  memcached_set_error_string(memc, MEMCACHED_FAILURE, memcached_string_value(error_string), memcached_string_length(error_string));
-
   memcached_string_free(error_string);
 
   return TEST_SUCCESS;

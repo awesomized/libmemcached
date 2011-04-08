@@ -24,7 +24,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <memcached.h>
+   #include <libmemcached/memcached.h>
  
    void memcached_set_sasl_callbacks(memcached_st *ptr,
                                      const sasl_callback_t *callbacks)

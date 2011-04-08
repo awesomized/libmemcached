@@ -17,7 +17,7 @@ typedef struct memcached_stat_st memcached_stat_st;
 typedef struct memcached_analysis_st memcached_analysis_st;
 typedef struct memcached_result_st memcached_result_st;
 typedef struct memcached_array_st memcached_array_st;
-typedef struct memcached_error_st memcached_error_st;
+typedef struct memcached_error_t memcached_error_t;
 
 // All of the flavors of memcache_server_st
 typedef struct memcached_server_st memcached_server_st;

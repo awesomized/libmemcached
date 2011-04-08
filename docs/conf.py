@@ -224,7 +224,7 @@ man_pages = [
   ('hashkit_functions', 'hashkit_jenkins', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_functions', 'hashkit_md5', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_functions', 'hashkit_murmur', u'libhashkit Documentation', [u'Brian Aker'], 3),
-  ('hashkit_hsieh', 'hashkit_hsieh', u'libhashkit Documentation', [u'Brian Aker'], 3),
+  ('hashkit_functions', 'hashkit_hsieh', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_value', 'hashkit_value', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('libmemcached', 'libmemcached', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcached_examples', 'libmemcached_examples', u'libmemcached Documentation', [u'Brian Aker'], 3),
