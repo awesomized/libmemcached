@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED" "3" "April 07, 2011" "0.47" "libmemcached"
+.TH "LIBMEMCACHED" "3" "April 08, 2011" "0.47" "libmemcached"
 .SH NAME
 libmemcached \- libmemcached Documentation
 .
@@ -88,78 +88,48 @@ Hope you enjoy it!
 .SH CONSTANTS
 .sp
 A number of constants have been provided for in the library.
-.sp
-MEMCACHED_DEFAULT_PORT
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B MEMCACHED_DEFAULT_PORT
+.
 The default port used by memcached(3).
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MAX_KEY
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B MEMCACHED_MAX_KEY
+.
 Default maximum size of a key (which includes the null pointer). Master keys
 have no limit, this only applies to keys used for storage.
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MAX_KEY
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B MEMCACHED_MAX_KEY
+.
 Default size of key (which includes the null pointer).
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_STRIDE
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B MEMCACHED_STRIDE
+.
 This is the "stride" used in the consistent hash used between replicas.
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MAX_HOST_LENGTH
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B MEMCACHED_MAX_HOST_LENGTH
+.
 Maximum allowed size of the hostname.
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_VERSION_STRING
 .INDENT 0.0
-.INDENT 3.5
-.sp
+.TP
+.B LIBMEMCACHED_VERSION_STRING
+.
 String value of libmemcached version such as "1.23.4"
 .UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MAJOR_VERSION
 .INDENT 0.0
-.INDENT 3.5
-.sp
-Major version value. Such as 1.23.4, would be 1
-.UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MINOR_VERSION
-.INDENT 0.0
-.INDENT 3.5
-.sp
-Major version value. Such as 1.23.4, would be 23
-.UNINDENT
-.UNINDENT
-.sp
-MEMCACHED_MICRO_VERSION
-.INDENT 0.0
-.INDENT 3.5
-.sp
-Major version value. Such as 1.23.4, would be 4
-.UNINDENT
+.TP
+.B LIBMEMCACHED_VERSION_HEX
+.
+Hex value of the version number. "0x00048000" This can be used for comparing versions based on number.
 .UNINDENT
 .SH THREADS AND PROCESSES
 .sp

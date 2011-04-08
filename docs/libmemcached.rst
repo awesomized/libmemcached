@@ -84,58 +84,44 @@ CONSTANTS
 A number of constants have been provided for in the library.
 
 
-MEMCACHED_DEFAULT_PORT
+.. c:var:: MEMCACHED_DEFAULT_PORT
  
  The default port used by memcached(3).
  
 
 
-MEMCACHED_MAX_KEY
+.. c:var:: MEMCACHED_MAX_KEY
  
  Default maximum size of a key (which includes the null pointer). Master keys
  have no limit, this only applies to keys used for storage.
  
 
 
-MEMCACHED_MAX_KEY
+.. c:var:: MEMCACHED_MAX_KEY
  
  Default size of key (which includes the null pointer).
  
 
 
-MEMCACHED_STRIDE
+.. c:var:: MEMCACHED_STRIDE
  
  This is the "stride" used in the consistent hash used between replicas.
  
 
 
-MEMCACHED_MAX_HOST_LENGTH
+.. c:var:: MEMCACHED_MAX_HOST_LENGTH
  
  Maximum allowed size of the hostname.
  
 
-
-MEMCACHED_VERSION_STRING
+.. c:var:: LIBMEMCACHED_VERSION_STRING
  
  String value of libmemcached version such as "1.23.4"
- 
 
 
-MEMCACHED_MAJOR_VERSION
+.. c:var:: LIBMEMCACHED_VERSION_HEX
  
- Major version value. Such as 1.23.4, would be 1
- 
-
-
-MEMCACHED_MINOR_VERSION
- 
- Major version value. Such as 1.23.4, would be 23
- 
-
-
-MEMCACHED_MICRO_VERSION
- 
- Major version value. Such as 1.23.4, would be 4
+ Hex value of the version number. "0x00048000" This can be used for comparing versions based on number.
  
 
 
