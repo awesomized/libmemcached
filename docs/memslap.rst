@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+=======
 memslap
-*******
+=======
 
 
 memslap - Load testing and benchmarking tool for memcached

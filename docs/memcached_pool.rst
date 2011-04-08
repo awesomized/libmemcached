@@ -129,6 +129,4 @@ Trond Norbye, <trond.norbye@gmail.com>
 SEE ALSO
 ********
 
-
-memcached(1) libmemcached(3) memcached_create(3) memcached_free(3) libmemcachedutil(3) memcached_behavior_get(3) memcached_behavior_set(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

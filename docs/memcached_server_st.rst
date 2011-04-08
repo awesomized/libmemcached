@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_server_list_free, memcached_server_list_append, memcached_server_list_count, memcached_servers_parse
-**************************************************************************************************************
+=========================
+Managing lists of servers
+=========================
 
 
 Manage server list
@@ -113,5 +111,4 @@ SEE ALSO
 ********
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

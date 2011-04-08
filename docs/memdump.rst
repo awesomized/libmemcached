@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+=======
 memdump
-*******
+=======
 
 
 Dump a list of keys from a server.

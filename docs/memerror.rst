@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+========
 memerror
-********
+========
 
 
 Translate a memcached error code to a string

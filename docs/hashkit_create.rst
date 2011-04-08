@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-hashkit_create, hashkit_clone, hashkit_free, hashkit_is_allocated
-*****************************************************************
+============================
+Creating a hashkit structure
+============================
 
 
 Create and destroy hashkit objects
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Library for hashing algorithms (libhashkit, -lhashkit)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -36,9 +34,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 The hashkit_create() function initializes a hashkit object for use. If
@@ -57,9 +55,9 @@ The hashkit_is_allocated() reports where the memory was allocated
 for a hashkit object.
 
 
-************
+------------
 RETURN VALUE
-************
+------------
 
 
 hashkit_create() and hashkit_clone() will return NULL on failure or
@@ -70,19 +68,10 @@ object was allocated inside of hashkit_create() or hashkit_clone(),
 otherwise it is false and was user-supplied memory.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
-
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-

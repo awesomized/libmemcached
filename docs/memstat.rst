@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+=======
 memstat
-*******
+=======
 
 
 memstat - Display the operating status of a single or group of memcached servers
@@ -43,16 +41,6 @@ HOME
 
 To find out more information please check:
 `http://launchpad.org/libmemcached <http://launchpad.org/libmemcached>`_
-
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-Mark Atwood, <mark@fallenpegasus.com>
 
 
 ********

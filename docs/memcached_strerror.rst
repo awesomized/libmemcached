@@ -1,11 +1,6 @@
-.. highlight:: perl
-
-
-memcached_strerror
-******************
-
-
-Get error string
+================================================
+Coverting Errors, memcached_return_t, to strings
+================================================
 
 
 *******

@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
+=================
 memcached_analyze
-*****************
+=================
 
 
 Analyze server information
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -33,9 +31,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) has the ability to query a memcached server (or collection
@@ -50,9 +48,9 @@ A command line tool, memstat(1) with the option --analyze, is provided so that
 you do not have to write an application to use this method.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A pointer to the allocated \ ``memcached_analysis_st``\  structure on success and
@@ -63,27 +61,19 @@ Any method returning a \ ``memcached_analysis_st``\  expects you to free the
 memory allocated for it.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Toru Maesaka, <dev@torum.net>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
 

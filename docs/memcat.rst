@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+======
 memcat
-******
+======
 
 
 Copy a set of keys to stdout

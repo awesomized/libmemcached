@@ -91,5 +91,4 @@ SEE ALSO
 ********
 
 
-memcached(1) libmemcached(3) memcached_behavior_set(3) libhashkit(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

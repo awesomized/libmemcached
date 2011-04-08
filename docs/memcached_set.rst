@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-memcached_set, memcached_add, memcached_replace
-***********************************************
+==========================
+Storing and Replacing Data
+==========================
 
 
 Store value on server
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -119,9 +117,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_set(), memcached_add(), and memcached_replace() are all used to
@@ -182,9 +180,9 @@ total size of the command, including overhead, exceeds 1400 bytes, a \ ``MEMCACH
 will be returned.
 
 
-******
+------
 RETURN
-******
+------
 
 
 All methods return a value of type \ ``memcached_return_t``\ .
@@ -195,26 +193,18 @@ For memcached_replace() and memcached_add(), \ ``MEMCACHED_NOTSTORED``\  is a
 legitmate error in the case of a collision.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemached(3) memcached_strerror(3)

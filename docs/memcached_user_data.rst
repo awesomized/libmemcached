@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_set_user_data, memcached_get_user_data
-************************************************
+==============================================
+Storing custom user information in the client.
+==============================================
 
 
 Manage user specific data

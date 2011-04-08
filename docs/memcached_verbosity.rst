@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_verbosity
-*******************
+=================================
+Setting the verbosity of a server
+=================================
 
 
 Modifiy verbosity of servers

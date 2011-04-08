@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+========
 memflush
-********
+========
 
 
 Reset a server or list of servers

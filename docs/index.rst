@@ -1,21 +1,16 @@
-.. libmemcached documentation master file, created by
-   sphinx-quickstart on Sun Mar  6 12:05:53 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+========================================
 Welcome to libmemcached's documentation!
 ========================================
 
-Contents:
+------------
+Libmemcached
+------------
 
 .. toctree::
    :maxdepth: 2
 
-   hashkit_create
-   hashkit_functions
-   hashkit_value
-   libmemcached_examples
    libmemcached
+   libmemcached_examples
    libmemcachedutil
    memcached_analyze
    memcached_auto
@@ -50,6 +45,17 @@ Contents:
    memrm
    memslap
    memstat
+
+----------
+Libhashkit
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   hashkit_create
+   hashkit_functions
+   hashkit_value
 
 Indices and tables
 ==================

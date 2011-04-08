@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+=====
 memrm
-*****
+=====
 
 
 memrm - Remove a key(s) from a collection of memcached servers

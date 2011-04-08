@@ -132,6 +132,4 @@ Brian Aker, <brian@tangent.orf<gt>
 SEE ALSO
 ********
 
-
-memcached(1) libmemcached(3) memcached_get_user_data(3) memcached_set_user_data(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

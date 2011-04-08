@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
+=====
 memcp
-*****
+=====
 
 
 Copies files to a collection of memcached servers

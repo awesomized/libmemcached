@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcapable
-**********
+============================================================
+Checking you Memcached server capibilities and compatibility
+============================================================
 
 
 Check memcached server capabilities

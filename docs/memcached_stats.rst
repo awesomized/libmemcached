@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_stat, memcached_stat_servername, memcached_stat_get_value, memcached_stat_get_keys
-********************************************************************************************
+==================================================
+Working with statistical information from a server
+==================================================
 
 
 Get memcached statistics

@@ -1,25 +1,23 @@
-.. highlight:: perl
-
-
-libmemcached_examples
-*********************
+=====================
+libmemcached examples
+=====================
 
 
 Examples for libmemcached
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 For full examples, test cases are found in tests/\*.c in the main
 distribution. These are always up to date, and are used for each test run of
 the library.
 
+------------------------------
 Creating and Freeing structure
-==============================
-
+------------------------------
 
 
 .. code-block:: perl
@@ -36,8 +34,9 @@ The above code would create a connection and then free the connection when
 finished.
 
 
+---------------------
 Connecting to servers
-=====================
+---------------------
 
 
 
@@ -70,8 +69,9 @@ You can reuse the \ ``memcached_server_st``\  object with multile \ ``memcached_
 structures.
 
 
+----------------------------
 Adding a value to the server
-============================
+----------------------------
 
 
 
@@ -102,8 +102,9 @@ Adding a value to the server
 It is best practice to always look at the return value of any operation.
 
 
+------------------------
 Fetching multiple values
-========================
+------------------------
 
 
 
@@ -136,27 +137,19 @@ Notice that you freed values returned from memcached_fetch(). The define
 
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1)
+:manpage:`memcached(1)`
 

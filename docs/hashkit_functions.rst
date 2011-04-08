@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-hashkit_default, hashkit_fnv1_64, hashkit_fnv1a_64, hashkit_fnv1_32, hashkit_fnv1a_32, hashkit_crc32, hashkit_hsieh, hashkit_murmur, hashkit_jenkins, hashkit_md5
-*****************************************************************************************************************************************************************
+================
+Available Hashes
+================
 
 
 Various hash functions to use for calculating values for keys
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Library for hashing algorithms (libhashkit, -lhashkit)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -39,9 +37,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 These functions generate hash values from a key using a variety of
@@ -52,34 +50,26 @@ The hashkit_hsieh() is only available if the library is built with
 the appropriate flag enabled.
 
 
-************
+------------
 RETURN VALUE
-************
+------------
 
 
 A 32-bit hash value.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
 hashkit_create(3) hashkit_value(3) hashkit_set_hash_fn(3)

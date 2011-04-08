@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_lib_version, memcached_version
-****************************************
+=======================================================
+Getting version information about the client and server
+=======================================================
 
 
 Get library version
