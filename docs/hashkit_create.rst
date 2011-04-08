@@ -22,7 +22,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <libhashkit/hashkit.h>
+   #include <libmemcached/hashkit.h>
  
    hashkit_st *hashkit_create(hashkit_st *hash);
  

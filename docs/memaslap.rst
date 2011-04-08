@@ -26,7 +26,7 @@ DESCRIPTION
 \ **memaslap**\  is a load generation and benchmark tool for memcached(1)
 servers. It generates configurable workload such as threads, concurrencies, connections,
 run time, overwrite, miss rate, key size, value size, get/set proportion,
-expected throughput, and so on. Furthermore, it also supports data
+expected throughput, and so on. Furthermore, it also testss data
 verification, expire-time verification, UDP, binary protocol, facebook test,
 replication test, multi-get and reconnection, etc.
 
@@ -118,7 +118,7 @@ _________________________________________________________
 
 Memslap has the similar implementation of multi-threads to
 memcached. Memslap creates one or more self-governed threads;
-each thread is bound with one CPU core if the system supports setting CPU
+each thread is bound with one CPU core if the system testss setting CPU
 core affinity.
 
 In addition, each thread has a libevent to manage the events of the network;
@@ -201,9 +201,9 @@ ________________________________________________________________________________
 
 Because each thread is self-governed, memaslap can assign
 different threads to handle different memcached servers. This is just one of
-the ways in which memaslap supports multiple servers. The only
+the ways in which memaslap testss multiple servers. The only
 limitation is that the number of servers cannot be greater than the number
-of threads. The other way to support multiple servers is for replication
+of threads. The other way to tests multiple servers is for replication
 test. Each concurrency has one socket connection to each memcached server.
 For the implementation, memaslap can set some objects to one
 memcached server, and get these objects from the other servers.
@@ -212,10 +212,10 @@ By default, Memslap does single get. If the user specifies
 multi-get option, memaslap will collect enough get commands and
 pack and send the commands together.
 
-Memslap supports both the ASCII protocol and binary protocol,
+Memslap testss both the ASCII protocol and binary protocol,
 but it runs on the ASCII protocol by default. 
 Memslap by default runs on the TCP protocol, but it also
-supports UDP. Because UDP is unreliable, dropped packages and out-of-order
+testss UDP. Because UDP is unreliable, dropped packages and out-of-order
 packages may occur. Memslap creates a memory buffer to handle
 these problems. Memslap tries to read all the response data of
 one command from the server and reorders the response data. If some packages
@@ -306,8 +306,8 @@ rounded to 3 decimal places.
 The minimum value size is 1 bytes; the maximum value size is 1M bytes. The
 precision of proportion is 0.001. The proportion of distribution will be
 rounded to 3 decimal places.
-Currently, memaslap only supports set and get commands. And it
-supports 100% set and 100% get. For 100% get, it will preset some objects to
+Currently, memaslap only testss set and get commands. And it
+testss 100% set and 100% get. For 100% get, it will preset some objects to
 the server.
 
 
@@ -321,7 +321,7 @@ number of them. The default number of threads is 1; the default number of
 concurrency is 16. The user can use “—threads” and “--concurrency” to
 specify these variables.
 
-If the system supports setting CPU affinity and the number of threads
+If the system testss setting CPU affinity and the number of threads
 specified by the user is greater than 1, memaslap will try to
 bind each thread to a different CPU core. So if you want to get the best
 performance memaslap, it is better to specify the number of
@@ -378,7 +378,7 @@ ___________
 Most of the time, the user does not need to specify the window size. The
 default window size is 10k. For Schooner Memcached, the user can specify
 different window sizes to get different cache miss rates based on the test
-case. Memslap supports cache miss rate between 0% and 100%.
+case. Memslap testss cache miss rate between 0% and 100%.
 If you use this utility to test the performance of Schooner Memcached, you
 can specify a proper window size to get the expected cache miss rate. The
 formula for calculating window size is as follows:
@@ -424,11 +424,11 @@ Verification
 ____________
 
 
-Memslap supports both data verification and expire-time
+Memslap testss both data verification and expire-time
 verification. The user can use "--verify=" or "-v" to specify the proportion
-of data verification. In theory, it supports 100% data verification. The
+of data verification. In theory, it testss 100% data verification. The
 user can use "--exp_verify=" or "-e" to specify the proportion of
-expire-time verification. In theory, it supports 100% expire-time
+expire-time verification. In theory, it testss 100% expire-time
 verification. Specify the "--verbose" options to get more detailed error
 information.
 
@@ -438,11 +438,11 @@ objects are gotten, memaslap will verify the expire-time and
 value.
 
 
-multi-servers and multi-clients
+multi-servers and multi-config
 _______________________________
 
 
-Memslap supports multi-servers based on self-governed thread.
+Memslap testss multi-servers based on self-governed thread.
 There is a limitation that the number of servers cannot be greater than the
 number of threads. Memslap assigns one thread to handle one
 server at least. The user can use the "--servers=" or "-s" option to specify
@@ -503,10 +503,10 @@ _________
 
 
 The user can use "--division=" or "-d" to specify multi-get keys count.
-Memslap by default does single get with TCP. Memslap also supports data 
+Memslap by default does single get with TCP. Memslap also testss data 
 verification and expire-time verification for multi-get.
 
-Memslap supports multi-get with both TCP and UDP. Because of
+Memslap testss multi-get with both TCP and UDP. Because of
 the different implementation of the ASCII protocol and binary protocol,
 there are some differences between the two. For the ASCII protocol,
 memaslap sends one “multi-get” to the server once. For the
@@ -518,7 +518,7 @@ UDP and TCP
 ___________
 
 
-Memslap supports both UDP and TCP. For TCP,
+Memslap testss both UDP and TCP. For TCP,
 memaslap does not reconnect the memcached server if socket connections are
 lost. If all the socket connections are lost or memcached server crashes,
 memaslap will exit. If the user specifies the “--reconnect”
@@ -529,10 +529,10 @@ limitations:
 
 UDP cannot set data more than 1400 bytes.
 
-UDP is not supported by the binary protocol because the binary protocol of
-memcached does not support that.
+UDP is not testsed by the binary protocol because the binary protocol of
+memcached does not tests that.
 
-UDP doesn’t support reconnection.
+UDP doesn’t tests reconnection.
 
 
 Facebook test
@@ -584,8 +584,8 @@ _____________________________________
 
 
 Start memaslap with "--conn_sock=" or "-n" to enable this
-feature. Make sure that your system can support opening thousands of files
-and creating thousands of sockets. However, this feature does not support
+feature. Make sure that your system can tests opening thousands of files
+and creating thousands of sockets. However, this feature does not tests
 reconnection if sockets disconnect.
 
 For example:
@@ -603,7 +603,7 @@ ________________________
 
 
 Start memaslap with "--binary" or "-B" options to enable this
-feature. It supports all the above features except UDP, because the latest
+feature. It testss all the above features except UDP, because the latest
 memcached 1.3.3 does not implement binary UDP protocol.
 
 For example:
@@ -611,7 +611,7 @@ For example:
 --binary
 
 Since memcached 1.3.3 doesn't implement binary UDP protocol,
-memaslap does not support UDP. In addition, memcached 1.3.3 does not support
+memaslap does not tests UDP. In addition, memcached 1.3.3 does not tests
 multi-get. If you specify "--division=50" option, it just sends 50 get
 commands together as “mulit-get” to the server.
 
@@ -686,7 +686,7 @@ Below is a sample configuration file:
   #cmd
   #cmd_type cmd_proportion
   #
-  #currently memaslap only supports get and set command.
+  #currently memaslap only testss get and set command.
   #
   #cmd_type
   #set     0
@@ -1182,10 +1182,10 @@ OPTIONS
     Default never overwrite object.
 
 -R, --reconnect 
-    Reconnect support, when connection is closed it will be reconnected.
+    Reconnect tests, when connection is closed it will be reconnected.
 
 -U, --udp 
-    UDP support, default memaslap uses TCP, TCP port and UDP port of
+    UDP tests, default memaslap uses TCP, TCP port and UDP port of
     server must be same.
 
 -a, --facebook 

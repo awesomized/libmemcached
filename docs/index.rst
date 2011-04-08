@@ -7,7 +7,7 @@ Libmemcached
 ------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    libmemcached
    libmemcached_examples
@@ -43,7 +43,7 @@ Client Applications
 -------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    memcapable
    memcat
@@ -61,7 +61,7 @@ Libhashkit
 ----------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    hashkit_create
    hashkit_functions

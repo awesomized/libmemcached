@@ -1,6 +1,6 @@
-=====
-memcp
-=====
+=============================
+memcp - Copy data to a server
+=============================
 
 
 Copies files to a collection of memcached servers
@@ -37,18 +37,18 @@ server(s).
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>

@@ -1,6 +1,6 @@
-========
-memerror
-========
+==============================================
+memerror - translate an error code to a string
+==============================================
 
 
 Translate a memcached error code to a string

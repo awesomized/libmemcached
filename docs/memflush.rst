@@ -1,6 +1,6 @@
-========
-memflush
-========
+---------------------------------------
+memflush - flush all data from a server
+---------------------------------------
 
 
 Reset a server or list of servers

@@ -6,9 +6,9 @@ Working with result sets
 Work with memcached_result_st
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -108,9 +108,9 @@ stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
 
-******
+------
 RETURN
-******
+------
 
 
 Varies, see particular functions. All structures must have
@@ -118,21 +118,13 @@ memcached_result_free() called on them for cleanup purposes. Failure to
 do this will result in leaked memory.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
-
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------
