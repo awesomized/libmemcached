@@ -11,6 +11,7 @@ Libmemcached
 
    libmemcached
    libmemcached_examples
+   libmemcached_configuration
    libmemcachedutil
    memcached_analyze
    memcached_auto
@@ -36,6 +37,14 @@ Libmemcached
    memcached_user_data
    memcached_verbosity
    memcached_version
+
+-------------------
+Client Applications
+-------------------
+
+.. toctree::
+   :maxdepth: 2
+
    memcapable
    memcat
    memcp
@@ -44,6 +53,7 @@ Libmemcached
    memflush
    memrm
    memslap
+   memaslap
    memstat
 
 ----------

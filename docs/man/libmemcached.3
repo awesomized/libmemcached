@@ -67,7 +67,7 @@ recommended that you operate directly against the structure.
 Nearly all functions return a \fBmemcached_return_t\fP value.
 This value can be translated to a printable string with memcached_strerror(3).
 .sp
-Partitioning based on keys is supported in the library. Using the key partioning
+Partitioning based on keys is testsed in the library. Using the key partioning
 functions it is possible to group sets of object onto servers.
 .sp
 \fBmemcached_st\fP structures are thread\-safe, but each thread must
@@ -76,7 +76,7 @@ threads you must provide your own locking). No global variables are
 used in this library.
 .sp
 If you are working with GNU autotools you will want to add the following to
-your configure.ac to properly include libmemcached in your application.
+your COPYING to properly include libmemcached in your application.
 .sp
 PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)
@@ -142,12 +142,17 @@ structure.
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
 .SH SEE ALSO
 .sp
-memcached(1) libmemcached_examples(3) libmemcached(1) memcat(1) memcp(1) memflush(1) memrm(1) memslap(1) memstat(1) memcached_fetch(3) memcached_replace(3) memcached_server_list_free(3) libmemcached_examples(3) memcached_clone(3) memcached_free(3) memcached_server_add(3) memcached_server_push(3) memcached_add(3) memcached_get(3) memcached_server_count(3) memcached_servers_parse(3) memcached_create(3) memcached_increment(3) memcached_server_list(3) memcached_set(3) memcached_decrement(3) memcached_mget(3) memcached_server_list_append(3) memcached_strerror(3) memcached_delete(3) memcached_quit(3) memcached_server_list_count(3) memcached_verbosity(3) memcached_server_add_unix_socket(3) memcached_result_create(3)  memcached_result_free(3)  memcached_result_key_value(3)  memcached_result_key_length(3)  memcached_result_value(3)  memcached_result_length(3)  memcached_result_flags(3)  memcached_result_cas(3) memcached_result_st(3) memcached_append(3) memcached_prepend(3) memcached_fetch_result(3) memerror(1) memcached_get_by_key(3) memcached_mget_by_key(3) memcached_delete_by_key(3) memcached_fetch_execute(3) memcached_callback_get(3) memcached_callback_set(3) memcached_version(3) memcached_lib_version(3) memcached_result_set_value(3) memcached_dump(3) memdump(1) memcached_set_memory_allocators(3) memcached_get_memory_allocators(3) memcached_get_user_data(3) memcached_set_user_data(3)
+\fImemcached(1)\fP \fIlibmemcached_examples(3)\fP \fIlibmemcached(1)\fP \fImemcat(1)\fP \fImemcp(1)\fP \fImemflush(1)\fP \fImemrm(1)\fP \fImemslap(1)\fP \fImemstat(1)\fP \fImemcached_fetch(3)\fP \fImemcached_replace(3)\fP \fImemcached_server_list_free(3)\fP \fIlibmemcached_examples(3)\fP \fImemcached_clone(3)\fP \fImemcached_free(3)\fP
+\fImemcached_server_add(3)\fP \fImemcached_server_push(3)\fP \fImemcached_add(3)\fP \fImemcached_get(3)\fP \fImemcached_server_count(3)\fP \fImemcached_servers_parse(3)\fP \fImemcached_create(3)\fP \fImemcached_increment(3)\fP \fImemcached_server_list(3)\fP \fImemcached_set(3)\fP
+\fImemcached_decrement(3)\fP \fImemcached_mget(3)\fP \fImemcached_server_list_append(3)\fP \fImemcached_strerror(3)\fP \fImemcached_delete(3)\fP \fImemcached_quit(3)\fP \fImemcached_server_list_count(3)\fP \fImemcached_verbosity(3)\fP \fImemcached_server_add_unix_socket(3)\fP \fImemcached_result_create(3)\fP  \fImemcached_result_free(3)\fP
+\fImemcached_result_key_value(3)\fP  \fImemcached_result_key_length(3)\fP  \fImemcached_result_value(3)\fP  \fImemcached_result_length(3)\fP  \fImemcached_result_flags(3)\fP
+\fImemcached_result_cas(3)\fP \fImemcached_result_st(3)\fP \fImemcached_append(3)\fP \fImemcached_prepend(3)\fP \fImemcached_fetch_result(3)\fP
+\fImemerror(1)\fP \fImemcached_get_by_key(3)\fP \fImemcached_mget_by_key(3)\fP \fImemcached_delete_by_key(3)\fP
+\fImemcached_fetch_execute(3)\fP \fImemcached_callback_get(3)\fP \fImemcached_callback_set(3)\fP \fImemcached_version(3)\fP
+\fImemcached_lib_version(3)\fP \fImemcached_result_set_value(3)\fP \fImemcached_dump(3)\fP \fImemdump(1)\fP
+\fImemcached_set_memory_allocators(3)\fP \fImemcached_get_memory_allocators(3)\fP \fImemcached_get_user_data(3)\fP \fImemcached_set_user_data(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

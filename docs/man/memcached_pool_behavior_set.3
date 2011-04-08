@@ -35,38 +35,28 @@ Manage pools
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcachedutil, \-lmemcachedutil)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
 #include <libmemcached/memcached_pool.h>
 
-memcached_pool_st *
-  memcached_pool_create(memcached_st* mmc, int initial, int max);
+memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max);
 
-memcached_st *
-  memcached_pool_destroy(memcached_pool_st* pool);
+memcached_st * memcached_pool_destroy(memcached_pool_st* pool);
 
-memcached_st *
-  memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
+memcached_st * memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
 
-memcached_return_t
-  memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
 
 memcached_st *memcached_create (memcached_st *ptr);
 
-memcached_return_t
-  memcached_pool_behavior_set(memcached_pool_st *pool,
-                              memcached_behavior_t flag,
-                              uint64_t data)
+memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
 
-memcached_return_t
-  memcached_pool_behavior_get(memcached_pool_st *pool,
-                              memcached_behavior_t flag,
-                              uint64_t *value)
+memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t *value)
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_pool_create() is used to create a connection pool of objects you
 may use to remove the overhead of using memcached_clone for short
@@ -118,9 +108,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Trond Norbye, <\fI\%trond.norbye@gmail.com\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_create(3) memcached_free(3) libmemcachedutil(3) memcached_behavior_get(3) memcached_behavior_set(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

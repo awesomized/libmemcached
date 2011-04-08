@@ -11,7 +11,7 @@ LIBRARY
 -------
 
 
-C Library for hashing algorithms (libhashkit, -lhashkit)
+C Library for hashing algorithms (libmemcached, -lhashkit)
 
 
 --------

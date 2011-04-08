@@ -35,7 +35,7 @@ Disconnect from all servers
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcached, \-lmemcached)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
@@ -44,7 +44,7 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 void memcached_quit (memcached_st *ptr);
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_quit() will disconnect you from all currently connected servers.
 It will also reset the state of the connection (ie, any memcached_fetch() you
@@ -67,9 +67,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

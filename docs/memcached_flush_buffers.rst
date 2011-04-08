@@ -2,7 +2,7 @@
 
 
 memcached_flush_buffers
-***********************
+----------------------*
 
 
 Flush buffers and send buffered commands
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -31,9 +31,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_flush_buffers() is used in conjunction with 
@@ -68,9 +68,9 @@ AUTHOR
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

@@ -2,7 +2,7 @@
 
 
 memcached_generate_hash_value
-*****************************
+---------------------------**
 
 
 Hash a key value
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -38,9 +38,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_generate_hash_value() allows you to hash a key using one of
@@ -56,7 +56,7 @@ the hash value that would have been generated based on the defaults
 of the memcached_st structure.
 
 As of version 0.36 all hash methods have been placed into the library
-libhashkit(3) which is linked with libmemcached(3).
+libmemcached(3) which is linked with libmemcached(3).
 
 
 ******
@@ -86,9 +86,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

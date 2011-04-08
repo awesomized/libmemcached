@@ -34,12 +34,12 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 Generate a value for the given key
 .SH LIBRARY
 .sp
-C Library for hashing algorithms (libhashkit, \-lhashkit)
+C Library for hashing algorithms (libmemcached, \-lhashkit)
 .SH SYNOPSIS
 .sp
 .nf
 .ft C
-#include <libhashkit/hashkit.h>
+#include <libmemcached/hashkit.h>
 
 uint32_t hashkit_value(hashkit_st *hash,
                        const char *key,
@@ -59,9 +59,6 @@ A 32\-bit hash value.
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
 .SH SEE ALSO
 .sp
 hashkit_create(3) hashkit_set_distribution(3) hashkit_set_hash_fn(3)

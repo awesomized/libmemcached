@@ -35,7 +35,7 @@ Delete a key
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcached, \-lmemcached)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
@@ -53,7 +53,7 @@ memcached_delete_by_key (memcached_st *ptr,
                          time_t expiration);
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_delete() is used to delete a particular key.
 memcached_delete_by_key() works the same, but it takes a master key to
@@ -64,7 +64,7 @@ it won\(aqt possible to retrieve it by the "get" command, but "add" and
 "replace" command with this key will also fail (the "set" command will
 succeed, however). After the time passes, the item is finally deleted from server memory.
 .sp
-Please note the the Danga memcached server removed support for expiration in
+Please note the the Danga memcached server removed tests for expiration in
 the 1.4 version.
 .SH RETURN
 .sp
@@ -81,9 +81,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

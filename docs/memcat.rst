@@ -6,9 +6,9 @@ memcat
 Copy a set of keys to stdout
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memcat**\  outputs to stdout the value a single or multiple set of keys
@@ -53,9 +53,9 @@ Brian Aker, <brian@tangent.org>
 Mark Atwood <mark@fallenpegasus.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

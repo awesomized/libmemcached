@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_create, memcached_free, memcached_clone, memcached_servers_reset
-**************************************************************************
+======================================
+Creating and destroying a memcached_st
+======================================
 
 
 Create a memcached_st structure
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -36,9 +34,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_create() is used to create a \ ``memcached_st``\  structure that will then
@@ -93,9 +91,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

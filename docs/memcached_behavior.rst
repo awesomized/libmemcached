@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_behavior_get, memcached_behavior_set
-**********************************************
+================================
+Modifying how the driver behaves
+================================
 
 
 Manipulate behavior
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -37,9 +35,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) behavior can be modified by use memcached_behavior_set().
@@ -60,14 +58,14 @@ memcached_behavior_set() will flush and reset all connections.
 MEMCACHED_BEHAVIOR_USE_UDP
  
  Causes libmemcached(3) to use the UDP transport when communicating
- with a memcached server. Not all I/O operations are supported
+ with a memcached server. Not all I/O operations are testsed
  when this behavior is enababled. The following operations will return
  \ ``MEMCACHED_NOT_SUPPORTED``\  when executed with the MEMCACHED_BEHAVIOR_USE_UDP
  enabled: memcached_version(), memcached_stat(), memcached_get(),
  memcached_get_by_key(), memcached_mget(), memcached_mget_by_key(),
  memcached_fetch(), memcached_fetch_result(), memcached_value_fetch().
  
- All other operations are supported but are executed in a 'fire-and-forget'
+ All other operations are testsed but are executed in a 'fire-and-forget'
  mode, in which once the client has executed the operation, no attempt
  will be made to ensure the operation has been received and acted on by the
  server.
@@ -114,7 +112,7 @@ MEMCACHED_BEHAVIOR_HASH
  Makes the default hashing algorithm for keys use MD5. The value can be set
  to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR.
  Each hash has it's advantages and it's weaknesses. If you don't know or don't care, just go with the default.
- Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable support for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
+ Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
  
 
 
@@ -151,7 +149,7 @@ MEMCACHED_BEHAVIOR_KETAMA
 
 MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
  
- Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted support.
+ Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted tests.
  and the hash to MEMCACHED_HASH_MD5.
  
 
@@ -297,7 +295,7 @@ MEMCACHED_BEHAVIOR_CORK
  Enable TCP_CORK behavior. This is only available as an option Linux.
  MEMCACHED_NO_SERVERS is returned if no servers are available to test with.
  MEMCACHED_NOT_SUPPORTED is returned if we were not able to determine
- if support was available. All other responses then MEMCACHED_SUCCESS
+ if tests was available. All other responses then MEMCACHED_SUCCESS
  report an error of some sort. This behavior also enables
  MEMCACHED_BEHAVIOR_TCP_NODELAY when set.
  
@@ -396,9 +394,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

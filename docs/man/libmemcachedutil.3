@@ -31,11 +31,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructeredText.
 .
 .sp
-libmemcachedutil \- Utility library for libmemcached
-.SH LIBRARY
+Utility library for libmemcached
 .sp
 C Client Library containing utility functions for libmemcached (libmemcachedutil, \-lmemcachedutil)
-.SH SYNOPSIS
 .sp
 .nf
 .ft C
@@ -44,26 +42,20 @@ cc [ flag ... ] file ... \-lmemcachedutil
 #include <libmemcached/memcached_util.h>
 .ft P
 .fi
-.SH DESCRIPTION
 .sp
 \fBlibmemcachedutil\fP is a small and thread\-safe client library that provides
 extra functionality built on top of \fBlibmemcached\fP.
-.SH THREADS
 .sp
 Do not try to access an instance of \fBmemcached_st\fP from multiple threads
 at the same time. If you want to access memcached from multiple threads
 you should either clone the \fBmemcached_st\fP, or use the memcached pool
 implementation. see memcached_pool_create(3).
-.SH HOME
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
 .sp
-Trond Norbye, <\fI\%trond.norbye@gmail.com\fP>
-.SH SEE ALSO
-.sp
-libmemcached(3) memcached_pool_create(3) memcached_pool_destroy(3) memcached_pool_pop(3) memcached_pool_push(3)
+\fIlibmemcached(3)\fP
+\fImemcached_pool_create(3)\fP \fImemcached_pool_destroy(3)\fP \fImemcached_pool_pop(3)\fP \fImemcached_pool_push(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

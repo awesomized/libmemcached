@@ -6,9 +6,9 @@ memstat
 memstat - Display the operating status of a single or group of memcached servers
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memstat**\  dumps the state of memcached(1) servers.
@@ -43,9 +43,9 @@ To find out more information please check:
 `http://launchpad.org/libmemcached <http://launchpad.org/libmemcached>`_
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

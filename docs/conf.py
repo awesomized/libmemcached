@@ -334,6 +334,7 @@ man_pages = [
   ('memcp', 'memcp', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memdump', 'memdump', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memerror', 'memerror', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('memaslap', 'memaslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memflush', 'memflush', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memrm', 'memrm', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memslap', 'memslap', u'libmemcached Documentation', [u'Brian Aker'], 1),

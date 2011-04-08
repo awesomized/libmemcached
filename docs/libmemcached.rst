@@ -54,7 +54,7 @@ recommended that you operate directly against the structure.
 Nearly all functions return a \ ``memcached_return_t``\  value.
 This value can be translated to a printable string with memcached_strerror(3).
 
-Partitioning based on keys is supported in the library. Using the key partioning 
+Partitioning based on keys is testsed in the library. Using the key partioning 
 functions it is possible to group sets of object onto servers.
 
 \ ``memcached_st``\  structures are thread-safe, but each thread must
@@ -63,7 +63,7 @@ threads you must provide your own locking). No global variables are
 used in this library.
 
 If you are working with GNU autotools you will want to add the following to
-your configure.ac to properly include libmemcached in your application.
+your COPYING to properly include libmemcached in your application.
 
 PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)

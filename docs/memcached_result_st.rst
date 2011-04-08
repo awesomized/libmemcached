@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_result_create, memcached_result_free, memcached_result_key_value, memcached_result_key_length, memcached_result_value, memcached_result_length, memcached_result_flags, memcached_result_cas
-******************************************************************************************************************************************************************************************************
+========================
+Working with result sets
+========================
 
 
 Work with memcached_result_st
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -54,9 +52,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) can optionally return a memcached_result_st which acts as a
@@ -93,7 +91,7 @@ current result object.
 
 memcached_result_cas() returns the cas associated with the
 current result object. This value will only be available if the server
-supports it.
+testss it.
 
 memcached_result_set_value() takes a byte array and a size and sets
 the result to this value. This function is used for trigger responses.
@@ -137,8 +135,8 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

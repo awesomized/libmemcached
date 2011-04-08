@@ -2,10 +2,10 @@
 
 
 memcached_set_sasl_callbacks, memcached_get_sasl_callbacks, memcached_sasl_set_auth_data, memcached_destroy_sasl_auth_data
-**************************************************************************************************************************
+------------------------------------------------------------------------------------------------------------------------**
 
 
-SASL support
+SASL tests
 
 
 *******
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -38,9 +38,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) allows you to plug in your own callbacks function used by
@@ -88,9 +88,9 @@ AUTHOR
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

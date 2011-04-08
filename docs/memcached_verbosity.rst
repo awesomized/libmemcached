@@ -14,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -30,9 +30,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_verbosity() modifies the "verbosity" of the
@@ -66,9 +66,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3) memcached_strerror(3)

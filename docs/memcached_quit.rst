@@ -2,7 +2,7 @@
 
 
 memcached_quit
-**************
+--------------
 
 
 Disconnect from all servers
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -30,9 +30,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_quit() will disconnect you from all currently connected servers.
@@ -73,8 +73,8 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

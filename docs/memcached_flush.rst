@@ -2,7 +2,7 @@
 
 
 memcached_flush
-***************
+--------------*
 
 
 Wipe contents of memcached servers
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -32,9 +32,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_flush() is used to wipe clean the contents of memcached(1) servers.
@@ -72,8 +72,8 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

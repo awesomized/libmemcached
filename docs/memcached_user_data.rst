@@ -14,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -30,9 +30,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) allows you to store a pointer to a user specific data inside
@@ -74,9 +74,9 @@ AUTHOR
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

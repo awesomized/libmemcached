@@ -11,7 +11,7 @@ LIBRARY
 -------
 
 
-C Library for hashing algorithms (libhashkit, -lhashkit)
+C Library for hashing algorithms (libmemcached, -lhashkit)
 
 
 --------
@@ -22,7 +22,7 @@ SYNOPSIS
 
 .. code-block:: perl
 
-   #include <libhashkit/hashkit.h>
+   #include <libmemcached/hashkit.h>
  
    uint32_t hashkit_value(hashkit_st *hash,
                           const char *key,

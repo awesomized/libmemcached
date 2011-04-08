@@ -6,9 +6,9 @@ memrm
 memrm - Remove a key(s) from a collection of memcached servers
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memrm**\  removes items, specified by key, from memcached(1) servers.
@@ -50,9 +50,9 @@ Brian Aker, <brian@tangent.org>
 Mark Atwood, <mark@fallenpegasus.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

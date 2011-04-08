@@ -35,7 +35,7 @@ Create a memcached_st structure
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcached, \-lmemcached)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
@@ -50,7 +50,7 @@ memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
 void memcached_servers_reset(memcached_st);
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_create() is used to create a \fBmemcached_st\fP structure that will then
 be used by other libmemcached(3) functions to communicate with the server. You
@@ -87,9 +87,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

@@ -123,6 +123,7 @@ EXTRA_DIST+= \
 	     docs/memerror.rst \
 	     docs/memflush.rst \
 	     docs/memrm.rst \
+	     docs/memaslap.rst \
 	     docs/memslap.rst \
 	     docs/memstat.rst \
 	     docs/_static \
@@ -147,6 +148,7 @@ EXTRA_DIST+= \
 	     docs/memflush.rst \
 	     docs/memrm.rst \
 	     docs/memslap.rst \
+	     docs/memaslap.rst \
 	     docs/memstat.rst
 
 # Makefile for Sphinx documentation
@@ -260,6 +262,7 @@ man_MANS+= \
 	   docs/man/memerror.1 \
 	   docs/man/memflush.1 \
 	   docs/man/memrm.1 \
+	   docs/man/memaslap.1 \
 	   docs/man/memslap.1 \
 	   docs/man/memstat.1
 

@@ -35,7 +35,7 @@ Get a list of keys found on memcached servers
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcached, \-lmemcached)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
@@ -53,14 +53,14 @@ typedef memcached_return_t (*memcached_dump_fn)(memcached_st *ptr,
                                                 void *context);
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_dump() is used to get a list of keys found  memcached(1) servers.
 Because memcached(1) does not guarentee to dump all keys you can not assume
 you have fetched all keys from the server. The function takes an array
 of callbacks that it will use to execute on keys as they are found.
 .sp
-Currently the binar protocol is not supported.
+Currently the binar protocol is not testsed.
 .SH RETURN
 .sp
 A value of type \fBmemcached_return_t\fP is returned
@@ -73,9 +73,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

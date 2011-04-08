@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_pool_create, memcached_pool_destroy, memcached_pool_push, memcached_pool_pop
-**************************************************************************************
+============================
+Working with memcached pools
+============================
 
 
 Manage pools
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcachedutil, -lmemcachedutil)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -26,35 +24,25 @@ SYNOPSIS
 
    #include <libmemcached/memcached_pool.h>
  
-   memcached_pool_st *
-     memcached_pool_create(memcached_st* mmc, int initial, int max);
+   memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max);
  
-   memcached_st *
-     memcached_pool_destroy(memcached_pool_st* pool);
+   memcached_st * memcached_pool_destroy(memcached_pool_st* pool);
  
-   memcached_st *
-     memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
+   memcached_st * memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
  
-   memcached_return_t
-     memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+   memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
  
    memcached_st *memcached_create (memcached_st *ptr);
  
-   memcached_return_t
-     memcached_pool_behavior_set(memcached_pool_st *pool,
-                                 memcached_behavior_t flag,
-                                 uint64_t data)
+   memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
  
-   memcached_return_t
-     memcached_pool_behavior_get(memcached_pool_st *pool,
-                                 memcached_behavior_t flag,
-                                 uint64_t *value)
+   memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t *value)
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_pool_create() is used to create a connection pool of objects you
@@ -125,8 +113,8 @@ AUTHOR
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

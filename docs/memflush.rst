@@ -6,9 +6,9 @@ memflush
 Reset a server or list of servers
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memflush**\  resets the contents of memcached(1) servers.
@@ -51,9 +51,9 @@ Brian Aker, <brian@tangent.org>
 Mark Atwood <mark@fallenpegasus.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

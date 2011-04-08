@@ -6,9 +6,9 @@ memdump
 Dump a list of keys from a server.
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memdump**\  currently dumps a list of "keys" from all servers that 
@@ -47,9 +47,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

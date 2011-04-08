@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_server_count, memcached_server_list, memcached_server_add, memcached_server_push, memcached_server_get_last_disconnect, memcached_server_cursor
-*********************************************************************************************************************************************************
+========================================================
+Manipulate the server information stored in memcached_st
+========================================================
 
 
 Manage server list
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -28,44 +26,25 @@ SYNOPSIS
  
    uint32_t memcached_server_count (memcached_st *ptr);
  
-   memcached_return_t
-     memcached_server_add (memcached_st *ptr,
-                           const char *hostname,
-                           in_port_t port);
+   memcached_return_t memcached_server_add (memcached_st *ptr, const char *hostname, in_port_t port);
  
-   memcached_return_t
-     memcached_server_add_udp (memcached_st *ptr,
- 			      const char *hostname,
- 			      in_port_t port);
+   memcached_return_t memcached_server_add_udp (memcached_st *ptr, const char *hostname, in_port_t port);
  
-   memcached_return_t
-     memcached_server_add_unix_socket (memcached_st *ptr,
-                                       const char *socket);
+   memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket);
  
-   memcached_return_t
-     memcached_server_push (memcached_st *ptr,
-                            const memcached_server_st *list);
+   memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list); 
+
+   memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error);
  
-   memcached_server_instance_st
-     memcached_server_by_key (const memcached_st *ptr,
-                              const char *key,
- 			     size_t key_length,
-                              memcached_return_t *error);
+   memcached_server_instance_st memcached_server_get_last_disconnect (const memcached_st *ptr)
  
-   memcached_server_instance_st
-     memcached_server_get_last_disconnect (const memcached_st *ptr)
- 
-   memcached_return_t
-     memcached_server_cursor(const memcached_st *ptr,
- 			    const memcached_server_fn *callback,
- 			    void *context,
- 			    uint32_t number_of_callbacks);
+   memcached_return_t memcached_server_cursor(const memcached_st *ptr, const memcached_server_fn *callback, void *context, uint32_t number_of_callbacks);
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) performs operations on a list of hosts. The order of these
@@ -135,17 +114,9 @@ To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

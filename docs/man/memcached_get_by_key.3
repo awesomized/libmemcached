@@ -35,7 +35,7 @@ Get a value
 .SH LIBRARY
 .sp
 C Client Library for memcached (libmemcached, \-lmemcached)
-.SH SYNOPSIS
+.SS SYNOPSIS
 .sp
 .nf
 .ft C
@@ -108,7 +108,7 @@ memcached_return_t
                                  uint32_t number_of_callbacks);
 .ft P
 .fi
-.SH DESCRIPTION
+.SS DESCRIPTION
 .sp
 memcached_get() is used to fetch an individual value from the server. You
 must pass in a key and its length to fetch the object. You must supply
@@ -174,7 +174,7 @@ as memcached_get() and memcached_mget(). The difference is that they take
 a master key that is used for determining which server an object was stored
 if key partitioning was used for storage.
 .sp
-All of the above functions are not supported when the \fBMEMCACHED_BEHAVIOR_USE_UDP\fPhas been set. Executing any of these functions with this behavior on will result in
+All of the above functions are not testsed when the \fBMEMCACHED_BEHAVIOR_USE_UDP\fPhas been set. Executing any of these functions with this behavior on will result in
 \fBMEMCACHED_NOT_SUPPORTED\fP being returned or, for those functions which do not return
 a \fBmemcached_return_t\fP, the error function parameter will be set to
 \fBMEMCACHED_NOT_SUPPORTED\fP.
@@ -194,9 +194,9 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SH SEE ALSO
+.SS SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

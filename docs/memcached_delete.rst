@@ -2,7 +2,7 @@
 
 
 memcached_delete
-****************
+----------------
 
 
 Delete a key
@@ -16,9 +16,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -39,9 +39,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_delete() is used to delete a particular key. 
@@ -53,7 +53,7 @@ it won't possible to retrieve it by the "get" command, but "add" and
 "replace" command with this key will also fail (the "set" command will 
 succeed, however). After the time passes, the item is finally deleted from server memory.
 
-Please note the the Danga memcached server removed support for expiration in
+Please note the the Danga memcached server removed tests for expiration in
 the 1.4 version.
 
 
@@ -87,8 +87,8 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

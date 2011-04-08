@@ -6,9 +6,9 @@ Checking you Memcached server capibilities and compatibility
 Check memcached server capabilities
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -18,9 +18,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memcapable**\  connects to the specified memcached server and tries to
@@ -33,7 +33,7 @@ OPTIONS
 *******
 
 
-The following options are supported:
+The following options are testsed:
 
 
 -h hostname
@@ -67,9 +67,9 @@ The following options are supported:
 
 
 
-***********
+-----------
 LIMITATIONS
-***********
+-----------
 
 
 The current version of memcapable will only verify the binary protocol.
@@ -92,9 +92,9 @@ AUTHOR
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

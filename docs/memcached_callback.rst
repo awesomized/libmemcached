@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_callback_get, memcached_callback_set
-**********************************************
+=================
+Setting callbacks
+=================
 
 
 Get and set a callback
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -38,9 +36,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) can have callbacks set key execution points. These either
@@ -164,9 +162,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_get, memcached_mget, memcached_fetch, memcached_mget_execute, memcached_mget_execute_by_key
-*****************************************************************************************************
+===============================
+Retrieving data from the server
+===============================
 
 
 Get a value
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -94,9 +92,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_get() is used to fetch an individual value from the server. You
@@ -163,7 +161,7 @@ as memcached_get() and memcached_mget(). The difference is that they take
 a master key that is used for determining which server an object was stored
 if key partitioning was used for storage.
 
-All of the above functions are not supported when the \ ``MEMCACHED_BEHAVIOR_USE_UDP``\ 
+All of the above functions are not testsed when the \ ``MEMCACHED_BEHAVIOR_USE_UDP``\ 
 has been set. Executing any of these functions with this behavior on will result in
 \ ``MEMCACHED_NOT_SUPPORTED``\  being returned or, for those functions which do not return
 a \ ``memcached_return_t``\ , the error function parameter will be set to
@@ -201,8 +199,8 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
