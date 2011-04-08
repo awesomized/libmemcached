@@ -14,7 +14,6 @@ Contents:
    hashkit_create
    hashkit_functions
    hashkit_value
-   index
    libmemcached_examples
    libmemcached
    libmemcachedutil
