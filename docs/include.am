@@ -79,10 +79,12 @@ man_MANS+= \
 	   docs/man/hashkit_murmur.3 \
 	   docs/man/hashkit_value.3 \
 	   docs/man/libhashkit.3 \
+	   docs/man/libhashkit.3.gz \
 	   docs/man/libmemcached.3 \
 	   docs/man/libmemcached_examples.3 \
 	   docs/man/libmemcachedutil.3 \
 	   docs/man/memaslap.1 \
+	   docs/man/memaslap.1.gz \
 	   docs/man/memcached_add.3 \
 	   docs/man/memcached_add_by_key.3 \
 	   docs/man/memcached_analyze.3 \
