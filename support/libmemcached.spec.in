@@ -97,6 +97,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man1/memerror.1.gz
 %{_mandir}/man1/memflush.1.gz
 %{_mandir}/man1/memrm.1.gz
+%{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memslap.1.gz
 %{_mandir}/man1/memstat.1.gz
 
@@ -166,6 +167,7 @@ you will need to install %{name}-devel.
 %{_libdir}/libmemcachedprotocol.so
 %{_libdir}/libmemcachedutil.so
 %{_libdir}/pkgconfig/libmemcached.pc
+%{_mandir}/man3/libhashkit.3.gz
 %{_mandir}/man3/hashkit_clone.3.gz
 %{_mandir}/man3/hashkit_crc32.3.gz
 %{_mandir}/man3/hashkit_create.3.gz
