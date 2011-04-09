@@ -50,7 +50,7 @@ you will need to install %{name}-devel.
 
 %build
 %configure
-%{__make} %{_smp_mflags}
+%{__make}
 
 
 %install
