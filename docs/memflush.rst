@@ -1,6 +1,6 @@
----------------------------------------
+=======================================
 memflush - flush all data from a server
----------------------------------------
+=======================================
 
 
 Reset a server or list of servers
@@ -10,13 +10,9 @@ Reset a server or list of servers
 SYNOPSIS
 --------
 
+.. program:: memflush
 
-
-.. code-block:: perl
-
-   memflush [options]
-
-
+.. option:: --help
 
 -----------
 DESCRIPTION
@@ -32,18 +28,18 @@ environment variable \ ``MEMCACHED_SERVERS``\ .
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
@@ -55,6 +51,4 @@ Mark Atwood <mark@fallenpegasus.com>
 SEE ALSO
 --------
 
-
 memcached(1) libmemcached(3)
-

@@ -1,16 +1,14 @@
-.. highlight:: perl
-
-
-memcached_generate_hash_value
----------------------------**
+===============================
+Generating hash values directly
+===============================
 
 
 Hash a key value
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -56,12 +54,12 @@ the hash value that would have been generated based on the defaults
 of the memcached_st structure.
 
 As of version 0.36 all hash methods have been placed into the library
-libmemcached(3) which is linked with libmemcached(3).
+libhashkit(3) which is linked with libmemcached(3). For more information please see its documentation.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A 32-bit integer which is the result of hashing the given key.
@@ -69,18 +67,18 @@ For 64-bit hash algorithms, only the least-significant 32 bits are
 returned.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check: 
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>

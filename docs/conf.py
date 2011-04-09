@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'libmemcached'
-copyright = u'2011, Brian Aker'
+copyright = u'2011, Brian Aker DataDifferential, http://datadifferential.com/'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -211,6 +211,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
+  ('libhashkit', 'libhashkit', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_create', 'hashkit_clone', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_create', 'hashkit_create', u'libhashkit Documentation', [u'Brian Aker'], 3),
   ('hashkit_create', 'hashkit_free', u'libhashkit Documentation', [u'Brian Aker'], 3),

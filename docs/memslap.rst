@@ -1,9 +1,6 @@
-=======
-memslap
-=======
-
-
-memslap - Load testing and benchmarking tool for memcached
+=================================================
+memslap - Load testing  and benchmarking a server
+=================================================
 
 
 --------
@@ -33,4 +30,4 @@ SEE ALSO
 --------
 
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`

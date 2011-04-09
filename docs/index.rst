@@ -1,6 +1,6 @@
-========================================
-Welcome to libmemcached's documentation!
-========================================
+=========================================
+Welcome to the libmemcached documentation
+=========================================
 
 ------------
 Libmemcached
@@ -12,7 +12,6 @@ Libmemcached
    libmemcached
    libmemcached_examples
    libmemcached_configuration
-   libmemcachedutil
    memcached_analyze
    memcached_auto
    memcached_behavior
@@ -25,7 +24,6 @@ Libmemcached
    memcached_generate_hash_value
    memcached_get
    memcached_memory_allocators
-   memcached_pool
    memcached_quit
    memcached_result_st
    memcached_sasl
@@ -37,6 +35,16 @@ Libmemcached
    memcached_user_data
    memcached_verbosity
    memcached_version
+
+----------------
+Libmemcachedutil
+----------------
+
+.. toctree::
+   :maxdepth: 1
+
+   libmemcachedutil
+   memcached_pool
 
 -------------------
 Client Applications
@@ -63,6 +71,7 @@ Libhashkit
 .. toctree::
    :maxdepth: 1
 
+   libhashkit
    hashkit_create
    hashkit_functions
    hashkit_value

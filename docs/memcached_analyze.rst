@@ -1,5 +1,5 @@
 =================
-memcached_analyze
+Anaylzing servers
 =================
 
 

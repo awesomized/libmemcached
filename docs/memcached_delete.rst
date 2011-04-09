@@ -1,16 +1,14 @@
-.. highlight:: perl
-
-
-memcached_delete
-----------------
+===========================
+Deleting data from a server
+===========================
 
 
 Delete a key
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -26,16 +24,9 @@ SYNOPSIS
 
    #include <libmemcached/memcached.h>
  
-   memcached_return_t
-     memcached_delete (memcached_st *ptr,
-                       const char *key, size_t key_length,
-                       time_t expiration);
+   memcached_return_t memcached_delete (memcached_st *ptr, const char *key, size_t key_length, time_t expiration);
  
-   memcached_return_t
-   memcached_delete_by_key (memcached_st *ptr,
-                            const char *master_key, size_t master_key_length,
-                            const char *key, size_t key_length,
-                            time_t expiration);
+   memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, time_t expiration);
 
 
 
@@ -57,9 +48,9 @@ Please note the the Danga memcached server removed tests for expiration in
 the 1.4 version.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A value of type \ ``memcached_return_t``\  is returned
@@ -70,18 +61,18 @@ If you are using the non-blocking mode of the library, success only
 means that the message was queued for delivery.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>

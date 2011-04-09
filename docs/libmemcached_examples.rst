@@ -1,10 +1,8 @@
-=====================
-libmemcached examples
-=====================
-
+========
+Examples
+========
 
 Examples for libmemcached
-
 
 -----------
 DESCRIPTION
@@ -20,7 +18,7 @@ Creating and Freeing structure
 ------------------------------
 
 
-.. code-block:: perl
+.. code-block:: c
 
    memcached_st *memc;
    memcached_return_t rc;
@@ -40,7 +38,7 @@ Connecting to servers
 
 
 
-.. code-block:: perl
+.. code-block:: c
 
    memcached_server_st *servers;
    memcached_st *memc= memcached_create(NULL);
@@ -75,7 +73,7 @@ Adding a value to the server
 
 
 
-.. code-block:: perl
+.. code-block:: c
 
    char *key= "foo";
    char *value;
@@ -108,7 +106,7 @@ Fetching multiple values
 
 
 
-.. code-block:: perl
+.. code-block:: c
 
    memcached_return_t rc;
    char *keys[]= {"fudge", "son", "food"};

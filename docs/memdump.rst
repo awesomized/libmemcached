@@ -1,6 +1,6 @@
-=======
-memdump
-=======
+=============================
+memdump - Dumping your server
+=============================
 
 
 Dump a list of keys from a server.
@@ -10,7 +10,9 @@ Dump a list of keys from a server.
 SYNOPSIS
 --------
 
-.. program:: memdump [options]
+.. program:: memdump
+
+.. option:: --help
 
 -----------
 DESCRIPTION

@@ -10,12 +10,9 @@ Copies files to a collection of memcached servers
 SYNOPSIS
 --------
 
+.. program:: memcp
 
-
-.. code-block:: perl
-
-   memcp [options] file file <servers>
-
+.. option:: --help
 
 
 -----------

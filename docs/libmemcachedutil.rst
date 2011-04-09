@@ -1,6 +1,6 @@
-================
-libmemcachedutil
-================
+===========
+Introducing
+===========
 
 
 Utility library for libmemcached
@@ -11,7 +11,7 @@ LIBRARY
 -------
 
 
-C Client Library containing utility functions for libmemcached (libmemcachedutil, -lmemcachedutil)
+C Client Library containing utility functions for libmemcached (libmemcachedutil, -lmemcachedutil -lmemcached)
 
 
 --------

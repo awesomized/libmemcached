@@ -1,26 +1,19 @@
-========
-memaslap
-========
+==================================================
+memaslap - Load testing  and benchmarking a server
+==================================================
 
 
-memaslap - Load testing and benchmarking tool for memcached
-
-
-********
+--------
 SYNOPSIS
-********
+--------
 
+.. program:: memaslap
 
+.. option:: --help
 
-.. code-block:: perl
-
-   memaslap [options]
-
-
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memaslap**\  is a load generation and benchmark tool for memcached(1)
@@ -40,9 +33,9 @@ You can specify servers via the \ **--servers**\  option or via the
 environment variable \ ``MEMCACHED_SERVERS``\ .
 
 
-********
+--------
 FEATURES
-********
+--------
 
 
 Memslap is developed to for the following purposes:
@@ -97,9 +90,9 @@ Supports facebook test (set with TCP and multi-get with UDP) and replication tes
 
 
 
-*******
+-------
 DETAILS
-*******
+-------
 
 
 Effective implementation of network.
@@ -224,9 +217,9 @@ be discarded and the next command will be sent.
 
 
 
-*****
+-----
 USAGE
-*****
+-----
 
 
 Below are some usage samples:
@@ -617,9 +610,9 @@ commands together as “mulit-get” to the server.
 
 
 
-******************
+------------------
 Configuration file
-******************
+------------------
 
 
 This section describes the format of the configuration file.  By default
@@ -631,7 +624,7 @@ Below is a sample configuration file:
 
 .. code-block:: perl
 
-  ***************************************************************************
+  ---------------------------------------------------------------------------
   #comments should start with '#'
   #key 
   #start_len end_len proportion
@@ -705,9 +698,9 @@ Below is a sample configuration file:
 
 
 
-****************
+----------------
 Format of output
-****************
+----------------
 
 
 At the beginning, memaslap displays some configuration information as follows:
@@ -1127,9 +1120,9 @@ Net_rate
 
 
 
-*******
+-------
 OPTIONS
-*******
+-------
 
 
 -s, --servers=
@@ -1210,9 +1203,9 @@ OPTIONS
     Display the version of the application and then exit.
 
 
-********
+--------
 EXAMPLES
-********
+--------
 
 
 memaslap -s 127.0.0.1:11211 -S 5s
@@ -1230,27 +1223,26 @@ memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://launchpad.org/libmemcached <http://launchpad.org/libmemcached>`_
 
 
-*******
+-------
 AUTHORS
-*******
+-------
 
 
 Mingqiang Zhuang <mingqiangzhuang@hengtiansoft.com> (Schooner Technolgy)
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
-
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`

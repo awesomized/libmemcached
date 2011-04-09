@@ -10,13 +10,9 @@ Translate a memcached error code to a string
 SYNOPSIS
 --------
 
+.. program:: memerror
 
-
-.. code-block:: perl
-
-   memerror [options] error_code
-
-
+.. option:: --help
 
 -----------
 DESCRIPTION

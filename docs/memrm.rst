@@ -12,9 +12,9 @@ SYNOPSIS
 
 
 
-.. code-block:: perl
+.. program:: memrm
 
-   memrm [options] key key ...
+.. option:: --help
 
 
 

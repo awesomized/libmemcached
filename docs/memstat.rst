@@ -1,6 +1,6 @@
-=======
-memstat
-=======
+=========================================
+memstat - Gather statistics from a server
+=========================================
 
 
 memstat - Display the operating status of a single or group of memcached servers
@@ -10,13 +10,9 @@ memstat - Display the operating status of a single or group of memcached servers
 SYNOPSIS
 --------
 
+.. program:: memstat
 
-
-.. code-block:: perl
-
-   memstat [options]
-
-
+.. option:: --help
 
 -----------
 DESCRIPTION
@@ -34,9 +30,9 @@ etc..).
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:

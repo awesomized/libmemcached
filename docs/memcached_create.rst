@@ -6,9 +6,9 @@ Creating and destroying a memcached_st
 Create a memcached_st structure
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -18,19 +18,15 @@ C Client Library for memcached (libmemcached, -lmemcached)
 SYNOPSIS
 --------
 
-
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   memcached_st *memcached_create (memcached_st *ptr);
+.. c:function:: memcached_st *memcached_create (memcached_st *ptr);
  
-   void memcached_free (memcached_st *ptr);
+.. c:function:: void memcached_free (memcached_st *ptr);
  
-   memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
+.. c:function:: memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
  
-   void memcached_servers_reset(memcached_st);
+.. c:function:: void memcached_servers_reset(memcached_st);
 
 
 
@@ -62,9 +58,9 @@ stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_create() returns a pointer to the memcached_st that was created
@@ -74,18 +70,18 @@ memcached_clone() returns a pointer to the memcached_st that was created
 (or initialized). On an allocation failure, it returns NULL.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>

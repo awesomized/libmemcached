@@ -12,10 +12,9 @@ SYNOPSIS
 
 
 
-.. code-block:: perl
+.. program:: memcat
 
-   memcat [options] key key ...
-
+.. option:: --help
 
 
 -----------

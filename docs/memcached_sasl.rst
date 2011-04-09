@@ -1,16 +1,11 @@
-.. highlight:: perl
+============
+SASL support
+============
 
 
-memcached_set_sasl_callbacks, memcached_get_sasl_callbacks, memcached_sasl_set_auth_data, memcached_destroy_sasl_auth_data
-------------------------------------------------------------------------------------------------------------------------**
-
-
-SASL tests
-
-
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -61,9 +56,9 @@ before enabling it in libmemcached, and you have to shut down libsasl by
 calling sasl_done() when you are done using SASL from libmemcached.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_get_sasl_callbacks() returns the callbacks currently used
@@ -71,19 +66,21 @@ by this memcached handle.
 memcached_get_sasl_set_auth_data() returns MEMCACHED_SUCCESS upon success.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
+
+Brian Aker, <brian@tangent.org>
 
 Trond Norbye, <trond.norbye@gmail.com>
 
