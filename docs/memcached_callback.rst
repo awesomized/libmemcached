@@ -1,46 +1,34 @@
-.. highlight:: perl
-
-
-memcached_callback_get, memcached_callback_set
-**********************************************
+=================
+Setting callbacks
+=================
 
 
 Get and set a callback
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
-
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   memcached_return_t 
-     memcached_callback_set (memcached_st *ptr, 
-                             memcached_callback_t flag, 
-                             void *data);
+.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, void *data);
  
-   void *
-     memcached_callback_get (memcached_st *ptr, 
-                             memcached_callback_t flag,
-                             memcached_return_t *error);
+.. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) can have callbacks set key execution points. These either
@@ -57,21 +45,21 @@ You can use MEMCACHED_CALLBACK_USER_DATA to provide custom context if required f
 of the callbacks
 
 
-MEMCACHED_CALLBACK_CLEANUP_FUNCTION
+.. c:var:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
  
  When memcached_delete() is called this function will be excuted. At the
  point of its execution all connections have been closed.
  
 
 
-MEMCACHED_CALLBACK_CLONE_FUNCTION
+.. c:var:: MEMCACHED_CALLBACK_CLONE_FUNCTION
  
  When memcached_delete() is called this function will be excuted. At the
  point of its execution all connections have been closed.
  
 
 
-MEMCACHED_CALLBACK_PREFIX_KEY
+.. c:var:: MEMCACHED_CALLBACK_PREFIX_KEY
  
  You can set a value which will be used to create a domain for your keys.
  The value specified here will be prefixed to each of your keys. The value can not
@@ -83,7 +71,7 @@ MEMCACHED_CALLBACK_PREFIX_KEY
  If you set a value with the value being NULL then the prefix key is disabled.
 
 
-MEMCACHED_CALLBACK_USER_DATA
+.. c:var:: MEMCACHED_CALLBACK_USER_DATA
  
  This allows you to store a pointer to a specifc piece of data. This can be
  retrieved from inside of memcached_fetch_execute(). Cloning a memcached_st
@@ -91,25 +79,25 @@ MEMCACHED_CALLBACK_USER_DATA
  
 
 
-MEMCACHED_CALLBACK_MALLOC_FUNCTION
+.. c:var:: MEMCACHED_CALLBACK_MALLOC_FUNCTION
  
  DEPRECATED: use memcached_set_memory_allocators instead.
  
 
 
-MEMCACHED_CALLBACK_REALLOC_FUNCTION
+.. c:var:: MEMCACHED_CALLBACK_REALLOC_FUNCTION
  
  DEPRECATED: use memcached_set_memory_allocators instead.
  
 
 
-MEMCACHED_CALLBACK_FREE_FUNCTION
+.. c:var:: MEMCACHED_CALLBACK_FREE_FUNCTION
  
  DEPRECATED: use memcached_set_memory_allocators instead.
  
 
 
-MEMCACHED_CALLBACK_GET_FAILURE
+.. c:var:: MEMCACHED_CALLBACK_GET_FAILURE
  
  This function implements the read through cache behavior. On failure of retrieval this callback will be called. 
  You are responsible for populating the result object provided. This result object will then be stored in the server and
@@ -123,20 +111,18 @@ MEMCACHED_CALLBACK_GET_FAILURE
  
 
 
-MEMCACHED_CALLBACK_DELETE_TRIGGER
+.. c:var:: MEMCACHED_CALLBACK_DELETE_TRIGGER
  
- This function implements a trigger upon successful deletion of a key. The memcached_st structure will need to be cloned
- in order to make use of it.
+This function implements a trigger upon successful deletion of a key. The memcached_st structure will need to be cloned in order to make use of it.
  
- The prototype for this is:
- typedef memcached_return_t (\*memcached_trigger_delete_key)(memcached_st \*ptr, char \*key, size_t key_length);
+The prototype for this is: typedef memcached_return_t (\*memcached_trigger_delete_key)(memcached_st \*ptr, char \*key, size_t key_length);
  
 
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_callback_get() return the function or structure that was provided.
@@ -147,27 +133,26 @@ memcached_callback_set() returns MEMCACHED_SUCCESS upon successful setting,
 otherwise MEMCACHED_FAILURE on error.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

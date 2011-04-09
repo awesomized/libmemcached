@@ -1,28 +1,22 @@
-.. highlight:: perl
-
-
-memerror
-********
+==============================================
+memerror - translate an error code to a string
+==============================================
 
 
 Translate a memcached error code to a string
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
+.. program:: memerror
 
+.. option:: --help
 
-.. code-block:: perl
-
-   memerror [options] error_code
-
-
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memerror**\  translate an error code from libmemcached(3) to  a human
@@ -48,9 +42,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

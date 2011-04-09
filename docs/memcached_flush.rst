@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-memcached_flush
-***************
+=====================================
+Wiping clean the contents of a server
+=====================================
 
 
 Wipe contents of memcached servers
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -32,9 +30,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_flush() is used to wipe clean the contents of memcached(1) servers.
@@ -45,9 +43,9 @@ single server. That is, it will flush the servers in the order that they were
 added.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A value of type \ ``memcached_return_t``\  is returned
@@ -55,27 +53,25 @@ On success that value will be \ ``MEMCACHED_SUCCESS``\ .
 Use memcached_strerror() to translate this value to a printable string.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
-
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

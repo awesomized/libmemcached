@@ -3,6 +3,9 @@
 # All paths should be given relative to the root
 
 EXTRA_DIST+= \
+	     docs/_static \
+	     docs/_templates \
+	     docs/conf.py \
 	     docs/hashkit_clone.rst \
 	     docs/hashkit_crc32.rst \
 	     docs/hashkit_create.rst \
@@ -19,63 +22,65 @@ EXTRA_DIST+= \
 	     docs/hashkit_murmur.rst \
 	     docs/hashkit_value.rst \
 	     docs/index.rst \
-	     docs/libmemcached_examples.rst \
+	     docs/libhashkit.rst \
 	     docs/libmemcached.rst \
+	     docs/libmemcached_examples.rst \
 	     docs/libmemcachedutil.rst \
-	     docs/memcached_add_by_key.rst \
+	     docs/memaslap.rst \
 	     docs/memcached_add.rst \
+	     docs/memcached_add_by_key.rst \
 	     docs/memcached_analyze.rst \
-	     docs/memcached_append_by_key.rst \
 	     docs/memcached_append.rst \
+	     docs/memcached_append_by_key.rst \
 	     docs/memcached_auto.rst \
-	     docs/memcached_behavior_get.rst \
 	     docs/memcached_behavior.rst \
+	     docs/memcached_behavior_get.rst \
 	     docs/memcached_behavior_set.rst \
-	     docs/memcached_callback_get.rst \
 	     docs/memcached_callback.rst \
+	     docs/memcached_callback_get.rst \
 	     docs/memcached_callback_set.rst \
-	     docs/memcached_cas_by_key.rst \
 	     docs/memcached_cas.rst \
+	     docs/memcached_cas_by_key.rst \
 	     docs/memcached_clone.rst \
 	     docs/memcached_create.rst \
 	     docs/memcached_decrement.rst \
 	     docs/memcached_decrement_with_initial.rst \
-	     docs/memcached_delete_by_key.rst \
 	     docs/memcached_delete.rst \
+	     docs/memcached_delete_by_key.rst \
 	     docs/memcached_destroy_sasl_auth_data.rst \
 	     docs/memcached_dump.rst \
+	     docs/memcached_fetch.rst \
 	     docs/memcached_fetch_execute.rst \
 	     docs/memcached_fetch_result.rst \
-	     docs/memcached_fetch.rst \
-	     docs/memcached_flush_buffers.rst \
 	     docs/memcached_flush.rst \
+	     docs/memcached_flush_buffers.rst \
 	     docs/memcached_free.rst \
 	     docs/memcached_generate_hash_value.rst \
+	     docs/memcached_get.rst \
 	     docs/memcached_get_by_key.rst \
 	     docs/memcached_get_memory_allocators.rst \
-	     docs/memcached_get.rst \
 	     docs/memcached_get_sasl_callbacks.rst \
 	     docs/memcached_get_user_data.rst \
 	     docs/memcached_increment.rst \
 	     docs/memcached_increment_with_initial.rst \
 	     docs/memcached_lib_version.rst \
 	     docs/memcached_memory_allocators.rst \
-	     docs/memcached_mget_by_key.rst \
-	     docs/memcached_mget_execute_by_key.rst \
-	     docs/memcached_mget_execute.rst \
 	     docs/memcached_mget.rst \
+	     docs/memcached_mget_by_key.rst \
+	     docs/memcached_mget_execute.rst \
+	     docs/memcached_mget_execute_by_key.rst \
+	     docs/memcached_pool.rst \
 	     docs/memcached_pool_behavior_get.rst \
 	     docs/memcached_pool_behavior_set.rst \
 	     docs/memcached_pool_create.rst \
 	     docs/memcached_pool_destroy.rst \
 	     docs/memcached_pool_push.rst \
-	     docs/memcached_pool.rst \
 	     docs/memcached_pool_rst.rst \
-	     docs/memcached_prepend_by_key.rst \
 	     docs/memcached_prepend.rst \
+	     docs/memcached_prepend_by_key.rst \
 	     docs/memcached_quit.rst \
-	     docs/memcached_replace_by_key.rst \
 	     docs/memcached_replace.rst \
+	     docs/memcached_replace_by_key.rst \
 	     docs/memcached_result_cas.rst \
 	     docs/memcached_result_create.rst \
 	     docs/memcached_result_flags.rst \
@@ -91,54 +96,31 @@ EXTRA_DIST+= \
 	     docs/memcached_server_add_unix_socket.rst \
 	     docs/memcached_server_count.rst \
 	     docs/memcached_server_cursor.rst \
+	     docs/memcached_server_list.rst \
 	     docs/memcached_server_list_append.rst \
 	     docs/memcached_server_list_count.rst \
 	     docs/memcached_server_list_free.rst \
-	     docs/memcached_server_list.rst \
 	     docs/memcached_server_push.rst \
+	     docs/memcached_server_st.rst \
+	     docs/memcached_servers.rst \
 	     docs/memcached_servers_parse.rst \
 	     docs/memcached_servers_reset.rst \
-	     docs/memcached_servers.rst \
-	     docs/memcached_server_st.rst \
-	     docs/memcached_set_by_key.rst \
-	     docs/memcached_set_memory_allocators_context.rst \
-	     docs/memcached_set_memory_allocators.rst \
 	     docs/memcached_set.rst \
+	     docs/memcached_set_by_key.rst \
+	     docs/memcached_set_memory_allocators.rst \
+	     docs/memcached_set_memory_allocators_context.rst \
 	     docs/memcached_set_sasl_callbacks.rst \
 	     docs/memcached_set_user_data.rst \
+	     docs/memcached_stat.rst \
 	     docs/memcached_stat_execute.rst \
 	     docs/memcached_stat_get_keys.rst \
 	     docs/memcached_stat_get_value.rst \
-	     docs/memcached_stat.rst \
 	     docs/memcached_stat_servername.rst \
 	     docs/memcached_stats.rst \
 	     docs/memcached_strerror.rst \
 	     docs/memcached_user_data.rst \
 	     docs/memcached_verbosity.rst \
 	     docs/memcached_version.rst \
-	     docs/memcapable.rst \
-	     docs/memcat.rst \
-	     docs/memcp.rst \
-	     docs/memdump.rst \
-	     docs/memerror.rst \
-	     docs/memflush.rst \
-	     docs/memrm.rst \
-	     docs/memslap.rst \
-	     docs/memstat.rst \
-	     docs/_static \
-	     docs/_templates \
-	     docs/conf.py \
-	     docs/libmemcached.rst \
-	     docs/libmemcached_examples.rst \
-	     docs/libmemcachedutil.rst \
-	     docs/memcached_analyze.rst \
-	     docs/memcached_dump.rst \
-	     docs/memcached_flush.rst \
-	     docs/memcached_flush_buffers.rst \
-	     docs/memcached_generate_hash_value.rst \
-	     docs/memcached_quit.rst \
-	     docs/memcached_strerror.rst \
-	     docs/memcached_verbosity.rst \
 	     docs/memcapable.rst \
 	     docs/memcat.rst \
 	     docs/memcp.rst \
@@ -164,8 +146,8 @@ ALLSPHINXOPTS   = -d $(SPHINX_BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOP
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
 man_MANS+= \
-	   docs/man/hashkit_crc32.3 \
 	   docs/man/hashkit_clone.3 \
+	   docs/man/hashkit_crc32.3 \
 	   docs/man/hashkit_create.3 \
 	   docs/man/hashkit_fnv1_32.3 \
 	   docs/man/hashkit_fnv1_64.3 \
@@ -179,9 +161,11 @@ man_MANS+= \
 	   docs/man/hashkit_md5.3 \
 	   docs/man/hashkit_murmur.3 \
 	   docs/man/hashkit_value.3 \
+	   docs/man/libhashkit.3 \
 	   docs/man/libmemcached.3 \
 	   docs/man/libmemcached_examples.3 \
 	   docs/man/libmemcachedutil.3 \
+	   docs/man/memaslap.1 \
 	   docs/man/memcached_add.3 \
 	   docs/man/memcached_add_by_key.3 \
 	   docs/man/memcached_analyze.3 \

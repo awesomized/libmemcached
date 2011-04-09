@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-memcached_quit
-**************
+====================================
+Disconnecting a client from a server
+====================================
 
 
 Disconnect from all servers
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -30,9 +28,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_quit() will disconnect you from all currently connected servers.
@@ -46,9 +44,9 @@ function is provided mainly so that you can timeout your connections or
 reset connections during the middle of a memcached_fetch().
 
 
-******
+------
 RETURN
-******
+------
 
 
 A value of type \ ``memcached_return``\  is returned
@@ -56,27 +54,25 @@ On success that value will be \ ``MEMCACHED_SUCCESS``\ .
 Use memcached_strerror() to translate this value to a printable string.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
-
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

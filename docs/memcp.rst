@@ -1,28 +1,23 @@
-.. highlight:: perl
-
-
-memcp
-*****
+=============================
+memcp - Copy data to a server
+=============================
 
 
 Copies files to a collection of memcached servers
 
 
-********
+--------
 SYNOPSIS
-********
+--------
+
+.. program:: memcp
+
+.. option:: --help
 
 
-
-.. code-block:: perl
-
-   memcp [options] file file <servers>
-
-
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memcp**\  copies one or more files into memcached(1) servers.
@@ -39,18 +34,18 @@ server(s).
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
@@ -58,9 +53,9 @@ Brian Aker, <brian@tangent.org>
 Mark Atwood, <mark@fallenpegasus.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

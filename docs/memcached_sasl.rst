@@ -1,24 +1,19 @@
-.. highlight:: perl
-
-
-memcached_set_sasl_callbacks, memcached_get_sasl_callbacks, memcached_sasl_set_auth_data, memcached_destroy_sasl_auth_data
-**************************************************************************************************************************
-
-
+============
 SASL support
+============
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -38,9 +33,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) allows you to plug in your own callbacks function used by
@@ -61,9 +56,9 @@ before enabling it in libmemcached, and you have to shut down libsasl by
 calling sasl_done() when you are done using SASL from libmemcached.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_get_sasl_callbacks() returns the callbacks currently used
@@ -71,27 +66,28 @@ by this memcached handle.
 memcached_get_sasl_set_auth_data() returns MEMCACHED_SUCCESS upon success.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
+
+Brian Aker, <brian@tangent.org>
 
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

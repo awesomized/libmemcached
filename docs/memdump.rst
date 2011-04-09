@@ -1,28 +1,22 @@
-.. highlight:: perl
-
-
-memdump
-*******
+=============================
+memdump - Dumping your server
+=============================
 
 
 Dump a list of keys from a server.
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
+.. program:: memdump
 
+.. option:: --help
 
-.. code-block:: perl
-
-   memdump [options]
-
-
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memdump**\  currently dumps a list of "keys" from all servers that 
@@ -32,27 +26,17 @@ provide all keys it is not possible to get a complete "dump".
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
-
-memcached(1) libmemcached(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`

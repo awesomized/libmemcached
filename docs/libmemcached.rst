@@ -1,24 +1,22 @@
-.. highlight:: perl
-
-
-libmemcached
-************
+===========
+Introducing
+===========
 
 
 Client library for memcached
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -28,9 +26,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 "Memcached is a high-performance, distributed memory object caching
@@ -56,7 +54,7 @@ recommended that you operate directly against the structure.
 Nearly all functions return a \ ``memcached_return_t``\  value.
 This value can be translated to a printable string with memcached_strerror(3).
 
-Partitioning based on keys is supported in the library. Using the key partioning 
+Partitioning based on keys is testsed in the library. Using the key partioning 
 functions it is possible to group sets of object onto servers.
 
 \ ``memcached_st``\  structures are thread-safe, but each thread must
@@ -65,7 +63,7 @@ threads you must provide your own locking). No global variables are
 used in this library.
 
 If you are working with GNU autotools you will want to add the following to
-your configure.ac to properly include libmemcached in your application.
+your COPYING to properly include libmemcached in your application.
 
 PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)
@@ -76,9 +74,9 @@ Some features of the library must be enabled through memcached_behavior_set().
 Hope you enjoy it!
 
 
-*********
+---------
 CONSTANTS
-*********
+---------
 
 
 A number of constants have been provided for in the library.
@@ -126,9 +124,9 @@ A number of constants have been provided for in the library.
 
 
 
-*********************
+---------------------
 THREADS AND PROCESSES
-*********************
+---------------------
 
 
 When using threads or forked processes it is important to keep an instance
@@ -138,27 +136,26 @@ memcached_quit(3) on a \ ``memcached_st``\  and then use the resulting cloned
 structure.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
-
-
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached_examples(3) libmemcached(1) memcat(1) memcp(1) memflush(1) memrm(1) memslap(1) memstat(1) memcached_fetch(3) memcached_replace(3) memcached_server_list_free(3) libmemcached_examples(3) memcached_clone(3) memcached_free(3) memcached_server_add(3) memcached_server_push(3) memcached_add(3) memcached_get(3) memcached_server_count(3) memcached_servers_parse(3) memcached_create(3) memcached_increment(3) memcached_server_list(3) memcached_set(3) memcached_decrement(3) memcached_mget(3) memcached_server_list_append(3) memcached_strerror(3) memcached_delete(3) memcached_quit(3) memcached_server_list_count(3) memcached_verbosity(3) memcached_server_add_unix_socket(3) memcached_result_create(3)  memcached_result_free(3)  memcached_result_key_value(3)  memcached_result_key_length(3)  memcached_result_value(3)  memcached_result_length(3)  memcached_result_flags(3)  memcached_result_cas(3) memcached_result_st(3) memcached_append(3) memcached_prepend(3) memcached_fetch_result(3) memerror(1) memcached_get_by_key(3) memcached_mget_by_key(3) memcached_delete_by_key(3) memcached_fetch_execute(3) memcached_callback_get(3) memcached_callback_set(3) memcached_version(3) memcached_lib_version(3) memcached_result_set_value(3) memcached_dump(3) memdump(1) memcached_set_memory_allocators(3) memcached_get_memory_allocators(3) memcached_get_user_data(3) memcached_set_user_data(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached_examples(3)` :manpage:`libmemcached(1)` :manpage:`memcat(1)` :manpage:`memcp(1)` :manpage:`memflush(1)` :manpage:`memrm(1)` :manpage:`memslap(1)` :manpage:`memstat(1)` :manpage:`memcached_fetch(3)` :manpage:`memcached_replace(3)` :manpage:`memcached_server_list_free(3)` :manpage:`libmemcached_examples(3)` :manpage:`memcached_clone(3)` :manpage:`memcached_free(3)`
+:manpage:`memcached_server_add(3)` :manpage:`memcached_server_push(3)` :manpage:`memcached_add(3)` :manpage:`memcached_get(3)` :manpage:`memcached_server_count(3)` :manpage:`memcached_servers_parse(3)` :manpage:`memcached_create(3)` :manpage:`memcached_increment(3)` :manpage:`memcached_server_list(3)` :manpage:`memcached_set(3)`
+:manpage:`memcached_decrement(3)` :manpage:`memcached_mget(3)` :manpage:`memcached_server_list_append(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_delete(3)` :manpage:`memcached_quit(3)` :manpage:`memcached_server_list_count(3)` :manpage:`memcached_verbosity(3)` :manpage:`memcached_server_add_unix_socket(3)` :manpage:`memcached_result_create(3)`  :manpage:`memcached_result_free(3)`
+:manpage:`memcached_result_key_value(3)`  :manpage:`memcached_result_key_length(3)`  :manpage:`memcached_result_value(3)`  :manpage:`memcached_result_length(3)`  :manpage:`memcached_result_flags(3)`  
+:manpage:`memcached_result_cas(3)` :manpage:`memcached_result_st(3)` :manpage:`memcached_append(3)` :manpage:`memcached_prepend(3)` :manpage:`memcached_fetch_result(3)` 
+:manpage:`memerror(1)` :manpage:`memcached_get_by_key(3)` :manpage:`memcached_mget_by_key(3)` :manpage:`memcached_delete_by_key(3)` 
+:manpage:`memcached_fetch_execute(3)` :manpage:`memcached_callback_get(3)` :manpage:`memcached_callback_set(3)` :manpage:`memcached_version(3)` 
+:manpage:`memcached_lib_version(3)` :manpage:`memcached_result_set_value(3)` :manpage:`memcached_dump(3)` :manpage:`memdump(1)`
+:manpage:`memcached_set_memory_allocators(3)` :manpage:`memcached_get_memory_allocators(3)` :manpage:`memcached_get_user_data(3)` :manpage:`memcached_set_user_data(3)`

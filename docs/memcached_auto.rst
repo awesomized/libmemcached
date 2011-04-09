@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_increment, memcached_decrement, memcached_increment_with_initial, memcached_decrement_with_initial
-************************************************************************************************************
+=========================================================
+Incrementing and Decrementing values stored in the server
+=========================================================
 
 
 Manipulate counters
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -94,9 +92,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached(1) servers have the ability to increment and decrement keys
@@ -162,10 +160,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

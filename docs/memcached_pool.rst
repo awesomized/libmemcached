@@ -1,60 +1,33 @@
-.. highlight:: perl
+============================
+Working with memcached pools
+============================
 
-
-memcached_pool_create, memcached_pool_destroy, memcached_pool_push, memcached_pool_pop
-**************************************************************************************
-
-
-Manage pools
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcachedutil, -lmemcachedutil)
-
-
-********
+--------
 SYNOPSIS
-********
+--------
+
+#include <libmemcached/memcached_pool.h>
+
+.. c:function:: memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max);
+ 
+.. c:function:: memcached_st * memcached_pool_destroy(memcached_pool_st* pool);
+ 
+.. c:function:: memcached_st * memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
+ 
+.. c:function:: memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
+ 
+.. c:function:: memcached_st *memcached_create (memcached_st *ptr);
+ 
+.. c:function:: memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
+ 
+.. c:function:: memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t *value)
+
+Compile and link with -lmemcachedutil -lmemcached
 
 
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached_pool.h>
- 
-   memcached_pool_st *
-     memcached_pool_create(memcached_st* mmc, int initial, int max);
- 
-   memcached_st *
-     memcached_pool_destroy(memcached_pool_st* pool);
- 
-   memcached_st *
-     memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
- 
-   memcached_return_t
-     memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
- 
-   memcached_st *memcached_create (memcached_st *ptr);
- 
-   memcached_return_t
-     memcached_pool_behavior_set(memcached_pool_st *pool,
-                                 memcached_behavior_t flag,
-                                 uint64_t data)
- 
-   memcached_return_t
-     memcached_pool_behavior_get(memcached_pool_st *pool,
-                                 memcached_behavior_t flag,
-                                 uint64_t *value)
-
-
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_pool_create() is used to create a connection pool of objects you
@@ -86,9 +59,9 @@ memcached_pool_behavior_set() and memcached_pool_behagior_get() is
 used to get/set behavior flags on all connections in the pool.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_pool_create() returns a pointer to the newly created
@@ -108,27 +81,27 @@ memcached_pool_behavior_get() and memcached_pool_behavior_get()
 returns MEMCACHED_SUCCESS upon success.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
+
+Brian Aker, <brian@tangent.org>
 
 Trond Norbye, <trond.norbye@gmail.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
-
-memcached(1) libmemcached(3) memcached_create(3) memcached_free(3) libmemcachedutil(3) memcached_behavior_get(3) memcached_behavior_set(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

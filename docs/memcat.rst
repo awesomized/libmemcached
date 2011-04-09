@@ -1,28 +1,25 @@
-.. highlight:: perl
-
-
-memcat
-******
+=================================
+memcat - "cat" data from a server
+=================================
 
 
 Copy a set of keys to stdout
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
-.. code-block:: perl
+.. program:: memcat
 
-   memcat [options] key key ...
+.. option:: --help
 
 
-
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 \ **memcat**\  outputs to stdout the value a single or multiple set of keys
@@ -36,18 +33,18 @@ environment variable \ ``MEMCACHED_SERVERS``\ .
 For a full list of operations run the tool with the \ **--help**\  option.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
@@ -55,9 +52,9 @@ Brian Aker, <brian@tangent.org>
 Mark Atwood <mark@fallenpegasus.com>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

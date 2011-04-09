@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_server_list_free, memcached_server_list_append, memcached_server_list_count, memcached_servers_parse
-**************************************************************************************************************
+=========================
+Managing lists of servers
+=========================
 
 
 Manage server list
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -48,9 +46,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) operates on a list of hosts which are stored in
@@ -108,10 +106,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

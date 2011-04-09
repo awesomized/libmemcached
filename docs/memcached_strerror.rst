@@ -1,11 +1,6 @@
-.. highlight:: perl
-
-
-memcached_strerror
-******************
-
-
-Get error string
+================================================
+Coverting Errors, memcached_return_t, to strings
+================================================
 
 
 *******
@@ -16,9 +11,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -32,9 +27,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_strerror() takes a \ ``memcached_return_t``\  value and returns a string
@@ -73,9 +68,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3)

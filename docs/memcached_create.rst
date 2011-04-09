@@ -1,44 +1,38 @@
-.. highlight:: perl
-
-
-memcached_create, memcached_free, memcached_clone, memcached_servers_reset
-**************************************************************************
+======================================
+Creating and destroying a memcached_st
+======================================
 
 
 Create a memcached_st structure
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
-
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   memcached_st *memcached_create (memcached_st *ptr);
+.. c:function:: memcached_st *memcached_create (memcached_st *ptr);
  
-   void memcached_free (memcached_st *ptr);
+.. c:function:: void memcached_free (memcached_st *ptr);
  
-   memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
+.. c:function:: memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
  
-   void memcached_servers_reset(memcached_st);
+.. c:function:: void memcached_servers_reset(memcached_st);
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_create() is used to create a \ ``memcached_st``\  structure that will then
@@ -64,9 +58,9 @@ stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_create() returns a pointer to the memcached_st that was created
@@ -76,27 +70,26 @@ memcached_clone() returns a pointer to the memcached_st that was created
 (or initialized). On an allocation failure, it returns NULL.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
-memcached(1) libmemcached(3) memcached_strerror(3)
-
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

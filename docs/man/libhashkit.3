@@ -1,6 +1,6 @@
-.TH "MEMRM" "1" "April 08, 2011" "0.47" "libmemcached"
+.TH "LIBHASHKIT" "3" "April 08, 2011" "0.47" "libmemcached"
 .SH NAME
-memrm \- libmemcached Documentation
+libhashkit \- libhashkit Documentation
 .
 .nr rst2man-indent-level 0
 .
@@ -30,33 +30,28 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
+.SH LIBRARY
 .sp
-memrm \- Remove a key(s) from a collection of memcached servers
+C library collection of useful hashing algorithm (libhashkit, \-lhashkit)
 .SH SYNOPSIS
-.INDENT 0.0
-.TP
-.B \-\-help
-.UNINDENT
+.sp
+.nf
+.ft C
+cc [ flag ... ] file ... \-lhashkit
+
+#include <libhashkit/hashkit.h>
+.ft P
+.fi
 .SH DESCRIPTION
 .sp
-\fBmemrm\fP removes items, specified by key, from memcached(1) servers.
-.sp
-You can specify servers via the \fB\-\-servers\fP option or via the
-environment variable \fBMEMCACHED_SERVERS\fP.
-.sp
-For a full list of operations run the tool with the \fB\-\-help\fP option.
+\fBlibhashkit\fP is a small and thread\-safe client library that provides a collection of useful hashing algorithm. libhashkit is distributed with libmemcached.
 .SH HOME
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
-.sp
-Mark Atwood, <\fI\%mark@fallenpegasus.com\fP>
 .SH SEE ALSO
 .sp
-memcached(1) libmemcached(3)
+\fIlibmemcached(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

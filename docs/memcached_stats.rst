@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_stat, memcached_stat_servername, memcached_stat_get_value, memcached_stat_get_keys
-********************************************************************************************
+==================================================
+Working with statistical information from a server
+==================================================
 
 
 Get memcached statistics
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -54,9 +52,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 libmemcached(3) has the ability to query a memcached server (or collection
@@ -122,9 +120,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3) memcached_strerror(3)

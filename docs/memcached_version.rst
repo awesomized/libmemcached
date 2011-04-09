@@ -1,8 +1,6 @@
-.. highlight:: perl
-
-
-memcached_lib_version, memcached_version
-****************************************
+=======================================================
+Getting version information about the client and server
+=======================================================
 
 
 Get library version
@@ -16,9 +14,9 @@ LIBRARY
 C Client Library for memcached (libmemcached, -lmemcached)
 
 
-********
+--------
 SYNOPSIS
-********
+--------
 
 
 
@@ -35,9 +33,9 @@ SYNOPSIS
 
 
 
-***********
+-----------
 DESCRIPTION
-***********
+-----------
 
 
 memcached_lib_version() is used to return a simple version string representing
@@ -80,9 +78,9 @@ AUTHOR
 Brian Aker, <brian@tangent.org>
 
 
-********
+--------
 SEE ALSO
-********
+--------
 
 
 memcached(1) libmemcached(3) memcached_strerror(3)
