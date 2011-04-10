@@ -118,10 +118,10 @@ static test_return_t __check_IO_MSG_WATERMARK(memcached_st *memc, const scanner_
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_AUTO_EJECT_HOSTS(memcached_st *memc, const scanner_string_st &value)
+static test_return_t __check_REMOVE_FAILED_SERVERS(memcached_st *memc, const scanner_string_st &value)
 {
   (void)value;
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS));
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS));
   return TEST_SUCCESS;
 }
 
@@ -176,14 +176,14 @@ scanner_variable_t bad_test_strings[]= {
 
 scanner_variable_t test_number_options[]= {
   { ARRAY,  make_scanner_string("--CONNECT_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
   { ARRAY,  make_scanner_string("--IO_BYTES_WATERMARK=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--IO_KEY_PREFETCH=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
   { ARRAY,  make_scanner_string("--NUMBER_OF_REPLICAS=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--POLL_TIMEOUT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--RCV_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--REMOVE-FAILED-SERVERS=3"), scanner_string_null, __check_REMOVE_FAILED_SERVERS },
   { ARRAY,  make_scanner_string("--RETRY_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SERVER_FAILURE_LIMIT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SND_TIMEOUT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SOCKET_RECV_SIZE=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SOCKET_SEND_SIZE=456"), scanner_string_null, NULL },
@@ -191,7 +191,6 @@ scanner_variable_t test_number_options[]= {
 };
 
 scanner_variable_t test_boolean_options[]= {
-  { ARRAY,  make_scanner_string("--AUTO_EJECT_HOSTS"), scanner_string_null, __check_AUTO_EJECT_HOSTS },
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },

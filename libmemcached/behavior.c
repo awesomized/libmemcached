@@ -51,9 +51,13 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     ptr->rcv_timeout= (int32_t)data;
     break;
+
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    ptr->flags.auto_eject_hosts= set_flag(data);
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     ptr->server_failure_limit= (uint32_t)data;
     break;
+
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     send_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     if (data)
@@ -236,6 +240,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return hashkit_get_function(&ptr->hashkit);
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
     return hashkit_get_function(&ptr->distribution_hashkit);
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
@@ -443,6 +448,7 @@ const char *libmemcached_string_behavior(const memcached_behavior_t flag)
   case MEMCACHED_BEHAVIOR_NOREPLY: return "MEMCACHED_BEHAVIOR_NOREPLY";
   case MEMCACHED_BEHAVIOR_USE_UDP: return "MEMCACHED_BEHAVIOR_USE_UDP";
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS: return "MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS";
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS: return "MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS";
   case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS: return "MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS";
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ: return "MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ";
   case MEMCACHED_BEHAVIOR_CORK: return "MEMCACHED_BEHAVIOR_CORK";

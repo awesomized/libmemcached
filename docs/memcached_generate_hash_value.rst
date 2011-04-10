@@ -6,34 +6,18 @@ Generating hash values directly
 Hash a key value
 
 
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
---------
-SYNOPSIS
+-------- 
+SYNOPSIS 
 --------
 
 
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   uint32_t
-     memcached_generate_hash_value (const char *key,
-                                    size_t key_length,
-                                    memcached_hash_t hash_algorithm);
- 
-   uint32_t 
-     memcached_generate_hash (memcached_st *ptr,
-                              const char *key, 
-                              size_t key_length);
+.. c:function:: uint32_t memcached_generate_hash_value (const char *key, size_t key_length, memcached_hash_t hash_algorithm);
 
+.. c:function:: uint32_t memcached_generate_hash (memcached_st *ptr, const char *key, size_t key_length);
+
+Compile and link with -lmemcachedutil -lmemcached
 
 
 -----------

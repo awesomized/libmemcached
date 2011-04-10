@@ -3,93 +3,32 @@ Retrieving data from the server
 ===============================
 
 
-Get a value
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
 
+#include <libmemcached/memcached.h>
+ 
+.. c:function:: memcached_result_st * memcached_fetch_result (memcached_st *ptr, memcached_result_st *result, memcached_return_t *error);
 
-.. code-block:: perl
+.. c:function:: char * memcached_get (memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_result_st *
-     memcached_fetch_result (memcached_st *ptr,
-                             memcached_result_st *result,
-                             memcached_return_t *error);
- 
-   char *
-     memcached_get (memcached_st *ptr,
-                    const char *key, size_t key_length,
-                    size_t *value_length,
-                    uint32_t *flags,
-                    memcached_return_t *error);
- 
-   memcached_return_t
-     memcached_mget (memcached_st *ptr,
-                   const char * const *keys,
-                   const size_t *key_length,
-                   size_t number_of_keys);
-   char *
-     memcached_get_by_key (memcached_st *ptr,
-                           const char *master_key, size_t master_key_length,
-                           const char *key, size_t key_length,
-                           size_t *value_length,
-                           uint32_t *flags,
-                           memcached_return_t *error);
- 
-   memcached_return_t
-     memcached_mget_by_key (memcached_st *ptr,
-                            const char *master_key, size_t master_key_length,
-                            const char * const *keys,
-                            const size_t *key_length,
-                            size_t number_of_keys);
- 
-   char *
-     memcached_fetch (memcached_st *ptr,
-                      char *key, size_t *key_length,
-                      size_t *value_length,
-                      uint32_t *flags,
-                      memcached_return_t *error);
- 
-   memcached_return_t
-     memcached_fetch_execute (memcached_st *ptr,
-                              memcached_execute_fn *callback,
-                              void *context,
-                              uint32_t number_of_callbacks);
- 
- 
-   memcached_return_t
-     memcached_mget_execute (memcached_st *ptr,
-                             const char * const *keys,
-                             const size_t *key_length,
-                             size_t number_of_keys,
-                             memcached_execute_fn *callback,
-                             void *context,
-                             uint32_t number_of_callbacks);
- 
-   memcached_return_t
-     memcached_mget_execute_by_key (memcached_st *ptr,
-                                    const char *master_key,
-                                    size_t master_key_length,
-                                    const char * const *keys,
-                                    const size_t *key_length,
-                                    size_t number_of_keys,
-                                    memcached_execute_fn *callback,
-                                    void *context,
-                                    uint32_t number_of_callbacks);
+.. c:function::  memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys);
 
+.. c:function:: char * memcached_get_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+
+.. c:function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+
+.. c:function::  char * memcached_fetch (memcached_st *ptr, char *key, size_t *key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+
+.. c:function::  memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+
+.. c:function:: memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+
+.. c:function:: memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+
+Compile and link with -lmemcached
 
 
 -----------
@@ -168,9 +107,9 @@ a \ ``memcached_return_t``\ , the error function parameter will be set to
 \ ``MEMCACHED_NOT_SUPPORTED``\ .
 
 
-******
+------
 RETURN
-******
+------
 
 
 All objects returned must be freed by the calling application.
@@ -182,21 +121,14 @@ and the key was set larger then MEMCACHED_MAX_KEY, which was the largest
 key allowed for the original memcached ascii server.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

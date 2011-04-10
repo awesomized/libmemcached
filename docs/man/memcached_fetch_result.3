@@ -1,6 +1,6 @@
 .TH "MEMCACHED_FETCH_RESULT" "3" "April 09, 2011" "0.47" "libmemcached"
 .SH NAME
-memcached_fetch_result \- libmemcached Documentation
+memcached_fetch_result \- Retrieving data from the server
 .
 .nr rst2man-indent-level 0
 .
@@ -30,85 +30,48 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
+.SH SYNOPSIS
 .sp
-Get a value
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-memcached_result_st *
-  memcached_fetch_result (memcached_st *ptr,
-                          memcached_result_st *result,
-                          memcached_return_t *error);
-
-char *
-  memcached_get (memcached_st *ptr,
-                 const char *key, size_t key_length,
-                 size_t *value_length,
-                 uint32_t *flags,
-                 memcached_return_t *error);
-
-memcached_return_t
-  memcached_mget (memcached_st *ptr,
-                const char * const *keys,
-                const size_t *key_length,
-                size_t number_of_keys);
-char *
-  memcached_get_by_key (memcached_st *ptr,
-                        const char *master_key, size_t master_key_length,
-                        const char *key, size_t key_length,
-                        size_t *value_length,
-                        uint32_t *flags,
-                        memcached_return_t *error);
-
-memcached_return_t
-  memcached_mget_by_key (memcached_st *ptr,
-                         const char *master_key, size_t master_key_length,
-                         const char * const *keys,
-                         const size_t *key_length,
-                         size_t number_of_keys);
-
-char *
-  memcached_fetch (memcached_st *ptr,
-                   char *key, size_t *key_length,
-                   size_t *value_length,
-                   uint32_t *flags,
-                   memcached_return_t *error);
-
-memcached_return_t
-  memcached_fetch_execute (memcached_st *ptr,
-                           memcached_execute_fn *callback,
-                           void *context,
-                           uint32_t number_of_callbacks);
-
-
-memcached_return_t
-  memcached_mget_execute (memcached_st *ptr,
-                          const char * const *keys,
-                          const size_t *key_length,
-                          size_t number_of_keys,
-                          memcached_execute_fn *callback,
-                          void *context,
-                          uint32_t number_of_callbacks);
-
-memcached_return_t
-  memcached_mget_execute_by_key (memcached_st *ptr,
-                                 const char *master_key,
-                                 size_t master_key_length,
-                                 const char * const *keys,
-                                 const size_t *key_length,
-                                 size_t number_of_keys,
-                                 memcached_execute_fn *callback,
-                                 void *context,
-                                 uint32_t number_of_callbacks);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B memcached_result_st * memcached_fetch_result (memcached_st *ptr, memcached_result_st *result, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B char * memcached_get (memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B char * memcached_get_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B char * memcached_fetch (memcached_st *ptr, char *key, size_t *key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 memcached_get() is used to fetch an individual value from the server. You
 must pass in a key and its length to fetch the object. You must supply
@@ -191,10 +154,7 @@ key allowed for the original memcached ascii server.
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
-.SS SEE ALSO
+.SH SEE ALSO
 .sp
 \fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR

@@ -3,30 +3,15 @@ Disconnecting a client from a server
 ====================================
 
 
-Disconnect from all servers
-
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
-
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   void memcached_quit (memcached_st *ptr);
+.. c:function:: void memcached_quit (memcached_st *ptr);
 
-
+Compile and link with -lmemcached
 
 -----------
 DESCRIPTION

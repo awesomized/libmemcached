@@ -93,8 +93,6 @@
 
 "--VERIFY_KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
 "--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
-"--AUTO_EJECT_HOSTS"	        { yyextra->begin= yytext; return AUTO_EJECT_HOSTS; }
-"--AUTO-EJECT_HOSTS"	        { yyextra->begin= yytext; return AUTO_EJECT_HOSTS; }
 "--BINARY_PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
 "--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
 "--BUFFER_REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
@@ -124,10 +122,10 @@
 "--RCV-TIMEOUT="			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
 "--RETRY_TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
 "--RETRY-TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
-"--SERVER_FAILURE_LIMIT="	        { yyextra->begin= yytext; return SERVER_FAILURE_LIMIT; }
-"--SERVER-FAILURE-LIMIT="	        { yyextra->begin= yytext; return SERVER_FAILURE_LIMIT; }
 "--SND_TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
 "--SND-TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
+"--REMOVE_FAILED_SERVERS="			{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
+"--REMOVE-FAILED-SERVERS="			{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
 "--SOCKET_RECV_SIZE="	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
 "--SOCKET-RECV-SIZE="	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
 "--SOCKET_SEND_SIZE="	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }

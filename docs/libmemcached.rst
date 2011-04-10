@@ -1,29 +1,14 @@
-===========
-Introducing
-===========
-
-
-Client library for memcached
-
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
+==============================================
+Introducing the C Client Library for memcached
+==============================================
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached.h>
 
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
-
+Compile and link with -lmemcached
 
 
 -----------

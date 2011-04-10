@@ -107,6 +107,7 @@ man_MANS+= \
 	   docs/man/memcached_fetch_result.3 \
 	   docs/man/memcached_flush_buffers.3 \
 	   docs/man/memcached_free.3 \
+	   docs/man/memcached_generate_hash.3 \
 	   docs/man/memcached_generate_hash_value.3 \
 	   docs/man/memcached_get.3 \
 	   docs/man/memcached_get_by_key.3 \

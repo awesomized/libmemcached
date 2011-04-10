@@ -75,7 +75,6 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token UNKNOWN
 
 /* All behavior options */
-%token AUTO_EJECT_HOSTS
 %token BINARY_PROTOCOL
 %token BUFFER_REQUESTS
 %token CONNECT_TIMEOUT
@@ -92,19 +91,19 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token POLL_TIMEOUT
 %token RANDOMIZE_REPLICA_READ
 %token RCV_TIMEOUT
+%token REMOVE_FAILED_SERVERS
 %token RETRY_TIMEOUT
-%token SERVER_FAILURE_LIMIT
 %token SND_TIMEOUT
 %token SOCKET_RECV_SIZE
 %token SOCKET_SEND_SIZE
 %token SORT_HOSTS
 %token SUPPORT_CAS
-%token _TCP_NODELAY
-%token _TCP_KEEPALIVE
-%token _TCP_KEEPIDLE
 %token USER_DATA
 %token USE_UDP
 %token VERIFY_KEY
+%token _TCP_KEEPALIVE
+%token _TCP_KEEPIDLE
+%token _TCP_NODELAY
 
 /* Callbacks */
 %token PREFIX_KEY
@@ -267,7 +266,11 @@ behaviors:
         ;
 
 behavior_number:
-          CONNECT_TIMEOUT
+          REMOVE_FAILED_SERVERS
+          {
+            $$= MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS;
+          }
+        | CONNECT_TIMEOUT
           {
             $$= MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT;
           }
@@ -299,10 +302,6 @@ behavior_number:
           {
             $$= MEMCACHED_BEHAVIOR_RETRY_TIMEOUT;
           }
-        |  SERVER_FAILURE_LIMIT
-          {
-            $$= MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT;
-          }
         |  SND_TIMEOUT
           {
             $$= MEMCACHED_BEHAVIOR_SND_TIMEOUT;
@@ -318,11 +317,7 @@ behavior_number:
         ;
 
 behavior_boolean: 
-          AUTO_EJECT_HOSTS
-          {
-            $$= MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS;
-          }
-        | BINARY_PROTOCOL
+          BINARY_PROTOCOL
           {
             $$= MEMCACHED_BEHAVIOR_BINARY_PROTOCOL;
           }

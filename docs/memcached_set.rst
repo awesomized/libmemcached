@@ -6,115 +6,39 @@ Storing and Replacing Data
 Store value on server
 
 
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
 
 
-.. code-block:: perl
+#include <libmemcached/memcached.h>
+ 
+.. c:function:: memcached_return_t memcached_set (memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_return_t
-     memcached_set (memcached_st *ptr,
-                    const char *key, size_t key_length, 
-                    const char *value, size_t value_length, 
-                    time_t expiration,
-                    uint32_t flags);
- 
-   memcached_return_t
-     memcached_add (memcached_st *ptr,
-                    const char *key, size_t key_length,
-                    const char *value, size_t value_length, 
-                    time_t expiration,
-                    uint32_t flags);
- 
-   memcached_return_t
-     memcached_replace (memcached_st *ptr,
-                        const char *key, size_t key_length,
-                        const char *value, size_t value_length, 
-                        time_t expiration,
-                        uint32_t flags);
- 
-   memcached_return_t 
-     memcached_prepend(memcached_st *ptr, 
-                       const char *key, size_t key_length,
-                       const char *value, size_t value_length, 
-                       time_t expiration,
-                       uint32_t flags)
- 
-   memcached_return_t 
-     memcached_append(memcached_st *ptr, 
-                      const char *key, size_t key_length,
-                       const char *value, size_t value_length, 
-                       time_t expiration,
-                       uint32_t flags)
-   memcached_return_t 
-     memcached_cas(memcached_st *ptr, 
-                   const char *key, size_t key_length,
-                   const char *value, size_t value_length, 
-                   time_t expiration,
-                   uint32_t flags,
-                   uint64_t cas);
- 
-   memcached_return_t 
-     memcached_set_by_key(memcached_st *ptr, 
-                          const char *master_key, size_t master_key_length, 
-                          const char *key, size_t key_length, 
-                          const char *value, size_t value_length, 
-                          time_t expiration,
-                          uint32_t flags);
- 
-   memcached_return_t 
-     memcached_add_by_key(memcached_st *ptr, 
-                          const char *master_key, size_t master_key_length,
-                          const char *key, size_t key_length,
-                          const char *value, size_t value_length, 
-                          time_t expiration,
-                          uint32_t flags);
- 
-   memcached_return_t 
-     memcached_replace_by_key(memcached_st *ptr, 
-                              const char *master_key, size_t master_key_length,
-                              const char *key, size_t key_length,
-                              const char *value, size_t value_length, 
-                              time_t expiration,
-                              uint32_t flags);
- 
-   memcached_return_t 
-     memcached_prepend_by_key(memcached_st *ptr, 
-                              const char *master_key, size_t master_key_length,
-                              const char *key, size_t key_length,
-                              const char *value, size_t value_length, 
-                              time_t expiration,
-                              uint32_t flags);
- 
-   memcached_return_t 
-     memcached_append_by_key(memcached_st *ptr, 
-                             const char *master_key, size_t master_key_length,
-                             const char *key, size_t key_length,
-                             const char *value, size_t value_length, 
-                             time_t expiration,
-                             uint32_t flags);
- 
-   memcached_return_t 
-     memcached_cas_by_key(memcached_st *ptr, 
-                          const char *master_key, size_t master_key_length,
-                          const char *key, size_t key_length,
-                          const char *value, size_t value_length, 
-                          time_t expiration,
-                          uint32_t flags,
-                          uint64_t cas);
+.. c:function:: memcached_return_t memcached_add (memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
+.. c:function:: memcached_return_t memcached_replace (memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_prepend(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
+
+.. c:function:: memcached_return_t memcached_append(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
+
+.. c:function:: memcached_return_t memcached_cas(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
+
+.. c:function:: memcached_return_t memcached_set_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_add_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_replace_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_prepend_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_append_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+
+.. c:function:: memcached_return_t memcached_cas_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
+
+Compile and link with -lmemcached
 
 
 -----------

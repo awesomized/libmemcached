@@ -32,9 +32,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Create a memcached_st structure
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached.h>
@@ -54,6 +51,8 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 .TP
 .B void memcached_servers_reset(memcached_st);
 .UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 memcached_create() is used to create a \fBmemcached_st\fP structure that will then

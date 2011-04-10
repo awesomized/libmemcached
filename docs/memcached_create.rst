@@ -6,14 +6,6 @@ Creating and destroying a memcached_st
 Create a memcached_st structure
 
 
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
@@ -28,7 +20,7 @@ SYNOPSIS
  
 .. c:function:: void memcached_servers_reset(memcached_st);
 
-
+Compile and link with -lmemcached
 
 -----------
 DESCRIPTION
