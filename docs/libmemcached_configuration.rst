@@ -33,9 +33,9 @@ Provide a servername to be used by the client. Providing a weight will cause wei
 
 Verify that keys that are being used fit within the design of the protocol being used.
 
-.. describe:: --AUTO-EJECT_HOSTS
+.. describe:: --REMOVE_FAILED_SERVERS
 
-Enable the behavior MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS.
+Enable the behavior MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS.
 
 .. describe:: --BINARY-PROTOCOL
 
@@ -151,6 +151,23 @@ RETURN
 
 memcached_create_with_options() returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
+
+
+
+------- 
+EXAMPLE 
+-------
+
+
+.. code-block:: c
+
+   const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"
+   memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
+   {
+    ...
+   }
+   memcached_free(memc);
+
 
 
 ----
