@@ -319,8 +319,6 @@ static test_return_t clone_test(memcached_st *memc)
     { // Test all of the flags
       test_true(memc_clone->flags.no_block == memc->flags.no_block);
       test_true(memc_clone->flags.tcp_nodelay == memc->flags.tcp_nodelay);
-      test_true(memc_clone->flags.reuse_memory == memc->flags.reuse_memory);
-      test_true(memc_clone->flags.use_cache_lookups == memc->flags.use_cache_lookups);
       test_true(memc_clone->flags.support_cas == memc->flags.support_cas);
       test_true(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
       test_true(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);
@@ -6219,7 +6217,6 @@ test_st parser_tests[] ={
   {"hash", 0, (test_callback_fn)parser_hash_test },
   {"libmemcached_check_configuration", 0, (test_callback_fn)libmemcached_check_configuration_test },
   {"libmemcached_check_configuration_with_filename", 0, (test_callback_fn)libmemcached_check_configuration_with_filename_test },
-  {"memcached_parse_configure_file", 0, (test_callback_fn)memcached_parse_configure_file_test },
   {"number_options", 0, (test_callback_fn)parser_number_options_test },
   {"randomly generated options", 0, (test_callback_fn)random_statement_build_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },

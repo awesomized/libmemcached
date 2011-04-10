@@ -15,6 +15,7 @@ noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.h \
+		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
 		 libmemcached/is.h \
@@ -91,7 +92,7 @@ libmemcached_libmemcachedcallbacks_la_SOURCES = libmemcached/callback.c
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
-					      libmemcached/error.c \
+					      libmemcached/error.cc \
 					      libmemcached/string.c
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
@@ -112,6 +113,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/get.c \
 				       libmemcached/hash.c \
 				       libmemcached/hosts.c \
+				       libmemcached/initialize_query.cc \
 				       libmemcached/io.c \
 				       libmemcached/key.c \
 				       libmemcached/memcached.c \

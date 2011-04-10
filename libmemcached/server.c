@@ -168,6 +168,12 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
                                            void *context,
                                            uint32_t number_of_callbacks)
 {
+  memcached_return_t rc;
+  if ((rc= initialize_const_query(ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
+
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_instance_st instance=
@@ -215,14 +221,20 @@ memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
   uint32_t server_key;
   memcached_server_instance_st instance;
 
-  *error= memcached_validate_key_length(key_length,
-                                        ptr->flags.binary_protocol);
-  unlikely (*error != MEMCACHED_SUCCESS)
-    return NULL;
-
-  unlikely (memcached_server_count(ptr) == 0)
+  memcached_return_t rc;
+  if ((rc= initialize_const_query(ptr)) != MEMCACHED_SUCCESS)
   {
-    *error= MEMCACHED_NO_SERVERS;
+    if (error)
+      *error= rc;
+
+    return NULL;
+  }
+
+  if ((rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)) != MEMCACHED_SUCCESS)
+  {
+    if (error)
+      *error= rc;
+
     return NULL;
   }
 
@@ -239,14 +251,22 @@ memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
 
 }
 
-void memcached_server_error_reset(memcached_server_st *ptr)
+void memcached_server_error_reset(memcached_server_st *self)
 {
-  ptr->cached_server_error[0]= 0;
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return;
+
+  self->cached_server_error[0]= 0;
 }
 
-memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr)
+memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *self)
 {
-  return ptr->last_disconnected_server;
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return 0;
+
+  return self->last_disconnected_server;
 }
 
 void memcached_server_list_free(memcached_server_list_st self)
@@ -276,26 +296,46 @@ void memcached_server_list_free(memcached_server_list_st self)
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
+  WATCHPOINT_ASSERT(servers);
+  if (! servers)
+    return 0;
+
   return servers->number_of_hosts= count;
 }
 
 uint32_t memcached_server_count(const memcached_st *self)
 {
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return 0;
+
   return self->number_of_hosts;
 }
 
 const char *memcached_server_name(memcached_server_instance_st self)
 {
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return NULL;
+
   return self->hostname;
 }
 
 in_port_t memcached_server_port(memcached_server_instance_st self)
 {
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return 0;
+
   return self->port;
 }
 
 uint32_t memcached_server_response_count(memcached_server_instance_st self)
 {
+  WATCHPOINT_ASSERT(self);
+  if (! self)
+    return 0;
+
   return self->cursor_active;
 }
 

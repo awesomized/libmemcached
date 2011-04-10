@@ -101,10 +101,8 @@ struct memcached_st {
     bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
-    bool reuse_memory:1;
     bool support_cas:1;
     bool tcp_nodelay:1;
-    bool use_cache_lookups:1;
     bool use_sort_hosts:1;
     bool use_udp:1;
     bool verify_key:1;
@@ -129,6 +127,7 @@ struct memcached_st {
   int send_size;
   int recv_size;
   void *user_data;
+  uint64_t query_id;
   uint32_t number_of_replicas;
   hashkit_st distribution_hashkit;
   memcached_result_st result;
@@ -157,7 +156,7 @@ struct memcached_st {
   memcached_trigger_delete_key_fn delete_trigger;
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
-  struct memcached_error_st *error_messages;
+  struct memcached_error_t *error_messages;
   struct memcached_array_st *prefix_key;
   struct {
     struct memcached_array_st *filename;
@@ -179,7 +178,7 @@ LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
-memcached_st *memcached_create_with_options(const char *string, size_t length);
+memcached_st *memcached_create_with_options(const char *string, size_t string_length);
 
 LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);

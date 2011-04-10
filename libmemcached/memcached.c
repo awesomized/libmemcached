@@ -52,7 +52,6 @@ static const memcached_st global_copy= {
     .no_block= false,
     .no_reply= false,
     .randomize_replica_read= false,
-    .reuse_memory= false,
     .support_cas= false,
     .tcp_nodelay= false,
     .use_sort_hosts= false,
@@ -88,6 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->snd_timeout= 0;
   self->rcv_timeout= 0;
   self->server_failure_limit= 0;
+  self->query_id= 0;
 
   /* TODO, Document why we picked these defaults */
   self->io_msg_watermark= 500;
@@ -129,7 +129,7 @@ static inline bool _memcached_init(memcached_st *self)
 static void _free(memcached_st *ptr, bool release_st)
 {
   /* If we have anything open, lets close it now */
-  memcached_quit(ptr);
+  send_quit(ptr);
   memcached_server_list_free(memcached_server_list(ptr));
   memcached_result_free(&ptr->result);
 
@@ -213,18 +213,28 @@ memcached_st *memcached_create_with_options(const char *string, size_t length)
   memcached_st *self= memcached_create(NULL);
 
   if (! self)
-    return NULL;
-
-  memcached_return_t rc;
-  if ((rc= memcached_parse_configuration(self, string, length)) != MEMCACHED_SUCCESS)
   {
-    return self;
+    errno= ENOMEM;
+    return NULL;
   }
 
-  if (memcached_parse_filename(self))
+  memcached_return_t rc;
+  rc= memcached_parse_configuration(self, string, length);
+
+  if (rc == MEMCACHED_SUCCESS && memcached_parse_filename(self))
   {
     rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
   }
+
+    
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    memcached_free(self);
+    errno= EINVAL;
+    return NULL;
+  }
+
+  errno= 0;
 
   return self;
 }
@@ -236,9 +246,11 @@ memcached_return_t memcached_reset(memcached_st *ptr)
     return MEMCACHED_INVALID_ARGUMENTS;
 
   bool stored_is_allocated= memcached_is_allocated(ptr);
+  uint64_t query_id= ptr->query_id;
   _free(ptr, false);
   memcached_create(ptr);
   memcached_set_allocated(ptr, stored_is_allocated);
+  ptr->query_id= query_id;
 
   if (ptr->configure.filename)
   {
@@ -250,6 +262,9 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
 void memcached_servers_reset(memcached_st *ptr)
 {
+  if (! ptr)
+    return;
+
   memcached_server_list_free(memcached_server_list(ptr));
 
   memcached_server_list_set(ptr, NULL);
@@ -264,6 +279,9 @@ void memcached_servers_reset(memcached_st *ptr)
 
 void memcached_reset_last_disconnected_server(memcached_st *ptr)
 {
+  if (! ptr)
+    return;
+
   if (ptr->last_disconnected_server)
   {
     memcached_server_free(ptr->last_disconnected_server);
@@ -273,6 +291,9 @@ void memcached_reset_last_disconnected_server(memcached_st *ptr)
 
 void memcached_free(memcached_st *ptr)
 {
+  if (! ptr)
+    return;
+
   _free(ptr, true);
 }
 

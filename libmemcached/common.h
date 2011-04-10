@@ -71,10 +71,10 @@
 #define BUILDING_LIBMEMCACHED 1
 
 
-#include "libmemcached/memcached.h"
-#include "libmemcached/watchpoint.h"
-#include "libmemcached/is.h"
-#include "libmemcached/prefix_key.h"
+#include <libmemcached/memcached.h>
+#include <libmemcached/watchpoint.h>
+#include <libmemcached/is.h>
+#include <libmemcached/prefix_key.h>
 
 typedef struct memcached_server_st * memcached_server_write_instance_st;
 
@@ -90,15 +90,16 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 
 
 /* These are private not to be installed headers */
-#include "libmemcached/io.h"
-#include "libmemcached/do.h"
-#include "libmemcached/internal.h"
-#include "libmemcached/array.h"
-#include "libmemcached/libmemcached_probes.h"
-#include "libmemcached/memcached/protocol_binary.h"
-#include "libmemcached/byteorder.h"
-#include "libmemcached/response.h"
-#include "libmemcached/prefix_key.h"
+#include <libmemcached/io.h>
+#include <libmemcached/do.h>
+#include <libmemcached/internal.h>
+#include <libmemcached/array.h>
+#include <libmemcached/libmemcached_probes.h>
+#include <libmemcached/memcached/protocol_binary.h>
+#include <libmemcached/byteorder.h>
+#include <libmemcached/initialize_query.h>
+#include <libmemcached/response.h>
+#include <libmemcached/prefix_key.h>
 
 /* string value */
 struct memcached_continuum_item_st

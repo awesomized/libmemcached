@@ -1,3 +1,8 @@
+# Copyright (C) 2008 Sun Microsystems, Inc.
+# This file is free software; Sun Microsystems, Inc.
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
 # We check two things: where the include file is for unordered_map, and
 # what namespace unordered_map lives in within that include file.  We
 # include AC_COMPILE_IFELSE for all the combinations we've seen in the

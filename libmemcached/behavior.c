@@ -51,11 +51,15 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
     ptr->rcv_timeout= (int32_t)data;
     break;
+
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    ptr->flags.auto_eject_hosts= set_flag(data);
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     ptr->server_failure_limit= (uint32_t)data;
     break;
+
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
-    memcached_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
+    send_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     if (data)
     {
       ptr->flags.verify_key= false;
@@ -67,11 +71,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     ptr->flags.no_block= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
     ptr->flags.buffer_requests= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USE_UDP:
     if (memcached_server_count(ptr))
@@ -86,11 +90,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     ptr->flags.tcp_nodelay= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
     ptr->flags.tcp_keepalive= set_flag(data);
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return memcached_behavior_set_distribution(ptr, (memcached_server_distribution_t)data);
@@ -144,15 +148,15 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     ptr->send_size= (int32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
     ptr->recv_size= (int32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
     ptr->tcp_keepidle= (uint32_t)data;
-    memcached_quit(ptr);
+    send_quit(ptr);
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
@@ -236,6 +240,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return hashkit_get_function(&ptr->hashkit);
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
     return hashkit_get_function(&ptr->distribution_hashkit);
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
@@ -443,6 +448,7 @@ const char *libmemcached_string_behavior(const memcached_behavior_t flag)
   case MEMCACHED_BEHAVIOR_NOREPLY: return "MEMCACHED_BEHAVIOR_NOREPLY";
   case MEMCACHED_BEHAVIOR_USE_UDP: return "MEMCACHED_BEHAVIOR_USE_UDP";
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS: return "MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS";
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS: return "MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS";
   case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS: return "MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS";
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ: return "MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ";
   case MEMCACHED_BEHAVIOR_CORK: return "MEMCACHED_BEHAVIOR_CORK";

@@ -50,7 +50,7 @@ you will need to install %{name}-devel.
 
 %build
 %configure
-%{__make} %{_smp_mflags}
+%{__make}
 
 
 %install
@@ -97,6 +97,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man1/memerror.1.gz
 %{_mandir}/man1/memflush.1.gz
 %{_mandir}/man1/memrm.1.gz
+%{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memslap.1.gz
 %{_mandir}/man1/memstat.1.gz
 
@@ -121,6 +122,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/callback.h
 %{_includedir}/libmemcached/configure.h
 %{_includedir}/libmemcached/constants.h
+%{_includedir}/libhashkit/str_algorithm.h
+%{_includedir}/libmemcached/memcached/vbucket.h
 %{_includedir}/libmemcached/delete.h
 %{_includedir}/libmemcached/dump.h
 %{_includedir}/libmemcached/error.h
@@ -179,7 +182,10 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/hashkit_md5.3.gz
 %{_mandir}/man3/hashkit_murmur.3.gz
 %{_mandir}/man3/hashkit_value.3.gz
+%{_mandir}/man3/libhashkit.3.gz
 %{_mandir}/man3/libmemcached.3.gz
+%{_mandir}/man3/libmemcached_check_configuration.3.gz
+%{_mandir}/man3/libmemcached_configuration.3.gz
 %{_mandir}/man3/libmemcached_examples.3.gz
 %{_mandir}/man3/libmemcachedutil.3.gz
 %{_mandir}/man3/memcached_add.3.gz
@@ -195,6 +201,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_cas_by_key.3.gz
 %{_mandir}/man3/memcached_clone.3.gz
 %{_mandir}/man3/memcached_create.3.gz
+%{_mandir}/man3/memcached_create_with_options.3.gz
 %{_mandir}/man3/memcached_decrement.3.gz
 %{_mandir}/man3/memcached_decrement_with_initial.3.gz
 %{_mandir}/man3/memcached_delete.3.gz

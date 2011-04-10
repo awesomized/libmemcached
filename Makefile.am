@@ -5,9 +5,11 @@ SUFFIXES =
 PHONY =
 TESTS =
 CLEANFILES =
+DISTCLEANFILES =
 bin_PROGRAMS =
 noinst_HEADERS =
 lib_LTLIBRARIES =
+man_MANS =
 noinst_LTLIBRARIES =
 noinst_PROGRAMS =
 include_HEADERS =
@@ -15,7 +17,6 @@ nobase_include_HEADERS =
 check_PROGRAMS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
-DISTCLEANFILES=
 EXTRA_DIST= \
 	    ${srcdir}/m4/pandora_*.m4 \
 	    .quickly \
@@ -32,17 +33,7 @@ EXTRA_DIST= \
 	    m4/po.m4 \
 	    m4/progtest.m4
 
-TEST_DOCS=
-if BUILD_DOCS
-SUBDIRS = docs
-TEST_DOCS+=test-docs
-endif
-
-test-docs:
-	(cd docs && $(MAKE) test-docs)
-
 include libtest/include.am
-
 include libmemcached/include.am
 include clients/include.am
 include libhashkit/include.am
@@ -51,8 +42,10 @@ include example/include.am
 include support/include.am
 include poll/include.am
 include win32/include.am
+include docs/include.am
 
 TESTS += ${check_PROGRAMS}
+EXTRA_DIST+= ${man_MANS}
 
 
 fedora:
@@ -82,6 +75,9 @@ merge-clean:
 	find ./ | $(GREP) \.rpm | xargs rm -f
 	find ./ | $(GREP) \~$$ | xargs rm -f
 	bzr unknowns
+
+clean-local:
+	-rm -rf docs/_build docs/doctrees
 
 lcov: lcov-clean check
 	@echo

@@ -405,14 +405,15 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
   memcached_return_t rc;
   memcached_stat_st *stats;
 
-  if (! self)
+  if ((rc= initialize_query(self)) != MEMCACHED_SUCCESS)
   {
-    WATCHPOINT_ASSERT(self);
+    if (error)
+      *error= rc;
+
     return NULL;
   }
 
   WATCHPOINT_ASSERT(error);
-
 
   unlikely (self->flags.use_udp)
   {
@@ -432,6 +433,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     return NULL;
   }
 
+  WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS);
   rc= MEMCACHED_SUCCESS;
   for (uint32_t x= 0; x < memcached_server_count(self); x++)
   {
@@ -467,7 +469,6 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
 memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args,
                                              const char *hostname, in_port_t port)
 {
-  memcached_return_t rc;
   memcached_st memc;
   memcached_st *memc_ptr;
   memcached_server_write_instance_st instance;
@@ -475,9 +476,16 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   memset(memc_stat, 0, sizeof(memcached_stat_st));
 
   memc_ptr= memcached_create(&memc);
-  WATCHPOINT_ASSERT(memc_ptr);
+  if (! memc_ptr)
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   memcached_server_add(&memc, hostname, port);
+
+  memcached_return_t rc;
+  if ((rc= initialize_query(memc_ptr)) != MEMCACHED_SUCCESS)
+  {
+    return rc;
+  }
 
   instance= memcached_server_instance_fetch(memc_ptr, 0);
 

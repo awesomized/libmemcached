@@ -339,10 +339,15 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
     instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+    WATCHPOINT_ASSERT(instance);
 
     /* TODO check return type */
-    (void)memcached_server_create_with(ptr, instance, list[x].hostname,
-                                       list[x].port, list[x].weight, list[x].type);
+    instance= memcached_server_create_with(ptr, instance, list[x].hostname,
+                                           list[x].port, list[x].weight, list[x].type);
+    if (! instance)
+    {
+      return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
+    }
     ptr->number_of_hosts++;
   }
 
