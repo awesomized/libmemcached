@@ -40,31 +40,15 @@ Connecting to servers
 
 .. code-block:: c
 
-   memcached_server_st *servers;
-   memcached_st *memc= memcached_create(NULL);
-   char servername[]= "0.example.com";
- 
-   servers= memcached_server_list_append(NULL, servername, 400, &rc);
- 
-   for (x= 0; x < 20; x++)
+   const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"
+   memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
    {
-     char buffer[SMALL_STRING_LEN];
- 
-     snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
-     servers= memcached_server_list_append(servers, buffer, 401, &rc);
+    ...
    }
-   rc= memcached_server_push(memc, servers);
-   memcached_server_free(servers);
    memcached_free(memc);
 
 
-In the above code you create a \ ``memcached_st``\  object that you then feed in a
-single host into. In the for loop you build a \ ``memcached_server_st``\ 
-pointer that you then later feed via memcached_server_push() into the
-\ ``memcached_st``\  structure.
-
-You can reuse the \ ``memcached_server_st``\  object with multile \ ``memcached_st``\ 
-structures.
+In the above code you create a \ ``memcached_st``\  object with three server by making use of :manpage:`memcached_create_with_options(3)`.
 
 
 ----------------------------

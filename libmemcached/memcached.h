@@ -178,7 +178,7 @@ LIBMEMCACHED_API
 memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
-memcached_st *memcached_create_with_options(const char *string, size_t length);
+memcached_st *memcached_create_with_options(const char *string, size_t string_length);
 
 LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);

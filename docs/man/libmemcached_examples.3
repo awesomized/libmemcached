@@ -56,30 +56,16 @@ finished.
 .sp
 .nf
 .ft C
-memcached_server_st *servers;
-memcached_st *memc= memcached_create(NULL);
-char servername[]= "0.example.com";
-
-servers= memcached_server_list_append(NULL, servername, 400, &rc);
-
-for (x= 0; x < 20; x++)
+const char *config_string= "\-\-SERVER=host10.example.com \-\-SERVER=host11.example.com \-\-SERVER=host10.example.com"
+memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
 {
-  char buffer[SMALL_STRING_LEN];
-
-  snprintf(buffer, SMALL_STRING_LEN, "%u.example.com", 400+x);
-  servers= memcached_server_list_append(servers, buffer, 401, &rc);
+ ...
 }
-rc= memcached_server_push(memc, servers);
-memcached_server_free(servers);
 memcached_free(memc);
 .ft P
 .fi
 .sp
-In the above code you create a \fBmemcached_st\fP object that you then feed in a
-single host into. In the for loop you build a \fBmemcached_server_st\fPpointer that you then later feed via memcached_server_push() into the
-\fBmemcached_st\fP structure.
-.sp
-You can reuse the \fBmemcached_server_st\fP object with multile \fBmemcached_st\fPstructures.
+In the above code you create a \fBmemcached_st\fP object with three server by making use of \fImemcached_create_with_options(3)\fP.
 .SH ADDING A VALUE TO THE SERVER
 .sp
 .nf

@@ -22,15 +22,17 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
+
 -----------
 DESCRIPTION
 -----------
-
 
 memcached_create() is used to create a \ ``memcached_st``\  structure that will then
 be used by other libmemcached(3) functions to communicate with the server. You
 should either pass a statically declared \ ``memcached_st``\  to memcached_create() or
 a NULL. If a NULL passed in then a structure is allocated for you.
+
+Please note, when you write new application use memcached_create_with_options() over memcached_create().
 
 memcached_clone() is similar to memcached_create(3) but it copies the
 defaults and list of servers from the source \ ``memcached_st``\ . If you pass a null as
@@ -69,14 +71,6 @@ HOME
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

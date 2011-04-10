@@ -6217,7 +6217,6 @@ test_st parser_tests[] ={
   {"hash", 0, (test_callback_fn)parser_hash_test },
   {"libmemcached_check_configuration", 0, (test_callback_fn)libmemcached_check_configuration_test },
   {"libmemcached_check_configuration_with_filename", 0, (test_callback_fn)libmemcached_check_configuration_with_filename_test },
-  {"memcached_parse_configure_file", 0, (test_callback_fn)memcached_parse_configure_file_test },
   {"number_options", 0, (test_callback_fn)parser_number_options_test },
   {"randomly generated options", 0, (test_callback_fn)random_statement_build_test },
   {"prefix_key", 0, (test_callback_fn)parser_key_prefix_test },

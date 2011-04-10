@@ -2,7 +2,28 @@
 Configuring Libmemcached
 ========================
 
-Libmemcached implements a custom language for configuring and modifying servers.
+-------- 
+SYNOPSIS 
+--------
+
+
+.. c:function:: memcached_st *memcached_create_with_options(const char *string, size_t string_length)
+
+
+.. c:function:: memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
+
+Compile and link with -lmemcached
+
+
+
+-----------
+DESCRIPTION
+-----------
+
+Libmemcached implements a custom language for configuring and modifying
+servers. By passing in an option string you can generate a memcached_st object
+that you can use in your application directly.
+
 
 .. describe:: --SERVER=<servername>:<optional_port>/?<optional_weight>
 
@@ -121,3 +142,30 @@ End configutation processing.
 .. describe:: ERROR
 
 End configutation processing and throw an error.
+
+
+------
+RETURN
+------
+
+
+memcached_create_with_options() returns a pointer to the memcached_st that was
+created (or initialized).  On an allocation failure, it returns NULL.
+
+
+----
+HOME
+----
+
+
+To find out more information please check:
+`https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
+
+
+
+--------
+SEE ALSO
+--------
+
+
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
