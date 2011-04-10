@@ -40,6 +40,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <errno.h>
 
 #define BUILDING_LIBMEMCACHED
 #include <libmemcached/memcached.h>
@@ -118,30 +119,26 @@ static test_return_t __check_IO_MSG_WATERMARK(memcached_st *memc, const scanner_
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_AUTO_EJECT_HOSTS(memcached_st *memc, const scanner_string_st &value)
+static test_return_t __check_REMOVE_FAILED_SERVERS(memcached_st *memc, const scanner_string_st &)
 {
-  (void)value;
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS));
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS));
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_NOREPLY(memcached_st *memc, const scanner_string_st &value)
+static test_return_t __check_NOREPLY(memcached_st *memc, const scanner_string_st &)
 {
-  (void)value;
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY));
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_VERIFY_KEY(memcached_st *memc, const scanner_string_st &value)
+static test_return_t __check_VERIFY_KEY(memcached_st *memc, const scanner_string_st &)
 {
-  (void)value;
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY));
   return TEST_SUCCESS;
 }
 
-static test_return_t __check_distribution_RANDOM(memcached_st *memc, const scanner_string_st &value)
+static test_return_t __check_distribution_RANDOM(memcached_st *memc, const scanner_string_st &)
 {
-  (void)value;
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION) == MEMCACHED_DISTRIBUTION_RANDOM);
   return TEST_SUCCESS;
 }
@@ -176,14 +173,14 @@ scanner_variable_t bad_test_strings[]= {
 
 scanner_variable_t test_number_options[]= {
   { ARRAY,  make_scanner_string("--CONNECT_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
   { ARRAY,  make_scanner_string("--IO_BYTES_WATERMARK=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--IO_KEY_PREFETCH=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
   { ARRAY,  make_scanner_string("--NUMBER_OF_REPLICAS=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--POLL_TIMEOUT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--RCV_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--REMOVE-FAILED-SERVERS=3"), scanner_string_null, __check_REMOVE_FAILED_SERVERS },
   { ARRAY,  make_scanner_string("--RETRY_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SERVER_FAILURE_LIMIT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SND_TIMEOUT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SOCKET_RECV_SIZE=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SOCKET_SEND_SIZE=456"), scanner_string_null, NULL },
@@ -191,7 +188,6 @@ scanner_variable_t test_number_options[]= {
 };
 
 scanner_variable_t test_boolean_options[]= {
-  { ARRAY,  make_scanner_string("--AUTO_EJECT_HOSTS"), scanner_string_null, __check_AUTO_EJECT_HOSTS },
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
@@ -210,7 +206,7 @@ scanner_variable_t test_boolean_options[]= {
 scanner_variable_t prefix_key_strings[]= {
   { ARRAY, make_scanner_string("--PREFIX_KEY=foo"), make_scanner_string("foo"), __check_prefix_key },
   { ARRAY, make_scanner_string("--PREFIX-KEY=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--PREFIX-KEY=\"This is a very long key\""), make_scanner_string("This is a very long key"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--PREFIX-KEY=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
@@ -239,36 +235,39 @@ scanner_variable_t hash_strings[]= {
 static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= true)
 {
   (void)test_true;
-  memcached_st *memc;
-  memc= memcached_create(NULL);
 
   for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
   {
-    memcached_return_t rc;
-    rc= memcached_parse_configuration(memc, ptr->option.c_str, ptr->option.size);
+    memcached_st *memc;
+    memc= memcached_create_with_options(ptr->option.c_str, ptr->option.size);
     if (test_true)
     {
-      if (rc != MEMCACHED_SUCCESS)
+      if (not memc)
       {
-        memcached_error_print(memc);
+        char buffer[2048];
+        memcached_return_t rc= libmemcached_check_configuration(ptr->option.c_str, ptr->option.size, buffer, sizeof(buffer));
+        std::cerr << "About error for " << memcached_strerror(NULL, rc) << " : " << buffer << std::endl;
       }
 
-      test_true(rc == MEMCACHED_SUCCESS);
+      test_true(memc);
 
       if (ptr->check_func)
       {
         test_return_t test_rc= (*ptr->check_func)(memc, ptr->result);
         if (test_rc != TEST_SUCCESS)
+        {
+          memcached_free(memc);
           return test_rc;
+        }
       }
+
+      memcached_free(memc);
     }
     else
     {
-      test_false_with(rc == MEMCACHED_SUCCESS, ptr->option.c_str);
+      test_false_with(memc, ptr->option.c_str);
     }
-    memcached_reset(memc);
   }
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -325,23 +324,6 @@ test_return_t parser_key_prefix_test(memcached_st*)
 }
 
 #define SUPPORT_EXAMPLE_CNF "support/example.cnf"
-
-test_return_t memcached_parse_configure_file_test(memcached_st*)
-{
-  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
-    return TEST_SKIPPED;
-
-  memcached_st memc;
-  memcached_st *memc_ptr= memcached_create(&memc);
-
-  test_true(memc_ptr);
-
-  memcached_set_configuration_file(memc_ptr, memcached_string_with_size(SUPPORT_EXAMPLE_CNF));
-  memcached_reset(memc_ptr);
-  memcached_free(memc_ptr);
-
-  return TEST_SUCCESS;
-}
 
 test_return_t memcached_create_with_options_with_filename(memcached_st*)
 {
@@ -481,13 +463,31 @@ test_return_t random_statement_build_test(memcached_st*)
       random_options+= " ";
     }
 
-    memcached_return_t rc;
     memcached_st *memc_ptr= memcached_create(NULL);
-    rc= memcached_parse_configuration(memc_ptr, random_options.c_str(), random_options.size() -1);
-    if (rc == MEMCACHED_PARSE_ERROR)
+    memc_ptr= memcached_create_with_options(random_options.c_str(), random_options.size() -1);
+    if (not memc_ptr)
     {
-      std::cerr << std::endl << "Failed to parse(" << memcached_strerror(NULL, rc) << "): " << random_options << std::endl;
-      memcached_error_print(memc_ptr);
+      switch (errno) 
+      {
+      case EINVAL:
+#if 0 // Testing framework is not smart enough for this just yet.
+        {
+          // We will try to find the specific error
+          char buffer[2048];
+          memcached_return_t rc= libmemcached_check_configuration(random_options.c_str(), random_options.size(), buffer, sizeof(buffer));
+          test_true_got(rc != MEMCACHED_SUCCESS, "memcached_create_with_options() failed whiled libmemcached_check_configuration() was successful");
+          std::cerr << "Error occured on " << random_options.c_str() << " : " << buffer << std::endl;
+          return TEST_FAILURE;
+        }
+#endif
+        break;
+      case ENOMEM:
+        std::cerr << "Failed to allocate memory for memcached_create_with_options()" << std::endl;
+        return TEST_FAILURE;
+      default:
+        std::cerr << "Unknown error from memcached_create_with_options?!!" << std::endl;
+        return TEST_FAILURE;
+      }
     }
     memcached_free(memc_ptr);
   }

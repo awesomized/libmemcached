@@ -32,9 +32,6 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Create a memcached_st structure
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached.h>
@@ -54,12 +51,16 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 .TP
 .B void memcached_servers_reset(memcached_st);
 .UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 memcached_create() is used to create a \fBmemcached_st\fP structure that will then
 be used by other libmemcached(3) functions to communicate with the server. You
 should either pass a statically declared \fBmemcached_st\fP to memcached_create() or
 a NULL. If a NULL passed in then a structure is allocated for you.
+.sp
+Please note, when you write new application use memcached_create_with_options() over memcached_create().
 .sp
 memcached_clone() is similar to memcached_create(3) but it copies the
 defaults and list of servers from the source \fBmemcached_st\fP. If you pass a null as
@@ -88,9 +89,6 @@ memcached_clone() returns a pointer to the memcached_st that was created
 .sp
 To find out more information please check:
 \fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
 .SH SEE ALSO
 .sp
 \fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP

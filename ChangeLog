@@ -2,9 +2,12 @@
   * Fix calls to auto methods so that if value is not passed in nothing bad happens.
   * New parser calls for generating memcached_st objects.
   * New error system.
+  * New flow control for messages means faster get/set calls.
   * Added new documentation system.
   * A behavior change has been now made that if you specify a weight for any
   server, we enable the weight flag and do weight balancing.
+  * A behavior change has been now made that if you specify a weight for any server, we enable the weight flag and do weight balancing.  
+  * Added MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS to simplify the setting of AUTO REJECT for servers.
 
 0.48 Tue Mar 15 23:05:18 PDT 2011
   * Fix memory leak in server parse.

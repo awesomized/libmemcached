@@ -6,28 +6,16 @@ Wiping clean the contents of a server
 Wipe contents of memcached servers
 
 
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
 
-
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   memcached_return_t
-     memcached_flush (memcached_st *ptr,
-                      time_t expiration);
+.. c:function:: memcached_return_t memcached_flush (memcached_st *ptr, time_t expiration);
 
+Compile and link with -lmemcached
 
 
 -----------

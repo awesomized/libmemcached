@@ -1,17 +1,7 @@
-=========================================================
-Incrementing and Decrementing values stored in the server
-=========================================================
+====================================
+Incrementing and Decrementing Values
+====================================
 
-
-Manipulate counters
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
 
 
 --------
@@ -20,76 +10,25 @@ SYNOPSIS
 
 
 
-.. code-block:: perl
+#include <libmemcached/memcached.h>
+ 
+.. c:function:: memcached_return_t memcached_increment (memcached_st *ptr, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_return_t
-     memcached_increment (memcached_st *ptr, 
-                          const char *key, size_t key_length,
-                          unsigned int offset,
-                          uint64_t *value);
- 
-   memcached_return_t
-     memcached_decrement (memcached_st *ptr, 
-                          const char *key, size_t key_length,
-                          unsigned int offset,
-                          uint64_t *value);
- 
-   memcached_return_t
-     memcached_increment_with_initial (memcached_st *ptr,
-                                       const char *key,
-                                       size_t key_length,
-                                       uint64_t offset,
-                                       uint64_t initial,
-                                       time_t expiration,
-                                       uint64_t *value);
- 
-   memcached_return_t
-     memcached_decrement_with_initial (memcached_st *ptr,
-                                       const char *key,
-                                       size_t key_length,
-                                       uint64_t offset,
-                                       uint64_t initial,
-                                       time_t expiration,
-                                       uint64_t *value);
- 
-   memcached_return_t
-     memcached_increment_by_key (memcached_st *ptr, 
-                                 const char *master_key, size_t master_key_length,
-                                 const char *key, size_t key_length,
-                                 unsigned int offset,
-                                 uint64_t *value);
- 
-   memcached_return_t
-     memcached_decrement_by_key (memcached_st *ptr, 
-                                 const char *master_key, size_t master_key_length,
-                                 const char *key, size_t key_length,
-                                 unsigned int offset,
-                                 uint64_t *value);
- 
-   memcached_return_t
-     memcached_increment_with_initial_by_key (memcached_st *ptr,
-                                              const char *master_key,
-                                              size_t master_key_length,
-                                              const char *key,
-                                              size_t key_length,
-                                              uint64_t offset,
-                                              uint64_t initial,
-                                              time_t expiration,
-                                              uint64_t *value);
- 
-   memcached_return_t
-     memcached_decrement_with_initial_by_key (memcached_st *ptr,
-                                              const char *master_key,
-                                              size_t master_key_length,
-                                              const char *key,
-                                              size_t key_length,
-                                              uint64_t offset,
-                                              uint64_t initial,
-                                              time_t expiration,
-                                              uint64_t *value);
+.. c:function:: memcached_return_t memcached_decrement (memcached_st *ptr, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
 
+.. c:function:: memcached_return_t memcached_increment_with_initial (memcached_st *ptr, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+
+.. c:function:: memcached_return_t memcached_decrement_with_initial (memcached_st *ptr, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+
+.. c:function::  memcached_return_t memcached_increment_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
+
+.. c:function:: memcached_return_t memcached_decrement_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
+
+.. c:function:: memcached_return_t memcached_increment_with_initial_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+
+.. c:function:: memcached_return_t memcached_decrement_with_initial_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+
+Compile and link with -lmemcached
 
 
 -----------
@@ -97,7 +36,7 @@ DESCRIPTION
 -----------
 
 
-memcached(1) servers have the ability to increment and decrement keys
+:manpage:`memcached(1)` servers have the ability to increment and decrement keys
 (overflow and underflow are not detected). This gives you the ability to use
 memcached to generate shared sequences of values.
 
@@ -133,9 +72,9 @@ memcached_decrement_with_initial_by_key() are master key equivalents of the
 above.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A value of type \ ``memcached_return_t``\  is returned.
@@ -143,21 +82,13 @@ On success that value will be \ ``MEMCACHED_SUCCESS``\ .
 Use memcached_strerror() to translate this value to a printable string.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
-
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------
