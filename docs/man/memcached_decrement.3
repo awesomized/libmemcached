@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DECREMENT" "3" "April 10, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_DECREMENT" "3" "April 11, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_decrement \- Incrementing and Decrementing Values
 .
@@ -51,19 +51,19 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_increment_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
+.B memcached_return_t memcached_increment_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_decrement_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
+.B memcached_return_t memcached_decrement_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, unsigned int offset, uint64_t *value);
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_increment_with_initial_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+.B memcached_return_t memcached_increment_with_initial_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_decrement_with_initial_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
+.B memcached_return_t memcached_decrement_with_initial_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value);
 .UNINDENT
 .sp
 Compile and link with \-lmemcached

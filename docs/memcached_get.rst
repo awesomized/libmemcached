@@ -16,9 +16,9 @@ SYNOPSIS
 
 .. c:function::  memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys);
 
-.. c:function:: char * memcached_get_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.. c:function:: char * memcached_get_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
 
-.. c:function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+.. c:function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys);
 
 .. c:function::  char * memcached_fetch (memcached_st *ptr, char *key, size_t *key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
 
@@ -26,7 +26,7 @@ SYNOPSIS
 
 .. c:function:: memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
 
-.. c:function:: memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.. c:function:: memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
 
 Compile and link with -lmemcached
 

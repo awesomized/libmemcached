@@ -46,7 +46,8 @@ EXTRA_DIST+= \
 	     docs/memflush.rst \
 	     docs/memrm.rst \
 	     docs/memslap.rst \
-	     docs/memstat.rst
+	     docs/memstat.rst \
+	     docs/tap.rst
 
 # Makefile for Sphinx documentation
 #

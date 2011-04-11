@@ -24,7 +24,6 @@ Libmemcached implements a custom language for configuring and modifying
 servers. By passing in an option string you can generate a memcached_st object
 that you can use in your application directly.
 
-
 .. describe:: --SERVER=<servername>:<optional_port>/?<optional_weight>
 
 Provide a servername to be used by the client. Providing a weight will cause weighting to occur with all hosts with each server getting a default weight of 1.
@@ -61,27 +60,54 @@ Set the distribution model used by the client.  See :manpage:`` for more details
 
 Set the hashing alogrthm used for placing keys on servers.
 
-.. describe:: --HASH-WITH-PREFIX_KEY
+.. describe:: --HASH-WITH-NAMESPACE
 
-.. describe:: --IO-BYTES-WATERMARK=
-
-.. describe:: --IO-KEY-PREFETCH=
-
-.. describe:: --IO-MSG-WATERMARK=
+When enabled the prefix key will be added to the key when determining which
+server to store the data in.
 
 .. describe:: --NOREPLY
+
+Enable "no reply" for all calls that support this. It is highly recommended
+that you use this option with the binary protocol only.
 
 .. describe:: --NUMBER-OF-REPLICAS=
 
 Set the nummber of servers that keys will be replicated to.
 
-.. describe:: --POLL-TIMEOUT=
-
 .. describe:: --RANDOMIZE-REPLICA-READ
 
 Select randomly the server within the replication pool to read from.
 
-.. describe:: --RCV-TIMEOUT=
+.. describe:: --SORT-HOSTS
+
+When adding new servers always calculate their distribution based on sorted naming order.
+
+.. describe:: --SUPPORT-CAS
+
+See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_SUPPORT_CAS
+
+.. describe:: --USE-UDP
+
+See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_USE_UDP
+
+.. describe:: --NAMESPACE=
+
+A namespace is a container that provides context for keys, only other
+requests that know the namespace can access these values. This is
+accomplished by prepending the namespace value to all keys.
+
+
+************
+I/O Options:
+************
+
+.. describe:: --TCP-NODELAY
+
+See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_TCP_NODELAY
+
+.. describe:: --TCP-KEEPALIVE
+
+See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_TCP_KEEPALIVE
 
 .. describe:: --RETRY-TIMEOUT=
 
@@ -103,29 +129,26 @@ See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE
 
 See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
 
-.. describe:: --SORT-HOSTS
+.. describe:: --POLL-TIMEOUT=
 
-When adding new servers always calculate their distribution based on sorted naming order.
+That sets the value of the timeout used by :manpage: `poll()`.
 
-.. describe:: --SUPPORT-CAS
+.. describe:: --IO-BYTES-WATERMARK=
 
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_SUPPORT_CAS
+.. describe:: --IO-KEY-PREFETCH=
 
-.. describe:: --TCP-NODELAY
-
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_TCP_NODELAY
-
-.. describe:: --TCP-KEEPALIVE
-
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_TCP_KEEPALIVE
+.. describe:: --IO-MSG-WATERMARK=
 
 .. describe:: --TCP-KEEPIDLE
 
-.. describe:: --USE-UDP
+.. describe:: --RCV-TIMEOUT=
 
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_USE_UDP
 
-.. describe:: --PREFIX-KEY=
+
+******
+Other:
+******
+
 
 .. describe:: INCLUDE
 

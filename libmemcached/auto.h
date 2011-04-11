@@ -29,14 +29,14 @@ LIBMEMCACHED_API
 
 LIBMEMCACHED_API
   memcached_return_t memcached_increment_by_key(memcached_st *ptr,
-                                                const char *master_key, size_t master_key_length,
+                                                const char *group_key, size_t group_key_length,
                                                 const char *key, size_t key_length,
                                                 uint64_t offset,
                                                 uint64_t *value);
 
 LIBMEMCACHED_API
   memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
-                                                const char *master_key, size_t master_key_length,
+                                                const char *group_key, size_t group_key_length,
                                                 const char *key, size_t key_length,
                                                 uint64_t offset,
                                                 uint64_t *value);
@@ -61,8 +61,8 @@ LIBMEMCACHED_API
 
 LIBMEMCACHED_API
   memcached_return_t memcached_increment_with_initial_by_key(memcached_st *ptr,
-                                                             const char *master_key,
-                                                             size_t master_key_length,
+                                                             const char *group_key,
+                                                             size_t group_key_length,
                                                              const char *key,
                                                              size_t key_length,
                                                              uint64_t offset,
@@ -72,8 +72,8 @@ LIBMEMCACHED_API
 
 LIBMEMCACHED_API
   memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
-                                                             const char *master_key,
-                                                             size_t master_key_length,
+                                                             const char *group_key,
+                                                             size_t group_key_length,
                                                              const char *key,
                                                              size_t key_length,
                                                              uint64_t offset,
