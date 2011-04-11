@@ -103,8 +103,8 @@
 "--CONNECT-TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
 "--DISTRIBUTION="			{ yyextra->begin= yytext; return DISTRIBUTION; }
 "--HASH="			        { yyextra->begin= yytext; return HASH; }
-"--HASH_WITH_PREFIX_KEY"	        { yyextra->begin= yytext; return HASH_WITH_PREFIX_KEY; }
-"--HASH-WITH-PREFIX_KEY"	        { yyextra->begin= yytext; return HASH_WITH_PREFIX_KEY; }
+"--HASH_WITH_NAMESPACE"	        { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
+"--HASH-WITH-NAMESPACE"	        { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
 "--IO_BYTES_WATERMARK="	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
 "--IO-BYTES-WATERMARK="	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
 "--IO_KEY_PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
@@ -145,8 +145,7 @@
 "--USE_UDP"			        { yyextra->begin= yytext; return USE_UDP; }
 "--USE-UDP"	       		        { yyextra->begin= yytext; return USE_UDP; }
 
-"--PREFIX-KEY="	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
-"--PREFIX_KEY="	       		        { yyextra->begin= yytext; return PREFIX_KEY; }
+"--NAMESPACE="	       		        { yyextra->begin= yytext; return NAMESPACE; }
 
 INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
 RESET           { yyextra->begin= yytext; return RESET; }

@@ -58,6 +58,15 @@ Advanced Topics
    memcached_verbosity
    memcached_version
 
+#################
+Platform Specific
+#################
+
+.. toctree::
+   :maxdepth: 1
+
+   tap
+
 #################################
 Deriving statistics from a server
 #################################

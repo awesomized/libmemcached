@@ -191,7 +191,7 @@ scanner_variable_t test_number_options[]= {
 scanner_variable_t test_boolean_options[]= {
   { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH_WITH_NAMESPACE"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },
   { ARRAY,  make_scanner_string("--RANDOMIZE_REPLICA_READ"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--SORT_HOSTS"), scanner_string_null, NULL },
@@ -205,9 +205,9 @@ scanner_variable_t test_boolean_options[]= {
 };
 
 scanner_variable_t prefix_key_strings[]= {
-  { ARRAY, make_scanner_string("--PREFIX_KEY=foo"), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--PREFIX-KEY=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--PREFIX-KEY=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=foo"), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 

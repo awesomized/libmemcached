@@ -80,7 +80,7 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token CONNECT_TIMEOUT
 %token DISTRIBUTION
 %token HASH
-%token HASH_WITH_PREFIX_KEY
+%token HASH_WITH_NAMESPACE
 %token IO_BYTES_WATERMARK
 %token IO_KEY_PREFETCH
 %token IO_MSG_WATERMARK
@@ -106,7 +106,7 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token _TCP_NODELAY
 
 /* Callbacks */
-%token PREFIX_KEY
+%token NAMESPACE
 
 /* Hash types */
 %token MD5
@@ -214,7 +214,7 @@ expression:
         ;
 
 behaviors:
-          PREFIX_KEY string
+          NAMESPACE string
           {
             if ((context->rc= memcached_set_prefix_key(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
             {
@@ -325,7 +325,7 @@ behavior_boolean:
           {
             $$= MEMCACHED_BEHAVIOR_BUFFER_REQUESTS;
           }
-        | HASH_WITH_PREFIX_KEY
+        | HASH_WITH_NAMESPACE
           {
             $$= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
           }

@@ -3,8 +3,7 @@
 
 # Store one additional copy on each node.
 --number-of-replicas=2
---prefix-key="my_foo"
---prefix-key="my_prefix"
+--namespace="my_foo"
 --server=localhost:11211
 --server=localhost:11212
 --server=localhost:11213
