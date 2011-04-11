@@ -44,6 +44,7 @@
 
 #define BUILDING_LIBMEMCACHED
 #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
 
 #include "tests/parser.h"
 #include "tests/print.h"
@@ -483,9 +484,11 @@ test_return_t random_statement_build_test(memcached_st*)
         break;
       case ENOMEM:
         std::cerr << "Failed to allocate memory for memcached_create_with_options()" << std::endl;
+        memcached_free(memc_ptr);
         return TEST_FAILURE;
       default:
         std::cerr << "Unknown error from memcached_create_with_options?!!" << std::endl;
+        memcached_free(memc_ptr);
         return TEST_FAILURE;
       }
     }

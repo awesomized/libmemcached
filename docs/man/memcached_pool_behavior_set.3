@@ -1,4 +1,4 @@
-.TH "MEMCACHED_POOL_BEHAVIOR_SET" "3" "April 09, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_POOL_BEHAVIOR_SET" "3" "April 10, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_pool_behavior_set \- libmemcached Documentation
 .
@@ -35,7 +35,11 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached_pool.h>
 .INDENT 0.0
 .TP
-.B memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max);
+.B memcached_pool_st *memcached_pool(const char *option_string, size_t option_string_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max); DEPRECATED
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -65,22 +69,28 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 Compile and link with \-lmemcachedutil \-lmemcached
 .SH DESCRIPTION
 .sp
-memcached_pool_create() is used to create a connection pool of objects you
-may use to remove the overhead of using memcached_clone for short
-lived \fBmemcached_st\fP objects. The mmc argument should be an
-initialised \fBmemcached_st\fP structure, and a successfull invocation of
-memcached_pool_create takes full ownership of the variable (until it
-is released by memcached_pool_destroy). The \fBinitial\fP argument
-specifies the initial size of the connection pool, and the \fBmax\fPargument specifies the maximum size the connection pool should grow
-to. Please note that the library will allocate a fixed size buffer
-scaled to the max size of the connection pool, so you should not pass
-MAXINT or some other large number here.
+memcached_pool() is used to create a connection pool of objects you may use
+to remove the overhead of using memcached_clone for short lived
+\fBmemcached_st\fPobjects. Please see \fIlibmemcached_configuration\fP for details on the format of the configuration string.
+.sp
+DEPRECATED memcached_pool_create() is used to create a connection pool of
+objects you may use to remove the overhead of using memcached_clone for
+short lived \fBmemcached_st\fPobjects. The mmc argument should be an
+initialised \fBmemcached_st\fPstructure, and a successfull invocation of
+memcached_pool_create takes full ownership of the variable (until it is
+released by memcached_pool_destroy).  The \fBinitial\fP argument specifies
+the initial size of the connection pool, and the \fBmax\fPargument
+specifies the maximum size the connection pool should grow to. Please note
+that the library will allocate a fixed size buffer scaled to the max size of
+the connection pool, so you should not pass MAXINT or some other large
+number here.
 .sp
 memcached_pool_destroy() is used to destroy the connection pool
 created with memcached_pool_create() and release all allocated
 resources. It will return the pointer to the \fBmemcached_st\fP structure
-passed as an argument to memcached_pool_create(), and returns the
-ownership of the pointer to the caller.
+passed as an argument to memcached_pool_create(), and returns the ownership
+of the pointer to the caller when created with memcached_pool_create,
+otherwise NULL is returned..
 .sp
 memcached_pool_pop() is used to grab a connection structure from the
 connection pool. The block argument specifies if the function should

@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  Libmemcached client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -44,58 +44,7 @@ extern "C" {
 #endif
 
 LIBTEST_INTERNAL_API
-test_return_t server_test(memcached_st *memc);
-
-LIBTEST_INTERNAL_API
-test_return_t servers_bad_test(memcached_st *memc);
-
-LIBTEST_INTERNAL_API
-test_return_t behavior_parser_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t parser_number_options_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t parser_distribution_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t parser_hash_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t parser_boolean_options_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t parser_key_prefix_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t libmemcached_check_configuration_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t memcached_create_with_options_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t memcached_create_with_options_with_filename(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t random_statement_build_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_include_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_end_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_reset_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_error_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t server_with_weight_test(memcached_st *);
+test_return_t memcached_pool_test(memcached_st *);
 
 #ifdef	__cplusplus
 }

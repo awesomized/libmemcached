@@ -10,7 +10,9 @@ Check the server for compatibility and capabilities
 SYNOPSIS
 --------
 
-.. program:: memcat
+:program:`memcapable`
+
+.. program:: memcapable
 
 .. option:: -h hostname
  

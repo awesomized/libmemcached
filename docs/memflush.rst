@@ -10,6 +10,8 @@ Reset a server or list of servers
 SYNOPSIS
 --------
 
+:program: `memflush`
+
 .. program:: memflush
 
 .. option:: --help

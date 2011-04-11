@@ -25,6 +25,7 @@ struct memcached_pool_st
   int firstfree;
   uint32_t size;
   uint32_t current_size;
+  bool _owns_master;
   char *version;
 };
 
@@ -71,17 +72,17 @@ static int grow_pool(memcached_pool_st* pool)
   return EXIT_SUCCESS;
 }
 
-memcached_pool_st *memcached_pool_create(memcached_st* mmc,
-                                         uint32_t initial, uint32_t max)
+static inline memcached_pool_st *_pool_create(memcached_st* mmc, uint32_t initial, uint32_t max)
 {
-  memcached_pool_st* ret = NULL;
-  memcached_pool_st object = { .mutex = PTHREAD_MUTEX_INITIALIZER,
+  memcached_pool_st* ret= NULL;
+  memcached_pool_st object= { .mutex = PTHREAD_MUTEX_INITIALIZER,
     .cond = PTHREAD_COND_INITIALIZER,
     .master = mmc,
     .mmc = calloc(max, sizeof(memcached_st*)),
-    .firstfree = -1,
+    .firstfree= -1,
     .size = max,
-    .current_size = 0 };
+    .current_size= 0,
+    ._owns_master= false};
 
   if (object.mmc != NULL)
   {
@@ -108,9 +109,38 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc,
   return ret;
 }
 
+memcached_pool_st *memcached_pool_create(memcached_st* mmc, uint32_t initial, uint32_t max)
+{
+  return _pool_create(mmc, initial, max);
+}
+
+memcached_pool_st * memcached_pool(const char *option_string, size_t option_string_length)
+{
+  memcached_pool_st *self;
+  memcached_st *memc= memcached_create_with_options(option_string, option_string_length);
+
+  if (! memc)
+    return NULL;
+
+  self= memcached_pool_create(memc, memc->configure.initial_pool_size, memc->configure.max_pool_size);
+  if (self)
+  {
+    self->_owns_master= true;
+  }
+  else
+  {
+    memcached_free(memc);
+  }
+
+  return self;
+}
+
 memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
 {
-  memcached_st *ret = pool->master;
+  if (! pool)
+    return NULL;
+
+  memcached_st *ret= pool->master;
 
   for (int xx= 0; xx <= pool->firstfree; ++xx)
   {
@@ -122,6 +152,11 @@ memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
   pthread_mutex_destroy(&pool->mutex);
   pthread_cond_destroy(&pool->cond);
   free(pool->mmc);
+  if (pool->_owns_master)
+  {
+    memcached_free(pool->master);
+    ret= NULL;
+  }
   free(pool);
 
   return ret;
@@ -138,7 +173,9 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
   do
   {
     if (pool->firstfree > -1)
+    {
       ret= pool->mmc[pool->firstfree--];
+    }
     else if (pool->current_size == pool->size)
     {
       if (!block)
@@ -149,9 +186,9 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
 
       if (pthread_cond_wait(&pool->cond, &pool->mutex) == -1)
       {
-        int err = errno;
+        int err= errno;
         mutex_exit(&pool->mutex);
-        errno = err;
+        errno= err;
         *rc= MEMCACHED_ERRNO;
         return NULL;
       }
@@ -229,11 +266,14 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
   {
     rc= memcached_behavior_set(pool->mmc[xx], flag, data);
     if (rc == MEMCACHED_SUCCESS)
+    {
       memcached_set_user_data(pool->mmc[xx], pool->version);
+    }
     else
     {
       memcached_free(pool->mmc[xx]);
       memset(pool->mmc[xx], 0, sizeof(*pool->mmc[xx]));
+
       if (memcached_clone(pool->mmc[xx], pool->master) == NULL)
       {
         /* I'm not sure what to do in this case.. this would happen

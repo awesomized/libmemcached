@@ -10,6 +10,8 @@ Translate a memcached error code to a string
 SYNOPSIS
 --------
 
+:program: `memerror`
+
 .. program:: memerror
 
 .. option:: --help

@@ -10,7 +10,7 @@ memrm - Remove a key(s) from a collection of memcached servers
 SYNOPSIS
 --------
 
-
+:program: `memrm`
 
 .. program:: memrm
 

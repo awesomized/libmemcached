@@ -121,6 +121,8 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->error_messages= NULL;
   self->prefix_key= NULL;
+  self->configure.initial_pool_size= 1;
+  self->configure.max_pool_size= 1;
   self->configure.filename= NULL;
 
   return true;

@@ -130,6 +130,7 @@ man_MANS+= \
 	   docs/man/memcached_pool_destroy.3 \
 	   docs/man/memcached_pool_pop.3 \
 	   docs/man/memcached_pool_push.3 \
+	   docs/man/memcached_pool_st.3 \
 	   docs/man/memcached_prepend.3 \
 	   docs/man/memcached_prepend_by_key.3 \
 	   docs/man/memcached_quit.3 \

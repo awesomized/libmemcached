@@ -35,6 +35,7 @@
 
 #include <libtest/test.h>
 #include "tests/parser.h"
+#include "tests/pool.h"
 #include "tests/string.h"
 #include "tests/replication.h"
 #include "tests/basic.h"
@@ -5980,10 +5981,9 @@ test_st tests[] ={
   {"delete_through", 1, (test_callback_fn)delete_through },
   {"noreply", 1, (test_callback_fn)noreply_test},
   {"analyzer", 1, (test_callback_fn)analyzer_test},
-#ifdef HAVE_LIBMEMCACHEDUTIL
   {"connectionpool", 1, (test_callback_fn)connection_pool_test },
+  {"memcached_pool_test", 1, (test_callback_fn)memcached_pool_test },
   {"ping", 1, (test_callback_fn)ping_test },
-#endif
   {"test_get_last_disconnect", 1, (test_callback_fn)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn)test_verbosity},
   {"test_server_failure", 1, (test_callback_fn)test_server_failure},
