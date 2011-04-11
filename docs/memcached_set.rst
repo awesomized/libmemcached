@@ -26,17 +26,17 @@ SYNOPSIS
 
 .. c:function:: memcached_return_t memcached_cas(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
 
-.. c:function:: memcached_return_t memcached_set_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+.. c:function:: memcached_return_t memcached_set_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-.. c:function:: memcached_return_t memcached_add_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+.. c:function:: memcached_return_t memcached_add_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-.. c:function:: memcached_return_t memcached_replace_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+.. c:function:: memcached_return_t memcached_replace_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-.. c:function:: memcached_return_t memcached_prepend_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+.. c:function:: memcached_return_t memcached_prepend_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-.. c:function:: memcached_return_t memcached_append_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+.. c:function:: memcached_return_t memcached_append_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
-.. c:function:: memcached_return_t memcached_cas_by_key(memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
+.. c:function:: memcached_return_t memcached_cas_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
 
 Compile and link with -lmemcached
 
@@ -80,7 +80,7 @@ information on how to do this.
 memcached_set_by_key(), memcached_add_by_key(), memcached_replace_by_key(), 
 memcached_prepend_by_key(), memcached_append_by_key_by_key(), 
 memcached_cas_by_key() methods all behave in a similar method as the non key 
-methods. The difference is that they use their master_key parameter to map
+methods. The difference is that they use their group_key parameter to map
 objects to particular servers.
 
 If you are looking for performance, memcached_set() with non-blocking IO is 
