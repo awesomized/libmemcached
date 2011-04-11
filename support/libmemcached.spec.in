@@ -213,6 +213,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_fetch_result.3.gz
 %{_mandir}/man3/memcached_flush_buffers.3.gz
 %{_mandir}/man3/memcached_free.3.gz
+%{_mandir}/man3/memcached_generate_hash.3.gz
 %{_mandir}/man3/memcached_generate_hash_value.3.gz
 %{_mandir}/man3/memcached_get.3.gz
 %{_mandir}/man3/memcached_get_by_key.3.gz
@@ -232,6 +233,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_pool_destroy.3.gz
 %{_mandir}/man3/memcached_pool_pop.3.gz
 %{_mandir}/man3/memcached_pool_push.3.gz
+%{_mandir}/man3/memcached_pool_st.3.gz
 %{_mandir}/man3/memcached_prepend.3.gz
 %{_mandir}/man3/memcached_prepend_by_key.3.gz
 %{_mandir}/man3/memcached_quit.3.gz
