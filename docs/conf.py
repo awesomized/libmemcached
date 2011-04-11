@@ -270,6 +270,7 @@ man_pages = [
   ('memcached_memory_allocators', 'memcached_set_memory_allocators', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_memory_allocators', 'memcached_set_memory_allocators_context', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_pool', 'memcached_pool', u'libmemcached Documentation', [u'Brian Aker'], 3),
+  ('memcached_pool', 'memcached_pool_st', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_pool', 'memcached_pool_behavior_get', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_pool', 'memcached_pool_behavior_set', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_pool', 'memcached_pool_create', u'libmemcached Documentation', [u'Brian Aker'], 3),

@@ -8,7 +8,9 @@ SYNOPSIS
 
 #include <libmemcached/memcached_pool.h>
 
-.. c:function:: memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max);
+.. c:function:: memcached_pool_st *memcached_pool(const char *option_string, size_t option_string_length); 
+
+.. c:function:: memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max); DEPRECATED
  
 .. c:function:: memcached_st * memcached_pool_destroy(memcached_pool_st* pool);
  
@@ -30,23 +32,28 @@ DESCRIPTION
 -----------
 
 
-memcached_pool_create() is used to create a connection pool of objects you
-may use to remove the overhead of using memcached_clone for short
-lived \ ``memcached_st``\  objects. The mmc argument should be an
-initialised \ ``memcached_st``\  structure, and a successfull invocation of
-memcached_pool_create takes full ownership of the variable (until it
-is released by memcached_pool_destroy). The \ ``initial``\  argument
-specifies the initial size of the connection pool, and the \ ``max``\ 
-argument specifies the maximum size the connection pool should grow
-to. Please note that the library will allocate a fixed size buffer
-scaled to the max size of the connection pool, so you should not pass
-MAXINT or some other large number here.
+memcached_pool() is used to create a connection pool of objects you may use
+to remove the overhead of using memcached_clone for short lived
+\ ``memcached_st``\ objects. Please see :manpage:`libmemcached_configuration` for details on the format of the configuration string.
+
+DEPRECATED memcached_pool_create() is used to create a connection pool of
+objects you may use to remove the overhead of using memcached_clone for
+short lived \ ``memcached_st``\ objects. The mmc argument should be an
+initialised \ ``memcached_st``\ structure, and a successfull invocation of
+memcached_pool_create takes full ownership of the variable (until it is
+released by memcached_pool_destroy).  The \ ``initial``\  argument specifies
+the initial size of the connection pool, and the \ ``max``\ argument
+specifies the maximum size the connection pool should grow to. Please note
+that the library will allocate a fixed size buffer scaled to the max size of
+the connection pool, so you should not pass MAXINT or some other large
+number here.
 
 memcached_pool_destroy() is used to destroy the connection pool
 created with memcached_pool_create() and release all allocated
 resources. It will return the pointer to the \ ``memcached_st``\  structure
-passed as an argument to memcached_pool_create(), and returns the
-ownership of the pointer to the caller.
+passed as an argument to memcached_pool_create(), and returns the ownership
+of the pointer to the caller when created with memcached_pool_create,
+otherwise NULL is returned..
 
 memcached_pool_pop() is used to grab a connection structure from the
 connection pool. The block argument specifies if the function should

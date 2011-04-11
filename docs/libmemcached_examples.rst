@@ -13,9 +13,9 @@ For full examples, test cases are found in tests/\*.c in the main
 distribution. These are always up to date, and are used for each test run of
 the library.
 
-------------------------------
-Creating and Freeing structure
-------------------------------
+-----------------------------------------------
+Creating and Freeing the memcached_st structure
+-----------------------------------------------
 
 
 .. code-block:: c
@@ -49,6 +49,43 @@ Connecting to servers
 
 
 In the above code you create a \ ``memcached_st``\  object with three server by making use of :manpage:`memcached_create_with_options(3)`.
+
+
+--------------------------
+Creating a pool of servers
+--------------------------
+
+
+
+.. code-block:: c
+
+  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"; 
+  
+  memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
+
+  memcached_return_t rc;
+
+  memcached_st *memc= memcached_pool_pop(pool, false, &rc);
+
+  .... do work
+
+  /*
+    Release the memc_ptr that was pulled from the pool
+  */
+  memcached_pool_push(pool, memc);
+
+  /*
+    Destroy the pool.
+  */
+  memcached_pool_destroy(pool);
+
+
+
+In the above code you create a \ ``memcached_pool_st``\  object with three
+server by making use of :manpage:`memcached_pool(3)`.
+
+When memcached_pool_destroy() all memory will be released that is associated
+with the pool.
 
 
 ----------------------------

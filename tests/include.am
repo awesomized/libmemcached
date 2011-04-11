@@ -35,6 +35,7 @@ noinst_HEADERS+= \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached_world.h \
 		 tests/parser.h \
+		 tests/pool.h \
 		 tests/print.h \
 		 tests/replication.h \
 		 tests/string.h \
@@ -56,6 +57,7 @@ tests_testapp_SOURCES= \
 		       tests/error_conditions.cc \
 		       tests/mem_functions.c \
 		       tests/parser.cc \
+		       tests/pool.cc \
 		       tests/print.cc \
 		       tests/replication.cc \
 		       tests/string.cc \

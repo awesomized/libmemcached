@@ -159,6 +159,8 @@ struct memcached_st {
   struct memcached_error_t *error_messages;
   struct memcached_array_st *prefix_key;
   struct {
+    uint32_t initial_pool_size;
+    uint32_t max_pool_size;
     struct memcached_array_st *filename;
   } configure;
   struct {
