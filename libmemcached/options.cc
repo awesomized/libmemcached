@@ -35,9 +35,7 @@
  *
  */
 
-#include "libmemcached/common.h"
-
-#include <iostream>
+#include <libmemcached/common.h>
 
 #include <libmemcached/options/context.h>
 
@@ -90,6 +88,9 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
 {
   memcached_st memc, *memc_ptr;
 
+  if (error_buffer_size)
+    error_buffer[0]= 0;
+
   if (! (memc_ptr= memcached_create(&memc)))
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
@@ -119,7 +120,9 @@ memcached_return_t memcached_parse_configuration(memcached_st *self, char const 
 {
   WATCHPOINT_ASSERT(self);
   if (! self)
+  {
     return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
+  }
 
   memcached_return_t rc;
   Context context(option_string, length, self, rc);

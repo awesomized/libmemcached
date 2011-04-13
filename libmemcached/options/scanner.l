@@ -91,59 +91,37 @@
 
 "--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
 
-"--VERIFY_KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
-"--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
-"--BINARY_PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
 "--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
-"--BUFFER_REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
 "--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
-"--CONFIGURE_FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
 "--CONFIGURE-FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
-"--CONNECT_TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
 "--CONNECT-TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
 "--DISTRIBUTION="			{ yyextra->begin= yytext; return DISTRIBUTION; }
-"--HASH="			        { yyextra->begin= yytext; return HASH; }
-"--HASH_WITH_NAMESPACE"	        { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
 "--HASH-WITH-NAMESPACE"	        { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
-"--IO_BYTES_WATERMARK="	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
+"--HASH="			        { yyextra->begin= yytext; return HASH; }
 "--IO-BYTES-WATERMARK="	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
-"--IO_KEY_PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
 "--IO-KEY-PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
-"--IO_MSG_WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
 "--IO-MSG-WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
 "--NOREPLY"                         { yyextra->begin= yytext; return NOREPLY; }
-"--NUMBER_OF_REPLICAS="	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
 "--NUMBER-OF-REPLICAS="	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
-"--POLL_TIMEOUT="			{ yyextra->begin= yytext; return POLL_TIMEOUT; }
 "--POLL-TIMEOUT="			{ yyextra->begin= yytext; return POLL_TIMEOUT; }
-"--RANDOMIZE_REPLICA_READ"	        { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
 "--RANDOMIZE-REPLICA-READ"	        { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
-"--RCV_TIMEOUT="			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
 "--RCV-TIMEOUT="			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
-"--RETRY_TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
-"--RETRY-TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
-"--SND_TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
-"--SND-TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
-"--REMOVE_FAILED_SERVERS="			{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
 "--REMOVE-FAILED-SERVERS="			{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
-"--SOCKET_RECV_SIZE="	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
+"--RETRY-TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
+"--SND-TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
 "--SOCKET-RECV-SIZE="	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
-"--SOCKET_SEND_SIZE="	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
 "--SOCKET-SEND-SIZE="	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
-"--SORT_HOSTS"			{ yyextra->begin= yytext; return SORT_HOSTS; }
 "--SORT-HOSTS"			{ yyextra->begin= yytext; return SORT_HOSTS; }
-"--SUPPORT_CAS"			{ yyextra->begin= yytext; return SUPPORT_CAS; }
 "--SUPPORT-CAS"			{ yyextra->begin= yytext; return SUPPORT_CAS; }
-"--TCP_NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
-"--TCP-NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
-"--TCP_KEEPALIVE"			{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
 "--TCP-KEEPALIVE"			{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
-"--TCP_KEEPIDLE"			{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
 "--TCP-KEEPIDLE"			{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
-"--USER_DATA"			{ yyextra->begin= yytext; return USER_DATA; }
-"--USER-DATA"			{ yyextra->begin= yytext; return USER_DATA; }
-"--USE_UDP"			        { yyextra->begin= yytext; return USE_UDP; }
+"--TCP-NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
 "--USE-UDP"	       		        { yyextra->begin= yytext; return USE_UDP; }
+"--USER-DATA"			{ yyextra->begin= yytext; return USER_DATA; }
+"--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
+
+"--POOL-MIN="	       		        { yyextra->begin= yytext; return POOL_MIN; }
+"--POOL-MAX="	       		        { yyextra->begin= yytext; return POOL_MAX; }
 
 "--NAMESPACE="	       		        { yyextra->begin= yytext; return NAMESPACE; }
 

@@ -48,10 +48,17 @@
 
 test_return_t memcached_pool_test(memcached_st *)
 {
-  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com";
-  memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
-
   memcached_return_t rc;
+  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com --POOL-MIN=10 --POOL-MAX=32";
+
+  char buffer[2048];
+  rc= libmemcached_check_configuration(config_string, sizeof(config_string) -1, buffer, sizeof(buffer));
+
+  test_true_got(rc != MEMCACHED_SUCCESS, buffer);
+
+  memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
+  test_true_got(pool, strerror(errno));
+
   memcached_st *memc= memcached_pool_pop(pool, false, &rc);
 
   test_true(rc == MEMCACHED_SUCCESS);

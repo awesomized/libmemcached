@@ -2,6 +2,8 @@
 Working with memcached pools
 ============================
 
+.. index:: object: memcached_pool_st
+
 --------
 SYNOPSIS
 --------

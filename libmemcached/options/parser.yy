@@ -108,6 +108,10 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 /* Callbacks */
 %token NAMESPACE
 
+/* Pool */
+%token POOL_MIN
+%token POOL_MAX
+
 /* Hash types */
 %token MD5
 %token CRC
@@ -209,6 +213,14 @@ expression:
         | CONFIGURE_FILE string
           {
             memcached_set_configuration_file(context->memc, $2.c_str, $2.length);
+          }
+        | POOL_MIN NUMBER
+          {
+            context->memc->configure.initial_pool_size= $2;
+          }
+        | POOL_MAX NUMBER
+          {
+            context->memc->configure.max_pool_size= $2;
           }
         | behaviors
         ;
