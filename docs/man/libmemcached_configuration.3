@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED_CONFIGURATION" "3" "April 12, 2011" "0.47" "libmemcached"
+.TH "LIBMEMCACHED_CONFIGURATION" "3" "April 13, 2011" "0.47" "libmemcached"
 .SH NAME
 libmemcached_configuration \- libmemcached Documentation
 .
@@ -33,7 +33,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .SH SYNOPSIS
 .INDENT 0.0
 .TP
-.B memcached_st *memcached_create_with_options(const char\fI\ *string\fP, size_t\fI\ string_length\fP)
+.B memcached_st *memcached(const char\fI\ *string\fP, size_t\fI\ string_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -261,14 +261,14 @@ End configutation processing.
 End configutation processing and throw an error.
 .SH RETURN
 .sp
-memcached_create_with_options() returns a pointer to the memcached_st that was
+memcached() returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
 .SH EXAMPLE
 .sp
 .nf
 .ft C
 const char *config_string= "\-\-SERVER=host10.example.com \-\-SERVER=host11.example.com \-\-SERVER=host10.example.com"
-memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
+memcached_st *memc= memcached(config_string, strlen(config_string);
 {
  ...
 }

@@ -7,7 +7,7 @@ SYNOPSIS
 --------
 
 
-.. c:function:: memcached_st *memcached_create_with_options(const char *string, size_t string_length)
+.. c:function:: memcached_st *memcached(const char *string, size_t string_length)
 
 
 .. c:function:: memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
@@ -184,7 +184,7 @@ RETURN
 ------
 
 
-memcached_create_with_options() returns a pointer to the memcached_st that was
+memcached() returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
 
 
@@ -197,7 +197,7 @@ EXAMPLE
 .. code-block:: c
 
    const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"
-   memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
+   memcached_st *memc= memcached(config_string, strlen(config_string);
    {
     ...
    }
