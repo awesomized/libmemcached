@@ -97,6 +97,18 @@ requests that know the namespace can access these values. This is
 accomplished by prepending the namespace value to all keys.
 
 
+********************** 
+Mecached Pool Options: 
+**********************
+
+.. describe:: --POOL-MIN
+
+Initial size of pool.
+
+.. describe:: --POOL-MAX
+
+Maximize size of the pool.
+
 ************
 I/O Options:
 ************

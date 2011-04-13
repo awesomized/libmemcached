@@ -212,8 +212,13 @@ memcached_st *memcached_create(memcached_st *ptr)
 
 memcached_st *memcached_create_with_options(const char *string, size_t length)
 {
-  memcached_st *self= memcached_create(NULL);
+  if (! length || ! string)
+  {
+    errno= EINVAL;
+    return NULL;
+  }
 
+  memcached_st *self= memcached_create(NULL);
   if (! self)
   {
     errno= ENOMEM;
@@ -227,7 +232,6 @@ memcached_st *memcached_create_with_options(const char *string, size_t length)
   {
     rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
   }
-
     
   if (rc != MEMCACHED_SUCCESS)
   {

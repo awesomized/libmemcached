@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED_CHECK_CONFIGURATION" "3" "April 11, 2011" "0.47" "libmemcached"
+.TH "LIBMEMCACHED_CHECK_CONFIGURATION" "3" "April 12, 2011" "0.47" "libmemcached"
 .SH NAME
 libmemcached_check_configuration \- libmemcached Documentation
 .
@@ -152,6 +152,19 @@ See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_USE_UDP
 A namespace is a container that provides context for keys, only other
 requests that know the namespace can access these values. This is
 accomplished by prepending the namespace value to all keys.
+.SS Mecached Pool Options:
+.INDENT 0.0
+.TP
+.B \-\-POOL\-MIN
+.UNINDENT
+.sp
+Initial size of pool.
+.INDENT 0.0
+.TP
+.B \-\-POOL\-MAX
+.UNINDENT
+.sp
+Maximize size of the pool.
 .SS I/O Options:
 .INDENT 0.0
 .TP

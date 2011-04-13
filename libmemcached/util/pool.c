@@ -75,25 +75,33 @@ static int grow_pool(memcached_pool_st* pool)
 static inline memcached_pool_st *_pool_create(memcached_st* mmc, uint32_t initial, uint32_t max)
 {
   memcached_pool_st* ret= NULL;
+
+  if (! initial || ! max || initial > max)
+  {
+    errno= EINVAL;
+    return NULL;
+  }
+
   memcached_pool_st object= { .mutex = PTHREAD_MUTEX_INITIALIZER,
-    .cond = PTHREAD_COND_INITIALIZER,
-    .master = mmc,
-    .mmc = calloc(max, sizeof(memcached_st*)),
+    .cond= PTHREAD_COND_INITIALIZER,
+    .master= mmc,
+    .mmc= calloc(max, sizeof(memcached_st*)),
     .firstfree= -1,
-    .size = max,
+    .size= max,
     .current_size= 0,
     ._owns_master= false};
 
   if (object.mmc != NULL)
   {
-    ret= calloc(1, sizeof(*ret));
+    ret= (memcached_pool_st*)calloc(1, sizeof(memcached_pool_st));
     if (ret == NULL)
     {
       free(object.mmc);
+      errno= ENOMEM; // Set this for the failed calloc
       return NULL;
     }
 
-    *ret = object;
+    *ret= object;
 
     /*
       Try to create the initial size of the pool. An allocation failure at
@@ -123,14 +131,15 @@ memcached_pool_st * memcached_pool(const char *option_string, size_t option_stri
     return NULL;
 
   self= memcached_pool_create(memc, memc->configure.initial_pool_size, memc->configure.max_pool_size);
-  if (self)
-  {
-    self->_owns_master= true;
-  }
-  else
+  if (! self)
   {
     memcached_free(memc);
+    errno= ENOMEM;
+    return NULL;
   }
+  errno= 0;
+
+  self->_owns_master= true;
 
   return self;
 }
@@ -166,9 +175,17 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
                                  bool block,
                                  memcached_return_t *rc)
 {
+  if (! pool || ! rc)
+  {
+    errno= EINVAL;
+    return NULL;
+  }
+
   memcached_st *ret= NULL;
   if ((*rc= mutex_enter(&pool->mutex)) != MEMCACHED_SUCCESS)
+  {
     return NULL;
+  }
 
   do
   {
@@ -209,6 +226,9 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
 memcached_return_t memcached_pool_push(memcached_pool_st* pool,
                                        memcached_st *mmc)
 {
+  if (! pool)
+    return MEMCACHED_INVALID_ARGUMENTS;
+
   memcached_return_t rc= mutex_enter(&pool->mutex);
 
   if (rc != MEMCACHED_SUCCESS)
@@ -246,6 +266,8 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
                                                memcached_behavior_t flag,
                                                uint64_t data)
 {
+  if (! pool)
+    return MEMCACHED_INVALID_ARGUMENTS;
 
   memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
@@ -295,8 +317,10 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool,
                                                memcached_behavior_t flag,
                                                uint64_t *value)
 {
-  memcached_return_t rc= mutex_enter(&pool->mutex);
+  if (! pool)
+    return MEMCACHED_INVALID_ARGUMENTS;
 
+  memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
   {
     return rc;
