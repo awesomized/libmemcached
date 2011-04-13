@@ -11,6 +11,7 @@ SYNOPSIS
 --------
 
 
+:program:`memcat`
 
 .. program:: memcat
 

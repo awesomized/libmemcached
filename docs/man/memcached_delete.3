@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DELETE" "3" "April 09, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_DELETE" "3" "April 12, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_delete \- libmemcached Documentation
 .
@@ -39,7 +39,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, time_t expiration);
+.B memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration);
 .UNINDENT
 .sp
 Compile and link with \-lmemcached

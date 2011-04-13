@@ -44,6 +44,7 @@
 
 #define BUILDING_LIBMEMCACHED
 #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
 
 #include "tests/parser.h"
 #include "tests/print.h"
@@ -172,41 +173,41 @@ scanner_variable_t bad_test_strings[]= {
 };
 
 scanner_variable_t test_number_options[]= {
-  { ARRAY,  make_scanner_string("--CONNECT_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--IO_BYTES_WATERMARK=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--IO_KEY_PREFETCH=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--IO_MSG_WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
-  { ARRAY,  make_scanner_string("--NUMBER_OF_REPLICAS=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--POLL_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--RCV_TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--CONNECT-TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO-BYTES-WATERMARK=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO-KEY-PREFETCH=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--IO-MSG-WATERMARK=456"), make_scanner_string("456"), __check_IO_MSG_WATERMARK },
+  { ARRAY,  make_scanner_string("--NUMBER-OF-REPLICAS=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--POLL-TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--RCV-TIMEOUT=456"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--REMOVE-FAILED-SERVERS=3"), scanner_string_null, __check_REMOVE_FAILED_SERVERS },
-  { ARRAY,  make_scanner_string("--RETRY_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SND_TIMEOUT=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SOCKET_RECV_SIZE=456"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SOCKET_SEND_SIZE=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--RETRY-TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SND-TIMEOUT=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SOCKET-RECV-SIZE=456"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SOCKET-SEND-SIZE=456"), scanner_string_null, NULL },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
 scanner_variable_t test_boolean_options[]= {
-  { ARRAY,  make_scanner_string("--BINARY_PROTOCOL"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--BUFFER_REQUESTS"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH_WITH_PREFIX_KEY"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--BINARY-PROTOCOL"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--BUFFER-REQUESTS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--HASH-WITH-NAMESPACE"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--NOREPLY"), scanner_string_null, __check_NOREPLY },
-  { ARRAY,  make_scanner_string("--RANDOMIZE_REPLICA_READ"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SORT_HOSTS"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--SUPPORT_CAS"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--TCP_NODELAY"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--TCP_KEEPALIVE"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--TCP_KEEPIDLE"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--USE_UDP"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--VERIFY_KEY"), scanner_string_null, __check_VERIFY_KEY },
+  { ARRAY,  make_scanner_string("--RANDOMIZE-REPLICA-READ"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SORT-HOSTS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--SUPPORT-CAS"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP-NODELAY"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP-KEEPALIVE"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--TCP-KEEPIDLE"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--USE-UDP"), scanner_string_null, NULL },
+  { ARRAY,  make_scanner_string("--VERIFY-KEY"), scanner_string_null, __check_VERIFY_KEY },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
 scanner_variable_t prefix_key_strings[]= {
-  { ARRAY, make_scanner_string("--PREFIX_KEY=foo"), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--PREFIX-KEY=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--PREFIX-KEY=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=foo"), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
@@ -483,9 +484,11 @@ test_return_t random_statement_build_test(memcached_st*)
         break;
       case ENOMEM:
         std::cerr << "Failed to allocate memory for memcached_create_with_options()" << std::endl;
+        memcached_free(memc_ptr);
         return TEST_FAILURE;
       default:
         std::cerr << "Unknown error from memcached_create_with_options?!!" << std::endl;
+        memcached_free(memc_ptr);
         return TEST_FAILURE;
       }
     }

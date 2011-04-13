@@ -52,7 +52,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
                                                bool flush);
 
 memcached_return_t memcached_delete_by_key(memcached_st *ptr,
-                                           const char *master_key, size_t master_key_length,
+                                           const char *group_key, size_t group_key_length,
                                            const char *key, size_t key_length,
                                            time_t expiration)
 {
@@ -77,7 +77,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  server_key= memcached_generate_hash_with_redistribution(ptr, master_key, master_key_length);
+  server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   to_write= (ptr->flags.buffer_requests) ? false : true;

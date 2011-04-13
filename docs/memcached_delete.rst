@@ -11,7 +11,7 @@ SYNOPSIS
  
 .. c:function:: memcached_return_t memcached_delete (memcached_st *ptr, const char *key, size_t key_length, time_t expiration);
 
-.. c:function:: memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *master_key, size_t master_key_length, const char *key, size_t key_length, time_t expiration);
+.. c:function:: memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration);
 
 Compile and link with -lmemcached
 

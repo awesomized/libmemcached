@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED_CONFIGURATION" "3" "April 09, 2011" "0.47" "libmemcached"
+.TH "LIBMEMCACHED_CONFIGURATION" "3" "April 12, 2011" "0.47" "libmemcached"
 .SH NAME
 libmemcached_configuration \- libmemcached Documentation
 .
@@ -102,24 +102,18 @@ Set the distribution model used by the client.  See :manpage:\(ga\(ga for more d
 Set the hashing alogrthm used for placing keys on servers.
 .INDENT 0.0
 .TP
-.B \-\-HASH\-WITH\-PREFIX_KEY
+.B \-\-HASH\-WITH\-NAMESPACE
 .UNINDENT
-.INDENT 0.0
-.TP
-.B \-\-IO\-BYTES\-WATERMARK=
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-\-IO\-KEY\-PREFETCH=
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-\-IO\-MSG\-WATERMARK=
-.UNINDENT
+.sp
+When enabled the prefix key will be added to the key when determining which
+server to store the data in.
 .INDENT 0.0
 .TP
 .B \-\-NOREPLY
 .UNINDENT
+.sp
+Enable "no reply" for all calls that support this. It is highly recommended
+that you use this option with the binary protocol only.
 .INDENT 0.0
 .TP
 .B \-\-NUMBER\-OF\-REPLICAS=
@@ -128,18 +122,62 @@ Set the hashing alogrthm used for placing keys on servers.
 Set the nummber of servers that keys will be replicated to.
 .INDENT 0.0
 .TP
-.B \-\-POLL\-TIMEOUT=
-.UNINDENT
-.INDENT 0.0
-.TP
 .B \-\-RANDOMIZE\-REPLICA\-READ
 .UNINDENT
 .sp
 Select randomly the server within the replication pool to read from.
 .INDENT 0.0
 .TP
-.B \-\-RCV\-TIMEOUT=
+.B \-\-SORT\-HOSTS
 .UNINDENT
+.sp
+When adding new servers always calculate their distribution based on sorted naming order.
+.INDENT 0.0
+.TP
+.B \-\-SUPPORT\-CAS
+.UNINDENT
+.sp
+See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_SUPPORT_CAS
+.INDENT 0.0
+.TP
+.B \-\-USE\-UDP
+.UNINDENT
+.sp
+See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_USE_UDP
+.INDENT 0.0
+.TP
+.B \-\-NAMESPACE=
+.UNINDENT
+.sp
+A namespace is a container that provides context for keys, only other
+requests that know the namespace can access these values. This is
+accomplished by prepending the namespace value to all keys.
+.SS Mecached Pool Options:
+.INDENT 0.0
+.TP
+.B \-\-POOL\-MIN
+.UNINDENT
+.sp
+Initial size of pool.
+.INDENT 0.0
+.TP
+.B \-\-POOL\-MAX
+.UNINDENT
+.sp
+Maximize size of the pool.
+.SS I/O Options:
+.INDENT 0.0
+.TP
+.B \-\-TCP\-NODELAY
+.UNINDENT
+.sp
+See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_TCP_NODELAY
+.INDENT 0.0
+.TP
+.B \-\-TCP\-KEEPALIVE
+.UNINDENT
+.sp
+See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_TCP_KEEPALIVE
 .INDENT 0.0
 .TP
 .B \-\-RETRY\-TIMEOUT=
@@ -172,42 +210,31 @@ See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE
 See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
 .INDENT 0.0
 .TP
-.B \-\-SORT\-HOSTS
+.B \-\-POLL\-TIMEOUT=
 .UNINDENT
 .sp
-When adding new servers always calculate their distribution based on sorted naming order.
+That sets the value of the timeout used by :manpage: \fIpoll()\fP.
 .INDENT 0.0
 .TP
-.B \-\-SUPPORT\-CAS
+.B \-\-IO\-BYTES\-WATERMARK=
 .UNINDENT
-.sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_SUPPORT_CAS
 .INDENT 0.0
 .TP
-.B \-\-TCP\-NODELAY
+.B \-\-IO\-KEY\-PREFETCH=
 .UNINDENT
-.sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_TCP_NODELAY
 .INDENT 0.0
 .TP
-.B \-\-TCP\-KEEPALIVE
+.B \-\-IO\-MSG\-WATERMARK=
 .UNINDENT
-.sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_TCP_KEEPALIVE
 .INDENT 0.0
 .TP
 .B \-\-TCP\-KEEPIDLE
 .UNINDENT
 .INDENT 0.0
 .TP
-.B \-\-USE\-UDP
+.B \-\-RCV\-TIMEOUT=
 .UNINDENT
-.sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_USE_UDP
-.INDENT 0.0
-.TP
-.B \-\-PREFIX\-KEY=
-.UNINDENT
+.SS Other:
 .INDENT 0.0
 .TP
 .B INCLUDE

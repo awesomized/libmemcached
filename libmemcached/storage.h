@@ -56,7 +56,7 @@ memcached_return_t memcached_cas(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_set_by_key(memcached_st *ptr,
-                                        const char *master_key, size_t master_key_length,
+                                        const char *group_key, size_t group_key_length,
                                         const char *key, size_t key_length,
                                         const char *value, size_t value_length,
                                         time_t expiration,
@@ -64,7 +64,7 @@ memcached_return_t memcached_set_by_key(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_add_by_key(memcached_st *ptr,
-                                        const char *master_key, size_t master_key_length,
+                                        const char *group_key, size_t group_key_length,
                                         const char *key, size_t key_length,
                                         const char *value, size_t value_length,
                                         time_t expiration,
@@ -72,7 +72,7 @@ memcached_return_t memcached_add_by_key(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_replace_by_key(memcached_st *ptr,
-                                            const char *master_key, size_t master_key_length,
+                                            const char *group_key, size_t group_key_length,
                                             const char *key, size_t key_length,
                                             const char *value, size_t value_length,
                                             time_t expiration,
@@ -80,7 +80,7 @@ memcached_return_t memcached_replace_by_key(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_prepend_by_key(memcached_st *ptr,
-                                            const char *master_key, size_t master_key_length,
+                                            const char *group_key, size_t group_key_length,
                                             const char *key, size_t key_length,
                                             const char *value, size_t value_length,
                                             time_t expiration,
@@ -88,7 +88,7 @@ memcached_return_t memcached_prepend_by_key(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_append_by_key(memcached_st *ptr,
-                                           const char *master_key, size_t master_key_length,
+                                           const char *group_key, size_t group_key_length,
                                            const char *key, size_t key_length,
                                            const char *value, size_t value_length,
                                            time_t expiration,
@@ -96,7 +96,7 @@ memcached_return_t memcached_append_by_key(memcached_st *ptr,
 
 LIBMEMCACHED_API
 memcached_return_t memcached_cas_by_key(memcached_st *ptr,
-                                        const char *master_key, size_t master_key_length,
+                                        const char *group_key, size_t group_key_length,
                                         const char *key, size_t key_length,
                                         const char *value, size_t value_length,
                                         time_t expiration,

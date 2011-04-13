@@ -165,7 +165,9 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
   int flags;
 
   do
+  {
     flags= fcntl(ptr->fd, F_GETFL, 0);
+  }
   while (flags == -1 && (errno == EINTR || errno == EAGAIN));
 
   unlikely (flags == -1)
@@ -178,7 +180,9 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
     int rval;
 
     do
+    {
       rval= fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
+    }
     while (rval == -1 && (errno == EINTR || errno == EAGAIN));
 
     unlikely (rval == -1)

@@ -10,6 +10,8 @@ Dump a list of keys from a server.
 SYNOPSIS
 --------
 
+:program: `memdump`
+
 .. program:: memdump
 
 .. option:: --help

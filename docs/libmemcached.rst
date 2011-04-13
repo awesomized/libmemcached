@@ -39,8 +39,11 @@ recommended that you operate directly against the structure.
 Nearly all functions return a \ ``memcached_return_t``\  value.
 This value can be translated to a printable string with memcached_strerror(3).
 
-Partitioning based on keys is testsed in the library. Using the key partioning 
-functions it is possible to group sets of object onto servers.
+Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
+
+Group keys can be optionally used to group sets of objects with servers. 
+
+Namespaces are supported, and can be used to partition caches so that multiple applications can use the same memcached servers.
 
 \ ``memcached_st``\  structures are thread-safe, but each thread must
 contain its own structure (that is, if you want to share these among

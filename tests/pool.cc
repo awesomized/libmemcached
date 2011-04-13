@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  Libmemcached Client and Server 
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,68 +35,44 @@
  *
  */
 
-#pragma once
+#include <config.h>
 
-#include <libtest/test.h>
+#include <vector>
+#include <iostream>
+#include <string>
+#include <errno.h>
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+#include <libmemcached/memcached.h>
+#include <libmemcached/util.h>
+#include <tests/pool.h>
 
-LIBTEST_INTERNAL_API
-test_return_t server_test(memcached_st *memc);
+test_return_t memcached_pool_test(memcached_st *)
+{
+  memcached_return_t rc;
+  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com --POOL-MIN=10 --POOL-MAX=32";
 
-LIBTEST_INTERNAL_API
-test_return_t servers_bad_test(memcached_st *memc);
+  char buffer[2048];
+  rc= libmemcached_check_configuration(config_string, sizeof(config_string) -1, buffer, sizeof(buffer));
 
-LIBTEST_INTERNAL_API
-test_return_t behavior_parser_test(memcached_st*);
+  test_true_got(rc != MEMCACHED_SUCCESS, buffer);
 
-LIBTEST_INTERNAL_API
-test_return_t parser_number_options_test(memcached_st*);
+  memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
+  test_true_got(pool, strerror(errno));
 
-LIBTEST_INTERNAL_API
-test_return_t parser_distribution_test(memcached_st*);
+  memcached_st *memc= memcached_pool_pop(pool, false, &rc);
 
-LIBTEST_INTERNAL_API
-test_return_t parser_hash_test(memcached_st*);
+  test_true(rc == MEMCACHED_SUCCESS);
+  test_true(memc);
 
-LIBTEST_INTERNAL_API
-test_return_t parser_boolean_options_test(memcached_st*);
+  /*
+    Release the memc_ptr that was pulled from the pool
+  */
+  memcached_pool_push(pool, memc);
 
-LIBTEST_INTERNAL_API
-test_return_t parser_key_prefix_test(memcached_st*);
+  /*
+    Destroy the pool.
+  */
+  memcached_pool_destroy(pool);
 
-LIBTEST_INTERNAL_API
-  test_return_t libmemcached_check_configuration_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t memcached_create_with_options_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t memcached_create_with_options_with_filename(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-  test_return_t random_statement_build_test(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_include_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_end_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_reset_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t test_error_keyword(memcached_st*);
-
-LIBTEST_INTERNAL_API
-test_return_t server_with_weight_test(memcached_st *);
-
-#ifdef	__cplusplus
+  return TEST_SUCCESS;
 }
-#endif

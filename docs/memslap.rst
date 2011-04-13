@@ -8,8 +8,11 @@ SYNOPSIS
 --------
 
 
-.. program::  memslap [options]
+:program: `memslap`
 
+.. program::  memslap
+
+.. option:: --help
 
 -----------
 DESCRIPTION
