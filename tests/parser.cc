@@ -240,7 +240,7 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true= t
   for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
   {
     memcached_st *memc;
-    memc= memcached_create_with_options(ptr->option.c_str, ptr->option.size);
+    memc= memcached(ptr->option.c_str, ptr->option.size);
     if (test_true)
     {
       if (not memc)
@@ -332,7 +332,7 @@ test_return_t memcached_create_with_options_with_filename(memcached_st*)
     return TEST_SKIPPED;
 
   memcached_st *memc_ptr;
-  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
+  memc_ptr= memcached(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
   test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
   memcached_free(memc_ptr);
 
@@ -377,11 +377,11 @@ test_return_t libmemcached_check_configuration_test(memcached_st*)
 test_return_t memcached_create_with_options_test(memcached_st*)
 {
   memcached_st *memc_ptr;
-  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--server=localhost"));
+  memc_ptr= memcached(STRING_WITH_LEN("--server=localhost"));
   test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
   memcached_free(memc_ptr);
 
-  memc_ptr= memcached_create_with_options(STRING_WITH_LEN("--dude=localhost"));
+  memc_ptr= memcached(STRING_WITH_LEN("--dude=localhost"));
   test_false_with(memc_ptr, memcached_last_error_message(memc_ptr));
 
   return TEST_SUCCESS;
@@ -464,8 +464,7 @@ test_return_t random_statement_build_test(memcached_st*)
       random_options+= " ";
     }
 
-    memcached_st *memc_ptr= memcached_create(NULL);
-    memc_ptr= memcached_create_with_options(random_options.c_str(), random_options.size() -1);
+    memcached_st *memc_ptr= memcached(random_options.c_str(), random_options.size() -1);
     if (not memc_ptr)
     {
       switch (errno) 

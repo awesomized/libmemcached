@@ -230,7 +230,7 @@ man_pages = [
   ('libmemcached', 'libmemcached', u'Introducing the C Client Library for memcached', [u'Brian Aker'], 3),
   ('libmemcached_examples', 'libmemcached_examples', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcached_configuration', 'libmemcached_configuration', u'libmemcached Documentation', [u'Brian Aker'], 3),
-  ('libmemcached_configuration', 'memcached_create_with_options', u'libmemcached Documentation', [u'Brian Aker'], 3),
+  ('libmemcached_configuration', 'memcached', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcached_configuration', 'libmemcached_check_configuration', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcachedutil', 'libmemcachedutil', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_analyze', 'memcached_analyze', u'libmemcached Documentation', [u'Brian Aker'], 3),

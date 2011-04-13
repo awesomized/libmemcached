@@ -210,7 +210,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   return ptr;
 }
 
-memcached_st *memcached_create_with_options(const char *string, size_t length)
+memcached_st *memcached(const char *string, size_t length)
 {
   if (! length || ! string)
   {

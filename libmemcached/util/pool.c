@@ -125,7 +125,7 @@ memcached_pool_st *memcached_pool_create(memcached_st* mmc, uint32_t initial, ui
 memcached_pool_st * memcached_pool(const char *option_string, size_t option_string_length)
 {
   memcached_pool_st *self;
-  memcached_st *memc= memcached_create_with_options(option_string, option_string_length);
+  memcached_st *memc= memcached(option_string, option_string_length);
 
   if (! memc)
     return NULL;
