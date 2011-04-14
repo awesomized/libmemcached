@@ -13,24 +13,6 @@ For full examples, test cases are found in tests/\*.c in the main
 distribution. These are always up to date, and are used for each test run of
 the library.
 
------------------------------------------------
-Creating and Freeing the memcached_st structure
------------------------------------------------
-
-
-.. code-block:: c
-
-   memcached_st *memc;
-   memcached_return_t rc;
- 
-   memc= memcached_create(NULL);
-   ...do stuff...
-   memcached_free(memc);
-
-
-The above code would create a connection and then free the connection when
-finished.
-
 
 ---------------------
 Connecting to servers
@@ -41,7 +23,7 @@ Connecting to servers
 .. code-block:: c
 
    const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"
-   memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
+   memcached_st *memc= memcached(config_string, strlen(config_string);
    {
     ...
    }
@@ -97,25 +79,14 @@ Adding a value to the server
 .. code-block:: c
 
    char *key= "foo";
-   char *value;
-   size_t value_length= 8191;
-   unsigned int x;
- 
-   value = (char*)malloc(value_length);
-   assert(value);
- 
-   for (x= 0; x < value_length; x++)
-   value[x] = (char) (x % 127);
- 
-   for (x= 0; x < 1; x++)
+   char *value= "value";
+
+   memcached_return_t rc= memcached_set(memc, key, strlen(key), value, value_length, (time_t)0, (uint32_t)0);
+
+   if (rc != MEMCACHED_SUCCESS)
    {
-     rc= memcached_set(memc, key, strlen(key), 
-     value, value_length,
-     (time_t)0, (uint32_t)0);
-     assert(rc == MEMCACHED_SUCCESS);
+   ... // handle failure
    }
- 
-   free(value);
 
 
 It is best practice to always look at the return value of any operation.
