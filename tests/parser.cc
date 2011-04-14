@@ -44,7 +44,6 @@
 
 #define BUILDING_LIBMEMCACHED
 #include <libmemcached/memcached.h>
-#include <libmemcached/memcached.h>
 
 #include "tests/parser.h"
 #include "tests/print.h"

@@ -30,39 +30,36 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
+.SH SYNOPSIS
 .sp
-Manage server list
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-const memcached_server_instance_st
-  memcached_server_list (memcached_st *ptr);
-
-void memcached_server_list_free (memcached_server_list_st list);
-
-memcached_server_list_st
-  memcached_server_list_append (memcached_server_list_st list,
-                                const char *hostname,
-                                unsigned int port,
-                                memcached_return_t *error);
-
-uint32_t memcached_server_list_count (memcached_server_list_st list);
-
-memcached_server_list_st memcached_servers_parse (const char *server_strings);
-
-const char *memcached_server_error (memcached_server_instance_st instance);
-
-DEPRECATED
-void memcached_server_error_reset (memcached_server_instance_st list);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B const memcached_server_instance_st memcached_server_list (memcached_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_server_list_free (memcached_server_list_st list);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_server_list_st memcached_server_list_append (memcached_server_list_st list, const char *hostname, unsigned int port, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t memcached_server_list_count (memcached_server_list_st list);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B const char *memcached_server_error (memcached_server_instance_st instance);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_server_error_reset (memcached_server_instance_st list); DEPRECATED
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 libmemcached(3) operates on a list of hosts which are stored in
 memcached_server_st structures. You should not modify these structures
@@ -81,10 +78,7 @@ memcached_return_t pointer you passed into the function will be set with the
 appropriate error. If the value of port is zero, it is set to the default
 port of a memcached server.
 .sp
-memcached_servers_parse() takes a string, the type that is used for the
-command line applications, and parse it to an array of memcached_server_st.
-The example is "localhost, foo:555, foo, bar". All hosts except foo:555 will
-be set to the default port, while that host will have a port of 555.
+DEPRECATED memcached_servers_parse(), please see \fImemcached(3)\fP
 .sp
 memcached_server_error() can be used to look at the text of the last error
 message sent by the server to to the client.
@@ -98,11 +92,8 @@ Varies, see particular functions.
 .SH HOME
 .sp
 To find out more information please check:
-\fI\%https://launchpad.net/libmemcached\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
-.SS SEE ALSO
+\fI\%http://libmemcached.org/\fP
+.SH SEE ALSO
 .sp
 \fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
