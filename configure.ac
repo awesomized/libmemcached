@@ -8,7 +8,7 @@
 # the COPYING file in this directory for full text.
 
 AC_PREREQ(2.59)
-AC_INIT([libmemcached],[0.48],[http://libmemcached.org/])
+AC_INIT([libmemcached],[0.49],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.c])
 AC_CONFIG_AUX_DIR(config)
 
@@ -17,9 +17,9 @@ AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
 #shared library versioning
-MEMCACHED_UTIL_LIBRARY_VERSION=1:0:0
+MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=6:0:0
+MEMCACHED_LIBRARY_VERSION=7:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
