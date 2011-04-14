@@ -37,27 +37,12 @@ Examples for libmemcached
 For full examples, test cases are found in tests/*.c in the main
 distribution. These are always up to date, and are used for each test run of
 the library.
-.SH CREATING AND FREEING THE MEMCACHED_ST STRUCTURE
-.sp
-.nf
-.ft C
-memcached_st *memc;
-memcached_return_t rc;
-
-memc= memcached_create(NULL);
-\&...do stuff...
-memcached_free(memc);
-.ft P
-.fi
-.sp
-The above code would create a connection and then free the connection when
-finished.
 .SH CONNECTING TO SERVERS
 .sp
 .nf
 .ft C
 const char *config_string= "\-\-SERVER=host10.example.com \-\-SERVER=host11.example.com \-\-SERVER=host10.example.com"
-memcached_st *memc= memcached_create_with_options(config_string, strlen(config_string);
+memcached_st *memc= memcached(config_string, strlen(config_string);
 {
  ...
 }
@@ -102,25 +87,14 @@ with the pool.
 .nf
 .ft C
 char *key= "foo";
-char *value;
-size_t value_length= 8191;
-unsigned int x;
+char *value= "value";
 
-value = (char*)malloc(value_length);
-assert(value);
+memcached_return_t rc= memcached_set(memc, key, strlen(key), value, value_length, (time_t)0, (uint32_t)0);
 
-for (x= 0; x < value_length; x++)
-value[x] = (char) (x % 127);
-
-for (x= 0; x < 1; x++)
+if (rc != MEMCACHED_SUCCESS)
 {
-  rc= memcached_set(memc, key, strlen(key),
-  value, value_length,
-  (time_t)0, (uint32_t)0);
-  assert(rc == MEMCACHED_SUCCESS);
+\&... // handle failure
 }
-
-free(value);
 .ft P
 .fi
 .sp
