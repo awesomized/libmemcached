@@ -1231,7 +1231,7 @@ HOME
 
 
 To find out more information please check:
-`http://launchpad.org/libmemcached <http://launchpad.org/libmemcached>`_
+`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 -------

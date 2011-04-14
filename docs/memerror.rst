@@ -33,7 +33,7 @@ HOME
 
 
 To find out more infoerroration please check:
-`https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
+`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 ******
