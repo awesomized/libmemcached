@@ -35,6 +35,7 @@ noinst_HEADERS+= \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached_world.h \
 		 tests/parser.h \
+		 tests/deprecated.h \
 		 tests/pool.h \
 		 tests/print.h \
 		 tests/replication.h \
@@ -54,6 +55,7 @@ noinst_PROGRAMS+= \
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= \
 		       tests/basic.cc \
+		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
 		       tests/mem_functions.c \
 		       tests/parser.cc \

@@ -3,16 +3,6 @@ Managing lists of servers
 =========================
 
 
-Manage server list
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
 
 --------
 SYNOPSIS
@@ -20,30 +10,22 @@ SYNOPSIS
 
 
 
-.. code-block:: perl
+#include <libmemcached/memcached.h>
+ 
+.. c:function:: const memcached_server_instance_st memcached_server_list (memcached_st *ptr);
 
-   #include <libmemcached/memcached.h>
+.. c:function:: void memcached_server_list_free (memcached_server_list_st list);
  
-   const memcached_server_instance_st
-     memcached_server_list (memcached_st *ptr);
+.. c:function:: memcached_server_list_st memcached_server_list_append (memcached_server_list_st list, const char *hostname, unsigned int port, memcached_return_t *error);
  
-   void memcached_server_list_free (memcached_server_list_st list);
+.. c:function:: uint32_t memcached_server_list_count (memcached_server_list_st list);
  
-   memcached_server_list_st
-     memcached_server_list_append (memcached_server_list_st list, 
-                                   const char *hostname,
-                                   unsigned int port, 
-                                   memcached_return_t *error);
+.. c:function:: const char *memcached_server_error (memcached_server_instance_st instance);
  
-   uint32_t memcached_server_list_count (memcached_server_list_st list);
- 
-   memcached_server_list_st memcached_servers_parse (const char *server_strings);
- 
-   const char *memcached_server_error (memcached_server_instance_st instance);
- 
-   DEPRECATED
-   void memcached_server_error_reset (memcached_server_instance_st list);
+.. c:function:: void memcached_server_error_reset (memcached_server_instance_st list); DEPRECATED 
+   
 
+Compile and link with -lmemcached
 
 
 -----------
@@ -68,10 +50,7 @@ memcached_return_t pointer you passed into the function will be set with the
 appropriate error. If the value of port is zero, it is set to the default
 port of a memcached server.
 
-memcached_servers_parse() takes a string, the type that is used for the
-command line applications, and parse it to an array of memcached_server_st.
-The example is "localhost, foo:555, foo, bar". All hosts except foo:555 will
-be set to the default port, while that host will have a port of 555.
+DEPRECATED memcached_servers_parse(), please see :manpage:`memcached(3)`
 
 memcached_server_error() can be used to look at the text of the last error 
 message sent by the server to to the client.
@@ -81,29 +60,22 @@ memcached_server_st \* was aliased to memcached_server_list_st. This was
 done for a style reason/to help clean up some concepts in the code.
 
 
-******
+------
 RETURN
-******
+------
 
 
 Varies, see particular functions.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `https://launchpad.net/libmemcached <https://launchpad.net/libmemcached>`_
 
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

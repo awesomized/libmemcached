@@ -1,10 +1,40 @@
-/* libMemcached Functions Test
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 /*
   Sample test application.
@@ -34,6 +64,7 @@
 #define SMALL_STRING_LEN 1024
 
 #include <libtest/test.h>
+#include "tests/deprecated.h"
 #include "tests/parser.h"
 #include "tests/pool.h"
 #include "tests/string.h"
@@ -71,24 +102,6 @@ static test_return_t init_test(memcached_st *not_used)
 
   (void)memcached_create(&memc);
   memcached_free(&memc);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t server_list_null_test(memcached_st *ptr)
-{
-  memcached_server_st *server_list;
-  memcached_return_t rc;
-  (void)ptr;
-
-  server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, NULL);
-  test_true(server_list == NULL);
-
-  server_list= memcached_server_list_append_with_weight(NULL, "localhost", 0, 0, NULL);
-  test_true(server_list == NULL);
-
-  server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, &rc);
-  test_true(server_list == NULL);
 
   return TEST_SUCCESS;
 }
@@ -199,23 +212,13 @@ static test_return_t server_sort2_test(memcached_st *ptr)
 
 static test_return_t memcached_server_remove_test(memcached_st *ptr)
 {
-  memcached_return_t rc;
-  memcached_st local_memc;
-  memcached_st *memc;
-  memcached_server_st *servers;
-  memcached_server_fn callbacks[1];
-
-  const char *server_string= "localhost:4444, localhost:4445, localhost:4446, localhost:4447, localhost, memcache1.memcache.bk.sapo.pt:11211, memcache1.memcache.bk.sapo.pt:11212, memcache1.memcache.bk.sapo.pt:11213, memcache1.memcache.bk.sapo.pt:11214, memcache2.memcache.bk.sapo.pt:11211, memcache2.memcache.bk.sapo.pt:11212, memcache2.memcache.bk.sapo.pt:11213, memcache2.memcache.bk.sapo.pt:11214";
+  const char *server_string= "--server=localhost:4444 --server=localhost:4445 --server=localhost:4446 --server=localhost:4447 --server=localhost --server=memcache1.memcache.bk.sapo.pt:11211 --server=memcache1.memcache.bk.sapo.pt:11212 --server=memcache1.memcache.bk.sapo.pt:11213 --server=memcache1.memcache.bk.sapo.pt:11214 --server=memcache2.memcache.bk.sapo.pt:11211 --server=memcache2.memcache.bk.sapo.pt:11212 --server=memcache2.memcache.bk.sapo.pt:11213 --server=memcache2.memcache.bk.sapo.pt:11214";
   (void)ptr;
 
-  memc= memcached_create(&local_memc);
+  memcached_st *memc= memcached(server_string, strlen(server_string));
+  test_true(memc);
 
-  servers= memcached_servers_parse(server_string);
-  assert(servers);
-
-  rc= memcached_server_push(memc, servers);
-  memcached_server_list_free(servers);
-
+  memcached_server_fn callbacks[1];
   callbacks[0]= server_print_callback;
   memcached_server_cursor(memc, callbacks, NULL,  1);
 
@@ -5755,17 +5758,6 @@ static test_return_t regression_bug_583031(memcached_st *unused)
     memcached_free(memc);
 
     return TEST_SUCCESS;
-}
-
-// Look for memory leak
-static test_return_t regression_bug_728286(memcached_st *unused)
-{
-  (void)unused;
-  memcached_server_st *servers = memcached_servers_parse("1.2.3.4:99");
-  assert(servers);
-  memcached_server_free(servers);
-
-  return TEST_SUCCESS;
 }
 
 static test_return_t regression_bug_581030(memcached_st *unused)
