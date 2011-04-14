@@ -64,7 +64,7 @@ generic:
 	cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
-rpm: all dist generic fedora
+rpm: all man dist generic fedora
 
 merge-clean:
 	find ./ | $(GREP) \.gcda | xargs rm -f
