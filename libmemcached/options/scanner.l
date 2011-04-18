@@ -20,14 +20,15 @@
 
 %top{
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
+#include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
+
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #define YY_EXTRA_TYPE Context*
 

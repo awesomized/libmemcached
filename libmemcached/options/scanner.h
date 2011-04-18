@@ -5,21 +5,22 @@
 #line 6 "libmemcached/options/scanner.h"
 #line 22 "libmemcached/options/scanner.l"
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
+#include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
+
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #define YY_EXTRA_TYPE Context*
 
 
 
 
-#line 23 "libmemcached/options/scanner.h"
+#line 24 "libmemcached/options/scanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -471,9 +472,9 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 196 "libmemcached/options/scanner.l"
+#line 197 "libmemcached/options/scanner.l"
 
 
-#line 478 "libmemcached/options/scanner.h"
+#line 479 "libmemcached/options/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */

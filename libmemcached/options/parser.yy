@@ -43,9 +43,9 @@
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
+#include <libmemcached/options/scanner.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-#include <libmemcached/options/scanner.h>
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
