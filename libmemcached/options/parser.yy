@@ -39,11 +39,10 @@
 
 #include <stdint.h>
 
+#include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
-#include <libmemcached/visibility.h>
-#include <libmemcached/prefix_key.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <libmemcached/options/scanner.h>
