@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef __LIBMEMCACHED_MEMCACHED_H__
-#define __LIBMEMCACHED_MEMCACHED_H__
+#pragma once
 
 #include <inttypes.h>
 #include <stdlib.h>
@@ -51,6 +50,7 @@
 #include <libmemcached/configure.h>
 #include <libmemcached/platform.h>
 #include <libmemcached/constants.h>
+#include <libmemcached/return.h>
 #include <libmemcached/types.h>
 #include <libmemcached/string.h>
 #include <libmemcached/array.h>
@@ -213,6 +213,3 @@ uint32_t memcached_server_count(const memcached_st *);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif /* __LIBMEMCACHED_MEMCACHED_H__ */
-

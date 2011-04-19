@@ -55,6 +55,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
 			 libmemcached/quit.h \
+			 libmemcached/return.h \
                          libmemcached/platform.h \
 			 libmemcached/result.h \
                          libmemcached/sasl.h \

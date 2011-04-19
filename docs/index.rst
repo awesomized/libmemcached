@@ -19,6 +19,7 @@ Basics
    memcached_create
    libmemcached_examples
    libmemcached_configuration
+   error_messages
 
 
 #################

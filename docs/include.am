@@ -4,6 +4,54 @@
 
 EXTRA_DIST+= \
 	     docs/conf.py \
+	     docs/error_messages.rst \
+	     docs/client_errors/MEMCACHED_AUTH_CONTINUE.rst \
+	     docs/client_errors/MEMCACHED_AUTH_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_AUTH_PROBLEM.rst \
+	     docs/client_errors/MEMCACHED_BAD_KEY_PROVIDED.rst \
+	     docs/client_errors/MEMCACHED_BUFFERED.rst \
+	     docs/client_errors/MEMCACHED_CLIENT_ERROR.rst \
+	     docs/client_errors/MEMCACHED_CONNECTION_BIND_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_CONNECTION_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_DATA_DOES_NOT_EXIST.rst \
+	     docs/client_errors/MEMCACHED_DATA_EXISTS.rst \
+	     docs/client_errors/MEMCACHED_DELETED.rst \
+	     docs/client_errors/MEMCACHED_DEPRECATED.rst \
+	     docs/client_errors/MEMCACHED_E2BIG.rst \
+	     docs/client_errors/MEMCACHED_END.rst \
+	     docs/client_errors/MEMCACHED_ERRNO.rst \
+	     docs/client_errors/MEMCACHED_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_FAIL_UNIX_SOCKET.rst \
+	     docs/client_errors/MEMCACHED_FETCH_NOTFINISHED.rst \
+	     docs/client_errors/MEMCACHED_HOST_LOOKUP_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_INVALID_ARGUMENTS.rst \
+	     docs/client_errors/MEMCACHED_INVALID_HOST_PROTOCOL.rst \
+	     docs/client_errors/MEMCACHED_ITEM.rst \
+	     docs/client_errors/MEMCACHED_KEY_TOO_BIG.rst \
+	     docs/client_errors/MEMCACHED_MAXIMUM_RETURN.rst \
+	     docs/client_errors/MEMCACHED_MEMORY_ALLOCATION_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_NOTFOUND.rst \
+	     docs/client_errors/MEMCACHED_NOTSTORED.rst \
+	     docs/client_errors/MEMCACHED_NOT_SUPPORTED.rst \
+	     docs/client_errors/MEMCACHED_NO_KEY_PROVIDED.rst \
+	     docs/client_errors/MEMCACHED_NO_SERVERS.rst \
+	     docs/client_errors/MEMCACHED_PARSE_ERROR.rst \
+	     docs/client_errors/MEMCACHED_PARSE_USER_ERROR.rst \
+	     docs/client_errors/MEMCACHED_PARTIAL_READ.rst \
+	     docs/client_errors/MEMCACHED_PROTOCOL_ERROR.rst \
+	     docs/client_errors/MEMCACHED_READ_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_SERVER_ERROR.rst \
+	     docs/client_errors/MEMCACHED_SERVER_MARKED_DEAD.rst \
+	     docs/client_errors/MEMCACHED_SOME_ERRORS.rst \
+	     docs/client_errors/MEMCACHED_STAT.rst \
+	     docs/client_errors/MEMCACHED_STORED.rst \
+	     docs/client_errors/MEMCACHED_SUCCESS.rst \
+	     docs/client_errors/MEMCACHED_TIMEOUT.rst \
+	     docs/client_errors/MEMCACHED_UNKNOWN_READ_FAILURE.rst \
+	     docs/client_errors/MEMCACHED_UNKNOWN_STAT_KEY.rst \
+	     docs/client_errors/MEMCACHED_VALUE.rst \
+	     docs/client_errors/MEMCACHED_WRITE_FAILURE.rst \
 	     docs/hashkit_create.rst \
 	     docs/hashkit_functions.rst \
 	     docs/hashkit_value.rst \
