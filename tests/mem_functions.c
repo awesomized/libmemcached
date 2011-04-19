@@ -4310,6 +4310,7 @@ static void* connection_release(void *arg)
   } *resource= arg;
 
   usleep(250);
+  // Release all of the memc we are holding
   assert(memcached_pool_push(resource->pool, resource->mmc) == MEMCACHED_SUCCESS);
   return arg;
 }
@@ -4322,6 +4323,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   memcached_st *mmc[POOL_SIZE];
   memcached_return_t rc;
 
+  // Fill up our array that we will store the memc that are in the pool
   for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     mmc[x]= memcached_pool_pop(pool, false, &rc);
@@ -4329,6 +4331,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
     test_true(rc == MEMCACHED_SUCCESS);
   }
 
+  // All memc should be gone
   test_true(memcached_pool_pop(pool, false, &rc) == NULL);
   test_true(rc == MEMCACHED_SUCCESS);
 
@@ -4337,11 +4340,12 @@ static test_return_t connection_pool_test(memcached_st *memc)
     memcached_pool_st* pool;
     memcached_st* mmc;
   } item= { .pool = pool, .mmc = mmc[9] };
+
   pthread_create(&tid, NULL, connection_release, &item);
   mmc[9]= memcached_pool_pop(pool, true, &rc);
   test_true(rc == MEMCACHED_SUCCESS);
   pthread_join(tid, NULL);
-  test_true(mmc[9] == item.mmc);
+  test_true(mmc[9]);
   const char *key= "key";
   size_t keylen= strlen(key);
 

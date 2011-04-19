@@ -54,7 +54,7 @@ bool libmemcached_util_version_check(memcached_st *memc,
   if (rc != MEMCACHED_SUCCESS)
     return false;
 
-  struct local_context check= { .major_version= major_version, .minor_version= minor_version, .micro_version= micro_version, .truth= true };
+  struct local_context check= { major_version, minor_version, micro_version, true };
 
   callbacks[0]= check_server_version;
   memcached_server_cursor(memc, callbacks, (void *)&check,  1);

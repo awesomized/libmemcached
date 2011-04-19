@@ -161,6 +161,7 @@ struct memcached_st {
   struct {
     uint32_t initial_pool_size;
     uint32_t max_pool_size;
+    int32_t version; // This is used by pool and others to determine if the memcached_st is out of date.
     struct memcached_array_st *filename;
   } configure;
   struct {

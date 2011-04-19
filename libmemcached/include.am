@@ -151,9 +151,9 @@ lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 
 libmemcached_libmemcachedutil_la_SOURCES= \
-					  libmemcached/util/ping.c \
-					  libmemcached/util/pool.c \
-					  libmemcached/util/version.c
+					  libmemcached/util/ping.cc \
+					  libmemcached/util/pool.cc \
+					  libmemcached/util/version.cc
 libmemcached_libmemcachedutil_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} ${PTHREAD_CFLAGS}
 libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
 libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} ${PTHREAD_LIBS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}

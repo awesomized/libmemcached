@@ -79,10 +79,6 @@ static memcached_return_t stat_printer(memcached_server_instance_st instance,
 
 int main(int argc, char *argv[])
 {
-  memcached_return_t rc;
-  memcached_st *memc;
-  memcached_server_st *servers;
-
   options_parse(argc, argv);
   initialize_sockets();
 
@@ -100,10 +96,12 @@ int main(int argc, char *argv[])
     }
   }
 
-  memc= memcached_create(NULL);
+  memcached_st *memc= memcached_create(NULL);
 
-  servers= memcached_servers_parse(opt_servers);
-  rc= memcached_server_push(memc, servers);
+  memcached_server_st *servers= memcached_servers_parse(opt_servers);
+  free(opt_servers);
+
+  memcached_return_t rc= memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
   if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
@@ -131,11 +129,9 @@ int main(int argc, char *argv[])
     rc= memcached_stat_execute(memc, stat_args, stat_printer, NULL);
   }
 
-  free(opt_servers);
-
   memcached_free(memc);
 
-  return rc == MEMCACHED_SUCCESS ? 0: -1;
+  return rc == MEMCACHED_SUCCESS ? EXIT_SUCCESS: EXIT_FAILURE;
 }
 
 static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat)
