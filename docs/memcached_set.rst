@@ -49,8 +49,8 @@ DESCRIPTION
 memcached_set(), memcached_add(), and memcached_replace() are all used to
 store information on the server. All methods take a key, and its length to
 store the object. Keys are currently limited to 250 characters by the
-memcached(1) server. You must also supply a value and a length. Optionally you
-may tests an expiration time for the object and a 16 byte value (it is
+memcached(1) server. You must supply both a value and a length. Optionally you
+may test an expiration time for the object and a 16 byte value (it is
 meant to be used as a bitmap).
 
 memcached_set() will write an object to the server. If an object already
@@ -87,12 +87,12 @@ If you are looking for performance, memcached_set() with non-blocking IO is
 the fastest way to store data on the server.
 
 All of the above functions are testsed with the \ ``MEMCACHED_BEHAVIOR_USE_UDP``\ 
-behavior enabled. But when using these operations with this behavior on, there 
+behavior enabled. However, when using these operations with this behavior on, there 
 are limits to the size of the payload being sent to the server.  The reason for 
-these limits is that the Memcahed Server does not allow multi-datagram requests
+these limits is that the Memcached Server does not allow multi-datagram requests
 and the current server implementation sets a datagram size to 1400 bytes. Due 
 to protocol overhead, the actual limit of the user supplied data is less than 
-1400 bytes and depends on the protocol in use as well as the operation being 
+1400 bytes and depends on the protocol in use as, well as the operation being 
 executed. When running with the binary protocol, \ `` MEMCACHED_BEHAVIOR_BINARY_PROTOCOL``\ , 
 the size of the key,value, flags and expiry combined may not exceed 1368 bytes. 
 When running with the ASCII protocol, the exact limit fluctuates depending on 

@@ -59,9 +59,9 @@ DESCRIPTION
 
 libmemcached(3) can optionally return a memcached_result_st which acts as a
 result object. The result objects have added benefits over the character
-pointer returns in that they are forward compatible with new return items
+pointer returns, in that they are forward compatible with new return items
 that future memcached servers may implement (the best current example of
-this is the CAS return item). The structures can also be reused which will
+this is the CAS return item). The structures can also be reused, which will
 save on calls to malloc(3). It is suggested that you use result objects over
 char \* return functions.
 
@@ -72,7 +72,7 @@ memcached_result_create() will either allocate memory for a
 memcached_result_st or will initialize a structure passed to it.
 
 memcached_result_free() will deallocate any memory attached to the
-structure. If the structure was also alloacted, it will deallocate it.
+structure. If the structure was also allocated, it will deallocate it.
 
 memcached_result_key_value() returns the key value associated with the
 current result object.
@@ -91,7 +91,7 @@ current result object.
 
 memcached_result_cas() returns the cas associated with the
 current result object. This value will only be available if the server
-testss it.
+tests it.
 
 memcached_result_set_value() takes a byte array and a size and sets
 the result to this value. This function is used for trigger responses.

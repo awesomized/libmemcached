@@ -21,7 +21,7 @@ DESCRIPTION
 -----------
 
 
-\ **memdump**\  currently dumps a list of "keys" from all servers that 
+\ **memdump**\  dumps a list of "keys" from all servers that 
 it is told to fetch from. Because memcached does not guarentee to
 provide all keys it is not possible to get a complete "dump".
 

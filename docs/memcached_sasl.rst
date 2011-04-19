@@ -44,7 +44,7 @@ libsasl to perform SASL authentication.
 Please note that SASL requires the memcached binary protocol, and you have
 to specify the callbacks before you connect to the server.
 
-memcached_set_sasl_auth_data() is a helper function for you defining
+memcached_set_sasl_auth_data() is a helper function defining
 the basic functionality for you, but it will store the username and password
 in memory. If you choose to use this method you have to call
 memcached_destroy_sasl_auth_data before calling memcached_free to avoid

@@ -25,8 +25,8 @@ memcached_delete_by_key() works the same, but it takes a master key to
 find the given value.
 
 Expiration works by placing the item into a delete queue, which means that
-it won't possible to retrieve it by the "get" command, but "add" and 
-"replace" command with this key will also fail (the "set" command will 
+it won't be possible to retrieve it by the "get" command. The "add" and 
+"replace" commands with this key will also fail (the "set" command will 
 succeed, however). After the time passes, the item is finally deleted from server memory.
 
 Please note the the Danga memcached server removed tests for expiration in

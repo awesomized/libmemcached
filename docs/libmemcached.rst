@@ -10,6 +10,17 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
+libMemcached is an open source C/C++ client library and tools for the memcached server (http://danga.com/memcached). It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
+
+libMemcached was designed to provide the greatest number of options to use Memcached. Some of the features provided:
+
+1. Asynchronous and Synchronous Transport Support.
+2. Consistent Hashing and Distribution.
+3. Tunable Hashing algorithm to match keys.
+4. Access to large object support.
+5. Local replication.
+6. A complete reference guide and documentation to the API.
+7. Tools to Manage your Memcached networks.
 
 -----------
 DESCRIPTION
@@ -21,14 +32,14 @@ system, generic in nature, but intended for use in speeding up dynamic web
 applications by alleviating database load." `http://danga.com/memcached/ <http://danga.com/memcached/>`_
 
 \ **libmemcached**\  is a small, thread-safe client library for the
-memcached protocol. The code has all been written with an eye to allow
+memcached protocol. The code has all been written to allow
 for both web and embedded usage. It handles the work behind routing
-particular keys to specific servers that you specify (and values are
-matched based on server order as supplied by you). It implements both
-a modula and consistent method of object distribution.
+individual keys to specific servers specified by the developer (and values are
+matched based on server order as supplied by the user). It implements
+a modular and consistent method of object distribution.
 
 There are multiple implemented routing and hashing methods. See the
-memcached_behavior_set() manpage.
+memcached_behavior_set() manpage for more information.
 
 All operations are performed against a \ ``memcached_st``\  structure.
 These structures can either be dynamically allocated or statically
@@ -117,9 +128,9 @@ THREADS AND PROCESSES
 ---------------------
 
 
-When using threads or forked processes it is important to keep an instance
+When using threads or forked processes it is important to keep one instance
 of \ ``memcached_st``\  per process or thread. Without creating your own locking
-structures you can not share a single \ ``memcached_st``\ . You can though call
+structures you can not share a single \ ``memcached_st``\ . However, you can call
 memcached_quit(3) on a \ ``memcached_st``\  and then use the resulting cloned
 structure.
 
