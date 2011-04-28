@@ -67,18 +67,23 @@ tests_testapp_SOURCES= \
 
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \
+			    $(TESTS_LDADDS) \
 			    clients/libgenexec.la \
-			    libmemcached/libmemcachedinternal.la \
-			    $(TESTS_LDADDS)
+			    libhashkit/libhashkit.la \
+			    libmemcached/libmemcachedinternal.la
 
-tests_testapp_LDADD= clients/libgenexec.la \
-		     libmemcached/libmemcachedinternal.la \
-		     $(TESTS_LDADDS) $(LIBSASL)
+tests_testapp_LDADD= \
+		     $(LIBSASL) \
+		     $(TESTS_LDADDS) \
+		     clients/libgenexec.la \
+		     libhashkit/libhashkit.la \
+		     libmemcached/libmemcachedinternal.la
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
+check_PROGRAMS+= tests/testplus
 
 tests_atomsmasher_SOURCES= tests/atomsmasher.c
 tests_atomsmasher_DEPENDENCIES= \
@@ -101,12 +106,12 @@ tests_startservers_LDADD= $(tests_startservers_DEPENDENCIES) $(LIBSASL)
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.c
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
-tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
+tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES)
 
-tests_hash_plus_SOURCES = tests/hash_plus.cc
-tests_hash_plus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_hash_plus_DEPENDENCIES = $(tests_testhashkit_DEPENDENCIES)
-tests_hash_plus_LDADD = $(tests_testhashkit_DEPENDENCIES) $(LIBSASL)
+tests_hash_plus_SOURCES= tests/hash_plus.cc
+tests_hash_plus_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES)
+tests_hash_plus_LDADD= $(tests_testhashkit_DEPENDENCIES)
 check_PROGRAMS+= tests/hash_plus
 
 test: check

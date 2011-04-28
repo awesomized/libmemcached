@@ -1,4 +1,4 @@
-0.49
+0.49 Thu Apr 14 08:43:37 PDT 2011
   * Fix calls to auto methods so that if value is not passed in nothing bad happens.
   * New parser calls for generating memcached_st objects.
   * New error system.

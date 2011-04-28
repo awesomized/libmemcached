@@ -83,13 +83,13 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
 %{_libdir}/libhashkit.so.1.0.0
-%{_libdir}/libmemcached.so.6.0.0
-%{_libdir}/libmemcachedutil.so.1.0.0
+%{_libdir}/libmemcached.so.7.0.0
+%{_libdir}/libmemcachedutil.so.2.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
 %{_libdir}/libhashkit.so.1
-%{_libdir}/libmemcached.so.6
+%{_libdir}/libmemcached.so.7
 %{_libdir}/libmemcachedprotocol.so.0
-%{_libdir}/libmemcachedutil.so.1
+%{_libdir}/libmemcachedutil.so.2
 %{_mandir}/man1/memcapable.1.gz
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
@@ -188,6 +188,7 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/libmemcached_configuration.3.gz
 %{_mandir}/man3/libmemcached_examples.3.gz
 %{_mandir}/man3/libmemcachedutil.3.gz
+%{_mandir}/man3/memcached.3.gz
 %{_mandir}/man3/memcached_add.3.gz
 %{_mandir}/man3/memcached_add_by_key.3.gz
 %{_mandir}/man3/memcached_analyze.3.gz
@@ -201,7 +202,6 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_cas_by_key.3.gz
 %{_mandir}/man3/memcached_clone.3.gz
 %{_mandir}/man3/memcached_create.3.gz
-%{_mandir}/man3/memcached_create_with_options.3.gz
 %{_mandir}/man3/memcached_decrement.3.gz
 %{_mandir}/man3/memcached_decrement_with_initial.3.gz
 %{_mandir}/man3/memcached_delete.3.gz

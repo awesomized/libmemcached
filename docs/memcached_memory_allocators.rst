@@ -45,7 +45,7 @@ DESCRIPTION
 -----------
 
 
-libmemcached(3) allows you to specify your own memory allocators optimized
+libmemcached(3) allows you to specify your own memory allocators, optimized
 for your application. This enables libmemcached to be used inside of applications that have their own malloc implementation.
 
 memcached_set_memory_allocators() is used to set the memory allocators used

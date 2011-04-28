@@ -9,6 +9,7 @@
  *
  */
 
+#pragma once
 #ifndef __LIBMEMCACHED_TYPES_H__
 #define __LIBMEMCACHED_TYPES_H__
 

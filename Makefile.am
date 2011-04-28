@@ -35,6 +35,8 @@ EXTRA_DIST= \
 
 include libtest/include.am
 include libmemcached/include.am
+include libmemcached/protocol/include.am
+include libmemcached/util/include.am
 include clients/include.am
 include libhashkit/include.am
 include tests/include.am
@@ -93,6 +95,4 @@ lcov-clean: clean
 	find . -name '*.gcno' | xargs rm -f
 	find . -name '*.gcda' | xargs rm -f
 
-CLEANFILES+= config/top.h
-
-
+DISTCLEANFILES+= config/top.h

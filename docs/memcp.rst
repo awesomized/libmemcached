@@ -26,11 +26,10 @@ DESCRIPTION
 It is similar to the standard UNIX cp(1) command.
 
 The key names will be the names of the files,
-without any directory path part.
+without any directory path.
 
 You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\ . If you specify neither of
-these, the final value in the command line list is the name of a
+environment variable \ ``MEMCACHED_SERVERS``\. If you do not specify either these, the final value in the command line list is the name of a
 server(s).
 
 For a full list of operations run the tool with the \ **--help**\  option.

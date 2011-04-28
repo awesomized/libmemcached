@@ -65,7 +65,7 @@ memcached_return_t pointer to hold any error. The object will be returned
 upon success and NULL will be returned on failure. MEMCACHD_END is returned
 by the \*error value when all objects that have been found are returned.
 The final value upon MEMCACHED_END is null. Values returned by
-memcached_fetch() musted be free'ed by the caller. memcached_fetch() will
+memcached_fetch() must be freed by the caller. memcached_fetch() will
 be DEPRECATED in the near future, memcached_fetch_result() should be used
 instead.
 
@@ -89,7 +89,7 @@ memcached_mget_execute() and memcached_mget_execute_by_key() is
 similar to memcached_mget(), but it may trigger the supplied callbacks
 with result sets while sending out the queries. If you try to perform
 a really large multiget with memcached_mget() you may encounter a
-deadlock in the OS kernel (we fail to write data to the socket because
+deadlock in the OS kernel (it will fail to write data to the socket because
 the input buffer is full). memcached_mget_execute() solves this
 problem by processing some of the results before continuing sending
 out requests. Please note that this function is only available in the
@@ -100,9 +100,9 @@ as memcached_get() and memcached_mget(). The difference is that they take
 a master key that is used for determining which server an object was stored
 if key partitioning was used for storage.
 
-All of the above functions are not testsed when the \ ``MEMCACHED_BEHAVIOR_USE_UDP``\ 
+All of the above functions are not tested when the \ ``MEMCACHED_BEHAVIOR_USE_UDP``\ 
 has been set. Executing any of these functions with this behavior on will result in
-\ ``MEMCACHED_NOT_SUPPORTED``\  being returned or, for those functions which do not return
+\ ``MEMCACHED_NOT_SUPPORTED``\  being returned, or for those functions which do not return
 a \ ``memcached_return_t``\ , the error function parameter will be set to
 \ ``MEMCACHED_NOT_SUPPORTED``\ .
 

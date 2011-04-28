@@ -767,8 +767,10 @@ static test_return_t flush_test(memcached_st *memc)
 {
   memcached_return_t rc;
 
+  uint64_t query_id= memcached_query_id(memc);
   rc= memcached_flush(memc, 0);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(rc, MEMCACHED_SUCCESS);
+  test_compare(query_id +1, memcached_query_id(memc));
 
   return TEST_SUCCESS;
 }
@@ -806,18 +808,23 @@ static test_return_t bad_key_test(memcached_st *memc)
   size_t max_keylen= 0xffff;
 
   // Just skip if we are in binary mode.
+  uint64_t query_id= memcached_query_id(memc);
   if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
     return TEST_SKIPPED;
+  test_compare(query_id, memcached_query_id(memc)); // We should not increase the query_id for memcached_behavior_get()
 
   memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
 
+  query_id= memcached_query_id(memc_clone);
   rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
   test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(query_id, memcached_query_id(memc_clone)); // We should not increase the query_id for memcached_behavior_set()
 
   /* All keys are valid in the binary protocol (except for length) */
   if (memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 0)
   {
+    query_id= memcached_query_id(memc_clone);
     string= memcached_get(memc_clone, key, strlen(key),
                           &string_length, &flags, &rc);
     test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
@@ -825,7 +832,9 @@ static test_return_t bad_key_test(memcached_st *memc)
     test_true(!string);
 
     set= 0;
+    query_id= memcached_query_id(memc_clone);
     rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
+    test_compare(query_id, memcached_query_id(memc_clone)); // We should not increase the query_id for memcached_behavior_set()
     test_true(rc == MEMCACHED_SUCCESS);
     string= memcached_get(memc_clone, key, strlen(key),
                           &string_length, &flags, &rc);
@@ -837,14 +846,20 @@ static test_return_t bad_key_test(memcached_st *memc)
     const char *keys[] = { "GoodKey", "Bad Key", "NotMine" };
     size_t key_lengths[] = { 7, 7, 7 };
     set= 1;
+    query_id= memcached_query_id(memc_clone);
     rc= memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_VERIFY_KEY, set);
     test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(query_id, memcached_query_id(memc_clone));
 
+    query_id= memcached_query_id(memc_clone);
     rc= memcached_mget(memc_clone, keys, key_lengths, 3);
     test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
+    test_compare(query_id +1, memcached_query_id(memc_clone));
 
+    query_id= memcached_query_id(memc_clone);
     rc= memcached_mget_by_key(memc_clone, "foo daddy", 9, keys, key_lengths, 1);
     test_true(rc == MEMCACHED_BAD_KEY_PROVIDED);
+    test_compare(query_id +1, memcached_query_id(memc_clone));
 
     max_keylen= 250;
 
@@ -970,8 +985,10 @@ static test_return_t get_test(memcached_st *memc)
   size_t string_length;
   uint32_t flags;
 
+  uint64_t query_id= memcached_query_id(memc);
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
   test_true(rc == MEMCACHED_BUFFERED || rc == MEMCACHED_NOTFOUND);
+  test_compare(query_id +1, memcached_query_id(memc));
 
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
@@ -992,18 +1009,22 @@ static test_return_t get_test2(memcached_st *memc)
   size_t string_length;
   uint32_t flags;
 
+  uint64_t query_id= memcached_query_id(memc);
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  test_compare(query_id +1, memcached_query_id(memc));
 
+  query_id= memcached_query_id(memc);
   string= memcached_get(memc, key, strlen(key),
                         &string_length, &flags, &rc);
+  test_compare(query_id +1, memcached_query_id(memc));
 
   test_true(string);
   test_true(rc == MEMCACHED_SUCCESS);
   test_true(string_length == strlen(value));
-  test_true(!memcmp(string, value, string_length));
+  test_memcmp(string, value, string_length);
 
   free(string);
 
@@ -1034,25 +1055,26 @@ static test_return_t set_test3(memcached_st *memc)
   memcached_return_t rc;
   char *value;
   size_t value_length= 8191;
-  unsigned int x;
 
   value = (char*)malloc(value_length);
   test_true(value);
 
-  for (x= 0; x < value_length; x++)
+  for (uint32_t x= 0; x < value_length; x++)
     value[x] = (char) (x % 127);
 
   /* The dump test relies on there being at least 32 items in memcached */
-  for (x= 0; x < 32; x++)
+  for (uint32_t x= 0; x < 32; x++)
   {
     char key[16];
 
     snprintf(key, sizeof(key), "foo%u", x);
 
+    uint64_t query_id= memcached_query_id(memc);
     rc= memcached_set(memc, key, strlen(key),
                       value, value_length,
                       (time_t)0, (uint32_t)0);
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_compare(query_id +1, memcached_query_id(memc));
   }
 
   free(value);
@@ -1720,8 +1742,10 @@ static test_return_t mget_execute(memcached_st *memc)
     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
     keys[x]= strdup(k);
     test_true(keys[x] != NULL);
+    uint64_t query_id= memcached_query_id(memc);
     rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_compare(query_id +1, memcached_query_id(memc));
   }
 
   /* Try to get all of them with a large multiget */
@@ -1733,8 +1757,10 @@ static test_return_t mget_execute(memcached_st *memc)
   if (rc == MEMCACHED_SUCCESS)
   {
     test_true(binary);
+    uint64_t query_id= memcached_query_id(memc);
     rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
     test_true(rc == MEMCACHED_END);
+    test_compare(query_id, memcached_query_id(memc));
 
     /* Verify that we got all of the items */
     test_true(counter == max_keys);
@@ -2257,7 +2283,7 @@ static test_return_t user_supplied_bug4(memcached_st *memc)
 
   /* We need to empty the server before continueing test */
   rc= memcached_flush(memc, 0);
-  test_true(rc == MEMCACHED_NO_SERVERS);
+  test_compare(rc, MEMCACHED_NO_SERVERS);
 
   rc= memcached_mget(memc, keys, key_length, 3);
   test_true(rc == MEMCACHED_NO_SERVERS);
@@ -2267,7 +2293,7 @@ static test_return_t user_supplied_bug4(memcached_st *memc)
   {
     test_true(return_value);
   }
-  test_true(!return_value);
+  test_false(return_value);
   test_true(return_value_length == 0);
   test_true(rc == MEMCACHED_NO_SERVERS);
 
@@ -2289,7 +2315,7 @@ static test_return_t user_supplied_bug4(memcached_st *memc)
     test_true(return_value);
     test_true(rc == MEMCACHED_SUCCESS);
     test_true(return_key_length == return_value_length);
-    test_true(!memcmp(return_value, return_key, return_value_length));
+    test_memcmp(return_value, return_key, return_value_length);
     free(return_value);
     x++;
   }
@@ -4310,6 +4336,7 @@ static void* connection_release(void *arg)
   } *resource= arg;
 
   usleep(250);
+  // Release all of the memc we are holding
   assert(memcached_pool_push(resource->pool, resource->mmc) == MEMCACHED_SUCCESS);
   return arg;
 }
@@ -4322,6 +4349,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   memcached_st *mmc[POOL_SIZE];
   memcached_return_t rc;
 
+  // Fill up our array that we will store the memc that are in the pool
   for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     mmc[x]= memcached_pool_pop(pool, false, &rc);
@@ -4329,6 +4357,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
     test_true(rc == MEMCACHED_SUCCESS);
   }
 
+  // All memc should be gone
   test_true(memcached_pool_pop(pool, false, &rc) == NULL);
   test_true(rc == MEMCACHED_SUCCESS);
 
@@ -4337,11 +4366,12 @@ static test_return_t connection_pool_test(memcached_st *memc)
     memcached_pool_st* pool;
     memcached_st* mmc;
   } item= { .pool = pool, .mmc = mmc[9] };
+
   pthread_create(&tid, NULL, connection_release, &item);
   mmc[9]= memcached_pool_pop(pool, true, &rc);
   test_true(rc == MEMCACHED_SUCCESS);
   pthread_join(tid, NULL);
-  test_true(mmc[9] == item.mmc);
+  test_true(mmc[9]);
   const char *key= "key";
   size_t keylen= strlen(key);
 
@@ -6291,7 +6321,7 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-#include "libmemcached_world.h"
+#include "tests/libmemcached_world.h"
 
 void get_world(world_st *world)
 {

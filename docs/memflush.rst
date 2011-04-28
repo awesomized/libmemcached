@@ -22,7 +22,7 @@ DESCRIPTION
 
 
 \ **memflush**\  resets the contents of memcached(1) servers.
-This means all data in these servers will be deleted.
+This means that all data in the specified servers will be deleted.
 
 You can specify servers via the \ **--servers**\  option or via the
 environment variable \ ``MEMCACHED_SERVERS``\ .

@@ -60,7 +60,7 @@ enum conn_states
 {
   conn_read,         /* reading in a command line */
   conn_write,        /* writing out a simple response */
-  conn_closing,      /* closing this connection */
+  conn_closing      /* closing this connection */
 };
 
 /* returned states of memcached command */
@@ -78,7 +78,7 @@ enum mcd_ret
   MCD_NOTFOUND,                     /* server not find the object */
   MCD_END,                          /* end of the response of get command */
   MCD_DELETED,                      /* server delete the object successfully */
-  MCD_STAT,                         /* response of stats command */
+  MCD_STAT                         /* response of stats command */
 };
 
 /* used to store the current or previous running command state */
@@ -103,7 +103,7 @@ typedef struct udppkt
 enum protocol
 {
   ascii_prot = 3,           /* ASCII protocol */
-  binary_prot,              /* binary protocol */
+  binary_prot              /* binary protocol */
 };
 
 /**

@@ -55,7 +55,7 @@ typedef enum
   OPT_BINARY_PROTOCOL= 'B',
   OPT_OVERWRITE= 'o',
   OPT_TPS= 'P',
-  OPT_REP_WRITE_SRV= 'p',
+  OPT_REP_WRITE_SRV= 'p'
 } ms_options_t;
 
 /* global statistic of response time */

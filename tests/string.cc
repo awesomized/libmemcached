@@ -35,9 +35,11 @@
  *
  */
 
-#include "libmemcached/common.h"
-#include "libmemcached/error.h"
-#include "tests/string.h"
+#define BUILDING_LIBMEMCACHED
+
+#include <libmemcached/common.h>
+#include <libmemcached/error.h>
+#include <tests/string.h>
 
 test_return_t string_static_null(memcached_st *memc)
 {

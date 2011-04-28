@@ -36,12 +36,9 @@
  *
  */
 
-#ifndef __LIBMEMCACHED_IO_H__
-#define __LIBMEMCACHED_IO_H__
+#pragma once
 
-#if defined(BUILDING_LIBMEMCACHED)
-
-#include "libmemcached/memcached.h"
+#include <libmemcached/memcached.h>
 
 #define MAX_UDP_DATAGRAM_LENGTH 1400
 #define UDP_DATAGRAM_HEADER_LENGTH 8
@@ -117,7 +114,3 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* BUILDING_LIBMEMCACHED */
-
-#endif /* __LIBMEMCACHED_IO_H__ */

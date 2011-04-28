@@ -82,14 +82,13 @@
 
 #include <stdint.h>
 
+#include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
-#include <libmemcached/visibility.h>
-#include <libmemcached/prefix_key.h>
+#include <libmemcached/options/scanner.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-#include <libmemcached/options/scanner.h>
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
@@ -104,7 +103,7 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 
 
 /* Line 189 of yacc.c  */
-#line 108 "libmemcached/options/parser.cc"
+#line 107 "libmemcached/options/parser.cc"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -215,7 +214,7 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 
 
 /* Line 264 of yacc.c  */
-#line 219 "libmemcached/options/parser.cc"
+#line 218 "libmemcached/options/parser.cc"
 
 #ifdef short
 # undef short
@@ -524,13 +523,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   157,   157,   158,   162,   164,   166,   168,   173,   178,
-     182,   186,   197,   205,   213,   217,   221,   225,   229,   236,
-     243,   254,   261,   268,   275,   281,   285,   289,   293,   297,
-     301,   305,   309,   313,   317,   321,   325,   332,   336,   340,
-     344,   348,   352,   356,   360,   364,   368,   372,   376,   383,
-     384,   389,   390,   395,   399,   403,   407,   411,   415,   419,
-     423,   427,   434,   438,   446,   450,   454
+       0,   156,   156,   157,   161,   163,   165,   167,   172,   177,
+     181,   185,   196,   204,   212,   216,   220,   224,   228,   235,
+     242,   253,   260,   267,   274,   280,   284,   288,   292,   296,
+     300,   304,   308,   312,   316,   320,   324,   331,   335,   339,
+     343,   347,   351,   355,   359,   363,   367,   371,   375,   382,
+     383,   388,   389,   394,   398,   402,   406,   410,   414,   418,
+     422,   426,   433,   437,   445,   449,   453
 };
 #endif
 
@@ -1522,28 +1521,28 @@ yyreduce:
         case 4:
 
 /* Line 1464 of yacc.c  */
-#line 163 "libmemcached/options/parser.yy"
+#line 162 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 165 "libmemcached/options/parser.yy"
+#line 164 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 167 "libmemcached/options/parser.yy"
+#line 166 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 169 "libmemcached/options/parser.yy"
+#line 168 "libmemcached/options/parser.yy"
     {
             context->set_end();
             YYACCEPT;
@@ -1553,7 +1552,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 174 "libmemcached/options/parser.yy"
+#line 173 "libmemcached/options/parser.yy"
     {
             context->rc= MEMCACHED_PARSE_USER_ERROR;
             parser_abort(context, NULL);
@@ -1563,7 +1562,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 179 "libmemcached/options/parser.yy"
+#line 178 "libmemcached/options/parser.yy"
     {
             memcached_reset(context->memc);
           ;}
@@ -1572,7 +1571,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 183 "libmemcached/options/parser.yy"
+#line 182 "libmemcached/options/parser.yy"
     {
             yydebug= 1;
           ;}
@@ -1581,7 +1580,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 187 "libmemcached/options/parser.yy"
+#line 186 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_parse_configure_file(context->memc, (yyvsp[(3) - (3)].string).c_str, (yyvsp[(3) - (3)].string).length)) != MEMCACHED_SUCCESS)
             {
@@ -1593,7 +1592,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 198 "libmemcached/options/parser.yy"
+#line 197 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_server_add_with_weight(context->memc, (yyvsp[(2) - (4)].server).c_str, (yyvsp[(2) - (4)].server).port, (yyvsp[(2) - (4)].server).weight)) != MEMCACHED_SUCCESS)
             {
@@ -1606,7 +1605,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 206 "libmemcached/options/parser.yy"
+#line 205 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_server_add_with_weight(context->memc, (yyvsp[(2) - (4)].server).c_str, (yyvsp[(2) - (4)].server).port, (yyvsp[(2) - (4)].server).weight)) != MEMCACHED_SUCCESS)
             {
@@ -1619,7 +1618,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 214 "libmemcached/options/parser.yy"
+#line 213 "libmemcached/options/parser.yy"
     {
             memcached_set_configuration_file(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).length);
           ;}
@@ -1628,7 +1627,7 @@ yyreduce:
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 218 "libmemcached/options/parser.yy"
+#line 217 "libmemcached/options/parser.yy"
     {
             context->memc->configure.initial_pool_size= (yyvsp[(2) - (2)].number);
           ;}
@@ -1637,7 +1636,7 @@ yyreduce:
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 222 "libmemcached/options/parser.yy"
+#line 221 "libmemcached/options/parser.yy"
     {
             context->memc->configure.max_pool_size= (yyvsp[(2) - (2)].number);
           ;}
@@ -1646,7 +1645,7 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 230 "libmemcached/options/parser.yy"
+#line 229 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_set_prefix_key(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).length)) != MEMCACHED_SUCCESS)
             {
@@ -1658,7 +1657,7 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 237 "libmemcached/options/parser.yy"
+#line 236 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, (yyvsp[(2) - (2)].distribution))) != MEMCACHED_SUCCESS)
             {
@@ -1670,7 +1669,7 @@ yyreduce:
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 244 "libmemcached/options/parser.yy"
+#line 243 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, (yyvsp[(2) - (4)].distribution))) != MEMCACHED_SUCCESS)
             {
@@ -1686,7 +1685,7 @@ yyreduce:
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 255 "libmemcached/options/parser.yy"
+#line 254 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, (yyvsp[(2) - (2)].hash))) != MEMCACHED_SUCCESS)
             {
@@ -1698,7 +1697,7 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 262 "libmemcached/options/parser.yy"
+#line 261 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, (yyvsp[(1) - (2)].behavior), (yyvsp[(2) - (2)].number))) != MEMCACHED_SUCCESS)
             {
@@ -1710,7 +1709,7 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 269 "libmemcached/options/parser.yy"
+#line 268 "libmemcached/options/parser.yy"
     {
             if ((context->rc= memcached_behavior_set(context->memc, (yyvsp[(1) - (1)].behavior), true)) != MEMCACHED_SUCCESS)
             {
@@ -1722,7 +1721,7 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 276 "libmemcached/options/parser.yy"
+#line 275 "libmemcached/options/parser.yy"
     {
           ;}
     break;
@@ -1730,7 +1729,7 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 282 "libmemcached/options/parser.yy"
+#line 281 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS;
           ;}
@@ -1739,7 +1738,7 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 286 "libmemcached/options/parser.yy"
+#line 285 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT;
           ;}
@@ -1748,7 +1747,7 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 290 "libmemcached/options/parser.yy"
+#line 289 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK;
           ;}
@@ -1757,7 +1756,7 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 294 "libmemcached/options/parser.yy"
+#line 293 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK;
           ;}
@@ -1766,7 +1765,7 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 298 "libmemcached/options/parser.yy"
+#line 297 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH;
           ;}
@@ -1775,7 +1774,7 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 302 "libmemcached/options/parser.yy"
+#line 301 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS;
           ;}
@@ -1784,7 +1783,7 @@ yyreduce:
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 306 "libmemcached/options/parser.yy"
+#line 305 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_POLL_TIMEOUT;
           ;}
@@ -1793,7 +1792,7 @@ yyreduce:
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 310 "libmemcached/options/parser.yy"
+#line 309 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_RCV_TIMEOUT;
           ;}
@@ -1802,7 +1801,7 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 314 "libmemcached/options/parser.yy"
+#line 313 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_RETRY_TIMEOUT;
           ;}
@@ -1811,7 +1810,7 @@ yyreduce:
   case 34:
 
 /* Line 1464 of yacc.c  */
-#line 318 "libmemcached/options/parser.yy"
+#line 317 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SND_TIMEOUT;
           ;}
@@ -1820,7 +1819,7 @@ yyreduce:
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 322 "libmemcached/options/parser.yy"
+#line 321 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE;
           ;}
@@ -1829,7 +1828,7 @@ yyreduce:
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 326 "libmemcached/options/parser.yy"
+#line 325 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE;
           ;}
@@ -1838,7 +1837,7 @@ yyreduce:
   case 37:
 
 /* Line 1464 of yacc.c  */
-#line 333 "libmemcached/options/parser.yy"
+#line 332 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_BINARY_PROTOCOL;
           ;}
@@ -1847,7 +1846,7 @@ yyreduce:
   case 38:
 
 /* Line 1464 of yacc.c  */
-#line 337 "libmemcached/options/parser.yy"
+#line 336 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_BUFFER_REQUESTS;
           ;}
@@ -1856,7 +1855,7 @@ yyreduce:
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 341 "libmemcached/options/parser.yy"
+#line 340 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY;
           ;}
@@ -1865,7 +1864,7 @@ yyreduce:
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 345 "libmemcached/options/parser.yy"
+#line 344 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_NOREPLY;
           ;}
@@ -1874,7 +1873,7 @@ yyreduce:
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 349 "libmemcached/options/parser.yy"
+#line 348 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ;
           ;}
@@ -1883,7 +1882,7 @@ yyreduce:
   case 42:
 
 /* Line 1464 of yacc.c  */
-#line 353 "libmemcached/options/parser.yy"
+#line 352 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SORT_HOSTS;
           ;}
@@ -1892,7 +1891,7 @@ yyreduce:
   case 43:
 
 /* Line 1464 of yacc.c  */
-#line 357 "libmemcached/options/parser.yy"
+#line 356 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_SUPPORT_CAS;
           ;}
@@ -1901,7 +1900,7 @@ yyreduce:
   case 44:
 
 /* Line 1464 of yacc.c  */
-#line 361 "libmemcached/options/parser.yy"
+#line 360 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_NODELAY;
           ;}
@@ -1910,7 +1909,7 @@ yyreduce:
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 365 "libmemcached/options/parser.yy"
+#line 364 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPALIVE;
           ;}
@@ -1919,7 +1918,7 @@ yyreduce:
   case 46:
 
 /* Line 1464 of yacc.c  */
-#line 369 "libmemcached/options/parser.yy"
+#line 368 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_TCP_KEEPIDLE;
           ;}
@@ -1928,7 +1927,7 @@ yyreduce:
   case 47:
 
 /* Line 1464 of yacc.c  */
-#line 373 "libmemcached/options/parser.yy"
+#line 372 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_USE_UDP;
           ;}
@@ -1937,7 +1936,7 @@ yyreduce:
   case 48:
 
 /* Line 1464 of yacc.c  */
-#line 377 "libmemcached/options/parser.yy"
+#line 376 "libmemcached/options/parser.yy"
     {
             (yyval.behavior)= MEMCACHED_BEHAVIOR_VERIFY_KEY;
           ;}
@@ -1946,35 +1945,35 @@ yyreduce:
   case 49:
 
 /* Line 1464 of yacc.c  */
-#line 383 "libmemcached/options/parser.yy"
+#line 382 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 50:
 
 /* Line 1464 of yacc.c  */
-#line 385 "libmemcached/options/parser.yy"
+#line 384 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 51:
 
 /* Line 1464 of yacc.c  */
-#line 389 "libmemcached/options/parser.yy"
+#line 388 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 52:
 
 /* Line 1464 of yacc.c  */
-#line 391 "libmemcached/options/parser.yy"
+#line 390 "libmemcached/options/parser.yy"
     { ;}
     break;
 
   case 53:
 
 /* Line 1464 of yacc.c  */
-#line 396 "libmemcached/options/parser.yy"
+#line 395 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_MD5;
           ;}
@@ -1983,7 +1982,7 @@ yyreduce:
   case 54:
 
 /* Line 1464 of yacc.c  */
-#line 400 "libmemcached/options/parser.yy"
+#line 399 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_CRC;
           ;}
@@ -1992,7 +1991,7 @@ yyreduce:
   case 55:
 
 /* Line 1464 of yacc.c  */
-#line 404 "libmemcached/options/parser.yy"
+#line 403 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_FNV1_64;
           ;}
@@ -2001,7 +2000,7 @@ yyreduce:
   case 56:
 
 /* Line 1464 of yacc.c  */
-#line 408 "libmemcached/options/parser.yy"
+#line 407 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_FNV1A_64;
           ;}
@@ -2010,7 +2009,7 @@ yyreduce:
   case 57:
 
 /* Line 1464 of yacc.c  */
-#line 412 "libmemcached/options/parser.yy"
+#line 411 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_FNV1_32;
           ;}
@@ -2019,7 +2018,7 @@ yyreduce:
   case 58:
 
 /* Line 1464 of yacc.c  */
-#line 416 "libmemcached/options/parser.yy"
+#line 415 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_FNV1A_32;
           ;}
@@ -2028,7 +2027,7 @@ yyreduce:
   case 59:
 
 /* Line 1464 of yacc.c  */
-#line 420 "libmemcached/options/parser.yy"
+#line 419 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_HSIEH;
           ;}
@@ -2037,7 +2036,7 @@ yyreduce:
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 424 "libmemcached/options/parser.yy"
+#line 423 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_MURMUR;
           ;}
@@ -2046,7 +2045,7 @@ yyreduce:
   case 61:
 
 /* Line 1464 of yacc.c  */
-#line 428 "libmemcached/options/parser.yy"
+#line 427 "libmemcached/options/parser.yy"
     {
             (yyval.hash)= MEMCACHED_HASH_JENKINS;
           ;}
@@ -2055,7 +2054,7 @@ yyreduce:
   case 62:
 
 /* Line 1464 of yacc.c  */
-#line 435 "libmemcached/options/parser.yy"
+#line 434 "libmemcached/options/parser.yy"
     {
             (yyval.string)= (yyvsp[(1) - (1)].string);
           ;}
@@ -2064,7 +2063,7 @@ yyreduce:
   case 63:
 
 /* Line 1464 of yacc.c  */
-#line 439 "libmemcached/options/parser.yy"
+#line 438 "libmemcached/options/parser.yy"
     {
             (yyval.string).c_str= (yyvsp[(1) - (1)].string).c_str +1; // +1 to move use passed the initial quote
             (yyval.string).length= (yyvsp[(1) - (1)].string).length -1; // -1 removes the end quote
@@ -2074,7 +2073,7 @@ yyreduce:
   case 64:
 
 /* Line 1464 of yacc.c  */
-#line 447 "libmemcached/options/parser.yy"
+#line 446 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_CONSISTENT;
           ;}
@@ -2083,7 +2082,7 @@ yyreduce:
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 451 "libmemcached/options/parser.yy"
+#line 450 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_MODULA;
           ;}
@@ -2092,7 +2091,7 @@ yyreduce:
   case 66:
 
 /* Line 1464 of yacc.c  */
-#line 455 "libmemcached/options/parser.yy"
+#line 454 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_RANDOM;
           ;}
@@ -2101,7 +2100,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2105 "libmemcached/options/parser.cc"
+#line 2104 "libmemcached/options/parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2313,7 +2312,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 460 "libmemcached/options/parser.yy"
+#line 459 "libmemcached/options/parser.yy"
  
 
 void Context::start() 

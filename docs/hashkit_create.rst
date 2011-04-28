@@ -3,35 +3,24 @@ Creating a hashkit structure
 ============================
 
 
-Create and destroy hashkit objects
-
-
--------
-LIBRARY
--------
-
-
-C Library for hashing algorithms (libmemcached, -lhashkit)
-
-
 --------
 SYNOPSIS
 --------
 
+C Library for hashing algorithms (libmemcached, -lhashkit)
 
 
-.. code-block:: perl
+#include <libhashkit/hashkit.h>
+ 
+.. c:function:: hashkit_st *hashkit_create(hashkit_st *hash);
+ 
+.. c:function:: hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
 
-   #include <libmemcached/hashkit.h>
- 
-   hashkit_st *hashkit_create(hashkit_st *hash);
- 
-   hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
- 
-   void hashkit_free(hashkit_st *hash);
- 
-   bool hashkit_is_allocated(const hashkit_st *hash);
+.. c:function:: void hashkit_free(hashkit_st *hash);
 
+.. c:function:: bool hashkit_is_allocated(const hashkit_st *hash);
+
+Compile and link with -lmemcached
 
 
 -----------

@@ -24,8 +24,6 @@
 #include <time.h>
 #include <stdint.h>
 
-#include <libmemcached/memcached.h>
-
 #include <libtest/test.h>
 #include <libtest/failed.h>
 
@@ -369,10 +367,6 @@ cleanup:
   }
 
   world_stats_print(&stats);
-
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  sasl_done();
-#endif
 
   return stats.failed == 0 ? 0 : 1;
 }

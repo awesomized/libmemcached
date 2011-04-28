@@ -39,7 +39,7 @@ DESCRIPTION
 
 
 memcached_lib_version() is used to return a simple version string representing
-the libmemcached version (version of the client library, not server)
+the libmemcached version (client library version, not server version)
 
 memcached_version() is used to set the major, minor, and micro versions of each
 memcached server being used by the memcached_st connection structure. It returns the 
