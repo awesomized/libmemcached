@@ -40,6 +40,8 @@
 #include <libtest/test.h>
 #include "tests/basic.h"
 
+#include <cstring>
+
 test_return_t basic_init_test(memcached_st *junk)
 {
   (void)junk;

@@ -77,7 +77,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   else if (!strcmp("rusage_user", key))
   {
     char *walk_ptr;
-    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++);
+    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++) {};
     *walk_ptr= 0;
     walk_ptr++;
     memc_stat->rusage_user_seconds= (uint32_t) strtol(value, (char **)NULL, 10);
@@ -86,7 +86,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   else if (!strcmp("rusage_system", key))
   {
     char *walk_ptr;
-    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++);
+    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++) {};
     *walk_ptr= 0;
     walk_ptr++;
     memc_stat->rusage_system_seconds= (uint32_t) strtol(value, (char **)NULL, 10);
@@ -371,12 +371,12 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
 
       string_ptr= buffer;
       string_ptr+= 5; /* Move past STAT */
-      for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++);
+      for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++) {};
       key= string_ptr;
       key[(size_t)(end_ptr-string_ptr)]= 0;
 
       string_ptr= end_ptr + 1;
-      for (end_ptr= string_ptr; !(isspace(*end_ptr)); end_ptr++);
+      for (end_ptr= string_ptr; !(isspace(*end_ptr)); end_ptr++) {};
       value= string_ptr;
       value[(size_t)(end_ptr-string_ptr)]= 0;
       string_ptr= end_ptr + 2;
@@ -398,7 +398,9 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
       }
     }
     else
+    {
       break;
+    }
   }
 
 error:

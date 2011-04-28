@@ -64,18 +64,17 @@ tests_testapp_SOURCES= \
 		       tests/replication.cc \
 		       tests/string.cc \
 		       tests/virtual_buckets.cc
+tests_testapp_SOURCES+= clients/generator.cc clients/execute.cc
 
 tests_testapp_DEPENDENCIES= \
 			    $(BUILT_SOURCES) \
 			    $(TESTS_LDADDS) \
-			    clients/libgenexec.la \
 			    libhashkit/libhashkit.la \
 			    libmemcached/libmemcachedinternal.la
 
 tests_testapp_LDADD= \
 		     $(LIBSASL) \
 		     $(TESTS_LDADDS) \
-		     clients/libgenexec.la \
 		     libhashkit/libhashkit.la \
 		     libmemcached/libmemcachedinternal.la
 
@@ -86,17 +85,14 @@ tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testplus
 
 tests_atomsmasher_SOURCES= tests/atomsmasher.c
-tests_atomsmasher_DEPENDENCIES= \
-				clients/libgenexec.la \
-				$(TESTS_LDADDS)
+tests_atomsmasher_SOURCES+= clients/generator.cc clients/execute.cc
+tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
 
 tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.c
-tests_testudp_DEPENDENCIES= \
-			    clients/libgenexec.la \
-			    $(TESTS_LDADDS)
+tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
 
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 

@@ -162,7 +162,8 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   string_ptr++;
   if (end_ptr == string_ptr)
     goto read_error;
-  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
+
+  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++) {};
   result->item_flags= (uint32_t) strtoul(next_ptr, &string_ptr, 10);
 
   if (end_ptr == string_ptr)
@@ -173,7 +174,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   if (end_ptr == string_ptr)
     goto read_error;
 
-  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
+  for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++) {};
   value_length= (size_t)strtoull(next_ptr, &string_ptr, 10);
 
   if (end_ptr == string_ptr)
@@ -188,7 +189,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   else
   {
     string_ptr++;
-    for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++);
+    for (next_ptr= string_ptr; isdigit(*string_ptr); string_ptr++) {};
     result->item_cas= strtoull(next_ptr, &string_ptr, 10);
   }
 

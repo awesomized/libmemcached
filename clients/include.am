@@ -46,9 +46,6 @@ noinst_HEADERS+= \
 noinst_LTLIBRARIES+= clients/libutilities.la
 clients_libutilities_la_SOURCES= clients/utilities.cc
 
-noinst_LTLIBRARIES+= clients/libgenexec.la
-clients_libgenexec_la_SOURCES= clients/generator.cc clients/execute.cc
-
 clients_memcat_SOURCES= clients/memcat.cc
 clients_memcat_LDADD= $(CLIENTS_LDADDS)
 
@@ -74,7 +71,8 @@ clients_memerror_SOURCES= clients/memerror.cc
 clients_memerror_LDADD= $(CLIENTS_LDADDS)
 
 clients_memslap_SOURCES = clients/memslap.cc
-clients_memslap_LDADD = $(PTHREAD_LIBS) clients/libgenexec.la $(CLIENTS_LDADDS)
+clients_memslap_SOURCES+= clients/generator.cc clients/execute.cc
+clients_memslap_LDADD = $(PTHREAD_LIBS) $(CLIENTS_LDADDS)
 
 clients_memaslap_SOURCES= \
 			  clients/memaslap.c \
@@ -84,7 +82,8 @@ clients_memaslap_SOURCES= \
 			  clients/ms_stats.c \
 			  clients/ms_task.c \
 			  clients/ms_thread.c
-clients_memaslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS)
+clients_memaslap_SOURCES+= clients/generator.cc clients/execute.cc
+clients_memaslap_LDADD= $(LTLIBEVENT) $(CLIENTS_LDADDS)
 
 clients_memcapable_SOURCES= \
 			    clients/memcapable.cc \
