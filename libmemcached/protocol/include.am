@@ -1,0 +1,26 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+
+lib_LTLIBRARIES+= libmemcached/libmemcachedprotocol.la
+libmemcached_libmemcachedprotocol_la_SOURCES=  \
+					       libmemcached/byteorder.cc \
+					       libmemcached/protocol/ascii_handler.c \
+					       libmemcached/protocol/binary_handler.c \
+					       libmemcached/protocol/cache.c \
+					       libmemcached/protocol/pedantic.c \
+					       libmemcached/protocol/protocol_handler.c
+
+libmemcached_libmemcachedprotocol_la_CFLAGS= \
+					     ${AM_CFLAGS} \
+					     ${NO_CONVERSION} \
+					     ${PTHREAD_CFLAGS} \
+					     -DBUILDING_LIBMEMCACHED
+
+libmemcached_libmemcachedprotocol_la_CXXFLAGS= \
+					       ${AM_CXXFLAGS} \
+					       ${PTHREAD_CFLAGS} \
+					       -DBUILDING_LIBMEMCACHED
+
+libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} ${PTHREAD_LIBS} -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}

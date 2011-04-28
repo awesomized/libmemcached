@@ -90,7 +90,7 @@ public:
 
   const char *set_hostname(const char *str, size_t size)
   {
-    size_t copy_length= std::min((size_t)NI_MAXHOST, size);
+    size_t copy_length= (size_t)NI_MAXHOST > size ? size : (size_t)NI_MAXHOST;
     memcpy(_hostname, str, copy_length);
     _hostname[copy_length]= 0;
 

@@ -9,7 +9,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT([libmemcached],[0.49],[http://libmemcached.org/])
-AC_CONFIG_SRCDIR([libmemcached/memcached.c])
+AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 AC_CONFIG_AUX_DIR(config)
 
 PANDORA_CANONICAL_TARGET(no-vc-changelog)

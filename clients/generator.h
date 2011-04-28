@@ -13,8 +13,7 @@
   Code to generate data to be pushed into memcached
 */
 
-#ifndef __GENERATOR_H__
-#define __GENERATOR_H__
+#pragma once
 
 typedef struct pairs_st pairs_st;
 
@@ -25,7 +24,13 @@ struct pairs_st {
   size_t value_length;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 pairs_st *pairs_generate(uint64_t number_of, size_t value_length);
 void pairs_free(pairs_st *pairs);
 
+#ifdef __cplusplus
+} // extern "C"
 #endif

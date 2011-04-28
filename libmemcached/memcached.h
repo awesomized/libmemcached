@@ -57,6 +57,7 @@
 #include <libmemcached/error.h>
 #include <libmemcached/stats.h>
 #include <libhashkit/hashkit.h>
+
 // Everything above this line must be in the order specified.
 #include <libmemcached/allocators.h>
 #include <libmemcached/analyze.h>
@@ -142,13 +143,7 @@ struct memcached_st {
 
   struct memcached_virtual_bucket_t *virtual_bucket;
 
-  struct _allocators_st {
-    memcached_calloc_fn calloc;
-    memcached_free_fn free;
-    memcached_malloc_fn malloc;
-    memcached_realloc_fn realloc;
-    void *context;
-  } allocators;
+  struct memcached_allocator_t allocators;
 
   memcached_clone_fn on_clone;
   memcached_cleanup_fn on_cleanup;
@@ -209,6 +204,9 @@ memcached_server_instance_st memcached_server_instance_by_position(const memcach
 
 LIBMEMCACHED_API
 uint32_t memcached_server_count(const memcached_st *);
+
+LIBMEMCACHED_API
+uint64_t memcached_query_id(const memcached_st *);
 
 #ifdef __cplusplus
 } // extern "C"

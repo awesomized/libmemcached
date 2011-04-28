@@ -9,6 +9,7 @@
  *
  */
 
+#pragma once
 #ifndef __LIBMEMCACHED_CALLBACK_H__
 #define __LIBMEMCACHED_CALLBACK_H__
 

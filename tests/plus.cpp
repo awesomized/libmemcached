@@ -1,17 +1,16 @@
 /*
   C++ interface test
 */
-#include "libmemcached/memcached.hpp"
+#include <libmemcached/memcached.hpp>
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 
 #include <libtest/server.h>
 
@@ -44,7 +43,7 @@ static void populate_vector(vector<char> &vec, const string &str)
 static void copy_vec_to_string(vector<char> &vec, string &str)
 {
   str.clear();
-  if (! vec.empty())
+  if (not vec.empty())
   {
     str.assign(vec.begin(), vec.end());
   }
@@ -59,31 +58,18 @@ test_return_t basic_test(memcached_st *memc)
 
   populate_vector(value, value_set);
 
-  foo.set("mine", value, 0, 0);
-  foo.get("mine", test_value);
+  test_true(foo.set("mine", value, 0, 0));
+  test_true(foo.get("mine", test_value));
 
-  assert((memcmp(&test_value[0], &value[0], test_value.size()) == 0));
+  test_memcmp(&test_value[0], &value[0], test_value.size());
+  test_false(foo.set("", value, 0, 0));
 
-  /*
-   * Simple test of the exceptions here...this should throw an exception
-   * saying that the key is empty.
-   */
-  try
-  {
-    foo.set("", value, 0, 0);
-  }
-  catch (Error &err)
-  {
-    return TEST_SUCCESS;
-  }
-
-  return TEST_FAILURE;
+  return TEST_SUCCESS;
 }
 
-test_return_t increment_test(memcached_st *memc)
+test_return_t increment_test(memcached_st *original)
 {
-  Memcache mcach(memc);
-  bool rc;
+  Memcache mcach(original);
   const string key("blah");
   const string inc_value("1");
   std::vector<char> inc_val;
@@ -94,40 +80,31 @@ test_return_t increment_test(memcached_st *memc)
 
   populate_vector(inc_val, inc_value);
 
-  rc= mcach.set(key, inc_val, 0, 0);
-  if (rc == false)
-  {
-    return TEST_FAILURE;
-  }
-  mcach.get(key, ret_value);
-  if (ret_value.empty())
-  {
-    return TEST_FAILURE;
-  }
+  test_true(mcach.set(key, inc_val, 0, 0));
+
+  test_true(mcach.get(key, ret_value));
+  test_false(ret_value.empty());
   copy_vec_to_string(ret_value, ret_string);
 
   int_inc_value= uint64_t(atol(inc_value.c_str()));
   int_ret_value= uint64_t(atol(ret_string.c_str()));
-  assert(int_ret_value == int_inc_value);
+  test_compare(int_inc_value, int_ret_value);
 
-  rc= mcach.increment(key, 1, &int_ret_value);
-  assert(rc == true);
-  assert(int_ret_value == 2);
+  test_true(mcach.increment(key, 1, &int_ret_value));
+  test_compare(2, int_ret_value);
 
-  rc= mcach.increment(key, 1, &int_ret_value);
-  assert(rc == true);
-  assert(int_ret_value == 3);
+  test_true(mcach.increment(key, 1, &int_ret_value));
+  test_compare(3, int_ret_value);
 
-  rc= mcach.increment(key, 5, &int_ret_value);
-  assert(rc == true);
-  assert(int_ret_value == 8);
+  test_true(mcach.increment(key, 5, &int_ret_value));
+  test_compare(8, int_ret_value);
 
   return TEST_SUCCESS;
 }
 
-test_return_t basic_master_key_test(memcached_st *memc)
+test_return_t basic_master_key_test(memcached_st *original)
 {
-  Memcache foo(memc);
+  Memcache foo(original);
   const string value_set("Data for server A");
   vector<char> value;
   vector<char> test_value;
@@ -140,12 +117,12 @@ test_return_t basic_master_key_test(memcached_st *memc)
   foo.setByKey(master_key_a, key, value, 0, 0);
   foo.getByKey(master_key_a, key, test_value);
 
-  assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
+  test_true((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   test_value.clear();
 
   foo.getByKey(master_key_b, key, test_value);
-  assert((memcmp(&value[0], &test_value[0], value.size()) == 0));
+  test_true((memcmp(&value[0], &test_value[0], value.size()) == 0));
 
   return TEST_SUCCESS;
 }
@@ -162,53 +139,9 @@ memcached_return_t callback_counter(const memcached_st *,
   return MEMCACHED_SUCCESS;
 }
 
-test_return_t mget_result_function(memcached_st *memc)
+test_return_t mget_test(memcached_st *original)
 {
-  Memcache mc(memc);
-  bool rc;
-  string key1("fudge");
-  string key2("son");
-  string key3("food");
-  vector<string> keys;
-  vector< vector<char> *> values;
-  vector<char> val1;
-  vector<char> val2;
-  vector<char> val3;
-  populate_vector(val1, key1);
-  populate_vector(val2, key2);
-  populate_vector(val3, key3);
-  keys.reserve(3);
-  keys.push_back(key1);
-  keys.push_back(key2);
-  keys.push_back(key3);
-  values.reserve(3);
-  values.push_back(&val1);
-  values.push_back(&val2);
-  values.push_back(&val3);
-  unsigned int counter;
-  memcached_execute_fn callbacks[1];
-
-  /* We need to empty the server before we continue the test */
-  rc= mc.flush(0);
-  rc= mc.setAll(keys, values, 50, 9);
-  assert(rc == true);
-
-  rc= mc.mget(keys);
-  assert(rc == true);
-
-  callbacks[0]= &callback_counter;
-  counter= 0;
-  rc= mc.fetchExecute(callbacks, static_cast<void *>(&counter), 1);
-
-  assert(counter == 3);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t mget_test(memcached_st *memc)
-{
-  Memcache mc(memc);
-  bool rc;
+  Memcache memc(original);
   memcached_return_t mc_rc;
   vector<string> keys;
   vector< vector<char> *> values;
@@ -231,43 +164,37 @@ test_return_t mget_test(memcached_st *memc)
   vector<char> return_value;
 
   /* We need to empty the server before we continue the test */
-  rc= mc.flush(0);
-  assert(rc == true);
+  test_true(memc.flush(0));
 
-  rc= mc.mget(keys);
-  assert(rc == true);
+  test_true(memc.mget(keys));
 
-  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
+  while ((mc_rc= memc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
-    assert(return_value.size() != 0);
+    test_true(return_value.size());
     return_value.clear();
   }
-  assert(mc_rc == MEMCACHED_END);
+  test_compare(mc_rc, MEMCACHED_END);
 
-  rc= mc.setAll(keys, values, 50, 9);
-  assert(rc == true);
+  test_true(memc.setAll(keys, values, 50, 9));
 
-  rc= mc.mget(keys);
-  assert(rc == true);
+  test_true(memc.mget(keys));
 
-  while ((mc_rc= mc.fetch(return_key, return_value)) != MEMCACHED_END)
+  while ((mc_rc= memc.fetch(return_key, return_value)) != MEMCACHED_END)
   {
-    assert(return_key.length() == return_value.size());
-    assert(!memcmp(&return_value[0], return_key.c_str(), return_value.size()));
+    test_compare(return_key.length(), return_value.size());
+    test_memcmp(&return_value[0], return_key.c_str(), return_value.size());
   }
 
   return TEST_SUCCESS;
 }
 
-test_return_t basic_behavior(memcached_st *memc)
+test_return_t basic_behavior(memcached_st *original)
 {
-  Memcache mc(memc);
-  bool rc;
-  uint64_t value = 1;
-  rc = mc.setBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY, value);
-  assert(rc);
-  uint64_t behavior = mc.getBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY);
-  assert(behavior == value);
+  Memcache memc(original);
+  uint64_t value= 1;
+  test_true(memc.setBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY, value));
+  uint64_t behavior= memc.getBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY);
+  test_compare(behavior, value);
 
   return TEST_SUCCESS;
 }
@@ -281,8 +208,6 @@ test_st tests[] ={
     reinterpret_cast<test_callback_fn>(increment_test) },
   { "mget", 1,
     reinterpret_cast<test_callback_fn>(mget_test) },
-  { "mget_result_function", 1,
-    reinterpret_cast<test_callback_fn>(mget_result_function) },
   { "basic_behavior", 0,
     reinterpret_cast<test_callback_fn>(basic_behavior) },
   {0, 0, 0}

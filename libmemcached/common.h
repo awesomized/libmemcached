@@ -65,16 +65,14 @@
 # endif
 #endif
 
-/* Define this here, which will turn on the visibilty controls while we're
- * building libmemcached.
- */
-#define BUILDING_LIBMEMCACHED 1
-
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
-#include <libmemcached/prefix_key.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct memcached_server_st * memcached_server_write_instance_st;
 
@@ -87,6 +85,9 @@ LIBMEMCACHED_LOCAL
 memcached_return_t memcached_server_execute(memcached_st *ptr,
                                             memcached_server_execute_fn callback,
                                             void *context);
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 
 /* These are private not to be installed headers */

@@ -218,12 +218,13 @@ extern "C"
     /**
      * Definition of a request-packet containing no extras
      */
-    typedef union {
+    union protocol_binary_request_no_extras {
         struct {
             protocol_binary_request_header header;
         } message;
         uint8_t bytes[sizeof(protocol_binary_request_header)];
-    } protocol_binary_request_no_extras;
+    };
+    typedef union protocol_binary_request_no_extras protocol_binary_request_no_extras;
 
     /**
      * Definition of a response-packet containing no extras

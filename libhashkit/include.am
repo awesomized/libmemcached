@@ -22,6 +22,7 @@ nobase_include_HEADERS+= \
 			 libhashkit/digest.h \
 			 libhashkit/function.h \
 			 libhashkit/hashkit.h \
+			 libhashkit/hashkit.hpp \
 			 libhashkit/strerror.h \
 			 libhashkit/str_algorithm.h \
 			 libhashkit/types.h \
@@ -31,31 +32,31 @@ noinst_HEADERS+= \
 		 libhashkit/common.h
 
 libhashkit_libhashkit_la_SOURCES= \
-				  libhashkit/algorithm.c \
-				  libhashkit/behavior.c \
-				  libhashkit/crc32.c \
-				  libhashkit/digest.c \
-				  libhashkit/fnv.c \
-				  libhashkit/function.c \
-				  libhashkit/hashkit.c \
-				  libhashkit/jenkins.c \
-				  libhashkit/ketama.c \
-				  libhashkit/md5.c \
-				  libhashkit/one_at_a_time.c \
-				  libhashkit/str_algorithm.c \
-				  libhashkit/strerror.c
+				  libhashkit/algorithm.cc \
+				  libhashkit/behavior.cc \
+				  libhashkit/crc32.cc \
+				  libhashkit/digest.cc \
+				  libhashkit/fnv.cc \
+				  libhashkit/function.cc \
+				  libhashkit/hashkit.cc \
+				  libhashkit/jenkins.cc \
+				  libhashkit/ketama.cc \
+				  libhashkit/md5.cc \
+				  libhashkit/one_at_a_time.cc \
+				  libhashkit/str_algorithm.cc \
+				  libhashkit/strerror.cc
 
 if INCLUDE_HSIEH_SRC
-libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.c
+libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.cc
 endif
 
 if INCLUDE_MURMUR_SRC
-libhashkit_libhashkit_la_SOURCES+= libhashkit/murmur.c
+libhashkit_libhashkit_la_SOURCES+= libhashkit/murmur.cc
 endif
 
-libhashkit_libhashkit_la_CFLAGS= \
-				 ${AM_CFLAGS} \
-				 -DBUILDING_HASHKIT
+libhashkit_libhashkit_la_CXXFLAGS= \
+				   ${AM_CXXFLAGS} \
+				   -DBUILDING_HASHKIT
 
 libhashkit_libhashkit_la_LDFLAGS= \
 				  $(LIBM) \

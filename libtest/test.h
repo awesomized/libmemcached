@@ -217,6 +217,17 @@ do \
   } \
 } while (0)
 
+#define test_compare(A,B) \
+do \
+{ \
+  if ((A) != (B)) \
+  { \
+    fprintf(stderr, "\n%s:%d: Expected %lu == %lu\n", __FILE__, __LINE__, (unsigned long)(A), (unsigned long)(B)); \
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
 #define test_false(A) \
 do \
 { \
@@ -248,6 +259,16 @@ do \
   } \
 } while (0)
 
+#define test_memcmp(A,B,C) \
+do \
+{ \
+  if (memcmp((A), (B), (C))) \
+  { \
+    fprintf(stderr, "\n%s:%d: %.*s -> %.*s\n", __FILE__, __LINE__, (int)(C), (char *)(A), (int)(C), (char *)(B)); \
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)

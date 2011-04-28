@@ -133,6 +133,10 @@ test_return_t world_destroy(libmemcached_test_container_st *container)
 
   server_shutdown(construct);
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  sasl_done();
+#endif
+
   return TEST_SUCCESS;
 }
 

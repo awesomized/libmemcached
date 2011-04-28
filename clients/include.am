@@ -2,10 +2,10 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-CLIENTS_LDADDS = \
-	$(LIBM) \
-	clients/libutilities.la \
-	libmemcached/libmemcached.la
+CLIENTS_LDADDS= \
+		$(LIBM) \
+		clients/libutilities.la \
+		libmemcached/libmemcached.la
 
 if HAVE_SASL
 CLIENTS_LDADDS+= $(LIBSASL)
@@ -44,53 +44,52 @@ noinst_HEADERS+= \
 		clients/utilities.h
 
 noinst_LTLIBRARIES+= clients/libutilities.la
-clients_libutilities_la_SOURCES= clients/utilities.c
+clients_libutilities_la_SOURCES= clients/utilities.cc
 
 noinst_LTLIBRARIES+= clients/libgenexec.la
-clients_libgenexec_la_SOURCES= clients/generator.c clients/execute.c
+clients_libgenexec_la_SOURCES= clients/generator.cc clients/execute.cc
 
-clients_memcat_SOURCES= clients/memcat.c
+clients_memcat_SOURCES= clients/memcat.cc
 clients_memcat_LDADD= $(CLIENTS_LDADDS)
 
 clients_memparse_SOURCES= clients/memparse.cc
 clients_memparse_LDADD= $(CLIENTS_LDADDS)
 
-clients_memcp_SOURCES= clients/memcp.c
+clients_memcp_SOURCES= clients/memcp.cc
 clients_memcp_LDADD= $(CLIENTS_LDADDS)
 
-clients_memdump_SOURCES= clients/memdump.c
+clients_memdump_SOURCES= clients/memdump.cc
 clients_memdump_LDADD= $(CLIENTS_LDADDS)
 
-clients_memstat_SOURCES= clients/memstat.c
+clients_memstat_SOURCES= clients/memstat.cc
 clients_memstat_LDADD= $(CLIENTS_LDADDS)
 
-clients_memrm_SOURCES= clients/memrm.c
+clients_memrm_SOURCES= clients/memrm.cc
 clients_memrm_LDADD= $(CLIENTS_LDADDS)
 
-clients_memflush_SOURCES= clients/memflush.c
+clients_memflush_SOURCES= clients/memflush.cc
 clients_memflush_LDADD= $(CLIENTS_LDADDS)
 
-clients_memerror_SOURCES= clients/memerror.c
+clients_memerror_SOURCES= clients/memerror.cc
 clients_memerror_LDADD= $(CLIENTS_LDADDS)
 
-clients_memslap_SOURCES = clients/memslap.c
+clients_memslap_SOURCES = clients/memslap.cc
 clients_memslap_LDADD = $(PTHREAD_LIBS) clients/libgenexec.la $(CLIENTS_LDADDS)
 
 clients_memaslap_SOURCES= \
-		clients/memaslap.c \
-		clients/ms_conn.c \
-		clients/ms_setting.c \
-		clients/ms_sigsegv.c \
-		clients/ms_stats.c \
-		clients/ms_task.c \
-		clients/ms_thread.c
+			  clients/memaslap.c \
+			  clients/ms_conn.c \
+			  clients/ms_setting.c \
+			  clients/ms_sigsegv.c \
+			  clients/ms_stats.c \
+			  clients/ms_task.c \
+			  clients/ms_thread.c
 clients_memaslap_LDADD= $(LTLIBEVENT) clients/libgenexec.la $(CLIENTS_LDADDS)
 
-clients_memcapable_SOURCES= clients/memcapable.c
+clients_memcapable_SOURCES= \
+			    clients/memcapable.cc \
+			    libmemcached/byteorder.cc
 clients_memcapable_LDADD= $(CLIENTS_LDADDS)
-if BUILD_BYTEORDER
-clients_memcapable_LDADD+= libmemcached/libbyteorder.la
-endif
 
 test-start-server:
 	clients/memflush --servers=localhost

@@ -35,12 +35,13 @@
  */
 
 #include <libmemcached/common.h>
-#include <libmemcached/initialize_query.h>
 
 memcached_return_t initialize_query(memcached_st *self)
 {
-  if (! self)
+  if (not self)
     return MEMCACHED_INVALID_ARGUMENTS;
+
+  self->query_id++;
 
   if (self->state.is_time_for_rebuild)
   {
@@ -52,15 +53,12 @@ memcached_return_t initialize_query(memcached_st *self)
     return memcached_set_error(self, MEMCACHED_NO_SERVERS, NULL);
   }
 
-
-  self->query_id++;
-
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return_t initialize_const_query(const memcached_st *self)
 {
-  if (! self)
+  if (not self)
     return MEMCACHED_INVALID_ARGUMENTS;
 
   if (memcached_server_count(self) == 0)

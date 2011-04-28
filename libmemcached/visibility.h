@@ -16,8 +16,7 @@
  * @brief Visibility control macros
  */
 
-#ifndef __LIBMEMCACHED_VISIBILITY_H__
-#define __LIBMEMCACHED_VISIBILITY_H__
+#pragma once
 
 /**
  *
@@ -50,5 +49,3 @@
 #  define LIBMEMCACHED_LOCAL
 # endif /* defined(_MSC_VER) */
 #endif /* defined(BUILDING_LIBMEMCACHED) */
-
-#endif /* __LIBMEMCACHED_VISIBILITY_H__ */

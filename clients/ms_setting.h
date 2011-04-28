@@ -88,7 +88,7 @@ typedef enum cmd_type
 {
   CMD_SET,
   CMD_GET,
-  CMD_NULL,
+  CMD_NULL
 } ms_cmd_type_t;
 
 /* types in the configuration file */
@@ -97,7 +97,7 @@ typedef enum conf_type
   CONF_KEY,
   CONF_VALUE,
   CONF_CMD,
-  CONF_NULL,
+  CONF_NULL
 } ms_conf_type_t;
 
 /* information of command distribution */

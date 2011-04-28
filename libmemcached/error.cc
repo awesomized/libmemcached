@@ -139,7 +139,7 @@ void memcached_error_print(const memcached_st *self)
 
 static void _error_free(memcached_error_t *error)
 {
-  if (! error)
+  if (not error)
     return;
 
   _error_free(error->next);
@@ -156,10 +156,11 @@ static void _error_free(memcached_error_t *error)
 
 void memcached_error_free(memcached_st *self)
 {
-  if (! self)
+  if (not self)
     return;
 
   _error_free(self->error_messages);
+  self->error_messages= NULL;
 }
 
 const char *memcached_last_error_message(memcached_st *memc)
