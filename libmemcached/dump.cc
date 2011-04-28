@@ -51,7 +51,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
 
           string_ptr= buffer;
           string_ptr+= 5; /* Move past ITEM */
-          for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++);
+          for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++) {} ;
           key= string_ptr;
           key[(size_t)(end_ptr-string_ptr)]= 0;
           for (callback_counter= 0; callback_counter < number_of_callbacks; callback_counter++)

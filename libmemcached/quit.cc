@@ -85,7 +85,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       {
         ssize_t nread;
         while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
-                                 &nread) == MEMCACHED_SUCCESS);
+                                 &nread) == MEMCACHED_SUCCESS) {} ;
       }
 
 

@@ -41,6 +41,8 @@
 
 #include <libmemcached/memcached.h>
 
+#include <cstring>
+
 struct libtest_string_t {
   const char *c_str;
   size_t size;
