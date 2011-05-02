@@ -232,7 +232,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }
@@ -281,7 +281,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }

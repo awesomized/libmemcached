@@ -130,7 +130,6 @@ struct memcached_st {
   void *user_data;
   uint64_t query_id;
   uint32_t number_of_replicas;
-  hashkit_st distribution_hashkit;
   memcached_result_st result;
 
   struct {

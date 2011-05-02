@@ -337,7 +337,6 @@ static test_return_t clone_test(memcached_st *memc)
     }
     test_true(memc_clone->get_key_failure == memc->get_key_failure);
     test_true(hashkit_compare(&memc_clone->hashkit, &memc->hashkit));
-    test_true(hashkit_compare(&memc_clone->distribution_hashkit, &memc->distribution_hashkit));
     test_true(memc_clone->io_bytes_watermark == memc->io_bytes_watermark);
     test_true(memc_clone->io_msg_watermark == memc->io_msg_watermark);
     test_true(memc_clone->io_key_prefetch == memc->io_key_prefetch);

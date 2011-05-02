@@ -87,9 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
-  hashkit_st *hash_ptr;
-  hash_ptr= hashkit_create(&self->hashkit);
-  if (! hash_ptr)
+  if (not hashkit_create(&self->hashkit))
     return false;
 
   self->ketama.continuum= NULL;
@@ -123,9 +121,6 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->user_data= NULL;
   self->number_of_replicas= 0;
-  hash_ptr= hashkit_create(&self->distribution_hashkit);
-  if (! hash_ptr)
-    return false;
 
   self->allocators= memcached_allocators_return_default();
 
@@ -353,17 +348,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->retry_timeout= source->retry_timeout;
   new_clone->distribution= source->distribution;
 
-  hashkit_st *hash_ptr;
-
-  hash_ptr= hashkit_clone(&new_clone->hashkit, &source->hashkit);
-  if (! hash_ptr)
-  {
-    memcached_free(new_clone);
-    return NULL;
-  }
-
-  hash_ptr= hashkit_clone(&new_clone->distribution_hashkit, &source->distribution_hashkit);
-  if (! hash_ptr)
+  if (not hashkit_clone(&new_clone->hashkit, &source->hashkit))
   {
     memcached_free(new_clone);
     return NULL;

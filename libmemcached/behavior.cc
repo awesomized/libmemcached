@@ -239,7 +239,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_HASH:
     return hashkit_get_function(&ptr->hashkit);
   case MEMCACHED_BEHAVIOR_KETAMA_HASH:
-    return hashkit_get_function(&ptr->distribution_hashkit);
+    return hashkit_get_function(&ptr->hashkit);
   case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
@@ -403,7 +403,7 @@ memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
 
 memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type)
 {
-  if (hashkit_set_function(&ptr->distribution_hashkit, (hashkit_hash_algorithm_t)type) == HASHKIT_SUCCESS)
+  if (hashkit_success(hashkit_set_distribution_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
     return MEMCACHED_SUCCESS;
 
   return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS,
@@ -412,7 +412,7 @@ memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, m
 
 memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr)
 {
-  return (memcached_hash_t)hashkit_get_function(&ptr->distribution_hashkit);
+  return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
 }
 
 const char *libmemcached_string_behavior(const memcached_behavior_t flag)
