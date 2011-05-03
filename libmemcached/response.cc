@@ -122,7 +122,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   memcached_return_t rrc;
 
   if (ptr->root->flags.use_udp)
-    return MEMCACHED_NOT_SUPPORTED;
+    return memcached_set_error((memcached_st *)ptr->root, MEMCACHED_NOT_SUPPORTED);
 
   WATCHPOINT_ASSERT(ptr->root);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
@@ -201,7 +201,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   if (rc != MEMCACHED_SUCCESS)
   {
     value_length= 0;
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return memcached_set_error((memcached_st *)ptr->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE);
   }
 
   value_ptr= memcached_string_value_mutable(&result->value);
@@ -552,7 +552,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       if ((rc= memcached_safe_read(ptr, hole, nr)) != MEMCACHED_SUCCESS)
       {
         WATCHPOINT_ERROR(rc);
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
+        return memcached_set_error((memcached_st *)ptr->root, MEMCACHED_UNKNOWN_READ_FAILURE);
       }
       bodylen-= (uint32_t) nr;
     }

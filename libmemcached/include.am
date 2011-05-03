@@ -78,6 +78,15 @@ noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
 					      libmemcached/error.cc \
 					      libmemcached/string.cc
+libmemcached_libmemcachedinternal_la_CFLAGS= \
+				     ${AM_CFLAGS} \
+				     ${NO_CONVERSION} \
+				     -DBUILDING_LIBMEMCACHED
+
+libmemcached_libmemcachedinternal_la_CXXFLAGS= \
+				       ${AM_CXXFLAGS} \
+				       ${NO_CONVERSION} \
+				       -DBUILDING_LIBMEMCACHED
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= \

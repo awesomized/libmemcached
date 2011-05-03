@@ -92,15 +92,25 @@ memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_retu
   memcached_string_t tmp;
   tmp.c_str= str;
   tmp.size= length;
-  return memcached_set_error(memc, rc, &tmp);
+  return memcached_set_error_message(memc, rc, &tmp);
 }
 
-memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str)
+memcached_return_t memcached_set_error_message(memcached_st *memc, memcached_return_t rc, memcached_string_t *str)
 {
   if (rc == MEMCACHED_SUCCESS)
     return MEMCACHED_SUCCESS;
 
   _set(memc, str, rc, 0);
+
+  return rc;
+}
+
+memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc)
+{
+  if (rc == MEMCACHED_SUCCESS)
+    return MEMCACHED_SUCCESS;
+
+  _set(memc, NULL, rc, 0);
 
   return rc;
 }

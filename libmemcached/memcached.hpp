@@ -35,67 +35,39 @@ class Memcache
 {
 public:
 
-  Memcache() :
-      servers_list(),
-      memc(),
-      result()
+  Memcache()
   {
-    memcached_create(&memc);
+    memc= memcached("", 0);
   }
 
-  Memcache(const std::string &in_servers_list)
-    :
-      servers_list(in_servers_list),
-      memc(),
-      result()
+  Memcache(const std::string &config)
   {
-    memcached_create(&memc);
-    init();
+    memc= memcached(config.c_str(), config.size());
   }
 
-  Memcache(const std::string &hostname,
-           in_port_t port)
-    :
-      servers_list(),
-      memc(),
-      result()
+  Memcache(const std::string &hostname, in_port_t port)
   {
-    memcached_create(&memc);
-
-    servers_list.append(hostname);
-    servers_list.append(":");
-    std::ostringstream strsmt;
-    strsmt << port;
-    servers_list.append(strsmt.str());
-
-    init();
+    memc= memcached("", 0);
+    if (memc)
+      memcached_server_add(memc, hostname.c_str(), port);
   }
 
   Memcache(memcached_st *clone)
-    :
-      servers_list(),
-      memc(),
-      result()
   {
-    memcached_clone(&memc, clone);
+    memc= memcached_clone(NULL, clone);
   }
 
   Memcache(const Memcache &rhs)
-    :
-      servers_list(rhs.servers_list),
-      memc(),
-      result()
   {
-    memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
-    init();
+    memc= memcached_clone(NULL, rhs.getImpl());
   }
 
   Memcache &operator=(const Memcache &rhs)
   {
     if (this != &rhs)
     {
-      memcached_clone(&memc, const_cast<memcached_st *>(&rhs.getImpl()));
-      init();
+      memcached_free(memc);
+      memc= memcached_clone(NULL, rhs.getImpl());
     }
 
     return *this;
@@ -103,29 +75,13 @@ public:
 
   ~Memcache()
   {
-    memcached_free(&memc);
-  }
-
-  void init()
-  {
-    memcached_server_st *servers;
-    servers= memcached_servers_parse(servers_list.c_str());
-    memcached_server_push(&memc, servers);
-    memcached_server_free(servers);
+    memcached_free(memc);
   }
 
   /**
    * Get the internal memcached_st *
    */
-  memcached_st &getImpl()
-  {
-    return memc;
-  }
-
-  /**
-   * Get the internal memcached_st *
-   */
-  const memcached_st &getImpl() const
+  const memcached_st *getImpl() const
   {
     return memc;
   }
@@ -145,38 +101,23 @@ public:
 
   bool setBehavior(memcached_behavior_t flag, uint64_t data)
   {
-    memcached_return_t rc;
-    rc= memcached_behavior_set(&memc, flag, data);
-    return (rc == MEMCACHED_SUCCESS);
+    return (memcached_success(memcached_behavior_set(memc, flag, data)));
   }
 
-  uint64_t getBehavior(memcached_behavior_t flag) {
-    return memcached_behavior_get(&memc, flag);
-  }
-
-  /**
-   * Return the string which contains the list of memcached servers being
-   * used.
-   *
-   * @return a std::string containing the list of memcached servers
-   */
-  const std::string getServersList() const
+  uint64_t getBehavior(memcached_behavior_t flag)
   {
-    return servers_list;
+    return memcached_behavior_get(memc, flag);
   }
 
   /**
-   * Set the list of memcached servers to use.
+   * Configure the memcache object
    *
-   * @param[in] in_servers_list list of servers
+   * @param[in] in_config configuration
    * @return true on success; false otherwise
    */
-  bool setServers(const std::string &in_servers_list)
+  bool configure(const std::string &configuration)
   {
-    servers_list.assign(in_servers_list);
-    init();
-
-    return (memcached_server_count(&memc));
+    return (memcached_success(memcached_parse_configuration(memc, configuration.c_str(), configuration.size())));
   }
 
   /**
@@ -190,7 +131,7 @@ public:
   {
     memcached_return_t rc;
 
-    rc= memcached_server_add(&memc, server_name.c_str(), port);
+    rc= memcached_server_add(memc, server_name.c_str(), port);
 
     return (rc == MEMCACHED_SUCCESS);
   }
@@ -233,7 +174,7 @@ public:
     size_t key_length= 0;
     memcached_return_t rc;
     uint32_t flags= 0;
-    char *value= memcached_fetch(&memc, ret_key, &key_length,
+    char *value= memcached_fetch(memc, ret_key, &key_length,
                                  &value_length, &flags, &rc);
     if (value && ret_val.empty())
     {
@@ -264,7 +205,7 @@ public:
     memcached_return_t rc;
     size_t value_length= 0;
 
-    char *value= memcached_get(&memc, key.c_str(), key.length(),
+    char *value= memcached_get(memc, key.c_str(), key.length(),
                                &value_length, &flags, &rc);
     if (value != NULL && ret_val.empty())
     {
@@ -296,7 +237,7 @@ public:
     memcached_return_t rc;
     size_t value_length= 0;
 
-    char *value= memcached_get_by_key(&memc,
+    char *value= memcached_get_by_key(memc,
                                       master_key.c_str(), master_key.length(),
                                       key.c_str(), key.length(),
                                       &value_length, &flags, &rc);
@@ -345,8 +286,7 @@ public:
      */
     if (! real_keys.empty())
     {
-      memcached_return_t rc= memcached_mget(&memc, &real_keys[0], &key_len[0],
-                                          real_keys.size());
+      memcached_return_t rc= memcached_mget(memc, &real_keys[0], &key_len[0], real_keys.size());
       return (rc == MEMCACHED_SUCCESS);
     }
 
@@ -369,10 +309,10 @@ public:
            time_t expiration,
            uint32_t flags)
   {
-    memcached_return_t rc= memcached_set(&memc,
-                                       key.c_str(), key.length(),
-                                       &value[0], value.size(),
-                                       expiration, flags);
+    memcached_return_t rc= memcached_set(memc,
+                                         key.c_str(), key.length(),
+                                         &value[0], value.size(),
+                                         expiration, flags);
     return (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
@@ -393,12 +333,12 @@ public:
                 time_t expiration,
                 uint32_t flags)
   {
-    memcached_return_t rc= memcached_set_by_key(&memc, master_key.c_str(),
-                                              master_key.length(),
-                                              key.c_str(), key.length(),
-                                              &value[0], value.size(),
-                                              expiration,
-                                              flags);
+    memcached_return_t rc= memcached_set_by_key(memc, master_key.c_str(),
+                                                master_key.length(),
+                                                key.c_str(), key.length(),
+                                                &value[0], value.size(),
+                                                expiration,
+                                                flags);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -474,8 +414,8 @@ public:
    */
   bool increment(const std::string &key, uint32_t offset, uint64_t *value)
   {
-    memcached_return_t rc= memcached_increment(&memc, key.c_str(), key.length(),
-                                             offset, value);
+    memcached_return_t rc= memcached_increment(memc, key.c_str(), key.length(),
+                                               offset, value);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -491,9 +431,9 @@ public:
    */
   bool decrement(const std::string &key, uint32_t offset, uint64_t *value)
   {
-    memcached_return_t rc= memcached_decrement(&memc, key.c_str(),
-                                             key.length(),
-                                             offset, value);
+    memcached_return_t rc= memcached_decrement(memc, key.c_str(),
+                                               key.length(),
+                                               offset, value);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -508,8 +448,8 @@ public:
    */
   bool add(const std::string &key, const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_add(&memc, key.c_str(), key.length(),
-                                       &value[0], value.size(), 0, 0);
+    memcached_return_t rc= memcached_add(memc, key.c_str(), key.length(),
+                                         &value[0], value.size(), 0, 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -527,14 +467,14 @@ public:
                 const std::string &key,
                 const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_add_by_key(&memc,
-                                              master_key.c_str(),
-                                              master_key.length(),
-                                              key.c_str(),
-                                              key.length(),
-                                              &value[0],
-                                              value.size(),
-                                              0, 0);
+    memcached_return_t rc= memcached_add_by_key(memc,
+                                                master_key.c_str(),
+                                                master_key.length(),
+                                                key.c_str(),
+                                                key.length(),
+                                                &value[0],
+                                                value.size(),
+                                                0, 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -548,9 +488,9 @@ public:
    */
   bool replace(const std::string &key, const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_replace(&memc, key.c_str(), key.length(),
-                                           &value[0], value.size(),
-                                           0, 0);
+    memcached_return_t rc= memcached_replace(memc, key.c_str(), key.length(),
+                                             &value[0], value.size(),
+                                             0, 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -568,14 +508,14 @@ public:
                     const std::string &key,
                     const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_replace_by_key(&memc,
-                                                  master_key.c_str(),
-                                                  master_key.length(),
-                                                  key.c_str(),
-                                                  key.length(),
-                                                  &value[0],
-                                                  value.size(),
-                                                  0, 0);
+    memcached_return_t rc= memcached_replace_by_key(memc,
+                                                    master_key.c_str(),
+                                                    master_key.length(),
+                                                    key.c_str(),
+                                                    key.length(),
+                                                    &value[0],
+                                                    value.size(),
+                                                    0, 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -588,8 +528,8 @@ public:
    */
   bool prepend(const std::string &key, const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_prepend(&memc, key.c_str(), key.length(),
-                                           &value[0], value.size(), 0, 0);
+    memcached_return_t rc= memcached_prepend(memc, key.c_str(), key.length(),
+                                             &value[0], value.size(), 0, 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -607,15 +547,15 @@ public:
                     const std::string &key,
                     const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_prepend_by_key(&memc,
-                                                  master_key.c_str(),
-                                                  master_key.length(),
-                                                  key.c_str(),
-                                                  key.length(),
-                                                  &value[0],
-                                                  value.size(),
-                                                  0,
-                                                  0);
+    memcached_return_t rc= memcached_prepend_by_key(memc,
+                                                    master_key.c_str(),
+                                                    master_key.length(),
+                                                    key.c_str(),
+                                                    key.length(),
+                                                    &value[0],
+                                                    value.size(),
+                                                    0,
+                                                    0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -628,7 +568,7 @@ public:
    */
   bool append(const std::string &key, const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_append(&memc,
+    memcached_return_t rc= memcached_append(memc,
                                             key.c_str(),
                                             key.length(),
                                             &value[0],
@@ -651,7 +591,7 @@ public:
                    const std::string &key,
                    const std::vector<char> &value)
   {
-    memcached_return_t rc= memcached_append_by_key(&memc,
+    memcached_return_t rc= memcached_append_by_key(memc,
                                                    master_key.c_str(),
                                                    master_key.length(),
                                                    key.c_str(),
@@ -674,9 +614,9 @@ public:
            const std::vector<char> &value,
            uint64_t cas_arg)
   {
-    memcached_return_t rc= memcached_cas(&memc, key.c_str(), key.length(),
-                                       &value[0], value.size(),
-                                       0, 0, cas_arg);
+    memcached_return_t rc= memcached_cas(memc, key.c_str(), key.length(),
+                                         &value[0], value.size(),
+                                         0, 0, cas_arg);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -695,14 +635,14 @@ public:
                 const std::vector<char> &value,
                 uint64_t cas_arg)
   {
-    memcached_return_t rc= memcached_cas_by_key(&memc,
-                                              master_key.c_str(),
-                                              master_key.length(),
-                                              key.c_str(),
-                                              key.length(),
-                                              &value[0],
-                                              value.size(),
-                                              0, 0, cas_arg);
+    memcached_return_t rc= memcached_cas_by_key(memc,
+                                                master_key.c_str(),
+                                                master_key.length(),
+                                                key.c_str(),
+                                                key.length(),
+                                                &value[0],
+                                                value.size(),
+                                                0, 0, cas_arg);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -714,7 +654,7 @@ public:
    */
   bool remove(const std::string &key)
   {
-    memcached_return_t rc= memcached_delete(&memc, key.c_str(), key.length(), 0);
+    memcached_return_t rc= memcached_delete(memc, key.c_str(), key.length(), 0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -727,10 +667,10 @@ public:
    */
   bool remove(const std::string &key, time_t expiration)
   {
-    memcached_return_t rc= memcached_delete(&memc,
-                                          key.c_str(),
-                                          key.length(),
-                                          expiration);
+    memcached_return_t rc= memcached_delete(memc,
+                                            key.c_str(),
+                                            key.length(),
+                                            expiration);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -744,12 +684,12 @@ public:
   bool removeByKey(const std::string &master_key,
                    const std::string &key)
   {
-    memcached_return_t rc= memcached_delete_by_key(&memc,
-                                                 master_key.c_str(),
-                                                 master_key.length(),
-                                                 key.c_str(),
-                                                 key.length(),
-                                                 0);
+    memcached_return_t rc= memcached_delete_by_key(memc,
+                                                   master_key.c_str(),
+                                                   master_key.length(),
+                                                   key.c_str(),
+                                                   key.length(),
+                                                   0);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -765,12 +705,12 @@ public:
                    const std::string &key,
                    time_t expiration)
   {
-    memcached_return_t rc= memcached_delete_by_key(&memc,
-                                                 master_key.c_str(),
-                                                 master_key.length(),
-                                                 key.c_str(),
-                                                 key.length(),
-                                                 expiration);
+    memcached_return_t rc= memcached_delete_by_key(memc,
+                                                   master_key.c_str(),
+                                                   master_key.length(),
+                                                   key.c_str(),
+                                                   key.length(),
+                                                   expiration);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -783,7 +723,7 @@ public:
    */
   bool flush(time_t expiration)
   {
-    memcached_return_t rc= memcached_flush(&memc, expiration);
+    memcached_return_t rc= memcached_flush(memc, expiration);
     return (rc == MEMCACHED_SUCCESS);
   }
 
@@ -810,7 +750,7 @@ public:
                 &stats_map)
   {
     memcached_return_t rc;
-    memcached_stat_st *stats= memcached_stat(&memc, NULL, &rc);
+    memcached_stat_st *stats= memcached_stat(memc, NULL, &rc);
 
     if (rc != MEMCACHED_SUCCESS &&
         rc != MEMCACHED_SOME_ERRORS)
@@ -818,7 +758,7 @@ public:
       return false;
     }
 
-    uint32_t server_count= memcached_server_count(&memc);
+    uint32_t server_count= memcached_server_count(memc);
 
     /*
      * For each memcached server, construct a std::map for its stats and add
@@ -827,7 +767,7 @@ public:
     for (uint32_t x= 0; x < server_count; x++)
     {
       memcached_server_instance_st instance=
-        memcached_server_instance_by_position(&memc, x);
+        memcached_server_instance_by_position(memc, x);
       std::ostringstream strstm;
       std::string server_name(memcached_server_name(instance));
       server_name.append(":");
@@ -838,10 +778,10 @@ public:
       char **list= NULL;
       char **ptr= NULL;
 
-      list= memcached_stat_get_keys(&memc, &stats[x], &rc);
+      list= memcached_stat_get_keys(memc, &stats[x], &rc);
       for (ptr= list; *ptr; ptr++)
       {
-        char *value= memcached_stat_get_value(&memc, &stats[x], *ptr, &rc);
+        char *value= memcached_stat_get_value(memc, &stats[x], *ptr, &rc);
         server_stats[*ptr]= value;
         free(value);
       }
@@ -850,15 +790,12 @@ public:
       free(list);
     }
 
-    memcached_stat_free(&memc, stats);
+    memcached_stat_free(memc, stats);
     return true;
   }
 
 private:
-
-  std::string servers_list;
-  memcached_st memc;
-  memcached_result_st result;
+  memcached_st *memc;
 };
 
 }

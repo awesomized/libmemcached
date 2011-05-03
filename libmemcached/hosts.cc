@@ -345,7 +345,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
                                            list[x].port, list[x].weight, list[x].type);
     if (! instance)
     {
-      return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
+      return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE);
     }
     ptr->number_of_hosts++;
   }

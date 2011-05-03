@@ -51,7 +51,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   bool no_reply= ptr->flags.no_reply;
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
-    return MEMCACHED_BAD_KEY_PROVIDED;
+    return memcached_set_error(ptr, MEMCACHED_BAD_KEY_PROVIDED);
 
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
@@ -63,7 +63,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                         (int)key_length, key,
                         offset, no_reply ? " noreply" : "");
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
-    return MEMCACHED_WRITE_FAILURE;
+    return memcached_set_error(ptr, MEMCACHED_WRITE_FAILURE);
 
   rc= memcached_do(instance, buffer, (size_t)send_length, true);
   if (no_reply || rc != MEMCACHED_SUCCESS)
@@ -114,7 +114,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   bool no_reply= ptr->flags.no_reply;
 
   if (memcached_server_count(ptr) == 0)
-    return memcached_set_error(ptr, MEMCACHED_NO_SERVERS, NULL);
+    return memcached_set_error(ptr, MEMCACHED_NO_SERVERS);
 
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);

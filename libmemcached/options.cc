@@ -119,9 +119,9 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
 memcached_return_t memcached_parse_configuration(memcached_st *self, char const *option_string, size_t length)
 {
   WATCHPOINT_ASSERT(self);
-  if (! self)
+  if (not self)
   {
-    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS);
   }
 
   memcached_return_t rc;
@@ -140,11 +140,11 @@ void memcached_set_configuration_file(memcached_st *self, const char *filename, 
 
 memcached_return_t memcached_parse_configure_file(memcached_st *self, const char *filename, size_t filename_length)
 {
-  if (! self)
-    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
+  if (not self)
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS);
 
   if (! filename || filename_length == 0)
-    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, NULL);
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS);
   
   memcached_string_t tmp;
   tmp.c_str= filename;

@@ -226,18 +226,21 @@ memcached_st *memcached_create(memcached_st *ptr)
 
 memcached_st *memcached(const char *string, size_t length)
 {
-  if (! length || ! string)
+  if ((not length and string) or (length and not string))
   {
     errno= EINVAL;
     return NULL;
   }
 
   memcached_st *self= memcached_create(NULL);
-  if (! self)
+  if (not self)
   {
     errno= ENOMEM;
     return NULL;
   }
+
+  if (not length)
+    return self;
 
   memcached_return_t rc;
   rc= memcached_parse_configuration(self, string, length);
