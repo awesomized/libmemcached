@@ -51,11 +51,6 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
     self->next_retry= 0;
   }
 
-  if (self->weight > 1 && root)
-  {
-    ((memcached_st *)root)->ketama.weighted= true;
-  }
-
   self->root= root;
   self->limit_maxbytes= 0;
   if (hostname == NULL)

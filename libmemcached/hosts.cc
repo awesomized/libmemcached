@@ -343,10 +343,16 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     /* TODO check return type */
     instance= memcached_server_create_with(ptr, instance, list[x].hostname,
                                            list[x].port, list[x].weight, list[x].type);
-    if (! instance)
+    if (not instance)
     {
       return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE);
     }
+
+    if (list[x].weight > 1)
+    {
+      ptr->ketama.weighted= true;
+    }
+
     ptr->number_of_hosts++;
   }
 
@@ -440,7 +446,14 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
 
   /* TODO: Check return type */
   instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+
   (void)memcached_server_create_with(ptr, instance, hostname, port, weight, type);
+
+  if (weight > 1)
+  {
+    ptr->ketama.weighted= true;
+  }
+
   ptr->number_of_hosts++;
 
   instance= memcached_server_instance_fetch(ptr, 0);
