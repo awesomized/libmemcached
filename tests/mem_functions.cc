@@ -2486,7 +2486,6 @@ static test_return_t user_supplied_bug8(memcached_st *memc)
 /* Test flag store/retrieve */
 static test_return_t user_supplied_bug7(memcached_st *memc)
 {
-  memcached_return_t rc;
   const char *keys= "036790384900";
   size_t key_length=  strlen(keys);
   char return_key[MEMCACHED_MAX_KEY];
@@ -2494,18 +2493,17 @@ static test_return_t user_supplied_bug7(memcached_st *memc)
   char *value;
   size_t value_length;
   uint32_t flags;
-  unsigned int x;
   char *insert_data= new (std::nothrow) char[VALUE_SIZE_BUG5];
 
-  for (x= 0; x < VALUE_SIZE_BUG5; x++)
+  for (unsigned int x= 0; x < VALUE_SIZE_BUG5; x++)
     insert_data[x]= (signed char)rand();
 
   memcached_flush(memc, 0);
 
   flags= 245;
-  rc= memcached_set(memc, keys, key_length,
-                    insert_data, VALUE_SIZE_BUG5,
-                    (time_t)0, flags);
+  memcached_return_t rc= memcached_set(memc, keys, key_length,
+                                       insert_data, VALUE_SIZE_BUG5,
+                                       (time_t)0, flags);
   test_true(rc == MEMCACHED_SUCCESS);
 
   flags= 0;
@@ -2531,7 +2529,6 @@ static test_return_t user_supplied_bug7(memcached_st *memc)
 
 static test_return_t user_supplied_bug9(memcached_st *memc)
 {
-  memcached_return_t rc;
   const char *keys[]= {"UDATA:edevil@sapo.pt", "fudge&*@#", "for^#@&$not"};
   size_t key_length[3];
   uint32_t flags;
@@ -2550,13 +2547,14 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
 
   for (unsigned int x= 0; x < 3; x++)
   {
+    memcached_return_t rc;
     rc= memcached_set(memc, keys[x], key_length[x],
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
     test_true(rc == MEMCACHED_SUCCESS);
   }
 
-  rc= memcached_mget(memc, keys, key_length, 3);
+  memcached_return_t rc= memcached_mget(memc, keys, key_length, 3);
   test_true(rc == MEMCACHED_SUCCESS);
 
   /* We need to empty the server before continueing test */
@@ -2580,7 +2578,6 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
   size_t value_length= 512;
   unsigned int x;
   size_t key_len= 3;
-  memcached_return_t rc;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
   int32_t timeout;
@@ -2598,7 +2595,7 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
 
   for (x= 1; x <= 100000; ++x)
   {
-    rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+    memcached_return_t rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE ||
            rc == MEMCACHED_BUFFERED || rc == MEMCACHED_TIMEOUT);
