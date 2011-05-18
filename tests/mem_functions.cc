@@ -42,17 +42,19 @@
 
 #include "config.h"
 
-#include <assert.h>
-#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <memory>
+#include <signal.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <signal.h>
 #include <unistd.h>
-#include <time.h>
 
 #include "libmemcached/common.h"
 
@@ -399,7 +401,6 @@ static test_return_t connection_test(memcached_st *memc)
 
 static test_return_t error_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U,
                         982370485U, 1263635348U, 4242906218U, 3829656100U,
                         1891735253U, 334139633U, 2257084983U, 3088286104U,
@@ -414,16 +415,16 @@ static test_return_t error_test(memcached_st *memc)
                         1336171666U, 3021258493U, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
-  for (rc= MEMCACHED_SUCCESS; rc < MEMCACHED_MAXIMUM_RETURN; rc++)
+  for (int rc= int(MEMCACHED_SUCCESS); rc < int(MEMCACHED_MAXIMUM_RETURN); ++rc)
   {
     uint32_t hash_val;
-    const char *msg=  memcached_strerror(memc, rc);
+    const char *msg=  memcached_strerror(memc, memcached_return_t(rc));
     hash_val= memcached_generate_hash_value(msg, strlen(msg),
                                             MEMCACHED_HASH_JENKINS);
     if (values[rc] != hash_val)
     {
       fprintf(stderr, "\n\nYou have updated memcached_return_t without updating the error_test\n");
-      fprintf(stderr, "%u, %s, (%u)\n\n", (uint32_t)rc, memcached_strerror(memc, rc), hash_val);
+      fprintf(stderr, "%u, %s, (%u)\n\n", (uint32_t)rc, memcached_strerror(memc, memcached_return_t(rc)), hash_val);
     }
     test_true(values[rc] == hash_val);
   }
@@ -914,6 +915,10 @@ static memcached_return_t read_through_trigger(memcached_st *memc,
   return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
 }
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
 static test_return_t read_through(memcached_st *memc)
 {
   memcached_return_t rc;
@@ -930,8 +935,7 @@ static test_return_t read_through(memcached_st *memc)
   test_false(string_length);
   test_false(string);
 
-  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE,
-                             *(void **)&cb);
+  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, *(void **)&cb);
   test_true(rc == MEMCACHED_SUCCESS);
 
   string= memcached_get(memc, key, strlen(key),
@@ -1727,8 +1731,8 @@ static test_return_t mget_execute(memcached_st *memc)
   size_t max_keys= 20480;
 
 
-  char **keys= calloc(max_keys, sizeof(char*));
-  size_t *key_length=calloc(max_keys, sizeof(size_t));
+  char **keys= static_cast<char **>(calloc(max_keys, sizeof(char*)));
+  size_t *key_length=static_cast<size_t *>(calloc(max_keys, sizeof(size_t)));
 
   /* First add all of the items.. */
   char blob[1024] = {0};
@@ -1749,7 +1753,7 @@ static test_return_t mget_execute(memcached_st *memc)
 
   /* Try to get all of them with a large multiget */
   size_t counter= 0;
-  memcached_execute_fn callbacks[1]= { [0]= &callback_counter };
+  memcached_execute_fn callbacks[]= { &callback_counter };
   rc= memcached_mget_execute(memc, (const char**)keys, key_length,
                              max_keys, callbacks, &counter, 1);
 
@@ -2239,7 +2243,7 @@ static test_return_t user_supplied_bug3(memcached_st *memc)
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 #endif
 
-  keys= calloc(KEY_COUNT, sizeof(char *));
+  keys= static_cast<char **>(calloc(KEY_COUNT, sizeof(char *)));
   test_true(keys);
   for (x= 0; x < KEY_COUNT; x++)
   {
@@ -2335,7 +2339,7 @@ static test_return_t user_supplied_bug5(memcached_st *memc)
   uint32_t flags;
   unsigned int count;
   unsigned int x;
-  char insert_data[VALUE_SIZE_BUG5];
+  char *insert_data= new (std::nothrow) char[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
     insert_data[x]= (signed char)rand();
@@ -2377,6 +2381,7 @@ static test_return_t user_supplied_bug5(memcached_st *memc)
     }
     test_true(count == 4);
   }
+  delete [] insert_data;
 
   return TEST_SUCCESS;
 }
@@ -2393,7 +2398,7 @@ static test_return_t user_supplied_bug6(memcached_st *memc)
   uint32_t flags;
   unsigned int count;
   unsigned int x;
-  char insert_data[VALUE_SIZE_BUG5];
+  char *insert_data= new (std::nothrow) char[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
     insert_data[x]= (signed char)rand();
@@ -2442,6 +2447,7 @@ static test_return_t user_supplied_bug6(memcached_st *memc)
       free(value);
     }
   }
+  delete [] insert_data;
 
   return TEST_SUCCESS;
 }
@@ -2489,7 +2495,7 @@ static test_return_t user_supplied_bug7(memcached_st *memc)
   size_t value_length;
   uint32_t flags;
   unsigned int x;
-  char insert_data[VALUE_SIZE_BUG5];
+  char *insert_data= new (std::nothrow) char[VALUE_SIZE_BUG5];
 
   for (x= 0; x < VALUE_SIZE_BUG5; x++)
     insert_data[x]= (signed char)rand();
@@ -2514,9 +2520,10 @@ static test_return_t user_supplied_bug7(memcached_st *memc)
   flags= 0;
   value= memcached_fetch(memc, return_key, &return_key_length,
                          &value_length, &flags, &rc);
-  test_true(flags == 245);
+  test_compare(245, flags);
   test_true(value);
   free(value);
+  delete [] insert_data;
 
 
   return TEST_SUCCESS;
@@ -2527,7 +2534,6 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
   memcached_return_t rc;
   const char *keys[]= {"UDATA:edevil@sapo.pt", "fudge&*@#", "for^#@&$not"};
   size_t key_length[3];
-  unsigned int x;
   uint32_t flags;
   unsigned count= 0;
 
@@ -2542,7 +2548,7 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
   key_length[2]= strlen("for^#@&$not");
 
 
-  for (x= 0; x < 3; x++)
+  for (unsigned int x= 0; x < 3; x++)
   {
     rc= memcached_set(memc, keys[x], key_length[x],
                       keys[x], key_length[x],
@@ -2701,7 +2707,6 @@ static test_return_t user_supplied_bug12(memcached_st *memc)
 static test_return_t user_supplied_bug13(memcached_st *memc)
 {
   char key[] = "key34567890";
-  char *overflow;
   memcached_return_t rc;
   size_t overflowSize;
 
@@ -2716,14 +2721,14 @@ static test_return_t user_supplied_bug13(memcached_st *memc)
 
   for (testSize= overflowSize - 1; testSize < overflowSize + 1; testSize++)
   {
-    overflow= malloc(testSize);
-    test_true(overflow != NULL);
+    char *overflow= new (std::nothrow) char[testSize];
+    test_true(overflow);
 
     memset(overflow, 'x', testSize);
     rc= memcached_set(memc, key, strlen(key),
                       overflow, testSize, 0, 0);
     test_true(rc == MEMCACHED_SUCCESS);
-    free(overflow);
+    delete overflow;
   }
 
   return TEST_SUCCESS;
@@ -3031,8 +3036,9 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   rc= memcached_flush(memc_clone, 0);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  key_lengths= calloc(key_count, sizeof(size_t));
-  keys= calloc(key_count, sizeof(char *));
+  key_lengths= new (std::nothrow) size_t[key_count];
+  test_true(key_lengths);
+  keys= static_cast<char **>(calloc(key_count, sizeof(char *)));
   test_true(keys);
   for (x= 0; x < key_count; x++)
   {
@@ -3058,7 +3064,7 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   for (x= 0; x < key_count; x++)
     free(keys[x]);
   free(keys);
-  free(key_lengths);
+  delete key_lengths;
 
   memcached_free(memc_clone);
 
@@ -3861,7 +3867,6 @@ static void *my_calloc(const memcached_st *ptr, size_t nelem, const size_t size,
 #endif
 }
 
-
 static test_return_t set_prefix(memcached_st *memc)
 {
   memcached_return_t rc;
@@ -3869,14 +3874,14 @@ static test_return_t set_prefix(memcached_st *memc)
   char *value;
 
   /* Make sure be default none exists */
-  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
   test_true(rc == MEMCACHED_FAILURE);
 
   /* Test a clean set */
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)key);
   test_true_got(rc == MEMCACHED_SUCCESS, memcached_last_error_message(memc));
 
-  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
   test_true(value);
   test_true(memcmp(value, key, 4) == 0);
   test_true(rc == MEMCACHED_SUCCESS);
@@ -3885,7 +3890,7 @@ static test_return_t set_prefix(memcached_st *memc)
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
   test_false(value);
   test_true(rc == MEMCACHED_FAILURE);
 
@@ -3893,7 +3898,7 @@ static test_return_t set_prefix(memcached_st *memc)
   rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)key);
   test_true(rc == MEMCACHED_SUCCESS);
 
-  value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+  value= (char *)memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
   test_true(value);
   test_true(rc == MEMCACHED_SUCCESS);
   test_true(memcmp(value, key, 4) == 0);
@@ -3906,7 +3911,7 @@ static test_return_t set_prefix(memcached_st *memc)
     rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL);
     test_true(rc == MEMCACHED_SUCCESS);
 
-    value= memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
+    value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_PREFIX_KEY, &rc);
     test_false(value);
     test_true(rc == MEMCACHED_FAILURE);
     test_true(value == NULL);
@@ -4327,12 +4332,15 @@ static test_return_t dump_test(memcached_st *memc)
 }
 
 #ifdef HAVE_LIBMEMCACHEDUTIL
+
+struct test_pool_context_st {
+  memcached_pool_st* pool;
+  memcached_st* mmc;
+};
+
 static void* connection_release(void *arg)
 {
-  struct {
-    memcached_pool_st* pool;
-    memcached_st* mmc;
-  } *resource= arg;
+  test_pool_context_st *resource= static_cast<test_pool_context_st *>(arg);
 
   usleep(250);
   // Release all of the memc we are holding
@@ -4361,10 +4369,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   test_true(rc == MEMCACHED_SUCCESS);
 
   pthread_t tid;
-  struct {
-    memcached_pool_st* pool;
-    memcached_st* mmc;
-  } item= { .pool = pool, .mmc = mmc[9] };
+  test_pool_context_st item= { pool, mmc[9] };
 
   pthread_create(&tid, NULL, connection_release, &item);
   mmc[9]= memcached_pool_pop(pool, true, &rc);
@@ -5040,16 +5045,15 @@ static test_return_t regression_bug_434484(memcached_st *memc)
   if (test_rc != TEST_SUCCESS)
     return test_rc;
 
-  memcached_return_t ret;
   const char *key= "regression_bug_434484";
   size_t keylen= strlen(key);
 
-  ret= memcached_append(memc, key, keylen, key, keylen, 0, 0);
+  memcached_return_t ret= memcached_append(memc, key, keylen, key, keylen, 0, 0);
   test_true(ret == MEMCACHED_NOTSTORED);
 
   size_t size= 2048 * 1024;
-  void *data= calloc(1, size);
-  test_true(data != NULL);
+  char *data= (char*)calloc(1, size);
+  test_true(data);
   ret= memcached_set(memc, key, keylen, data, size, 0, 0);
   test_true(ret == MEMCACHED_E2BIG);
   free(data);
@@ -5067,7 +5071,7 @@ static test_return_t regression_bug_434843(memcached_st *memc)
 
   memcached_return_t rc;
   size_t counter= 0;
-  memcached_execute_fn callbacks[1]= { [0]= &callback_counter };
+  memcached_execute_fn callbacks[]= { &callback_counter };
 
   /*
    * I only want to hit only _one_ server so I know the number of requests I'm
@@ -5078,8 +5082,8 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   uint32_t number_of_hosts= memcached_server_count(memc);
   memc->number_of_hosts= 1;
   const size_t max_keys= 1024;
-  char **keys= calloc(max_keys, sizeof(char*));
-  size_t *key_length=calloc(max_keys, sizeof(size_t));
+  char **keys= (char**)calloc(max_keys, sizeof(char*));
+  size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
 
   for (size_t x= 0; x < max_keys; ++x)
   {
@@ -5235,8 +5239,8 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   test_true(rc == MEMCACHED_SUCCESS);
 
   const size_t max_keys= 100;
-  char **keys= calloc(max_keys, sizeof(char*));
-  size_t *key_length= calloc(max_keys, sizeof(size_t));
+  char **keys= (char**)calloc(max_keys, sizeof(char*));
+  size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
 
   for (size_t x= 0; x < max_keys; ++x)
   {
@@ -5271,7 +5275,7 @@ static test_return_t regression_bug_447342(memcached_st *memc)
   test_true(rc == MEMCACHED_SUCCESS);
 
   size_t counter= 0;
-  memcached_execute_fn callbacks[1]= { [0]= &callback_counter };
+  memcached_execute_fn callbacks[]= { &callback_counter };
   rc= memcached_fetch_execute(memc, callbacks, (void *)&counter, 1);
   /* Verify that we received all of the key/value pairs */
   test_true(counter == max_keys);
@@ -5679,8 +5683,8 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   size_t max_keys= 20480;
 
 
-  char **keys= calloc(max_keys, sizeof(char*));
-  size_t *key_length=calloc(max_keys, sizeof(size_t));
+  char **keys= (char **)calloc(max_keys, sizeof(char*));
+  size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
 
   /* First add all of the items.. */
   bool slept= false;
@@ -5719,7 +5723,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
 
     /* Try to get all of them with a large multiget */
     size_t counter= 0;
-    memcached_execute_function callbacks[1]= { [0]= &callback_counter };
+    memcached_execute_function callbacks[]= { &callback_counter };
     rc= memcached_mget_execute(memc, (const char**)keys, key_length,
                                (size_t)max_keys, callbacks, &counter, 1);
 

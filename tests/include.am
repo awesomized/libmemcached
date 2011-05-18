@@ -57,7 +57,7 @@ tests_testapp_SOURCES= \
 		       tests/basic.cc \
 		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
-		       tests/mem_functions.c \
+		       tests/mem_functions.cc \
 		       tests/parser.cc \
 		       tests/pool.cc \
 		       tests/print.cc \
