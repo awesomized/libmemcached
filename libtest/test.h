@@ -222,7 +222,7 @@ do \
 { \
   if ((A) != (B)) \
   { \
-    fprintf(stderr, "\n%s:%d: Expected %lu == %lu\n", __FILE__, __LINE__, (unsigned long)(A), (unsigned long)(B)); \
+    fprintf(stderr, "\n%s:%d: Expected %s, got %lu\n", __FILE__, __LINE__, #A, (unsigned long)(B)); \
     create_core(); \
     return TEST_FAILURE; \
   } \

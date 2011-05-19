@@ -2547,10 +2547,9 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
 
   for (unsigned int x= 0; x < 3; x++)
   {
-    memcached_return_t rc;
-    rc= memcached_set(memc, keys[x], key_length[x],
-                      keys[x], key_length[x],
-                      (time_t)50, (uint32_t)9);
+    memcached_return_t rc= memcached_set(memc, keys[x], key_length[x],
+                                         keys[x], key_length[x],
+                                         (time_t)50, (uint32_t)9);
     test_true(rc == MEMCACHED_SUCCESS);
   }
 
@@ -2559,13 +2558,13 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
 
   /* We need to empty the server before continueing test */
   while ((return_value= memcached_fetch(memc, return_key, &return_key_length,
-                      &return_value_length, &flags, &rc)) != NULL)
+                                        &return_value_length, &flags, &rc)) != NULL)
   {
     test_true(return_value);
     free(return_value);
     count++;
   }
-  test_true(count == 3);
+  test_compare(3, count);
 
   return TEST_SUCCESS;
 }
