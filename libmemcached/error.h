@@ -38,20 +38,31 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
 LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc);
+  memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_st*, memcached_return_t rc);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_server_st&, memcached_return_t rc);
+
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, memcached_string_t *str);
+
+extern "C" {
+#endif
 
 LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_error_message(memcached_st *memc, memcached_return_t rc, memcached_string_t *str);
 
 LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length);
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
 
 LIBMEMCACHED_LOCAL
   void memcached_error_free(memcached_st *error);

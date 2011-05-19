@@ -394,10 +394,10 @@ memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
                                                         in_port_t port,
                                                         uint32_t weight)
 {
-  if (! port)
+  if (not port)
     port= MEMCACHED_DEFAULT_PORT;
 
-  if (! hostname)
+  if (not hostname)
     hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_UDP);

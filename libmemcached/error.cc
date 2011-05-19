@@ -49,10 +49,10 @@ struct memcached_error_t
   char message[MAX_ERROR_LENGTH];
 };
 
-static void _set(memcached_st *memc, memcached_string_t *str, const memcached_return_t rc, const int local_errno)
+static void _set(memcached_st *memc, memcached_string_t *str, memcached_return_t &rc, int local_errno= 0)
 {
   WATCHPOINT_ASSERT(memc);
-  if (! memc)
+  if (not memc)
     return;
 
   if (memc->error_messages && memc->error_messages->query_id != memc->query_id)
@@ -60,10 +60,16 @@ static void _set(memcached_st *memc, memcached_string_t *str, const memcached_re
     memcached_error_free(memc);
   }
 
+  if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE or rc == MEMCACHED_ERRNO)
+  {
+    local_errno= errno;
+    rc= MEMCACHED_ERRNO;
+  }
+
   memcached_error_t *error;
   error= (struct memcached_error_t *)libmemcached_malloc(memc, sizeof(struct memcached_error_t));
 
-  if (! error)
+  if (not error)
     return;
 
   error->root= memc;
@@ -100,34 +106,74 @@ memcached_return_t memcached_set_error_message(memcached_st *memc, memcached_ret
   if (rc == MEMCACHED_SUCCESS)
     return MEMCACHED_SUCCESS;
 
-  _set(memc, str, rc, 0);
+  _set(memc, str, rc);
 
   return rc;
 }
 
-memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc)
+memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc)
 {
   if (rc == MEMCACHED_SUCCESS)
     return MEMCACHED_SUCCESS;
 
-  _set(memc, NULL, rc, 0);
+  char hostname_port[NI_MAXHOST +NI_MAXSERV + sizeof("host : ")];
+  int size= snprintf(hostname_port, sizeof(hostname_port), "host: %s:%d", self.hostname, int(self.port));
+
+  memcached_string_t error_host= { size, hostname_port };
+
+  _set((memcached_st*)self.root, &error_host, rc);
+
+  return rc;
+}
+
+memcached_return_t memcached_set_error(memcached_st* self, memcached_return_t rc)
+{
+  if (memcached_success(rc))
+    return MEMCACHED_SUCCESS;
+
+  _set(self, NULL, rc);
+
+  return rc;
+}
+
+memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc)
+{
+  if (memcached_success(rc))
+    return MEMCACHED_SUCCESS;
+
+  _set(&self, NULL, rc);
 
   return rc;
 }
 
 memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str)
 {
-  _set(memc, str, MEMCACHED_ERRNO, local_errno);
+  memcached_return_t rc= MEMCACHED_ERRNO;
+  _set(memc, str, rc, local_errno);
 
-  return MEMCACHED_ERRNO;
+  return rc;
+}
+
+memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errno, memcached_string_t *)
+{
+  char hostname_port[NI_MAXHOST +NI_MAXSERV + sizeof("host : ")];
+  int size= snprintf(hostname_port, sizeof(hostname_port), "host: %s:%d", self.hostname, int(self.port));
+
+  memcached_string_t error_host= { size, hostname_port };
+
+  self.cached_errno= local_errno;
+  memcached_return_t rc= MEMCACHED_ERRNO;
+  _set((memcached_st*)self.root, &error_host, rc, local_errno);
+
+  return rc;
 }
 
 static void _error_print(const memcached_error_t *error)
 {
-  if (! error)
+  if (not error)
     return;
 
-  if (! error->size)
+  if (not error->size)
   {
     fprintf(stderr, "%s\n", memcached_strerror(NULL, error->rc) );
   }
@@ -141,7 +187,7 @@ static void _error_print(const memcached_error_t *error)
 
 void memcached_error_print(const memcached_st *self)
 {
-  if (! self)
+  if (not self)
     return;
 
   _error_print(self->error_messages);
@@ -175,26 +221,24 @@ void memcached_error_free(memcached_st *self)
 
 const char *memcached_last_error_message(memcached_st *memc)
 {
-  if (! memc)
+  if (not memc)
     return memcached_strerror(memc, MEMCACHED_INVALID_ARGUMENTS);
 
-  if (! memc->error_messages)
+  if (not memc->error_messages)
     return memcached_strerror(memc, MEMCACHED_SUCCESS);
 
-  if (! memc->error_messages->size)
-  {
+  if (not memc->error_messages->size)
     return memcached_strerror(memc, memc->error_messages->rc);
-  }
 
   return memc->error_messages->message;
 }
 
 memcached_return_t memcached_last_error(memcached_st *memc)
 {
-  if (! memc)
+  if (not memc)
     return MEMCACHED_INVALID_ARGUMENTS;
 
-  if (! memc->error_messages)
+  if (not memc->error_messages)
     return MEMCACHED_SUCCESS;
 
   return memc->error_messages->rc;
@@ -202,10 +246,10 @@ memcached_return_t memcached_last_error(memcached_st *memc)
 
 int memcached_last_error_errno(memcached_st *memc)
 {
-  if (! memc)
+  if (not memc)
     return 0;
 
-  if (! memc->error_messages)
+  if (not memc->error_messages)
     return 0;
 
   return memc->error_messages->local_errno;

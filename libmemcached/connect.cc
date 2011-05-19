@@ -185,8 +185,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
   u_long arg = 1;
   if (ioctlsocket(ptr->fd, FIONBIO, &arg) == SOCKET_ERROR)
   {
-    ptr->cached_errno= get_socket_errno();
-    return MEMCACHED_CONNECTION_FAILURE;
+    return memcached_set_errno(*ptr, get_socket_errno(), NULL);
   }
 #else
   int flags;
@@ -199,8 +198,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
 
   unlikely (flags == -1)
   {
-    ptr->cached_errno= errno;
-    return MEMCACHED_CONNECTION_FAILURE;
+    return memcached_set_errno(*ptr, errno, NULL);
   }
   else if ((flags & O_NONBLOCK) == 0)
   {
@@ -214,8 +212,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
 
     unlikely (rval == -1)
     {
-      ptr->cached_errno= errno;
-      return MEMCACHED_CONNECTION_FAILURE;
+      return memcached_set_errno(*ptr, errno, NULL);
     }
   }
 #endif

@@ -107,7 +107,7 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
   _init_string(self);
 
   rc=  _string_check(self, initial_size);
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
   {
     if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
     {
@@ -132,7 +132,7 @@ memcached_return_t memcached_string_append_character(memcached_string_st *string
 
   rc=  _string_check(string, 1);
 
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
   {
     return rc;
   }

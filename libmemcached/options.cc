@@ -57,7 +57,7 @@ static memcached_return_t _parse_file_options(memcached_st *self, memcached_stri
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   FILE *fp= fopen(memcached_array_string(real_name), "r");
-  if (! fp)
+  if (not fp)
   {
     memcached_string_t error_message= memcached_array_to_string(real_name);
     memcached_return_t rc=  memcached_set_errno(self, errno, &error_message);
