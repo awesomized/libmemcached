@@ -145,52 +145,33 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
-  uint32_t counter= 5;
-  while (--counter)
+  int errcode;
+  switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
   {
-    int errcode;
-    switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
+  case 0:
+    break;
+
+  case EAI_AGAIN:
+    return memcached_set_error_string(*server, MEMCACHED_TIMEOUT, gai_strerror(errcode), strlen(gai_strerror(errcode)));
+
+  case EAI_SYSTEM:
     {
-    case 0:
-      break;
-    case EAI_AGAIN:
-      if (counter > 1)
-      {
-#ifndef WIN32
-        struct timespec dream, rem;
+      static memcached_string_t mesg= { memcached_literal_param("getaddrinfo") };
+      return memcached_set_errno(*server, errno, &mesg);
+    }
+  case EAI_BADFLAGS:
+    return memcached_set_error_string(*server, MEMCACHED_INVALID_ARGUMENTS,  memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
 
-        dream.tv_nsec= 1000;
-        dream.tv_sec= 0;
+  case EAI_MEMORY:
+    return memcached_set_error_string(*server, MEMCACHED_ERRNO,  memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
 
-        nanosleep(&dream, &rem);
-#endif
-        continue;
-      }
-      else
-      {
-        return memcached_set_error_string(*server, MEMCACHED_HOST_LOOKUP_FAILURE, gai_strerror(errcode), strlen(gai_strerror(errcode)));
-      }
-
-    case EAI_SYSTEM:
-      {
-        static memcached_string_t mesg= { memcached_literal_param("getaddrinfo") };
-        return memcached_set_errno(*server, errno, &mesg);
-      }
-    case EAI_BADFLAGS:
-      return memcached_set_error_string(*server, MEMCACHED_HOST_LOOKUP_FAILURE,  memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
-
-    case EAI_MEMORY:
-      return memcached_set_error_string(*server, MEMCACHED_ERRNO,  memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
-
-    default:
-      {
-        WATCHPOINT_STRING(server->hostname);
-        WATCHPOINT_STRING(gai_strerror(e));
-        return memcached_set_error_string(*server, MEMCACHED_HOST_LOOKUP_FAILURE, gai_strerror(errcode), strlen(gai_strerror(errcode)));
-      }
+  default:
+    {
+      WATCHPOINT_STRING(server->hostname);
+      WATCHPOINT_STRING(gai_strerror(e));
+      return memcached_set_error_string(*server, MEMCACHED_HOST_LOOKUP_FAILURE, gai_strerror(errcode), strlen(gai_strerror(errcode)));
     }
   }
-
   server->address_info_next= server->address_info;
 
   return MEMCACHED_SUCCESS;
@@ -423,10 +404,26 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
   WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
   WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
-  if (! ptr->address_info)
+  if (not ptr->address_info)
   {
-    memcached_return_t rc= set_hostinfo(ptr);
-    if (rc != MEMCACHED_SUCCESS)
+    memcached_return_t rc;
+    uint32_t counter= 5;
+    while (--counter)
+    {
+      if ((rc= set_hostinfo(ptr)) != MEMCACHED_TIMEOUT)
+        break;
+
+#ifndef WIN32
+      struct timespec dream, rem;
+
+      dream.tv_nsec= 1000;
+      dream.tv_sec= 0;
+
+      nanosleep(&dream, &rem);
+#endif
+    }
+
+    if (memcached_failed(rc))
       return rc;
   }
 
