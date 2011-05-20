@@ -37,8 +37,8 @@
 #pragma once
 
 struct memcached_string_t {
-  size_t size;
   const char *c_str;
+  size_t size;
 };
 
 #define memcached_size(X) (X).size;

@@ -173,7 +173,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
 
     case EAI_SYSTEM:
       {
-        static memcached_string_t mesg= { memcached_string_make("getaddrinfo") };
+        static memcached_string_t mesg= { memcached_literal_param("getaddrinfo") };
         return memcached_set_errno(*server, errno, &mesg);
       }
     case EAI_BADFLAGS:
