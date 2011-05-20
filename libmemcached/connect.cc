@@ -37,9 +37,9 @@
 
 
 #include <libmemcached/common.h>
-#include <assert.h>
+#include <cassert>
+#include <ctime>
 #include <sys/time.h>
-#include <time.h>
 
 static memcached_return_t connect_poll(memcached_server_st *ptr)
 {
@@ -358,8 +358,7 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 
   if ((ptr->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   {
-    ptr->cached_errno= errno;
-    return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    return memcached_set_errno(*ptr, errno, NULL);
   }
 
   struct sockaddr_un servAddr;
@@ -388,7 +387,7 @@ test_connect:
     }
   }
 
-  WATCHPOINT_ASSERT(ptr->fd != -1);
+  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   return MEMCACHED_SUCCESS;
 #else
@@ -441,9 +440,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
                          ptr->address_info_next->ai_socktype,
                          ptr->address_info_next->ai_protocol)) < 0)
     {
-      ptr->cached_errno= get_socket_errno();
-      WATCHPOINT_ERRNO(get_socket_errno());
-      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+      return memcached_set_errno(*ptr, get_socket_errno(), NULL);
     }
 
     (void)set_socket_options(ptr);
@@ -582,7 +579,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     if (ptr->fd != INVALID_SOCKET && ptr->root->sasl.callbacks)
     {
       rc= memcached_sasl_authenticate_connection(ptr);
-      if (rc != MEMCACHED_SUCCESS)
+      if (memcached_failed(rc))
       {
         (void)closesocket(ptr->fd);
         ptr->fd= INVALID_SOCKET;
