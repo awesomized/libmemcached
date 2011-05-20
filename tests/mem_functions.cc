@@ -37,26 +37,22 @@
 
 
 /*
-  Sample test application.
+  Test cases
 */
 
-#include "config.h"
+#define BUILDING_LIBMEMCACHED
+// !NEVER use common.h, always use memcached.h in your own apps
+#include <libmemcached/common.h>
 
 #include <stdint.h>
 
 #include <cassert>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
 #include <memory>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include "libmemcached/common.h"
 
 #include <libtest/server.h>
 
@@ -401,7 +397,7 @@ static test_return_t connection_test(memcached_st *memc)
 
 static test_return_t error_test(memcached_st *memc)
 {
-  uint32_t values[] = { 851992627U, 2337886783U, 3196981036U, 4001849190U,
+  uint32_t values[] = { 851992627U, 2337886783U, 646418395U, 4001849190U,
                         982370485U, 1263635348U, 4242906218U, 3829656100U,
                         1891735253U, 334139633U, 2257084983U, 3088286104U,
                         13199785U, 2542027183U, 1097051614U, 199566778U,
@@ -435,13 +431,10 @@ static test_return_t error_test(memcached_st *memc)
 
 static test_return_t set_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  const char *key= "foo";
-  const char *value= "when we sanitize";
-
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
+  memcached_return_t rc= memcached_set(memc,
+                                       memcached_literal_param("foo"),
+                                       memcached_literal_param("when we sanitize"),
+                                       time_t(0), (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   return TEST_SUCCESS;

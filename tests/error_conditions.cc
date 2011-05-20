@@ -44,29 +44,20 @@
 #include <libtest/test.h>
 #include <tests/error_conditions.h>
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *junk)
+test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)
 {
-  (void)junk;
   memcached_st *memc_ptr;
 
   memc_ptr= memcached_create(NULL);
   test_true(memc_ptr);
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
+  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
   test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
-  memcached_increment(memc_ptr, memcached_string_with_size("dead key"), 1, NULL);
+  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
   test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;
 }
-
-#ifdef	__cplusplus
-}
-#endif

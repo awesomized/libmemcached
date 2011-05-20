@@ -20,6 +20,7 @@ noinst_HEADERS+= \
 		 libmemcached/io.h \
 		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
+		 libmemcached/memory.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
@@ -31,6 +32,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/analyze.h \
 			 libmemcached/array.h \
 			 libmemcached/auto.h \
+			 libmemcached/basic_string.h \
 			 libmemcached/behavior.h \
 			 libmemcached/callback.h \
 			 libmemcached/configure.h \
@@ -113,7 +115,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/do.cc \
 				       libmemcached/dump.cc \
 				       libmemcached/error.cc \
-				       libmemcached/fetch.c \
+				       libmemcached/fetch.cc \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \
 				       libmemcached/get.cc \

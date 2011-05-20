@@ -122,12 +122,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
     return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
-                                      memcached_string_with_size("MEMCACHED_BEHAVIOR_CACHE_LOOKUPS has been deprecated."));
+                                      memcached_literal_param("MEMCACHED_BEHAVIOR_CACHE_LOOKUPS has been deprecated."));
 
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     if (ptr->flags.binary_protocol)
       return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS, 
-                                        memcached_string_with_size("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
+                                        memcached_literal_param("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
     ptr->flags.verify_key= set_flag(data);
     break;
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
@@ -160,7 +160,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
   case MEMCACHED_BEHAVIOR_USER_DATA:
     return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
-                                      memcached_string_with_size("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
+                                      memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     ptr->flags.hash_with_prefix_key= set_flag(data);
     break;
@@ -177,18 +177,18 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_CORK:
       {
         return memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
-                                          memcached_string_with_size("MEMCACHED_BEHAVIOR_CORK is now incorporated into the driver by default."));
+                                          memcached_literal_param("MEMCACHED_BEHAVIOR_CORK is now incorporated into the driver by default."));
       }
       break;
   case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
       return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS, 
-                                        memcached_string_with_size("MEMCACHED_BEHAVIOR_LOAD_FROM_FILE can not be set with memcached_behavior_set()"));
+                                        memcached_literal_param("MEMCACHED_BEHAVIOR_LOAD_FROM_FILE can not be set with memcached_behavior_set()"));
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     /* Shouldn't get here */
     WATCHPOINT_ASSERT(0);
     return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS, 
-                                      memcached_string_with_size("Invalid behavior passed to memcached_behavior_set()"));
+                                      memcached_literal_param("Invalid behavior passed to memcached_behavior_set()"));
   }
 
   return MEMCACHED_SUCCESS;
@@ -330,7 +330,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     }
   case MEMCACHED_BEHAVIOR_USER_DATA:
     memcached_set_error_string(ptr, MEMCACHED_DEPRECATED, 
-                               memcached_string_with_size("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
+                               memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
     return 0;
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
     return ptr->flags.hash_with_prefix_key;
@@ -378,7 +378,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
   }
 
   return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS,
-                                    memcached_string_with_size("Invalid memcached_server_distribution_t"));
+                                    memcached_literal_param("Invalid memcached_server_distribution_t"));
 }
 
 
@@ -393,7 +393,7 @@ memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_
     return MEMCACHED_SUCCESS;
 
   return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS,
-                                    memcached_string_with_size("Invalid memcached_hash_t()"));
+                                    memcached_literal_param("Invalid memcached_hash_t()"));
 }
 
 memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
@@ -407,7 +407,7 @@ memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, m
     return MEMCACHED_SUCCESS;
 
   return memcached_set_error_string(ptr, MEMCACHED_INVALID_ARGUMENTS,
-                                    memcached_string_with_size("Invalid memcached_hash_t()"));
+                                    memcached_literal_param("Invalid memcached_hash_t()"));
 }
 
 memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr)

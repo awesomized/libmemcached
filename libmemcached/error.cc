@@ -101,9 +101,17 @@ memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_retu
   return memcached_set_error_message(memc, rc, &tmp);
 }
 
+memcached_return_t memcached_set_error_string(memcached_server_st& self, memcached_return_t rc, const char *str, size_t length)
+{
+  memcached_string_t tmp;
+  tmp.c_str= str;
+  tmp.size= length;
+  return memcached_set_error_message(self, rc, &tmp);
+}
+
 memcached_return_t memcached_set_error_message(memcached_st *memc, memcached_return_t rc, memcached_string_t *str)
 {
-  if (rc == MEMCACHED_SUCCESS)
+  if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
   _set(memc, str, rc);
@@ -111,9 +119,35 @@ memcached_return_t memcached_set_error_message(memcached_st *memc, memcached_ret
   return rc;
 }
 
+memcached_return_t memcached_set_error_message(memcached_server_st& self, memcached_return_t rc, memcached_string_t *str)
+{
+  if (memcached_success(rc))
+    return MEMCACHED_SUCCESS;
+
+  char hostname_port_message[MAX_ERROR_LENGTH];
+  int size;
+  if (str and str->size)
+  {
+    size= snprintf(hostname_port_message, sizeof(hostname_port_message), "%.*s, host: %s:%d",
+                   memcached_string_printf(*str),
+                   self.hostname, int(self.port));
+  }
+  else
+  {
+    size= snprintf(hostname_port_message, sizeof(hostname_port_message), "host: %s:%d",
+                   self.hostname, int(self.port));
+  }
+
+  memcached_string_t error_host= { size, hostname_port_message };
+
+  _set((memcached_st*)self.root, &error_host, rc);
+
+  return rc;
+}
+
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc)
 {
-  if (rc == MEMCACHED_SUCCESS)
+  if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
   char hostname_port[NI_MAXHOST +NI_MAXSERV + sizeof("host : ")];
@@ -154,14 +188,25 @@ memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memc
   return rc;
 }
 
-memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errno, memcached_string_t *)
+memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errno, memcached_string_t *str)
 {
-  char hostname_port[NI_MAXHOST +NI_MAXSERV + sizeof("host : ")];
-  int size= snprintf(hostname_port, sizeof(hostname_port), "host: %s:%d", self.hostname, int(self.port));
+  char hostname_port_message[MAX_ERROR_LENGTH];
+  int size;
+  if (str and str->size)
+  {
+    size= snprintf(hostname_port_message, sizeof(hostname_port_message), "%.*s, host: %s:%d",
+                   memcached_string_printf(*str),
+                   self.hostname, int(self.port));
+  }
+  else
+  {
+    size= snprintf(hostname_port_message, sizeof(hostname_port_message), "host: %s:%d",
+                   self.hostname, int(self.port));
+  }
 
-  memcached_string_t error_host= { size, hostname_port };
+  memcached_string_t error_host= { size, hostname_port_message };
 
-  self.cached_errno= local_errno;
+  self.cached_errno= local_errno; // Store in the actual server
   memcached_return_t rc= MEMCACHED_ERRNO;
   _set((memcached_st*)self.root, &error_host, rc, local_errno);
 

@@ -44,7 +44,6 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                                          uint64_t offset,
                                          uint64_t *value)
 {
-  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
   memcached_server_write_instance_st instance;
@@ -63,10 +62,10 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                         (int)key_length, key,
                         offset, no_reply ? " noreply" : "");
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
-    return memcached_set_error(ptr, MEMCACHED_WRITE_FAILURE);
+    return memcached_set_error_string(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
 
-  rc= memcached_do(instance, buffer, (size_t)send_length, true);
-  if (no_reply || rc != MEMCACHED_SUCCESS)
+  memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
+  if (no_reply or memcached_failed(rc))
     return rc;
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
@@ -78,17 +77,17 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
     use it. We still called memcached_response() though since it
     worked its magic for non-blocking IO.
   */
-  if (! strncmp(buffer, "ERROR\r\n", 7))
+  if (not strncmp(buffer, memcached_literal_param("ERROR\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
   }
-  else if (! strncmp(buffer, "CLIENT_ERROR\r\n", 14))
+  else if (not strncmp(buffer, memcached_literal_param("CLIENT_ERROR\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
   }
-  else if (!strncmp(buffer, "NOT_FOUND\r\n", 11))
+  else if (not strncmp(buffer, memcached_literal_param("NOT_FOUND\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_NOTFOUND;
@@ -99,7 +98,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
     rc= MEMCACHED_SUCCESS;
   }
 
-  return rc;
+  return memcached_set_error(*instance, rc);
 }
 
 static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,

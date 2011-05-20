@@ -36,61 +36,22 @@
 
 #pragma once
 
-enum memcached_return_t {
-  MEMCACHED_SUCCESS,
-  MEMCACHED_FAILURE,
-  MEMCACHED_HOST_LOOKUP_FAILURE, // getaddrinfo() only
-  MEMCACHED_CONNECTION_FAILURE,  // DEPRECATED
-  MEMCACHED_CONNECTION_BIND_FAILURE,  // DEPRECATED
-  MEMCACHED_WRITE_FAILURE,
-  MEMCACHED_READ_FAILURE,
-  MEMCACHED_UNKNOWN_READ_FAILURE,
-  MEMCACHED_PROTOCOL_ERROR,
-  MEMCACHED_CLIENT_ERROR,
-  MEMCACHED_SERVER_ERROR,
-  MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE,
-  MEMCACHED_DATA_EXISTS,
-  MEMCACHED_DATA_DOES_NOT_EXIST,
-  MEMCACHED_NOTSTORED,
-  MEMCACHED_STORED,
-  MEMCACHED_NOTFOUND,
-  MEMCACHED_MEMORY_ALLOCATION_FAILURE,
-  MEMCACHED_PARTIAL_READ,
-  MEMCACHED_SOME_ERRORS,
-  MEMCACHED_NO_SERVERS,
-  MEMCACHED_END,
-  MEMCACHED_DELETED,
-  MEMCACHED_VALUE,
-  MEMCACHED_STAT,
-  MEMCACHED_ITEM,
-  MEMCACHED_ERRNO,
-  MEMCACHED_FAIL_UNIX_SOCKET,
-  MEMCACHED_NOT_SUPPORTED,
-  MEMCACHED_NO_KEY_PROVIDED, /* Deprecated. Use MEMCACHED_BAD_KEY_PROVIDED! */
-  MEMCACHED_FETCH_NOTFINISHED,
-  MEMCACHED_TIMEOUT,
-  MEMCACHED_BUFFERED,
-  MEMCACHED_BAD_KEY_PROVIDED,
-  MEMCACHED_INVALID_HOST_PROTOCOL,
-  MEMCACHED_SERVER_MARKED_DEAD,
-  MEMCACHED_UNKNOWN_STAT_KEY,
-  MEMCACHED_E2BIG,
-  MEMCACHED_INVALID_ARGUMENTS,
-  MEMCACHED_KEY_TOO_BIG,
-  MEMCACHED_AUTH_PROBLEM,
-  MEMCACHED_AUTH_FAILURE,
-  MEMCACHED_AUTH_CONTINUE,
-  MEMCACHED_PARSE_ERROR,
-  MEMCACHED_PARSE_USER_ERROR,
-  MEMCACHED_DEPRECATED,
-  MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
-};
+static inline void libmemcached_free(const memcached_st *self, void *mem)
+{
+  self->allocators.free(self, mem, self->allocators.context);
+}
 
-#ifndef __cplusplus
-typedef enum memcached_return_t memcached_return_t;
-#endif
+static inline void *libmemcached_malloc(const memcached_st *self, const size_t size)
+{
+  return self->allocators.malloc(self, size, self->allocators.context);
+}
 
+static inline void *libmemcached_realloc(const memcached_st *self, void *mem, const size_t size)
+{
+  return self->allocators.realloc(self, mem, size, self->allocators.context);
+}
 
-#define memcached_success(X) (X) == MEMCACHED_SUCCESS ? true : false
-#define memcached_failed(A) (A) != MEMCACHED_SUCCESS ? true : false
-
+static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size)
+{
+  return self->allocators.calloc(self, nelem, size, self->allocators.context);
+}

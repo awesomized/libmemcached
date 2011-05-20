@@ -35,7 +35,8 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include <config.h>
+#include <libmemcached/memcached.h>
 #include <libmemcached/virtual_bucket.h>
 
 struct bucket_t {

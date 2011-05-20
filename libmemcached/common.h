@@ -44,27 +44,24 @@
 
 #include <config.h>
 
+#ifdef __cplusplus
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <ctype.h>
+#else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <limits.h>
-#include <errno.h>
-#include <fcntl.h>
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
+#include <time.h>
 #endif
 
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
@@ -91,6 +88,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 
 
 /* These are private not to be installed headers */
+#include <libmemcached/memory.h>
 #include <libmemcached/io.h>
 #include <libmemcached/do.h>
 #include <libmemcached/internal.h>
@@ -176,26 +174,6 @@ static inline memcached_return_t memcached_validate_key_length(size_t key_length
   }
 
   return MEMCACHED_SUCCESS;
-}
-
-static inline void libmemcached_free(const memcached_st *ptr, void *mem)
-{
-  ptr->allocators.free(ptr, mem, ptr->allocators.context);
-}
-
-static inline void *libmemcached_malloc(const memcached_st *ptr, const size_t size)
-{
-  return ptr->allocators.malloc(ptr, size, ptr->allocators.context);
-}
-
-static inline void *libmemcached_realloc(const memcached_st *ptr, void *mem, const size_t size)
-{
-  return ptr->allocators.realloc(ptr, mem, size, ptr->allocators.context);
-}
-
-static inline void *libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size)
-{
-  return ptr->allocators.calloc(ptr, nelem, size, ptr->allocators.context);
 }
 
 #ifdef __cplusplus

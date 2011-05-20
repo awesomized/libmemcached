@@ -35,16 +35,17 @@
  *
  */
 
-#include "libmemcached/common.h"
+#include <libmemcached/common.h>
 
 struct memcached_array_st
 {
-  memcached_st *root;
+  struct memcached_st *root;
   size_t size;
   char c_str[];
 };
 
-memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_array_st *original)
+
+memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original)
 {
   if (! original)
     return NULL;
@@ -52,7 +53,7 @@ memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_ar
   return memcached_strcpy(memc, original->c_str, original->size);
 }
 
-memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t str_length)
+memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length)
 {
   memcached_array_st *array= (struct memcached_array_st *)libmemcached_malloc(memc, sizeof(struct memcached_array_st) +str_length +1);
 
