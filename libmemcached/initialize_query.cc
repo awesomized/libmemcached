@@ -50,7 +50,7 @@ memcached_return_t initialize_query(memcached_st *self)
 
   if (memcached_server_count(self) == 0)
   {
-    return memcached_set_error(self, MEMCACHED_NO_SERVERS);
+    return memcached_set_error(*self, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
   }
 
   return MEMCACHED_SUCCESS;

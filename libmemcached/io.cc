@@ -296,7 +296,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             {
               memcached_quit_server(ptr, true);
               *nread= -1;
-              return rc;
+              return memcached_set_error(*ptr, rc, MEMCACHED_AT);
             }
           }
         }
@@ -314,7 +314,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           WATCHPOINT_STRING("We had a zero length recv()");
           memcached_quit_server(ptr, true);
           *nread= -1;
-          return MEMCACHED_UNKNOWN_READ_FAILURE;
+          return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
         }
       }
 
@@ -524,13 +524,14 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     return NULL;
   }
 
-  int err= poll(fds, host_index, memc->poll_timeout);
-  switch (err) {
+  switch (poll(fds, host_index, memc->poll_timeout))
+  {
   case -1:
-    memcached_set_errno(memc, get_socket_errno(), NULL);
+    memcached_set_errno(*memc, get_socket_errno(), MEMCACHED_AT);
     /* FALLTHROUGH */
   case 0:
     break;
+
   default:
     for (size_t x= 0; x < host_index; ++x)
     {

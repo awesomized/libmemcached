@@ -140,10 +140,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint32_t live_servers= 0;
   struct timeval now;
 
-  if (gettimeofday(&now, NULL) != 0)
+  if (gettimeofday(&now, NULL))
   {
-    memcached_set_errno(ptr, errno, NULL);
-    return MEMCACHED_ERRNO;
+    return memcached_set_errno(*ptr, errno, MEMCACHED_AT);
   }
 
   list= memcached_server_list(ptr);
@@ -157,11 +156,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     for (uint32_t host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
     {
       if (list[host_index].next_retry <= now.tv_sec)
+      {
         live_servers++;
+      }
       else
       {
         if (ptr->ketama.next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->ketama.next_distribution_rebuild)
+        {
           ptr->ketama.next_distribution_rebuild= list[host_index].next_retry;
+        }
       }
     }
   }
@@ -173,8 +176,10 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint64_t is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   uint32_t points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
-  if (live_servers == 0)
+  if (not live_servers)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   if (live_servers > ptr->ketama.continuum_count)
   {
@@ -373,7 +378,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
                                            list[x].port, list[x].weight, list[x].type);
     if (not instance)
     {
-      return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE);
+      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
 
     if (list[x].weight > 1)

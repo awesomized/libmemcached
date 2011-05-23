@@ -91,6 +91,6 @@ typedef enum memcached_return_t memcached_return_t;
 #endif
 
 
-#define memcached_success(X) (X) == MEMCACHED_SUCCESS ? true : false
-#define memcached_failed(A) (A) != MEMCACHED_SUCCESS ? true : false
+#define memcached_success(X) ((X) == MEMCACHED_SUCCESS)
+#define memcached_failed(A) ((A) != MEMCACHED_SUCCESS)
 

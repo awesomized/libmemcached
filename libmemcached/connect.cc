@@ -152,24 +152,22 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     break;
 
   case EAI_AGAIN:
-    return memcached_set_error_string(*server, MEMCACHED_TIMEOUT, gai_strerror(errcode), strlen(gai_strerror(errcode)));
+    return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
 
   case EAI_SYSTEM:
-    {
-      static memcached_string_t mesg= { memcached_literal_param("getaddrinfo") };
-      return memcached_set_errno(*server, errno, &mesg);
-    }
+      return memcached_set_errno(*server, errno, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_SYSTEM)"));
+
   case EAI_BADFLAGS:
-    return memcached_set_error_string(*server, MEMCACHED_INVALID_ARGUMENTS,  memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
+    return memcached_set_error(*server, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
 
   case EAI_MEMORY:
-    return memcached_set_error_string(*server, MEMCACHED_ERRNO,  memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
+    return memcached_set_error(*server, MEMCACHED_ERRNO, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
 
   default:
     {
       WATCHPOINT_STRING(server->hostname);
       WATCHPOINT_STRING(gai_strerror(e));
-      return memcached_set_error_string(*server, MEMCACHED_HOST_LOOKUP_FAILURE, gai_strerror(errcode), strlen(gai_strerror(errcode)));
+      return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
   server->address_info_next= server->address_info;

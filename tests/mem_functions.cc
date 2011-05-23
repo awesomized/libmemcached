@@ -208,11 +208,15 @@ static test_return_t server_sort2_test(memcached_st *ptr)
   return TEST_SUCCESS;
 }
 
-static test_return_t memcached_server_remove_test(memcached_st *ptr)
+static test_return_t memcached_server_remove_test(memcached_st*)
 {
   const char *server_string= "--server=localhost:4444 --server=localhost:4445 --server=localhost:4446 --server=localhost:4447 --server=localhost --server=memcache1.memcache.bk.sapo.pt:11211 --server=memcache1.memcache.bk.sapo.pt:11212 --server=memcache1.memcache.bk.sapo.pt:11213 --server=memcache1.memcache.bk.sapo.pt:11214 --server=memcache2.memcache.bk.sapo.pt:11211 --server=memcache2.memcache.bk.sapo.pt:11212 --server=memcache2.memcache.bk.sapo.pt:11213 --server=memcache2.memcache.bk.sapo.pt:11214";
-  (void)ptr;
+  char buffer[BUFSIZ];
 
+  memcached_return_t rc;
+  test_compare_got(MEMCACHED_SUCCESS,
+                   rc= libmemcached_check_configuration(server_string, strlen(server_string), buffer, sizeof(buffer)),
+                   memcached_strerror(NULL, rc));
   memcached_st *memc= memcached(server_string, strlen(server_string));
   test_true(memc);
 
@@ -225,13 +229,12 @@ static test_return_t memcached_server_remove_test(memcached_st *ptr)
   return TEST_SUCCESS;
 }
 
-static memcached_return_t server_display_unsort_function(const memcached_st *ptr,
+static memcached_return_t server_display_unsort_function(const memcached_st*,
                                                          const memcached_server_st *server,
                                                          void *context)
 {
   /* Do Nothing */
   uint32_t x= *((uint32_t *)(context));
-  (void)ptr;
 
   if (! (test_ports[x] == server->port))
   {

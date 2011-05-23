@@ -88,6 +88,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 
 
 /* These are private not to be installed headers */
+#include <libmemcached/error.hpp>
 #include <libmemcached/memory.h>
 #include <libmemcached/io.h>
 #include <libmemcached/do.h>

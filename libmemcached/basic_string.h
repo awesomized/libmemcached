@@ -36,6 +36,8 @@
 
 #pragma once
 
+// No assumptions of NULL should be made
+
 struct memcached_string_t {
   const char *c_str;
   size_t size;

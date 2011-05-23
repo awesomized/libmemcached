@@ -54,13 +54,13 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     new_size= sizeof(char) * (size_t)((adjust * MEMCACHED_BLOCK_SIZE) + string->current_size);
     /* Test for overflow */
     if (new_size < need)
-      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
     new_value= static_cast<char *>(libmemcached_realloc(string->root, string->string, new_size));
 
-    if (new_value == NULL)
+    if (not new_value)
     {
-      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
 
     string->string= new_value;
@@ -78,10 +78,8 @@ static inline void _init_string(memcached_string_st *self)
   self->end= self->string= NULL;
 }
 
-memcached_string_st *memcached_string_create(const memcached_st *memc, memcached_string_st *self, size_t initial_size)
+memcached_string_st *memcached_string_create(memcached_st *memc, memcached_string_st *self, size_t initial_size)
 {
-  memcached_return_t rc;
-
   WATCHPOINT_ASSERT(memc);
 
   /* Saving malloc calls :) */
@@ -102,17 +100,12 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
 
     self->options.is_allocated= true;
   }
-  self->root= const_cast<memcached_st *>(memc);
+  self->root= memc;
 
   _init_string(self);
 
-  rc=  _string_check(self, initial_size);
-  if (memcached_failed(rc))
+  if (memcached_failed(_string_check(self, initial_size)))
   {
-    if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
-    {
-      memcached_set_errno(self->root, errno, NULL);
-    }
     libmemcached_free(memc, self);
 
     return NULL;
@@ -128,13 +121,9 @@ memcached_string_st *memcached_string_create(const memcached_st *memc, memcached
 memcached_return_t memcached_string_append_character(memcached_string_st *string,
                                                      char character)
 {
-  memcached_return_t rc;
-
-  rc=  _string_check(string, 1);
-
-  if (memcached_failed(rc))
+  if (memcached_failed(_string_check(string, 1)))
   {
-    return rc;
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
   *string->end= character;
@@ -146,13 +135,9 @@ memcached_return_t memcached_string_append_character(memcached_string_st *string
 memcached_return_t memcached_string_append(memcached_string_st *string,
                                            const char *value, size_t length)
 {
-  memcached_return_t rc;
-
-  rc= _string_check(string, length);
-
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(_string_check(string, length)))
   {
-    return rc;
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
   WATCHPOINT_ASSERT(length <= string->current_size);
@@ -167,14 +152,12 @@ memcached_return_t memcached_string_append(memcached_string_st *string,
 
 char *memcached_string_c_copy(memcached_string_st *string)
 {
-  char *c_ptr;
-
-  if (memcached_string_length(string) == 0)
+  if (not memcached_string_length(string))
     return NULL;
 
-  c_ptr= static_cast<char *>(libmemcached_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char)));
+  char *c_ptr= static_cast<char *>(libmemcached_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char)));
 
-  if (c_ptr == NULL)
+  if (not c_ptr)
     return NULL;
 
   memcpy(c_ptr, memcached_string_value(string), memcached_string_length(string));
@@ -192,7 +175,7 @@ memcached_return_t memcached_string_reset(memcached_string_st *string)
 
 void memcached_string_free(memcached_string_st *ptr)
 {
-  if (ptr == NULL)
+  if (not ptr)
     return;
 
   if (ptr->string)

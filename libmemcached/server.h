@@ -69,7 +69,7 @@ struct memcached_server_st {
   struct addrinfo *address_info;
   struct addrinfo *address_info_next;
   time_t next_retry;
-  const memcached_st *root;
+  memcached_st *root;
   uint64_t limit_maxbytes;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];

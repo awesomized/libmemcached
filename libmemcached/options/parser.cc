@@ -2066,7 +2066,7 @@ yyreduce:
 #line 438 "libmemcached/options/parser.yy"
     {
             (yyval.string).c_str= (yyvsp[(1) - (1)].string).c_str +1; // +1 to move use passed the initial quote
-            (yyval.string).length= (yyvsp[(1) - (1)].string).length -1; // -1 removes the end quote
+            (yyval.string).length= (yyvsp[(1) - (1)].string).length -2; // -2 removes the begin and end quote
           ;}
     break;
 

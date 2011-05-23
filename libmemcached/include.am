@@ -15,6 +15,7 @@ noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.h \
+		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
@@ -78,6 +79,7 @@ nobase_include_HEADERS+= \
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
+					      libmemcached/array.c \
 					      libmemcached/error.cc \
 					      libmemcached/string.cc
 libmemcached_libmemcachedinternal_la_CFLAGS= \

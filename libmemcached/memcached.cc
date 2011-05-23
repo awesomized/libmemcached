@@ -226,12 +226,6 @@ memcached_st *memcached_create(memcached_st *ptr)
 
 memcached_st *memcached(const char *string, size_t length)
 {
-  if ((not length and string) or (length and not string))
-  {
-    errno= EINVAL;
-    return NULL;
-  }
-
   memcached_st *self= memcached_create(NULL);
   if (not self)
   {
@@ -242,22 +236,19 @@ memcached_st *memcached(const char *string, size_t length)
   if (not length)
     return self;
 
-  memcached_return_t rc;
-  rc= memcached_parse_configuration(self, string, length);
+  memcached_return_t rc= memcached_parse_configuration(self, string, length);
 
-  if (rc == MEMCACHED_SUCCESS && memcached_parse_filename(self))
+  if (memcached_success(rc) and memcached_parse_filename(self))
   {
     rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
   }
     
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
   {
     memcached_free(self);
     errno= EINVAL;
     return NULL;
   }
-
-  errno= 0;
 
   return self;
 }
@@ -285,7 +276,7 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
 void memcached_servers_reset(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   memcached_server_list_free(memcached_server_list(ptr));
@@ -302,7 +293,7 @@ void memcached_servers_reset(memcached_st *ptr)
 
 void memcached_reset_last_disconnected_server(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   if (ptr->last_disconnected_server)
@@ -314,7 +305,7 @@ void memcached_reset_last_disconnected_server(memcached_st *ptr)
 
 void memcached_free(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   _free(ptr, true);
@@ -388,6 +379,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
 
   new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
+  new_clone->configure.filename= memcached_array_clone(new_clone, source->prefix_key);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)

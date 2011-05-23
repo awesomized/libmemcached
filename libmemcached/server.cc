@@ -41,7 +41,7 @@
 #include <libmemcached/common.h>
 #include <cassert>
 
-static inline void _server_init(memcached_server_st *self, const memcached_st *root,
+static inline void _server_init(memcached_server_st *self, memcached_st *root,
                                 const char *hostname, in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
 {
@@ -92,11 +92,11 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
 {
-  if (self == NULL)
+  if (not self)
   {
    self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
 
-    if (! self)
+    if (not self)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
     self->options.is_allocated= true;
@@ -118,10 +118,10 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc,
 {
   self= _server_create(self, memc);
 
-  if (self == NULL)
+  if (not self)
     return NULL;
 
-  _server_init(self, memc, hostname, port, weight, type);
+  _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
 
   if (type == MEMCACHED_CONNECTION_UDP)
@@ -299,7 +299,7 @@ void memcached_server_list_free(memcached_server_list_st self)
     }
   }
 
-  const memcached_st *root= self->root;
+  memcached_st *root= self->root;
   if (root)
   {
     libmemcached_free(root, self);

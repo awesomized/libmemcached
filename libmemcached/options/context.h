@@ -122,7 +122,7 @@ public:
     }
     memcached_string_append(error_string, memcached_literal_param(")"));
 
-    memcached_set_error_string(memc, rc, memcached_string_value(error_string), memcached_string_length(error_string));
+    memcached_set_error(*memc, rc, MEMCACHED_AT, memcached_string_value(error_string), memcached_string_length(error_string));
 
     memcached_string_free(error_string);
   }

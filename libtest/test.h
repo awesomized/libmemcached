@@ -228,6 +228,17 @@ do \
   } \
 } while (0)
 
+#define test_compare_got(A,B,C) \
+do \
+{ \
+  if ((A) != (B)) \
+  { \
+    fprintf(stderr, "\n%s:%d: Expected %s, got %s\n", __FILE__, __LINE__, #A, (C)); \
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
 #define test_false(A) \
 do \
 { \

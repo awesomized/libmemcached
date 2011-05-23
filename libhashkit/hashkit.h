@@ -90,10 +90,6 @@ void hashkit_free(hashkit_st *hash);
 #define hashkit_is_allocated(__object) ((__object)->options.is_allocated)
 #define hashkit_is_initialized(__object) ((__object)->options.is_initialized)
 
-
-#define hashkit_success(X) (X) == HASHKIT_SUCCESS
-#define hashkit_failed(X) (X) != HASHKIT_SUCCESS
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

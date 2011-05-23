@@ -39,19 +39,21 @@
 
 memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *key, size_t key_length)
 {
-  if (key && key_length)
+  WATCHPOINT_ASSERT(self);
+
+  if (key and key_length)
   {
     if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-      return memcached_set_error(self, MEMCACHED_BAD_KEY_PROVIDED);
+      return memcached_set_error(*self, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
 
     if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
-      return memcached_set_error(self, MEMCACHED_KEY_TOO_BIG);
+      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
 
     memcached_array_free(self->prefix_key);
     self->prefix_key= memcached_strcpy(self, key, key_length);
 
-    if (! self->prefix_key)
-      return memcached_set_error(self, MEMCACHED_MEMORY_ALLOCATION_FAILURE);
+    if (not self->prefix_key)
+      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
   else
   {

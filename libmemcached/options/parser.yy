@@ -437,7 +437,7 @@ string:
         | QUOTED_STRING
           {
             $$.c_str= $1.c_str +1; // +1 to move use passed the initial quote
-            $$.length= $1.length -1; // -1 removes the end quote
+            $$.length= $1.length -2; // -2 removes the begin and end quote
           }
         ;
 
