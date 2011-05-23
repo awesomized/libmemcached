@@ -1,25 +1,45 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: Change the behavior of the memcached connection.
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
 #include <libmemcached/common.h>
 #include <libmemcached/virtual_bucket.h>
 
-#include <time.h>
+#include <ctime>
 #include <sys/types.h>
-
-static bool set_flag(uint64_t data)
-{
-  // Wordy :)
-  return data ? true : false;
-}
 
 /*
   This function is used to modify the behavior of running client.
@@ -61,7 +81,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
-    ptr->flags.auto_eject_hosts= set_flag(data);
+    ptr->flags.auto_eject_hosts= bool(data);
 
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     ptr->server_failure_limit= (uint32_t)data;
@@ -73,20 +93,20 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     {
       ptr->flags.verify_key= false;
     }
-    ptr->flags.binary_protocol= set_flag(data);
+    ptr->flags.binary_protocol= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
-    ptr->flags.support_cas= set_flag(data);
+    ptr->flags.support_cas= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
-    ptr->flags.no_block= set_flag(data);
+    ptr->flags.no_block= bool(data);
     send_quit(ptr);
     break;
 
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    ptr->flags.buffer_requests= set_flag(data);
+    ptr->flags.buffer_requests= bool(data);
     send_quit(ptr);
     break;
 
@@ -95,20 +115,20 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     {
       return MEMCACHED_FAILURE;
     }
-    ptr->flags.use_udp= set_flag(data);
+    ptr->flags.use_udp= bool(data);
     if (data)
     {
-      ptr->flags.no_reply= set_flag(data);
+      ptr->flags.no_reply= bool(data);
     }
     break;
 
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
-    ptr->flags.tcp_nodelay= set_flag(data);
+    ptr->flags.tcp_nodelay= bool(data);
     send_quit(ptr);
     break;
 
   case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
-    ptr->flags.tcp_keepalive= set_flag(data);
+    ptr->flags.tcp_keepalive= bool(data);
     send_quit(ptr);
     break;
 
@@ -127,7 +147,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     {
       (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_MD5);
       (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_MD5);
-      ptr->ketama.weighted= set_flag(data);
+      ptr->ketama.weighted= bool(data);
       /**
         @note We try to keep the same distribution going. This should be deprecated and rewritten.
       */
@@ -148,12 +168,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     if (ptr->flags.binary_protocol)
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                         memcached_literal_param("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
-    ptr->flags.verify_key= set_flag(data);
+    ptr->flags.verify_key= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
-      ptr->flags.use_sort_hosts= set_flag(data);
+      ptr->flags.use_sort_hosts= bool(data);
       run_distribution(ptr);
 
       break;
@@ -191,20 +211,20 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
 
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    ptr->flags.hash_with_prefix_key= set_flag(data);
+    ptr->flags.hash_with_prefix_key= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    ptr->flags.no_reply= set_flag(data);
+    ptr->flags.no_reply= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
-    ptr->flags.auto_eject_hosts= set_flag(data);
+    ptr->flags.auto_eject_hosts= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
       srandom((uint32_t) time(NULL));
-      ptr->flags.randomize_replica_read= set_flag(data);
+      ptr->flags.randomize_replica_read= bool(data);
       break;
 
   case MEMCACHED_BEHAVIOR_CORK:
