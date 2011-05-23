@@ -14,6 +14,7 @@
 */Makefile
 */Makefile.in
 *TAGS
+.deps
 INSTALL
 Makefile
 Makefile.in
@@ -50,6 +51,8 @@ docs/*.[13]
 docs/*.html
 docs/doctest/
 docs/doctrees/
+docs/html/
+docs/linkcheck/
 example/memcached_light
 libhashkit/configure.h
 libmemcached-*.tar.gz
@@ -71,8 +74,6 @@ ltsugar.m4
 ltversion.m4
 lt~obsolete.m4
 patch
-docs/html/
-docs/linkcheck/
 patch2
 stamp-h1
 support/Makefile
@@ -80,6 +81,7 @@ support/Makefile.in
 support/libmemcached-fc.spec
 support/libmemcached.pc
 support/libmemcached.spec
+tags
 tests/atomsmasher
 tests/hash_plus
 tests/hashplus
@@ -92,4 +94,3 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
-.deps
