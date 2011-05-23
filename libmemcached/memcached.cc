@@ -157,8 +157,7 @@ static void _free(memcached_st *ptr, bool release_st)
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
 
-  if (ptr->ketama.continuum)
-    libmemcached_free(ptr, ptr->ketama.continuum);
+  libmemcached_free(ptr, ptr->ketama.continuum);
 
   memcached_array_free(ptr->prefix_key);
   ptr->prefix_key= NULL;
@@ -190,7 +189,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
 
-    if (! ptr)
+    if (not ptr)
     {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
     }

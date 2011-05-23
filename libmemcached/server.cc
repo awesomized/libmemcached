@@ -146,14 +146,7 @@ void memcached_server_free(memcached_server_st *self)
 
   if (memcached_is_allocated(self))
   {
-    if (self->root)
-    {
-      libmemcached_free(self->root, self);
-    }
-    else
-    {
-      free(self);
-    }
+    libmemcached_free(self->root, self);
   }
   else
   {
@@ -300,14 +293,7 @@ void memcached_server_list_free(memcached_server_list_st self)
   }
 
   memcached_st *root= self->root;
-  if (root)
-  {
-    libmemcached_free(root, self);
-  }
-  else
-  {
-    free(self);
-  }
+  libmemcached_free(root, self);
 }
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)

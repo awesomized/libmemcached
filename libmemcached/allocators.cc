@@ -39,7 +39,8 @@
 
 void _libmemcached_free(const memcached_st*, void *mem, void*)
 {
-  free(mem);
+  if (mem)
+    free(mem);
 }
 
 void *_libmemcached_malloc(const memcached_st *, size_t size, void *)

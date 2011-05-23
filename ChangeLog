@@ -1,4 +1,5 @@
- * Updates to C++ interface
+ * Updates to C++ interface 
+ * Custom free allocators need to now check for value before calling free.
 
 0.49 Thu Apr 14 08:43:37 PDT 2011
   * Fix calls to auto methods so that if value is not passed in nothing bad happens.

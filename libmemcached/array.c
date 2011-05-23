@@ -108,14 +108,7 @@ void memcached_array_free(memcached_array_st *array)
     return;
 
   WATCHPOINT_ASSERT(array->root);
-  if (array && array->root)
-  {
-    libmemcached_free(array->root, array);
-  }
-  else if (array)
-  {
-    free(array);
-  }
+  libmemcached_free(array->root, array);
 }
 
 size_t memcached_array_size(memcached_array_st *array)

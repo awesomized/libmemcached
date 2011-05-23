@@ -38,20 +38,42 @@
 
 static inline void libmemcached_free(const memcached_st *self, void *mem)
 {
-  self->allocators.free(self, mem, self->allocators.context);
+  if (self)
+  {
+    self->allocators.free(self, mem, self->allocators.context);
+  }
+  else if (mem)
+  {
+    free(mem);
+  }
 }
 
 static inline void *libmemcached_malloc(const memcached_st *self, const size_t size)
 {
-  return self->allocators.malloc(self, size, self->allocators.context);
+  if (self)
+  {
+    return self->allocators.malloc(self, size, self->allocators.context);
+  }
+
+  return malloc(size);
 }
 
 static inline void *libmemcached_realloc(const memcached_st *self, void *mem, const size_t size)
 {
-  return self->allocators.realloc(self, mem, size, self->allocators.context);
+  if (self)
+  {
+    return self->allocators.realloc(self, mem, size, self->allocators.context);
+  }
+
+  return realloc(mem, size);
 }
 
 static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size)
 {
-  return self->allocators.calloc(self, nelem, size, self->allocators.context);
+  if (self)
+  {
+    return self->allocators.calloc(self, nelem, size, self->allocators.context);
+  }
+
+  return calloc(nelem, size);
 }
