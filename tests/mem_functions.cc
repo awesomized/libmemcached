@@ -398,6 +398,28 @@ static test_return_t connection_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t libmemcached_string_behavior_test(memcached_st *)
+{
+  for (int x= MEMCACHED_BEHAVIOR_NO_BLOCK; x < int(MEMCACHED_BEHAVIOR_MAX); ++x)
+  {
+    test_true(libmemcached_string_behavior(memcached_behavior_t(x)));
+  }
+  test_compare(36, MEMCACHED_BEHAVIOR_MAX);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t libmemcached_string_distribution_test(memcached_st *)
+{
+  for (int x= MEMCACHED_DISTRIBUTION_MODULA; x < int(MEMCACHED_DISTRIBUTION_CONSISTENT_MAX); ++x)
+  {
+    test_true(libmemcached_string_distribution(memcached_server_distribution_t(x)));
+  }
+  test_compare(7, MEMCACHED_DISTRIBUTION_CONSISTENT_MAX);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t error_test(memcached_st *memc)
 {
   uint32_t values[] = { 851992627U, 2337886783U, 646418395U, 4001849190U,
@@ -2113,7 +2135,7 @@ static test_return_t fetch_all_results(memcached_st *memc, size_t *keys_returned
     *keys_returned= *keys_returned +1;
   }
 
-  test_true_got(rc == MEMCACHED_END || rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_true_got(rc == MEMCACHED_END || memcached_success(rc), memcached_strerror(NULL, rc));
 
   return TEST_SUCCESS;
 }
@@ -3397,7 +3419,7 @@ static test_return_t mget_read(memcached_st *memc)
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_true_got(memcached_success(rc), memcached_strerror(NULL, rc));
 
   // Go fetch the keys and test to see if all of them were returned
   {
@@ -3420,7 +3442,7 @@ static test_return_t mget_read_result(memcached_st *memc)
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_true_got(memcached_success(rc), memcached_strerror(NULL, rc));
 
   /* Turn this into a help function */
   {
@@ -3447,7 +3469,7 @@ static test_return_t mget_read_function(memcached_st *memc)
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
-  test_true_got(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_true_got(memcached_success(rc), memcached_strerror(NULL, rc));
 
   memcached_execute_fn callbacks[]= { &callback_counter };
   size_t counter= 0;
@@ -5954,6 +5976,8 @@ test_st tests[] ={
 };
 
 test_st behavior_tests[] ={
+  {"libmemcached_string_behavior()", 0, (test_callback_fn)libmemcached_string_behavior_test},
+  {"libmemcached_string_distribution()", 0, (test_callback_fn)libmemcached_string_distribution_test},
   {"behavior_test", 0, (test_callback_fn)behavior_test},
   {"MEMCACHED_BEHAVIOR_CORK", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_CORK_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", 0, (test_callback_fn)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},

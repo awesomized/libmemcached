@@ -11,8 +11,7 @@
  *
  */
 
-#ifndef __LIBMEMCACHED_PROTOCOL_H__
-#define __LIBMEMCACHED_PROTOCOL_H__
+#pragma once
 
 #include <sys/types.h>
 #if !defined(__cplusplus)
@@ -213,6 +212,4 @@ memcached_binary_protocol_raw_response_handler memcached_binary_protocol_get_raw
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

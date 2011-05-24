@@ -37,8 +37,6 @@
 
 
 #pragma once
-#ifndef __LIBMEMCACHED_TYPES_H__
-#define __LIBMEMCACHED_TYPES_H__
 
 typedef struct memcached_st memcached_st;
 typedef struct memcached_stat_st memcached_stat_st;
@@ -117,5 +115,3 @@ typedef memcached_server_fn memcached_server_function;
 typedef memcached_trigger_key_fn memcached_trigger_key;
 typedef memcached_trigger_delete_key_fn memcached_trigger_delete_key;
 typedef memcached_dump_fn memcached_dump_func;
-
-#endif /* __LIBMEMCACHED_TYPES_H__ */

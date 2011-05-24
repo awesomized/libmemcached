@@ -133,9 +133,8 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
     return "USER INITIATED ERROR OCCURED WHILE PARSING";
   case MEMCACHED_DEPRECATED:
     return "DEPRECATED";
-  case MEMCACHED_MAXIMUM_RETURN:
-    return "Gibberish returned!";
   default:
-    return "Gibberish returned!";
+  case MEMCACHED_MAXIMUM_RETURN:
+    return "INVALID memcached_return_t";
   }
 }

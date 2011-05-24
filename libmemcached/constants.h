@@ -1,17 +1,42 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: Constants for libmemcached
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
+
 #pragma once
-#ifndef __LIBMEMCACHED_CONSTANTS_H__
-#define __LIBMEMCACHED_CONSTANTS_H__
 
 /* Public defines */
 #define MEMCACHED_DEFAULT_PORT 11211
@@ -45,7 +70,7 @@ enum memcached_server_distribution_t {
 typedef enum memcached_server_distribution_t memcached_server_distribution_t;
 #endif
 
-typedef enum {
+enum memcached_behavior_t {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
   MEMCACHED_BEHAVIOR_TCP_NODELAY,
   MEMCACHED_BEHAVIOR_HASH,
@@ -83,9 +108,13 @@ typedef enum {
   MEMCACHED_BEHAVIOR_LOAD_FROM_FILE,
   MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS,
   MEMCACHED_BEHAVIOR_MAX
-} memcached_behavior_t;
+};
 
-typedef enum {
+#ifndef __cplusplus
+typedef enum memcached_behavior_t memcached_behavior_t;
+#endif
+
+enum memcached_callback_t {
   MEMCACHED_CALLBACK_PREFIX_KEY = 0,
   MEMCACHED_CALLBACK_USER_DATA = 1,
   MEMCACHED_CALLBACK_CLEANUP_FUNCTION = 2,
@@ -98,9 +127,13 @@ typedef enum {
   MEMCACHED_CALLBACK_GET_FAILURE = 7,
   MEMCACHED_CALLBACK_DELETE_TRIGGER = 8,
   MEMCACHED_CALLBACK_MAX
-} memcached_callback_t;
+};
 
-typedef enum {
+#ifndef __cplusplus
+typedef enum memcached_callback_t memcached_callback_t;
+#endif
+
+enum memcached_hash_t {
   MEMCACHED_HASH_DEFAULT= 0,
   MEMCACHED_HASH_MD5,
   MEMCACHED_HASH_CRC,
@@ -113,14 +146,20 @@ typedef enum {
   MEMCACHED_HASH_JENKINS,
   MEMCACHED_HASH_CUSTOM,
   MEMCACHED_HASH_MAX
-} memcached_hash_t;
+};
 
-typedef enum {
+#ifndef __cplusplus
+typedef enum memcached_hash_t memcached_hash_t;
+#endif
+
+enum memcached_connection_t {
   MEMCACHED_CONNECTION_UNKNOWN,
   MEMCACHED_CONNECTION_TCP,
   MEMCACHED_CONNECTION_UDP,
   MEMCACHED_CONNECTION_UNIX_SOCKET,
   MEMCACHED_CONNECTION_MAX
-} memcached_connection_t;
+};
 
-#endif /* __LIBMEMCACHED_CONSTANTS_H__ */
+#ifndef __cplusplus
+typedef enum memcached_connection_t memcached_connection_t;
+#endif
