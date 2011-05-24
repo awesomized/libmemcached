@@ -2,43 +2,31 @@
 Manipulate the server information stored in memcached_st
 ========================================================
 
-
-Manage server list
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
+.. index:: object: memcached_st
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached.h>
+ 
+.. c:function:: uint32_t memcached_server_count (memcached_st *ptr);
 
+.. c:function:: memcached_return_t memcached_server_add (memcached_st *ptr, const char *hostname, in_port_t port);
 
-.. code-block:: perl
+.. c:function:: memcached_return_t memcached_server_add_udp (memcached_st *ptr, const char *hostname, in_port_t port);
 
-   #include <libmemcached/memcached.h>
- 
-   uint32_t memcached_server_count (memcached_st *ptr);
- 
-   memcached_return_t memcached_server_add (memcached_st *ptr, const char *hostname, in_port_t port);
- 
-   memcached_return_t memcached_server_add_udp (memcached_st *ptr, const char *hostname, in_port_t port);
- 
-   memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket);
- 
-   memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list); 
+.. c:function:: memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket);
 
-   memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error);
- 
-   memcached_server_instance_st memcached_server_get_last_disconnect (const memcached_st *ptr)
- 
-   memcached_return_t memcached_server_cursor(const memcached_st *ptr, const memcached_server_fn *callback, void *context, uint32_t number_of_callbacks);
+.. c:function:: memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list); 
+
+.. c:function:: memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error);
+
+.. c:function:: memcached_server_instance_st memcached_server_get_last_disconnect (const memcached_st *ptr)
+
+.. c:function:: memcached_return_t memcached_server_cursor(const memcached_st *ptr, const memcached_server_fn *callback, void *context, uint32_t number_of_callbacks);
+
+compile and link with -lmemcached
 
 
 
@@ -97,17 +85,17 @@ return from any callback will terminate the loop. memcached_server_cursor()
 is passed the original caller memcached_st in its current state.
 
 
-******
+------
 RETURN
-******
+------
 
 
 Varies, see particular functions.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:

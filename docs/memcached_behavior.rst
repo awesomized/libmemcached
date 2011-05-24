@@ -3,15 +3,9 @@ Modifying how the driver behaves
 ================================
 
 
-Manipulate behavior
+Manipulate the behavior of a memcached_st structure. 
 
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
+.. index:: object: memcached_st
 
 
 --------
@@ -25,6 +19,7 @@ SYNOPSIS
 
 .. c:function:: memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior flag, uint64_t data);
 
+Compile and link with -lmemcached
 
 
 -----------

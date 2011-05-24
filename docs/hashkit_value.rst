@@ -3,30 +3,21 @@ hashkit_value
 =============
 
 
+.. index:: object: hashkit_st
+
 Generate a value for the given key
-
-
--------
-LIBRARY
--------
-
-
-C Library for hashing algorithms (libmemcached, -lhashkit)
-
 
 --------
 SYNOPSIS
 --------
 
 
+#include <libhashkit/hashkit.h>
 
-.. code-block:: perl
-
-   #include <libmemcached/hashkit.h>
+.. c:function:: uint32_t hashkit_value(hashkit_st *hash, const char *key, size_t key_length);
  
-   uint32_t hashkit_value(hashkit_st *hash,
-                          const char *key,
-                          size_t key_length);
+
+Compile and link with -lhashkit
 
 
 

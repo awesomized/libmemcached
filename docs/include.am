@@ -63,9 +63,11 @@ EXTRA_DIST+= \
 	     docs/libmemcachedutil.rst \
 	     docs/memaslap.rst \
 	     docs/memcached_analyze.rst \
+	     docs/memcached_append.rst \
 	     docs/memcached_auto.rst \
 	     docs/memcached_behavior.rst \
 	     docs/memcached_callback.rst \
+	     docs/memcached_cas.rst \
 	     docs/memcached_create.rst \
 	     docs/memcached_delete.rst \
 	     docs/memcached_dump.rst \

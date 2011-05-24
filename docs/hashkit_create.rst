@@ -2,13 +2,11 @@
 Creating a hashkit structure
 ============================
 
+.. index:: object: hashkit_st
 
 --------
 SYNOPSIS
 --------
-
-C Library for hashing algorithms (libmemcached, -lhashkit)
-
 
 #include <libhashkit/hashkit.h>
  
@@ -20,7 +18,7 @@ C Library for hashing algorithms (libmemcached, -lhashkit)
 
 .. c:function:: bool hashkit_is_allocated(const hashkit_st *hash);
 
-Compile and link with -lmemcached
+Compile and link with -lhashkit
 
 
 -----------

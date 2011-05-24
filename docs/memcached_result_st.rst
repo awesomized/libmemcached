@@ -2,53 +2,40 @@
 Working with result sets
 ========================
 
+.. index:: object: memcached_result_st
 
 Work with memcached_result_st
-
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
 
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached_pool.h>
 
+.. c:function:: memcached_result_st * memcached_result_create (memcached_st *ptr, memcached_result_st *result);
 
-.. code-block:: perl
+.. c:function:: void memcached_result_free (memcached_result_st *result);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_result_st *
-     memcached_result_create (memcached_st *ptr,
-                              memcached_result_st *result);
- 
-   void memcached_result_free (memcached_result_st *result);
- 
-   const char * memcached_result_key_value (memcached_result_st *result);
- 
-   size_t memcached_result_key_length (const memcached_result_st *result);
- 
-   const char *memcached_result_value (memcached_result_st *ptr);
- 
-   size_t memcached_result_length (const memcached_result_st *ptr);
- 
-   uint32_t memcached_result_flags (const memcached_result_st *result)
- 
-   uint64_t memcached_result_cas (const memcached_result_st *result);
- 
-   memcached_return_t
-     memcached_result_set_value (memcached_result_st *ptr,
-                                 const char *value, size_t length)
- 
-   void memcached_result_set_flags (memcached_result_st *ptr, uint32_t flags)
- 
-   void memcached_result_set_expiration (memcached_result_st *ptr, time_t)
+.. c:function:: const char * memcached_result_key_value (memcached_result_st *result);
+
+.. c:function:: size_t memcached_result_key_length (const memcached_result_st *result);
+
+.. c:function:: const char *memcached_result_value (memcached_result_st *ptr);
+
+.. c:function:: size_t memcached_result_length (const memcached_result_st *ptr);
+
+.. c:function:: uint32_t memcached_result_flags (const memcached_result_st *result)
+
+.. c:function:: uint64_t memcached_result_cas (const memcached_result_st *result);
+
+.. c:function:: memcached_return_t memcached_result_set_value (memcached_result_st *ptr, const char *value, size_t length)
+
+.. c:function:: void memcached_result_set_flags (memcached_result_st *ptr, uint32_t flags)
+
+.. c:function:: void memcached_result_set_expiration (memcached_result_st *ptr, time_t)
+
+Compile and link with -lmemcachedutil -lmemcached
 
 
 

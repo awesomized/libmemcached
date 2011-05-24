@@ -5,13 +5,7 @@ Setting callbacks
 
 Get and set a callback
 
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
+.. index:: object: memcached_st
 
 
 --------
@@ -24,6 +18,7 @@ SYNOPSIS
  
 .. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
 
+Compile and link with -lmemcached
 
 
 -----------

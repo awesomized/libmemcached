@@ -2,13 +2,15 @@
 Configuring Libmemcached
 ========================
 
+.. index:: object: memcached_st
+
 -------- 
 SYNOPSIS 
 --------
 
+#include <libmemcached/memcached.h>
 
 .. c:function:: memcached_st *memcached(const char *string, size_t string_length)
-
 
 .. c:function:: memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
 

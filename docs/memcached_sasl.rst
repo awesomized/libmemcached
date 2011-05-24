@@ -2,34 +2,24 @@
 SASL support
 ============
 
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
+.. index:: object: memcached_st
 
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached_pool.h>
 
+.. c:function:: void memcached_set_sasl_callbacks(memcached_st *ptr, const sasl_callback_t *callbacks)
 
-.. code-block:: perl
+.. c:function:: const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
 
-   #include <libmemcached/memcached.h>
- 
-   void memcached_set_sasl_callbacks(memcached_st *ptr,
-                                     const sasl_callback_t *callbacks)
- 
-   const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
- 
-   memcached_return memcached_set_sasl_auth_data(memcached_st *ptr,
-                                                 const char *username,
-                                                 const char *password)
-   memcached_return memcached_destroy_sasl_auth_data(memcached_st *ptr)
+.. c:function:: memcached_return memcached_set_sasl_auth_data(memcached_st *ptr, const char *username, const char *password)
+
+.. c:function:: memcached_return memcached_destroy_sasl_auth_data(memcached_st *ptr)
+
+Compile and link with -lmemcached
 
 
 

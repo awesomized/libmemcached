@@ -5,52 +5,26 @@ Working with statistical information from a server
 
 Get memcached statistics
 
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
+.. index:: object: memcached_st
 
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached.h>
 
+.. c:function:: memcached_stat_st *memcached_stat (memcached_st *ptr, char *args, memcached_return_t *error);
 
-.. code-block:: perl
+.. c:function:: memcached_return_t memcached_stat_servername (memcached_stat_st *stat, char *args, const char *hostname, unsigned int port);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_stat_st *memcached_stat (memcached_st *ptr,
-                                      char *args,
-                                      memcached_return_t *error);
- 
-   memcached_return_t memcached_stat_servername (memcached_stat_st *stat,
-                                                 char *args, 
-                                                 const char *hostname,
-                                                 unsigned int port);
- 
-   char *
-     memcached_stat_get_value (memcached_st *ptr,
-                               memcached_stat_st *stat, 
-                               const char *key,
-                               memcached_return_t *error);
- 
-   char ** 
-     memcached_stat_get_keys (memcached_st *ptr,
-                              memcached_stat_st *stat, 
-                              memcached_return_t *error);
- 
-   memcached_return_t
-     memcached_stat_execute (memcached_st *memc,
-                             const char *args,
-                             memcached_stat_fn func,
-                             void *context);
+.. c:function:: char * memcached_stat_get_value (memcached_st *ptr, memcached_stat_st *stat, const char *key, memcached_return_t *error);
 
+.. c:function:: char ** memcached_stat_get_keys (memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error);
 
+.. c:function:: memcached_return_t memcached_stat_execute (memcached_st *memc, const char *args, memcached_stat_fn func, void *context);
+
+Compile and link with -lmemcached
 
 -----------
 DESCRIPTION
@@ -92,9 +66,9 @@ A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
 
 
-******
+------
 RETURN
-******
+------
 
 
 Varies, see particular functions.
@@ -103,18 +77,18 @@ Any method returning a \ ``memcached_stat_st``\  expects you to free the
 memory allocated for it.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
-******
+------
 AUTHOR
-******
+------
 
 
 Brian Aker, <brian@tangent.org>

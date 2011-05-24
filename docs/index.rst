@@ -36,6 +36,8 @@ Working with data
    memcached_get
    memcached_result_st
    memcached_set
+   memcached_append
+   memcached_cas
 
 
 ###############

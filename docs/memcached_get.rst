@@ -2,6 +2,7 @@
 Retrieving data from the server
 ===============================
 
+.. index:: object: memcached_st
 
 --------
 SYNOPSIS

@@ -6,20 +6,11 @@ Introducing
 Utility library for libmemcached
 
 
--------
-LIBRARY
--------
-
-
-C Client Library containing utility functions for libmemcached (libmemcachedutil, -lmemcachedutil -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
-
-.. code-block:: perl
+.. code-block:: c
 
    cc [ flag ... ] file ... -lmemcachedutil
  

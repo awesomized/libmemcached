@@ -3,28 +3,17 @@ Coverting Errors, memcached_return_t, to strings
 ================================================
 
 
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
+.. index:: object: memcached_st
 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached.h>
 
+.. c:function:: const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc);
 
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
- 
-   const char *
-     memcached_strerror (memcached_st *ptr,
-                         memcached_return_t rc);
-
+Compile and link with -lmemcached
 
 
 -----------
@@ -43,29 +32,22 @@ This string must not be modified by the application.
 with switch/case and know that you are capturing all possible return values.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_strerror() returns a string describing a \ ``memcached_return_t``\  value.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
 
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

@@ -3,16 +3,9 @@ Flushing client buffers
 =======================
 
 
-Flush buffers and send buffered commands
+.. index:: object: memcached_st
 
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
+Flush and senf buffered commands
 
 --------
 SYNOPSIS
@@ -22,6 +15,7 @@ SYNOPSIS
  
 .. c:function:: memcached_return_t memcached_flush_buffers (memcached_st *ptr);
 
+Compile and link with -lmemcached
 
 
 -----------

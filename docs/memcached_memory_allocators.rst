@@ -2,41 +2,32 @@
 Use custom allocators for embedded usage
 ========================================
 
+.. index:: object: memcached_st
 
 Manage memory allocator functions
-
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
 
 --------
 SYNOPSIS
 --------
 
 
+#include <libmemcached/memcached.h>
 
-.. code-block:: perl
+.. c:function:: memcached_return_t memcached_set_memory_allocators (memcached_st *ptr, memcached_malloc_fn mem_malloc, memcached_free_fn mem_free, memcached_realloc_fn mem_realloc, memcached_calloc_fn mem_calloc, void *context);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_return_t memcached_set_memory_allocators (memcached_st *ptr, memcached_malloc_fn mem_malloc, memcached_free_fn mem_free, memcached_realloc_fn mem_realloc, memcached_calloc_fn mem_calloc, void *context);
- 
-   void memcached_get_memory_allocators (memcached_st *ptr, memcached_malloc_fn *mem_malloc, memcached_free_fn *mem_free, memcached_realloc_fn *mem_realloc, memcached_calloc_fn *mem_calloc);
- 
-   void * memcached_get_memory_allocators_context(const memcached_st *ptr);
- 
-   void * (*memcached_malloc_fn) (memcached_st *ptr, const size_t size, void *context);
- 
-   void * (*memcached_realloc_fn) (memcached_st *ptr, void *mem, const size_t size, void *context);
- 
-   void (*memcached_free_fn) (memcached_st *ptr, void *mem, void *context);
- 
-   void * (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
+.. c:function:: void memcached_get_memory_allocators (memcached_st *ptr, memcached_malloc_fn *mem_malloc, memcached_free_fn *mem_free, memcached_realloc_fn *mem_realloc, memcached_calloc_fn *mem_calloc);
+
+.. c:function:: void * memcached_get_memory_allocators_context(const memcached_st *ptr);
+
+.. c:function:: void * (*memcached_malloc_fn) (memcached_st *ptr, const size_t size, void *context);
+
+.. c:function:: void * (*memcached_realloc_fn) (memcached_st *ptr, void *mem, const size_t size, void *context);
+
+.. c:function:: void (*memcached_free_fn) (memcached_st *ptr, void *mem, void *context);
+
+.. c:function:: void * (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
+
+Compile and link with -lmemcached
 
 
 

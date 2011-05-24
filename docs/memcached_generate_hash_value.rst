@@ -2,6 +2,7 @@
 Generating hash values directly
 ===============================
 
+.. index:: object: memcached_st
 
 Hash a key value
 

@@ -2,6 +2,7 @@
 Wiping clean the contents of a server
 =====================================
 
+.. index:: object: memcached_st
 
 Wipe contents of memcached servers
 
