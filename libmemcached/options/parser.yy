@@ -41,7 +41,6 @@
 
 #include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
-#include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
 #include <libmemcached/options/scanner.h>
 
@@ -184,7 +183,7 @@ statement:
           }
         | INCLUDE ' ' string
           {
-            if ((context->rc= memcached_parse_configure_file(context->memc, $3.c_str, $3.length)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_parse_configure_file(context->memc, $3.c_str, $3.size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
             }
@@ -211,7 +210,7 @@ expression:
           }
         | CONFIGURE_FILE string
           {
-            memcached_set_configuration_file(context->memc, $2.c_str, $2.length);
+            memcached_set_configuration_file(context->memc, $2.c_str, $2.size);
           }
         | POOL_MIN NUMBER
           {
@@ -227,7 +226,7 @@ expression:
 behaviors:
           NAMESPACE string
           {
-            if ((context->rc= memcached_set_prefix_key(context->memc, $2.c_str, $2.length)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_set_prefix_key(context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }
@@ -437,7 +436,7 @@ string:
         | QUOTED_STRING
           {
             $$.c_str= $1.c_str +1; // +1 to move use passed the initial quote
-            $$.length= $1.length -2; // -2 removes the begin and end quote
+            $$.size= $1.size -2; // -2 removes the begin and end quote
           }
         ;
 

@@ -23,7 +23,6 @@
 #include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
-#include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -161,7 +160,7 @@ JENKINS			{ return JENKINS; }
       yylval->server.weight= 1;
       yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
       if (yylval->server.c_str)
-        yylval->server.length= yyleng;
+        yylval->server.size= yyleng;
       return IPADDRESS;
     }
 
@@ -172,20 +171,20 @@ JENKINS			{ return JENKINS; }
         yylval->server.weight= 1;
         yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
         if (yylval->server.c_str)
-          yylval->server.length= yyleng;
+          yylval->server.size= yyleng;
 
         return HOSTNAME;
       }
 
       yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
+      yylval->string.size = yyleng;
 
       return STRING;
     }
 
 (\".*\") {
       yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
+      yylval->string.size = yyleng;
       return QUOTED_STRING;
     }
 
