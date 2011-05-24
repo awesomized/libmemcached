@@ -3,7 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker, Trond Norbye All rights reserved.
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,20 +37,13 @@
 
 #pragma once
 
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
+                                const void *commmand,
+                                size_t command_length,
+                                bool with_flush);
 
-#ifdef WIN32
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
-typedef short in_port_t;
-typedef SOCKET memcached_socket_t;
-#else
-typedef int memcached_socket_t;
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/un.h>
-#include <netinet/tcp.h>
-
-#endif /* WIN32 */
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
+                                 const struct libmemcached_io_vector_st *vector, size_t count,
+                                 bool with_flush);

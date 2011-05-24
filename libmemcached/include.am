@@ -14,7 +14,7 @@ EXTRA_DIST+= \
 noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
-		 libmemcached/do.h \
+		 libmemcached/do.hpp \
 		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
