@@ -87,9 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
-  hashkit_st *hash_ptr;
-  hash_ptr= hashkit_create(&self->hashkit);
-  if (! hash_ptr)
+  if (not hashkit_create(&self->hashkit))
     return false;
 
   self->ketama.continuum= NULL;
@@ -123,9 +121,6 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->user_data= NULL;
   self->number_of_replicas= 0;
-  hash_ptr= hashkit_create(&self->distribution_hashkit);
-  if (! hash_ptr)
-    return false;
 
   self->allocators= memcached_allocators_return_default();
 
@@ -162,8 +157,7 @@ static void _free(memcached_st *ptr, bool release_st)
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
 
-  if (ptr->ketama.continuum)
-    libmemcached_free(ptr, ptr->ketama.continuum);
+  libmemcached_free(ptr, ptr->ketama.continuum);
 
   memcached_array_free(ptr->prefix_key);
   ptr->prefix_key= NULL;
@@ -195,7 +189,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
 
-    if (! ptr)
+    if (not ptr)
     {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
     }
@@ -231,35 +225,29 @@ memcached_st *memcached_create(memcached_st *ptr)
 
 memcached_st *memcached(const char *string, size_t length)
 {
-  if (! length || ! string)
-  {
-    errno= EINVAL;
-    return NULL;
-  }
-
   memcached_st *self= memcached_create(NULL);
-  if (! self)
+  if (not self)
   {
     errno= ENOMEM;
     return NULL;
   }
 
-  memcached_return_t rc;
-  rc= memcached_parse_configuration(self, string, length);
+  if (not length)
+    return self;
 
-  if (rc == MEMCACHED_SUCCESS && memcached_parse_filename(self))
+  memcached_return_t rc= memcached_parse_configuration(self, string, length);
+
+  if (memcached_success(rc) and memcached_parse_filename(self))
   {
     rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
   }
     
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
   {
     memcached_free(self);
     errno= EINVAL;
     return NULL;
   }
-
-  errno= 0;
 
   return self;
 }
@@ -287,7 +275,7 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
 void memcached_servers_reset(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   memcached_server_list_free(memcached_server_list(ptr));
@@ -304,7 +292,7 @@ void memcached_servers_reset(memcached_st *ptr)
 
 void memcached_reset_last_disconnected_server(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   if (ptr->last_disconnected_server)
@@ -316,7 +304,7 @@ void memcached_reset_last_disconnected_server(memcached_st *ptr)
 
 void memcached_free(memcached_st *ptr)
 {
-  if (! ptr)
+  if (not ptr)
     return;
 
   _free(ptr, true);
@@ -353,17 +341,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->retry_timeout= source->retry_timeout;
   new_clone->distribution= source->distribution;
 
-  hashkit_st *hash_ptr;
-
-  hash_ptr= hashkit_clone(&new_clone->hashkit, &source->hashkit);
-  if (! hash_ptr)
-  {
-    memcached_free(new_clone);
-    return NULL;
-  }
-
-  hash_ptr= hashkit_clone(&new_clone->distribution_hashkit, &source->distribution_hashkit);
-  if (! hash_ptr)
+  if (not hashkit_clone(&new_clone->hashkit, &source->hashkit))
   {
     memcached_free(new_clone);
     return NULL;
@@ -400,6 +378,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
 
   new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
+  new_clone->configure.filename= memcached_array_clone(new_clone, source->prefix_key);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)

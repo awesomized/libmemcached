@@ -1,4 +1,4 @@
-.TH "MEMCACHED_FLUSH_BUFFERS" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_FLUSH_BUFFERS" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_flush_buffers \- libmemcached Documentation
 .
@@ -31,10 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructeredText.
 .
 .sp
-Flush buffers and send buffered commands
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
+Flush and senf buffered commands
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached.h>
@@ -42,6 +39,8 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 .TP
 .B memcached_return_t memcached_flush_buffers (memcached_st *ptr);
 .UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 memcached_flush_buffers() is used in conjunction with

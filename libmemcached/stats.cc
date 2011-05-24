@@ -552,15 +552,10 @@ void memcached_stat_free(const memcached_st *ptr, memcached_stat_st *memc_stat)
   if (memc_stat->root)
   {
     libmemcached_free(memc_stat->root, memc_stat);
+    return;
   }
-  else if (ptr)
-  {
-    libmemcached_free(ptr, memc_stat);
-  }
-  else
-  {
-    free(memc_stat);
-  }
+
+  libmemcached_free(ptr, memc_stat);
 }
 
 static memcached_return_t call_stat_fn(memcached_st *ptr,

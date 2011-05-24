@@ -2,13 +2,14 @@
 Storing custom user information in the client.
 ==============================================
 
+.. index:: object: memcached_st
 
 Manage user specific data
 
 
-*******
+-------
 LIBRARY
-*******
+-------
 
 
 C Client Library for memcached (libmemcached, -lmemcached)
@@ -45,9 +46,9 @@ memcached_get_user_data() is used to retrieve the user specific data in
 the memcached_st structure.
 
 
-******
+------
 RETURN
-******
+------
 
 
 memcached_set_user_data() returns the previous value of the user specific 
@@ -57,21 +58,13 @@ memcached_get_user_data() returns the current value uf the user specific
 data.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-******
-AUTHOR
-******
-
-
-Trond Norbye, <trond.norbye@gmail.com>
 
 
 --------

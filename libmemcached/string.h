@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <libmemcached/basic_string.h>
+
 /**
   Strings are always under our control so we make some assumptions
   about them.
@@ -58,17 +60,14 @@ struct memcached_string_st {
   } options;
 };
 
-struct memcached_string_t {
-  size_t size;
-  const char *c_str;
-};
+#ifdef BUILDING_LIBMEMCACHED
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-memcached_string_st *memcached_string_create(const memcached_st *ptr,
+memcached_string_st *memcached_string_create(memcached_st *ptr,
                                              memcached_string_st *string,
                                              size_t initial_size);
 LIBMEMCACHED_LOCAL
@@ -108,14 +107,10 @@ void memcached_string_set_length(memcached_string_st *self, size_t length);
 }
 #endif
 
-#ifdef BUILDING_LIBMEMCACHED
-
 #ifdef __cplusplus
-#define memcached_string_with_size(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
-#define memcached_string_make(X) (static_cast<size_t>((sizeof(X) - 1))), (X)
+#define memcached_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
 #else
-#define memcached_string_with_size(X) (X), ((size_t)((sizeof(X) - 1)))
-#define memcached_string_make(X) (((size_t)((sizeof(X) - 1))), (X)
+#define memcached_literal_param(X) (X), ((size_t)((sizeof(X) - 1)))
 #endif
 
 #define memcached_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)

@@ -1,4 +1,4 @@
-.TH "MEMCACHED_RESULT_FLAGS" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_RESULT_FLAGS" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_result_flags \- Working with result sets
 .
@@ -32,49 +32,62 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Work with memcached_result_st
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
 .SH SYNOPSIS
 .sp
-.nf
-.ft C
-#include <libmemcached/memcached.h>
-
-memcached_result_st *
-  memcached_result_create (memcached_st *ptr,
-                           memcached_result_st *result);
-
-void memcached_result_free (memcached_result_st *result);
-
-const char * memcached_result_key_value (memcached_result_st *result);
-
-size_t memcached_result_key_length (const memcached_result_st *result);
-
-const char *memcached_result_value (memcached_result_st *ptr);
-
-size_t memcached_result_length (const memcached_result_st *ptr);
-
-uint32_t memcached_result_flags (const memcached_result_st *result)
-
-uint64_t memcached_result_cas (const memcached_result_st *result);
-
-memcached_return_t
-  memcached_result_set_value (memcached_result_st *ptr,
-                              const char *value, size_t length)
-
-void memcached_result_set_flags (memcached_result_st *ptr, uint32_t flags)
-
-void memcached_result_set_expiration (memcached_result_st *ptr, time_t)
-.ft P
-.fi
+#include <libmemcached/memcached_pool.h>
+.INDENT 0.0
+.TP
+.B memcached_result_st * memcached_result_create (memcached_st *ptr, memcached_result_st *result);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_result_free (memcached_result_st *result);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B const char * memcached_result_key_value (memcached_result_st *result);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B size_t memcached_result_key_length (const memcached_result_st *result);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B const char *memcached_result_value (memcached_result_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B size_t memcached_result_length (const memcached_result_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t memcached_result_flags(const memcached_result_st\fI\ *result\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint64_t memcached_result_cas (const memcached_result_st *result);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_result_set_value(memcached_result_st\fI\ *ptr\fP, const char\fI\ *value\fP, size_t\fI\ length\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_result_set_flags(memcached_result_st\fI\ *ptr\fP, uint32_t\fI\ flags\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_result_set_expiration(memcached_result_st\fI\ *ptr\fP, time_t)
+.UNINDENT
+.sp
+Compile and link with \-lmemcachedutil \-lmemcached
 .SH DESCRIPTION
 .sp
 libmemcached(3) can optionally return a memcached_result_st which acts as a
 result object. The result objects have added benefits over the character
-pointer returns in that they are forward compatible with new return items
+pointer returns, in that they are forward compatible with new return items
 that future memcached servers may implement (the best current example of
-this is the CAS return item). The structures can also be reused which will
+this is the CAS return item). The structures can also be reused, which will
 save on calls to malloc(3). It is suggested that you use result objects over
 char * return functions.
 .sp
@@ -85,7 +98,7 @@ memcached_result_create() will either allocate memory for a
 memcached_result_st or will initialize a structure passed to it.
 .sp
 memcached_result_free() will deallocate any memory attached to the
-structure. If the structure was also alloacted, it will deallocate it.
+structure. If the structure was also allocated, it will deallocate it.
 .sp
 memcached_result_key_value() returns the key value associated with the
 current result object.
@@ -104,7 +117,7 @@ current result object.
 .sp
 memcached_result_cas() returns the cas associated with the
 current result object. This value will only be available if the server
-testss it.
+tests it.
 .sp
 memcached_result_set_value() takes a byte array and a size and sets
 the result to this value. This function is used for trigger responses.

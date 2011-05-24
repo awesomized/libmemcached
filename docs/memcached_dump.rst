@@ -5,13 +5,7 @@ Dumping data from a server
 
 Get a list of keys found on memcached servers
 
-
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
+.. index:: object: memcached_st
 
 
 --------
@@ -19,21 +13,13 @@ SYNOPSIS
 --------
 
 
+#include <libmemcached/memcached.h>
 
-.. code-block:: perl
+.. c:function:: memcached_return_t memcached_dump (memcached_st *ptr, memcached_dump_fn *function, void *context, uint32_t number_of_callbacks);
+ 
+.. c:function::  typedef memcached_return_t (*memcached_dump_fn)(memcached_st *ptr,  const char *key, size_t key_length, void *context);
 
-   #include <libmemcached/memcached.h>
- 
-   memcached_return_t
-     memcached_dump (memcached_st *ptr, 
-                     memcached_dump_fn *function, 
-                     void *context, 
-                     uint32_t number_of_callbacks);
- 
-   typedef memcached_return_t (*memcached_dump_fn)(memcached_st *ptr,  
-                                                   const char *key, 
-                                                   size_t key_length, 
-                                                   void *context);
+Compile and link with -lmemcached
 
 
 

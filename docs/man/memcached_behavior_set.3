@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR_SET" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR_SET" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_behavior_set \- libmemcached Documentation
 .
@@ -31,10 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructeredText.
 .
 .sp
-Manipulate behavior
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
+Manipulate the behavior of a memcached_st structure.
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached.h>
@@ -46,6 +43,8 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 .TP
 .B memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior flag, uint64_t data);
 .UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 \fIlibmemcached(3)\fP behavior can be modified by use memcached_behavior_set().

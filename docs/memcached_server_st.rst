@@ -3,6 +3,7 @@ Managing lists of servers
 =========================
 
 
+.. index:: object: memcached_server_instance_st
 
 --------
 SYNOPSIS

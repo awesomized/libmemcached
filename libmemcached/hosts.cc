@@ -1,16 +1,44 @@
-/* LibMemcached
- * Copyright (C) 2006-2010 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2010 Brian Aker All rights reserved.
  *
- * Summary: 
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#include "common.h"
-#include <math.h>
+#include <libmemcached/common.h>
+
+#include <cmath>
+#include <sys/time.h>
 
 /* Protoypes (static) */
 static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
@@ -112,10 +140,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint32_t live_servers= 0;
   struct timeval now;
 
-  if (gettimeofday(&now, NULL) != 0)
+  if (gettimeofday(&now, NULL))
   {
-    memcached_set_errno(ptr, errno, NULL);
-    return MEMCACHED_ERRNO;
+    return memcached_set_errno(*ptr, errno, MEMCACHED_AT);
   }
 
   list= memcached_server_list(ptr);
@@ -129,11 +156,15 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     for (uint32_t host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
     {
       if (list[host_index].next_retry <= now.tv_sec)
+      {
         live_servers++;
+      }
       else
       {
         if (ptr->ketama.next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->ketama.next_distribution_rebuild)
+        {
           ptr->ketama.next_distribution_rebuild= list[host_index].next_retry;
+        }
       }
     }
   }
@@ -145,8 +176,10 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint64_t is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   uint32_t points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
-  if (live_servers == 0)
+  if (not live_servers)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   if (live_servers > ptr->ketama.continuum_count)
   {
@@ -232,7 +265,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }
@@ -281,7 +314,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         }
         else
         {
-          uint32_t value= hashkit_digest(&ptr->distribution_hashkit, sort_host, (size_t)sort_host_length);
+          uint32_t value= hashkit_digest(&ptr->hashkit, sort_host, (size_t)sort_host_length);
           ptr->ketama.continuum[continuum_index].index= host_index;
           ptr->ketama.continuum[continuum_index++].value= value;
         }
@@ -343,10 +376,16 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     /* TODO check return type */
     instance= memcached_server_create_with(ptr, instance, list[x].hostname,
                                            list[x].port, list[x].weight, list[x].type);
-    if (! instance)
+    if (not instance)
     {
-      return memcached_set_error(ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, NULL);
+      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
+
+    if (list[x].weight > 1)
+    {
+      ptr->ketama.weighted= true;
+    }
+
     ptr->number_of_hosts++;
   }
 
@@ -388,10 +427,10 @@ memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
                                                         in_port_t port,
                                                         uint32_t weight)
 {
-  if (! port)
+  if (not port)
     port= MEMCACHED_DEFAULT_PORT;
 
-  if (! hostname)
+  if (not hostname)
     hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_UDP);
@@ -440,7 +479,14 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
 
   /* TODO: Check return type */
   instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+
   (void)memcached_server_create_with(ptr, instance, hostname, port, weight, type);
+
+  if (weight > 1)
+  {
+    ptr->ketama.weighted= true;
+  }
+
   ptr->number_of_hosts++;
 
   instance= memcached_server_instance_fetch(ptr, 0);

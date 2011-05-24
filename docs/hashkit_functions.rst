@@ -2,39 +2,38 @@
 Available Hashes
 ================
 
+.. index:: object: hashkit_st
 
 Various hash functions to use for calculating values for keys
-
-
--------
-LIBRARY
--------
-
-
-C Library for hashing algorithms (libmemcached, -lhashkit)
 
 
 --------
 SYNOPSIS
 --------
 
-
-
-.. code-block:: perl
-
-   #include <libmemcached/hashkit.h>
+#include <libhashkit/hashkit.h>
  
-   uint32_t hashkit_default(const char *key, size_t key_length);
-   uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
-   uint32_t hashkit_fnv1a_64(const char *key, size_t key_length);
-   uint32_t hashkit_fnv1_32(const char *key, size_t key_length);
-   uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
-   uint32_t hashkit_crc32(const char *key, size_t key_length);
-   uint32_t hashkit_hsieh(const char *key, size_t key_length);
-   uint32_t hashkit_murmur(const char *key, size_t key_length);
-   uint32_t hashkit_jenkins(const char *key, size_t key_length);
-   uint32_t hashkit_md5(const char *key, size_t key_length);
+.. c:function:: uint32_t hashkit_default(const char *key, size_t key_length);
 
+.. c:function:: uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_fnv1a_64(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_fnv1_32(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_crc32(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_hsieh(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_murmur(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_jenkins(const char *key, size_t key_length);
+
+.. c:function:: uint32_t hashkit_md5(const char *key, size_t key_length);
+
+Compile and link with -lhashkit
 
 
 -----------

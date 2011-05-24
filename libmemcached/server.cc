@@ -1,11 +1,37 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: String structure used for libmemcached.
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -13,8 +39,9 @@
   This is a partial implementation for fetching/creating memcached_server_st objects.
 */
 #include <libmemcached/common.h>
+#include <cassert>
 
-static inline void _server_init(memcached_server_st *self, const memcached_st *root,
+static inline void _server_init(memcached_server_st *self, memcached_st *root,
                                 const char *hostname, in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
 {
@@ -51,11 +78,6 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
     self->next_retry= 0;
   }
 
-  if (self->weight > 1 && root)
-  {
-    ((memcached_st *)root)->ketama.weighted= true;
-  }
-
   self->root= root;
   self->limit_maxbytes= 0;
   if (hostname == NULL)
@@ -70,11 +92,11 @@ static inline void _server_init(memcached_server_st *self, const memcached_st *r
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
 {
-  if (self == NULL)
+  if (not self)
   {
    self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
 
-    if (! self)
+    if (not self)
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
 
     self->options.is_allocated= true;
@@ -96,10 +118,10 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc,
 {
   self= _server_create(self, memc);
 
-  if (self == NULL)
+  if (not self)
     return NULL;
 
-  _server_init(self, memc, hostname, port, weight, type);
+  _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
 
   if (type == MEMCACHED_CONNECTION_UDP)
@@ -113,6 +135,7 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc,
 
 void memcached_server_free(memcached_server_st *self)
 {
+  assert(self);
   memcached_quit_server(self, false);
 
   if (self->cached_server_error)
@@ -123,14 +146,7 @@ void memcached_server_free(memcached_server_st *self)
 
   if (memcached_is_allocated(self))
   {
-    if (self->root)
-    {
-      libmemcached_free(self->root, self);
-    }
-    else
-    {
-      free(self);
-    }
+    libmemcached_free(self->root, self);
   }
   else
   {
@@ -145,7 +161,7 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                             const memcached_server_st *source)
 {
   /* We just do a normal create if source is missing */
-  if (source == NULL)
+  if (not source)
     return NULL;
 
   destination= memcached_server_create_with(source->root, destination,
@@ -169,7 +185,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
                                            uint32_t number_of_callbacks)
 {
   memcached_return_t rc;
-  if ((rc= initialize_const_query(ptr)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= initialize_const_query(ptr)))
   {
     return rc;
   }
@@ -199,12 +215,9 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 {
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance=
-      memcached_server_instance_fetch(ptr, x);
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    unsigned int iferror;
-
-    iferror= (*callback)(ptr, instance, context);
+    unsigned int iferror= (*callback)(ptr, instance, context);
 
     if (iferror)
       continue;
@@ -219,26 +232,26 @@ memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
                                                      memcached_return_t *error)
 {
   memcached_return_t rc;
+  memcached_return_t unused;
+
+  if (not error)
+    error= &unused;
+
   if (memcached_failed(rc= initialize_const_query(ptr)))
   {
-    if (error)
-      *error= rc;
-
+    *error= rc;
     return NULL;
   }
 
   if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
   {
-    if (error)
-      *error= rc;
-
+    *error= rc;
     return NULL;
   }
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
   {
-    if (error)
-      *error= MEMCACHED_BAD_KEY_PROVIDED;
+    *error= MEMCACHED_BAD_KEY_PROVIDED;
     return NULL;
   }
 
@@ -279,15 +292,8 @@ void memcached_server_list_free(memcached_server_list_st self)
     }
   }
 
-  const memcached_st *root= self->root;
-  if (root)
-  {
-    libmemcached_free(root, self);
-  }
-  else
-  {
-    free(self);
-  }
+  memcached_st *root= self->root;
+  libmemcached_free(root, self);
 }
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)

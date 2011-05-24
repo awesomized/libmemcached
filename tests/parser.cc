@@ -43,7 +43,8 @@
 #include <errno.h>
 
 #define BUILDING_LIBMEMCACHED
-#include <libmemcached/memcached.h>
+// !NEVER use common.h, always use memcached.h in your own apps
+#include <libmemcached/common.h>
 
 #include "tests/parser.h"
 #include "tests/print.h"
@@ -332,7 +333,8 @@ test_return_t memcached_create_with_options_with_filename(memcached_st*)
 
   memcached_st *memc_ptr;
   memc_ptr= memcached(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
-  test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
+  test_true_got(memc_ptr, "memcached() failed");
+  test_strcmp(SUPPORT_EXAMPLE_CNF, memcached_array_string(memc_ptr->configure.filename));
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;
@@ -347,13 +349,13 @@ test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*)
   char buffer[BUFSIZ];
 
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+  test_true_got(rc == MEMCACHED_SUCCESS, (rc == MEMCACHED_ERRNO) ? strerror(errno) : memcached_strerror(NULL, rc));
 
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer));
-  test_false_with(rc == MEMCACHED_SUCCESS, buffer);
+  test_false_with(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
   rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_ERRNO, buffer);
+  test_true_got(rc == MEMCACHED_ERRNO, memcached_strerror(NULL, rc));
 
   return TEST_SUCCESS;
 }

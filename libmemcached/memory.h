@@ -3,7 +3,6 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,17 +36,44 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <iostream>
-
-struct string_t
+static inline void libmemcached_free(const memcached_st *self, void *mem)
 {
-  const char *c_str;
-  size_t length;
-};
+  if (self)
+  {
+    self->allocators.free(self, mem, self->allocators.context);
+  }
+  else if (mem)
+  {
+    free(mem);
+  }
+}
 
-inline std::ostream& operator<<(std::ostream& output, const string_t& arg)
+static inline void *libmemcached_malloc(const memcached_st *self, const size_t size)
 {
-  output.write(arg.c_str, arg.length);
-  return output;
+  if (self)
+  {
+    return self->allocators.malloc(self, size, self->allocators.context);
+  }
+
+  return malloc(size);
+}
+
+static inline void *libmemcached_realloc(const memcached_st *self, void *mem, const size_t size)
+{
+  if (self)
+  {
+    return self->allocators.realloc(self, mem, size, self->allocators.context);
+  }
+
+  return realloc(mem, size);
+}
+
+static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size)
+{
+  if (self)
+  {
+    return self->allocators.calloc(self, nelem, size, self->allocators.context);
+  }
+
+  return calloc(nelem, size);
 }

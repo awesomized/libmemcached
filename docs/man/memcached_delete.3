@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DELETE" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_DELETE" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_delete \- libmemcached Documentation
 .
@@ -50,8 +50,8 @@ memcached_delete_by_key() works the same, but it takes a master key to
 find the given value.
 .sp
 Expiration works by placing the item into a delete queue, which means that
-it won\(aqt possible to retrieve it by the "get" command, but "add" and
-"replace" command with this key will also fail (the "set" command will
+it won\(aqt be possible to retrieve it by the "get" command. The "add" and
+"replace" commands with this key will also fail (the "set" command will
 succeed, however). After the time passes, the item is finally deleted from server memory.
 .sp
 Please note the the Danga memcached server removed tests for expiration in

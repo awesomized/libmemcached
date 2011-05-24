@@ -19,7 +19,6 @@ Connecting to servers
 ---------------------
 
 
-
 .. code-block:: c
 
    const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"

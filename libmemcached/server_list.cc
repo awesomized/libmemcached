@@ -10,7 +10,7 @@
  */
 
 
-#include "common.h"
+#include <libmemcached/common.h>
 
 memcached_server_list_st 
 memcached_server_list_append_with_weight(memcached_server_list_st ptr,

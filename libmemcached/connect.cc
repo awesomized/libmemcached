@@ -37,9 +37,9 @@
 
 
 #include <libmemcached/common.h>
-#include <assert.h>
+#include <cassert>
+#include <ctime>
 #include <sys/time.h>
-#include <time.h>
 
 static memcached_return_t connect_poll(memcached_server_st *ptr)
 {
@@ -145,35 +145,31 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
-  uint32_t counter= 5;
-  while (--counter)
+  int errcode;
+  switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
   {
-    int e= getaddrinfo(server->hostname, str_port, &hints, &server->address_info);
+  case 0:
+    break;
 
-    if (e == 0)
-    {
-      break;
-    }
-    else if (e == EAI_AGAIN)
-    {
-#ifndef WIN32
-      struct timespec dream, rem;
+  case EAI_AGAIN:
+    return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
 
-      dream.tv_nsec= 1000;
-      dream.tv_sec= 0;
+  case EAI_SYSTEM:
+      return memcached_set_errno(*server, errno, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_SYSTEM)"));
 
-      nanosleep(&dream, &rem);
-#endif
-      continue;
-    }
-    else
+  case EAI_BADFLAGS:
+    return memcached_set_error(*server, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
+
+  case EAI_MEMORY:
+    return memcached_set_error(*server, MEMCACHED_ERRNO, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
+
+  default:
     {
       WATCHPOINT_STRING(server->hostname);
       WATCHPOINT_STRING(gai_strerror(e));
-      return MEMCACHED_HOST_LOOKUP_FAILURE;
+      return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
-
   server->address_info_next= server->address_info;
 
   return MEMCACHED_SUCCESS;
@@ -185,8 +181,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
   u_long arg = 1;
   if (ioctlsocket(ptr->fd, FIONBIO, &arg) == SOCKET_ERROR)
   {
-    ptr->cached_errno= get_socket_errno();
-    return MEMCACHED_CONNECTION_FAILURE;
+    return memcached_set_errno(*ptr, get_socket_errno(), NULL);
   }
 #else
   int flags;
@@ -199,8 +194,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
 
   unlikely (flags == -1)
   {
-    ptr->cached_errno= errno;
-    return MEMCACHED_CONNECTION_FAILURE;
+    return memcached_set_errno(*ptr, errno, NULL);
   }
   else if ((flags & O_NONBLOCK) == 0)
   {
@@ -214,8 +208,7 @@ static inline memcached_return_t set_socket_nonblocking(memcached_server_st *ptr
 
     unlikely (rval == -1)
     {
-      ptr->cached_errno= errno;
-      return MEMCACHED_CONNECTION_FAILURE;
+      return memcached_set_errno(*ptr, errno, NULL);
     }
   }
 #endif
@@ -363,8 +356,7 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 
   if ((ptr->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   {
-    ptr->cached_errno= errno;
-    return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+    return memcached_set_errno(*ptr, errno, NULL);
   }
 
   struct sockaddr_un servAddr;
@@ -393,7 +385,7 @@ test_connect:
     }
   }
 
-  WATCHPOINT_ASSERT(ptr->fd != -1);
+  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   return MEMCACHED_SUCCESS;
 #else
@@ -409,10 +401,26 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
   WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
   WATCHPOINT_ASSERT(ptr->cursor_active == 0);
 
-  if (! ptr->address_info)
+  if (not ptr->address_info)
   {
-    memcached_return_t rc= set_hostinfo(ptr);
-    if (rc != MEMCACHED_SUCCESS)
+    memcached_return_t rc;
+    uint32_t counter= 5;
+    while (--counter)
+    {
+      if ((rc= set_hostinfo(ptr)) != MEMCACHED_TIMEOUT)
+        break;
+
+#ifndef WIN32
+      struct timespec dream, rem;
+
+      dream.tv_nsec= 1000;
+      dream.tv_sec= 0;
+
+      nanosleep(&dream, &rem);
+#endif
+    }
+
+    if (memcached_failed(rc))
       return rc;
   }
 
@@ -430,9 +438,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
                          ptr->address_info_next->ai_socktype,
                          ptr->address_info_next->ai_protocol)) < 0)
     {
-      ptr->cached_errno= get_socket_errno();
-      WATCHPOINT_ERRNO(get_socket_errno());
-      return MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE;
+      return memcached_set_errno(*ptr, get_socket_errno(), NULL);
     }
 
     (void)set_socket_options(ptr);
@@ -571,7 +577,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     if (ptr->fd != INVALID_SOCKET && ptr->root->sasl.callbacks)
     {
       rc= memcached_sasl_authenticate_connection(ptr);
-      if (rc != MEMCACHED_SUCCESS)
+      if (memcached_failed(rc))
       {
         (void)closesocket(ptr->fd);
         ptr->fd= INVALID_SOCKET;

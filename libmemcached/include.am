@@ -15,11 +15,13 @@ noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.h \
+		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
 		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
+		 libmemcached/memory.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
@@ -31,6 +33,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/analyze.h \
 			 libmemcached/array.h \
 			 libmemcached/auto.h \
+			 libmemcached/basic_string.h \
 			 libmemcached/behavior.h \
 			 libmemcached/callback.h \
 			 libmemcached/configure.h \
@@ -76,8 +79,18 @@ nobase_include_HEADERS+= \
 # These symbols will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
+					      libmemcached/array.c \
 					      libmemcached/error.cc \
 					      libmemcached/string.cc
+libmemcached_libmemcachedinternal_la_CFLAGS= \
+				     ${AM_CFLAGS} \
+				     ${NO_CONVERSION} \
+				     -DBUILDING_LIBMEMCACHED
+
+libmemcached_libmemcachedinternal_la_CXXFLAGS= \
+				       ${AM_CXXFLAGS} \
+				       ${NO_CONVERSION} \
+				       -DBUILDING_LIBMEMCACHED
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= \
@@ -104,7 +117,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/do.cc \
 				       libmemcached/dump.cc \
 				       libmemcached/error.cc \
-				       libmemcached/fetch.c \
+				       libmemcached/fetch.cc \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \
 				       libmemcached/get.cc \

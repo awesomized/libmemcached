@@ -42,15 +42,6 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st *memc, memcached_return_t rc, memcached_string_t *str);
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error_string(memcached_st *memc, memcached_return_t rc, const char *str, size_t length);
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st *memc, int local_errno, memcached_string_t *str);
-
-LIBMEMCACHED_LOCAL
   void memcached_error_free(memcached_st *error);
 
 LIBMEMCACHED_API

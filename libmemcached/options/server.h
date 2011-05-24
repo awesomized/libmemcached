@@ -38,21 +38,23 @@
 #pragma once
 
 #include <cstdlib>
-#include <iostream>
 #include <arpa/inet.h>
 
 struct server_t
 {
   in_port_t port;
   uint32_t weight;
-  size_t length;
   const char *c_str;
+  size_t size;
 };
 
+#if 0
+#include <iostream>
 inline std::ostream& operator<<(std::ostream& output, const server_t& arg)
 {
-  output.write(arg.c_str, arg.length);
+  output.write(arg.c_str, arg.size);
   output << ':' << arg.port;
   output << '+' << arg.weight;
   return output;
 }
+#endif

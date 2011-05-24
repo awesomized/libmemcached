@@ -1,4 +1,4 @@
-.TH "MEMCACHED_STAT_GET_VALUE" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_STAT_GET_VALUE" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_stat_get_value \- libmemcached Documentation
 .
@@ -32,43 +32,32 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Get memcached statistics
-.SH LIBRARY
+.SH SYNOPSIS
 .sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-memcached_stat_st *memcached_stat (memcached_st *ptr,
-                                   char *args,
-                                   memcached_return_t *error);
-
-memcached_return_t memcached_stat_servername (memcached_stat_st *stat,
-                                              char *args,
-                                              const char *hostname,
-                                              unsigned int port);
-
-char *
-  memcached_stat_get_value (memcached_st *ptr,
-                            memcached_stat_st *stat,
-                            const char *key,
-                            memcached_return_t *error);
-
-char **
-  memcached_stat_get_keys (memcached_st *ptr,
-                           memcached_stat_st *stat,
-                           memcached_return_t *error);
-
-memcached_return_t
-  memcached_stat_execute (memcached_st *memc,
-                          const char *args,
-                          memcached_stat_fn func,
-                          void *context);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B memcached_stat_st *memcached_stat (memcached_st *ptr, char *args, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_stat_servername (memcached_stat_st *stat, char *args, const char *hostname, unsigned int port);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B char * memcached_stat_get_value (memcached_st *ptr, memcached_stat_st *stat, const char *key, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B char ** memcached_stat_get_keys (memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_stat_execute (memcached_st *memc, const char *args, memcached_stat_fn func, void *context);
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 libmemcached(3) has the ability to query a memcached server (or collection
 of servers) for their current state. Queries to find state return a
@@ -115,7 +104,7 @@ To find out more information please check:
 .SH AUTHOR
 .sp
 Brian Aker, <\fI\%brian@tangent.org\fP>
-.SS SEE ALSO
+.SH SEE ALSO
 .sp
 memcached(1) libmemcached(3) memcached_strerror(3)
 .SH AUTHOR

@@ -1,4 +1,4 @@
-.TH "MEMCP" "1" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCP" "1" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcp \- libmemcached Documentation
 .
@@ -49,11 +49,10 @@ Copies files to a collection of memcached servers
 It is similar to the standard UNIX cp(1) command.
 .sp
 The key names will be the names of the files,
-without any directory path part.
+without any directory path.
 .sp
 You can specify servers via the \fB\-\-servers\fP option or via the
-environment variable \fBMEMCACHED_SERVERS\fP. If you specify neither of
-these, the final value in the command line list is the name of a
+environment variable \fBMEMCACHED_SERVERS\fP. If you do not specify either these, the final value in the command line list is the name of a
 server(s).
 .sp
 For a full list of operations run the tool with the \fB\-\-help\fP option.

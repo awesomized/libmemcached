@@ -2,34 +2,19 @@
 Getting version information about the client and server
 =======================================================
 
-
-Get library version
-
-
-*******
-LIBRARY
-*******
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
+ 
 --------
 SYNOPSIS
 --------
 
+#include <libmemcached/memcached.h>
+
+.. c:function:: const char * memcached_lib_version (void) 
+
+.. c:function:: memcached_return_t memcached_version (memcached_st *ptr)
 
 
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
- 
-   const char *
-     memcached_lib_version (void) 
- 
- 
-   memcached_return_t
-     memcached_version (memcached_st *ptr)
+Compile and link with -lmemcached
 
 
 
@@ -46,9 +31,9 @@ memcached server being used by the memcached_st connection structure. It returns
 memcached server return code.
 
 
-******
+------
 RETURN
-******
+------
 
 
 A string with the version of libmemcached driver is returned from
@@ -61,21 +46,13 @@ will be returned. Use memcached_strerror() to translate this value to
 a printable string.
 
 
-****
+----
 HOME
-****
+----
 
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-******
-AUTHOR
-******
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

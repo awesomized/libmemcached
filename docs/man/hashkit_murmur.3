@@ -1,4 +1,4 @@
-.TH "HASHKIT_MURMUR" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "HASHKIT_MURMUR" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 hashkit_murmur \- libhashkit Documentation
 .
@@ -32,27 +32,51 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Various hash functions to use for calculating values for keys
-.SH LIBRARY
-.sp
-C Library for hashing algorithms (libmemcached, \-lhashkit)
 .SH SYNOPSIS
 .sp
-.nf
-.ft C
-#include <libmemcached/hashkit.h>
-
-uint32_t hashkit_default(const char *key, size_t key_length);
-uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
-uint32_t hashkit_fnv1a_64(const char *key, size_t key_length);
-uint32_t hashkit_fnv1_32(const char *key, size_t key_length);
-uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
-uint32_t hashkit_crc32(const char *key, size_t key_length);
-uint32_t hashkit_hsieh(const char *key, size_t key_length);
-uint32_t hashkit_murmur(const char *key, size_t key_length);
-uint32_t hashkit_jenkins(const char *key, size_t key_length);
-uint32_t hashkit_md5(const char *key, size_t key_length);
-.ft P
-.fi
+#include <libhashkit/hashkit.h>
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_default(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_fnv1a_64(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_fnv1_32(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_crc32(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_hsieh(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_murmur(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_jenkins(const char *key, size_t key_length);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_md5(const char *key, size_t key_length);
+.UNINDENT
+.sp
+Compile and link with \-lhashkit
 .SH DESCRIPTION
 .sp
 These functions generate hash values from a key using a variety of

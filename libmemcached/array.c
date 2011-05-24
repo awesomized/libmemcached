@@ -35,40 +35,66 @@
  *
  */
 
-#include "libmemcached/common.h"
+#include <libmemcached/common.h>
+#include <assert.h>
+#include <iso646.h>
 
 struct memcached_array_st
 {
-  memcached_st *root;
+  struct memcached_st *root;
   size_t size;
   char c_str[];
 };
 
-memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_array_st *original)
+
+memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original)
 {
-  if (! original)
+  if (not original)
     return NULL;
 
   return memcached_strcpy(memc, original->c_str, original->size);
 }
 
-memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t str_length)
+memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length)
 {
+  assert(memc);
+  assert(str);
+  assert(str_length);
+
   memcached_array_st *array= (struct memcached_array_st *)libmemcached_malloc(memc, sizeof(struct memcached_array_st) +str_length +1);
 
-  if (! array)
+  if (not array)
     return NULL;
 
   array->root= memc;
-  array->size= str_length -1; // We don't count the NULL ending
+  array->size= str_length; // We don't count the NULL ending
   memcpy(array->c_str, str, str_length);
   array->c_str[str_length]= 0;
 
   return array;
 }
 
+bool memcached_array_is_null(memcached_array_st *array)
+{
+  assert(array);
+  assert(array->root);
+
+  if (not array)
+    return false;
+
+  if (array->size and array->c_str)
+    return false;
+
+  assert(not array->size and not array->c_str);
+
+  return true;
+}
+
 memcached_string_t memcached_array_to_string(memcached_array_st *array)
 {
+  assert(array);
+  assert(array->c_str);
+  assert(array->size);
   memcached_string_t tmp;
   tmp.c_str= array->c_str;
   tmp.size= array->size;
@@ -78,23 +104,16 @@ memcached_string_t memcached_array_to_string(memcached_array_st *array)
 
 void memcached_array_free(memcached_array_st *array)
 {
-  if (! array)
+  if (not array)
     return;
 
   WATCHPOINT_ASSERT(array->root);
-  if (array && array->root)
-  {
-    libmemcached_free(array->root, array);
-  }
-  else if (array)
-  {
-    free(array);
-  }
+  libmemcached_free(array->root, array);
 }
 
 size_t memcached_array_size(memcached_array_st *array)
 {
-  if (! array)
+  if (not array)
     return 0;
 
   return array->size;
@@ -102,7 +121,7 @@ size_t memcached_array_size(memcached_array_st *array)
 
 const char *memcached_array_string(memcached_array_st *array)
 {
-  if (! array)
+  if (not array)
     return NULL;
 
   return array->c_str;

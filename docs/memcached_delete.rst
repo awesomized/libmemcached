@@ -2,6 +2,8 @@
 Deleting data from a server
 ===========================
 
+.. index:: object: memcached_st
+
 --------
 SYNOPSIS
 --------

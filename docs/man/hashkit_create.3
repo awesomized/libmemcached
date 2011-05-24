@@ -1,4 +1,4 @@
-.TH "HASHKIT_CREATE" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "HASHKIT_CREATE" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 hashkit_create \- libhashkit Documentation
 .
@@ -30,26 +30,27 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
-.sp
-Create and destroy hashkit objects
-.SH LIBRARY
-.sp
-C Library for hashing algorithms (libmemcached, \-lhashkit)
 .SH SYNOPSIS
 .sp
-.nf
-.ft C
-#include <libmemcached/hashkit.h>
-
-hashkit_st *hashkit_create(hashkit_st *hash);
-
-hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
-
-void hashkit_free(hashkit_st *hash);
-
-bool hashkit_is_allocated(const hashkit_st *hash);
-.ft P
-.fi
+#include <libhashkit/hashkit.h>
+.INDENT 0.0
+.TP
+.B hashkit_st *hashkit_create(hashkit_st *hash);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void hashkit_free(hashkit_st *hash);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B bool hashkit_is_allocated(const hashkit_st *hash);
+.UNINDENT
+.sp
+Compile and link with \-lhashkit
 .SH DESCRIPTION
 .sp
 The hashkit_create() function initializes a hashkit object for use. If

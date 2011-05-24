@@ -4,7 +4,6 @@
 #include <libmemcached/common.h>
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/parser.h>
-#include <libmemcached/options/string.h>
 #include <libmemcached/options/symbol.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -16,7 +15,7 @@
 
 
 
-#line 20 "libmemcached/options/scanner.cc"
+#line 19 "libmemcached/options/scanner.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1076,13 +1075,13 @@ static yyconst flex_int16_t yy_chk[1722] =
 
 static yyconst flex_int16_t yy_rule_linenum[64] =
     {   0,
-       78,   80,   82,   84,   86,   89,   93,   95,   96,   97,
-       98,   99,  100,  101,  102,  103,  104,  105,  106,  107,
-      108,  109,  110,  111,  112,  113,  114,  115,  116,  117,
-      118,  119,  120,  121,  122,  124,  125,  127,  129,  130,
-      131,  132,  133,  134,  136,  137,  140,  145,  146,  147,
-      149,  150,  151,  152,  153,  154,  155,  156,  157,  159,
-      168,  186,  192
+       77,   79,   81,   83,   85,   88,   92,   94,   95,   96,
+       97,   98,   99,  100,  101,  102,  103,  104,  105,  106,
+      107,  108,  109,  110,  111,  112,  113,  114,  115,  116,
+      117,  118,  119,  120,  121,  123,  124,  126,  128,  129,
+      130,  131,  132,  133,  135,  136,  139,  144,  145,  146,
+      148,  149,  150,  151,  152,  153,  154,  155,  156,  158,
+      167,  185,  191
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1113,7 +1112,7 @@ static yyconst flex_int16_t yy_rule_linenum[64] =
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#line 39 "libmemcached/options/scanner.l"
+#line 38 "libmemcached/options/scanner.l"
 #include <cstdlib>
 #include <cstring>
 
@@ -1137,7 +1136,7 @@ static yyconst flex_int16_t yy_rule_linenum[64] =
 
 #define YY_INPUT(buffer, result, max_size) get_lex_chars(buffer, result, max_size, PARAM)
 
-#line 1141 "libmemcached/options/scanner.cc"
+#line 1140 "libmemcached/options/scanner.cc"
 
 #define INITIAL 0
 
@@ -1440,11 +1439,11 @@ YY_DECL
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 /* %% [7.0] user's declarations go here */
-#line 75 "libmemcached/options/scanner.l"
+#line 74 "libmemcached/options/scanner.l"
 
 
 
-#line 1448 "libmemcached/options/scanner.cc"
+#line 1447 "libmemcached/options/scanner.cc"
 
     yylval = yylval_param;
 
@@ -1563,28 +1562,28 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 78 "libmemcached/options/scanner.l"
+#line 77 "libmemcached/options/scanner.l"
 { return yytext[0];}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 80 "libmemcached/options/scanner.l"
+#line 79 "libmemcached/options/scanner.l"
 { yylval->number = atoi(yytext); return (NUMBER); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 82 "libmemcached/options/scanner.l"
+#line 81 "libmemcached/options/scanner.l"
 { yylval->server.port = atoi(yytext +1); return PORT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 84 "libmemcached/options/scanner.l"
+#line 83 "libmemcached/options/scanner.l"
 { yylval->server.weight = atoi(yytext +2); return WEIGHT_START; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 86 "libmemcached/options/scanner.l"
+#line 85 "libmemcached/options/scanner.l"
 ; /* skip whitespace */
 	YY_BREAK
 case 6:
@@ -1592,214 +1591,214 @@ case 6:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 89 "libmemcached/options/scanner.l"
+#line 88 "libmemcached/options/scanner.l"
 {
       return COMMENT;
     }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 93 "libmemcached/options/scanner.l"
+#line 92 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 95 "libmemcached/options/scanner.l"
+#line 94 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return BINARY_PROTOCOL; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 96 "libmemcached/options/scanner.l"
+#line 95 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return BUFFER_REQUESTS; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 97 "libmemcached/options/scanner.l"
+#line 96 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return CONFIGURE_FILE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 98 "libmemcached/options/scanner.l"
+#line 97 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return CONNECT_TIMEOUT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 99 "libmemcached/options/scanner.l"
+#line 98 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return DISTRIBUTION; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 100 "libmemcached/options/scanner.l"
+#line 99 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 101 "libmemcached/options/scanner.l"
+#line 100 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return HASH; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 102 "libmemcached/options/scanner.l"
+#line 101 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 103 "libmemcached/options/scanner.l"
+#line 102 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return IO_KEY_PREFETCH; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 104 "libmemcached/options/scanner.l"
+#line 103 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 105 "libmemcached/options/scanner.l"
+#line 104 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return NOREPLY; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 106 "libmemcached/options/scanner.l"
+#line 105 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 107 "libmemcached/options/scanner.l"
+#line 106 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return POLL_TIMEOUT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 108 "libmemcached/options/scanner.l"
+#line 107 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 109 "libmemcached/options/scanner.l"
+#line 108 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return RCV_TIMEOUT; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 110 "libmemcached/options/scanner.l"
+#line 109 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 111 "libmemcached/options/scanner.l"
+#line 110 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return RETRY_TIMEOUT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 112 "libmemcached/options/scanner.l"
+#line 111 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SND_TIMEOUT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 113 "libmemcached/options/scanner.l"
+#line 112 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 114 "libmemcached/options/scanner.l"
+#line 113 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 115 "libmemcached/options/scanner.l"
+#line 114 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SORT_HOSTS; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 116 "libmemcached/options/scanner.l"
+#line 115 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SUPPORT_CAS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 117 "libmemcached/options/scanner.l"
+#line 116 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return _TCP_KEEPALIVE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 118 "libmemcached/options/scanner.l"
+#line 117 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return _TCP_KEEPIDLE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 119 "libmemcached/options/scanner.l"
+#line 118 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return _TCP_NODELAY; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 120 "libmemcached/options/scanner.l"
+#line 119 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return USE_UDP; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 121 "libmemcached/options/scanner.l"
+#line 120 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return USER_DATA; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 122 "libmemcached/options/scanner.l"
+#line 121 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return VERIFY_KEY; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 124 "libmemcached/options/scanner.l"
+#line 123 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return POOL_MIN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 125 "libmemcached/options/scanner.l"
+#line 124 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return POOL_MAX; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 127 "libmemcached/options/scanner.l"
+#line 126 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return NAMESPACE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 129 "libmemcached/options/scanner.l"
+#line 128 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return INCLUDE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 130 "libmemcached/options/scanner.l"
+#line 129 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return RESET; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 131 "libmemcached/options/scanner.l"
+#line 130 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return PARSER_DEBUG; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 132 "libmemcached/options/scanner.l"
+#line 131 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return SERVERS; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 133 "libmemcached/options/scanner.l"
+#line 132 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return END; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 134 "libmemcached/options/scanner.l"
+#line 133 "libmemcached/options/scanner.l"
 { yyextra->begin= yytext; return ERROR; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 136 "libmemcached/options/scanner.l"
+#line 135 "libmemcached/options/scanner.l"
 { return TRUE; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 137 "libmemcached/options/scanner.l"
+#line 136 "libmemcached/options/scanner.l"
 { return FALSE; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 140 "libmemcached/options/scanner.l"
+#line 139 "libmemcached/options/scanner.l"
 {
       yyextra->begin= yytext;
       return UNKNOWN_OPTION;
@@ -1807,79 +1806,79 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 145 "libmemcached/options/scanner.l"
+#line 144 "libmemcached/options/scanner.l"
 { return CONSISTENT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 146 "libmemcached/options/scanner.l"
+#line 145 "libmemcached/options/scanner.l"
 { return MODULA; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 147 "libmemcached/options/scanner.l"
+#line 146 "libmemcached/options/scanner.l"
 { return RANDOM; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 149 "libmemcached/options/scanner.l"
+#line 148 "libmemcached/options/scanner.l"
 { return MD5; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 150 "libmemcached/options/scanner.l"
+#line 149 "libmemcached/options/scanner.l"
 { return CRC; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 151 "libmemcached/options/scanner.l"
+#line 150 "libmemcached/options/scanner.l"
 { return FNV1_64; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 152 "libmemcached/options/scanner.l"
+#line 151 "libmemcached/options/scanner.l"
 { return FNV1A_64; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 153 "libmemcached/options/scanner.l"
+#line 152 "libmemcached/options/scanner.l"
 { return FNV1_32; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 154 "libmemcached/options/scanner.l"
+#line 153 "libmemcached/options/scanner.l"
 { return FNV1A_32; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 155 "libmemcached/options/scanner.l"
+#line 154 "libmemcached/options/scanner.l"
 { return HSIEH; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 156 "libmemcached/options/scanner.l"
+#line 155 "libmemcached/options/scanner.l"
 { return MURMUR; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 157 "libmemcached/options/scanner.l"
+#line 156 "libmemcached/options/scanner.l"
 { return JENKINS; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 159 "libmemcached/options/scanner.l"
+#line 158 "libmemcached/options/scanner.l"
 {
       yylval->server.port= MEMCACHED_DEFAULT_PORT;
       yylval->server.weight= 1;
       yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
       if (yylval->server.c_str)
-        yylval->server.length= yyleng;
+        yylval->server.size= yyleng;
       return IPADDRESS;
     }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 168 "libmemcached/options/scanner.l"
+#line 167 "libmemcached/options/scanner.l"
 {
       if (yyextra->is_server())
       {
@@ -1887,29 +1886,29 @@ YY_RULE_SETUP
         yylval->server.weight= 1;
         yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
         if (yylval->server.c_str)
-          yylval->server.length= yyleng;
+          yylval->server.size= yyleng;
 
         return HOSTNAME;
       }
 
       yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
+      yylval->string.size = yyleng;
 
       return STRING;
     }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 186 "libmemcached/options/scanner.l"
+#line 185 "libmemcached/options/scanner.l"
 {
       yylval->string.c_str = yytext;
-      yylval->string.length = yyleng;
+      yylval->string.size = yyleng;
       return QUOTED_STRING;
     }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 192 "libmemcached/options/scanner.l"
+#line 191 "libmemcached/options/scanner.l"
 {
       yyextra->begin= yytext;
       return UNKNOWN;
@@ -1917,10 +1916,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 197 "libmemcached/options/scanner.l"
+#line 196 "libmemcached/options/scanner.l"
 ECHO;
 	YY_BREAK
-#line 1924 "libmemcached/options/scanner.cc"
+#line 1923 "libmemcached/options/scanner.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -3186,7 +3185,7 @@ void config_free (void * ptr , yyscan_t yyscanner)
 
 /* %ok-for-header */
 
-#line 197 "libmemcached/options/scanner.l"
+#line 196 "libmemcached/options/scanner.l"
 
 
 

@@ -2,13 +2,11 @@
 Incrementing and Decrementing Values
 ====================================
 
-
+.. index:: object: memcached_st
 
 --------
 SYNOPSIS
 --------
-
-
 
 #include <libmemcached/memcached.h>
  

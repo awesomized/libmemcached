@@ -2,9 +2,6 @@
 Creating and destroying a memcached_st
 ======================================
 
-
-Create a memcached_st structure
-
 .. index:: object: memcached_st
 
 --------

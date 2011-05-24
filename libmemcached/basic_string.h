@@ -34,37 +34,22 @@
  *
  */
 
-#include <libmemcached/common.h>
+#pragma once
 
-memcached_return_t initialize_query(memcached_st *self)
-{
-  if (not self)
-    return MEMCACHED_INVALID_ARGUMENTS;
+// No assumptions of NULL should be made
 
-  self->query_id++;
+struct memcached_string_t {
+  const char *c_str;
+  size_t size;
+};
 
-  if (self->state.is_time_for_rebuild)
-  {
-    memcached_reset(self);
-  }
+#define memcached_size(X) (X).size;
+#define memcached_c_str(X) (X).c_str;
+#define memcached_string_param(X) (X).c_str, (X).size
 
-  if (memcached_server_count(self) == 0)
-  {
-    return memcached_set_error(*self, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
-  }
+#ifdef __cplusplus
+#define memcached_string_printf(X) int((X).size), (X).c_str
+#else
+#define memcached_string_printf(X) (int)((X).size), (X).c_str
+#endif
 
-  return MEMCACHED_SUCCESS;
-}
-
-memcached_return_t initialize_const_query(const memcached_st *self)
-{
-  if (not self)
-    return MEMCACHED_INVALID_ARGUMENTS;
-
-  if (memcached_server_count(self) == 0)
-  {
-    return MEMCACHED_NO_SERVERS;
-  }
-
-  return MEMCACHED_SUCCESS;
-}

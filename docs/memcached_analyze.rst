@@ -6,30 +6,18 @@ Anaylzing servers
 Analyze server information
 
 
--------
-LIBRARY
--------
-
-
-C Client Library for memcached (libmemcached, -lmemcached)
-
-
 --------
 SYNOPSIS
 --------
 
+.. index:: object: memcached_analysis_st
 
 
-.. code-block:: perl
-
-   #include <libmemcached/memcached.h>
+#include <libmemcached/memcached.h>
  
-   memcached_analysis_st *
-     memcached_analyze (memcached_st *ptr,
-                        memcached_stat_st *stat,
-                        memcached_return_t *error);
+.. c:function::  memcached_analysis_st * memcached_analyze (memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error);
 
-
+Compile and link with -lmemcached
 
 -----------
 DESCRIPTION

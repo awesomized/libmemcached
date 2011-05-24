@@ -37,39 +37,48 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_array_st *original);
-
-LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t str_length);
-
-LIBMEMCACHED_LOCAL
-void memcached_array_free(memcached_array_st *array);
-
-LIBMEMCACHED_LOCAL
-size_t memcached_array_size(memcached_array_st *array);
-
-LIBMEMCACHED_LOCAL
-const char *memcached_array_string(memcached_array_st *array);
-
-LIBMEMCACHED_LOCAL
-memcached_string_t memcached_array_to_string(memcached_array_st *array);
-
-LIBMEMCACHED_LOCAL
-bool memcached_array_is_null(memcached_array_st *array);
+#include <libmemcached/error.h>
 
 #ifdef __cplusplus
-} // extern "C"
-#endif
 
-#ifdef __cplusplus
-#define memcached_print_array(X) static_cast<int>(memcached_array_size(X)), memcached_array_string(X)
-#define memcached_param_array(X) memcached_array_string(X), memcached_array_size(X)
-#else
-#define memcached_print_array(X) (int)memcached_array_size((X)), memcached_array_string((X))
-#define memcached_param_array(X) memcached_array_string(X), memcached_array_size(X)
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define MEMCACHED_AT __FILE__ ":" TOSTRING(__LINE__)
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_server_st&, memcached_return_t rc, const char *at);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at, const char *str, size_t length);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_server_st&, memcached_return_t rc, const char *at, const char *str, size_t length);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_error(memcached_server_st&, memcached_return_t rc, const char *at, memcached_string_t& str);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, memcached_string_t& str);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, const char *at, memcached_string_t& str);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, const char *str, size_t length);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, const char *at, const char *str, size_t length);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at);
+
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, const char *at);
+
 #endif

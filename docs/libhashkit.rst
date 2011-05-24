@@ -3,20 +3,7 @@ Introducing libhashkit
 ======================
 
 
--------
-LIBRARY
--------
-
-
-C library collection of useful hashing algorithm (libhashkit, -lhashkit)
-
-
---------
-SYNOPSIS
---------
-
-
-.. code-block:: perl
+.. code-block:: c
 
    cc [ flag ... ] file ... -lhashkit
  
@@ -45,5 +32,5 @@ To find out more information please check:
 SEE ALSO
 --------
 
-:manpage:`libmemcached(3)`
+:manpage:`libhashkit(3)`
 

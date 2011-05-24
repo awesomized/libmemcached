@@ -108,9 +108,9 @@ public:
       rc= MEMCACHED_PARSE_ERROR;
 
     memcached_string_st *error_string= memcached_string_create(memc, NULL, 1024);
-    memcached_string_append(error_string, memcached_string_with_size("Error occured while parsing: "));
+    memcached_string_append(error_string, memcached_literal_param("Error occured while parsing: "));
     memcached_string_append(error_string, memcached_string_make_from_cstr(begin));
-    memcached_string_append(error_string, memcached_string_with_size(" ("));
+    memcached_string_append(error_string, memcached_literal_param(" ("));
 
     if (rc == MEMCACHED_PARSE_ERROR and error)
     {
@@ -120,9 +120,9 @@ public:
     {
       memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, rc)));
     }
-    memcached_string_append(error_string, memcached_string_with_size(")"));
+    memcached_string_append(error_string, memcached_literal_param(")"));
 
-    memcached_set_error_string(memc, rc, memcached_string_value(error_string), memcached_string_length(error_string));
+    memcached_set_error(*memc, rc, MEMCACHED_AT, memcached_string_value(error_string), memcached_string_length(error_string));
 
     memcached_string_free(error_string);
   }

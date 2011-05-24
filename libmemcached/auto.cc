@@ -44,14 +44,13 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                                          uint64_t offset,
                                          uint64_t *value)
 {
-  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
   memcached_server_write_instance_st instance;
   bool no_reply= ptr->flags.no_reply;
 
   if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
-    return MEMCACHED_BAD_KEY_PROVIDED;
+    return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
 
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
@@ -63,10 +62,13 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                         (int)key_length, key,
                         offset, no_reply ? " noreply" : "");
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
-    return MEMCACHED_WRITE_FAILURE;
+  {
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+  }
 
-  rc= memcached_do(instance, buffer, (size_t)send_length, true);
-  if (no_reply || rc != MEMCACHED_SUCCESS)
+  memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
+  if (no_reply or memcached_failed(rc))
     return rc;
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
@@ -78,17 +80,17 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
     use it. We still called memcached_response() though since it
     worked its magic for non-blocking IO.
   */
-  if (! strncmp(buffer, "ERROR\r\n", 7))
+  if (not strncmp(buffer, memcached_literal_param("ERROR\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
   }
-  else if (! strncmp(buffer, "CLIENT_ERROR\r\n", 14))
+  else if (not strncmp(buffer, memcached_literal_param("CLIENT_ERROR\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_PROTOCOL_ERROR;
   }
-  else if (!strncmp(buffer, "NOT_FOUND\r\n", 11))
+  else if (not strncmp(buffer, memcached_literal_param("NOT_FOUND\r\n")))
   {
     *value= 0;
     rc= MEMCACHED_NOTFOUND;
@@ -99,7 +101,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
     rc= MEMCACHED_SUCCESS;
   }
 
-  return rc;
+  return memcached_set_error(*instance, rc, MEMCACHED_AT);
 }
 
 static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
@@ -114,7 +116,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   bool no_reply= ptr->flags.no_reply;
 
   if (memcached_server_count(ptr) == 0)
-    return memcached_set_error(ptr, MEMCACHED_NO_SERVERS, NULL);
+    return memcached_set_error(*ptr, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
 
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
@@ -123,6 +125,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   {
     if(cmd == PROTOCOL_BINARY_CMD_DECREMENT)
       cmd= PROTOCOL_BINARY_CMD_DECREMENTQ;
+
     if(cmd == PROTOCOL_BINARY_CMD_INCREMENT)
       cmd= PROTOCOL_BINARY_CMD_INCREMENTQ;
   }

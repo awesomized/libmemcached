@@ -111,18 +111,15 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
                                               char *buffer,
                                               memcached_result_st *result)
 {
-  memcached_return_t rc= MEMCACHED_SUCCESS;
   char *string_ptr;
   char *end_ptr;
   char *next_ptr;
   size_t value_length;
   size_t to_read;
-  char *value_ptr;
   ssize_t read_length= 0;
-  memcached_return_t rrc;
 
   if (ptr->root->flags.use_udp)
-    return MEMCACHED_NOT_SUPPORTED;
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
 
   WATCHPOINT_ASSERT(ptr->root);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
@@ -197,25 +194,26 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     goto read_error;
 
   /* We add two bytes so that we can walk the \r\n */
-  rc= memcached_string_check(&result->value, value_length+2);
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(memcached_string_check(&result->value, value_length +2)))
   {
     value_length= 0;
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
-  value_ptr= memcached_string_value_mutable(&result->value);
-  /*
-    We read the \r\n into the string since not doing so is more
-    cycles then the waster of memory to do so.
+  {
+    char *value_ptr= memcached_string_value_mutable(&result->value);
+    /*
+      We read the \r\n into the string since not doing so is more
+      cycles then the waster of memory to do so.
 
-    We are null terminating through, which will most likely make
-    some people lazy about using the return length.
-  */
-  to_read= (value_length) + 2;
-  rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
-  if (rrc != MEMCACHED_SUCCESS)
-    return rrc;
+      We are null terminating through, which will most likely make
+      some people lazy about using the return length.
+    */
+    to_read= (value_length) + 2;
+    memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
+    if (memcached_failed(rrc))
+      return rrc;
+  }
 
   if (read_length != (ssize_t)(value_length + 2))
   {
@@ -552,7 +550,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       if ((rc= memcached_safe_read(ptr, hole, nr)) != MEMCACHED_SUCCESS)
       {
         WATCHPOINT_ERROR(rc);
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
+        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
       }
       bodylen-= (uint32_t) nr;
     }

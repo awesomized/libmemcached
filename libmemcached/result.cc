@@ -80,7 +80,7 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
   _result_init(ptr, (memcached_st *)memc);
 
   WATCHPOINT_SET(ptr->value.options.is_initialized= false);
-  memcached_string_create(memc, &ptr->value, 0);
+  memcached_string_create((memcached_st*)memc, &ptr->value, 0);
   WATCHPOINT_ASSERT_INITIALIZED(&ptr->value);
   WATCHPOINT_ASSERT(ptr->value.string == NULL);
 
@@ -98,7 +98,7 @@ void memcached_result_reset(memcached_result_st *ptr)
 
 void memcached_result_free(memcached_result_st *ptr)
 {
-  if (ptr == NULL)
+  if (not ptr)
     return;
 
   memcached_string_free(&ptr->value);
@@ -118,14 +118,12 @@ memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
                                               const char *value,
                                               size_t length)
 {
-  memcached_return_t rc= memcached_string_append(&ptr->value, value, length);
-
-  if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+  if (memcached_failed(memcached_string_append(&ptr->value, value, length)))
   {
-    memcached_set_errno(ptr->root, errno, NULL);
+    return memcached_set_errno(*ptr->root, errno, MEMCACHED_AT);
   }
 
-      return rc;
+  return MEMCACHED_SUCCESS;
 }
 
 const char *memcached_result_key_value(const memcached_result_st *self)

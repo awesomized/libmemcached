@@ -37,15 +37,15 @@
 
 #pragma once
 
+#include <libmemcached/basic_string.h>
 #include <libmemcached/constants.h>
-#include <libmemcached/options/string.h>
 #include <libmemcached/options/server.h>
 
 union YYSTYPE
 {
   long long number;  
-  string_t string;
-  string_t option;
+  memcached_string_t string;
+  memcached_string_t option;
   double double_number;
   memcached_server_distribution_t distribution;
   memcached_hash_t hash;

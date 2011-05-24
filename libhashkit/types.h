@@ -36,13 +36,7 @@
  */
 
 
-#ifndef HASHKIT_TYPES_H
-#define HASHKIT_TYPES_H
-
-#ifdef __cplusplus
-
-extern "C" {
-#endif
+#pragma once
 
 typedef enum {
   HASHKIT_SUCCESS,
@@ -52,6 +46,9 @@ typedef enum {
   HASHKIT_INVALID_ARGUMENT,
   HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
 } hashkit_return_t;
+
+#define hashkit_success(X) ((X) == HASHKIT_SUCCESS)
+#define hashkit_failed(X) ((X) != HASHKIT_SUCCESS)
 
 typedef enum {
   HASHKIT_HASH_DEFAULT= 0, // hashkit_one_at_a_time()
@@ -79,6 +76,9 @@ typedef enum
   HASHKIT_DISTRIBUTION_MAX /* Always add new values before this. */
 } hashkit_distribution_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct hashkit_st hashkit_st;
 
@@ -87,5 +87,3 @@ typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length, void *co
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* HASHKIT_TYPES_H */

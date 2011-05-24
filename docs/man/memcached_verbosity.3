@@ -1,4 +1,4 @@
-.TH "MEMCACHED_VERBOSITY" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_VERBOSITY" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_verbosity \- libmemcached Documentation
 .
@@ -32,21 +32,16 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Modifiy verbosity of servers
-.SH LIBRARY
+.SH SYNOPSIS
 .sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-memcached_return_t
-  memcached_verbosity (memcached_st *ptr,
-                       unsigned int verbosity);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_verbosity (memcached_st *ptr, unsigned int verbosity);
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 memcached_verbosity() modifies the "verbosity" of the
 memcached(1) servers referenced in the \fBmemcached_st\fP parameter.
@@ -59,10 +54,7 @@ Use memcached_strerror() to translate this value to a printable string.
 .sp
 To find out more information please check:
 \fI\%http://libmemcached.org/\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
-.SS SEE ALSO
+.SH SEE ALSO
 .sp
 memcached(1) libmemcached(3) memcached_strerror(3)
 .SH AUTHOR

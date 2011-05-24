@@ -8,22 +8,23 @@
 
 #include <libhashkit/common.h>
 
-static inline bool _hashkit_init(hashkit_st *self)
+static inline void _hashkit_init(hashkit_st *self)
 {
   self->base_hash.function= hashkit_one_at_a_time;
   self->base_hash.context= NULL;
-  self->distribution_hash.function= self->base_hash.function;
-  self->flags.is_base_same_distributed= false;
 
-  return true;
+  self->distribution_hash.function= hashkit_one_at_a_time;
+  self->distribution_hash.context= NULL;
+
+  self->flags.is_base_same_distributed= true;
 }
 
 static inline hashkit_st *_hashkit_create(hashkit_st *self)
 {
-  if (self == NULL)
+  if (not self)
   {
-    self= (hashkit_st *)malloc(sizeof(hashkit_st));
-    if (self == NULL)
+    self= new hashkit_st;
+    if (not self)
     {
       return NULL;
     }
@@ -41,13 +42,10 @@ static inline hashkit_st *_hashkit_create(hashkit_st *self)
 hashkit_st *hashkit_create(hashkit_st *self)
 {
   self= _hashkit_create(self);
-  if (! self)
+  if (not self)
     return self;
 
-  if (! _hashkit_init(self))
-  {
-    hashkit_free(self);
-  }
+  _hashkit_init(self);
 
   return self;
 }
@@ -57,7 +55,7 @@ void hashkit_free(hashkit_st *self)
 {
   if (hashkit_is_allocated(self))
   {
-    free(self);
+    delete self;
   }
 }
 
@@ -86,10 +84,13 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
 
 bool hashkit_compare(const hashkit_st *first, const hashkit_st *second)
 {
-  if (first->base_hash.function == second->base_hash.function &&
-      first->base_hash.context == second->base_hash.context &&
-      first->distribution_hash.function == second->distribution_hash.function &&
-      first->distribution_hash.context == second->distribution_hash.context &&
+  if (not first or not second)
+    return false;
+
+  if (first->base_hash.function == second->base_hash.function and
+      first->base_hash.context == second->base_hash.context and
+      first->distribution_hash.function == second->distribution_hash.function and
+      first->distribution_hash.context == second->distribution_hash.context and
       first->flags.is_base_same_distributed == second->flags.is_base_same_distributed)
   {
     return true;

@@ -155,12 +155,12 @@ test_return_t string_alloc_append_toobig(memcached_st *memc)
 test_return_t string_alloc_append_multiple(memcached_st *memc)
 {
   memcached_string_st *error_string= memcached_string_create(memc, NULL, 1024);
-  memcached_string_append(error_string, memcached_string_with_size("Error occured while parsing: "));
+  memcached_string_append(error_string, memcached_literal_param("Error occured while parsing: "));
   memcached_string_append(error_string, memcached_string_make_from_cstr("jog the strlen() method"));
-  memcached_string_append(error_string, memcached_string_with_size(" ("));
+  memcached_string_append(error_string, memcached_literal_param(" ("));
 
   memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, MEMCACHED_SUCCESS)));
-  memcached_string_append(error_string, memcached_string_with_size(")"));
+  memcached_string_append(error_string, memcached_literal_param(")"));
 
   memcached_string_free(error_string);
 
