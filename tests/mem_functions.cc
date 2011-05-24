@@ -5380,13 +5380,14 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
   const char *value= "milka";
 
   memcached_reset_last_disconnected_server(memc);
+  test_false(memc->last_disconnected_server);
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
   disconnected_server = memcached_server_get_last_disconnect(memc);
-  test_true(disconnected_server == NULL);
+  test_false(disconnected_server);
 
   /* With a non existing server */
   memcached_st *mine;
@@ -5405,16 +5406,11 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
   rc= memcached_set(mine, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  test_true(rc != MEMCACHED_SUCCESS);
+  test_true(memcached_failed(rc));
 
   disconnected_server= memcached_server_get_last_disconnect(mine);
-  if (disconnected_server == NULL)
-  {
-    fprintf(stderr, "RC %s\n", memcached_strerror(mine, rc));
-    abort();
-  }
-  test_true(disconnected_server != NULL);
-  test_true(memcached_server_port(disconnected_server)== 9);
+  test_true_got(disconnected_server, memcached_strerror(mine, rc));
+  test_compare(9, memcached_server_port(disconnected_server));
   test_true(strncmp(memcached_server_name(disconnected_server),"localhost",9) == 0);
 
   memcached_quit(mine);

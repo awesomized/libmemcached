@@ -67,7 +67,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       }
       else
       {
-        rc= memcached_do(ptr, "quit\r\n", sizeof("quit\r\n") -1, true);
+        rc= memcached_do(ptr, memcached_literal_param("quit\r\n"), true);
       }
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);

@@ -151,8 +151,7 @@ static void _free(memcached_st *ptr, bool release_st)
 
   memcached_virtual_bucket_free(ptr);
 
-  if (ptr->last_disconnected_server)
-    memcached_server_free(ptr->last_disconnected_server);
+  memcached_server_free(ptr->last_disconnected_server);
 
   if (ptr->on_cleanup)
     ptr->on_cleanup(ptr);
@@ -273,33 +272,27 @@ memcached_return_t memcached_reset(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-void memcached_servers_reset(memcached_st *ptr)
+void memcached_servers_reset(memcached_st *self)
 {
-  if (not ptr)
+  if (not self)
     return;
 
-  memcached_server_list_free(memcached_server_list(ptr));
+  memcached_server_list_free(memcached_server_list(self));
 
-  memcached_server_list_set(ptr, NULL);
-  ptr->number_of_hosts= 0;
-  if (ptr->last_disconnected_server)
-  {
-    memcached_server_free(ptr->last_disconnected_server);
-  }
-  ptr->last_disconnected_server= NULL;
-  ptr->server_failure_limit= 0;
+  memcached_server_list_set(self, NULL);
+  self->number_of_hosts= 0;
+  memcached_server_free(self->last_disconnected_server);
+  self->last_disconnected_server= NULL;
+  self->server_failure_limit= 0;
 }
 
-void memcached_reset_last_disconnected_server(memcached_st *ptr)
+void memcached_reset_last_disconnected_server(memcached_st *self)
 {
-  if (not ptr)
+  if (not self)
     return;
 
-  if (ptr->last_disconnected_server)
-  {
-    memcached_server_free(ptr->last_disconnected_server);
-    ptr->last_disconnected_server= NULL;
-  }
+  memcached_server_free(self->last_disconnected_server);
+  self->last_disconnected_server= NULL;
 }
 
 void memcached_free(memcached_st *ptr)
