@@ -1,4 +1,4 @@
-.TH "MEMCACHED_STRERROR" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_STRERROR" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_strerror \- libmemcached Documentation
 .
@@ -30,21 +30,16 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
-.SH LIBRARY
+.SH SYNOPSIS
 .sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-const char *
-  memcached_strerror (memcached_st *ptr,
-                      memcached_return_t rc);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc);
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 memcached_strerror() takes a \fBmemcached_return_t\fP value and returns a string
 describing the error.
@@ -62,10 +57,7 @@ memcached_strerror() returns a string describing a \fBmemcached_return_t\fP valu
 .sp
 To find out more information please check:
 \fI\%http://libmemcached.org/\fP
-.SH AUTHOR
-.sp
-Brian Aker, <\fI\%brian@tangent.org\fP>
-.SS SEE ALSO
+.SH SEE ALSO
 .sp
 memcached(1) libmemcached(3)
 .SH AUTHOR

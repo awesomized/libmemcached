@@ -1,4 +1,4 @@
-.TH "HASHKIT_VALUE" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "HASHKIT_VALUE" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 hashkit_value \- libhashkit Documentation
 .
@@ -32,20 +32,15 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Generate a value for the given key
-.SH LIBRARY
-.sp
-C Library for hashing algorithms (libmemcached, \-lhashkit)
 .SH SYNOPSIS
 .sp
-.nf
-.ft C
-#include <libmemcached/hashkit.h>
-
-uint32_t hashkit_value(hashkit_st *hash,
-                       const char *key,
-                       size_t key_length);
-.ft P
-.fi
+#include <libhashkit/hashkit.h>
+.INDENT 0.0
+.TP
+.B uint32_t hashkit_value(hashkit_st *hash, const char *key, size_t key_length);
+.UNINDENT
+.sp
+Compile and link with \-lhashkit
 .SH DESCRIPTION
 .sp
 The hashkit_value() function generates a 32\-bit hash value from the

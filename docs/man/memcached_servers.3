@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SERVERS" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_SERVERS" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_servers \- libmemcached Documentation
 .
@@ -30,35 +30,44 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
+.SH SYNOPSIS
 .sp
-Manage server list
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
-.SS SYNOPSIS
-.sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-uint32_t memcached_server_count (memcached_st *ptr);
-
-memcached_return_t memcached_server_add (memcached_st *ptr, const char *hostname, in_port_t port);
-
-memcached_return_t memcached_server_add_udp (memcached_st *ptr, const char *hostname, in_port_t port);
-
-memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket);
-
-memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list);
-
-memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error);
-
-memcached_server_instance_st memcached_server_get_last_disconnect (const memcached_st *ptr)
-
-memcached_return_t memcached_server_cursor(const memcached_st *ptr, const memcached_server_fn *callback, void *context, uint32_t number_of_callbacks);
-.ft P
-.fi
-.SS DESCRIPTION
+.INDENT 0.0
+.TP
+.B uint32_t memcached_server_count (memcached_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_server_add (memcached_st *ptr, const char *hostname, in_port_t port);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_server_add_udp (memcached_st *ptr, const char *hostname, in_port_t port);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st\fI\ *ptr\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_server_cursor(const memcached_st *ptr, const memcached_server_fn *callback, void *context, uint32_t number_of_callbacks);
+.UNINDENT
+.sp
+compile and link with \-lmemcached
+.SH DESCRIPTION
 .sp
 libmemcached(3) performs operations on a list of hosts. The order of these
 hosts determine routing to keys. Functions are provided to add keys to
@@ -113,7 +122,7 @@ Varies, see particular functions.
 .sp
 To find out more information please check:
 \fI\%http://libmemcached.org/\fP
-.SS SEE ALSO
+.SH SEE ALSO
 .sp
 \fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR

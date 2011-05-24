@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SET_MEMORY_ALLOCATORS_CONTEXT" "3" "April 14, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_SET_MEMORY_ALLOCATORS_CONTEXT" "3" "May 23, 2011" "0.47" "libmemcached"
 .SH NAME
 memcached_set_memory_allocators_context \- libmemcached Documentation
 .
@@ -32,33 +32,42 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .sp
 Manage memory allocator functions
-.SH LIBRARY
-.sp
-C Client Library for memcached (libmemcached, \-lmemcached)
 .SH SYNOPSIS
 .sp
-.nf
-.ft C
 #include <libmemcached/memcached.h>
-
-memcached_return_t memcached_set_memory_allocators (memcached_st *ptr, memcached_malloc_fn mem_malloc, memcached_free_fn mem_free, memcached_realloc_fn mem_realloc, memcached_calloc_fn mem_calloc, void *context);
-
-void memcached_get_memory_allocators (memcached_st *ptr, memcached_malloc_fn *mem_malloc, memcached_free_fn *mem_free, memcached_realloc_fn *mem_realloc, memcached_calloc_fn *mem_calloc);
-
-void * memcached_get_memory_allocators_context(const memcached_st *ptr);
-
-void * (*memcached_malloc_fn) (memcached_st *ptr, const size_t size, void *context);
-
-void * (*memcached_realloc_fn) (memcached_st *ptr, void *mem, const size_t size, void *context);
-
-void (*memcached_free_fn) (memcached_st *ptr, void *mem, void *context);
-
-void * (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
-.ft P
-.fi
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_set_memory_allocators (memcached_st *ptr, memcached_malloc_fn mem_malloc, memcached_free_fn mem_free, memcached_realloc_fn mem_realloc, memcached_calloc_fn mem_calloc, void *context);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_get_memory_allocators (memcached_st *ptr, memcached_malloc_fn *mem_malloc, memcached_free_fn *mem_free, memcached_realloc_fn *mem_realloc, memcached_calloc_fn *mem_calloc);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void * memcached_get_memory_allocators_context(const memcached_st *ptr);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void * (*memcached_malloc_fn) (memcached_st *ptr, const size_t size, void *context);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void * (*memcached_realloc_fn) (memcached_st *ptr, void *mem, const size_t size, void *context);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void (*memcached_free_fn) (memcached_st *ptr, void *mem, void *context);
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void * (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-libmemcached(3) allows you to specify your own memory allocators optimized
+libmemcached(3) allows you to specify your own memory allocators, optimized
 for your application. This enables libmemcached to be used inside of applications that have their own malloc implementation.
 .sp
 memcached_set_memory_allocators() is used to set the memory allocators used
