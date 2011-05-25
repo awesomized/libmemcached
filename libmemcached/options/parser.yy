@@ -135,19 +135,21 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 
 %token <number> FLOAT
 %token <number> NUMBER
-%token PORT
-%token WEIGHT_START
+%token <number> PORT
+%token <number> WEIGHT_START
 %token <server> IPADDRESS
 %token <server> HOSTNAME
 %token <string> STRING
 %token <string> QUOTED_STRING
 %token <string> FILE_PATH
 
-%type <string> string
-%type <distribution> distribution
-%type <hash> hash
 %type <behavior> behavior_boolean
 %type <behavior> behavior_number
+%type <distribution> distribution
+%type <hash> hash
+%type <number> optional_port
+%type <number> optional_weight
+%type <string> string
 
 %%
 
@@ -194,7 +196,7 @@ statement:
 expression:
           SERVER HOSTNAME optional_port optional_weight
           {
-            if ((context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $2.port, $2.weight)) != MEMCACHED_SUCCESS)
+            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
             {
               parser_abort(context, NULL);
             }
@@ -202,7 +204,7 @@ expression:
           }
         | SERVER IPADDRESS optional_port optional_weight
           {
-            if ((context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $2.port, $2.weight)) != MEMCACHED_SUCCESS)
+            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
             {
               parser_abort(context, NULL);
             }
@@ -378,13 +380,13 @@ behavior_boolean:
 
 
 optional_port:
-          { }
+          { $$= MEMCACHED_DEFAULT_PORT;}
         | PORT
           { };
         ;
 
 optional_weight:
-          { }
+          { $$= 1; }
         | WEIGHT_START
           { }
         ;

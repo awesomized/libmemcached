@@ -448,10 +448,10 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
                                                     in_port_t port,
                                                     uint32_t weight)
 {
-  if (! port)
+  if (not port)
     port= MEMCACHED_DEFAULT_PORT;
 
-  if (! hostname)
+  if (not hostname)
     hostname= "localhost";
 
   return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_TCP);
@@ -462,23 +462,23 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
                                      uint32_t weight,
                                      memcached_connection_t type)
 {
-  memcached_server_st *new_host_list;
-  memcached_server_write_instance_st instance;
 
-  if ( (ptr->flags.use_udp && type != MEMCACHED_CONNECTION_UDP)
-      || ( (type == MEMCACHED_CONNECTION_UDP) && (! ptr->flags.use_udp) ) )
+  if ( (ptr->flags.use_udp and type != MEMCACHED_CONNECTION_UDP)
+      or ( (type == MEMCACHED_CONNECTION_UDP) and (not ptr->flags.use_udp) ) )
+  {
     return MEMCACHED_INVALID_HOST_PROTOCOL;
+  }
 
-  new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
-									sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
+  memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
+                                                                                             sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
 
-  if (new_host_list == NULL)
+  if (not new_host_list)
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   memcached_server_list_set(ptr, new_host_list);
 
   /* TODO: Check return type */
-  instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
 
   (void)memcached_server_create_with(ptr, instance, hostname, port, weight, type);
 

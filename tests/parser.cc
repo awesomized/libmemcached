@@ -40,7 +40,8 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <errno.h>
+#include <cerrno>
+#include <cassert>
 
 #define BUILDING_LIBMEMCACHED
 // !NEVER use common.h, always use memcached.h in your own apps
@@ -494,6 +495,53 @@ test_return_t random_statement_build_test(memcached_st*)
     }
     memcached_free(memc_ptr);
   }
+
+  return TEST_SUCCESS;
+}
+
+static memcached_return_t dump_server_information(const memcached_st *,
+                                                  const memcached_server_st *instance,
+                                                  void *)
+{
+  if (strcmp(memcached_server_name(instance), "localhost")) 
+  {
+    assert(not memcached_server_name(instance));
+    return MEMCACHED_FAILURE;
+  }
+
+  if (memcached_server_port(instance) < 8888 or memcached_server_port(instance) > 8892)
+  {
+    assert(not memcached_server_port(instance));
+    return MEMCACHED_FAILURE;
+  }
+
+  if (instance->weight > 5 or instance->weight < 2)
+  {
+    assert(not instance->weight);
+    return MEMCACHED_FAILURE;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
+
+test_return_t test_hostname_port_weight(memcached_st *)
+{
+  const char *server_string= "--server=localhost:8888/?2 --server=localhost:8889/?3 --server=localhost:8890/?4 --server=localhost:8891/?5 --server=localhost:8892/?3";
+  char buffer[BUFSIZ];
+
+  memcached_return_t rc;
+  test_compare_got(MEMCACHED_SUCCESS,
+                   rc= libmemcached_check_configuration(server_string, strlen(server_string), buffer, sizeof(buffer)),
+                   memcached_strerror(NULL, rc));
+
+  memcached_st *memc= memcached(server_string, strlen(server_string));
+  test_true(memc);
+
+  memcached_server_fn callbacks[]= { dump_server_information };
+  test_true(memcached_success(memcached_server_cursor(memc, callbacks, NULL, 1)));
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }

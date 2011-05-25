@@ -76,11 +76,11 @@
 
 =|,|[ ]       { return yytext[0];}
 
-[[:digit:]]+ { yylval->number = atoi(yytext); return (NUMBER); }
+[[:digit:]]+ { yylval->number= atoi(yytext); return (NUMBER); }
 
-:[[:digit:]]{1,5} { yylval->server.port = atoi(yytext +1); return PORT; }
+:[[:digit:]]{1,5} { yylval->number= atoi(yytext +1); return PORT; }
 
-"/?"[[:digit:]]{1,5} { yylval->server.weight = atoi(yytext +2); return WEIGHT_START; }
+"/?"[[:digit:]]{1,5} { yylval->number= atoi(yytext +2); return WEIGHT_START; }
 
 [\t\r\n] ; /* skip whitespace */
 

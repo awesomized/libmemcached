@@ -5419,6 +5419,46 @@ static test_return_t test_get_last_disconnect(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t test_multiple_get_last_disconnect(memcached_st *)
+{
+  const char *server_string= "--server=localhost:8888 --server=localhost:8889 --server=localhost:8890 --server=localhost:8891 --server=localhost:8892";
+  char buffer[BUFSIZ];
+
+  memcached_return_t rc;
+  test_compare_got(MEMCACHED_SUCCESS,
+                   rc= libmemcached_check_configuration(server_string, strlen(server_string), buffer, sizeof(buffer)),
+                   memcached_strerror(NULL, rc));
+
+  memcached_st *memc= memcached(server_string, strlen(server_string));
+  test_true(memc);
+
+  // We will just use the error strings as our keys
+  uint32_t counter= 100;
+  while (--counter)
+  {
+    for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
+    {
+      const char *msg=  memcached_strerror(memc, memcached_return_t(x));
+      memcached_return_t ret= memcached_set(memc, msg, strlen(msg), NULL, 0, (time_t)0, (uint32_t)0);
+      test_compare_got(MEMCACHED_WRITE_FAILURE, ret, memcached_strerror(NULL, ret));
+
+      memcached_server_instance_st disconnected_server= memcached_server_get_last_disconnect(memc);
+      test_true(disconnected_server);
+      test_strcmp("localhost", memcached_server_name(disconnected_server));
+      test_true(memcached_server_port(disconnected_server) >= 8888 and memcached_server_port(disconnected_server) <= 8892);
+
+      if (random() % 2)
+      {
+        memcached_reset_last_disconnected_server(memc);
+      }
+    }
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t test_verbosity(memcached_st *memc)
 {
   memcached_verbosity(memc, 3);
@@ -6013,6 +6053,12 @@ test_st string_tests[] ={
   {0, 0, (test_callback_fn)0}
 };
 
+test_st memcached_server_get_last_disconnect_tests[] ={
+  {"memcached_server_get_last_disconnect()", 0, (test_callback_fn)test_multiple_get_last_disconnect},
+  {0, 0, (test_callback_fn)0}
+};
+
+
 test_st result_tests[] ={
   {"result static", 0, (test_callback_fn)result_static},
   {"result alloc", 0, (test_callback_fn)result_alloc},
@@ -6204,6 +6250,7 @@ test_st parser_tests[] ={
   {"server", 0, (test_callback_fn)server_test },
   {"bad server strings", 0, (test_callback_fn)servers_bad_test },
   {"server with weights", 0, (test_callback_fn)server_with_weight_test },
+  {"parsing servername, port, and weight", 0, (test_callback_fn)test_hostname_port_weight },
   {0, 0, (test_callback_fn)0}
 };
 
@@ -6277,6 +6324,7 @@ collection_st collection[] ={
   {"error_conditions", 0, 0, error_conditions},
   {"parser", 0, 0, parser_tests},
   {"virtual buckets", 0, 0, virtual_bucket_tests},
+  {"memcached_server_get_last_disconnect", 0, 0, memcached_server_get_last_disconnect_tests},
   {0, 0, 0, 0}
 };
 

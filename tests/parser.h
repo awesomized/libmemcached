@@ -97,6 +97,9 @@ test_return_t test_error_keyword(memcached_st*);
 LIBTEST_INTERNAL_API
 test_return_t server_with_weight_test(memcached_st *);
 
+LIBTEST_INTERNAL_API
+test_return_t test_hostname_port_weight(memcached_st *);
+
 #ifdef	__cplusplus
 }
 #endif
