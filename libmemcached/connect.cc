@@ -505,19 +505,18 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
   return MEMCACHED_SUCCESS; /* The last error should be from connect() */
 }
 
-void set_last_disconnected_host(memcached_server_write_instance_st ptr)
+void set_last_disconnected_host(memcached_server_write_instance_st self)
 {
   // const_cast
-  memcached_st *root= (memcached_st *)ptr->root;
+  memcached_st *root= (memcached_st *)self->root;
 
 #if 0
-  WATCHPOINT_STRING(ptr->hostname);
-  WATCHPOINT_NUMBER(ptr->port);
-  WATCHPOINT_ERRNO(ptr->cached_errno);
+  WATCHPOINT_STRING(self->hostname);
+  WATCHPOINT_NUMBER(self->port);
+  WATCHPOINT_ERRNO(self->cached_errno);
 #endif
-  if (root->last_disconnected_server)
-    memcached_server_free(root->last_disconnected_server);
-  root->last_disconnected_server= memcached_server_clone(NULL, ptr);
+  memcached_server_free(root->last_disconnected_server);
+  root->last_disconnected_server= memcached_server_clone(NULL, self);
 }
 
 memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
@@ -570,6 +569,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     WATCHPOINT_ASSERT(0);
     rc= MEMCACHED_NOT_SUPPORTED;
     break;
+
   case MEMCACHED_CONNECTION_UDP:
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
@@ -585,15 +585,17 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     }
 #endif
     break;
+
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     rc= unix_socket_connect(ptr);
     break;
+
   case MEMCACHED_CONNECTION_MAX:
   default:
     WATCHPOINT_ASSERT(0);
   }
 
-  if (rc == MEMCACHED_SUCCESS)
+  if (memcached_success(rc))
   {
     ptr->server_failure_counter= 0;
     ptr->next_retry= 0;

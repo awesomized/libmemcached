@@ -1568,17 +1568,17 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 79 "libmemcached/options/scanner.l"
-{ yylval->number = atoi(yytext); return (NUMBER); }
+{ yylval->number= atoi(yytext); return (NUMBER); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 81 "libmemcached/options/scanner.l"
-{ yylval->server.port = atoi(yytext +1); return PORT; }
+{ yylval->number= atoi(yytext +1); return PORT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 83 "libmemcached/options/scanner.l"
-{ yylval->server.weight = atoi(yytext +2); return WEIGHT_START; }
+{ yylval->number= atoi(yytext +2); return WEIGHT_START; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */

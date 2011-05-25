@@ -135,7 +135,9 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc,
 
 void memcached_server_free(memcached_server_st *self)
 {
-  assert(self);
+  if (not self)
+    return;
+
   memcached_quit_server(self, false);
 
   if (self->cached_server_error)
@@ -167,7 +169,7 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
   destination= memcached_server_create_with(source->root, destination,
                                             source->hostname, source->port, source->weight,
                                             source->type);
-  if (destination != NULL)
+  if (not destination)
   {
     destination->cached_errno= source->cached_errno;
 
