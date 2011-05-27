@@ -56,6 +56,9 @@ test_return_t replication_delete_test(memcached_st *memc);
 LIBTEST_INTERNAL_API
 test_return_t replication_randomize_mget_test(memcached_st *memc);
 
+LIBTEST_INTERNAL_API
+test_return_t replication_randomize_mget_fail_test(memcached_st *memc);
+
 #ifdef	__cplusplus
 }
 #endif

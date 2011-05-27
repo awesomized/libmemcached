@@ -24,7 +24,7 @@ DESCRIPTION
 -----------
 
 
-memcached_flush() is used to wipe clean the contents of memcached(1) servers.
+:c:func::`memcached_flush()` is used to wipe clean the contents of memcached(1) servers.
 It will either do this immediately or expire the content based on the
 expiration time passed to the method (a value of zero causes an immediate
 flush). The operation is not atomic to multiple servers, just atomic to a
@@ -37,9 +37,9 @@ RETURN
 ------
 
 
-A value of type \ ``memcached_return_t``\  is returned
-On success that value will be \ ``MEMCACHED_SUCCESS``\ .
-Use memcached_strerror() to translate this value to a printable string.
+A value of type :c:type:`memcached_return_t`  is returned
+On success that value will be :c:type:`MEMCACHED_SUCCESS`.
+Use :c:type:`memcached_strerror()` to translate this value to a printable string.
 
 
 ----
