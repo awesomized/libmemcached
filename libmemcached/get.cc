@@ -1,15 +1,42 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
- * Summary: Get functions for libmemcached
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#include "common.h"
+#include "libmemcached/common.h"
+#include <iostream>
 
 /*
   What happens if no servers exist?
@@ -66,10 +93,9 @@ char *memcached_get_by_key(memcached_st *ptr,
   {
     if (ptr->get_key_failure && *error == MEMCACHED_NOTFOUND)
     {
-      memcached_return_t rc;
 
       memcached_result_reset(&ptr->result);
-      rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
+      memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
 
       /* On all failure drop to returning NULL */
       if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
@@ -516,8 +542,6 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
     for (uint32_t x= 0; x < number_of_keys; ++x)
     {
-      memcached_server_write_instance_st instance;
-
       if (hash[x] == memcached_server_count(ptr))
         continue; /* Already successfully sent */
 
@@ -533,12 +557,12 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       if (dead_servers[server])
         continue;
 
-      instance= memcached_server_instance_fetch(ptr, server);
+      memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server);
 
       if (memcached_server_response_count(instance) == 0)
       {
         rc= memcached_connect(instance);
-        if (rc != MEMCACHED_SUCCESS)
+        if (memcached_failed(rc))
         {
           memcached_io_reset(instance);
           dead_servers[server]= true;
@@ -607,11 +631,8 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
   }
   else
   {
-    uint32_t* hash;
-    bool* dead_servers;
-
-    hash= static_cast<uint32_t*>(libmemcached_malloc(ptr, sizeof(uint32_t) * number_of_keys));
-    dead_servers= static_cast<bool*>(libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(bool)));
+    uint32_t* hash= static_cast<uint32_t*>(libmemcached_malloc(ptr, sizeof(uint32_t) * number_of_keys));
+    bool* dead_servers= static_cast<bool*>(libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(bool)));
 
     if (hash == NULL || dead_servers == NULL)
     {

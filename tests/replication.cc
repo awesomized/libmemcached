@@ -294,3 +294,41 @@ test_return_t replication_delete_test(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
+
+test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
+{
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
+  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 3);
+
+  for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
+  {
+    const char *key= memcached_strerror(NULL, memcached_return_t(x));
+    memcached_return_t rc= memcached_set(memc,
+                                         key, strlen(key),
+                                         key, strlen(key), 0, 0);
+    test_true(rc == MEMCACHED_SUCCESS);
+  }
+
+  memcached_flush_buffers(memc);
+
+  // We need to now cause a failure in one server, never do this in your own
+  // code.
+  close(memc_clone->servers[1].fd);
+  memc_clone->servers[1].port= 1;
+  memc_clone->servers[1].address_info_next= NULL;
+
+  for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
+  {
+    const char *key= memcached_strerror(NULL, memcached_return_t(x));
+    memcached_return_t rc;
+    uint32_t flags;
+    size_t value_length;
+    char *value= memcached_get(memc_clone, key, strlen(key), &value_length, &flags, &rc);
+    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(strlen(key), value_length);
+    test_strcmp(key, value);
+    free(value);
+  }
+  memcached_free(memc_clone);
+  return TEST_SUCCESS;
+}
