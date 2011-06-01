@@ -34,10 +34,10 @@ DESCRIPTION
 
 memcached_set(), memcached_add(), and memcached_replace() are all used to
 store information on the server. All methods take a key, and its length to
-store the object. Keys are currently limited to 250 characters when using either a version of memcached(1) which is 1.4 or below, or when using the text protocol.
-You must supply both a value and a length. Optionally you
-may test an expiration time for the object and a 16 byte value (it is
-meant to be used as a bitmap). "flags" is a 4byte space that is stored alongside of the main value. Many sub libraries make use of this field, so in most cases users should avoid making use of it.
+store the object. Keys are currently limited to 250 characters when using either a version of memcached(1) which is 1.4 or below, or when using the text protocol. You must supply both a value and a length. Optionally you
+store the object. Keys are currently limited to 250 characters by the
+memcached(1) server. You must supply both a value and a length. Optionally you
+may test an expiration time for the object and a 16 byte value (it is meant to be used as a bitmap). "flags" is a 4byte space that is stored alongside of the main value. Many sub libraries make use of this field, so in most cases users should avoid making use of it.
 
 memcached_set() will write an object to the server. If an object already
 exists it will overwrite what is in the server. If the object does not exist
