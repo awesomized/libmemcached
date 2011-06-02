@@ -23,9 +23,11 @@ bin_PROGRAMS+= \
 	clients/memslap \
 	clients/memstat
 
+if BUILD_MEMASLAP
 if HAVE_LIBEVENT
 if !BUILD_WIN32_WRAPPERS
   bin_PROGRAMS+= clients/memaslap
+endif
 endif
 endif
 
@@ -96,19 +98,19 @@ test-start-server:
 	clients/memcat --servers=localhost /etc/services
 	clients/memrm --servers=localhost /etc/services
 	clients/memstat --servers=localhost
-	clients/memaslap --servers=localhost
-	clients/memaslap --servers=localhost --concurrency=10
-	clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000
-	clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
-	clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
-	clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
-	clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
+	clients/memslap --servers=localhost
+	clients/memslap --servers=localhost --concurrency=10
+	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000
+	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
+	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
+	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
+	clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
 
 client-valgrind:
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
-	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memaslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=get
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set
+	libtool --mode=execute valgrind --leak-check=yes --show-reachable=yes  clients/memslap --servers=localhost --concurrency=10 --initial-load=1000 --execute-number=10 --test=set --non-blocking
