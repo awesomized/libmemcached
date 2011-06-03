@@ -114,10 +114,13 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit/strerror.h
 %{_includedir}/libhashkit/types.h
 %{_includedir}/libhashkit/visibility.h
+%{_includedir}/libhashkit/hashkit.hpp
+
 %{_includedir}/libmemcached/allocators.h
 %{_includedir}/libmemcached/analyze.h
 %{_includedir}/libmemcached/array.h
 %{_includedir}/libmemcached/auto.h
+%{_includedir}/libmemcached/basic_string.h
 %{_includedir}/libmemcached/behavior.h
 %{_includedir}/libmemcached/callback.h
 %{_includedir}/libmemcached/configure.h
@@ -146,6 +149,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/protocol_handler.h
 %{_includedir}/libmemcached/quit.h
 %{_includedir}/libmemcached/result.h
+%{_includedir}/libmemcached/return.h
 %{_includedir}/libmemcached/sasl.h
 %{_includedir}/libmemcached/server.h
 %{_includedir}/libmemcached/server_list.h

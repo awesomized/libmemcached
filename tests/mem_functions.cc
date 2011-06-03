@@ -6116,6 +6116,7 @@ test_st replication_tests[]= {
   {"mget", 0, (test_callback_fn)replication_mget_test },
   {"delete", 0, (test_callback_fn)replication_delete_test },
   {"rand_mget", 0, (test_callback_fn)replication_randomize_mget_test },
+  {"fail", 0, (test_callback_fn)replication_randomize_mget_fail_test },
   {0, 0, (test_callback_fn)0}
 };
 
