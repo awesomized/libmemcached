@@ -6,6 +6,7 @@ if BUILD_LIBMEMCACHEDUTIL
 nobase_include_HEADERS+= \
 			 libmemcached/memcached_util.h \
 			 libmemcached/util.h \
+			 libmemcached/util/flush.h \
 			 libmemcached/util/ping.h \
 			 libmemcached/util/pool.h \
 			 libmemcached/util/version.h
@@ -13,6 +14,7 @@ lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 
 libmemcached_libmemcachedutil_la_SOURCES= \
+					  libmemcached/util/flush.cc \
 					  libmemcached/util/ping.cc \
 					  libmemcached/util/pool.cc \
 					  libmemcached/util/version.cc
