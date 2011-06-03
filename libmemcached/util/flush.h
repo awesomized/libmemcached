@@ -33,30 +33,18 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
-{
-  memcached_st *memc_ptr= memcached_create(NULL);
+LIBMEMCACHED_API
+bool libmemcached_util_flush(const char *hostname, in_port_t port, memcached_return_t *ret);
 
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
-  {
-    rc= memcached_version(memc_ptr);
-  }
-
-  memcached_free(memc_ptr);
-
-  if (ret)
-  {
-    *ret= rc;
-  }
-
-  return rc == MEMCACHED_SUCCESS;
+#ifdef __cplusplus
 }
+#endif
+
