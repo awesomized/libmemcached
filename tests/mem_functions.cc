@@ -5478,7 +5478,7 @@ static test_return_t test_server_failure(memcached_st *memc)
 
   uint32_t server_count= memcached_server_count(local_memc);
 
-  test_true(server_count == 1);
+  test_compare(1, server_count);
 
   // Disable the server
   instance= memcached_server_instance_by_position(local_memc, 0);
@@ -5488,13 +5488,13 @@ static test_return_t test_server_failure(memcached_st *memc)
   rc= memcached_set(local_memc, "foo", strlen("foo"),
                     NULL, 0,
                     (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SERVER_MARKED_DEAD);
+  test_compare_got(MEMCACHED_SERVER_MARKED_DEAD, rc, memcached_last_error_message(local_memc));
 
   ((memcached_server_write_instance_st)instance)->server_failure_counter= 0;
   rc= memcached_set(local_memc, "foo", strlen("foo"),
                     NULL, 0,
                     (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_last_error_message(local_memc));
 
 
   memcached_free(local_memc);
@@ -5683,47 +5683,26 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
 
   /* First add all of the items.. */
-  bool slept= false;
   char blob[1024]= { 0 };
-  memcached_return rc;
   for (size_t x= 0; x < max_keys; ++x)
   {
     char k[251];
     key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
     keys[x]= strdup(k);
     assert(keys[x] != NULL);
-    rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
-#ifdef __APPLE__
-    if (rc == MEMCACHED_SERVER_MARKED_DEAD)
-    {
-      break; // We are out of business
-    }
-#endif
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED || rc == MEMCACHED_TIMEOUT); // MEMCACHED_TIMEOUT <-- only observed on OSX
-
-    if (rc == MEMCACHED_TIMEOUT && slept == false)
-    {
-      x++;
-      sleep(1);// We will try to sleep
-      slept= true;
-    }
-    else if (rc == MEMCACHED_TIMEOUT && slept == true)
-    {
-      // We failed to send everything.
-      break;
-    }
+    memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED); // MEMCACHED_TIMEOUT <-- hash been observed on OSX
   }
 
-  if (rc != MEMCACHED_SERVER_MARKED_DEAD)
   {
 
     /* Try to get all of them with a large multiget */
     size_t counter= 0;
     memcached_execute_function callbacks[]= { &callback_counter };
-    rc= memcached_mget_execute(memc, (const char**)keys, key_length,
-                               (size_t)max_keys, callbacks, &counter, 1);
+    memcached_return_t rc= memcached_mget_execute(memc, (const char**)keys, key_length,
+                                                  (size_t)max_keys, callbacks, &counter, 1);
+    test_compare(MEMCACHED_SUCCESS, rc);
 
-    assert(rc == MEMCACHED_SUCCESS);
     char* the_value= NULL;
     char the_key[MEMCACHED_MAX_KEY];
     size_t the_key_length;
@@ -5742,7 +5721,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
     } while ( (the_value!= NULL) && (rc == MEMCACHED_SUCCESS));
 
 
-    assert(rc == MEMCACHED_END);
+    test_compare(MEMCACHED_END, rc);
 
     /* Verify that we got all of the items */
     assert(counter == max_keys);
