@@ -5468,10 +5468,9 @@ static test_return_t test_verbosity(memcached_st *memc)
 
 static test_return_t test_server_failure(memcached_st *memc)
 {
-  memcached_st *local_memc;
   memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
 
-  local_memc= memcached_create(NULL);
+  memcached_st *local_memc= memcached_create(NULL);
 
   memcached_server_add(local_memc, memcached_server_name(instance), memcached_server_port(instance));
   memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 2);
