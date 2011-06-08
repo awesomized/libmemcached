@@ -62,7 +62,7 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     {
       uint32_t num= ptr->ketama.continuum_points_counter;
-      WATCHPOINT_ASSERT(ptr->continuum);
+      WATCHPOINT_ASSERT(ptr->ketama.continuum);
 
       hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;

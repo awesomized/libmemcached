@@ -96,14 +96,14 @@ static inline void libmemcached_stack_dump(void)
 
 #define WATCHPOINT
 #define WATCHPOINT_ERROR(A)
-#define WATCHPOINT_IFERROR(A)
+#define WATCHPOINT_IFERROR(__memcached_return_t) (void)(__memcached_return_t)
 #define WATCHPOINT_STRING(A)
 #define WATCHPOINT_NUMBER(A)
 #define WATCHPOINT_LABELED_NUMBER(A,B)
 #define WATCHPOINT_IF_LABELED_NUMBER(A,B,C)
 #define WATCHPOINT_ERRNO(A)
 #define WATCHPOINT_ASSERT_PRINT(A,B,C)
-#define WATCHPOINT_ASSERT(A)
+#define WATCHPOINT_ASSERT(A) (void)(A)
 #define WATCHPOINT_ASSERT_INITIALIZED(A)
 #define WATCHPOINT_SET(A)
 

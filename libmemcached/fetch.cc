@@ -56,7 +56,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 
   result_buffer= memcached_fetch_result(ptr, result_buffer, error);
 
-  if (result_buffer == NULL || *error != MEMCACHED_SUCCESS)
+  if (result_buffer == NULL or *error != MEMCACHED_SUCCESS)
   {
     WATCHPOINT_ASSERT(result_buffer == NULL);
     *value_length= 0;
