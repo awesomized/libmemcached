@@ -332,6 +332,19 @@ const char *memcached_last_error_message(memcached_st *memc)
   return memc->error_messages->message;
 }
 
+
+bool memcached_has_current_error(memcached_st &memc)
+{
+  if (memc.error_messages 
+      and memc.error_messages->query_id == memc.query_id
+      and memcached_failed(memc.error_messages->rc))
+  {
+    return true;
+  }
+
+  return false;
+}
+
 memcached_return_t memcached_last_error(memcached_st *memc)
 {
   if (not memc)

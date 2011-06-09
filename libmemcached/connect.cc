@@ -542,7 +542,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     {
       set_last_disconnected_host(ptr);
 
-      return MEMCACHED_SERVER_MARKED_DEAD;
+      return memcached_set_error(*ptr, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
     }
   }
 
@@ -559,7 +559,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
       run_distribution((memcached_st *)ptr->root);
     }
 
-    return MEMCACHED_SERVER_MARKED_DEAD;
+    return memcached_set_error(*ptr, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
   }
 
   /* We need to clean up the multi startup piece */
@@ -602,8 +602,8 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   }
   else
   {
+    memcached_set_error(*ptr, rc, MEMCACHED_AT);
     ptr->server_failure_counter++;
-
     set_last_disconnected_host(ptr);
   }
 

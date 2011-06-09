@@ -393,11 +393,10 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
 
     if (ptr->write_buffer_offset == buffer_end && ptr->type != MEMCACHED_CONNECTION_UDP)
     {
-      memcached_return_t rc;
-      ssize_t sent_length;
-
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-      sent_length= io_flush(ptr, with_flush, &rc);
+
+      memcached_return_t rc;
+      ssize_t sent_length= io_flush(ptr, with_flush, &rc);
       if (sent_length == -1)
       {
         return -1;
@@ -646,7 +645,9 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
           rc= io_wait(ptr, MEM_WRITE);
 
           if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_TIMEOUT)
+          {
             continue;
+          }
 
           memcached_quit_server(ptr, true);
           return -1;
@@ -655,7 +656,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       case EPIPE:
       default:
         memcached_quit_server(ptr, true);
-        *error= MEMCACHED_ERRNO;
+        *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         WATCHPOINT_ASSERT(ptr->fd == -1);
         return -1;
       }
@@ -714,7 +715,9 @@ memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
     memcached_return_t rc= memcached_io_read(ptr, data + offset, size - offset,
                                              &nread);
     if (rc != MEMCACHED_SUCCESS)
+    {
       return rc;
+    }
 
     offset+= (size_t) nread;
   }
@@ -741,7 +744,9 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
       ssize_t nread;
       memcached_return_t rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
       if (rc != MEMCACHED_SUCCESS)
+      {
         return rc;
+      }
 
       if (*buffer_ptr == '\n')
         line_complete= true;

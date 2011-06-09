@@ -46,6 +46,7 @@
 #define BUILDING_LIBMEMCACHED
 // !NEVER use common.h, always use memcached.h in your own apps
 #include <libmemcached/common.h>
+#include <libmemcached/util.h>
 
 #include "tests/parser.h"
 #include "tests/print.h"
@@ -548,7 +549,8 @@ test_return_t test_hostname_port_weight(memcached_st *)
 
 test_return_t regression_bug_71231153(memcached_st *)
 {
-  if (1) return TEST_SKIPPED;
+  if (libmemcached_util_ping("10.0.2.252", 0, NULL)) // If for whatever reason someone has a host at this address, skip
+    return TEST_SKIPPED;
 
   memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=1 --POLL-TIMEOUT=1"));
   test_true(memc);
@@ -557,9 +559,10 @@ test_return_t regression_bug_71231153(memcached_st *)
 
   memcached_return_t rc;
   size_t value_len;
-  char *value= memcached_get(memc, "test", 4, &value_len, NULL, &rc);
+  char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
   test_false(value);
-  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
+  test_compare(0, value_len);
+  test_true_got(rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_FAILURE or rc == MEMCACHED_ERRNO, memcached_strerror(memc, rc));
 
   memcached_free(memc);
 
