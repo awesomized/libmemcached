@@ -547,24 +547,53 @@ test_return_t test_hostname_port_weight(memcached_st *)
   return TEST_SUCCESS;
 }
 
-test_return_t regression_bug_71231153(memcached_st *)
+/*
+  By setting the timeout value to zero, we force poll() to return immediatly.
+*/
+test_return_t regression_bug_71231153_connect(memcached_st *)
 {
   if (libmemcached_util_ping("10.0.2.252", 0, NULL)) // If for whatever reason someone has a host at this address, skip
     return TEST_SKIPPED;
 
-  memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=1 --POLL-TIMEOUT=1"));
-  test_true(memc);
-  test_compare(1, memc->connect_timeout);
-  test_compare(1, memc->poll_timeout);
+  { // Test the connect-timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
+    memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=0"));
+    test_true(memc);
+    test_compare(0, memc->connect_timeout);
+    test_compare(MEMCACHED_DEFAULT_TIMEOUT, memc->poll_timeout);
 
-  memcached_return_t rc;
-  size_t value_len;
-  char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
-  test_false(value);
-  test_compare(0, value_len);
-  test_true_got(rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_FAILURE or rc == MEMCACHED_ERRNO, memcached_strerror(memc, rc));
+    memcached_return_t rc;
+    size_t value_len;
+    char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
+    test_false(value);
+    test_compare(0, value_len);
+    test_compare_got(MEMCACHED_CONNECTION_FAILURE, rc, memcached_strerror(NULL, rc));
 
-  memcached_free(memc);
+    memcached_free(memc);
+  }
+
+  return TEST_SUCCESS;
+}
+
+test_return_t regression_bug_71231153_poll(memcached_st *)
+{
+  if (libmemcached_util_ping("10.0.2.252", 0, NULL)) // If for whatever reason someone has a host at this address, skip
+    return TEST_SKIPPED;
+
+  { // Test the poll timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
+    memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --POLL-TIMEOUT=0"));
+    test_true(memc);
+    test_compare(MEMCACHED_DEFAULT_CONNECT_TIMEOUT, memc->connect_timeout);
+    test_compare(0, memc->poll_timeout);
+
+    memcached_return_t rc;
+    size_t value_len;
+    char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
+    test_false(value);
+    test_compare(0, value_len);
+    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
+
+    memcached_free(memc);
+  }
 
   return TEST_SUCCESS;
 }

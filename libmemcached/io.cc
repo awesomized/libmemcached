@@ -37,7 +37,7 @@
  */
 
 
-#include "libmemcached/common.h"
+#include <libmemcached/common.h>
 
 typedef enum {
   MEM_READ,
@@ -80,13 +80,22 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   {
     memcached_return_t rc= memcached_purge(ptr);
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+    {
       return MEMCACHED_FAILURE;
+    }
   }
 
   size_t loop_max= 5;
   while (--loop_max) // While loop is for ERESTART or EINTR
   {
-    error= poll(&fds, 1, ptr->root->poll_timeout);
+    if (ptr->root->poll_timeout) // Mimic 0 causes timeout behavior (not all platforms do this)
+    {
+      error= poll(&fds, 1, ptr->root->poll_timeout);
+    }
+    else
+    {
+      error= 0;
+    }
 
     switch (error)
     {
@@ -95,8 +104,10 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
       WATCHPOINT_IF_LABELED_NUMBER(!read_or_write && loop_max < 4, "write() times we had to loop, decremented down from 5", loop_max);
 
       return MEMCACHED_SUCCESS;
+
     case 0: // Timeout occured, we let the while() loop do its thing.
-      return MEMCACHED_TIMEOUT;
+      return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+
     default:
       WATCHPOINT_ERRNO(get_socket_errno());
       switch (get_socket_errno())
@@ -106,6 +117,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 #endif
       case EINTR:
         break;
+
       default:
         if (fds.revents & POLLERR)
         {
@@ -120,7 +132,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
         }
         memcached_quit_server(ptr, true);
 
-        return MEMCACHED_FAILURE;
+        return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
       }
     }
   }
@@ -130,7 +142,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   ptr->cached_errno= get_socket_errno();
   memcached_quit_server(ptr, true);
 
-  return MEMCACHED_FAILURE;
+  return memcached_set_error(*ptr, MEMCACHED_FAILURE, MEMCACHED_AT);
 }
 
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
@@ -290,6 +302,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 #endif
             if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
               continue;
+
             /* fall through */
 
           default:
@@ -582,12 +595,15 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   // UDP Sanity check, make sure that we are not sending somthing too big
   if (ptr->type == MEMCACHED_CONNECTION_UDP && write_length > MAX_UDP_DATAGRAM_LENGTH)
   {
+    *error= MEMCACHED_WRITE_FAILURE;
     return -1;
   }
 
   if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
                                         && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
+  {
     return 0;
+  }
 
   /* Looking for memory overflows */
 #if defined(DEBUG)
@@ -641,15 +657,19 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
               process_input_buffer(ptr))
             continue;
 
-          memcached_return_t rc;
-          rc= io_wait(ptr, MEM_WRITE);
-
-          if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_TIMEOUT)
+          memcached_return_t rc= io_wait(ptr, MEM_WRITE);
+          if (memcached_success(rc))
           {
             continue;
           }
+          else if (rc == MEMCACHED_TIMEOUT)
+          {
+            *error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+            return -1;
+          }
 
           memcached_quit_server(ptr, true);
+          *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           return -1;
         }
       case ENOTCONN:
@@ -662,10 +682,11 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       }
     }
 
-    if (ptr->type == MEMCACHED_CONNECTION_UDP &&
+    if (ptr->type == MEMCACHED_CONNECTION_UDP and
         (size_t)sent_length != write_length)
     {
       memcached_quit_server(ptr, true);
+      *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
       return -1;
     }
 

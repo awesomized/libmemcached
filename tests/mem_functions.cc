@@ -5757,7 +5757,7 @@ static test_return_t regression_bug_583031(memcached_st *)
   test_false(value);
   test_compare(0, length);
 
-  test_true_got(rc == MEMCACHED_TIMEOUT || rc == MEMCACHED_ERRNO || rc == MEMCACHED_FAILURE, memcached_strerror(memc, rc));
+  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(memc, rc));
 
   memcached_free(memc);
 
@@ -6114,7 +6114,8 @@ test_st regression_tests[]= {
   {"lp:?", 1, (test_callback_fn)regression_bug_ },
   {"lp:728286", 1, (test_callback_fn)regression_bug_728286 },
   {"lp:581030", 1, (test_callback_fn)regression_bug_581030 },
-  {"lp:71231153", 1, (test_callback_fn)regression_bug_71231153 },
+  {"lp:71231153 connect()", 1, (test_callback_fn)regression_bug_71231153_connect },
+  {"lp:71231153 poll()", 1, (test_callback_fn)regression_bug_71231153_poll },
   {0, 0, (test_callback_fn)0}
 };
 

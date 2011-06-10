@@ -75,6 +75,11 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
     rc= MEMCACHED_ERRNO;
   }
 
+  if (rc == MEMCACHED_ERRNO and local_errno == ENOTCONN)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
   memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
   if (not error) // Bad business if this happens
     return;
@@ -84,16 +89,29 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   error->rc= rc;
   error->local_errno= local_errno;
 
-  if (str)
+  if (str and local_errno)
   {
-    size_t length= str->size > (size_t)MAX_ERROR_LENGTH ? MAX_ERROR_LENGTH : str->size;
-    error->size= length;
-    memcpy(error->message, str->c_str, error->size);
-    error->message[error->size]= 0;
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s), %.*s -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               strerror(local_errno),
+                               int(error->size), str->c_str, at);
+  }
+  else if (local_errno)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s) -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               strerror(local_errno), at);
+  }
+  else if (str)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s, %.*s -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               int(error->size), str->c_str, at);
   }
   else
   {
-    error->size= 0;
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s -> %s", 
+                               memcached_strerror(&memc, rc), at);
   }
 
   error->next= memc.error_messages;

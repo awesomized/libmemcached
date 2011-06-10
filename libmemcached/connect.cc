@@ -52,7 +52,14 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
-    error= poll(fds, 1, ptr->root->connect_timeout);
+    if (ptr->root->poll_timeout)
+    {
+      error= poll(fds, 1, ptr->root->connect_timeout);
+    }
+    else
+    {
+      error= 0;
+    }
 
     switch (error)
     {
@@ -76,6 +83,7 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
       }
     case 0:
       return MEMCACHED_TIMEOUT;
+
     default: // A real error occurred and we need to completely bail
       WATCHPOINT_ERRNO(get_socket_errno());
       switch (get_socket_errno())
@@ -457,8 +465,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     case EINPROGRESS: // nonblocking mode - first return
     case EALREADY: // nonblocking mode - subsequent returns
       {
-        memcached_return_t rc;
-        rc= connect_poll(ptr);
+        memcached_return_t rc= connect_poll(ptr);
 
         if (rc == MEMCACHED_TIMEOUT)
           timeout_error_occured= true;

@@ -178,10 +178,21 @@ int main(int argc, char *argv[])
   }
 
   if (argc > 1)
+  {
     collection_to_run= argv[1];
+  }
+  else if (getenv("TEST_COLLECTION"))
+  {
+    collection_to_run= getenv("TEST_COLLECTION");
+  }
+
+  if (collection_to_run)
+    printf("Only testing %s\n", collection_to_run);
 
   if (argc == 3)
+  {
     wildcard= argv[2];
+  }
 
   for (next= collection; next->name; next++)
   {
