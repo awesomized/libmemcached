@@ -47,11 +47,11 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
   fds[0].fd = ptr->fd;
   fds[0].events = POLLOUT;
 
-  int error;
   size_t loop_max= 5;
 
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
+    int error;
     if (ptr->root->poll_timeout)
     {
       error= poll(fds, 1, ptr->root->connect_timeout);
@@ -76,9 +76,7 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
         }
         else
         {
-          ptr->cached_errno= errno;
-
-          return MEMCACHED_ERRNO;
+          return memcached_set_errno(*ptr, err, MEMCACHED_AT);
         }
       }
     case 0:
@@ -93,7 +91,15 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 #endif
       case EINTR:
         continue;
-      default:
+
+      case EFAULT:
+      case ENOMEM:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+
+      case EINVAL:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+
+      default: // This should not happen
         if (fds[0].revents & POLLERR)
         {
           int err;

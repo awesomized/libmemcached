@@ -89,12 +89,12 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   error->rc= rc;
   error->local_errno= local_errno;
 
-  if (str and local_errno)
+  if (str and str->size and local_errno)
   {
     error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s), %.*s -> %s", 
                                memcached_strerror(&memc, rc), 
                                strerror(local_errno),
-                               int(error->size), str->c_str, at);
+                               memcached_string_printf(*str), at);
   }
   else if (local_errno)
   {
@@ -102,11 +102,11 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
                                memcached_strerror(&memc, rc), 
                                strerror(local_errno), at);
   }
-  else if (str)
+  else if (str and str->size)
   {
     error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s, %.*s -> %s", 
                                memcached_strerror(&memc, rc), 
-                               int(error->size), str->c_str, at);
+                               int(str->size), str->c_str, at);
   }
   else
   {

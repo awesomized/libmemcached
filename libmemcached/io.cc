@@ -118,6 +118,13 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
       case EINTR:
         break;
 
+      case EFAULT:
+      case ENOMEM:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+
+      case EINVAL:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+
       default:
         if (fds.revents & POLLERR)
         {
