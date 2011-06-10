@@ -51,16 +51,16 @@ behavior set, a NULL value is returned and the error parameter is set to
 
 memcached_stat_servername() can be used standalone without a \ ``memcached_st``\  to
 obtain the state of a particular server.  "args" is used to define a
-particular state object (a list of these are not provided for by either
-the memcached_stat_get_keys() call nor are they defined in the memcached
-protocol). You must specify the hostname and port of the server you want to
-obtain information on.
+particular state object (a list of these are not provided for by either the
+:c:func:`memcached_stat_get_keys()` call nor are they defined in the
+memcached protocol). You must specify the hostname and port of the server
+you want to obtain information on.
 
 memcached_stat_get_value() returns the value of a particular state key. You
 specify the key you wish to obtain.  The key must be null terminated.
 
-memcached_stat_get_keys() returns a list of keys that the server has state
-objects on. You are responsible for freeing this list.
+:c:func:`memcached_stat_get_keys()` returns a list of keys that the server
+has state objects on. You are responsible for freeing this list.
 
 A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
