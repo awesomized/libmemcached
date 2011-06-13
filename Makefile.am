@@ -46,9 +46,11 @@ include poll/include.am
 include win32/include.am
 include docs/include.am
 
-TESTS += ${check_PROGRAMS}
-EXTRA_DIST+= ${man_MANS}
+docs: html man
 
+TESTS += ${check_PROGRAMS}
+
+EXTRA_DIST+= ${man_MANS}
 
 fedora:
 	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
@@ -68,7 +70,7 @@ generic:
 	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-debuginfo-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
-rpm: all man distcheck generic
+rpm: man distcheck generic
 
 release: rpm
 	@rpm --addsign libmemcached-$(VERSION)*.rpm .

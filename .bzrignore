@@ -49,10 +49,12 @@ config/top.h
 configure
 docs/*.[13]
 docs/*.html
+docs/conf.py
 docs/doctest/
 docs/doctrees/
 docs/html/
 docs/linkcheck/
+docs/man/*
 example/memcached_light
 libhashkit/configure.h
 libmemcached-*.tar.gz
