@@ -2465,9 +2465,7 @@ static bool ms_need_yield(ms_conn_t *c)
   {
     gettimeofday(&curr_time, NULL);
     time_diff= ms_time_diff(&ms_thread->startup_time, &curr_time);
-    tps=
-      (int64_t)((task->get_opt
-                 + task->set_opt) / ((uint64_t)time_diff / 1000000));
+    tps= (int64_t)(((task->get_opt + task->set_opt) / (uint64_t)time_diff) * 1000000);
 
     /* current throughput is greater than expected throughput */
     if (tps > ms_thread->thread_ctx->tps_perconn)
