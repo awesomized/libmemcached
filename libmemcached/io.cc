@@ -182,7 +182,7 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
     ssize_t nr= recv(ptr->fd,
                      ptr->read_ptr + ptr->read_data_length,
                      MEMCACHED_MAX_BUFFER - ptr->read_data_length,
-                     0);
+                     MSG_DONTWAIT);
 
     if (nr > 0)
     {
@@ -261,7 +261,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 
       do
       {
-        data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, 0);
+        data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
 
         if (data_read == SOCKET_ERROR)
         {
