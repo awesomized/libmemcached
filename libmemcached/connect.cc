@@ -179,7 +179,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
   default:
     {
       WATCHPOINT_STRING(server->hostname);
-      WATCHPOINT_STRING(gai_strerror(e));
+      WATCHPOINT_STRING(gai_strerror(errcode));
       return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
