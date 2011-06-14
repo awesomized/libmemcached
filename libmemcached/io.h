@@ -96,7 +96,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
                                          size_t size);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr);
+void memcached_io_close(memcached_server_write_instance_st ptr);
 
 /* Read n bytes of data from the server and store them in dta */
 LIBMEMCACHED_LOCAL

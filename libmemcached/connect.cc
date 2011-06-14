@@ -112,6 +112,7 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
           ptr->cached_errno= get_socket_errno();
         }
 
+        WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
         (void)closesocket(ptr->fd);
         ptr->fd= INVALID_SOCKET;
         ptr->state= MEMCACHED_SERVER_STATE_NEW;
@@ -127,7 +128,7 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 
 static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
-  assert(! server->address_info); // We cover the case where a programming mistake has been made.
+  WATCHPOINT_ASSERT(not server->address_info); // We cover the case where a programming mistake has been made.
   if (server->address_info)
   {
     freeaddrinfo(server->address_info);
@@ -482,6 +483,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       break;
 
     case EINTR: // Special case, we retry ai_addr
+      WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
       (void)closesocket(ptr->fd);
       ptr->fd= INVALID_SOCKET;
       ptr->state= MEMCACHED_SERVER_STATE_NEW;
@@ -491,6 +493,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       break;
     }
 
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     (void)closesocket(ptr->fd);
     ptr->fd= INVALID_SOCKET;
     ptr->address_info_next= ptr->address_info_next->ai_next;
@@ -592,11 +595,12 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    if (ptr->fd != INVALID_SOCKET && ptr->root->sasl.callbacks)
+    if (ptr->fd != INVALID_SOCKET and ptr->root->sasl.callbacks)
     {
       rc= memcached_sasl_authenticate_connection(ptr);
-      if (memcached_failed(rc))
+      if (memcached_failed(rc) and ptr->fd != INVALID_SOCKET)
       {
+        WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
         (void)closesocket(ptr->fd);
         ptr->fd= INVALID_SOCKET;
       }

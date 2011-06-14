@@ -478,11 +478,11 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
 }
 
 
-memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr)
+void memcached_io_close(memcached_server_write_instance_st ptr)
 {
   if (ptr->fd == INVALID_SOCKET)
   {
-    return MEMCACHED_SUCCESS;
+    return;
   }
 
   /* in case of death shutdown to avoid blocking at close() */
@@ -499,8 +499,6 @@ memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr)
   }
   ptr->state= MEMCACHED_SERVER_STATE_NEW;
   ptr->fd= INVALID_SOCKET;
-
-  return MEMCACHED_SUCCESS;
 }
 
 memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st *memc)
