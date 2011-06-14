@@ -246,33 +246,6 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
   return false;
 }
 
-#if 0 // Dead code, this should be removed.
-void memcached_io_preread(memcached_st *ptr)
-{
-  unsigned int x;
-
-  return;
-
-  for (x= 0; x < memcached_server_count(ptr); x++)
-  {
-    if (memcached_server_response_count(ptr, x) &&
-        ptr->hosts[x].read_data_length < MEMCACHED_MAX_BUFFER )
-    {
-      size_t data_read;
-
-      data_read= recv(ptr->hosts[x].fd,
-                      ptr->hosts[x].read_ptr + ptr->hosts[x].read_data_length,
-                      MEMCACHED_MAX_BUFFER - ptr->hosts[x].read_data_length, 0);
-      if (data_read == SOCKET_ERROR)
-        continue;
-
-      ptr->hosts[x].read_buffer_length+= data_read;
-      ptr->hosts[x].read_data_length+= data_read;
-    }
-  }
-}
-#endif
-
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
                                      void *buffer, size_t length, ssize_t *nread)
 {
@@ -286,14 +259,11 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
     {
       ssize_t data_read;
 
-      while (1)
+      do
       {
         data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, 0);
-        if (data_read > 0)
-        {
-          break;
-        }
-        else if (data_read == SOCKET_ERROR)
+
+        if (data_read == SOCKET_ERROR)
         {
           switch (get_socket_errno())
           {
@@ -320,7 +290,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             }
           }
         }
-        else
+        else if (data_read == 0)
         {
           /*
             EOF. Any data received so far is incomplete
@@ -336,7 +306,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           *nread= -1;
           return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
         }
-      }
+      } while (data_read <= 0);
 
       ptr->io_bytes_sent = 0;
       ptr->read_data_length= (size_t) data_read;
