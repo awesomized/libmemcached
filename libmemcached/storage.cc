@@ -493,7 +493,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
                                                             request.message.header.request.extlen));
 
   if (cas)
-    request.message.header.request.cas= htonll(cas);
+    request.message.header.request.cas= memcached_htonll(cas);
 
   flush= (bool) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
 

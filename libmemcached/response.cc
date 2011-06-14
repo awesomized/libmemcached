@@ -384,7 +384,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   header.response.keylen= ntohs(header.response.keylen);
   header.response.status= ntohs(header.response.status);
   header.response.bodylen= ntohl(header.response.bodylen);
-  header.response.cas= ntohll(header.response.cas);
+  header.response.cas= memcached_ntohll(header.response.cas);
   uint32_t bodylen= header.response.bodylen;
 
   if (header.response.status == PROTOCOL_BINARY_RESPONSE_SUCCESS ||
@@ -450,7 +450,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
 
-        val= ntohll(val);
+        val= memcached_ntohll(val);
         memcpy(buffer, &val, sizeof(val));
       }
       break;

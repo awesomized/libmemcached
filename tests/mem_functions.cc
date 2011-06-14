@@ -2581,34 +2581,34 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
 static test_return_t user_supplied_bug10(memcached_st *memc)
 {
   const char *key= "foo";
-  char *value;
   size_t value_length= 512;
-  unsigned int x;
   size_t key_len= 3;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
-  int32_t timeout;
 
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
-  timeout= 2;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
-                         (uint64_t)timeout);
+  int32_t timeout= 0;
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, (uint64_t)timeout);
 
-  value = (char*)malloc(value_length * sizeof(char));
+  char *value= (char*)malloc(value_length * sizeof(char));
 
-  for (x= 0; x < value_length; x++)
+  for (unsigned int x= 0; x < value_length; x++)
+  {
     value[x]= (char) (x % 127);
+  }
 
-  for (x= 1; x <= 100000; ++x)
+  for (unsigned int x= 1; x <= 100000; ++x)
   {
     memcached_return_t rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
 
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_WRITE_FAILURE ||
-           rc == MEMCACHED_BUFFERED || rc == MEMCACHED_TIMEOUT);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_BUFFERED or rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_CONNECTION_FAILURE, 
+                  memcached_strerror(NULL, rc));
 
-    if (rc == MEMCACHED_WRITE_FAILURE || rc == MEMCACHED_TIMEOUT)
+    if (rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_TIMEOUT)
+    {
       x--;
+    }
   }
 
   free(value);
@@ -2623,33 +2623,31 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
 static test_return_t user_supplied_bug11(memcached_st *memc)
 {
   const char *key= "foo";
-  char *value;
   size_t value_length= 512;
-  unsigned int x;
   size_t key_len= 3;
-  memcached_return_t rc;
   unsigned int set= 1;
-  int32_t timeout;
   memcached_st *mclone= memcached_clone(NULL, memc);
 
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
-  timeout= -1;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT,
-                         (size_t)timeout);
+  int32_t timeout= -1;
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, (size_t)timeout);
 
   timeout= (int32_t)memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
   test_true(timeout == -1);
 
-  value = (char*)malloc(value_length * sizeof(char));
+  char *value= (char*)malloc(value_length * sizeof(char));
 
-  for (x= 0; x < value_length; x++)
-    value[x]= (char) (x % 127);
-
-  for (x= 1; x <= 100000; ++x)
+  for (unsigned int x= 0; x < value_length; x++)
   {
-    rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+    value[x]= (char) (x % 127);
+  }
+
+  for (unsigned int x= 1; x <= 100000; ++x)
+  {
+    memcached_return_t rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+    (void)rc;
   }
 
   free(value);
@@ -4065,15 +4063,13 @@ static test_return_t pre_settimer(memcached_st *memc)
 
 static test_return_t poll_timeout(memcached_st *memc)
 {
-  size_t timeout;
-
-  timeout= 100;
+  size_t timeout= 100; // Not using, just checking that it sets
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
 
   timeout= (size_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
 
-  test_true(timeout == 100);
+  test_compare(100, timeout);
 
   return TEST_SUCCESS;
 }

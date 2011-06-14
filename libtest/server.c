@@ -178,6 +178,7 @@ void server_startup(server_startup_st *construct)
                 if (libmemcached_util_flush("localhost", construct->port[x], NULL))
                 { 
                   fprintf(stderr, "Found server on port %d, flushed it!\n", (int)construct->port[x]);
+                  construct->is_used[x]= true;
                 } // If we can flush it, we will just use it
                 else
                 {
@@ -202,15 +203,22 @@ void server_startup(server_startup_st *construct)
                    MEMCACHED_BINARY, construct->pid_file[x], construct->port[x], construct->port[x]);
         }
 
-	if (libmemcached_util_ping("localhost", construct->port[x], NULL))
-	{
-	  fprintf(stderr, "Server on port %u already exists\n", construct->port[x]);
-	}
-	else
-	{
-	  status= system(buffer);
-	  fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
-	}
+        if (construct->is_used[x])
+        {
+          fprintf(stderr, "USING SERVER: %s\n", buffer);
+        }
+        else
+        {
+          if (libmemcached_util_ping("localhost", construct->port[x], NULL))
+          {
+            fprintf(stderr, "Server on port %u already exists\n", construct->port[x]);
+          }
+          else
+          {
+            status= system(buffer);
+            fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
+          }
+        }
 
         int count;
         size_t remaining_length= sizeof(server_string_buffer) - (size_t)(end_ptr -server_string_buffer);
@@ -237,6 +245,10 @@ void server_startup(server_startup_st *construct)
       for (uint32_t x= 0; x < construct->count; x++)
       {
         uint32_t counter= 3000; // Absurd, just to catch run away process
+
+        if (construct->is_used[x])
+          continue;
+
         while (construct->pids[x] <= 0  && --counter)
         {
           FILE *file= fopen(construct->pid_file[x], "r");
@@ -255,12 +267,13 @@ void server_startup(server_startup_st *construct)
             }
             fclose(file);
           }
+
           switch (errno)
           {
           default:
-            fprintf(stderr, "Could not open pid file %s -> fopen(%s) -> %s:%d\n", construct->pid_file[x], strerror(errno),
-                    __FILE__, __LINE__);
+            fprintf(stderr, "Could not open pid file %s -> fopen(%s) -> %s:%d\n", construct->pid_file[x], strerror(errno), __FILE__, __LINE__);
             abort();
+
           case ENOENT:
           case EINTR:
           case EACCES:
@@ -331,6 +344,9 @@ void server_shutdown(server_startup_st *construct)
   {
     for (uint32_t x= 0; x < construct->count; x++)
     {
+      if (construct->is_used[x])
+        continue;
+
       kill_file(construct->pid_file[x]);
     }
 

@@ -155,7 +155,7 @@ get_response_handler(const void *cookie,
       .opcode= opcode,
       .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
       .opaque= client->current_command->request.opaque,
-      .cas= htonll(cas),
+      .cas= memcached_htonll(cas),
       .keylen= htons(keylen),
       .extlen= 4,
       .bodylen= htonl(bodylen + keylen + 4),
@@ -184,12 +184,12 @@ get_response_handler(const void *cookie,
  * @param body the length of the body
  * @param bodylen the length of the body
  */
-static protocol_binary_response_status
-stat_response_handler(const void *cookie,
-                     const void *key,
-                     uint16_t keylen,
-                     const void *body,
-                     uint32_t bodylen) {
+static protocol_binary_response_status stat_response_handler(const void *cookie,
+                                                             const void *key,
+                                                             uint16_t keylen,
+                                                             const void *body,
+                                                             uint32_t bodylen)
+{
 
   memcached_protocol_client_st *client= (void*)cookie;
 
@@ -201,6 +201,7 @@ stat_response_handler(const void *cookie,
       .opaque= client->current_command->request.opaque,
       .keylen= htons(keylen),
       .bodylen= htonl(bodylen + keylen),
+      .cas= 0
     },
   };
 
@@ -236,6 +237,7 @@ version_response_handler(const void *cookie,
       .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
       .opaque= client->current_command->request.opaque,
       .bodylen= htonl(textlen),
+      .cas= 0
     },
   };
 
@@ -291,7 +293,7 @@ add_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_ADD,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(cas)
+            .cas= memcached_ntohll(cas)
           }
         }
       };
@@ -326,8 +328,8 @@ decrement_command_handler(const void *cookie,
   {
     uint16_t keylen= ntohs(header->request.keylen);
     protocol_binary_request_decr *request= (void*)header;
-    uint64_t init= ntohll(request->message.body.initial);
-    uint64_t delta= ntohll(request->message.body.delta);
+    uint64_t init= memcached_ntohll(request->message.body.initial);
+    uint64_t delta= memcached_ntohll(request->message.body.delta);
     uint32_t timeout= ntohl(request->message.body.expiration);
     void *key= request->bytes + sizeof(request->bytes);
     uint64_t result;
@@ -347,10 +349,10 @@ decrement_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_DECREMENT,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(cas),
+            .cas= memcached_ntohll(cas),
             .bodylen= htonl(8)
           },
-          .body.value= htonll(result)
+          .body.value= memcached_htonll(result)
         }
       };
       rval= response_handler(cookie, header, (void*)&response);
@@ -383,8 +385,8 @@ delete_command_handler(const void *cookie,
   if (client->root->callback->interface.v1.delete != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
-    void *key= (header + 1);
-    uint64_t cas= ntohll(header->request.cas);
+    void *key= (header +1);
+    uint64_t cas= memcached_ntohll(header->request.cas);
     rval= client->root->callback->interface.v1.delete(cookie, key, keylen, cas);
     if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS &&
         header->request.opcode == PROTOCOL_BINARY_CMD_DELETE)
@@ -521,8 +523,8 @@ increment_command_handler(const void *cookie,
   {
     uint16_t keylen= ntohs(header->request.keylen);
     protocol_binary_request_incr *request= (void*)header;
-    uint64_t init= ntohll(request->message.body.initial);
-    uint64_t delta= ntohll(request->message.body.delta);
+    uint64_t init= memcached_ntohll(request->message.body.initial);
+    uint64_t delta= memcached_ntohll(request->message.body.delta);
     uint32_t timeout= ntohl(request->message.body.expiration);
     void *key= request->bytes + sizeof(request->bytes);
     uint64_t cas;
@@ -542,10 +544,10 @@ increment_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_INCREMENT,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(cas),
+            .cas= memcached_ntohll(cas),
             .bodylen= htonl(8)
           },
-          .body.value= htonll(result)
+          .body.value= memcached_htonll(result)
         }
       };
 
@@ -614,9 +616,9 @@ append_command_handler(const void *cookie,
   {
     uint16_t keylen= ntohs(header->request.keylen);
     uint32_t datalen= ntohl(header->request.bodylen) - keylen;
-    char *key= (void*)(header + 1);
-    char *data= key + keylen;
-    uint64_t cas= ntohll(header->request.cas);
+    char *key= (void*)(header +1);
+    char *data= key +keylen;
+    uint64_t cas= memcached_ntohll(header->request.cas);
     uint64_t result_cas;
 
     rval= client->root->callback->interface.v1.append(cookie, key, keylen,
@@ -633,7 +635,7 @@ append_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_APPEND,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(result_cas),
+            .cas= memcached_ntohll(result_cas),
           },
         }
       };
@@ -670,7 +672,7 @@ prepend_command_handler(const void *cookie,
     uint32_t datalen= ntohl(header->request.bodylen) - keylen;
     char *key= (char*)(header + 1);
     char *data= key + keylen;
-    uint64_t cas= ntohll(header->request.cas);
+    uint64_t cas= memcached_ntohll(header->request.cas);
     uint64_t result_cas;
     rval= client->root->callback->interface.v1.prepend(cookie, key, keylen,
                                                        data, datalen, cas,
@@ -686,7 +688,7 @@ prepend_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_PREPEND,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(result_cas),
+            .cas= memcached_ntohll(result_cas),
           },
         }
       };
@@ -764,7 +766,7 @@ replace_command_handler(const void *cookie,
     uint32_t timeout= ntohl(request->message.body.expiration);
     char *key= ((char*)header) + sizeof(*header) + 8;
     char *data= key + keylen;
-    uint64_t cas= ntohll(header->request.cas);
+    uint64_t cas= memcached_ntohll(header->request.cas);
     uint64_t result_cas;
 
     rval= client->root->callback->interface.v1.replace(cookie, key, keylen,
@@ -782,7 +784,7 @@ replace_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_REPLACE,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(result_cas),
+            .cas= memcached_ntohll(result_cas),
           },
         }
       };
@@ -822,7 +824,7 @@ set_command_handler(const void *cookie,
     uint32_t timeout= ntohl(request->message.body.expiration);
     char *key= ((char*)header) + sizeof(*header) + 8;
     char *data= key + keylen;
-    uint64_t cas= ntohll(header->request.cas);
+    uint64_t cas= memcached_ntohll(header->request.cas);
     uint64_t result_cas;
 
 
@@ -840,7 +842,7 @@ set_command_handler(const void *cookie,
             .opcode= PROTOCOL_BINARY_CMD_SET,
             .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
             .opaque= header->request.opaque,
-            .cas= ntohll(result_cas),
+            .cas= memcached_ntohll(result_cas),
           },
         }
       };

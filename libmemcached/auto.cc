@@ -137,8 +137,8 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   request.message.header.request.extlen= 20;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->prefix_key) +request.message.header.request.extlen));
-  request.message.body.delta= htonll(offset);
-  request.message.body.initial= htonll(initial);
+  request.message.body.delta= memcached_htonll(offset);
+  request.message.body.initial= memcached_htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
   struct libmemcached_io_vector_st vector[]=

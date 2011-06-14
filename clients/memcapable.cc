@@ -297,7 +297,7 @@ static enum test_return send_packet(command *cmd)
   cmd->plain.message.header.request.bodylen=
           ntohl(cmd->plain.message.header.request.bodylen);
   cmd->plain.message.header.request.cas=
-          ntohll(cmd->plain.message.header.request.cas);
+          memcached_ntohll(cmd->plain.message.header.request.cas);
 
   execute(resend_packet(cmd));
   return TEST_PASS;
@@ -343,7 +343,7 @@ static enum test_return recv_packet(response *rsp)
   rsp->plain.message.header.response.bodylen=
           ntohl(rsp->plain.message.header.response.bodylen);
   rsp->plain.message.header.response.cas=
-          ntohll(rsp->plain.message.header.response.cas);
+          memcached_ntohll(rsp->plain.message.header.response.cas);
 
   size_t bodysz= rsp->plain.message.header.response.bodylen;
   if (bodysz > 0)
@@ -472,8 +472,8 @@ static void arithmetic_command(command *cmd,
   cmd->incr.message.header.request.extlen= 20;
   cmd->incr.message.header.request.bodylen= (uint32_t)(keylen + 20);
   cmd->incr.message.header.request.opaque= 0xdeadbeef;
-  cmd->incr.message.body.delta= htonll(delta);
-  cmd->incr.message.body.initial= htonll(initial);
+  cmd->incr.message.body.delta= memcached_htonll(delta);
+  cmd->incr.message.body.initial= memcached_htonll(initial);
   cmd->incr.message.body.expiration= htonl(exptime);
 
   off_t key_offset= sizeof (protocol_binary_request_no_extras) + 20;
@@ -690,8 +690,7 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
   }
 
   /* try to set with the correct CAS value */
-  cmd.plain.message.header.request.cas=
-          htonll(rsp.plain.message.header.response.cas);
+  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas);
   execute(resend_packet(&cmd));
   if (cc == PROTOCOL_BINARY_CMD_SET)
   {
@@ -702,8 +701,7 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
     execute(test_binary_noop());
 
   /* try to set with an incorrect CAS value */
-  cmd.plain.message.header.request.cas=
-          htonll(rsp.plain.message.header.response.cas - 1);
+  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
   execute(send_binary_noop());
   execute(recv_packet(&rsp));
@@ -819,8 +817,7 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
   }
 
   /* verify that replace with CAS value works! */
-  cmd.plain.message.header.request.cas=
-          htonll(rsp.plain.message.header.response.cas);
+  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas);
   execute(resend_packet(&cmd));
 
   if (cc == PROTOCOL_BINARY_CMD_REPLACE)
@@ -832,8 +829,7 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
     execute(test_binary_noop());
 
   /* try to set with an incorrect CAS value */
-  cmd.plain.message.header.request.cas=
-          htonll(rsp.plain.message.header.response.cas - 1);
+  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
   execute(send_binary_noop());
   execute(recv_packet(&rsp));
@@ -956,7 +952,7 @@ static enum test_return test_binary_incr_impl(const char* key, uint8_t cc)
     {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-      verify(ntohll(rsp.incr.message.body.value) == ii);
+      verify(memcached_ntohll(rsp.incr.message.body.value) == ii);
     }
     else
       execute(test_binary_noop());
@@ -994,7 +990,7 @@ static enum test_return test_binary_decr_impl(const char* key, uint8_t cc)
     {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-      verify(ntohll(rsp.decr.message.body.value) == (uint64_t)ii);
+      verify(memcached_ntohll(rsp.decr.message.body.value) == (uint64_t)ii);
     }
     else
       execute(test_binary_noop());
@@ -1006,7 +1002,7 @@ static enum test_return test_binary_decr_impl(const char* key, uint8_t cc)
   {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-    verify(ntohll(rsp.decr.message.body.value) == 0);
+    verify(memcached_ntohll(rsp.decr.message.body.value) == 0);
   }
   else
   {

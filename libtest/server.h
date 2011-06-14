@@ -32,6 +32,7 @@ struct server_startup_st
   char pid_file[SERVERS_TO_CREATE][FILENAME_MAX];
   in_port_t port[SERVERS_TO_CREATE];
   int pids[SERVERS_TO_CREATE];
+  bool is_used[SERVERS_TO_CREATE]; // Did we start it, or was it just sitting there?
 };
 
 void server_startup(server_startup_st *construct);
