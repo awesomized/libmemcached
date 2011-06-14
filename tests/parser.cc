@@ -566,7 +566,7 @@ test_return_t regression_bug_71231153_connect(memcached_st *)
     char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
     test_compare(0, value_len);
-    test_compare_got(MEMCACHED_CONNECTION_FAILURE, rc, memcached_strerror(NULL, rc));
+    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
 
     memcached_free(memc);
   }

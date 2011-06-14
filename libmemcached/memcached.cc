@@ -311,9 +311,8 @@ void memcached_free(memcached_st *ptr)
 memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 {
   memcached_return_t rc= MEMCACHED_SUCCESS;
-  memcached_st *new_clone;
 
-  if (source == NULL)
+  if (not source)
     return memcached_create(clone);
 
   if (clone && memcached_is_allocated(clone))
@@ -321,9 +320,9 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
     return NULL;
   }
 
-  new_clone= memcached_create(clone);
+  memcached_st *new_clone= memcached_create(clone);
 
-  if (new_clone == NULL)
+  if (not new_clone)
     return NULL;
 
   new_clone->flags= source->flags;

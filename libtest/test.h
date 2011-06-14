@@ -228,6 +228,15 @@ do \
   } \
 } while (0)
 
+#define test_skip(A,B) \
+do \
+{ \
+  if ((A) != (B)) \
+  { \
+    return TEST_SKIPPED; \
+  } \
+} while (0)
+
 #define test_compare_got(A,B,C) \
 do \
 { \

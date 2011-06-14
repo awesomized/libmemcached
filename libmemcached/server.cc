@@ -69,6 +69,8 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->address_info= NULL;
   self->address_info_next= NULL;
 
+  self->state= MEMCACHED_SERVER_STATE_NEW;
+
   if (root)
   {
     self->next_retry= root->retry_timeout;
@@ -80,13 +82,13 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
 
   self->root= root;
   self->limit_maxbytes= 0;
-  if (hostname == NULL)
+  if (hostname)
   {
-    self->hostname[0]= 0;
+    strncpy(self->hostname, hostname, NI_MAXHOST - 1);
   }
   else
   {
-    strncpy(self->hostname, hostname, NI_MAXHOST - 1);
+    self->hostname[0]= 0;
   }
 }
 
@@ -294,8 +296,7 @@ void memcached_server_list_free(memcached_server_list_st self)
     }
   }
 
-  memcached_st *root= self->root;
-  libmemcached_free(root, self);
+  libmemcached_free(self->root, self);
 }
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)

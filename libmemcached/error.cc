@@ -36,6 +36,7 @@
  */
 
 #include <libmemcached/common.h>
+#include <cassert>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -120,18 +121,21 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
+  assert(rc != MEMCACHED_ERRNO);
   memcached_string_t tmp= { str, length };
   return memcached_set_error(memc, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
+  assert(rc != MEMCACHED_ERRNO);
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -142,6 +146,7 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -171,6 +176,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -189,6 +195,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc, const char *at)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 

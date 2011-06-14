@@ -295,8 +295,6 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
         }
         else if (data_read == SOCKET_ERROR)
         {
-          ptr->cached_errno= get_socket_errno();
-          memcached_return_t rc= MEMCACHED_ERRNO;
           switch (get_socket_errno())
           {
           case EWOULDBLOCK:
@@ -307,8 +305,10 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 #ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
-            if ((rc= io_wait(ptr, MEM_READ)) == MEMCACHED_SUCCESS)
+            if (memcached_success(io_wait(ptr, MEM_READ)))
+            {
               continue;
+            }
 
             /* fall through */
 
@@ -316,7 +316,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             {
               memcached_quit_server(ptr, true);
               *nread= -1;
-              return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+              return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
             }
           }
         }
@@ -497,6 +497,8 @@ memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr)
   {
     WATCHPOINT_ERRNO(get_socket_errno());
   }
+  ptr->state= MEMCACHED_SERVER_STATE_NEW;
+  ptr->fd= INVALID_SOCKET;
 
   return MEMCACHED_SUCCESS;
 }

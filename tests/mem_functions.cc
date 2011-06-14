@@ -1809,10 +1809,7 @@ static test_return_t mget_execute(memcached_st *memc)
 
 static test_return_t key_setup(memcached_st *memc)
 {
-  (void)memc;
-
-  if (pre_binary(memc) != TEST_SUCCESS)
-    return TEST_SKIPPED;
+  test_skip(TEST_SUCCESS, pre_binary(memc));
 
   global_pairs= pairs_generate(REGRESSION_BINARY_VS_BLOCK_COUNT, 0);
 
@@ -1881,22 +1878,17 @@ static test_return_t version_string_test(memcached_st *memc)
 
 static test_return_t get_stats(memcached_st *memc)
 {
- char **stat_list;
- char **ptr;
  memcached_return_t rc;
- memcached_stat_st *memc_stat;
 
- memc_stat= memcached_stat(memc, NULL, &rc);
- test_true(rc == MEMCACHED_SUCCESS);
-
- test_true(rc == MEMCACHED_SUCCESS);
+ memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
+ test_compare(MEMCACHED_SUCCESS, rc);
  test_true(memc_stat);
 
  for (uint32_t x= 0; x < memcached_server_count(memc); x++)
  {
-   stat_list= memcached_stat_get_keys(memc, memc_stat+x, &rc);
-   test_true(rc == MEMCACHED_SUCCESS);
-   for (ptr= stat_list; *ptr; ptr++);
+   char **stat_list= memcached_stat_get_keys(memc, memc_stat+x, &rc);
+   test_compare(MEMCACHED_SUCCESS, rc);
+   for (char **ptr= stat_list; *ptr; ptr++);
 
    free(stat_list);
  }
@@ -3411,8 +3403,7 @@ static test_return_t get_read(memcached_st *memc)
 static test_return_t mget_read(memcached_st *memc)
 {
 
-  if (not libmemcached_util_version_check(memc, 1, 4, 4))
-    return TEST_SKIPPED;
+  test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
@@ -3434,8 +3425,7 @@ static test_return_t mget_read(memcached_st *memc)
 static test_return_t mget_read_result(memcached_st *memc)
 {
 
-  if (not libmemcached_util_version_check(memc, 1, 4, 4))
-    return TEST_SKIPPED;
+  test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
@@ -3460,9 +3450,7 @@ static test_return_t mget_read_result(memcached_st *memc)
 
 static test_return_t mget_read_function(memcached_st *memc)
 {
-
-  if (not libmemcached_util_version_check(memc, 1, 4, 4))
-    return TEST_SKIPPED;
+  test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
 
   memcached_return_t rc= memcached_mget(memc, global_keys, global_keys_length, global_count);
 
@@ -3730,7 +3718,7 @@ static test_return_t pre_sasl(memcached_st *memc)
 
 static test_return_t pre_replication(memcached_st *memc)
 {
-  test_true(TEST_SUCCESS == pre_binary(memc));
+  test_skip(TEST_SUCCESS, pre_binary(memc));
 
   /*
    * Make sure that we store the item on all servers
@@ -3747,7 +3735,7 @@ static test_return_t pre_replication(memcached_st *memc)
 
 static test_return_t pre_replication_noblock(memcached_st *memc)
 {
-  test_compare(TEST_SUCCESS, pre_replication(memc));
+  test_skip(TEST_SUCCESS, pre_replication(memc));
 
   return pre_nonblock(memc);
 }
@@ -4768,7 +4756,6 @@ static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
 {
   (void)memc;
   memcached_st *tl_memc_h;
-  memcached_server_st *servers;
 
   const char *key= "MemcachedLives";
   size_t len;
@@ -4778,7 +4765,8 @@ static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
 
   // Create a handle.
   tl_memc_h= memcached_create(NULL);
-  servers= memcached_servers_parse("localhost:9898,localhost:9899"); // This server should not exist
+  memcached_server_st *servers= memcached_servers_parse("localhost:9898,localhost:9899"); // This server should not exist
+  test_true(servers);
   memcached_server_push(tl_memc_h, servers);
   memcached_server_list_free(servers);
 
@@ -4786,7 +4774,7 @@ static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
   value= memcached_get(tl_memc_h, key, strlen(key), &len, &flags, &rc);
 
   test_false(value);
-  test_true(len == 0);
+  test_compare(0, len);
   test_false(rc == MEMCACHED_SUCCESS);
 
   memcached_free(tl_memc_h);
@@ -5437,7 +5425,7 @@ static test_return_t test_multiple_get_last_disconnect(memcached_st *)
     {
       const char *msg=  memcached_strerror(memc, memcached_return_t(x));
       memcached_return_t ret= memcached_set(memc, msg, strlen(msg), NULL, 0, (time_t)0, (uint32_t)0);
-      test_compare_got(MEMCACHED_WRITE_FAILURE, ret, memcached_strerror(NULL, ret));
+      test_compare_got(MEMCACHED_CONNECTION_FAILURE, ret, memcached_last_error_message(memc));
 
       memcached_server_instance_st disconnected_server= memcached_server_get_last_disconnect(memc);
       test_true(disconnected_server);

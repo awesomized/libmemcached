@@ -47,9 +47,9 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
     return "FAILURE";
   case MEMCACHED_HOST_LOOKUP_FAILURE: // getaddrinfo only
     return "getaddrinfo() HOSTNAME LOOKUP FAILURE";
-  case MEMCACHED_CONNECTION_FAILURE: // DEPRECATED
+  case MEMCACHED_CONNECTION_FAILURE:
     return "CONNECTION FAILURE";
-  case MEMCACHED_CONNECTION_BIND_FAILURE:
+  case MEMCACHED_CONNECTION_BIND_FAILURE: // DEPRECATED, see MEMCACHED_HOST_LOOKUP_FAILURE
     return "CONNECTION BIND FAILURE";
   case MEMCACHED_READ_FAILURE:
     return "READ FAILURE";

@@ -577,14 +577,11 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
   return list;
 }
 
-void memcached_stat_free(const memcached_st *ptr, memcached_stat_st *memc_stat)
+void memcached_stat_free(const memcached_st *, memcached_stat_st *memc_stat)
 {
-  if (not ptr)
-    return;
-
+  WATCHPOINT_ASSERT(memc_stat); // Be polite, but when debugging catch this as an error
   if (not memc_stat)
   {
-    WATCHPOINT_ASSERT(0); /* Be polite, but when debugging catch this as an error */
     return;
   }
 
@@ -594,7 +591,7 @@ void memcached_stat_free(const memcached_st *ptr, memcached_stat_st *memc_stat)
     return;
   }
 
-  libmemcached_free(ptr, memc_stat);
+  libmemcached_free(NULL, memc_stat);
 }
 
 static memcached_return_t call_stat_fn(memcached_st *ptr,

@@ -38,6 +38,13 @@
 
 #pragma once
 
+enum memcached_server_state_t {
+  MEMCACHED_SERVER_STATE_NEW,
+  MEMCACHED_SERVER_STATE_ADDRINFO,
+  MEMCACHED_SERVER_STATE_IN_PROGRESS,
+  MEMCACHED_SERVER_STATE_CONNECTED
+};
+
 struct memcached_server_st {
   struct {
     bool is_allocated:1;
@@ -53,6 +60,7 @@ struct memcached_server_st {
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
   uint32_t weight;
+  enum memcached_server_state_t state;
   struct {
     uint32_t read;
     uint32_t write;

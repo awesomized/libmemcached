@@ -258,12 +258,15 @@ void server_startup(server_startup_st *construct)
           switch (errno)
           {
           default:
-            fprintf(stderr, "%s -> fopen(%s)\n", construct->pid_file[x], strerror(errno));
+            fprintf(stderr, "Could not open pid file %s -> fopen(%s) -> %s:%d\n", construct->pid_file[x], strerror(errno),
+                    __FILE__, __LINE__);
             abort();
           case ENOENT:
           case EINTR:
           case EACCES:
+          case EINPROGRESS:
             break;
+
           case ENOTCONN:
             continue;
           }
