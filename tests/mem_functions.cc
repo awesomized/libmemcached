@@ -5760,6 +5760,56 @@ static test_return_t regression_bug_581030(memcached_st *)
   return TEST_SUCCESS;
 }
 
+#define regression_bug_655423_COUNT 6000
+static test_return_t regression_bug_655423(memcached_st *memc)
+{
+  memcached_st *clone= memcached_clone(NULL, memc);
+  memc= NULL; // Just to make sure it is not used
+  test_true(clone);
+  char payload[100];
+
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(clone, MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH, 1));
+
+  memset(payload, int('x'), sizeof(payload));
+
+  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
+  {
+    char key[1024];
+    snprintf(key, sizeof(key), "%u", x);
+
+    test_compare(MEMCACHED_SUCCESS, memcached_set(clone, key, strlen(key), payload, sizeof(payload), 0, 0));
+  }
+
+  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
+  {
+    char key[1024];
+    snprintf(key, sizeof(key), "%u", x);
+
+    size_t value_length;
+    memcached_return_t rc;
+    char *value= memcached_get(clone, key, strlen(key), &value_length, NULL, &rc);
+
+    if (rc == MEMCACHED_NOTFOUND)
+    {
+      test_false(value);
+      test_compare(0, value_length);
+      continue;
+    }
+
+    test_compare(MEMCACHED_SUCCESS, rc);
+    test_true(value);
+    test_compare(100, value_length);
+    free(value);
+  }
+
+  memcached_free(clone);
+
+  return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -6100,6 +6150,7 @@ test_st regression_tests[]= {
   {"lp:581030", 1, (test_callback_fn)regression_bug_581030 },
   {"lp:71231153 connect()", 1, (test_callback_fn)regression_bug_71231153_connect },
   {"lp:71231153 poll()", 1, (test_callback_fn)regression_bug_71231153_poll },
+  {"lp:655423", 1, (test_callback_fn)regression_bug_655423 },
   {0, 0, (test_callback_fn)0}
 };
 
