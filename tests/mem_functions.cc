@@ -5845,6 +5845,46 @@ static test_return_t regression_bug_655423(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+/*
+ * Test that ensures that buffered set to not trigger problems during io_flush
+ */
+#define regression_bug_490520_COUNT 200480
+static test_return_t regression_bug_490520(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT,1);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 3600);
+
+  memc->number_of_hosts= 1;
+
+  char **keys= (char **)calloc(regression_bug_490520_COUNT, sizeof(char*));
+  size_t *key_length= (size_t *)calloc(regression_bug_490520_COUNT, sizeof(size_t));
+
+  /* First add all of the items.. */
+  char blob[3333] = {0};
+  for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
+  {
+    char k[251];
+    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
+    keys[x]= strdup(k);
+    test_true(keys[x]);
+
+    memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+  }
+
+  for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
+  {
+    free(keys[x]);
+  }
+  free(keys);
+  free(key_length);
+
+  return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -6186,6 +6226,7 @@ test_st regression_tests[]= {
   {"lp:71231153 connect()", 1, (test_callback_fn)regression_bug_71231153_connect },
   {"lp:71231153 poll()", 1, (test_callback_fn)regression_bug_71231153_poll },
   {"lp:655423", 1, (test_callback_fn)regression_bug_655423 },
+  {"lp:490520", 1, (test_callback_fn)regression_bug_490520 },
   {0, 0, (test_callback_fn)0}
 };
 
