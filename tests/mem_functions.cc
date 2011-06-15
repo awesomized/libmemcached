@@ -5805,6 +5805,41 @@ static test_return_t regression_bug_655423(memcached_st *memc)
     free(value);
   }
 
+  char **keys= (char**)calloc(regression_bug_655423_COUNT, sizeof(char*));
+  size_t *key_length= (size_t *)calloc(regression_bug_655423_COUNT, sizeof(size_t));
+  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
+  {
+    char key[1024];
+    snprintf(key, sizeof(key), "%u", x);
+
+    keys[x]= strdup(key);
+    key_length[x]= strlen(key);
+  }
+
+  memcached_return_t rc;
+  test_compare_got(MEMCACHED_SUCCESS,
+                   rc= memcached_mget(clone, (const char* const *)keys, key_length, regression_bug_655423_COUNT),
+                   memcached_strerror(NULL, rc));
+
+  uint32_t count= 0;
+  memcached_result_st *result= NULL;
+  while ((result= memcached_fetch_result(clone, result, NULL)))
+  {
+    test_compare(100, memcached_result_length(result));
+    count++;
+  }
+
+  test_true(count > 100); // If we don't get back atleast this, something is up
+
+  /* Release all allocated resources */
+  for (size_t x= 0; x < regression_bug_655423_COUNT; ++x)
+  {
+    free(keys[x]);
+  }
+  free(keys);
+  free(key_length);
+
+
   memcached_free(clone);
 
   return TEST_SUCCESS;

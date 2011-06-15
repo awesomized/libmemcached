@@ -90,27 +90,41 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 {
   memcached_server_st *server;
 
-  unlikely (ptr->flags.use_udp)
+  memcached_return_t unused;
+  if (not error)
+    error= &unused;
+
+  if (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
   }
 
-  if (result == NULL)
-    if ((result= memcached_result_create(ptr, NULL)) == NULL)
+  if (not result)
+  {
+    if (not (result= memcached_result_create(ptr, NULL)))
+    {
       return NULL;
+    }
+  }
 
-  while ((server= memcached_io_get_readable_server(ptr)) != NULL) 
+  while ((server= memcached_io_get_readable_server(ptr)))
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     *error= memcached_response(server, buffer, sizeof(buffer), result);
 
     if (*error == MEMCACHED_SUCCESS)
+    {
       return result;
+    }
     else if (*error == MEMCACHED_END)
+    {
       memcached_server_response_reset(server);
+    }
     else if (*error != MEMCACHED_NOTFOUND)
+    {
       break;
+    }
   }
 
   /* We have completed reading data */
