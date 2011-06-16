@@ -84,8 +84,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       if (ptr->root->flags.buffer_requests || ptr->root->number_of_replicas)
       {
         ssize_t nread;
-        while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
-                                 &nread) == MEMCACHED_SUCCESS) {} ;
+        while (memcached_success(memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer), &nread))) {} ;
       }
 
 
@@ -101,6 +100,8 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
     memcached_io_close(ptr);
   }
 
+  ptr->state= MEMCACHED_SERVER_STATE_NEW;
+  ptr->cursor_active= 0;
   ptr->io_bytes_sent= 0;
   ptr->write_buffer_offset= (size_t) ((ptr->type == MEMCACHED_CONNECTION_UDP) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
   ptr->read_buffer_length= 0;
@@ -132,7 +133,7 @@ void send_quit(memcached_st *ptr)
 
 void memcached_quit(memcached_st *ptr)
 {
-  if (initialize_query(ptr) != MEMCACHED_SUCCESS)
+  if (memcached_failed(initialize_query(ptr)))
   {
     return;
   }

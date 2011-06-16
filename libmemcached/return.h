@@ -83,6 +83,7 @@ enum memcached_return_t {
   MEMCACHED_PARSE_ERROR,
   MEMCACHED_PARSE_USER_ERROR,
   MEMCACHED_DEPRECATED,
+  MEMCACHED_IN_PROGRESS,
   MEMCACHED_MAXIMUM_RETURN /* Always add new error code before */
 };
 
@@ -91,6 +92,6 @@ typedef enum memcached_return_t memcached_return_t;
 #endif
 
 
-#define memcached_success(X) ((X) == MEMCACHED_SUCCESS)
-#define memcached_failed(A) ((A) != MEMCACHED_SUCCESS)
+#define memcached_success(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_SUCCESS or (__memcached_return_t) == MEMCACHED_END)
+#define memcached_failed(__memcached_return_t) ((__memcached_return_t) != MEMCACHED_SUCCESS and (__memcached_return_t) != MEMCACHED_END)
 

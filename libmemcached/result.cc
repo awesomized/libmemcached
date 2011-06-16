@@ -69,8 +69,10 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
   {
     ptr= static_cast<memcached_result_st *>(libmemcached_malloc(memc, sizeof(memcached_result_st)));
 
-    if (ptr == NULL)
+    if (not ptr)
+    {
       return NULL;
+    }
 
     ptr->options.is_allocated= true;
   }

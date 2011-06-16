@@ -53,8 +53,10 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
     return "CONNECTION BIND FAILURE";
   case MEMCACHED_READ_FAILURE:
     return "READ FAILURE";
+
   case MEMCACHED_UNKNOWN_READ_FAILURE:
     return "UNKNOWN READ FAILURE";
+
   case MEMCACHED_PROTOCOL_ERROR:
     return "PROTOCOL ERROR";
   case MEMCACHED_CLIENT_ERROR:
@@ -131,8 +133,13 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
     return "ERROR OCCURED WHILE PARSING";
   case MEMCACHED_PARSE_USER_ERROR:
     return "USER INITIATED ERROR OCCURED WHILE PARSING";
+
   case MEMCACHED_DEPRECATED:
     return "DEPRECATED";
+
+  case MEMCACHED_IN_PROGRESS:
+    return "OPERATION IN PROCESS";
+
   default:
   case MEMCACHED_MAXIMUM_RETURN:
     return "INVALID memcached_return_t";

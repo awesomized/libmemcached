@@ -38,11 +38,12 @@
 
 
 #include <libmemcached/common.h>
+#include <cassert>
 
-typedef enum {
+enum memc_read_or_write {
   MEM_READ,
   MEM_WRITE
-} memc_read_or_write;
+};
 
 static ssize_t io_flush(memcached_server_write_instance_st ptr,
                         const bool with_flush,
@@ -249,20 +250,16 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
                                      void *buffer, size_t length, ssize_t *nread)
 {
-  char *buffer_ptr;
-
-  buffer_ptr= static_cast<char *>(buffer);
+  char *buffer_ptr= static_cast<char *>(buffer);
 
   while (length)
   {
     if (not ptr->read_buffer_length)
     {
       ssize_t data_read;
-
       do
       {
         data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
-
         if (data_read == SOCKET_ERROR)
         {
           switch (get_socket_errno())
@@ -279,6 +276,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             {
               continue;
             }
+            return MEMCACHED_IN_PROGRESS;
 
             /* fall through */
 
@@ -710,9 +708,13 @@ memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
   while (offset < size)
   {
     ssize_t nread;
-    memcached_return_t rc= memcached_io_read(ptr, data + offset, size - offset,
-                                             &nread);
-    if (rc != MEMCACHED_SUCCESS)
+    memcached_return_t rc= memcached_io_read(ptr, data + offset, size - offset, &nread);
+    if (memcached_failed(rc) and rc == MEMCACHED_IN_PROGRESS)
+    {
+      memcached_quit_server(ptr, true);
+      return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    }
+    else if (memcached_failed(rc))
     {
       return rc;
     }
@@ -730,7 +732,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
   bool line_complete= false;
   size_t total_nr= 0;
 
-  while (!line_complete)
+  while (not line_complete)
   {
     if (ptr->read_buffer_length == 0)
     {
@@ -741,7 +743,12 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
      */
       ssize_t nread;
       memcached_return_t rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
-      if (rc != MEMCACHED_SUCCESS)
+      if (memcached_failed(rc) and rc == MEMCACHED_IN_PROGRESS)
+      {
+        memcached_quit_server(ptr, true);
+        return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+      }
+      else if (memcached_failed(rc))
       {
         return rc;
       }

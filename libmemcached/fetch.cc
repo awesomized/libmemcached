@@ -104,6 +104,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   {
     if (not (result= memcached_result_create(ptr, NULL)))
     {
+      *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
       return NULL;
     }
   }
@@ -137,6 +138,12 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     memcached_string_reset(&result->value);
   }
 
+  if (*error == MEMCACHED_NOTFOUND)
+    *error= MEMCACHED_END;
+
+  if (*error == MEMCACHED_SUCCESS)
+    *error= MEMCACHED_END;
+
   return NULL;
 }
 
@@ -148,14 +155,14 @@ memcached_return_t memcached_fetch_execute(memcached_st *ptr,
   memcached_result_st *result= &ptr->result;
   memcached_return_t rc= MEMCACHED_FAILURE;
 
-  while ((result= memcached_fetch_result(ptr, result, &rc)) != NULL) 
+  while ((result= memcached_fetch_result(ptr, result, &rc)))
   {
-    if (rc == MEMCACHED_SUCCESS)
+    if (memcached_success(rc))
     {
       for (uint32_t x= 0; x < number_of_callbacks; x++)
       {
         rc= (*callback[x])(ptr, result, context);
-        if (rc != MEMCACHED_SUCCESS)
+        if (memcached_failed(rc))
           break;
       }
     }
