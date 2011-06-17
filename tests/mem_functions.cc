@@ -954,7 +954,8 @@ static test_return_t read_through(memcached_st *memc)
                         &string_length, &flags, &rc);
 
   test_compare(MEMCACHED_SUCCESS, rc);
-  test_compare(string_length, strlen(READ_THROUGH_VALUE));
+  test_compare(string_length, sizeof(READ_THROUGH_VALUE) -1);
+  test_true(string[sizeof(READ_THROUGH_VALUE) -1] == 0);
   test_strcmp(READ_THROUGH_VALUE, string);
   free(string);
 
@@ -962,7 +963,9 @@ static test_return_t read_through(memcached_st *memc)
                         &string_length, &flags, &rc);
 
   test_compare(MEMCACHED_SUCCESS, rc);
-  test_compare(string_length, strlen(READ_THROUGH_VALUE));
+  test_true(string);
+  test_compare(string_length, sizeof(READ_THROUGH_VALUE) -1);
+  test_true(string[sizeof(READ_THROUGH_VALUE) -1] == 0);
   test_strcmp(READ_THROUGH_VALUE, string);
   free(string);
 
@@ -2802,7 +2805,6 @@ static test_return_t user_supplied_bug15(memcached_st *memc)
   uint32_t x;
   memcached_return_t rc;
   const char *key= "mykey";
-  char *value;
   size_t length;
   uint32_t flags;
 
@@ -2814,13 +2816,13 @@ static test_return_t user_supplied_bug15(memcached_st *memc)
 
     test_compare(MEMCACHED_SUCCESS, rc);
 
-    value= memcached_get(memc, key, strlen(key),
-                         &length, &flags, &rc);
+    char *value= memcached_get(memc, key, strlen(key),
+                               &length, &flags, &rc);
 
     test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(value == NULL);
-    test_true(length == 0);
-    test_true(flags == 0);
+    test_false(value);
+    test_false(length);
+    test_false(flags);
 
     value= memcached_get(memc, key, strlen(key),
                          &length, &flags, &rc);

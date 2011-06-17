@@ -111,7 +111,6 @@ char *memcached_get_by_key(memcached_st *ptr,
   {
     if (ptr->get_key_failure && *error == MEMCACHED_NOTFOUND)
     {
-
       memcached_result_reset(&ptr->result);
       memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
 
@@ -148,7 +147,7 @@ char *memcached_get_by_key(memcached_st *ptr,
           *error= rc;
           *value_length= memcached_result_length(&ptr->result);
           *flags= memcached_result_flags(&ptr->result);
-          return memcached_string_c_copy(&ptr->result.value);
+          return memcached_string_take_value(&ptr->result.value);
         }
       }
     }
