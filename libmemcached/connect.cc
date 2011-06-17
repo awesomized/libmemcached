@@ -486,7 +486,6 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
       (void)closesocket(ptr->fd);
       ptr->fd= INVALID_SOCKET;
-      ptr->state= MEMCACHED_SERVER_STATE_NEW;
       continue;
 
     default:

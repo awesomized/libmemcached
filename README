@@ -10,8 +10,11 @@ memrm - Remove a key(s) from the server.
 memstat - Dump the stats of your servers to standard output
 memslap - Load generation utility (benchmark!)
 
-The utilities are beta quality at this point. The library is in production
-in many locations (upwards to 1000+ nodes).
+The library is in production in many locations (upwards to 1000+ nodes).
+
+The project has information here: http://libmemcached.org/
+
+Documentation can be found here: http://docs.libmemcached.org/
 
 Want to contribute? If you write more then three good patches, then I will
 just ask you to commit directly to the tree. I am happy to have additional
@@ -24,9 +27,16 @@ by someone in the community.
 
 If you are looking for answers to your questions please check out the
 mailing list at:
-http://lists.tangent.org/  
+http://lists.libmemcached.org/  
 
 Subscription information for the libmemcached mailing list can be found there.
+
+Please report bugs here:
+https://bugs.launchpad.net/libmemcached/
+
+You can purchase support from:
+http://datadifferential.com/
+
 
 Cheers,
   -Brian Aker

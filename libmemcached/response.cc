@@ -62,9 +62,9 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   else
     rc= textual_read_one_response(ptr, buffer, buffer_length, result);
 
-  unlikely(rc == MEMCACHED_UNKNOWN_READ_FAILURE ||
-           rc == MEMCACHED_PROTOCOL_ERROR ||
-           rc == MEMCACHED_CLIENT_ERROR ||
+  unlikely(rc == MEMCACHED_UNKNOWN_READ_FAILURE or
+           rc == MEMCACHED_PROTOCOL_ERROR or
+           rc == MEMCACHED_CLIENT_ERROR or
            rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
     memcached_io_reset(ptr);
 

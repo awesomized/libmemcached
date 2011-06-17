@@ -164,26 +164,25 @@ test_return_t mget_test(memcached_st *original)
   vector<char> return_value;
 
   /* We need to empty the server before we continue the test */
-  test_true(memc.flush(0));
+  test_true(memc.flush());
 
   test_true(memc.mget(keys));
 
-  while ((mc_rc= memc.fetch(return_key, return_value)) != MEMCACHED_END)
-  {
-    test_true(return_value.size());
-    return_value.clear();
-  }
-  test_compare(mc_rc, MEMCACHED_END);
+  test_compare(MEMCACHED_NOTFOUND, 
+               memc.fetch(return_key, return_value));
 
   test_true(memc.setAll(keys, values, 50, 9));
 
   test_true(memc.mget(keys));
 
-  while ((mc_rc= memc.fetch(return_key, return_value)) != MEMCACHED_END)
+  size_t count= 0;
+  while ((mc_rc= memc.fetch(return_key, return_value)) == MEMCACHED_SUCCESS)
   {
     test_compare(return_key.length(), return_value.size());
     test_memcmp(&return_value[0], return_key.c_str(), return_value.size());
+    count++;
   }
+  test_compare(values.size(), count);
 
   return TEST_SUCCESS;
 }

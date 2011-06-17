@@ -94,4 +94,5 @@ typedef enum memcached_return_t memcached_return_t;
 
 #define memcached_success(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_SUCCESS or (__memcached_return_t) == MEMCACHED_END)
 #define memcached_failed(__memcached_return_t) ((__memcached_return_t) != MEMCACHED_SUCCESS and (__memcached_return_t) != MEMCACHED_END)
+#define memcached_continue(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_IN_PROGRESS)
 

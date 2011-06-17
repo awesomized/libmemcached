@@ -61,7 +61,6 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   // For memory allocation we use our error since it is a bit more specific
   if (local_errno == ENOMEM and rc == MEMCACHED_ERRNO)
   {
-    local_errno= ENOMEM;
     rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
@@ -77,6 +76,16 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   }
 
   if (rc == MEMCACHED_ERRNO and local_errno == ENOTCONN)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
+  if (local_errno == EINVAL)
+  {
+    rc= MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  if (local_errno == ECONNREFUSED)
   {
     rc= MEMCACHED_CONNECTION_FAILURE;
   }

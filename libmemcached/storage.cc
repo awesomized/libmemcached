@@ -68,7 +68,6 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   bool to_write;
   size_t write_length;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  memcached_server_write_instance_st instance;
 
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
@@ -85,7 +84,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     return MEMCACHED_BAD_KEY_PROVIDED;
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  instance= memcached_server_instance_fetch(ptr, server_key);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
 
   WATCHPOINT_SET(instance->io_wait_count.read= 0);
   WATCHPOINT_SET(instance->io_wait_count.write= 0);

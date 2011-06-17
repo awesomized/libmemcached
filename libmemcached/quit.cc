@@ -52,11 +52,9 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   {
     if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP && ptr->options.is_shutting_down == false)
     {
-      memcached_return_t rc;
-      char buffer[MEMCACHED_MAX_BUFFER];
-
       ptr->options.is_shutting_down= true;
 
+      memcached_return_t rc;
       if (ptr->root->flags.binary_protocol)
       {
         protocol_binary_request_quit request= {}; // = {.bytes= {0}};
@@ -70,8 +68,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
         rc= memcached_do(ptr, memcached_literal_param("quit\r\n"), true);
       }
 
-      WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
-      (void)rc; // Shut up ICC
+      WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_FETCH_NOTFINISHED);
 
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read
@@ -81,12 +78,12 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
        * In .40 we began to only do this if we had been doing buffered
        * requests of had replication enabled.
        */
-      if (ptr->root->flags.buffer_requests || ptr->root->number_of_replicas)
+      if (ptr->root->flags.buffer_requests or ptr->root->number_of_replicas)
       {
-        ssize_t nread;
-        while (memcached_success(memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer), &nread))) {} ;
+        memcached_return_t rc_slurp;
+        while (memcached_continue(rc_slurp= memcached_io_slurp(ptr))) {} ;
+        WATCHPOINT_ASSERT(rc_slurp == MEMCACHED_CONNECTION_FAILURE);
       }
-
 
       /*
        * memcached_io_read may call memcached_quit_server with io_death if

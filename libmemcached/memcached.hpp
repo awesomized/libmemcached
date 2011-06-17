@@ -163,7 +163,7 @@ public:
    * @return a memcached return structure
    */
   memcached_return_t fetch(std::string &key,
-                         std::vector<char> &ret_val)
+                           std::vector<char> &ret_val)
   {
     char ret_key[MEMCACHED_MAX_KEY];
     size_t value_length= 0;
@@ -698,7 +698,7 @@ public:
    *                       memcached servers
    * @return true on success; false otherwise
    */
-  bool flush(time_t expiration)
+  bool flush(time_t expiration= 0)
   {
     return memcached_success(memcached_flush(memc, expiration));
   }

@@ -39,8 +39,8 @@
 #pragma once
 
 enum memcached_server_state_t {
-  MEMCACHED_SERVER_STATE_NEW,
-  MEMCACHED_SERVER_STATE_ADDRINFO,
+  MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
+  MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered
   MEMCACHED_SERVER_STATE_IN_PROGRESS,
   MEMCACHED_SERVER_STATE_CONNECTED
 };
