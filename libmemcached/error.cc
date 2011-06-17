@@ -99,18 +99,35 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   error->rc= rc;
   error->local_errno= local_errno;
 
+  const char *errmsg_ptr;
+  char errmsg[MAX_ERROR_LENGTH];
+  errmsg[0]= 0;
+  errmsg_ptr= errmsg;
+
+  if (local_errno)
+  {
+#ifdef STRERROR_R_CHAR_P
+    errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
+#else
+    strerror_r(local_errno, errmsg, sizeof(errmsg));
+    errmsg_ptr= errmsg;
+#endif
+  }
+
+
   if (str and str->size and local_errno)
   {
     error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s), %.*s -> %s", 
                                memcached_strerror(&memc, rc), 
-                               strerror(local_errno),
+                               errmsg_ptr,
                                memcached_string_printf(*str), at);
   }
   else if (local_errno)
   {
     error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s) -> %s", 
                                memcached_strerror(&memc, rc), 
-                               strerror(local_errno), at);
+                               errmsg_ptr,
+                               at);
   }
   else if (str and str->size)
   {
