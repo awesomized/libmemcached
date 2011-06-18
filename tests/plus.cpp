@@ -174,7 +174,6 @@ test_return_t mget_test(memcached_st *original)
   test_true(memc.setAll(keys, values, 50, 9));
 
   test_true(memc.mget(keys));
-
   size_t count= 0;
   while ((mc_rc= memc.fetch(return_key, return_value)) == MEMCACHED_SUCCESS)
   {

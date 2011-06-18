@@ -163,28 +163,39 @@ public:
    * @return a memcached return structure
    */
   memcached_return_t fetch(std::string &key,
-                           std::vector<char> &ret_val)
+                           std::vector<char> &ret_val,
+                           uint32_t &flags,
+                           uint64_t &cas_value)
   {
-    char ret_key[MEMCACHED_MAX_KEY];
-    size_t value_length= 0;
-    size_t key_length= 0;
     memcached_return_t rc;
-    uint32_t flags= 0;
-    char *value= memcached_fetch(memc, ret_key, &key_length,
-                                 &value_length, &flags, &rc);
-    if (value && ret_val.empty())
+
+    memcached_result_st *result;
+    if ((result= memcached_fetch_result(memc, NULL, &rc)))
     {
-      ret_val.reserve(value_length);
-      ret_val.assign(value, value + value_length);
-      key.assign(ret_key, key_length);
-      free(value);
+      // Key
+      key.assign(memcached_result_key_value(result), memcached_result_key_length(result));
+
+      // Actual value, null terminated
+      ret_val.reserve(memcached_result_length(result) +1);
+      ret_val.assign(memcached_result_value(result), 
+                     memcached_result_value(result) +memcached_result_length(result));
+
+      // Misc
+      flags= memcached_result_flags(result);
+      cas_value= memcached_result_cas(result);
     }
-    else if (value)
-    {
-      free(value);
-    }
+    memcached_result_free(result);
 
     return rc;
+  }
+
+  memcached_return_t fetch(std::string &key,
+                           std::vector<char> &ret_val)
+  {
+    uint32_t flags= 0;
+    uint64_t cas_value= 0;
+
+    return fetch(key, ret_val, flags, cas_value);
   }
 
   /**
@@ -210,6 +221,7 @@ public:
       free(value);
       return true;
     }
+
     return false;
   }
 
