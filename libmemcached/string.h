@@ -98,6 +98,9 @@ LIBMEMCACHED_LOCAL
 const char *memcached_string_value(const memcached_string_st *self);
 
 LIBMEMCACHED_LOCAL
+char *memcached_string_take_value(memcached_string_st *self);
+
+LIBMEMCACHED_LOCAL
 char *memcached_string_value_mutable(const memcached_string_st *self);
 
 LIBMEMCACHED_LOCAL

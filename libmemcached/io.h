@@ -96,7 +96,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
                                          size_t size);
 
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_io_close(memcached_server_write_instance_st ptr);
+void memcached_io_close(memcached_server_write_instance_st ptr);
 
 /* Read n bytes of data from the server and store them in dta */
 LIBMEMCACHED_LOCAL
@@ -110,6 +110,9 @@ memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_
 
 LIBMEMCACHED_LOCAL
 memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st *memc);
+
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr);
 
 #ifdef __cplusplus
 }

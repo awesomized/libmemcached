@@ -37,32 +37,32 @@
 
 #pragma once
 
-
 struct memcached_stat_st {
-  uint32_t connection_structures;
-  uint32_t curr_connections;
-  uint32_t curr_items;
-  uint32_t pid;
-  uint32_t pointer_size;
-  uint32_t rusage_system_microseconds;
-  uint32_t rusage_system_seconds;
-  uint32_t rusage_user_microseconds;
-  uint32_t rusage_user_seconds;
-  uint32_t threads;
-  uint32_t time;
-  uint32_t total_connections;
-  uint32_t total_items;
-  uint32_t uptime;
-  uint64_t bytes;
-  uint64_t bytes_read;
-  uint64_t bytes_written;
-  uint64_t cmd_get;
-  uint64_t cmd_set;
-  uint64_t evictions;
-  uint64_t get_hits;
-  uint64_t get_misses;
-  uint64_t limit_maxbytes;
+  unsigned long connection_structures;
+  unsigned long curr_connections;
+  unsigned long curr_items;
+  unsigned long pid;
+  unsigned long pointer_size;
+  unsigned long rusage_system_microseconds;
+  unsigned long rusage_system_seconds;
+  unsigned long rusage_user_microseconds;
+  unsigned long rusage_user_seconds;
+  unsigned long threads;
+  unsigned long time;
+  unsigned long total_connections;
+  unsigned long total_items;
+  unsigned long uptime;
+  unsigned long long bytes;
+  unsigned long long bytes_read;
+  unsigned long long bytes_written;
+  unsigned long long cmd_get;
+  unsigned long long cmd_set;
+  unsigned long long evictions;
+  unsigned long long get_hits;
+  unsigned long long get_misses;
+  unsigned long long limit_maxbytes;
   char version[MEMCACHED_VERSION_STRING_LENGTH];
+  void *__future; // @todo create a new structure to place here for future usage
   memcached_st *root;
 };
 
@@ -85,7 +85,7 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
                                const char *key, memcached_return_t *error);
 
 LIBMEMCACHED_API
-char ** memcached_stat_get_keys(const memcached_st *ptr, memcached_stat_st *memc_stat,
+char ** memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
                                 memcached_return_t *error);
 
 LIBMEMCACHED_API

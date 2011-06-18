@@ -52,11 +52,9 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
   {
     if (io_death == false && ptr->type != MEMCACHED_CONNECTION_UDP && ptr->options.is_shutting_down == false)
     {
-      memcached_return_t rc;
-      char buffer[MEMCACHED_MAX_BUFFER];
-
       ptr->options.is_shutting_down= true;
 
+      memcached_return_t rc;
       if (ptr->root->flags.binary_protocol)
       {
         protocol_binary_request_quit request= {}; // = {.bytes= {0}};
@@ -70,8 +68,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
         rc= memcached_do(ptr, memcached_literal_param("quit\r\n"), true);
       }
 
-      WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_FETCH_NOTFINISHED);
-      (void)rc; // Shut up ICC
+      WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_FETCH_NOTFINISHED);
 
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read
@@ -81,13 +78,12 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
        * In .40 we began to only do this if we had been doing buffered
        * requests of had replication enabled.
        */
-      if (ptr->root->flags.buffer_requests || ptr->root->number_of_replicas)
+      if (ptr->root->flags.buffer_requests or ptr->root->number_of_replicas)
       {
-        ssize_t nread;
-        while (memcached_io_read(ptr, buffer, sizeof(buffer)/sizeof(*buffer),
-                                 &nread) == MEMCACHED_SUCCESS) {} ;
+        memcached_return_t rc_slurp;
+        while (memcached_continue(rc_slurp= memcached_io_slurp(ptr))) {} ;
+        WATCHPOINT_ASSERT(rc_slurp == MEMCACHED_CONNECTION_FAILURE);
       }
-
 
       /*
        * memcached_io_read may call memcached_quit_server with io_death if
@@ -101,7 +97,8 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
     memcached_io_close(ptr);
   }
 
-  ptr->fd= INVALID_SOCKET;
+  ptr->state= MEMCACHED_SERVER_STATE_NEW;
+  ptr->cursor_active= 0;
   ptr->io_bytes_sent= 0;
   ptr->write_buffer_offset= (size_t) ((ptr->type == MEMCACHED_CONNECTION_UDP) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
   ptr->read_buffer_length= 0;
@@ -133,7 +130,7 @@ void send_quit(memcached_st *ptr)
 
 void memcached_quit(memcached_st *ptr)
 {
-  if (initialize_query(ptr) != MEMCACHED_SUCCESS)
+  if (memcached_failed(initialize_query(ptr)))
   {
     return;
   }

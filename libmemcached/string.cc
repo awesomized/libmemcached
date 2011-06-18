@@ -37,6 +37,7 @@
 
 
 #include <libmemcached/common.h>
+#include <cassert>
 
 inline static memcached_return_t _string_check(memcached_string_st *string, size_t need)
 {
@@ -116,6 +117,18 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   WATCHPOINT_ASSERT(self->string == self->end);
 
   return self;
+}
+
+static memcached_return_t memcached_string_append_null(memcached_string_st *string)
+{
+  if (memcached_failed(_string_check(string, 1)))
+  {
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
+
+  *string->end= 0;
+
+  return MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_string_append_character(memcached_string_st *string,
@@ -211,6 +224,22 @@ size_t memcached_string_size(const memcached_string_st *self)
 const char *memcached_string_value(const memcached_string_st *self)
 {
   return self->string;
+}
+
+char *memcached_string_take_value(memcached_string_st *self)
+{
+  assert(self);
+  // If we fail at adding the null, we copy and move on
+  if (memcached_success(memcached_string_append_null(self)))
+  {
+    return memcached_string_c_copy(self);
+  }
+
+  char *value= self->string;
+
+  _init_string(self);
+
+  return value;
 }
 
 char *memcached_string_value_mutable(const memcached_string_st *self)

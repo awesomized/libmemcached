@@ -81,4 +81,7 @@ LIBMEMCACHED_LOCAL
 LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, const char *at);
 
+LIBMEMCACHED_LOCAL
+bool memcached_has_current_error(memcached_st &memc);
+
 #endif

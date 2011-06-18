@@ -44,6 +44,7 @@ struct memcached_result_st {
   uint64_t item_cas;
   memcached_st *root;
   memcached_string_st value;
+  uint64_t count;
   char item_key[MEMCACHED_MAX_KEY];
   struct {
     bool is_allocated:1;

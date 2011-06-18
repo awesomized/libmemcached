@@ -1,4 +1,4 @@
-.TH "MEMCACHED_RESULT_LENGTH" "3" "June 02, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_RESULT_LENGTH" "3" "June 17, 2011" "0.49" "libmemcached"
 .SH NAME
 memcached_result_length \- Working with result sets
 .
@@ -30,11 +30,13 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
-.sp
-Work with memcached_result_st
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached_pool.h>
+.INDENT 0.0
+.TP
+.B memcached_result_st
+.UNINDENT
 .INDENT 0.0
 .TP
 .B memcached_result_st * memcached_result_create (memcached_st *ptr, memcached_result_st *result);
@@ -61,7 +63,7 @@ Work with memcached_result_st
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t memcached_result_flags(const memcached_result_st\fI\ *result\fP)
+.B uint32_t memcached_result_flags(const \fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -69,15 +71,15 @@ Work with memcached_result_st
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_result_set_value(memcached_result_st\fI\ *ptr\fP, const char\fI\ *value\fP, size_t\fI\ length\fP)
+.B memcached_return_t memcached_result_set_value(\fI\%memcached_result_st\fP\fI\ *ptr\fP, const char\fI\ *value\fP, size_t\fI\ length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_result_set_flags(memcached_result_st\fI\ *ptr\fP, uint32_t\fI\ flags\fP)
+.B void memcached_result_set_flags(\fI\%memcached_result_st\fP\fI\ *ptr\fP, uint32_t\fI\ flags\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_result_set_expiration(memcached_result_st\fI\ *ptr\fP, time_t)
+.B void memcached_result_set_expiration(\fI\%memcached_result_st\fP\fI\ *ptr\fP, time_t)
 .UNINDENT
 .sp
 Compile and link with \-lmemcachedutil \-lmemcached

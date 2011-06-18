@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SERVERS_PARSE" "3" "June 02, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_SERVERS_PARSE" "3" "June 17, 2011" "0.49" "libmemcached"
 .SH NAME
 memcached_servers_parse \- libmemcached Documentation
 .
@@ -35,28 +35,34 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B const memcached_server_instance_st memcached_server_list (memcached_st *ptr);
+.B memcached_server_instance_st
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_server_list_free (memcached_server_list_st list);
+.B const \fI\%memcached_server_instance_st\fP memcached_server_list(memcached_st\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_server_list_st memcached_server_list_append (memcached_server_list_st list, const char *hostname, unsigned int port, memcached_return_t *error);
+.B void memcached_server_list_free(memcached_server_list_st\fI\ list\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t memcached_server_list_count (memcached_server_list_st list);
+.B memcached_server_list_st memcached_server_list_append(memcached_server_list_st\fI\ list\fP, const char\fI\ *hostname\fP, unsigned int\fI\ port\fP, memcached_return_t\fI\ *error\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B const char *memcached_server_error (memcached_server_instance_st instance);
+.B uint32_t memcached_server_list_count(memcached_server_list_st\fI\ list\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_server_error_reset (memcached_server_instance_st list); DEPRECATED
+.B const char *memcached_server_error(\fI\%memcached_server_instance_st\fP\fI\ instance\fP)
 .UNINDENT
+.INDENT 0.0
+.TP
+.B void memcached_server_error_reset(\fI\%memcached_server_instance_st\fP\fI\ list\fP)
+.UNINDENT
+.sp
+Deprecated since version 0.39.
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
@@ -66,25 +72,25 @@ memcached_server_st structures. You should not modify these structures
 directly. Functions are provided to modify these structures (and more can be
 added, just ask!).
 .sp
-memcached_server_list() is used to provide an array of all defined hosts.
+\fI\%memcached_server_list()\fP is used to provide an array of all defined hosts.
 This was incorrectly documented as "requiring free()" up till version 0.39.
 .sp
-memcached_server_list_free() deallocates all memory associated with the array
+\fI\%memcached_server_list_free()\fP deallocates all memory associated with the array
 of memcached_server_st that you passed to it.
 .sp
-memcached_server_list_append() adds a server to the end of a
+\fI\%memcached_server_list_append()\fP adds a server to the end of a
 memcached_server_st array. On error null will be returned and the
 memcached_return_t pointer you passed into the function will be set with the
 appropriate error. If the value of port is zero, it is set to the default
 port of a memcached server.
 .sp
-DEPRECATED memcached_servers_parse(), please see \fImemcached(3)\fP
+DEPRECATED \fBmemcached_servers_parse()\fP, please see \fBmemcached()\fP
 .sp
-memcached_server_error() can be used to look at the text of the last error
+\fI\%memcached_server_error()\fP can be used to look at the text of the last error
 message sent by the server to to the client.
 .sp
-Before version 0.39 theses functions used a memcache_server_st *. In 0.39
-memcached_server_st * was aliased to memcached_server_list_st. This was
+Before version 0.39 these functions used a memcache_server_st *. In 0.39
+memcached_server_st * was aliased to \fBmemcached_server_list_st\fP. This was
 done for a style reason/to help clean up some concepts in the code.
 .SH RETURN
 .sp

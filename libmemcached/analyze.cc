@@ -55,7 +55,7 @@ static void calc_hit_ratio(memcached_analysis_st *result,
     return;
   }
 
-  double temp= (double) (total_get_hits/total_get_cmds);
+  double temp= double(total_get_hits) / total_get_cmds;
   result->pool_hit_ratio= temp * 100;
 }
 
@@ -68,12 +68,15 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
   uint32_t server_count, x;
   memcached_analysis_st *result;
 
+  if (not memc or not memc_stat)
+    return NULL;
+
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
   result= (memcached_analysis_st*)calloc(memcached_server_count(memc),
                                          sizeof(memcached_analysis_st));
 
-  if (!result)
+  if (not result)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;

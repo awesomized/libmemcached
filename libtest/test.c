@@ -59,10 +59,12 @@ const char *test_strerror(test_return_t code)
     return "ok";
   case TEST_FAILURE:
     return "failed";
-  case TEST_MEMORY_ALLOCATION_FAILURE:
-    return "memory allocation";
+  case TEST_FATAL:
+    return "failed";
   case TEST_SKIPPED:
     return "skipped";
+  case TEST_MEMORY_ALLOCATION_FAILURE:
+    return "memory allocation";
   case TEST_MAXIMUM_RETURN:
   default:
     fprintf(stderr, "Unknown return value\n");
@@ -146,7 +148,6 @@ int main(int argc, char *argv[])
   char *wildcard= NULL;
   world_st world;
   collection_st *collection;
-  collection_st *next;
   void *world_ptr;
 
   world_stats_st stats;
@@ -178,12 +179,23 @@ int main(int argc, char *argv[])
   }
 
   if (argc > 1)
+  {
     collection_to_run= argv[1];
+  }
+  else if (getenv("TEST_COLLECTION"))
+  {
+    collection_to_run= getenv("TEST_COLLECTION");
+  }
+
+  if (collection_to_run)
+    printf("Only testing %s\n", collection_to_run);
 
   if (argc == 3)
+  {
     wildcard= argv[2];
+  }
 
-  for (next= collection; next->name; next++)
+  for (collection_st *next= collection; next->name; next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     test_st *run;
@@ -212,6 +224,10 @@ skip_pre:
       case TEST_SUCCESS:
         fprintf(stderr, "\n%s\n\n", next->name);
         break;
+      case TEST_FATAL:
+        fprintf(stderr, "\n%s [ failed ]\n\n", next->name);
+        stats.collection_failed++;
+        goto cleanup;
       case TEST_FAILURE:
         fprintf(stderr, "\n%s [ failed ]\n\n", next->name);
         stats.collection_failed++;
@@ -296,6 +312,8 @@ skip_pre:
         fprintf(stderr, "%ld.%03ld ", load_time / 1000, load_time % 1000);
         stats.success++;
         break;
+
+      case TEST_FATAL:
       case TEST_FAILURE:
 #if 0
         push_failed_test(next->name, run->name);
@@ -303,13 +321,16 @@ skip_pre:
         stats.failed++;
         failed= true;
         break;
+
       case TEST_SKIPPED:
         stats.skipped++;
         skipped= true;
         break;
+
       case TEST_MEMORY_ALLOCATION_FAILURE:
         fprintf(stderr, "Exhausted memory, quitting\n");
         abort();
+
       case TEST_MAXIMUM_RETURN:
       default:
         assert(0); // Coding error.
@@ -325,6 +346,12 @@ skip_pre:
 
         if (rc != TEST_SUCCESS)
           break;
+      }
+
+      // If we get a TEST_FATAL we move onto the next collection
+      if (return_code == TEST_FATAL)
+      {
+        break;
       }
     }
 

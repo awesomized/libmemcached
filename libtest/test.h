@@ -56,13 +56,25 @@ typedef struct world_st world_st;
 typedef struct collection_st collection_st;
 typedef struct test_st test_st;
 
-typedef enum {
-  TEST_SUCCESS= 0, /* Backwards compatibility */
+enum test_return_t {
+  TEST_SUCCESS, /* Backwards compatibility */
   TEST_FAILURE,
   TEST_MEMORY_ALLOCATION_FAILURE,
   TEST_SKIPPED,
+  TEST_FATAL, // Collection should not be continued
   TEST_MAXIMUM_RETURN /* Always add new error code before */
-} test_return_t;
+};
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+typedef enum test_return_t test_return_t;
+
+#ifdef	__cplusplus
+}
+#endif
+
 
 typedef void *(*test_callback_create_fn)(test_return_t *error);
 typedef test_return_t (*test_callback_fn)(void *);
@@ -225,6 +237,15 @@ do \
     fprintf(stderr, "\n%s:%d: Expected %s, got %lu\n", __FILE__, __LINE__, #A, (unsigned long)(B)); \
     create_core(); \
     return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_skip(A,B) \
+do \
+{ \
+  if ((A) != (B)) \
+  { \
+    return TEST_SKIPPED; \
   } \
 } while (0)
 

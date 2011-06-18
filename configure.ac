@@ -150,6 +150,7 @@ SOCKET_SEND_FLAGS
 
 AC_CONFIG_FILES([
   Makefile
+  docs/conf.py
   libhashkit/configure.h
   libmemcached/configure.h
   support/libmemcached.pc

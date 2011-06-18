@@ -159,6 +159,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/string.h
 %{_includedir}/libmemcached/types.h
 %{_includedir}/libmemcached/util.h
+%{_includedir}/libmemcached/util/flush.h
 %{_includedir}/libmemcached/util/ping.h
 %{_includedir}/libmemcached/util/pool.h
 %{_includedir}/libmemcached/util/version.h

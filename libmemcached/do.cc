@@ -9,7 +9,7 @@
  *
  */
 
-#include "common.h"
+#include <libmemcached/common.h>
 
 memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const void *command,
                                 size_t command_length, bool with_flush)
@@ -20,8 +20,9 @@ memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const vo
   WATCHPOINT_ASSERT(command_length);
   WATCHPOINT_ASSERT(command);
 
-  if ((rc= memcached_connect(ptr)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= memcached_connect(ptr)))
   {
+    WATCHPOINT_ASSERT(rc == memcached_last_error(ptr->root));
     WATCHPOINT_ERROR(rc);
     return rc;
   }

@@ -36,6 +36,7 @@
  */
 
 #include <libmemcached/common.h>
+#include <cassert>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -60,7 +61,6 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   // For memory allocation we use our error since it is a bit more specific
   if (local_errno == ENOMEM and rc == MEMCACHED_ERRNO)
   {
-    local_errno= ENOMEM;
     rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
@@ -75,6 +75,21 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
     rc= MEMCACHED_ERRNO;
   }
 
+  if (rc == MEMCACHED_ERRNO and local_errno == ENOTCONN)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
+  if (local_errno == EINVAL)
+  {
+    rc= MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  if (local_errno == ECONNREFUSED)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
   memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
   if (not error) // Bad business if this happens
     return;
@@ -84,16 +99,46 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
   error->rc= rc;
   error->local_errno= local_errno;
 
-  if (str)
+  const char *errmsg_ptr;
+  char errmsg[MAX_ERROR_LENGTH];
+  errmsg[0]= 0;
+  errmsg_ptr= errmsg;
+
+  if (local_errno)
   {
-    size_t length= str->size > (size_t)MAX_ERROR_LENGTH ? MAX_ERROR_LENGTH : str->size;
-    error->size= length;
-    memcpy(error->message, str->c_str, error->size);
-    error->message[error->size]= 0;
+#ifdef STRERROR_R_CHAR_P
+    errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
+#else
+    strerror_r(local_errno, errmsg, sizeof(errmsg));
+    errmsg_ptr= errmsg;
+#endif
+  }
+
+
+  if (str and str->size and local_errno)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s), %.*s -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               errmsg_ptr,
+                               memcached_string_printf(*str), at);
+  }
+  else if (local_errno)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s(%s) -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               errmsg_ptr,
+                               at);
+  }
+  else if (str and str->size)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s, %.*s -> %s", 
+                               memcached_strerror(&memc, rc), 
+                               int(str->size), str->c_str, at);
   }
   else
   {
-    error->size= 0;
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s -> %s", 
+                               memcached_strerror(&memc, rc), at);
   }
 
   error->next= memc.error_messages;
@@ -102,18 +147,21 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
+  assert(rc != MEMCACHED_ERRNO);
   memcached_string_t tmp= { str, length };
   return memcached_set_error(memc, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
+  assert(rc != MEMCACHED_ERRNO);
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -124,6 +172,7 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -153,6 +202,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -171,6 +221,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc, const char *at)
 {
+  assert(rc != MEMCACHED_ERRNO);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -330,6 +381,19 @@ const char *memcached_last_error_message(memcached_st *memc)
     return memcached_strerror(memc, memc->error_messages->rc);
 
   return memc->error_messages->message;
+}
+
+
+bool memcached_has_current_error(memcached_st &memc)
+{
+  if (memc.error_messages 
+      and memc.error_messages->query_id == memc.query_id
+      and memcached_failed(memc.error_messages->rc))
+  {
+    return true;
+  }
+
+  return false;
 }
 
 memcached_return_t memcached_last_error(memcached_st *memc)

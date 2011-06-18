@@ -2,7 +2,6 @@
 
 memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
 {
-  uint32_t x;
   memcached_return_t ret= MEMCACHED_SUCCESS;
   memcached_st *root= (memcached_st *)ptr->root;
 
@@ -26,7 +25,7 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
   {
     memcached_set_purging(root, true);
 
-    return MEMCACHED_WRITE_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
   }
   WATCHPOINT_ASSERT(ptr->fd != -1);
 
@@ -48,7 +47,7 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
     result_ptr= memcached_result_create(root, &result);
     WATCHPOINT_ASSERT(result_ptr);
 
-    for (x= 0; x < no_msg; x++)
+    for (uint32_t x= 0; x < no_msg; x++)
     {
       memcached_result_reset(result_ptr);
       memcached_return_t rc= memcached_read_one_response(ptr, buffer,
@@ -62,8 +61,9 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
       if (rc== MEMCACHED_PROTOCOL_ERROR || rc == MEMCACHED_UNKNOWN_READ_FAILURE)
       {
         WATCHPOINT_ERROR(rc);
-        ret = rc;
+        ret= rc;
         memcached_io_reset(ptr);
+        memcached_set_error(*ptr, rc, MEMCACHED_AT);
       }
 
       if (ptr->root->callbacks != NULL)

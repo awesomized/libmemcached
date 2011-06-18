@@ -2,16 +2,13 @@
 Working with result sets
 ========================
 
-.. index:: object: memcached_result_st
-
-Work with memcached_result_st
-
-
 --------
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached_pool.h>
+
+.. c:type:: memcached_result_st
 
 .. c:function:: memcached_result_st * memcached_result_create (memcached_st *ptr, memcached_result_st *result);
 

@@ -49,6 +49,7 @@ config/top.h
 configure
 docs/*.[13]
 docs/*.html
+docs/conf.py
 docs/doctest/
 docs/doctrees/
 docs/html/

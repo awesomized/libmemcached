@@ -325,7 +325,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   }
 
   WATCHPOINT_ASSERT(ptr);
-  WATCHPOINT_ASSERT(ptr->continuum);
+  WATCHPOINT_ASSERT(ptr->ketama.continuum);
   WATCHPOINT_ASSERT(memcached_server_count(ptr) * MEMCACHED_POINTS_PER_SERVER <= MEMCACHED_CONTINUUM_SIZE);
   ptr->ketama.continuum_points_counter= pointer_counter;
   qsort(ptr->ketama.continuum, ptr->ketama.continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
@@ -333,7 +333,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 #ifdef DEBUG
   for (uint32_t pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
   {
-    WATCHPOINT_ASSERT(ptr->continuum[pointer_index].value <= ptr->continuum[pointer_index + 1].value);
+    WATCHPOINT_ASSERT(ptr->ketama.continuum[pointer_index].value <= ptr->ketama.continuum[pointer_index + 1].value);
   }
 #endif
 

@@ -63,12 +63,12 @@ three pointer variables which will give you the state of the returned
 object.  A uint32_t pointer to contain whatever flags you stored with the value,
 a size_t pointer which will be filled with size of of the object, and a
 memcached_return_t pointer to hold any error. The object will be returned
-upon success and NULL will be returned on failure. MEMCACHD_END is returned
-by the \*error value when all objects that have been found are returned.
-The final value upon MEMCACHED_END is null. Values returned by
-memcached_fetch() must be freed by the caller. memcached_fetch() will
-be DEPRECATED in the near future, memcached_fetch_result() should be used
-instead.
+upon success and NULL will be returned on failure. :c:type:`MEMCACHD_END` is
+returned by the \*error value when all objects that have been found are
+returned.  The final value upon :c:type:`MEMCACHED_END` is null. Values
+returned by memcached_fetch() must be freed by the caller. memcached_fetch()
+will be DEPRECATED in the near future, memcached_fetch_result() should be
+used instead.
 
 memcached_fetch_result() is used to return a memcached_result_st(3) structure
 from a memcached server. The result object is forward compatible with changes
@@ -116,6 +116,14 @@ RETURN
 All objects returned must be freed by the calling application.
 memcached_get() and memcached_fetch() will return NULL on error. You must
 look at the value of error to determine what the actual error was.
+
+:c:func:`memcached_fetch_execute()` return :c:type:`MEMCACHED_SUCCESS` if
+all keys were successful. :c:type:`MEMCACHED_NOTFOUND` will be return if no
+keys at all were found.
+
+:c:func:`memcached_fetch()` and :c:func:`memcached_fetch_result()` set error
+to :c:type:`MEMCACHED_END` upon successful conclusion.
+:c:type:`MEMCACHED_NOTFOUND` will be return if no keys at all were found.
 
 MEMCACHED_KEY_TOO_BIG is set to error whenever memcached_fetch() was used
 and the key was set larger then MEMCACHED_MAX_KEY, which was the largest

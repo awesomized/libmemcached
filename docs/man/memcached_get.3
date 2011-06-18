@@ -1,4 +1,4 @@
-.TH "MEMCACHED_GET" "3" "June 02, 2011" "0.47" "libmemcached"
+.TH "MEMCACHED_GET" "3" "June 17, 2011" "0.49" "libmemcached"
 .SH NAME
 memcached_get \- Retrieving data from the server
 .
@@ -99,12 +99,12 @@ three pointer variables which will give you the state of the returned
 object.  A uint32_t pointer to contain whatever flags you stored with the value,
 a size_t pointer which will be filled with size of of the object, and a
 memcached_return_t pointer to hold any error. The object will be returned
-upon success and NULL will be returned on failure. MEMCACHD_END is returned
-by the *error value when all objects that have been found are returned.
-The final value upon MEMCACHED_END is null. Values returned by
-memcached_fetch() must be freed by the caller. memcached_fetch() will
-be DEPRECATED in the near future, memcached_fetch_result() should be used
-instead.
+upon success and NULL will be returned on failure. \fBMEMCACHD_END\fP is
+returned by the *error value when all objects that have been found are
+returned.  The final value upon \fBMEMCACHED_END\fP is null. Values
+returned by memcached_fetch() must be freed by the caller. memcached_fetch()
+will be DEPRECATED in the near future, memcached_fetch_result() should be
+used instead.
 .sp
 memcached_fetch_result() is used to return a memcached_result_st(3) structure
 from a memcached server. The result object is forward compatible with changes
@@ -146,6 +146,14 @@ a \fBmemcached_return_t\fP, the error function parameter will be set to
 All objects returned must be freed by the calling application.
 memcached_get() and memcached_fetch() will return NULL on error. You must
 look at the value of error to determine what the actual error was.
+.sp
+\fBmemcached_fetch_execute()\fP return \fBMEMCACHED_SUCCESS\fP if
+all keys were successful. \fBMEMCACHED_NOTFOUND\fP will be return if no
+keys at all were found.
+.sp
+\fBmemcached_fetch()\fP and \fBmemcached_fetch_result()\fP set error
+to \fBMEMCACHED_END\fP upon successful conclusion.
+\fBMEMCACHED_NOTFOUND\fP will be return if no keys at all were found.
 .sp
 MEMCACHED_KEY_TOO_BIG is set to error whenever memcached_fetch() was used
 and the key was set larger then MEMCACHED_MAX_KEY, which was the largest

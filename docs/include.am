@@ -2,13 +2,10 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-EXTRA_DIST+= \
-	     docs/conf.py
-
 # Makefile for Sphinx documentation
 #
 
-SPHINXOPTS    = ${SPHINX_WARNINGS} -D release=${PANDORA_RELEASE_VERSION}
+SPHINXOPTS    = ${SPHINX_WARNINGS}
 PAPER         =
 SPHINX_BUILDDIR      = ${top_builddir}/docs
 
@@ -239,4 +236,5 @@ doctest:
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(SPHINX_BUILDDIR)/doctest/output.txt."
+
 endif

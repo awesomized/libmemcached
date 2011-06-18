@@ -52,6 +52,7 @@ static inline void _result_init(memcached_result_st *self,
   self->key_length= 0;
   self->item_cas= 0;
   self->root= memc;
+  self->count= 0;
   self->item_key[0]= 0;
 }
 
@@ -69,8 +70,10 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
   {
     ptr= static_cast<memcached_result_st *>(libmemcached_malloc(memc, sizeof(memcached_result_st)));
 
-    if (ptr == NULL)
+    if (not ptr)
+    {
       return NULL;
+    }
 
     ptr->options.is_allocated= true;
   }
@@ -110,6 +113,7 @@ void memcached_result_free(memcached_result_st *ptr)
   }
   else
   {
+    ptr->count= 0;
     ptr->options.is_initialized= false;
   }
 }

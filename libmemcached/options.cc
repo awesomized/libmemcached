@@ -89,9 +89,10 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
   memcached_return_t rc= memcached_parse_configuration(memc_ptr, option_string, length);
-  if (memcached_failed(rc) && error_buffer && error_buffer_size)
+  if (memcached_failed(rc) and error_buffer and error_buffer_size)
   {
     strncpy(error_buffer, memcached_last_error_message(memc_ptr), error_buffer_size);
+    error_buffer[length -1]= 0;
   }
 
   bool has_filename= memcached_behavior_get(memc_ptr, MEMCACHED_BEHAVIOR_LOAD_FROM_FILE);

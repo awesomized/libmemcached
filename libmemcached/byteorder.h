@@ -37,36 +37,16 @@
 
 #pragma once
 
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifndef HAVE_HTONLL
-#define ntohll(a) memcached_ntohll(a)
-#define htonll(a) memcached_htonll(a)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
 uint64_t memcached_ntohll(uint64_t);
+
 LIBMEMCACHED_LOCAL
 uint64_t memcached_htonll(uint64_t);
+
 #ifdef __cplusplus
 }
-#endif
-
-#endif
-
-#ifdef linux
-/* /usr/include/netinet/in.h defines macros from ntohs() to _bswap_nn to
- * optimize the conversion functions, but the prototypes generate warnings
- * from gcc. The conversion methods isn't the bottleneck for my app, so
- * just remove the warnings by undef'ing the optimization ..
- */
-#undef ntohs
-#undef ntohl
-#undef htons
-#undef htonl
 #endif

@@ -62,9 +62,9 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   else
     rc= textual_read_one_response(ptr, buffer, buffer_length, result);
 
-  unlikely(rc == MEMCACHED_UNKNOWN_READ_FAILURE ||
-           rc == MEMCACHED_PROTOCOL_ERROR ||
-           rc == MEMCACHED_CLIENT_ERROR ||
+  unlikely(rc == MEMCACHED_UNKNOWN_READ_FAILURE or
+           rc == MEMCACHED_PROTOCOL_ERROR or
+           rc == MEMCACHED_CLIENT_ERROR or
            rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
     memcached_io_reset(ptr);
 
@@ -211,8 +211,15 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     */
     to_read= (value_length) + 2;
     memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
-    if (memcached_failed(rrc))
+    if (memcached_failed(rrc) and rrc == MEMCACHED_IN_PROGRESS)
+    {
+      memcached_quit_server(ptr, true);
+      return memcached_set_error(*ptr, rrc, MEMCACHED_AT);
+    }
+    else if (memcached_failed(rrc))
+    {
       return rrc;
+    }
   }
 
   if (read_length != (ssize_t)(value_length + 2))
@@ -225,7 +232,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     char *char_ptr;
     char_ptr= memcached_string_value_mutable(&result->value);;
     char_ptr[value_length]= 0;
-    char_ptr[value_length + 1]= 0;
+    char_ptr[value_length +1]= 0;
     memcached_string_set_length(&result->value, value_length);
   }
 
@@ -242,8 +249,10 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
                                                     memcached_result_st *result)
 {
   memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length);
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
+  {
     return rc;
+  }
 
   switch(buffer[0])
   {
@@ -384,7 +393,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   header.response.keylen= ntohs(header.response.keylen);
   header.response.status= ntohs(header.response.status);
   header.response.bodylen= ntohl(header.response.bodylen);
-  header.response.cas= ntohll(header.response.cas);
+  header.response.cas= memcached_ntohll(header.response.cas);
   uint32_t bodylen= header.response.bodylen;
 
   if (header.response.status == PROTOCOL_BINARY_RESPONSE_SUCCESS ||
@@ -450,7 +459,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
 
-        val= ntohll(val);
+        val= memcached_ntohll(val);
         memcpy(buffer, &val, sizeof(val));
       }
       break;
