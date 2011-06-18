@@ -3471,6 +3471,71 @@ static test_return_t mget_read_result(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t mget_read_internal_result(memcached_st *memc)
+{
+
+  test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_mget(memc, global_keys, global_keys_length, global_count));
+  {
+    memcached_result_st *results= NULL;
+    memcached_return_t rc;
+    while ((results= memcached_fetch_result(memc, results, &rc)))
+    {
+      test_true(results);
+      test_compare(MEMCACHED_SUCCESS, rc);
+    }
+    test_compare(MEMCACHED_END, rc);
+
+    memcached_result_free(results);
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t mget_read_partial_result(memcached_st *memc)
+{
+
+  test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_mget(memc, global_keys, global_keys_length, global_count));
+
+  // We will scan for just one key
+  {
+    memcached_result_st results_obj;
+    memcached_result_st *results= memcached_result_create(memc, &results_obj);
+
+    memcached_return_t rc;
+    results= memcached_fetch_result(memc, results, &rc);
+    test_true(results);
+    test_compare(MEMCACHED_SUCCESS, rc);
+
+    memcached_result_free(&results_obj);
+  }
+
+  // We already have a read happening, lets start up another one.
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_mget(memc, global_keys, global_keys_length, global_count));
+  {
+    memcached_result_st results_obj;
+    memcached_result_st *results= memcached_result_create(memc, &results_obj);
+
+    memcached_return_t rc;
+    while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
+    {
+      test_true(results);
+      test_compare(MEMCACHED_SUCCESS, rc);
+    }
+    test_compare(MEMCACHED_END, rc);
+
+    memcached_result_free(&results_obj);
+  }
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t mget_read_function(memcached_st *memc)
 {
   test_skip(true, bool(libmemcached_util_version_check(memc, 1, 4, 4)));
@@ -6265,6 +6330,8 @@ test_st generate_tests[] ={
   {"generate_data", 1, (test_callback_fn)generate_data },
   {"mget_read", 0, (test_callback_fn)mget_read },
   {"mget_read_result", 0, (test_callback_fn)mget_read_result },
+  {"memcached_fetch_result() use internal result", 0, (test_callback_fn)mget_read_internal_result },
+  {"memcached_fetch_result() partial read", 0, (test_callback_fn)mget_read_partial_result },
   {"mget_read_function", 0, (test_callback_fn)mget_read_function },
   {"cleanup", 1, (test_callback_fn)cleanup_pairs },
   {"generate_large_pairs", 1, (test_callback_fn)generate_large_pairs },

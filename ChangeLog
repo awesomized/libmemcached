@@ -1,5 +1,9 @@
+0.50
+
  * Updates to C++ interface 
  * Custom free allocators need to now check for value before calling free.
+
+ * memcached_fetch_result() now uses the internal result when available (about 25 to 50% faster).
 
 0.49 Thu Apr 14 08:43:37 PDT 2011
   * Fix calls to auto methods so that if value is not passed in nothing bad happens.

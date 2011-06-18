@@ -128,6 +128,12 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   if (not error)
     error= &unused;
 
+  if (not ptr)
+  {
+    *error= MEMCACHED_INVALID_ARGUMENTS;
+    return NULL;
+  }
+
   if (ptr->flags.use_udp)
   {
     *error= MEMCACHED_NOT_SUPPORTED;
@@ -136,10 +142,19 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
 
   if (not result)
   {
-    if (not (result= memcached_result_create(ptr, NULL)))
+    // If we have already initialized (ie it is in use) our internal, we
+    // create one.
+    if (memcached_is_initialized(&ptr->result))
     {
-      *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-      return NULL;
+      if (not (result= memcached_result_create(ptr, NULL)))
+      {
+        *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+        return NULL;
+      }
+    }
+    else
+    {
+      result= memcached_result_create(ptr, &ptr->result);
     }
   }
 

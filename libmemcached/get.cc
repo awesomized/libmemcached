@@ -131,7 +131,9 @@ char *memcached_get_by_key(memcached_st *ptr,
                             (memcached_result_flags(&ptr->result)));
 
           if (rc == MEMCACHED_BUFFERED && latch == 0)
+          {
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0);
+          }
         }
         else
         {
