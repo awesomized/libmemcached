@@ -53,6 +53,7 @@ docs/doctest/
 docs/doctrees/
 docs/html/
 docs/linkcheck/
+docs/conf.py
 example/memcached_light
 libhashkit/configure.h
 libmemcached-*.tar.gz
