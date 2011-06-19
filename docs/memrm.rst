@@ -14,21 +14,33 @@ SYNOPSIS
 
 .. program:: memrm
 
-.. option:: --help
-
-
 
 -----------
 DESCRIPTION
 -----------
 
 
-\ **memrm**\  removes items, specified by key, from memcached(1) servers.
+:program:`memrm`  removes items, specified by key, from memcached(1) servers.
 
-You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\ .
 
-For a full list of operations run the tool with the \ **--help**\  option.
+-------
+OPTIONS
+-------
+
+
+You can specify servers via the option:
+
+.. option:: --servers
+
+or via the environment variable:
+
+.. envvar:: `MEMCACHED_SERVERS`
+
+For a full list of operations run the tool with the
+
+.. option:: --help
+
+
 
 
 ----
@@ -55,5 +67,5 @@ SEE ALSO
 --------
 
 
-memcached(1) libmemcached(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`
 

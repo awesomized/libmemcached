@@ -126,6 +126,13 @@ LIBMEMCACHED_API
 memcached_return_t memcached_server_add(memcached_st *ptr,
                                         const char *hostname, in_port_t port);
 
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
+                                                 const char *hostname,
+                                                 size_t hostname_length,
+                                                 in_port_t port,
+                                                 uint32_t weight);
+
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
                                                         const char *hostname,

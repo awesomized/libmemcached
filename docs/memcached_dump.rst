@@ -28,9 +28,9 @@ DESCRIPTION
 -----------
 
 
-memcached_dump() is used to get a list of keys found in memcached(1) servers.
-Because memcached(1) does not guarentee to dump all keys you can not assume
-you have fetched all keys from the server. The function takes an array
+:c:func:`memcached_dump()` is used to get a list of keys found in memcached(1) 
+servers. Because memcached(1) does not guarentee to dump all keys you can not 
+assume you have fetched all keys from the server. The function takes an array
 of callbacks that it will use to execute on keys as they are found.
 
 Currently the binary protocol is not testsed.
@@ -41,9 +41,10 @@ RETURN
 ------
 
 
-A value of type \ ``memcached_return_t``\  is returned
-On success that value will be \ ``MEMCACHED_SUCCESS``\ .
-Use memcached_strerror() to translate this value to a printable string.
+A value of type :c:type:`memcached_return_t` is returned
+On success that value will be :c:type:`MEMCACHED_SUCCESS`.
+Use :c:func:`memcached_strerror()` to translate this value to a printable 
+string.
 
 
 ----

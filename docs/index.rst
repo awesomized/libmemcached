@@ -53,6 +53,7 @@ Advanced Topics
    memcached_generate_hash_value
    memcached_memory_allocators
    memcached_quit
+   libmemcached/memcached_return_t
    memcached_sasl
    memcached_server_st
    memcached_servers

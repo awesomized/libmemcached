@@ -22,9 +22,9 @@ DESCRIPTION
 -----------
 
 
-memcached_delete() is used to delete a particular key. 
-memcached_delete_by_key() works the same, but it takes a master key to
-find the given value.
+:c:func:`memcached_delete()` is used to delete a particular key. 
+:c:func:`memcached_delete_by_key()` works the same, but it takes a master key 
+to find the given value.
 
 Expiration works by placing the item into a delete queue, which means that
 it won't be possible to retrieve it by the "get" command. The "add" and 
@@ -40,9 +40,10 @@ RETURN
 ------
 
 
-A value of type \ ``memcached_return_t``\  is returned
-On success that value will be \ ``MEMCACHED_SUCCESS``\ .
-Use memcached_strerror() to translate this value to a printable string.
+A value of type :c:type:`memcached_return_t` is returned
+On success that value will be :c:type:`MEMCACHED_SUCCESS`.
+Use :c:func:`memcached_strerror()` to translate this value to a printable 
+string.
 
 If you are using the non-blocking mode of the library, success only
 means that the message was queued for delivery.

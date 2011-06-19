@@ -301,6 +301,7 @@ man_pages = [
   ('memcached_result_st', 'memcached_result_length', u'Working with result sets', [u'Brian Aker'], 3),
   ('memcached_result_st', 'memcached_result_st', u'Working with result sets', [u'Brian Aker'], 3),
   ('memcached_result_st', 'memcached_result_value', u'Working with result sets', [u'Brian Aker'], 3),
+  ('libmemcached/memcached_return_t', 'memcached_return_t', u'Return type values ', [u'Brian Aker'], 3),
   ('memcached_sasl', 'memcached_destroy_sasl_auth_data', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_sasl', 'memcached_get_sasl_callbacks', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_sasl', 'memcached_sasl', u'libmemcached Documentation', [u'Brian Aker'], 3),

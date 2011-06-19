@@ -39,18 +39,18 @@ DESCRIPTION
 libmemcached(3) allows you to specify your own memory allocators, optimized
 for your application. This enables libmemcached to be used inside of applications that have their own malloc implementation.
 
-memcached_set_memory_allocators() is used to set the memory allocators used
-by the memcached instance specified by ptr. Please note that you cannot
-override only one of the memory allocators, you have to specify a complete
-new set if you want to override one of them. All of the memory allocation
-functions should behave as specified in the C99 standard. Specify NULL as
-all functions to reset them to the default values.
+:c:func:`memcached_set_memory_allocators()` is used to set the memory 
+allocators used by the memcached instance specified by ptr. Please note that 
+you cannot override only one of the memory allocators, you have to specify a 
+complete new set if you want to override one of them. All of the memory 
+allocation functions should behave as specified in the C99 standard. Specify 
+NULL as all functions to reset them to the default values.
 
-memcached_get_memory_allocators() is used to get the currently used memory
-allocators by a mamcached handle.
+:c:func:`memcached_get_memory_allocators()` is used to get the currently used 
+memory allocators by a mamcached handle.
 
-memcached_get_memory_allocators_context() returns the void \* that was
-passed in during the call to memcached_set_memory_allocators().
+:c:func:`memcached_get_memory_allocators_context()` returns the void \* that 
+was passed in during the call to :c:func:`memcached_set_memory_allocators()`.
 
 The first argument to the memory allocator functions is a pointer to a
 memcached structure, the is passed as const and you will need to clone
@@ -72,8 +72,9 @@ RETURN
 ------
 
 
-memcached_set_memory_allocators() return MEMCACHED_SUCCESS upon success,
-and MEMCACHED_FAILURE if you don't pass a complete set of function pointers.
+:c:func:`memcached_set_memory_allocators()` return :c:type:`MEMCACHED_SUCCESS` 
+upon success, and :c:type:`MEMCACHED_FAILURE` if you don't pass a complete set 
+of function pointers.
 
 
 ----

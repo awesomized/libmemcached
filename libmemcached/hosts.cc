@@ -186,7 +186,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     memcached_continuum_item_st *new_ptr;
 
     new_ptr= static_cast<memcached_continuum_item_st*>(libmemcached_realloc(ptr, ptr->ketama.continuum,
-									    sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
+                                                                            sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -259,8 +259,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
             uint32_t value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
-             ptr->ketama.continuum[continuum_index].index= host_index;
-             ptr->ketama.continuum[continuum_index++].value= value;
+            ptr->ketama.continuum[continuum_index].index= host_index;
+            ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
@@ -307,9 +307,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
-             uint32_t value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
-             ptr->ketama.continuum[continuum_index].index= host_index;
-             ptr->ketama.continuum[continuum_index++].value= value;
+            uint32_t value= ketama_server_hash(sort_host, (size_t)sort_host_length, x);
+            ptr->ketama.continuum[continuum_index].index= host_index;
+            ptr->ketama.continuum[continuum_index++].value= value;
           }
         }
         else
@@ -493,4 +493,21 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   memcached_servers_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
+}
+
+memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
+                                               const char *hostname,
+                                               size_t hostname_length,
+                                               in_port_t port,
+                                               uint32_t weight)
+{
+  char buffer[NI_MAXHOST];
+
+  memcpy(buffer, hostname, hostname_length);
+  buffer[hostname_length]= 0;
+
+  return server_add(ptr, buffer,
+                    port,
+                    weight,
+                    MEMCACHED_CONNECTION_TCP);
 }
