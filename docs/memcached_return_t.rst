@@ -29,6 +29,8 @@ SYNOPSIS
 
 .. c:type:: MEMCACHED_SUCCESS,
 
+Success
+
 .. c:type:: MEMCACHED_FAILURE,
 
 .. c:type:: MEMCACHED_HOST_LOOKUP_FAILURE, // getaddrinfo() only
@@ -90,6 +92,8 @@ SYNOPSIS
 .. c:type:: MEMCACHED_FETCH_NOTFINISHED,
 
 .. c:type:: MEMCACHED_TIMEOUT,
+
+Connection to server timed out.
 
 .. c:type:: MEMCACHED_BUFFERED,
 

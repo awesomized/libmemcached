@@ -39,11 +39,10 @@ DESCRIPTION
 libmemcached(3) allows you to store a pointer to a user specific data inside
 the memcached_st structure.
 
-memcached_set_user_data() is used to set the user specific data in the
-memcached_st structure.
+:c:func:`memcached_set_user_data()` is used to set the user specific data in the
+:c:type:`memcached_st` structure.
 
-memcached_get_user_data() is used to retrieve the user specific data in
-the memcached_st structure.
+:c:func:`memcached_get_user_data()` is used to retrieve the user specific data in the :c:type:`memcached_st` structure.
 
 
 ------
@@ -51,11 +50,9 @@ RETURN
 ------
 
 
-memcached_set_user_data() returns the previous value of the user specific 
-data.
+:c:func:`memcached_set_user_data()` returns the previous value of the user specific data.
 
-memcached_get_user_data() returns the current value uf the user specific
-data.
+:c:func:`memcached_get_user_data()` returns the current value uf the user specific data.
 
 
 ----
@@ -72,5 +69,5 @@ SEE ALSO
 --------
 
 
-memcached(1) libmemcached(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`
 

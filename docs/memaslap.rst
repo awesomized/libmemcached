@@ -18,10 +18,10 @@ DESCRIPTION
 -----------
 
 
-\ **memaslap**\  is a load generation and benchmark tool for memcached(1)
-servers. It generates configurable workload such as threads, concurrencies, connections,
-run time, overwrite, miss rate, key size, value size, get/set proportion,
-expected throughput, and so on. Furthermore, it also testss data
+.. c:func:: memaslap
+
+is a load generation and benchmark tool for memcached(1)
+servers. It generates configurable workload such as threads, concurrencies, connections, run time, overwrite, miss rate, key size, value size, get/set proportion, expected throughput, and so on. Furthermore, it also testss data
 verification, expire-time verification, UDP, binary protocol, facebook test,
 replication test, multi-get and reconnection, etc.
 
@@ -31,8 +31,8 @@ the threads don't communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.
 
-You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\ .
+You can specify servers via the :option:`--servers` option or via the
+environment variable :envvar:`MEMCACHED_SERVERS`.
 
 
 --------

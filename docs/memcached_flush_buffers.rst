@@ -23,9 +23,8 @@ DESCRIPTION
 -----------
 
 
-memcached_flush_buffers() is used in conjunction with 
-MEMCACHED_BEHAVIOR_BUFFER_REQUESTS (see memcached_behavior(3)) to flush
-all buffers by sending the buffered commands to the server for processing.
+:c:func:`memcached_flush_buffers()` is used in conjunction with 
+:c:type:`MEMCACHED_BEHAVIOR_BUFFER_REQUESTS` (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.
 
 
 ------
@@ -33,9 +32,10 @@ RETURN
 ------
 
 
-A value of type \ ``memcached_return_t``\  is returned
-On success that value will be \ ``MEMCACHED_SUCCESS``\ .
-Use memcached_strerror() to translate this value to a printable string.
+A value of type :c:type:`memcached_return_t` is returned
+On success that value will be :c:type:`MEMCACHED_SUCCESS`.
+Use :c:func:`memcached_strerror()` to translate this value to a printable 
+string.
 
 
 ----

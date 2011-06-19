@@ -14,20 +14,31 @@ SYNOPSIS
 
 .. program:: memflush
 
-.. option:: --help
-
 -----------
 DESCRIPTION
 -----------
 
 
-\ **memflush**\  resets the contents of memcached(1) servers.
+:program:`memflush`  resets the contents of memcached(1) servers.
 This means that all data in the specified servers will be deleted.
 
-You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\ .
 
-For a full list of operations run the tool with the \ **--help**\  option.
+-------
+OPTIONS
+-------
+
+
+You can specify servers via the option:
+
+.. option:: --servers
+
+or via the environment variable:
+
+.. envvar:: `MEMCACHED_SERVERS`
+
+For a full list of operations run the tool with option:
+
+.. option:: --help
 
 
 ----
@@ -53,4 +64,4 @@ Mark Atwood <mark@fallenpegasus.com>
 SEE ALSO
 --------
 
-memcached(1) libmemcached(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`

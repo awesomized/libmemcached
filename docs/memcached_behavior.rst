@@ -26,19 +26,17 @@ Compile and link with -lmemcached
 DESCRIPTION
 -----------
 
-:manpage:`libmemcached(3)` behavior can be modified by use memcached_behavior_set().
-Default behavior is the library strives to be quick and accurate. Some
-behavior, while being faster, can also result in not entirely accurate
-behavior (for instance, memcached_set() will always respond with
-\ ``MEMCACHED_SUCCESS``\ ).
+:manpage:`libmemcached(3)` behavior can be modified by using :c:func:`memcached_behavior_set()`. Default behavior is the library strives to be quick and 
+accurate. Some behavior, while being faster, can also result in not entirely 
+accurate behavior (for instance, :c:func:`memcached_set()` will always respond 
+with :c:type:`MEMCACHED_SUCCESS`).
 
-memcached_behavior_get() takes a behavior flag and returns whether or not
-that behavior is currently enabled in the client.
+:c:func:`memcached_behavior_get()` takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
 
-memcached_behavior_set() changes the value of a particular option of the
-client. It takes both a flag (listed below) and a value. For simple on or
-off options you just need to pass in a value of 1. Calls to
-memcached_behavior_set() will flush and reset all connections.
+:c:func:`memcached_behavior_set()` changes the value of a particular option 
+of the client. It takes both a flag (listed below) and a value. For simple 
+on or off options you just need to pass in a value of 1. Calls to
+:c:func:`memcached_behavior_set()` will flush and reset all connections.
 
 
 .. c:var:: MEMCACHED_BEHAVIOR_USE_UDP
@@ -46,27 +44,24 @@ memcached_behavior_set() will flush and reset all connections.
 Causes :manpage:`libmemcached(3)` to use the UDP transport when communicating
 with a memcached server. Not all I/O operations are testsed
 when this behavior is enababled. The following operations will return
-\ ``MEMCACHED_NOT_SUPPORTED``\  when executed with the MEMCACHED_BEHAVIOR_USE_UDP
-enabled: memcached_version(), memcached_stat(), memcached_get(),
-memcached_get_by_key(), memcached_mget(), memcached_mget_by_key(),
-memcached_fetch(), memcached_fetch_result(), memcached_value_fetch().
+:c:type:`MEMCACHED_NOT_SUPPORTED` when executed with the :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` enabled: :c:func:`memcached_version()`, :c:func:`memcached_stat()`, :c:func:`memcached_get()`, :c:func:`memcached_get_by_key()`, :c:func:`memcached_mget()`, :c:func:`memcached_mget_by_key()`, :c:func:`memcached_fetch()`, :c:func:`memcached_fetch_result()`, :c:func:`memcached_value_fetch()`.
 
 All other operations are testsed but are executed in a 'fire-and-forget'
 mode, in which once the client has executed the operation, no attempt
 will be made to ensure the operation has been received and acted on by the
 server.
 
-:manpage:`libmemcached(3)` does not allow TCP and UDP servers to be shared within
-the same libmemached(3) client 'instance'. An attempt to add a TCP server
-when this behavior is enabled will result in a \ ``MEMCACHED_INVALID_HOST_PROTOCOL``\ ,
-as will attempting to add a UDP server when this behavior has not been enabled.
+:manpage:`libmemcached(3)` does not allow TCP and UDP servers to be shared 
+within the same libmemached(3) client 'instance'. An attempt to add a TCP 
+server when this behavior is enabled will result in a :c:type:`MEMCACHED_INVALID_HOST_PROTOCOL`, as will attempting to add a UDP server when this behavior has 
+not been enabled.
 
 
 
 .. c:var:: MEMCACHED_BEHAVIOR_NO_BLOCK
 
-Causes :manpage:`libmemcached(3)` to use asychronous IO. This is the fastest transport
-available for storage functions.
+Causes :manpage:`libmemcached(3)` to use asychronous IO. This is the fastest 
+transport available for storage functions.
 
 
 .. c:var:: MEMCACHED_BEHAVIOR_SND_TIMEOUT
@@ -91,11 +86,12 @@ environments).
 
 .. c:var:: MEMCACHED_BEHAVIOR_HASH
 
-Makes the default hashing algorithm for keys use MD5. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR.  
+Makes the default hashing algorithm for keys use MD5. The value can be set to either :c:type:`MEMCACHED_HASH_DEFAULT`, :c:type:`MEMCACHED_HASH_MD5`, :c:type:`MEMCACHED_HASH_CRC`, :c:type:`MEMCACHED_HASH_FNV1_64`, :c:type:`MEMCACHED_HASH_FNV1A_64`, :c:type:`MEMCACHED_HASH_FNV1_32`, :c:type:`MEMCACHED_HASH_FNV1A_32`, :c:type:`MEMCACHED_HASH_JENKINS`, :c:type:`MEMCACHED_HASH_HSIEH`, and :c:type:`MEMCACHED_HASH_MURMUR`.  
 
-Each hash has it's advantages and it's weaknesses. If you don't know or don't care, just go with the default.
+Each hash has it's advantages and it's weaknesses. If you don't know or don't 
+care, just go with the default.
 
-Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
+Support for :c:type:`MEMCACHED_HASH_HSIEH` is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
 
 
 
