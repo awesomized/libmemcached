@@ -2271,7 +2271,7 @@ static test_return_t user_supplied_bug3(memcached_st *memc)
     keys[x]= strdup(key);
     test_true(keys[x]);
     key_lengths[x]= key_length;
-    test_compare(key_length, strlen(keys[x]));
+    test_compare(size_t(key_length), strlen(keys[x]));
   }
 
   test_compare(MEMCACHED_SUCCESS,
