@@ -1880,7 +1880,7 @@ static test_return_t get_stats(memcached_st *memc)
  {
    char **stat_list= memcached_stat_get_keys(memc, memc_stat+x, &rc);
    test_compare(MEMCACHED_SUCCESS, rc);
-   for (char **ptr= stat_list; *ptr; ptr++);
+   for (char **ptr= stat_list; *ptr; ptr++) {};
 
    free(stat_list);
  }
