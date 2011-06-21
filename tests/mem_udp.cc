@@ -70,8 +70,8 @@ static void increment_request_id(uint16_t *id)
 
 static uint16_t *get_udp_request_ids(memcached_st *memc)
 {
-  uint16_t *ids= malloc(sizeof(uint16_t) * memcached_server_count(memc));
-  assert(ids != NULL);
+  uint16_t *ids= (uint16_t*)malloc(sizeof(uint16_t) * memcached_server_count(memc));
+  assert(ids);
 
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
@@ -425,23 +425,23 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
   test_st current_op;
   test_st mixed_io_ops [] ={
     {"udp_set_test", 0,
-      (test_callback_fn)udp_set_test},
+      (test_callback_fn*)udp_set_test},
     {"udp_set_too_big_test", 0,
-      (test_callback_fn)udp_set_too_big_test},
+      (test_callback_fn*)udp_set_too_big_test},
     {"udp_delete_test", 0,
-      (test_callback_fn)udp_delete_test},
+      (test_callback_fn*)udp_delete_test},
     {"udp_verbosity_test", 0,
-      (test_callback_fn)udp_verbosity_test},
+      (test_callback_fn*)udp_verbosity_test},
     {"udp_quit_test", 0,
-      (test_callback_fn)udp_quit_test},
+      (test_callback_fn*)udp_quit_test},
     {"udp_flush_test", 0,
-      (test_callback_fn)udp_flush_test},
+      (test_callback_fn*)udp_flush_test},
     {"udp_incr_test", 0,
-      (test_callback_fn)udp_incr_test},
+      (test_callback_fn*)udp_incr_test},
     {"udp_decr_test", 0,
-      (test_callback_fn)udp_decr_test},
+      (test_callback_fn*)udp_decr_test},
     {"udp_version_test", 0,
-      (test_callback_fn)udp_version_test}
+      (test_callback_fn*)udp_version_test}
   };
 
   for (size_t x= 0; x < 500; x++)
@@ -453,34 +453,34 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
 }
 
 test_st udp_setup_server_tests[] ={
-  {"set_udp_behavior_test", 0, (test_callback_fn)set_udp_behavior_test},
-  {"add_tcp_server_udp_client_test", 0, (test_callback_fn)add_tcp_server_udp_client_test},
-  {"add_udp_server_tcp_client_test", 0, (test_callback_fn)add_udp_server_tcp_client_test},
+  {"set_udp_behavior_test", 0, (test_callback_fn*)set_udp_behavior_test},
+  {"add_tcp_server_udp_client_test", 0, (test_callback_fn*)add_tcp_server_udp_client_test},
+  {"add_udp_server_tcp_client_test", 0, (test_callback_fn*)add_udp_server_tcp_client_test},
   {0, 0, 0}
 };
 
 test_st upd_io_tests[] ={
-  {"udp_set_test", 0, (test_callback_fn)udp_set_test},
-  {"udp_buffered_set_test", 0, (test_callback_fn)udp_buffered_set_test},
-  {"udp_set_too_big_test", 0, (test_callback_fn)udp_set_too_big_test},
-  {"udp_delete_test", 0, (test_callback_fn)udp_delete_test},
-  {"udp_buffered_delete_test", 0, (test_callback_fn)udp_buffered_delete_test},
-  {"udp_verbosity_test", 0, (test_callback_fn)udp_verbosity_test},
-  {"udp_quit_test", 0, (test_callback_fn)udp_quit_test},
-  {"udp_flush_test", 0, (test_callback_fn)udp_flush_test},
-  {"udp_incr_test", 0, (test_callback_fn)udp_incr_test},
-  {"udp_decr_test", 0, (test_callback_fn)udp_decr_test},
-  {"udp_stat_test", 0, (test_callback_fn)udp_stat_test},
-  {"udp_version_test", 0, (test_callback_fn)udp_version_test},
-  {"udp_get_test", 0, (test_callback_fn)udp_get_test},
-  {"udp_mixed_io_test", 0, (test_callback_fn)udp_mixed_io_test},
+  {"udp_set_test", 0, (test_callback_fn*)udp_set_test},
+  {"udp_buffered_set_test", 0, (test_callback_fn*)udp_buffered_set_test},
+  {"udp_set_too_big_test", 0, (test_callback_fn*)udp_set_too_big_test},
+  {"udp_delete_test", 0, (test_callback_fn*)udp_delete_test},
+  {"udp_buffered_delete_test", 0, (test_callback_fn*)udp_buffered_delete_test},
+  {"udp_verbosity_test", 0, (test_callback_fn*)udp_verbosity_test},
+  {"udp_quit_test", 0, (test_callback_fn*)udp_quit_test},
+  {"udp_flush_test", 0, (test_callback_fn*)udp_flush_test},
+  {"udp_incr_test", 0, (test_callback_fn*)udp_incr_test},
+  {"udp_decr_test", 0, (test_callback_fn*)udp_decr_test},
+  {"udp_stat_test", 0, (test_callback_fn*)udp_stat_test},
+  {"udp_version_test", 0, (test_callback_fn*)udp_version_test},
+  {"udp_get_test", 0, (test_callback_fn*)udp_get_test},
+  {"udp_mixed_io_test", 0, (test_callback_fn*)udp_mixed_io_test},
   {0, 0, 0}
 };
 
 collection_st collection[] ={
-  {"udp_setup", (test_callback_fn)init_udp, 0, udp_setup_server_tests},
-  {"udp_io", (test_callback_fn)init_udp, 0, upd_io_tests},
-  {"udp_binary_io", (test_callback_fn)binary_init_udp, 0, upd_io_tests},
+  {"udp_setup", (test_callback_fn*)init_udp, 0, udp_setup_server_tests},
+  {"udp_io", (test_callback_fn*)init_udp, 0, upd_io_tests},
+  {"udp_binary_io", (test_callback_fn*)binary_init_udp, 0, upd_io_tests},
   {0, 0, 0, 0}
 };
 
@@ -492,17 +492,17 @@ void get_world(world_st *world)
 {
   world->collections= collection;
 
-  world->create= (test_callback_create_fn)world_create;
-  world->destroy= (test_callback_fn)world_destroy;
+  world->create= (test_callback_create_fn*)world_create;
+  world->destroy= (test_callback_fn*)world_destroy;
 
-  world->test.startup= (test_callback_fn)world_test_startup;
-  world->test.flush= (test_callback_fn)world_flush;
-  world->test.pre_run= (test_callback_fn)world_pre_run;
-  world->test.post_run= (test_callback_fn)world_post_run;
-  world->test.on_error= (test_callback_error_fn)world_on_error;
+  world->run_startup= (test_callback_fn*)world_test_startup;
+  world->flush= (test_callback_fn*)world_flush;
+  world->pre_run= (test_callback_fn*)world_pre_run;
+  world->post_run= (test_callback_fn*)world_post_run;
+  world->on_error= (test_callback_error_fn*)world_on_error;
 
-  world->collection.startup= (test_callback_fn)world_container_startup;
-  world->collection.shutdown= (test_callback_fn)world_container_shutdown;
+  world->collection_startup= (test_callback_fn*)world_container_startup;
+  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
   world->runner= &defualt_libmemcached_runner;
 }

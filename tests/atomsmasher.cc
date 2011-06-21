@@ -14,8 +14,8 @@
 */
 #include "config.h"
 
-#include "libmemcached/memcached.h"
-#include "libmemcached/watchpoint.h"
+#include <libmemcached/memcached.h>
+#include <libmemcached/watchpoint.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +48,7 @@ static test_return_t cleanup_pairs(memcached_st *memc)
   (void)memc;
   pairs_free(global_pairs);
 
-  return EXIT_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 static test_return_t generate_pairs(memcached_st *memc)
@@ -63,7 +63,7 @@ static test_return_t generate_pairs(memcached_st *memc)
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
-  return EXIT_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 static test_return_t drizzle(memcached_st *memc)
@@ -160,7 +160,7 @@ static test_return_t add_test(memcached_st *memc)
     test_true(rc == MEMCACHED_NOTSTORED);
   }
 
-  return EXIT_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 /*
@@ -173,14 +173,14 @@ static test_return_t many_adds(memcached_st *memc)
   {
     add_test(memc);
   }
-  return EXIT_SUCCESS;
+  return TEST_SUCCESS;
 }
 
 test_st smash_tests[] ={
-  {"generate_pairs", 1, (test_callback_fn)generate_pairs },
-  {"drizzle", 1, (test_callback_fn)drizzle },
-  {"cleanup", 1, (test_callback_fn)cleanup_pairs },
-  {"many_adds", 1, (test_callback_fn)many_adds },
+  {"generate_pairs", 1, (test_callback_fn*)generate_pairs },
+  {"drizzle", 1, (test_callback_fn*)drizzle },
+  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
+  {"many_adds", 1, (test_callback_fn*)many_adds },
   {0, 0, 0}
 };
 
@@ -258,16 +258,16 @@ static test_return_t post_allocate(memcached_st *memc)
 
 
 test_st micro_tests[] ={
-  {"memcached_create", 1, (test_callback_fn)memcached_create_benchmark },
-  {"memcached_clone", 1, (test_callback_fn)memcached_clone_benchmark },
+  {"memcached_create", 1, (test_callback_fn*)memcached_create_benchmark },
+  {"memcached_clone", 1, (test_callback_fn*)memcached_clone_benchmark },
   {0, 0, 0}
 };
 
 
 collection_st collection[] ={
   {"smash", 0, 0, smash_tests},
-  {"smash_nonblock", (test_callback_fn)pre_nonblock, 0, smash_tests},
-  {"micro-benchmark", (test_callback_fn)pre_allocate, (test_callback_fn)post_allocate, micro_tests},
+  {"smash_nonblock", (test_callback_fn*)pre_nonblock, 0, smash_tests},
+  {"micro-benchmark", (test_callback_fn*)pre_allocate, (test_callback_fn*)post_allocate, micro_tests},
   {0, 0, 0, 0}
 };
 
@@ -280,17 +280,17 @@ void get_world(world_st *world)
 {
   world->collections= collection;
 
-  world->create= (test_callback_create_fn)world_create;
-  world->destroy= (test_callback_fn)world_destroy;
+  world->create= (test_callback_create_fn*)world_create;
+  world->destroy= (test_callback_fn*)world_destroy;
 
-  world->test.startup= (test_callback_fn)world_test_startup;
-  world->test.flush= (test_callback_fn)world_flush;
-  world->test.pre_run= (test_callback_fn)world_pre_run;
-  world->test.post_run= (test_callback_fn)world_post_run;
-  world->test.on_error= (test_callback_error_fn)world_on_error;
+  world->run_startup= (test_callback_fn*)world_test_startup;
+  world->flush= (test_callback_fn*)world_flush;
+  world->pre_run= (test_callback_fn*)world_pre_run;
+  world->post_run= (test_callback_fn*)world_post_run;
+  world->on_error= (test_callback_error_fn*)world_on_error;
 
-  world->collection.startup= (test_callback_fn)world_container_startup;
-  world->collection.shutdown= (test_callback_fn)world_container_shutdown;
+  world->collection_startup= (test_callback_fn*)world_container_startup;
+  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
   world->runner= &defualt_libmemcached_runner;
 }

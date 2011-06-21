@@ -84,23 +84,23 @@ tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testplus
 
-tests_atomsmasher_SOURCES= tests/atomsmasher.c
+tests_atomsmasher_SOURCES= tests/atomsmasher.cc
 tests_atomsmasher_SOURCES+= clients/generator.cc clients/execute.cc
 tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
 
 tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testudp_SOURCES= tests/mem_udp.c
+tests_testudp_SOURCES= tests/mem_udp.cc
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
 
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 
-tests_startservers_SOURCES= tests/start.c
+tests_startservers_SOURCES= tests/start.cc
 tests_startservers_DEPENDENCIES= $(TESTS_LDADDS)
 tests_startservers_LDADD= $(tests_startservers_DEPENDENCIES) $(LIBSASL)
 
-tests_testhashkit_SOURCES = tests/hashkit_functions.c
+tests_testhashkit_SOURCES = tests/hashkit_functions.cc
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES)
 

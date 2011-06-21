@@ -57,8 +57,6 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   fds.fd= ptr->fd;
   fds.events= POLLIN;
 
-  int error;
-
   if (read_or_write == MEM_WRITE) /* write */
   {
     fds.events= POLLOUT;
@@ -86,18 +84,16 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     }
   }
 
+  if (ptr->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
+  {
+    return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+  }
+
   size_t loop_max= 5;
   while (--loop_max) // While loop is for ERESTART or EINTR
   {
-    if (ptr->root->poll_timeout) // Mimic 0 causes timeout behavior (not all platforms do this)
-    {
-      error= poll(&fds, 1, ptr->root->poll_timeout);
-    }
-    else
-    {
-      error= 0;
-    }
 
+    int error= poll(&fds, 1, ptr->root->poll_timeout);
     switch (error)
     {
     case 1: // Success!
@@ -145,8 +141,6 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     }
   }
 
-  /* Imposssible for anything other then -1 */
-  WATCHPOINT_ASSERT(error == -1);
   ptr->cached_errno= get_socket_errno();
   memcached_quit_server(ptr, true);
 
@@ -619,7 +613,8 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     return NULL;
   }
 
-  switch (poll(fds, host_index, memc->poll_timeout))
+  int error= poll(fds, host_index, memc->poll_timeout);
+  switch (error)
   {
   case -1:
     memcached_set_errno(*memc, get_socket_errno(), MEMCACHED_AT);

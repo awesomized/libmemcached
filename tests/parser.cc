@@ -334,7 +334,7 @@ test_return_t memcached_create_with_options_with_filename(memcached_st*)
     return TEST_SKIPPED;
 
   memcached_st *memc_ptr;
-  memc_ptr= memcached(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""));
+  memc_ptr= memcached(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""));
   test_true_got(memc_ptr, "memcached() failed");
   test_strcmp(SUPPORT_EXAMPLE_CNF, memcached_array_string(memc_ptr->configure.filename));
   memcached_free(memc_ptr);
@@ -350,13 +350,13 @@ test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*)
   memcached_return_t rc;
   char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_SUCCESS, (rc == MEMCACHED_ERRNO) ? strerror(errno) : memcached_strerror(NULL, rc));
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer));
   test_false_with(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_ERRNO, memcached_strerror(NULL, rc));
 
   return TEST_SUCCESS;
@@ -367,10 +367,10 @@ test_return_t libmemcached_check_configuration_test(memcached_st*)
   memcached_return_t rc;
   char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--server=localhost"), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--dude=localhost"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--dude=localhost"), buffer, sizeof(buffer));
   test_false_with(rc == MEMCACHED_SUCCESS, buffer);
   test_true(rc == MEMCACHED_PARSE_ERROR);
 
@@ -380,11 +380,11 @@ test_return_t libmemcached_check_configuration_test(memcached_st*)
 test_return_t memcached_create_with_options_test(memcached_st*)
 {
   memcached_st *memc_ptr;
-  memc_ptr= memcached(STRING_WITH_LEN("--server=localhost"));
+  memc_ptr= memcached(test_literal_param("--server=localhost"));
   test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
   memcached_free(memc_ptr);
 
-  memc_ptr= memcached(STRING_WITH_LEN("--dude=localhost"));
+  memc_ptr= memcached(test_literal_param("--dude=localhost"));
   test_false_with(memc_ptr, memcached_last_error_message(memc_ptr));
 
   return TEST_SUCCESS;
@@ -397,7 +397,7 @@ test_return_t test_include_keyword(memcached_st*)
 
   char buffer[BUFSIZ];
   memcached_return_t rc;
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
   return TEST_SUCCESS;
@@ -407,7 +407,7 @@ test_return_t test_end_keyword(memcached_st*)
 {
   char buffer[BUFSIZ];
   memcached_return_t rc;
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost END bad keywords"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--server=localhost END bad keywords"), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
   return TEST_SUCCESS;
@@ -417,7 +417,7 @@ test_return_t test_reset_keyword(memcached_st*)
 {
   char buffer[BUFSIZ];
   memcached_return_t rc;
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer));
   test_true_got(rc == MEMCACHED_SUCCESS, buffer);
 
   return TEST_SUCCESS;
@@ -427,7 +427,7 @@ test_return_t test_error_keyword(memcached_st*)
 {
   char buffer[BUFSIZ];
   memcached_return_t rc;
-  rc= libmemcached_check_configuration(STRING_WITH_LEN("--server=localhost ERROR --server=bad.com"), buffer, sizeof(buffer));
+  rc= libmemcached_check_configuration(test_literal_param("--server=localhost ERROR --server=bad.com"), buffer, sizeof(buffer));
   test_true_got(rc != MEMCACHED_SUCCESS, buffer);
 
   return TEST_SUCCESS;

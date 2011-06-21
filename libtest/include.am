@@ -26,7 +26,7 @@ libtest_libserver_la_SOURCES= libtest/server.c
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES=\
-			   libtest/test.c
+			   libtest/test.cc
 libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
 libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
 

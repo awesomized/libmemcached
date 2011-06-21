@@ -40,6 +40,8 @@
 #include <stdint.h>
 
 #include <libmemcached/common.h>
+#include <libmemcached/options.hpp>
+
 #include <libmemcached/options/context.h>
 #include <libmemcached/options/symbol.h>
 #include <libmemcached/options/scanner.h>
@@ -185,7 +187,7 @@ statement:
           }
         | INCLUDE ' ' string
           {
-            if ((context->rc= memcached_parse_configure_file(context->memc, $3.c_str, $3.size)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_parse_configure_file(*context->memc, $3.c_str, $3.size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);
             }

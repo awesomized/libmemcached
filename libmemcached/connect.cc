@@ -49,18 +49,14 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 
   size_t loop_max= 5;
 
+  if (ptr->root->poll_timeout == 0)
+  {
+    return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+  }
+
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
-    int error;
-    if (ptr->root->poll_timeout)
-    {
-      error= poll(fds, 1, ptr->root->connect_timeout);
-    }
-    else
-    {
-      error= 0;
-    }
-
+    int error= poll(fds, 1, ptr->root->connect_timeout);
     switch (error)
     {
     case 1:

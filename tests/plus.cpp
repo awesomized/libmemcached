@@ -199,15 +199,15 @@ test_return_t basic_behavior(memcached_st *original)
 
 test_st tests[] ={
   { "basic", 0,
-    reinterpret_cast<test_callback_fn>(basic_test) },
+    reinterpret_cast<test_callback_fn*>(basic_test) },
   { "basic_master_key", 0,
-    reinterpret_cast<test_callback_fn>(basic_master_key_test) },
+    reinterpret_cast<test_callback_fn*>(basic_master_key_test) },
   { "increment_test", 0,
-    reinterpret_cast<test_callback_fn>(increment_test) },
+    reinterpret_cast<test_callback_fn*>(increment_test) },
   { "mget", 1,
-    reinterpret_cast<test_callback_fn>(mget_test) },
+    reinterpret_cast<test_callback_fn*>(mget_test) },
   { "basic_behavior", 0,
-    reinterpret_cast<test_callback_fn>(basic_behavior) },
+    reinterpret_cast<test_callback_fn*>(basic_behavior) },
   {0, 0, 0}
 };
 
@@ -224,17 +224,17 @@ void get_world(world_st *world)
 {
   world->collections= collection;
 
-  world->create= reinterpret_cast<test_callback_create_fn>(world_create);
-  world->destroy= reinterpret_cast<test_callback_fn>(world_destroy);
+  world->create= reinterpret_cast<test_callback_create_fn*>(world_create);
+  world->destroy= reinterpret_cast<test_callback_fn*>(world_destroy);
 
-  world->test.startup= reinterpret_cast<test_callback_fn>(world_test_startup);
-  world->test.flush= reinterpret_cast<test_callback_fn>(world_flush);
-  world->test.pre_run= reinterpret_cast<test_callback_fn>(world_pre_run);
-  world->test.post_run= reinterpret_cast<test_callback_fn>(world_post_run);
-  world->test.on_error= reinterpret_cast<test_callback_error_fn>(world_on_error);
+  world->run_startup= reinterpret_cast<test_callback_fn*>(world_test_startup);
+  world->flush= reinterpret_cast<test_callback_fn*>(world_flush);
+  world->pre_run= reinterpret_cast<test_callback_fn*>(world_pre_run);
+  world->post_run= reinterpret_cast<test_callback_fn*>(world_post_run);
+  world->on_error= reinterpret_cast<test_callback_error_fn*>(world_on_error);
 
-  world->collection.startup= reinterpret_cast<test_callback_fn>(world_container_startup);
-  world->collection.shutdown= reinterpret_cast<test_callback_fn>(world_container_shutdown);
+  world->collection_startup= reinterpret_cast<test_callback_fn*>(world_container_startup);
+  world->collection_shutdown= reinterpret_cast<test_callback_fn*>(world_container_shutdown);
 
   world->runner= &defualt_libmemcached_runner;
 }

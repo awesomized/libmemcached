@@ -195,14 +195,14 @@ static test_return_t compare_function_test(void *obj)
 }
 
 test_st basic[] ={
-  { "exists", 0, reinterpret_cast<test_callback_fn>(exists_test) },
-  { "new", 0, reinterpret_cast<test_callback_fn>(new_test) },
-  { "copy", 0, reinterpret_cast<test_callback_fn>(copy_test) },
-  { "assign", 0, reinterpret_cast<test_callback_fn>(assign_test) },
-  { "digest", 0, reinterpret_cast<test_callback_fn>(digest_test) },
-  { "set_function", 0, reinterpret_cast<test_callback_fn>(set_function_test) },
-  { "set_distribution_function", 0, reinterpret_cast<test_callback_fn>(set_distribution_function_test) },
-  { "compare", 0, reinterpret_cast<test_callback_fn>(compare_function_test) },
+  { "exists", 0, reinterpret_cast<test_callback_fn*>(exists_test) },
+  { "new", 0, reinterpret_cast<test_callback_fn*>(new_test) },
+  { "copy", 0, reinterpret_cast<test_callback_fn*>(copy_test) },
+  { "assign", 0, reinterpret_cast<test_callback_fn*>(assign_test) },
+  { "digest", 0, reinterpret_cast<test_callback_fn*>(digest_test) },
+  { "set_function", 0, reinterpret_cast<test_callback_fn*>(set_function_test) },
+  { "set_distribution_function", 0, reinterpret_cast<test_callback_fn*>(set_distribution_function_test) },
+  { "compare", 0, reinterpret_cast<test_callback_fn*>(compare_function_test) },
   { 0, 0, 0}
 };
 

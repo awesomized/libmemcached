@@ -117,7 +117,17 @@ public:
    */
   bool configure(const std::string &configuration)
   {
-    return memcached_success(memcached_parse_configuration(memc, configuration.c_str(), configuration.size()));
+    memcached_st *new_memc= memcached(configuration.c_str(), configuration.size());
+
+    if (new_memc)
+    {
+      memcached_free(memc);
+      memc= new_memc;
+
+      return true;
+    }
+
+    return false;
   }
 
   /**
