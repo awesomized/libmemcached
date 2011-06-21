@@ -31,6 +31,9 @@
 
 #define SERVERS_TO_CREATE 5
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
 
 /**
   @note This should be testing to see if the server really supports the binary protocol.
