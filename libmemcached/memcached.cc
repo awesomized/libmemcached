@@ -36,6 +36,8 @@
  */
 
 #include <libmemcached/common.h>
+
+#include <libmemcached/options.hpp>
 #include <libmemcached/virtual_bucket.h>
 
 #if 0
@@ -238,7 +240,7 @@ memcached_st *memcached(const char *string, size_t length)
 
   if (memcached_success(rc) and memcached_parse_filename(self))
   {
-    rc= memcached_parse_configure_file(self, memcached_parse_filename(self), memcached_parse_filename_length(self));
+    rc= memcached_parse_configure_file(*self, memcached_parse_filename(self), memcached_parse_filename_length(self));
   }
     
   if (memcached_failed(rc))
@@ -266,7 +268,7 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
   if (ptr->configure.filename)
   {
-    return memcached_parse_configure_file(ptr, memcached_param_array(ptr->configure.filename));
+    return memcached_parse_configure_file(*ptr, memcached_param_array(ptr->configure.filename));
   }
 
   return MEMCACHED_SUCCESS;

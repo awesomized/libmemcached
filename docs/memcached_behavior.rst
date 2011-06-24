@@ -26,55 +26,50 @@ Compile and link with -lmemcached
 DESCRIPTION
 -----------
 
-:manpage:`libmemcached(3)` behavior can be modified by use memcached_behavior_set().
-Default behavior is the library strives to be quick and accurate. Some
-behavior, while being faster, can also result in not entirely accurate
-behavior (for instance, memcached_set() will always respond with
-\ ``MEMCACHED_SUCCESS``\ ).
+:manpage:`libmemcached(3)` behavior can be modified by using :c:func:`memcached_behavior_set()`. Default behavior is the library strives to be quick and 
+accurate. Some behavior, while being faster, can also result in not entirely 
+accurate behavior (for instance, :c:func:`memcached_set()` will always respond 
+with :c:type:`MEMCACHED_SUCCESS`).
 
-memcached_behavior_get() takes a behavior flag and returns whether or not
-that behavior is currently enabled in the client.
+:c:func:`memcached_behavior_get()` takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
 
-memcached_behavior_set() changes the value of a particular option of the
-client. It takes both a flag (listed below) and a value. For simple on or
-off options you just need to pass in a value of 1. Calls to
-memcached_behavior_set() will flush and reset all connections.
+:c:func:`memcached_behavior_set()` changes the value of a particular option 
+of the client. It takes both a flag (listed below) and a value. For simple 
+on or off options you just need to pass in a value of 1. Calls to
+:c:func:`memcached_behavior_set()` will flush and reset all connections.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_USE_UDP
+.. c:type:: MEMCACHED_BEHAVIOR_USE_UDP
 
 Causes :manpage:`libmemcached(3)` to use the UDP transport when communicating
 with a memcached server. Not all I/O operations are testsed
 when this behavior is enababled. The following operations will return
-\ ``MEMCACHED_NOT_SUPPORTED``\  when executed with the MEMCACHED_BEHAVIOR_USE_UDP
-enabled: memcached_version(), memcached_stat(), memcached_get(),
-memcached_get_by_key(), memcached_mget(), memcached_mget_by_key(),
-memcached_fetch(), memcached_fetch_result(), memcached_value_fetch().
+:c:type:`MEMCACHED_NOT_SUPPORTED` when executed with the :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` enabled: :c:func:`memcached_version()`, :c:func:`memcached_stat()`, :c:func:`memcached_get()`, :c:func:`memcached_get_by_key()`, :c:func:`memcached_mget()`, :c:func:`memcached_mget_by_key()`, :c:func:`memcached_fetch()`, :c:func:`memcached_fetch_result()`, :c:func:`memcached_value_fetch()`.
 
 All other operations are testsed but are executed in a 'fire-and-forget'
 mode, in which once the client has executed the operation, no attempt
 will be made to ensure the operation has been received and acted on by the
 server.
 
-:manpage:`libmemcached(3)` does not allow TCP and UDP servers to be shared within
-the same libmemached(3) client 'instance'. An attempt to add a TCP server
-when this behavior is enabled will result in a \ ``MEMCACHED_INVALID_HOST_PROTOCOL``\ ,
-as will attempting to add a UDP server when this behavior has not been enabled.
+:manpage:`libmemcached(3)` does not allow TCP and UDP servers to be shared 
+within the same libmemached(3) client 'instance'. An attempt to add a TCP 
+server when this behavior is enabled will result in a :c:type:`MEMCACHED_INVALID_HOST_PROTOCOL`, as will attempting to add a UDP server when this behavior has 
+not been enabled.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_NO_BLOCK
+.. c:type:: MEMCACHED_BEHAVIOR_NO_BLOCK
 
-Causes :manpage:`libmemcached(3)` to use asychronous IO. This is the fastest transport
-available for storage functions.
+Causes :manpage:`libmemcached(3)` to use asychronous IO. This is the fastest 
+transport available for storage functions.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_SND_TIMEOUT
+.. c:type:: MEMCACHED_BEHAVIOR_SND_TIMEOUT
 
 This sets the microsecond behavior of the socket against the SO_SNDTIMEO flag.  In cases where you cannot use non-blocking IO this will allow you to still have timeouts on the sending of data.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_RCV_TIMEOUT
+.. c:type:: MEMCACHED_BEHAVIOR_RCV_TIMEOUT
 
 This sets the microsecond behavior of the socket against the SO_RCVTIMEO flag. 
 
@@ -82,179 +77,185 @@ In cases where you cannot use non-blocking IO this will allow you to still have 
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_TCP_NODELAY
+.. c:type:: MEMCACHED_BEHAVIOR_TCP_NODELAY
 
 Turns on the no-delay feature for connecting sockets (may be faster in some
 environments).
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_HASH
+.. c:type:: MEMCACHED_BEHAVIOR_HASH
 
-Makes the default hashing algorithm for keys use MD5. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR.  
+Makes the default hashing algorithm for keys use MD5. The value can be set to either :c:type:`MEMCACHED_HASH_DEFAULT`, :c:type:`MEMCACHED_HASH_MD5`, :c:type:`MEMCACHED_HASH_CRC`, :c:type:`MEMCACHED_HASH_FNV1_64`, :c:type:`MEMCACHED_HASH_FNV1A_64`, :c:type:`MEMCACHED_HASH_FNV1_32`, :c:type:`MEMCACHED_HASH_FNV1A_32`, :c:type:`MEMCACHED_HASH_JENKINS`, :c:type:`MEMCACHED_HASH_HSIEH`, and :c:type:`MEMCACHED_HASH_MURMUR`.  
 
-Each hash has it's advantages and it's weaknesses. If you don't know or don't care, just go with the default.
+Each hash has it's advantages and it's weaknesses. If you don't know or don't 
+care, just go with the default.
 
-Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
+Support for :c:type:`MEMCACHED_HASH_HSIEH` is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the --enable-hash_hsieh.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_DISTRIBUTION
+.. c:type:: MEMCACHED_BEHAVIOR_DISTRIBUTION
 
 Using this you can enable different means of distributing values to servers.
 
 The default method is MEMCACHED_DISTRIBUTION_MODULA. You can enable consistent hashing by setting MEMCACHED_DISTRIBUTION_CONSISTENT.  Consistent hashing delivers better distribution and allows servers to be added to the cluster with minimal cache losses. Currently MEMCACHED_DISTRIBUTION_CONSISTENT is an alias for the value MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA.
 
-.. c:var:: MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
+.. c:type:: MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
+.. deprecated:: 0.46(?)
+   DNS lookups are now always cached until an error occurs with the server.
 
-DEPRECATED. Memcached can cache named lookups so that DNS lookups are made only once.
+   Memcached can cache named lookups so that DNS lookups are made only once.
 
-.. c:var:: MEMCACHED_BEHAVIOR_SUPPORT_CAS
+.. c:type:: MEMCACHED_BEHAVIOR_SUPPORT_CAS
 
 Support CAS operations (this is not enabled by default at this point in the server since it imposes a slight performance penalty).
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_KETAMA
+.. c:type:: MEMCACHED_BEHAVIOR_KETAMA
 
 Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and the hash to MEMCACHED_HASH_MD5.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
+.. c:type:: MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
+  
+  Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted tests.  and the hash to MEMCACHED_HASH_MD5.
 
-Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted tests.  and the hash to MEMCACHED_HASH_MD5.
-
-.. c:var:: MEMCACHED_BEHAVIOR_KETAMA_HASH
+.. c:type:: MEMCACHED_BEHAVIOR_KETAMA_HASH
 
 Sets the hashing algorithm for host mapping on continuum. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, and MEMCACHED_HASH_FNV1A_32.
 
-.. c:var:: MEMCACHED_BEHAVIOR_KETAMA_COMPAT
+.. c:type:: MEMCACHED_BEHAVIOR_KETAMA_COMPAT
 
 Sets the compatibility mode. The value can be set to either MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED (this is the default) or MEMCACHED_KETAMA_COMPAT_SPY to be compatible with the SPY Memcached client for Java.
 
-.. c:var:: MEMCACHED_BEHAVIOR_POLL_TIMEOUT
+.. c:type:: MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 
 Modify the timeout value that is used by poll(). The default value is -1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.
 
-.. c:var:: MEMCACHED_BEHAVIOR_USER_DATA
+.. c:type:: MEMCACHED_BEHAVIOR_USER_DATA
+.. deprecated:: < 0.30
 
-DEPRECATED
-
-.. c:var:: MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
+.. c:type:: MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
 
 Enabling buffered IO causes commands to "buffer" instead of being sent. Any action that gets data causes this buffer to be be sent to the remote connection. Quiting the connection or closing down the connection will also cause the buffered data to be pushed to the remote connection.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_VERIFY_KEY
+.. c:type:: MEMCACHED_BEHAVIOR_VERIFY_KEY
 
 Enabling this will cause :manpage:`libmemcached(3)` to test all keys to verify that they are valid keys.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_SORT_HOSTS
+.. c:type:: MEMCACHED_BEHAVIOR_SORT_HOSTS
 
 Enabling this will cause hosts that are added to be placed in the host list in sorted order. This will defeat consisten hashing.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
+.. c:type:: MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
 
 In non-blocking mode this changes the value of the timeout during socket connection.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_BINARY_PROTOCOL
+.. c:type:: MEMCACHED_BEHAVIOR_BINARY_PROTOCOL
 
 Enable the use of the binary protocol. Please note that you cannot toggle this flag on an open connection.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+.. c:type:: MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
 
 Set this value to enable the server be removed after continuous MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT times connection failure.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK
+.. c:type:: MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK
 
 Set this value to tune the number of messages that may be sent before libmemcached should start to automatically drain the input queue. Setting this value to high, may cause libmemcached to deadlock (trying to send data, but the send will block because the input buffer in the kernel is full).
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK
+.. c:type:: MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK
 
 Set this value to tune the number of bytes that may be sent before libmemcached should start to automatically drain the input queue (need at least 10 IO requests sent without reading the input buffer). Setting this value to high, may cause libmemcached to deadlock (trying to send data, but the send will block because the input buffer in the kernel is full).
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH
+.. c:type:: MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH
 
 The binary protocol works a bit different than the textual protocol in that a multiget is implemented as a pipe of single get-operations which are sent to the server in a chunk. If you are using large multigets from your application, you may improve the latency of the gets by setting this value so you send out the first chunk of requests when you hit the specified limit.  It allows the servers to start processing the requests to send the data back while the rest of the requests are created and sent to the server.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_NOREPLY
+.. c:type:: MEMCACHED_BEHAVIOR_NOREPLY
 
 Set this value to specify that you really don't care about the result from your storage commands (set, add, replace, append, prepend).
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS
+.. c:type:: MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS
 
 If you just want "a poor mans HA", you may specify the numbers of replicas libmemcached should store of each item (on different servers).  This replication does not dedicate certain memcached servers to store the replicas in, but instead it will store the replicas together with all of the other objects (on the 'n' next servers specified in your server list).
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
+.. c:type:: MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
 
 Allows randomizing the replica reads starting point. Normally the read is done from primary server and in case of miss the read is done from primary + 1, then primary + 2 all the way to 'n' replicas. If this option is set on the starting point of the replica reads is randomized between the servers.  This allows distributing read load to multiple servers with the expense of more write traffic.
 
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_CORK
+.. c:type:: MEMCACHED_BEHAVIOR_CORK
 
 This open has been deprecated with the behavior now built and used appropriately on selected platforms.
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_KEEPALIVE
+.. c:type:: MEMCACHED_BEHAVIOR_KEEPALIVE
 
 Enable TCP_KEEPALIVE behavior.
  
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE
+.. c:type:: MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE
  
 Specify time, in seconds, to mark a connection as idle. This is only available as an option Linux.
  
 
-.. c:var:: MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
+.. c:type:: MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
  
 Find the current size of SO_SNDBUF. A value of 0 means either an error occured or no hosts were available. It is safe to assume system default if this occurs. If an error occurs you can checked the last cached errno statement to find the specific error.
  
 
-.. c:var:: MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE
+.. c:type:: MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE
  
 Find the current size of SO_RCVBUF. A value of 0 means either an error occured or no hosts were available. It is safe to assume system default if this occurs. If an error occurs you can checked the last cached errno statement to find the specific error.
  
 
-.. c:var:: MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+.. c:type:: MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
+.. deprecated:: 0.48
+   See :c:type:`MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS`
  
-DEPRECATED, please see MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS. This number of times a host can have an error before it is disabled.
+   This number of times a host can have an error before it is disabled.
  
 
-.. c:var:: MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
+.. c:type:: MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
+.. deprecated:: 0.48
+   See :c:type:`MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS`
  
-DEPRECATED, please see MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS. If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure. This must be used in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
+   If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure. This must be used in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
 
-.. c:var:: MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS
+.. c:type:: MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS
 
-If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure.
+   If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure.
 
-.. c:var:: MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
+.. c:type:: MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
  
 When enabled a host which is problematic will only be checked for usage based on the amount of time set by this behavior.  
 
 
-.. c:var:: MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
+.. c:type:: MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
  
 When enabled the prefix key will be added to the key when determining server by hash.
  

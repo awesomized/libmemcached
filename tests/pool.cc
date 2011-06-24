@@ -37,10 +37,12 @@
 
 #include <config.h>
 
+#include <libtest/test.hpp>
+
 #include <vector>
 #include <iostream>
 #include <string>
-#include <errno.h>
+#include <cerrno>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>

@@ -10,11 +10,9 @@ Copies files to a collection of memcached servers
 SYNOPSIS
 --------
 
-:program: `memcp`
+memcp [options] [file] [server]
 
 .. program:: memcp
-
-.. option:: --help
 
 
 -----------
@@ -22,17 +20,31 @@ DESCRIPTION
 -----------
 
 
-\ **memcp**\  copies one or more files into memcached(1) servers.
+:program:`memcp` copies one or more files into memcached(1) servers.
 It is similar to the standard UNIX cp(1) command.
 
 The key names will be the names of the files,
 without any directory path.
 
-You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\. If you do not specify either these, the final value in the command line list is the name of a
-server(s).
 
-For a full list of operations run the tool with the \ **--help**\  option.
+-------
+OPTIONS
+-------
+
+
+You can specify servers via the option:
+
+.. option:: --servers
+
+or via the environment variable:
+
+.. envvar:: `MEMCACHED_SERVERS`
+
+If you do not specify either these, the final value in the command line list is the name of a server(s).
+
+For a full list of operations run the tool with the option:
+
+.. option:: --help
 
 
 ----
@@ -59,5 +71,5 @@ SEE ALSO
 --------
 
 
-memcached(1) libmemcached(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`
 

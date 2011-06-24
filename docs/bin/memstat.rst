@@ -10,26 +10,37 @@ memstat - Display the operating status of a single or group of memcached servers
 SYNOPSIS
 --------
 
-:program: `memstat`
+memstat [options]
 
 .. program:: memstat
-
-.. option:: --help
 
 -----------
 DESCRIPTION
 -----------
 
 
-\ **memstat**\  dumps the state of memcached(1) servers.
+:program:`memstat`  dumps the state of memcached(1) servers.
 It displays all data to stdout.
 
-You can specify servers via the \ **--servers**\  option or via the
-environment variable \ ``MEMCACHED_SERVERS``\ . \ **--args**\  can be used
-to specify the "argument" sent to the stats command (ie slab, size, items,
-etc..).
 
-For a full list of operations run the tool with the \ **--help**\  option.
+-------
+OPTIONS
+-------
+
+
+You can specify servers via the option:
+
+.. option:: --servers  
+
+or via the environment variable:
+
+.. envvar:: 'MEMCACHED_SERVERS, --args'
+
+which can be used to specify the "argument" sent to the stats command (ie slab, size, items, etc..).
+
+For a full list of operations run the tool with:
+
+.. option:: --help
 
 
 ----
@@ -46,5 +57,5 @@ SEE ALSO
 --------
 
 
-memcached(1) libmemcached(3)
+:manpage:`memcached(1)` :manpage:`libmemcached(3)`
 

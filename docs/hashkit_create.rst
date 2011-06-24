@@ -10,6 +10,8 @@ SYNOPSIS
 
 #include <libhashkit/hashkit.h>
  
+.. c:type:: hashkit_st
+
 .. c:function:: hashkit_st *hashkit_create(hashkit_st *hash);
  
 .. c:function:: hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
@@ -20,25 +22,24 @@ SYNOPSIS
 
 Compile and link with -lhashkit
 
-
 -----------
 DESCRIPTION
 -----------
 
 
-The hashkit_create() function initializes a hashkit object for use. If
+The :c:func:`hashkit_create()` function initializes a hashkit object for use. If
 you pass a NULL argument for hash, then the memory for the object is
 allocated. If you specify a pre-allocated piece of memory, that is
 initialized for use.
 
-The hashkit_clone() function initializes a hashkit object much like
-hashkit_create(), but instead of using default settings it will use
+The :c:func:`hashkit_clone()` function initializes a hashkit object much like
+:c:func:`hashkit_create()`, but instead of using default settings it will use
 the settings of the ptr hashkit object.
 
-The hashkit_free() frees any resources being consumed by the hashkit
-objects that were initialized with hashkit_create() or hashkit_clone().
+The :c:func:`hashkit_free()` frees any resources being consumed by the hashkit
+objects that were initialized with :c:func:`hashkit_create()` or :c:func:`hashkit_clone()`.
 
-The hashkit_is_allocated() reports where the memory was allocated 
+The :c:func:`hashkit_is_allocated()` reports where the memory was allocated 
 for a hashkit object.
 
 
@@ -47,11 +48,11 @@ RETURN VALUE
 ------------
 
 
-hashkit_create() and hashkit_clone() will return NULL on failure or
+:c:func:`hashkit_create()` and :c:func:`hashkit_clone()` will return NULL on failure or
 non-NULL on success.
 
-hashkit_is_allocated() returns true if the memory for the hashkit
-object was allocated inside of hashkit_create() or hashkit_clone(),
+:c:func:`hashkit_is_allocated()` returns true if the memory for the hashkit
+object was allocated inside of :c:func:`hashkit_create()` or :c:func:`hashkit_clone()`,
 otherwise it is false and was user-supplied memory.
 
 

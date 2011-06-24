@@ -26,17 +26,17 @@ DESCRIPTION
 -----------
 
 
-memcached_generate_hash_value() allows you to hash a key using one of
+:c:func:`memcached_generate_hash_value()` allows you to hash a key using one of
 the hash functions defined in the library. This method is provided for
 the convenience of higher-level language bindings and is not necessary
 for normal memcache operations.
 
 The allowed hash algorithm constants are listed in the manpage for
-memcached_behavior_set().
+:c:func:`memcached_behavior_set()`.
 
-memcached_generate_hash() takes a memcached_st struture and produces
-the hash value that would have been generated based on the defaults
-of the memcached_st structure.
+:c:func:`memcached_generate_hash()` takes a :c:type:`memcached_st` struture 
+and produces the hash value that would have been generated based on the 
+defaults of the :c:type:`memcached_st structure`.
 
 As of version 0.36 all hash methods have been placed into the library
 libhashkit(3) which is linked with libmemcached(3). For more information please see its documentation.

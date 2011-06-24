@@ -1,9 +1,38 @@
-/* libHashKit Functions Test
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  libHashKit Functions Test
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #include "config.h"
@@ -15,7 +44,7 @@
 
 #include <libhashkit/hashkit.h>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 
 #include "hash_results.h"
 
@@ -309,9 +338,9 @@ static test_return_t jenkins_run (hashkit_st *hashk)
 */
 
 test_st allocation[]= {
-  {"init", 0, (test_callback_fn)init_test},
-  {"create and free", 0, (test_callback_fn)allocation_test},
-  {"clone", 0, (test_callback_fn)clone_test},
+  {"init", 0, (test_callback_fn*)init_test},
+  {"create and free", 0, (test_callback_fn*)allocation_test},
+  {"clone", 0, (test_callback_fn*)clone_test},
   {0, 0, 0}
 };
 
@@ -325,14 +354,13 @@ static test_return_t hashkit_digest_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
+  for (int algo= int(HASHKIT_HASH_DEFAULT); algo < int(HASHKIT_HASH_MAX); algo++)
   {
-    hashkit_return_t rc;
     uint32_t x;
     const char **ptr;
     uint32_t *list;
 
-    rc= hashkit_set_function(hashk, algo);
+    hashkit_return_t rc= hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
 
     /* Hsieh is disabled most of the time for patent issues */
 #ifndef HAVE_HSIEH_HASH
@@ -438,11 +466,9 @@ static test_return_t hashkit_set_custom_function_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
+  for (int algo= int(HASHKIT_HASH_DEFAULT); algo < int(HASHKIT_HASH_MAX); algo++)
   {
-    hashkit_return_t rc;
-
-    rc= hashkit_set_distribution_function(hashk, algo);
+    hashkit_return_t rc= hashkit_set_distribution_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
 
     /* Hsieh is disabled most of the time for patent issues */
     if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
@@ -459,9 +485,7 @@ static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_custom_distribution_function_test(hashkit_st *hashk)
 {
-  hashkit_return_t rc;
-
-  rc= hashkit_set_custom_distribution_function(hashk, hash_test_function, NULL);
+  hashkit_return_t rc= hashkit_set_custom_distribution_function(hashk, hash_test_function, NULL);
   test_true(rc == HASHKIT_SUCCESS);
 
   return TEST_SUCCESS;
@@ -470,14 +494,13 @@ static test_return_t hashkit_set_custom_distribution_function_test(hashkit_st *h
 
 static test_return_t hashkit_get_function_test(hashkit_st *hashk)
 {
-  for (hashkit_hash_algorithm_t algo = HASHKIT_HASH_DEFAULT; algo < HASHKIT_HASH_MAX; algo++)
+  for (int algo= int(HASHKIT_HASH_DEFAULT); algo < int(HASHKIT_HASH_MAX); algo++)
   {
-    hashkit_return_t rc;
 
-    if (HASHKIT_HASH_CUSTOM || HASHKIT_HASH_HSIEH)
+    if (HASHKIT_HASH_CUSTOM or HASHKIT_HASH_HSIEH)
       continue;
 
-    rc= hashkit_set_function(hashk, algo);
+    hashkit_return_t rc= hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
     test_true(rc == HASHKIT_SUCCESS);
 
     test_true(hashkit_get_function(hashk) == algo);
@@ -487,9 +510,7 @@ static test_return_t hashkit_get_function_test(hashkit_st *hashk)
 
 static test_return_t hashkit_compare_test(hashkit_st *hashk)
 {
-  hashkit_st *clone;
-
-  clone= hashkit_clone(NULL, hashk);
+  hashkit_st *clone= hashkit_clone(NULL, hashk);
 
   test_true(hashkit_compare(clone, hashk));
   hashkit_free(clone);
@@ -498,44 +519,44 @@ static test_return_t hashkit_compare_test(hashkit_st *hashk)
 }
 
 test_st hashkit_st_functions[] ={
-  {"hashkit_digest", 0, (test_callback_fn)hashkit_digest_test},
-  {"hashkit_set_function", 0, (test_callback_fn)hashkit_set_function_test},
-  {"hashkit_set_custom_function", 0, (test_callback_fn)hashkit_set_custom_function_test},
-  {"hashkit_get_function", 0, (test_callback_fn)hashkit_get_function_test},
-  {"hashkit_set_distribution_function", 0, (test_callback_fn)hashkit_set_distribution_function_test},
-  {"hashkit_set_custom_distribution_function", 0, (test_callback_fn)hashkit_set_custom_distribution_function_test},
-  {"hashkit_compare", 0, (test_callback_fn)hashkit_compare_test},
+  {"hashkit_digest", 0, (test_callback_fn*)hashkit_digest_test},
+  {"hashkit_set_function", 0, (test_callback_fn*)hashkit_set_function_test},
+  {"hashkit_set_custom_function", 0, (test_callback_fn*)hashkit_set_custom_function_test},
+  {"hashkit_get_function", 0, (test_callback_fn*)hashkit_get_function_test},
+  {"hashkit_set_distribution_function", 0, (test_callback_fn*)hashkit_set_distribution_function_test},
+  {"hashkit_set_custom_distribution_function", 0, (test_callback_fn*)hashkit_set_custom_distribution_function_test},
+  {"hashkit_compare", 0, (test_callback_fn*)hashkit_compare_test},
   {0, 0, 0}
 };
 
 static test_return_t libhashkit_digest_test(hashkit_st *hashk)
 {
-  uint32_t value;
 
   (void)hashk;
 
-  value= libhashkit_digest("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
+  uint32_t value= libhashkit_digest("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
+  test_true(value);
 
   return TEST_SUCCESS;
 }
 
 test_st library_functions[] ={
-  {"libhashkit_digest", 0, (test_callback_fn)libhashkit_digest_test},
+  {"libhashkit_digest", 0, (test_callback_fn*)libhashkit_digest_test},
   {0, 0, 0}
 };
 
 test_st hash_tests[] ={
-  {"one_at_a_time", 0, (test_callback_fn)one_at_a_time_run },
-  {"md5", 0, (test_callback_fn)md5_run },
-  {"crc", 0, (test_callback_fn)crc_run },
-  {"fnv1_64", 0, (test_callback_fn)fnv1_64_run },
-  {"fnv1a_64", 0, (test_callback_fn)fnv1a_64_run },
-  {"fnv1_32", 0, (test_callback_fn)fnv1_32_run },
-  {"fnv1a_32", 0, (test_callback_fn)fnv1a_32_run },
-  {"hsieh", 0, (test_callback_fn)hsieh_run },
-  {"murmur", 0, (test_callback_fn)murmur_run },
-  {"jenkis", 0, (test_callback_fn)jenkins_run },
-  {0, 0, (test_callback_fn)0}
+  {"one_at_a_time", 0, (test_callback_fn*)one_at_a_time_run },
+  {"md5", 0, (test_callback_fn*)md5_run },
+  {"crc", 0, (test_callback_fn*)crc_run },
+  {"fnv1_64", 0, (test_callback_fn*)fnv1_64_run },
+  {"fnv1a_64", 0, (test_callback_fn*)fnv1a_64_run },
+  {"fnv1_32", 0, (test_callback_fn*)fnv1_32_run },
+  {"fnv1a_32", 0, (test_callback_fn*)fnv1a_32_run },
+  {"hsieh", 0, (test_callback_fn*)hsieh_run },
+  {"murmur", 0, (test_callback_fn*)murmur_run },
+  {"jenkis", 0, (test_callback_fn*)jenkins_run },
+  {0, 0, (test_callback_fn*)0}
 };
 
 /*
@@ -563,9 +584,7 @@ test_return_t world_destroy(hashkit_st *hashk);
 
 void *world_create(test_return_t *error)
 {
-  hashkit_st *hashk_ptr;
-
-  hashk_ptr= hashkit_create(&global_hashk);
+  hashkit_st *hashk_ptr= hashkit_create(&global_hashk);
 
   if (hashk_ptr != &global_hashk)
   {
@@ -594,9 +613,9 @@ test_return_t world_destroy(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-void get_world(world_st *world)
+void get_world(Framework *world)
 {
   world->collections= collection;
-  world->create= (test_callback_create_fn)world_create;
-  world->destroy= (test_callback_fn)world_destroy;
+  world->_create= (test_callback_create_fn*)world_create;
+  world->_destroy= (test_callback_fn*)world_destroy;
 }

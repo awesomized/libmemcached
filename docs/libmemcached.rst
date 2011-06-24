@@ -10,6 +10,8 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
+=======
+
 libMemcached is an open source C/C++ client library and tools for the memcached server (http://danga.com/memcached). It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
 
 libMemcached was designed to provide the greatest number of options to use Memcached. Some of the features provided:
@@ -41,13 +43,13 @@ a modular and consistent method of object distribution.
 There are multiple implemented routing and hashing methods. See the
 memcached_behavior_set() manpage for more information.
 
-All operations are performed against a \ ``memcached_st``\  structure.
+All operations are performed against a :c:type:`memcached_st`  structure.
 These structures can either be dynamically allocated or statically
 allocated and then initialized by memcached_create(). Functions have been
-written in order to encapsulate the \ ``memcached_st``\ . It is not
+written in order to encapsulate the :c:type:`memcached_st` . It is not
 recommended that you operate directly against the structure.
 
-Nearly all functions return a \ ``memcached_return_t``\  value.
+Nearly all functions return a :c:type:`memcached_return_t`\  value.
 This value can be translated to a printable string with memcached_strerror(3).
 
 Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
@@ -56,7 +58,7 @@ Group keys can be optionally used to group sets of objects with servers.
 
 Namespaces are supported, and can be used to partition caches so that multiple applications can use the same memcached servers.
 
-\ ``memcached_st``\  structures are thread-safe, but each thread must
+:c:type:`memcached_st`  structures are thread-safe, but each thread must
 contain its own structure (that is, if you want to share these among
 threads you must provide your own locking). No global variables are
 used in this library.
@@ -129,9 +131,9 @@ THREADS AND PROCESSES
 
 
 When using threads or forked processes it is important to keep one instance
-of \ ``memcached_st``\  per process or thread. Without creating your own locking
-structures you can not share a single \ ``memcached_st``\ . However, you can call
-memcached_quit(3) on a \ ``memcached_st``\  and then use the resulting cloned
+of :c:type:`memcached_st`  per process or thread. Without creating your own locking
+structures you can not share a single :c:type:`memcached_st`. However, you can call
+memcached_quit(3) on a :c:type:`memcached_st`  and then use the resulting cloned
 structure.
 
 

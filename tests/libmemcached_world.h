@@ -14,12 +14,19 @@ extern "C" {
 #endif
 
 /* The structure we use for the test system */
-typedef struct
+struct libmemcached_test_container_st
 {
   server_startup_st construct;
   memcached_st *parent;
   memcached_st *memc;
-} libmemcached_test_container_st;
+
+  libmemcached_test_container_st() :
+    parent(NULL),
+    memc(NULL)
+  {
+    memset(&construct, 0, sizeof(server_startup_st));
+  }
+};
 
 /* Prototypes for functions we will pass to test framework */
 libmemcached_test_container_st *world_create(test_return_t *error);
@@ -41,12 +48,11 @@ test_return_t world_container_shutdown(libmemcached_test_container_st *container
 
 libmemcached_test_container_st *world_create(test_return_t *error)
 {
-  memset(&global_container, 0, sizeof(global_container));
   global_container.construct.count= SERVERS_TO_CREATE;
   global_container.construct.udp= 0;
   server_startup(&global_container.construct);
 
-  if (! global_container.construct.servers)
+  if (not global_container.construct.servers)
   {
     *error= TEST_FAILURE;
     server_shutdown(&global_container.construct);
@@ -60,12 +66,11 @@ libmemcached_test_container_st *world_create(test_return_t *error)
 
 test_return_t world_container_startup(libmemcached_test_container_st *container)
 {
-  memcached_return_t rc;
   container->parent= memcached_create(NULL);
   test_true((container->parent != NULL));
 
-  rc= memcached_server_push(container->parent, container->construct.servers);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS,
+	       memcached_server_push(container->parent, container->construct.servers));
 
   return TEST_SUCCESS;
 }
@@ -101,8 +106,8 @@ test_return_t world_pre_run(libmemcached_test_container_st *container)
     memcached_server_instance_st instance=
       memcached_server_instance_by_position(container->memc, loop);
 
-    test_true(instance->fd == -1);
-    test_true(instance->cursor_active == 0);
+    test_compare(-1, instance->fd);
+    test_compare(0, instance->cursor_active);
   }
 
   return TEST_SUCCESS;
@@ -183,15 +188,15 @@ static test_return_t _post_runner_default(libmemcached_test_callback_fn func, li
 
 #ifdef	__cplusplus
 
-static world_runner_st defualt_libmemcached_runner= {
-  reinterpret_cast<test_callback_runner_fn>(_pre_runner_default),
-  reinterpret_cast<test_callback_runner_fn>(_runner_default),
-  reinterpret_cast<test_callback_runner_fn>(_post_runner_default)
+static Runner defualt_libmemcached_runner= {
+  reinterpret_cast<test_callback_runner_fn*>(_pre_runner_default),
+  reinterpret_cast<test_callback_runner_fn*>(_runner_default),
+  reinterpret_cast<test_callback_runner_fn*>(_post_runner_default)
 };
 
 #else
 
-static world_runner_st defualt_libmemcached_runner= {
+static Runner defualt_libmemcached_runner= {
   (test_callback_runner_fn)_pre_runner_default,
   (test_callback_runner_fn)_runner_default,
   (test_callback_runner_fn)_post_runner_default

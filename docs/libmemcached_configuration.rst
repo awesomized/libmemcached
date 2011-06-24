@@ -2,7 +2,7 @@
 Configuring Libmemcached
 ========================
 
-.. index:: object: memcached_st
+.. highlightlang:: c
 
 -------- 
 SYNOPSIS 
@@ -17,13 +17,12 @@ SYNOPSIS
 Compile and link with -lmemcached
 
 
-
 -----------
 DESCRIPTION
 -----------
 
 Libmemcached implements a custom language for configuring and modifying
-servers. By passing in an option string you can generate a memcached_st object
+servers. By passing in an option string you can generate a ``memcached_st`` object
 that you can use in your application directly.
 
 .. describe:: --SERVER=<servername>:<optional_port>/?<optional_weight>

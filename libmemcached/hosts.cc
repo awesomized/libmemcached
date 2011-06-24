@@ -186,7 +186,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     memcached_continuum_item_st *new_ptr;
 
     new_ptr= static_cast<memcached_continuum_item_st*>(libmemcached_realloc(ptr, ptr->ketama.continuum,
-									    sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
+                                                                            sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
 
     if (new_ptr == 0)
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;

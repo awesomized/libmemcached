@@ -36,7 +36,9 @@
  */
 
 #include <libmemcached/common.h>
-#include <assert.h>
+#include <libmemcached/options.hpp>
+
+#include <cassert>
 
 #include <libmemcached/options/context.h>
 
@@ -51,13 +53,13 @@ size_t memcached_parse_filename_length(memcached_st *memc)
   return memcached_array_size(memc->configure.filename);
 }
 
-static memcached_return_t _parse_file_options(memcached_st *self, memcached_array_st *real_name)
+static memcached_return_t _parse_file_options(memcached_st& self, memcached_array_st *real_name)
 {
   FILE *fp= fopen(memcached_array_string(real_name), "r");
   if (not fp)
   {
     memcached_string_t error_message= memcached_array_to_string(real_name);
-    memcached_return_t rc=  memcached_set_errno(*self, errno, MEMCACHED_AT, error_message);
+    memcached_return_t rc=  memcached_set_errno(self, errno, MEMCACHED_AT, error_message);
     return rc;
   }
 
@@ -70,7 +72,7 @@ static memcached_return_t _parse_file_options(memcached_st *self, memcached_arra
     if (length == 1 and buffer[0] == '\n')
       continue;
 
-    if (memcached_failed(rc= memcached_parse_configuration(self, buffer, length)))
+    if (memcached_failed(rc= memcached_parse_configuration(&self, buffer, length)))
       break;
   }
   fclose(fp);
@@ -101,7 +103,7 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
     assert(memcached_parse_filename(memc_ptr));
     assert(memcached_parse_filename_length(memc_ptr));
     memcached_string_t filename= memcached_array_to_string(memc_ptr->configure.filename);
-    rc= _parse_file_options(memc_ptr, memc_ptr->configure.filename);
+    rc= _parse_file_options(*memc_ptr, memc_ptr->configure.filename);
 
     if (memcached_failed(rc) and error_buffer && error_buffer_size)
     {
@@ -138,47 +140,39 @@ void memcached_set_configuration_file(memcached_st *self, const char *filename, 
   self->configure.filename= memcached_strcpy(self, filename, filename_length);
 }
 
-memcached_return_t memcached_parse_configure_file(memcached_st *self, const char *filename, size_t length)
+memcached_return_t memcached_parse_configure_file(memcached_st& self, const char *filename, size_t length)
 {
-  WATCHPOINT_ASSERT(self);
-  if (not self)
-  {
-    return MEMCACHED_INVALID_ARGUMENTS;
-  }
-
-  WATCHPOINT_ASSERT(self);
   if (not filename)
   {
-    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
   }
 
   WATCHPOINT_ASSERT(self);
   if (not length)
   {
-    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
   }
 
-  memcached_array_st *tmp_array= memcached_strcpy(self, filename, length);
+  memcached_array_st *tmp_array= memcached_strcpy(&self, filename, length);
 
-  memcached_return_t rc= memcached_parse_configure_file(self, tmp_array);
+  if (not tmp_array)
+  {
+    return memcached_set_error(self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+  }
+
+  memcached_return_t rc= memcached_parse_configure_file(self, *tmp_array);
   memcached_array_free(tmp_array);
 
   return rc;
 }
 
-memcached_return_t memcached_parse_configure_file(memcached_st *self, memcached_array_st *filename)
+memcached_return_t memcached_parse_configure_file(memcached_st& self, memcached_array_st& filename)
 {
-  WATCHPOINT_ASSERT(self);
-  if (not self)
+  WATCHPOINT_ASSERT(memcached_array_size(&filename));
+  if (not memcached_array_size(&filename))
   {
-    return MEMCACHED_INVALID_ARGUMENTS;
+    return memcached_set_error(self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
   }
 
-  WATCHPOINT_ASSERT(memcached_array_size(filename));
-  if (not memcached_array_size(filename))
-  {
-    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT);
-  }
-
-  return _parse_file_options(self, filename);
+  return _parse_file_options(self, &filename);
 }

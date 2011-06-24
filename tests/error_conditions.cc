@@ -41,7 +41,9 @@
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/is.h>
-#include <libtest/test.h>
+
+#include <libtest/test.hpp>
+
 #include <tests/error_conditions.h>
 
 test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)

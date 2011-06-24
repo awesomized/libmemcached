@@ -37,7 +37,7 @@
 
 #include <config.h>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 #include "libmemcached/common.h"
 #include <tests/replication.h>
 

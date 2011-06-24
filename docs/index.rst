@@ -53,6 +53,7 @@ Advanced Topics
    memcached_generate_hash_value
    memcached_memory_allocators
    memcached_quit
+   libmemcached/memcached_return_t
    memcached_sasl
    memcached_server_st
    memcached_servers
@@ -60,6 +61,16 @@ Advanced Topics
    memcached_user_data
    memcached_verbosity
    memcached_version
+
+
+####################
+Deprecated Functions
+####################
+
+.. toctree::
+   :titlesonly:
+
+   libmemcached/memcached_fetch
 
 #################
 Platform Specific
@@ -97,16 +108,16 @@ Client Applications
 .. toctree::
    :maxdepth: 1
 
-   memcapable
-   memcat
-   memcp
-   memdump
-   memerror
-   memflush
-   memrm
-   memslap
-   memaslap
-   memstat
+   bin/memcapable
+   bin/memcat
+   bin/memcp
+   bin/memdump
+   bin/memerror
+   bin/memflush
+   bin/memrm
+   bin/memslap
+   bin/memaslap
+   bin/memstat
 
 ----------
 Libhashkit

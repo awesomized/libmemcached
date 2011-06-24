@@ -38,6 +38,9 @@
 #define BUILDING_LIBMEMCACHED
 
 #include <libmemcached/common.h>
+
+#include <libtest/test.hpp>
+
 #include <libmemcached/error.h>
 #include <tests/string.h>
 
