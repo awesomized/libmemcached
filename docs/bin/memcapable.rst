@@ -2,16 +2,11 @@
 memcapable - Checking a Memcached server capibilities and compatibility
 =======================================================================
 
-.. index:: object: memcached_st
-
-Check the server for compatibility and capabilities
-
-
 --------
 SYNOPSIS
 --------
 
-:program:`memcapable`
+memcapable [options]
 
 .. program:: memcapable
 

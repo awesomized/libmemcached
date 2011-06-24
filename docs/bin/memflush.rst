@@ -1,30 +1,26 @@
-=================================
-memcat - "cat" data from a server
-=================================
+=======================================
+memflush - flush all data from a server
+=======================================
 
 
-Copy a set of keys to stdout
+Reset a server or list of servers
 
 
 --------
 SYNOPSIS
 --------
 
+memflush [options]
 
-:program:`memcat`
-
-.. program:: memcat
-
+.. program:: memflush
 
 -----------
 DESCRIPTION
 -----------
 
 
-:program:`memcat` outputs to stdout the value a single or multiple set of keys
-stored in a memcached(1) server. If any key is not found an error is returned.
-
-It is similar to the standard UNIX cat(1) utility.
+:program:`memflush`  resets the contents of memcached(1) servers.
+This means that all data in the specified servers will be deleted.
 
 
 -------
@@ -40,7 +36,7 @@ or via the environment variable:
 
 .. envvar:: `MEMCACHED_SERVERS`
 
-For a full list of operations run the tool with the option:
+For a full list of operations run the tool with option:
 
 .. option:: --help
 
@@ -68,6 +64,4 @@ Mark Atwood <mark@fallenpegasus.com>
 SEE ALSO
 --------
 
-
 :manpage:`memcached(1)` :manpage:`libmemcached(3)`
-

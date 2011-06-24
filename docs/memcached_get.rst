@@ -11,23 +11,21 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function:: memcached_result_st * memcached_fetch_result (memcached_st *ptr, memcached_result_st *result, memcached_return_t *error);
+.. c:function:: memcached_result_st * memcached_fetch_result (memcached_st *ptr, memcached_result_st *result, memcached_return_t *error)
 
-.. c:function:: char * memcached_get (memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.. c:function:: char * memcached_get (memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error)
 
-.. c:function::  memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+.. c:function::  memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys)
 
-.. c:function:: char * memcached_get_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.. c:function:: char * memcached_get_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error)
 
-.. c:function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys);
+.. c:function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys)
 
-.. c:function::  char * memcached_fetch (memcached_st *ptr, char *key, size_t *key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
+.. c:function::  memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
 
-.. c:function::  memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.. c:function:: memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
 
-.. c:function:: memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
-
-.. c:function:: memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks);
+.. c:function:: memcached_return_t memcached_mget_execute_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
 
 Compile and link with -lmemcached
 
@@ -47,23 +45,19 @@ object returned by :c:func:`memcached_get()` must be released by the caller
 application.
 
 :c:func:`memcached_mget()` is used to select multiple keys at once. For 
-multiple key operations it is always faster to use this function. This function always works asynchronously. :c:func:`memcached_fetch()` is then used to 
-retrieve any keys found. No error is given on keys that are not found. You 
-must call either :c:func:`memcached_fetch()` or 
-:c:func:`memcached_fetch_result()` after a successful call to
-:c:func:`memcached_mget()`. You should continue to call these functions until 
-they return NULL (aka no more values). If you need to quit in the middle of a
-:c:func:`memcached_get()` call, execute a :c:func:`memcached_quit()`. After you do this, you can issue new queries against the server.
+multiple key operations it is always faster to use this function. This function always works asynchronously. 
 
-:c:func:`memcached_fetch()` is used to fetch an individual value from the server. :c:func:`memcached_mget()` must always be called before using this method.  
+To retrieve data after a successful execution of :c:func:`memcached_mget()`, you will need to
+call :c:func:`memcached_fetch_result()`.  You should continue to call this function until 
+it returns a NULL (i.e. no more values). If you need to quit in the middle of a
+:c:func:`memcached_mget()` call, you can execute a :c:func:`memcached_quit()`, those this is not required.
+
+:c:func:`memcached_fetch_result()` is used to fetch an individual value from the server. :c:func:`memcached_mget()` must always be called before using this method.  
 You must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
 object.  A :c:type:`uint32_t` pointer to contain whatever flags you stored with the value, a :c:type:`size_t` pointer which will be filled with size of of the 
 object, and a :c:type:`memcached_return_t` pointer to hold any error. The 
 object will be returned upon success and NULL will be returned on failure. :c:type:`MEMCACHD_END` is returned by the \*error value when all objects that have been found are returned. The final value upon :c:type:`MEMCACHED_END` is null. 
-Values returned by :c:func:`memcached_fetch()` must be freed by the caller. 
-:c:func:`memcached_fetch()` will be DEPRECATED in the near future, 
-c:func:`memcached_fetch_result()` should be used instead.
 
 :c:func:`memcached_fetch_result()` is used to return a :c:type:`memcached_result_st` structure from a memcached server. The result object is forward compatible 
 with changes to the server. For more information please refer to the 
@@ -105,8 +99,9 @@ RETURN
 ------
 
 
-All objects returned must be freed by the calling application.
-:c:func:`memcached_get()` and :c:func:`memcached_fetch()` will return NULL on 
+All objects retrieved via :c:func:`memcached_get()` or :c:func:`memcached_get_by_key()` must be freed with :manpage:`free(3)`.
+
+:c:func:`memcached_get()` will return NULL on 
 error. You must look at the value of error to determine what the actual error 
 was.
 
@@ -114,14 +109,9 @@ was.
 all keys were successful. :c:type:`MEMCACHED_NOTFOUND` will be return if no
 keys at all were found.
 
-:c:func:`memcached_fetch()` and :c:func:`memcached_fetch_result()` set error
+:c:func:`memcached_fetch_result()` sets error
 to :c:type:`MEMCACHED_END` upon successful conclusion.
 :c:type:`MEMCACHED_NOTFOUND` will be return if no keys at all were found.
-
-:c:type:`MEMCACHED_KEY_TOO_BIG` is set to error whenever :c::func:`memcached_fetch()` was used
-and the key was set larger then :c:type:`MEMCACHED_MAX_KEY`, which was the largest
-key allowed for the original memcached ascii server.
-
 
 ----
 HOME
@@ -130,7 +120,6 @@ HOME
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 
 --------

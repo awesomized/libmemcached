@@ -1,18 +1,19 @@
 =================================
-memrm - Remove data from a server
+memcat - "cat" data from a server
 =================================
 
-
-memrm - Remove a key(s) from a collection of memcached servers
 
 
 --------
 SYNOPSIS
 --------
 
-:program: `memrm`
+memcat [options] key
 
-.. program:: memrm
+Copy a set of keys to stdout
+
+
+.. program:: memcat
 
 
 -----------
@@ -20,7 +21,10 @@ DESCRIPTION
 -----------
 
 
-:program:`memrm`  removes items, specified by key, from memcached(1) servers.
+:program:`memcat` outputs to stdout the value a single or multiple set of keys
+stored in a memcached(1) server. If any key is not found an error is returned.
+
+It is similar to the standard UNIX cat(1) utility.
 
 
 -------
@@ -30,17 +34,15 @@ OPTIONS
 
 You can specify servers via the option:
 
-.. option:: --servers
+.. cmdoption:: --servers
 
 or via the environment variable:
 
 .. envvar:: `MEMCACHED_SERVERS`
 
-For a full list of operations run the tool with the
+For a full list of operations run the tool with the option:
 
-.. option:: --help
-
-
+.. cmdoption:: --help
 
 
 ----
@@ -59,7 +61,7 @@ AUTHOR
 
 Brian Aker, <brian@tangent.org>
 
-Mark Atwood, <mark@fallenpegasus.com>
+Mark Atwood <mark@fallenpegasus.com>
 
 
 --------

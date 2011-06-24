@@ -39,7 +39,7 @@
 
 #include <cassert>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 #include <libmemcached/memcached.h>
 #include <tests/deprecated.h>
 

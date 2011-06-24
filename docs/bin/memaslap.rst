@@ -7,7 +7,7 @@ memaslap - Load testing  and benchmarking a server
 SYNOPSIS
 --------
 
-:program:: `memaslap`
+memaslap [options]
 
 .. program:: memaslap
 

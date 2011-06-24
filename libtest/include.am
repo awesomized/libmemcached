@@ -16,8 +16,18 @@ CLEANFILES+= \
 	     tests/var/tmp/*
 
 noinst_HEADERS+= \
+		 libtest/callbacks.h \
+		 libtest/collection.h \
+		 libtest/common.h \
+		 libtest/core.h \
+		 libtest/error.h \
 		 libtest/failed.h \
+		 libtest/framework.h \
+		 libtest/get.h \
+		 libtest/runner.h \
 		 libtest/server.h \
+		 libtest/stats.h \
+		 libtest/strerror.h \
 		 libtest/test.h \
 		 libtest/visibility.h
 
@@ -26,8 +36,9 @@ libtest_libserver_la_SOURCES= libtest/server.c
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES=\
+			   libtest/framework.cc \
 			   libtest/test.cc
-libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION}
+libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
 libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
 
 tests/var: tests/var/log tests/var/tmp

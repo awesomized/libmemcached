@@ -36,7 +36,6 @@
  */
 
 #pragma once
-#include <libtest/visibility.h>
 
 #ifdef __cplusplus
 extern "C" {

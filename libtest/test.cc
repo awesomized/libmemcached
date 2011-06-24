@@ -8,28 +8,40 @@
  */
 
 
-#include <config.h>
+#include <libtest/common.h>
 
-#include <stdint.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #include <fnmatch.h>
 #include <iostream>
 
-#include <libtest/test.h>
+#include <libtest/stats.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-static void world_stats_print(world_stats_st *stats)
+static in_port_t global_port= 0;
+
+in_port_t default_port()
+{
+  assert(global_port);
+  return global_port;
+}
+ 
+void set_default_port(in_port_t port)
+{
+  global_port= port;
+}
+
+static void stats_print(Stats *stats)
 {
   std::cout << "\tTotal Collections\t\t\t\t" << stats->collection_total << std::endl;
   std::cout << "\tFailed Collections\t\t\t\t" << stats->collection_failed << std::endl;
@@ -58,19 +70,21 @@ const char *test_strerror(test_return_t code)
   switch (code) {
   case TEST_SUCCESS:
     return "ok";
+
   case TEST_FAILURE:
     return "failed";
-  case TEST_FATAL:
-    return "failed";
+
   case TEST_MEMORY_ALLOCATION_FAILURE:
     return "memory allocation";
+
   case TEST_SKIPPED:
     return "skipped";
-  case TEST_MAXIMUM_RETURN:
-  default:
-     std::cerr << "Unknown return value." << std::endl;
-    abort();
+
+  case TEST_FATAL:
+    break;
   }
+
+  return "failed";
 }
 
 void create_core(void)
@@ -94,12 +108,14 @@ void create_core(void)
 static test_return_t _runner_default(test_callback_fn func, void *p)
 {
   if (func)
+  {
     return func(p);
+  }
 
   return TEST_SUCCESS;
 }
 
-static world_runner_st defualt_runners= {
+static Runner defualt_runners= {
   _runner_default,
   _runner_default,
   _runner_default
@@ -112,29 +128,23 @@ static test_return_t _default_callback(void *p)
   return TEST_SUCCESS;
 }
 
-static collection_st *init_world(world_st *world)
+Framework::Framework() :
+  collections(NULL),
+  _create(NULL),
+  _destroy(NULL),
+  collection_startup(_default_callback),
+  collection_shutdown(_default_callback),
+  _on_error(NULL),
+  runner(&defualt_runners)
 {
-  if (world->runner == NULL)
-  {
-    world->runner= &defualt_runners;
-  }
-
-  if (world->collection_startup == NULL)
-    world->collection_startup= _default_callback;
-
-  if (world->collection_shutdown == NULL)
-    world->collection_shutdown= _default_callback;
-
-  return world->collections;
 }
 
 
 int main(int argc, char *argv[])
 {
-  world_st world;
-  void *world_ptr;
+  Framework world;
 
-  world_stats_st stats;
+  Stats stats;
 
   get_world(&world);
 
@@ -143,20 +153,11 @@ int main(int argc, char *argv[])
     world.runner= &defualt_runners;
   }
 
-  collection_st *collection= init_world(&world);
-
-  if (world.create)
+  test_return_t error;
+  void *world_ptr= world.create(&error);
+  if (test_failed(error))
   {
-    test_return_t error;
-    world_ptr= world.create(&error);
-    if (error != TEST_SUCCESS)
-    {
-      return EXIT_FAILURE;
-    }
-  }
-  else
-  {
-    world_ptr= NULL;
+    return EXIT_FAILURE;
   }
 
   char *collection_to_run= NULL;
@@ -180,7 +181,7 @@ int main(int argc, char *argv[])
     wildcard= argv[2];
   }
 
-  for (collection_st *next= collection; next->name; next++)
+  for (collection_st *next= world.collections; next->name; next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     bool failed= false;
@@ -191,7 +192,7 @@ int main(int argc, char *argv[])
 
     stats.collection_total++;
 
-    collection_rc= world.collection_startup(world_ptr);
+    collection_rc= world.startup(world_ptr);
 
     if (collection_rc == TEST_SUCCESS and next->pre)
     {
@@ -216,10 +217,7 @@ int main(int argc, char *argv[])
       goto cleanup;
 
     case TEST_MEMORY_ALLOCATION_FAILURE:
-    case TEST_MAXIMUM_RETURN:
-    default:
-      assert(0);
-      break;
+      test_assert(0, "Allocation failure, or unknown return");
     }
 
     for (test_st *run= next->tests; run->name; run++)
@@ -234,53 +232,21 @@ int main(int argc, char *argv[])
 
       std::cerr << "\tTesting " << run->name;
 
-      if (world.run_startup)
-      {
-	world.run_startup(world_ptr);
-      }
+      world.item.startup(world_ptr);
 
-      if (run->requires_flush && world.flush)
-      {
-	world.flush(world_ptr);
-      }
+      world.item.flush(world_ptr, run);
 
-      if (world.pre_run)
-      {
-	world.pre_run(world_ptr);
-      }
-
+      world.item.pre(world_ptr);
 
       test_return_t return_code;
       { // Runner Code
-#if 0
-	if (next->pre and world.runner->pre)
-	{
-	  return_code= world.runner->pre(next->pre, world_ptr);
-
-	  if (return_code != TEST_SUCCESS)
-	  {
-	    goto error;
-	  }
-	}
-#endif
-
 	gettimeofday(&start_time, NULL);
 	return_code= world.runner->run(run->test_fn, world_ptr);
 	gettimeofday(&end_time, NULL);
 	load_time= timedif(end_time, start_time);
-
-#if 0
-	if (next->post && world.runner->post)
-	{
-	  (void) world.runner->post(next->post, world_ptr);
-	}
-#endif
       }
 
-      if (world.post_run)
-      {
-	world.post_run(world_ptr);
-      }
+      world.item.post(world_ptr);
 
       stats.total++;
 
@@ -305,22 +271,15 @@ int main(int argc, char *argv[])
 	break;
 
       case TEST_MEMORY_ALLOCATION_FAILURE:
-      case TEST_MAXIMUM_RETURN:
-      default:
-	break;
-	abort();
+	test_assert(0, "Memory Allocation Error");
       }
 
       std::cerr << "[ " << test_strerror(return_code) << " ]" << std::endl;
 
-      if (world.on_error)
+      if (test_failed(world.on_error(return_code, world_ptr)))
       {
-	test_return_t rc= world.on_error(return_code, world_ptr);
-
-	if (rc != TEST_SUCCESS)
-	  break;
+        break;
       }
-
     }
 
     if (next->post && world.runner->post)
@@ -334,10 +293,7 @@ int main(int argc, char *argv[])
     }
 cleanup:
 
-    if (world.collection_shutdown)
-    {
-      world.collection_shutdown(world_ptr);
-    }
+    world.shutdown(world_ptr);
   }
 
   if (stats.collection_failed || stats.collection_skipped)
@@ -352,18 +308,12 @@ cleanup:
     std::cout << std::endl << std::endl <<  "All tests completed successfully." << std::endl << std::endl;
   }
 
-  if (world.destroy)
+  if (test_failed(world.destroy(world_ptr)))
   {
-    test_return_t error= world.destroy(world_ptr);
-
-    if (error != TEST_SUCCESS)
-    {
-      std::cerr << "Failure during shutdown." << std::endl;
-      stats.failed++; // We do this to make our exit code return EXIT_FAILURE
-    }
+    stats.failed++; // We do this to make our exit code return EXIT_FAILURE
   }
 
-  world_stats_print(&stats);
+  stats_print(&stats);
 
   return stats.failed == 0 ? 0 : 1;
 }

@@ -37,7 +37,9 @@
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/is.h>
-#include <libtest/test.h>
+
+#include <libtest/test.hpp>
+
 #include "tests/basic.h"
 
 #include <cstring>

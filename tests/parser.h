@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <libtest/test.h>
-
 #ifdef	__cplusplus
 extern "C" {
 #endif

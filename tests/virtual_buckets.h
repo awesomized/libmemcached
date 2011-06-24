@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <libtest/test.h>
-
 struct memcached_st;
 
 #ifdef	__cplusplus

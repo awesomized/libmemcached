@@ -44,7 +44,7 @@
 
 #include <libhashkit/hashkit.h>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 
 #include "hash_results.h"
 
@@ -613,9 +613,9 @@ test_return_t world_destroy(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-void get_world(world_st *world)
+void get_world(Framework *world)
 {
   world->collections= collection;
-  world->create= (test_callback_create_fn*)world_create;
-  world->destroy= (test_callback_fn*)world_destroy;
+  world->_create= (test_callback_create_fn*)world_create;
+  world->_destroy= (test_callback_fn*)world_destroy;
 }

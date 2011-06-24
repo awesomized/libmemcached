@@ -2,21 +2,21 @@
 Creating and destroying a memcached_st
 ======================================
 
-.. index:: object: memcached_st
-
 --------
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+
+.. c:type:: memcachd_st
+
+.. c:function:: memcached_st* memcached_create(memcached_st *ptr)
  
-.. c:function:: memcached_st *memcached_create (memcached_st *ptr);
+.. c:function:: void memcached_free(memcached_st *ptr)
  
-.. c:function:: void memcached_free (memcached_st *ptr);
+.. c:function:: memcached_st* memcached_clone(memcached_st *destination, memcached_st *source)
  
-.. c:function:: memcached_st *memcached_clone (memcached_st *destination, memcached_st *source);
- 
-.. c:function:: void memcached_servers_reset(memcached_st);
+.. c:function:: void memcached_servers_reset(memcached_st)
 
 Compile and link with -lmemcached
 

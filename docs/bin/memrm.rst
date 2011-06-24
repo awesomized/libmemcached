@@ -1,26 +1,26 @@
-=======================================
-memflush - flush all data from a server
-=======================================
+=================================
+memrm - Remove data from a server
+=================================
 
 
-Reset a server or list of servers
+memrm - Remove a key(s) from a collection of memcached servers
 
 
 --------
 SYNOPSIS
 --------
 
-:program: `memflush`
+memrm [options] [key]
 
-.. program:: memflush
+.. program:: memrm
+
 
 -----------
 DESCRIPTION
 -----------
 
 
-:program:`memflush`  resets the contents of memcached(1) servers.
-This means that all data in the specified servers will be deleted.
+:program:`memrm`  removes items, specified by key, from memcached(1) servers.
 
 
 -------
@@ -36,9 +36,11 @@ or via the environment variable:
 
 .. envvar:: `MEMCACHED_SERVERS`
 
-For a full list of operations run the tool with option:
+For a full list of operations run the tool with the
 
 .. option:: --help
+
+
 
 
 ----
@@ -57,11 +59,13 @@ AUTHOR
 
 Brian Aker, <brian@tangent.org>
 
-Mark Atwood <mark@fallenpegasus.com>
+Mark Atwood, <mark@fallenpegasus.com>
 
 
 --------
 SEE ALSO
 --------
 
+
 :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+

@@ -40,7 +40,7 @@
 #include <iostream>
 
 #include <libmemcached/memcached.h>
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 
 #include "tests/print.h"
 

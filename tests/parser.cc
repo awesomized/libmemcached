@@ -43,13 +43,15 @@
 #include <cerrno>
 #include <cassert>
 
+#include <libtest/test.hpp>
+
 #define BUILDING_LIBMEMCACHED
 // !NEVER use common.h, always use memcached.h in your own apps
 #include <libmemcached/common.h>
 #include <libmemcached/util.h>
 
-#include "tests/parser.h"
-#include "tests/print.h"
+#include <tests/parser.h>
+#include <tests/print.h>
 
 enum scanner_type_t
 {

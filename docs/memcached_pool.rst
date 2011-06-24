@@ -2,25 +2,25 @@
 Working with memcached pools
 ============================
 
-.. index:: object: memcached_pool_st
-
 --------
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached_pool.h>
 
-.. c:function:: memcached_pool_st *memcached_pool(const char *option_string, size_t option_string_length); 
+.. c:type:: memcached_pool_st
 
-.. c:function:: memcached_pool_st * memcached_pool_create(memcached_st* mmc, int initial, int max); DEPRECATED
+.. c:function:: memcached_pool_st* memcached_pool(const char *option_string, size_t option_string_length) 
+
+.. c:function:: memcached_pool_st* memcached_pool_create(memcached_st* mmc, int initial, int max)
+.. deprecated:: 0.46
+   Use :c:func:`memcached_pool()` instead.
  
-.. c:function:: memcached_st * memcached_pool_destroy(memcached_pool_st* pool);
+.. c:function:: memcached_st* memcached_pool_destroy(memcached_pool_st* pool)
  
-.. c:function:: memcached_st * memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc);
+.. c:function:: memcached_st* memcached_pool_pop (memcached_pool_st* pool, bool block, memcached_return_t *rc)
  
-.. c:function:: memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc);
- 
-.. c:function:: memcached_st *memcached_create (memcached_st *ptr);
+.. c:function:: memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *mmc)
  
 .. c:function:: memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
  
@@ -36,19 +36,7 @@ DESCRIPTION
 
 :c:func:`memcached_pool()` is used to create a connection pool of objects you 
 may use to remove the overhead of using memcached_clone for short lived
-:c:type:`memcached_st` objects. Please see :manpage:`libmemcached_configuration` for details on the format of the configuration string.
-
-DEPRECATED :c:func:`memcached_pool_create()` is used to create a connection pool of objects you may use to remove the overhead of using 
-:c:type:`memcached_clone` for short lived :c:type:`memcached_st` objects. 
-The mmc argument should be an initialised :c:type:`memcached_st` structure, 
-and a successfull invocation of :c:type:`memcached_pool_create` takes full 
-ownership of the variable (until it is released by 
-:c:type:`memcached_pool_destroy`).  The :c:type:`initial` argument specifies 
-the  initial size of the connection pool, and the :c:type:`max` argument
-specifies the maximum size the connection pool should grow to. Please note
-that the library will allocate a fixed size buffer scaled to the max size of
-the connection pool, so you should not pass MAXINT or some other large
-number here.
+:c:type:`memcached_st` objects. Please see :doc:`libmemcached_configuration` for details on the format of the configuration string.
 
 :c:func:`memcached_pool_destroy()` is used to destroy the connection pool
 created with :c:func:`memcached_pool_create()` and release all allocated
@@ -62,23 +50,16 @@ to exceed the maximum size.
 
 :c:func:`memcached_pool_push()` is used to return a connection structure back to the pool.
 
-:c:func:`memcached_pool_behavior_set()` and :c:func:`memcached_pool_behagior_get()` is used to get/set behavior flags on all connections in the pool.
+:c:func:`memcached_pool_behavior_get()` and :c:func:`memcached_pool_behavior_set()` is used to get/set behavior flags on all connections in the pool.
 
 
 ------
 RETURN
 ------
 
+:c:func:`memcached_pool_destroy()` returns the pointer (and ownership) to the :c:type:`memcached_st` structure used to create the pool. If connections are in use it returns NULL.
 
-:c:func:`memcached_pool_create()` returns a pointer to the newly created
-:c:type:`memcached_pool_st` structure. On an allocation failure, it returns
-NULL.
-
-:c:func:`memcached_pool_destroy()` returns the pointer (and ownership) to the
-:c:type:`memcached_st` structure used to create the pool. If connections are in
-use it returns NULL.
-
-:c:func:`memcached_pool_pop()` returns a pointer to a :c:type:`memcached_st structure` from the pool (or NULL if an allocation cannot be satisfied).
+:c:func:`memcached_pool_pop()` returns a pointer to a :c:type:`memcached_st` structure from the pool (or NULL if an allocation cannot be satisfied).
 
 :c:func:`memcached_pool_push()` returns :c:type:`MEMCACHED_SUCCESS` upon success.
 
@@ -108,4 +89,4 @@ Trond Norbye, <trond.norbye@gmail.com>
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`libmemcached_configuration(3)`

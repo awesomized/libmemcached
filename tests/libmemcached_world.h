@@ -188,7 +188,7 @@ static test_return_t _post_runner_default(libmemcached_test_callback_fn func, li
 
 #ifdef	__cplusplus
 
-static world_runner_st defualt_libmemcached_runner= {
+static Runner defualt_libmemcached_runner= {
   reinterpret_cast<test_callback_runner_fn*>(_pre_runner_default),
   reinterpret_cast<test_callback_runner_fn*>(_runner_default),
   reinterpret_cast<test_callback_runner_fn*>(_post_runner_default)
@@ -196,7 +196,7 @@ static world_runner_st defualt_libmemcached_runner= {
 
 #else
 
-static world_runner_st defualt_libmemcached_runner= {
+static Runner defualt_libmemcached_runner= {
   (test_callback_runner_fn)_pre_runner_default,
   (test_callback_runner_fn)_runner_default,
   (test_callback_runner_fn)_post_runner_default

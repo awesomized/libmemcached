@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  uTest
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ All
+ *  rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,31 +35,16 @@
  *
  */
 
+/*
+  Common include file for libmemached
+*/
+
+#pragma once
+
 #include <config.h>
 
-#define BUILDING_LIBMEMCACHED
-
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
+#include <inttypes.h>
+#include <cstdlib>
+#include <sys/types.h>
 
 #include <libtest/test.hpp>
-
-#include <tests/error_conditions.h>
-
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)
-{
-  memcached_st *memc_ptr;
-
-  memc_ptr= memcached_create(NULL);
-  test_true(memc_ptr);
-
-  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_free(memc_ptr);
-
-  return TEST_SUCCESS;
-}

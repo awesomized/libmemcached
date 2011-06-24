@@ -63,7 +63,7 @@
 
 #define SMALL_STRING_LEN 1024
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 #include "tests/deprecated.h"
 #include "tests/parser.h"
 #include "tests/pool.h"
@@ -6507,18 +6507,18 @@ collection_st collection[] ={
 
 #include "tests/libmemcached_world.h"
 
-void get_world(world_st *world)
+void get_world(Framework *world)
 {
   world->collections= collection;
 
-  world->create= (test_callback_create_fn*)world_create;
-  world->destroy= (test_callback_fn*)world_destroy;
+  world->_create= (test_callback_create_fn*)world_create;
+  world->_destroy= (test_callback_fn*)world_destroy;
 
-  world->run_startup= (test_callback_fn*)world_test_startup;
-  world->flush= (test_callback_fn*)world_flush;
-  world->pre_run= (test_callback_fn*)world_pre_run;
-  world->post_run= (test_callback_fn*)world_post_run;
-  world->on_error= (test_callback_error_fn*)world_on_error;
+  world->item._startup= (test_callback_fn*)world_test_startup;
+  world->item._flush= (test_callback_fn*)world_flush;
+  world->item.set_pre((test_callback_fn*)world_pre_run);
+  world->item.set_post((test_callback_fn*)world_post_run);
+  world->_on_error= (test_callback_error_fn*)world_on_error;
 
   world->collection_startup= (test_callback_fn*)world_container_startup;
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;

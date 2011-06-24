@@ -40,21 +40,19 @@ You can use :c:type:`MEMCACHED_CALLBACK_USER_DATA` to provide custom context
 if required for any of the callbacks.
 
 
-.. c:var:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
+.. c:type:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
  
 When :c:func:`memcached_delete()` is called this function will be excuted. At 
 the point of its execution all connections are closed.
  
 
 
-.. c:var:: MEMCACHED_CALLBACK_CLONE_FUNCTION
+.. c:type:: MEMCACHED_CALLBACK_CLONE_FUNCTION
  
 When :c:func:`memcached_delete()` is called this function will be excuted. 
 At the point of its execution all connections are closed.
- 
 
-
-.. c:var:: MEMCACHED_CALLBACK_PREFIX_KEY
+.. c:type:: MEMCACHED_CALLBACK_PREFIX_KEY
  
 You can set a value which will be used to create a domain for your keys.
 The value specified here will be prefixed to each of your keys. The value can 
@@ -67,34 +65,25 @@ a key which is too long, :c:type:`MEMCACHED_BAD_KEY_PROVIDED` will be returned.
  
 If you set a value with the value being NULL then the prefix key is disabled.
 
-
-.. c:var:: MEMCACHED_CALLBACK_USER_DATA
+.. c:type:: MEMCACHED_CALLBACK_USER_DATA
  
 This allows you to store a pointer to a specifc piece of data. This can be
 retrieved from inside of :c:func:`memcached_fetch_execute()`. Cloning a 
 :c:type:`memcached_st` will copy the pointer to the clone.
  
+.. c:type:: MEMCACHED_CALLBACK_MALLOC_FUNCTION
+.. deprecated:: <0.32
+   Use :c:type:`memcached_set_memory_allocators` instead.
 
-
-.. c:var:: MEMCACHED_CALLBACK_MALLOC_FUNCTION
+.. c:type:: MEMCACHED_CALLBACK_REALLOC_FUNCTION
+.. deprecated:: <0.32
+   Use :c:type:`memcached_set_memory_allocators` instead.
  
-DEPRECATED: use :c:type:`memcached_set_memory_allocators` instead.
- 
+.. c:type:: MEMCACHED_CALLBACK_FREE_FUNCTION
+.. deprecated:: <0.32
+   Use :c:type:`memcached_set_memory_allocators` instead.
 
-
-.. c:var:: MEMCACHED_CALLBACK_REALLOC_FUNCTION
- 
-DEPRECATED: use :c:type:`memcached_set_memory_allocators` instead.
- 
-
-
-.. c:var:: MEMCACHED_CALLBACK_FREE_FUNCTION
- 
-DEPRECATED: use :c:type:`memcached_set_memory_allocators` instead.
- 
-
-
-.. c:var:: MEMCACHED_CALLBACK_GET_FAILURE
+.. c:type:: MEMCACHED_CALLBACK_GET_FAILURE
  
 This function implements the read through cache behavior. On failure of retrieval this callback will be called. 
 
@@ -113,7 +102,7 @@ The prototype for this is:
  
 
 
-.. c:var:: MEMCACHED_CALLBACK_DELETE_TRIGGER
+.. c:type:: MEMCACHED_CALLBACK_DELETE_TRIGGER
  
 This function implements a trigger upon successful deletion of a key. The memcached_st structure will need to be cloned in order to make use of it.
  

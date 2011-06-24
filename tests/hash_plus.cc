@@ -4,7 +4,7 @@
 
 #include <config.h>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -93,7 +93,7 @@ static test_return_t set_function_test(void *)
   {
     hashkit_return_t rc= hashk.set_function(*algo);
 
-    test_true(rc == HASHKIT_SUCCESS);
+    test_compare(HASHKIT_SUCCESS, rc);
 
     uint32_t *list;
     switch (*algo)
@@ -101,30 +101,38 @@ static test_return_t set_function_test(void *)
     case HASHKIT_HASH_DEFAULT:
       list= one_at_a_time_values;
       break;
+
     case HASHKIT_HASH_MD5:
       list= md5_values;
       break;
+
     case HASHKIT_HASH_CRC:
       list= crc_values;
       break;
+
     case HASHKIT_HASH_FNV1_64:
       list= fnv1_64_values;
       break;
+
     case HASHKIT_HASH_FNV1A_64:
       list= fnv1a_64_values;
       break;
+
     case HASHKIT_HASH_FNV1_32:
       list= fnv1_32_values;
       break;
+
     case HASHKIT_HASH_FNV1A_32:
       list= fnv1a_32_values;
       break;
+
     case HASHKIT_HASH_HSIEH:
 #ifndef HAVE_HSIEH_HASH
       continue;
 #endif
       list= hsieh_values;
       break;
+
     case HASHKIT_HASH_MURMUR:
 #ifdef WORDS_BIGENDIAN
       continue;
@@ -134,9 +142,11 @@ static test_return_t set_function_test(void *)
 #endif
       list= murmur_values;
       break;
+
     case HASHKIT_HASH_JENKINS:
       list= jenkins_values;
       break;
+
     case HASHKIT_HASH_CUSTOM:
     case HASHKIT_HASH_MAX:
     default:
@@ -211,7 +221,7 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-void get_world(world_st *world)
+void get_world(Framework *world)
 {
   world->collections= collection;
 }

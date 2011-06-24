@@ -14,7 +14,7 @@
 
 #include <libtest/server.h>
 
-#include <libtest/test.h>
+#include <libtest/test.hpp>
 
 #include <string>
 #include <iostream>
@@ -220,18 +220,18 @@ collection_st collection[] ={
 
 #include "libmemcached_world.h"
 
-void get_world(world_st *world)
+void get_world(Framework *world)
 {
   world->collections= collection;
 
-  world->create= reinterpret_cast<test_callback_create_fn*>(world_create);
-  world->destroy= reinterpret_cast<test_callback_fn*>(world_destroy);
+  world->_create= reinterpret_cast<test_callback_create_fn*>(world_create);
+  world->_destroy= reinterpret_cast<test_callback_fn*>(world_destroy);
 
-  world->run_startup= reinterpret_cast<test_callback_fn*>(world_test_startup);
-  world->flush= reinterpret_cast<test_callback_fn*>(world_flush);
-  world->pre_run= reinterpret_cast<test_callback_fn*>(world_pre_run);
-  world->post_run= reinterpret_cast<test_callback_fn*>(world_post_run);
-  world->on_error= reinterpret_cast<test_callback_error_fn*>(world_on_error);
+  world->item._startup= reinterpret_cast<test_callback_fn*>(world_test_startup);
+  world->item._flush= reinterpret_cast<test_callback_fn*>(world_flush);
+  world->item.set_pre(reinterpret_cast<test_callback_fn*>(world_pre_run));
+  world->item.set_post(reinterpret_cast<test_callback_fn*>(world_post_run));
+  world->_on_error= reinterpret_cast<test_callback_error_fn*>(world_on_error);
 
   world->collection_startup= reinterpret_cast<test_callback_fn*>(world_container_startup);
   world->collection_shutdown= reinterpret_cast<test_callback_fn*>(world_container_shutdown);

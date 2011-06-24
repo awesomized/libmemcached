@@ -10,7 +10,7 @@ Copies files to a collection of memcached servers
 SYNOPSIS
 --------
 
-:program: `memcp`
+memcp [options] [file] [server]
 
 .. program:: memcp
 
