@@ -1,3 +1,6 @@
+*.BASE
+*.OTHER
+*.THIS
 *.exe
 *.lo
 *.output
