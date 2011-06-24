@@ -29,6 +29,7 @@ noinst_HEADERS+= \
 		 libtest/stats.h \
 		 libtest/strerror.h \
 		 libtest/test.h \
+		 libtest/test.hpp \
 		 libtest/visibility.h
 
 noinst_LTLIBRARIES+= libtest/libserver.la
