@@ -12,7 +12,7 @@
 /*
   Sample test application.
 */
-#include "config.h"
+#include <libtest/common.h>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
@@ -30,7 +30,6 @@
 #include <clients/execute.h>
 
 #include <libtest/server.h>
-#include <libtest/test.hpp>
 
 /* Number of items generated for tests */
 #define GLOBAL_COUNT 100000

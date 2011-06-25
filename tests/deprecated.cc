@@ -35,11 +35,10 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
 #include <cassert>
 
-#include <libtest/test.hpp>
 #include <libmemcached/memcached.h>
 #include <tests/deprecated.h>
 

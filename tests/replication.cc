@@ -35,10 +35,9 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
-#include <libtest/test.hpp>
-#include "libmemcached/common.h"
+#include <libmemcached/common.h>
 #include <tests/replication.h>
 
 test_return_t replication_set_test(memcached_st *memc)

@@ -35,6 +35,7 @@
  *
  */
 
+#include <libtest/common.h>
 
 /*
   Test cases
@@ -43,8 +44,6 @@
 #define BUILDING_LIBMEMCACHED
 // !NEVER use common.h, always use memcached.h in your own apps
 #include <libmemcached/common.h>
-
-#include <stdint.h>
 
 #include <cassert>
 #include <memory>

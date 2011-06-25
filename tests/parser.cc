@@ -35,15 +35,13 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
 #include <vector>
 #include <iostream>
 #include <string>
 #include <cerrno>
 #include <cassert>
-
-#include <libtest/test.hpp>
 
 #define BUILDING_LIBMEMCACHED
 // !NEVER use common.h, always use memcached.h in your own apps

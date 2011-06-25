@@ -35,10 +35,10 @@
  *
  */
 
+#include <libtest/common.h>
+
 #include <libmemcached/memcached.h>
 #include <libmemcached/is.h>
-
-#include <libtest/test.hpp>
 
 #include "tests/basic.h"
 

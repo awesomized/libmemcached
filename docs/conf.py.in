@@ -239,7 +239,6 @@ man_pages = [
   ('libmemcached_configuration', 'memcached', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcached_examples', 'libmemcached_examples', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('libmemcachedutil', 'libmemcachedutil', u'libmemcached Documentation', [u'Brian Aker'], 3),
-  ('memaslap', 'memaslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('memcached_analyze', 'memcached_analyze', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_append', 'memcached_append', u'Appending to or Prepending to data on the server', [u'Brian Aker'], 3),
   ('memcached_append', 'memcached_append_by_key', u'Appending to or Prepending to data on the server', [u'Brian Aker'], 3),
@@ -345,6 +344,7 @@ man_pages = [
   ('bin/memerror', 'memerror', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memflush', 'memflush', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memrm', 'memrm', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('bin/memaslap', 'memaslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memslap', 'memslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memstat', 'memstat', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ]

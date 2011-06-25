@@ -10,9 +10,9 @@
   Sample test application.
 */
 
-#include "config.h"
+#include <libtest/common.h>
 
-#include "libmemcached/common.h"
+#include <libmemcached/common.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -27,7 +27,6 @@
 #include <time.h>
 
 #include <libtest/server.h>
-#include <libtest/test.hpp>
 
 #define SERVERS_TO_CREATE 5
 

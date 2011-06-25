@@ -35,6 +35,9 @@
  *
  */
 
+// We let libmemcached/common.h define config since we are looking at
+// library internals.
+
 #define BUILDING_LIBMEMCACHED
 
 #include <libmemcached/common.h>
