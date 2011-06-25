@@ -26,7 +26,7 @@ DESCRIPTION
 -----------
 
 
-The hashkit_value() function generates a 32-bit hash value from the
+The :c:func:`hashkit_value()` function generates a 32-bit hash value from the
 given key and key_length. The hash argument is an initialized hashkit
 object, and distribution type and hash function is used from this
 object while generating the value.
@@ -54,5 +54,5 @@ SEE ALSO
 --------
 
 
-hashkit_create(3) hashkit_set_distribution(3) hashkit_set_hash_fn(3)
+:manpage:`hashkit_create(3)` :manpage:`hashkit_set_distribution(3)` :manpage:`hashkit_set_hash_fn(3)`
 

@@ -185,7 +185,7 @@ RETURN
 ------
 
 
-memcached() returns a pointer to the memcached_st that was
+:c:func:`memcached()` returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
 
 

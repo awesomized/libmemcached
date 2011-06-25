@@ -71,6 +71,5 @@ SEE ALSO
 --------
 
 
-hashkit_create(3) hashkit_value(3) hashkit_set_hash_fn(3)
-hashkit_set_continuum_hash_fn(3)
+:manpage:`hashkit_create(3)` :manpage:`hashkit_value(3)` :manpage:`hashkit_set_hash_fn(3)` :manpage:`hashkit_set_continuum_hash_fn(3)`
 
