@@ -655,7 +655,7 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
   command cmd;
   response rsp;
 
-  uint64_t value= 0xdeadbeefdeadcafe;
+  uint64_t value= 0xdeadbeefdeadcafeULL;
   storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
 
   /* set should always work */
@@ -725,7 +725,7 @@ static enum test_return test_binary_add_impl(const char* key, uint8_t cc)
 {
   command cmd;
   response rsp;
-  uint64_t value= 0xdeadbeefdeadcafe;
+  uint64_t value= 0xdeadbeefdeadcafeULL;
   storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
 
   /* first add should work, rest of them should fail (even with cas
@@ -784,7 +784,7 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
 {
   command cmd;
   response rsp;
-  uint64_t value= 0xdeadbeefdeadcafe;
+  uint64_t value= 0xdeadbeefdeadcafeULL;
   storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
 
   /* first replace should fail, successive should succeed (when the
