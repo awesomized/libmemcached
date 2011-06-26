@@ -362,21 +362,20 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     memcached_server_write_instance_st instance;
 
     if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
-            || ((list[x].type == MEMCACHED_CONNECTION_UDP)
-            && ! (ptr->flags.use_udp)) )
+        or ((list[x].type == MEMCACHED_CONNECTION_UDP)
+            and ! (ptr->flags.use_udp)) )
     {
       return MEMCACHED_INVALID_HOST_PROTOCOL;
     }
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
+    // We have extended the array, and now we will find it, and use it.
     instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
     WATCHPOINT_ASSERT(instance);
 
-    /* TODO check return type */
-    instance= memcached_server_create_with(ptr, instance, list[x].hostname,
-                                           list[x].port, list[x].weight, list[x].type);
-    if (not instance)
+    if (not memcached_server_create_with(ptr, instance, list[x].hostname,
+                                         list[x].port, list[x].weight, list[x].type))
     {
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
@@ -480,7 +479,10 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   /* TODO: Check return type */
   memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
 
-  (void)memcached_server_create_with(ptr, instance, hostname, port, weight, type);
+  if (not memcached_server_create_with(ptr, instance, hostname, port, weight, type))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+  }
 
   if (weight > 1)
   {
@@ -489,6 +491,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
 
   ptr->number_of_hosts++;
 
+  // @note we place the count in the bottom of the server list
   instance= memcached_server_instance_fetch(ptr, 0);
   memcached_servers_set_count(instance, memcached_server_count(ptr));
 

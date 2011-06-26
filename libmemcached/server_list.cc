@@ -45,7 +45,12 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   }
 
   /* @todo Check return type */
-  memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET);
+  if (not memcached_server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET))
+  {
+    ptr->cached_errno= errno;
+    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return NULL;
+  }
 
   // Handset allocated since 
   new_host_list->options.is_allocated= true;
