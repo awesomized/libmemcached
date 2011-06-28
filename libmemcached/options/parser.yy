@@ -230,7 +230,7 @@ expression:
 behaviors:
           NAMESPACE string
           {
-            if ((context->rc= memcached_set_prefix_key(context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_set_namespace(context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }

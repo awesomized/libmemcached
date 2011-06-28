@@ -54,7 +54,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached/vbucket.h \
 			 libmemcached/options.h \
 			 libmemcached/parse.h \
-			 libmemcached/prefix_key.h \
+			 libmemcached/namespace.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
@@ -130,7 +130,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/memcached.cc \
 				       libmemcached/options.cc \
 				       libmemcached/parse.cc \
-				       libmemcached/prefix_key.cc \
+				       libmemcached/namespace.cc \
 				       libmemcached/purge.cc \
 				       libmemcached/quit.cc \
 				       libmemcached/response.cc \

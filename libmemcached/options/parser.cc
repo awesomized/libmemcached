@@ -1648,7 +1648,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 232 "libmemcached/options/parser.yy"
     {
-            if ((context->rc= memcached_set_prefix_key(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).size)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_set_namespace(context->memc, (yyvsp[(2) - (2)].string).c_str, (yyvsp[(2) - (2)].string).size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, NULL);;
             }

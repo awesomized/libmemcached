@@ -88,7 +88,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   {
     WATCHPOINT_ASSERT(self->options.is_initialized == false);
 
-    self->options.is_allocated= false;
+    memcached_set_allocated(self, false);
   }
   else
   {
@@ -99,7 +99,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
       return NULL;
     }
 
-    self->options.is_allocated= true;
+    memcached_set_allocated(self, true);
   }
   self->root= memc;
 
@@ -107,7 +107,10 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
 
   if (memcached_failed(_string_check(self, initial_size)))
   {
-    libmemcached_free(memc, self);
+    if (memcached_is_allocated(self))
+    {
+      libmemcached_free(memc, self);
+    }
 
     return NULL;
   }

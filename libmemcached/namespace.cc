@@ -3,7 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,34 +37,49 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t memcached_key_test(const memcached_st &memc,
-                                      const char * const *keys,
-                                      const size_t *key_length,
-                                      size_t number_of_keys)
+memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, size_t key_length)
 {
-  if (not memc.flags.verify_key)
-    return MEMCACHED_SUCCESS;
+  WATCHPOINT_ASSERT(self);
 
-  if (memc.flags.binary_protocol)
-    return MEMCACHED_SUCCESS;
-
-  for (uint32_t x= 0; x < number_of_keys; x++)
+  if (key and key_length == 0)
+  { 
+    WATCHPOINT_ASSERT(key_length);
+    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string had value but length was 0"));
+  }
+  else if (key_length and key == NULL)
   {
-    memcached_return_t rc= memcached_validate_key_length(*(key_length + x), false);
-    if (memcached_failed(rc))
+    WATCHPOINT_ASSERT(key);
+    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string length was > 1 but namespace string was null "));
+  }
+  else if (key and key_length)
+  {
+    bool orig= self->flags.verify_key;
+    self->flags.verify_key= true;
+    if (memcached_failed(memcached_key_test(*self, (const char **)&key, &key_length, 1)))
     {
-      return rc;
+      self->flags.verify_key= orig;
+      return memcached_set_error(*self, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
     }
- 
-    for (size_t y= 0; y < *(key_length + x); y++)
+    self->flags.verify_key= orig;
+
+    if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
     {
-      if ((isgraph(keys[x][y])) == 0)
-      {
-        return MEMCACHED_BAD_KEY_PROVIDED;
-      }
+      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
     }
+
+    memcached_array_free(self->prefix_key);
+    self->prefix_key= memcached_strcpy(self, key, key_length);
+
+    if (not self->prefix_key)
+    {
+      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    }
+  }
+  else
+  {
+    memcached_array_free(self->prefix_key);
+    self->prefix_key= NULL;
   }
 
   return MEMCACHED_SUCCESS;
 }
-

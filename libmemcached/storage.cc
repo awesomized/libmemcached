@@ -78,10 +78,14 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
+  {
     return rc;
+  }
 
-  if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (memcached_failed(memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
+  {
     return MEMCACHED_BAD_KEY_PROVIDED;
+  }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);

@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached Client and Server 
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,31 +35,43 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include <libtest/common.h>
 
-memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *key, size_t key_length)
+test_return_t memcached_increment_namespace(memcached_st *memc)
 {
-  WATCHPOINT_ASSERT(self);
+  uint64_t new_number;
+  memcached_return_t rc;
+  const char *key= "number";
+  const char *value= "0";
 
-  if (key and key_length)
-  {
-    if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-      return memcached_set_error(*self, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_set(memc, 
+                             test_literal_param("number"),
+                             test_literal_param("0"),
+                             (time_t)0, (uint32_t)0));
 
-    if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
-      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_increment(memc,
+                                   test_literal_param("number"),
+                                   1, &new_number));
+  test_compare(1, new_number);
 
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= memcached_strcpy(self, key, key_length);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_increment(memc,
+                                   test_literal_param("number"),
+                                   1, &new_number));
+  test_compare(2, new_number);
 
-    if (not self->prefix_key)
-      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
-  }
-  else
-  {
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= NULL;
-  }
+  memcached_st *clone= memcached_clone(NULL, memc);
 
-  return MEMCACHED_SUCCESS;
+  test_compare(MEMCACHED_NOTFOUND, 
+               memcached_increment(memc,
+                                   test_literal_param("number"),
+                                   1, &new_number));
+  test_compare(1, new_number);
+
+
+
+  return TEST_SUCCESS;
 }
+

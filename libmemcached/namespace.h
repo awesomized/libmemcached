@@ -3,7 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,36 +35,15 @@
  *
  */
 
-#include <libmemcached/common.h>
+#pragma once
 
-memcached_return_t memcached_key_test(const memcached_st &memc,
-                                      const char * const *keys,
-                                      const size_t *key_length,
-                                      size_t number_of_keys)
-{
-  if (not memc.flags.verify_key)
-    return MEMCACHED_SUCCESS;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  if (memc.flags.binary_protocol)
-    return MEMCACHED_SUCCESS;
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_namespace(memcached_st *self, const char *str, size_t length);
 
-  for (uint32_t x= 0; x < number_of_keys; x++)
-  {
-    memcached_return_t rc= memcached_validate_key_length(*(key_length + x), false);
-    if (memcached_failed(rc))
-    {
-      return rc;
-    }
- 
-    for (size_t y= 0; y < *(key_length + x); y++)
-    {
-      if ((isgraph(keys[x][y])) == 0)
-      {
-        return MEMCACHED_BAD_KEY_PROVIDED;
-      }
-    }
-  }
-
-  return MEMCACHED_SUCCESS;
+#ifdef __cplusplus
 }
-
+#endif

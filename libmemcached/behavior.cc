@@ -255,6 +255,11 @@ bool _is_auto_eject_host(const memcached_st *ptr)
 uint64_t memcached_behavior_get(memcached_st *ptr,
                                 const memcached_behavior_t flag)
 {
+  if (not ptr)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
   switch (flag)
   {
   case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:

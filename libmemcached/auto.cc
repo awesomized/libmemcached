@@ -49,8 +49,10 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   memcached_server_write_instance_st instance;
   bool no_reply= ptr->flags.no_reply;
 
-  if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (memcached_failed(memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
+  {
     return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+  }
 
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
@@ -111,15 +113,13 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
                                            uint32_t expiration,
                                            uint64_t *value)
 {
-  uint32_t server_key;
-  memcached_server_write_instance_st instance;
   bool no_reply= ptr->flags.no_reply;
 
   if (memcached_server_count(ptr) == 0)
     return memcached_set_error(*ptr, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
 
-  server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  instance= memcached_server_instance_fetch(ptr, server_key);
+  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
 
   if (no_reply)
   {
@@ -144,12 +144,12 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   struct libmemcached_io_vector_st vector[]=
   {
     { sizeof(request.bytes), request.bytes },
-    { memcached_array_size(ptr->prefix_key), ptr->prefix_key },
+    { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
     { key_length, key }
   };
 
   memcached_return_t rc;
-  if ((rc= memcached_vdo(instance, vector, 3, true)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= memcached_vdo(instance, vector, 3, true)))
   {
     memcached_io_reset(instance);
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
@@ -166,10 +166,6 @@ memcached_return_t memcached_increment(memcached_st *ptr,
                                        uint32_t offset,
                                        uint64_t *value)
 {
-  uint64_t local_value;
-  if (! value)
-    value= &local_value;
-
   return memcached_increment_by_key(ptr, key, key_length, key, key_length, offset, value);
 }
 
@@ -178,10 +174,6 @@ memcached_return_t memcached_decrement(memcached_st *ptr,
                                        uint32_t offset,
                                        uint64_t *value)
 {
-  uint64_t local_value;
-  if (! value)
-    value= &local_value;
-
   return memcached_decrement_by_key(ptr, key, key_length, key, key_length, offset, value);
 }
 

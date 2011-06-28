@@ -219,7 +219,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     return memcached_set_error(*ptr, MEMCACHED_NOTFOUND, MEMCACHED_AT, memcached_literal_param("number_of_keys was zero"));
   }
 
-  if (ptr->flags.verify_key && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (memcached_failed(memcached_key_test(*ptr, keys, key_length, number_of_keys)))
   {
     return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad key value was provided"));
   }
@@ -227,7 +227,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   bool is_group_key_set= false;
   if (group_key && group_key_length)
   {
-    if (ptr->flags.verify_key and (memcached_key_test((const char * const *)&group_key, &group_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+    if (memcached_failed(memcached_key_test(*ptr, (const char * const *)&group_key, &group_key_length, 1)))
     {
       return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad group key was provided."));
     }

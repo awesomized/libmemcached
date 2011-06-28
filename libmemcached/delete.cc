@@ -58,26 +58,26 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 {
   bool to_write;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  uint32_t server_key;
   memcached_server_write_instance_st instance;
 
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
   memcached_return_t rc;
-  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= initialize_query(ptr)))
   {
     return rc;
   }
 
   rc= memcached_validate_key_length(key_length,
                                     ptr->flags.binary_protocol);
-  unlikely (rc != MEMCACHED_SUCCESS)
+
+  unlikely (memcached_failed(rc))
     return rc;
 
   unlikely (memcached_server_count(ptr) == 0)
     return MEMCACHED_NO_SERVERS;
 
-  server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
+  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   to_write= (ptr->flags.buffer_requests) ? false : true;

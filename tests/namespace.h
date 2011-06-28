@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -37,13 +37,5 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *str, size_t length);
-
-#ifdef __cplusplus
-}
-#endif
+LIBTEST_INTERNAL_API
+test_return_t memcached_increment_namespace(memcached_st *memc);
