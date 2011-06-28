@@ -3979,16 +3979,12 @@ static test_return_t selection_of_namespace_tests(memcached_st *memc)
                  memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, long_key));
 
     /* Test for a bad prefix, but with a short key */
-    test_compare_got(MEMCACHED_SUCCESS,
+    test_compare_got(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) ? MEMCACHED_INVALID_ARGUMENTS : MEMCACHED_SUCCESS,
                      rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, 1),
                      memcached_strerror(NULL, rc));
 
-    if (not memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
-    {
-      strncpy(long_key, "dog cat", sizeof(long_key));
-      test_compare(MEMCACHED_BAD_KEY_PROVIDED,
-                   memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, long_key));
-    }
+    test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) ? MEMCACHED_SUCCESS : MEMCACHED_BAD_KEY_PROVIDED,
+                 memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, "dog cat"));
   }
 
   return TEST_SUCCESS;
@@ -6485,8 +6481,8 @@ test_st virtual_bucket_tests[] ={
 };
 
 test_st namespace_tests[] ={
-  {"basic tests", 0, (test_callback_fn*)selection_of_namespace_tests },
-  {"increment", 0, (test_callback_fn*)memcached_increment_namespace },
+  {"basic tests", true, (test_callback_fn*)selection_of_namespace_tests },
+  {"increment", true, (test_callback_fn*)memcached_increment_namespace },
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -6525,13 +6521,14 @@ collection_st collection[] ={
   {"namespace", (test_callback_fn*)set_namespace, 0, tests},
   {"namespace(BINARY)", (test_callback_fn*)set_namespace_and_binary, 0, tests},
   {"specific namespace", 0, 0, namespace_tests},
+  {"specific namespace(BINARY)", (test_callback_fn*)pre_binary, 0, namespace_tests},
   {"sasl_auth", (test_callback_fn*)pre_sasl, 0, sasl_auth_tests },
   {"sasl", (test_callback_fn*)pre_sasl, 0, tests },
   {"version_1_2_3", (test_callback_fn*)check_for_1_2_3, 0, version_1_2_3},
   {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"async", (test_callback_fn*)pre_nonblock, 0, async_tests},
-  {"async_binary", (test_callback_fn*)pre_nonblock_binary, 0, async_tests},
+  {"async(BINARY)", (test_callback_fn*)pre_nonblock_binary, 0, async_tests},
   {"Cal Haldenbrand's tests", 0, 0, haldenbrand_tests},
   {"user", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
