@@ -14,7 +14,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, void *data);
+.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, const void *data);
  
 .. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
 

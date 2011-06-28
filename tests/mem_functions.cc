@@ -66,6 +66,7 @@
 #include "tests/deprecated.h"
 #include "tests/parser.h"
 #include "tests/pool.h"
+#include "tests/namespace.h"
 #include "tests/string.h"
 #include "tests/replication.h"
 #include "tests/basic.h"
@@ -6485,9 +6486,7 @@ test_st virtual_bucket_tests[] ={
 
 test_st namespace_tests[] ={
   {"basic tests", 0, (test_callback_fn*)selection_of_namespace_tests },
-#if 0
   {"increment", 0, (test_callback_fn*)memcached_increment_namespace },
-#endif
   {0, 0, (test_callback_fn*)0}
 };
 

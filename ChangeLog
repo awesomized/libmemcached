@@ -1,3 +1,8 @@
+0.51
+
+  * memcached_callback_set() now takes its data argument as const
+
+
 0.50 Mon Jun 20 10:36:57 PDT 2011
  * Updates to C++ interface 
  * Custom free allocators need to now check for value before calling free.

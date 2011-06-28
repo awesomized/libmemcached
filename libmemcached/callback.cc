@@ -20,7 +20,7 @@
 
 memcached_return_t memcached_callback_set(memcached_st *ptr,
                                           const memcached_callback_t flag,
-                                          void *data)
+                                          const void *data)
 {
   switch (flag)
   {
@@ -30,7 +30,7 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
     }
   case MEMCACHED_CALLBACK_USER_DATA:
     {
-      ptr->user_data= data;
+      ptr->user_data= const_cast<void *>(data);
       break;
     }
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:

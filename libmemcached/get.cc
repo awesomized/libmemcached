@@ -67,6 +67,10 @@ char *memcached_get_by_key(memcached_st *ptr,
                            uint32_t *flags,
                            memcached_return_t *error)
 {
+  memcached_return_t unused;
+  if (error == NULL)
+    error= &unused;
+
   unlikely (ptr->flags.use_udp)
   {
     if (value_length) 
@@ -81,8 +85,8 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   /* Request the key */
   *error= memcached_mget_by_key_real(ptr, group_key, group_key_length,
-                                     (const char * const *)&key,
-                                     &key_length, 1, false);
+                                     (const char * const *)&key, &key_length, 
+                                     1, false);
   assert(ptr->query_id == query_id +1);
 
 

@@ -36,13 +36,12 @@
  */
 
 #include <libtest/common.h>
+#include <libmemcached/memcached.h>
+#include <tests/namespace.h>
 
 test_return_t memcached_increment_namespace(memcached_st *memc)
 {
   uint64_t new_number;
-  memcached_return_t rc;
-  const char *key= "number";
-  const char *value= "0";
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_set(memc, 
@@ -64,13 +63,40 @@ test_return_t memcached_increment_namespace(memcached_st *memc)
 
   memcached_st *clone= memcached_clone(NULL, memc);
 
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_callback_set(clone, MEMCACHED_CALLBACK_NAMESPACE, "all_your_bases"));
+
   test_compare(MEMCACHED_NOTFOUND, 
+               memcached_increment(clone,
+                                   test_literal_param("number"),
+                                   1, &new_number));
+
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_add(clone, 
+                             test_literal_param("number"),
+                             test_literal_param("10"),
+                             (time_t)0, (uint32_t)0));
+
+  char *value= memcached_get(clone, 
+                             test_literal_param("number"),
+                             0, 0, 0);
+  test_true(value);
+  test_compare(2, strlen(value));
+  test_strcmp("10", value);
+
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_increment(clone,
+                                   test_literal_param("number"),
+                                   1, &new_number));
+  test_compare(11, new_number);
+
+  test_compare(MEMCACHED_SUCCESS, 
                memcached_increment(memc,
                                    test_literal_param("number"),
                                    1, &new_number));
-  test_compare(1, new_number);
+  test_compare(3, new_number);
 
-
+  memcached_free(clone);
 
   return TEST_SUCCESS;
 }
