@@ -543,34 +543,61 @@ test_return_t test_hostname_port_weight(memcached_st *)
   return TEST_SUCCESS;
 }
 
+struct socket_weight_t {
+  const char *socket;
+  size_t weight;
+};
+
 static memcached_return_t dump_socket_information(const memcached_st *,
                                                   const memcached_server_st *instance,
                                                   void *context)
 {
-  if (not strcmp(memcached_server_name(instance), static_cast<char *>(context))) 
+  socket_weight_t *check= (socket_weight_t *)context;
+
+  if (strcmp(memcached_server_name(instance), check->socket))
   {
-    std::cerr << std::endl << __FILE__ << ":" << __LINE__ << " " << memcached_server_name(instance) << " != " << static_cast<char *>(context) << std::endl;
+    std::cerr << std::endl << __FILE__ << ":" << __LINE__ << " " << memcached_server_name(instance) << " != " << check->socket << std::endl;
     return MEMCACHED_FAILURE;
   }
 
-  return MEMCACHED_SUCCESS;
+  if (instance->weight == check->weight)
+  {
+    return MEMCACHED_SUCCESS;
+  }
+
+  return MEMCACHED_FAILURE;
 }
 
 test_return_t test_parse_socket(memcached_st *)
 {
   char buffer[BUFSIZ];
 
-  test_compare_got(MEMCACHED_SUCCESS,
-                   libmemcached_check_configuration(test_literal_param("--socket=\"/tmp/foo\""), buffer, sizeof(buffer)),
-                   buffer);
-
-  memcached_st *memc= memcached(test_literal_param("--socket=\"/tmp/foo\""));
-  test_true(memc);
-
   memcached_server_fn callbacks[]= { dump_socket_information };
-  test_true(memcached_success(memcached_server_cursor(memc, callbacks, (void*)("/tmp/foo"), 1)));
+  {
+    test_compare_got(MEMCACHED_SUCCESS,
+                     libmemcached_check_configuration(test_literal_param("--socket=\"/tmp/foo\""), buffer, sizeof(buffer)),
+                     buffer);
 
-  memcached_free(memc);
+    memcached_st *memc= memcached(test_literal_param("--socket=\"/tmp/foo\""));
+    test_true(memc);
+    socket_weight_t check= { "/tmp/foo", 1 };
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_server_cursor(memc, callbacks, &check, 1));
+    memcached_free(memc);
+  }
+
+  {
+    test_compare_got(MEMCACHED_SUCCESS,
+                     libmemcached_check_configuration(test_literal_param("--socket=\"/tmp/foo\"/?23"), buffer, sizeof(buffer)),
+                     buffer);
+
+    memcached_st *memc= memcached(test_literal_param("--socket=\"/tmp/foo\"/?23"));
+    test_true(memc);
+    socket_weight_t check= { "/tmp/foo", 23 };
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_server_cursor(memc, callbacks, &check, 1));
+    memcached_free(memc);
+  }
 
   return TEST_SUCCESS;
 }

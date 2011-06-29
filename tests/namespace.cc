@@ -83,6 +83,7 @@ test_return_t memcached_increment_namespace(memcached_st *memc)
   test_true(value);
   test_compare(2, strlen(value));
   test_strcmp("10", value);
+  free(value);
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_increment(clone,

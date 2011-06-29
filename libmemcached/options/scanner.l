@@ -184,9 +184,10 @@ JENKINS			{ return JENKINS; }
       return STRING;
     }
 
-(\".*\") {
-      yylval->string.c_str = yytext;
-      yylval->string.size = yyleng;
+L?\"(\\.|[^\\"])*\" {
+      yytext[yyleng -1]= 0;
+      yylval->string.c_str= yytext +1;
+      yylval->string.size= yyleng -2;
       return QUOTED_STRING;
     }
 

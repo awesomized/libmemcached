@@ -194,6 +194,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
     return rc;
   }
 
+  size_t errors= 0;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_instance_st instance=
@@ -201,16 +202,17 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
 
     for (uint32_t y= 0; y < number_of_callbacks; y++)
     {
-      unsigned int iferror;
+      memcached_return_t ret= (*callback[y])(ptr, instance, context);
 
-      iferror= (*callback[y])(ptr, instance, context);
-
-      if (iferror)
+      if (memcached_failed(ret))
+      {
+        errors++;
         continue;
+      }
     }
   }
 
-  return MEMCACHED_SUCCESS;
+  return errors ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_server_execute(memcached_st *ptr,
@@ -349,3 +351,26 @@ const char *memcached_server_error(memcached_server_instance_st ptr)
   return ptr ?  ptr->cached_server_error : NULL;
 }
 
+const char *memcached_server_type(memcached_server_instance_st ptr)
+{
+  if (ptr)
+  {
+    switch (ptr->type)
+    {
+    case MEMCACHED_CONNECTION_TCP:
+      return "TCP";
+
+    case MEMCACHED_CONNECTION_UDP:
+      return "UDP";
+
+    case MEMCACHED_CONNECTION_UNIX_SOCKET:
+      return "SOCKET";
+
+    case MEMCACHED_CONNECTION_MAX:
+    case MEMCACHED_CONNECTION_UNKNOWN:
+      break;
+    }
+  }
+
+  return "UNKNOWN";
+}

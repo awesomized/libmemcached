@@ -162,6 +162,9 @@ in_port_t memcached_server_port(memcached_server_instance_st self);
 LIBMEMCACHED_API
 const char *memcached_server_error(memcached_server_instance_st ptr);
 
+LIBMEMCACHED_API
+const char *memcached_server_type(memcached_server_instance_st ptr);
+
 
 
 #ifdef __cplusplus

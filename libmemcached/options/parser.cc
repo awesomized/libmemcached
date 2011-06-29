@@ -442,7 +442,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  67
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  84
+#define YYNSTATES  85
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -495,12 +495,12 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyprhs[] =
 {
        0,     0,     3,     5,     9,    11,    13,    15,    17,    19,
-      21,    23,    27,    32,    37,    40,    43,    46,    49,    51,
-      54,    57,    62,    65,    68,    70,    72,    74,    76,    78,
-      80,    82,    84,    86,    88,    90,    92,    94,    96,    98,
-     100,   102,   104,   106,   108,   110,   112,   114,   116,   118,
-     120,   121,   123,   124,   126,   128,   130,   132,   134,   136,
-     138,   140,   142,   144,   146,   148,   150,   152
+      21,    23,    27,    32,    37,    41,    44,    47,    50,    52,
+      55,    58,    63,    66,    69,    71,    73,    75,    77,    79,
+      81,    83,    85,    87,    89,    91,    93,    95,    97,    99,
+     101,   103,   105,   107,   109,   111,   113,   115,   117,   119,
+     121,   122,   124,   125,   127,   129,   131,   133,   135,   137,
+     139,   141,   143,   145,   147,   149,   151,   153
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
@@ -509,19 +509,19 @@ static const yytype_int8 yyrhs[] =
       76,     0,    -1,    77,    -1,    76,    74,    77,    -1,    78,
       -1,     3,    -1,    10,    -1,     4,    -1,     5,    -1,     6,
       -1,     7,    -1,     8,    74,    85,    -1,    11,    70,    82,
-      83,    -1,    11,    69,    82,    83,    -1,    12,    85,    -1,
-       9,    85,    -1,    47,    66,    -1,    48,    66,    -1,    79,
-      -1,    46,    85,    -1,    20,    86,    -1,    20,    86,    63,
-      84,    -1,    21,    84,    -1,    80,    66,    -1,    81,    -1,
-      40,    -1,    33,    -1,    19,    -1,    25,    -1,    23,    -1,
-      24,    -1,    29,    -1,    30,    -1,    32,    -1,    34,    -1,
-      35,    -1,    36,    -1,    37,    -1,    17,    -1,    18,    -1,
-      22,    -1,    28,    -1,    31,    -1,    38,    -1,    39,    -1,
-      45,    -1,    43,    -1,    44,    -1,    41,    -1,    42,    -1,
-      -1,    67,    -1,    -1,    68,    -1,    49,    -1,    50,    -1,
-      51,    -1,    52,    -1,    53,    -1,    54,    -1,    55,    -1,
-      56,    -1,    57,    -1,    71,    -1,    72,    -1,    58,    -1,
-      59,    -1,    60,    -1
+      83,    -1,    11,    69,    82,    83,    -1,    12,    85,    83,
+      -1,     9,    85,    -1,    47,    66,    -1,    48,    66,    -1,
+      79,    -1,    46,    85,    -1,    20,    86,    -1,    20,    86,
+      63,    84,    -1,    21,    84,    -1,    80,    66,    -1,    81,
+      -1,    40,    -1,    33,    -1,    19,    -1,    25,    -1,    23,
+      -1,    24,    -1,    29,    -1,    30,    -1,    32,    -1,    34,
+      -1,    35,    -1,    36,    -1,    37,    -1,    17,    -1,    18,
+      -1,    22,    -1,    28,    -1,    31,    -1,    38,    -1,    39,
+      -1,    45,    -1,    43,    -1,    44,    -1,    41,    -1,    42,
+      -1,    -1,    67,    -1,    -1,    68,    -1,    49,    -1,    50,
+      -1,    51,    -1,    52,    -1,    53,    -1,    54,    -1,    55,
+      -1,    56,    -1,    57,    -1,    71,    -1,    72,    -1,    58,
+      -1,    59,    -1,    60,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
@@ -533,7 +533,7 @@ static const yytype_uint16 yyrline[] =
      309,   313,   317,   321,   325,   329,   333,   337,   344,   348,
      352,   356,   360,   364,   368,   372,   376,   380,   384,   388,
      395,   396,   401,   402,   407,   411,   415,   419,   423,   427,
-     431,   435,   439,   446,   450,   458,   462,   466
+     431,   435,   439,   446,   450,   461,   465,   469
 };
 #endif
 
@@ -595,7 +595,7 @@ static const yytype_uint8 yyr1[] =
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     3,     1,     1,     1,     1,     1,     1,
-       1,     3,     4,     4,     2,     2,     2,     2,     1,     2,
+       1,     3,     4,     4,     3,     2,     2,     2,     1,     2,
        2,     4,     2,     2,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
@@ -613,16 +613,16 @@ static const yytype_uint8 yydefact[] =
       41,    31,    32,    42,    33,    26,    34,    35,    36,    37,
       43,    44,    25,    48,    49,    46,    47,    45,     0,     0,
        0,     0,     2,     4,    18,     0,    24,     0,    63,    64,
-      15,    50,    50,    14,    65,    66,    67,    20,    54,    55,
+      15,    50,    50,    52,    65,    66,    67,    20,    54,    55,
       56,    57,    58,    59,    60,    61,    62,    22,    19,    16,
-      17,     1,     0,    23,    11,    51,    52,    52,     0,     3,
-      53,    13,    12,    21
+      17,     1,     0,    23,    11,    51,    52,    52,    53,    14,
+       0,     3,    13,    12,    21
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,    41,    42,    43,    44,    45,    46,    76,    81,    67,
+      -1,    41,    42,    43,    44,    45,    46,    76,    79,    67,
       50,    57
 };
 
@@ -635,17 +635,17 @@ static const yytype_int8 yypact[] =
      -24,   -61,   -61,   -61,   -47,    13,   -61,   -61,   -61,   -61,
      -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,
      -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,   -24,   -41,
-     -15,     0,   -61,   -61,   -61,   -13,   -61,   -24,   -61,   -61,
-     -61,   -12,   -12,   -61,   -61,   -61,   -61,    -9,   -61,   -61,
+     -15,     0,   -61,   -61,   -61,   -11,   -61,   -24,   -61,   -61,
+     -61,   -10,   -10,   -12,   -61,   -61,   -61,    -5,   -61,   -61,
      -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,   -61,
-     -61,   -61,    -2,   -61,   -61,   -61,   -11,   -11,    13,   -61,
-     -61,   -61,   -61,   -61
+     -61,   -61,    -2,   -61,   -61,   -61,   -12,   -12,   -61,   -61,
+      13,   -61,   -61,   -61,   -61
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -61,   -61,   -16,   -61,   -61,   -61,   -61,     6,   -18,    -7,
+     -61,   -61,   -13,   -61,   -61,   -61,   -61,     8,   -23,    -9,
       14,   -61
 };
 
@@ -661,9 +661,9 @@ static const yytype_uint8 yytable[] =
       16,    17,    18,    19,    53,    69,    20,    21,    22,    23,
       24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
       34,    35,    36,    37,    38,    39,    40,    48,    49,    51,
-      52,    70,    68,    73,    78,    75,    79,    80,    77,    82,
-       0,    74,    58,    59,    60,    61,    62,    63,    64,    65,
-      66,    83,     0,     0,    72
+      52,    70,    68,    82,    83,    73,    78,    75,    80,    81,
+      77,    74,    58,    59,    60,    61,    62,    63,    64,    65,
+      66,    84,     0,     0,    72
 };
 
 static const yytype_int8 yycheck[] =
@@ -673,9 +673,9 @@ static const yytype_int8 yycheck[] =
       22,    23,    24,    25,    10,    66,    28,    29,    30,    31,
       32,    33,    34,    35,    36,    37,    38,    39,    40,    41,
       42,    43,    44,    45,    46,    47,    48,    71,    72,    69,
-      70,    66,    38,    66,    63,    67,    72,    68,    52,    77,
-      -1,    47,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    78,    -1,    -1,    74
+      70,    66,    38,    76,    77,    66,    68,    67,    63,    72,
+      52,    47,    49,    50,    51,    52,    53,    54,    55,    56,
+      57,    80,    -1,    -1,    74
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -689,8 +689,8 @@ static const yytype_uint8 yystos[] =
       48,    76,    77,    78,    79,    80,    81,    74,    71,    72,
       85,    69,    70,    85,    58,    59,    60,    86,    49,    50,
       51,    52,    53,    54,    55,    56,    57,    84,    85,    66,
-      66,     0,    74,    66,    85,    67,    82,    82,    63,    77,
-      68,    83,    83,    84
+      66,     0,    74,    66,    85,    67,    82,    82,    68,    83,
+      63,    77,    83,    83,    84
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1624,7 +1624,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 219 "libmemcached/options/parser.yy"
     {
-            if (memcached_failed(context->rc= memcached_server_add_unix_socket(context->memc, (yyvsp[(2) - (2)].string).c_str)))
+            if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, (yyvsp[(2) - (3)].string).c_str, (yyvsp[(3) - (3)].number))))
             {
               parser_abort(context, NULL);
             }
@@ -2081,15 +2081,18 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 451 "libmemcached/options/parser.yy"
     {
+            (yyval.string)= (yyvsp[(1) - (1)].string);
+            #if 0
             (yyval.string).c_str= (yyvsp[(1) - (1)].string).c_str +1; // +1 to move use passed the initial quote
             (yyval.string).size= (yyvsp[(1) - (1)].string).size -2; // -2 removes the begin and end quote
+            #endif
           ;}
     break;
 
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 459 "libmemcached/options/parser.yy"
+#line 462 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_CONSISTENT;
           ;}
@@ -2098,7 +2101,7 @@ yyreduce:
   case 66:
 
 /* Line 1464 of yacc.c  */
-#line 463 "libmemcached/options/parser.yy"
+#line 466 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_MODULA;
           ;}
@@ -2107,7 +2110,7 @@ yyreduce:
   case 67:
 
 /* Line 1464 of yacc.c  */
-#line 467 "libmemcached/options/parser.yy"
+#line 470 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_RANDOM;
           ;}
@@ -2116,7 +2119,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2120 "libmemcached/options/parser.cc"
+#line 2123 "libmemcached/options/parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2328,7 +2331,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 472 "libmemcached/options/parser.yy"
+#line 475 "libmemcached/options/parser.yy"
  
 
 void Context::start() 

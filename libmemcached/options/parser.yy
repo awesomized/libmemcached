@@ -215,9 +215,9 @@ expression:
             }
             context->unset_server();
           }
-        | SOCKET string
+        | SOCKET string optional_weight
           {
-            if (memcached_failed(context->rc= memcached_server_add_unix_socket(context->memc, $2.c_str)))
+            if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, $3)))
             {
               parser_abort(context, NULL);
             }
@@ -449,8 +449,11 @@ string:
           }
         | QUOTED_STRING
           {
+            $$= $1;
+            #if 0
             $$.c_str= $1.c_str +1; // +1 to move use passed the initial quote
             $$.size= $1.size -2; // -2 removes the begin and end quote
+            #endif
           }
         ;
 
