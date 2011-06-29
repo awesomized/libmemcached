@@ -1136,30 +1136,28 @@ static test_return_t get_test3(memcached_st *memc)
 
 static test_return_t get_test4(memcached_st *memc)
 {
-  memcached_return_t rc;
   const char *key= "foo";
-  char *value;
   size_t value_length= 8191;
-  char *string;
-  size_t string_length;
-  uint32_t flags;
-  uint32_t x;
 
-  value = (char*)malloc(value_length);
+  char *value= (char*)malloc(value_length);
   test_true(value);
 
-  for (x= 0; x < value_length; x++)
-    value[x] = (char) (x % 127);
-
-  rc= memcached_set(memc, key, strlen(key),
-                    value, value_length,
-                    (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
-
-  for (x= 0; x < 10; x++)
+  for (uint32_t x= 0; x < value_length; x++)
   {
-    string= memcached_get(memc, key, strlen(key),
-                          &string_length, &flags, &rc);
+    value[x] = (char) (x % 127);
+  }
+
+  memcached_return_t rc= memcached_set(memc, key, strlen(key),
+                                       value, value_length,
+                                       (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+
+  for (uint32_t x= 0; x < 10; x++)
+  {
+    uint32_t flags;
+    size_t string_length;
+    char *string= memcached_get(memc, key, strlen(key),
+                                &string_length, &flags, &rc);
 
     test_compare(MEMCACHED_SUCCESS, rc);
     test_true(string);
@@ -6472,6 +6470,7 @@ test_st parser_tests[] ={
   {"bad server strings", 0, (test_callback_fn*)servers_bad_test },
   {"server with weights", 0, (test_callback_fn*)server_with_weight_test },
   {"parsing servername, port, and weight", 0, (test_callback_fn*)test_hostname_port_weight },
+  {"--socket=", 0, (test_callback_fn*)test_parse_socket },
   {0, 0, (test_callback_fn*)0}
 };
 

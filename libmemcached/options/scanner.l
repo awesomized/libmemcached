@@ -91,6 +91,8 @@
 
 "--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
 
+"--SOCKET="                          { yyextra->begin= yytext; return SOCKET; }
+
 "--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
 "--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
 "--CONFIGURE-FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }

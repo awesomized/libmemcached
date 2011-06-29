@@ -471,7 +471,7 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 196 "libmemcached/options/scanner.l"
+#line 198 "libmemcached/options/scanner.l"
 
 
 #line 478 "libmemcached/options/scanner.h"

@@ -46,6 +46,8 @@
 #include <libmemcached/options/symbol.h>
 #include <libmemcached/options/scanner.h>
 
+#include <iostream>
+
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
@@ -69,6 +71,7 @@ inline void config_error(Context *context, yyscan_t *scanner, const char *error)
 %token CONFIGURE_FILE
 %token EMPTY_LINE
 %token SERVER
+%token SOCKET
 %token SERVERS
 %token SERVERS_OPTION
 %token UNKNOWN_OPTION
@@ -211,6 +214,13 @@ expression:
               parser_abort(context, NULL);
             }
             context->unset_server();
+          }
+        | SOCKET string
+          {
+            if (memcached_failed(context->rc= memcached_server_add_unix_socket(context->memc, $2.c_str)))
+            {
+              parser_abort(context, NULL);
+            }
           }
         | CONFIGURE_FILE string
           {
