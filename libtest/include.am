@@ -33,7 +33,7 @@ noinst_HEADERS+= \
 		 libtest/visibility.h
 
 noinst_LTLIBRARIES+= libtest/libserver.la
-libtest_libserver_la_SOURCES= libtest/server.c
+libtest_libserver_la_SOURCES= libtest/memcached.cc
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES=\

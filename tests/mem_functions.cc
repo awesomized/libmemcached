@@ -2910,19 +2910,14 @@ static test_return_t user_supplied_bug17(memcached_st *memc)
   From Andrei on IRC
 */
 
-static test_return_t user_supplied_bug19(memcached_st *not_used)
+static test_return_t user_supplied_bug19(memcached_st *)
 {
-  memcached_st *memc;
-  const memcached_server_st *server;
   memcached_return_t res;
 
-  (void)not_used;
+  memcached_st *memc= memcached(test_literal_param("--server=localhost:11311/?100 --server=localhost:11312/?100"));
 
-  memc= memcached_create(NULL);
-  memcached_server_add_with_weight(memc, "localhost", 11311, 100);
-  memcached_server_add_with_weight(memc, "localhost", 11312, 100);
-
-  server= memcached_server_by_key(memc, "a", 1, &res);
+  const memcached_server_st *server= memcached_server_by_key(memc, "a", 1, &res);
+  test_true(server);
 
   memcached_free(memc);
 
@@ -4875,26 +4870,18 @@ static test_return_t memcached_get_hashkit_test (memcached_st *memc)
   We are testing the error condition when we connect to a server via memcached_get()
   but find that the server is not available.
 */
-static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *memc)
+static test_return_t memcached_get_MEMCACHED_ERRNO(memcached_st *)
 {
-  (void)memc;
-  memcached_st *tl_memc_h;
-
   const char *key= "MemcachedLives";
   size_t len;
   uint32_t flags;
   memcached_return rc;
-  char *value;
 
   // Create a handle.
-  tl_memc_h= memcached_create(NULL);
-  memcached_server_st *servers= memcached_servers_parse("localhost:9898,localhost:9899"); // This server should not exist
-  test_true(servers);
-  memcached_server_push(tl_memc_h, servers);
-  memcached_server_list_free(servers);
+  memcached_st *tl_memc_h= memcached(test_literal_param("--server=localhost:9898 --server=localhost:9899")); // This server should not exist
 
   // See if memcached is reachable.
-  value= memcached_get(tl_memc_h, key, strlen(key), &len, &flags, &rc);
+  char *value= memcached_get(tl_memc_h, key, strlen(key), &len, &flags, &rc);
 
   test_false(value);
   test_compare(0, len);

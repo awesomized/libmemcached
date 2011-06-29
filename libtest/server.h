@@ -27,7 +27,6 @@ struct server_startup_st
 {
   uint8_t count;
   uint8_t udp;
-  memcached_server_st *servers;
   char *server_list;
   char pid_file[SERVERS_TO_CREATE][FILENAME_MAX];
   in_port_t port[SERVERS_TO_CREATE];

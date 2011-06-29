@@ -52,13 +52,6 @@ libmemcached_test_container_st *world_create(test_return_t *error)
   global_container.construct.udp= 0;
   server_startup(&global_container.construct);
 
-  if (not global_container.construct.servers)
-  {
-    *error= TEST_FAILURE;
-    server_shutdown(&global_container.construct);
-    return NULL;
-  }
-
   *error= TEST_SUCCESS;
 
   return &global_container;
@@ -66,11 +59,15 @@ libmemcached_test_container_st *world_create(test_return_t *error)
 
 test_return_t world_container_startup(libmemcached_test_container_st *container)
 {
-  container->parent= memcached_create(NULL);
-  test_true((container->parent != NULL));
+  char buffer[BUFSIZ];
 
-  test_compare(MEMCACHED_SUCCESS,
-	       memcached_server_push(container->parent, container->construct.servers));
+  test_compare_got(MEMCACHED_SUCCESS,
+                   libmemcached_check_configuration(container->construct.server_list, strlen(container->construct.server_list),
+                                                    buffer, sizeof(buffer)),
+                   buffer);
+
+  container->parent= memcached(container->construct.server_list, strlen(container->construct.server_list));
+  test_true(container->parent);
 
   return TEST_SUCCESS;
 }
@@ -86,7 +83,7 @@ test_return_t world_container_shutdown(libmemcached_test_container_st *container
 test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
   container->memc= memcached_clone(NULL, container->parent);
-  test_true((container->memc != NULL));
+  test_true(container->memc);
 
   return TEST_SUCCESS;
 }
@@ -133,8 +130,6 @@ test_return_t world_on_error(test_return_t test_state, libmemcached_test_contain
 test_return_t world_destroy(libmemcached_test_container_st *container)
 {
   server_startup_st *construct= &container->construct;
-  memcached_server_st *servers= container->construct.servers;
-  memcached_server_list_free(servers);
 
   server_shutdown(construct);
 

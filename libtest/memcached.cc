@@ -62,10 +62,10 @@
 
 #include <libtest/server.h>
 
-static struct timespec global_sleep_value= { .tv_sec= 0, .tv_nsec= 50000 };
-
 static void global_sleep(void)
 {
+  static struct timespec global_sleep_value= { 0, 50000 };
+
 #ifdef WIN32
   sleep(1);
 #else
@@ -133,8 +133,6 @@ void server_startup(server_startup_st *construct)
   if ((construct->server_list= getenv("MEMCACHED_SERVERS")))
   {
     printf("servers %s\n", construct->server_list);
-    construct->servers= memcached_servers_parse(construct->server_list);
-    construct->server_list= NULL;
     construct->count= 0;
   }
   else
@@ -220,11 +218,10 @@ void server_startup(server_startup_st *construct)
           }
         }
 
-        int count;
         size_t remaining_length= sizeof(server_string_buffer) - (size_t)(end_ptr -server_string_buffer);
-        count= snprintf(end_ptr, remaining_length,  "localhost:%u,", construct->port[x]);
+        int count= snprintf(end_ptr, remaining_length,  "--server=localhost:%u ", construct->port[x]);
 
-        if ((size_t)count >= remaining_length || count < 0)
+        if ((size_t)count >= remaining_length or count < 0)
         {
           fprintf(stderr, "server names grew to be larger then buffer allowed\n");
           abort();
@@ -318,22 +315,11 @@ void server_startup(server_startup_st *construct)
         }
       }
 
-      construct->server_list= strdup(server_string_buffer);
+      construct->server_list= strndup(server_string_buffer, strlen(server_string_buffer) -1);
     }
-    printf("servers %s\n", construct->server_list);
-    construct->servers= memcached_servers_parse(construct->server_list);
   }
-
-  assert(construct->servers);
 
   srandom((unsigned int)time(NULL));
-
-  for (uint32_t x= 0; x < memcached_server_list_count(construct->servers); x++)
-  {
-    printf("\t%s : %d\n", memcached_server_name(&construct->servers[x]), memcached_server_port(&construct->servers[x]));
-    assert(construct->servers[x].fd == -1);
-    assert(construct->servers[x].cursor_active == 0);
-  }
 
   printf("\n");
 }
