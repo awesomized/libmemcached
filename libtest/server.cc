@@ -3,7 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,40 +33,67 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#include <config.h>
+#include <iostream>
+
+#include <libtest/server.h>
+#include <libtest/killpid.h>
 
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+std::ostream& operator<<(std::ostream& output, const server_st &arg)
 {
-  memcached_st *memc_ptr= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
+  if (arg.is_socket())
   {
-    rc= memcached_version(memc_ptr);
+    output << arg.hostname;
   }
-
-  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
+  else
   {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_ptr, 0);
+    output << arg.hostname << ":" << arg.port();
+  }
+  return output;  // for multiple << operators
+}
 
-    if (instance and instance->error_messages)
+server_st::~server_st()
+{
+  if (not _used)
+  {
+    kill();
+  }
+}
+
+void server_st::reset_pid()
+{
+  pid_file[0]= 0;
+  _pid= -1;
+}
+
+bool server_st::kill()
+{
+  if (not has_pid() and pid_file[0] == 0)
+  {
+    return true;
+  }
+  
+  if (has_pid())
+  {
+    kill_pid(pid());
+    if (pid_file[0])
     {
-      rc= memcached_server_error_return(instance);
+      unlink(pid_file); // If this happens we may be dealing with a dead server that left its pid file.
     }
-  }
-  memcached_free(memc_ptr);
+    reset_pid();
 
-  if (ret)
+    return true;
+  }
+  else if (pid_file[0])
   {
-    *ret= rc;
+    kill_file(pid_file);
+    reset_pid();
+
+    return true;
   }
 
-  return memcached_success(rc);
+  return false;
 }

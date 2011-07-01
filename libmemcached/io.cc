@@ -128,11 +128,11 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
           int err;
           socklen_t len= sizeof (err);
           (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          ptr->cached_errno= (err == 0) ? get_socket_errno() : err;
+          memcached_set_errno(*ptr, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
         }
         else
         {
-          ptr->cached_errno= get_socket_errno();
+          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         }
         memcached_quit_server(ptr, true);
 
@@ -141,10 +141,9 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     }
   }
 
-  ptr->cached_errno= get_socket_errno();
   memcached_quit_server(ptr, true);
 
-  return memcached_set_error(*ptr, MEMCACHED_FAILURE, MEMCACHED_AT);
+  return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
 }
 
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
@@ -711,7 +710,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
 
     if (sent_length == SOCKET_ERROR)
     {
-      ptr->cached_errno= get_socket_errno();
+      memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
 #if 0 // @todo I should look at why we hit this bit of code hard frequently
       WATCHPOINT_ERRNO(get_socket_errno());
       WATCHPOINT_NUMBER(get_socket_errno());

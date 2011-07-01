@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,40 +32,85 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#include <config.h>
 
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+#include <libtest/killpid.h>
+
+bool kill_pid(pid_t pid_arg)
 {
-  memcached_st *memc_ptr= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
+  if ((kill(pid_arg, SIGTERM) == -1))
   {
-    rc= memcached_version(memc_ptr);
-  }
-
-  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_ptr, 0);
-
-    if (instance and instance->error_messages)
+    switch (errno)
     {
-      rc= memcached_server_error_return(instance);
+    case EPERM:
+      perror(__func__);
+      std::cerr << __func__ << " -> Does someone else have a process running locally for " << int(pid_arg) << "?" << std::endl;
+      return false;
+
+    case ESRCH:
+      perror(__func__);
+      std::cerr << "Process " << int(pid_arg) << " not found." << std::endl;
+      return false;
+
+    default:
+    case EINVAL:
+      perror(__func__);
+      return false;
     }
   }
-  memcached_free(memc_ptr);
 
-  if (ret)
+  int status= 0;
+  pid_t pid= waitpid(pid_arg, &status, 0);
+  if (pid == -1)
   {
-    *ret= rc;
+    switch (errno)
+    {
+    case ECHILD:
+      return true;
+    }
+    std::cerr << std::endl << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg) << std::endl;
+    return false;
   }
 
-  return memcached_success(rc);
+  if (WIFEXITED(status))
+    return true;
+
+  if (WCOREDUMP(status))
+    return true;
+
+  return false;
+}
+
+
+void kill_file(const std::string &filename)
+{
+  FILE *fp;
+
+  if (filename.empty())
+    return;
+
+  if ((fp= fopen(filename.c_str(), "r")))
+  {
+    char pid_buffer[1024];
+
+    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
+    fclose(fp);
+
+    if (ptr)
+    {
+      pid_t pid= (pid_t)atoi(pid_buffer);
+      if (pid != 0)
+      {
+        kill_pid(pid);
+        unlink(filename.c_str()); // If this happens we may be dealing with a dead server that left its pid file.
+      }
+    }
+  }
 }

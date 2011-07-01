@@ -163,7 +163,7 @@ static void _free(memcached_st *ptr, bool release_st)
   memcached_array_free(ptr->prefix_key);
   ptr->prefix_key= NULL;
 
-  memcached_error_free(ptr);
+  memcached_error_free(*ptr);
 
   if (ptr->sasl.callbacks)
   {

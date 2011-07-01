@@ -344,7 +344,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list)
 {
   if (not list)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   uint32_t count= memcached_server_list_count(list);
 
@@ -362,8 +364,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     memcached_server_write_instance_st instance;
 
     if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
-        or ((list[x].type == MEMCACHED_CONNECTION_UDP)
-            and ! (ptr->flags.use_udp)) )
+        or ((list[x].type == MEMCACHED_CONNECTION_UDP) and not (ptr->flags.use_udp)) )
     {
       return MEMCACHED_INVALID_HOST_PROTOCOL;
     }
@@ -374,8 +375,8 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
     WATCHPOINT_ASSERT(instance);
 
-    if (not memcached_server_create_with(ptr, instance, list[x].hostname,
-                                         list[x].port, list[x].weight, list[x].type))
+    if (not __server_create_with(ptr, instance, list[x].hostname,
+                                 list[x].port, list[x].weight, list[x].type))
     {
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
@@ -453,7 +454,7 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
   if (not hostname)
     hostname= "localhost";
 
-  return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_TCP);
+  return server_add(ptr, hostname, port, weight, hostname[0] == '/' ? MEMCACHED_CONNECTION_UNIX_SOCKET  : MEMCACHED_CONNECTION_TCP);
 }
 
 static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
@@ -479,7 +480,7 @@ static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
   /* TODO: Check return type */
   memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
 
-  if (not memcached_server_create_with(ptr, instance, hostname, port, weight, type))
+  if (not __server_create_with(ptr, instance, hostname, port, weight, type))
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }

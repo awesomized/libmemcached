@@ -101,11 +101,11 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
           int err;
           socklen_t len= sizeof (err);
           (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          ptr->cached_errno= (err == 0) ? get_socket_errno() : err;
+          memcached_set_errno(*ptr, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
         }
         else
         {
-          ptr->cached_errno= get_socket_errno();
+          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         }
 
         WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
@@ -347,7 +347,8 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 
   if ((ptr->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   {
-    return memcached_set_errno(*ptr, errno, NULL);
+    memcached_set_errno(*ptr, errno, NULL);
+    return MEMCACHED_CONNECTION_FAILURE;
   }
 
   struct sockaddr_un servAddr;
@@ -374,7 +375,8 @@ static memcached_return_t unix_socket_connect(memcached_server_st *ptr)
 
       default:
         WATCHPOINT_ERRNO(errno);
-        return memcached_set_errno(*ptr, errno, MEMCACHED_AT);
+        memcached_set_errno(*ptr, errno, MEMCACHED_AT);
+        return MEMCACHED_CONNECTION_FAILURE;
       }
     }
   } while (0);
@@ -540,7 +542,9 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   memcached_return_t rc= MEMCACHED_NO_SERVERS;
 
   if (ptr->fd != INVALID_SOCKET)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 

@@ -55,3 +55,14 @@ test_return_t Framework::Item::startup(void* arg)
 
   return TEST_SUCCESS;
 }
+
+void* Framework::create(test_return_t* arg)
+{
+  if (_create)
+  {
+    return _create(arg);
+  }
+
+  return NULL;
+}
+

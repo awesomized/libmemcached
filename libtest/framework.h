@@ -19,15 +19,7 @@ struct Framework {
   test_callback_create_fn *_create;
   test_callback_fn *_destroy;
 
-  void* create(test_return_t* arg)
-  {
-    if (_create)
-    {
-      return _create(arg);
-    }
-
-    return NULL;
-  }
+  void* create(test_return_t* arg);
 
   test_return_t destroy(void*);
 

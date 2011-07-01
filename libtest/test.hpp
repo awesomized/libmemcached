@@ -37,6 +37,12 @@ LIBTEST_API
 LIBTEST_API
   void set_default_port(in_port_t port);
 
+LIBTEST_API
+  const char* default_socket();
+
+LIBTEST_API
+  void set_default_socket(const char *socket);
+
 #ifdef __cplusplus
 #define test_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
 #else

@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,40 +33,46 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#pragma once
 
+#include <unistd.h>
+#include <string>
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+namespace libtest {
+
+class Wait 
 {
-  memcached_st *memc_ptr= memcached_create(NULL);
+public:
 
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
+  Wait(const std::string &filename, uint32_t timeout= 6) :
+    _successful(false)
   {
-    rc= memcached_version(memc_ptr);
-  }
+    uint32_t waited;
+    uint32_t this_wait;
+    uint32_t retry;
 
-  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_ptr, 0);
-
-    if (instance and instance->error_messages)
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
     {
-      rc= memcached_server_error_return(instance);
+      if ((not access(filename.c_str(), R_OK)) or (waited >= timeout))
+      {
+        _successful= true;
+        break;
+      }
+
+      this_wait= retry * retry / 3 + 1;
+      sleep(this_wait);
     }
   }
-  memcached_free(memc_ptr);
 
-  if (ret)
+  bool successful() const
   {
-    *ret= rc;
+    return _successful;
   }
 
-  return memcached_success(rc);
-}
+private:
+  bool _successful;
+};
+
+} // namespace libtest

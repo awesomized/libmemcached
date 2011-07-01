@@ -41,9 +41,6 @@
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
-  void memcached_error_free(memcached_st *error);
-
 LIBMEMCACHED_API
   const char *memcached_last_error_message(memcached_st *memc);
 
@@ -55,6 +52,12 @@ LIBMEMCACHED_API
 
 LIBMEMCACHED_API
   int memcached_last_error_errno(memcached_st *memc);
+
+LIBMEMCACHED_API
+  const char *memcached_server_error(memcached_server_instance_st ptr);
+
+LIBMEMCACHED_API
+  memcached_return_t memcached_server_error_return(memcached_server_instance_st ptr);
 
 #ifdef __cplusplus
 } // extern "C"

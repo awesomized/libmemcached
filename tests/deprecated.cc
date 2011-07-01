@@ -49,13 +49,16 @@ test_return_t server_list_null_test(memcached_st *ptr)
   (void)ptr;
 
   server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, NULL);
-  test_true(server_list == NULL);
+  test_true(server_list);
+  memcached_server_list_free(server_list);
 
   server_list= memcached_server_list_append_with_weight(NULL, "localhost", 0, 0, NULL);
-  test_true(server_list == NULL);
+  test_true(server_list);
+  memcached_server_list_free(server_list);
 
   server_list= memcached_server_list_append_with_weight(NULL, NULL, 0, 0, &rc);
-  test_true(server_list == NULL);
+  test_true(server_list);
+  memcached_server_list_free(server_list);
 
   return TEST_SUCCESS;
 }
@@ -63,7 +66,7 @@ test_return_t server_list_null_test(memcached_st *ptr)
 // Look for memory leak
 test_return_t regression_bug_728286(memcached_st *)
 {
-  memcached_server_st *servers = memcached_servers_parse("1.2.3.4:99");
+  memcached_server_st *servers= memcached_servers_parse("1.2.3.4:99");
   assert(servers);
   memcached_server_free(servers);
 

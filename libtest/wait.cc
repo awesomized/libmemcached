@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,40 +33,22 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#include <config.h>
 
+#include <cstdlib>
+#include <libtest/wait.h>
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+int main(int argc, char *argv[])
 {
-  memcached_st *memc_ptr= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
+  if (argc == 2)
   {
-    rc= memcached_version(memc_ptr);
+    libtest::Wait wait(argv[1]);
+
+    if (wait.successful())
+      return EXIT_SUCCESS;
   }
 
-  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_ptr, 0);
-
-    if (instance and instance->error_messages)
-    {
-      rc= memcached_server_error_return(instance);
-    }
-  }
-  memcached_free(memc_ptr);
-
-  if (ret)
-  {
-    *ret= rc;
-  }
-
-  return memcached_success(rc);
+  return EXIT_FAILURE;
 }

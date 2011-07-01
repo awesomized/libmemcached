@@ -12,6 +12,7 @@ EXTRA_DIST+= \
 	     libmemcached/memcached/README.txt
 
 noinst_HEADERS+= \
+		 libmemcached/assert.hpp \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.hpp \

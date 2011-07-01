@@ -4150,7 +4150,7 @@ static test_return_t check_for_1_2_3(memcached_st *memc)
     memcached_server_instance_by_position(memc, 0);
 
   if ((instance->major_version >= 1 && (instance->minor_version == 2 && instance->micro_version >= 4))
-      || instance->minor_version > 2)
+      or instance->minor_version > 2)
   {
     return TEST_SUCCESS;
   }
@@ -4160,17 +4160,17 @@ static test_return_t check_for_1_2_3(memcached_st *memc)
 
 static test_return_t pre_unix_socket(memcached_st *memc)
 {
-  memcached_return_t rc;
   struct stat buf;
 
   memcached_servers_reset(memc);
+  const char *socket_file= default_socket();
 
-  if (stat("/tmp/memcached.socket", &buf))
-    return TEST_SKIPPED;
+  test_skip(0, stat(socket_file, &buf));
 
-  rc= memcached_server_add_unix_socket_with_weight(memc, "/tmp/memcached.socket", 0);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_server_add_unix_socket_with_weight(memc, socket_file, 0));
 
-  return ( rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_FAILURE );
+  return TEST_SUCCESS;
 }
 
 static test_return_t pre_nodelay(memcached_st *memc)
@@ -5556,6 +5556,9 @@ static test_return_t test_verbosity(memcached_st *memc)
 
 static test_return_t test_server_failure(memcached_st *memc)
 {
+  if (memcached_server_count(memc) < 2)
+    return TEST_SKIPPED;
+
   memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
 
   memcached_st *local_memc= memcached_create(NULL);
@@ -5591,7 +5594,12 @@ static test_return_t test_server_failure(memcached_st *memc)
 
 static test_return_t test_cull_servers(memcached_st *memc)
 {
-  uint32_t count = memcached_server_count(memc);
+  uint32_t count= memcached_server_count(memc);
+
+  if (count < 2)
+  {
+    return TEST_SKIPPED;
+  }
 
   // Do not do this in your code, it is not supported.
   memc->servers[1].options.is_dead= true;
@@ -6452,7 +6460,7 @@ test_st parser_tests[] ={
   {"libmemcached_check_configuration_with_filename", 0, (test_callback_fn*)libmemcached_check_configuration_with_filename_test },
   {"number_options", 0, (test_callback_fn*)parser_number_options_test },
   {"randomly generated options", 0, (test_callback_fn*)random_statement_build_test },
-  {"prefix_key", 0, (test_callback_fn*)parser_key_prefix_test },
+  {"namespace", 0, (test_callback_fn*)parser_key_prefix_test },
   {"server", 0, (test_callback_fn*)server_test },
   {"bad server strings", 0, (test_callback_fn*)servers_bad_test },
   {"server with weights", 0, (test_callback_fn*)server_with_weight_test },

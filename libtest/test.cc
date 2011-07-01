@@ -29,6 +29,7 @@
 #endif
 
 static in_port_t global_port= 0;
+static char global_socket[1024];
 
 in_port_t default_port()
 {
@@ -39,6 +40,17 @@ in_port_t default_port()
 void set_default_port(in_port_t port)
 {
   global_port= port;
+}
+
+const char *default_socket()
+{
+  assert(global_socket[0]);
+  return global_socket;
+}
+ 
+void set_default_socket(const char *socket)
+{
+  strncpy(global_socket, socket, strlen(socket));
 }
 
 static void stats_print(Stats *stats)
@@ -142,21 +154,22 @@ Framework::Framework() :
 
 int main(int argc, char *argv[])
 {
-  Framework world;
+  Framework *world= new Framework();
+
+  if (not world)
+  {
+    return EXIT_FAILURE;
+  }
 
   Stats stats;
 
-  get_world(&world);
-
-  if (not world.runner)
-  {
-    world.runner= &defualt_runners;
-  }
+  get_world(world);
 
   test_return_t error;
-  void *world_ptr= world.create(&error);
+  void *world_ptr= world->create(&error);
   if (test_failed(error))
   {
+    std::cerr << "create() failed" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -181,7 +194,7 @@ int main(int argc, char *argv[])
     wildcard= argv[2];
   }
 
-  for (collection_st *next= world.collections; next->name; next++)
+  for (collection_st *next= world->collections; next->name; next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     bool failed= false;
@@ -192,11 +205,11 @@ int main(int argc, char *argv[])
 
     stats.collection_total++;
 
-    collection_rc= world.startup(world_ptr);
+    collection_rc= world->startup(world_ptr);
 
     if (collection_rc == TEST_SUCCESS and next->pre)
     {
-      collection_rc= world.runner->pre(next->pre, world_ptr);
+      collection_rc= world->runner->pre(next->pre, world_ptr);
     }
 
     switch (collection_rc)
@@ -232,21 +245,34 @@ int main(int argc, char *argv[])
 
       std::cerr << "\tTesting " << run->name;
 
-      world.item.startup(world_ptr);
-
-      world.item.flush(world_ptr, run);
-
-      world.item.pre(world_ptr);
-
       test_return_t return_code;
-      { // Runner Code
-	gettimeofday(&start_time, NULL);
-	return_code= world.runner->run(run->test_fn, world_ptr);
-	gettimeofday(&end_time, NULL);
-	load_time= timedif(end_time, start_time);
-      }
+      if (test_success(return_code= world->item.startup(world_ptr)))
+      {
+        if (test_success(return_code= world->item.flush(world_ptr, run)))
+        {
+          // @note pre will fail is SKIPPED is returned
+          if (test_success(return_code= world->item.pre(world_ptr)))
+          {
+            { // Runner Code
+              gettimeofday(&start_time, NULL);
+              return_code= world->runner->run(run->test_fn, world_ptr);
+              gettimeofday(&end_time, NULL);
+              load_time= timedif(end_time, start_time);
+            }
+          }
 
-      world.item.post(world_ptr);
+          // @todo do something if post fails
+          (void)world->item.post(world_ptr);
+        }
+        else
+        {
+          std::cerr << __FILE__ << ":" << __LINE__ << " item.flush(failure)" << std::endl;
+        }
+      }
+      else
+      {
+        std::cerr << __FILE__ << ":" << __LINE__ << " item.startup(failure)" << std::endl;
+      }
 
       stats.total++;
 
@@ -276,15 +302,15 @@ int main(int argc, char *argv[])
 
       std::cerr << "[ " << test_strerror(return_code) << " ]" << std::endl;
 
-      if (test_failed(world.on_error(return_code, world_ptr)))
+      if (test_failed(world->on_error(return_code, world_ptr)))
       {
         break;
       }
     }
 
-    if (next->post && world.runner->post)
+    if (next->post and world->runner->post)
     {
-      (void) world.runner->post(next->post, world_ptr);
+      (void) world->runner->post(next->post, world_ptr);
     }
 
     if (failed == 0 and skipped == 0)
@@ -293,7 +319,7 @@ int main(int argc, char *argv[])
     }
 cleanup:
 
-    world.shutdown(world_ptr);
+    world->shutdown(world_ptr);
   }
 
   if (stats.collection_failed || stats.collection_skipped)
@@ -308,12 +334,14 @@ cleanup:
     std::cout << std::endl << std::endl <<  "All tests completed successfully." << std::endl << std::endl;
   }
 
-  if (test_failed(world.destroy(world_ptr)))
+  if (test_failed(world->destroy(world_ptr)))
   {
     stats.failed++; // We do this to make our exit code return EXIT_FAILURE
   }
 
   stats_print(&stats);
 
-  return stats.failed == 0 ? 0 : 1;
+  delete world;
+
+  return stats.failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

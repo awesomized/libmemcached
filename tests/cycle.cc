@@ -3,7 +3,6 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,40 +32,60 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and makes sure it is alive.
- *
  */
 
+
+/*
+  Test that we are cycling the servers we are creating during testing.
+*/
+
+#include <libtest/common.h>
+
 #include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
 
 
-bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
+#include <libtest/server.h>
+
+#define SERVERS_TO_CREATE 5
+
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
+test_st ping[] ={
+  {0, 0, 0}
+};
+
+collection_st collection[] ={
+  {0, 0, 0, 0}
+};
+
+static server_startup_st *world_create(test_return_t *error)
 {
-  memcached_st *memc_ptr= memcached_create(NULL);
+  server_startup_st *servers= new server_startup_st();
 
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
-  {
-    rc= memcached_version(memc_ptr);
-  }
+  server_startup(servers);
 
-  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_ptr, 0);
+  *error= TEST_SUCCESS;
 
-    if (instance and instance->error_messages)
-    {
-      rc= memcached_server_error_return(instance);
-    }
-  }
-  memcached_free(memc_ptr);
-
-  if (ret)
-  {
-    *ret= rc;
-  }
-
-  return memcached_success(rc);
+  return servers;
 }
+
+static test_return_t world_destroy(server_startup_st *servers)
+{
+  server_shutdown(servers);
+  delete servers;
+
+  return TEST_SUCCESS;
+}
+
+
+
+void get_world(Framework *world)
+{
+  world->collections= collection;
+
+  world->_create= (test_callback_create_fn*)world_create;
+  world->_destroy= (test_callback_fn*)world_destroy;
+}
+

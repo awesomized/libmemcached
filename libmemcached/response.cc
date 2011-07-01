@@ -218,7 +218,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     if (memcached_failed(rrc) and rrc == MEMCACHED_IN_PROGRESS)
     {
       memcached_quit_server(ptr, true);
-      return memcached_set_error(*ptr, rrc, MEMCACHED_AT);
+      return memcached_set_error(*ptr, MEMCACHED_IN_PROGRESS, MEMCACHED_AT);
     }
     else if (memcached_failed(rrc))
     {
@@ -291,28 +291,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
         while (*endptr != '\r' && *endptr != '\n') endptr++;
 
-        /*
-          Yes, we could make this "efficent" but to do that we would need
-          to maintain more state for the size of the buffer. Why waste
-          memory in the struct, which is important, for something that
-          rarely should happen?
-        */
-        char *rel_ptr= (char *)libmemcached_realloc(ptr->root,
-                                                    ptr->cached_server_error,
-                                                    (size_t) (endptr - startptr + 1));
-
-        if (rel_ptr == NULL)
-        {
-          /* If we happened to have some memory, we just null it since we don't know the size */
-          if (ptr->cached_server_error)
-            ptr->cached_server_error[0]= 0;
-          return MEMCACHED_SERVER_ERROR;
-        }
-        ptr->cached_server_error= rel_ptr;
-
-        memcpy(ptr->cached_server_error, startptr, (size_t) (endptr - startptr));
-        ptr->cached_server_error[endptr - startptr]= 0;
-        return MEMCACHED_SERVER_ERROR;
+        return memcached_set_error(*ptr, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
       }
       else if (buffer[1] == 'T')
       {

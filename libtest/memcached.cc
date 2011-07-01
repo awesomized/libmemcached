@@ -42,25 +42,31 @@
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT+10
 
-#include <config.h>
+#include <libtest/common.h>
 
-#include <iso646.h>
-
-#include <assert.h>
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <limits.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
-#include <time.h>
 #include <unistd.h>
-#include <errno.h>
+#include <iostream>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 
 #include <libtest/server.h>
+#include <libtest/killpid.h>
+#include <libtest/wait.h>
+
+#include <boost/lexical_cast.hpp>
+
+
+#define CERR_PREFIX std::endl << __FILE__ << ":" << __LINE__ << " "
 
 static void global_sleep(void)
 {
@@ -73,269 +79,221 @@ static void global_sleep(void)
 #endif
 }
 
-static bool wait_for_file(const char *filename)
+#define SOCKET_FILE "/tmp/memcached.socket"
+
+static bool cycle_server(server_st& server)
 {
-  uint32_t timeout= 6;
-  uint32_t waited;
-  uint32_t this_wait;
-  uint32_t retry;
-
-  for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
+  while (1)
   {
-    if ((! access(filename, R_OK)) || (waited >= timeout))
+    if (libmemcached_util_ping(server.hostname, server.port(), NULL))
     {
-      return true;
-    }
+      // First we try to kill it, and on fail of that we flush it.
+      pid_t pid= libmemcached_util_getpid(server.hostname, server.port(), NULL);
 
-    this_wait= retry * retry / 3 + 1;
-    sleep(this_wait);
-  }
-
-  return false;
-}
-
-static void kill_file(const char *file_buffer)
-{
-  FILE *fp;
-
-  while ((fp= fopen(file_buffer, "r")))
-  {
-    char pid_buffer[1024];
-
-    if (fgets(pid_buffer, sizeof(pid_buffer), fp) != NULL)
-    {
-      pid_t pid= (pid_t)atoi(pid_buffer);
-      if (pid != 0)
+      if (pid > 0 and kill_pid(pid))
       {
-        if (kill(pid, SIGTERM) == -1)
-        {
-          remove(file_buffer); // If this happens we may be dealing with a dead server that left its pid file.
-        }
-        else
-        {
-          uint32_t counter= 3;
-          while ((kill(pid, 0) == 0) && --counter)
-          {
-            global_sleep();
-          }
-        }
+        std::cerr << CERR_PREFIX << "Killed existing server," << server << " with pid:" << pid << std::endl;
+        continue;
+      }
+      else if (libmemcached_util_flush(server.hostname, server.port(), NULL)) // If we can flush it, we will just use it
+      { 
+        std::cerr << CERR_PREFIX << "Found server on port " << int(server.port()) << ", flushed it!" << std::endl;
+        server.set_used();
+        return true;
+      } // No idea what is wrong here, so we need to find a different port
+      else
+      {
+        return false;
       }
     }
 
-    global_sleep();
-
-    fclose(fp);
+    break;
   }
+
+  return true;
 }
 
-void server_startup(server_startup_st *construct)
+bool server_startup(server_startup_st *construct)
 {
-  if ((construct->server_list= getenv("MEMCACHED_SERVERS")))
+  if (getenv(((char *)"MEMCACHED_SERVERS")))
   {
-    printf("servers %s\n", construct->server_list);
+    construct->server_list= getenv(((char *)"MEMCACHED_SERVERS"));
+    printf("servers %s\n", construct->server_list.c_str());
     construct->count= 0;
   }
   else
   {
+    std::string server_config_string;
+
+    uint32_t port_base= 0;
+    for (uint32_t x= 0; x < (construct->count -1); x++)
     {
-      char server_string_buffer[8096];
-      char *end_ptr;
-      end_ptr= server_string_buffer;
+      server_st &server= construct->server[x];
 
-      uint32_t port_base= 0;
-      for (uint32_t x= 0; x < construct->count; x++)
       {
-        int status;
+        char *var;
+        char variable_buffer[1024];
 
-        snprintf(construct->pid_file[x], FILENAME_MAX, "/tmp/memcached.pidXXXXXX");
-        int fd;
-        if ((fd= mkstemp(construct->pid_file[x])) == -1)
+        snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
+
+        if ((var= getenv(variable_buffer)))
         {
-          perror("mkstemp");
-          return;
+          server.set_port((in_port_t)atoi(var));
         }
-        close(fd);
-
+        else
         {
-          char *var;
-          char variable_buffer[1024];
+          server.set_port(in_port_t(x + TEST_PORT_BASE + port_base));
 
-          snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
-
-          if ((var= getenv(variable_buffer)))
+          while (not cycle_server(server))
           {
-            construct->port[x]= (in_port_t)atoi(var);
-          }
-          else
-          {
-            do {
-              construct->port[x]= (in_port_t)(x + TEST_PORT_BASE + port_base);
-
-              if (libmemcached_util_ping("localhost", construct->port[x], NULL))
-              {
-                if (libmemcached_util_flush("localhost", construct->port[x], NULL))
-                { 
-                  fprintf(stderr, "Found server on port %d, flushed it!\n", (int)construct->port[x]);
-                  construct->is_used[x]= true;
-                } // If we can flush it, we will just use it
-                else
-                {
-                  fprintf(stderr, "Found server on port %d, could not flush it, so trying next port.\n", (int)construct->port[x]);
-                  port_base++;
-                  construct->port[x]= 0;
-                }
-              }
-            } while (construct->port[x] == 0);
+            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, so trying next port." << std::endl;
+            port_base++;
+            server.set_port(in_port_t(x + TEST_PORT_BASE + port_base));
           }
         }
+      }
 
+      if (server.is_used())
+      {
+        std::cerr << std::endl << "Using server at : " << server << std::endl;
+      }
+      else
+      {
         char buffer[FILENAME_MAX];
         if (x == 0)
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -P %s -t 1 -p %u -U %u -m 128",
-                   MEMCACHED_BINARY, construct->pid_file[x], construct->port[x], construct->port[x]);
+          snprintf(buffer, sizeof(buffer), "%s -d -t 1 -p %u -U %u -m 128",
+                   MEMCACHED_BINARY, server.port(), server.port());
         }
         else
         {
-          snprintf(buffer, sizeof(buffer), "%s -d -P %s -t 1 -p %u -U %u",
-                   MEMCACHED_BINARY, construct->pid_file[x], construct->port[x], construct->port[x]);
+          snprintf(buffer, sizeof(buffer), "%s -d -t 1 -p %u -U %u",
+                   MEMCACHED_BINARY, server.port(), server.port());
         }
 
-        if (construct->is_used[x])
+        int status= system(buffer);
+        if (status == -1)
         {
-          fprintf(stderr, "USING SERVER: %s\n", buffer);
+          std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          return false;
         }
-        else
+        fprintf(stderr, "STARTING SERVER: %s\n", buffer);
+
+        int count= 30;
+        memcached_return_t rc;
+        while (not libmemcached_util_ping(server.hostname, server.port(), &rc) and --count)
         {
-          if (libmemcached_util_ping("localhost", construct->port[x], NULL))
-          {
-            fprintf(stderr, "Server on port %u already exists\n", construct->port[x]);
-          }
-          else
-          {
-            status= system(buffer);
-            fprintf(stderr, "STARTING SERVER: %s  status:%d\n", buffer, status);
-          }
+          global_sleep();
         }
 
-        size_t remaining_length= sizeof(server_string_buffer) - (size_t)(end_ptr -server_string_buffer);
-        int count= snprintf(end_ptr, remaining_length,  "--server=localhost:%u ", construct->port[x]);
-
-        if ((size_t)count >= remaining_length or count < 0)
+        if (memcached_failed(rc))
         {
-          fprintf(stderr, "server names grew to be larger then buffer allowed\n");
-          abort();
+          std::cerr << CERR_PREFIX << "libmemcached_util_ping() failed:" << memcached_strerror(NULL, rc) << " Connection:" << server << std::endl;
+          return false;
         }
-        end_ptr+= count;
-      }
-      *end_ptr= 0;
 
-
-      for (uint32_t x= 0; x < construct->count; x++)
-      {
-        if (! wait_for_file(construct->pid_file[x]))
+        server.set_pid(libmemcached_util_getpid(server.hostname, server.port(), &rc));
+        if (not server.has_pid())
         {
-          abort();
+          std::cerr << CERR_PREFIX << "libmemcached_util_getpid() failed" << memcached_strerror(NULL, rc) << " Connection: " << server << std::endl;
+          return false;
         }
       }
 
-      for (uint32_t x= 0; x < construct->count; x++)
-      {
-        uint32_t counter= 3000; // Absurd, just to catch run away process
-
-        if (construct->is_used[x])
-          continue;
-
-        while (construct->pids[x] <= 0  && --counter)
-        {
-          FILE *file= fopen(construct->pid_file[x], "r");
-          if (file)
-          {
-            char pid_buffer[1024];
-            char *found= fgets(pid_buffer, sizeof(pid_buffer), file);
-
-            if (found)
-            {
-              construct->pids[x]= atoi(pid_buffer);
-              fclose(file);
-
-              if (construct->pids[x] > 0)
-                break;
-            }
-            fclose(file);
-          }
-
-          switch (errno)
-          {
-          default:
-            fprintf(stderr, "Could not open pid file %s -> fopen(%s) -> %s:%d\n", construct->pid_file[x], strerror(errno), __FILE__, __LINE__);
-            abort();
-
-          case ENOENT:
-          case EINTR:
-          case EACCES:
-          case EINPROGRESS:
-            break;
-
-          case ENOTCONN:
-            continue;
-          }
-
-          // Safety 3rd, check to see if the file has gone away
-          if (! wait_for_file(construct->pid_file[x]))
-          {
-            abort();
-          }
-        }
-
-        bool was_started= false;
-        if (construct->pids[x] > 0)
-        {
-          counter= 30;
-          while (--counter)
-          {
-            if (kill(construct->pids[x], 0) == 0)
-            {
-              was_started= true;
-              break;
-            }
-            global_sleep();
-          }
-        }
-
-        if (was_started == false)
-        {
-          fprintf(stderr, "Failed to open buffer %s(%d)\n", construct->pid_file[x], construct->pids[x]);
-          for (uint32_t y= 0; y < construct->count; y++)
-          {
-            if (construct->pids[y] > 0)
-              kill(construct->pids[y], SIGTERM);
-          }
-          abort();
-        }
-      }
-
-      construct->server_list= strndup(server_string_buffer, strlen(server_string_buffer) -1);
+      server_config_string+= "--server=";
+      server_config_string+= server.hostname;
+      server_config_string+= ":";
+      server_config_string+= boost::lexical_cast<std::string>(server.port());
+      server_config_string+= " ";
+      fprintf(stderr, " Port %d\n", server.port());
     }
+
+    {
+      server_st &server= construct->server[construct->count -1];
+
+      {
+        std::string socket_file;
+        char *var;
+
+        server.set_hostname(SOCKET_FILE);
+
+        if ((var= getenv("LIBMEMCACHED_SOCKET")))
+        {
+          socket_file+= var;
+        }
+        else
+        {
+          if (not cycle_server(server))
+          {
+            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, so trying next port." << std::endl;
+            return false;
+          }
+        }
+      }
+
+      if (server.is_used())
+      {
+        std::cerr << std::endl << "Using server at : " << server << std::endl;
+      }
+      else
+      {
+        char buffer[FILENAME_MAX];
+        snprintf(buffer, sizeof(buffer), "%s -d -t 1 -s %s", MEMCACHED_BINARY, SOCKET_FILE);
+
+        int status= system(buffer);
+        if (status == -1)
+        {
+          std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          return false;
+        }
+        fprintf(stderr, "STARTING SERVER: %s\n", buffer);
+
+        int count= 30;
+        memcached_return_t rc;
+        while (not libmemcached_util_ping(server.hostname, server.port(), &rc) and --count)
+        {
+          global_sleep();
+        }
+
+        if (memcached_failed(rc))
+        {
+          std::cerr << CERR_PREFIX << "libmemcached_util_ping() failed:" << memcached_strerror(NULL, rc) << " Connection:" << server << std::endl;
+          return false;
+        }
+
+        server.set_pid(libmemcached_util_getpid(server.hostname, server.port(), &rc));
+        if (not server.has_pid())
+        {
+          std::cerr << CERR_PREFIX << "libmemcached_util_getpid() failed" << memcached_strerror(NULL, rc) << " Connection: " << server << std::endl;
+          return false;
+        }
+      }
+
+      {
+        set_default_socket(server.hostname);
+        server_config_string+= "--socket=\"";
+        server_config_string+= server.hostname;
+        server_config_string+= "\" ";
+      }
+    }
+
+    server_config_string.resize(server_config_string.size() -1); // Remove final space
+    construct->server_list= server_config_string;
   }
 
   srandom((unsigned int)time(NULL));
 
-  printf("\n");
+  std::cerr << std::endl;
+  return true;
 }
 
 void server_shutdown(server_startup_st *construct)
 {
-  if (construct->server_list)
+  for (uint32_t x= 0; x < construct->count; x++)
   {
-    for (uint32_t x= 0; x < construct->count; x++)
-    {
-      if (construct->is_used[x])
-        continue;
+    if (construct->server[x].is_used())
+      continue;
 
-      kill_file(construct->pid_file[x]);
-    }
-
-    free(construct->server_list);
+    construct->server[x].kill();
   }
 }
