@@ -21,8 +21,6 @@ struct Framework {
 
   void* create(test_return_t* arg);
 
-  test_return_t destroy(void*);
-
   /* This is called a the beginning of any collection run. */
   test_callback_fn *collection_startup;
 
@@ -119,11 +117,11 @@ struct Framework {
 
   Framework();
 
-  virtual ~Framework()
-  { }
+  virtual ~Framework();
 
   Framework(const Framework&);
 
 private:
   Framework& operator=(const Framework&);
+  void *_creators_ptr;
 };

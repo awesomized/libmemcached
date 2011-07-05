@@ -5,15 +5,52 @@
  */
 
 #include <libtest/common.h>
+#include <iostream>
 
-test_return_t Framework::destroy(void* arg)
+static test_return_t _runner_default(test_callback_fn func, void *p)
 {
-  if (_destroy)
+  if (func)
   {
-    return _destroy(arg);
+    return func(p);
   }
 
   return TEST_SUCCESS;
+}
+
+static Runner defualt_runners= {
+  _runner_default,
+  _runner_default,
+  _runner_default
+};
+
+static test_return_t _default_callback(void *p)
+{
+  (void)p;
+
+  return TEST_SUCCESS;
+}
+
+Framework::Framework() :
+  collections(NULL),
+  _create(NULL),
+  _destroy(NULL),
+  collection_startup(_default_callback),
+  collection_shutdown(_default_callback),
+  _on_error(NULL),
+  runner(&defualt_runners),
+  _creators_ptr(NULL)
+{
+}
+
+Framework::~Framework()
+{
+  if (_destroy)
+  {
+    if (test_failed(_destroy(_creators_ptr)))
+    {
+      std::cerr << "Failure in _destroy(), some resources may not have been cleaned up." << std::endl;
+    }
+  }
 }
 
 test_return_t Framework::Item::flush(void* arg, test_st* run)
@@ -60,9 +97,8 @@ void* Framework::create(test_return_t* arg)
 {
   if (_create)
   {
-    return _create(arg);
+    return _creators_ptr= _create(arg);
   }
 
   return NULL;
 }
-

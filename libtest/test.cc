@@ -21,6 +21,9 @@
 #include <ctime>
 #include <fnmatch.h>
 #include <iostream>
+#include <cerrno>
+
+#include <signal.h>
 
 #include <libtest/stats.h>
 
@@ -116,57 +119,84 @@ void create_core(void)
   }
 }
 
-
-static test_return_t _runner_default(test_callback_fn func, void *p)
-{
-  if (func)
-  {
-    return func(p);
-  }
-
-  return TEST_SUCCESS;
-}
-
-static Runner defualt_runners= {
-  _runner_default,
-  _runner_default,
-  _runner_default
+enum shutdown_t {
+  SHUTDOWN_RUNNING,
+  SHUTDOWN_GRACEFUL,
+  SHUTDOWN_FORCED
 };
 
-static test_return_t _default_callback(void *p)
-{
-  (void)p;
+static Framework *world= NULL;
+static volatile shutdown_t __shutdown= SHUTDOWN_RUNNING;
 
-  return TEST_SUCCESS;
+static void *sig_thread(void *arg)
+{   
+  sigset_t *set= (sigset_t *) arg;
+
+  for (;__shutdown == SHUTDOWN_RUNNING;)
+  {
+    int sig;
+    int error;
+    while ((error= sigwait(set, &sig)) == EINTR) ;
+
+    std::cerr << std::endl << "Signal handling thread got signal " <<  strsignal(sig) << std::endl;
+    switch (sig)
+    {
+    case SIGSEGV:
+    case SIGINT:
+    case SIGABRT:
+      __shutdown= SHUTDOWN_FORCED;
+
+    default:
+      break;
+    }
+  }
+
+  return NULL;
 }
 
-Framework::Framework() :
-  collections(NULL),
-  _create(NULL),
-  _destroy(NULL),
-  collection_startup(_default_callback),
-  collection_shutdown(_default_callback),
-  _on_error(NULL),
-  runner(&defualt_runners)
+
+static void setup_signals(pthread_t& thread)
 {
+  sigset_t set;
+
+  sigemptyset(&set);
+  sigaddset(&set, SIGSEGV);
+  sigaddset(&set, SIGABRT);
+  sigaddset(&set, SIGINT);
+
+  int error;
+  if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
+  {
+    std::cerr << __FILE__ << ":" << __LINE__ << " died during pthread_sigmask(" << strerror(error) << ")" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if ((error= pthread_create(&thread, NULL, &sig_thread, (void *) &set)) != 0)
+  {
+    std::cerr << __FILE__ << ":" << __LINE__ << " died during pthread_create(" << strerror(error) << ")" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 
 int main(int argc, char *argv[])
 {
-  Framework *world= new Framework();
+  world= new Framework();
 
   if (not world)
   {
     return EXIT_FAILURE;
   }
 
+  pthread_t thread;
+  setup_signals(thread);
+
   Stats stats;
 
   get_world(world);
 
   test_return_t error;
-  void *world_ptr= world->create(&error);
+  void *creators_ptr= world->create(&error);
   if (test_failed(error))
   {
     std::cerr << "create() failed" << std::endl;
@@ -194,7 +224,7 @@ int main(int argc, char *argv[])
     wildcard= argv[2];
   }
 
-  for (collection_st *next= world->collections; next->name; next++)
+  for (collection_st *next= world->collections; next->name and __shutdown == SHUTDOWN_RUNNING; next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     bool failed= false;
@@ -205,11 +235,11 @@ int main(int argc, char *argv[])
 
     stats.collection_total++;
 
-    collection_rc= world->startup(world_ptr);
+    collection_rc= world->startup(creators_ptr);
 
     if (collection_rc == TEST_SUCCESS and next->pre)
     {
-      collection_rc= world->runner->pre(next->pre, world_ptr);
+      collection_rc= world->runner->pre(next->pre, creators_ptr);
     }
 
     switch (collection_rc)
@@ -246,23 +276,23 @@ int main(int argc, char *argv[])
       std::cerr << "\tTesting " << run->name;
 
       test_return_t return_code;
-      if (test_success(return_code= world->item.startup(world_ptr)))
+      if (test_success(return_code= world->item.startup(creators_ptr)))
       {
-        if (test_success(return_code= world->item.flush(world_ptr, run)))
+        if (test_success(return_code= world->item.flush(creators_ptr, run)))
         {
           // @note pre will fail is SKIPPED is returned
-          if (test_success(return_code= world->item.pre(world_ptr)))
+          if (test_success(return_code= world->item.pre(creators_ptr)))
           {
             { // Runner Code
               gettimeofday(&start_time, NULL);
-              return_code= world->runner->run(run->test_fn, world_ptr);
+              return_code= world->runner->run(run->test_fn, creators_ptr);
               gettimeofday(&end_time, NULL);
               load_time= timedif(end_time, start_time);
             }
           }
 
           // @todo do something if post fails
-          (void)world->item.post(world_ptr);
+          (void)world->item.post(creators_ptr);
         }
         else
         {
@@ -302,7 +332,7 @@ int main(int argc, char *argv[])
 
       std::cerr << "[ " << test_strerror(return_code) << " ]" << std::endl;
 
-      if (test_failed(world->on_error(return_code, world_ptr)))
+      if (test_failed(world->on_error(return_code, creators_ptr)))
       {
         break;
       }
@@ -310,7 +340,7 @@ int main(int argc, char *argv[])
 
     if (next->post and world->runner->post)
     {
-      (void) world->runner->post(next->post, world_ptr);
+      (void) world->runner->post(next->post, creators_ptr);
     }
 
     if (failed == 0 and skipped == 0)
@@ -319,29 +349,30 @@ int main(int argc, char *argv[])
     }
 cleanup:
 
-    world->shutdown(world_ptr);
+    world->shutdown(creators_ptr);
   }
 
-  if (stats.collection_failed || stats.collection_skipped)
+  if (__shutdown == SHUTDOWN_RUNNING)
+  {
+    __shutdown= SHUTDOWN_GRACEFUL;
+  }
+
+  if (__shutdown == SHUTDOWN_FORCED)
+  {
+    std::cerr << std::endl << std::endl <<  "Tests were aborted." << std::endl << std::endl;
+  }
+  else if (stats.collection_failed or stats.collection_skipped)
   {
     std::cerr << std::endl << std::endl <<  "Some test failures and/or skipped test occurred." << std::endl << std::endl;
-#if 0
-    print_failed_test();
-#endif
   }
   else
   {
     std::cout << std::endl << std::endl <<  "All tests completed successfully." << std::endl << std::endl;
   }
 
-  if (test_failed(world->destroy(world_ptr)))
-  {
-    stats.failed++; // We do this to make our exit code return EXIT_FAILURE
-  }
-
   stats_print(&stats);
 
   delete world;
 
-  return stats.failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+  return stats.failed == 0 and __shutdown == SHUTDOWN_GRACEFUL ? EXIT_SUCCESS : EXIT_FAILURE;
 }
