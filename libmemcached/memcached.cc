@@ -51,7 +51,7 @@ static const memcached_st global_copy= {
     .auto_eject_hosts= false,
     .binary_protocol= false,
     .buffer_requests= false,
-    .hash_with_prefix_key= false,
+    .hash_with_namespace= false,
     .no_block= false,
     .no_reply= false,
     .randomize_replica_read= false,
@@ -74,7 +74,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->flags.auto_eject_hosts= false;
   self->flags.binary_protocol= false;
   self->flags.buffer_requests= false;
-  self->flags.hash_with_prefix_key= false;
+  self->flags.hash_with_namespace= false;
   self->flags.no_block= false;
   self->flags.no_reply= false;
   self->flags.randomize_replica_read= false;
@@ -135,7 +135,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->sasl.is_allocated= false;
 
   self->error_messages= NULL;
-  self->prefix_key= NULL;
+  self->_namespace= NULL;
   self->configure.initial_pool_size= 1;
   self->configure.max_pool_size= 1;
   self->configure.version= -1;
@@ -160,8 +160,8 @@ static void _free(memcached_st *ptr, bool release_st)
 
   libmemcached_free(ptr, ptr->ketama.continuum);
 
-  memcached_array_free(ptr->prefix_key);
-  ptr->prefix_key= NULL;
+  memcached_array_free(ptr->_namespace);
+  ptr->_namespace= NULL;
 
   memcached_error_free(*ptr);
 
@@ -371,8 +371,8 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
 
-  new_clone->prefix_key= memcached_array_clone(new_clone, source->prefix_key);
-  new_clone->configure.filename= memcached_array_clone(new_clone, source->prefix_key);
+  new_clone->_namespace= memcached_array_clone(new_clone, source->_namespace);
+  new_clone->configure.filename= memcached_array_clone(new_clone, source->_namespace);
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (source->sasl.callbacks)

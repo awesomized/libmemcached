@@ -142,7 +142,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     key= result->item_key;
     result->key_length= 0;
 
-    for (prefix_length= memcached_array_size(ptr->root->prefix_key); !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
+    for (prefix_length= memcached_array_size(ptr->root->_namespace); !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
     {
       if (prefix_length == 0)
       {
@@ -418,15 +418,15 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         // Only bother with doing this if key_length > 0
         if (result->key_length)
         {
-          if (memcached_array_size(ptr->root->prefix_key) and memcached_array_size(ptr->root->prefix_key) >= result->key_length)
+          if (memcached_array_size(ptr->root->_namespace) and memcached_array_size(ptr->root->_namespace) >= result->key_length)
           {
             return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
           }
 
-          if (memcached_array_size(ptr->root->prefix_key))
+          if (memcached_array_size(ptr->root->_namespace))
           {
-            result->key_length-= memcached_array_size(ptr->root->prefix_key);
-            memmove(result->item_key, result->item_key +memcached_array_size(ptr->root->prefix_key), result->key_length);
+            result->key_length-= memcached_array_size(ptr->root->_namespace);
+            memmove(result->item_key, result->item_key +memcached_array_size(ptr->root->_namespace), result->key_length);
           }
         }
 

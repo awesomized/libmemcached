@@ -97,10 +97,10 @@ void *memcached_callback_get(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      if (ptr->prefix_key)
+      if (ptr->_namespace)
       {
         *error= MEMCACHED_SUCCESS;
-        return (void *)memcached_array_string(ptr->prefix_key);
+        return (void *)memcached_array_string(ptr->_namespace);
       }
       else
       {

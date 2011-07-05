@@ -330,7 +330,7 @@ static test_return_t clone_test(memcached_st *memc)
       test_true(memc_clone->flags.verify_key == memc->flags.verify_key);
       test_true(memc_clone->ketama.weighted == memc->ketama.weighted);
       test_true(memc_clone->flags.binary_protocol == memc->flags.binary_protocol);
-      test_true(memc_clone->flags.hash_with_prefix_key == memc->flags.hash_with_prefix_key);
+      test_true(memc_clone->flags.hash_with_namespace == memc->flags.hash_with_namespace);
       test_true(memc_clone->flags.no_reply == memc->flags.no_reply);
       test_true(memc_clone->flags.use_udp == memc->flags.use_udp);
       test_true(memc_clone->flags.auto_eject_hosts == memc->flags.auto_eject_hosts);
@@ -1725,7 +1725,7 @@ static test_return_t mget_test(memcached_st *memc)
   {
     test_true(return_value);
     test_compare(MEMCACHED_SUCCESS, rc);
-    if (not memc->prefix_key)
+    if (not memc->_namespace)
     {
       test_compare(return_key_length, return_value_length);
       test_memcmp(return_value, return_key, return_value_length);

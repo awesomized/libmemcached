@@ -111,7 +111,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
       check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                     "%s %.*s%.*s %u %llu %lu %llu%s\r\n",
                                     storage_op_string(verb),
-                                    memcached_print_array(ptr->prefix_key),
+                                    memcached_print_array(ptr->_namespace),
                                     (int)key_length, key, flags,
                                     (unsigned long long)expiration, (unsigned long)value_length,
                                     (unsigned long long)cas,
@@ -134,10 +134,10 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
       memcpy(buffer_ptr, command, strlen(command));
 
       /* Copy in the key prefix, switch to the buffer_ptr */
-      buffer_ptr= (char *)memcpy((char *)(buffer_ptr + strlen(command)), (char *)memcached_array_string(ptr->prefix_key), memcached_array_size(ptr->prefix_key));
+      buffer_ptr= (char *)memcpy((char *)(buffer_ptr + strlen(command)), (char *)memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace));
 
       /* Copy in the key, adjust point if a key prefix was used. */
-      buffer_ptr= (char *)memcpy(buffer_ptr + memcached_array_size(ptr->prefix_key),
+      buffer_ptr= (char *)memcpy(buffer_ptr + memcached_array_size(ptr->_namespace),
                          key, key_length);
       buffer_ptr+= key_length;
       buffer_ptr[0]=  ' ';
@@ -481,7 +481,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= get_com_code(verb, noreply);
-  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->prefix_key)));
+  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   if (verb == APPEND_OP || verb == PREPEND_OP)
     send_length -= 8; /* append & prepend does not contain extras! */
@@ -492,7 +492,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     request.message.body.expiration= htonl((uint32_t)expiration);
   }
 
-  request.message.header.request.bodylen= htonl((uint32_t) (key_length + memcached_array_size(ptr->prefix_key) + value_length +
+  request.message.header.request.bodylen= htonl((uint32_t) (key_length + memcached_array_size(ptr->_namespace) + value_length +
                                                             request.message.header.request.extlen));
 
   if (cas)
@@ -517,7 +517,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   struct libmemcached_io_vector_st vector[]=
   {
     { send_length, request.bytes },
-    { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
     { key_length, key },
     { value_length, value }
   };

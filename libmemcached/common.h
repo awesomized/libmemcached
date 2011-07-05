@@ -100,7 +100,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/byteorder.h>
 #include <libmemcached/initialize_query.h>
 #include <libmemcached/response.h>
-#include <libmemcached/prefix_key.h>
+#include <libmemcached/namespace.h>
 
 /* string value */
 struct memcached_continuum_item_st

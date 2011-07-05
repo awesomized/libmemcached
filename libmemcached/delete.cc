@@ -134,7 +134,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
           }
           send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                                 "delete %.*s%.*s %u%s\r\n",
-                                memcached_print_array(ptr->prefix_key),
+                                memcached_print_array(ptr->_namespace),
                                 (int) key_length, key,
                                 (uint32_t)expiration,
                                 no_reply ? " noreply" :"" );
@@ -144,7 +144,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
     {
       send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                             "delete %.*s%.*s%s\r\n",
-                            memcached_print_array(ptr->prefix_key),
+                            memcached_print_array(ptr->_namespace),
                             (int)key_length, key, no_reply ? " noreply" :"");
     }
 
@@ -208,9 +208,9 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
   }
-  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->prefix_key)));
+  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->prefix_key)));
+  request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->_namespace)));
 
   if (ptr->flags.use_udp && ! flush)
   {
@@ -225,7 +225,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
   struct libmemcached_io_vector_st vector[]=
   {
     { sizeof(request.bytes), request.bytes},
-    { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
     { key_length, key },
   };
 

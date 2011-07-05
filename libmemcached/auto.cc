@@ -60,7 +60,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   int send_length;
   send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
                         "%s %.*s%.*s %" PRIu64 "%s\r\n", verb,
-                        memcached_print_array(ptr->prefix_key),
+                        memcached_print_array(ptr->_namespace),
                         (int)key_length, key,
                         offset, no_reply ? " noreply" : "");
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
@@ -133,10 +133,10 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   request.message.header.request.opcode= cmd;
-  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->prefix_key)));
+  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.extlen= 20;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->prefix_key) +request.message.header.request.extlen));
+  request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->_namespace) +request.message.header.request.extlen));
   request.message.body.delta= memcached_htonll(offset);
   request.message.body.initial= memcached_htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
@@ -144,7 +144,7 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   struct libmemcached_io_vector_st vector[]=
   {
     { sizeof(request.bytes), request.bytes },
-    { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
     { key_length, key }
   };
 

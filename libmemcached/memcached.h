@@ -98,7 +98,7 @@ struct memcached_st {
     bool auto_eject_hosts:1;
     bool binary_protocol:1;
     bool buffer_requests:1;
-    bool hash_with_prefix_key:1;
+    bool hash_with_namespace:1;
     bool no_block:1; // Don't block
     bool no_reply:1;
     bool randomize_replica_read:1;
@@ -151,7 +151,7 @@ struct memcached_st {
   memcached_callback_st *callbacks;
   struct memcached_sasl_st sasl;
   struct memcached_error_t *error_messages;
-  struct memcached_array_st *prefix_key;
+  struct memcached_array_st *_namespace;
   struct {
     uint32_t initial_pool_size;
     uint32_t max_pool_size;

@@ -212,7 +212,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
 
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    ptr->flags.hash_with_prefix_key= bool(data);
+    ptr->flags.hash_with_namespace= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
@@ -415,7 +415,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return 0;
 
   case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
-    return ptr->flags.hash_with_prefix_key;
+    return ptr->flags.hash_with_namespace;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
     return ptr->flags.no_reply;

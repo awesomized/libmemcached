@@ -67,18 +67,18 @@ memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, 
       return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
     }
 
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= memcached_strcpy(self, key, key_length);
+    memcached_array_free(self->_namespace);
+    self->_namespace= memcached_strcpy(self, key, key_length);
 
-    if (not self->prefix_key)
+    if (not self->_namespace)
     {
       return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
   }
   else
   {
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= NULL;
+    memcached_array_free(self->_namespace);
+    self->_namespace= NULL;
   }
 
   return MEMCACHED_SUCCESS;
