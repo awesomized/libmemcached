@@ -185,7 +185,7 @@ JENKINS			{ return JENKINS; }
     }
 
 L?\"(\\.|[^\\"])*\" {
-      yytext[yyleng -1]= 0;
+      yyget_text(yyscanner)[yyleng -1]= 0;
       yylval->string.c_str= yytext +1;
       yylval->string.size= yyleng -2;
       return QUOTED_STRING;

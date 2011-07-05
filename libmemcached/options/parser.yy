@@ -29,15 +29,11 @@
 %parse-param { Context *context }
 %parse-param { yyscan_t *scanner }
 %pure-parser
-%require "2.2"
+%require "2.4"
 %start begin
 %verbose
 
 %{
-
-#include <config.h>
-
-#include <stdint.h>
 
 #include <libmemcached/common.h>
 #include <libmemcached/options.hpp>

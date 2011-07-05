@@ -1921,7 +1921,7 @@ case 63:
 YY_RULE_SETUP
 #line 187 "libmemcached/options/scanner.l"
 {
-      yytext[yyleng -1]= 0;
+      config_get_text(yyscanner)[yyleng -1]= 0;
       yylval->string.c_str= yytext +1;
       yylval->string.size= yyleng -2;
       return QUOTED_STRING;
