@@ -42,6 +42,10 @@
 #include <libtest/common.h>
 
 #include <libmemcached/common.h>
+#include <libmemcached/is.h>
+#include <libmemcached/util.h>
+
+#include <iostream>
 
 
 #include <libtest/server.h>
@@ -52,14 +56,57 @@
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-test_st ping[] ={
+static test_return_t alive(memcached_st *memc)
+{
+  test_true(memc);
+  test_true(memcached_is_allocated(memc));
+  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+  {
+    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
+    test_true(instance);
+
+    test_true(libmemcached_util_ping(memcached_server_name(instance),
+                                     memcached_server_port(instance), NULL));
+  }
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t valid(memcached_st *memc)
+{
+  test_true(memc);
+  test_true(memcached_is_allocated(memc));
+
+  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+  {
+    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
+    test_true(instance);
+
+    pid_t pid= libmemcached_util_getpid(memcached_server_name(instance),
+                                        memcached_server_port(instance), NULL);
+    test_true(pid != -1);
+  }
+
+  return TEST_SUCCESS;
+}
+
+test_st ping_tests[] ={
+  {"alive", true, (test_callback_fn*)alive },
+  {0, 0, 0}
+};
+
+test_st getpid_tests[] ={
+  {"valid", true, (test_callback_fn*)valid },
   {0, 0, 0}
 };
 
 collection_st collection[] ={
+  {"libmemcached_util_ping()", 0, 0, ping_tests},
+  {"libmemcached_util_getpid()", 0, 0, getpid_tests},
   {0, 0, 0, 0}
 };
 
+#if 0
 static server_startup_st *world_create(test_return_t *error)
 {
   server_startup_st *servers= new server_startup_st();
@@ -78,8 +125,10 @@ static test_return_t world_destroy(server_startup_st *servers)
 
   return TEST_SUCCESS;
 }
+#endif
 
 
+#include "tests/libmemcached_world.h"
 
 void get_world(Framework *world)
 {
@@ -87,5 +136,15 @@ void get_world(Framework *world)
 
   world->_create= (test_callback_create_fn*)world_create;
   world->_destroy= (test_callback_fn*)world_destroy;
+
+  world->item._startup= (test_callback_fn*)world_test_startup;
+  world->item.set_pre((test_callback_fn*)world_pre_run);
+  world->item.set_post((test_callback_fn*)world_post_run);
+  world->_on_error= (test_callback_error_fn*)world_on_error;
+
+  world->collection_startup= (test_callback_fn*)world_container_startup;
+  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
+
+  world->runner= &defualt_libmemcached_runner;
 }
 

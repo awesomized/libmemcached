@@ -305,6 +305,9 @@ gdb-cycle: tests/cycle
 gdb-memslap: clients/memslap
 	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
 
+valgrind-cycle: tests/cycle
+	$(VALGRIND_COMMAND)  $(CYCLE_COMMAND)
+
 valgrind-mem: tests/testapp
 	$(VALGRIND_COMMAND)  $(MEM_COMMAND)
 

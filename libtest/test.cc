@@ -138,15 +138,18 @@ static void *sig_thread(void *arg)
     int error;
     while ((error= sigwait(set, &sig)) == EINTR) ;
 
-    std::cerr << std::endl << "Signal handling thread got signal " <<  strsignal(sig) << std::endl;
     switch (sig)
     {
     case SIGSEGV:
     case SIGINT:
     case SIGABRT:
+      std::cerr << std::endl << "Signal handling thread got signal " <<  strsignal(sig) << std::endl;
       __shutdown= SHUTDOWN_FORCED;
+      break;
 
     default:
+      std::cerr << std::endl << "Signal handling thread got unexpected signal " <<  strsignal(sig) << std::endl;
+    case SIGUSR1:
       break;
     }
   }
@@ -163,6 +166,7 @@ static void setup_signals(pthread_t& thread)
   sigaddset(&set, SIGSEGV);
   sigaddset(&set, SIGABRT);
   sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGUSR1);
 
   int error;
   if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
@@ -371,6 +375,10 @@ cleanup:
   }
 
   stats_print(&stats);
+
+  void *retval;
+  pthread_kill(thread, SIGUSR1);
+  pthread_join(thread, &retval);
 
   delete world;
 

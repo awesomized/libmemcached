@@ -3,7 +3,6 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,6 +36,8 @@
 
 #include <config.h>
 #include <iostream>
+#include <cstdlib>
+#include <cassert>
 
 #include <libtest/server.h>
 #include <libtest/killpid.h>
@@ -55,12 +56,50 @@ std::ostream& operator<<(std::ostream& output, const server_st &arg)
   return output;  // for multiple << operators
 }
 
+static void global_sleep(void)
+{
+  static struct timespec global_sleep_value= { 0, 50000 };
+
+#ifdef WIN32
+  sleep(1);
+#else
+  nanosleep(&global_sleep_value, NULL);
+#endif
+}
+
 server_st::~server_st()
 {
-  if (not _used)
+  if (has_pid())
   {
     kill();
   }
+}
+
+bool server_st::start()
+{
+  assert(not _command.empty());
+  assert(not has_pid());
+
+  if (has_pid())
+    return false;
+
+  if (system(_command.c_str()) == -1)
+    return false;
+
+  int count= 30;
+  while (not ping() and --count)
+  {
+    global_sleep();
+  }
+
+  if (count == 0)
+  {
+    return false;
+  }
+
+  _pid= get_pid();
+
+  return has_pid();
 }
 
 void server_st::reset_pid()
@@ -69,16 +108,25 @@ void server_st::reset_pid()
   _pid= -1;
 }
 
+pid_t server_st::pid()
+{
+  if (not has_pid())
+  {
+    _pid= get_pid();
+  }
+
+  return _pid;
+}
+
+
 bool server_st::kill()
 {
-  if (not has_pid() and pid_file[0] == 0)
+  if (is_used())
+    return false;
+
+  if ((_pid= get_pid()))
   {
-    return true;
-  }
-  
-  if (has_pid())
-  {
-    kill_pid(pid());
+    kill_pid(_pid);
     if (pid_file[0])
     {
       unlink(pid_file); // If this happens we may be dealing with a dead server that left its pid file.
@@ -87,6 +135,7 @@ bool server_st::kill()
 
     return true;
   }
+#if 0
   else if (pid_file[0])
   {
     kill_file(pid_file);
@@ -94,6 +143,10 @@ bool server_st::kill()
 
     return true;
   }
+#endif
 
   return false;
 }
+
+server_startup_st::~server_startup_st()
+{ }

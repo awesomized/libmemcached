@@ -40,8 +40,6 @@ test_return_t world_post_run(libmemcached_test_container_st *);
 test_return_t world_on_error(test_return_t, libmemcached_test_container_st *);
 test_return_t world_destroy(libmemcached_test_container_st *);
 
-static libmemcached_test_container_st global_container;
-
 /**
   @note generic shutdown/startup for libmemcached tests.
 */
@@ -50,9 +48,8 @@ test_return_t world_container_shutdown(libmemcached_test_container_st *container
 
 libmemcached_test_container_st *world_create(test_return_t *error)
 {
-  global_container.construct.count= SERVERS_TO_CREATE;
-  global_container.construct.udp= 0;
-  if (not server_startup(&global_container.construct))
+  libmemcached_test_container_st *global_container= new libmemcached_test_container_st();
+  if (not server_startup(&global_container->construct))
   {
     *error= TEST_FAILURE;
     return NULL;
@@ -60,7 +57,7 @@ libmemcached_test_container_st *world_create(test_return_t *error)
 
   *error= TEST_SUCCESS;
 
-  return &global_container;
+  return global_container;
 }
 
 test_return_t world_container_startup(libmemcached_test_container_st *container)
@@ -149,6 +146,8 @@ test_return_t world_destroy(libmemcached_test_container_st *container)
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   sasl_done();
 #endif
+
+  delete container;
 
   return TEST_SUCCESS;
 }

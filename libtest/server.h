@@ -17,12 +17,21 @@
 
 #define SERVERS_TO_CREATE 5
 
+struct server_st;
+
+typedef pid_t (test_server_getpid)(server_st &);
+typedef bool (test_server_ping)(server_st &);
+
 struct server_st {
 private:
   bool _used;
   pid_t _pid;
   in_port_t _port;
   char pid_file[FILENAME_MAX]; // Did we start it, or was it just sitting there?
+  std::string _command;
+  test_server_getpid *__get_pid;
+  test_server_ping *__ping;
+
 public:
 
   char hostname[NI_MAXHOST];
@@ -30,10 +39,34 @@ public:
   server_st() :
     _used(false),
     _pid(-1),
-    _port(0)
+    _port(0),
+    __get_pid(NULL),
+    __ping(NULL)
   {
     pid_file[0]= 0;
     strncpy(hostname, "localhost", sizeof(hostname));
+  }
+
+  void set_methods(test_server_getpid *get_pid_arg, test_server_ping *ping_arg)
+  {
+    __get_pid= get_pid_arg;
+    __ping= ping_arg;
+  }
+
+  bool ping()
+  {
+    if (__ping)
+      return __ping(*this);
+
+    return false;
+  }
+
+  pid_t get_pid()
+  {
+    if (__get_pid)
+      return _pid= __get_pid(*this);
+
+    return -1;
   }
 
   void set_port(in_port_t arg)
@@ -48,7 +81,12 @@ public:
 
   bool has_port() const
   {
-    return not _port == 0;
+    return (_port != 0);
+  }
+
+  void set_command(const char *arg)
+  {
+    _command= arg;
   }
 
   void set_used()
@@ -56,15 +94,7 @@ public:
     _used= true;
   }
 
-  void set_pid(pid_t arg)
-  {
-    _pid= arg;
-  }
-
-  pid_t pid() const
-  {
-    return _pid;
-  }
+  pid_t pid();
 
   bool is_used() const
   {
@@ -75,7 +105,7 @@ public:
 
   bool has_pid()
   {
-    return _pid > 0;
+    return (_pid > 1);
   }
 
   bool is_socket() const
@@ -89,6 +119,7 @@ public:
   }
 
   bool kill();
+  bool start();
 
 private:
   void reset_pid();
@@ -108,8 +139,7 @@ struct server_startup_st
     udp(0)
   { }
 
-  ~server_startup_st()
-  { }
+  ~server_startup_st();
 };
 
 #ifdef	__cplusplus

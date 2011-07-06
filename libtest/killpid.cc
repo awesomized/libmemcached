@@ -45,7 +45,10 @@
 
 bool kill_pid(pid_t pid_arg)
 {
-  if ((kill(pid_arg, SIGTERM) == -1))
+  if (pid_arg <= 1)
+    return false;
+
+  if ((::kill(pid_arg, SIGTERM) == -1))
   {
     switch (errno)
     {

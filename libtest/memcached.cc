@@ -68,18 +68,21 @@
 
 #define CERR_PREFIX std::endl << __FILE__ << ":" << __LINE__ << " "
 
-static void global_sleep(void)
-{
-  static struct timespec global_sleep_value= { 0, 50000 };
+#define SOCKET_FILE "/tmp/memcached.socket"
 
-#ifdef WIN32
-  sleep(1);
-#else
-  nanosleep(&global_sleep_value, NULL);
-#endif
+static pid_t __getpid(server_st& server)
+{
+  memcached_return_t rc;
+  pid_t pid= libmemcached_util_getpid(server.hostname, server.port(), &rc);
+  return pid;
 }
 
-#define SOCKET_FILE "/tmp/memcached.socket"
+static bool __ping(server_st& server)
+{
+  memcached_return_t rc;
+  bool ret= libmemcached_util_ping(server.hostname, server.port(), &rc);
+  return ret;
+}
 
 static bool cycle_server(server_st& server)
 {
@@ -123,6 +126,12 @@ bool server_startup(server_startup_st *construct)
   }
   else
   {
+    for (uint32_t x= 0; x < construct->count; x++)
+    {
+      server_st &server= construct->server[x];
+      server.set_methods(__getpid, __ping);
+    }
+
     std::string server_config_string;
 
     uint32_t port_base= 0;
@@ -170,34 +179,14 @@ bool server_startup(server_startup_st *construct)
           snprintf(buffer, sizeof(buffer), "%s -d -t 1 -p %u -U %u",
                    MEMCACHED_BINARY, server.port(), server.port());
         }
+        server.set_command(buffer);
 
-        int status= system(buffer);
-        if (status == -1)
+        if (not server.start())
         {
           std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
           return false;
         }
-        fprintf(stderr, "STARTING SERVER: %s\n", buffer);
-
-        int count= 30;
-        memcached_return_t rc;
-        while (not libmemcached_util_ping(server.hostname, server.port(), &rc) and --count)
-        {
-          global_sleep();
-        }
-
-        if (memcached_failed(rc))
-        {
-          std::cerr << CERR_PREFIX << "libmemcached_util_ping() failed:" << memcached_strerror(NULL, rc) << " Connection:" << server << std::endl;
-          return false;
-        }
-
-        server.set_pid(libmemcached_util_getpid(server.hostname, server.port(), &rc));
-        if (not server.has_pid())
-        {
-          std::cerr << CERR_PREFIX << "libmemcached_util_getpid() failed" << memcached_strerror(NULL, rc) << " Connection: " << server << std::endl;
-          return false;
-        }
+        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server.pid() << std::endl;
       }
 
       server_config_string+= "--server=";
@@ -205,9 +194,9 @@ bool server_startup(server_startup_st *construct)
       server_config_string+= ":";
       server_config_string+= boost::lexical_cast<std::string>(server.port());
       server_config_string+= " ";
-      fprintf(stderr, " Port %d\n", server.port());
     }
 
+    // Socket
     {
       server_st &server= construct->server[construct->count -1];
 
@@ -225,7 +214,7 @@ bool server_startup(server_startup_st *construct)
         {
           if (not cycle_server(server))
           {
-            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, so trying next port." << std::endl;
+            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, failing since socket file is not available." << std::endl;
             return false;
           }
         }
@@ -239,34 +228,14 @@ bool server_startup(server_startup_st *construct)
       {
         char buffer[FILENAME_MAX];
         snprintf(buffer, sizeof(buffer), "%s -d -t 1 -s %s", MEMCACHED_BINARY, SOCKET_FILE);
+        server.set_command(buffer);
 
-        int status= system(buffer);
-        if (status == -1)
+        if (not server.start())
         {
           std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
           return false;
         }
-        fprintf(stderr, "STARTING SERVER: %s\n", buffer);
-
-        int count= 30;
-        memcached_return_t rc;
-        while (not libmemcached_util_ping(server.hostname, server.port(), &rc) and --count)
-        {
-          global_sleep();
-        }
-
-        if (memcached_failed(rc))
-        {
-          std::cerr << CERR_PREFIX << "libmemcached_util_ping() failed:" << memcached_strerror(NULL, rc) << " Connection:" << server << std::endl;
-          return false;
-        }
-
-        server.set_pid(libmemcached_util_getpid(server.hostname, server.port(), &rc));
-        if (not server.has_pid())
-        {
-          std::cerr << CERR_PREFIX << "libmemcached_util_getpid() failed" << memcached_strerror(NULL, rc) << " Connection: " << server << std::endl;
-          return false;
-        }
+        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server.pid() << std::endl;
       }
 
       {
