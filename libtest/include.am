@@ -11,6 +11,8 @@
 
 LIBUTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
 
+VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+
 CLEANFILES+= \
 	     tests/var/log/* \
 	     tests/var/run/* \

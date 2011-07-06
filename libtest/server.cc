@@ -47,11 +47,11 @@ std::ostream& operator<<(std::ostream& output, const server_st &arg)
 {
   if (arg.is_socket())
   {
-    output << arg.hostname;
+    output << arg.hostname();
   }
   else
   {
-    output << arg.hostname << ":" << arg.port();
+    output << arg.hostname() << ":" << arg.port();
   }
   return output;  // for multiple << operators
 }
@@ -66,6 +66,29 @@ static void global_sleep(void)
   nanosleep(&global_sleep_value, NULL);
 #endif
 }
+
+server_st::server_st(in_port_t port_arg, test_server_getpid *get_pid_arg, test_server_ping *ping_arg) :
+  _used(false),
+  _pid(-1),
+  _port(port_arg),
+  __get_pid(get_pid_arg),
+  __ping(ping_arg),
+  _hostname("localhost")
+{
+  pid_file[0]= 0;
+}
+
+server_st::server_st(const std::string &socket_file, test_server_getpid *get_pid_arg, test_server_ping *ping_arg) :
+  _used(false),
+  _pid(-1),
+  _port(0),
+  __get_pid(get_pid_arg),
+  __ping(ping_arg),
+  _hostname(socket_file)
+{
+  pid_file[0]= 0;
+}
+
 
 server_st::~server_st()
 {
@@ -148,5 +171,27 @@ bool server_st::kill()
   return false;
 }
 
+void server_startup_st::push_server(server_st *arg)
+{
+  servers.push_back(arg);
+}
+
+void server_startup_st::shutdown()
+{
+  for (std::vector<server_st *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    if ((*iter)->is_used())
+      continue;
+
+    (*iter)->kill();
+  }
+}
+
 server_startup_st::~server_startup_st()
-{ }
+{
+  for (std::vector<server_st *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    delete *iter;
+  }
+  servers.clear();
+}

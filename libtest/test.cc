@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
   get_world(world);
 
   test_return_t error;
-  void *creators_ptr= world->create(&error);
+  void *creators_ptr= world->create(error);
   if (test_failed(error))
   {
     std::cerr << "create() failed" << std::endl;

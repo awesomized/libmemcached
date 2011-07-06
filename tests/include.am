@@ -13,8 +13,6 @@ TESTS_LDADDS= \
 	      libtest/libserver.la \
 	      libtest/libtest.la
 
-VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
-
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole

@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <unistd.h>
+#include <vector>
 
 #define SERVERS_TO_CREATE 5
 
@@ -31,26 +32,25 @@ private:
   std::string _command;
   test_server_getpid *__get_pid;
   test_server_ping *__ping;
+  std::string _hostname;
 
 public:
+  server_st(in_port_t port_arg, test_server_getpid *, test_server_ping *);
 
-  char hostname[NI_MAXHOST];
-
-  server_st() :
-    _used(false),
-    _pid(-1),
-    _port(0),
-    __get_pid(NULL),
-    __ping(NULL)
-  {
-    pid_file[0]= 0;
-    strncpy(hostname, "localhost", sizeof(hostname));
-  }
+  server_st(const std::string &socket_file, test_server_getpid *, test_server_ping *);
 
   void set_methods(test_server_getpid *get_pid_arg, test_server_ping *ping_arg)
   {
     __get_pid= get_pid_arg;
     __ping= ping_arg;
+  }
+
+  const char *hostname() const
+  {
+    if (_hostname.empty())
+      return "";
+
+    return _hostname.c_str();
   }
 
   bool ping()
@@ -110,12 +110,7 @@ public:
 
   bool is_socket() const
   {
-    return hostname[0] == '/';
-  }
-
-  void set_hostname(const char *arg)
-  {
-    strncpy(hostname, arg, sizeof(hostname));
+    return _hostname[0] == '/';
   }
 
   bool kill();
@@ -132,12 +127,15 @@ struct server_startup_st
   uint8_t count;
   uint8_t udp;
   std::string server_list;
-  server_st server[SERVERS_TO_CREATE];
+  std::vector<server_st *> servers;
 
   server_startup_st() :
     count(SERVERS_TO_CREATE),
     udp(0)
   { }
+
+  void shutdown();
+  void push_server(server_st *);
 
   ~server_startup_st();
 };

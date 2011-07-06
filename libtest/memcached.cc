@@ -63,9 +63,6 @@
 #include <libtest/killpid.h>
 #include <libtest/wait.h>
 
-#include <boost/lexical_cast.hpp>
-
-
 #define CERR_PREFIX std::endl << __FILE__ << ":" << __LINE__ << " "
 
 #define SOCKET_FILE "/tmp/memcached.socket"
@@ -73,35 +70,35 @@
 static pid_t __getpid(server_st& server)
 {
   memcached_return_t rc;
-  pid_t pid= libmemcached_util_getpid(server.hostname, server.port(), &rc);
+  pid_t pid= libmemcached_util_getpid(server.hostname(), server.port(), &rc);
   return pid;
 }
 
 static bool __ping(server_st& server)
 {
   memcached_return_t rc;
-  bool ret= libmemcached_util_ping(server.hostname, server.port(), &rc);
+  bool ret= libmemcached_util_ping(server.hostname(), server.port(), &rc);
   return ret;
 }
 
-static bool cycle_server(server_st& server)
+static bool cycle_server(server_st  *server)
 {
   while (1)
   {
-    if (libmemcached_util_ping(server.hostname, server.port(), NULL))
+    if (libmemcached_util_ping(server->hostname(), server->port(), NULL))
     {
       // First we try to kill it, and on fail of that we flush it.
-      pid_t pid= libmemcached_util_getpid(server.hostname, server.port(), NULL);
+      pid_t pid= libmemcached_util_getpid(server->hostname(), server->port(), NULL);
 
       if (pid > 0 and kill_pid(pid))
       {
-        std::cerr << CERR_PREFIX << "Killed existing server," << server << " with pid:" << pid << std::endl;
+        std::cerr << CERR_PREFIX << "Killed existing server," << *server << " with pid:" << pid << std::endl;
         continue;
       }
-      else if (libmemcached_util_flush(server.hostname, server.port(), NULL)) // If we can flush it, we will just use it
+      else if (libmemcached_util_flush(server->hostname(), server->port(), NULL)) // If we can flush it, we will just use it
       { 
-        std::cerr << CERR_PREFIX << "Found server on port " << int(server.port()) << ", flushed it!" << std::endl;
-        server.set_used();
+        std::cerr << CERR_PREFIX << "Found server on port " << int(server->port()) << ", flushed it!" << std::endl;
+        server->set_used();
         return true;
       } // No idea what is wrong here, so we need to find a different port
       else
@@ -126,18 +123,12 @@ bool server_startup(server_startup_st *construct)
   }
   else
   {
-    for (uint32_t x= 0; x < construct->count; x++)
-    {
-      server_st &server= construct->server[x];
-      server.set_methods(__getpid, __ping);
-    }
-
     std::string server_config_string;
 
     uint32_t port_base= 0;
     for (uint32_t x= 0; x < (construct->count -1); x++)
     {
-      server_st &server= construct->server[x];
+      server_st *server= NULL;
 
       {
         char *var;
@@ -147,22 +138,22 @@ bool server_startup(server_startup_st *construct)
 
         if ((var= getenv(variable_buffer)))
         {
-          server.set_port((in_port_t)atoi(var));
+          server= new server_st((in_port_t)atoi(var), __getpid, __ping);
         }
         else
         {
-          server.set_port(in_port_t(x + TEST_PORT_BASE + port_base));
+          server= new server_st(in_port_t(x +TEST_PORT_BASE +port_base), __getpid, __ping);
 
           while (not cycle_server(server))
           {
-            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, so trying next port." << std::endl;
+            std::cerr << CERR_PREFIX << "Found server " << *server << ", could not flush it, so trying next port." << std::endl;
             port_base++;
-            server.set_port(in_port_t(x + TEST_PORT_BASE + port_base));
+            server->set_port(in_port_t(x +TEST_PORT_BASE +port_base));
           }
         }
       }
 
-      if (server.is_used())
+      if (server->is_used())
       {
         std::cerr << std::endl << "Using server at : " << server << std::endl;
       }
@@ -172,76 +163,84 @@ bool server_startup(server_startup_st *construct)
         if (x == 0)
         {
           snprintf(buffer, sizeof(buffer), "%s -d -t 1 -p %u -U %u -m 128",
-                   MEMCACHED_BINARY, server.port(), server.port());
+                   MEMCACHED_BINARY, server->port(), server->port());
         }
         else
         {
           snprintf(buffer, sizeof(buffer), "%s -d -t 1 -p %u -U %u",
-                   MEMCACHED_BINARY, server.port(), server.port());
+                   MEMCACHED_BINARY, server->port(), server->port());
         }
-        server.set_command(buffer);
+        server->set_command(buffer);
 
-        if (not server.start())
+        if (not server->start())
         {
           std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          delete server;
           return false;
         }
-        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server.pid() << std::endl;
+        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server->pid() << std::endl;
+      }
+      construct->push_server(server);
+
+      if (x == 0)
+      {
+        assert(server->has_port());
+        set_default_port(server->port());
       }
 
+      char port_str[NI_MAXSERV];
+      snprintf(port_str, sizeof(port_str), "%u", int(server->port()));
+
       server_config_string+= "--server=";
-      server_config_string+= server.hostname;
+      server_config_string+= server->hostname();
       server_config_string+= ":";
-      server_config_string+= boost::lexical_cast<std::string>(server.port());
+      server_config_string+= port_str;
       server_config_string+= " ";
     }
 
     // Socket
     {
-      server_st &server= construct->server[construct->count -1];
 
+      std::string socket_file(SOCKET_FILE);
+      char *var;
+
+      if ((var= getenv("LIBMEMCACHED_SOCKET")))
       {
-        std::string socket_file;
-        char *var;
-
-        server.set_hostname(SOCKET_FILE);
-
-        if ((var= getenv("LIBMEMCACHED_SOCKET")))
-        {
-          socket_file+= var;
-        }
-        else
-        {
-          if (not cycle_server(server))
-          {
-            std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, failing since socket file is not available." << std::endl;
-            return false;
-          }
-        }
+        socket_file= var;
       }
 
-      if (server.is_used())
+      server_st *server= new server_st(SOCKET_FILE, __getpid, __ping);
+
+      if (not cycle_server(server))
       {
-        std::cerr << std::endl << "Using server at : " << server << std::endl;
+        std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, failing since socket file is not available." << std::endl;
+        return false;
+      }
+
+      if (server->is_used())
+      {
+        std::cerr << std::endl << "Using server at : " << *server << std::endl;
       }
       else
       {
         char buffer[FILENAME_MAX];
         snprintf(buffer, sizeof(buffer), "%s -d -t 1 -s %s", MEMCACHED_BINARY, SOCKET_FILE);
-        server.set_command(buffer);
+        server->set_command(buffer);
 
-        if (not server.start())
+        if (not server->start())
         {
           std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          delete server;
           return false;
         }
-        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server.pid() << std::endl;
+        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server->pid() << std::endl;
       }
+      set_default_socket(server->hostname());
+      construct->push_server(server);
 
       {
-        set_default_socket(server.hostname);
         server_config_string+= "--socket=\"";
-        server_config_string+= server.hostname;
+        server_config_string+= server->hostname();
         server_config_string+= "\" ";
       }
     }
@@ -258,11 +257,8 @@ bool server_startup(server_startup_st *construct)
 
 void server_shutdown(server_startup_st *construct)
 {
-  for (uint32_t x= 0; x < construct->count; x++)
-  {
-    if (construct->server[x].is_used())
-      continue;
+  if (not construct)
+    return;
 
-    construct->server[x].kill();
-  }
+  construct->shutdown();
 }

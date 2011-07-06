@@ -93,11 +93,12 @@ test_return_t Framework::Item::startup(void* arg)
   return TEST_SUCCESS;
 }
 
-void* Framework::create(test_return_t* arg)
+void* Framework::create(test_return_t& arg)
 {
+  arg= TEST_SUCCESS;
   if (_create)
   {
-    return _creators_ptr= _create(arg);
+    return _creators_ptr= _create(&arg);
   }
 
   return NULL;

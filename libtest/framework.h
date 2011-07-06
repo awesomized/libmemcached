@@ -19,7 +19,7 @@ struct Framework {
   test_callback_create_fn *_create;
   test_callback_fn *_destroy;
 
-  void* create(test_return_t* arg);
+  void* create(test_return_t& arg);
 
   /* This is called a the beginning of any collection run. */
   test_callback_fn *collection_startup;
