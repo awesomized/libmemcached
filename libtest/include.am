@@ -48,7 +48,7 @@ libtest_libtest_la_SOURCES=\
 			   libtest/framework.cc \
 			   libtest/test.cc
 libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
-libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
+libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
 
 clearn-var:
 	@rm -f tests/var/log/*
@@ -68,6 +68,12 @@ tests/var/tmp:
 tests/var/run:
 	$(mkdir_p) tests/var/run
 
-noinst_PROGRAMS+= libtest/wait
+libtest_unittest_LDADD= \
+			  libtest/libtest.la
+libtest_unittest_SOURCES= \
+			    libtest/unittest.cc
+noinst_PROGRAMS+= libtest/unittest
+check_PROGRAMS+= libtest/unittest
 
 libtest_wait_SOURCES= libtest/wait.cc
+noinst_PROGRAMS+= libtest/wait

@@ -103,3 +103,4 @@ libtest/wait
 docs/text
 docs/changes
 tests/cycle
+libtest/unittest

@@ -50,7 +50,12 @@ const char *default_socket()
   assert(global_socket[0]);
   return global_socket;
 }
- 
+
+bool test_is_local()
+{
+  return (getenv("LIBTEST_LOCAL"));
+}
+
 void set_default_socket(const char *socket)
 {
   strncpy(global_socket, socket, strlen(socket));
