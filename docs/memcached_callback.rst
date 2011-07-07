@@ -14,7 +14,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, void *data);
+.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, const void *data);
  
 .. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
 
@@ -53,6 +53,10 @@ When :c:func:`memcached_delete()` is called this function will be excuted.
 At the point of its execution all connections are closed.
 
 .. c:type:: MEMCACHED_CALLBACK_PREFIX_KEY
+
+   See :c:type:`MEMCACHED_CALLBACK_NAMESPACE`
+
+.. c:type:: MEMCACHED_CALLBACK_NAMESPACE
  
 You can set a value which will be used to create a domain for your keys.
 The value specified here will be prefixed to each of your keys. The value can 

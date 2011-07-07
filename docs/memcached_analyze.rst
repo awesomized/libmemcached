@@ -24,16 +24,16 @@ DESCRIPTION
 -----------
 
 
-libmemcached(3) has the ability to query a memcached server (or collection
-of servers) for their current state. Queries to find state return a
-\ ``memcached_analysis_st``\  structure. You are responsible for freeing this structure.
+:program:`libmemcached` has the ability to query a memcached server (or 
+collection of servers) for their current state. Queries to find state return a
+:c:type:`memcached_analysis_st` structure. You are responsible for freeing this structure.
 
-memcached_analyze() analyzes useful information based on the provided servers
-and sets the result to the \ ``memcached_analysis_st``\  structure. The return value
-must be freed by the calling application.
+:c:func:`memcached_analyze()` analyzes useful information based on the 
+provided servers and sets the result to the :c:type:`memcached_analysis_st` 
+structure. The return value must be freed by the calling application.
 
-A command line tool, memstat(1) with the option --analyze, is provided so that
-you do not have to write an application to use this method.
+A command line tool, :c:func:`memstat()` with the option :option:`--analyze`, 
+is provided so that you do not have to write an application to use this method.
 
 
 ------
@@ -41,11 +41,11 @@ RETURN
 ------
 
 
-A pointer to the allocated \ ``memcached_analysis_st``\  structure on success and
-a NULL pointer on failure. You may inspect the error detail by checking the
-\ ``memcached_return_t``\  value.
+A pointer to the allocated :c:type:`memcached_analysis_st` structure on 
+success and a NULL pointer on failure. You may inspect the error detail by 
+checking the :c:type:`memcached_return_t` value.
 
-Any method returning a \ ``memcached_analysis_st``\  expects you to free the
+Any method returning a :c:type:`memcached_analysis_st` expects you to free the
 memory allocated for it.
 
 

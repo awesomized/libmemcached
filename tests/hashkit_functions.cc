@@ -35,7 +35,7 @@
  *
  */
 
-#include "config.h"
+#include <libtest/common.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -43,8 +43,6 @@
 #include <string.h>
 
 #include <libhashkit/hashkit.h>
-
-#include <libtest/test.hpp>
 
 #include "hash_results.h"
 

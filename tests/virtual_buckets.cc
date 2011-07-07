@@ -35,9 +35,8 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
-#include <libtest/test.hpp>
 #include <tests/virtual_buckets.h>
 
 #include <libmemcached/memcached.h>

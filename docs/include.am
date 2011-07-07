@@ -144,38 +144,38 @@ sphinx-help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
-html-local:
+html-local: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(SPHINX_BUILDDIR)/html."
 
-dirhtml:
+dirhtml: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in $(SPHINX_BUILDDIR)/dirhtml."
 
-singlehtml:
+singlehtml: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b singlehtml $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/singlehtml
 	@echo
 	@echo "Build finished. The HTML page is in $(SPHINX_BUILDDIR)/singlehtml."
 
-pickle:
+pickle: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/pickle
 	@echo
 	@echo "Build finished; now you can process the pickle files."
 
-json:
+json: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b json $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/json
 	@echo
 	@echo "Build finished; now you can process the JSON files."
 
-htmlhelp:
+htmlhelp: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in $(SPHINX_BUILDDIR)/htmlhelp."
 
-qthelp:
+qthelp: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/qthelp
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
@@ -184,7 +184,7 @@ qthelp:
 	@echo "To view the help file:"
 	@echo "# assistant -collectionFile $(SPHINX_BUILDDIR)/qthelp/Libmemcached.qhc"
 
-devhelp:
+devhelp: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
@@ -193,40 +193,40 @@ devhelp:
 	@echo "# ln -s $(SPHINX_BUILDDIR)/devhelp $$HOME/.local/share/devhelp/Libmemcached"
 	@echo "# devhelp"
 
-epub:
+epub: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/epub
 	@echo
 	@echo "Build finished. The epub file is in $(SPHINX_BUILDDIR)/epub."
 
-latex:
+latex: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(SPHINX_BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf: latex
+latexpdf: latex changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(SPHINX_BUILDDIR)/latex all-pdf
 	@echo "pdflatex finished; the PDF files are in $(SPHINX_BUILDDIR)/latex."
 
-text:
+text: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b text $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/text
 	@echo
 	@echo "Build finished. The text files are in $(SPHINX_BUILDDIR)/text."
 
-man:
+man: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/man
 	@echo
 	@echo "Build finished. The manual pages are in $(SPHINX_BUILDDIR)/man."
 
-changes:
+changes: docs/conf.py linkcheck
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/changes
 	@echo
 	@echo "The overview file is in $(SPHINX_BUILDDIR)/changes."
 
-linkcheck:
+linkcheck: docs/conf.py
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \

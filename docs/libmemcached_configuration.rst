@@ -29,6 +29,10 @@ that you can use in your application directly.
 
 Provide a servername to be used by the client. Providing a weight will cause weighting to occur with all hosts with each server getting a default weight of 1.
 
+.. describe:: --SOCKET=<filepath>/?<optional_weight>
+
+Provide a filepath to a UNIX socket file. Providing a weight will cause weighting to occur with all hosts with each server getting a default weight of 1.
+
 .. describe:: --VERIFY-KEY
 
 Verify that keys that are being used fit within the design of the protocol being used.
@@ -185,7 +189,7 @@ RETURN
 ------
 
 
-memcached() returns a pointer to the memcached_st that was
+:c:func:`memcached()` returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
 
 

@@ -11,8 +11,11 @@
 
 LIBUTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
 
+VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+
 CLEANFILES+= \
 	     tests/var/log/* \
+	     tests/var/run/* \
 	     tests/var/tmp/*
 
 noinst_HEADERS+= \
@@ -24,25 +27,36 @@ noinst_HEADERS+= \
 		 libtest/failed.h \
 		 libtest/framework.h \
 		 libtest/get.h \
+		 libtest/killpid.h \
 		 libtest/runner.h \
 		 libtest/server.h \
 		 libtest/stats.h \
 		 libtest/strerror.h \
 		 libtest/test.h \
 		 libtest/test.hpp \
-		 libtest/visibility.h
+		 libtest/visibility.h \
+		 libtest/wait.h
 
 noinst_LTLIBRARIES+= libtest/libserver.la
-libtest_libserver_la_SOURCES= libtest/server.c
+libtest_libserver_la_SOURCES= \
+			      libtest/killpid.cc \
+			      libtest/memcached.cc \
+			      libtest/server.cc
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES=\
 			   libtest/framework.cc \
 			   libtest/test.cc
 libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
-libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
+libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
 
-tests/var: tests/var/log tests/var/tmp
+clearn-var:
+	@rm -f tests/var/log/*
+	@rm -f tests/var/run/*
+	@rm -f tests/var/tmp/*
+
+
+tests/var: tests/var/log tests/var/tmp tests/var/run clearn-var
 	$(mkdir_p) tests/var
 
 tests/var/log:
@@ -50,3 +64,16 @@ tests/var/log:
 
 tests/var/tmp:
 	$(mkdir_p) tests/var/tmp
+
+tests/var/run:
+	$(mkdir_p) tests/var/run
+
+libtest_unittest_LDADD= \
+			  libtest/libtest.la
+libtest_unittest_SOURCES= \
+			    libtest/unittest.cc
+noinst_PROGRAMS+= libtest/unittest
+check_PROGRAMS+= libtest/unittest
+
+libtest_wait_SOURCES= libtest/wait.cc
+noinst_PROGRAMS+= libtest/wait

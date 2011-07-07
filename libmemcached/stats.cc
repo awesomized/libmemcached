@@ -493,6 +493,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
 
     stat_instance= stats +x;
 
+    stat_instance->pid= -1;
     stat_instance->root= self;
 
     instance= memcached_server_instance_fetch(self, x);

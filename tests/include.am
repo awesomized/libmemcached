@@ -13,8 +13,6 @@ TESTS_LDADDS= \
 	      libtest/libserver.la \
 	      libtest/libtest.la
 
-VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
-
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
@@ -34,6 +32,7 @@ noinst_HEADERS+= \
 		 tests/ketama_test_cases.h \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached_world.h \
+		 tests/namespace.h \
 		 tests/parser.h \
 		 tests/deprecated.h \
 		 tests/pool.h \
@@ -45,12 +44,20 @@ noinst_HEADERS+= \
 
 noinst_PROGRAMS+= \
 		  tests/atomsmasher \
+		  tests/cycle \
 		  tests/hash_plus \
-		  tests/startservers \
 		  tests/testapp \
 		  tests/testhashkit \
 		  tests/testplus \
 		  tests/testudp
+
+# Cycle should always run first
+tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+tests_cycle_SOURCES= tests/cycle.cc
+tests_cycle_DEPENDENCIES= $(TESTS_LDADDS)
+tests_cycle_LDADD= $(tests_cycle_DEPENDENCIES)
+check_PROGRAMS+= tests/cycle
+
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= \
@@ -58,6 +65,7 @@ tests_testapp_SOURCES= \
 		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
 		       tests/mem_functions.cc \
+		       tests/namespace.cc \
 		       tests/parser.cc \
 		       tests/pool.cc \
 		       tests/print.cc \
@@ -77,6 +85,7 @@ tests_testapp_LDADD= \
 		     $(TESTS_LDADDS) \
 		     libhashkit/libhashkit.la \
 		     libmemcached/libmemcachedinternal.la
+check_PROGRAMS+= tests/testapp
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
@@ -84,25 +93,23 @@ tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testplus
 
-tests_atomsmasher_SOURCES= tests/atomsmasher.cc
-tests_atomsmasher_SOURCES+= clients/generator.cc clients/execute.cc
+tests_atomsmasher_SOURCES= \
+			   tests/atomsmasher.cc \
+			   clients/generator.cc \
+			   clients/execute.cc
 tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
-
 tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.cc
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
-
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
-
-tests_startservers_SOURCES= tests/start.cc
-tests_startservers_DEPENDENCIES= $(TESTS_LDADDS)
-tests_startservers_LDADD= $(tests_startservers_DEPENDENCIES) $(LIBSASL)
+check_PROGRAMS+= tests/testudp
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.cc
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES)
+check_PROGRAMS+= tests/testhashkit
 
 tests_hash_plus_SOURCES= tests/hash_plus.cc
 tests_hash_plus_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
@@ -112,10 +119,10 @@ check_PROGRAMS+= tests/hash_plus
 
 test: check
 
-check-local: tests/var $(TEST_DOCS) test-mem test-hash memcapable
+check-local: tests/var $(TEST_DOCS) memcapable
 	@echo "Tests completed"
 
-test-x: check-local test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
+test-x: tests/var test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
 	@echo "Tests completed"
 
 memcapable: clients/memcapable
@@ -240,29 +247,34 @@ TESTPLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
 
 HASHPLUS_COMMAND= tests/hashplus $(COLLECTION) $(SUITE)
 
+CYCLE_COMMAND= tests/cycle $(COLLECTION) $(SUITE)
+
 ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
 
 UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
 
 HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
 
-test-mem: tests/testapp
+test-mem: tests/var tests/testapp
 	$(MEM_COMMAND)
 
-test-udp: tests/testudp
+test-udp: tests/var tests/testudp
 	$(UDP_COMMAND)
 
-test-atom: tests/atomsmasher
+test-atom: tests/var tests/atomsmasher
 	$(ATOM_COMMAND)
 
-test-plus: tests/testplus
+test-plus: tests/var tests/testplus
 	$(TESTPLUS_COMMAND)
 
-test-hash: tests/testhashkit
+test-hash: tests/var tests/testhashkit
 	$(HASH_COMMAND)
 
-test-hashplus: tests/hashplus
+test-hashplus: tests/var tests/hashplus
 	$(HASHPLUS_COMMAND)
+
+test-cycle: tests/var tests/cycle
+	$(CYCLE_COMMAND)
 
 pahole-mem: tests/testapp
 	$(PAHOLE_COMMAND)  $(MEM_COMMAND)
@@ -285,8 +297,14 @@ gdb-hash: tests/testhashkit
 gdb-hashplus: tests/hashplus
 	$(DEBUG_COMMAND) $(HASHPLUS_COMMAND)
 
+gdb-cycle: tests/cycle
+	$(DEBUG_COMMAND) $(CYCLE_COMMAND)
+
 gdb-memslap: clients/memslap
 	$(DEBUG_COMMAND)  $(MEMSLAP_COMMAND)
+
+valgrind-cycle: tests/cycle
+	$(VALGRIND_COMMAND)  $(CYCLE_COMMAND)
 
 valgrind-mem: tests/testapp
 	$(VALGRIND_COMMAND)  $(MEM_COMMAND)

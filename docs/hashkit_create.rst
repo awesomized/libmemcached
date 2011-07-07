@@ -48,12 +48,12 @@ RETURN VALUE
 ------------
 
 
-:c:func:`hashkit_create()` and :c:func:`hashkit_clone()` will return NULL on failure or
-non-NULL on success.
+:c:func:`hashkit_create()` and :c:func:`hashkit_clone()` will return NULL on 
+failure or non-NULL on success.
 
 :c:func:`hashkit_is_allocated()` returns true if the memory for the hashkit
-object was allocated inside of :c:func:`hashkit_create()` or :c:func:`hashkit_clone()`,
-otherwise it is false and was user-supplied memory.
+object was allocated inside of :c:func:`hashkit_create()` or 
+:c:func:`hashkit_clone()`, otherwise it is false and was user-supplied memory.
 
 
 ----
@@ -63,3 +63,13 @@ HOME
 
 To find out more information please check:
 `http://libmemcached.org/ <http://libmemcached.org/>`_
+
+
+
+--------
+SEE ALSO
+--------
+
+
+:manpage:`hashkit_create(3)` :manpage:`hashkit_value(3)` :manpage:`hashkit_set_hash_fn(3)`
+

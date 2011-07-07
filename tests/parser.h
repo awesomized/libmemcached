@@ -104,6 +104,9 @@ test_return_t regression_bug_71231153_connect(memcached_st *);
 LIBTEST_INTERNAL_API
 test_return_t regression_bug_71231153_poll(memcached_st *);
 
+LIBTEST_INTERNAL_API
+test_return_t test_parse_socket(memcached_st *);
+
 #ifdef	__cplusplus
 }
 #endif

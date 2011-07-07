@@ -84,4 +84,13 @@ LIBMEMCACHED_LOCAL
 LIBMEMCACHED_LOCAL
 bool memcached_has_current_error(memcached_st &memc);
 
+LIBMEMCACHED_LOCAL
+void memcached_error_free(memcached_st&);
+
+LIBMEMCACHED_LOCAL
+void memcached_error_free(memcached_server_st&);
+
+LIBMEMCACHED_LOCAL
+memcached_error_t *memcached_error_copy(const memcached_server_st&);
+
 #endif

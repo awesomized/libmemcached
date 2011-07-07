@@ -16,3 +16,4 @@ enum test_return_t {
 
 
 #define test_failed(__test_return_t) ((__test_return_t) != TEST_SUCCESS)
+#define test_success(__test_return_t) ((__test_return_t) == TEST_SUCCESS)

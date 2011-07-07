@@ -47,4 +47,9 @@
 #include <cstdlib>
 #include <sys/types.h>
 
+#include <cerrno>
+#include <cassert>
+
 #include <libtest/test.hpp>
+
+using namespace libtest;

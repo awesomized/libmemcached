@@ -35,7 +35,7 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
 #include <libtest/failed.h>
 
@@ -68,8 +68,7 @@ void print_failed_test(void)
 {
   for (Failures::iterator iter= failures.begin(); iter != failures.end(); iter++)
   {
-    std::cerr << "\t" << (*iter).collection << " " << (*iter).test << std::endl;
+    Error << "\t" << (*iter).collection << " " << (*iter).test;
   }
-  std::cerr << std::endl;
 }
 

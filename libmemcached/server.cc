@@ -50,7 +50,6 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
-  self->cached_errno= 0;
   self->fd= -1;
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
@@ -61,8 +60,8 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->micro_version= UINT8_MAX;
   self->minor_version= UINT8_MAX;
   self->type= type;
+  self->error_messages= NULL;
   self->read_ptr= self->read_buffer;
-  self->cached_server_error= NULL;
   self->read_buffer_length= 0;
   self->read_data_length= 0;
   self->write_buffer_offset= 0;
@@ -113,10 +112,10 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
   return self;
 }
 
-memcached_server_st *memcached_server_create_with(const memcached_st *memc,
-                                                  memcached_server_write_instance_st self,
-                                                  const char *hostname, in_port_t port,
-                                                  uint32_t weight, memcached_connection_t type)
+memcached_server_st *__server_create_with(const memcached_st *memc,
+                                          memcached_server_write_instance_st self,
+                                          const char *hostname, in_port_t port,
+                                          uint32_t weight, memcached_connection_t type)
 {
   self= _server_create(self, memc);
 
@@ -135,18 +134,16 @@ memcached_server_st *memcached_server_create_with(const memcached_st *memc,
   return self;
 }
 
-void memcached_server_free(memcached_server_st *self)
+void __server_free(memcached_server_st *self)
 {
-  if (not self)
-    return;
-
   memcached_quit_server(self, false);
 
-  if (self->cached_server_error)
-    free(self->cached_server_error);
-
   if (self->address_info)
+  {
     freeaddrinfo(self->address_info);
+  }
+
+  memcached_error_free(*self);
 
   if (memcached_is_allocated(self))
   {
@@ -156,6 +153,20 @@ void memcached_server_free(memcached_server_st *self)
   {
     self->options.is_initialized= false;
   }
+}
+
+void memcached_server_free(memcached_server_st *self)
+{
+  if (not self)
+    return;
+
+  if (memcached_server_list_count(self))
+  {
+    memcached_server_list_free(self);
+    return;
+  }
+
+  __server_free(self);
 }
 
 /*
@@ -168,15 +179,15 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
   if (not source)
     return NULL;
 
-  destination= memcached_server_create_with(source->root, destination,
-                                            source->hostname, source->port, source->weight,
-                                            source->type);
+  destination= __server_create_with(source->root, destination,
+                                    source->hostname, source->port, source->weight,
+                                    source->type);
   if (not destination)
   {
-    destination->cached_errno= source->cached_errno;
-
-    if (source->cached_server_error)
-      destination->cached_server_error= strdup(source->cached_server_error);
+    if (source->error_messages)
+    {
+      destination->error_messages= memcached_error_copy(*source);
+    }
   }
 
   return destination;
@@ -194,6 +205,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
     return rc;
   }
 
+  size_t errors= 0;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_instance_st instance=
@@ -201,16 +213,17 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
 
     for (uint32_t y= 0; y < number_of_callbacks; y++)
     {
-      unsigned int iferror;
+      memcached_return_t ret= (*callback[y])(ptr, instance, context);
 
-      iferror= (*callback[y])(ptr, instance, context);
-
-      if (iferror)
+      if (memcached_failed(ret))
+      {
+        errors++;
         continue;
+      }
     }
   }
 
-  return MEMCACHED_SUCCESS;
+  return errors ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_server_execute(memcached_st *ptr,
@@ -253,7 +266,7 @@ memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
     return NULL;
   }
 
-  if (ptr->flags.verify_key && (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (memcached_failed((memcached_key_test(*ptr, (const char **)&key, &key_length, 1))))
   {
     *error= MEMCACHED_BAD_KEY_PROVIDED;
     return NULL;
@@ -270,7 +283,7 @@ void memcached_server_error_reset(memcached_server_st *self)
   if (not self)
     return;
 
-  self->cached_server_error[0]= 0;
+  memcached_error_free(*self);
 }
 
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *self)
@@ -280,23 +293,6 @@ memcached_server_instance_st memcached_server_get_last_disconnect(const memcache
     return 0;
 
   return self->last_disconnected_server;
-}
-
-void memcached_server_list_free(memcached_server_list_st self)
-{
-  if (not self)
-    return;
-
-  for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
-  {
-    if (self[x].address_info)
-    {
-      freeaddrinfo(self[x].address_info);
-      self[x].address_info= NULL;
-    }
-  }
-
-  libmemcached_free(self->root, self);
 }
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
@@ -344,8 +340,26 @@ uint32_t memcached_server_response_count(memcached_server_instance_st self)
   return self->cursor_active;
 }
 
-const char *memcached_server_error(memcached_server_instance_st ptr)
+const char *memcached_server_type(memcached_server_instance_st ptr)
 {
-  return ptr ?  ptr->cached_server_error : NULL;
-}
+  if (ptr)
+  {
+    switch (ptr->type)
+    {
+    case MEMCACHED_CONNECTION_TCP:
+      return "TCP";
 
+    case MEMCACHED_CONNECTION_UDP:
+      return "UDP";
+
+    case MEMCACHED_CONNECTION_UNIX_SOCKET:
+      return "SOCKET";
+
+    case MEMCACHED_CONNECTION_MAX:
+    case MEMCACHED_CONNECTION_UNKNOWN:
+      break;
+    }
+  }
+
+  return "UNKNOWN";
+}

@@ -43,7 +43,16 @@
 
 bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
 {
+  memcached_return_t unused;
+  if (not ret)
+    ret= &unused;
+
   memcached_st *memc_ptr= memcached_create(NULL);
+  if (not memc_ptr)
+  {
+    *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return false;
+  }
 
   memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
   if (memcached_success(rc))
@@ -51,12 +60,19 @@ bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_retu
     rc= memcached_version(memc_ptr);
   }
 
+  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
+  {
+    memcached_server_instance_st instance=
+      memcached_server_instance_by_position(memc_ptr, 0);
+
+    if (instance and instance->error_messages)
+    {
+      rc= memcached_server_error_return(instance);
+    }
+  }
   memcached_free(memc_ptr);
 
-  if (ret)
-  {
-    *ret= rc;
-  }
+  *ret= rc;
 
-  return rc == MEMCACHED_SUCCESS;
+  return memcached_success(rc);
 }

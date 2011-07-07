@@ -99,3 +99,8 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
+libtest/wait
+docs/text
+docs/changes
+tests/cycle
+libtest/unittest

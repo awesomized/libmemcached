@@ -257,7 +257,9 @@ When enabled a host which is problematic will only be checked for usage based on
 
 .. c:type:: MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
  
-When enabled the prefix key will be added to the key when determining server by hash.
+When enabled the prefix key will be added to the key when determining server
+by hash. See :c:type:`MEMCACHED_CALLBACK_NAMESPACE` for additional
+information.
  
 
 

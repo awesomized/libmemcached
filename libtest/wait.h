@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,31 +35,44 @@
  *
  */
 
-#include <libmemcached/common.h>
+#pragma once
 
-memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *key, size_t key_length)
+#include <unistd.h>
+#include <string>
+
+namespace libtest {
+
+class Wait 
 {
-  WATCHPOINT_ASSERT(self);
+public:
 
-  if (key and key_length)
+  Wait(const std::string &filename, uint32_t timeout= 6) :
+    _successful(false)
   {
-    if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-      return memcached_set_error(*self, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+    uint32_t waited;
+    uint32_t this_wait;
+    uint32_t retry;
 
-    if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
-      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
+    {
+      if ((not access(filename.c_str(), R_OK)) or (waited >= timeout))
+      {
+        _successful= true;
+        break;
+      }
 
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= memcached_strcpy(self, key, key_length);
-
-    if (not self->prefix_key)
-      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      this_wait= retry * retry / 3 + 1;
+      sleep(this_wait);
+    }
   }
-  else
+
+  bool successful() const
   {
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= NULL;
+    return _successful;
   }
 
-  return MEMCACHED_SUCCESS;
-}
+private:
+  bool _successful;
+};
+
+} // namespace libtest
