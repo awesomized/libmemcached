@@ -529,7 +529,7 @@ static const yytype_uint16 yyrline[] =
      305,   309,   313,   317,   321,   325,   329,   333,   340,   344,
      348,   352,   356,   360,   364,   368,   372,   376,   380,   384,
      391,   392,   397,   398,   403,   407,   411,   415,   419,   423,
-     427,   431,   435,   442,   446,   457,   461,   465
+     427,   431,   435,   442,   446,   453,   457,   461
 };
 #endif
 
@@ -2078,17 +2078,13 @@ yyreduce:
 #line 447 "libmemcached/options/parser.yy"
     {
             (yyval.string)= (yyvsp[(1) - (1)].string);
-            #if 0
-            (yyval.string).c_str= (yyvsp[(1) - (1)].string).c_str +1; // +1 to move use passed the initial quote
-            (yyval.string).size= (yyvsp[(1) - (1)].string).size -2; // -2 removes the begin and end quote
-            #endif
           ;}
     break;
 
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 458 "libmemcached/options/parser.yy"
+#line 454 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_CONSISTENT;
           ;}
@@ -2097,7 +2093,7 @@ yyreduce:
   case 66:
 
 /* Line 1464 of yacc.c  */
-#line 462 "libmemcached/options/parser.yy"
+#line 458 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_MODULA;
           ;}
@@ -2106,7 +2102,7 @@ yyreduce:
   case 67:
 
 /* Line 1464 of yacc.c  */
-#line 466 "libmemcached/options/parser.yy"
+#line 462 "libmemcached/options/parser.yy"
     {
             (yyval.distribution)= MEMCACHED_DISTRIBUTION_RANDOM;
           ;}
@@ -2115,7 +2111,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2119 "libmemcached/options/parser.cc"
+#line 2115 "libmemcached/options/parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2327,7 +2323,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 471 "libmemcached/options/parser.yy"
+#line 467 "libmemcached/options/parser.yy"
  
 
 void Context::start() 

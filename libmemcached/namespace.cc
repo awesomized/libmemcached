@@ -83,3 +83,11 @@ memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, 
 
   return MEMCACHED_SUCCESS;
 }
+
+const char * memcached_get_namespace(memcached_st *self)
+{
+  if (not self->_namespace)
+    return NULL;
+
+  return memcached_array_string(self->_namespace);
+}

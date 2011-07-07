@@ -446,10 +446,6 @@ string:
         | QUOTED_STRING
           {
             $$= $1;
-            #if 0
-            $$.c_str= $1.c_str +1; // +1 to move use passed the initial quote
-            $$.size= $1.size -2; // -2 removes the begin and end quote
-            #endif
           }
         ;
 
