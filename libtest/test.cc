@@ -390,8 +390,6 @@ int main(int argc, char *argv[])
         Error << "Failed while running on_error()";
         break;
       }
-
-      Logn();
     }
 
     if (next->post and world->runner->post)
@@ -406,6 +404,7 @@ int main(int argc, char *argv[])
 cleanup:
 
     world->shutdown(creators_ptr);
+    Logn();
   }
 
   if (not is_shutdown())

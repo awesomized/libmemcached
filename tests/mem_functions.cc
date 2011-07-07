@@ -6466,6 +6466,7 @@ test_st parser_tests[] ={
   {"server with weights", 0, (test_callback_fn*)server_with_weight_test },
   {"parsing servername, port, and weight", 0, (test_callback_fn*)test_hostname_port_weight },
   {"--socket=", 0, (test_callback_fn*)test_parse_socket },
+  {"--namespace=", 0, (test_callback_fn*)test_namespace_keyword },
   {0, 0, (test_callback_fn*)0}
 };
 

@@ -98,16 +98,11 @@ static test_return_t __check_host(memcached_st *memc, const scanner_string_st &h
 }
 
 // Check and make sure the prefix_key is what we expect it to be
-static test_return_t __check_prefix_key(memcached_st *memc, const scanner_string_st &hostname)
+static test_return_t __check_namespace(memcached_st *memc, const scanner_string_st &arg)
 {
-  memcached_server_instance_st instance=
-    memcached_server_instance_by_position(memc, 0);
-
-  test_true(instance);
-
-  const char *first_hostname = memcached_server_name(instance);
-  test_true(first_hostname);
-  test_strcmp(first_hostname, hostname.c_str);
+  const char *_namespace = memcached_get_namespace(memc);
+  test_true(_namespace);
+  test_strcmp(_namespace, arg.c_str);
 
   return TEST_SUCCESS;
 }
@@ -206,10 +201,10 @@ scanner_variable_t test_boolean_options[]= {
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
-scanner_variable_t prefix_key_strings[]= {
-  { ARRAY, make_scanner_string("--NAMESPACE=foo"), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--NAMESPACE=\"foo\""), make_scanner_string("foo"), __check_prefix_key },
-  { ARRAY, make_scanner_string("--NAMESPACE=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_prefix_key },
+scanner_variable_t namespace_strings[]= {
+  { ARRAY, make_scanner_string("--NAMESPACE=foo"), make_scanner_string("foo"), __check_namespace },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"foo\""), make_scanner_string("foo"), __check_namespace },
+  { ARRAY, make_scanner_string("--NAMESPACE=\"This_is_a_very_long_key\""), make_scanner_string("This_is_a_very_long_key"), __check_namespace },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 
@@ -320,6 +315,11 @@ test_return_t parser_distribution_test(memcached_st*)
 test_return_t parser_key_prefix_test(memcached_st*)
 {
   return _test_option(distribution_strings);
+}
+
+test_return_t test_namespace_keyword(memcached_st*)
+{
+  return _test_option(namespace_strings);
 }
 
 #define SUPPORT_EXAMPLE_CNF "support/example.cnf"
@@ -443,7 +443,7 @@ test_return_t random_statement_build_test(memcached_st*)
   for (scanner_variable_t *ptr= test_boolean_options; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);
 
-  for (scanner_variable_t *ptr= prefix_key_strings; ptr->type != NIL; ptr++)
+  for (scanner_variable_t *ptr= namespace_strings; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);
 
   for (scanner_variable_t *ptr= distribution_strings; ptr->type != NIL; ptr++)
