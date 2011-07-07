@@ -111,7 +111,8 @@ static bool cycle_server(server_st  *server)
 
 bool server_startup(server_startup_st *construct)
 {
-  Log;
+  Logn();
+
   if (getenv(((char *)"MEMCACHED_SERVERS")))
   {
     construct->server_list= getenv(((char *)"MEMCACHED_SERVERS"));
@@ -246,7 +247,7 @@ bool server_startup(server_startup_st *construct)
     construct->server_list= server_config_string;
   }
 
-  Log;
+  Logn();
 
   srandom((unsigned int)time(NULL));
 

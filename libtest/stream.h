@@ -97,14 +97,15 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
     int _line_number;
 
   public:
-    log(const char *filename, int line_number) :
-      _filename(filename),
-      _line_number(line_number)
+    log() :
+      _filename(NULL),
+      _line_number(0)
+    { }
+
+    void set_filename(const char *filename, int line_number)
     {
-      if (_filename)
-      {
-        arg << _filename << ":" << _line_number << " ";
-      }
+      _filename= filename;
+      _line_number= line_number;
     }
 
     ~log()
@@ -116,6 +117,11 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
     template<class T>
       log &operator<<(const T &x)
       {
+        if (_filename)
+        {
+          arg << __FILE__ << ":" << __LINE__ << " ";
+          _filename= NULL;
+        }
         arg << x;
         return *this;
       }
@@ -127,22 +133,21 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
 
 class cerr : public detail::log<detail::cerr> {
 public:
-  cerr(const char *filename, int line_number) :
-    log(filename, line_number)
-  { }
+  cerr(const char *filename, int line_number)
+  {
+    set_filename(filename, line_number);
+  }
 };
 
 class clog : public detail::log<detail::clog> {
 public:
-  clog(const char *filename, int line_number) :
-    log(filename, line_number)
+  clog(const char *, int)
   { }
 };
 
 class cout : public detail::log<detail::cout> {
 public:
-  cout(const char *filename, int line_number) :
-    log(filename, line_number)
+  cout(const char *, int)
   { }
 };
 
@@ -154,5 +159,7 @@ public:
 #define Out stream::cout(NULL, __LINE__)
 
 #define Log stream::clog(NULL, __LINE__)
+
+#define Logn() stream::clog(NULL, __LINE__) << " "
 
 } // namespace libtest

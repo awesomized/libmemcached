@@ -390,6 +390,8 @@ int main(int argc, char *argv[])
         Error << "Failed while running on_error()";
         break;
       }
+
+      Logn();
     }
 
     if (next->post and world->runner->post)
@@ -427,13 +429,10 @@ cleanup:
 
   stats_print(&stats);
 
-  Error << " ";
   void *retval;
   pthread_join(thread, &retval);
 
-  Error << " word";
   delete world;
-  Error << " after word";
 
   return stats.failed == 0 and __shutdown == SHUTDOWN_GRACEFUL ? EXIT_SUCCESS : EXIT_FAILURE;
 }
