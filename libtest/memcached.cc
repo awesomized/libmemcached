@@ -44,8 +44,6 @@
 
 #include <libtest/common.h>
 
-#include <cassert>
-#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -62,8 +60,6 @@
 #include <libtest/server.h>
 #include <libtest/killpid.h>
 #include <libtest/wait.h>
-
-#define CERR_PREFIX std::endl << __FILE__ << ":" << __LINE__ << " "
 
 #define SOCKET_FILE "/tmp/memcached.socket"
 
@@ -92,12 +88,12 @@ static bool cycle_server(server_st  *server)
 
       if (pid > 0 and kill_pid(pid))
       {
-        std::cerr << CERR_PREFIX << "Killed existing server," << *server << " with pid:" << pid << std::endl;
+        Error << "Killed existing server," << *server << " with pid:" << pid;
         continue;
       }
       else if (libmemcached_util_flush(server->hostname(), server->port(), NULL)) // If we can flush it, we will just use it
       { 
-        std::cerr << CERR_PREFIX << "Found server on port " << int(server->port()) << ", flushed it!" << std::endl;
+        Error << "Found server on port " << int(server->port()) << ", flushed it!";
         server->set_used();
         return true;
       } // No idea what is wrong here, so we need to find a different port
@@ -115,10 +111,11 @@ static bool cycle_server(server_st  *server)
 
 bool server_startup(server_startup_st *construct)
 {
+  Log;
   if (getenv(((char *)"MEMCACHED_SERVERS")))
   {
     construct->server_list= getenv(((char *)"MEMCACHED_SERVERS"));
-    printf("servers %s\n", construct->server_list.c_str());
+    Log << "MEMCACHED_SERVERS " << construct->server_list;
     construct->count= 0;
   }
   else
@@ -146,7 +143,7 @@ bool server_startup(server_startup_st *construct)
 
           while (not cycle_server(server))
           {
-            std::cerr << CERR_PREFIX << "Found server " << *server << ", could not flush it, so trying next port." << std::endl;
+            Error << "Found server " << *server << ", could not flush it, so trying next port.";
             port_base++;
             server->set_port(in_port_t(x +TEST_PORT_BASE +port_base));
           }
@@ -155,7 +152,7 @@ bool server_startup(server_startup_st *construct)
 
       if (server->is_used())
       {
-        std::cerr << std::endl << "Using server at : " << server << std::endl;
+        Log << "Using server at : " << server;
       }
       else
       {
@@ -174,11 +171,11 @@ bool server_startup(server_startup_st *construct)
 
         if (not server->start())
         {
-          std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          Error << "Failed system(" << buffer << ")";
           delete server;
           return false;
         }
-        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server->pid() << std::endl;
+        Log << "STARTING SERVER: " << buffer << " pid:" << server->pid();
       }
       construct->push_server(server);
 
@@ -213,13 +210,13 @@ bool server_startup(server_startup_st *construct)
 
       if (not cycle_server(server))
       {
-        std::cerr << CERR_PREFIX << "Found server " << server << ", could not flush it, failing since socket file is not available." << std::endl;
+        Error << "Found server " << server << ", could not flush it, failing since socket file is not available.";
         return false;
       }
 
       if (server->is_used())
       {
-        std::cerr << std::endl << "Using server at : " << *server << std::endl;
+        Log << "Using server at : " << *server;
       }
       else
       {
@@ -229,11 +226,11 @@ bool server_startup(server_startup_st *construct)
 
         if (not server->start())
         {
-          std::cerr << CERR_PREFIX << "Failed system(" << buffer << ")" << std::endl;
+          Error << "Failed system(" << buffer << ")";
           delete server;
           return false;
         }
-        std::cerr << "STARTING SERVER: " << buffer << " pid:" << server->pid() << std::endl;
+        Log << "STARTING SERVER: " << buffer << " pid:" << server->pid();
       }
       set_default_socket(server->hostname());
       construct->push_server(server);
@@ -249,9 +246,10 @@ bool server_startup(server_startup_st *construct)
     construct->server_list= server_config_string;
   }
 
+  Log;
+
   srandom((unsigned int)time(NULL));
 
-  std::cerr << std::endl;
   return true;
 }
 

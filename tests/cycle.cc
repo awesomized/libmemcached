@@ -90,6 +90,19 @@ static test_return_t valid(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t kill_test(memcached_st *)
+{
+  static struct timespec global_sleep_value= { 2, 0 };
+
+#ifdef WIN32
+  sleep(1);
+#else
+  nanosleep(&global_sleep_value, NULL);
+#endif
+
+  return TEST_SUCCESS;
+}
+
 test_st ping_tests[] ={
   {"alive", true, (test_callback_fn*)alive },
   {0, 0, 0}
@@ -100,9 +113,15 @@ test_st getpid_tests[] ={
   {0, 0, 0}
 };
 
+test_st kill_tests[] ={
+  {"kill", true, (test_callback_fn*)kill_test },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"libmemcached_util_ping()", 0, 0, ping_tests},
   {"libmemcached_util_getpid()", 0, 0, getpid_tests},
+  {"kill", 0, 0, kill_tests},
   {0, 0, 0, 0}
 };
 

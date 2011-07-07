@@ -34,14 +34,16 @@
  *
  */
 
-#include <config.h>
+#include <libtest/common.h>
 
-#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 
 #include <libtest/killpid.h>
+#include <libtest/stream.h>
+
+using namespace libtest;
 
 bool kill_pid(pid_t pid_arg)
 {
@@ -54,12 +56,12 @@ bool kill_pid(pid_t pid_arg)
     {
     case EPERM:
       perror(__func__);
-      std::cerr << __func__ << " -> Does someone else have a process running locally for " << int(pid_arg) << "?" << std::endl;
+      Error << __func__ << " -> Does someone else have a process running locally for " << int(pid_arg) << "?";
       return false;
 
     case ESRCH:
       perror(__func__);
-      std::cerr << "Process " << int(pid_arg) << " not found." << std::endl;
+      Error << "Process " << int(pid_arg) << " not found.";
       return false;
 
     default:
@@ -78,7 +80,9 @@ bool kill_pid(pid_t pid_arg)
     case ECHILD:
       return true;
     }
-    std::cerr << std::endl << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg) << std::endl;
+
+    Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg);
+
     return false;
   }
 

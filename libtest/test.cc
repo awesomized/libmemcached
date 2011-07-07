@@ -1,11 +1,41 @@
-/* uTest
- * Copyright (C) 2011 Data Differential, http://datadifferential.com/
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  uTest, libtest
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
+
 
 
 #include <libtest/common.h>
@@ -21,7 +51,6 @@
 #include <ctime>
 #include <fnmatch.h>
 #include <iostream>
-#include <cerrno>
 
 #include <signal.h>
 
@@ -132,12 +161,30 @@ enum shutdown_t {
 
 static Framework *world= NULL;
 static volatile shutdown_t __shutdown= SHUTDOWN_RUNNING;
+pthread_mutex_t shutdown_mutex= PTHREAD_MUTEX_INITIALIZER;
+
+static bool is_shutdown()
+{
+  bool ret;
+  pthread_mutex_lock(&shutdown_mutex);
+  ret= bool(__shutdown != SHUTDOWN_RUNNING);
+  pthread_mutex_unlock(&shutdown_mutex);
+
+  return ret;
+}
+
+static void set_shutdown(shutdown_t arg)
+{
+  pthread_mutex_lock(&shutdown_mutex);
+  __shutdown= arg;
+  pthread_mutex_unlock(&shutdown_mutex);
+}
 
 static void *sig_thread(void *arg)
 {   
   sigset_t *set= (sigset_t *) arg;
 
-  for (;__shutdown == SHUTDOWN_RUNNING;)
+  while (is_shutdown())
   {
     int sig;
     int error;
@@ -148,12 +195,12 @@ static void *sig_thread(void *arg)
     case SIGSEGV:
     case SIGINT:
     case SIGABRT:
-      std::cerr << std::endl << "Signal handling thread got signal " <<  strsignal(sig) << std::endl;
-      __shutdown= SHUTDOWN_FORCED;
+      Error << "Signal handling thread got signal " <<  strsignal(sig);
+      set_shutdown(SHUTDOWN_FORCED);
       break;
 
     default:
-      std::cerr << std::endl << "Signal handling thread got unexpected signal " <<  strsignal(sig) << std::endl;
+      Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
     case SIGUSR1:
       break;
     }
@@ -176,13 +223,13 @@ static void setup_signals(pthread_t& thread)
   int error;
   if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
   {
-    std::cerr << __FILE__ << ":" << __LINE__ << " died during pthread_sigmask(" << strerror(error) << ")" << std::endl;
+    Error << " died during pthread_sigmask(" << strerror(error) << ")";
     exit(EXIT_FAILURE);
   }
 
   if ((error= pthread_create(&thread, NULL, &sig_thread, (void *) &set)) != 0)
   {
-    std::cerr << __FILE__ << ":" << __LINE__ << " died during pthread_create(" << strerror(error) << ")" << std::endl;
+    Error << " died during pthread_create(" << strerror(error) << ")";
     exit(EXIT_FAILURE);
   }
 }
@@ -208,7 +255,7 @@ int main(int argc, char *argv[])
   void *creators_ptr= world->create(error);
   if (test_failed(error))
   {
-    std::cerr << "create() failed" << std::endl;
+    Error << "create() failed";
     return EXIT_FAILURE;
   }
 
@@ -233,7 +280,7 @@ int main(int argc, char *argv[])
     wildcard= argv[2];
   }
 
-  for (collection_st *next= world->collections; next->name and __shutdown == SHUTDOWN_RUNNING; next++)
+  for (collection_st *next= world->collections; next->name and (not is_shutdown()); next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     bool failed= false;
@@ -254,23 +301,24 @@ int main(int argc, char *argv[])
     switch (collection_rc)
     {
     case TEST_SUCCESS:
-      std::cerr << std::endl << next->name << std::endl << std::endl;
       break;
 
     case TEST_FATAL:
     case TEST_FAILURE:
-      std::cerr << std::endl << next->name << " [ failed ]" << std::endl << std::endl;
+      Error << next->name << " [ failed ]";
       stats.collection_failed++;
       goto cleanup;
 
     case TEST_SKIPPED:
-      std::cerr << std::endl << next->name << " [ skipping ]" << std::endl << std::endl;
+      Log << next->name << " [ skipping ]";
       stats.collection_skipped++;
       goto cleanup;
 
     case TEST_MEMORY_ALLOCATION_FAILURE:
       test_assert(0, "Allocation failure, or unknown return");
     }
+
+    Log << "Collection: " << next->name;
 
     for (test_st *run= next->tests; run->name; run++)
     {
@@ -279,10 +327,8 @@ int main(int argc, char *argv[])
 
       if (wildcard && fnmatch(wildcard, run->name, 0))
       {
-	continue;
+        continue;
       }
-
-      std::cerr << "\tTesting " << run->name;
 
       test_return_t return_code;
       if (test_success(return_code= world->item.startup(creators_ptr)))
@@ -305,44 +351,43 @@ int main(int argc, char *argv[])
         }
         else
         {
-          std::cerr << __FILE__ << ":" << __LINE__ << " item.flush(failure)" << std::endl;
+          Error << " item.flush(failure)";
         }
       }
       else
       {
-        std::cerr << __FILE__ << ":" << __LINE__ << " item.startup(failure)" << std::endl;
+        Error << " item.startup(failure)";
       }
 
       stats.total++;
 
-      std::cerr << "\t\t\t\t\t";
-
       switch (return_code)
       {
       case TEST_SUCCESS:
-	std::cerr << load_time / 1000 << "." << load_time % 1000;
-	stats.success++;
-	break;
+        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
+        stats.success++;
+        break;
 
       case TEST_FATAL:
       case TEST_FAILURE:
-	stats.failed++;
-	failed= true;
-	break;
+        stats.failed++;
+        failed= true;
+        Error << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        break;
 
       case TEST_SKIPPED:
-	stats.skipped++;
-	skipped= true;
-	break;
+        stats.skipped++;
+        skipped= true;
+        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        break;
 
       case TEST_MEMORY_ALLOCATION_FAILURE:
-	test_assert(0, "Memory Allocation Error");
+        test_assert(0, "Memory Allocation Error");
       }
-
-      std::cerr << "[ " << test_strerror(return_code) << " ]" << std::endl;
 
       if (test_failed(world->on_error(return_code, creators_ptr)))
       {
+        Error << "Failed while running on_error()";
         break;
       }
     }
@@ -361,31 +406,34 @@ cleanup:
     world->shutdown(creators_ptr);
   }
 
-  if (__shutdown == SHUTDOWN_RUNNING)
+  if (not is_shutdown())
   {
-    __shutdown= SHUTDOWN_GRACEFUL;
+    set_shutdown(SHUTDOWN_GRACEFUL);
+    pthread_kill(thread, SIGUSR1);
   }
 
   if (__shutdown == SHUTDOWN_FORCED)
   {
-    std::cerr << std::endl << std::endl <<  "Tests were aborted." << std::endl << std::endl;
+    Error << "Tests were aborted.";
   }
   else if (stats.collection_failed or stats.collection_skipped)
   {
-    std::cerr << std::endl << std::endl <<  "Some test failures and/or skipped test occurred." << std::endl << std::endl;
+    Error << "Some test failures and/or skipped test occurred.";
   }
   else
   {
-    std::cout << std::endl << std::endl <<  "All tests completed successfully." << std::endl << std::endl;
+    Log << "All tests completed successfully.";
   }
 
   stats_print(&stats);
 
+  Error << " ";
   void *retval;
-  pthread_kill(thread, SIGUSR1);
   pthread_join(thread, &retval);
 
+  Error << " word";
   delete world;
+  Error << " after word";
 
   return stats.failed == 0 and __shutdown == SHUTDOWN_GRACEFUL ? EXIT_SUCCESS : EXIT_FAILURE;
 }
