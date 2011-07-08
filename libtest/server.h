@@ -124,7 +124,7 @@ std::ostream& operator<<(std::ostream& output, const server_st &arg);
 
 struct server_startup_st
 {
-  uint8_t count;
+  uint32_t count;
   uint8_t udp;
   std::string server_list;
   std::vector<server_st *> servers;

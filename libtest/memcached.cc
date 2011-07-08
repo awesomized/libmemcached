@@ -124,7 +124,7 @@ bool server_startup(server_startup_st *construct)
     std::string server_config_string;
 
     uint32_t port_base= 0;
-    for (uint32_t x= 0; x < (construct->count -1); x++)
+    for (uint32_t x= 0; x < uint32_t(construct->count -1); x++)
     {
       server_st *server= NULL;
 
