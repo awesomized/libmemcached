@@ -243,7 +243,11 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true_op
         libmemcached_check_configuration(ptr->option.c_str, ptr->option.size, buffer, sizeof(buffer));
       }
 
-      test_true_got(memc, buffer);
+      std::string temp(buffer);
+      temp+= " with option string:";
+      temp+= ptr->option.c_str;
+
+      test_true_got(memc, temp.c_str());
 
       if (ptr->check_func)
       {
