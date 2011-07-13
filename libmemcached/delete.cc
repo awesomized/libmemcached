@@ -150,7 +150,8 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 
     if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
     {
-      rc= MEMCACHED_WRITE_FAILURE;
+      rc=  memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
       goto error;
     }
 

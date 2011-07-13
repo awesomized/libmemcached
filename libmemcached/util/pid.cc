@@ -56,30 +56,31 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
   if (not memc_ptr)
   {
     *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    return pid;
+    return -1;
   }
 
   memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
   if (memcached_success(rc))
   {
     memcached_stat_st *stat= memcached_stat(memc_ptr, NULL, &rc);
-    if (stat and stat->pid > 0)
+    if (memcached_success(rc) and stat and stat->pid != -1)
     {
       pid= stat->pid;
-    }
-    else if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
-    {
-      memcached_server_instance_st instance=
-        memcached_server_instance_by_position(memc_ptr, 0);
-
-      if (instance and instance->error_messages)
-      {
-        rc= memcached_server_error_return(instance);
-      }
     }
     else if (memcached_success(rc))
     {
       rc= MEMCACHED_UNKNOWN_STAT_KEY; // Something went wrong if this happens
+    }
+    else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
+    {
+      memcached_server_instance_st instance=
+        memcached_server_instance_by_position(memc_ptr, 0);
+
+      assert_msg(instance and instance->error_messages, " ");
+      if (instance and instance->error_messages)
+      {
+        rc= memcached_server_error_return(instance);
+      }
     }
 
     memcached_stat_free(memc_ptr, stat);

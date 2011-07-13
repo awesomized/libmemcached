@@ -174,6 +174,7 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
   assert(rc != MEMCACHED_ERRNO);
+  assert(rc != MEMCACHED_SOME_ERRORS);
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
@@ -192,6 +193,7 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
   assert(rc != MEMCACHED_ERRNO);
+  assert(rc != MEMCACHED_SOME_ERRORS);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -223,6 +225,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at)
 {
   assert(rc != MEMCACHED_ERRNO);
+  assert(rc != MEMCACHED_SOME_ERRORS);
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 

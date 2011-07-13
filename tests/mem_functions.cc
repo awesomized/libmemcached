@@ -4396,8 +4396,6 @@ static test_return_t dump_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-#ifdef HAVE_LIBMEMCACHEDUTIL
-
 struct test_pool_context_st {
   memcached_pool_st* pool;
   memcached_st* mmc;
@@ -4539,6 +4537,41 @@ static test_return_t util_version_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t getpid_connection_failure_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  // Test both the version that returns a code, and the one that does not.
+  test_true(libmemcached_util_getpid(memcached_server_name(instance),
+                                     memcached_server_port(instance) -1, NULL) == -1);
+
+  test_true(libmemcached_util_getpid(memcached_server_name(instance),
+                                     memcached_server_port(instance) -1, &rc) == -1);
+  test_compare_got(MEMCACHED_CONNECTION_FAILURE, rc, memcached_strerror(memc, rc));
+
+  return TEST_SUCCESS;
+}
+
+
+static test_return_t getpid_test(memcached_st *memc)
+{
+  memcached_return_t rc;
+  memcached_server_instance_st instance=
+    memcached_server_instance_by_position(memc, 0);
+
+  // Test both the version that returns a code, and the one that does not.
+  test_true(libmemcached_util_getpid(memcached_server_name(instance),
+                                     memcached_server_port(instance), NULL) > -1);
+
+  test_true(libmemcached_util_getpid(memcached_server_name(instance),
+                                     memcached_server_port(instance), &rc) > -1);
+  test_compare(MEMCACHED_SUCCESS, rc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t ping_test(memcached_st *memc)
 {
   memcached_return_t rc;
@@ -4556,7 +4589,6 @@ static test_return_t ping_test(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
-#endif
 
 
 #if 0
@@ -6205,7 +6237,6 @@ test_st tests[] ={
   {"analyzer", 1, (test_callback_fn*)analyzer_test},
   {"connectionpool", 1, (test_callback_fn*)connection_pool_test },
   {"memcached_pool_test", 1, (test_callback_fn*)memcached_pool_test },
-  {"ping", 1, (test_callback_fn*)ping_test },
   {"test_get_last_disconnect", 1, (test_callback_fn*)test_get_last_disconnect},
   {"verbosity", 1, (test_callback_fn*)test_verbosity},
   {"test_server_failure", 1, (test_callback_fn*)test_server_failure},
@@ -6221,6 +6252,13 @@ test_st behavior_tests[] ={
   {"MEMCACHED_BEHAVIOR_CORK", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_CORK_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
+  {0, 0, 0}
+};
+
+test_st libmemcachedutil_tests[] ={
+  {"libmemcached_util_ping()", 1, (test_callback_fn*)ping_test },
+  {"libmemcached_util_getpid()", 1, (test_callback_fn*)getpid_test },
+  {"libmemcached_util_getpid(MEMCACHED_CONNECTION_FAILURE)", 1, (test_callback_fn*)getpid_connection_failure_test },
   {0, 0, 0}
 };
 
@@ -6485,6 +6523,7 @@ collection_st collection[] ={
 #if 0
   {"hash_sanity", 0, 0, hash_sanity},
 #endif
+  {"libmemcachedutil", 0, 0, libmemcachedutil_tests},
   {"basic", 0, 0, basic_tests},
   {"hsieh_availability", 0, 0, hsieh_availability},
   {"murmur_availability", 0, 0, murmur_availability},

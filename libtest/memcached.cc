@@ -253,11 +253,3 @@ bool server_startup(server_startup_st *construct)
 
   return true;
 }
-
-void server_shutdown(server_startup_st *construct)
-{
-  if (not construct)
-    return;
-
-  construct->shutdown();
-}

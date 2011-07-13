@@ -246,7 +246,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
         if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
         {
-          return MEMCACHED_FAILURE;
+          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                                     memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         }
 #ifdef DEBUG
         printf("update_continuum: key is %s\n", sort_host);
@@ -298,7 +299,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
         if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
         {
-          return MEMCACHED_FAILURE;
+          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                                     memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         }
 
         WATCHPOINT_ASSERT(sort_host_length);

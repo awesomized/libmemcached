@@ -118,7 +118,8 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                     (ptr->flags.no_reply) ? " noreply" : "");
       if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || check_length < 0)
       {
-        rc= MEMCACHED_WRITE_FAILURE;
+        rc= memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         memcached_io_reset(instance);
 
         return rc;
@@ -151,7 +152,8 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                  ptr->flags.no_reply ? " noreply" : "");
       if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -size_t(buffer_ptr - buffer) || check_length < 0)
       {
-        rc= MEMCACHED_WRITE_FAILURE;
+        rc= memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         memcached_io_reset(instance);
 
         return rc;

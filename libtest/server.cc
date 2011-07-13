@@ -195,3 +195,11 @@ server_startup_st::~server_startup_st()
   }
   servers.clear();
 }
+
+void server_shutdown(server_startup_st *construct)
+{
+  if (not construct)
+    return;
+
+  construct->shutdown();
+}
