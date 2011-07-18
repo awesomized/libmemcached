@@ -34,56 +34,57 @@
  *
  */
 
-
-/*
-  Structures for generic tests.
-*/
-
-#include <cstdio>
-#include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
-
-#include <libtest/visibility.h>
-
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-
 #pragma once
 
-LIBTEST_API
-in_port_t default_port();
+namespace libtest {
 
-LIBTEST_API
-void set_default_port(in_port_t port);
+template <class T_comparable, class T_hint>
+bool _compare_true_hint(const char *file, int line, const char *func, T_comparable __expected, const char *assertation_label,  T_hint __hint)
+{
+  if (__expected == false)
+  {
+    libtest::stream::make_cerr(file, line, func) << "Assertation  \"" << assertation_label << "\" failed, hint: " << __hint;
+    return false;
+  }
 
-LIBTEST_API
-const char* default_socket();
+  return true;
+}
 
-LIBTEST_API
-void set_default_socket(const char *socket);
+template <class T_comparable>
+bool _compare(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual)
+{
+  if (__expected != __actual)
+  {
+    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
+    return false;
+  }
 
-LIBTEST_API
-bool test_is_local(void);
+  return true;
+}
 
-#ifdef __cplusplus
-#define test_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
-#else
-#define test_literal_param(X) (X), ((size_t)((sizeof(X) - 1)))
-#endif
+template <class T_comparable>
+bool _compare_zero(const char *file, int line, const char *func, T_comparable __actual)
+{
+  if (T_comparable(0) != __actual)
+  {
+    libtest::stream::make_cerr(file, line, func) << "Expected 0 got \"" << __actual << "\"";
+    return false;
+  }
 
-#define test_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
+  return true;
+}
 
-#define test_array_length(__array) sizeof(__array)/sizeof(&__array)
+template <class T_comparable, class T_hint>
+bool _compare_hint(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual, T_hint __hint)
+{
+  if (__expected != __actual)
+  {
+    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\" Additionally: \"" << __hint << "\"";
+
+    return false;
+  }
+
+  return true;
+}
+
+} // namespace libtest

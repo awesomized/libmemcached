@@ -12,13 +12,7 @@
 #endif
 
 #include <libtest/stream.h>
-
-LIBTEST_API
-const char* default_socket();
-
-LIBTEST_API
-void set_default_socket(const char *socket);
-
+#include <libtest/comparison.hpp>
 
 /**
   A structure describing the test case.
@@ -28,9 +22,6 @@ struct test_st {
   bool requires_flush;
   test_callback_fn *test_fn;
 };
-
-LIBTEST_API
-bool test_is_local(void);
 
 #define test_assert_errno(A) \
 do \
@@ -75,22 +66,10 @@ do \
   } \
 } while (0)
 
-template <class T_comparable, class T_hint>
-bool _true_hint(const char *file, int line, const char *func, T_comparable __expected, const char *assertation_label,  T_hint __hint)
-{
-  if (__expected == false)
-  {
-    libtest::stream::make_cerr(file, line, func) << "Assertation  \"" << assertation_label << "\" failed, hint: " << __hint;
-    return false;
-  }
-
-  return true;
-}
-
 #define test_true_got(__expected, __hint) \
 do \
 { \
-  if (not _true_hint(__FILE__, __LINE__, __func__, ((__expected)), #__expected, ((__hint)))) \
+  if (not libtest::_compare_true_hint(__FILE__, __LINE__, __func__, ((__expected)), #__expected, ((__hint)))) \
   { \
     create_core(); \
     return TEST_FAILURE; \
@@ -137,47 +116,10 @@ do \
   } \
 } while (0)
 
-template <class T_comparable>
-bool _compare(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual)
-{
-  if (__expected != __actual)
-  {
-    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
-    return false;
-  }
-
-  return true;
-}
-
-template <class T_comparable>
-bool _compare_zero(const char *file, int line, const char *func, T_comparable __actual)
-{
-  if (T_comparable(0) != __actual)
-  {
-    libtest::stream::make_cerr(file, line, func) << "Expected 0 got \"" << __actual << "\"";
-    return false;
-  }
-
-  return true;
-}
-
-template <class T_comparable, class T_hint>
-bool _compare_hint(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual, T_hint __hint)
-{
-  if (__expected != __actual)
-  {
-    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\" Additionally: \"" << __hint << "\"";
-
-    return false;
-  }
-
-  return true;
-}
-
 #define test_compare(__expected, __actual) \
 do \
 { \
-  if (not _compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)))) \
+  if (not libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)))) \
   { \
     create_core(); \
     return TEST_FAILURE; \
@@ -187,7 +129,7 @@ do \
 #define test_zero(__actual) \
 do \
 { \
-  if (not _compare_zero(__FILE__, __LINE__, __func__, ((__actual)))) \
+  if (not libtest::_compare_zero(__FILE__, __LINE__, __func__, ((__actual)))) \
   { \
     create_core(); \
     return TEST_FAILURE; \
@@ -197,7 +139,7 @@ do \
 #define test_compare_got(__expected, __actual, __hint) \
 do \
 { \
-  if (not _compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint))) \
+  if (not libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint))) \
   { \
     create_core(); \
     return TEST_FAILURE; \
