@@ -1,4 +1,4 @@
-#  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+# vim:ft=automake
 #
 #  Libmemcached Scanner and Parser
 #
@@ -17,6 +17,9 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+EXTRA_DIST+= \
+	     libmemcached/options/parser.yy \
+	     libmemcached/options/scanner.l
 
 libmemcached/options/parser.h: libmemcached/options/parser.cc
 

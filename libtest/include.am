@@ -25,6 +25,7 @@ noinst_HEADERS+= \
 		 libtest/callbacks.h \
 		 libtest/cmdline.h \
 		 libtest/collection.h \
+		 libtest/comparison.hpp \
 		 libtest/common.h \
 		 libtest/core.h \
 		 libtest/error.h \
@@ -38,6 +39,7 @@ noinst_HEADERS+= \
 		 libtest/server.h \
 		 libtest/signal.h \
 		 libtest/stats.h \
+		 libtest/stream.h \
 		 libtest/strerror.h \
 		 libtest/test.h \
 		 libtest/test.hpp \

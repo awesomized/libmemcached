@@ -38,7 +38,7 @@
 
 #include <pthread.h>
 #include <semaphore.h>
-#include <signal.h>
+#include <csignal>
 
 #include <libtest/signal.h>
 
@@ -51,18 +51,16 @@ struct context_st {
   context_st()
   {
     sigemptyset(&set);
-    sigaddset(&set, SIGABRT);
+    sigaddset(&set, SIGQUIT);
     sigaddset(&set, SIGINT);
-    sigaddset(&set, SIGUSR2);
 
     sem_init(&lock, 0, 0);
   }
   
   void test()
   {
-    assert(sigismember(&set, SIGABRT));
+    assert(sigismember(&set, SIGQUIT));
     assert(sigismember(&set, SIGINT));
-    assert(sigismember(&set, SIGUSR2));
   }
 
   int wait(int& sig)
@@ -98,7 +96,7 @@ void set_shutdown(shutdown_t arg)
 
   if (arg == SHUTDOWN_GRACEFUL)
   {
-    pthread_kill(thread, SIGUSR2);
+    pthread_kill(thread, SIGQUIT);
 
     void *retval;
     pthread_join(thread, &retval);
@@ -137,14 +135,13 @@ static void *sig_thread(void *arg)
 
     switch (sig)
     {
-    case SIGABRT:
     case SIGINT:
-      Error << "Signal handling thread got signal " <<  strsignal(sig);
-      set_shutdown(SHUTDOWN_FORCED);
-      break;
-
-      // Signal thread is being told that a graceful shutdown is occuring
-    case SIGUSR2:
+    case SIGQUIT:
+      if (is_shutdown() == false)
+      {
+        Error << "Signal handling thread got signal " <<  strsignal(sig);
+        set_shutdown(SHUTDOWN_FORCED);
+      }
       break;
 
     default:
@@ -168,6 +165,19 @@ void setup_signals()
   context_st *context= new context_st;
 
   assert(context);
+
+  sigset_t old_set;
+  sigemptyset(&old_set);
+  pthread_sigmask(SIG_BLOCK, NULL, &old_set);
+
+  if (sigismember(&old_set, SIGQUIT))
+  {
+    Error << strsignal(SIGQUIT) << " has been previously set.";
+  }
+  if (sigismember(&old_set, SIGINT))
+  {
+    Error << strsignal(SIGINT) << " has been previously set.";
+  }
 
   int error;
   if ((error= pthread_sigmask(SIG_BLOCK, &context->set, NULL)) != 0)
