@@ -35,7 +35,10 @@
  *
  */
 
-#include <libtest/common.h>
+#include <config.h>
+#include <libtest/test.hpp>
+
+using namespace libtest;
 
 #include <tests/virtual_buckets.h>
 

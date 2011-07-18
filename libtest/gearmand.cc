@@ -35,10 +35,12 @@
  */
 
 #include <libtest/common.h>
+#include <libtest/gearmand.h>
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/util.h>
+#include "util/instance.h"
+#include "util/operation.h"
 
+using namespace gearman_util;
 using namespace libtest;
 
 #include <cassert>
@@ -55,127 +57,132 @@ using namespace libtest;
 #include <libtest/server.h>
 #include <libtest/wait.h>
 
-#include <libtest/memcached.h>
+#include <libgearman/gearman.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
+class GetPid : public Instance::Finish
+{
+private:
+  pid_t _pid;
+
+public:
+  GetPid() :
+    _pid(-1)
+  { }
+
+  pid_t pid()
+  {
+    return _pid;
+  }
+
+
+  bool call(const bool success, const std::string &response)
+  {
+    _pid= -1;
+
+    if (success and response.size())
+    {
+      _pid= atoi(response.c_str());
+    }
+
+    if (_pid < 1)
+    {
+      _pid= -1;
+      return true;
+    }
+
+    return false;
+  }
+};
+
 using namespace libtest;
 
-class Memcached : public Server
+class Gearmand : public Server
 {
+private:
 public:
-  Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg) :
-    Server(host_arg, port_arg, is_socket_arg)
+  Gearmand(const std::string& host_arg, in_port_t port_arg) :
+    Server(host_arg, port_arg)
   { }
 
   pid_t get_pid(bool error_is_ok)
   {
-    // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
-    {
-      Wait wait(pid_file(), 0);
+    GetPid *get_instance_pid;
+    Instance instance(hostname(), port());
+    instance.set_finish(get_instance_pid= new GetPid);
 
-      if (not wait.successful())
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
+    instance.push(new Operation(test_literal_param("getpid\r\n"), true));
 
-    memcached_return_t rc;
-    if (has_socket())
+    if (not instance.run() and not error_is_ok)
     {
-      _pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
-    }
-    else
-    {
-      _pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
+      Error << "Failed to obtain pid of server";
     }
 
-    if ((memcached_failed(rc) or _pid < 1) and not error_is_ok)
-    {
-      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << _pid << " for:" << *this;
-    }
+    _pid= get_instance_pid->pid();
 
     return _pid;
   }
 
   bool ping()
   {
-    // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    gearman_client_st *client= gearman_client_create(NULL);
+    if (not client)
     {
-      Wait wait(pid_file(), 0);
+      Error << "Could not allocate memory for gearman_client_create()";
+      return false;
+    }
+    gearman_client_set_timeout(client, 1000);
 
-      if (not wait.successful())
+    if (gearman_success(gearman_client_add_server(client, hostname().c_str(), port())))
+    {
+      gearman_return_t rc= gearman_client_echo(client, gearman_literal_param("This is my echo test"));
+
+      if (gearman_success(rc))
       {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
+        gearman_client_free(client);
+        return true;
       }
     }
 
-    memcached_return_t rc;
-    bool ret;
-    if (has_socket())
-    {
-      ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
-    }
-    else
-    {
-      ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
-    }
+    gearman_client_free(client);
 
-    if (memcached_failed(rc) or not ret)
-    {
-      Error << "libmemcached_util_ping(" << memcached_strerror(NULL, rc) << ")";
-    }
-    return ret;
+    return false;;
   }
 
   const char *name()
   {
-    return "memcached";
+    return "gearmand";
   };
 
   const char *executable()
   {
-    return MEMCACHED_BINARY;
+    return GEARMAND_BINARY;
   }
 
   const char *pid_file_option()
   {
-    return "-P ";
-  }
-
-  const char *socket_file_option() const
-  {
-    return "-s ";
+    return "--pid-file=";
   }
 
   const char *daemon_file_option()
   {
-    return "-d";
+    return "--daemon";
   }
 
   const char *log_file_option()
   {
-    return NULL;
+    return "-vvvvv --log-file=";
   }
 
   const char *port_option()
   {
-    return "-p ";
+    return "--port=";
   }
 
   bool is_libtool()
-  {
-    return false;
-  }
-
-  // Memcached's pidfile is broken
-  bool broken_pid_file()
   {
     return true;
   }
@@ -186,7 +193,7 @@ public:
 
 #include <sstream>
 
-bool Memcached::build(int argc, const char *argv[])
+bool Gearmand::build(int argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
@@ -207,15 +214,9 @@ bool Memcached::build(int argc, const char *argv[])
 
 namespace libtest {
 
-Server *build_memcached(const std::string& hostname, const in_port_t try_port)
+Server *build_gearmand(const char *hostname, in_port_t try_port)
 {
-  return new Memcached(hostname, try_port, false);
-}
-
-Server *build_memcached_socket(const std::string& hostname, const in_port_t try_port)
-{
-  return new Memcached(hostname, try_port, true);
+  return new Gearmand(hostname, try_port);
 }
 
 }
-

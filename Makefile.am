@@ -60,7 +60,7 @@ fedora:
 	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
-generic:
+generic: support/libmemcached.spec
 	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
 	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/

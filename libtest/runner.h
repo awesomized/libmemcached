@@ -7,13 +7,21 @@
 #pragma once
 
 
+namespace libtest {
+
 /**
   Structure which houses the actual callers for the test cases contained in
   the collections.
 */
-struct Runner {
-  test_callback_runner_fn *pre;
-  test_callback_runner_fn *run;
-  test_callback_runner_fn *post;
+class Runner {
+public:
+  virtual test_return_t run(test_callback_fn* func, void *object);
+  virtual test_return_t pre(test_callback_fn* func, void *object);
+  virtual test_return_t post(test_callback_fn* func, void *object);
+
+  Runner();
+
+  virtual ~Runner() { }
 };
 
+} // namespace Runner

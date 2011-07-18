@@ -10,7 +10,6 @@
 
 TESTS_LDADDS= \
 	      libmemcached/libmemcached.la \
-	      libtest/libserver.la \
 	      libtest/libtest.la
 
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
@@ -27,6 +26,7 @@ EXTRA_DIST+= \
 
 noinst_HEADERS+= \
 		 tests/basic.h \
+		 tests/debug.h \
 		 tests/error_conditions.h \
 		 tests/hash_results.h \
 		 tests/ketama_test_cases.h \
@@ -62,6 +62,7 @@ check_PROGRAMS+= tests/cycle
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= \
 		       tests/basic.cc \
+		       tests/debug.cc \
 		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
 		       tests/mem_functions.cc \
@@ -107,13 +108,13 @@ tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testudp
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.cc
-tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la
+tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES)
 check_PROGRAMS+= tests/testhashkit
 
 tests_hash_plus_SOURCES= tests/hash_plus.cc
 tests_hash_plus_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES)
+tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES) $(TESTS_LDADDS)
 tests_hash_plus_LDADD= $(tests_testhashkit_DEPENDENCIES)
 check_PROGRAMS+= tests/hash_plus
 
@@ -239,21 +240,21 @@ valgrind-memerror: clients/memerror
 
 
 
-MEMSLAP_COMMAND= clients/memslap $(COLLECTION) $(SUITE)
+MEMSLAP_COMMAND= clients/memslap
 
-MEM_COMMAND= tests/testapp $(COLLECTION) $(SUITE)
+MEM_COMMAND= tests/testapp
 
-TESTPLUS_COMMAND= tests/testplus $(COLLECTION) $(SUITE)
+TESTPLUS_COMMAND= tests/testplus
 
-HASHPLUS_COMMAND= tests/hashplus $(COLLECTION) $(SUITE)
+HASHPLUS_COMMAND= tests/hashplus
 
-CYCLE_COMMAND= tests/cycle $(COLLECTION) $(SUITE)
+CYCLE_COMMAND= tests/cycle
 
-ATOM_COMMAND= tests/atomsmasher $(COLLECTION) $(SUITE)
+ATOM_COMMAND= tests/atomsmasher
 
-UDP_COMMAND= tests/testudp $(COLLECTION) $(SUITE)
+UDP_COMMAND= tests/testudp
 
-HASH_COMMAND= tests/testhashkit $(COLLECTION) $(SUITE)
+HASH_COMMAND= tests/testhashkit
 
 test-mem: tests/var tests/testapp
 	$(MEM_COMMAND)

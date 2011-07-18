@@ -35,12 +35,15 @@
  *
  */
 
-#include <libtest/common.h>
+#include <config.h>
+#include <libtest/test.hpp>
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+using namespace libtest;
+
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <libhashkit/hashkit.h>
 
@@ -576,36 +579,31 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-/* Prototypes for functions we will pass to test framework */
-void *world_create(test_return_t *error);
-test_return_t world_destroy(hashkit_st *hashk);
-
-void *world_create(test_return_t *error)
+static void *world_create(libtest::server_startup_st&, test_return_t& error)
 {
   hashkit_st *hashk_ptr= hashkit_create(&global_hashk);
 
   if (hashk_ptr != &global_hashk)
   {
-    *error= TEST_FAILURE;
+    error= TEST_FAILURE;
     return NULL;
   }
 
   if (hashkit_is_allocated(hashk_ptr) == true)
   {
-    *error= TEST_FAILURE;
+    error= TEST_FAILURE;
     return NULL;
   }
-
-  *error= TEST_SUCCESS;
 
   return hashk_ptr;
 }
 
 
-test_return_t world_destroy(hashkit_st *hashk)
+static bool world_destroy(void *object)
 {
+  hashkit_st *hashk= (hashkit_st *)object;
   // Did we get back what we expected?
-  assert(hashkit_is_allocated(hashk) == false);
+  test_true(hashkit_is_allocated(hashk) == false);
   hashkit_free(&global_hashk);
 
   return TEST_SUCCESS;
@@ -614,6 +612,6 @@ test_return_t world_destroy(hashkit_st *hashk)
 void get_world(Framework *world)
 {
   world->collections= collection;
-  world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_fn*)world_destroy;
+  world->_create= world_create;
+  world->_destroy= world_destroy;
 }

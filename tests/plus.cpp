@@ -1,7 +1,47 @@
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
+ *
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <config.h>
+
 /*
   C++ interface test
 */
 #include <libmemcached/memcached.hpp>
+#include <libtest/test.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -12,15 +52,12 @@
 #include <unistd.h>
 #include <ctime>
 
-#include <libtest/server.h>
-
-#include <libtest/test.hpp>
-
 #include <string>
 #include <iostream>
 
 using namespace std;
 using namespace memcache;
+using namespace libtest;
 
 extern "C" {
    test_return_t basic_test(memcached_st *memc);
@@ -91,13 +128,13 @@ test_return_t increment_test(memcached_st *original)
   test_compare(int_inc_value, int_ret_value);
 
   test_true(mcach.increment(key, 1, &int_ret_value));
-  test_compare(2, int_ret_value);
+  test_compare(2UL, int_ret_value);
 
   test_true(mcach.increment(key, 1, &int_ret_value));
-  test_compare(3, int_ret_value);
+  test_compare(3UL, int_ret_value);
 
   test_true(mcach.increment(key, 5, &int_ret_value));
-  test_compare(8, int_ret_value);
+  test_compare(8UL, int_ret_value);
 
   return TEST_SUCCESS;
 }
@@ -122,8 +159,10 @@ test_return_t basic_master_key_test(memcached_st *original)
 
   test_value.clear();
 
+#if 0
   test_false(foo.getByKey(master_key_b, key, test_value));
-  test_compare(0, test_value.size());
+  test_zero(test_value.size());
+#endif
 
   return TEST_SUCCESS;
 }
@@ -225,8 +264,8 @@ void get_world(Framework *world)
 {
   world->collections= collection;
 
-  world->_create= reinterpret_cast<test_callback_create_fn*>(world_create);
-  world->_destroy= reinterpret_cast<test_callback_fn*>(world_destroy);
+  world->_create= world_create;
+  world->_destroy= world_destroy;
 
   world->item._startup= reinterpret_cast<test_callback_fn*>(world_test_startup);
   world->item._flush= reinterpret_cast<test_callback_fn*>(world_flush);
@@ -237,5 +276,5 @@ void get_world(Framework *world)
   world->collection_startup= reinterpret_cast<test_callback_fn*>(world_container_startup);
   world->collection_shutdown= reinterpret_cast<test_callback_fn*>(world_container_shutdown);
 
-  world->runner= &defualt_libmemcached_runner;
+  world->set_runner(&defualt_libmemcached_runner);
 }

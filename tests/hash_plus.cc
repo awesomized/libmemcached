@@ -2,13 +2,17 @@
   C++ to libhashkit
 */
 
-#include <libtest/common.h>
+#include <config.h>
+
+#include <libtest/test.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 #include <libhashkit/hashkit.hpp>
+
+using namespace libtest;
 
 #include "hash_results.h"
 

@@ -35,28 +35,12 @@
  *
  */
 
-#include <config.h>
-#include <libtest/test.hpp>
+#pragma once
 
-using namespace libtest;
+test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys, bool key_matches_value= false);
 
+test_return_t confirm_keys_dont_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys);
 
-#include <iostream>
+test_return_t print_keys_by_server(memcached_st *memc);
 
-#include <libmemcached/memcached.h>
-
-#include "tests/print.h"
-
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context)
-{
-  (void)ptr;
-
-  if (context)
-  {
-    std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
-  }
-
-  return MEMCACHED_SUCCESS;
-}
+size_t confirm_key_count(memcached_st *memc);

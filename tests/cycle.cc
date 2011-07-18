@@ -39,7 +39,8 @@
   Test that we are cycling the servers we are creating during testing.
 */
 
-#include <libtest/common.h>
+#include <config.h>
+#include <libtest/test.hpp>
 
 #include <libmemcached/common.h>
 #include <libmemcached/is.h>
@@ -49,6 +50,8 @@
 
 
 #include <libtest/server.h>
+
+using namespace libtest;
 
 #define SERVERS_TO_CREATE 5
 
@@ -125,27 +128,6 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-#if 0
-static server_startup_st *world_create(test_return_t *error)
-{
-  server_startup_st *servers= new server_startup_st();
-
-  server_startup(servers);
-
-  *error= TEST_SUCCESS;
-
-  return servers;
-}
-
-static test_return_t world_destroy(server_startup_st *servers)
-{
-  server_shutdown(servers);
-  delete servers;
-
-  return TEST_SUCCESS;
-}
-#endif
-
 
 #include "tests/libmemcached_world.h"
 
@@ -154,16 +136,17 @@ void get_world(Framework *world)
   world->collections= collection;
 
   world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_fn*)world_destroy;
+  world->_destroy= (test_callback_destroy_fn*)world_destroy;
 
-  world->item._startup= (test_callback_fn*)world_test_startup;
+  world->item.set_startup((test_callback_fn*)world_test_startup);
   world->item.set_pre((test_callback_fn*)world_pre_run);
   world->item.set_post((test_callback_fn*)world_post_run);
-  world->_on_error= (test_callback_error_fn*)world_on_error;
+
+  world->set_on_error((test_callback_error_fn*)world_on_error);
 
   world->collection_startup= (test_callback_fn*)world_container_startup;
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
-  world->runner= &defualt_libmemcached_runner;
+  world->set_runner(&defualt_libmemcached_runner);
 }
 

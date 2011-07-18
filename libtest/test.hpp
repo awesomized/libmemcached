@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  uTest, libtest
+ *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -48,6 +47,8 @@
 #include <libtest/visibility.h>
 
 #include <libtest/error.h>
+#include <libtest/server.h>
+#include <libtest/wait.h>
 #include <libtest/callbacks.h>
 #include <libtest/test.h>
 #include <libtest/strerror.h>
@@ -58,6 +59,7 @@
 #include <libtest/framework.h>
 #include <libtest/get.h>
 #include <libtest/stream.h>
+#include <libtest/cmdline.h>
 
 #pragma once
 
@@ -80,3 +82,5 @@ LIBTEST_API
 #endif
 
 #define test_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
+
+#define test_array_length(__array) sizeof(__array)/sizeof(&__array)

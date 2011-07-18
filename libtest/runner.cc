@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  uTest, libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,28 +34,42 @@
  *
  */
 
-#include <config.h>
-#include <libtest/test.hpp>
+#include <libtest/common.h>
 
-using namespace libtest;
+namespace libtest {
 
-
-#include <iostream>
-
-#include <libmemcached/memcached.h>
-
-#include "tests/print.h"
-
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context)
+Runner::Runner()
 {
-  (void)ptr;
+}
 
-  if (context)
+test_return_t Runner::run(test_callback_fn* func, void *object)
+{
+  if (func)
   {
-    std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
+    return func(object);
   }
 
-  return MEMCACHED_SUCCESS;
+  return TEST_SUCCESS;
 }
+
+test_return_t Runner::pre(test_callback_fn* func, void *object)
+{
+  if (func)
+  {
+    return func(object);
+  }
+
+  return TEST_SUCCESS;
+}
+
+test_return_t Runner::post(test_callback_fn* func, void *object)
+{
+  if (func)
+  {
+    return func(object);
+  }
+
+  return TEST_SUCCESS;
+}
+
+} // namespace libtest

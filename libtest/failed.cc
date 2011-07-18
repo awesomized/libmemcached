@@ -43,32 +43,38 @@
 #include <string>
 #include <vector>
 
-struct failed_test_names_st
-{
-  failed_test_names_st(const char *collection_arg, const char *test_arg) :
+namespace libtest {
+
+struct failed_st {
+  failed_st(const std::string collection_arg, const std::string test_arg) :
     collection(collection_arg),
     test(test_arg)
-  {
-  }
+  { }
 
   std::string collection;
   std::string test;
 };
 
-typedef std::vector<failed_test_names_st> Failures;
+typedef std::vector<failed_st> Failures;
 
-static Failures failures;
-
-void push_failed_test(const char *collection, const char *test)
+class Failed
 {
-  failures.push_back(failed_test_names_st(collection, test));
-}
+private:
+  Failures failures;
 
-void print_failed_test(void)
-{
-  for (Failures::iterator iter= failures.begin(); iter != failures.end(); iter++)
+public:
+  void push(const char *collection, const char *test)
   {
-    Error << "\t" << (*iter).collection << " " << (*iter).test;
+    failures.push_back(failed_st(collection, test));
   }
-}
 
+  void print_failed_test(void)
+  {
+    for (Failures::iterator iter= failures.begin(); iter != failures.end(); iter++)
+    {
+      Error << "\t" << (*iter).collection << " " << (*iter).test;
+    }
+  }
+};
+
+} // namespace libtest

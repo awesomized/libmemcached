@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  uTest, libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,28 +34,23 @@
  *
  */
 
-#include <config.h>
-#include <libtest/test.hpp>
 
-using namespace libtest;
+#pragma once 
 
+enum shutdown_t {
+  SHUTDOWN_RUNNING,
+  SHUTDOWN_GRACEFUL,
+  SHUTDOWN_FORCED
+};
 
-#include <iostream>
+LIBTEST_INTERNAL_API
+bool is_shutdown();
 
-#include <libmemcached/memcached.h>
+LIBTEST_INTERNAL_API
+shutdown_t get_shutdown();
 
-#include "tests/print.h"
+LIBTEST_INTERNAL_API
+void set_shutdown(shutdown_t arg);
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context)
-{
-  (void)ptr;
-
-  if (context)
-  {
-    std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
-  }
-
-  return MEMCACHED_SUCCESS;
-}
+LIBTEST_INTERNAL_API
+void setup_signals(void);

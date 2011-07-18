@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,28 +34,6 @@
  *
  */
 
-#include <config.h>
-#include <libtest/test.hpp>
+#pragma once
 
-using namespace libtest;
-
-
-#include <iostream>
-
-#include <libmemcached/memcached.h>
-
-#include "tests/print.h"
-
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context)
-{
-  (void)ptr;
-
-  if (context)
-  {
-    std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
-  }
-
-  return MEMCACHED_SUCCESS;
-}
+bool exec_cmdline(const std::string& executable, const char *args[]);

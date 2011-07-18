@@ -35,7 +35,10 @@
  *
  */
 
-#include <libtest/common.h>
+#include <config.h>
+#include <libtest/test.hpp>
+
+using namespace libtest;
 
 #include <vector>
 #include <iostream>
@@ -235,20 +238,24 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true_op
   for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
   {
     memcached_st *memc= memcached(ptr->option.c_str, ptr->option.size);
-    if (test_true_opt)
+    
+    // The case that it should have parsed, but it didn't. We will inspect
+    // for an error with libmemcached_check_configuration()
+    if (not memc and test_true_opt)
     {
       char buffer[2048];
-      if (not memc)
-      {
-        libmemcached_check_configuration(ptr->option.c_str, ptr->option.size, buffer, sizeof(buffer));
-      }
+      bool success= libmemcached_check_configuration(ptr->option.c_str, ptr->option.size, buffer, sizeof(buffer));
 
       std::string temp(buffer);
       temp+= " with option string:";
       temp+= ptr->option.c_str;
+      test_true_got(success, temp.c_str());
 
-      test_true_got(memc, temp.c_str());
+      return TEST_FAILURE; // The line above should fail since memc should be null
+    }
 
+    if (test_true_opt)
+    {
       if (ptr->check_func)
       {
         test_return_t test_rc= (*ptr->check_func)(memc, ptr->result);
@@ -531,10 +538,8 @@ test_return_t test_hostname_port_weight(memcached_st *)
   const char *server_string= "--server=localhost:8888/?2 --server=localhost:8889/?3 --server=localhost:8890/?4 --server=localhost:8891/?5 --server=localhost:8892/?3";
   char buffer[BUFSIZ];
 
-  memcached_return_t rc;
   test_compare_got(MEMCACHED_SUCCESS,
-                   rc= libmemcached_check_configuration(server_string, strlen(server_string), buffer, sizeof(buffer)),
-                   memcached_strerror(NULL, rc));
+                   libmemcached_check_configuration(server_string, strlen(server_string), buffer, sizeof(buffer)), buffer);
 
   memcached_st *memc= memcached(server_string, strlen(server_string));
   test_true(memc);
@@ -617,14 +622,14 @@ test_return_t regression_bug_71231153_connect(memcached_st *)
   { // Test the connect-timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
     memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=0"));
     test_true(memc);
-    test_compare(0, memc->connect_timeout);
+    test_zero(memc->connect_timeout);
     test_compare(MEMCACHED_DEFAULT_TIMEOUT, memc->poll_timeout);
 
     memcached_return_t rc;
     size_t value_len;
     char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
-    test_compare(0, value_len);
+    test_zero(value_len);
     test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
 
     memcached_free(memc);
@@ -642,13 +647,13 @@ test_return_t regression_bug_71231153_poll(memcached_st *)
     memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --POLL-TIMEOUT=0"));
     test_true(memc);
     test_compare(MEMCACHED_DEFAULT_CONNECT_TIMEOUT, memc->connect_timeout);
-    test_compare(0, memc->poll_timeout);
+    test_zero(memc->poll_timeout);
 
     memcached_return_t rc;
     size_t value_len;
     char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
-    test_compare(0, value_len);
+    test_zero(value_len);
     test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
 
     memcached_free(memc);

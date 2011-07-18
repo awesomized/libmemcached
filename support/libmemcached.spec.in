@@ -45,7 +45,7 @@ you will need to install %{name}-devel.
 %setup -q
 
 %{__mkdir} examples
-%{__cp} tests/*.{c,cc,cpp,h} examples/
+%{__cp} tests/*.{cc,cpp,h} examples/
 
 
 %build
