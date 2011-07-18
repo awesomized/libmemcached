@@ -8,18 +8,19 @@
 # the COPYING file in this directory for full text.
 
 AC_PREREQ(2.59)
-AC_INIT([libmemcached],[0.50],[http://libmemcached.org/])
+AC_INIT([libmemcached],[0.51],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_MACRO_DIR(m4)
 
 PANDORA_CANONICAL_TARGET(no-vc-changelog)
 AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
 #shared library versioning
-MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
+MEMCACHED_UTIL_LIBRARY_VERSION=2:1:1
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=8:0:0
+MEMCACHED_LIBRARY_VERSION=8:1:1
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
@@ -37,6 +38,10 @@ AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 
 HASHKIT_LIBRARY_VERSION=1:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
+
+AC_DEFINE([HAVE_LIBMEMCACHED], [ 1 ], [dummy rule for libtest])
+AC_SUBST(HAVE_LIBMEMCACHED, 1)
+AM_CONDITIONAL(HAVE_LIBMEMCACHED, true)
 
 AH_TOP([
 #ifndef CONFIG_H
@@ -122,6 +127,7 @@ ENABLE_DEPRECATED
 PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
 PANDORA_HAVE_SASL
+WITH_LIBGEARMAN
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],

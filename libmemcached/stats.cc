@@ -55,7 +55,21 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   }
   else if (not strcmp("pid", key))
   {
-    memc_stat->pid= strtoul(value, (char **)NULL, 10);
+    int64_t temp= strtoll(value, (char **)NULL, 10);
+
+    if (temp <= INT32_MAX and ( sizeof(pid_t) == sizeof(int32_t) ))
+    {
+      memc_stat->pid= temp;
+    }
+    else if (temp > -1)
+    {
+      memc_stat->pid= temp;
+    }
+    else
+    {
+      // If we got a value less then -1 then something went wrong in the
+      // protocol
+    }
   }
   else if (not strcmp("uptime", key))
   {
@@ -188,7 +202,7 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 
   if (not memcmp("pid", key, sizeof("pid") -1))
   {
-    length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->pid);
+    length= snprintf(buffer, SMALL_STRING_LEN,"%lld", (signed long long)memc_stat->pid);
   }
   else if (not memcmp("uptime", key, sizeof("uptime") -1))
   {
@@ -384,29 +398,28 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             memcached_server_write_instance_st instance,
                                             struct local_context *check)
 {
-  memcached_return_t rc;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   int send_length;
 
   if (args)
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                   "stats %s\r\n", args);
+  {
+    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "stats %s\r\n", args);
+  }
   else
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                   "stats\r\n");
+  {
+    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "stats\r\n");
+  }
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
-    return MEMCACHED_WRITE_FAILURE;
-
-  rc= memcached_do(instance, buffer, (size_t)send_length, true);
-  if (rc != MEMCACHED_SUCCESS)
-    goto error;
-
-  while (1)
   {
-    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+  }
 
-    if (rc == MEMCACHED_STAT)
+  memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
+  if (memcached_success(rc))
+  {
+    while ((rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL)) == MEMCACHED_STAT)
     {
       char *string_ptr, *end_ptr;
       char *key, *value;
@@ -439,13 +452,8 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                     check->context);
       }
     }
-    else
-    {
-      break;
-    }
   }
 
-error:
   if (rc == MEMCACHED_END)
     return MEMCACHED_SUCCESS;
   else
@@ -455,7 +463,7 @@ error:
 memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_return_t *error)
 {
   memcached_return_t rc;
-  if ((rc= initialize_query(self)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= initialize_query(self)))
   {
     if (error)
       *error= rc;
@@ -507,8 +515,10 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
       temp_return= ascii_stats_fetch(stat_instance, args, instance, NULL);
     }
 
-    if (temp_return != MEMCACHED_SUCCESS)
+    if (memcached_failed(temp_return))
+    {
       rc= MEMCACHED_SOME_ERRORS;
+    }
   }
 
   if (error)

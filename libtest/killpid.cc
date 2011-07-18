@@ -39,6 +39,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 
 #include <libtest/killpid.h>
 #include <libtest/stream.h>
@@ -47,38 +52,42 @@ using namespace libtest;
 
 bool kill_pid(pid_t pid_arg)
 {
-  if (pid_arg <= 1)
+  assert(pid_arg > 0);
+  if (pid_arg < 1)
+  {
+    Error << "Invalid pid:" << pid_arg;
     return false;
+  }
 
   if ((::kill(pid_arg, SIGTERM) == -1))
   {
     switch (errno)
     {
     case EPERM:
-      perror(__func__);
-      Error << __func__ << " -> Does someone else have a process running locally for " << int(pid_arg) << "?";
+      Error << "Does someone else have a process running locally for " << int(pid_arg) << "?";
       return false;
 
     case ESRCH:
-      perror(__func__);
       Error << "Process " << int(pid_arg) << " not found.";
       return false;
 
     default:
     case EINVAL:
-      perror(__func__);
+      Error << "kill() " << strerror(errno);
       return false;
     }
   }
 
   int status= 0;
-  pid_t pid= waitpid(pid_arg, &status, 0);
-  if (pid == -1)
+  if (waitpid(pid_arg, &status, 0) == -1)
   {
     switch (errno)
     {
+      // Just means that the server has already gone away
     case ECHILD:
-      return true;
+      {
+        return true;
+      }
     }
 
     Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg);
@@ -86,13 +95,7 @@ bool kill_pid(pid_t pid_arg)
     return false;
   }
 
-  if (WIFEXITED(status))
-    return true;
-
-  if (WCOREDUMP(status))
-    return true;
-
-  return false;
+  return true;
 }
 
 

@@ -16,67 +16,97 @@
 /* The structure we use for the test system */
 struct libmemcached_test_container_st
 {
-  server_startup_st construct;
+  server_startup_st& construct;
   memcached_st *parent;
   memcached_st *memc;
 
-  libmemcached_test_container_st() :
+  libmemcached_test_container_st(server_startup_st &construct_arg) :
+    construct(construct_arg),
     parent(NULL),
     memc(NULL)
   { }
 };
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+#define SERVERS_TO_CREATE 5
+#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 
-/* Prototypes for functions we will pass to test framework */
-libmemcached_test_container_st *world_create(test_return_t *error);
-test_return_t world_test_startup(libmemcached_test_container_st *);
-test_return_t world_flush(libmemcached_test_container_st *container);
-test_return_t world_pre_run(libmemcached_test_container_st *);
-
-test_return_t world_post_run(libmemcached_test_container_st *);
-test_return_t world_on_error(test_return_t, libmemcached_test_container_st *);
-test_return_t world_destroy(libmemcached_test_container_st *);
-
-/**
-  @note generic shutdown/startup for libmemcached tests.
-*/
-test_return_t world_container_startup(libmemcached_test_container_st *container);
-test_return_t world_container_shutdown(libmemcached_test_container_st *container);
-
-libmemcached_test_container_st *world_create(test_return_t *error)
+static void *world_create(server_startup_st& servers, test_return_t& error)
 {
-  libmemcached_test_container_st *global_container= new libmemcached_test_container_st();
-  if (not server_startup(&global_container->construct))
+  in_port_t max_port;
+  for (uint32_t x= 0; x < SERVERS_TO_CREATE; x++)
   {
-    *error= TEST_FAILURE;
+    in_port_t port;
+
+    char variable_buffer[1024];
+    snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
+
+    char *var;
+    if ((var= getenv(variable_buffer)))
+    {
+      port= in_port_t(atoi(var));
+    }
+    else
+    {
+      port= in_port_t(TEST_PORT_BASE +x);
+    }
+
+    max_port= port;
+    const char *argv[1]= { "memcached" };
+    if (not server_startup(servers, "memcached", port, 1, argv))
+    {
+      error= TEST_FAILURE;
+      return NULL;
+    }
+  }
+
+  const char *argv[1]= { "memcached" };
+  if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+  {
+    error= TEST_FAILURE;
     return NULL;
   }
 
-  *error= TEST_SUCCESS;
+
+  libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
+  if (global_container == NULL)
+  {
+    error= TEST_MEMORY_ALLOCATION_FAILURE;
+    return NULL;
+  }
+
+  error= TEST_SUCCESS;
 
   return global_container;
 }
 
-test_return_t world_container_startup(libmemcached_test_container_st *container)
+static test_return_t world_container_startup(libmemcached_test_container_st *container)
 {
   char buffer[BUFSIZ];
 
   test_compare_got(MEMCACHED_SUCCESS,
-                   libmemcached_check_configuration(container->construct.server_list.c_str(), container->construct.server_list.size(),
+                   libmemcached_check_configuration(container->construct.option_string().c_str(), container->construct.option_string().size(),
                                                     buffer, sizeof(buffer)),
-                   buffer);
+                   container->construct.option_string().c_str());
 
-  assert(not container->parent);
-  container->parent= memcached(container->construct.server_list.c_str(), container->construct.server_list.size());
+  test_true(not container->parent);
+  container->parent= memcached(container->construct.option_string().c_str(), container->construct.option_string().size());
   test_true(container->parent);
+
+  for (uint32_t host= 0; host < memcached_server_count(container->parent); ++host)
+  {
+    memcached_server_instance_st instance=
+      memcached_server_instance_by_position(container->parent, host);
+
+    if (instance->type == MEMCACHED_CONNECTION_TCP)
+    {
+      test_true_got(memcached_server_port(instance) >= TEST_PORT_BASE, memcached_server_port(instance));
+    }
+  }
 
   return TEST_SUCCESS;
 }
 
-test_return_t world_container_shutdown(libmemcached_test_container_st *container)
+static test_return_t world_container_shutdown(libmemcached_test_container_st *container)
 {
   memcached_free(container->parent);
   container->parent= NULL;
@@ -84,65 +114,63 @@ test_return_t world_container_shutdown(libmemcached_test_container_st *container
   return TEST_SUCCESS;
 }
 
-test_return_t world_test_startup(libmemcached_test_container_st *container)
+static test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
-  assert(container);
-  assert(not container->memc);
-  assert(container->parent);
+  test_true(container);
+  test_true(not container->memc);
+  test_true(container->parent);
   container->memc= memcached_clone(NULL, container->parent);
   test_true(container->memc);
 
   return TEST_SUCCESS;
 }
 
+test_return_t world_flush(libmemcached_test_container_st *container);
 test_return_t world_flush(libmemcached_test_container_st *container)
 {
-  assert(container->memc);
+  test_true(container->memc);
   memcached_flush(container->memc, 0);
   memcached_quit(container->memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t world_pre_run(libmemcached_test_container_st *container)
+static test_return_t world_pre_run(libmemcached_test_container_st *container)
 {
-  assert(container->memc);
+  test_true(container->memc);
   for (uint32_t loop= 0; loop < memcached_server_list_count(container->memc->servers); loop++)
   {
     memcached_server_instance_st instance=
       memcached_server_instance_by_position(container->memc, loop);
 
     test_compare(-1, instance->fd);
-    test_compare(0, instance->cursor_active);
+    test_compare(0U, instance->cursor_active);
   }
 
   return TEST_SUCCESS;
 }
 
 
-test_return_t world_post_run(libmemcached_test_container_st *container)
+static test_return_t world_post_run(libmemcached_test_container_st *container)
 {
   test_true(container->memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t world_on_error(test_return_t test_state, libmemcached_test_container_st *container)
+static test_return_t world_on_error(test_return_t test_state, libmemcached_test_container_st *container)
 {
   (void)test_state;
-  assert(container->memc);
+  test_true(container->memc);
   memcached_free(container->memc);
   container->memc= NULL;
 
   return TEST_SUCCESS;
 }
 
-test_return_t world_destroy(libmemcached_test_container_st *container)
+static bool world_destroy(void *object)
 {
-  server_startup_st *construct= &container->construct;
-
-  server_shutdown(construct);
-
+  libmemcached_test_container_st *container= (libmemcached_test_container_st *)object;
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   sasl_done();
 #endif
@@ -153,18 +181,17 @@ test_return_t world_destroy(libmemcached_test_container_st *container)
 }
 
 typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
+
 static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
 {
   if (func)
   {
-    assert(container);
-    assert(container->memc);
+    test_true(container);
+    test_true(container->memc);
     return func(container->memc);
   }
-  else
-  {
-    return TEST_SUCCESS;
-  }
+
+  return TEST_SUCCESS;
 }
 
 static test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
@@ -173,10 +200,8 @@ static test_return_t _pre_runner_default(libmemcached_test_callback_fn func, lib
   {
     return func(container->parent);
   }
-  else
-  {
-    return TEST_SUCCESS;
-  }
+
+  return TEST_SUCCESS;
 }
 
 static test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
@@ -185,30 +210,26 @@ static test_return_t _post_runner_default(libmemcached_test_callback_fn func, li
   {
     return func(container->parent);
   }
-  else
+
+  return TEST_SUCCESS;
+}
+
+class LibmemcachedRunner : public Runner {
+public:
+  test_return_t run(test_callback_fn* func, void *object)
   {
-    return TEST_SUCCESS;
+    return _runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
   }
-}
 
-#ifdef	__cplusplus
-}
-#endif
+  test_return_t pre(test_callback_fn* func, void *object)
+  {
+    return _pre_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
 
-#ifdef	__cplusplus
-
-static Runner defualt_libmemcached_runner= {
-  reinterpret_cast<test_callback_runner_fn*>(_pre_runner_default),
-  reinterpret_cast<test_callback_runner_fn*>(_runner_default),
-  reinterpret_cast<test_callback_runner_fn*>(_post_runner_default)
+  test_return_t post(test_callback_fn* func, void *object)
+  {
+    return _post_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
 };
 
-#else
-
-static Runner defualt_libmemcached_runner= {
-  (test_callback_runner_fn)_pre_runner_default,
-  (test_callback_runner_fn)_runner_default,
-  (test_callback_runner_fn)_post_runner_default
-};
-
-#endif
+static LibmemcachedRunner defualt_libmemcached_runner;

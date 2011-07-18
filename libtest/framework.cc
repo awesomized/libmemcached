@@ -40,28 +40,14 @@
 
 using namespace libtest;
 
-static test_return_t _runner_default(test_callback_fn func, void *p)
-{
-  if (func)
-  {
-    return func(p);
-  }
-
-  return TEST_SUCCESS;
-}
-
-static Runner defualt_runners= {
-  _runner_default,
-  _runner_default,
-  _runner_default
-};
-
 static test_return_t _default_callback(void *p)
 {
   (void)p;
 
   return TEST_SUCCESS;
 }
+
+static Runner defualt_runners;
 
 Framework::Framework() :
   collections(NULL),
@@ -70,20 +56,39 @@ Framework::Framework() :
   collection_startup(_default_callback),
   collection_shutdown(_default_callback),
   _on_error(NULL),
-  runner(&defualt_runners),
+  _runner(NULL),
   _creators_ptr(NULL)
 {
 }
 
 Framework::~Framework()
 {
-  if (_destroy)
+  if (_destroy and _destroy(_creators_ptr))
   {
-    if (test_failed(_destroy(_creators_ptr)))
-    {
-      Error << "Failure in _destroy(), some resources may not have been cleaned up.";
-    }
+    Error << "Failure in _destroy(), some resources may not have been cleaned up.";
   }
+
+  _servers.shutdown();
+}
+
+test_return_t Framework::Item::pre(void *arg)
+{
+  if (pre_run)
+  {
+    return pre_run(arg);
+  }
+
+  return TEST_SUCCESS;
+}
+
+test_return_t Framework::Item::post(void *arg)
+{
+  if (post_run)
+  {
+    return post_run(arg);
+  }
+
+  return TEST_SUCCESS;
 }
 
 test_return_t Framework::Item::flush(void* arg, test_st* run)
@@ -126,12 +131,17 @@ test_return_t Framework::Item::startup(void* arg)
   return TEST_SUCCESS;
 }
 
+libtest::Runner *Framework::runner()
+{
+  return _runner ? _runner : &defualt_runners;
+}
+
 void* Framework::create(test_return_t& arg)
 {
   arg= TEST_SUCCESS;
   if (_create)
   {
-    return _creators_ptr= _create(&arg);
+    return _creators_ptr= _create(_servers, arg);
   }
 
   return NULL;

@@ -150,16 +150,16 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr, const cha
   Operations on Single Servers.
 */
 LIBMEMCACHED_API
-uint32_t memcached_server_response_count(memcached_server_instance_st self);
+uint32_t memcached_server_response_count(const memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-const char *memcached_server_name(memcached_server_instance_st self);
+const char *memcached_server_name(const memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-in_port_t memcached_server_port(memcached_server_instance_st self);
+in_port_t memcached_server_port(const memcached_server_instance_st self);
 
 LIBMEMCACHED_API
-const char *memcached_server_type(memcached_server_instance_st ptr);
+const char *memcached_server_type(const memcached_server_instance_st ptr);
 
 
 LIBMEMCACHED_LOCAL

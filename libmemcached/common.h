@@ -102,6 +102,10 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/response.h>
 #include <libmemcached/namespace.h>
 
+#ifdef __cplusplus
+#include <libmemcached/assert.hpp>
+#endif
+
 /* string value */
 struct memcached_continuum_item_st
 {

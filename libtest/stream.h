@@ -57,6 +57,20 @@ template<class Ch, class Tr, class A>
   public:
     void operator()(const stream_buffer &s)
     {
+      std::cerr << s.str() << std::endl;
+    }
+  };
+
+template<class Ch, class Tr, class A>
+  class make_cerr {
+  private:
+
+  public:
+    typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
+
+  public:
+    void operator()(const stream_buffer &s)
+    {
       std::cerr << std::endl << s.str() << std::endl;
     }
   };
@@ -85,7 +99,7 @@ template<class Ch, class Tr, class A>
   public:
     void operator()(const stream_buffer &s)
     {
-      std::cerr << s.str() << std::endl;
+      std::cerr<< s.str() << std::endl;
     }
   };
 
@@ -95,6 +109,7 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
     typedef OutputPolicy<Ch, Tr, A> output_policy;
     const char *_filename;
     int _line_number;
+    const char *_func;
 
   public:
     log() :
@@ -102,10 +117,11 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
       _line_number(0)
     { }
 
-    void set_filename(const char *filename, int line_number)
+    void set_filename(const char *filename, int line_number, const char *func)
     {
       _filename= filename;
       _line_number= line_number;
+      _func= func;
     }
 
     ~log()
@@ -119,7 +135,7 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
       {
         if (_filename)
         {
-          arg << __FILE__ << ":" << __LINE__ << " ";
+          arg << _filename << ":" << _line_number << ": in " << _func << "() ";
           _filename= NULL;
         }
         arg << x;
@@ -131,35 +147,43 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
   };
 }
 
+class make_cerr : public detail::log<detail::make_cerr> {
+public:
+  make_cerr(const char *filename, int line_number, const char *func)
+  {
+    set_filename(filename, line_number, func);
+  }
+};
+
 class cerr : public detail::log<detail::cerr> {
 public:
-  cerr(const char *filename, int line_number)
+  cerr(const char *filename, int line_number, const char *func)
   {
-    set_filename(filename, line_number);
+    set_filename(filename, line_number, func);
   }
 };
 
 class clog : public detail::log<detail::clog> {
 public:
-  clog(const char *, int)
+  clog(const char *, int, const char*)
   { }
 };
 
 class cout : public detail::log<detail::cout> {
 public:
-  cout(const char *, int)
+  cout(const char *, int, const char *)
   { }
 };
 
 
 } // namespace stream
 
-#define Error stream::cerr(__FILE__, __LINE__)
+#define Error stream::cerr(__FILE__, __LINE__, __func__)
 
-#define Out stream::cout(NULL, __LINE__)
+#define Out stream::cout(NULL, __LINE__, __func__)
 
-#define Log stream::clog(NULL, __LINE__)
+#define Log stream::clog(NULL, __LINE__, __func__)
 
-#define Logn() stream::clog(NULL, __LINE__) << " "
+#define Logn() stream::clog(NULL, __LINE__, __func__) << " "
 
 } // namespace libtest

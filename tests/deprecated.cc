@@ -35,7 +35,8 @@
  *
  */
 
-#include <libtest/common.h>
+#include <config.h>
+#include <libtest/test.hpp>
 
 #include <cassert>
 

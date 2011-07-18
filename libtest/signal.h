@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest, libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,62 +32,25 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Summary: connects to a host, and determines what its pid is
- *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
 
+#pragma once 
 
-// Never look at the stat object directly.
+enum shutdown_t {
+  SHUTDOWN_RUNNING,
+  SHUTDOWN_GRACEFUL,
+  SHUTDOWN_FORCED
+};
 
+LIBTEST_INTERNAL_API
+bool is_shutdown();
 
-pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_return_t *ret)
-{
-  pid_t pid= -1;
+LIBTEST_INTERNAL_API
+shutdown_t get_shutdown();
 
-  memcached_return_t unused;
-  if (not ret)
-    ret= &unused;
+LIBTEST_INTERNAL_API
+void set_shutdown(shutdown_t arg);
 
-  memcached_st *memc_ptr= memcached_create(NULL);
-  if (not memc_ptr)
-  {
-    *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-    return -1;
-  }
-
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
-  {
-    memcached_stat_st *stat= memcached_stat(memc_ptr, NULL, &rc);
-    if (memcached_success(rc) and stat and stat->pid != -1)
-    {
-      pid= stat->pid;
-    }
-    else if (memcached_success(rc))
-    {
-      rc= MEMCACHED_UNKNOWN_STAT_KEY; // Something went wrong if this happens
-    }
-    else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
-    {
-      memcached_server_instance_st instance=
-        memcached_server_instance_by_position(memc_ptr, 0);
-
-      assert_msg(instance and instance->error_messages, " ");
-      if (instance and instance->error_messages)
-      {
-        rc= memcached_server_error_return(instance);
-      }
-    }
-
-    memcached_stat_free(memc_ptr, stat);
-  }
-  memcached_free(memc_ptr);
-
-  *ret= rc;
-
-  return pid;
-}
-
+LIBTEST_INTERNAL_API
+void setup_signals(void);

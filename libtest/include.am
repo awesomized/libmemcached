@@ -7,11 +7,14 @@
 #
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
-#
+# 
 
 LIBUTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
 
 VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+HELGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 
+DRD_COMMAND= $(LIBTOOL) --mode=execute valgrind --tool=drd
+GDB_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 CLEANFILES+= \
 	     tests/var/log/* \
@@ -20,16 +23,20 @@ CLEANFILES+= \
 
 noinst_HEADERS+= \
 		 libtest/callbacks.h \
+		 libtest/cmdline.h \
 		 libtest/collection.h \
 		 libtest/common.h \
 		 libtest/core.h \
 		 libtest/error.h \
 		 libtest/failed.h \
 		 libtest/framework.h \
+		 libtest/gearmand.h \
 		 libtest/get.h \
 		 libtest/killpid.h \
+		 libtest/memcached.h \
 		 libtest/runner.h \
 		 libtest/server.h \
+		 libtest/signal.h \
 		 libtest/stats.h \
 		 libtest/strerror.h \
 		 libtest/test.h \
@@ -37,18 +44,32 @@ noinst_HEADERS+= \
 		 libtest/visibility.h \
 		 libtest/wait.h
 
-noinst_LTLIBRARIES+= libtest/libserver.la
-libtest_libserver_la_SOURCES= \
-			      libtest/killpid.cc \
-			      libtest/memcached.cc \
-			      libtest/server.cc
-
 noinst_LTLIBRARIES+= libtest/libtest.la
-libtest_libtest_la_SOURCES=\
-			   libtest/framework.cc \
-			   libtest/test.cc
+libtest_libtest_la_SOURCES= \
+			    libtest/cmdline.cc \
+			    libtest/framework.cc \
+			    libtest/killpid.cc \
+			    libtest/runner.cc \
+			    libtest/server.cc \
+			    libtest/signal.cc \
+			    libtest/test.cc
+
 libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
+libtest_libtest_la_LIBADD=
+
+LIBTEST_LDADD= libtest/libtest.la
+
+if HAVE_LIBMEMCACHED
+LIBTEST_LDADD+= $(libmemcached_LIBS) -lmemcachedutil
+libtest_libtest_la_SOURCES+= libtest/memcached.cc
+endif
+
+if HAVE_LIBGEARMAN
+LIBTEST_LDADD+= libgearman/libgearman.la
+libtest_libtest_la_SOURCES+= libtest/gearmand.cc
+libtest_libtest_la_SOURCES+= util/instance.cc
+endif
 
 clearn-var:
 	@rm -f tests/var/log/*
@@ -68,12 +89,29 @@ tests/var/tmp:
 tests/var/run:
 	$(mkdir_p) tests/var/run
 
+
+libtest_unittest_CFLAGS=
 libtest_unittest_LDADD= \
-			  libtest/libtest.la
-libtest_unittest_SOURCES= \
-			    libtest/unittest.cc
-noinst_PROGRAMS+= libtest/unittest
+			${LIBTEST_LDADD} \
+			libtest/libtest.la
+libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest
+noinst_PROGRAMS+= libtest/unittest
+test-unittest: libtest/unittest
+	@libtest/unittest
+
+valgrind-unittest: libtest/unittest
+	@$(VALGRIND_COMMAND) libtest/unittest
+
+gdb-unittest: libtest/unittest
+	@$(GDB_COMMAND) libtest/unittest
+
+helgrind-unittest: libtest/unittest
+	@$(HELGRIND_COMMAND) libtest/unittest
+
+drd-unittest: libtest/unittest
+	@$(DRD_COMMAND) libtest/unittest
 
 libtest_wait_SOURCES= libtest/wait.cc
 noinst_PROGRAMS+= libtest/wait
+

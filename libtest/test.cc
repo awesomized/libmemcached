@@ -35,9 +35,6 @@
  *
  */
 
-
-
-
 #include <libtest/common.h>
 
 #include <cassert>
@@ -55,17 +52,19 @@
 #include <signal.h>
 
 #include <libtest/stats.h>
+#include <libtest/signal.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
+
+using namespace libtest;
 
 static in_port_t global_port= 0;
 static char global_socket[1024];
 
 in_port_t default_port()
 {
-  assert(global_port);
   return global_port;
 }
  
@@ -87,20 +86,23 @@ bool test_is_local()
 
 void set_default_socket(const char *socket)
 {
-  strncpy(global_socket, socket, strlen(socket));
+  if (socket)
+  {
+    strncpy(global_socket, socket, strlen(socket));
+  }
 }
 
 static void stats_print(Stats *stats)
 {
-  std::cout << "\tTotal Collections\t\t\t\t" << stats->collection_total << std::endl;
-  std::cout << "\tFailed Collections\t\t\t\t" << stats->collection_failed << std::endl;
-  std::cout << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped << std::endl;
-  std::cout << "\tSucceeded Collections\t\t\t\t" << stats->collection_success << std::endl;
-  std::cout << std::endl;
-  std::cout << "Total\t\t\t\t" << stats->total << std::endl;
-  std::cout << "\tFailed\t\t\t" << stats->failed << std::endl;
-  std::cout << "\tSkipped\t\t\t" << stats->skipped << std::endl;
-  std::cout << "\tSucceeded\t\t" << stats->success << std::endl;
+  Log << "\tTotal Collections\t\t\t\t" << stats->collection_total;
+  Log << "\tFailed Collections\t\t\t\t" << stats->collection_failed;
+  Log << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped;
+  Log << "\tSucceeded Collections\t\t\t\t" << stats->collection_success;
+  Logn();
+  Log << "Total\t\t\t\t" << stats->total;
+  Log << "\tFailed\t\t\t" << stats->failed;
+  Log << "\tSkipped\t\t\t" << stats->skipped;
+  Log << "\tSucceeded\t\t" << stats->success;
 }
 
 static long int timedif(struct timeval a, struct timeval b)
@@ -153,90 +155,11 @@ void create_core(void)
   }
 }
 
-enum shutdown_t {
-  SHUTDOWN_RUNNING,
-  SHUTDOWN_GRACEFUL,
-  SHUTDOWN_FORCED
-};
-
 static Framework *world= NULL;
-static volatile shutdown_t __shutdown= SHUTDOWN_RUNNING;
-pthread_mutex_t shutdown_mutex= PTHREAD_MUTEX_INITIALIZER;
-
-static bool is_shutdown()
-{
-  bool ret;
-  pthread_mutex_lock(&shutdown_mutex);
-  ret= bool(__shutdown != SHUTDOWN_RUNNING);
-  pthread_mutex_unlock(&shutdown_mutex);
-
-  return ret;
-}
-
-static void set_shutdown(shutdown_t arg)
-{
-  pthread_mutex_lock(&shutdown_mutex);
-  __shutdown= arg;
-  pthread_mutex_unlock(&shutdown_mutex);
-}
-
-static void *sig_thread(void *arg)
-{   
-  sigset_t *set= (sigset_t *) arg;
-
-  while (is_shutdown())
-  {
-    int sig;
-    int error;
-    while ((error= sigwait(set, &sig)) == EINTR) ;
-
-    switch (sig)
-    {
-    case SIGSEGV:
-    case SIGINT:
-    case SIGABRT:
-      Error << "Signal handling thread got signal " <<  strsignal(sig);
-      set_shutdown(SHUTDOWN_FORCED);
-      break;
-
-    default:
-      Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
-    case SIGUSR1:
-      break;
-    }
-  }
-
-  return NULL;
-}
-
-
-static void setup_signals(pthread_t& thread)
-{
-  sigset_t set;
-
-  sigemptyset(&set);
-  sigaddset(&set, SIGSEGV);
-  sigaddset(&set, SIGABRT);
-  sigaddset(&set, SIGINT);
-  sigaddset(&set, SIGUSR1);
-
-  int error;
-  if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
-  {
-    Error << " died during pthread_sigmask(" << strerror(error) << ")";
-    exit(EXIT_FAILURE);
-  }
-
-  if ((error= pthread_create(&thread, NULL, &sig_thread, (void *) &set)) != 0)
-  {
-    Error << " died during pthread_create(" << strerror(error) << ")";
-    exit(EXIT_FAILURE);
-  }
-}
-
-
 int main(int argc, char *argv[])
 {
+  srandom((unsigned int)time(NULL));
+
   world= new Framework();
 
   if (not world)
@@ -244,8 +167,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  pthread_t thread;
-  setup_signals(thread);
+  setup_signals();
 
   Stats stats;
 
@@ -256,6 +178,7 @@ int main(int argc, char *argv[])
   if (test_failed(error))
   {
     Error << "create() failed";
+    delete world;
     return EXIT_FAILURE;
   }
 
@@ -271,7 +194,7 @@ int main(int argc, char *argv[])
 
   if (collection_to_run)
   {
-    std::cout << "Only testing " <<  collection_to_run << std::endl;
+    Log << "Only testing " <<  collection_to_run;
   }
 
   char *wildcard= NULL;
@@ -295,7 +218,7 @@ int main(int argc, char *argv[])
 
     if (collection_rc == TEST_SUCCESS and next->pre)
     {
-      collection_rc= world->runner->pre(next->pre, creators_ptr);
+      collection_rc= world->runner()->pre(next->pre, creators_ptr);
     }
 
     switch (collection_rc)
@@ -306,12 +229,13 @@ int main(int argc, char *argv[])
     case TEST_FATAL:
     case TEST_FAILURE:
       Error << next->name << " [ failed ]";
-      stats.collection_failed++;
+      failed= true;
+      set_shutdown(SHUTDOWN_GRACEFUL);
       goto cleanup;
 
     case TEST_SKIPPED:
       Log << next->name << " [ skipping ]";
-      stats.collection_skipped++;
+      skipped= true;
       goto cleanup;
 
     case TEST_MEMORY_ALLOCATION_FAILURE:
@@ -340,7 +264,9 @@ int main(int argc, char *argv[])
           {
             { // Runner Code
               gettimeofday(&start_time, NULL);
-              return_code= world->runner->run(run->test_fn, creators_ptr);
+              assert(world->runner());
+              assert(run->test_fn);
+              return_code= world->runner()->run(run->test_fn, creators_ptr);
               gettimeofday(&end_time, NULL);
               load_time= timedif(end_time, start_time);
             }
@@ -349,14 +275,20 @@ int main(int argc, char *argv[])
           // @todo do something if post fails
           (void)world->item.post(creators_ptr);
         }
-        else
+        else if (return_code == TEST_SKIPPED)
+        { }
+        else if (return_code == TEST_FAILURE)
         {
           Error << " item.flush(failure)";
+          set_shutdown(SHUTDOWN_GRACEFUL);
         }
       }
-      else
+      else if (return_code == TEST_SKIPPED)
+      { }
+      else if (return_code == TEST_FAILURE)
       {
         Error << " item.startup(failure)";
+        set_shutdown(SHUTDOWN_GRACEFUL);
       }
 
       stats.total++;
@@ -372,7 +304,7 @@ int main(int argc, char *argv[])
       case TEST_FAILURE:
         stats.failed++;
         failed= true;
-        Error << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
         break;
 
       case TEST_SKIPPED:
@@ -388,20 +320,28 @@ int main(int argc, char *argv[])
       if (test_failed(world->on_error(return_code, creators_ptr)))
       {
         Error << "Failed while running on_error()";
+        set_shutdown(SHUTDOWN_GRACEFUL);
         break;
       }
     }
 
-    if (next->post and world->runner->post)
-    {
-      (void) world->runner->post(next->post, creators_ptr);
-    }
+    (void) world->runner()->post(next->post, creators_ptr);
 
-    if (failed == 0 and skipped == 0)
+cleanup:
+    if (failed == false and skipped == false)
     {
       stats.collection_success++;
     }
-cleanup:
+
+    if (failed)
+    {
+      stats.collection_failed++;
+    }
+
+    if (skipped)
+    {
+      stats.collection_skipped++;
+    }
 
     world->shutdown(creators_ptr);
     Logn();
@@ -410,16 +350,23 @@ cleanup:
   if (not is_shutdown())
   {
     set_shutdown(SHUTDOWN_GRACEFUL);
-    pthread_kill(thread, SIGUSR1);
   }
 
-  if (__shutdown == SHUTDOWN_FORCED)
+  int exit_code= EXIT_SUCCESS;
+  shutdown_t status= get_shutdown();
+  if (status == SHUTDOWN_FORCED)
   {
-    Error << "Tests were aborted.";
+    Log << "Tests were aborted.";
+    exit_code= EXIT_FAILURE;
   }
-  else if (stats.collection_failed or stats.collection_skipped)
+  else if (stats.collection_failed)
   {
-    Error << "Some test failures and/or skipped test occurred.";
+    Log << "Some test failed.";
+    exit_code= EXIT_FAILURE;
+  }
+  else if (stats.collection_skipped)
+  {
+    Log << "Some tests were skipped.";
   }
   else
   {
@@ -428,10 +375,9 @@ cleanup:
 
   stats_print(&stats);
 
-  void *retval;
-  pthread_join(thread, &retval);
-
   delete world;
 
-  return stats.failed == 0 and __shutdown == SHUTDOWN_GRACEFUL ? EXIT_SUCCESS : EXIT_FAILURE;
+  Logn(); // Generate a blank to break up the messages if make check/test has been run
+
+  return exit_code;
 }

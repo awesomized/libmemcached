@@ -49,7 +49,7 @@
 
 #include <cerrno>
 #include <cassert>
+#include <sstream>
+#include <string>
 
 #include <libtest/test.hpp>
-
-using namespace libtest;
