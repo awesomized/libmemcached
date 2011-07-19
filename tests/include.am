@@ -329,7 +329,34 @@ valgrind-memslap: clients/memslap
 	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)
 
 PHONY += valgrind
-valgrind: tests/testapp tests/testhashkit valgrind-mem valgrind-hash valgrind-memcat valgrind-memcp valgrind-memrm valgrind-memerror valgrind-memdump valgrind-memflush valgrind-memstat
+valgrind: valgrind-mem valgrind-hash valgrind-memcat valgrind-memcp valgrind-memrm valgrind-memerror valgrind-memdump valgrind-memflush valgrind-memstat
+
+helgrind-cycle: tests/cycle
+	$(HELGRIND_COMMAND)  $(CYCLE_COMMAND)
+
+helgrind-mem: tests/testapp
+	$(HELGRIND_COMMAND)  $(MEM_COMMAND)
+
+helgrind-atom: tests/atomsmasher
+	$(HELGRIND_COMMAND)  $(ATOM_COMMAND)
+
+helgrind-udp: tests/testudp
+	$(HELGRIND_COMMAND)  $(UDP_COMMAND)
+
+helgrind-plus: tests/testplus
+	$(HELGRIND_COMMAND)  $(TESTPLUS_COMMAND)
+
+helgrind-hash: tests/testhashkit
+	$(HELGRIND_COMMAND) $(HASH_COMMAND)
+
+helgrind-hashplus: tests/hashplus
+	$(HELGRIND_COMMAND) $(HASHPLUS_COMMAND)
+
+helgrind-memslap: clients/memslap
+	$(HELGRIND_COMMAND) $(MEMSLAP_COMMAND)
+
+PHONY += helgrind
+helgrind: helgrind-mem helgrind-hash helgrind-memcat helgrind-memcp helgrind-memrm helgrind-memerror helgrind-memdump helgrind-memflush helgrind-memstat
 
 PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out

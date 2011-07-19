@@ -41,6 +41,7 @@ noinst_HEADERS+= \
 		 libtest/stats.h \
 		 libtest/stream.h \
 		 libtest/strerror.h \
+		 libtest/string.hpp \
 		 libtest/test.h \
 		 libtest/test.hpp \
 		 libtest/visibility.h \

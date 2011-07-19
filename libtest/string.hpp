@@ -34,17 +34,11 @@
  *
  */
 
-
 #pragma once
 
-enum test_return_t {
-  TEST_SUCCESS= 0, /* Backwards compatibility */
-  TEST_FAILURE,
-  TEST_MEMORY_ALLOCATION_FAILURE,
-  TEST_SKIPPED,
-  TEST_FATAL // Collection should not be continued
-};
+#include "util/string.hpp"
 
-
-#define test_failed(__test_return_t) ((__test_return_t) != TEST_SUCCESS)
-#define test_success(__test_return_t) ((__test_return_t) == TEST_SUCCESS)
+#define test_literal_param util_literal_param
+#define test_literal_param_size util_literal_param_size
+#define test_string_make_from_cstr util_string_make_from_cstr
+#define test_array_length util_array_length

@@ -94,15 +94,15 @@ void set_default_socket(const char *socket)
 
 static void stats_print(Stats *stats)
 {
-  Log << "\tTotal Collections\t\t\t\t" << stats->collection_total;
-  Log << "\tFailed Collections\t\t\t\t" << stats->collection_failed;
-  Log << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped;
-  Log << "\tSucceeded Collections\t\t\t\t" << stats->collection_success;
-  Logn();
-  Log << "Total\t\t\t\t" << stats->total;
-  Log << "\tFailed\t\t\t" << stats->failed;
-  Log << "\tSkipped\t\t\t" << stats->skipped;
-  Log << "\tSucceeded\t\t" << stats->success;
+  Out << "\tTotal Collections\t\t\t\t" << stats->collection_total;
+  Out << "\tFailed Collections\t\t\t\t" << stats->collection_failed;
+  Out << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped;
+  Out << "\tSucceeded Collections\t\t\t\t" << stats->collection_success;
+  Outn();
+  Out << "Total\t\t\t\t" << stats->total;
+  Out << "\tFailed\t\t\t" << stats->failed;
+  Out << "\tSkipped\t\t\t" << stats->skipped;
+  Out << "\tSucceeded\t\t" << stats->success;
 }
 
 static long int timedif(struct timeval a, struct timeval b)
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 
   if (collection_to_run)
   {
-    Log << "Only testing " <<  collection_to_run;
+    Out << "Only testing " <<  collection_to_run;
   }
 
   char *wildcard= NULL;
@@ -228,13 +228,13 @@ int main(int argc, char *argv[])
 
     case TEST_FATAL:
     case TEST_FAILURE:
-      Error << next->name << " [ failed ]";
+      Out << next->name << " [ failed ]";
       failed= true;
       set_shutdown(SHUTDOWN_GRACEFUL);
       goto cleanup;
 
     case TEST_SKIPPED:
-      Log << next->name << " [ skipping ]";
+      Out << next->name << " [ skipping ]";
       skipped= true;
       goto cleanup;
 
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
       test_assert(0, "Allocation failure, or unknown return");
     }
 
-    Log << "Collection: " << next->name;
+    Out << "Collection: " << next->name;
 
     for (test_st *run= next->tests; run->name; run++)
     {
@@ -296,7 +296,7 @@ int main(int argc, char *argv[])
       switch (return_code)
       {
       case TEST_SUCCESS:
-        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
+        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
         stats.success++;
         break;
 
@@ -304,13 +304,13 @@ int main(int argc, char *argv[])
       case TEST_FAILURE:
         stats.failed++;
         failed= true;
-        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
         break;
 
       case TEST_SKIPPED:
         stats.skipped++;
         skipped= true;
-        Log << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
         break;
 
       case TEST_MEMORY_ALLOCATION_FAILURE:
@@ -344,7 +344,7 @@ cleanup:
     }
 
     world->shutdown(creators_ptr);
-    Logn();
+    Outn();
   }
 
   if (not is_shutdown())
@@ -356,28 +356,28 @@ cleanup:
   shutdown_t status= get_shutdown();
   if (status == SHUTDOWN_FORCED)
   {
-    Log << "Tests were aborted.";
+    Out << "Tests were aborted.";
     exit_code= EXIT_FAILURE;
   }
   else if (stats.collection_failed)
   {
-    Log << "Some test failed.";
+    Out << "Some test failed.";
     exit_code= EXIT_FAILURE;
   }
   else if (stats.collection_skipped)
   {
-    Log << "Some tests were skipped.";
+    Out << "Some tests were skipped.";
   }
   else
   {
-    Log << "All tests completed successfully.";
+    Out << "All tests completed successfully.";
   }
 
   stats_print(&stats);
 
   delete world;
 
-  Logn(); // Generate a blank to break up the messages if make check/test has been run
+  Outn(); // Generate a blank to break up the messages if make check/test has been run
 
   return exit_code;
 }

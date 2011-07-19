@@ -37,10 +37,10 @@
 #include <libtest/common.h>
 #include <libtest/gearmand.h>
 
-#include "util/instance.h"
-#include "util/operation.h"
+#include "util/instance.hpp"
+#include "util/operation.hpp"
 
-using namespace gearman_util;
+using namespace datadifferential;
 using namespace libtest;
 
 #include <cassert>
@@ -54,16 +54,13 @@ using namespace libtest;
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <libtest/server.h>
-#include <libtest/wait.h>
-
 #include <libgearman/gearman.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-class GetPid : public Instance::Finish
+class GetPid : public util::Instance::Finish
 {
 private:
   pid_t _pid;
@@ -91,10 +88,10 @@ public:
     if (_pid < 1)
     {
       _pid= -1;
-      return true;
+      return false;
     }
 
-    return false;
+    return true;
   }
 };
 
@@ -110,20 +107,29 @@ public:
 
   pid_t get_pid(bool error_is_ok)
   {
+    if (not pid_file().empty())
+    {
+      Wait wait(pid_file(), 0);
+
+      if (error_is_ok and not wait.successful())
+      {
+        Error << "Pidfile was not found:" << pid_file();
+        return -1;
+      }
+    }
+
     GetPid *get_instance_pid;
-    Instance instance(hostname(), port());
+    util::Instance instance(hostname(), port());
     instance.set_finish(get_instance_pid= new GetPid);
 
-    instance.push(new Operation(test_literal_param("getpid\r\n"), true));
+    instance.push(new util::Operation(test_literal_param("getpid\r\n"), true));
 
-    if (not instance.run() and not error_is_ok)
+    if (error_is_ok and instance.run() == false)
     {
       Error << "Failed to obtain pid of server";
     }
 
-    _pid= get_instance_pid->pid();
-
-    return _pid;
+    return get_instance_pid->pid();
   }
 
   bool ping()
@@ -138,7 +144,7 @@ public:
 
     if (gearman_success(gearman_client_add_server(client, hostname().c_str(), port())))
     {
-      gearman_return_t rc= gearman_client_echo(client, gearman_literal_param("This is my echo test"));
+      gearman_return_t rc= gearman_client_echo(client, test_literal_param("This is my echo test"));
 
       if (gearman_success(rc))
       {

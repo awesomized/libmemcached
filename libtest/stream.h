@@ -182,6 +182,8 @@ public:
 
 #define Out stream::cout(NULL, __LINE__, __func__)
 
+#define Outn() stream::cout(NULL, __LINE__, __func__) << " "
+
 #define Log stream::clog(NULL, __LINE__, __func__)
 
 #define Logn() stream::clog(NULL, __LINE__, __func__) << " "
