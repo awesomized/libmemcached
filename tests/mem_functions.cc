@@ -1283,7 +1283,6 @@ static test_return_t mget_end(memcached_st *memc)
 /* Do not copy the style of this code, I just access hosts to testthis function */
 static test_return_t stats_servername_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   memcached_stat_st memc_stat;
   memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);
@@ -1292,9 +1291,9 @@ static test_return_t stats_servername_test(memcached_st *memc)
   if (memcached_get_sasl_callbacks(memc) != NULL)
     return TEST_SKIPPED;
 #endif
-  rc= memcached_stat_servername(&memc_stat, NULL,
-                                memcached_server_name(instance),
-                                memcached_server_port(instance));
+  test_compare(MEMCACHED_SUCCESS, memcached_stat_servername(&memc_stat, NULL,
+                                                            memcached_server_name(instance),
+                                                            memcached_server_port(instance)));
 
   return TEST_SUCCESS;
 }

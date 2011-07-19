@@ -167,7 +167,11 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  setup_signals();
+  libtest::SignalThread signal;
+  if (not signal.setup())
+  {
+    return EXIT_FAILURE;
+  }
 
   Stats stats;
 
@@ -203,7 +207,7 @@ int main(int argc, char *argv[])
     wildcard= argv[2];
   }
 
-  for (collection_st *next= world->collections; next->name and (not is_shutdown()); next++)
+  for (collection_st *next= world->collections; next->name and (not signal.is_shutdown()); next++)
   {
     test_return_t collection_rc= TEST_SUCCESS;
     bool failed= false;
@@ -230,7 +234,7 @@ int main(int argc, char *argv[])
     case TEST_FAILURE:
       Out << next->name << " [ failed ]";
       failed= true;
-      set_shutdown(SHUTDOWN_GRACEFUL);
+      signal.set_shutdown(SHUTDOWN_GRACEFUL);
       goto cleanup;
 
     case TEST_SKIPPED:
@@ -280,7 +284,7 @@ int main(int argc, char *argv[])
         else if (return_code == TEST_FAILURE)
         {
           Error << " item.flush(failure)";
-          set_shutdown(SHUTDOWN_GRACEFUL);
+          signal.set_shutdown(SHUTDOWN_GRACEFUL);
         }
       }
       else if (return_code == TEST_SKIPPED)
@@ -288,7 +292,7 @@ int main(int argc, char *argv[])
       else if (return_code == TEST_FAILURE)
       {
         Error << " item.startup(failure)";
-        set_shutdown(SHUTDOWN_GRACEFUL);
+        signal.set_shutdown(SHUTDOWN_GRACEFUL);
       }
 
       stats.total++;
@@ -320,7 +324,7 @@ int main(int argc, char *argv[])
       if (test_failed(world->on_error(return_code, creators_ptr)))
       {
         Error << "Failed while running on_error()";
-        set_shutdown(SHUTDOWN_GRACEFUL);
+        signal.set_shutdown(SHUTDOWN_GRACEFUL);
         break;
       }
     }
@@ -347,13 +351,13 @@ cleanup:
     Outn();
   }
 
-  if (not is_shutdown())
+  if (not signal.is_shutdown())
   {
-    set_shutdown(SHUTDOWN_GRACEFUL);
+    signal.set_shutdown(SHUTDOWN_GRACEFUL);
   }
 
   int exit_code= EXIT_SUCCESS;
-  shutdown_t status= get_shutdown();
+  shutdown_t status= signal.get_shutdown();
   if (status == SHUTDOWN_FORCED)
   {
     Out << "Tests were aborted.";

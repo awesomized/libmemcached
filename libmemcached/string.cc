@@ -37,7 +37,6 @@
 
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 inline static memcached_return_t _string_check(memcached_string_st *string, size_t need)
 {
@@ -231,7 +230,7 @@ const char *memcached_string_value(const memcached_string_st *self)
 
 char *memcached_string_take_value(memcached_string_st *self)
 {
-  assert(self);
+  assert_msg(self, "Invalid memcached_string_st");
   // If we fail at adding the null, we copy and move on
   if (memcached_success(memcached_string_append_null(self)))
   {

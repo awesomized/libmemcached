@@ -38,7 +38,6 @@
 
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 enum memc_read_or_write {
   MEM_READ,
@@ -277,12 +276,12 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
                                      void *buffer, size_t length, ssize_t *nread)
 {
-  assert(ptr); // Programmer error
+  assert_msg(ptr, "Programmer error, memcached_io_read() recieved an invalid memcached_server_write_instance_st"); // Programmer error
   char *buffer_ptr= static_cast<char *>(buffer);
 
   if (ptr->fd == INVALID_SOCKET)
   {
-    assert(int(ptr->state) <= int(MEMCACHED_SERVER_STATE_ADDRINFO));
+    assert_msg(int(ptr->state) <= int(MEMCACHED_SERVER_STATE_ADDRINFO), "Programmer error, invalid socket state");
     return MEMCACHED_CONNECTION_FAILURE;
   }
 
@@ -322,7 +321,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           case ENOTSOCK:
             WATCHPOINT_ASSERT(0);
           case EBADF:
-            assert(ptr->fd != INVALID_SOCKET);
+            assert_msg(ptr->fd != INVALID_SOCKET, "Programmer error, invalid socket");
           case EINVAL:
           case EFAULT:
           case ECONNREFUSED:
@@ -346,7 +345,6 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             it will return EGAIN if data is not immediatly available.
           */
           WATCHPOINT_STRING("We had a zero length recv()");
-          assert(0);
           memcached_quit_server(ptr, true);
           *nread= -1;
           return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
@@ -388,11 +386,11 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 
 memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
 {
-  assert(ptr); // Programmer error
+  assert_msg(ptr, "Programmer error, invalid memcached_server_write_instance_st");
 
   if (ptr->fd == INVALID_SOCKET)
   {
-    assert(int(ptr->state) <= int(MEMCACHED_SERVER_STATE_ADDRINFO));
+    assert_msg(int(ptr->state) <= int(MEMCACHED_SERVER_STATE_ADDRINFO), "Invalid socket state");
     return MEMCACHED_CONNECTION_FAILURE;
   }
 
@@ -429,7 +427,7 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
       case ENOTSOCK:
         WATCHPOINT_ASSERT(0);
       case EBADF:
-        assert(ptr->fd != INVALID_SOCKET);
+        assert_msg(ptr->fd != INVALID_SOCKET, "Invalid socket state");
       case EINVAL:
       case EFAULT:
       case ECONNREFUSED:

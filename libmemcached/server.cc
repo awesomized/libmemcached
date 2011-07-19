@@ -39,7 +39,6 @@
   This is a partial implementation for fetching/creating memcached_server_st objects.
 */
 #include <libmemcached/common.h>
-#include <cassert>
 
 static inline void _server_init(memcached_server_st *self, memcached_st *root,
                                 const char *hostname, in_port_t port,

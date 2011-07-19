@@ -38,13 +38,11 @@
 #include <libmemcached/common.h>
 #include <libmemcached/options.hpp>
 
-#include <cassert>
-
 #include <libmemcached/options/context.h>
 
 const char *memcached_parse_filename(memcached_st *memc)
 {
-  assert(memc);
+  assert_msg(memc, "Invalid memcached_st");
   return memcached_array_string(memc->configure.filename);
 }
 
@@ -100,9 +98,8 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
   bool has_filename= memcached_behavior_get(memc_ptr, MEMCACHED_BEHAVIOR_LOAD_FROM_FILE);
   if (memcached_success(rc) and has_filename)
   {
-    assert(memcached_parse_filename(memc_ptr));
-    assert(memcached_parse_filename_length(memc_ptr));
-    memcached_string_t filename= memcached_array_to_string(memc_ptr->configure.filename);
+    assert_msg(memcached_parse_filename(memc_ptr), "Invalid configuration file");
+    assert_msg(memcached_parse_filename_length(memc_ptr), "Invalid configuration file");
     rc= _parse_file_options(*memc_ptr, memc_ptr->configure.filename);
 
     if (memcached_failed(rc) and error_buffer && error_buffer_size)
@@ -134,8 +131,8 @@ memcached_return_t memcached_parse_configuration(memcached_st *self, char const 
 
 void memcached_set_configuration_file(memcached_st *self, const char *filename, size_t filename_length)
 {
-  assert(filename);
-  assert(filename_length);
+  assert_msg(filename, "Invalid filename");
+  assert_msg(filename_length, "Invalid filename_length");
   memcached_array_free(self->configure.filename);
   self->configure.filename= memcached_strcpy(self, filename, filename_length);
 }

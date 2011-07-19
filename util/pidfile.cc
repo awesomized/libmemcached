@@ -89,11 +89,12 @@ bool Pidfile::create()
   { 
     _error_message+= "Could not write pid to file: "; 
     _error_message+= _filename;
+    close(file);
 
     return false;
   }
 
-  if (close(file < 0))
+  if (close(file) < 0)
   {
     _error_message+= "Could not close() file after writing pid to it: "; 
     _error_message+= _filename;

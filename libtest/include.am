@@ -12,9 +12,11 @@
 LIBUTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
 
 VALGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
-HELGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 
+HELGRIND_COMMAND= $(LIBTOOL) --mode=execute valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1  -v
 DRD_COMMAND= $(LIBTOOL) --mode=execute valgrind --tool=drd
-GDB_COMMAND= $(LIBTOOL) --mode=execute gdb
+GDB_COMMAND= $(LIBTOOL) --mode=execute gdb -f -x libtest/run.gdb
+
+EXTRA_DIST+= libtest/run.gdb
 
 CLEANFILES+= \
 	     tests/var/log/* \

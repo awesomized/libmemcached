@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -166,22 +165,22 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   memcached_string_t tmp= { str, length };
   return memcached_set_error(memc, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
-  assert(rc != MEMCACHED_ERRNO);
-  assert(rc != MEMCACHED_SOME_ERRORS);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -192,8 +191,8 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
-  assert(rc != MEMCACHED_ERRNO);
-  assert(rc != MEMCACHED_SOME_ERRORS);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -224,8 +223,8 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at)
 {
-  assert(rc != MEMCACHED_ERRNO);
-  assert(rc != MEMCACHED_SOME_ERRORS);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -245,7 +244,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 
 memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc, const char *at)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 

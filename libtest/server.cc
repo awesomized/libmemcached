@@ -188,11 +188,21 @@ bool Server::start()
     return false;
   }
 
+  if (is_valgrind() or is_helgrind())
+  {
+    _running+= " &";
+  }
+
   if (system(_running.c_str()) == -1)
   {
     Error << "system() failed:" << strerror(errno);
     _running.clear();
     return false;
+  }
+
+  if (is_helgrind())
+  {
+    sleep(4);
   }
 
   if (pid_file_option() and not pid_file().empty())
@@ -205,7 +215,7 @@ bool Server::start()
     }
   }
 
-  int count= 5;
+  int count= is_helgrind() ? 20 : 5;
   while (not ping() and --count)
   {
     nap();
@@ -325,7 +335,12 @@ void Server::rebuild_base_command()
   }
   else if (is_valgrind())
   {
-    _base_command+= "valgrind --log-file=tests/var/tmp/valgrind.out --leak-check=full  --show-reachable=yes ";
+    _base_command+= "valgrind --log-file=tests/var/tmp/valgrind.out --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE ";
+
+  }
+  else if (is_helgrind())
+  {
+    _base_command+= "valgrind --log-file=tests/var/tmp/helgrind.out --tool=helgrind --read-var-info=yes --error-exitcode=1  -v ";
   }
 
   _base_command+= executable();
@@ -359,7 +374,7 @@ bool Server::args(std::string& options)
   }
 
   assert(daemon_file_option());
-  if (daemon_file_option())
+  if (daemon_file_option() and not is_valgrind() and not is_helgrind())
   {
     arg_buffer << " " << daemon_file_option();
   }
@@ -394,6 +409,11 @@ bool Server::is_debug() const
 bool Server::is_valgrind() const
 {
   return bool(getenv("LIBTEST_MANUAL_VALGRIND"));
+}
+
+bool Server::is_helgrind() const
+{
+  return bool(getenv("LIBTEST_MANUAL_HELGRIND"));
 }
 
 bool Server::kill(pid_t pid_arg)
@@ -485,6 +505,12 @@ bool server_startup_st::is_valgrind() const
 {
   return bool(getenv("LIBTEST_MANUAL_VALGRIND"));
 }
+
+bool server_startup_st::is_helgrind() const
+{
+  return bool(getenv("LIBTEST_MANUAL_HELGRIND"));
+}
+
 
 bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[])
 {

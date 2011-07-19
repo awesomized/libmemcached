@@ -347,8 +347,7 @@ test_st allocation[]= {
 
 static test_return_t hashkit_digest_test(hashkit_st *hashk)
 {
-  uint32_t value;
-  value= hashkit_digest(hashk, "a", sizeof("a"));
+  test_true(hashkit_digest(hashk, "a", sizeof("a")));
 
   return TEST_SUCCESS;
 }

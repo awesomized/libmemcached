@@ -38,7 +38,6 @@
 
 
 #include <libmemcached/common.h>
-#include <libmemcached/assert.hpp>
 
 memcached_server_list_st 
 memcached_server_list_append_with_weight(memcached_server_list_st ptr,

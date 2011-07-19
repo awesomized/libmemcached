@@ -36,49 +36,15 @@
 
 #include <libtest/common.h>
 
-#include <pthread.h>
-#include <semaphore.h>
 #include <csignal>
 
 #include <libtest/signal.h>
 
 using namespace libtest;
 
-struct context_st {
-  sigset_t set;
-  sem_t lock;
+#define MAGIC_MEMORY 123569
 
-  context_st()
-  {
-    sigemptyset(&set);
-    sigaddset(&set, SIGQUIT);
-    sigaddset(&set, SIGINT);
-
-    sem_init(&lock, 0, 0);
-  }
-  
-  void test()
-  {
-    assert(sigismember(&set, SIGQUIT));
-    assert(sigismember(&set, SIGINT));
-  }
-
-  int wait(int& sig)
-  {
-    return sigwait(&set, &sig);
-  }
-
-  ~context_st()
-  {
-    sem_destroy(&lock);
-  }
-};
-
-static volatile shutdown_t __shutdown;
-static pthread_mutex_t shutdown_mutex;
-static pthread_t thread;
-
-bool is_shutdown()
+bool SignalThread::is_shutdown()
 {
   bool ret;
   pthread_mutex_lock(&shutdown_mutex);
@@ -88,7 +54,7 @@ bool is_shutdown()
   return ret;
 }
 
-void set_shutdown(shutdown_t arg)
+void SignalThread::set_shutdown(shutdown_t arg)
 {
   pthread_mutex_lock(&shutdown_mutex);
   __shutdown= arg;
@@ -96,14 +62,14 @@ void set_shutdown(shutdown_t arg)
 
   if (arg == SHUTDOWN_GRACEFUL)
   {
-    pthread_kill(thread, SIGQUIT);
+    pthread_kill(thread, SIGUSR2);
 
     void *retval;
     pthread_join(thread, &retval);
   }
 }
 
-shutdown_t get_shutdown()
+shutdown_t SignalThread::get_shutdown()
 {
   shutdown_t local;
   pthread_mutex_lock(&shutdown_mutex);
@@ -113,17 +79,33 @@ shutdown_t get_shutdown()
   return local;
 }
 
+void SignalThread::post()
+{
+  sem_post(&lock);
+}
+
+void SignalThread::test()
+{
+  assert(magic_memory == MAGIC_MEMORY);
+  if (not getenv("LIBTEST_IN_GDB"))
+  {
+    assert(sigismember(&set, SIGABRT));
+    assert(sigismember(&set, SIGQUIT));
+    assert(sigismember(&set, SIGINT));
+  }
+  assert(sigismember(&set, SIGUSR2));
+}
+
 extern "C" {
 
 static void *sig_thread(void *arg)
 {   
-  context_st *context= (context_st*)arg;
-  assert(context);
+  SignalThread *context= (SignalThread*)arg;
 
   context->test();
-  sem_post(&context->lock);
+  context->post();
 
-  while (get_shutdown() == SHUTDOWN_RUNNING)
+  while (context->get_shutdown() == SHUTDOWN_RUNNING)
   {
     int sig;
 
@@ -135,12 +117,14 @@ static void *sig_thread(void *arg)
 
     switch (sig)
     {
+    case SIGABRT:
+    case SIGUSR2:
     case SIGINT:
     case SIGQUIT:
-      if (is_shutdown() == false)
+      if (context->is_shutdown() == false)
       {
         Error << "Signal handling thread got signal " <<  strsignal(sig);
-        set_shutdown(SHUTDOWN_FORCED);
+        context->set_shutdown(SHUTDOWN_FORCED);
       }
       break;
 
@@ -150,21 +134,32 @@ static void *sig_thread(void *arg)
     }
   }
 
-  delete context;
-
   return NULL;
 }
 
 }
 
-void setup_signals()
+SignalThread::SignalThread() :
+  magic_memory(MAGIC_MEMORY)
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
+  sigemptyset(&set);
+  if (not getenv("LIBTEST_IN_GDB"))
+  {
+    sigaddset(&set, SIGABRT);
+    sigaddset(&set, SIGQUIT);
+    sigaddset(&set, SIGINT);
+  }
+
+  sigaddset(&set, SIGUSR2);
+
+  sem_init(&lock, 0, 0);
+}
+
+
+bool SignalThread::setup()
+{
   set_shutdown(SHUTDOWN_RUNNING);
-
-  context_st *context= new context_st;
-
-  assert(context);
 
   sigset_t old_set;
   sigemptyset(&old_set);
@@ -178,19 +173,25 @@ void setup_signals()
   {
     Error << strsignal(SIGINT) << " has been previously set.";
   }
+  if (sigismember(&old_set, SIGUSR2))
+  {
+    Error << strsignal(SIGUSR2) << " has been previously set.";
+  }
 
   int error;
-  if ((error= pthread_sigmask(SIG_BLOCK, &context->set, NULL)) != 0)
+  if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
   {
     Error << "pthread_sigmask() died during pthread_sigmask(" << strerror(error) << ")";
-    exit(EXIT_FAILURE);
+    return false;
   }
 
-  if ((error= pthread_create(&thread, NULL, &sig_thread, (void *) &context->set)) != 0)
+  if ((error= pthread_create(&thread, NULL, &sig_thread, this)) != 0)
   {
     Error << "pthread_create() died during pthread_create(" << strerror(error) << ")";
-    exit(EXIT_FAILURE);
+    return false;
   }
 
-  sem_wait(&context->lock);
+  sem_wait(&lock);
+
+  return true;
 }
