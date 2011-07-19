@@ -132,7 +132,7 @@ static test_return_t memcached_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-#if !defined(MEMCACHED_BINARY) && !defined(HAVE_LIBMEMCACHED)
+#if !defined(MEMCACHED_BINARY) || !defined(HAVE_LIBMEMCACHED)
   return TEST_SKIPPED;
 #endif
 
@@ -147,7 +147,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-#if !defined(MEMCACHED_BINARY) && !defined(HAVE_LIBMEMCACHED)
+#if !defined(MEMCACHED_BINARY) || !defined(HAVE_LIBMEMCACHED)
   return TEST_SKIPPED;
 #endif
 

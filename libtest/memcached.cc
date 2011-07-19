@@ -77,29 +77,30 @@ public:
     {
       Wait wait(pid_file(), 0);
 
-      if (not wait.successful())
+      if (error_is_ok and not wait.successful())
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
       }
     }
 
+    pid_t local_pid;
     memcached_return_t rc;
     if (has_socket())
     {
-      _pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
+      local_pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
     }
     else
     {
-      _pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
+      local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
     }
 
-    if ((memcached_failed(rc) or _pid < 1) and not error_is_ok)
+    if (error_is_ok and ((memcached_failed(rc) or local_pid < 1)))
     {
-      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << _pid << " for:" << *this;
+      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << local_pid << " for:" << *this;
     }
 
-    return _pid;
+    return local_pid;
   }
 
   bool ping()

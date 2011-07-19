@@ -60,6 +60,7 @@
 #include <libtest/get.h>
 #include <libtest/stream.h>
 #include <libtest/cmdline.h>
+#include <libtest/string.hpp>
 
 #pragma once
 
@@ -77,13 +78,3 @@ void set_default_socket(const char *socket);
 
 LIBTEST_API
 bool test_is_local(void);
-
-#ifdef __cplusplus
-#define test_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
-#else
-#define test_literal_param(X) (X), ((size_t)((sizeof(X) - 1)))
-#endif
-
-#define test_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
-
-#define test_array_length(__array) sizeof(__array)/sizeof(&__array)

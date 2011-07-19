@@ -28,9 +28,9 @@ private:
   std::string _log_file;
   std::string _base_command; // executable command which include libtool, valgrind, gdb, etc
   std::string _running; // Current string being used for system()
+  pid_t _pid;
 
 protected:
-  pid_t _pid;
   in_port_t _port;
   std::string _hostname;
   std::string _extra_args;
@@ -92,7 +92,7 @@ public:
 
   virtual bool ping()= 0;
 
-  virtual pid_t get_pid(bool error_is_ok= true)= 0;
+  virtual pid_t get_pid(bool error_is_ok= false)= 0;
 
   virtual bool build(int argc, const char *argv[])= 0;
 
@@ -130,6 +130,11 @@ public:
     return (_pid > 1);
   }
 
+  bool check_pid(pid_t pid_arg) const
+  {
+    return (pid_arg > 1);
+  }
+
   bool is_socket() const
   {
     return _hostname[0] == '/';
@@ -142,7 +147,7 @@ public:
 
   std::string log_and_pid();
 
-  bool kill();
+  bool kill(pid_t pid_arg);
   bool start();
   bool command(std::string& command_arg);
 

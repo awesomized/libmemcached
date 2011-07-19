@@ -116,7 +116,7 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg, bool is_so
 
 Server::~Server()
 {
-  if (has_pid() and not kill())
+  if (has_pid() and not kill(_pid))
   {
     Error << "Unable to kill:" << *this;
   }
@@ -138,7 +138,7 @@ bool Server::cycle()
   pid_t current_pid;
   while (--limit and (current_pid= get_pid()) != -1)
   {
-    if (kill())
+    if (kill(current_pid))
     {
       Log << "Killed existing server," << *this << " with pid:" << current_pid;
       nap();
@@ -174,9 +174,9 @@ bool Server::command(std::string& command_arg)
 bool Server::start()
 {
   // If we find that we already have a pid then kill it.
-  if (has_pid() and not kill())
+  if (has_pid() and not kill(_pid))
   {
-    Error << "Could not kill() existing server during start()";
+    Error << "Could not kill() existing server during start() pid:" << _pid;
     return false;
   }
   assert(not has_pid());
@@ -219,7 +219,7 @@ bool Server::start()
   }
 
   // A failing get_pid() at this point is considered an error
-  _pid= get_pid(false);
+  _pid= get_pid(true);
 
   return has_pid();
 }
@@ -396,9 +396,9 @@ bool Server::is_valgrind() const
   return bool(getenv("LIBTEST_MANUAL_VALGRIND"));
 }
 
-bool Server::kill()
+bool Server::kill(pid_t pid_arg)
 {
-  if (has_pid() and kill_pid(_pid)) // If we kill it, reset
+  if (check_pid(pid_arg) and kill_pid(pid_arg)) // If we kill it, reset
   {
     if (broken_pid_file() and not pid_file().empty())
     {
@@ -463,7 +463,7 @@ void server_startup_st::shutdown(bool remove)
   {
     for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
     {
-      if ((*iter)->has_pid() and not (*iter)->kill())
+      if ((*iter)->has_pid() and not (*iter)->kill((*iter)->pid()))
       {
         Error << "Unable to kill:" <<  *(*iter);
       }
@@ -488,7 +488,7 @@ bool server_startup_st::is_valgrind() const
 
 bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[])
 {
-  Logn();
+  Outn();
 
   // Look to see if we are being provided ports to use
   {
@@ -557,10 +557,10 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
 
   if (construct.is_debug())
   {
-    Log << "Pausing for startup, hit return when ready.";
+    Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
-    Log << "run " << server->args(options);
+    Out << "run " << server->args(options);
     getchar();
   }
   else if (not server->start())
@@ -571,7 +571,7 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
   else
   {
-    Log << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+    Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
   }
 
   construct.push_server(server);
@@ -582,14 +582,15 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
     set_default_port(server->port());
   }
 
-  Logn();
+  Outn();
 
   return true;
 }
 
 bool server_startup_st::start_socket_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[])
 {
-  Logn();
+  (void)try_port;
+  Outn();
 
   Server *server= NULL;
   if (0)
@@ -635,10 +636,10 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
 
   if (is_debug())
   {
-    Log << "Pausing for startup, hit return when ready.";
+    Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
-    Log << "run " << server->args(options);
+    Out << "run " << server->args(options);
     getchar();
   }
   else if (not server->start())
@@ -649,14 +650,14 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
   }
   else
   {
-    Log << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+    Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
   }
 
   push_server(server);
 
   set_default_socket(server->socket().c_str());
 
-  Logn();
+  Outn();
 
   return true;
 }
