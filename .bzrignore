@@ -110,3 +110,5 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
+out
+*.orig

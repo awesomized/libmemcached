@@ -155,6 +155,7 @@ protected:
   void nap();
 
 private:
+  bool is_helgrind() const;
   bool is_valgrind() const;
   bool is_debug() const;
   bool set_log_file();
@@ -190,6 +191,7 @@ public:
   }
 
   bool is_debug() const;
+  bool is_helgrind() const;
   bool is_valgrind() const;
 
   void shutdown(bool remove= false);

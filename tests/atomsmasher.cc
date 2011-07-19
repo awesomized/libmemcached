@@ -147,7 +147,7 @@ static test_return_t add_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   memcached_quit(memc);
   rc= memcached_add(memc, key, strlen(key),
                     value, strlen(value),
@@ -156,11 +156,11 @@ static test_return_t add_test(memcached_st *memc)
   /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
   if (setting_value)
   {
-    test_true(rc == MEMCACHED_NOTSTORED || rc == MEMCACHED_STORED);
+    test_true(rc == MEMCACHED_NOTSTORED or rc == MEMCACHED_STORED);
   }
   else
   {
-    test_true(rc == MEMCACHED_NOTSTORED);
+    test_compare_got(MEMCACHED_NOTSTORED, rc, memcached_strerror(NULL, rc));
   }
 
   return TEST_SUCCESS;

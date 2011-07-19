@@ -257,7 +257,7 @@ UDP_COMMAND= tests/testudp
 HASH_COMMAND= tests/testhashkit
 
 test-mem: tests/var tests/testapp
-	$(MEM_COMMAND)
+	@tests/testapp
 
 test-udp: tests/var tests/testudp
 	$(UDP_COMMAND)
@@ -278,10 +278,10 @@ test-cycle: tests/var tests/cycle
 	$(CYCLE_COMMAND)
 
 pahole-mem: tests/testapp
-	$(PAHOLE_COMMAND)  $(MEM_COMMAND)
+	@$(PAHOLE_COMMAND)  tests/testapp
 
 gdb-mem: tests/testapp
-	$(DEBUG_COMMAND)  $(MEM_COMMAND)
+	@$(DEBUG_COMMAND)  tests/testapp
 
 gdb-atom: tests/atomsmasher
 	$(DEBUG_COMMAND)  $(UDP_COMMAND)
@@ -308,7 +308,7 @@ valgrind-cycle: tests/cycle
 	$(VALGRIND_COMMAND)  $(CYCLE_COMMAND)
 
 valgrind-mem: tests/testapp
-	$(VALGRIND_COMMAND)  $(MEM_COMMAND)
+	@$(VALGRIND_COMMAND) tests/testapp
 
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND)  $(ATOM_COMMAND)
@@ -325,17 +325,14 @@ valgrind-hash: tests/testhashkit
 valgrind-hashplus: tests/hashplus
 	$(VALGRIND_COMMAND) $(HASHPLUS_COMMAND)
 
-valgrind-memslap: clients/memslap
-	$(VALGRIND_COMMAND) $(MEMSLAP_COMMAND)
-
 PHONY += valgrind
-valgrind: valgrind-mem valgrind-hash valgrind-memcat valgrind-memcp valgrind-memrm valgrind-memerror valgrind-memdump valgrind-memflush valgrind-memstat
+valgrind: valgrind-cycle valgrind-mem valgrind-atom valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
 
 helgrind-cycle: tests/cycle
 	$(HELGRIND_COMMAND)  $(CYCLE_COMMAND)
 
 helgrind-mem: tests/testapp
-	$(HELGRIND_COMMAND)  $(MEM_COMMAND)
+	@$(HELGRIND_COMMAND) tests/testapp
 
 helgrind-atom: tests/atomsmasher
 	$(HELGRIND_COMMAND)  $(ATOM_COMMAND)
@@ -352,11 +349,8 @@ helgrind-hash: tests/testhashkit
 helgrind-hashplus: tests/hashplus
 	$(HELGRIND_COMMAND) $(HASHPLUS_COMMAND)
 
-helgrind-memslap: clients/memslap
-	$(HELGRIND_COMMAND) $(MEMSLAP_COMMAND)
-
-PHONY += helgrind
-helgrind: helgrind-mem helgrind-hash helgrind-memcat helgrind-memcp helgrind-memrm helgrind-memerror helgrind-memdump helgrind-memflush helgrind-memstat
+.PHONY += helgrind
+helgrind: helgrind-cycle helgrind-mem helgrind-atom helgrind-udp helgrind-plus helgrind-hash helgrind-hashplus
 
 PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out
@@ -371,16 +365,6 @@ callgrind:
 	rm -f tests/callgrind.out.*
 	$(LIBTOOL) --mode=execute valgrind --tool=callgrind --callgrind-out-file=tests/callgrind.out.%p  tests/testapp
 	callgrind_annotate tests/callgrind.out.* --auto=yes > tests/callgrind.out
-
-PHONY += helgrind
-CLEANFILES+= helgrind.out.*
-helgrind:
-	rm -f helgrind.out.*
-	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  tests/testapp
-
-PHONY += helgrind-slap
-helgrind-slap:
-	$(LIBTOOL) --mode=execute valgrind --tool=helgrind  clients/memslap --server=localhost --concurrency=30
 
 test-no-outputdiff: test
 

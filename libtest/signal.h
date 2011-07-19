@@ -37,20 +37,46 @@
 
 #pragma once 
 
+#include <pthread.h>
+#include <semaphore.h>
+
 enum shutdown_t {
   SHUTDOWN_RUNNING,
   SHUTDOWN_GRACEFUL,
   SHUTDOWN_FORCED
 };
 
-LIBTEST_INTERNAL_API
-bool is_shutdown();
+namespace libtest {
 
-LIBTEST_INTERNAL_API
-shutdown_t get_shutdown();
+class SignalThread {
+  sigset_t set;
+  sem_t lock;
+  uint64_t magic_memory;
+  volatile shutdown_t __shutdown;
+  pthread_mutex_t shutdown_mutex;
+  pthread_t thread;
 
-LIBTEST_INTERNAL_API
-void set_shutdown(shutdown_t arg);
+public:
 
-LIBTEST_INTERNAL_API
-void setup_signals(void);
+  SignalThread();
+
+  void test();
+  void post();
+  bool setup();
+
+  int wait(int& sig)
+  {
+    return sigwait(&set, &sig);
+  }
+
+  ~SignalThread()
+  {
+    sem_destroy(&lock);
+  }
+
+  void set_shutdown(shutdown_t arg);
+  bool is_shutdown();
+  shutdown_t get_shutdown();
+};
+
+} // namespace libtest

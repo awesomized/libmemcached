@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 /*
   What happens if no servers exist?
@@ -87,7 +86,7 @@ char *memcached_get_by_key(memcached_st *ptr,
   *error= memcached_mget_by_key_real(ptr, group_key, group_key_length,
                                      (const char * const *)&key, &key_length, 
                                      1, false);
-  assert(ptr->query_id == query_id +1);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
 
   if (memcached_failed(*error))
@@ -105,7 +104,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   char *value= memcached_fetch(ptr, NULL, NULL,
                                value_length, flags, error);
-  assert(ptr->query_id == query_id +1);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
   /* This is for historical reasons */
   if (*error == MEMCACHED_END)
@@ -157,7 +156,7 @@ char *memcached_get_by_key(memcached_st *ptr,
         }
       }
     }
-    assert(ptr->query_id == query_id +1);
+    assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
     return NULL;
   }
@@ -171,7 +170,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                                      &dummy_error);
   WATCHPOINT_ASSERT(dummy_length == 0);
   WATCHPOINT_ASSERT(dummy_value == 0);
-  assert(ptr->query_id == query_id +1);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
   return value;
 }
