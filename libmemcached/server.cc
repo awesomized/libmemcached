@@ -140,6 +140,7 @@ void __server_free(memcached_server_st *self)
   if (self->address_info)
   {
     freeaddrinfo(self->address_info);
+    self->address_info= NULL;
   }
 
   memcached_error_free(*self);
