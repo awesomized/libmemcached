@@ -103,6 +103,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/namespace.h>
 
 #ifdef __cplusplus
+#include <libmemcached/backtrace.hpp>
 #include <libmemcached/assert.hpp>
 #endif
 
@@ -168,20 +169,24 @@ LIBMEMCACHED_LOCAL
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
 {
-  unlikely (key_length == 0)
+  if (key_length == 0)
   {
     return MEMCACHED_BAD_KEY_PROVIDED;
   }
 
   if (binary)
   {
-    unlikely (key_length > 0xffff)
+    if (key_length > 0xffff)
+    {
       return MEMCACHED_BAD_KEY_PROVIDED;
+    }
   }
   else
   {
-    unlikely (key_length >= MEMCACHED_MAX_KEY)
+    if (key_length >= MEMCACHED_MAX_KEY)
+    {
       return MEMCACHED_BAD_KEY_PROVIDED;
+    }
   }
 
   return MEMCACHED_SUCCESS;

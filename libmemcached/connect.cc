@@ -37,7 +37,6 @@
 
 
 #include <libmemcached/common.h>
-#include <cassert>
 #include <ctime>
 #include <sys/time.h>
 

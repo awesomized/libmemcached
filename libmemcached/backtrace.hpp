@@ -37,22 +37,5 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <cstdio>
-
-#ifdef NDEBUG
-#define	assert(__expr, __mesg)	((void)0)
-#else
-
-#define assert_msg(__expr, __mesg) \
-do \
-{ \
-  if (not (__expr)) \
-  { \
-    fprintf(stderr, "\nAssertion \"%s\" failed for function \"%s\" likely for %s, at %s:%d\n", #__expr, __func__, (#__mesg),  __FILE__, __LINE__);\
-    custom_backtrace(); \
-    abort(); \
-  } \
-} while (0)
-
-#endif
+LIBMEMCACHED_LOCAL
+void custom_backtrace(void);

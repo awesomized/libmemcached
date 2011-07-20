@@ -35,24 +35,74 @@
  *
  */
 
-#pragma once
+#include <libmemcached/common.h>
 
+#include <cstring>
 #include <cstdlib>
-#include <cstdio>
 
-#ifdef NDEBUG
-#define	assert(__expr, __mesg)	((void)0)
-#else
+#ifdef __GNUC__
+#ifdef HAVE_BACKTRACE
+#include <execinfo.h>
+#include <cxxabi.h>
+#endif // HAVE_BACKTRACE
+#endif // __GNUC__
 
-#define assert_msg(__expr, __mesg) \
-do \
-{ \
-  if (not (__expr)) \
-  { \
-    fprintf(stderr, "\nAssertion \"%s\" failed for function \"%s\" likely for %s, at %s:%d\n", #__expr, __func__, (#__mesg),  __FILE__, __LINE__);\
-    custom_backtrace(); \
-    abort(); \
-  } \
-} while (0)
 
-#endif
+void custom_backtrace(void)
+{
+#ifdef __GNUC__
+#ifdef HAVE_BACKTRACE
+  void *array[50];
+
+  size_t size= backtrace(array, 50);
+  char **strings= backtrace_symbols(array, size);
+
+  fprintf(stderr, "Number of stack frames obtained: %lu\n", (unsigned long)size);
+
+  for (size_t x= 1; x < size; x++) 
+  {
+    size_t sz= 200;
+    char *function= (char *)malloc(sz);
+    char *begin= 0;
+    char *end= 0;
+
+    for (char *j = strings[x]; *j; ++j)
+    {
+      if (*j == '(') {
+        begin = j;
+      }
+      else if (*j == '+') {
+        end = j;
+      }
+    }
+    if (begin && end)
+    {
+      begin++;
+      *end= '\0';
+
+      int status;
+      char *ret = abi::__cxa_demangle(begin, function, &sz, &status);
+      if (ret) 
+      {
+        function= ret;
+      }
+      else
+      {
+        strncpy(function, begin, sz);
+        strncat(function, "()", sz);
+        function[sz-1] = '\0';
+      }
+      fprintf(stderr, "%s\n", function);
+    }
+    else
+    {
+      fprintf(stderr, "%s\n", strings[x]);
+    }
+    free(function);
+  }
+
+
+  free (strings);
+#endif // HAVE_BACKTRACE
+#endif // __GNUC__
+}

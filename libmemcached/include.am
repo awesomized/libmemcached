@@ -13,6 +13,7 @@ EXTRA_DIST+= \
 
 noinst_HEADERS+= \
 		 libmemcached/assert.hpp \
+		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.hpp \
@@ -82,6 +83,7 @@ nobase_include_HEADERS+= \
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
 					      libmemcached/array.c \
+					      libmemcached/backtrace.cc \
 					      libmemcached/error.cc \
 					      libmemcached/string.cc
 libmemcached_libmemcachedinternal_la_CFLAGS= \
@@ -111,6 +113,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/analyze.cc \
 				       libmemcached/array.c \
 				       libmemcached/auto.cc \
+				       libmemcached/backtrace.cc \
 				       libmemcached/behavior.cc \
 				       libmemcached/byteorder.cc \
 				       libmemcached/callback.cc \
