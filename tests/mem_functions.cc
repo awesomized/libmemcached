@@ -3616,24 +3616,24 @@ static test_return_t pre_cork_and_nonblock(memcached_st *memc)
 
 static test_return_t pre_nonblock_binary(memcached_st *memc)
 {
-  memcached_return_t rc= MEMCACHED_FAILURE;
-  memcached_st *memc_clone;
-
-  memc_clone= memcached_clone(NULL, memc);
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
+
   // The memcached_version needs to be done on a clone, because the server
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
+  memcached_return_t rc= MEMCACHED_FAILURE;
   if (libmemcached_util_version_check(memc_clone, 1, 4, 4))
   {
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
-    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-    test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
+    test_compare(1UL, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
   }
   else
   {
+    memcached_free(memc_clone);
     return TEST_SKIPPED;
   }
 
