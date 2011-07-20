@@ -15,6 +15,7 @@ lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 endif
 
 libmemcached_libmemcachedutil_la_SOURCES= \
+					  libmemcached/backtrace.cc \
 					  libmemcached/util/flush.cc \
 					  libmemcached/util/pid.cc \
 					  libmemcached/util/ping.cc \
