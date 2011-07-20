@@ -36,8 +36,9 @@
  */
 
 #include <config.h>
-
 #include <libtest/test.hpp>
+
+using namespace libtest;
 
 #include <vector>
 #include <iostream>

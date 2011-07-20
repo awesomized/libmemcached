@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Gearmand client and server library.
+ *  Libmemcached client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -36,11 +36,14 @@
  */
 
 #include <config.h>
+#include <libtest/test.hpp>
+
+using namespace libtest;
+
 
 #include <iostream>
 
 #include <libmemcached/memcached.h>
-#include <libtest/test.hpp>
 
 #include "tests/print.h"
 

@@ -12,6 +12,8 @@ EXTRA_DIST+= \
 	     libmemcached/memcached/README.txt
 
 noinst_HEADERS+= \
+		 libmemcached/assert.hpp \
+		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/do.hpp \
@@ -54,7 +56,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/memcached/vbucket.h \
 			 libmemcached/options.h \
 			 libmemcached/parse.h \
-			 libmemcached/prefix_key.h \
+			 libmemcached/namespace.h \
 			 libmemcached/protocol/cache.h \
 			 libmemcached/protocol/callback.h \
 			 libmemcached/protocol_handler.h \
@@ -81,6 +83,7 @@ nobase_include_HEADERS+= \
 noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
 libmemcached_libmemcachedinternal_la_SOURCES= \
 					      libmemcached/array.c \
+					      libmemcached/backtrace.cc \
 					      libmemcached/error.cc \
 					      libmemcached/string.cc
 libmemcached_libmemcachedinternal_la_CFLAGS= \
@@ -110,6 +113,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/analyze.cc \
 				       libmemcached/array.c \
 				       libmemcached/auto.cc \
+				       libmemcached/backtrace.cc \
 				       libmemcached/behavior.cc \
 				       libmemcached/byteorder.cc \
 				       libmemcached/callback.cc \
@@ -130,7 +134,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/memcached.cc \
 				       libmemcached/options.cc \
 				       libmemcached/parse.cc \
-				       libmemcached/prefix_key.cc \
+				       libmemcached/namespace.cc \
 				       libmemcached/purge.cc \
 				       libmemcached/quit.cc \
 				       libmemcached/response.cc \

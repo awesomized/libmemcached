@@ -15,7 +15,8 @@ Introducing libhashkit
 DESCRIPTION
 -----------
 
-:program:'libhashkit'  is a small and thread-safe client library that provides a collection of useful hashing algorithm. libhashkit is distributed with libmemcached.
+
+libhashkit  is a small and thread-safe client library that provides a collection of useful hashing algorithm. libhashkit is distributed with libmemcached.
 
 
 ----

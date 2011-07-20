@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Gearmand client and server library.
+ *  Libmemcached client and server library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -36,10 +36,13 @@
  */
 
 #include <config.h>
-
 #include <libtest/test.hpp>
-#include "libmemcached/common.h"
+
+using namespace libtest;
+
+#include <libmemcached/common.h>
 #include <tests/replication.h>
+#include <tests/debug.h>
 
 test_return_t replication_set_test(memcached_st *memc)
 {
@@ -47,8 +50,8 @@ test_return_t replication_set_test(memcached_st *memc)
   memcached_st *memc_clone= memcached_clone(NULL, memc);
   memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
 
-  rc= memcached_set(memc, "bubba", 5, "0", 1, 0, 0);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_set(memc, "bubba", 5, "0", 1, 0, 0));
 
   /*
   ** We are using the quiet commands to store the replicas, so we need
@@ -78,8 +81,8 @@ test_return_t replication_set_test(memcached_st *memc)
     uint32_t flags;
     char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5,
                                     &len, &flags, &rc);
-    test_true(rc == MEMCACHED_SUCCESS);
-    test_true(val != NULL);
+    test_compare(MEMCACHED_SUCCESS, rc);
+    test_true(val);
     free(val);
   }
 
@@ -159,7 +162,7 @@ test_return_t replication_mget_test(memcached_st *memc)
    * This is to verify correct behavior in the library
    */
   memcached_result_st result_obj;
-  for (uint32_t host= 0; host < memc_clone->number_of_hosts; host++)
+  for (uint32_t host= 0; host < memcached_server_count(memc_clone); host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
     memcached_server_instance_st instance=
@@ -216,8 +219,8 @@ test_return_t replication_randomize_mget_test(memcached_st *memc)
   {
     const char key[2]= { (char)x, 0 };
 
-    rc= memcached_mget_by_key(memc_clone, key, 1, keys, len, 7);
-    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_mget_by_key(memc_clone, key, 1, keys, len, 7));
 
     memcached_result_st *results= memcached_result_create(memc_clone, &result_obj);
     test_true(results);
@@ -227,70 +230,61 @@ test_return_t replication_randomize_mget_test(memcached_st *memc)
     {
       ++hits;
     }
-    test_true(hits == 7);
+    test_compare(hits, 7);
     memcached_result_free(&result_obj);
   }
   memcached_free(memc_clone);
   return TEST_SUCCESS;
 }
 
-test_return_t replication_delete_test(memcached_st *memc)
+test_return_t replication_delete_test(memcached_st *memc_just_cloned)
 {
-  memcached_return_t rc;
-  memcached_st *memc_clone= memcached_clone(NULL, memc);
-  /* Delete the items from all of the servers except 1 */
-  uint64_t repl= memcached_behavior_get(memc,
-                                        MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, --repl);
+  memcached_flush(memc_just_cloned, 0);
+  memcached_st *memc_not_replicate= memcached_clone(NULL, memc_just_cloned);
+  memcached_st *memc_replicated= memcached_clone(NULL, memc_just_cloned);
+  const char *keys[]= { "bubba", "key1", "key2", "key3", "key4" };
 
-  const char *keys[]= { "bubba", "key1", "key2", "key3" };
-  size_t len[]= { 5, 4, 4, 4 };
+  test_true(memcached_behavior_get(memc_replicated, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_replicated, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, false));
 
-  for (size_t x= 0; x< 4; ++x)
+  // Make one copy
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_replicated, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 1UL));
+  test_compare(1UL, memcached_behavior_get(memc_replicated, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_not_replicate, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0UL));
+  test_compare(0UL, memcached_behavior_get(memc_not_replicate, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
+
+  for (size_t x= 0; x < test_array_length(keys); ++x)
   {
-    rc= memcached_delete_by_key(memc, keys[0], len[0], keys[x], len[x], 0);
-    test_true(rc == MEMCACHED_SUCCESS);
+    memcached_set(memc_replicated,
+                  test_string_make_from_cstr(keys[x]), // Keys
+                  test_string_make_from_cstr(keys[x]), // We use the keys as values
+                  0, 0);
   }
 
-  /*
-   * Don't do the following in your code. I am abusing the internal details
-   * within the library, and this is not a supported interface.
-   * This is to verify correct behavior in the library
-   */
-  uint32_t hash= memcached_generate_hash(memc, keys[0], len[0]);
-  for (uint32_t x= 0; x < (repl + 1); ++x)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_clone, x);
+  memcached_flush_buffers(memc_replicated);
 
-    ((memcached_server_write_instance_st)instance)->port= 0;
-    if (++hash == memc_clone->number_of_hosts)
-      hash= 0;
+  // Confirm keys with replication read
+  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_replicated, keys, test_array_length(keys), true));
+  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_not_replicate, keys, test_array_length(keys), true));
+
+  /* Delete the items from all of the servers except 1, we use the non replicated memc so that we know we deleted the keys */
+  for (size_t x= 0; x < test_array_length(keys); ++x)
+  {
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_delete(memc_replicated,
+                                  test_string_make_from_cstr(keys[x]), // Keys
+                                  0));
   }
 
-  memcached_result_st result_obj;
-  for (uint32_t host= 0; host < memc_clone->number_of_hosts; ++host)
-  {
-    for (size_t x= 'a'; x <= 'z'; ++x)
-    {
-      const char key[2]= { (char)x, 0 };
+  test_compare(TEST_SUCCESS, confirm_keys_dont_exist(memc_replicated, keys, test_array_length(keys)));
+  test_compare(TEST_SUCCESS, confirm_keys_dont_exist(memc_not_replicate, keys, test_array_length(keys)));
+#if 0
+  test_zero(confirm_key_count(memc_not_replicate));
+#endif
 
-      rc= memcached_mget_by_key(memc_clone, key, 1, keys, len, 4);
-      test_true(rc == MEMCACHED_SUCCESS);
-
-      memcached_result_st *results= memcached_result_create(memc_clone, &result_obj);
-      test_true(results);
-
-      int hits= 0;
-      while ((results= memcached_fetch_result(memc_clone, &result_obj, &rc)) != NULL)
-      {
-        ++hits;
-      }
-      test_true(hits == 4);
-      memcached_result_free(&result_obj);
-    }
-  }
-  memcached_free(memc_clone);
+  memcached_free(memc_not_replicate);
+  memcached_free(memc_replicated);
 
   return TEST_SUCCESS;
 }
@@ -303,10 +297,10 @@ test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
   for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
   {
     const char *key= memcached_strerror(NULL, memcached_return_t(x));
-    memcached_return_t rc= memcached_set(memc,
-                                         key, strlen(key),
-                                         key, strlen(key), 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_set(memc,
+                               key, strlen(key),
+                               key, strlen(key), 0, 0));
   }
 
   memcached_flush_buffers(memc);

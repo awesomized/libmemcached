@@ -7,6 +7,13 @@
 
 #pragma once
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
+#include <libtest/stream.h>
+#include <libtest/comparison.hpp>
+
 /**
   A structure describing the test case.
 */
@@ -16,16 +23,11 @@ struct test_st {
   test_callback_fn *test_fn;
 };
 
-#define TEST_STRINGIFY(x) #x
-#define TEST_TOSTRING(x) TEST_STRINGIFY(x)
-#define TEST_AT __FILE__ ":" TEST_TOSTRING(__LINE__)
-
-
 #define test_assert_errno(A) \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "\nAssertion failed at %s:%d: ", __FILE__, __LINE__);\
+    fprintf(stderr, "\n%s:%d: Assertion failed for %s: ", __FILE__, __LINE__, __func__);\
     perror(#A); \
     fprintf(stderr, "\n"); \
     create_core(); \
@@ -37,7 +39,7 @@ do \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "\nAssertion, %s(%s), failed at %s:%d: ", (B), #A, __FILE__, __LINE__);\
+    fprintf(stderr, "\n%s:%d: Assertion failed %s, with message %s, in %s", __FILE__, __LINE__, (B), #A, __func__ );\
     fprintf(stderr, "\n"); \
     create_core(); \
     assert((A)); \
@@ -48,7 +50,7 @@ do \
 do \
 { \
   if (! (A)) { \
-    fprintf(stderr, "\nAssertion failed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\n%s:%d: Assertion \"%s\" failed, in %s\n", __FILE__, __LINE__, #A, __func__);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -58,17 +60,17 @@ do \
 do \
 { \
   if (! (A)) { \
-    fprintf(stderr, "\nAssertion failed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\n%s:%d: Assertion \"%s\" failed, in %s\n", __FILE__, __LINE__, #A, __func__);\
     create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
 
-#define test_true_got(A,B) \
+#define test_true_got(__expected, __hint) \
 do \
 { \
-  if (! (A)) { \
-    fprintf(stderr, "\nAssertion failed at %s:%d: \"%s\" received \"%s\"\n", __FILE__, __LINE__, #A, (B));\
+  if (not libtest::_compare_true_hint(__FILE__, __LINE__, __func__, ((__expected)), #__expected, ((__hint)))) \
+  { \
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -87,7 +89,7 @@ do \
 do \
 { \
   if (1) { \
-    fprintf(stderr, "\nFailed at %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\n%s:%d: Failed with %s, in %s\n", __FILE__, __LINE__, #A, __func__);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -98,7 +100,7 @@ do \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "\nAssertion failed in %s:%d: %s\n", __FILE__, __LINE__, #A);\
+    fprintf(stderr, "\n%s:%d: Assertion failed %s, in %s\n", __FILE__, __LINE__, #A, __func__);\
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -108,30 +110,37 @@ do \
 do \
 { \
   if ((A)) { \
-    fprintf(stderr, "\nAssertion failed at %s:%d: %s with %s\n", __FILE__, __LINE__, #A, (B));\
+    fprintf(stderr, "\n%s:%d: Assertion failed %s with %s\n", __FILE__, __LINE__, #A, (B));\
     create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
 
-
-#define test_compare(A,B) \
+#define test_compare(__expected, __actual) \
 do \
 { \
-  if ((A) != (B)) \
+  if (not libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)))) \
   { \
-    fprintf(stderr, "\n%s:%d: Expected %s, got %lu\n", __FILE__, __LINE__, #A, (unsigned long)(B)); \
     create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
 
-#define test_compare_got(A,B,C) \
+#define test_zero(__actual) \
 do \
 { \
-  if ((A) != (B)) \
+  if (not libtest::_compare_zero(__FILE__, __LINE__, __func__, ((__actual)))) \
   { \
-    fprintf(stderr, "\n%s:%d: Expected %s, got %s\n", __FILE__, __LINE__, #A, (C)); \
+    create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_compare_got(__expected, __actual, __hint) \
+do \
+{ \
+  if (not libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint))) \
+  { \
     create_core(); \
     return TEST_FAILURE; \
   } \
@@ -157,6 +166,15 @@ do \
     fprintf(stderr, "\n%s:%d: %.*s -> %.*s\n", __FILE__, __LINE__, (int)(C), (char *)(A), (int)(C), (char *)(B)); \
     create_core(); \
     return TEST_FAILURE; \
+  } \
+} while (0)
+
+#define test_return_if(__test_return_t) \
+do \
+{ \
+  if ((__test_return_t) != TEST_SUCCESS) \
+  { \
+    return __test_return_t; \
   } \
 } while (0)
 

@@ -18,6 +18,10 @@
 */Makefile.in
 *TAGS
 .deps
+.hg/
+.hgsub
+.hgignore
+.hgsubstate
 INSTALL
 Makefile
 Makefile.in
@@ -52,12 +56,14 @@ config/top.h
 configure
 docs/*.[13]
 docs/*.html
+docs/changes
 docs/conf.py
 docs/doctest/
 docs/doctrees/
 docs/html/
 docs/linkcheck/
-docs/conf.py
+docs/man/*
+docs/text
 example/memcached_light
 libhashkit/configure.h
 libmemcached-*.tar.gz
@@ -72,6 +78,10 @@ libmemcached/configure.h
 libmemcached/dtrace_probes.h
 libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
+libtest/.hg/
+libtest/.hgignore
+libtest/unittest
+libtest/wait
 libtool
 libtool.m4
 ltoptions.m4
@@ -88,6 +98,7 @@ support/libmemcached.pc
 support/libmemcached.spec
 tags
 tests/atomsmasher
+tests/cycle
 tests/hash_plus
 tests/hashplus
 tests/memplus
@@ -99,3 +110,5 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
+out
+*.orig

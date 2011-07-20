@@ -61,9 +61,10 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
   WATCHPOINT_ASSERT(count);
   WATCHPOINT_ASSERT(vector);
 
-  if ((rc= memcached_connect(ptr)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= memcached_connect(ptr)))
   {
     WATCHPOINT_ERROR(rc);
+    assert_msg(ptr->error_messages, "memcached_connect() returned an error but the memcached_server_write_instance_st showed none.");
     return rc;
   }
 
@@ -85,7 +86,7 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
     command_length+= vector->length;
   }
 
-  if (sent_length == -1 || (size_t)sent_length != command_length)
+  if (sent_length == -1 or size_t(sent_length) != command_length)
   {
     rc= MEMCACHED_WRITE_FAILURE;
     WATCHPOINT_ERROR(rc);

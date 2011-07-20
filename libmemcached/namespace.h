@@ -35,31 +35,18 @@
  *
  */
 
-#include <libmemcached/common.h>
+#pragma once
 
-memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *key, size_t key_length)
-{
-  WATCHPOINT_ASSERT(self);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  if (key and key_length)
-  {
-    if (memcached_key_test((const char **)&key, &key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED)
-      return memcached_set_error(*self, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+LIBMEMCACHED_LOCAL
+  memcached_return_t memcached_set_namespace(memcached_st *self, const char *str, size_t length);
 
-    if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
-      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
+LIBMEMCACHED_API
+  const char * memcached_get_namespace(memcached_st *self);
 
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= memcached_strcpy(self, key, key_length);
-
-    if (not self->prefix_key)
-      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
-  }
-  else
-  {
-    memcached_array_free(self->prefix_key);
-    self->prefix_key= NULL;
-  }
-
-  return MEMCACHED_SUCCESS;
+#ifdef __cplusplus
 }
+#endif

@@ -66,6 +66,7 @@
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
+#include <libmemcached/namespace.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,7 +100,12 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/byteorder.h>
 #include <libmemcached/initialize_query.h>
 #include <libmemcached/response.h>
-#include <libmemcached/prefix_key.h>
+#include <libmemcached/namespace.h>
+
+#ifdef __cplusplus
+#include <libmemcached/backtrace.hpp>
+#include <libmemcached/assert.hpp>
+#endif
 
 /* string value */
 struct memcached_continuum_item_st
@@ -141,37 +147,46 @@ memcached_return_t run_distribution(memcached_st *ptr);
 LIBMEMCACHED_LOCAL
 void set_last_disconnected_host(memcached_server_write_instance_st ptr);
 
+#ifdef __cplusplus
 LIBMEMCACHED_LOCAL
-memcached_return_t memcached_key_test(const char * const *keys,
+memcached_return_t memcached_key_test(const memcached_st& memc,
+                                      const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys);
+#endif
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_purge(memcached_server_write_instance_st ptr);
 
 LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_create_with(const memcached_st *memc,
-                                                  memcached_server_write_instance_st host,
-                                                  const char *hostname,
-                                                  in_port_t port,
-                                                  uint32_t weight,
-                                                  memcached_connection_t type);
+  memcached_server_st *__server_create_with(const memcached_st *memc,
+                                            memcached_server_write_instance_st host,
+                                            const char *hostname,
+                                            in_port_t port,
+                                            uint32_t weight,
+                                            memcached_connection_t type);
 
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
 {
-  unlikely (key_length == 0)
+  if (key_length == 0)
+  {
     return MEMCACHED_BAD_KEY_PROVIDED;
+  }
 
   if (binary)
   {
-    unlikely (key_length > 0xffff)
+    if (key_length > 0xffff)
+    {
       return MEMCACHED_BAD_KEY_PROVIDED;
+    }
   }
   else
   {
-    unlikely (key_length >= MEMCACHED_MAX_KEY)
+    if (key_length >= MEMCACHED_MAX_KEY)
+    {
       return MEMCACHED_BAD_KEY_PROVIDED;
+    }
   }
 
   return MEMCACHED_SUCCESS;

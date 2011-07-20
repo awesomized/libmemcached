@@ -122,8 +122,6 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_result_st *result,
                                             memcached_return_t *error)
 {
-  memcached_server_st *server;
-
   memcached_return_t unused;
   if (not error)
     error= &unused;
@@ -159,6 +157,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   }
 
   *error= MEMCACHED_MAXIMUM_RETURN; // We use this to see if we ever go into the loop
+  memcached_server_st *server;
   while ((server= memcached_io_get_readable_server(ptr)))
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];

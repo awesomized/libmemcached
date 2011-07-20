@@ -10,8 +10,7 @@
  * @brief Exception declarations
  */
 
-#ifndef LIBMEMACHED_EXCEPTION_HPP
-#define LIBMEMACHED_EXCEPTION_HPP
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -59,5 +58,3 @@ namespace memcache
   };
 
 } /* namespace libmemcached */
-
-#endif /* LIBMEMACHED_EXCEPTION_HPP */

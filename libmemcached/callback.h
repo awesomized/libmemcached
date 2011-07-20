@@ -50,7 +50,7 @@ extern "C" {
 LIBMEMCACHED_API
 memcached_return_t memcached_callback_set(memcached_st *ptr,
                                           const memcached_callback_t flag,
-                                          void *data);
+                                          const void *data);
 LIBMEMCACHED_API
 void *memcached_callback_get(memcached_st *ptr,
                              const memcached_callback_t flag,

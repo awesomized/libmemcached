@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 /*
   What happens if no servers exist?
@@ -67,6 +66,10 @@ char *memcached_get_by_key(memcached_st *ptr,
                            uint32_t *flags,
                            memcached_return_t *error)
 {
+  memcached_return_t unused;
+  if (error == NULL)
+    error= &unused;
+
   unlikely (ptr->flags.use_udp)
   {
     if (value_length) 
@@ -81,9 +84,9 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   /* Request the key */
   *error= memcached_mget_by_key_real(ptr, group_key, group_key_length,
-                                     (const char * const *)&key,
-                                     &key_length, 1, false);
-  assert(ptr->query_id == query_id +1);
+                                     (const char * const *)&key, &key_length, 
+                                     1, false);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
 
   if (memcached_failed(*error))
@@ -101,7 +104,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   char *value= memcached_fetch(ptr, NULL, NULL,
                                value_length, flags, error);
-  assert(ptr->query_id == query_id +1);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
   /* This is for historical reasons */
   if (*error == MEMCACHED_END)
@@ -153,7 +156,7 @@ char *memcached_get_by_key(memcached_st *ptr,
         }
       }
     }
-    assert(ptr->query_id == query_id +1);
+    assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
     return NULL;
   }
@@ -167,7 +170,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                                      &dummy_error);
   WATCHPOINT_ASSERT(dummy_length == 0);
   WATCHPOINT_ASSERT(dummy_value == 0);
-  assert(ptr->query_id == query_id +1);
+  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 
   return value;
 }
@@ -219,7 +222,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     return memcached_set_error(*ptr, MEMCACHED_NOTFOUND, MEMCACHED_AT, memcached_literal_param("number_of_keys was zero"));
   }
 
-  if (ptr->flags.verify_key && (memcached_key_test(keys, key_length, number_of_keys) == MEMCACHED_BAD_KEY_PROVIDED))
+  if (memcached_failed(memcached_key_test(*ptr, keys, key_length, number_of_keys)))
   {
     return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad key value was provided"));
   }
@@ -227,7 +230,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   bool is_group_key_set= false;
   if (group_key && group_key_length)
   {
-    if (ptr->flags.verify_key and (memcached_key_test((const char * const *)&group_key, &group_key_length, 1) == MEMCACHED_BAD_KEY_PROVIDED))
+    if (memcached_failed(memcached_key_test(*ptr, (const char * const *)&group_key, &group_key_length, 1)))
     {
       return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad group key was provided."));
     }
@@ -296,7 +299,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     struct libmemcached_io_vector_st vector[]=
     {
       { get_command_length, get_command },
-      { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+      { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
       { key_length[x], keys[x] },
       { 1, " " }
     };
@@ -489,14 +492,14 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       return vk;
     }
 
-    request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->prefix_key)));
+    request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-    request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + memcached_array_size(ptr->prefix_key)));
+    request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + memcached_array_size(ptr->_namespace)));
 
     struct libmemcached_io_vector_st vector[]=
     {
       { sizeof(request.bytes), request.bytes },
-      { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+      { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
       { key_length[x], keys[x] }
     };
 
@@ -608,9 +611,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       protocol_binary_request_getk request= {};
       request.message.header.request.magic= PROTOCOL_BINARY_REQ;
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
-      request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->prefix_key)));
+      request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
       request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-      request.message.header.request.bodylen= htonl((uint32_t)(key_length[x] + memcached_array_size(ptr->prefix_key)));
+      request.message.header.request.bodylen= htonl((uint32_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
 
       /*
        * We need to disable buffering to actually know that the request was
@@ -625,7 +628,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       struct libmemcached_io_vector_st vector[]=
       {
         { sizeof(request.bytes), request.bytes },
-        { memcached_array_size(ptr->prefix_key), memcached_array_string(ptr->prefix_key) },
+        { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
         { key_length[x], keys[x] }
       };
 

@@ -10,9 +10,12 @@
   Sample test application.
 */
 
-#include "config.h"
+#include <config.h>
+#include <libtest/test.hpp>
 
-#include "libmemcached/common.h"
+using namespace libtest;
+
+#include <libmemcached/common.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -27,7 +30,6 @@
 #include <time.h>
 
 #include <libtest/server.h>
-#include <libtest/test.hpp>
 
 #define SERVERS_TO_CREATE 5
 
@@ -496,7 +498,7 @@ void get_world(Framework *world)
   world->collections= collection;
 
   world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_fn*)world_destroy;
+  world->_destroy= (test_callback_destroy_fn*)world_destroy;
 
   world->item._startup= (test_callback_fn*)world_test_startup;
   world->item._flush= (test_callback_fn*)world_flush;
@@ -507,5 +509,5 @@ void get_world(Framework *world)
   world->collection_startup= (test_callback_fn*)world_container_startup;
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
-  world->runner= &defualt_libmemcached_runner;
+  world->set_runner(&defualt_libmemcached_runner);
 }

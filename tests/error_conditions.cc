@@ -36,13 +36,12 @@
  */
 
 #include <config.h>
+#include <libtest/test.hpp>
 
 #define BUILDING_LIBMEMCACHED
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/is.h>
-
-#include <libtest/test.hpp>
 
 #include <tests/error_conditions.h>
 

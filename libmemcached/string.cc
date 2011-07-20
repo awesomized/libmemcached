@@ -37,7 +37,6 @@
 
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 inline static memcached_return_t _string_check(memcached_string_st *string, size_t need)
 {
@@ -88,7 +87,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   {
     WATCHPOINT_ASSERT(self->options.is_initialized == false);
 
-    self->options.is_allocated= false;
+    memcached_set_allocated(self, false);
   }
   else
   {
@@ -99,7 +98,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
       return NULL;
     }
 
-    self->options.is_allocated= true;
+    memcached_set_allocated(self, true);
   }
   self->root= memc;
 
@@ -107,7 +106,10 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
 
   if (memcached_failed(_string_check(self, initial_size)))
   {
-    libmemcached_free(memc, self);
+    if (memcached_is_allocated(self))
+    {
+      libmemcached_free(memc, self);
+    }
 
     return NULL;
   }
@@ -228,7 +230,7 @@ const char *memcached_string_value(const memcached_string_st *self)
 
 char *memcached_string_take_value(memcached_string_st *self)
 {
-  assert(self);
+  assert_msg(self, "Invalid memcached_string_st");
   // If we fail at adding the null, we copy and move on
   if (memcached_success(memcached_string_append_null(self)))
   {

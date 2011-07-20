@@ -33,7 +33,7 @@ DESCRIPTION
 system, generic in nature, but intended for use in speeding up dynamic web
 applications by alleviating database load." `http://danga.com/memcached/ <http://danga.com/memcached/>`_
 
-\ **libmemcached**\  is a small, thread-safe client library for the
+:program:`libmemcached` is a small, thread-safe client library for the
 memcached protocol. The code has all been written to allow
 for both web and embedded usage. It handles the work behind routing
 individual keys to specific servers specified by the developer (and values are
@@ -41,16 +41,17 @@ matched based on server order as supplied by the user). It implements
 a modular and consistent method of object distribution.
 
 There are multiple implemented routing and hashing methods. See the
-memcached_behavior_set() manpage for more information.
+:c:func:`memcached_behavior_set()` manpage for more information.
 
-All operations are performed against a :c:type:`memcached_st`  structure.
+All operations are performed against a :c:type:`memcached_st` structure.
 These structures can either be dynamically allocated or statically
-allocated and then initialized by memcached_create(). Functions have been
-written in order to encapsulate the :c:type:`memcached_st` . It is not
+allocated and then initialized by :c:func:`memcached_create()`. Functions have 
+been written in order to encapsulate the :c:type:`memcached_st`. It is not
 recommended that you operate directly against the structure.
 
-Nearly all functions return a :c:type:`memcached_return_t`\  value.
-This value can be translated to a printable string with memcached_strerror(3).
+Nearly all functions return a :c:type:`memcached_return_t` value.
+This value can be translated to a printable string with 
+:c:type:`memcached_strerror()`.
 
 Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
 
@@ -58,7 +59,7 @@ Group keys can be optionally used to group sets of objects with servers.
 
 Namespaces are supported, and can be used to partition caches so that multiple applications can use the same memcached servers.
 
-:c:type:`memcached_st`  structures are thread-safe, but each thread must
+:c:type:`memcached_st` structures are thread-safe, but each thread must
 contain its own structure (that is, if you want to share these among
 threads you must provide your own locking). No global variables are
 used in this library.
@@ -70,7 +71,7 @@ PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 
-Some features of the library must be enabled through memcached_behavior_set().
+Some features of the library must be enabled through :c:func:`memcached_behavior_set()`.
 
 Hope you enjoy it!
 
@@ -131,10 +132,9 @@ THREADS AND PROCESSES
 
 
 When using threads or forked processes it is important to keep one instance
-of :c:type:`memcached_st`  per process or thread. Without creating your own locking
-structures you can not share a single :c:type:`memcached_st`. However, you can call
-memcached_quit(3) on a :c:type:`memcached_st`  and then use the resulting cloned
-structure.
+of :c:type:`memcached_st` per process or thread. Without creating your own 
+locking structures you can not share a single :c:type:`memcached_st`. However, 
+you can call :c:func:`memcached_quit()` on a :c:type:`memcached_st` and then use the resulting cloned structure.
 
 
 ----

@@ -12,6 +12,8 @@
 
 #include <libhashkit/hashkit.hpp>
 
+using namespace libtest;
+
 #include "hash_results.h"
 
 static test_return_t exists_test(void *obj)
@@ -61,13 +63,10 @@ static test_return_t assign_test(void *obj)
   return TEST_SUCCESS;
 }
 
-static test_return_t digest_test(void *obj)
+static test_return_t digest_test(void *)
 {
   Hashkit hashk;
-  uint32_t value;
-  (void)obj;
-
-  value= hashk.digest("Foo", sizeof("Foo"));
+  test_true(hashk.digest("Foo", sizeof("Foo")));
 
   return TEST_SUCCESS;
 }

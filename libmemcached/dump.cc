@@ -31,7 +31,8 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
 
       if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
       {
-        return MEMCACHED_FAILURE;
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                                   memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
       }
 
       rc= memcached_do(instance, buffer, (size_t)send_length, true);

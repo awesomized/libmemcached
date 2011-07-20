@@ -20,17 +20,17 @@
 
 memcached_return_t memcached_callback_set(memcached_st *ptr,
                                           const memcached_callback_t flag,
-                                          void *data)
+                                          const void *data)
 {
   switch (flag)
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      return memcached_set_prefix_key(ptr, (char*)data, data ? strlen((char*)data) : 0);
+      return memcached_set_namespace(ptr, (char*)data, data ? strlen((char*)data) : 0);
     }
   case MEMCACHED_CALLBACK_USER_DATA:
     {
-      ptr->user_data= data;
+      ptr->user_data= const_cast<void *>(data);
       break;
     }
   case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
@@ -78,7 +78,6 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
       break;
     }
   case MEMCACHED_CALLBACK_MAX:
-  default:
     return MEMCACHED_FAILURE;
   }
 
@@ -98,10 +97,10 @@ void *memcached_callback_get(memcached_st *ptr,
   {
   case MEMCACHED_CALLBACK_PREFIX_KEY:
     {
-      if (ptr->prefix_key)
+      if (ptr->_namespace)
       {
         *error= MEMCACHED_SUCCESS;
-        return (void *)memcached_array_string(ptr->prefix_key);
+        return (void *)memcached_array_string(ptr->_namespace);
       }
       else
       {

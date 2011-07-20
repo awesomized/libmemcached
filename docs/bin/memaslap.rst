@@ -18,12 +18,14 @@ DESCRIPTION
 -----------
 
 
-memaslap is a load generation and benchmark tool for :program:`memcached()`
-servers. It generates configurable workload such as threads, concurrencies, connections, run time, overwrite, miss rate, key size, value size, get/set proportion, expected throughput, and so on. Furthermore, it also testss data
+:program:`memaslap` is a load generation and benchmark tool for memcached
+servers. It generates configurable workload such as threads, concurrencies, 
+connections, run time, overwrite, miss rate, key size, value size, get/set 
+proportion, expected throughput, and so on. Furthermore, it also testss data
 verification, expire-time verification, UDP, binary protocol, facebook test,
 replication test, multi-get and reconnection, etc.
 
-Memslap manages network connections like memcached with
+Memaslap manages network connections like memcached with
 libevent. Each thread of memaslap is bound with a CPU core, all
 the threads don't communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
@@ -194,9 +196,9 @@ ________________________________________________________________________________
 
 Because each thread is self-governed, memaslap can assign
 different threads to handle different memcached servers. This is just one of
-the ways in which memaslap testss multiple servers. The only
+the ways in which memaslap tests multiple servers. The only
 limitation is that the number of servers cannot be greater than the number
-of threads. The other way to tests multiple servers is for replication
+of threads. The other way to test multiple servers is for replication
 test. Each concurrency has one socket connection to each memcached server.
 For the implementation, memaslap can set some objects to one
 memcached server, and get these objects from the other servers.
@@ -208,7 +210,7 @@ pack and send the commands together.
 Memslap testss both the ASCII protocol and binary protocol,
 but it runs on the ASCII protocol by default. 
 Memslap by default runs on the TCP protocol, but it also
-testss UDP. Because UDP is unreliable, dropped packages and out-of-order
+tests UDP. Because UDP is unreliable, dropped packages and out-of-order
 packages may occur. Memslap creates a memory buffer to handle
 these problems. Memslap tries to read all the response data of
 one command from the server and reorders the response data. If some packages
@@ -314,7 +316,7 @@ number of them. The default number of threads is 1; the default number of
 concurrency is 16. The user can use “—threads” and “--concurrency” to
 specify these variables.
 
-If the system testss setting CPU affinity and the number of threads
+If the system tests setting CPU affinity and the number of threads
 specified by the user is greater than 1, memaslap will try to
 bind each thread to a different CPU core. So if you want to get the best
 performance memaslap, it is better to specify the number of

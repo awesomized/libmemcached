@@ -41,7 +41,7 @@ struct memcached_stat_st {
   unsigned long connection_structures;
   unsigned long curr_connections;
   unsigned long curr_items;
-  unsigned long pid;
+  pid_t pid;
   unsigned long pointer_size;
   unsigned long rusage_system_microseconds;
   unsigned long rusage_system_seconds;

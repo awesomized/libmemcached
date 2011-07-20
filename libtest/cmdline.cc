@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  uTest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,15 +34,31 @@
  *
  */
 
-#pragma once
+#include <libtest/common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <libtest/cmdline.h>
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_prefix_key(memcached_st *self, const char *str, size_t length);
+#include <cstdlib>
+#include <string>
+#include <sstream>
 
-#ifdef __cplusplus
+bool exec_cmdline(const std::string& executable, const char *args[])
+{
+  std::stringstream arg_buffer;
+
+  arg_buffer << "./libtool --mode=execute ";
+
+  arg_buffer << executable;
+  for (const char **ptr= args; *ptr; ++ptr)
+  {
+    arg_buffer << " " << *ptr;
+  }
+
+  arg_buffer << " > /dev/null 2>&1";
+  if (system(arg_buffer.str().c_str()) == -1)
+  {
+    return false;
+  }
+
+  return true;
 }
-#endif

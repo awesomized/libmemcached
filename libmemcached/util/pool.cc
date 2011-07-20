@@ -248,7 +248,7 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
     return NULL;
   }
 
-  if ((*rc= mutex_enter(&pool->mutex)) != MEMCACHED_SUCCESS)
+  if (memcached_failed((*rc= mutex_enter(&pool->mutex))))
   {
     return NULL;
   }

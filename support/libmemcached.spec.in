@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 
 %description
-libmemcached is a C client library to the memcached server
+libmemcached, http://libmemcached.org/, is a C client library to the memcached server
 (http://danga.com/memcached). It has been designed to be light on memory
 usage, and provide full access to server side methods.
 
@@ -45,7 +45,7 @@ you will need to install %{name}-devel.
 %setup -q
 
 %{__mkdir} examples
-%{__cp} tests/*.{c,cpp,h} examples/
+%{__cp} tests/*.{cc,cpp,h} examples/
 
 
 %build

@@ -2,6 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 # includes append to these:
 SUFFIXES =
+.PHONY =
 PHONY =
 TESTS =
 CLEANFILES =
@@ -43,6 +44,7 @@ include tests/include.am
 include example/include.am
 include support/include.am
 include poll/include.am
+include util/include.am
 include win32/include.am
 include docs/include.am
 
@@ -60,7 +62,7 @@ fedora:
 	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
-generic:
+generic: support/libmemcached.spec
 	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
 	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/

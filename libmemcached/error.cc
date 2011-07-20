@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <cassert>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -50,12 +49,31 @@ struct memcached_error_t
   char message[MAX_ERROR_LENGTH];
 };
 
+static void _set(memcached_server_st& server, memcached_st& memc)
+{
+  if (server.error_messages && server.error_messages->query_id != server.root->query_id)
+  {
+    memcached_error_free(server);
+  }
+
+  if (memc.error_messages == NULL)
+    return;
+
+  memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
+  if (not error) // Bad business if this happens
+    return;
+
+  memcpy(error, memc.error_messages, sizeof(memcached_error_t));
+  error->next= server.error_messages;
+  server.error_messages= error;
+}
+
 static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t &rc, const char *at, int local_errno= 0)
 {
   (void)at;
   if (memc.error_messages && memc.error_messages->query_id != memc.query_id)
   {
-    memcached_error_free(&memc);
+    memcached_error_free(memc);
   }
 
   // For memory allocation we use our error since it is a bit more specific
@@ -147,21 +165,22 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   memcached_string_t tmp= { str, length };
   return memcached_set_error(memc, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
 
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -172,7 +191,8 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -196,13 +216,15 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
     return rc;
 
   _set(*self.root, &error_host, rc, at);
+  _set(self, (*self.root));
 
   return rc;
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -215,13 +237,14 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
     return rc;
 
   _set(*self.root, &error_host, rc, at);
+  _set(self, *self.root);
 
   return rc;
 }
 
 memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc, const char *at)
 {
-  assert(rc != MEMCACHED_ERRNO);
+  assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_success(rc))
     return MEMCACHED_SUCCESS;
 
@@ -285,13 +308,12 @@ memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errn
 
   memcached_string_t error_host= { hostname_port_message, size };
 
-  self.cached_errno= local_errno; // Store in the actual server
-
   memcached_return_t rc= MEMCACHED_ERRNO;
   if (not self.root)
     return rc;
 
   _set(*self.root, &error_host, rc, at, local_errno);
+  _set(self, (*self.root));
 
   return rc;
 }
@@ -307,13 +329,12 @@ memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errn
 
   memcached_string_t error_host= { hostname_port_message, size };
 
-  self.cached_errno= local_errno; // Store in the actual server
-
   memcached_return_t rc= MEMCACHED_ERRNO;
   if (not self.root)
     return rc;
 
   _set(*self.root, &error_host, rc, at, local_errno);
+  _set(self, (*self.root));
 
   return rc;
 }
@@ -360,13 +381,16 @@ static void _error_free(memcached_error_t *error)
   }
 }
 
-void memcached_error_free(memcached_st *self)
+void memcached_error_free(memcached_st& self)
 {
-  if (not self)
-    return;
+  _error_free(self.error_messages);
+  self.error_messages= NULL;
+}
 
-  _error_free(self->error_messages);
-  self->error_messages= NULL;
+void memcached_error_free(memcached_server_st& self)
+{
+  _error_free(self.error_messages);
+  self.error_messages= NULL;
 }
 
 const char *memcached_last_error_message(memcached_st *memc)
@@ -416,4 +440,41 @@ int memcached_last_error_errno(memcached_st *memc)
     return 0;
 
   return memc->error_messages->local_errno;
+}
+
+const char *memcached_server_error(memcached_server_instance_st server)
+{
+  if (not server)
+    return memcached_strerror(server->root, MEMCACHED_INVALID_ARGUMENTS);
+
+  if (not server->error_messages)
+    return memcached_strerror(server->root, MEMCACHED_SUCCESS);
+
+  if (not server->error_messages->size)
+    return memcached_strerror(server->root, server->error_messages->rc);
+
+  return server->error_messages->message;
+}
+
+
+memcached_error_t *memcached_error_copy(const memcached_server_st& server)
+{
+  if (not server.error_messages)
+    return NULL;
+
+  memcached_error_t *error= (memcached_error_t *)libmemcached_malloc(server.root, sizeof(memcached_error_t));
+  memcpy(error, server.error_messages, sizeof(memcached_error_t));
+  error->next= NULL;
+
+  return error;
+}
+
+memcached_return_t memcached_server_error_return(memcached_server_instance_st ptr)
+{
+  if (ptr and ptr->error_messages)
+  {
+    return ptr->error_messages->rc;
+  }
+
+  return MEMCACHED_FAILURE;
 }
