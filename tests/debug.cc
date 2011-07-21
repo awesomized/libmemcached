@@ -44,6 +44,7 @@ using namespace libtest;
 
 #include <libmemcached/memcached.h>
 #include <tests/debug.h>
+#include <tests/print.h>
 
 /* Dump each server's keys */
 static memcached_return_t print_keys_callback(const memcached_st *,
@@ -178,4 +179,11 @@ size_t confirm_key_count(memcached_st *memc)
 
   memcached_free(clone);
   return count;
+}
+
+void print_servers(memcached_st *memc)
+{
+  memcached_server_fn callbacks[1];
+  callbacks[0]= server_print_callback;
+  memcached_server_cursor(memc, callbacks, NULL,  1);
 }

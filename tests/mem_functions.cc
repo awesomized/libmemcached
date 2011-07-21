@@ -6540,4 +6540,6 @@ void get_world(Framework *world)
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
   world->set_runner(&defualt_libmemcached_runner);
+
+  world->set_socket();
 }

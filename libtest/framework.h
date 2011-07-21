@@ -153,6 +153,11 @@ public:
 
   test_return_t on_error(const enum test_return_t, void *);
 
+  void set_socket()
+  {
+    _servers.set_socket();
+  }
+  
   /**
     Runner represents the callers for the tests. If not implemented we will use
     a set of default implementations.
@@ -176,5 +181,6 @@ public:
 private:
   Framework& operator=(const Framework&);
   libtest::server_startup_st _servers;
+  bool _socket;
   void *_creators_ptr;
 };
