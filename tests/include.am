@@ -96,6 +96,8 @@ check_PROGRAMS+= tests/testplus
 
 tests_atomsmasher_SOURCES= \
 			   tests/atomsmasher.cc \
+			   tests/debug.cc \
+			   tests/print.cc \
 			   clients/generator.cc \
 			   clients/execute.cc
 tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
@@ -326,7 +328,7 @@ valgrind-hashplus: tests/hashplus
 	$(VALGRIND_COMMAND) $(HASHPLUS_COMMAND)
 
 PHONY += valgrind
-valgrind: valgrind-cycle valgrind-mem valgrind-atom valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
+valgrind: valgrind-cycle valgrind-mem valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
 
 helgrind-cycle: tests/cycle
 	$(HELGRIND_COMMAND)  $(CYCLE_COMMAND)
@@ -350,7 +352,7 @@ helgrind-hashplus: tests/hashplus
 	$(HELGRIND_COMMAND) $(HASHPLUS_COMMAND)
 
 .PHONY += helgrind
-helgrind: helgrind-cycle helgrind-mem helgrind-atom helgrind-udp helgrind-plus helgrind-hash helgrind-hashplus
+helgrind: helgrind-cycle helgrind-mem helgrind-udp helgrind-plus helgrind-hash helgrind-hashplus
 
 PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out
