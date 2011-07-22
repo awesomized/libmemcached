@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
- *  Libmemcached Scanner and Parser
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 DataDifferental, http://datadifferential.com
  * 
@@ -21,9 +21,9 @@
 %top{
 
 #include <libmemcached/common.h>
-#include <libmemcached/options/context.h>
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/symbol.h>
+#include <libmemcached/csl/context.h>
+#include <libmemcached/csl/parser.h>
+#include <libmemcached/csl/symbol.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wsign-compare"
@@ -66,7 +66,7 @@
 %option debug
 %option nounput
 %option noyywrap
-%option outfile="libmemcached/options/scanner.cc" header-file="libmemcached/options/scanner.h"
+%option outfile="libmemcached/csl/scanner.cc" header-file="libmemcached/csl/scanner.h"
 %option perf-report
 %option prefix="config_"
 %option reentrant

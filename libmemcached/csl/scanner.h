@@ -2,13 +2,13 @@
 #define config_HEADER_H 1
 #define config_IN_HEADER 1
 
-#line 6 "libmemcached/options/scanner.h"
-#line 22 "libmemcached/options/scanner.l"
+#line 6 "libmemcached/csl/scanner.h"
+#line 22 "libmemcached/csl/scanner.l"
 
 #include <libmemcached/common.h>
-#include <libmemcached/options/context.h>
-#include <libmemcached/options/parser.h>
-#include <libmemcached/options/symbol.h>
+#include <libmemcached/csl/context.h>
+#include <libmemcached/csl/parser.h>
+#include <libmemcached/csl/symbol.h>
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wsign-compare"
@@ -19,7 +19,7 @@
 
 
 
-#line 23 "libmemcached/options/scanner.h"
+#line 23 "libmemcached/csl/scanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -471,9 +471,9 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 199 "libmemcached/options/scanner.l"
+#line 199 "libmemcached/csl/scanner.l"
 
 
-#line 478 "libmemcached/options/scanner.h"
+#line 478 "libmemcached/csl/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */

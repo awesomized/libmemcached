@@ -1,6 +1,6 @@
 # vim:ft=automake
 #
-#  Libmemcached Scanner and Parser
+#  Configure Scripting Language
 #
 #  Copyright (C) 2011 DataDifferental, http://datadifferential.com
 #  
@@ -18,15 +18,15 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 EXTRA_DIST+= \
-	     libmemcached/options/parser.yy \
-	     libmemcached/options/scanner.l
+	     libmemcached/csl/parser.yy \
+	     libmemcached/csl/scanner.l
 
-libmemcached/options/parser.h: libmemcached/options/parser.cc
+libmemcached/csl/parser.h: libmemcached/csl/parser.cc
 
-libmemcached/options/parser.cc: libmemcached/options/parser.yy libmemcached/options/scanner.l libmemcached/options/scanner.h
+libmemcached/csl/parser.cc: libmemcached/csl/parser.yy libmemcached/csl/scanner.l libmemcached/csl/scanner.h
 	$(AM_V_YACC)$(am__skipyacc) $(YACC) $(YLFLAGS) $(AM_YFLAGS) -o $@ $<
 
-libmemcached/options/scanner.h: libmemcached/options/scanner.cc
+libmemcached/csl/scanner.h: libmemcached/csl/scanner.cc
 
-libmemcached/options/scanner.cc: libmemcached/options/scanner.l libmemcached/options/parser.yy
+libmemcached/csl/scanner.cc: libmemcached/csl/scanner.l libmemcached/csl/parser.yy
 	$(AM_V_GEN)$(LEX) $<

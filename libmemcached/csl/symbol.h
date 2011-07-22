@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -39,7 +39,7 @@
 
 #include <libmemcached/basic_string.h>
 #include <libmemcached/constants.h>
-#include <libmemcached/options/server.h>
+#include <libmemcached/csl/server.h>
 
 union YYSTYPE
 {

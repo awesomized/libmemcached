@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
- *  Libmemcached Scanner and Parser
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 DataDifferental, http://datadifferential.com
  *  
@@ -22,8 +22,8 @@
 %debug
 %defines
 %expect 0
-%output "libmemcached/options/parser.cc"
-%defines "libmemcached/options/parser.h"
+%output "libmemcached/csl/parser.cc"
+%defines "libmemcached/csl/parser.h"
 %lex-param { yyscan_t *scanner }
 %name-prefix="config_"
 %parse-param { Context *context }
@@ -38,9 +38,9 @@
 #include <libmemcached/common.h>
 #include <libmemcached/options.hpp>
 
-#include <libmemcached/options/context.h>
-#include <libmemcached/options/symbol.h>
-#include <libmemcached/options/scanner.h>
+#include <libmemcached/csl/context.h>
+#include <libmemcached/csl/symbol.h>
+#include <libmemcached/csl/scanner.h>
 
 #include <iostream>
 
