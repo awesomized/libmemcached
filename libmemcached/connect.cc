@@ -78,7 +78,6 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
       }
 
     default: // A real error occurred and we need to completely bail
-      WATCHPOINT_ERRNO(get_socket_errno());
       switch (get_socket_errno())
       {
 #ifdef TARGET_OS_LINUX
@@ -107,7 +106,7 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
           memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         }
 
-        WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+        assert_msg(ptr->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
         (void)closesocket(ptr->fd);
         ptr->fd= INVALID_SOCKET;
         ptr->state= MEMCACHED_SERVER_STATE_NEW;
@@ -123,7 +122,6 @@ static memcached_return_t connect_poll(memcached_server_st *ptr)
 
 static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
-  WATCHPOINT_ASSERT(not server->address_info); // We cover the case where a programming mistake has been made.
   if (server->address_info)
   {
     freeaddrinfo(server->address_info);
@@ -175,8 +173,6 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
 
   default:
     {
-      WATCHPOINT_STRING(server->hostname);
-      WATCHPOINT_STRING(gai_strerror(errcode));
       return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
@@ -225,10 +221,12 @@ static inline void set_socket_nonblocking(memcached_server_st *ptr)
 
 static void set_socket_options(memcached_server_st *ptr)
 {
-  WATCHPOINT_ASSERT(ptr->fd != -1);
+  assert_msg(ptr->fd != -1, "invalid socket was passed to set_socket_options()");
 
   if (ptr->type == MEMCACHED_CONNECTION_UDP)
+  {
     return;
+  }
 
 #ifdef HAVE_SNDTIMEO
   if (ptr->root->snd_timeout)
@@ -407,7 +405,9 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     while (--counter)
     {
       if ((rc= set_hostinfo(ptr)) != MEMCACHED_TIMEOUT)
+      {
         break;
+      }
 
 #ifndef WIN32
       struct timespec dream, rem;
@@ -529,11 +529,6 @@ void set_last_disconnected_host(memcached_server_write_instance_st self)
   // const_cast
   memcached_st *root= (memcached_st *)self->root;
 
-#if 0
-  WATCHPOINT_STRING(self->hostname);
-  WATCHPOINT_NUMBER(self->port);
-  WATCHPOINT_ERRNO(self->cached_errno);
-#endif
   memcached_server_free(root->last_disconnected_server);
   root->last_disconnected_server= memcached_server_clone(NULL, self);
 }
