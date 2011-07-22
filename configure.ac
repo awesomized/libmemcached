@@ -18,9 +18,9 @@ AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
 #shared library versioning
-MEMCACHED_UTIL_LIBRARY_VERSION=2:1:1
+MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=8:1:1
+MEMCACHED_LIBRARY_VERSION=8:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
