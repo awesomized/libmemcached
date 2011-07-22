@@ -44,3 +44,5 @@ test_return_t confirm_keys_dont_exist(memcached_st *memc, const char * const *ke
 test_return_t print_keys_by_server(memcached_st *memc);
 
 size_t confirm_key_count(memcached_st *memc);
+
+void print_servers(memcached_st *);

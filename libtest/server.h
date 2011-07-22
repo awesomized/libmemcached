@@ -171,6 +171,7 @@ class server_startup_st
 {
 private:
   std::string server_list;
+  bool _socket;
 
 public:
 
@@ -178,6 +179,7 @@ public:
   std::vector<Server *> servers;
 
   server_startup_st() :
+    _socket(false),
     udp(0)
   { }
 
@@ -193,6 +195,17 @@ public:
   bool is_debug() const;
   bool is_helgrind() const;
   bool is_valgrind() const;
+
+  bool socket()
+  {
+    return _socket;
+  }
+
+  void set_socket()
+  {
+    _socket= true;
+  }
+
 
   void shutdown(bool remove= false);
   void push_server(Server *);

@@ -80,7 +80,9 @@ static void sort_hosts(memcached_st *ptr)
 memcached_return_t run_distribution(memcached_st *ptr)
 {
   if (ptr->flags.use_sort_hosts)
+  {
     sort_hosts(ptr);
+  }
 
   switch (ptr->distribution)
   {
@@ -89,15 +91,18 @@ memcached_return_t run_distribution(memcached_st *ptr)
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
     return update_continuum(ptr);
+
   case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
   case MEMCACHED_DISTRIBUTION_MODULA:
     break;
+
   case MEMCACHED_DISTRIBUTION_RANDOM:
     srandom((uint32_t) time(NULL));
     break;
+
   case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
   default:
-    WATCHPOINT_ASSERT(0); /* We have added a distribution without extending the logic */
+    assert_msg(0, "Invalid distribution type passed to run_distribution()");
   }
 
   return MEMCACHED_SUCCESS;
@@ -252,9 +257,6 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 #ifdef DEBUG
         printf("update_continuum: key is %s\n", sort_host);
 #endif
-
-        WATCHPOINT_ASSERT(sort_host_length);
-
         if (is_ketama_weighted)
         {
           for (uint32_t x= 0; x < pointer_per_hash; x++)
@@ -302,8 +304,6 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                      memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         }
-
-        WATCHPOINT_ASSERT(sort_host_length);
 
         if (is_ketama_weighted)
         {

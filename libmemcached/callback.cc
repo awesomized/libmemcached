@@ -90,8 +90,10 @@ void *memcached_callback_get(memcached_st *ptr,
 {
   memcached_return_t local_error;
 
-  if (!error)
+  if (error == NULL)
+  {
     error = &local_error;
+  }
 
   switch (flag)
   {
@@ -152,7 +154,7 @@ void *memcached_callback_get(memcached_st *ptr,
     }
   case MEMCACHED_CALLBACK_MAX:
   default:
-    WATCHPOINT_ASSERT(0);
+    assert_msg(0, "Invalid behavior passed to memcached_behavior_set()");
     *error= MEMCACHED_FAILURE;
     return NULL;
   }

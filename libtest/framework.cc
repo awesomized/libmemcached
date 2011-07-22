@@ -57,6 +57,7 @@ Framework::Framework() :
   collection_shutdown(_default_callback),
   _on_error(NULL),
   _runner(NULL),
+  _socket(false),
   _creators_ptr(NULL)
 {
 }

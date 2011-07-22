@@ -33,6 +33,8 @@
 
 #include <libtest/server.h>
 
+#include <tests/debug.h>
+
 using namespace libtest;
 
 /* Number of items generated for tests */
@@ -46,17 +48,15 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-static test_return_t cleanup_pairs(memcached_st *memc)
+static test_return_t cleanup_pairs(memcached_st *)
 {
-  (void)memc;
   pairs_free(global_pairs);
 
   return TEST_SUCCESS;
 }
 
-static test_return_t generate_pairs(memcached_st *memc)
+static test_return_t generate_pairs(memcached_st *)
 {
-  (void)memc;
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
 
@@ -71,14 +71,14 @@ static test_return_t generate_pairs(memcached_st *memc)
 
 static test_return_t drizzle(memcached_st *memc)
 {
-  memcached_return_t rc;
-  char *return_value;
-  size_t return_value_length;
-  uint32_t flags;
-
 infinite:
   for (size_t x= 0; x < TEST_COUNTER; x++)
   {
+    memcached_return_t rc;
+    char *return_value;
+    size_t return_value_length;
+    uint32_t flags;
+
     uint32_t test_bit;
     uint8_t which;
 
@@ -119,7 +119,9 @@ infinite:
   }
 
   if (getenv("MEMCACHED_ATOM_BURIN_IN"))
+  {
     goto infinite;
+  }
 
   return TEST_SUCCESS;
 }
@@ -137,13 +139,10 @@ static test_return_t pre_nonblock(memcached_st *memc)
 */
 static test_return_t add_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   const char *key= "foo";
   const char *value= "when we sanitize";
-  unsigned long long setting_value;
 
-  setting_value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK);
-
+  memcached_return_t rc;
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
@@ -153,8 +152,13 @@ static test_return_t add_test(memcached_st *memc)
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
 
+  if (rc == MEMCACHED_CONNECTION_FAILURE)
+  {
+    print_servers(memc);
+  }
+
   /* Too many broken OS'es have broken loopback in async, so we can't be sure of the result */
-  if (setting_value)
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NO_BLOCK))
   {
     test_true(rc == MEMCACHED_NOTSTORED or rc == MEMCACHED_STORED);
   }
@@ -172,18 +176,19 @@ static test_return_t add_test(memcached_st *memc)
  */
 static test_return_t many_adds(memcached_st *memc)
 {
+  test_true(memc);
   for (size_t x= 0; x < TEST_COUNTER; x++)
   {
-    add_test(memc);
+    test_compare_got(TEST_SUCCESS, add_test(memc), x);
   }
   return TEST_SUCCESS;
 }
 
 test_st smash_tests[] ={
-  {"generate_pairs", 1, (test_callback_fn*)generate_pairs },
-  {"drizzle", 1, (test_callback_fn*)drizzle },
-  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
-  {"many_adds", 1, (test_callback_fn*)many_adds },
+  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
+  {"drizzle", true, (test_callback_fn*)drizzle },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
+  {"many_adds", true, (test_callback_fn*)many_adds },
   {0, 0, 0}
 };
 
@@ -197,9 +202,8 @@ struct benchmark_state_st
   memcached_st *clone;
 } benchmark_state;
 
-static test_return_t memcached_create_benchmark(memcached_st *memc)
+static test_return_t memcached_create_benchmark(memcached_st *)
 {
-  (void)memc;
   benchmark_state.create_init= true;
 
   for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
@@ -228,9 +232,8 @@ static test_return_t memcached_clone_benchmark(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t pre_allocate(memcached_st *memc)
+static test_return_t pre_allocate(memcached_st *)
 {
-  (void)memc;
   memset(&benchmark_state, 0, sizeof(benchmark_state));
 
   benchmark_state.create= (memcached_st *)calloc(BENCHMARK_TEST_LOOP, sizeof(memcached_st));
@@ -241,16 +244,19 @@ static test_return_t pre_allocate(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t post_allocate(memcached_st *memc)
+static test_return_t post_allocate(memcached_st *)
 {
-  (void)memc;
   for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
     if (benchmark_state.create_init)
+    {
       memcached_free(&benchmark_state.create[x]);
+    }
 
     if (benchmark_state.clone_init)
+    {
       memcached_free(&benchmark_state.clone[x]);
+    }
   }
 
   free(benchmark_state.create);

@@ -111,6 +111,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit/digest.h
 %{_includedir}/libhashkit/function.h
 %{_includedir}/libhashkit/hashkit.h
+%{_includedir}/libhashkit/hashkit.hpp
+%{_includedir}/libhashkit/str_algorithm.h
 %{_includedir}/libhashkit/strerror.h
 %{_includedir}/libhashkit/types.h
 %{_includedir}/libhashkit/visibility.h
@@ -125,8 +127,6 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/callback.h
 %{_includedir}/libmemcached/configure.h
 %{_includedir}/libmemcached/constants.h
-%{_includedir}/libhashkit/str_algorithm.h
-%{_includedir}/libmemcached/memcached/vbucket.h
 %{_includedir}/libmemcached/delete.h
 %{_includedir}/libmemcached/dump.h
 %{_includedir}/libmemcached/error.h
@@ -139,11 +139,12 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/memcached.h
 %{_includedir}/libmemcached/memcached.hpp
 %{_includedir}/libmemcached/memcached/protocol_binary.h
+%{_includedir}/libmemcached/memcached/vbucket.h
 %{_includedir}/libmemcached/memcached_util.h
+%{_includedir}/libmemcached/namespace.h
 %{_includedir}/libmemcached/options.h
 %{_includedir}/libmemcached/parse.h
 %{_includedir}/libmemcached/platform.h
-%{_includedir}/libmemcached/prefix_key.h
 %{_includedir}/libmemcached/protocol/cache.h
 %{_includedir}/libmemcached/protocol/callback.h
 %{_includedir}/libmemcached/protocol_handler.h
@@ -160,6 +161,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/types.h
 %{_includedir}/libmemcached/util.h
 %{_includedir}/libmemcached/util/flush.h
+%{_includedir}/libmemcached/util/pid.h
 %{_includedir}/libmemcached/util/ping.h
 %{_includedir}/libmemcached/util/pool.h
 %{_includedir}/libmemcached/util/version.h

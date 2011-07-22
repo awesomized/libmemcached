@@ -59,11 +59,14 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     }
   }
 
-  const char *argv[1]= { "memcached" };
-  if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+  if (servers.socket())
   {
-    error= TEST_FAILURE;
-    return NULL;
+    const char *argv[1]= { "memcached" };
+    if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+    {
+      error= TEST_FAILURE;
+      return NULL;
+    }
   }
 
 
