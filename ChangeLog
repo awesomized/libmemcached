@@ -1,7 +1,7 @@
-0.51
-
+0.51 Thu Jul 21 11:08:58 PDT 2011
   * memcached_callback_set() now takes its data argument as const
-
+  * Update to tests.
+  * Fix in parser for port number.
 
 0.50 Mon Jun 20 10:36:57 PDT 2011
  * Updates to C++ interface 
