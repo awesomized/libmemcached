@@ -281,7 +281,9 @@ void memcached_server_error_reset(memcached_server_st *self)
 {
   WATCHPOINT_ASSERT(self);
   if (not self)
+  {
     return;
+  }
 
   memcached_error_free(*self);
 }

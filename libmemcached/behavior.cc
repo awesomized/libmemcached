@@ -239,7 +239,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_MAX:
   default:
     /* Shouldn't get here */
-    WATCHPOINT_ASSERT(0);
+    assert_msg(0, "Invalid behavior passed to memcached_behavior_set()");
     return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                memcached_literal_param("Invalid behavior passed to memcached_behavior_set()"));
   }
@@ -441,7 +441,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_MAX:
   default:
-    WATCHPOINT_ASSERT(0); /* Programming mistake if it gets this far */
+    assert_msg(0, "Invalid behavior passed to memcached_behavior_set()");
     return 0;
   }
 
