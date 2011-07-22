@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DUMP" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_DUMP" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_dump \- libmemcached Documentation
 .
@@ -47,9 +47,9 @@ Get a list of keys found on memcached servers
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-memcached_dump() is used to get a list of keys found in memcached(1) servers.
-Because memcached(1) does not guarentee to dump all keys you can not assume
-you have fetched all keys from the server. The function takes an array
+\fBmemcached_dump()\fP is used to get a list of keys found in memcached(1)
+servers. Because memcached(1) does not guarentee to dump all keys you can not
+assume you have fetched all keys from the server. The function takes an array
 of callbacks that it will use to execute on keys as they are found.
 .sp
 Currently the binary protocol is not testsed.
@@ -57,7 +57,8 @@ Currently the binary protocol is not testsed.
 .sp
 A value of type \fBmemcached_return_t\fP is returned
 On success that value will be \fBMEMCACHED_SUCCESS\fP.
-Use memcached_strerror() to translate this value to a printable string.
+Use \fBmemcached_strerror()\fP to translate this value to a printable
+string.
 .SH HOME
 .sp
 To find out more information please check:

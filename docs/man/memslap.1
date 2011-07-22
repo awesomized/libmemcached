@@ -1,4 +1,4 @@
-.TH "MEMSLAP" "1" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMSLAP" "1" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memslap \- libmemcached Documentation
 .
@@ -31,22 +31,38 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructeredText.
 .
 .SH SYNOPSIS
-.INDENT 0.0
-.TP
-.B program
-.
-\fImemslap\fP
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-\-help
-.UNINDENT
+.sp
+memslap [options]
 .SH DESCRIPTION
 .sp
 \fBmemslap\fP is a load generation and benchmark tool for memcached(1)
 servers. It generates configurable workload such as threads, concurrencies, connections, run time, overwrite, miss rate, key size, value size, get/set proportion, expected throughput, and so on.
+.SH OPTIONS
 .sp
-You can specify servers via the \fB\-\-servers\fP option or via the environment variable \fBMEMCACHED_SERVERS\fP.
+You can specify servers via the option:
+.INDENT 0.0
+.TP
+.B \-\-servers
+.UNINDENT
+.sp
+or via the environment variable:
+.INDENT 0.0
+.TP
+.B \(gaMEMCACHED_SERVERS\(ga
+.UNINDENT
+.sp
+For a full list of operations run the tool with:
+.INDENT 0.0
+.TP
+.B \-\-help
+.UNINDENT
+.SH HOME
+.sp
+To find out more information please check:
+\(aq\fI\%http://libmemcached.org/\fP <\fI\%http://libmemcached.org/\fP>\(aq_
+.SH AUTHOR
+.sp
+Brian Aker, <\fI\%brian@tangent.org\fP>
 .SH SEE ALSO
 .sp
 \fImemcached(1)\fP \fIlibmemcached(3)\fP

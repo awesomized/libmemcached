@@ -1,4 +1,4 @@
-.TH "MEMCACHED_STAT_GET_VALUE" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_STAT_GET_VALUE" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_stat_get_value \- libmemcached Documentation
 .
@@ -61,33 +61,20 @@ Compile and link with \-lmemcached
 .sp
 libmemcached(3) has the ability to query a memcached server (or collection
 of servers) for their current state. Queries to find state return a
-\fBmemcached_stat_st\fP structure. You are responsible for freeing this structure.
-While it is possible to access the structure directly it is not advisable.
-<memcached_stat_get_value() has been provided to query the structure.
+\fBmemcached_stat_st\fP structure. You are responsible for freeing this structure. While it is possible to access the structure directly it is not advisable. \fBmemcached_stat_get_value()\fP has been provided to query the structure.
 .sp
-memcached_stat_execute() uses the servers found in \fBmemcached_stat_st\fP and
-executes a "stat" command on each server. args is an optional argument that
-can be passed in to modify the behavior of "stats". You will need to supply
-a callback function that will be supplied each pair of values returned by
+\fBmemcached_stat_execute()\fP uses the servers found in \fBmemcached_stat_st\fP and executes a "stat" command on each server. args is an optional argument that can be passed in to modify the behavior of "stats". You will need to supply a callback function that will be supplied each pair of values returned by
 the memcached server.
 .sp
-memcached_stat() fetches an array of \fBmemcached_stat_st\fP structures containing
-the state of all available memcached servers. The return value must be freed
-by the calling application. If called with the \fBMEMCACHED_BEHAVIOR_USE_UDP\fPbehavior set, a NULL value is returned and the error parameter is set to
-\fBMEMCACHED_NOT_SUPPORTED\fP.
+\fBmemcached_stat()\fP fetches an array of \fBmemcached_stat_st\fP structures containing the state of all available memcached servers. The return value must be freed by the calling application. If called with the \fBMEMCACHED_BEHAVIOR_USE_UDP\fP behavior set, a NULL value is returned and the error parameter is set to \fBMEMCACHED_NOT_SUPPORTED\fP.
 .sp
-memcached_stat_servername() can be used standalone without a \fBmemcached_st\fP to
-obtain the state of a particular server.  "args" is used to define a
-particular state object (a list of these are not provided for by either the
-\fBmemcached_stat_get_keys()\fP call nor are they defined in the
-memcached protocol). You must specify the hostname and port of the server
-you want to obtain information on.
+\fBmemcached_stat_servername()\fP can be used standalone without a \fBmemcached_st\fP to obtain the state of a particular server.  "args" is used to define a particular state object (a list of these are not provided for by either
+the \fBmemcached_stat_get_keys()\fP call nor are they defined in the memcached protocol). You must specify the hostname and port of the server you want to
+obtain information on.
 .sp
-memcached_stat_get_value() returns the value of a particular state key. You
-specify the key you wish to obtain.  The key must be null terminated.
+\fBmemcached_stat_get_value()\fP returns the value of a particular state key. You specify the key you wish to obtain.  The key must be null terminated.
 .sp
-\fBmemcached_stat_get_keys()\fP returns a list of keys that the server
-has state objects on. You are responsible for freeing this list.
+\fBmemcached_stat_get_keys()\fP returns a list of keys that the server has state objects on. You are responsible for freeing this list.
 .sp
 A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
@@ -106,7 +93,7 @@ To find out more information please check:
 Brian Aker, <\fI\%brian@tangent.org\fP>
 .SH SEE ALSO
 .sp
-memcached(1) libmemcached(3) memcached_strerror(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP \fImemcached_strerror(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

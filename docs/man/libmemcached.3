@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "LIBMEMCACHED" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 libmemcached \- Introducing the C Client Library for memcached
 .
@@ -35,6 +35,13 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .sp
 Compile and link with \-lmemcached
+
+.sp
+.ce
+----
+
+.ce 0
+.sp
 .sp
 libMemcached is an open source C/C++ client library and tools for the memcached server (\fI\%http://danga.com/memcached\fP). It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
 .sp
@@ -76,16 +83,17 @@ matched based on server order as supplied by the user). It implements
 a modular and consistent method of object distribution.
 .sp
 There are multiple implemented routing and hashing methods. See the
-memcached_behavior_set() manpage for more information.
+\fBmemcached_behavior_set()\fP manpage for more information.
 .sp
 All operations are performed against a \fBmemcached_st\fP structure.
 These structures can either be dynamically allocated or statically
-allocated and then initialized by memcached_create(). Functions have been
-written in order to encapsulate the \fBmemcached_st\fP. It is not
+allocated and then initialized by \fBmemcached_create()\fP. Functions have
+been written in order to encapsulate the \fBmemcached_st\fP. It is not
 recommended that you operate directly against the structure.
 .sp
 Nearly all functions return a \fBmemcached_return_t\fP value.
-This value can be translated to a printable string with memcached_strerror(3).
+This value can be translated to a printable string with
+\fBmemcached_strerror()\fP.
 .sp
 Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
 .sp
@@ -105,7 +113,7 @@ PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 .sp
-Some features of the library must be enabled through memcached_behavior_set().
+Some features of the library must be enabled through \fBmemcached_behavior_set()\fP.
 .sp
 Hope you enjoy it!
 .SH CONSTANTS
@@ -157,10 +165,9 @@ Hex value of the version number. "0x00048000" This can be used for comparing ver
 .SH THREADS AND PROCESSES
 .sp
 When using threads or forked processes it is important to keep one instance
-of \fBmemcached_st\fP per process or thread. Without creating your own locking
-structures you can not share a single \fBmemcached_st\fP. However, you can call
-memcached_quit(3) on a \fBmemcached_st\fP and then use the resulting cloned
-structure.
+of \fBmemcached_st\fP per process or thread. Without creating your own
+locking structures you can not share a single \fBmemcached_st\fP. However,
+you can call \fBmemcached_quit()\fP on a \fBmemcached_st\fP and then use the resulting cloned structure.
 .SH HOME
 .sp
 To find out more information please check:

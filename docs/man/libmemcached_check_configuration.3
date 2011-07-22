@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED_CHECK_CONFIGURATION" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "LIBMEMCACHED_CHECK_CONFIGURATION" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 libmemcached_check_configuration \- libmemcached Documentation
 .
@@ -46,7 +46,7 @@ Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 Libmemcached implements a custom language for configuring and modifying
-servers. By passing in an option string you can generate a memcached_st object
+servers. By passing in an option string you can generate a \fBmemcached_st\fP object
 that you can use in your application directly.
 .INDENT 0.0
 .TP
@@ -54,6 +54,12 @@ that you can use in your application directly.
 .UNINDENT
 .sp
 Provide a servername to be used by the client. Providing a weight will cause weighting to occur with all hosts with each server getting a default weight of 1.
+.INDENT 0.0
+.TP
+.B \-\-SOCKET=<filepath>/?<optional_weight>
+.UNINDENT
+.sp
+Provide a filepath to a UNIX socket file. Providing a weight will cause weighting to occur with all hosts with each server getting a default weight of 1.
 .INDENT 0.0
 .TP
 .B \-\-VERIFY\-KEY
@@ -263,7 +269,7 @@ End configutation processing.
 End configutation processing and throw an error.
 .SH RETURN
 .sp
-memcached() returns a pointer to the memcached_st that was
+\fI\%memcached()\fP returns a pointer to the memcached_st that was
 created (or initialized).  On an allocation failure, it returns NULL.
 .SH EXAMPLE
 .sp

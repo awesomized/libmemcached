@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED_EXAMPLES" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "LIBMEMCACHED_EXAMPLES" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 libmemcached_examples \- libmemcached Documentation
 .
@@ -44,14 +44,23 @@ the library.
 const char *config_string= "\-\-SERVER=host10.example.com \-\-SERVER=host11.example.com \-\-SERVER=host10.example.com"
 memcached_st *memc= memcached(config_string, strlen(config_string);
 {
- ...
+\&...
 }
-memcached_free(memc);
+ memcached_free(memc);
 .ft P
 .fi
 .sp
-In the above code you create a \fBmemcached_st\fP object with three server by making use of \fImemcached_create_with_options(3)\fP.
+In the above code you create a \fBmemcached_st\fP object with three server
+by making use of \fBmemcached_create_with_options()\fP.
 .SH CREATING A POOL OF SERVERS
+.sp
+.nf
+.ft C
+
+.ft P
+.fi
+.sp
+Creating a pool of Servers:
 .sp
 .nf
 .ft C
@@ -78,11 +87,19 @@ memcached_pool_destroy(pool);
 .fi
 .sp
 In the above code you create a \fBmemcached_pool_st\fP object with three
-server by making use of \fImemcached_pool(3)\fP.
+server by making use of \fBmemcached_pool()\fP.
 .sp
-When memcached_pool_destroy() all memory will be released that is associated
+When \fBmemcached_pool_destroy()\fP all memory will be released that is associated
 with the pool.
 .SH ADDING A VALUE TO THE SERVER
+.sp
+.nf
+.ft C
+
+.ft P
+.fi
+.sp
+Adding a value to the Server:
 .sp
 .nf
 .ft C

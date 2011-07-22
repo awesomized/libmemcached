@@ -1,4 +1,4 @@
-.TH "MEMCACHED_FLUSH_BUFFERS" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_FLUSH_BUFFERS" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_flush_buffers \- libmemcached Documentation
 .
@@ -43,14 +43,14 @@ Flush and senf buffered commands
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-memcached_flush_buffers() is used in conjunction with
-MEMCACHED_BEHAVIOR_BUFFER_REQUESTS (see memcached_behavior(3)) to flush
-all buffers by sending the buffered commands to the server for processing.
+\fBmemcached_flush_buffers()\fP is used in conjunction with
+\fBMEMCACHED_BEHAVIOR_BUFFER_REQUESTS\fP (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.
 .SH RETURN
 .sp
 A value of type \fBmemcached_return_t\fP is returned
 On success that value will be \fBMEMCACHED_SUCCESS\fP.
-Use memcached_strerror() to translate this value to a printable string.
+Use \fBmemcached_strerror()\fP to translate this value to a printable
+string.
 .SH HOME
 .sp
 To find out more information please check:

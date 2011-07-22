@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR_GET" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR_GET" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_behavior_get \- libmemcached Documentation
 .
@@ -47,19 +47,17 @@ Manipulate the behavior of a memcached_st structure.
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fIlibmemcached(3)\fP behavior can be modified by use memcached_behavior_set().
-Default behavior is the library strives to be quick and accurate. Some
-behavior, while being faster, can also result in not entirely accurate
-behavior (for instance, memcached_set() will always respond with
-\fBMEMCACHED_SUCCESS\fP).
+\fIlibmemcached(3)\fP behavior can be modified by using \fBmemcached_behavior_set()\fP. Default behavior is the library strives to be quick and
+accurate. Some behavior, while being faster, can also result in not entirely
+accurate behavior (for instance, \fBmemcached_set()\fP will always respond
+with \fBMEMCACHED_SUCCESS\fP).
 .sp
-memcached_behavior_get() takes a behavior flag and returns whether or not
-that behavior is currently enabled in the client.
+\fBmemcached_behavior_get()\fP takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
 .sp
-memcached_behavior_set() changes the value of a particular option of the
-client. It takes both a flag (listed below) and a value. For simple on or
-off options you just need to pass in a value of 1. Calls to
-memcached_behavior_set() will flush and reset all connections.
+\fBmemcached_behavior_set()\fP changes the value of a particular option
+of the client. It takes both a flag (listed below) and a value. For simple
+on or off options you just need to pass in a value of 1. Calls to
+\fBmemcached_behavior_set()\fP will flush and reset all connections.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_USE_UDP
@@ -68,27 +66,24 @@ memcached_behavior_set() will flush and reset all connections.
 Causes \fIlibmemcached(3)\fP to use the UDP transport when communicating
 with a memcached server. Not all I/O operations are testsed
 when this behavior is enababled. The following operations will return
-\fBMEMCACHED_NOT_SUPPORTED\fP when executed with the MEMCACHED_BEHAVIOR_USE_UDP
-enabled: memcached_version(), memcached_stat(), memcached_get(),
-memcached_get_by_key(), memcached_mget(), memcached_mget_by_key(),
-memcached_fetch(), memcached_fetch_result(), memcached_value_fetch().
+\fBMEMCACHED_NOT_SUPPORTED\fP when executed with the \fI\%MEMCACHED_BEHAVIOR_USE_UDP\fP enabled: \fBmemcached_version()\fP, \fBmemcached_stat()\fP, \fBmemcached_get()\fP, \fBmemcached_get_by_key()\fP, \fBmemcached_mget()\fP, \fBmemcached_mget_by_key()\fP, \fBmemcached_fetch()\fP, \fBmemcached_fetch_result()\fP, \fBmemcached_value_fetch()\fP.
 .sp
 All other operations are testsed but are executed in a \(aqfire\-and\-forget\(aq
 mode, in which once the client has executed the operation, no attempt
 will be made to ensure the operation has been received and acted on by the
 server.
 .sp
-\fIlibmemcached(3)\fP does not allow TCP and UDP servers to be shared within
-the same libmemached(3) client \(aqinstance\(aq. An attempt to add a TCP server
-when this behavior is enabled will result in a \fBMEMCACHED_INVALID_HOST_PROTOCOL\fP,
-as will attempting to add a UDP server when this behavior has not been enabled.
+\fIlibmemcached(3)\fP does not allow TCP and UDP servers to be shared
+within the same libmemached(3) client \(aqinstance\(aq. An attempt to add a TCP
+server when this behavior is enabled will result in a \fBMEMCACHED_INVALID_HOST_PROTOCOL\fP, as will attempting to add a UDP server when this behavior has
+not been enabled.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_NO_BLOCK
 .UNINDENT
 .sp
-Causes \fIlibmemcached(3)\fP to use asychronous IO. This is the fastest transport
-available for storage functions.
+Causes \fIlibmemcached(3)\fP to use asychronous IO. This is the fastest
+transport available for storage functions.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_SND_TIMEOUT
@@ -115,11 +110,12 @@ environments).
 .B MEMCACHED_BEHAVIOR_HASH
 .UNINDENT
 .sp
-Makes the default hashing algorithm for keys use MD5. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, MEMCACHED_HASH_FNV1A_32, MEMCACHED_HASH_JENKINS, MEMCACHED_HASH_HSIEH, and MEMCACHED_HASH_MURMUR.
+Makes the default hashing algorithm for keys use MD5. The value can be set to either \fBMEMCACHED_HASH_DEFAULT\fP, \fBMEMCACHED_HASH_MD5\fP, \fBMEMCACHED_HASH_CRC\fP, \fBMEMCACHED_HASH_FNV1_64\fP, \fBMEMCACHED_HASH_FNV1A_64\fP, \fBMEMCACHED_HASH_FNV1_32\fP, \fBMEMCACHED_HASH_FNV1A_32\fP, \fBMEMCACHED_HASH_JENKINS\fP, \fBMEMCACHED_HASH_HSIEH\fP, and \fBMEMCACHED_HASH_MURMUR\fP.
 .sp
-Each hash has it\(aqs advantages and it\(aqs weaknesses. If you don\(aqt know or don\(aqt care, just go with the default.
+Each hash has it\(aqs advantages and it\(aqs weaknesses. If you don\(aqt know or don\(aqt
+care, just go with the default.
 .sp
-Support for MEMCACHED_HASH_HSIEH is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the \-\-enable\-hash_hsieh.
+Support for \fBMEMCACHED_HASH_HSIEH\fP is a compile time option that is disabled by default. To enable tests for this hashing algorithm, configure and build libmemcached with the \-\-enable\-hash_hsieh.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_DISTRIBUTION
@@ -133,7 +129,10 @@ The default method is MEMCACHED_DISTRIBUTION_MODULA. You can enable consistent h
 .B MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
 .UNINDENT
 .sp
-DEPRECATED. Memcached can cache named lookups so that DNS lookups are made only once.
+Deprecated since version 0.46(?): DNS lookups are now always cached until an error occurs with the server.
+.sp
+Memcached can cache named lookups so that DNS lookups are made only once.
+
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_SUPPORT_CAS
@@ -149,9 +148,9 @@ Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and th
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
-.UNINDENT
-.sp
+.
 Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted tests.  and the hash to MEMCACHED_HASH_MD5.
+.UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_KETAMA_HASH
@@ -175,7 +174,7 @@ Modify the timeout value that is used by poll(). The default value is \-1. An si
 .B MEMCACHED_BEHAVIOR_USER_DATA
 .UNINDENT
 .sp
-DEPRECATED
+Deprecated since version <: 0.30
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
@@ -283,19 +282,25 @@ Find the current size of SO_RCVBUF. A value of 0 means either an error occured o
 .B MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT
 .UNINDENT
 .sp
-DEPRECATED, please see MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS. This number of times a host can have an error before it is disabled.
+Deprecated since version 0.48: See \fI\%MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS\fP
+.sp
+This number of times a host can have an error before it is disabled.
+
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
 .UNINDENT
 .sp
-DEPRECATED, please see MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS. If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure. This must be used in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
+Deprecated since version 0.48: See \fI\%MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS\fP
+.sp
+If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure. This must be used in combination with MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT.
+
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS
-.UNINDENT
-.sp
+.
 If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure.
+.UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
@@ -307,7 +312,9 @@ When enabled a host which is problematic will only be checked for usage based on
 .B MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
 .UNINDENT
 .sp
-When enabled the prefix key will be added to the key when determining server by hash.
+When enabled the prefix key will be added to the key when determining server
+by hash. See \fBMEMCACHED_CALLBACK_NAMESPACE\fP for additional
+information.
 .SH RETURN
 .sp
 memcached_behavior_get() returns either the current value of the get, or 0

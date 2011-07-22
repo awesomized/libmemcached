@@ -1,4 +1,4 @@
-.TH "MEMCAT" "1" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCAT" "1" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcat \- libmemcached Documentation
 .
@@ -30,26 +30,36 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
-.sp
-Copy a set of keys to stdout
 .SH SYNOPSIS
 .sp
-\fBmemcat\fP
-.INDENT 0.0
-.TP
-.B \-\-help
-.UNINDENT
+memcat [options] key
+.sp
+Copy a set of keys to stdout
 .SH DESCRIPTION
 .sp
 \fBmemcat\fP outputs to stdout the value a single or multiple set of keys
 stored in a memcached(1) server. If any key is not found an error is returned.
 .sp
 It is similar to the standard UNIX cat(1) utility.
+.SH OPTIONS
 .sp
-You can specify servers via the \fB\-\-servers\fP option or via the
-environment variable \fBMEMCACHED_SERVERS\fP.
+You can specify servers via the option:
+.INDENT 0.0
+.TP
+.B \-\-servers
+.UNINDENT
 .sp
-For a full list of operations run the tool with the \fB\-\-help\fP option.
+or via the environment variable:
+.INDENT 0.0
+.TP
+.B \(gaMEMCACHED_SERVERS\(ga
+.UNINDENT
+.sp
+For a full list of operations run the tool with the option:
+.INDENT 0.0
+.TP
+.B \-\-help
+.UNINDENT
 .SH HOME
 .sp
 To find out more information please check:
@@ -61,7 +71,7 @@ Brian Aker, <\fI\%brian@tangent.org\fP>
 Mark Atwood <\fI\%mark@fallenpegasus.com\fP>
 .SH SEE ALSO
 .sp
-memcached(1) libmemcached(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

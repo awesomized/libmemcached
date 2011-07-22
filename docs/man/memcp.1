@@ -1,4 +1,4 @@
-.TH "MEMCP" "1" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCP" "1" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcp \- libmemcached Documentation
 .
@@ -33,16 +33,8 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 Copies files to a collection of memcached servers
 .SH SYNOPSIS
-.INDENT 0.0
-.TP
-.B program
-.
-\fImemcp\fP
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-\-help
-.UNINDENT
+.sp
+memcp [options] [file] [server]
 .SH DESCRIPTION
 .sp
 \fBmemcp\fP copies one or more files into memcached(1) servers.
@@ -50,12 +42,27 @@ It is similar to the standard UNIX cp(1) command.
 .sp
 The key names will be the names of the files,
 without any directory path.
+.SH OPTIONS
 .sp
-You can specify servers via the \fB\-\-servers\fP option or via the
-environment variable \fBMEMCACHED_SERVERS\fP. If you do not specify either these, the final value in the command line list is the name of a
-server(s).
+You can specify servers via the option:
+.INDENT 0.0
+.TP
+.B \-\-servers
+.UNINDENT
 .sp
-For a full list of operations run the tool with the \fB\-\-help\fP option.
+or via the environment variable:
+.INDENT 0.0
+.TP
+.B \(gaMEMCACHED_SERVERS\(ga
+.UNINDENT
+.sp
+If you do not specify either these, the final value in the command line list is the name of a server(s).
+.sp
+For a full list of operations run the tool with the option:
+.INDENT 0.0
+.TP
+.B \-\-help
+.UNINDENT
 .SH HOME
 .sp
 To find out more information please check:
@@ -67,7 +74,7 @@ Brian Aker, <\fI\%brian@tangent.org\fP>
 Mark Atwood, <\fI\%mark@fallenpegasus.com\fP>
 .SH SEE ALSO
 .sp
-memcached(1) libmemcached(3)
+\fImemcached(1)\fP \fIlibmemcached(3)\fP
 .SH AUTHOR
 Brian Aker
 .SH COPYRIGHT

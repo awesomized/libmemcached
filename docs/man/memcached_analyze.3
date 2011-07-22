@@ -1,4 +1,4 @@
-.TH "MEMCACHED_ANALYZE" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_ANALYZE" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_analyze \- libmemcached Documentation
 .
@@ -43,21 +43,21 @@ Analyze server information
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-libmemcached(3) has the ability to query a memcached server (or collection
-of servers) for their current state. Queries to find state return a
+\fBlibmemcached\fP has the ability to query a memcached server (or
+collection of servers) for their current state. Queries to find state return a
 \fBmemcached_analysis_st\fP structure. You are responsible for freeing this structure.
 .sp
-memcached_analyze() analyzes useful information based on the provided servers
-and sets the result to the \fBmemcached_analysis_st\fP structure. The return value
-must be freed by the calling application.
+\fBmemcached_analyze()\fP analyzes useful information based on the
+provided servers and sets the result to the \fBmemcached_analysis_st\fP
+structure. The return value must be freed by the calling application.
 .sp
-A command line tool, memstat(1) with the option \-\-analyze, is provided so that
-you do not have to write an application to use this method.
+A command line tool, \fBmemstat()\fP with the option \fI\-\-analyze\fP,
+is provided so that you do not have to write an application to use this method.
 .SH RETURN
 .sp
-A pointer to the allocated \fBmemcached_analysis_st\fP structure on success and
-a NULL pointer on failure. You may inspect the error detail by checking the
-\fBmemcached_return_t\fP value.
+A pointer to the allocated \fBmemcached_analysis_st\fP structure on
+success and a NULL pointer on failure. You may inspect the error detail by
+checking the \fBmemcached_return_t\fP value.
 .sp
 Any method returning a \fBmemcached_analysis_st\fP expects you to free the
 memory allocated for it.

@@ -1,4 +1,4 @@
-.TH "MEMCACHED_RESULT_CAS" "3" "June 17, 2011" "0.49" "libmemcached"
+.TH "MEMCACHED_RESULT_CAS" "3" "July 21, 2011" "0.51" "libmemcached"
 .SH NAME
 memcached_result_cas \- Working with result sets
 .
@@ -85,51 +85,50 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 Compile and link with \-lmemcachedutil \-lmemcached
 .SH DESCRIPTION
 .sp
-libmemcached(3) can optionally return a memcached_result_st which acts as a
-result object. The result objects have added benefits over the character
-pointer returns, in that they are forward compatible with new return items
-that future memcached servers may implement (the best current example of
-this is the CAS return item). The structures can also be reused, which will
-save on calls to malloc(3). It is suggested that you use result objects over
-char * return functions.
+libmemcached(3) can optionally return a \fI\%memcached_result_st\fP which
+acts as a result object. The result objects have added benefits over the
+character pointer returns, in that they are forward compatible with new
+return items that future memcached servers may implement (the best current
+example of this is the CAS return item). The structures can also be reused,
+which will save on calls to malloc(3). It is suggested that you use result
+objects over char * return functions.
 .sp
-The structure of memcached_result_st has been encapsulated, you should not
-write code to directly access members of the structure.
+The structure of \fI\%memcached_result_st\fP has been encapsulated, you should
+not write code to directly access members of the structure.
 .sp
-memcached_result_create() will either allocate memory for a
-memcached_result_st or will initialize a structure passed to it.
+\fBmemcached_result_create()\fP will either allocate memory for a
+\fI\%memcached_result_st\fP or will initialize a structure passed to it.
 .sp
-memcached_result_free() will deallocate any memory attached to the
+\fBmemcached_result_free()\fP will deallocate any memory attached to the
 structure. If the structure was also allocated, it will deallocate it.
 .sp
-memcached_result_key_value() returns the key value associated with the
+\fBmemcached_result_key_value()\fP returns the key value associated with the
 current result object.
 .sp
-memcached_result_key_length() returns the key length associated with the
+\fBmemcached_result_key_length()\fP returns the key length associated with
+the current result object.
+.sp
+\fBmemcached_result_value()\fP returns the result value associated with the
 current result object.
 .sp
-memcached_result_value() returns the result value associated with the
+\fBmemcached_result_length()\fP returns the result length associated with
+the current result object.
+.sp
+\fI\%memcached_result_flags()\fP returns the flags associated with the
 current result object.
 .sp
-memcached_result_length() returns the result length associated with the
-current result object.
-.sp
-memcached_result_flags() returns the flags associated with the
-current result object.
-.sp
-memcached_result_cas() returns the cas associated with the
+\fBmemcached_result_cas()\fP returns the cas associated with the
 current result object. This value will only be available if the server
 tests it.
 .sp
-memcached_result_set_value() takes a byte array and a size and sets
+\fI\%memcached_result_set_value()\fP takes a byte array and a size and sets
 the result to this value. This function is used for trigger responses.
 .sp
-void memcached_result_set_flags() takes a result structure and stores
+\fBvoid memcached_result_set_flags()\fP takes a result structure and stores
 a new value for the flags field.
 .sp
-void memcached_result_set_expiration(A) takes a result structure and stores
-a new value for the expiration field (this is only used by read through
-triggers).
+\fBvoid memcached_result_set_expiration(A)()\fP takes a result structure and stores a new value for the expiration field (this is only used by read
+through triggers).
 .sp
 You may wish to avoid using memcached_result_create(3) with a
 stack based allocation. The most common issues related to ABI safety involve
@@ -137,8 +136,8 @@ heap allocated structures.
 .SH RETURN
 .sp
 Varies, see particular functions. All structures must have
-memcached_result_free() called on them for cleanup purposes. Failure to
-do this will result in leaked memory.
+\fBmemcached_result_free()\fP called on them for cleanup purposes. Failure
+to do this will result in leaked memory.
 .SH HOME
 .sp
 To find out more information please check:
