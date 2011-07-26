@@ -4,7 +4,7 @@
 
 libmemcached_libmemcached_la_SOURCES =
 
-include libmemcached/options/include.am
+include libmemcached/csl/include.am
 
 EXTRA_DIST+= \
 	     libmemcached/configure.h.in \
@@ -149,7 +149,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/version.cc \
 				       libmemcached/virtual_bucket.c
 
-libmemcached/options.cc: libmemcached/options/parser.h
+libmemcached/options.cc: libmemcached/csl/parser.h
 
 
 libmemcached_libmemcached_la_DEPENDENCIES=

@@ -99,6 +99,8 @@ tests/var/tmp:
 tests/var/run:
 	$(mkdir_p) tests/var/run
 
+.PHONY+= tests/var
+
 
 libtest_unittest_CFLAGS=
 libtest_unittest_LDADD= ${LIBTEST_LDADD}

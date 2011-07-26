@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -37,21 +37,13 @@
 
 #pragma once
 
-#include <libmemcached/basic_string.h>
-#include <libmemcached/constants.h>
-#include <libmemcached/options/server.h>
+#include <cstdlib>
+#include <arpa/inet.h>
 
-union YYSTYPE
+struct server_t
 {
-  long long number;  
-  memcached_string_t string;
-  memcached_string_t option;
-  double double_number;
-  memcached_server_distribution_t distribution;
-  memcached_hash_t hash;
-  memcached_behavior_t behavior;
-  bool boolean;
-  server_t server;
+  in_port_t port;
+  uint32_t weight;
+  const char *c_str;
+  size_t size;
 };
-
-typedef union YYSTYPE YYSTYPE;

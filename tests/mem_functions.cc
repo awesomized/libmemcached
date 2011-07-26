@@ -456,8 +456,8 @@ static test_return_t error_test(memcached_st *memc)
 static test_return_t set_test(memcached_st *memc)
 {
   memcached_return_t rc= memcached_set(memc,
-                                       memcached_literal_param("foo"),
-                                       memcached_literal_param("when we sanitize"),
+                                       test_literal_param("foo"),
+                                       test_literal_param("when we sanitize"),
                                        time_t(0), (uint32_t)0);
   test_true_got(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
 
@@ -3441,6 +3441,11 @@ static test_return_t mget_read_result(memcached_st *memc)
     memcached_return_t rc;
     while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
     {
+      if (rc == MEMCACHED_IN_PROGRESS)
+      {
+        continue;
+      }
+
       test_true(results);
       test_compare(MEMCACHED_SUCCESS, rc);
     }
@@ -3629,7 +3634,7 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
     memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
     test_compare(MEMCACHED_SUCCESS,
                  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
-    test_compare(1UL, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+    test_compare(uint64_t(1), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
   }
   else
   {
@@ -4396,7 +4401,7 @@ static test_return_t connection_pool_test(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS,
                memcached_set(mmc[0], key, keylen, "0", 1, 0, 0));
 
-  for (size_t x= 0; x < POOL_SIZE; ++x)
+  for (uint64_t x= 0; x < POOL_SIZE; ++x)
   {
     uint64_t number_value;
     test_compare(MEMCACHED_SUCCESS,
@@ -4951,7 +4956,7 @@ static test_return_t ketama_compatibility_libmemcached(memcached_st *)
   test_compare(MEMCACHED_SUCCESS,
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1));
 
-  test_compare(1UL, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED));
+  test_compare(uint64_t(1), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED));
 
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA));
   test_compare(MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA, memcached_behavior_get_distribution(memc));
@@ -5818,7 +5823,7 @@ static test_return_t regression_bug_583031(memcached_st *)
   test_false(value);
   test_zero(length);
 
-  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(memc, rc));
+  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
 
   memcached_free(memc);
 

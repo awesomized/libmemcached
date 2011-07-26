@@ -3,7 +3,6 @@ ACLOCAL_AMFLAGS = -I m4
 # includes append to these:
 SUFFIXES =
 .PHONY =
-PHONY =
 TESTS =
 CLEANFILES =
 DISTCLEANFILES =

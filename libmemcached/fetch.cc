@@ -163,7 +163,11 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     *error= memcached_response(server, buffer, sizeof(buffer), result);
 
-    if (*error == MEMCACHED_SUCCESS)
+    if (*error == MEMCACHED_IN_PROGRESS)
+    {
+      continue;
+    }
+    else if (*error == MEMCACHED_SUCCESS)
     {
       result->count++;
       return result;

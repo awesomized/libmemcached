@@ -128,13 +128,13 @@ test_return_t increment_test(memcached_st *original)
   test_compare(int_inc_value, int_ret_value);
 
   test_true(mcach.increment(key, 1, &int_ret_value));
-  test_compare(2UL, int_ret_value);
+  test_compare(uint64_t(2), int_ret_value);
 
   test_true(mcach.increment(key, 1, &int_ret_value));
-  test_compare(3UL, int_ret_value);
+  test_compare(uint64_t(3), int_ret_value);
 
   test_true(mcach.increment(key, 5, &int_ret_value));
-  test_compare(8UL, int_ret_value);
+  test_compare(uint64_t(8), int_ret_value);
 
   return TEST_SUCCESS;
 }

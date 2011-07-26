@@ -53,8 +53,6 @@
 
 using namespace libtest;
 
-#define SERVERS_TO_CREATE 5
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
@@ -148,5 +146,6 @@ void get_world(Framework *world)
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
   world->set_runner(&defualt_libmemcached_runner);
+  world->set_socket();
 }
 

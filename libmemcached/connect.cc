@@ -515,11 +515,20 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     struct timeval next_time;
 
     if (gettimeofday(&next_time, NULL) == 0)
+    {
       ptr->next_retry= next_time.tv_sec + ptr->root->retry_timeout;
+    }
+  }
+  
+  if (memcached_has_current_error(*ptr))
+  {
+    return memcached_server_error_return(ptr);
   }
 
-  if (timeout_error_occured)
+  if (timeout_error_occured and ptr->state < MEMCACHED_SERVER_STATE_IN_PROGRESS)
+  {
     return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+  }
 
   return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT); /* The last error should be from connect() */
 }
@@ -616,6 +625,11 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   {
     ptr->server_failure_counter= 0;
     ptr->next_retry= 0;
+  }
+  else if (memcached_has_current_error(*ptr))
+  {
+    ptr->server_failure_counter++;
+    set_last_disconnected_host(ptr);
   }
   else
   {

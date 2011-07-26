@@ -52,10 +52,10 @@ test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)
   memc_ptr= memcached_create(NULL);
   test_true(memc_ptr);
 
-  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
+  memcached_increment(memc_ptr, test_literal_param("dead key"), 1, NULL);
   test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
-  memcached_increment(memc_ptr, memcached_literal_param("dead key"), 1, NULL);
+  memcached_increment(memc_ptr, test_literal_param("dead key"), 1, NULL);
   test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
 
   memcached_free(memc_ptr);

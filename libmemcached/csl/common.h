@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -37,24 +37,5 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <arpa/inet.h>
+#include <libmemcached/common.h>
 
-struct server_t
-{
-  in_port_t port;
-  uint32_t weight;
-  const char *c_str;
-  size_t size;
-};
-
-#if 0
-#include <iostream>
-inline std::ostream& operator<<(std::ostream& output, const server_t& arg)
-{
-  output.write(arg.c_str, arg.size);
-  output << ':' << arg.port;
-  output << '+' << arg.weight;
-  return output;
-}
-#endif
