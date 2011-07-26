@@ -407,7 +407,6 @@ const char *memcached_last_error_message(memcached_st *memc)
   return memc->error_messages->message;
 }
 
-
 bool memcached_has_current_error(memcached_st &memc)
 {
   if (memc.error_messages 
@@ -418,6 +417,11 @@ bool memcached_has_current_error(memcached_st &memc)
   }
 
   return false;
+}
+
+bool memcached_has_current_error(memcached_server_st& server)
+{
+  return memcached_has_current_error(*(server.root));
 }
 
 memcached_return_t memcached_last_error(memcached_st *memc)

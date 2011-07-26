@@ -58,13 +58,13 @@ test_return_t memcached_increment_namespace(memcached_st *memc)
                memcached_increment(memc,
                                    test_literal_param("number"),
                                    1, &new_number));
-  test_compare(1UL, new_number);
+  test_compare(uint64_t(1), new_number);
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_increment(memc,
                                    test_literal_param("number"),
                                    1, &new_number));
-  test_compare(2UL, new_number);
+  test_compare(uint64_t(2), new_number);
 
   memcached_st *clone= memcached_clone(NULL, memc);
 
@@ -94,13 +94,13 @@ test_return_t memcached_increment_namespace(memcached_st *memc)
                memcached_increment(clone,
                                    test_literal_param("number"),
                                    1, &new_number));
-  test_compare(11UL, new_number);
+  test_compare(uint64_t(11), new_number);
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_increment(memc,
                                    test_literal_param("number"),
                                    1, &new_number));
-  test_compare(3UL, new_number);
+  test_compare(uint64_t(3), new_number);
 
   memcached_free(clone);
 

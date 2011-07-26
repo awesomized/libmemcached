@@ -41,22 +41,13 @@ noinst_HEADERS+= \
 		 tests/string.h \
 		 tests/virtual_buckets.h
 
-
-noinst_PROGRAMS+= \
-		  tests/atomsmasher \
-		  tests/cycle \
-		  tests/hash_plus \
-		  tests/testapp \
-		  tests/testhashkit \
-		  tests/testplus \
-		  tests/testudp
-
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_cycle_SOURCES= tests/cycle.cc
 tests_cycle_DEPENDENCIES= $(TESTS_LDADDS)
 tests_cycle_LDADD= $(tests_cycle_DEPENDENCIES)
 check_PROGRAMS+= tests/cycle
+noinst_PROGRAMS+= tests/cycle
 
 
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
@@ -87,12 +78,14 @@ tests_testapp_LDADD= \
 		     libhashkit/libhashkit.la \
 		     libmemcached/libmemcachedinternal.la
 check_PROGRAMS+= tests/testapp
+noinst_PROGRAMS+= tests/testapp
 
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testplus
+noinst_PROGRAMS+= tests/testplus
 
 tests_atomsmasher_SOURCES= \
 			   tests/atomsmasher.cc \
@@ -102,37 +95,42 @@ tests_atomsmasher_SOURCES= \
 			   clients/execute.cc
 tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
 tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
+noinst_PROGRAMS+= tests/atomsmasher
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.cc
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
 check_PROGRAMS+= tests/testudp
+noinst_PROGRAMS+= tests/testudp
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.cc
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)
 tests_testhashkit_LDADD = $(tests_testhashkit_DEPENDENCIES)
 check_PROGRAMS+= tests/testhashkit
+noinst_PROGRAMS+= tests/testhashkit
 
 tests_hash_plus_SOURCES= tests/hash_plus.cc
 tests_hash_plus_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES) $(TESTS_LDADDS)
+tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES)
 tests_hash_plus_LDADD= $(tests_testhashkit_DEPENDENCIES)
 check_PROGRAMS+= tests/hash_plus
+noinst_PROGRAMS+= tests/hash_plus
+
+tests_memcapable_SOURCES= tests/memcapable.cc
+tests_memcapable_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memcapable_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memcapable_LDADD=  $(tests_memcapable_DEPENDENCIES)
+check_PROGRAMS+= tests/memcapable
+noinst_PROGRAMS+= tests/memcapable
 
 test: check
 
-check-local: tests/var $(TEST_DOCS) memcapable
+check-local: tests/var $(TEST_DOCS)
 	@echo "Tests completed"
 
 test-x: tests/var test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
 	@echo "Tests completed"
-
-memcapable: clients/memcapable
-	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcapable -p 12555 || echo "Your memcached server does not support all commands"
-	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm tests/Xumemc.pid
 
 test-memcat: clients/memcat clients/memcp
 	@echo "Testing memcat"
@@ -259,6 +257,9 @@ test-hashplus: tests/var tests/hash_plus
 test-cycle: tests/var tests/cycle
 	@tests/cycle
 
+test-memcapable: tests/var tests/memcapable
+	@tests/memcapable
+
 pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 
@@ -307,7 +308,7 @@ valgrind-hash: tests/testhashkit
 valgrind-hashplus: tests/hash_plus
 	@$(VALGRIND_COMMAND) tests/hash_plus
 
-PHONY += valgrind
+.PHONY += valgrind
 valgrind: valgrind-cycle valgrind-mem valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
 
 helgrind-cycle: tests/cycle
@@ -334,14 +335,14 @@ helgrind-hashplus: tests/hash_plus
 .PHONY += helgrind
 helgrind: helgrind-cycle helgrind-mem helgrind-udp helgrind-plus helgrind-hash helgrind-hashplus
 
-PHONY += cachegrind
+.PHONY += cachegrind
 CLEANFILES += tests/cachegrind.out
 cachegrind:
 	rm -f tests/cachegrind.out.*
 	$(LIBTOOL) --mode=execute valgrind --tool=cachegrind --cachegrind-out-file=tests/cachegrind.out.%p --branch-sim=yes tests/testapp
 	cg_annotate tests/cachegrind.out.* --auto=yes > tests/cachegrind.out
 
-PHONY += callgrind
+.PHONY += callgrind
 CLEANFILES += tests/callgrind.out
 callgrind:
 	rm -f tests/callgrind.out.*

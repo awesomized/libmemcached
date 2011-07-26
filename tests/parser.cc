@@ -374,8 +374,8 @@ test_return_t libmemcached_check_configuration_test(memcached_st*)
   memcached_return_t rc;
   char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(test_literal_param("--server=localhost"), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+  test_compare(MEMCACHED_SUCCESS,
+               libmemcached_check_configuration(test_literal_param("--server=localhost"), buffer, sizeof(buffer)));
 
   rc= libmemcached_check_configuration(test_literal_param("--dude=localhost"), buffer, sizeof(buffer));
   test_false_with(rc == MEMCACHED_SUCCESS, buffer);
@@ -403,9 +403,8 @@ test_return_t test_include_keyword(memcached_st*)
     return TEST_SKIPPED;
 
   char buffer[BUFSIZ];
-  memcached_return_t rc;
-  rc= libmemcached_check_configuration(test_literal_param("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+  test_compare(MEMCACHED_SUCCESS, 
+               libmemcached_check_configuration(test_literal_param("INCLUDE \"support/example.cnf\""), buffer, sizeof(buffer)));
 
   return TEST_SUCCESS;
 }
@@ -413,9 +412,8 @@ test_return_t test_include_keyword(memcached_st*)
 test_return_t test_end_keyword(memcached_st*)
 {
   char buffer[BUFSIZ];
-  memcached_return_t rc;
-  rc= libmemcached_check_configuration(test_literal_param("--server=localhost END bad keywords"), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+  test_compare(MEMCACHED_SUCCESS, 
+               libmemcached_check_configuration(test_literal_param("--server=localhost END bad keywords"), buffer, sizeof(buffer)));
 
   return TEST_SUCCESS;
 }
@@ -423,9 +421,8 @@ test_return_t test_end_keyword(memcached_st*)
 test_return_t test_reset_keyword(memcached_st*)
 {
   char buffer[BUFSIZ];
-  memcached_return_t rc;
-  rc= libmemcached_check_configuration(test_literal_param("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, buffer);
+  test_compare(MEMCACHED_SUCCESS,
+               libmemcached_check_configuration(test_literal_param("--server=localhost reset --server=bad.com"), buffer, sizeof(buffer)));
 
   return TEST_SUCCESS;
 }
@@ -620,17 +617,17 @@ test_return_t regression_bug_71231153_connect(memcached_st *)
     return TEST_SKIPPED;
 
   { // Test the connect-timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
-    memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=0"));
+    memcached_st *memc= memcached(test_literal_param("--SERVER=10.0.2.252 --CONNECT-TIMEOUT=0"));
     test_true(memc);
     test_zero(memc->connect_timeout);
     test_compare(MEMCACHED_DEFAULT_TIMEOUT, memc->poll_timeout);
 
     memcached_return_t rc;
     size_t value_len;
-    char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
+    char *value= memcached_get(memc, test_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
     test_zero(value_len);
-    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
+    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
 
     memcached_free(memc);
   }
@@ -644,17 +641,17 @@ test_return_t regression_bug_71231153_poll(memcached_st *)
     return TEST_SKIPPED;
 
   { // Test the poll timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
-    memcached_st *memc= memcached(memcached_literal_param("--SERVER=10.0.2.252 --POLL-TIMEOUT=0"));
+    memcached_st *memc= memcached(test_literal_param("--SERVER=10.0.2.252 --POLL-TIMEOUT=0"));
     test_true(memc);
     test_compare(MEMCACHED_DEFAULT_CONNECT_TIMEOUT, memc->connect_timeout);
     test_zero(memc->poll_timeout);
 
     memcached_return_t rc;
     size_t value_len;
-    char *value= memcached_get(memc, memcached_literal_param("test"), &value_len, NULL, &rc);
+    char *value= memcached_get(memc, test_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
     test_zero(value_len);
-    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_strerror(NULL, rc));
+    test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
 
     memcached_free(memc);
   }

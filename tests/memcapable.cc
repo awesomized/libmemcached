@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached
+ *  Test memcapable
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,30 +34,82 @@
  *
  */
 
+
+/*
+  Test that we are cycling the servers we are creating during testing.
+*/
+
 #include <config.h>
+
 #include <libtest/test.hpp>
-
-#define BUILDING_LIBMEMCACHED
-
 #include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
 
-#include <tests/error_conditions.h>
+using namespace libtest;
 
-test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
+static std::string executable;
+
+static test_return_t help_test(void *)
 {
-  memcached_st *memc_ptr;
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
+  const char *args[]= { buffer, "--help", 0 };
 
-  memc_ptr= memcached_create(NULL);
-  test_true(memc_ptr);
-
-  memcached_increment(memc_ptr, test_literal_param("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_increment(memc_ptr, test_literal_param("dead key"), 1, NULL);
-  test_true(memcached_last_error(memc_ptr) == MEMCACHED_NO_SERVERS);
-
-  memcached_free(memc_ptr);
-
+  test_success(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
+
+static test_return_t ascii_test(void *)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
+  const char *args[]= { buffer, " -a ", 0 };
+
+  test_success(exec_cmdline(executable, args));
+  return TEST_SUCCESS;
+}
+
+static test_return_t binary_test(void *)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
+  const char *args[]= { buffer, " -b ", 0 };
+
+  test_success(exec_cmdline(executable, args));
+  return TEST_SUCCESS;
+}
+
+test_st memcapable_tests[] ={
+  {"--help", 0, help_test},
+  {"-a, ascii", 0, ascii_test},
+  {"-b, binary", 0, binary_test},
+  {0, 0, 0}
+};
+
+collection_st collection[] ={
+  {"memcapable", 0, 0, memcapable_tests },
+  {0, 0, 0, 0}
+};
+
+static void *world_create(server_startup_st& servers, test_return_t& error)
+{
+  const char *argv[1]= { "memcapable" };
+  if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
+  {
+    error= TEST_FAILURE;
+  }
+
+  return &servers;
+}
+
+
+void get_world(Framework *world)
+{
+  executable= "./clients/memcapable";
+  world->collections= collection;
+  world->_create= world_create;
+}
+

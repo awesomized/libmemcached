@@ -36,6 +36,10 @@
 
 #pragma once
 
+#include <typeinfo>
+#include <libtest/strerror.h>
+#include <libmemcached/memcached.h>
+
 namespace libtest {
 
 template <class T_comparable, class T_hint>
@@ -55,7 +59,24 @@ bool _compare(const char *file, int line, const char *func, T_comparable __expec
 {
   if (__expected != __actual)
   {
-    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
+    if (typeid(__expected) == typeid(memcached_return_t))
+    {
+      libtest::stream::make_cerr(file, line, func) << "Expected \"" 
+        << memcached_strerror(NULL, memcached_return_t(__expected)) 
+        << "\" got \"" 
+        << memcached_strerror(NULL, memcached_return_t(__actual)) << "\"";
+    }
+    else if (typeid(__expected) == typeid(test_return_t))
+    {
+      libtest::stream::make_cerr(file, line, func) << "Expected \"" 
+        << test_strerror(test_return_t(__expected)) 
+        << "\" got \"" 
+        << test_strerror(test_return_t(__actual)) << "\"";
+    }
+    else
+    {
+      libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
+    }
     return false;
   }
 

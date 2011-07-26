@@ -119,7 +119,9 @@ memcached_server_st *__server_create_with(const memcached_st *memc,
   self= _server_create(self, memc);
 
   if (not self)
+  {
     return NULL;
+  }
 
   _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
@@ -237,7 +239,9 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
     unsigned int iferror= (*callback)(ptr, instance, context);
 
     if (iferror)
+    {
       continue;
+    }
   }
 
   return MEMCACHED_SUCCESS;
