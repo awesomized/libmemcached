@@ -626,6 +626,11 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
     ptr->server_failure_counter= 0;
     ptr->next_retry= 0;
   }
+  else if (memcached_has_current_error(*ptr))
+  {
+    ptr->server_failure_counter++;
+    set_last_disconnected_host(ptr);
+  }
   else
   {
     memcached_set_error(*ptr, rc, MEMCACHED_AT);

@@ -37,13 +37,15 @@
 
 #pragma once
 
-#include <libmemcached/common.h>
+#include <libmemcached/csl/common.h>
+#include <libmemcached/csl/parser.h>
 
 class Context
 {
 public:
   Context(const char *option_string, size_t option_string_length, memcached_st *memc_arg,
           memcached_return_t &rc_arg) :
+    previous_token(END),
     scanner(NULL),
     begin(NULL),
     pos(0),
@@ -88,50 +90,22 @@ public:
     return _is_server;
   }
 
-  const char *set_hostname(const char *str, size_t size)
-  {
-    size_t copy_length= (size_t)NI_MAXHOST > size ? size : (size_t)NI_MAXHOST;
-    memcpy(_hostname, str, copy_length);
-    _hostname[copy_length]= 0;
-
-    return _hostname;
-  }
+  const char *set_hostname(const char *str, size_t size);
 
   const char *hostname()
   {
     return _hostname;
   }
 
-  void abort(const char *error)
-  {
-    if (rc == MEMCACHED_SUCCESS)
-      rc= MEMCACHED_PARSE_ERROR;
-
-    memcached_string_st *error_string= memcached_string_create(memc, NULL, 1024);
-    memcached_string_append(error_string, memcached_literal_param("Error occured while parsing: "));
-    memcached_string_append(error_string, memcached_string_make_from_cstr(begin));
-    memcached_string_append(error_string, memcached_literal_param(" ("));
-
-    if (rc == MEMCACHED_PARSE_ERROR and error)
-    {
-      memcached_string_append(error_string, memcached_string_make_from_cstr(error));
-    }
-    else
-    {
-      memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, rc)));
-    }
-    memcached_string_append(error_string, memcached_literal_param(")"));
-
-    memcached_set_error(*memc, rc, MEMCACHED_AT, memcached_string_value(error_string), memcached_string_length(error_string));
-
-    memcached_string_free(error_string);
-  }
+  void abort(const char *, yytokentype, const char *);
+  void error(const char *, yytokentype, const char* );
 
   ~Context()
   {
     destroy_scanner();
   }
 
+  yytokentype previous_token;
   void *scanner;
   const char *buf;
   const char *begin;

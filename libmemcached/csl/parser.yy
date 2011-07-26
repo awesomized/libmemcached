@@ -35,26 +35,38 @@
 
 %{
 
-#include <libmemcached/common.h>
+#include <libmemcached/csl/common.h>
 #include <libmemcached/options.hpp>
 
 #include <libmemcached/csl/context.h>
 #include <libmemcached/csl/symbol.h>
 #include <libmemcached/csl/scanner.h>
 
-#include <iostream>
-
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
-#define parser_abort(A, B) do { (A)->abort((B)); YYABORT; } while (0) 
+#define select_yychar(__context) yychar == UNKNOWN ? ( (__context)->previous_token == END ? UNKNOWN : (__context)->previous_token ) : yychar   
 
-inline void config_error(Context *context, yyscan_t *scanner, const char *error)
+#define stryytname(__yytokentype) ((__yytokentype) <  YYNTOKENS ) ? yytname[(__yytokentype)] : ""
+
+#define parser_abort(__context, __error_message) do { (__context)->abort((__error_message), yytokentype(select_yychar(__context)), stryytname(YYTRANSLATE(select_yychar(__context)))); YYABORT; } while (0) 
+
+// This is bison calling error.
+inline void __config_error(Context *context, yyscan_t *scanner, const char *error, int last_token, const char *last_token_str)
 {
   if (not context->end())
-    context->abort(error);
+  {
+    context->error(error, yytokentype(last_token), last_token_str);
+  }
+  else
+  {
+    context->error(error, yytokentype(last_token), last_token_str);
+  }
 }
+
+#define config_error(__context, __scanner, __error_msg) do { __config_error((__context), (__scanner), (__error_msg), select_yychar(__context), stryytname(YYTRANSLATE(select_yychar(__context)))); } while (0)
+
 
 %}
 

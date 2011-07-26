@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,34 +35,7 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#include <iostream>
+#include <libmemcached/common.h>
 
-#include <libmemcached/memcached.h>
-
-int main(int argc, char *argv[])
-{
-
-  if (argc < 2)
-  {
-    std::cerr << "No arguments provided." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  for (int x= 1; x < argc; x++)
-  {
-    char buffer[BUFSIZ];
-    memcached_return_t rc;
-    rc= libmemcached_check_configuration(argv[x], strlen(argv[x]), buffer, sizeof(buffer));
-
-    if (rc != MEMCACHED_SUCCESS)
-    {
-      std::cerr << "Failed to parse argument #" << x << " " << argv[x] << std::endl;
-      std::cerr << buffer << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-
-  return EXIT_SUCCESS;
-}

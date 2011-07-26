@@ -1,7 +1,7 @@
 #line 2 "libmemcached/csl/scanner.cc"
 #line 22 "libmemcached/csl/scanner.l"
 
-#include <libmemcached/common.h>
+#include <libmemcached/csl/common.h>
 #include <libmemcached/csl/context.h>
 #include <libmemcached/csl/parser.h>
 #include <libmemcached/csl/symbol.h>
@@ -1613,207 +1613,207 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 92 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
+{ yyextra->begin= yytext; yyextra->set_server(); return yyextra->previous_token= SERVER; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 94 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SOCKET; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SOCKET; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 96 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
+{ yyextra->begin= yytext; return yyextra->previous_token= BINARY_PROTOCOL; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 97 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= BUFFER_REQUESTS; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 98 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return CONFIGURE_FILE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= CONFIGURE_FILE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 99 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
+{ yyextra->begin= yytext; return yyextra->previous_token= CONNECT_TIMEOUT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 100 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return DISTRIBUTION; }
+{ yyextra->begin= yytext; return yyextra->previous_token= DISTRIBUTION; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 101 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= HASH_WITH_NAMESPACE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 102 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return HASH; }
+{ yyextra->begin= yytext; return yyextra->previous_token= HASH; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 103 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
+{ yyextra->begin= yytext; return yyextra->previous_token= IO_BYTES_WATERMARK; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 104 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
+{ yyextra->begin= yytext; return yyextra->previous_token= IO_KEY_PREFETCH; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 105 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return IO_MSG_WATERMARK; }
+{ yyextra->begin= yytext; return yyextra->previous_token= IO_MSG_WATERMARK; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 106 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return NOREPLY; }
+{ yyextra->begin= yytext; return yyextra->previous_token= NOREPLY; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 107 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= NUMBER_OF_REPLICAS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 108 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return POLL_TIMEOUT; }
+{ yyextra->begin= yytext; return yyextra->previous_token= POLL_TIMEOUT; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 109 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
+{ yyextra->begin= yytext; return yyextra->previous_token= RANDOMIZE_REPLICA_READ; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 110 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return RCV_TIMEOUT; }
+{ yyextra->begin= yytext; return yyextra->previous_token= RCV_TIMEOUT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 111 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= REMOVE_FAILED_SERVERS; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 112 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
+{ yyextra->begin= yytext; return yyextra->previous_token= RETRY_TIMEOUT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 113 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SND_TIMEOUT; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SND_TIMEOUT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 114 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SOCKET_RECV_SIZE; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 115 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SOCKET_SEND_SIZE; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 116 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SORT_HOSTS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SORT_HOSTS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 117 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SUPPORT_CAS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SUPPORT_CAS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 118 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPALIVE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 119 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPIDLE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 120 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return _TCP_NODELAY; }
+{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_NODELAY; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 121 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return USE_UDP; }
+{ yyextra->begin= yytext; return yyextra->previous_token= USE_UDP; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 122 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return USER_DATA; }
+{ yyextra->begin= yytext; return yyextra->previous_token= USER_DATA; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 123 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return VERIFY_KEY; }
+{ yyextra->begin= yytext; return yyextra->previous_token= VERIFY_KEY; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 125 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return POOL_MIN; }
+{ yyextra->begin= yytext; return yyextra->previous_token= POOL_MIN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 126 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return POOL_MAX; }
+{ yyextra->begin= yytext; return yyextra->previous_token= POOL_MAX; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 128 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return NAMESPACE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= NAMESPACE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 130 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return INCLUDE; }
+{ yyextra->begin= yytext; return yyextra->previous_token= INCLUDE; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 131 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return RESET; }
+{ yyextra->begin= yytext; return yyextra->previous_token= RESET; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 132 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return PARSER_DEBUG; }
+{ yyextra->begin= yytext; return yyextra->previous_token= PARSER_DEBUG; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 133 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return SERVERS; }
+{ yyextra->begin= yytext; return yyextra->previous_token= SERVERS; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 134 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return END; }
+{ yyextra->begin= yytext; return yyextra->previous_token= END; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 135 "libmemcached/csl/scanner.l"
-{ yyextra->begin= yytext; return ERROR; }
+{ yyextra->begin= yytext; return yyextra->previous_token= ERROR; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 137 "libmemcached/csl/scanner.l"
-{ return TRUE; }
+{ return yyextra->previous_token= TRUE; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 138 "libmemcached/csl/scanner.l"
-{ return FALSE; }
+{ return yyextra->previous_token= FALSE; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP

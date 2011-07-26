@@ -6,6 +6,7 @@ DISTCLEANFILES+= \
 		 libmemcached/csl/parser.output
 
 noinst_HEADERS+= \
+		 libmemcached/csl/common.h \
 		 libmemcached/csl/context.h \
 		 libmemcached/csl/parser.h \
 		 libmemcached/csl/scanner.h \
@@ -13,6 +14,7 @@ noinst_HEADERS+= \
 		 libmemcached/csl/symbol.h
 
 libmemcached_libmemcached_la_SOURCES+= \
+				       libmemcached/csl/context.cc \
 				       libmemcached/csl/parser.cc \
 				       libmemcached/csl/scanner.cc
 

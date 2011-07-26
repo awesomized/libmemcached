@@ -20,7 +20,7 @@
 
 %top{
 
-#include <libmemcached/common.h>
+#include <libmemcached/csl/common.h>
 #include <libmemcached/csl/context.h>
 #include <libmemcached/csl/parser.h>
 #include <libmemcached/csl/symbol.h>
@@ -89,53 +89,53 @@
       return COMMENT;
     }
 
-"--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return SERVER; }
+"--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return yyextra->previous_token= SERVER; }
 
-"--SOCKET="                          { yyextra->begin= yytext; return SOCKET; }
+"--SOCKET="                          { yyextra->begin= yytext; return yyextra->previous_token= SOCKET; }
 
-"--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return BINARY_PROTOCOL; }
-"--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return BUFFER_REQUESTS; }
-"--CONFIGURE-FILE="			{ yyextra->begin= yytext; return CONFIGURE_FILE; }
-"--CONNECT-TIMEOUT="			{ yyextra->begin= yytext; return CONNECT_TIMEOUT; }
-"--DISTRIBUTION="			{ yyextra->begin= yytext; return DISTRIBUTION; }
-"--HASH-WITH-NAMESPACE"	        { yyextra->begin= yytext; return HASH_WITH_NAMESPACE; }
-"--HASH="			        { yyextra->begin= yytext; return HASH; }
-"--IO-BYTES-WATERMARK="	        { yyextra->begin= yytext; return IO_BYTES_WATERMARK; }
-"--IO-KEY-PREFETCH="			{ yyextra->begin= yytext; return IO_KEY_PREFETCH; }
-"--IO-MSG-WATERMARK="	        { yyextra->begin= yytext; return IO_MSG_WATERMARK; }
-"--NOREPLY"                         { yyextra->begin= yytext; return NOREPLY; }
-"--NUMBER-OF-REPLICAS="	        { yyextra->begin= yytext; return NUMBER_OF_REPLICAS; }
-"--POLL-TIMEOUT="			{ yyextra->begin= yytext; return POLL_TIMEOUT; }
-"--RANDOMIZE-REPLICA-READ"	        { yyextra->begin= yytext; return RANDOMIZE_REPLICA_READ; }
-"--RCV-TIMEOUT="			{ yyextra->begin= yytext; return RCV_TIMEOUT; }
-"--REMOVE-FAILED-SERVERS="			{ yyextra->begin= yytext; return REMOVE_FAILED_SERVERS; }
-"--RETRY-TIMEOUT="			{ yyextra->begin= yytext; return RETRY_TIMEOUT; }
-"--SND-TIMEOUT="			{ yyextra->begin= yytext; return SND_TIMEOUT; }
-"--SOCKET-RECV-SIZE="	        { yyextra->begin= yytext; return SOCKET_RECV_SIZE; }
-"--SOCKET-SEND-SIZE="	        { yyextra->begin= yytext; return SOCKET_SEND_SIZE; }
-"--SORT-HOSTS"			{ yyextra->begin= yytext; return SORT_HOSTS; }
-"--SUPPORT-CAS"			{ yyextra->begin= yytext; return SUPPORT_CAS; }
-"--TCP-KEEPALIVE"			{ yyextra->begin= yytext; return _TCP_KEEPALIVE; }
-"--TCP-KEEPIDLE"			{ yyextra->begin= yytext; return _TCP_KEEPIDLE; }
-"--TCP-NODELAY"			{ yyextra->begin= yytext; return _TCP_NODELAY; }
-"--USE-UDP"	       		        { yyextra->begin= yytext; return USE_UDP; }
-"--USER-DATA"			{ yyextra->begin= yytext; return USER_DATA; }
-"--VERIFY-KEY"                      { yyextra->begin= yytext; return VERIFY_KEY; }
+"--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return yyextra->previous_token= BINARY_PROTOCOL; }
+"--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return yyextra->previous_token= BUFFER_REQUESTS; }
+"--CONFIGURE-FILE="			{ yyextra->begin= yytext; return yyextra->previous_token= CONFIGURE_FILE; }
+"--CONNECT-TIMEOUT="			{ yyextra->begin= yytext; return yyextra->previous_token= CONNECT_TIMEOUT; }
+"--DISTRIBUTION="			{ yyextra->begin= yytext; return yyextra->previous_token= DISTRIBUTION; }
+"--HASH-WITH-NAMESPACE"	        { yyextra->begin= yytext; return yyextra->previous_token= HASH_WITH_NAMESPACE; }
+"--HASH="			        { yyextra->begin= yytext; return yyextra->previous_token= HASH; }
+"--IO-BYTES-WATERMARK="	        { yyextra->begin= yytext; return yyextra->previous_token= IO_BYTES_WATERMARK; }
+"--IO-KEY-PREFETCH="			{ yyextra->begin= yytext; return yyextra->previous_token= IO_KEY_PREFETCH; }
+"--IO-MSG-WATERMARK="	        { yyextra->begin= yytext; return yyextra->previous_token= IO_MSG_WATERMARK; }
+"--NOREPLY"                         { yyextra->begin= yytext; return yyextra->previous_token= NOREPLY; }
+"--NUMBER-OF-REPLICAS="	        { yyextra->begin= yytext; return yyextra->previous_token= NUMBER_OF_REPLICAS; }
+"--POLL-TIMEOUT="			{ yyextra->begin= yytext; return yyextra->previous_token= POLL_TIMEOUT; }
+"--RANDOMIZE-REPLICA-READ"	        { yyextra->begin= yytext; return yyextra->previous_token= RANDOMIZE_REPLICA_READ; }
+"--RCV-TIMEOUT="			{ yyextra->begin= yytext; return yyextra->previous_token= RCV_TIMEOUT; }
+"--REMOVE-FAILED-SERVERS="			{ yyextra->begin= yytext; return yyextra->previous_token= REMOVE_FAILED_SERVERS; }
+"--RETRY-TIMEOUT="			{ yyextra->begin= yytext; return yyextra->previous_token= RETRY_TIMEOUT; }
+"--SND-TIMEOUT="			{ yyextra->begin= yytext; return yyextra->previous_token= SND_TIMEOUT; }
+"--SOCKET-RECV-SIZE="	        { yyextra->begin= yytext; return yyextra->previous_token= SOCKET_RECV_SIZE; }
+"--SOCKET-SEND-SIZE="	        { yyextra->begin= yytext; return yyextra->previous_token= SOCKET_SEND_SIZE; }
+"--SORT-HOSTS"			{ yyextra->begin= yytext; return yyextra->previous_token= SORT_HOSTS; }
+"--SUPPORT-CAS"			{ yyextra->begin= yytext; return yyextra->previous_token= SUPPORT_CAS; }
+"--TCP-KEEPALIVE"			{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPALIVE; }
+"--TCP-KEEPIDLE"			{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPIDLE; }
+"--TCP-NODELAY"			{ yyextra->begin= yytext; return yyextra->previous_token= _TCP_NODELAY; }
+"--USE-UDP"	       		        { yyextra->begin= yytext; return yyextra->previous_token= USE_UDP; }
+"--USER-DATA"			{ yyextra->begin= yytext; return yyextra->previous_token= USER_DATA; }
+"--VERIFY-KEY"                      { yyextra->begin= yytext; return yyextra->previous_token= VERIFY_KEY; }
 
-"--POOL-MIN="	       		        { yyextra->begin= yytext; return POOL_MIN; }
-"--POOL-MAX="	       		        { yyextra->begin= yytext; return POOL_MAX; }
+"--POOL-MIN="	       		        { yyextra->begin= yytext; return yyextra->previous_token= POOL_MIN; }
+"--POOL-MAX="	       		        { yyextra->begin= yytext; return yyextra->previous_token= POOL_MAX; }
 
-"--NAMESPACE="	       		        { yyextra->begin= yytext; return NAMESPACE; }
+"--NAMESPACE="	       		        { yyextra->begin= yytext; return yyextra->previous_token= NAMESPACE; }
 
-INCLUDE           { yyextra->begin= yytext; return INCLUDE; }
-RESET           { yyextra->begin= yytext; return RESET; }
-DEBUG           { yyextra->begin= yytext; return PARSER_DEBUG; }
-SERVERS           { yyextra->begin= yytext; return SERVERS; }
-END           { yyextra->begin= yytext; return END; }
-ERROR           { yyextra->begin= yytext; return ERROR; }
+INCLUDE           { yyextra->begin= yytext; return yyextra->previous_token= INCLUDE; }
+RESET           { yyextra->begin= yytext; return yyextra->previous_token= RESET; }
+DEBUG           { yyextra->begin= yytext; return yyextra->previous_token= PARSER_DEBUG; }
+SERVERS           { yyextra->begin= yytext; return yyextra->previous_token= SERVERS; }
+END           { yyextra->begin= yytext; return yyextra->previous_token= END; }
+ERROR           { yyextra->begin= yytext; return yyextra->previous_token= ERROR; }
 
-TRUE           { return TRUE; }
-FALSE           { return FALSE; }
+TRUE           { return yyextra->previous_token= TRUE; }
+FALSE           { return yyextra->previous_token= FALSE; }
 
 
 "--"[[:alnum:]]*   {

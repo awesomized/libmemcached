@@ -36,6 +36,7 @@
  */
 
 #include <libmemcached/common.h>
+#include <cstdarg>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -147,6 +148,11 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
                                errmsg_ptr,
                                at);
   }
+  else if (rc == MEMCACHED_PARSE_ERROR and str and str->size)
+  {
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%.*s -> %s", 
+                               int(str->size), str->c_str, at);
+  }
   else if (str and str->size)
   {
     error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "%s, %.*s -> %s", 
@@ -187,6 +193,20 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
   _set(memc, &str, rc, at);
 
   return rc;
+}
+
+memcached_return_t memcached_set_parser_error(memcached_st& memc,
+                                              const char *at,
+                                              const char *format, ...)
+{
+  va_list args;
+
+  char buffer[BUFSIZ];
+  va_start(args, format);
+  int length= vsnprintf(buffer, sizeof(buffer), format, args);
+  va_end(args);
+
+  return memcached_set_error(memc, MEMCACHED_PARSE_ERROR, at, buffer, length);
 }
 
 memcached_return_t memcached_set_error(memcached_server_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)

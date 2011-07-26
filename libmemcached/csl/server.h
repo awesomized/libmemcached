@@ -47,14 +47,3 @@ struct server_t
   const char *c_str;
   size_t size;
 };
-
-#if 0
-#include <iostream>
-inline std::ostream& operator<<(std::ostream& output, const server_t& arg)
-{
-  output.write(arg.c_str, arg.size);
-  output << ':' << arg.port;
-  output << '+' << arg.weight;
-  return output;
-}
-#endif

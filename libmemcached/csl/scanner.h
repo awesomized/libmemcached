@@ -5,7 +5,7 @@
 #line 6 "libmemcached/csl/scanner.h"
 #line 22 "libmemcached/csl/scanner.l"
 
-#include <libmemcached/common.h>
+#include <libmemcached/csl/common.h>
 #include <libmemcached/csl/context.h>
 #include <libmemcached/csl/parser.h>
 #include <libmemcached/csl/symbol.h>
