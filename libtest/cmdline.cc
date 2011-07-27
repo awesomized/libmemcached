@@ -60,10 +60,15 @@ bool exec_cmdline(const std::string& executable, const char *args[])
     arg_buffer << " " << *ptr;
   }
 
-#if 0
-  arg_buffer << " > /dev/null 2>&1";
-#endif
-  std::cerr << std::endl << arg_buffer.str() << std::endl;
+  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  {
+    std::cerr << std::endl << arg_buffer.str() << std::endl;
+  }
+  else
+  {
+    arg_buffer << " > /dev/null 2>&1";
+  }
+
   if (system(arg_buffer.str().c_str()) == -1)
   {
     return false;
