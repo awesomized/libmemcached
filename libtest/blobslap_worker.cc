@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  uTest
+ *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -35,126 +35,145 @@
  */
 
 #include <libtest/common.h>
+#include <libtest/blobslap_worker.h>
+#include <libtest/killpid.h>
 
+using namespace libtest;
+
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
+#include <libgearman/gearman.h>
 
-#include <libtest/killpid.h>
-#include <libtest/stream.h>
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 
 using namespace libtest;
 
-bool kill_pid(pid_t pid_arg)
+class BlobslapWorker : public Server
 {
-  assert(pid_arg > 0);
-  if (pid_arg < 1)
-  {
-    Error << "Invalid pid:" << pid_arg;
-    return false;
-  }
+private:
+public:
+  BlobslapWorker(in_port_t port_arg) :
+    Server("localhost", port_arg)
+  { }
 
-  if ((::kill(pid_arg, SIGTERM) == -1))
+  pid_t get_pid(bool error_is_ok)
   {
-    switch (errno)
+    if (not pid_file().empty())
     {
-    case EPERM:
-      Error << "Does someone else have a process running locally for " << int(pid_arg) << "?";
-      return false;
+      Wait wait(pid_file(), 0);
 
-    case ESRCH:
-      Error << "Process " << int(pid_arg) << " not found.";
-      return false;
-
-    default:
-    case EINVAL:
-      Error << "kill() " << strerror(errno);
-      return false;
-    }
-  }
-
-  int status= 0;
-  if (waitpid(pid_arg, &status, 0) == -1)
-  {
-    switch (errno)
-    {
-      // Just means that the server has already gone away
-    case ECHILD:
+      if (error_is_ok and not wait.successful())
       {
-        return true;
+        Error << "Pidfile was not found:" << pid_file();
+        return -1;
+
+        return get_pid_from_file(pid_file());
       }
     }
 
-    Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg);
+    return -1;
+  }
+
+  bool ping()
+  {
+    if (pid_file().empty())
+    {
+      Error << "No pid file available";
+      return false;
+    }
+
+    Wait wait(pid_file(), 0);
+    if (not wait.successful())
+    {
+      Error << "Pidfile was not found:" << pid_file();
+      return false;
+    }
+
+    pid_t local_pid= get_pid_from_file(pid_file());
+    if (local_pid <= 0)
+    {
+      return false;
+    }
+
+    if (::kill(local_pid, 0) == 0)
+    {
+      return true;
+    }
 
     return false;
   }
+
+  const char *name()
+  {
+    return "blobslap_worker";
+  };
+
+  const char *executable()
+  {
+    return GEARMAND_BLOBSLAP_WORKER;
+  }
+
+  const char *pid_file_option()
+  {
+    return "--pid-file=";
+  }
+
+  const char *daemon_file_option()
+  {
+    return "--daemon";
+  }
+
+  const char *log_file_option()
+  {
+    return NULL;
+  }
+
+  const char *port_option()
+  {
+    return "--port=";
+  }
+
+  bool is_libtool()
+  {
+    return true;
+  }
+
+  bool build(int argc, const char *argv[]);
+};
+
+
+#include <sstream>
+
+bool BlobslapWorker::build(int argc, const char *argv[])
+{
+  std::stringstream arg_buffer;
+
+  for (int x= 1 ; x < argc ; x++)
+  {
+    arg_buffer << " " << argv[x] << " ";
+  }
+
+  set_extra_args(arg_buffer.str());
 
   return true;
 }
 
+namespace libtest {
 
-pid_t kill_file(const std::string &filename)
+Server *build_blobslap_worker(in_port_t try_port)
 {
-  pid_t ret= -1;
-  FILE *fp;
-
-  if (filename.empty())
-    return ret;
-
-  if ((fp= fopen(filename.c_str(), "r")))
-  {
-    char pid_buffer[1024];
-
-    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
-    fclose(fp);
-
-    if (ptr)
-    {
-      pid_t pid= (pid_t)atoi(pid_buffer);
-      if (pid != 0)
-      {
-        kill_pid(pid);
-        unlink(filename.c_str()); // If this happens we may be dealing with a dead server that left its pid file.
-      }
-    }
-  }
-  
-  return ret;
+  return new BlobslapWorker(try_port);
 }
 
-pid_t get_pid_from_file(const std::string &filename)
-{
-  pid_t ret= -1;
-  FILE *fp;
-
-  if (filename.empty())
-  {
-    Error << "empty pid file";
-    return ret;
-  }
-
-  if ((fp= fopen(filename.c_str(), "r")))
-  {
-    char pid_buffer[1024];
-
-    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
-    fclose(fp);
-
-    if (ptr)
-    {
-      ret= (pid_t)atoi(pid_buffer);
-      if (ret <= 0)
-      {
-        return ret;
-      }
-    }
-  }
-  
-  return ret;
 }

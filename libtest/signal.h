@@ -69,10 +69,7 @@ public:
     return sigwait(&set, &sig);
   }
 
-  ~SignalThread()
-  {
-    sem_destroy(&lock);
-  }
+  ~SignalThread();
 
   void set_shutdown(shutdown_t arg);
   bool is_shutdown();

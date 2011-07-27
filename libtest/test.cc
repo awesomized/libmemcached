@@ -94,6 +94,11 @@ void set_default_socket(const char *socket)
 
 static void stats_print(Stats *stats)
 {
+  if (stats->collection_failed == 0 and stats->collection_success == 0)
+  {
+    return;
+  }
+
   Out << "\tTotal Collections\t\t\t\t" << stats->collection_total;
   Out << "\tFailed Collections\t\t\t\t" << stats->collection_failed;
   Out << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped;
@@ -179,9 +184,21 @@ int main(int argc, char *argv[])
 
   test_return_t error;
   void *creators_ptr= world->create(error);
-  if (test_failed(error))
+
+  switch (error)
   {
-    Error << "create() failed";
+  case TEST_SUCCESS:
+    break;
+
+  case TEST_SKIPPED:
+    Out << "SKIP " << argv[0];
+    delete world;
+    return EXIT_SUCCESS;
+
+  case TEST_FATAL:
+  case TEST_FAILURE:
+  case TEST_MEMORY_ALLOCATION_FAILURE:
+    Error << argv[0] << "create() failed";
     delete world;
     return EXIT_FAILURE;
   }
@@ -368,11 +385,11 @@ cleanup:
     Out << "Some test failed.";
     exit_code= EXIT_FAILURE;
   }
-  else if (stats.collection_skipped)
+  else if (stats.collection_skipped and stats.collection_failed and stats.collection_success)
   {
     Out << "Some tests were skipped.";
   }
-  else
+  else if (stats.collection_success and stats.collection_failed == 0)
   {
     Out << "All tests completed successfully.";
   }

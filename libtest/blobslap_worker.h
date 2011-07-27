@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  uTest
+ *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -36,9 +36,8 @@
 
 #pragma once
 
+namespace libtest {
 
-bool kill_pid(pid_t pid_arg);
+Server *build_blobslap_worker(in_port_t try_port);
 
-pid_t kill_file(const std::string &filename);
-
-pid_t get_pid_from_file(const std::string &filename);
+}

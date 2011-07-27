@@ -58,6 +58,7 @@ static inline std::string &rtrim(std::string &s)
 
 #ifdef HAVE_LIBGEARMAN
 #include <libtest/gearmand.h>
+#include <libtest/blobslap_worker.h>
 #endif
 
 #ifdef HAVE_LIBMEMCACHED
@@ -324,23 +325,26 @@ bool Server::set_log_file()
 void Server::rebuild_base_command()
 {
   _base_command.clear();
-  if (is_libtool())
+  if (is_libtool() and getenv("LIBTOOL_COMMAND"))
   {
-    _base_command+= "./libtool --mode=execute ";
+    _base_command+= getenv("LIBTOOL_COMMAND");
+    _base_command+= " ";
   }
 
-  if (is_debug())
+  if (is_debug() and getenv("GDB_COMMAND"))
   {
-    _base_command+= "gdb ";
+    _base_command+= getenv("GDB_COMMAND");
+    _base_command+= " ";
   }
-  else if (is_valgrind())
+  else if (is_valgrind() and getenv("VALGRIND_COMMAND"))
   {
-    _base_command+= "valgrind --log-file=tests/var/tmp/valgrind.out --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE ";
-
+    _base_command+= getenv("VALGRIND_COMMAND");
+    _base_command+= " ";
   }
-  else if (is_helgrind())
+  else if (is_helgrind() and getenv("HELGRIND_COMMAND"))
   {
-    _base_command+= "valgrind --log-file=tests/var/tmp/helgrind.out --tool=helgrind --read-var-info=yes --error-exitcode=1  -v ";
+    _base_command+= getenv("HELGRIND_COMMAND");
+    _base_command+= " ";
   }
 
   _base_command+= executable();
@@ -359,7 +363,9 @@ bool Server::args(std::string& options)
   if (getenv("LIBTEST_LOG") and log_file_option())
   {
     if (not set_log_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << log_file_option() << _log_file;
   }
@@ -368,7 +374,9 @@ bool Server::args(std::string& options)
   if (pid_file_option())
   {
     if (not set_pid_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << pid_file_option() << pid_file(); 
   }
@@ -382,7 +390,9 @@ bool Server::args(std::string& options)
   if (_is_socket and socket_file_option())
   {
     if (not set_socket_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << socket_file_option() << "\"" <<  _socket << "\"";
   }
@@ -396,7 +406,9 @@ bool Server::args(std::string& options)
   options+= arg_buffer.str();
 
   if (not _extra_args.empty())
+  {
     options+= _extra_args;
+  }
 
   return true;
 }
@@ -539,6 +551,18 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
 #ifdef GEARMAND_BINARY
   #ifdef HAVE_LIBGEARMAN
     server= build_gearmand("localhost", try_port);
+  #else
+    Error << "Libgearman was not found";
+  #endif
+#else
+    Error << "No gearmand binary is available";
+#endif
+  }
+  else if (server_type.compare("blobslap_worker") == 0)
+  {
+#ifdef GEARMAND_BINARY
+  #ifdef HAVE_LIBGEARMAN
+    server= build_blobslap_worker(try_port);
   #else
     Error << "Libgearman was not found";
   #endif

@@ -40,8 +40,33 @@
 #include <libtest/test.hpp>
 
 #include <cstdlib>
+#include <unistd.h>
 
 using namespace libtest;
+
+static test_return_t LIBTOOL_COMMAND_test(void *)
+{
+  test_true(getenv("LIBTOOL_COMMAND"));
+  return TEST_SUCCESS;
+}
+
+static test_return_t VALGRIND_COMMAND_test(void *)
+{
+  test_true(getenv("VALGRIND_COMMAND"));
+  return TEST_SUCCESS;
+}
+
+static test_return_t HELGRIND_COMMAND_test(void *)
+{
+  test_true(getenv("HELGRIND_COMMAND"));
+  return TEST_SUCCESS;
+}
+
+static test_return_t GDB_COMMAND_test(void *)
+{
+  test_true(getenv("GDB_COMMAND"));
+  return TEST_SUCCESS;
+}
 
 static test_return_t test_success_test(void *)
 {
@@ -171,6 +196,14 @@ test_st memcached_tests[] ={
   {0, 0, 0}
 };
 
+test_st environment_tests[] ={
+  {"LIBTOOL_COMMAND", 0, LIBTOOL_COMMAND_test },
+  {"VALGRIND_COMMAND", 0, VALGRIND_COMMAND_test },
+  {"HELGRIND_COMMAND", 0, HELGRIND_COMMAND_test },
+  {"GDB_COMMAND", 0, GDB_COMMAND_test },
+  {0, 0, 0}
+};
+
 test_st tests_log[] ={
   {"TEST_SUCCESS", 0, test_success_test },
   {"TEST_FAILURE", 0, test_failure_test },
@@ -184,6 +217,7 @@ test_st local_log[] ={
 };
 
 collection_st collection[] ={
+  {"environment", 0, 0, environment_tests},
   {"return values", 0, 0, tests_log},
   {"local", 0, 0, local_log},
   {"gearmand", 0, 0, gearmand_tests},

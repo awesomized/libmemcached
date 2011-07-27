@@ -38,6 +38,8 @@
 
 #include <libtest/cmdline.h>
 
+using namespace libtest;
+
 #include <cstdlib>
 #include <string>
 #include <sstream>

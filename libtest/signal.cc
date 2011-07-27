@@ -62,10 +62,11 @@ void SignalThread::set_shutdown(shutdown_t arg)
 
   if (arg == SHUTDOWN_GRACEFUL)
   {
-    pthread_kill(thread, SIGUSR2);
-
-    void *retval;
-    pthread_join(thread, &retval);
+    if (pthread_kill(thread, SIGUSR2) == 0)
+    {
+      void *retval;
+      pthread_join(thread, &retval);
+    }
   }
 }
 
@@ -96,6 +97,16 @@ void SignalThread::test()
   assert(sigismember(&set, SIGUSR2));
 }
 
+SignalThread::~SignalThread()
+{
+  if (pthread_equal(thread, pthread_self()) != 0 and (pthread_kill(thread, 0) == ESRCH) == true)
+  {
+    void *retval;
+    pthread_join(thread, &retval);
+  }
+  sem_destroy(&lock);
+}
+
 extern "C" {
 
 static void *sig_thread(void *arg)
@@ -123,7 +134,6 @@ static void *sig_thread(void *arg)
     case SIGQUIT:
       if (context->is_shutdown() == false)
       {
-        Error << "Signal handling thread got signal " <<  strsignal(sig);
         context->set_shutdown(SHUTDOWN_FORCED);
       }
       break;
@@ -140,7 +150,8 @@ static void *sig_thread(void *arg)
 }
 
 SignalThread::SignalThread() :
-  magic_memory(MAGIC_MEMORY)
+  magic_memory(MAGIC_MEMORY),
+  thread(pthread_self())
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
   sigemptyset(&set);
