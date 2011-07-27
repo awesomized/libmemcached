@@ -1,42 +1,29 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  uTest
+ *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 3 of the License, or (at your option) any later version.
  *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include <libtest/common.h>
 
 #include <libtest/cmdline.h>
+
+using namespace libtest;
 
 #include <cstdlib>
 #include <string>
@@ -48,13 +35,27 @@ bool exec_cmdline(const std::string& executable, const char *args[])
 
   arg_buffer << "./libtool --mode=execute ";
 
+  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  {
+    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
+    arg_buffer << " ";
+  }
+
   arg_buffer << executable;
   for (const char **ptr= args; *ptr; ++ptr)
   {
     arg_buffer << " " << *ptr;
   }
 
-  arg_buffer << " > /dev/null 2>&1";
+  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  {
+    std::cerr << std::endl << arg_buffer.str() << std::endl;
+  }
+  else
+  {
+    arg_buffer << " > /dev/null 2>&1";
+  }
+
   if (system(arg_buffer.str().c_str()) == -1)
   {
     return false;

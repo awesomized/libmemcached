@@ -19,17 +19,10 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #pragma once
 
-enum test_return_t {
-  TEST_SUCCESS= 0, /* Backwards compatibility */
-  TEST_FAILURE,
-  TEST_MEMORY_ALLOCATION_FAILURE,
-  TEST_SKIPPED,
-  TEST_FATAL // Collection should not be continued
-};
+namespace libtest {
 
+Server *build_blobslap_worker(in_port_t try_port);
 
-#define test_failed(__test_return_t) ((__test_return_t) != TEST_SUCCESS)
-#define test_success(__test_return_t) ((__test_return_t) == TEST_SUCCESS)
+}
