@@ -48,13 +48,22 @@ bool exec_cmdline(const std::string& executable, const char *args[])
 
   arg_buffer << "./libtool --mode=execute ";
 
+  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  {
+    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
+    arg_buffer << " ";
+  }
+
   arg_buffer << executable;
   for (const char **ptr= args; *ptr; ++ptr)
   {
     arg_buffer << " " << *ptr;
   }
 
+#if 0
   arg_buffer << " > /dev/null 2>&1";
+#endif
+  std::cerr << std::endl << arg_buffer.str() << std::endl;
   if (system(arg_buffer.str().c_str()) == -1)
   {
     return false;

@@ -124,6 +124,13 @@ tests_memcapable_LDADD=  $(tests_memcapable_DEPENDENCIES)
 check_PROGRAMS+= tests/memcapable
 noinst_PROGRAMS+= tests/memcapable
 
+tests_memslap_SOURCES= tests/memslap.cc
+tests_memslap_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memslap_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memslap_LDADD=  $(tests_memslap_DEPENDENCIES)
+check_PROGRAMS+= tests/memslap
+noinst_PROGRAMS+= tests/memslap
+
 test: check
 
 check-local: tests/var $(TEST_DOCS)
@@ -283,9 +290,6 @@ gdb-hashplus: tests/hash_plus
 
 gdb-cycle: tests/cycle
 	@$(DEBUG_COMMAND) tests/cycle
-
-gdb-memslap: clients/memslap
-	@$(DEBUG_COMMAND) clients/memslap
 
 valgrind-cycle: tests/cycle
 	$(VALGRIND_COMMAND) tests/cycle
