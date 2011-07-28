@@ -112,3 +112,5 @@ tests/var/
 unittests/unittests
 out
 *.orig
+tests/memcapable
+tests/memslap

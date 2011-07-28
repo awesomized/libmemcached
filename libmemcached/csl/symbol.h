@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Configure Scripting Language
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,34 +35,23 @@
  *
  */
 
-#include <config.h>
+#pragma once
 
-#include <iostream>
+#include <libmemcached/basic_string.h>
+#include <libmemcached/constants.h>
+#include <libmemcached/csl/server.h>
 
-#include <libmemcached/memcached.h>
-
-int main(int argc, char *argv[])
+union YYSTYPE
 {
+  long long number;  
+  memcached_string_t string;
+  memcached_string_t option;
+  double double_number;
+  memcached_server_distribution_t distribution;
+  memcached_hash_t hash;
+  memcached_behavior_t behavior;
+  bool boolean;
+  server_t server;
+};
 
-  if (argc < 2)
-  {
-    std::cerr << "No arguments provided." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  for (int x= 1; x < argc; x++)
-  {
-    char buffer[BUFSIZ];
-    memcached_return_t rc;
-    rc= libmemcached_check_configuration(argv[x], strlen(argv[x]), buffer, sizeof(buffer));
-
-    if (rc != MEMCACHED_SUCCESS)
-    {
-      std::cerr << "Failed to parse argument #" << x << " " << argv[x] << std::endl;
-      std::cerr << buffer << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-
-  return EXIT_SUCCESS;
-}
+typedef union YYSTYPE YYSTYPE;

@@ -1,38 +1,24 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libtest library
+ *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 3 of the License, or (at your option) any later version.
  *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 
 #include <libtest/common.h>
 
@@ -58,6 +44,7 @@ static inline std::string &rtrim(std::string &s)
 
 #ifdef HAVE_LIBGEARMAN
 #include <libtest/gearmand.h>
+#include <libtest/blobslap_worker.h>
 #endif
 
 #ifdef HAVE_LIBMEMCACHED
@@ -324,23 +311,26 @@ bool Server::set_log_file()
 void Server::rebuild_base_command()
 {
   _base_command.clear();
-  if (is_libtool())
+  if (is_libtool() and getenv("LIBTOOL_COMMAND"))
   {
-    _base_command+= "./libtool --mode=execute ";
+    _base_command+= getenv("LIBTOOL_COMMAND");
+    _base_command+= " ";
   }
 
-  if (is_debug())
+  if (is_debug() and getenv("GDB_COMMAND"))
   {
-    _base_command+= "gdb ";
+    _base_command+= getenv("GDB_COMMAND");
+    _base_command+= " ";
   }
-  else if (is_valgrind())
+  else if (is_valgrind() and getenv("VALGRIND_COMMAND"))
   {
-    _base_command+= "valgrind --log-file=tests/var/tmp/valgrind.out --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE ";
-
+    _base_command+= getenv("VALGRIND_COMMAND");
+    _base_command+= " ";
   }
-  else if (is_helgrind())
+  else if (is_helgrind() and getenv("HELGRIND_COMMAND"))
   {
-    _base_command+= "valgrind --log-file=tests/var/tmp/helgrind.out --tool=helgrind --read-var-info=yes --error-exitcode=1  -v ";
+    _base_command+= getenv("HELGRIND_COMMAND");
+    _base_command+= " ";
   }
 
   _base_command+= executable();
@@ -359,7 +349,9 @@ bool Server::args(std::string& options)
   if (getenv("LIBTEST_LOG") and log_file_option())
   {
     if (not set_log_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << log_file_option() << _log_file;
   }
@@ -368,7 +360,9 @@ bool Server::args(std::string& options)
   if (pid_file_option())
   {
     if (not set_pid_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << pid_file_option() << pid_file(); 
   }
@@ -382,7 +376,9 @@ bool Server::args(std::string& options)
   if (_is_socket and socket_file_option())
   {
     if (not set_socket_file())
+    {
       return false;
+    }
 
     arg_buffer << " " << socket_file_option() << "\"" <<  _socket << "\"";
   }
@@ -396,7 +392,9 @@ bool Server::args(std::string& options)
   options+= arg_buffer.str();
 
   if (not _extra_args.empty())
+  {
     options+= _extra_args;
+  }
 
   return true;
 }
@@ -539,6 +537,18 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
 #ifdef GEARMAND_BINARY
   #ifdef HAVE_LIBGEARMAN
     server= build_gearmand("localhost", try_port);
+  #else
+    Error << "Libgearman was not found";
+  #endif
+#else
+    Error << "No gearmand binary is available";
+#endif
+  }
+  else if (server_type.compare("blobslap_worker") == 0)
+  {
+#ifdef GEARMAND_BINARY
+  #ifdef HAVE_LIBGEARMAN
+    server= build_blobslap_worker(try_port);
   #else
     Error << "Libgearman was not found";
   #endif

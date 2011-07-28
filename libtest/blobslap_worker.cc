@@ -21,9 +21,8 @@
 
 
 #include <libtest/common.h>
-
-#include <libmemcached/memcached.h>
-#include <libmemcached/util.h>
+#include <libtest/blobslap_worker.h>
+#include <libtest/killpid.h>
 
 using namespace libtest;
 
@@ -38,10 +37,7 @@ using namespace libtest;
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <libtest/server.h>
-#include <libtest/wait.h>
-
-#include <libtest/memcached.h>
+#include <libgearman/gearman.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -49,16 +45,16 @@ using namespace libtest;
 
 using namespace libtest;
 
-class Memcached : public Server
+class BlobslapWorker : public Server
 {
+private:
 public:
-  Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg) :
-    Server(host_arg, port_arg, is_socket_arg)
+  BlobslapWorker(in_port_t port_arg) :
+    Server("localhost", port_arg)
   { }
 
   pid_t get_pid(bool error_is_ok)
   {
-    // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
       Wait wait(pid_file(), 0);
@@ -67,83 +63,61 @@ public:
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
+
+        return get_pid_from_file(pid_file());
       }
     }
 
-    pid_t local_pid;
-    memcached_return_t rc;
-    if (has_socket())
-    {
-      local_pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
-    }
-    else
-    {
-      local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
-    }
-
-    if (error_is_ok and ((memcached_failed(rc) or local_pid < 1)))
-    {
-      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << local_pid << " for:" << *this;
-    }
-
-    return local_pid;
+    return -1;
   }
 
   bool ping()
   {
-    // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (not wait.successful())
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
+      Error << "No pid file available";
+      return false;
     }
 
-    memcached_return_t rc;
-    bool ret;
-    if (has_socket())
+    Wait wait(pid_file(), 0);
+    if (not wait.successful())
     {
-      ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
-    }
-    else
-    {
-      ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
+      Error << "Pidfile was not found:" << pid_file();
+      return false;
     }
 
-    if (memcached_failed(rc) or not ret)
+    pid_t local_pid= get_pid_from_file(pid_file());
+    if (local_pid <= 0)
     {
-      Error << "libmemcached_util_ping(" << memcached_strerror(NULL, rc) << ")";
+      return false;
     }
-    return ret;
+
+    if (::kill(local_pid, 0) == 0)
+    {
+      return true;
+    }
+
+    return false;
   }
 
   const char *name()
   {
-    return "memcached";
+    return "blobslap_worker";
   };
 
   const char *executable()
   {
-    return MEMCACHED_BINARY;
+    return GEARMAND_BLOBSLAP_WORKER;
   }
 
   const char *pid_file_option()
   {
-    return "-P ";
-  }
-
-  const char *socket_file_option() const
-  {
-    return "-s ";
+    return "--pid-file=";
   }
 
   const char *daemon_file_option()
   {
-    return "-d";
+    return "--daemon";
   }
 
   const char *log_file_option()
@@ -153,16 +127,10 @@ public:
 
   const char *port_option()
   {
-    return "-p ";
+    return "--port=";
   }
 
   bool is_libtool()
-  {
-    return false;
-  }
-
-  // Memcached's pidfile is broken
-  bool broken_pid_file()
   {
     return true;
   }
@@ -173,16 +141,9 @@ public:
 
 #include <sstream>
 
-bool Memcached::build(int argc, const char *argv[])
+bool BlobslapWorker::build(int argc, const char *argv[])
 {
   std::stringstream arg_buffer;
-
-  if (getuid() == 0 or geteuid() == 0)
-  {
-    arg_buffer << " -u root ";
-  }
-
-  arg_buffer << " -l 127.0.0.1 ";
 
   for (int x= 1 ; x < argc ; x++)
   {
@@ -196,15 +157,9 @@ bool Memcached::build(int argc, const char *argv[])
 
 namespace libtest {
 
-Server *build_memcached(const std::string& hostname, const in_port_t try_port)
+Server *build_blobslap_worker(in_port_t try_port)
 {
-  return new Memcached(hostname, try_port, false);
-}
-
-Server *build_memcached_socket(const std::string& hostname, const in_port_t try_port)
-{
-  return new Memcached(hostname, try_port, true);
+  return new BlobslapWorker(try_port);
 }
 
 }
-

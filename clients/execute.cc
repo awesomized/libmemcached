@@ -14,25 +14,28 @@
   Return the number of rows set.
 */
 
-#include "config.h"
+#include <config.h>
 #include "execute.h"
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
-  memcached_return_t rc;
   unsigned int x;
   unsigned int pairs_sent;
 
   for (x= 0, pairs_sent= 0; x < number_of; x++)
   {
-    rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
-                      pairs[x].value, pairs[x].value_length,
-                      0, 0);
+    memcached_return_t rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
+                                         pairs[x].value, pairs[x].value_length,
+                                         0, 0);
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
+    {
       fprintf(stderr, "Failured on insert of %.*s\n",
               (unsigned int)pairs[x].key_length, pairs[x].key);
+    }
     else
+    {
       pairs_sent++;
+    }
   }
 
   return pairs_sent;

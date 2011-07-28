@@ -35,15 +35,20 @@
  *
  */
 
-#pragma once
-
 #include <libmemcached/error.h>
+
+#pragma once
 
 #ifdef __cplusplus
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define MEMCACHED_AT __FILE__ ":" TOSTRING(__LINE__)
+
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_set_parser_error(memcached_st& memc,
+                                              const char *at,
+                                              const char *format, ...);
 
 LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at);
@@ -82,7 +87,10 @@ LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_errno(memcached_server_st&, int local_errno, const char *at);
 
 LIBMEMCACHED_LOCAL
-bool memcached_has_current_error(memcached_st &memc);
+bool memcached_has_current_error(memcached_st&);
+
+LIBMEMCACHED_LOCAL
+bool memcached_has_current_error(memcached_server_st&);
 
 LIBMEMCACHED_LOCAL
 void memcached_error_free(memcached_st&);

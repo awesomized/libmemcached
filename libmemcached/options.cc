@@ -38,7 +38,7 @@
 #include <libmemcached/common.h>
 #include <libmemcached/options.hpp>
 
-#include <libmemcached/options/context.h>
+#include <libmemcached/csl/context.h>
 
 const char *memcached_parse_filename(memcached_st *memc)
 {
