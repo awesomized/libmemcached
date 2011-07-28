@@ -446,7 +446,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     if ((connect(ptr->fd, ptr->address_info_next->ai_addr, ptr->address_info_next->ai_addrlen) != SOCKET_ERROR))
     {
       ptr->state= MEMCACHED_SERVER_STATE_CONNECTED;
-      break; // Success
+      return MEMCACHED_SUCCESS;
     }
 
     /* An error occurred */
