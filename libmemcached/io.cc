@@ -44,110 +44,28 @@ enum memc_read_or_write {
   MEM_WRITE
 };
 
-static ssize_t io_flush(memcached_server_write_instance_st ptr,
-                        const bool with_flush,
-                        memcached_return_t *error);
-static void increment_udp_message_id(memcached_server_write_instance_st ptr);
-
-static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
-                                  memc_read_or_write read_or_write)
-{
-  struct pollfd fds;
-  fds.fd= ptr->fd;
-  fds.events= POLLIN;
-
-  if (read_or_write == MEM_WRITE) /* write */
-  {
-    fds.events= POLLOUT;
-    WATCHPOINT_SET(ptr->io_wait_count.write++);
-  }
-  else
-  {
-    WATCHPOINT_SET(ptr->io_wait_count.read++);
-  }
-
-  /*
-   ** We are going to block on write, but at least on Solaris we might block
-   ** on write if we haven't read anything from our input buffer..
-   ** Try to purge the input buffer if we don't do any flow control in the
-   ** application layer (just sending a lot of data etc)
-   ** The test is moved down in the purge function to avoid duplication of
-   ** the test.
+/*
+ * The udp request id consists of two seperate sections
+ *   1) The thread id
+ *   2) The message number
+ * The thread id should only be set when the memcached_st struct is created
+ * and should not be changed.
+ *
+ * The message num is incremented for each new message we send, this function
+ * extracts the message number from message_id, increments it and then
+ * writes the new value back into the header
  */
-  if (read_or_write == MEM_WRITE)
-  {
-    memcached_return_t rc= memcached_purge(ptr);
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
-    {
-      return MEMCACHED_FAILURE;
-    }
-  }
-
-  if (ptr->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
-  {
-    return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
-  }
-
-  size_t loop_max= 5;
-  while (--loop_max) // While loop is for ERESTART or EINTR
-  {
-
-    int error= poll(&fds, 1, ptr->root->poll_timeout);
-    switch (error)
-    {
-    case 1: // Success!
-      WATCHPOINT_IF_LABELED_NUMBER(read_or_write && loop_max < 4, "read() times we had to loop, decremented down from 5", loop_max);
-      WATCHPOINT_IF_LABELED_NUMBER(!read_or_write && loop_max < 4, "write() times we had to loop, decremented down from 5", loop_max);
-
-      return MEMCACHED_SUCCESS;
-
-    case 0: // Timeout occured, we let the while() loop do its thing.
-      return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
-
-    default:
-      WATCHPOINT_ERRNO(get_socket_errno());
-      switch (get_socket_errno())
-      {
-#ifdef TARGET_OS_LINUX
-      case ERESTART:
-#endif
-      case EINTR:
-        break;
-
-      case EFAULT:
-      case ENOMEM:
-        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
-
-      case EINVAL:
-        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
-
-      default:
-        if (fds.revents & POLLERR)
-        {
-          int err;
-          socklen_t len= sizeof (err);
-          (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          memcached_set_errno(*ptr, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
-        }
-        else
-        {
-          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-        }
-        memcached_quit_server(ptr, true);
-
-        return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-      }
-    }
-  }
-
-  memcached_quit_server(ptr, true);
-
-  return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-}
-
-memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
+static void increment_udp_message_id(memcached_server_write_instance_st ptr)
 {
-  return io_wait(ptr, MEM_WRITE);
+  struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
+  uint16_t cur_req= get_udp_datagram_request_id(header);
+  int msg_num= get_msg_num_from_request_id(cur_req);
+  int thread_id= get_thread_id_from_request_id(cur_req);
+
+  if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK) != 0)
+    msg_num= 0;
+
+  header->request_id= htons((uint16_t) (thread_id | msg_num));
 }
 
 /**
@@ -271,6 +189,256 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
   }
 
   return false;
+}
+
+static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
+                                  memc_read_or_write read_or_write)
+{
+  struct pollfd fds;
+  fds.fd= ptr->fd;
+  fds.events= POLLIN;
+
+  if (read_or_write == MEM_WRITE) /* write */
+  {
+    fds.events= POLLOUT;
+    WATCHPOINT_SET(ptr->io_wait_count.write++);
+  }
+  else
+  {
+    WATCHPOINT_SET(ptr->io_wait_count.read++);
+  }
+
+  /*
+   ** We are going to block on write, but at least on Solaris we might block
+   ** on write if we haven't read anything from our input buffer..
+   ** Try to purge the input buffer if we don't do any flow control in the
+   ** application layer (just sending a lot of data etc)
+   ** The test is moved down in the purge function to avoid duplication of
+   ** the test.
+ */
+  if (read_or_write == MEM_WRITE)
+  {
+    memcached_return_t rc= memcached_purge(ptr);
+    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+    {
+      return MEMCACHED_FAILURE;
+    }
+  }
+
+  if (ptr->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
+  {
+    return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+  }
+
+  size_t loop_max= 5;
+  while (--loop_max) // While loop is for ERESTART or EINTR
+  {
+
+    int error= poll(&fds, 1, ptr->root->poll_timeout);
+    switch (error)
+    {
+    case 1: // Success!
+      WATCHPOINT_IF_LABELED_NUMBER(read_or_write && loop_max < 4, "read() times we had to loop, decremented down from 5", loop_max);
+      WATCHPOINT_IF_LABELED_NUMBER(!read_or_write && loop_max < 4, "write() times we had to loop, decremented down from 5", loop_max);
+
+      return MEMCACHED_SUCCESS;
+
+    case 0: // Timeout occured, we let the while() loop do its thing.
+      return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+
+    default:
+      WATCHPOINT_ERRNO(get_socket_errno());
+      switch (get_socket_errno())
+      {
+#ifdef TARGET_OS_LINUX
+      case ERESTART:
+#endif
+      case EINTR:
+        break;
+
+      case EFAULT:
+      case ENOMEM:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+
+      case EINVAL:
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+
+      default:
+        if (fds.revents & POLLERR)
+        {
+          int err;
+          socklen_t len= sizeof (err);
+          (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
+          memcached_set_errno(*ptr, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
+        }
+        else
+        {
+          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        }
+        memcached_quit_server(ptr, true);
+
+        return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+      }
+    }
+  }
+
+  memcached_quit_server(ptr, true);
+
+  return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+}
+
+static ssize_t io_flush(memcached_server_write_instance_st ptr,
+                        const bool with_flush,
+                        memcached_return_t *error)
+{
+  /*
+   ** We might want to purge the input buffer if we haven't consumed
+   ** any output yet... The test for the limits is the purge is inline
+   ** in the purge function to avoid duplicating the logic..
+ */
+  {
+    memcached_return_t rc;
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+    rc= memcached_purge(ptr);
+
+    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+    {
+      return -1;
+    }
+  }
+  ssize_t sent_length;
+  size_t return_length;
+  char *local_write_ptr= ptr->write_buffer;
+  size_t write_length= ptr->write_buffer_offset;
+
+  *error= MEMCACHED_SUCCESS;
+
+  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+
+  // UDP Sanity check, make sure that we are not sending somthing too big
+  if (ptr->type == MEMCACHED_CONNECTION_UDP && write_length > MAX_UDP_DATAGRAM_LENGTH)
+  {
+    *error= MEMCACHED_WRITE_FAILURE;
+    return -1;
+  }
+
+  if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
+                                        && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
+  {
+    return 0;
+  }
+
+  /* Looking for memory overflows */
+#if defined(DEBUG)
+  if (write_length == MEMCACHED_MAX_BUFFER)
+    WATCHPOINT_ASSERT(ptr->write_buffer == local_write_ptr);
+  WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));
+#endif
+
+  return_length= 0;
+  while (write_length)
+  {
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+    WATCHPOINT_ASSERT(write_length > 0);
+    sent_length= 0;
+    if (ptr->type == MEMCACHED_CONNECTION_UDP)
+      increment_udp_message_id(ptr);
+
+    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+    if (with_flush)
+    {
+      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
+    }
+    else
+    {
+      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
+    }
+
+    if (sent_length == SOCKET_ERROR)
+    {
+      memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+#if 0 // @todo I should look at why we hit this bit of code hard frequently
+      WATCHPOINT_ERRNO(get_socket_errno());
+      WATCHPOINT_NUMBER(get_socket_errno());
+#endif
+      switch (get_socket_errno())
+      {
+      case ENOBUFS:
+        continue;
+      case EWOULDBLOCK:
+#ifdef USE_EAGAIN
+      case EAGAIN:
+#endif
+        {
+          /*
+           * We may be blocked on write because the input buffer
+           * is full. Let's check if we have room in our input
+           * buffer for more data and retry the write before
+           * waiting..
+         */
+          if (repack_input_buffer(ptr) or
+              process_input_buffer(ptr))
+          {
+            continue;
+          }
+
+          memcached_return_t rc= io_wait(ptr, MEM_WRITE);
+          if (memcached_success(rc))
+          {
+            continue;
+          }
+          else if (rc == MEMCACHED_TIMEOUT)
+          {
+            *error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+            return -1;
+          }
+
+          memcached_quit_server(ptr, true);
+          *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+          return -1;
+        }
+      case ENOTCONN:
+      case EPIPE:
+      default:
+        memcached_quit_server(ptr, true);
+        *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        WATCHPOINT_ASSERT(ptr->fd == -1);
+        return -1;
+      }
+    }
+
+    if (ptr->type == MEMCACHED_CONNECTION_UDP and
+        (size_t)sent_length != write_length)
+    {
+      memcached_quit_server(ptr, true);
+      *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+      return -1;
+    }
+
+    ptr->io_bytes_sent += (uint32_t) sent_length;
+
+    local_write_ptr+= sent_length;
+    write_length-= (uint32_t) sent_length;
+    return_length+= (uint32_t) sent_length;
+  }
+
+  WATCHPOINT_ASSERT(write_length == 0);
+  // Need to study this assert() WATCHPOINT_ASSERT(return_length ==
+  // ptr->write_buffer_offset);
+
+  // if we are a udp server, the begining of the buffer is reserverd for
+  // the upd frame header
+  if (ptr->type == MEMCACHED_CONNECTION_UDP)
+    ptr->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
+  else
+    ptr->write_buffer_offset= 0;
+
+  return (ssize_t) return_length;
+}
+
+memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
+{
+  return io_wait(ptr, MEM_WRITE);
 }
 
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
@@ -639,155 +807,6 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
   return NULL;
 }
 
-static ssize_t io_flush(memcached_server_write_instance_st ptr,
-                        const bool with_flush,
-                        memcached_return_t *error)
-{
-  /*
-   ** We might want to purge the input buffer if we haven't consumed
-   ** any output yet... The test for the limits is the purge is inline
-   ** in the purge function to avoid duplicating the logic..
- */
-  {
-    memcached_return_t rc;
-    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    rc= memcached_purge(ptr);
-
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
-    {
-      return -1;
-    }
-  }
-  ssize_t sent_length;
-  size_t return_length;
-  char *local_write_ptr= ptr->write_buffer;
-  size_t write_length= ptr->write_buffer_offset;
-
-  *error= MEMCACHED_SUCCESS;
-
-  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-
-  // UDP Sanity check, make sure that we are not sending somthing too big
-  if (ptr->type == MEMCACHED_CONNECTION_UDP && write_length > MAX_UDP_DATAGRAM_LENGTH)
-  {
-    *error= MEMCACHED_WRITE_FAILURE;
-    return -1;
-  }
-
-  if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
-                                        && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
-  {
-    return 0;
-  }
-
-  /* Looking for memory overflows */
-#if defined(DEBUG)
-  if (write_length == MEMCACHED_MAX_BUFFER)
-    WATCHPOINT_ASSERT(ptr->write_buffer == local_write_ptr);
-  WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));
-#endif
-
-  return_length= 0;
-  while (write_length)
-  {
-    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    WATCHPOINT_ASSERT(write_length > 0);
-    sent_length= 0;
-    if (ptr->type == MEMCACHED_CONNECTION_UDP)
-      increment_udp_message_id(ptr);
-
-    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    if (with_flush)
-    {
-      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
-    }
-    else
-    {
-      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
-    }
-
-    if (sent_length == SOCKET_ERROR)
-    {
-      memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-#if 0 // @todo I should look at why we hit this bit of code hard frequently
-      WATCHPOINT_ERRNO(get_socket_errno());
-      WATCHPOINT_NUMBER(get_socket_errno());
-#endif
-      switch (get_socket_errno())
-      {
-      case ENOBUFS:
-        continue;
-      case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-      case EAGAIN:
-#endif
-        {
-          /*
-           * We may be blocked on write because the input buffer
-           * is full. Let's check if we have room in our input
-           * buffer for more data and retry the write before
-           * waiting..
-         */
-          if (repack_input_buffer(ptr) or
-              process_input_buffer(ptr))
-          {
-            continue;
-          }
-
-          memcached_return_t rc= io_wait(ptr, MEM_WRITE);
-          if (memcached_success(rc))
-          {
-            continue;
-          }
-          else if (rc == MEMCACHED_TIMEOUT)
-          {
-            *error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
-            return -1;
-          }
-
-          memcached_quit_server(ptr, true);
-          *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-          return -1;
-        }
-      case ENOTCONN:
-      case EPIPE:
-      default:
-        memcached_quit_server(ptr, true);
-        *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-        WATCHPOINT_ASSERT(ptr->fd == -1);
-        return -1;
-      }
-    }
-
-    if (ptr->type == MEMCACHED_CONNECTION_UDP and
-        (size_t)sent_length != write_length)
-    {
-      memcached_quit_server(ptr, true);
-      *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-      return -1;
-    }
-
-    ptr->io_bytes_sent += (uint32_t) sent_length;
-
-    local_write_ptr+= sent_length;
-    write_length-= (uint32_t) sent_length;
-    return_length+= (uint32_t) sent_length;
-  }
-
-  WATCHPOINT_ASSERT(write_length == 0);
-  // Need to study this assert() WATCHPOINT_ASSERT(return_length ==
-  // ptr->write_buffer_offset);
-
-  // if we are a udp server, the begining of the buffer is reserverd for
-  // the upd frame header
-  if (ptr->type == MEMCACHED_CONNECTION_UDP)
-    ptr->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
-  else
-    ptr->write_buffer_offset= 0;
-
-  return (ssize_t) return_length;
-}
-
 /*
   Eventually we will just kill off the server with the problem.
 */
@@ -877,30 +896,6 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
   }
 
   return MEMCACHED_SUCCESS;
-}
-
-/*
- * The udp request id consists of two seperate sections
- *   1) The thread id
- *   2) The message number
- * The thread id should only be set when the memcached_st struct is created
- * and should not be changed.
- *
- * The message num is incremented for each new message we send, this function
- * extracts the message number from message_id, increments it and then
- * writes the new value back into the header
- */
-static void increment_udp_message_id(memcached_server_write_instance_st ptr)
-{
-  struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
-  uint16_t cur_req= get_udp_datagram_request_id(header);
-  int msg_num= get_msg_num_from_request_id(cur_req);
-  int thread_id= get_thread_id_from_request_id(cur_req);
-
-  if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK) != 0)
-    msg_num= 0;
-
-  header->request_id= htons((uint16_t) (thread_id | msg_num));
 }
 
 memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_st ptr, uint16_t thread_id)
