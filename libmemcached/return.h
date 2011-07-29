@@ -91,8 +91,27 @@ enum memcached_return_t {
 typedef enum memcached_return_t memcached_return_t;
 #endif
 
+static inline bool memcached_success(memcached_return_t rc)
+{
+  return (rc == MEMCACHED_BUFFERED ||
+          rc == MEMCACHED_DELETED ||
+          rc == MEMCACHED_END || 
+          rc == MEMCACHED_ITEM || 
+          rc == MEMCACHED_STAT || 
+          rc == MEMCACHED_STORED || 
+          rc == MEMCACHED_SUCCESS || 
+          rc == MEMCACHED_VALUE);
+}
 
-#define memcached_success(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_SUCCESS or (__memcached_return_t) == MEMCACHED_END)
-#define memcached_failed(__memcached_return_t) ((__memcached_return_t) != MEMCACHED_SUCCESS and (__memcached_return_t) != MEMCACHED_END)
+static inline bool memcached_failed(memcached_return_t rc)
+{
+  return (rc != MEMCACHED_SUCCESS && 
+          rc != MEMCACHED_END && 
+          rc != MEMCACHED_STORED && 
+          rc != MEMCACHED_STAT && 
+          rc != MEMCACHED_DELETED &&
+          rc != MEMCACHED_BUFFERED &&
+          rc != MEMCACHED_VALUE);
+}
+
 #define memcached_continue(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_IN_PROGRESS)
-
