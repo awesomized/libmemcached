@@ -92,7 +92,11 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/error.hpp>
 #include <libmemcached/memory.h>
 #include <libmemcached/io.h>
+#ifdef __cplusplus
+#include <libmemcached/string.hpp>
+#include <libmemcached/io.hpp>
 #include <libmemcached/do.hpp>
+#endif
 #include <libmemcached/internal.h>
 #include <libmemcached/array.h>
 #include <libmemcached/libmemcached_probes.h>

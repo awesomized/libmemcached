@@ -110,12 +110,4 @@ void memcached_string_set_length(memcached_string_st *self, size_t length);
 }
 #endif
 
-#ifdef __cplusplus
-#define memcached_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
-#else
-#define memcached_literal_param(X) (X), ((size_t)((sizeof(X) - 1)))
-#endif
-
-#define memcached_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
-
 #endif

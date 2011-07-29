@@ -21,6 +21,7 @@ noinst_HEADERS+= \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
+		 libmemcached/io.hpp \
 		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
 		 libmemcached/memory.h \
@@ -29,6 +30,7 @@ noinst_HEADERS+= \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
 		 libmemcached/response.h \
+		 libmemcached/string.hpp \
 		 libmemcached/virtual_bucket.h
 
 nobase_include_HEADERS+= \

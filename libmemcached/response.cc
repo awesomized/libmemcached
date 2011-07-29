@@ -36,6 +36,7 @@
  */
 
 #include <libmemcached/common.h>
+#include <libmemcached/string.hpp>
 
 static memcached_return_t textual_read_one_response(memcached_server_write_instance_st ptr,
                                                     char *buffer, size_t buffer_length,
@@ -252,7 +253,9 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
                                                     char *buffer, size_t buffer_length,
                                                     memcached_result_st *result)
 {
-  memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length);
+  size_t total_read;
+  memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length, total_read);
+
   if (memcached_failed(rc))
   {
     return rc;
@@ -287,8 +290,25 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       }
       else if (buffer[1] == 'E') /* SERVER_ERROR */
       {
-        char *startptr= buffer + 13, *endptr= startptr;
+        if (total_read == memcached_literal_param_size("SERVER_ERROR"))
+        {
+          return MEMCACHED_SERVER_ERROR;
+        }
 
+        if (total_read > memcached_literal_param_size("SERVER_ERROR object too large for cache") and
+            (memcmp(buffer, memcached_literal_param("SERVER_ERROR object too large for cache")) == 0))
+        {
+          return MEMCACHED_E2BIG;
+        }
+
+        // Move past the basic error message and whitespace
+        char *startptr= buffer + memcached_literal_param_size("SERVER_ERROR");
+        if (startptr[0] == ' ')
+        {
+          startptr++;
+        }
+
+        char *endptr= startptr;
         while (*endptr != '\r' && *endptr != '\n') endptr++;
 
         return memcached_set_error(*ptr, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));

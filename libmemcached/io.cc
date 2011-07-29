@@ -846,10 +846,11 @@ memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
 
 memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
                                          char *buffer_ptr,
-                                         size_t size)
+                                         size_t size,
+                                         size_t& total_nr)
 {
+  total_nr= 0;
   bool line_complete= false;
-  size_t total_nr= 0;
 
   while (not line_complete)
   {
