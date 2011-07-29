@@ -25,23 +25,82 @@ static inline const char *storage_op_string(memcached_storage_action_t verb)
 {
   switch (verb)
   {
-  case SET_OP:
-    return "set ";
   case REPLACE_OP:
     return "replace ";
+
   case ADD_OP:
     return "add ";
+
   case PREPEND_OP:
     return "prepend ";
+
   case APPEND_OP:
     return "append ";
+
   case CAS_OP:
     return "cas ";
-  default:
-    return "tosserror"; /* This is impossible, fixes issue for compiler warning in VisualStudio */
+
+  case SET_OP:
+    break;
   }
 
-  /* NOTREACHED */
+  return "set ";
+}
+
+static inline uint8_t get_com_code(memcached_storage_action_t verb, bool noreply)
+{
+  /* 0 isn't a value we want, but GCC 4.2 seems to think ret can otherwise
+   * be used uninitialized in this function. FAIL */
+  uint8_t ret= 0;
+
+  if (noreply)
+    switch (verb)
+    {
+    case SET_OP:
+      ret=PROTOCOL_BINARY_CMD_SETQ;
+      break;
+    case ADD_OP:
+      ret=PROTOCOL_BINARY_CMD_ADDQ;
+      break;
+    case CAS_OP: /* FALLTHROUGH */
+    case REPLACE_OP:
+      ret=PROTOCOL_BINARY_CMD_REPLACEQ;
+      break;
+    case APPEND_OP:
+      ret=PROTOCOL_BINARY_CMD_APPENDQ;
+      break;
+    case PREPEND_OP:
+      ret=PROTOCOL_BINARY_CMD_PREPENDQ;
+      break;
+    default:
+      WATCHPOINT_ASSERT(verb);
+      break;
+    }
+  else
+    switch (verb)
+    {
+    case SET_OP:
+      ret=PROTOCOL_BINARY_CMD_SET;
+      break;
+    case ADD_OP:
+      ret=PROTOCOL_BINARY_CMD_ADD;
+      break;
+    case CAS_OP: /* FALLTHROUGH */
+    case REPLACE_OP:
+      ret=PROTOCOL_BINARY_CMD_REPLACE;
+      break;
+    case APPEND_OP:
+      ret=PROTOCOL_BINARY_CMD_APPEND;
+      break;
+    case PREPEND_OP:
+      ret=PROTOCOL_BINARY_CMD_PREPEND;
+      break;
+    default:
+      WATCHPOINT_ASSERT(verb);
+      break;
+    }
+
+  return ret;
 }
 
 static memcached_return_t memcached_send_binary(memcached_st *ptr,
@@ -54,7 +113,238 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
                                                 time_t expiration,
                                                 uint32_t flags,
                                                 uint64_t cas,
-                                                memcached_storage_action_t verb);
+                                                memcached_storage_action_t verb)
+{
+  bool flush;
+  protocol_binary_request_set request= {};
+  size_t send_length= sizeof(request.bytes);
+
+  bool noreply= server->root->flags.no_reply;
+
+  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  request.message.header.request.opcode= get_com_code(verb, noreply);
+  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
+  request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+  if (verb == APPEND_OP || verb == PREPEND_OP)
+    send_length -= 8; /* append & prepend does not contain extras! */
+  else
+  {
+    request.message.header.request.extlen= 8;
+    request.message.body.flags= htonl(flags);
+    request.message.body.expiration= htonl((uint32_t)expiration);
+  }
+
+  request.message.header.request.bodylen= htonl((uint32_t) (key_length + memcached_array_size(ptr->_namespace) + value_length +
+                                                            request.message.header.request.extlen));
+
+  if (cas)
+    request.message.header.request.cas= memcached_htonll(cas);
+
+  flush= (bool) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
+
+  if (server->root->flags.use_udp && ! flush)
+  {
+    size_t cmd_size= send_length + key_length + value_length;
+
+    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+    {
+      return MEMCACHED_WRITE_FAILURE;
+    }
+    if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+    {
+      memcached_io_write(server, NULL, 0, true);
+    }
+  }
+
+  struct libmemcached_io_vector_st vector[]=
+  {
+    { send_length, request.bytes },
+    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
+    { key_length, key },
+    { value_length, value }
+  };
+
+  /* write the header */
+  memcached_return_t rc;
+  if ((rc= memcached_vdo(server, vector, 4, flush)) != MEMCACHED_SUCCESS)
+  {
+    memcached_io_reset(server);
+    return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
+  }
+
+  if (verb == SET_OP && ptr->number_of_replicas > 0)
+  {
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
+    WATCHPOINT_STRING("replicating");
+
+    for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
+    {
+      memcached_server_write_instance_st instance;
+
+      ++server_key;
+      if (server_key == memcached_server_count(ptr))
+        server_key= 0;
+
+      instance= memcached_server_instance_fetch(ptr, server_key);
+
+      if (memcached_vdo(instance, vector, 4, false) != MEMCACHED_SUCCESS)
+      {
+        memcached_io_reset(instance);
+      }
+      else
+      {
+        memcached_server_response_decrement(instance);
+      }
+    }
+  }
+
+  if (flush == false)
+  {
+    return MEMCACHED_BUFFERED;
+  }
+
+  if (noreply)
+  {
+    return MEMCACHED_SUCCESS;
+  }
+
+  return memcached_response(server, NULL, 0, NULL);
+}
+
+static memcached_return_t memcached_send_ascii(memcached_st *ptr,
+                                               memcached_server_write_instance_st instance,
+                                               const char *key,
+                                               size_t key_length,
+                                               const char *value,
+                                               size_t value_length,
+                                               time_t expiration,
+                                               uint32_t flags,
+                                               uint64_t cas,
+                                               memcached_storage_action_t verb)
+{
+  bool to_write;
+  size_t write_length;
+  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+  memcached_return_t rc;
+
+  if (cas)
+  {
+    int check_length;
+    check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                           "%s %.*s%.*s %u %llu %lu %llu%s\r\n",
+                           storage_op_string(verb),
+                           memcached_print_array(ptr->_namespace),
+                           (int)key_length, key, flags,
+                           (unsigned long long)expiration, (unsigned long)value_length,
+                           (unsigned long long)cas,
+                           (ptr->flags.no_reply) ? " noreply" : "");
+    if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || check_length < 0)
+    {
+      rc= memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                              memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+      memcached_io_reset(instance);
+
+      return rc;
+    }
+    write_length= check_length;
+  }
+  else
+  {
+    char *buffer_ptr= buffer;
+    const char *command= storage_op_string(verb);
+
+    /* Copy in the command, no space needed, we handle that in the command function*/
+    memcpy(buffer_ptr, command, strlen(command));
+
+    /* Copy in the key prefix, switch to the buffer_ptr */
+    buffer_ptr= (char *)memcpy((char *)(buffer_ptr + strlen(command)), (char *)memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace));
+
+    /* Copy in the key, adjust point if a key prefix was used. */
+    buffer_ptr= (char *)memcpy(buffer_ptr + memcached_array_size(ptr->_namespace),
+                               key, key_length);
+    buffer_ptr+= key_length;
+    buffer_ptr[0]=  ' ';
+    buffer_ptr++;
+
+    write_length= (size_t)(buffer_ptr - buffer);
+    int check_length= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer),
+                               "%u %llu %lu%s\r\n",
+                               flags,
+                               (unsigned long long)expiration, (unsigned long)value_length,
+                               ptr->flags.no_reply ? " noreply" : "");
+    if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -size_t(buffer_ptr - buffer) || check_length < 0)
+    {
+      rc= memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                              memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+      memcached_io_reset(instance);
+
+      return rc;
+    }
+
+    write_length+= (size_t)check_length;
+    WATCHPOINT_ASSERT(write_length < MEMCACHED_DEFAULT_COMMAND_SIZE);
+  }
+
+  if (ptr->flags.use_udp && ptr->flags.buffer_requests)
+  {
+    size_t cmd_size= write_length + value_length +2;
+    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+      return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+
+    if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+      memcached_io_write(instance, NULL, 0, true);
+  }
+
+  if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
+  {
+    rc= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+  }
+  else
+  {
+    struct libmemcached_io_vector_st vector[]=
+    {
+      { write_length, buffer },
+      { value_length, value },
+      { 2, "\r\n" }
+    };
+
+    if (ptr->flags.buffer_requests && verb == SET_OP)
+    {
+      to_write= false;
+    }
+    else
+    {
+      to_write= true;
+    }
+
+    /* Send command header */
+    rc=  memcached_vdo(instance, vector, 3, to_write);
+    if (rc == MEMCACHED_SUCCESS)
+    {
+
+      if (ptr->flags.no_reply)
+      {
+        rc= (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
+      }
+      else if (to_write == false)
+      {
+        rc= MEMCACHED_BUFFERED;
+      }
+      else
+      {
+        rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+        if (rc == MEMCACHED_STORED)
+          rc= MEMCACHED_SUCCESS;
+      }
+    }
+  }
+
+  if (rc == MEMCACHED_WRITE_FAILURE)
+    memcached_io_reset(instance);
+
+  return rc;
+}
 
 static inline memcached_return_t memcached_send(memcached_st *ptr,
                                                 const char *group_key, size_t group_key_length,
@@ -65,10 +355,6 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                                 uint64_t cas,
                                                 memcached_storage_action_t verb)
 {
-  bool to_write;
-  size_t write_length;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
   WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
 
   memcached_return_t rc;
@@ -99,131 +385,14 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                               key, key_length,
                               value, value_length, expiration,
                               flags, cas, verb);
-    WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.read > 2, "read IO_WAIT", instance->io_wait_count.read);
-    WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.write > 2, "write_IO_WAIT", instance->io_wait_count.write);
   }
   else
   {
-
-    if (cas)
-    {
-      int check_length;
-      check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                    "%s %.*s%.*s %u %llu %lu %llu%s\r\n",
-                                    storage_op_string(verb),
-                                    memcached_print_array(ptr->_namespace),
-                                    (int)key_length, key, flags,
-                                    (unsigned long long)expiration, (unsigned long)value_length,
-                                    (unsigned long long)cas,
-                                    (ptr->flags.no_reply) ? " noreply" : "");
-      if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || check_length < 0)
-      {
-        rc= memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-        memcached_io_reset(instance);
-
-        return rc;
-      }
-      write_length= check_length;
-    }
-    else
-    {
-      char *buffer_ptr= buffer;
-      const char *command= storage_op_string(verb);
-
-      /* Copy in the command, no space needed, we handle that in the command function*/
-      memcpy(buffer_ptr, command, strlen(command));
-
-      /* Copy in the key prefix, switch to the buffer_ptr */
-      buffer_ptr= (char *)memcpy((char *)(buffer_ptr + strlen(command)), (char *)memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace));
-
-      /* Copy in the key, adjust point if a key prefix was used. */
-      buffer_ptr= (char *)memcpy(buffer_ptr + memcached_array_size(ptr->_namespace),
-                         key, key_length);
-      buffer_ptr+= key_length;
-      buffer_ptr[0]=  ' ';
-      buffer_ptr++;
-
-      write_length= (size_t)(buffer_ptr - buffer);
-      int check_length= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer),
-                                 "%u %llu %lu%s\r\n",
-                                 flags,
-                                 (unsigned long long)expiration, (unsigned long)value_length,
-                                 ptr->flags.no_reply ? " noreply" : "");
-      if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -size_t(buffer_ptr - buffer) || check_length < 0)
-      {
-        rc= memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-        memcached_io_reset(instance);
-
-        return rc;
-      }
-
-      write_length+= (size_t)check_length;
-      WATCHPOINT_ASSERT(write_length < MEMCACHED_DEFAULT_COMMAND_SIZE);
-    }
-
-    if (ptr->flags.use_udp && ptr->flags.buffer_requests)
-    {
-      size_t cmd_size= write_length + value_length +2;
-      if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-        return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-
-      if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-        memcached_io_write(instance, NULL, 0, true);
-    }
-
-    if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-    {
-      rc= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-    }
-    else
-    {
-      struct libmemcached_io_vector_st vector[]=
-      {
-        { write_length, buffer },
-        { value_length, value },
-        { 2, "\r\n" }
-      };
-
-      if (ptr->flags.buffer_requests && verb == SET_OP)
-      {
-        to_write= false;
-      }
-      else
-      {
-        to_write= true;
-      }
-
-      /* Send command header */
-      rc=  memcached_vdo(instance, vector, 3, to_write);
-      if (rc == MEMCACHED_SUCCESS)
-      {
-
-        if (ptr->flags.no_reply)
-        {
-          rc= (to_write == false) ? MEMCACHED_BUFFERED : MEMCACHED_SUCCESS;
-        }
-        else if (to_write == false)
-        {
-          rc= MEMCACHED_BUFFERED;
-        }
-        else
-        {
-          rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-          if (rc == MEMCACHED_STORED)
-            rc= MEMCACHED_SUCCESS;
-        }
-      }
-    }
-
-    if (rc == MEMCACHED_WRITE_FAILURE)
-      memcached_io_reset(instance);
+    rc= memcached_send_ascii(ptr, instance,
+                             key, key_length,
+                             value, value_length, expiration,
+                             flags, cas, verb);
   }
-
-  WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.read > 2, "read IO_WAIT", instance->io_wait_count.read);
-  WATCHPOINT_IF_LABELED_NUMBER(instance->io_wait_count.write > 2, "write_IO_WAIT", instance->io_wait_count.write);
 
   return rc;
 }
@@ -403,171 +572,5 @@ memcached_return_t memcached_cas_by_key(memcached_st *ptr,
                      key, key_length, value, value_length,
                      expiration, flags, cas, CAS_OP);
   return rc;
-}
-
-static inline uint8_t get_com_code(memcached_storage_action_t verb, bool noreply)
-{
-  /* 0 isn't a value we want, but GCC 4.2 seems to think ret can otherwise
-   * be used uninitialized in this function. FAIL */
-  uint8_t ret= 0;
-
-  if (noreply)
-    switch (verb)
-    {
-    case SET_OP:
-      ret=PROTOCOL_BINARY_CMD_SETQ;
-      break;
-    case ADD_OP:
-      ret=PROTOCOL_BINARY_CMD_ADDQ;
-      break;
-    case CAS_OP: /* FALLTHROUGH */
-    case REPLACE_OP:
-      ret=PROTOCOL_BINARY_CMD_REPLACEQ;
-      break;
-    case APPEND_OP:
-      ret=PROTOCOL_BINARY_CMD_APPENDQ;
-      break;
-    case PREPEND_OP:
-      ret=PROTOCOL_BINARY_CMD_PREPENDQ;
-      break;
-    default:
-      WATCHPOINT_ASSERT(verb);
-      break;
-    }
-  else
-    switch (verb)
-    {
-    case SET_OP:
-      ret=PROTOCOL_BINARY_CMD_SET;
-      break;
-    case ADD_OP:
-      ret=PROTOCOL_BINARY_CMD_ADD;
-      break;
-    case CAS_OP: /* FALLTHROUGH */
-    case REPLACE_OP:
-      ret=PROTOCOL_BINARY_CMD_REPLACE;
-      break;
-    case APPEND_OP:
-      ret=PROTOCOL_BINARY_CMD_APPEND;
-      break;
-    case PREPEND_OP:
-      ret=PROTOCOL_BINARY_CMD_PREPEND;
-      break;
-    default:
-      WATCHPOINT_ASSERT(verb);
-      break;
-    }
-
-  return ret;
-}
-
-
-
-static memcached_return_t memcached_send_binary(memcached_st *ptr,
-                                                memcached_server_write_instance_st server,
-                                                uint32_t server_key,
-                                                const char *key,
-                                                size_t key_length,
-                                                const char *value,
-                                                size_t value_length,
-                                                time_t expiration,
-                                                uint32_t flags,
-                                                uint64_t cas,
-                                                memcached_storage_action_t verb)
-{
-  bool flush;
-  protocol_binary_request_set request= {};
-  size_t send_length= sizeof(request.bytes);
-
-  bool noreply= server->root->flags.no_reply;
-
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  request.message.header.request.opcode= get_com_code(verb, noreply);
-  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
-  request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  if (verb == APPEND_OP || verb == PREPEND_OP)
-    send_length -= 8; /* append & prepend does not contain extras! */
-  else
-  {
-    request.message.header.request.extlen= 8;
-    request.message.body.flags= htonl(flags);
-    request.message.body.expiration= htonl((uint32_t)expiration);
-  }
-
-  request.message.header.request.bodylen= htonl((uint32_t) (key_length + memcached_array_size(ptr->_namespace) + value_length +
-                                                            request.message.header.request.extlen));
-
-  if (cas)
-    request.message.header.request.cas= memcached_htonll(cas);
-
-  flush= (bool) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
-
-  if (server->root->flags.use_udp && ! flush)
-  {
-    size_t cmd_size= send_length + key_length + value_length;
-
-    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return MEMCACHED_WRITE_FAILURE;
-    }
-    if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-    {
-      memcached_io_write(server, NULL, 0, true);
-    }
-  }
-
-  struct libmemcached_io_vector_st vector[]=
-  {
-    { send_length, request.bytes },
-    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-    { key_length, key },
-    { value_length, value }
-  };
-
-  /* write the header */
-  memcached_return_t rc;
-  if ((rc= memcached_vdo(server, vector, 4, flush)) != MEMCACHED_SUCCESS)
-  {
-    memcached_io_reset(server);
-    return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
-  }
-
-  if (verb == SET_OP && ptr->number_of_replicas > 0)
-  {
-    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
-    WATCHPOINT_STRING("replicating");
-
-    for (uint32_t x= 0; x < ptr->number_of_replicas; x++)
-    {
-      memcached_server_write_instance_st instance;
-
-      ++server_key;
-      if (server_key == memcached_server_count(ptr))
-        server_key= 0;
-
-      instance= memcached_server_instance_fetch(ptr, server_key);
-
-      if (memcached_vdo(instance, vector, 4, false) != MEMCACHED_SUCCESS)
-      {
-        memcached_io_reset(instance);
-      }
-      else
-      {
-        memcached_server_response_decrement(instance);
-      }
-    }
-  }
-
-  if (flush == false)
-  {
-    return MEMCACHED_BUFFERED;
-  }
-
-  if (noreply)
-  {
-    return MEMCACHED_SUCCESS;
-  }
-
-  return memcached_response(server, NULL, 0, NULL);
 }
 
