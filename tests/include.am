@@ -130,6 +130,12 @@ tests_memslap_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
 tests_memslap_LDADD=  $(tests_memslap_DEPENDENCIES)
 check_PROGRAMS+= tests/memslap
 noinst_PROGRAMS+= tests/memslap
+ 
+# Test linking with C application
+tests_c_test_SOURCES= tests/c_test.c
+tests_c_test_LDADD= ${CLIENT_LDADD}
+check_PROGRAMS+=tests/c_test
+noinst_PROGRAMS+=tests/c_test
 
 test: check
 

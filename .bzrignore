@@ -3,6 +3,7 @@
 *.THIS
 *.exe
 *.lo
+*.orig
 *.output
 *.pop
 *.rpm
@@ -19,8 +20,8 @@
 *TAGS
 .deps
 .hg/
-.hgsub
 .hgignore
+.hgsub
 .hgsubstate
 INSTALL
 Makefile
@@ -88,6 +89,7 @@ ltoptions.m4
 ltsugar.m4
 ltversion.m4
 lt~obsolete.m4
+out
 patch
 patch2
 stamp-h1
@@ -98,10 +100,13 @@ support/libmemcached.pc
 support/libmemcached.spec
 tags
 tests/atomsmasher
+tests/c_test
 tests/cycle
 tests/hash_plus
 tests/hashplus
+tests/memcapable
 tests/memplus
+tests/memslap
 tests/output.cmp
 tests/startservers
 tests/testapp
@@ -110,7 +115,3 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
-out
-*.orig
-tests/memcapable
-tests/memslap
