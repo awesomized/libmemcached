@@ -495,10 +495,15 @@ memcached_error_t *memcached_error_copy(const memcached_server_st& server)
 
 memcached_return_t memcached_server_error_return(memcached_server_instance_st ptr)
 {
+  if (ptr == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
   if (ptr and ptr->error_messages)
   {
     return ptr->error_messages->rc;
   }
 
-  return MEMCACHED_FAILURE;
+  return MEMCACHED_SUCCESS;
 }

@@ -613,24 +613,31 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_RESPONSE_KEY_ENOENT:
       rc= MEMCACHED_NOTFOUND;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS:
       rc= MEMCACHED_DATA_EXISTS;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_NOT_STORED:
       rc= MEMCACHED_NOTSTORED;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_E2BIG:
       rc= MEMCACHED_E2BIG;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_ENOMEM:
       rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE:
       rc= MEMCACHED_AUTH_CONTINUE;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_AUTH_ERROR:
       rc= MEMCACHED_AUTH_FAILURE;
       break;
+
     case PROTOCOL_BINARY_RESPONSE_EINVAL:
     case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:
     default:
