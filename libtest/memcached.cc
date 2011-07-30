@@ -183,6 +183,7 @@ bool Memcached::build(int argc, const char *argv[])
   }
 
   arg_buffer << " -l 127.0.0.1 ";
+  arg_buffer << " -m 128 ";
   arg_buffer << " -M ";
 
   for (int x= 1 ; x < argc ; x++)
