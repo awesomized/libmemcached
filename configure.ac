@@ -7,7 +7,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.61])
 AC_INIT([libmemcached],[0.51],[http://libmemcached.org/])
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 AC_CONFIG_AUX_DIR(config)
@@ -42,6 +42,7 @@ AC_SUBST(HASHKIT_LIBRARY_VERSION)
 AC_DEFINE([HAVE_LIBMEMCACHED], [ 1 ], [dummy rule for libtest])
 AC_SUBST(HAVE_LIBMEMCACHED, 1)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, true)
+LT_INIT
 
 AH_TOP([
 #ifndef CONFIG_H
