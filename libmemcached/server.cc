@@ -360,10 +360,6 @@ const char *memcached_server_type(const memcached_server_instance_st ptr)
 
     case MEMCACHED_CONNECTION_UNIX_SOCKET:
       return "SOCKET";
-
-    case MEMCACHED_CONNECTION_MAX:
-    case MEMCACHED_CONNECTION_UNKNOWN:
-      break;
     }
   }
 
