@@ -38,103 +38,113 @@
 // We let libmemcached/common.h define config since we are looking at
 // library internals.
 
-#define BUILDING_LIBMEMCACHED
+#include <config.h>
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/is.h>
 
 #include <libtest/test.hpp>
 
-#include <libmemcached/error.h>
 #include <tests/string.h>
 
-test_return_t string_static_null(memcached_st *memc)
+test_return_t string_static_null(void*)
 {
+  memcached_st *memc= memcached_create(NULL);
   memcached_string_st string;
-  memcached_string_st *string_ptr;
 
-  string_ptr= memcached_string_create(memc, &string, 0);
-  test_true(string.options.is_initialized == true);
+  memcached_string_st *string_ptr= memcached_string_create(memc, &string, 0);
+  test_true(string.options.is_initialized);
   test_true(string_ptr);
 
   /* The following two better be the same! */
-  test_true(memcached_is_allocated(string_ptr) == false);
-  test_true(memcached_is_allocated(&string) == false);
+  test_false(memcached_is_allocated(string_ptr));
+  test_false(memcached_is_allocated(&string));
   test_true(&string == string_ptr);
 
-  test_true(string.options.is_initialized == true);
-  test_true(memcached_is_initialized(&string) == true);
+  test_true(string.options.is_initialized);
+  test_true(memcached_is_initialized(&string));
   memcached_string_free(&string);
-  test_true(memcached_is_initialized(&string) == false);
+  test_false(memcached_is_initialized(&string));
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t string_alloc_null(memcached_st *memc)
+test_return_t string_alloc_null(void*)
 {
-  memcached_string_st *string;
+  memcached_st *memc= memcached_create(NULL);
 
-  string= memcached_string_create(memc, NULL, 0);
+  memcached_string_st *string= memcached_string_create(memc, NULL, 0);
   test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
+  test_true(memcached_is_allocated(string));
+  test_true(memcached_is_initialized(string));
   memcached_string_free(string);
 
+  memcached_free(memc);
+
   return TEST_SUCCESS;
 }
 
-test_return_t string_alloc_with_size(memcached_st *memc)
+test_return_t string_alloc_with_size(void*)
 {
-  memcached_string_st *string;
-
-  string= memcached_string_create(memc, NULL, 1024);
+  memcached_st *memc= memcached_create(NULL);
+  memcached_string_st *string= memcached_string_create(memc, NULL, 1024);
   test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
+  test_true(memcached_is_allocated(string));
+  test_true(memcached_is_initialized(string));
   memcached_string_free(string);
 
-  return TEST_SUCCESS;
-}
-
-test_return_t string_alloc_with_size_toobig(memcached_st *memc)
-{
-  memcached_string_st *string;
-
-  string= memcached_string_create(memc, NULL, SIZE_MAX);
-  test_true(string == NULL);
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t string_alloc_append(memcached_st *memc)
+test_return_t string_alloc_with_size_toobig(void*)
 {
-  unsigned int x;
-  char buffer[SMALL_STRING_LEN];
+  memcached_st *memc= memcached_create(NULL);
+  memcached_string_st *string= memcached_string_create(memc, NULL, SIZE_MAX);
+  test_zero(string);
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t string_alloc_append(void*)
+{
+  memcached_st *memc= memcached_create(NULL);
+
+  char buffer[BUFSIZ];
   memcached_string_st *string;
 
   /* Ring the bell! */
-  memset(buffer, 6, SMALL_STRING_LEN);
+  memset(buffer, 6, BUFSIZ);
 
   string= memcached_string_create(memc, NULL, 100);
   test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
+  test_true(memcached_is_allocated(string));
+  test_true(memcached_is_initialized(string));
 
-  for (x= 0; x < 1024; x++)
+  for (unsigned int x= 0; x < 1024; x++)
   {
     memcached_return_t rc;
-    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
+    rc= memcached_string_append(string, buffer, BUFSIZ);
     test_true(rc == MEMCACHED_SUCCESS);
   }
-  test_true(memcached_is_allocated(string) == true);
+  test_true(memcached_is_allocated(string));
   memcached_string_free(string);
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t string_alloc_append_toobig(memcached_st *memc)
+test_return_t string_alloc_append_toobig(void*)
 {
+  memcached_st *memc= memcached_create(NULL);
+
   memcached_return_t rc;
-  char buffer[SMALL_STRING_LEN];
+  char buffer[BUFSIZ];
   memcached_string_st *string;
 
   /* Ring the bell! */
@@ -142,33 +152,39 @@ test_return_t string_alloc_append_toobig(memcached_st *memc)
 
   string= memcached_string_create(memc, NULL, 100);
   test_true(string);
-  test_true(memcached_is_allocated(string) == true);
-  test_true(memcached_is_initialized(string) == true);
+  test_true(memcached_is_allocated(string));
+  test_true(memcached_is_initialized(string));
 
   for (unsigned int x= 0; x < 1024; x++)
   {
-    rc= memcached_string_append(string, buffer, SMALL_STRING_LEN);
+    rc= memcached_string_append(string, buffer, BUFSIZ);
     test_true(rc == MEMCACHED_SUCCESS);
   }
   rc= memcached_string_append(string, buffer, SIZE_MAX);
   test_true(rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE);
-  test_true(memcached_is_allocated(string) == true);
+  test_true(memcached_is_allocated(string));
   memcached_string_free(string);
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t string_alloc_append_multiple(memcached_st *memc)
+test_return_t string_alloc_append_multiple(void*)
 {
-  memcached_string_st *error_string= memcached_string_create(memc, NULL, 1024);
-  memcached_string_append(error_string, memcached_literal_param("Error occured while parsing: "));
-  memcached_string_append(error_string, memcached_string_make_from_cstr("jog the strlen() method"));
-  memcached_string_append(error_string, memcached_literal_param(" ("));
+  memcached_st *memc= memcached_create(NULL);
 
-  memcached_string_append(error_string, memcached_string_make_from_cstr(memcached_strerror(NULL, MEMCACHED_SUCCESS)));
-  memcached_string_append(error_string, memcached_literal_param(")"));
+  memcached_string_st *error_string= memcached_string_create(memc, NULL, 1024);
+  memcached_string_append(error_string, test_literal_param("Error occured while parsing: "));
+  memcached_string_append(error_string, test_string_make_from_cstr("jog the strlen() method"));
+  memcached_string_append(error_string, test_literal_param(" ("));
+
+  memcached_string_append(error_string, test_string_make_from_cstr(memcached_strerror(NULL, MEMCACHED_SUCCESS)));
+  memcached_string_append(error_string, test_literal_param(")"));
 
   memcached_string_free(error_string);
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }

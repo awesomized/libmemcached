@@ -10,7 +10,7 @@ example_memcached_light_SOURCES= \
 				 example/interface_v0.c \
 				 example/interface_v1.c \
 				 example/memcached_light.c \
-				 libmemcached/byteorder.cc \
+				 example/byteorder.cc \
 				 example/memcached_light.h \
 				 example/storage.h
 

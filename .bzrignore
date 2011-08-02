@@ -2,11 +2,14 @@
 *.OTHER
 *.THIS
 *.exe
+*.gz
 *.lo
 *.orig
 *.output
 *.pop
+*.rej
 *.rpm
+*.tar
 */*.l[oa]
 */*/*.l[oa]
 */*/.deps
@@ -29,6 +32,7 @@ Makefile.in
 TAGS
 aclocal.m4
 autom4te.cache
+autoscan.log
 clients/memaslap
 clients/memcapable
 clients/memcat
@@ -55,6 +59,7 @@ config/pandora_vc_revinfo
 config/plugin.ac
 config/top.h
 configure
+configure.scan
 docs/*.[13]
 docs/*.html
 docs/changes
@@ -67,13 +72,6 @@ docs/man/*
 docs/text
 example/memcached_light
 libhashkit/configure.h
-libmemcached-*.tar.gz
-libmemcached-0.30-1.src.rpm
-libmemcached-0.30-1.x86_64.rpm
-libmemcached-0.31-1.src.rpm
-libmemcached-0.31-1.x86_64.rpm
-libmemcached-0.37-1.src.rpm
-libmemcached-0.37-1.x86_64.rpm
 libmemcached-?.??/
 libmemcached/configure.h
 libmemcached/dtrace_probes.h
@@ -89,6 +87,11 @@ ltoptions.m4
 ltsugar.m4
 ltversion.m4
 lt~obsolete.m4
+m4/libtool.m4 
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
 out
 patch
 patch2
@@ -104,6 +107,7 @@ tests/c_test
 tests/cycle
 tests/hash_plus
 tests/hashplus
+tests/internals
 tests/memcapable
 tests/memplus
 tests/memslap

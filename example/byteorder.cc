@@ -35,7 +35,11 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include <config.h>
+
+#include <sys/types.h>
+
+#include <example/byteorder.h>
 
 /* Byte swap a 64-bit number. */
 #ifndef swap64
@@ -60,24 +64,24 @@ static inline uint64_t swap64(uint64_t in)
 
 #ifdef HAVE_HTONLL
 
-uint64_t memcached_ntohll(uint64_t value)
+uint64_t example_ntohll(uint64_t value)
 {
   return ntohll(value);
 }
 
-uint64_t memcached_htonll(uint64_t value)
+uint64_t example_htonll(uint64_t value)
 {
   return htonll(value);
 }
 
 #else // HAVE_HTONLL
 
-uint64_t memcached_ntohll(uint64_t value)
+uint64_t example_ntohll(uint64_t value)
 {
   return swap64(value);
 }
 
-uint64_t memcached_htonll(uint64_t value)
+uint64_t example_htonll(uint64_t value)
 {
   return swap64(value);
 }

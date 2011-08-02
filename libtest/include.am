@@ -78,19 +78,26 @@ libtest_libtest_la_SOURCES= \
 			    libtest/signal.cc \
 			    libtest/test.cc
 
-libtest_libtest_la_CFLAGS= ${AM_CFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
-libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS} ${NO_CONVERSION} -DBUILDING_LIBTEST
+libtest_libtest_la_CFLAGS= ${AM_CFLAGS}
+libtest_libtest_la_CFLAGS+= ${NO_CONVERSION}
+libtest_libtest_la_CFLAGS+= $(PTHREAD_CFLAGS)
+libtest_libtest_la_CFLAGS+= -DBUILDING_LIBTEST
+libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
+libtest_libtest_la_CPPFLAGS+= ${NO_CONVERSION}
+libtest_libtest_la_CPPFLAGS+= $(PTHREAD_LIBS)
+libtest_libtest_la_CPPFLAGS+= -DBUILDING_LIBTEST
+libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS}
+libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
+libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
+libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
 libtest_libtest_la_LIBADD=
+libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
 
 LIBTEST_LDADD= libtest/libtest.la
 
 if HAVE_LIBMEMCACHED
-if BUILD_LIBMEMCACHEDUTIL
-LIBTEST_LDADD+= libmemcached/libmemcached.la
-LIBTEST_LDADD+= libmemcached/libmemcachedutil.la
-else
-LIBTEST_LDADD+= $(libmemcached_LIBS)
-endif
+libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
+libtest_libtest_la_LIBADD+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 endif
 

@@ -10,15 +10,12 @@
 
 TESTS_LDADDS= \
 	      libmemcached/libmemcached.la \
+	      libmemcached/libmemcachedutil.la \
 	      libtest/libtest.la
 
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
-
-if BUILD_LIBMEMCACHEDUTIL
-TESTS_LDADDS+= libmemcached/libmemcachedutil.la
-endif
 
 EXTRA_DIST+= \
 	     tests/cpp_example.cc \
@@ -43,40 +40,55 @@ noinst_HEADERS+= \
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+tests_cycle_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
 tests_cycle_SOURCES= tests/cycle.cc
 tests_cycle_DEPENDENCIES= $(TESTS_LDADDS)
 tests_cycle_LDADD= $(tests_cycle_DEPENDENCIES)
+tests_cycle_LDADD+= ${PTHREAD_LIBS}
 check_PROGRAMS+= tests/cycle
 noinst_PROGRAMS+= tests/cycle
 
+# Test internals
+tests_internals_SOURCES= tests/internals.cc
+tests_internals_SOURCES+= tests/string.cc
+tests_internals_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
+tests_internals_DEPENDENCIES= libmemcachedinternal/libmemcachedinternal.la libtest/libtest.la  libmemcachedinternal/libmemcachedutilinternal.la
+tests_internals_LDADD= libmemcachedinternal/libmemcachedinternal.la
+tests_internals_LDADD+= ${PTHREAD_LIBS}
+tests_internals_LDADD+= libmemcachedinternal/libmemcachedutilinternal.la
+tests_internals_LDADD+= libtest/libtest.la
+check_PROGRAMS+= tests/internals
+noinst_PROGRAMS+= tests/internals
 
+
+tests_testapp_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
 tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testapp_SOURCES= \
 		       tests/basic.cc \
 		       tests/debug.cc \
 		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
+		       tests/ketama.cc \
 		       tests/mem_functions.cc \
 		       tests/namespace.cc \
 		       tests/parser.cc \
 		       tests/pool.cc \
 		       tests/print.cc \
 		       tests/replication.cc \
-		       tests/string.cc \
 		       tests/virtual_buckets.cc
 tests_testapp_SOURCES+= clients/generator.cc clients/execute.cc
-
 tests_testapp_DEPENDENCIES= \
-			    $(BUILT_SOURCES) \
-			    $(TESTS_LDADDS) \
+			    libmemcached/libmemcached.la \
+			    libtest/libtest.la
 			    libhashkit/libhashkit.la \
-			    libmemcached/libmemcachedinternal.la
-
+			    libmemcached/libmemcachedutil.la
 tests_testapp_LDADD= \
 		     $(LIBSASL) \
-		     $(TESTS_LDADDS) \
-		     libhashkit/libhashkit.la \
-		     libmemcached/libmemcachedinternal.la
+		     ${PTHREAD_LIBS} \
+		     libmemcached/libmemcached.la \
+		     libmemcached/libmemcachedutil.la \
+		     libtest/libtest.la \
+		     libhashkit/libhashkit.la
 check_PROGRAMS+= tests/testapp
 noinst_PROGRAMS+= tests/testapp
 

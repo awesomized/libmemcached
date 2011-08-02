@@ -60,8 +60,6 @@ struct memcached_string_st {
   } options;
 };
 
-#ifdef BUILDING_LIBMEMCACHED
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -108,6 +106,4 @@ void memcached_string_set_length(memcached_string_st *self, size_t length);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

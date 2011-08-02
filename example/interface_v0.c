@@ -15,7 +15,7 @@
 #include <string.h>
 
 #include <libmemcached/protocol_handler.h>
-#include <libmemcached/byteorder.h>
+#include <example/byteorder.h>
 #include "storage.h"
 #include "memcached_light.h"
 
@@ -78,7 +78,7 @@ static protocol_binary_response_status get_command_handler(const void *cookie,
     msg.response.message.body.flags= htonl(item->flags);
     char *ptr= (char*)(msg.response.bytes + sizeof(*header) + 4);
     uint32_t bodysize= 4;
-    msg.response.message.header.response.cas= memcached_htonll(item->cas);
+    msg.response.message.header.response.cas= example_htonll(item->cas);
     if (opcode == PROTOCOL_BINARY_CMD_GETK || opcode == PROTOCOL_BINARY_CMD_GETKQ)
     {
       memcpy(ptr, item->key, item->nkey);
@@ -172,8 +172,8 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
   };
 
   uint16_t keylen= ntohs(header->request.keylen);
-  uint64_t initial= memcached_ntohll(req->message.body.initial);
-  uint64_t delta= memcached_ntohll(req->message.body.delta);
+  uint64_t initial= example_ntohll(req->message.body.initial);
+  uint64_t delta= example_ntohll(req->message.body.delta);
   uint32_t expiration= ntohl(req->message.body.expiration);
   uint32_t flags= 0;
   void *key= req->bytes + sizeof(req->bytes);
@@ -222,8 +222,8 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS)
   {
     response.message.header.response.bodylen= ntohl(8);
-    response.message.body.value= memcached_ntohll((*(uint64_t*)item->data));
-    response.message.header.response.cas= memcached_ntohll(item->cas);
+    response.message.body.value= example_ntohll((*(uint64_t*)item->data));
+    response.message.header.response.cas= example_ntohll(item->cas);
 
     release_item(item);
     if (header->request.opcode == PROTOCOL_BINARY_CMD_INCREMENTQ ||
@@ -266,7 +266,7 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
 {
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
   uint16_t keylen= ntohs(header->request.keylen);
-  uint64_t cas= memcached_ntohll(header->request.cas);
+  uint64_t cas= example_ntohll(header->request.cas);
   void *key= header + 1;
   uint32_t vallen= ntohl(header->request.bodylen) - keylen;
   void *val= (char*)key + keylen;
@@ -317,7 +317,7 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
             .opcode= header->request.opcode,
             .status= htons(rval),
             .opaque= header->request.opaque,
-            .cas= memcached_htonll(cas),
+            .cas= example_htonll(cas),
           }
         }
       };
@@ -357,7 +357,7 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
     struct item* item= get_item(key, keylen);
     if (item != NULL)
     {
-      if (item->cas != memcached_ntohll(header->request.cas))
+      if (item->cas != example_ntohll(header->request.cas))
       {
         release_item(item);
         response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
@@ -379,7 +379,7 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
     /* SETQ shouldn't return a message */
     if (header->request.opcode == PROTOCOL_BINARY_CMD_SET)
     {
-      response.message.header.response.cas= memcached_htonll(item->cas);
+      response.message.header.response.cas= example_htonll(item->cas);
       release_item(item);
       return response_handler(cookie, header, (void*)&response);
     }
@@ -426,7 +426,7 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
       /* ADDQ shouldn't return a message */
       if (header->request.opcode == PROTOCOL_BINARY_CMD_ADD)
       {
-        response.message.header.response.cas= memcached_htonll(item->cas);
+        response.message.header.response.cas= example_htonll(item->cas);
         release_item(item);
         return response_handler(cookie, header, (void*)&response);
       }
@@ -471,7 +471,7 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
   {
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_ENOENT);
   }
-  else if (header->request.cas == 0 || memcached_ntohll(header->request.cas) == item->cas)
+  else if (header->request.cas == 0 || example_ntohll(header->request.cas) == item->cas)
   {
     release_item(item);
     delete_item(key, keylen);
@@ -487,7 +487,7 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
       /* REPLACEQ shouldn't return a message */
       if (header->request.opcode == PROTOCOL_BINARY_CMD_REPLACE)
       {
-        response.message.header.response.cas= memcached_htonll(item->cas);
+        response.message.header.response.cas= example_htonll(item->cas);
         release_item(item);
         return response_handler(cookie, header, (void*)&response);
       }

@@ -35,7 +35,7 @@
 #include <event.h>
 
 #include <libmemcached/protocol_handler.h>
-#include <libmemcached/byteorder.h>
+#include <example/byteorder.h>
 #include "storage.h"
 #include "memcached_light.h"
 
