@@ -35,69 +35,38 @@
  *
  */
 
-#pragma once
 
+#include <config.h>
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+#include "util/operation.hpp"
+#include <string>
 
 namespace datadifferential {
 namespace util {
 
-class Operation {
-  typedef std::vector<char> Packet;
+bool Operation::response(std::string &arg)
+{
+  if (_response.empty())
+    return false;
 
-public:
-  typedef std::vector<Operation *> vector;
-
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
-  {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
-  }
-
-  ~Operation()
+  if (not memcmp("OK\r\n", &_response[0], 3))
   { }
-
-  size_t size() const
+  else if (not memcmp("OK ", &_response[0], 3))
   {
-    return packet.size();
+    arg.append(&_response[3], _response.size() -3);
   }
-
-  const char* ptr() const
+  else if (not memcmp("ERR ", &_response[0], 4))
   {
-    return &(packet)[0];
-  }
-
-  bool has_response() const
-  {
-    return _expect_response;
-  }
-
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
-
-  // Return false on error
-  bool response(std::string &);
-
-  bool reconnect() const
-  {
+    arg.append(&_response[4], _response.size() -4);
     return false;
   }
+  else 
+  {
+    arg.append(&_response[0], _response.size());
+  }
 
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
-};
+  return true;
+}
 
 } /* namespace util */
 } /* namespace datadifferential */
