@@ -26,6 +26,7 @@ noinst_HEADERS+= \
 		 tests/debug.h \
 		 tests/error_conditions.h \
 		 tests/hash_results.h \
+		 tests/ketama.h \
 		 tests/ketama_test_cases.h \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached_world.h \
