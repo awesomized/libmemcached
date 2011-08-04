@@ -60,8 +60,6 @@ LT_INIT
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-AC_CHECK_FUNCS([getline])
-
 PANDORA_HAVE_LIBEVENT
 my_saved_libs="$LIBS"
 LIBS=
@@ -86,6 +84,7 @@ WITH_LIBGEARMAN
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([dup2])
+AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
 AC_CHECK_FUNCS([memchr])
 AC_CHECK_FUNCS([memmove])
