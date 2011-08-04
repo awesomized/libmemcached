@@ -7,11 +7,24 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_PREREQ([2.61])
-AC_INIT([libmemcached],[0.51],[http://libmemcached.org/])
-AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
+AC_INIT([libmemcached],[0.52],[http://libmemcached.org/])
+
 AC_CONFIG_AUX_DIR(config)
+
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE
+
+AC_CANONICAL_HOST
+AC_CANONICAL_BUILD
+
+AC_PREREQ([2.61])
+
 AC_CONFIG_MACRO_DIR(m4)
+
+AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
+
+AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
 PANDORA_CANONICAL_TARGET(no-vc-changelog)
 AC_CHECK_PROGS([YACC], ['bison'], [:])
@@ -44,66 +57,6 @@ AC_SUBST(HAVE_LIBMEMCACHED, 1)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, true)
 LT_INIT
 
-AH_TOP([
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#ifdef _SYS_FEATURE_TESTS_H
-#error "You should include config.h as your first include file"
-#endif
-
-#ifdef WIN32
-#define _WIN32_WINNT 0x0501
-#endif
-])
-
-AH_BOTTOM([
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
-#ifdef HAVE_FNMATCH_H
-#include <fnmatch.h>
-#endif
-
-#ifdef HAVE_POLL_H
-#include <poll.h>
-#else
-#include "poll/poll.h"
-#endif
-
-/* To hide the platform differences between MS Windows and Unix, I am
- * going to use the Microsoft way and #define the Microsoft-specific
- * functions to the unix way. Microsoft use a separate subsystem for sockets,
- * but Unix normally just use a filedescriptor on the same functions. It is
- * a lot easier to map back to the unix way with macros than going the other
- * way without side effect ;-)
- */
-#ifdef WIN32
-#include "win32/wrappers.h"
-#define get_socket_errno() WSAGetLastError()
-#else
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define closesocket(a) close(a)
-#define get_socket_errno() errno
-#endif
-
-#ifndef HAVE_MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
-#endif
-
-#ifndef HAVE_MSG_DONTWAIT
-#define MSG_DONTWAIT 0
-#endif
-
-#ifndef HAVE_MSG_MORE
-#define MSG_MORE 0
-#endif
-
-#endif
-])
-
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
@@ -116,6 +69,7 @@ PANDORA_REQUIRE_PTHREAD
 LIBS="$my_saved_libs"
 
 dnl Specialty checks
+CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB
 SETSOCKOPT_SANITY

@@ -48,6 +48,9 @@ int main(void)
   (void)memcached_failed(MEMCACHED_SUCCESS);
   (void)memcached_continue(MEMCACHED_SUCCESS);
 
+  memcached_st *memc= memcached_create(NULL);
+  memcached_free(memc);
+
   return EXIT_SUCCESS;
 }
 

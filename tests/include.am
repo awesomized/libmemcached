@@ -146,7 +146,8 @@ noinst_PROGRAMS+= tests/memslap
  
 # Test linking with C application
 tests_c_test_SOURCES= tests/c_test.c
-tests_c_test_LDADD= ${CLIENT_LDADD}
+tests_c_test_LDADD= libmemcached/libmemcached.la
+tests_c_test_DEPENDENCIES= libmemcached/libmemcached.la
 check_PROGRAMS+=tests/c_test
 noinst_PROGRAMS+=tests/c_test
 

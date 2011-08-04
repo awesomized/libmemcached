@@ -37,6 +37,7 @@
 
 #include <config.h>
 
+#include <cstdio>
 #include <iostream>
 
 #include <libmemcached/memcached.h>

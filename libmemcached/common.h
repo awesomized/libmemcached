@@ -70,6 +70,13 @@
 
 #include <libmemcached/server_instance.h>
 
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#else
+#include "poll/poll.h"
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

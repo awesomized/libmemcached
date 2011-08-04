@@ -46,6 +46,7 @@ clients/memslap
 clients/memstat
 config.h
 config.h.in
+config.in
 config.log
 config.status
 config/compile
