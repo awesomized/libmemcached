@@ -51,6 +51,19 @@ static inline std::string &rtrim(std::string &s)
 #include <libtest/memcached.h>
 #endif
 
+extern "C" {
+  static bool exited_successfully(int status)
+  {
+    if (WEXITSTATUS(status) == 0)
+    {
+      return true;
+    }
+
+    return true;
+  }
+}
+
+
 namespace libtest {
 
 std::ostream& operator<<(std::ostream& output, const Server &arg)
@@ -180,7 +193,8 @@ bool Server::start()
     _running+= " &";
   }
 
-  if (system(_running.c_str()) == -1)
+  int ret= system(_running.c_str());
+  if (not exited_successfully(ret))
   {
     Error << "system() failed:" << strerror(errno);
     _running.clear();
@@ -513,6 +527,7 @@ bool server_startup_st::is_helgrind() const
 bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[])
 {
   Outn();
+  (void)try_port;
 
   // Look to see if we are being provided ports to use
   {
