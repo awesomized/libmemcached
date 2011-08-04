@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  DataDifferential Utility Library
+ *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,69 +35,55 @@
  *
  */
 
-#pragma once
+#include <config.h>
 
+#include <sys/types.h>
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+#include <example/byteorder.h>
 
-namespace datadifferential {
-namespace util {
-
-class Operation {
-  typedef std::vector<char> Packet;
-
-public:
-  typedef std::vector<Operation *> vector;
-
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
+/* Byte swap a 64-bit number. */
+#ifndef swap64
+static inline uint64_t swap64(uint64_t in)
+{
+#ifndef WORDS_BIGENDIAN
+  /* Little endian, flip the bytes around until someone makes a faster/better
+   * way to do this. */
+  uint64_t rv= 0;
+  for (uint8_t x= 0; x < 8; x++)
   {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
+    rv= (rv << 8) | (in & 0xff);
+    in >>= 8;
   }
+  return rv;
+#else
+  /* big-endian machines don't need byte swapping */
+  return in;
+#endif // WORDS_BIGENDIAN
+}
+#endif
 
-  ~Operation()
-  { }
+#ifdef HAVE_HTONLL
 
-  size_t size() const
-  {
-    return packet.size();
-  }
+uint64_t example_ntohll(uint64_t value)
+{
+  return ntohll(value);
+}
 
-  const char* ptr() const
-  {
-    return &(packet)[0];
-  }
+uint64_t example_htonll(uint64_t value)
+{
+  return htonll(value);
+}
 
-  bool has_response() const
-  {
-    return _expect_response;
-  }
+#else // HAVE_HTONLL
 
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
+uint64_t example_ntohll(uint64_t value)
+{
+  return swap64(value);
+}
 
-  // Return false on error
-  bool response(std::string &);
+uint64_t example_htonll(uint64_t value)
+{
+  return swap64(value);
+}
 
-  bool reconnect() const
-  {
-    return false;
-  }
-
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
-};
-
-} /* namespace util */
-} /* namespace datadifferential */
+#endif // HAVE_HTONLL

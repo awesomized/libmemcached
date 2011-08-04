@@ -74,6 +74,7 @@ clients_memerror_LDADD= $(CLIENTS_LDADDS)
 
 clients_memslap_SOURCES = clients/memslap.cc
 clients_memslap_SOURCES+= clients/generator.cc clients/execute.cc
+clients_memslap_CXXFLAGS = ${PTHREAD_CFLAGS}
 clients_memslap_LDADD = $(PTHREAD_LIBS) $(CLIENTS_LDADDS)
 
 clients_memaslap_SOURCES= \

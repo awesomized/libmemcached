@@ -42,12 +42,16 @@
   Test cases
 */
 
-#define BUILDING_LIBMEMCACHED
-// !NEVER use common.h, always use memcached.h in your own apps
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/is.h>
+#include <libmemcached/server_instance.h>
+
+#include <libhashkit/hashkit.h>
 
 #include <cassert>
+#include <cerrno>
 #include <memory>
+#include <pthread.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -66,9 +70,9 @@
 #include <libtest/test.hpp>
 #include "tests/deprecated.h"
 #include "tests/parser.h"
+#include "tests/ketama.h"
 #include "tests/pool.h"
 #include "tests/namespace.h"
-#include "tests/string.h"
 #include "tests/replication.h"
 #include "tests/debug.h"
 #include "tests/basic.h"
@@ -78,10 +82,7 @@
 
 using namespace libtest;
 
-#ifdef HAVE_LIBMEMCACHEDUTIL
-#include <pthread.h>
-#include "libmemcached/memcached_util.h"
-#endif
+#include <libmemcached/memcached_util.h>
 
 #include "hash_results.h"
 
@@ -2931,69 +2932,6 @@ static test_return_t user_supplied_bug20(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-#include "ketama_test_cases.h"
-static test_return_t user_supplied_bug18(memcached_st *trash)
-{
-  memcached_return_t rc;
-  uint64_t value;
-  int x;
-  memcached_st *memc;
-
-  (void)trash;
-
-  memc= memcached_create(NULL);
-  test_true(memc);
-
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
-
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  test_true(value == 1);
-
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
-  test_compare(MEMCACHED_SUCCESS, rc);
-
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
-  test_true(value == MEMCACHED_HASH_MD5);
-
-  memcached_server_st *server_pool= memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
-  memcached_server_push(memc, server_pool);
-
-  /* verify that the server list was parsed okay. */
-  test_true(memcached_server_count(memc) == 8);
-  test_strcmp(server_pool[0].hostname, "10.0.1.1");
-  test_true(server_pool[0].port == 11211);
-  test_true(server_pool[0].weight == 600);
-  test_strcmp(server_pool[2].hostname, "10.0.1.3");
-  test_true(server_pool[2].port == 11211);
-  test_true(server_pool[2].weight == 200);
-  test_strcmp(server_pool[7].hostname, "10.0.1.8");
-  test_true(server_pool[7].port == 11211);
-  test_true(server_pool[7].weight == 100);
-
-  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
-   * us test the boundary wraparound.
-   */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
-
-  /* verify the standard ketama set. */
-  for (x= 0; x < 99; x++)
-  {
-    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
-
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, server_idx);
-
-    const char *hostname = memcached_server_name(instance);
-    test_strcmp(hostname, ketama_test_cases[x].server);
-  }
-
-  memcached_server_list_free(server_pool);
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
 /* Large mget() of missing keys with binary proto
  *
  * If many binary quiet commands (such as getq's in an mget) fill the output
@@ -3094,85 +3032,6 @@ static test_return_t user_supplied_bug21(memcached_st *memc)
   /* should fail as of r580 */
   test_compare(TEST_SUCCESS,
                _user_supplied_bug21(memc, 1000));
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t auto_eject_hosts(memcached_st *trash)
-{
-  (void) trash;
-  memcached_server_instance_st instance;
-
-  memcached_return_t rc;
-  memcached_st *memc= memcached_create(NULL);
-  test_true(memc);
-
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
-
-  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  test_true(value == 1);
-
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
-  test_compare(MEMCACHED_SUCCESS, rc);
-
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
-  test_true(value == MEMCACHED_HASH_MD5);
-
-    /* server should be removed when in delay */
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
-
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS);
-  test_true(value == 1);
-
-  memcached_server_st *server_pool;
-  server_pool = memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
-  memcached_server_push(memc, server_pool);
-
-  /* verify that the server list was parsed okay. */
-  test_true(memcached_server_count(memc) == 8);
-  test_strcmp(server_pool[0].hostname, "10.0.1.1");
-  test_true(server_pool[0].port == 11211);
-  test_true(server_pool[0].weight == 600);
-  test_strcmp(server_pool[2].hostname, "10.0.1.3");
-  test_true(server_pool[2].port == 11211);
-  test_true(server_pool[2].weight == 200);
-  test_strcmp(server_pool[7].hostname, "10.0.1.8");
-  test_true(server_pool[7].port == 11211);
-  test_true(server_pool[7].weight == 100);
-
-  instance= memcached_server_instance_by_position(memc, 2);
-  ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) + 15;
-  memc->ketama.next_distribution_rebuild= time(NULL) - 1;
-
-  /*
-    This would not work if there were only two hosts.
-  */
-  for (size_t x= 0; x < 99; x++)
-  {
-    memcached_autoeject(memc);
-    uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
-    test_true(server_idx != 2);
-  }
-
-  /* and re-added when it's back. */
-  ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) - 1;
-  memc->ketama.next_distribution_rebuild= time(NULL) - 1;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
-                         memc->distribution);
-  for (size_t x= 0; x < 99; x++)
-  {
-    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
-    // We re-use instance from above.
-    instance=
-      memcached_server_instance_by_position(memc, server_idx);
-    const char *hostname = memcached_server_name(instance);
-    test_strcmp(hostname, ketama_test_cases[x].server);
-  }
-
-  memcached_server_list_free(server_pool);
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -3376,7 +3235,9 @@ static test_return_t get_read_count(memcached_st *memc)
       {
         count++;
         if (return_value)
+        {
           free(return_value);
+        }
       }
     }
   }
@@ -3400,7 +3261,9 @@ static test_return_t get_read(memcached_st *memc)
       test_compare(MEMCACHED_SUCCESS, rc);
     */
     if (rc == MEMCACHED_SUCCESS && return_value)
+    {
       free(return_value);
+    }
   }
 
   return TEST_SUCCESS;
@@ -3419,7 +3282,7 @@ static test_return_t mget_read(memcached_st *memc)
     unsigned int keys_returned;
     test_compare(TEST_SUCCESS, fetch_all_results(memc, keys_returned, MEMCACHED_SUCCESS));
     test_true(keys_returned > 0);
-    test_compare(global_count, keys_returned);
+    test_compare_got(global_count, keys_returned, "Possible false, positive, memcached may have ejected key/value based on memory needs");
   }
 
   return TEST_SUCCESS;
@@ -4947,110 +4810,6 @@ static test_return_t memcached_get_by_key_MEMCACHED_NOTFOUND(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-
-static test_return_t ketama_compatibility_libmemcached(memcached_st *)
-{
-  memcached_st *memc= memcached_create(NULL);
-  test_true(memc);
-
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1));
-
-  test_compare(uint64_t(1), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED));
-
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA));
-  test_compare(MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA, memcached_behavior_get_distribution(memc));
-
-  memcached_server_st *server_pool= memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
-  memcached_server_push(memc, server_pool);
-
-  /* verify that the server list was parsed okay. */
-  test_compare(8U, memcached_server_count(memc));
-  test_strcmp(server_pool[0].hostname, "10.0.1.1");
-  test_compare(in_port_t(11211), server_pool[0].port);
-  test_compare(600U, server_pool[0].weight);
-  test_strcmp(server_pool[2].hostname, "10.0.1.3");
-  test_compare(in_port_t(11211), server_pool[2].port);
-  test_compare(200U, server_pool[2].weight);
-  test_strcmp(server_pool[7].hostname, "10.0.1.8");
-  test_compare(in_port_t(11211), server_pool[7].port);
-  test_compare(100U, server_pool[7].weight);
-
-  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
-   * us test the boundary wraparound.
-   */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
-
-  /* verify the standard ketama set. */
-  for (uint32_t x= 0; x < 99; x++)
-  {
-    uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, server_idx);
-    const char *hostname = memcached_server_name(instance);
-
-    test_strcmp(hostname, ketama_test_cases[x].server);
-  }
-
-  memcached_server_list_free(server_pool);
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t ketama_compatibility_spymemcached(memcached_st *)
-{
-  memcached_st *memc= memcached_create(NULL);
-  test_true(memc);
-
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1));
-
-  test_compare(UINT64_C(1), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED));
-
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY));
-  test_compare(MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY, memcached_behavior_get_distribution(memc));
-
-  memcached_server_st *server_pool= memcached_servers_parse("10.0.1.1:11211 600,10.0.1.2:11211 300,10.0.1.3:11211 200,10.0.1.4:11211 350,10.0.1.5:11211 1000,10.0.1.6:11211 800,10.0.1.7:11211 950,10.0.1.8:11211 100");
-  test_true(server_pool);
-  memcached_server_push(memc, server_pool);
-
-  /* verify that the server list was parsed okay. */
-  test_compare(8U, memcached_server_count(memc));
-  test_strcmp(server_pool[0].hostname, "10.0.1.1");
-  test_compare(in_port_t(11211), server_pool[0].port);
-  test_compare(600U, server_pool[0].weight);
-  test_strcmp(server_pool[2].hostname, "10.0.1.3");
-  test_compare(in_port_t(11211), server_pool[2].port);
-  test_compare(200U, server_pool[2].weight);
-  test_strcmp(server_pool[7].hostname, "10.0.1.8");
-  test_compare(in_port_t(11211), server_pool[7].port);
-  test_compare(100U, server_pool[7].weight);
-
-  /* VDEAAAAA hashes to fffcd1b5, after the last continuum point, and lets
-   * us test the boundary wraparound.
-   */
-  test_true(memcached_generate_hash(memc, (char *)"VDEAAAAA", 8) == memc->ketama.continuum[0].index);
-
-  /* verify the standard ketama set. */
-  for (uint32_t x= 0; x < 99; x++)
-  {
-    uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases_spy[x].key, strlen(ketama_test_cases_spy[x].key));
-
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, server_idx);
-
-    const char *hostname= memcached_server_name(instance);
-
-    test_strcmp(hostname, ketama_test_cases_spy[x].server);
-  }
-
-  memcached_server_list_free(server_pool);
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
 static test_return_t regression_bug_434484(memcached_st *memc)
 {
   test_return_t test_rc;
@@ -5975,7 +5734,7 @@ static void memcached_die(memcached_st* mc, memcached_return error, const char* 
 {
   fprintf(stderr, "Iteration #%u: ", it);
 
-  if(error == MEMCACHED_ERRNO)
+  if (error == MEMCACHED_ERRNO)
   {
     fprintf(stderr, "system error %d from %s: %s\n",
             errno, what, strerror(errno));
@@ -6114,161 +5873,150 @@ static test_return_t sasl_auth_test(memcached_st *memc)
 
 /* Clean the server before beginning testing */
 test_st tests[] ={
-  {"util_version", 1, (test_callback_fn*)util_version_test },
-  {"flush", 0, (test_callback_fn*)flush_test },
-  {"init", 0, (test_callback_fn*)init_test },
-  {"allocation", 0, (test_callback_fn*)allocation_test },
-  {"server_list_null_test", 0, (test_callback_fn*)server_list_null_test},
-  {"server_unsort", 0, (test_callback_fn*)server_unsort_test},
-  {"server_sort", 0, (test_callback_fn*)server_sort_test},
-  {"server_sort2", 0, (test_callback_fn*)server_sort2_test},
-  {"memcached_server_remove", 0, (test_callback_fn*)memcached_server_remove_test},
-  {"clone_test", 0, (test_callback_fn*)clone_test },
-  {"connection_test", 0, (test_callback_fn*)connection_test},
-  {"callback_test", 0, (test_callback_fn*)callback_test},
-  {"userdata_test", 0, (test_callback_fn*)userdata_test},
-  {"error", 0, (test_callback_fn*)error_test },
-  {"set", 0, (test_callback_fn*)set_test },
-  {"set2", 0, (test_callback_fn*)set_test2 },
-  {"set3", 0, (test_callback_fn*)set_test3 },
-  {"dump", 1, (test_callback_fn*)dump_test},
-  {"add", 1, (test_callback_fn*)add_test },
-  {"memcached_fetch_result(MEMCACHED_NOTFOUND)", 1, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
-  {"replace", 1, (test_callback_fn*)replace_test },
-  {"delete", 1, (test_callback_fn*)delete_test },
-  {"get", 1, (test_callback_fn*)get_test },
-  {"get2", 0, (test_callback_fn*)get_test2 },
-  {"get3", 0, (test_callback_fn*)get_test3 },
-  {"get4", 0, (test_callback_fn*)get_test4 },
-  {"partial mget", 0, (test_callback_fn*)get_test5 },
-  {"stats_servername", 0, (test_callback_fn*)stats_servername_test },
-  {"increment", 0, (test_callback_fn*)increment_test },
-  {"increment_with_initial", 1, (test_callback_fn*)increment_with_initial_test },
-  {"decrement", 0, (test_callback_fn*)decrement_test },
-  {"decrement_with_initial", 1, (test_callback_fn*)decrement_with_initial_test },
-  {"increment_by_key", 0, (test_callback_fn*)increment_by_key_test },
-  {"increment_with_initial_by_key", 1, (test_callback_fn*)increment_with_initial_by_key_test },
-  {"decrement_by_key", 0, (test_callback_fn*)decrement_by_key_test },
-  {"decrement_with_initial_by_key", 1, (test_callback_fn*)decrement_with_initial_by_key_test },
-  {"quit", 0, (test_callback_fn*)quit_test },
-  {"mget", 1, (test_callback_fn*)mget_test },
-  {"mget_result", 1, (test_callback_fn*)mget_result_test },
-  {"mget_result_alloc", 1, (test_callback_fn*)mget_result_alloc_test },
-  {"mget_result_function", 1, (test_callback_fn*)mget_result_function },
-  {"mget_execute", 1, (test_callback_fn*)mget_execute },
-  {"mget_end", 0, (test_callback_fn*)mget_end },
-  {"get_stats", 0, (test_callback_fn*)get_stats },
-  {"add_host_test", 0, (test_callback_fn*)add_host_test },
-  {"add_host_test_1", 0, (test_callback_fn*)add_host_test1 },
-  {"get_stats_keys", 0, (test_callback_fn*)get_stats_keys },
-  {"version_string_test", 0, (test_callback_fn*)version_string_test},
-  {"bad_key", 1, (test_callback_fn*)bad_key_test },
-  {"memcached_server_cursor", 1, (test_callback_fn*)memcached_server_cursor_test },
-  {"read_through", 1, (test_callback_fn*)read_through },
-  {"delete_through", 1, (test_callback_fn*)delete_through },
-  {"noreply", 1, (test_callback_fn*)noreply_test},
-  {"analyzer", 1, (test_callback_fn*)analyzer_test},
-  {"connectionpool", 1, (test_callback_fn*)connection_pool_test },
-  {"memcached_pool_test", 1, (test_callback_fn*)memcached_pool_test },
-  {"test_get_last_disconnect", 1, (test_callback_fn*)test_get_last_disconnect},
-  {"verbosity", 1, (test_callback_fn*)test_verbosity},
-  {"test_server_failure", 1, (test_callback_fn*)test_server_failure},
-  {"cull_servers", 1, (test_callback_fn*)test_cull_servers},
-  {"memcached_stat_execute", 1, (test_callback_fn*)memcached_stat_execute_test},
+  {"util_version", true, (test_callback_fn*)util_version_test },
+  {"flush", false, (test_callback_fn*)flush_test },
+  {"init", false, (test_callback_fn*)init_test },
+  {"allocation", false, (test_callback_fn*)allocation_test },
+  {"server_list_null_test", false, (test_callback_fn*)server_list_null_test},
+  {"server_unsort", false, (test_callback_fn*)server_unsort_test},
+  {"server_sort", false, (test_callback_fn*)server_sort_test},
+  {"server_sort2", false, (test_callback_fn*)server_sort2_test},
+  {"memcached_server_remove", false, (test_callback_fn*)memcached_server_remove_test},
+  {"clone_test", false, (test_callback_fn*)clone_test },
+  {"connection_test", false, (test_callback_fn*)connection_test},
+  {"callback_test", false, (test_callback_fn*)callback_test},
+  {"userdata_test", false, (test_callback_fn*)userdata_test},
+  {"error", false, (test_callback_fn*)error_test },
+  {"set", false, (test_callback_fn*)set_test },
+  {"set2", false, (test_callback_fn*)set_test2 },
+  {"set3", false, (test_callback_fn*)set_test3 },
+  {"dump", true, (test_callback_fn*)dump_test},
+  {"add", true, (test_callback_fn*)add_test },
+  {"memcached_fetch_result(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
+  {"replace", true, (test_callback_fn*)replace_test },
+  {"delete", true, (test_callback_fn*)delete_test },
+  {"get", true, (test_callback_fn*)get_test },
+  {"get2", false, (test_callback_fn*)get_test2 },
+  {"get3", false, (test_callback_fn*)get_test3 },
+  {"get4", false, (test_callback_fn*)get_test4 },
+  {"partial mget", false, (test_callback_fn*)get_test5 },
+  {"stats_servername", false, (test_callback_fn*)stats_servername_test },
+  {"increment", false, (test_callback_fn*)increment_test },
+  {"increment_with_initial", true, (test_callback_fn*)increment_with_initial_test },
+  {"decrement", false, (test_callback_fn*)decrement_test },
+  {"decrement_with_initial", true, (test_callback_fn*)decrement_with_initial_test },
+  {"increment_by_key", false, (test_callback_fn*)increment_by_key_test },
+  {"increment_with_initial_by_key", true, (test_callback_fn*)increment_with_initial_by_key_test },
+  {"decrement_by_key", false, (test_callback_fn*)decrement_by_key_test },
+  {"decrement_with_initial_by_key", true, (test_callback_fn*)decrement_with_initial_by_key_test },
+  {"quit", false, (test_callback_fn*)quit_test },
+  {"mget", true, (test_callback_fn*)mget_test },
+  {"mget_result", true, (test_callback_fn*)mget_result_test },
+  {"mget_result_alloc", true, (test_callback_fn*)mget_result_alloc_test },
+  {"mget_result_function", true, (test_callback_fn*)mget_result_function },
+  {"mget_execute", true, (test_callback_fn*)mget_execute },
+  {"mget_end", false, (test_callback_fn*)mget_end },
+  {"get_stats", false, (test_callback_fn*)get_stats },
+  {"add_host_test", false, (test_callback_fn*)add_host_test },
+  {"add_host_test_1", false, (test_callback_fn*)add_host_test1 },
+  {"get_stats_keys", false, (test_callback_fn*)get_stats_keys },
+  {"version_string_test", false, (test_callback_fn*)version_string_test},
+  {"bad_key", true, (test_callback_fn*)bad_key_test },
+  {"memcached_server_cursor", true, (test_callback_fn*)memcached_server_cursor_test },
+  {"read_through", true, (test_callback_fn*)read_through },
+  {"delete_through", true, (test_callback_fn*)delete_through },
+  {"noreply", true, (test_callback_fn*)noreply_test},
+  {"analyzer", true, (test_callback_fn*)analyzer_test},
+  {"connectionpool", true, (test_callback_fn*)connection_pool_test },
+  {"memcached_pool_test", true, (test_callback_fn*)memcached_pool_test },
+  {"test_get_last_disconnect", true, (test_callback_fn*)test_get_last_disconnect},
+  {"verbosity", true, (test_callback_fn*)test_verbosity},
+  {"test_server_failure", true, (test_callback_fn*)test_server_failure},
+  {"cull_servers", true, (test_callback_fn*)test_cull_servers},
+  {"memcached_stat_execute", true, (test_callback_fn*)memcached_stat_execute_test},
   {0, 0, 0}
 };
 
 test_st behavior_tests[] ={
-  {"libmemcached_string_behavior()", 0, (test_callback_fn*)libmemcached_string_behavior_test},
-  {"libmemcached_string_distribution()", 0, (test_callback_fn*)libmemcached_string_distribution_test},
-  {"behavior_test", 0, (test_callback_fn*)behavior_test},
-  {"MEMCACHED_BEHAVIOR_CORK", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_CORK_test},
-  {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
-  {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", 0, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
+  {"libmemcached_string_behavior()", false, (test_callback_fn*)libmemcached_string_behavior_test},
+  {"libmemcached_string_distribution()", false, (test_callback_fn*)libmemcached_string_distribution_test},
+  {"behavior_test", false, (test_callback_fn*)behavior_test},
+  {"MEMCACHED_BEHAVIOR_CORK", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_CORK_test},
+  {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
+  {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
   {0, 0, 0}
 };
 
 test_st libmemcachedutil_tests[] ={
-  {"libmemcached_util_ping()", 1, (test_callback_fn*)ping_test },
-  {"libmemcached_util_getpid()", 1, (test_callback_fn*)getpid_test },
-  {"libmemcached_util_getpid(MEMCACHED_CONNECTION_FAILURE)", 1, (test_callback_fn*)getpid_connection_failure_test },
+  {"libmemcached_util_ping()", true, (test_callback_fn*)ping_test },
+  {"libmemcached_util_getpid()", true, (test_callback_fn*)getpid_test },
+  {"libmemcached_util_getpid(MEMCACHED_CONNECTION_FAILURE)", true, (test_callback_fn*)getpid_connection_failure_test },
   {0, 0, 0}
 };
 
 test_st basic_tests[] ={
-  {"init", 1, (test_callback_fn*)basic_init_test},
-  {"clone", 1, (test_callback_fn*)basic_clone_test},
-  {"reset", 1, (test_callback_fn*)basic_reset_stack_test},
-  {"reset heap", 1, (test_callback_fn*)basic_reset_heap_test},
-  {"reset stack clone", 1, (test_callback_fn*)basic_reset_stack_clone_test},
-  {"reset heap clone", 1, (test_callback_fn*)basic_reset_heap_clone_test},
+  {"init", true, (test_callback_fn*)basic_init_test},
+  {"clone", true, (test_callback_fn*)basic_clone_test},
+  {"reset", true, (test_callback_fn*)basic_reset_stack_test},
+  {"reset heap", true, (test_callback_fn*)basic_reset_heap_test},
+  {"reset stack clone", true, (test_callback_fn*)basic_reset_stack_clone_test},
+  {"reset heap clone", true, (test_callback_fn*)basic_reset_heap_clone_test},
   {0, 0, 0}
 };
 
 test_st regression_binary_vs_block[] ={
-  {"block add", 1, (test_callback_fn*)block_add_regression},
-  {"binary add", 1, (test_callback_fn*)binary_add_regression},
+  {"block add", true, (test_callback_fn*)block_add_regression},
+  {"binary add", true, (test_callback_fn*)binary_add_regression},
   {0, 0, 0}
 };
 
 test_st async_tests[] ={
-  {"add", 1, (test_callback_fn*)add_wrapper },
+  {"add", true, (test_callback_fn*)add_wrapper },
   {0, 0, 0}
 };
 
-test_st string_tests[] ={
-  {"string static with null", 0, (test_callback_fn*)string_static_null },
-  {"string alloc with null", 0, (test_callback_fn*)string_alloc_null },
-  {"string alloc with 1K", 0, (test_callback_fn*)string_alloc_with_size },
-  {"string alloc with malloc failure", 0, (test_callback_fn*)string_alloc_with_size_toobig },
-  {"string append", 0, (test_callback_fn*)string_alloc_append },
-  {"string append failure (too big)", 0, (test_callback_fn*)string_alloc_append_toobig },
-  {"string_alloc_append_multiple", 0, (test_callback_fn*)string_alloc_append_multiple },
-  {0, 0, (test_callback_fn*)0}
-};
-
 test_st memcached_server_get_last_disconnect_tests[] ={
-  {"memcached_server_get_last_disconnect()", 0, (test_callback_fn*)test_multiple_get_last_disconnect},
+  {"memcached_server_get_last_disconnect()", false, (test_callback_fn*)test_multiple_get_last_disconnect},
   {0, 0, (test_callback_fn*)0}
 };
 
 
 test_st result_tests[] ={
-  {"result static", 0, (test_callback_fn*)result_static},
-  {"result alloc", 0, (test_callback_fn*)result_alloc},
+  {"result static", false, (test_callback_fn*)result_static},
+  {"result alloc", false, (test_callback_fn*)result_alloc},
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st version_1_2_3[] ={
-  {"append", 0, (test_callback_fn*)append_test },
-  {"prepend", 0, (test_callback_fn*)prepend_test },
-  {"cas", 0, (test_callback_fn*)cas_test },
-  {"cas2", 0, (test_callback_fn*)cas2_test },
-  {"append_binary", 0, (test_callback_fn*)append_binary_test },
+  {"append", false, (test_callback_fn*)append_test },
+  {"prepend", false, (test_callback_fn*)prepend_test },
+  {"cas", false, (test_callback_fn*)cas_test },
+  {"cas2", false, (test_callback_fn*)cas2_test },
+  {"append_binary", false, (test_callback_fn*)append_binary_test },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st haldenbrand_tests[] ={
-  {"memcached_set", 0, (test_callback_fn*)user_supplied_bug1 },
-  {"memcached_get()", 0, (test_callback_fn*)user_supplied_bug2 },
-  {"memcached_mget()", 0, (test_callback_fn*)user_supplied_bug3 },
+  {"memcached_set", false, (test_callback_fn*)user_supplied_bug1 },
+  {"memcached_get()", false, (test_callback_fn*)user_supplied_bug2 },
+  {"memcached_mget()", false, (test_callback_fn*)user_supplied_bug3 },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st user_tests[] ={
   {"user_supplied_bug4", true, (test_callback_fn*)user_supplied_bug4 },
-  {"user_supplied_bug5", 1, (test_callback_fn*)user_supplied_bug5 },
-  {"user_supplied_bug6", 1, (test_callback_fn*)user_supplied_bug6 },
-  {"user_supplied_bug7", 1, (test_callback_fn*)user_supplied_bug7 },
-  {"user_supplied_bug8", 1, (test_callback_fn*)user_supplied_bug8 },
-  {"user_supplied_bug9", 1, (test_callback_fn*)user_supplied_bug9 },
-  {"user_supplied_bug10", 1, (test_callback_fn*)user_supplied_bug10 },
-  {"user_supplied_bug11", 1, (test_callback_fn*)user_supplied_bug11 },
-  {"user_supplied_bug12", 1, (test_callback_fn*)user_supplied_bug12 },
-  {"user_supplied_bug13", 1, (test_callback_fn*)user_supplied_bug13 },
-  {"user_supplied_bug14", 1, (test_callback_fn*)user_supplied_bug14 },
-  {"user_supplied_bug15", 1, (test_callback_fn*)user_supplied_bug15 },
-  {"user_supplied_bug16", 1, (test_callback_fn*)user_supplied_bug16 },
+  {"user_supplied_bug5", true, (test_callback_fn*)user_supplied_bug5 },
+  {"user_supplied_bug6", true, (test_callback_fn*)user_supplied_bug6 },
+  {"user_supplied_bug7", true, (test_callback_fn*)user_supplied_bug7 },
+  {"user_supplied_bug8", true, (test_callback_fn*)user_supplied_bug8 },
+  {"user_supplied_bug9", true, (test_callback_fn*)user_supplied_bug9 },
+  {"user_supplied_bug10", true, (test_callback_fn*)user_supplied_bug10 },
+  {"user_supplied_bug11", true, (test_callback_fn*)user_supplied_bug11 },
+  {"user_supplied_bug12", true, (test_callback_fn*)user_supplied_bug12 },
+  {"user_supplied_bug13", true, (test_callback_fn*)user_supplied_bug13 },
+  {"user_supplied_bug14", true, (test_callback_fn*)user_supplied_bug14 },
+  {"user_supplied_bug15", true, (test_callback_fn*)user_supplied_bug15 },
+  {"user_supplied_bug16", true, (test_callback_fn*)user_supplied_bug16 },
 #if !defined(__sun) && !defined(__OpenBSD__)
   /*
   ** It seems to be something weird with the character sets..
@@ -6277,24 +6025,24 @@ test_st user_tests[] ={
   ** to run the test in a specific locale (I tried zh_CN.UTF-8 without success,
   ** so just disable the code for now...).
   */
-  {"user_supplied_bug17", 1, (test_callback_fn*)user_supplied_bug17 },
+  {"user_supplied_bug17", true, (test_callback_fn*)user_supplied_bug17 },
 #endif
-  {"user_supplied_bug18", 1, (test_callback_fn*)user_supplied_bug18 },
-  {"user_supplied_bug19", 1, (test_callback_fn*)user_supplied_bug19 },
-  {"user_supplied_bug20", 1, (test_callback_fn*)user_supplied_bug20 },
-  {"user_supplied_bug21", 1, (test_callback_fn*)user_supplied_bug21 },
-  {"wrong_failure_counter_test", 1, (test_callback_fn*)wrong_failure_counter_test},
-  {"wrong_failure_counter_two_test", 1, (test_callback_fn*)wrong_failure_counter_two_test},
+  {"user_supplied_bug18", true, (test_callback_fn*)user_supplied_bug18 },
+  {"user_supplied_bug19", true, (test_callback_fn*)user_supplied_bug19 },
+  {"user_supplied_bug20", true, (test_callback_fn*)user_supplied_bug20 },
+  {"user_supplied_bug21", true, (test_callback_fn*)user_supplied_bug21 },
+  {"wrong_failure_counter_test", true, (test_callback_fn*)wrong_failure_counter_test},
+  {"wrong_failure_counter_two_test", true, (test_callback_fn*)wrong_failure_counter_two_test},
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st replication_tests[]= {
-  {"set", 1, (test_callback_fn*)replication_set_test },
-  {"get", 0, (test_callback_fn*)replication_get_test },
-  {"mget", 0, (test_callback_fn*)replication_mget_test },
+  {"set", true, (test_callback_fn*)replication_set_test },
+  {"get", false, (test_callback_fn*)replication_get_test },
+  {"mget", false, (test_callback_fn*)replication_mget_test },
   {"delete", true, (test_callback_fn*)replication_delete_test },
-  {"rand_mget", 0, (test_callback_fn*)replication_randomize_mget_test },
-  {"fail", 0, (test_callback_fn*)replication_randomize_mget_fail_test },
+  {"rand_mget", false, (test_callback_fn*)replication_randomize_mget_test },
+  {"fail", false, (test_callback_fn*)replication_randomize_mget_fail_test },
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -6305,80 +6053,80 @@ test_st replication_tests[]= {
  *   http://bugs.launchpad.net/libmemcached
  */
 test_st regression_tests[]= {
-  {"lp:434484", 1, (test_callback_fn*)regression_bug_434484 },
-  {"lp:434843", 1, (test_callback_fn*)regression_bug_434843 },
-  {"lp:434843-buffered", 1, (test_callback_fn*)regression_bug_434843_buffered },
-  {"lp:421108", 1, (test_callback_fn*)regression_bug_421108 },
-  {"lp:442914", 1, (test_callback_fn*)regression_bug_442914 },
-  {"lp:447342", 1, (test_callback_fn*)regression_bug_447342 },
-  {"lp:463297", 1, (test_callback_fn*)regression_bug_463297 },
-  {"lp:490486", 1, (test_callback_fn*)regression_bug_490486 },
-  {"lp:583031", 1, (test_callback_fn*)regression_bug_583031 },
-  {"lp:?", 1, (test_callback_fn*)regression_bug_ },
-  {"lp:728286", 1, (test_callback_fn*)regression_bug_728286 },
-  {"lp:581030", 1, (test_callback_fn*)regression_bug_581030 },
-  {"lp:71231153 connect()", 1, (test_callback_fn*)regression_bug_71231153_connect },
-  {"lp:71231153 poll()", 1, (test_callback_fn*)regression_bug_71231153_poll },
-  {"lp:655423", 1, (test_callback_fn*)regression_bug_655423 },
-  {"lp:490520", 1, (test_callback_fn*)regression_bug_490520 },
-  {0, 0, (test_callback_fn*)0}
+  {"lp:434484", true, (test_callback_fn*)regression_bug_434484 },
+  {"lp:434843", true, (test_callback_fn*)regression_bug_434843 },
+  {"lp:434843-buffered", true, (test_callback_fn*)regression_bug_434843_buffered },
+  {"lp:421108", true, (test_callback_fn*)regression_bug_421108 },
+  {"lp:442914", true, (test_callback_fn*)regression_bug_442914 },
+  {"lp:447342", true, (test_callback_fn*)regression_bug_447342 },
+  {"lp:463297", true, (test_callback_fn*)regression_bug_463297 },
+  {"lp:490486", true, (test_callback_fn*)regression_bug_490486 },
+  {"lp:583031", true, (test_callback_fn*)regression_bug_583031 },
+  {"lp:?", true, (test_callback_fn*)regression_bug_ },
+  {"lp:728286", true, (test_callback_fn*)regression_bug_728286 },
+  {"lp:581030", true, (test_callback_fn*)regression_bug_581030 },
+  {"lp:71231153 connect()", true, (test_callback_fn*)regression_bug_71231153_connect },
+  {"lp:71231153 poll()", true, (test_callback_fn*)regression_bug_71231153_poll },
+  {"lp:655423", true, (test_callback_fn*)regression_bug_655423 },
+  {"lp:490520", true, (test_callback_fn*)regression_bug_490520 },
+  {0, false, (test_callback_fn*)0}
 };
 
 test_st sasl_auth_tests[]= {
-  {"sasl_auth", 1, (test_callback_fn*)sasl_auth_test },
+  {"sasl_auth", true, (test_callback_fn*)sasl_auth_test },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st ketama_compatibility[]= {
-  {"libmemcached", 1, (test_callback_fn*)ketama_compatibility_libmemcached },
-  {"spymemcached", 1, (test_callback_fn*)ketama_compatibility_spymemcached },
+  {"libmemcached", true, (test_callback_fn*)ketama_compatibility_libmemcached },
+  {"spymemcached", true, (test_callback_fn*)ketama_compatibility_spymemcached },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st generate_tests[] ={
-  {"generate_pairs", 1, (test_callback_fn*)generate_pairs },
-  {"generate_data", 1, (test_callback_fn*)generate_data },
-  {"get_read", 0, (test_callback_fn*)get_read },
-  {"delete_generate", 0, (test_callback_fn*)delete_generate },
-  {"generate_buffer_data", 1, (test_callback_fn*)generate_buffer_data },
-  {"delete_buffer", 0, (test_callback_fn*)delete_buffer_generate},
-  {"generate_data", 1, (test_callback_fn*)generate_data },
-  {"mget_read", 0, (test_callback_fn*)mget_read },
-  {"mget_read_result", 0, (test_callback_fn*)mget_read_result },
-  {"memcached_fetch_result() use internal result", 0, (test_callback_fn*)mget_read_internal_result },
-  {"memcached_fetch_result() partial read", 0, (test_callback_fn*)mget_read_partial_result },
-  {"mget_read_function", 0, (test_callback_fn*)mget_read_function },
-  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
-  {"generate_large_pairs", 1, (test_callback_fn*)generate_large_pairs },
-  {"generate_data", 1, (test_callback_fn*)generate_data },
-  {"generate_buffer_data", 1, (test_callback_fn*)generate_buffer_data },
-  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
+  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
+  {"generate_data", true, (test_callback_fn*)generate_data },
+  {"get_read", false, (test_callback_fn*)get_read },
+  {"delete_generate", false, (test_callback_fn*)delete_generate },
+  {"generate_buffer_data", true, (test_callback_fn*)generate_buffer_data },
+  {"delete_buffer", false, (test_callback_fn*)delete_buffer_generate},
+  {"generate_data", true, (test_callback_fn*)generate_data },
+  {"mget_read", false, (test_callback_fn*)mget_read },
+  {"mget_read_result", false, (test_callback_fn*)mget_read_result },
+  {"memcached_fetch_result() use internal result", false, (test_callback_fn*)mget_read_internal_result },
+  {"memcached_fetch_result() partial read", false, (test_callback_fn*)mget_read_partial_result },
+  {"mget_read_function", false, (test_callback_fn*)mget_read_function },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
+  {"generate_large_pairs", true, (test_callback_fn*)generate_large_pairs },
+  {"generate_data", true, (test_callback_fn*)generate_data },
+  {"generate_buffer_data", true, (test_callback_fn*)generate_buffer_data },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st consistent_tests[] ={
-  {"generate_pairs", 1, (test_callback_fn*)generate_pairs },
-  {"generate_data", 1, (test_callback_fn*)generate_data },
+  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
+  {"generate_data", true, (test_callback_fn*)generate_data },
   {"get_read", 0, (test_callback_fn*)get_read_count },
-  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st consistent_weighted_tests[] ={
-  {"generate_pairs", 1, (test_callback_fn*)generate_pairs },
-  {"generate_data", 1, (test_callback_fn*)generate_data_with_stats },
-  {"get_read", 0, (test_callback_fn*)get_read_count },
-  {"cleanup", 1, (test_callback_fn*)cleanup_pairs },
+  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
+  {"generate_data", true, (test_callback_fn*)generate_data_with_stats },
+  {"get_read", false, (test_callback_fn*)get_read_count },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st hsieh_availability[] ={
-  {"hsieh_avaibility_test", 0, (test_callback_fn*)hsieh_avaibility_test},
+  {"hsieh_avaibility_test", false, (test_callback_fn*)hsieh_avaibility_test},
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st murmur_availability[] ={
-  {"murmur_avaibility_test", 0, (test_callback_fn*)murmur_avaibility_test},
+  {"murmur_avaibility_test", false, (test_callback_fn*)murmur_avaibility_test},
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -6390,59 +6138,59 @@ test_st hash_sanity[] ={
 #endif
 
 test_st ketama_auto_eject_hosts[] ={
-  {"auto_eject_hosts", 1, (test_callback_fn*)auto_eject_hosts },
-  {"output_ketama_weighted_keys", 1, (test_callback_fn*)output_ketama_weighted_keys },
+  {"auto_eject_hosts", true, (test_callback_fn*)auto_eject_hosts },
+  {"output_ketama_weighted_keys", true, (test_callback_fn*)output_ketama_weighted_keys },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st hash_tests[] ={
-  {"one_at_a_time_run", 0, (test_callback_fn*)one_at_a_time_run },
-  {"md5", 0, (test_callback_fn*)md5_run },
-  {"crc", 0, (test_callback_fn*)crc_run },
-  {"fnv1_64", 0, (test_callback_fn*)fnv1_64_run },
-  {"fnv1a_64", 0, (test_callback_fn*)fnv1a_64_run },
-  {"fnv1_32", 0, (test_callback_fn*)fnv1_32_run },
-  {"fnv1a_32", 0, (test_callback_fn*)fnv1a_32_run },
-  {"hsieh", 0, (test_callback_fn*)hsieh_run },
-  {"murmur", 0, (test_callback_fn*)murmur_run },
-  {"jenkis", 0, (test_callback_fn*)jenkins_run },
-  {"memcached_get_hashkit", 0, (test_callback_fn*)memcached_get_hashkit_test },
+  {"one_at_a_time_run", false, (test_callback_fn*)one_at_a_time_run },
+  {"md5", false, (test_callback_fn*)md5_run },
+  {"crc", false, (test_callback_fn*)crc_run },
+  {"fnv1_64", false, (test_callback_fn*)fnv1_64_run },
+  {"fnv1a_64", false, (test_callback_fn*)fnv1a_64_run },
+  {"fnv1_32", false, (test_callback_fn*)fnv1_32_run },
+  {"fnv1a_32", false, (test_callback_fn*)fnv1a_32_run },
+  {"hsieh", false, (test_callback_fn*)hsieh_run },
+  {"murmur", false, (test_callback_fn*)murmur_run },
+  {"jenkis", false, (test_callback_fn*)jenkins_run },
+  {"memcached_get_hashkit", false, (test_callback_fn*)memcached_get_hashkit_test },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st error_conditions[] ={
-  {"memcached_get(MEMCACHED_ERRNO)", 0, (test_callback_fn*)memcached_get_MEMCACHED_ERRNO },
-  {"memcached_get(MEMCACHED_NOTFOUND)", 0, (test_callback_fn*)memcached_get_MEMCACHED_NOTFOUND },
-  {"memcached_get_by_key(MEMCACHED_ERRNO)", 0, (test_callback_fn*)memcached_get_by_key_MEMCACHED_ERRNO },
-  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", 0, (test_callback_fn*)memcached_get_by_key_MEMCACHED_NOTFOUND },
-  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", 0, (test_callback_fn*)memcached_get_by_key_MEMCACHED_NOTFOUND },
-  {"memcached_increment(MEMCACHED_NO_SERVERS)", 0, (test_callback_fn*)memcached_increment_MEMCACHED_NO_SERVERS },
+  {"memcached_get(MEMCACHED_ERRNO)", false, (test_callback_fn*)memcached_get_MEMCACHED_ERRNO },
+  {"memcached_get(MEMCACHED_NOTFOUND)", false, (test_callback_fn*)memcached_get_MEMCACHED_NOTFOUND },
+  {"memcached_get_by_key(MEMCACHED_ERRNO)", false, (test_callback_fn*)memcached_get_by_key_MEMCACHED_ERRNO },
+  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", false, (test_callback_fn*)memcached_get_by_key_MEMCACHED_NOTFOUND },
+  {"memcached_get_by_key(MEMCACHED_NOTFOUND)", false, (test_callback_fn*)memcached_get_by_key_MEMCACHED_NOTFOUND },
+  {"memcached_increment(MEMCACHED_NO_SERVERS)", false, (test_callback_fn*)memcached_increment_MEMCACHED_NO_SERVERS },
   {0, 0, (test_callback_fn*)0}
 };
 
 
 test_st parser_tests[] ={
-  {"behavior", 0, (test_callback_fn*)behavior_parser_test },
-  {"boolean_options", 0, (test_callback_fn*)parser_boolean_options_test },
-  {"configure_file", 0, (test_callback_fn*)memcached_create_with_options_with_filename },
-  {"distribtions", 0, (test_callback_fn*)parser_distribution_test },
-  {"hash", 0, (test_callback_fn*)parser_hash_test },
-  {"libmemcached_check_configuration", 0, (test_callback_fn*)libmemcached_check_configuration_test },
-  {"libmemcached_check_configuration_with_filename", 0, (test_callback_fn*)libmemcached_check_configuration_with_filename_test },
-  {"number_options", 0, (test_callback_fn*)parser_number_options_test },
-  {"randomly generated options", 0, (test_callback_fn*)random_statement_build_test },
-  {"namespace", 0, (test_callback_fn*)parser_key_prefix_test },
-  {"server", 0, (test_callback_fn*)server_test },
-  {"bad server strings", 0, (test_callback_fn*)servers_bad_test },
-  {"server with weights", 0, (test_callback_fn*)server_with_weight_test },
-  {"parsing servername, port, and weight", 0, (test_callback_fn*)test_hostname_port_weight },
-  {"--socket=", 0, (test_callback_fn*)test_parse_socket },
-  {"--namespace=", 0, (test_callback_fn*)test_namespace_keyword },
+  {"behavior", false, (test_callback_fn*)behavior_parser_test },
+  {"boolean_options", false, (test_callback_fn*)parser_boolean_options_test },
+  {"configure_file", false, (test_callback_fn*)memcached_create_with_options_with_filename },
+  {"distribtions", false, (test_callback_fn*)parser_distribution_test },
+  {"hash", false, (test_callback_fn*)parser_hash_test },
+  {"libmemcached_check_configuration", false, (test_callback_fn*)libmemcached_check_configuration_test },
+  {"libmemcached_check_configuration_with_filename", false, (test_callback_fn*)libmemcached_check_configuration_with_filename_test },
+  {"number_options", false, (test_callback_fn*)parser_number_options_test },
+  {"randomly generated options", false, (test_callback_fn*)random_statement_build_test },
+  {"namespace", false, (test_callback_fn*)parser_key_prefix_test },
+  {"server", false, (test_callback_fn*)server_test },
+  {"bad server strings", false, (test_callback_fn*)servers_bad_test },
+  {"server with weights", false, (test_callback_fn*)server_with_weight_test },
+  {"parsing servername, port, and weight", false, (test_callback_fn*)test_hostname_port_weight },
+  {"--socket=", false, (test_callback_fn*)test_parse_socket },
+  {"--namespace=", false, (test_callback_fn*)test_namespace_keyword },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st virtual_bucket_tests[] ={
-  {"basic", 0, (test_callback_fn*)virtual_back_map },
+  {"basic", false, (test_callback_fn*)virtual_back_map },
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -6492,7 +6240,6 @@ collection_st collection[] ={
   {"sasl_auth", (test_callback_fn*)pre_sasl, 0, sasl_auth_tests },
   {"sasl", (test_callback_fn*)pre_sasl, 0, tests },
   {"version_1_2_3", (test_callback_fn*)check_for_1_2_3, 0, version_1_2_3},
-  {"string", 0, 0, string_tests},
   {"result", 0, 0, result_tests},
   {"async", (test_callback_fn*)pre_nonblock, 0, async_tests},
   {"async(BINARY)", (test_callback_fn*)pre_nonblock_binary, 0, async_tests},

@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  DataDifferential Utility Library
+ *  Libmemcached internals test
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,69 +34,34 @@
  *
  */
 
-#pragma once
+#include <config.h>
+#include <libtest/test.hpp>
 
+using namespace libtest;
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+#include "tests/string.h"
 
-namespace datadifferential {
-namespace util {
-
-class Operation {
-  typedef std::vector<char> Packet;
-
-public:
-  typedef std::vector<Operation *> vector;
-
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
-  {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
-  }
-
-  ~Operation()
-  { }
-
-  size_t size() const
-  {
-    return packet.size();
-  }
-
-  const char* ptr() const
-  {
-    return &(packet)[0];
-  }
-
-  bool has_response() const
-  {
-    return _expect_response;
-  }
-
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
-
-  // Return false on error
-  bool response(std::string &);
-
-  bool reconnect() const
-  {
-    return false;
-  }
-
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
+/*
+  Test cases
+*/
+test_st string_tests[] ={
+  {"string static with null", false, string_static_null },
+  {"string alloc with null", false, string_alloc_null },
+  {"string alloc with 1K", false, string_alloc_with_size },
+  {"string alloc with malloc failure", false, string_alloc_with_size_toobig },
+  {"string append", false, string_alloc_append },
+  {"string append failure (too big)", false, string_alloc_append_toobig },
+  {"string_alloc_append_multiple", false, string_alloc_append_multiple },
+  {0, 0, 0}
 };
 
-} /* namespace util */
-} /* namespace datadifferential */
+
+collection_st collection[] ={
+  {"string", 0, 0, string_tests},
+  {0, 0, 0, 0}
+};
+
+void get_world(Framework *frame)
+{
+  frame->collections= collection;
+}

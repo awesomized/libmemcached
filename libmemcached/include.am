@@ -16,11 +16,13 @@ noinst_HEADERS+= \
 		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
+		 libmemcached/continuum.hpp \
 		 libmemcached/do.hpp \
 		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
 		 libmemcached/io.h \
+		 libmemcached/io.hpp \
 		 libmemcached/is.h \
 		 libmemcached/libmemcached_probes.h \
 		 libmemcached/memory.h \
@@ -29,6 +31,8 @@ noinst_HEADERS+= \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/common.h \
 		 libmemcached/response.h \
+		 libmemcached/server_instance.h \
+		 libmemcached/string.hpp \
 		 libmemcached/virtual_bucket.h
 
 nobase_include_HEADERS+= \
@@ -76,25 +80,6 @@ nobase_include_HEADERS+= \
 			 libmemcached/version.h \
 			 libmemcached/visibility.h \
 			 libmemcached/watchpoint.h
-
-# This noinst lib contains things we want to be ABI private but still want to
-# either use in client programs or be able to test in test cases
-# These symbols will not be exposed in the shipped .so
-noinst_LTLIBRARIES+= libmemcached/libmemcachedinternal.la
-libmemcached_libmemcachedinternal_la_SOURCES= \
-					      libmemcached/array.c \
-					      libmemcached/backtrace.cc \
-					      libmemcached/error.cc \
-					      libmemcached/string.cc
-libmemcached_libmemcachedinternal_la_CFLAGS= \
-				     ${AM_CFLAGS} \
-				     ${NO_CONVERSION} \
-				     -DBUILDING_LIBMEMCACHED
-
-libmemcached_libmemcachedinternal_la_CXXFLAGS= \
-				       ${AM_CXXFLAGS} \
-				       ${NO_CONVERSION} \
-				       -DBUILDING_LIBMEMCACHED
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= \
@@ -154,7 +139,7 @@ libmemcached/options.cc: libmemcached/csl/parser.h
 
 libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD= $(LIBM)
-libmemcached_libmemcached_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_LIBRARY_VERSION}
+libmemcached_libmemcached_la_LDFLAGS+= ${AM_LDFLAGS} -version-info ${MEMCACHED_LIBRARY_VERSION}
 
 if HAVE_SASL
 libmemcached_libmemcached_la_LDFLAGS+= $(LTLIBSASL) $(LTLIBSASL2)
@@ -164,22 +149,19 @@ endif
 if HAVE_DTRACE
 BUILT_SOURCES+= libmemcached/dtrace_probes.h
 CLEANFILES+= libmemcached/dtrace_probes.h
-endif
+CLEANFILES+= libmemcached/libmemcached_probes.o
 
-if DTRACE_NEEDS_OBJECTS
-libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
 libmemcached_libmemcached_la_DEPENDENCIES += libmemcached/libmemcached_probes.o
 libmemcached_libmemcached_la_LIBADD += libmemcached/libmemcached_probes.o
-CLEANFILES+= libmemcached/libmemcached_probes.o
+libmemcached_libmemcached_la_SOURCES += libmemcached/libmemcached_probes.d
 endif
 
 SUFFIXES+= .d
 
 libmemcached/dtrace_probes.h: libmemcached/libmemcached_probes.d
-	$(DTRACE) $(DTRACEFLAGS) -h -o libmemcached/dtrace_probes.h -s ${top_srcdir}/libmemcached/libmemcached_probes.d
+	$(DTRACE) $(DTRACEFLAGS) -h -o ${top_srcdir}/libmemcached/dtrace_probes.h -s ${top_srcdir}/libmemcached/libmemcached_probes.d
 
 libmemcached/libmemcached_probes.o: libmemcached/libmemcached_probes.d ${libmemcached_libmemcached_la_OBJECTS} config.h
 
 .d.o:
-	$(DTRACE) $(DTRACEFLAGS) -o $@ -G -s $< `grep '^pic_object' ${top_builddir}/libmemcached/*.lo | cut -f 2 -d\' | sed "s/^/${top_builddir}\/libmemcached\//"`
-
+	$(DTRACE) $(DTRACEFLAGS) -o $@ -G -s libmemcached/libmemcached_probes.d

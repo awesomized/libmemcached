@@ -86,7 +86,9 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   }
 
   if (value_length)
+  {
     *value_length= memcached_string_length(&result_buffer->value);
+  }
 
   if (key)
   {

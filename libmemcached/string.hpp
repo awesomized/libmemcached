@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  DataDifferential Utility Library
+ *  libmcachedd client library.
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -37,67 +37,11 @@
 
 #pragma once
 
+#include "util/string.hpp"
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+#define memcached_literal_param util_literal_param
+#define memcached_literal_param_size util_literal_param_size
+#define memcached_string_make_from_cstr util_string_make_from_cstr
+#define memcached_array_length util_array_length
 
-namespace datadifferential {
-namespace util {
 
-class Operation {
-  typedef std::vector<char> Packet;
-
-public:
-  typedef std::vector<Operation *> vector;
-
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
-  {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
-  }
-
-  ~Operation()
-  { }
-
-  size_t size() const
-  {
-    return packet.size();
-  }
-
-  const char* ptr() const
-  {
-    return &(packet)[0];
-  }
-
-  bool has_response() const
-  {
-    return _expect_response;
-  }
-
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
-
-  // Return false on error
-  bool response(std::string &);
-
-  bool reconnect() const
-  {
-    return false;
-  }
-
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
-};
-
-} /* namespace util */
-} /* namespace datadifferential */

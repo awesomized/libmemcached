@@ -343,7 +343,6 @@ test_return_t memcached_create_with_options_with_filename(memcached_st*)
   memcached_st *memc_ptr;
   memc_ptr= memcached(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""));
   test_true_got(memc_ptr, "memcached() failed");
-  test_strcmp(SUPPORT_EXAMPLE_CNF, memcached_array_string(memc_ptr->configure.filename));
   memcached_free(memc_ptr);
 
   return TEST_SUCCESS;

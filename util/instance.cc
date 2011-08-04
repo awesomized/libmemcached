@@ -42,6 +42,7 @@
 
 #include <cstdio>
 #include <sstream>
+#include <iostream>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>

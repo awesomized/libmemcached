@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  DataDifferential Utility Library
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,67 +38,38 @@
 
 #pragma once
 
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+LIBMEMCACHED_LOCAL
+void memcached_io_reset(memcached_server_write_instance_st ptr);
 
-namespace datadifferential {
-namespace util {
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
+                                     void *buffer, size_t length, ssize_t *nread);
 
-class Operation {
-  typedef std::vector<char> Packet;
+/* Read a line (terminated by '\n') into the buffer */
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
+                                         char *buffer_ptr,
+                                         size_t size,
+                                         size_t& total);
 
-public:
-  typedef std::vector<Operation *> vector;
+LIBMEMCACHED_LOCAL
+void memcached_io_close(memcached_server_write_instance_st ptr);
 
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
-  {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
-  }
+/* Read n bytes of data from the server and store them in dta */
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
+                                       void *dta,
+                                       size_t size);
 
-  ~Operation()
-  { }
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_st ptr,
+                                                uint16_t thread_id);
 
-  size_t size() const
-  {
-    return packet.size();
-  }
+LIBMEMCACHED_LOCAL
+memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st *memc);
 
-  const char* ptr() const
-  {
-    return &(packet)[0];
-  }
-
-  bool has_response() const
-  {
-    return _expect_response;
-  }
-
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
-
-  // Return false on error
-  bool response(std::string &);
-
-  bool reconnect() const
-  {
-    return false;
-  }
-
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
-};
-
-} /* namespace util */
-} /* namespace datadifferential */
+LIBMEMCACHED_LOCAL
+memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr);

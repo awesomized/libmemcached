@@ -43,6 +43,7 @@
 #include <cassert>
 #include <cstddef>
 #include <sys/socket.h>
+#include <string>
 
 #include "util/operation.hpp"
 

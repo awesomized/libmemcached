@@ -68,11 +68,18 @@
 #include <libmemcached/is.h>
 #include <libmemcached/namespace.h>
 
+#include <libmemcached/server_instance.h>
+
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#else
+#include "poll/poll.h"
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct memcached_server_st * memcached_server_write_instance_st;
 
 typedef memcached_return_t (*memcached_server_execute_fn)(memcached_st *ptr, memcached_server_write_instance_st server, void *context);
 
@@ -92,7 +99,11 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/error.hpp>
 #include <libmemcached/memory.h>
 #include <libmemcached/io.h>
+#ifdef __cplusplus
+#include <libmemcached/string.hpp>
+#include <libmemcached/io.hpp>
 #include <libmemcached/do.hpp>
+#endif
 #include <libmemcached/internal.h>
 #include <libmemcached/array.h>
 #include <libmemcached/libmemcached_probes.h>
@@ -107,12 +118,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/assert.hpp>
 #endif
 
-/* string value */
-struct memcached_continuum_item_st
-{
-  uint32_t index;
-  uint32_t value;
-};
+#include <libmemcached/continuum.hpp>
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 

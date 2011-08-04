@@ -6,8 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#ifndef TESTS_KETAMA_TEST_CASES_SPY_H
-#define TESTS_KETAMA_TEST_CASES_SPY_H
+#pragma once
 
 static struct {
     const char *key;
@@ -115,4 +114,3 @@ static struct {
   { "\\MQ_XNT7L-", 1259349383UL, 1259509450UL, "10.0.1.5" },
   { "VD6D0]ba_\\", 3842502950UL, 3842588691UL, "10.0.1.7" },
 };
-#endif

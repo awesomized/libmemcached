@@ -12,25 +12,32 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #undef NDEBUG
 
-#include "config.h"
-#include <pthread.h>
-#include <sys/types.h>
+#include <config.h>
+
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#else
+#include "poll/poll.h"
+#endif
+
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
+#include <pthread.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <assert.h>
 #include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <ctype.h>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
-#include "utilities.h"
+#include <clients/utilities.h>
 
 #ifdef linux
 /* /usr/include/netinet/in.h defines macros from ntohs() to _bswap_nn to

@@ -161,7 +161,9 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
         return MEMCACHED_WRITE_FAILURE;
 
       if (send_length + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+      {
         memcached_io_write(instance, NULL, 0, true);
+      }
     }
 
     rc= memcached_do(instance, buffer, (size_t)send_length, to_write);

@@ -7,11 +7,24 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_PREREQ(2.59)
-AC_INIT([libmemcached],[0.51],[http://libmemcached.org/])
-AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
+AC_INIT([libmemcached],[0.52],[http://libmemcached.org/])
+
 AC_CONFIG_AUX_DIR(config)
+
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE
+
+AC_CANONICAL_HOST
+AC_CANONICAL_BUILD
+
+AC_PREREQ([2.61])
+
 AC_CONFIG_MACRO_DIR(m4)
+
+AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
+
+AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
 PANDORA_CANONICAL_TARGET(no-vc-changelog)
 AC_CHECK_PROGS([YACC], ['bison'], [:])
@@ -42,71 +55,10 @@ AC_SUBST(HASHKIT_LIBRARY_VERSION)
 AC_DEFINE([HAVE_LIBMEMCACHED], [ 1 ], [dummy rule for libtest])
 AC_SUBST(HAVE_LIBMEMCACHED, 1)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, true)
-
-AH_TOP([
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#ifdef _SYS_FEATURE_TESTS_H
-#error "You should include config.h as your first include file"
-#endif
-
-#ifdef WIN32
-#define _WIN32_WINNT 0x0501
-#endif
-])
-
-AH_BOTTOM([
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
-#ifdef HAVE_FNMATCH_H
-#include <fnmatch.h>
-#endif
-
-#ifdef HAVE_POLL_H
-#include <poll.h>
-#else
-#include "poll/poll.h"
-#endif
-
-/* To hide the platform differences between MS Windows and Unix, I am
- * going to use the Microsoft way and #define the Microsoft-specific
- * functions to the unix way. Microsoft use a separate subsystem for sockets,
- * but Unix normally just use a filedescriptor on the same functions. It is
- * a lot easier to map back to the unix way with macros than going the other
- * way without side effect ;-)
- */
-#ifdef WIN32
-#include "win32/wrappers.h"
-#define get_socket_errno() WSAGetLastError()
-#else
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define closesocket(a) close(a)
-#define get_socket_errno() errno
-#endif
-
-#ifndef HAVE_MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
-#endif
-
-#ifndef HAVE_MSG_DONTWAIT
-#define MSG_DONTWAIT 0
-#endif
-
-#ifndef HAVE_MSG_MORE
-#define MSG_MORE 0
-#endif
-
-#endif
-])
+LT_INIT
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
-
-AC_CHECK_FUNCS([getline])
 
 PANDORA_HAVE_LIBEVENT
 my_saved_libs="$LIBS"
@@ -115,6 +67,7 @@ PANDORA_REQUIRE_PTHREAD
 LIBS="$my_saved_libs"
 
 dnl Specialty checks
+CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB
 SETSOCKOPT_SANITY
@@ -128,6 +81,52 @@ PANDORA_HAVE_LIBINNODB
 PANDORA_PRINT_CALLSTACK
 PANDORA_HAVE_SASL
 WITH_LIBGEARMAN
+
+AC_CHECK_FUNCS([alarm])
+AC_CHECK_FUNCS([dup2])
+AC_CHECK_FUNCS([getline])
+AC_CHECK_FUNCS([gettimeofday])
+AC_CHECK_FUNCS([memchr])
+AC_CHECK_FUNCS([memmove])
+AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([select])
+AC_CHECK_FUNCS([setenv])
+AC_CHECK_FUNCS([socket])
+AC_CHECK_FUNCS([sqrt])
+AC_CHECK_FUNCS([strcasecmp])
+AC_CHECK_FUNCS([strchr])
+AC_CHECK_FUNCS([strdup])
+AC_CHECK_FUNCS([strerror])
+AC_CHECK_FUNCS([strtol])
+AC_CHECK_FUNCS([strtoul])
+AC_CHECK_FUNCS([strtoull])
+AC_CHECK_HEADERS([arpa/inet.h])
+AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_HEADERS([libintl.h])
+AC_CHECK_HEADERS([limits.h])
+AC_CHECK_HEADERS([malloc.h])
+AC_CHECK_HEADERS([netdb.h])
+AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([stddef.h])
+AC_CHECK_HEADERS([sys/time.h])
+AC_FUNC_ALLOCA
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_STRERROR_R
+AC_HEADER_STDBOOL
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],

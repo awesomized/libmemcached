@@ -2,7 +2,6 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-if BUILD_LIBMEMCACHEDUTIL
 nobase_include_HEADERS+= \
 			 libmemcached/memcached_util.h \
 			 libmemcached/util.h \
@@ -12,7 +11,6 @@ nobase_include_HEADERS+= \
 			 libmemcached/util/pool.h \
 			 libmemcached/util/version.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
-endif
 
 libmemcached_libmemcachedutil_la_SOURCES= \
 					  libmemcached/backtrace.cc \
@@ -31,7 +29,7 @@ libmemcached_libmemcachedutil_la_CXXFLAGS= \
 					   ${NO_CONVERSION} \
 					   ${PTHREAD_CFLAGS} \
 					   -DBUILDING_LIBMEMCACHED
-libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
-libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} ${PTHREAD_LIBS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
+libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la ${PTHREAD_LIBS}
+libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
 libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la
 

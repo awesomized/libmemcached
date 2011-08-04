@@ -446,7 +446,7 @@ static memcached_return_t network_connect(memcached_server_st *ptr)
     if ((connect(ptr->fd, ptr->address_info_next->ai_addr, ptr->address_info_next->ai_addrlen) != SOCKET_ERROR))
     {
       ptr->state= MEMCACHED_SERVER_STATE_CONNECTED;
-      break; // Success
+      return MEMCACHED_SUCCESS;
     }
 
     /* An error occurred */
@@ -590,11 +590,6 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   /* We need to clean up the multi startup piece */
   switch (ptr->type)
   {
-  case MEMCACHED_CONNECTION_UNKNOWN:
-    WATCHPOINT_ASSERT(0);
-    rc= MEMCACHED_NOT_SUPPORTED;
-    break;
-
   case MEMCACHED_CONNECTION_UDP:
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
@@ -615,10 +610,6 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     rc= unix_socket_connect(ptr);
     break;
-
-  case MEMCACHED_CONNECTION_MAX:
-  default:
-    WATCHPOINT_ASSERT(0);
   }
 
   if (memcached_success(rc))

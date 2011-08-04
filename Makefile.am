@@ -33,19 +33,23 @@ EXTRA_DIST= \
 	    m4/po.m4 \
 	    m4/progtest.m4
 
-include libtest/include.am
-include libmemcached/include.am
-include libmemcached/protocol/include.am
-include libmemcached/util/include.am
+libmemcached_libmemcached_la_LDFLAGS=
+
 include clients/include.am
-include libhashkit/include.am
-include tests/include.am
+include docs/include.am
 include example/include.am
-include support/include.am
+include libhashkit/include.am
+include libmemcached/include.am
+include libmemcached/util/include.am
+include libmemcached/protocol/include.am
+include libmemcachedinternal/include.am
+include libmemcachedinternal/util/include.am
+include libtest/include.am
 include poll/include.am
+include support/include.am
+include tests/include.am
 include util/include.am
 include win32/include.am
-include docs/include.am
 
 docs: html man
 

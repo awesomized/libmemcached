@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  DataDifferential Utility Library
+ *  Byteorder for example
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,67 +36,14 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <cstring>
-#include <iosfwd>
-#include <vector>
+uint64_t example_ntohll(uint64_t);
 
-namespace datadifferential {
-namespace util {
+uint64_t example_htonll(uint64_t);
 
-class Operation {
-  typedef std::vector<char> Packet;
-
-public:
-  typedef std::vector<Operation *> vector;
-
-  Operation(const char *command, size_t command_length, bool expect_response= true) :
-    _expect_response(expect_response),
-    packet(),
-    _response()
-  {
-    packet.resize(command_length);
-    memcpy(&packet[0], command, command_length);
-  }
-
-  ~Operation()
-  { }
-
-  size_t size() const
-  {
-    return packet.size();
-  }
-
-  const char* ptr() const
-  {
-    return &(packet)[0];
-  }
-
-  bool has_response() const
-  {
-    return _expect_response;
-  }
-
-  void push(const char *buffer, size_t buffer_size)
-  {
-    size_t response_size= _response.size();
-    _response.resize(response_size +buffer_size);
-    memcpy(&_response[0] +response_size, buffer, buffer_size);
-  }
-
-  // Return false on error
-  bool response(std::string &);
-
-  bool reconnect() const
-  {
-    return false;
-  }
-
-private:
-  bool _expect_response;
-  Packet packet;
-  Packet _response;
-};
-
-} /* namespace util */
-} /* namespace datadifferential */
+#ifdef __cplusplus
+}
+#endif
