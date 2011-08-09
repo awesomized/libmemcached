@@ -23,11 +23,9 @@
 
 namespace libtest {
 
-LIBTEST_API
-Server *build_memcached(const std::string& hostname, const in_port_t try_port);
+libtest::Server *build_memcached(const std::string& hostname, const in_port_t try_port);
 
-LIBTEST_API
-Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port);
+libtest::Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port);
 
 }
 

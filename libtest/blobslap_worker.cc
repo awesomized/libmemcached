@@ -21,6 +21,7 @@
 
 
 #include <libtest/common.h>
+
 #include <libtest/blobslap_worker.h>
 #include <libtest/killpid.h>
 

@@ -120,3 +120,4 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
+libtest/version.h

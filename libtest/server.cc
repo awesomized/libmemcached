@@ -42,15 +42,6 @@ static inline std::string &rtrim(std::string &s)
 #include <libtest/stream.h>
 #include <libtest/killpid.h>
 
-#ifdef HAVE_LIBGEARMAN
-#include <libtest/gearmand.h>
-#include <libtest/blobslap_worker.h>
-#endif
-
-#ifdef HAVE_LIBMEMCACHED
-#include <libtest/memcached.h>
-#endif
-
 extern "C" {
   static bool exited_successfully(int status)
   {
@@ -258,7 +249,7 @@ bool Server::set_socket_file()
   }
   else
   {
-    snprintf(file_buffer, sizeof(file_buffer), "tests/var/run/%s.socketXXXXXX", name());
+    snprintf(file_buffer, sizeof(file_buffer), "var/run/%s.socketXXXXXX", name());
   }
 
   int fd;
@@ -286,7 +277,7 @@ bool Server::set_pid_file()
   }
   else
   {
-    snprintf(file_buffer, sizeof(file_buffer), "tests/var/run/%s.pidXXXXXX", name());
+    snprintf(file_buffer, sizeof(file_buffer), "var/run/%s.pidXXXXXX", name());
   }
 
   int fd;
@@ -308,7 +299,7 @@ bool Server::set_log_file()
   char file_buffer[FILENAME_MAX];
   file_buffer[0]= 0;
 
-  snprintf(file_buffer, sizeof(file_buffer), "tests/var/log/%s.logXXXXXX", name());
+  snprintf(file_buffer, sizeof(file_buffer), "var/log/%s.logXXXXXX", name());
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
@@ -437,6 +428,11 @@ bool Server::kill(pid_t pid_arg)
       unlink(pid_file().c_str());
     }
 
+    if (broken_socket_cleanup() and has_socket() and not socket().empty())
+    {
+      unlink(socket().c_str());
+    }
+
     reset_pid();
 
     return true;
@@ -544,44 +540,62 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
     }
   }
 
-  Server *server= NULL;
+  libtest::Server *server= NULL;
   if (0)
   { }
   else if (server_type.compare("gearmand") == 0)
   {
-#ifdef GEARMAND_BINARY
-  #ifdef HAVE_LIBGEARMAN
-    server= build_gearmand("localhost", try_port);
-  #else
-    Error << "Libgearman was not found";
-  #endif
-#else
-    Error << "No gearmand binary is available";
-#endif
+    if (GEARMAND_BINARY)
+    {
+      if (HAVE_LIBGEARMAN)
+      {
+        server= build_gearmand("localhost", try_port);
+      }
+      else
+      {
+        Error << "Libgearman was not found";
+      }
+    } 
+    else
+    {
+      Error << "No gearmand binary is available";
+    }
   }
   else if (server_type.compare("blobslap_worker") == 0)
   {
-#ifdef GEARMAND_BINARY
-  #ifdef HAVE_LIBGEARMAN
-    server= build_blobslap_worker(try_port);
-  #else
-    Error << "Libgearman was not found";
-  #endif
-#else
-    Error << "No gearmand binary is available";
-#endif
+    if (GEARMAND_BINARY)
+    {
+      if (HAVE_LIBGEARMAN)
+      {
+        server= build_blobslap_worker(try_port);
+      }
+      else
+      {
+        Error << "Libgearman was not found";
+      }
+    }
+    else
+    {
+      Error << "No gearmand binary is available";
+    }
   }
   else if (server_type.compare("memcached") == 0)
   {
-#ifdef MEMCACHED_BINARY
-#ifdef HAVE_LIBMEMCACHED
-    server= build_memcached("localhost", try_port);
-#else
-    Error << "Libmemcached was not found";
-#endif
-#else
-    Error << "No memcached binary is available";
-#endif
+    if (MEMCACHED_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached("localhost", try_port);
+      }
+      else
+      {
+        Error << "Libmemcached was not found";
+      }
+    }
+    else
+    {
+      Error << "No memcached binary is available";
+    }
   }
   else
   {
@@ -652,15 +666,21 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
   }
   else if (server_type.compare("memcached") == 0)
   {
-#ifdef MEMCACHED_BINARY
-#ifdef HAVE_LIBMEMCACHED
-    server= build_memcached_socket("localhost", try_port);
-#else
-    Error << "Libmemcached was not found";
-#endif
-#else
-    Error << "No memcached binary is available";
-#endif
+    if (MEMCACHED_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached_socket("localhost", try_port);
+      }
+      else
+      {
+        Error << "Libmemcached was not found";
+      }
+    }
+    else
+    {
+      Error << "No memcached binary is available";
+    }
   }
   else
   {

@@ -149,6 +149,17 @@ int main(int argc, char *argv[])
 {
   srandom((unsigned int)time(NULL));
 
+  if (getenv("srcdir"))
+  {
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "%s/%s", getenv("srcdir"), "tests");
+    chdir(buffer);
+  }
+  else
+  {
+    chdir("tests");
+  }
+
   world= new Framework();
 
   if (not world)

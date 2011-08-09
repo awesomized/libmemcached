@@ -21,13 +21,13 @@
 
 #include <libtest/common.h>
 
-#include <libtest/cmdline.h>
-
 using namespace libtest;
 
 #include <cstdlib>
 #include <string>
 #include <sstream>
+
+namespace libtest {
 
 bool exec_cmdline(const std::string& executable, const char *args[])
 {
@@ -63,3 +63,5 @@ bool exec_cmdline(const std::string& executable, const char *args[])
 
   return true;
 }
+
+} // namespace exec_cmdline

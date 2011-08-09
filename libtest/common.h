@@ -20,7 +20,7 @@
  */
 
 /*
-  Common include file for libmemached
+  Common include file for libtest
 */
 
 #pragma once
@@ -52,5 +52,9 @@
 #ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
 #endif
+
+#include <libtest/gearmand.h>
+#include <libtest/blobslap_worker.h>
+#include <libtest/memcached.h>
 
 #include <libtest/test.hpp>

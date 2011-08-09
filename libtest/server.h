@@ -60,6 +60,11 @@ public:
   virtual const char *log_file_option()= 0;
   virtual bool is_libtool()= 0;
 
+  virtual bool broken_socket_cleanup()
+  {
+    return false;
+  }
+
   virtual const char *socket_file_option() const
   {
     return NULL;

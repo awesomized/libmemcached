@@ -41,6 +41,10 @@ CLEANFILES+= \
 	     tests/var/run/* \
 	     tests/var/tmp/*
 
+.PHONY: distclean-tests-check
+distclean-tests-check:
+	-rm -rf tests/var
+
 noinst_HEADERS+= \
 		 libtest/blobslap_worker.h \
 		 libtest/callbacks.h \
@@ -92,29 +96,41 @@ libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
+libtest_libtest_la_DEPENDENCIES=
 
 LIBTEST_LDADD= libtest/libtest.la
 
-if HAVE_LIBMEMCACHED
+# We are either building in tree, or with
+if BUILDING_LIBMEMCACHED
+libtest_libtest_la_DEPENDENCIES+= libmemcached/libmemcached.la
+libtest_libtest_la_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 endif
+if HAVE_LIBMEMCACHED
+libtest_libtest_la_LIBADD+= $(libmemcached_LIBS) -lmemcachedutil
+libtest_libtest_la_SOURCES+= libtest/memcached.cc
+endif
 
+if BUILDING_GEARMAN
+libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
+libtest_libtest_la_LIBADD+= libgearman/libgearman.la
+libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
+libtest_libtest_la_SOURCES+= libtest/gearmand.cc
+libtest_libtest_la_SOURCES+= util/instance.cc
+libtest_libtest_la_SOURCES+= util/operation.cc
+endif
 if HAVE_LIBGEARMAN
-LIBTEST_LDADD+= libgearman/libgearman.la
+libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
+libtest_libtest_la_LIBADD+= $(libgearman_LIBS)
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
 endif
 
-libtest_tmp_dir: tests/var/log tests/var/tmp tests/var/run clearn-var
-
-clearn-var:
-	@rm -f tests/var/log/*
-	@rm -f tests/var/run/*
-	@rm -f tests/var/tmp/*
+libtest_tmp_dir: tests/var/log tests/var/tmp tests/var/run
 
 tests/var:
 	@$(mkdir_p) tests/var
@@ -127,8 +143,6 @@ tests/var/tmp: tests/var
 
 tests/var/run: tests/var
 	@$(mkdir_p) tests/var/run
-
-.PHONY+= tests/var
 
 
 libtest_unittest_CFLAGS=
@@ -154,4 +168,3 @@ drd-unittest: libtest/unittest
 
 libtest_wait_SOURCES= libtest/wait.cc
 noinst_PROGRAMS+= libtest/wait
-

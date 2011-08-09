@@ -21,6 +21,7 @@
 
 
 #include <libtest/common.h>
+
 #include <libtest/gearmand.h>
 
 #include "util/instance.hpp"
@@ -83,12 +84,12 @@ public:
 
 using namespace libtest;
 
-class Gearmand : public Server
+class Gearmand : public libtest::Server
 {
 private:
 public:
   Gearmand(const std::string& host_arg, in_port_t port_arg) :
-    Server(host_arg, port_arg)
+    libtest::Server(host_arg, port_arg)
   { }
 
   pid_t get_pid(bool error_is_ok)
@@ -208,7 +209,7 @@ bool Gearmand::build(int argc, const char *argv[])
 
 namespace libtest {
 
-Server *build_gearmand(const char *hostname, in_port_t try_port)
+libtest::Server *build_gearmand(const char *hostname, in_port_t try_port)
 {
   return new Gearmand(hostname, try_port);
 }
