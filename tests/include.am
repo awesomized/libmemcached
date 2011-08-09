@@ -373,7 +373,5 @@ callgrind:
 	$(LIBTOOL) --mode=execute valgrind --tool=callgrind --callgrind-out-file=tests/callgrind.out.%p  tests/testapp
 	callgrind_annotate tests/callgrind.out.* --auto=yes > tests/callgrind.out
 
-test-no-outputdiff: test
-
 hudson-valgrind: tests/testapp
 	$(VALGRIND_COMMAND) --log-file=tests/valgrind.out tests/testapp

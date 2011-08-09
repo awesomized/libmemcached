@@ -6,7 +6,7 @@ AC_DEFUN([ENABLE_UTILLIB],[
     [BUILD_UTILLIB="yes"])
 
   if test "x$BUILD_UTILLIB" = "xyes"; then
-    if test x"$acx_pthread_ok" != "xyes"; then
+    if test x"$ax_pthread_ok" != "xyes"; then
       AC_MSG_ERROR([Sorry you need POSIX thread library to build libmemcachedutil.])
     fi
     AC_DEFINE([HAVE_LIBMEMCACHEDUTIL], [1], [Enables libmemcachedutil Support])

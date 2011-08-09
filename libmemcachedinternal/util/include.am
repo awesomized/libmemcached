@@ -19,7 +19,6 @@ libmemcachedinternal_libmemcachedutilinternal_la_CXXFLAGS= \
 							   ${PTHREAD_CFLAGS} \
 							   -DBUILDING_LIBMEMCACHEDINTERNAL
 libmemcachedinternal_libmemcachedutilinternal_la_LIBADD= libmemcachedinternal/libmemcachedinternal.la ${PTHREAD_LIBS}
-libmemcachedinternal_libmemcachedutilinternal_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
-libmemcachedinternal_libmemcachedutilinternal_la_DEPENDENCIES= libmemcached/libmemcached.la
+libmemcachedinternal_libmemcachedutilinternal_la_DEPENDENCIES= libmemcachedinternal/libmemcachedinternal.la
 
 

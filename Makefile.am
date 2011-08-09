@@ -24,14 +24,7 @@ EXTRA_DIST= \
 	    README.win32 \
 	    config/autorun.sh \
 	    config/pandora-plugin \
-	    config/uncrustify.cfg \
-	    m4/ac_cxx_header_stdcxx_98.m4 \
-	    m4/acx_pthread.m4  \
-	    m4/gettext.m4 \
-	    m4/iconv.m4 \
-	    m4/pkg.m4 \
-	    m4/po.m4 \
-	    m4/progtest.m4
+	    config/uncrustify.cfg
 
 libmemcached_libmemcached_la_LDFLAGS=
 
