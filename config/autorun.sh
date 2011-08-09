@@ -1,2 +1,2 @@
 #!/bin/sh
-autoreconf -ivf
+autoreconf -ivf -Wall

@@ -82,14 +82,6 @@ libtest_libtest_la_SOURCES= \
 			    libtest/signal.cc \
 			    libtest/test.cc
 
-libtest_libtest_la_CFLAGS= ${AM_CFLAGS}
-libtest_libtest_la_CFLAGS+= ${NO_CONVERSION}
-libtest_libtest_la_CFLAGS+= $(PTHREAD_CFLAGS)
-libtest_libtest_la_CFLAGS+= -DBUILDING_LIBTEST
-libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
-libtest_libtest_la_CPPFLAGS+= ${NO_CONVERSION}
-libtest_libtest_la_CPPFLAGS+= $(PTHREAD_LIBS)
-libtest_libtest_la_CPPFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS}
 libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
@@ -98,7 +90,9 @@ libtest_libtest_la_LIBADD=
 libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
 libtest_libtest_la_DEPENDENCIES=
 
-LIBTEST_LDADD= libtest/libtest.la
+libtest_unittest_CXXFLAGS= ${AM_CXXFLAGS}
+libtest_unittest_LDADD=
+libtest_unittest_DEPENDENCIES=
 
 # We are either building in tree, or with
 if BUILDING_LIBMEMCACHED
@@ -107,10 +101,19 @@ libtest_libtest_la_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
-endif
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED
+
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED
+libtest_unittest_LDADD+= libmemcached/libmemcached.la
+libtest_unittest_LDADD+= libmemcached/libmemcachedutil.la
+else
 if HAVE_LIBMEMCACHED
 libtest_libtest_la_LIBADD+= $(libmemcached_LIBS) -lmemcachedutil
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
+else
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
+endif
 endif
 
 if BUILDING_GEARMAN
@@ -120,7 +123,14 @@ libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
-endif
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY="gearmand/gearmand"
+
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN
+libtest_unittest_CXXFLAGS+= -DGEARMAND_BINARY="gearmand/gearmand"
+libtest_unittest_LDADD+= libgearman/libgearman.la
+libtest_unittest_DEPENDENCIES+= libgearman/libgearman.la
+else
 if HAVE_LIBGEARMAN
 libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
 libtest_libtest_la_LIBADD+= $(libgearman_LIBS)
@@ -128,6 +138,12 @@ libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
+else
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY=0
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
+libtest_unittest_CXXFLAGS+= -DGEARMAND_BINARY=0
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
+endif
 endif
 
 libtest_tmp_dir: tests/var/log tests/var/tmp tests/var/run
@@ -145,9 +161,8 @@ tests/var/run: tests/var
 	@$(mkdir_p) tests/var/run
 
 
-libtest_unittest_CFLAGS=
-libtest_unittest_LDADD= ${LIBTEST_LDADD}
-libtest_unittest_DEPENDENCIES= ${LIBTEST_LDADD} libtest_tmp_dir
+libtest_unittest_DEPENDENCIES+= libtest/libtest.la libtest_tmp_dir
+libtest_unittest_LDADD+= libtest/libtest.la
 libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest
 noinst_PROGRAMS+= libtest/unittest
