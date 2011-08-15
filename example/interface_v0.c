@@ -4,7 +4,9 @@
  * in the protocol library. You might want to have your copy of the protocol
  * specification next to your coffee ;-)
  */
+
 #include "config.h"
+
 #include <assert.h>
 #include <sys/types.h>
 #include <stdio.h>

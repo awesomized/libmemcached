@@ -40,7 +40,8 @@
 
 using namespace libtest;
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/server_instance.h>
 #include <tests/replication.h>
 #include <tests/debug.h>
 

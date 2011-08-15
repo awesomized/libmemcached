@@ -42,7 +42,7 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
 #include <libmemcached/is.h>
 #include <libmemcached/util.h>
 
