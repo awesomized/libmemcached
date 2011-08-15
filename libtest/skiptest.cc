@@ -20,47 +20,29 @@
  */
 
 
-/*
-  Structures for generic tests.
-*/
+#include <config.h>
 
-#include <cstdio>
+#include <libtest/test.hpp>
+
 #include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+using namespace libtest;
 
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
 
-#pragma once
+collection_st collection[] ={
+  {0, 0, 0, 0}
+};
 
-LIBTEST_API
-in_port_t default_port();
+static void *world_create(server_startup_st&, test_return_t& rc)
+{
+  rc= TEST_SKIPPED;
 
-LIBTEST_API
-void set_default_port(in_port_t port);
+  return NULL;
+}
 
-LIBTEST_API
-const char* default_socket();
-
-LIBTEST_API
-void set_default_socket(const char *socket);
-
-LIBTEST_API
-bool test_is_local(void);
+void get_world(Framework *world)
+{
+  world->collections= collection;
+  world->_create= world_create;
+}

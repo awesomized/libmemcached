@@ -40,7 +40,6 @@
 #include <libmemcached/common.h>
 #include <libmemcached/memcached_util.h>
 
-
 bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
 {
   memcached_return_t unused;
@@ -51,6 +50,66 @@ bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_retu
   if (not memc_ptr)
   {
     *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return false;
+  }
+
+  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
+  if (memcached_success(rc))
+  {
+    rc= memcached_version(memc_ptr);
+  }
+
+  if (memcached_failed(rc) and rc == MEMCACHED_SOME_ERRORS)
+  {
+    memcached_server_instance_st instance=
+      memcached_server_instance_by_position(memc_ptr, 0);
+
+    assert_msg(instance and instance->error_messages, " ");
+    if (instance and instance->error_messages)
+    {
+      rc= memcached_server_error_return(instance);
+    }
+  }
+  memcached_free(memc_ptr);
+
+  *ret= rc;
+
+  return memcached_success(rc);
+}
+
+bool libmemcached_util_ping2(const char *hostname, in_port_t port, const char *username, const char *password,  memcached_return_t *ret)
+{
+  if (username == NULL)
+  {
+    return libmemcached_util_ping(hostname, port, ret);
+  }
+
+  memcached_return_t unused;
+  if (not ret)
+    ret= &unused;
+
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    *ret= MEMCACHED_NOT_SUPPORTED;
+    return false;
+  }
+
+  memcached_st *memc_ptr= memcached_create(NULL);
+  if (not memc_ptr)
+  {
+    *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return false;
+  }
+
+  if (memcached_failed(*ret= memcached_behavior_set(memc_ptr, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
+  {
+    memcached_free(memc_ptr);
+    return false;
+  }
+
+  if (memcached_failed(*ret= memcached_set_sasl_auth_data(memc_ptr, username, password)))
+  {
+    memcached_free(memc_ptr);
     return false;
   }
 

@@ -44,6 +44,9 @@ extern "C" {
 LIBMEMCACHED_API
 bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret);
 
+LIBMEMCACHED_API
+bool libmemcached_util_ping2(const char *hostname, in_port_t port, const char *username, const char *password,  memcached_return_t *ret);
+
 #ifdef __cplusplus
 }
 #endif

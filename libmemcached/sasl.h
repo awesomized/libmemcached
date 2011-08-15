@@ -37,8 +37,11 @@
 
 #pragma once
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 #include <sasl/sasl.h>
+#else
+#define sasl_callback_t void
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +61,7 @@ memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr);
 
 
 LIBMEMCACHED_API
-const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
+sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st *source);
@@ -70,17 +73,11 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
 }
 #endif
 
-#endif /* LIBMEMCACHED_WITH_SASL_SUPPORT */
-
 struct memcached_sasl_st {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    const sasl_callback_t *callbacks;
-#else
-    const void *callbacks;
-#endif
-    /*
-    ** Did we allocate data inside the callbacks, or did the user
-    ** supply that.
-    */
-    bool is_allocated;
+  sasl_callback_t *callbacks;
+  /*
+   ** Did we allocate data inside the callbacks, or did the user
+   ** supply that.
+ */
+  bool is_allocated;
 };

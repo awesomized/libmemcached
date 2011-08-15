@@ -21,6 +21,7 @@
 
 
 #include <libtest/common.h>
+
 #include <libtest/blobslap_worker.h>
 #include <libtest/killpid.h>
 
@@ -51,24 +52,35 @@ private:
 public:
   BlobslapWorker(in_port_t port_arg) :
     Server("localhost", port_arg)
-  { }
+  { 
+    set_pid_file();
+  }
 
   pid_t get_pid(bool error_is_ok)
   {
-    if (not pid_file().empty())
+    if (pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (error_is_ok and not wait.successful())
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-
-        return get_pid_from_file(pid_file());
-      }
+      Error << "pid_file was empty";
+      return -1;
     }
 
-    return -1;
+    Wait wait(pid_file(), 0);
+
+    if (error_is_ok and not wait.successful())
+    {
+      Error << "Pidfile was not found:" << pid_file();
+      return -1;
+    }
+
+    std::stringstream error_message;
+    pid_t ret= get_pid_from_file(pid_file(), error_message);
+
+    if (error_is_ok and is_pid_valid(ret) == false)
+    {
+      Error << error_message.str();
+    }
+
+    return ret;
   }
 
   bool ping()
@@ -86,12 +98,15 @@ public:
       return false;
     }
 
-    pid_t local_pid= get_pid_from_file(pid_file());
-    if (local_pid <= 0)
+    std::stringstream error_message;
+    pid_t local_pid= get_pid_from_file(pid_file(), error_message);
+    if (is_pid_valid(local_pid) == false)
     {
+      Error << error_message.str();
       return false;
     }
 
+    // Use kill to determine is the process exist
     if (::kill(local_pid, 0) == 0)
     {
       return true;
@@ -122,7 +137,7 @@ public:
 
   const char *log_file_option()
   {
-    return NULL;
+    return "--log-file=";
   }
 
   const char *port_option()

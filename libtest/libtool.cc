@@ -19,48 +19,40 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <libtest/common.h>
+#include <string>
 
-/*
-  Structures for generic tests.
-*/
+char _libtool[1024]= { 0 };
 
-#include <cstdio>
-#include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
+namespace libtest {
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+const char *libtool(void)
+{
+  if (_libtool[0])
+  {
+    std::string libtool_buffer;
+    if (getenv("srcdir"))
+    {
+      libtool_buffer+= getenv("srcdir");
+      libtool_buffer+= "/";
+    }
+    else
+    {
+      libtool_buffer+= "./";
+    }
 
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
+    libtool_buffer+= "libtool";
+    if (access(libtool_buffer.c_str(), R_OK | W_OK | X_OK))
+    {
+      return NULL;
+    }
 
-#pragma once
+    libtool_buffer+= " --mode=execute ";
 
-LIBTEST_API
-in_port_t default_port();
+    snprintf(_libtool, sizeof(_libtool), "%s", libtool_buffer.c_str());
+  }
 
-LIBTEST_API
-void set_default_port(in_port_t port);
+  return _libtool;
+}
 
-LIBTEST_API
-const char* default_socket();
-
-LIBTEST_API
-void set_default_socket(const char *socket);
-
-LIBTEST_API
-bool test_is_local(void);
+}

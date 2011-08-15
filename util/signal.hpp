@@ -20,47 +20,54 @@
  */
 
 
-/*
-  Structures for generic tests.
-*/
 
-#include <cstdio>
-#include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
+#pragma once 
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+#include <pthread.h>
+#include <semaphore.h>
 
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
+namespace datadifferential {
+namespace util {
 
-#pragma once
+enum shutdown_t {
+  SHUTDOWN_RUNNING,
+  SHUTDOWN_GRACEFUL,
+  SHUTDOWN_FORCED
+};
 
-LIBTEST_API
-in_port_t default_port();
+class SignalThread {
+  bool _exit_on_signal;
+  sigset_t set;
+  sem_t lock;
+  uint64_t magic_memory;
+  volatile shutdown_t __shutdown;
+  pthread_mutex_t shutdown_mutex;
+  pthread_t thread;
 
-LIBTEST_API
-void set_default_port(in_port_t port);
+public:
 
-LIBTEST_API
-const char* default_socket();
+  SignalThread(bool exit_on_signal_arg= false);
 
-LIBTEST_API
-void set_default_socket(const char *socket);
+  void test();
+  void post();
+  bool setup();
 
-LIBTEST_API
-bool test_is_local(void);
+  bool exit_on_signal()
+  {
+    return _exit_on_signal;
+  }
+
+  int wait(int& sig)
+  {
+    return sigwait(&set, &sig);
+  }
+
+  ~SignalThread();
+
+  void set_shutdown(shutdown_t arg);
+  bool is_shutdown();
+  shutdown_t get_shutdown();
+};
+
+} /* namespace util */
+} /* namespace datadifferential */

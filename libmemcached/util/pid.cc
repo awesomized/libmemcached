@@ -92,3 +92,74 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
   return pid;
 }
 
+pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char *username, const char *password,  memcached_return_t *ret)
+{
+  if (username == NULL)
+  {
+    return libmemcached_util_getpid(hostname, port, ret);
+  }
+
+  pid_t pid= -1;
+
+  memcached_return_t unused;
+  if (not ret)
+    ret= &unused;
+
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    *ret= MEMCACHED_NOT_SUPPORTED;
+    return pid;
+  }
+
+  memcached_st *memc_ptr= memcached_create(NULL);
+  if (not memc_ptr)
+  {
+    *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return -1;
+  }
+
+  if (memcached_failed(*ret= memcached_behavior_set(memc_ptr, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
+  {
+    memcached_free(memc_ptr);
+    return false;
+  }
+
+  if (memcached_failed(*ret= memcached_set_sasl_auth_data(memc_ptr, username, password)))
+  {
+    memcached_free(memc_ptr);
+    return false;
+  }
+
+
+  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
+  if (memcached_success(rc))
+  {
+    memcached_stat_st *stat= memcached_stat(memc_ptr, NULL, &rc);
+    if (memcached_success(rc) and stat and stat->pid != -1)
+    {
+      pid= stat->pid;
+    }
+    else if (memcached_success(rc))
+    {
+      rc= MEMCACHED_UNKNOWN_STAT_KEY; // Something went wrong if this happens
+    }
+    else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
+    {
+      memcached_server_instance_st instance=
+        memcached_server_instance_by_position(memc_ptr, 0);
+
+      assert_msg(instance and instance->error_messages, " ");
+      if (instance and instance->error_messages)
+      {
+        rc= memcached_server_error_return(instance);
+      }
+    }
+
+    memcached_stat_free(memc_ptr, stat);
+  }
+  memcached_free(memc_ptr);
+
+  *ret= rc;
+
+  return pid;
+}

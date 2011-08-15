@@ -127,9 +127,11 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   }
 }
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+
 static char *username;
 static char *passwd;
+
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 
 static int get_username(void *context, int id, const char **result, unsigned int *len)
 {
@@ -139,7 +141,9 @@ static int get_username(void *context, int id, const char **result, unsigned int
 
   *result= username;
   if (len)
+  {
      *len= (username == NULL) ? 0 : (unsigned int)strlen(username);
+  }
 
   return SASL_OK;
 }
@@ -181,44 +185,55 @@ static sasl_callback_t sasl_callbacks[] = {
   { SASL_CB_PASS, (local_sasl_fn)get_password, NULL },
   { SASL_CB_LIST_END, NULL, NULL }
 };
+
 #endif
 
 bool initialize_sasl(memcached_st *memc, char *user, char *password)
 {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    return false;
+  }
+
+  if (memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, (uint64_t)true) == 0)
+  {
+    return false;
+  }
+
   if (user != NULL && password != NULL)
   {
     username= user;
     passwd= password;
 
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
     if (sasl_client_init(NULL) != SASL_OK)
     {
       fprintf(stderr, "Failed to initialize sasl library!\n");
       return false;
     }
     memcached_set_sasl_callbacks(memc, sasl_callbacks);
-  }
 #else
-  (void)memc;
-  (void)user;
-  (void)password;
+    (void)memc;
 #endif
+  }
 
   return true;
 }
 
 void shutdown_sasl(void)
 {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (username != NULL || passwd != NULL)
+  if (username or passwd)
+  {
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
     sasl_done();
 #endif
+  }
 }
 
 void initialize_sockets(void)
 {
   /* Define the function for all platforms to avoid #ifdefs in each program */
-#ifdef WIN32
+#if defined(WIN32) && WIN32
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2,0), &wsaData) != 0)
   {

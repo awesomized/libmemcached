@@ -120,3 +120,8 @@ tests/testplus
 tests/testudp
 tests/var/
 unittests/unittests
+libtest/version.h
+clients/memping
+libtest/skiptest
+tests/sasl
+tests/c_sasl_test

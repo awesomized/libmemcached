@@ -21,19 +21,19 @@
 
 #include <libtest/common.h>
 
-#include <libtest/cmdline.h>
-
 using namespace libtest;
 
 #include <cstdlib>
 #include <string>
 #include <sstream>
 
+namespace libtest {
+
 bool exec_cmdline(const std::string& executable, const char *args[])
 {
   std::stringstream arg_buffer;
 
-  arg_buffer << "./libtool --mode=execute ";
+  arg_buffer << libtool();
 
   if (getenv("LIBTEST_TEST_ENVIRONMENT"))
   {
@@ -63,3 +63,10 @@ bool exec_cmdline(const std::string& executable, const char *args[])
 
   return true;
 }
+
+const char *gearmand_binary() 
+{
+  return GEARMAND_BINARY;
+}
+
+} // namespace exec_cmdline

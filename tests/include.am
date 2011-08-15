@@ -41,7 +41,8 @@ noinst_HEADERS+= \
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_cycle_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
+tests_cycle_CXXFLAGS= $(AM_CXXFLAGS)
+tests_cycle_CXXFLAGS+= ${PTHREAD_CFLAGS}
 tests_cycle_SOURCES= tests/cycle.cc
 tests_cycle_DEPENDENCIES= $(TESTS_LDADDS)
 tests_cycle_LDADD= $(tests_cycle_DEPENDENCIES)
@@ -84,7 +85,6 @@ tests_testapp_DEPENDENCIES= \
 			    libhashkit/libhashkit.la \
 			    libmemcached/libmemcachedutil.la
 tests_testapp_LDADD= \
-		     $(LIBSASL) \
 		     ${PTHREAD_LIBS} \
 		     libmemcached/libmemcached.la \
 		     libmemcached/libmemcachedutil.la \
@@ -93,10 +93,38 @@ tests_testapp_LDADD= \
 check_PROGRAMS+= tests/testapp
 noinst_PROGRAMS+= tests/testapp
 
+tests_sasl_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
+tests_sasl_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
+tests_sasl_SOURCES= \
+		    tests/basic.cc \
+		    tests/debug.cc \
+		    tests/deprecated.cc \
+		    tests/error_conditions.cc \
+		    tests/ketama.cc \
+		    tests/sasl.cc \
+		    tests/namespace.cc \
+		    tests/parser.cc \
+		    tests/pool.cc \
+		    tests/print.cc \
+		    tests/replication.cc \
+		    tests/virtual_buckets.cc
+tests_sasl_SOURCES+= clients/generator.cc clients/execute.cc
+tests_sasl_DEPENDENCIES= \
+			 libmemcached/libmemcached.la \
+			 libtest/libtest.la
+tests_sasl_LDADD= \
+		  ${PTHREAD_LIBS} \
+		  libmemcached/libmemcached.la \
+		  libmemcached/libmemcachedutil.la \
+		  libtest/libtest.la \
+		  libhashkit/libhashkit.la
+check_PROGRAMS+= tests/sasl
+noinst_PROGRAMS+= tests/sasl
+
 tests_testplus_SOURCES= tests/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
-tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES) $(LIBSASL)
+tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES)
 check_PROGRAMS+= tests/testplus
 noinst_PROGRAMS+= tests/testplus
 
@@ -107,13 +135,13 @@ tests_atomsmasher_SOURCES= \
 			   clients/generator.cc \
 			   clients/execute.cc
 tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
-tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES) $(LIBSASL)
+tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES)
 noinst_PROGRAMS+= tests/atomsmasher
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES= tests/mem_udp.cc
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
-tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES) $(LIBSASL)
+tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES)
 check_PROGRAMS+= tests/testudp
 noinst_PROGRAMS+= tests/testudp
 
@@ -151,12 +179,19 @@ tests_c_test_DEPENDENCIES= libmemcached/libmemcached.la
 check_PROGRAMS+=tests/c_test
 noinst_PROGRAMS+=tests/c_test
 
+# Test linking with C application/SASL include
+tests_c_sasl_test_SOURCES= tests/c_sasl_test.c
+tests_c_sasl_test_LDADD= libmemcached/libmemcached.la
+tests_c_sasl_test_DEPENDENCIES= libmemcached/libmemcached.la
+check_PROGRAMS+=tests/c_sasl_test
+noinst_PROGRAMS+=tests/c_sasl_test
+
 test: check
 
-check-local: tests/var $(TEST_DOCS)
+check-local: $(TEST_DOCS)
 	@echo "Tests completed"
 
-test-x: tests/var test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
+test-x: test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
 	@echo "Tests completed"
 
 test-memcat: clients/memcat clients/memcp
@@ -266,6 +301,10 @@ valgrind-memerror: clients/memerror
 test-mem: tests/var tests/testapp
 	@tests/testapp
 
+test-sasl: tests/sasl
+	@tests/sasl
+
+
 test-udp: tests/var tests/testudp
 	@tests/testudp
 
@@ -292,6 +331,9 @@ pahole-mem: tests/testapp
 
 gdb-mem: tests/testapp
 	@$(DEBUG_COMMAND)  tests/testapp
+
+gdb-sasl: tests/sasl
+	@$(DEBUG_COMMAND)  tests/sasl
 
 gdb-atom: tests/atomsmasher
 	@$(DEBUG_COMMAND) tests/testudp
@@ -372,8 +414,6 @@ callgrind:
 	rm -f tests/callgrind.out.*
 	$(LIBTOOL) --mode=execute valgrind --tool=callgrind --callgrind-out-file=tests/callgrind.out.%p  tests/testapp
 	callgrind_annotate tests/callgrind.out.* --auto=yes > tests/callgrind.out
-
-test-no-outputdiff: test
 
 hudson-valgrind: tests/testapp
 	$(VALGRIND_COMMAND) --log-file=tests/valgrind.out tests/testapp

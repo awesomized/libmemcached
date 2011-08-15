@@ -20,9 +20,7 @@
 # All paths should be given relative to the root
 # 
 
-LIBTEST_TMP = ${abs_top_builddir}/tests/var/tmp/
-
-LIBTOOL_COMMAND=$(LIBTOOL) --mode=execute
+LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
 VALGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
@@ -34,12 +32,25 @@ export HELGRIND_COMMAND
 export DRD_COMMAND
 export GDB_COMMAND
 
+valgrind:
+	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_COMMAND)\""
+
+helgrind:
+	@echo make check TESTS_ENVIRONMENT="\"$(HELGRIND_COMMAND)\""
+
+drd:
+	@echo make check TESTS_ENVIRONMENT="\"$(DRD_COMMAND)\""
+
 EXTRA_DIST+= libtest/run.gdb
 
 CLEANFILES+= \
-	     tests/var/log/* \
-	     tests/var/run/* \
-	     tests/var/tmp/*
+	     tmp_chroot/var/log/* \
+	     tmp_chroot/var/run/* \
+	     tmp_chroot/var/tmp/*
+
+.PHONY: distclean-libtest-check
+distclean-libtest-check:
+	-rm -rf tmp_chroot
 
 noinst_HEADERS+= \
 		 libtest/blobslap_worker.h \
@@ -55,6 +66,7 @@ noinst_HEADERS+= \
 		 libtest/gearmand.h \
 		 libtest/get.h \
 		 libtest/killpid.h \
+		 libtest/libtool.hpp \
 		 libtest/memcached.h \
 		 libtest/runner.h \
 		 libtest/server.h \
@@ -73,70 +85,104 @@ libtest_libtest_la_SOURCES= \
 			    libtest/cmdline.cc \
 			    libtest/framework.cc \
 			    libtest/killpid.cc \
+			    libtest/libtool.cc \
 			    libtest/runner.cc \
 			    libtest/server.cc \
 			    libtest/signal.cc \
 			    libtest/test.cc
 
-libtest_libtest_la_CFLAGS= ${AM_CFLAGS}
-libtest_libtest_la_CFLAGS+= ${NO_CONVERSION}
-libtest_libtest_la_CFLAGS+= $(PTHREAD_CFLAGS)
-libtest_libtest_la_CFLAGS+= -DBUILDING_LIBTEST
-libtest_libtest_la_CPPFLAGS= ${AM_CPPFLAGS}
-libtest_libtest_la_CPPFLAGS+= ${NO_CONVERSION}
-libtest_libtest_la_CPPFLAGS+= $(PTHREAD_LIBS)
-libtest_libtest_la_CPPFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS}
 libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
+libtest_libtest_la_CXXFLAGS+= -DLIBTEST_TEMP="\"tmp_chroot\""
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
+libtest_libtest_la_DEPENDENCIES= libtest_tmp_dir
 
-LIBTEST_LDADD= libtest/libtest.la
+# Declare unittest so that we can append to it
+libtest_unittest_CXXFLAGS=
+libtest_unittest_LDADD=
+libtest_unittest_DEPENDENCIES=
 
-if HAVE_LIBMEMCACHED
+# We are either building in tree, or with
+if BUILDING_LIBMEMCACHED
+libtest_libtest_la_DEPENDENCIES+= libmemcached/libmemcached.la
+libtest_libtest_la_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
 libtest_libtest_la_LIBADD+= libmemcached/libmemcachedutil.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED
+
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED
+libtest_unittest_LDADD+= libmemcached/libmemcached.la
+libtest_unittest_LDADD+= libmemcached/libmemcachedutil.la
+libtest_unittest_DEPENDENCIES+= libmemcached/libmemcached.la
+libtest_unittest_DEPENDENCIES+= libmemcached/libmemcachedutil.la
+else
+if HAVE_LIBMEMCACHED
+libtest_libtest_la_LIBADD+= $(libmemcached_LIBS)
+libtest_libtest_la_SOURCES+= libtest/memcached.cc
+else
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
+endif
 endif
 
-if HAVE_LIBGEARMAN
-LIBTEST_LDADD+= libgearman/libgearman.la
+if BUILDING_GEARMAN
+libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
+libtest_libtest_la_LIBADD+= libgearman/libgearman.la
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY="\"${abs_top_builddir}/gearmand/gearmand\""
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BLOBSLAP_WORKER="\"${abs_top_builddir}/benchmark/blobslap_worker\""
+
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN
+libtest_unittest_LDADD+= libgearman/libgearman.la
+libtest_unittest_DEPENDENCIES+= libgearman/libgearman.la
+else
+if HAVE_LIBGEARMAN
+libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
+libtest_libtest_la_LIBADD+= $(libgearman_LIBS)
+libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
+libtest_libtest_la_SOURCES+= libtest/gearmand.cc
+libtest_libtest_la_SOURCES+= util/instance.cc
+libtest_libtest_la_SOURCES+= util/operation.cc
+else
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY=0
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BLOBSLAP_WORKER=0
+libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
+libtest_unittest_CXXFLAGS+= -DGEARMAND_BINARY=0
+libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
+endif
 endif
 
-libtest_tmp_dir: tests/var/log tests/var/tmp tests/var/run clearn-var
+libtest_tmp_dir: tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run
 
-clearn-var:
-	@rm -f tests/var/log/*
-	@rm -f tests/var/run/*
-	@rm -f tests/var/tmp/*
+tmp_chroot:
+	@$(mkdir_p) tmp_chroot
 
-tests/var:
-	@$(mkdir_p) tests/var
+tmp_chroot/var: tmp_chroot
+	@$(mkdir_p) tmp_chroot/var
 
-tests/var/log: tests/var
-	@$(mkdir_p) tests/var/log
+tmp_chroot/var/log: tmp_chroot/var
+	@$(mkdir_p) tmp_chroot/var/log
 
-tests/var/tmp: tests/var
-	@$(mkdir_p) tests/var/tmp
+tmp_chroot/var/tmp: tmp_chroot/var
+	@$(mkdir_p) tmp_chroot/var/tmp
 
-tests/var/run: tests/var
-	@$(mkdir_p) tests/var/run
-
-.PHONY+= tests/var
+tmp_chroot/var/run: tmp_chroot/var
+	@$(mkdir_p) tmp_chroot/var/run
 
 
-libtest_unittest_CFLAGS=
-libtest_unittest_LDADD= ${LIBTEST_LDADD}
-libtest_unittest_DEPENDENCIES= ${LIBTEST_LDADD} libtest_tmp_dir
+libtest_unittest_CXXFLAGS+= ${AM_CXXFLAGS}
+libtest_unittest_DEPENDENCIES+= libtest/libtest.la libtest_tmp_dir
+libtest_unittest_LDADD+= libtest/libtest.la
 libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest
-noinst_PROGRAMS+= libtest/unittest
 test-unittest: libtest/unittest
 	@libtest/unittest
 
@@ -152,6 +198,10 @@ helgrind-unittest: libtest/unittest
 drd-unittest: libtest/unittest
 	@$(DRD_COMMAND) libtest/unittest
 
+libtest_skiptest_LDADD= libtest/libtest.la
+libtest_skiptest_SOURCES= libtest/skiptest.cc
+check_PROGRAMS+= libtest/skiptest
+noinst_PROGRAMS+= libtest/skiptest
+
 libtest_wait_SOURCES= libtest/wait.cc
 noinst_PROGRAMS+= libtest/wait
-

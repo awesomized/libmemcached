@@ -149,10 +149,41 @@ int main(int argc, char *argv[])
 {
   srandom((unsigned int)time(NULL));
 
+  if (getenv("LIBTEST_QUIET"))
+  {
+    close(STDOUT_FILENO);
+  }
+
+  char buffer[1024];
+  if (getenv("LIBTEST_TMP"))
+  {
+    snprintf(buffer, sizeof(buffer), "%s", getenv("LIBTEST_TMP"));
+  }
+  else
+  {
+    snprintf(buffer, sizeof(buffer), "%s", LIBTEST_TEMP);
+  }
+
+  if (chdir(buffer) == -1)
+  {
+    char getcwd_buffer[1024];
+    char *dir= getcwd(getcwd_buffer, sizeof(getcwd_buffer));
+
+    Error << "Unable to chdir() from " << dir << " to " << buffer << " errno:" << strerror(errno);
+    return EXIT_FAILURE;
+  }
+
+  if (libtest::libtool() == NULL)
+  {
+    Error << "Failed to locate libtool";
+    return EXIT_FAILURE;
+  }
+
   world= new Framework();
 
   if (not world)
   {
+    Error << "Failed to create Framework()";
     return EXIT_FAILURE;
   }
 
@@ -182,7 +213,7 @@ int main(int argc, char *argv[])
   case TEST_FATAL:
   case TEST_FAILURE:
   case TEST_MEMORY_ALLOCATION_FAILURE:
-    Error << argv[0] << "create() failed";
+    Error << argv[0] << " failed in Framework::create()";
     delete world;
     return EXIT_FAILURE;
   }

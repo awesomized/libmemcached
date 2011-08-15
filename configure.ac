@@ -52,21 +52,34 @@ AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 HASHKIT_LIBRARY_VERSION=1:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
-AC_DEFINE([HAVE_LIBMEMCACHED], [ 1 ], [dummy rule for libtest])
-AC_SUBST(HAVE_LIBMEMCACHED, 1)
-AM_CONDITIONAL(HAVE_LIBMEMCACHED, true)
 LT_INIT
+m4_include([m4/memcached.m4])
+m4_include([m4/memcached_sasl.m4])
+
+AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
+AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
+AC_SUBST(_WITH_LIBMEMCACHED_SUPPORT, ["_WITH_LIBMEMCACHED_SUPPORT 1"])
+
+AM_CONDITIONAL(BUILDING_GEARMAN, false)
+AM_CONDITIONAL(HAVE_LIBGEARMAN, false)
+AC_SUBST(_WITH_LIBGEARMAN_SUPPORT, ["_WITH_LIBGEARMAN_SUPPORT 0"])
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
 PANDORA_HAVE_LIBEVENT
-my_saved_libs="$LIBS"
-LIBS=
-PANDORA_REQUIRE_PTHREAD
-LIBS="$my_saved_libs"
+
+case "$target_os" in
+  *linux*)
+       AS_IF([test "x$GCC" = "xyes"],
+             [
+              LDFLAGS="$LDFLAGS -z relro -z now"
+              ])
+   ;;
+   esac
 
 dnl Specialty checks
+ACX_PTHREAD
 CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB
@@ -75,12 +88,9 @@ ENABLE_HSIEH_HASH
 ENABLE_MURMUR_HASH
 ENABLE_MEMASLAP
 PROTOCOL_BINARY_TEST
-WITH_MEMCACHED
 ENABLE_DEPRECATED
 PANDORA_HAVE_LIBINNODB
-PANDORA_PRINT_CALLSTACK
 PANDORA_HAVE_SASL
-WITH_LIBGEARMAN
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([dup2])
@@ -109,6 +119,7 @@ AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_HEADERS([sasl/sasl.h])
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
@@ -130,7 +141,13 @@ AC_TYPE_UINT8_T
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],
-      [LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1"])
+      [
+        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
+      ],
+      [
+        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
+       ]
+      )
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
 AC_CHECK_HEADERS([atomic.h])
@@ -161,6 +178,7 @@ AC_CONFIG_FILES([
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec
+  libtest/version.h
   ])
 AC_OUTPUT
 

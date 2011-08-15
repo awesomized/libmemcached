@@ -10,114 +10,76 @@
  */
 #include "config.h"
 
-#include <cstdio>
-#include <cstring>
-#include <getopt.h>
-#include <iostream>
+#include <stdio.h>
 #include <unistd.h>
-
+#include <string.h>
+#include <getopt.h>
 #include <libmemcached/memcached.h>
+#include <libmemcached/util.h>
 #include "client_options.h"
 #include "utilities.h"
+
+#include <iostream>
 
 static int opt_binary= 0;
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
-static char *opt_hash= NULL;
 static char *opt_username;
 static char *opt_passwd;
 
-#define PROGRAM_NAME "memrm"
-#define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
+#define PROGRAM_NAME "memping"
+#define PROGRAM_DESCRIPTION "Ping a server to see if it is alive"
 
 /* Prototypes */
-static void options_parse(int argc, char *argv[]);
+void options_parse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {
-  memcached_st *memc;
-  memcached_return_t rc;
-  memcached_server_st *servers;
-
-  int return_code= 0;
-
   options_parse(argc, argv);
-  initialize_sockets();
 
-  if (opt_servers == 0)
+  if (opt_servers == NULL)
   {
     char *temp;
 
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
-      fprintf(stderr, "No Servers provided\n");
-      exit(1);
+      std::cerr << "No Servers provided" << std::endl;
+      exit(EXIT_FAILURE);
     }
   }
 
-  memc= memcached_create(NULL);
-  process_hash_option(memc, opt_hash);
-
-  servers= memcached_servers_parse(opt_servers);
-  memcached_server_push(memc, servers);
-  memcached_server_list_free(servers);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
-                         (uint64_t) opt_binary);
-
-  if (opt_username and LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  int exit_code= EXIT_SUCCESS;
+  memcached_server_st *servers= memcached_servers_parse(opt_servers);
   {
-    memcached_free(memc);
-    std::cerr << "--username was supplied, but binary was not built with SASL support." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-
-  if (opt_username and initialize_sasl(memc, opt_username, opt_passwd) == false)
-  {
-    std::cerr << "Failed to initialize SASL support." << std::endl;
-
-    memcached_free(memc);
-    return EXIT_FAILURE;
-  }
-
-  while (optind < argc)
-  {
-    if (opt_verbose)
-      printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
-    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
-
-    if (rc != MEMCACHED_SUCCESS)
+    for (uint32_t x= 0; x < memcached_server_list_count(servers); x++)
     {
-      fprintf(stderr, "memrm: %s: memcache error %s",
-	      argv[optind], memcached_strerror(memc, rc));
-      if (memcached_last_error_errno(memc))
-	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
-      fprintf(stderr, "\n");
+      memcached_return_t instance_rc;
+      const char *hostname= servers[x].hostname;
+      in_port_t port= servers[x].port;
 
-      return_code= -1;
+      if (libmemcached_util_ping2(hostname, port, opt_username, opt_passwd, &instance_rc) == false)
+      {
+        std::cerr << "Failed to ping " << hostname << ":" << port << " " << memcached_strerror(NULL, instance_rc) <<  std::endl;
+        exit_code= EXIT_FAILURE;
+      }
     }
-
-    optind++;
   }
+  memcached_server_list_free(servers);
 
-  memcached_free(memc);
-
-  if (opt_servers)
-    free(opt_servers);
-
-  if (opt_hash)
-    free(opt_hash);
+  free(opt_servers);
 
   shutdown_sasl();
 
-  return return_code;
+  return exit_code;
 }
 
 
-static void options_parse(int argc, char *argv[])
+void options_parse(int argc, char *argv[])
 {
   memcached_programs_help_st help_options[]=
   {
@@ -132,7 +94,6 @@ static void options_parse(int argc, char *argv[])
     {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
     {(OPTIONSTRING)"expire", required_argument, NULL, OPT_EXPIRE},
-    {(OPTIONSTRING)"hash", required_argument, NULL, OPT_HASH},
     {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
     {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
     {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
@@ -169,9 +130,6 @@ static void options_parse(int argc, char *argv[])
       break;
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
-      break;
-    case OPT_HASH:
-      opt_hash= strdup(optarg);
       break;
     case OPT_USERNAME:
       opt_username= optarg;

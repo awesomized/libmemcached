@@ -34,100 +34,70 @@
  *
  */
 
-
-/*
-  Test that we are cycling the servers we are creating during testing.
-*/
-
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <libmemcached/common.h>
-#include <libmemcached/is.h>
-#include <libmemcached/util.h>
-
-#include <iostream>
-
-
-#include <libtest/server.h>
-
 using namespace libtest;
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
+/*
+  Test cases
+*/
 
-static test_return_t alive(memcached_st *memc)
+#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +20
+#include <libmemcached/memcached.h>
+
+static test_return_t pre_sasl(memcached_st *)
 {
-  test_true(memc);
-  test_true(memcached_is_allocated(memc));
-  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
-    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
-    test_true(instance);
-
-    test_true(libmemcached_util_ping(memcached_server_name(instance),
-                                     memcached_server_port(instance), NULL));
+    return TEST_SKIPPED;
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t valid(memcached_st *memc)
+/*
+ * Test that the sasl authentication works. We cannot use the default
+ * pool of servers, because that would require that all servers we want
+ * to test supports SASL authentication, and that they use the default
+ * creds.
+ */
+static test_return_t sasl_auth_test(memcached_st *memc)
 {
-  test_true(memc);
-  test_true(memcached_is_allocated(memc));
-
-  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT)
   {
-    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
-    test_true(instance);
+    test_compare(MEMCACHED_SUCCESS, memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0));
+    test_compare(MEMCACHED_SUCCESS, memcached_delete(memc, "foo", 3, 0));
+    test_compare(MEMCACHED_SUCCESS, memcached_destroy_sasl_auth_data(memc));
+    test_compare(MEMCACHED_SUCCESS, memcached_destroy_sasl_auth_data(memc));
+    test_compare(MEMCACHED_INVALID_ARGUMENTS, memcached_destroy_sasl_auth_data(NULL));
+    memcached_quit(memc);
 
-    pid_t pid= libmemcached_util_getpid(memcached_server_name(instance),
-                                        memcached_server_port(instance), NULL);
-    test_true(pid != -1);
+    test_compare(MEMCACHED_AUTH_FAILURE, 
+                 memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0));
+    test_compare(MEMCACHED_SUCCESS, memcached_destroy_sasl_auth_data(memc));
+
+    memcached_quit(memc);
+    return TEST_SUCCESS;
   }
 
-  return TEST_SUCCESS;
+  return TEST_SKIPPED;
 }
 
-static test_return_t kill_test(memcached_st *)
-{
-  static struct timespec global_sleep_value= { 2, 0 };
 
-#ifdef WIN32
-  sleep(1);
-#else
-  nanosleep(&global_sleep_value, NULL);
-#endif
-
-  return TEST_SUCCESS;
-}
-
-test_st ping_tests[] ={
-  {"alive", true, (test_callback_fn*)alive },
-  {0, 0, 0}
-};
-
-test_st getpid_tests[] ={
-  {"valid", true, (test_callback_fn*)valid },
-  {0, 0, 0}
-};
-
-test_st kill_tests[] ={
-  {"kill", true, (test_callback_fn*)kill_test },
-  {0, 0, 0}
+test_st sasl_auth_tests[]= {
+  {"sasl_auth", true, (test_callback_fn*)sasl_auth_test },
+  {0, 0, (test_callback_fn*)0}
 };
 
 collection_st collection[] ={
-  {"libmemcached_util_ping()", 0, 0, ping_tests},
-  {"libmemcached_util_getpid()", 0, 0, getpid_tests},
-  {"kill", 0, 0, kill_tests},
+  {"sasl_auth", (test_callback_fn*)pre_sasl, 0, sasl_auth_tests },
+#if 0
+  {"sasl", (test_callback_fn*)pre_sasl, 0, tests },
+#endif
   {0, 0, 0, 0}
 };
 
-
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 #include "tests/libmemcached_world.h"
 
 void get_world(Framework *world)
@@ -137,16 +107,16 @@ void get_world(Framework *world)
   world->_create= (test_callback_create_fn*)world_create;
   world->_destroy= (test_callback_destroy_fn*)world_destroy;
 
-  world->item.set_startup((test_callback_fn*)world_test_startup);
+  world->item._startup= (test_callback_fn*)world_test_startup;
   world->item.set_pre((test_callback_fn*)world_pre_run);
+  world->item.set_flush((test_callback_fn*)world_flush);
   world->item.set_post((test_callback_fn*)world_post_run);
-
-  world->set_on_error((test_callback_error_fn*)world_on_error);
+  world->_on_error= (test_callback_error_fn*)world_on_error;
 
   world->collection_startup= (test_callback_fn*)world_container_startup;
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
   world->set_runner(&defualt_libmemcached_runner);
-  world->set_socket();
-}
 
+  world->set_sasl("memcached", "memcached");
+}

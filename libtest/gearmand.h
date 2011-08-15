@@ -22,8 +22,12 @@
 
 #pragma once
 
+#include <arpa/inet.h>
+
+namespace libtest { class Server; }
+
 namespace libtest {
 
-Server *build_gearmand(const char *hostname, in_port_t try_port);
+libtest::Server *build_gearmand(const char *hostname, in_port_t try_port);
 
 }

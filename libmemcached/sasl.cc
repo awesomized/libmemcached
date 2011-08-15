@@ -36,16 +36,20 @@
  */
 
 #include <libmemcached/common.h>
-#include <iso646.h>
+#include <cassert>
+
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
+
+#include <sasl/sasl.h>
 
 void memcached_set_sasl_callbacks(memcached_st *ptr,
                                   const sasl_callback_t *callbacks)
 {
-  ptr->sasl.callbacks= callbacks;
+  ptr->sasl.callbacks= const_cast<sasl_callback_t *>(callbacks);
   ptr->sasl.is_allocated= false;
 }
 
-const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
+sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
 {
   return ptr->sasl.callbacks;
 }
@@ -57,16 +61,16 @@ const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
  * @param raddr remote address (out)
  * @return true on success false otherwise (errno contains more info)
  */
-static memcached_return_t resolve_names(int fd, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
+static memcached_return_t resolve_names(memcached_server_st& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
 {
   char host[NI_MAXHOST];
   char port[NI_MAXSERV];
   struct sockaddr_storage saddr;
   socklen_t salen= sizeof(saddr);
 
-  if (getsockname(fd, (struct sockaddr *)&saddr, &salen) < 0)
+  if (getsockname(server.fd, (struct sockaddr *)&saddr, &salen) < 0)
   {
-    return MEMCACHED_ERRNO;
+    return memcached_set_errno(server, MEMCACHED_ERRNO, MEMCACHED_AT);
   }
 
   if (getnameinfo((struct sockaddr *)&saddr, salen, host, sizeof(host), port, sizeof(port), NI_NUMERICHOST | NI_NUMERICSERV) < 0)
@@ -77,15 +81,15 @@ static memcached_return_t resolve_names(int fd, char *laddr, size_t laddr_length
   (void)snprintf(laddr, laddr_length, "%s;%s", host, port);
   salen= sizeof(saddr);
 
-  if (getpeername(fd, (struct sockaddr *)&saddr, &salen) < 0)
+  if (getpeername(server.fd, (struct sockaddr *)&saddr, &salen) < 0)
   {
-    return MEMCACHED_ERRNO;
+    return memcached_set_errno(server, MEMCACHED_ERRNO, MEMCACHED_AT);
   }
 
   if (getnameinfo((struct sockaddr *)&saddr, salen, host, sizeof(host),
                    port, sizeof(port), NI_NUMERICHOST | NI_NUMERICSERV) < 0)
   {
-    return MEMCACHED_HOST_LOOKUP_FAILURE;
+    return memcached_set_error(server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT);
   }
 
   (void)snprintf(raddr, raddr_length, "%s;%s", host, port);
@@ -95,23 +99,32 @@ static memcached_return_t resolve_names(int fd, char *laddr, size_t laddr_length
 
 memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server)
 {
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    return MEMCACHED_NOT_SUPPORTED;
+  }
+
+  if (server == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
   /* SANITY CHECK: SASL can only be used with the binary protocol */
-  if (!server->root->flags.binary_protocol)
-    return MEMCACHED_FAILURE;
+  if (server->root->flags.binary_protocol == false)
+  {
+    return MEMCACHED_PROTOCOL_ERROR;
+  }
 
   /* Try to get the supported mech from the server. Servers without SASL
    * support will return UNKNOWN COMMAND, so we can just treat that
    * as authenticated
-   */
-  protocol_binary_request_no_extras request= {
-    .message.header.request= {
-      .magic= PROTOCOL_BINARY_REQ,
-      .opcode= PROTOCOL_BINARY_CMD_SASL_LIST_MECHS
-    }
-  };
+ */
+  protocol_binary_request_no_extras request= { };
+  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SASL_LIST_MECHS;
 
   if (memcached_io_write(server, request.bytes,
-			 sizeof(request.bytes), 1) != sizeof(request.bytes))
+                         sizeof(request.bytes), 1) != sizeof(request.bytes))
   {
     return MEMCACHED_WRITE_FAILURE;
   }
@@ -129,7 +142,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
        * that the server don't support SASL and treat it as success and
        * let the client fail with the next operation if the error was
        * caused by another problem....
-       */
+     */
       rc= MEMCACHED_SUCCESS;
     }
 
@@ -140,29 +153,37 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
   char laddr[NI_MAXHOST + NI_MAXSERV];
   char raddr[NI_MAXHOST + NI_MAXSERV];
 
-  if (memcached_failed(rc= resolve_names(server->fd, laddr, sizeof(laddr), raddr, sizeof(raddr))))
+  if (memcached_failed(rc= resolve_names(*server, laddr, sizeof(laddr), raddr, sizeof(raddr))))
   {
     return rc;
   }
 
-  sasl_conn_t *conn;
-  int ret= sasl_client_new("memcached", server->hostname, laddr, raddr, server->root->sasl.callbacks, 0, &conn);
-  if (ret != SASL_OK)
+  int ret;
+  if ((ret= sasl_client_init(NULL)) != SASL_OK)
   {
-    return MEMCACHED_AUTH_PROBLEM;
+    const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+    return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
+                               memcached_string_make_from_cstr(sasl_error_msg));
+  }
+
+  sasl_conn_t *conn;
+  if ((ret= sasl_client_new("memcached", server->hostname, laddr, raddr, server->root->sasl.callbacks, 0, &conn) ) != SASL_OK)
+  {
+    const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+    return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
+                               memcached_string_make_from_cstr(sasl_error_msg));
   }
 
   const char *data;
   const char *chosenmech;
   unsigned int len;
   ret= sasl_client_start(conn, mech, NULL, &data, &len, &chosenmech);
-
-  if (ret != SASL_OK && ret != SASL_CONTINUE)
+  if (ret != SASL_OK and ret != SASL_CONTINUE)
   {
-    rc= MEMCACHED_AUTH_PROBLEM;
-    goto end;
+    const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+    return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
+                               memcached_string_make_from_cstr(sasl_error_msg));
   }
-
   uint16_t keylen= (uint16_t)strlen(chosenmech);
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SASL_AUTH;
   request.message.header.request.keylen= htons(keylen);
@@ -173,15 +194,15 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
 
     struct libmemcached_io_vector_st vector[]=
     {
-      { .length= sizeof(request.bytes), .buffer= request.bytes },
-      { .length= keylen, .buffer= chosenmech },
-      { .length= len, .buffer= data }
+      { sizeof(request.bytes), request.bytes },
+      { keylen, chosenmech },
+      { len, data }
     };
 
     if (memcached_io_writev(server, vector, 3, true) == -1)
     {
       rc= MEMCACHED_WRITE_FAILURE;
-      goto end;
+      break;
     }
     memcached_server_response_increment(server);
 
@@ -189,7 +210,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
     rc= memcached_response(server, NULL, 0, NULL);
     if (rc != MEMCACHED_AUTH_CONTINUE)
     {
-      goto end;
+      break;
     }
 
     ret= sasl_client_step(conn, memcached_result_value(&server->root->result),
@@ -199,29 +220,27 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
     if (ret != SASL_OK && ret != SASL_CONTINUE)
     {
       rc= MEMCACHED_AUTH_PROBLEM;
-      goto end;
+      break;
     }
 
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SASL_STEP;
     request.message.header.request.bodylen= htonl(len + keylen);
   } while (true);
 
-end:
   /* Release resources */
   sasl_dispose(&conn);
 
-  return rc;
+  return memcached_set_error(*server, rc, MEMCACHED_AT);
 }
 
-static int get_username(void *context, int id, const char **result,
-                        unsigned int *len)
+static int get_username(void *context, int id, const char **result, unsigned int *len)
 {
   if (!context || !result || (id != SASL_CB_USER && id != SASL_CB_AUTHNAME))
   {
     return SASL_BADPARAM;
   }
 
-  *result= context;
+  *result= (char *)context;
   if (len)
   {
     *len= (unsigned int)strlen(*result);
@@ -238,7 +257,7 @@ static int get_password(sasl_conn_t *conn, void *context, int id,
     return SASL_BADPARAM;
   }
 
-  *psecret= context;
+  *psecret= (sasl_secret_t *)context;
 
   return SASL_OK;
 }
@@ -247,24 +266,30 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
                                                 const char *username,
                                                 const char *password)
 {
-  if (ptr == NULL || username == NULL ||
-      password == NULL || ptr->sasl.callbacks != NULL)
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
-    return MEMCACHED_FAILURE;
+    return MEMCACHED_NOT_SUPPORTED;
   }
 
-  sasl_callback_t *callbacks= libmemcached_calloc(ptr, 4, sizeof(sasl_callback_t));
+  if (ptr == NULL or username == NULL or password == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  memcached_destroy_sasl_auth_data(ptr);
+
+  sasl_callback_t *callbacks= (sasl_callback_t*)libmemcached_calloc(ptr, 4, sizeof(sasl_callback_t));
   size_t password_length= strlen(password);
   size_t username_length= strlen(username);
-  char *name= libmemcached_malloc(ptr, username_length +1);
-  sasl_secret_t *secret= libmemcached_malloc(ptr, password_length +1 + sizeof(sasl_secret_t));
+  char *name= (char *)libmemcached_malloc(ptr, username_length +1);
+  sasl_secret_t *secret= (sasl_secret_t*)libmemcached_malloc(ptr, password_length +1 + sizeof(sasl_secret_t));
 
-  if (callbacks == NULL || name == NULL || secret == NULL)
+  if (callbacks == NULL or name == NULL or secret == NULL)
   {
     libmemcached_free(ptr, callbacks);
     libmemcached_free(ptr, name);
     libmemcached_free(ptr, secret);
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
   secret->len= password_length;
@@ -272,13 +297,13 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
   secret->data[password_length]= 0;
 
   callbacks[0].id= SASL_CB_USER;
-  callbacks[0].proc= get_username;
+  callbacks[0].proc= (int (*)())get_username;
   callbacks[0].context= strncpy(name, username, username_length +1);
   callbacks[1].id= SASL_CB_AUTHNAME;
-  callbacks[1].proc= get_username;
+  callbacks[1].proc= (int (*)())get_username;
   callbacks[1].context= name;
   callbacks[2].id= SASL_CB_PASS;
-  callbacks[2].proc= get_password;
+  callbacks[2].proc= (int (*)())get_password;
   callbacks[2].context= secret;
   callbacks[3].id= SASL_CB_LIST_END;
 
@@ -290,26 +315,45 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
 
 memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr)
 {
-   if (ptr == NULL || ptr->sasl.callbacks == NULL)
-   {
-     return MEMCACHED_FAILURE;
-   }
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    return MEMCACHED_NOT_SUPPORTED;
+  }
 
-   if (ptr->sasl.is_allocated)
-   {
-     libmemcached_free(ptr, ptr->sasl.callbacks[0].context);
-     libmemcached_free(ptr, ptr->sasl.callbacks[2].context);
-     libmemcached_free(ptr, (void*)ptr->sasl.callbacks);
-     ptr->sasl.is_allocated= false;
-   }
+  if (ptr == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
-   ptr->sasl.callbacks= NULL;
+  if (ptr->sasl.callbacks == NULL)
+  {
+    return MEMCACHED_SUCCESS;
+  }
 
-   return MEMCACHED_SUCCESS;
+  if (ptr->sasl.is_allocated)
+  {
+    libmemcached_free(ptr, ptr->sasl.callbacks[0].context);
+    libmemcached_free(ptr, ptr->sasl.callbacks[2].context);
+    libmemcached_free(ptr, (void*)ptr->sasl.callbacks);
+    ptr->sasl.is_allocated= false;
+  }
+
+  ptr->sasl.callbacks= NULL;
+
+  return MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st *source)
 {
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    return MEMCACHED_NOT_SUPPORTED;
+  }
+
+  if (clone == NULL or source == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   if (source->sasl.callbacks == NULL)
   {
@@ -318,16 +362,16 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
 
   /* Hopefully we are using our own callback mechanisms.. */
   if (source->sasl.callbacks[0].id == SASL_CB_USER &&
-      source->sasl.callbacks[0].proc == get_username &&
+      source->sasl.callbacks[0].proc ==  (int (*)())get_username &&
       source->sasl.callbacks[1].id == SASL_CB_AUTHNAME &&
-      source->sasl.callbacks[1].proc == get_username &&
+      source->sasl.callbacks[1].proc ==  (int (*)())get_username &&
       source->sasl.callbacks[2].id == SASL_CB_PASS &&
-      source->sasl.callbacks[2].proc == get_password &&
+      source->sasl.callbacks[2].proc ==  (int (*)())get_password &&
       source->sasl.callbacks[3].id == SASL_CB_LIST_END)
   {
-    sasl_secret_t *secret= source->sasl.callbacks[2].context;
+    sasl_secret_t *secret= (sasl_secret_t *)source->sasl.callbacks[2].context;
     return memcached_set_sasl_auth_data(clone,
-                                        source->sasl.callbacks[0].context,
+                                        (const char*)source->sasl.callbacks[0].context,
                                         (const char*)secret->data);
   }
 
@@ -335,7 +379,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
    * But we're not. It may work if we know what the user tries to pass
    * into the list, but if we don't know the ID we don't know how to handle
    * the context...
-   */
+ */
   size_t total= 0;
 
   while (source->sasl.callbacks[total].id != SASL_CB_LIST_END)
@@ -345,16 +389,16 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
     case SASL_CB_USER:
     case SASL_CB_AUTHNAME:
     case SASL_CB_PASS:
-       break;
+      break;
     default:
-       /* I don't know how to deal with this... */
-       return MEMCACHED_NOT_SUPPORTED;
+      /* I don't know how to deal with this... */
+      return MEMCACHED_NOT_SUPPORTED;
     }
 
     ++total;
   }
 
-  sasl_callback_t *callbacks= libmemcached_calloc(clone, total + 1, sizeof(sasl_callback_t));
+  sasl_callback_t *callbacks= (sasl_callback_t*)libmemcached_calloc(clone, total +1, sizeof(sasl_callback_t));
   if (callbacks == NULL)
   {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
@@ -366,7 +410,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
   {
     if (callbacks[x].id == SASL_CB_USER || callbacks[x].id == SASL_CB_AUTHNAME)
     {
-      callbacks[x].context= libmemcached_malloc(clone, strlen(source->sasl.callbacks[x].context));
+      callbacks[x].context= (sasl_callback_t*)libmemcached_malloc(clone, strlen((const char*)source->sasl.callbacks[x].context));
 
       if (callbacks[x].context == NULL)
       {
@@ -379,12 +423,12 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
         libmemcached_free(clone, callbacks);
         return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
       }
-      strncpy(callbacks[x].context, source->sasl.callbacks[x].context, sizeof(callbacks[x].context));
+      strncpy((char*)callbacks[x].context, (const char*)source->sasl.callbacks[x].context, sizeof(callbacks[x].context));
     }
     else
     {
-      sasl_secret_t *src = source->sasl.callbacks[x].context;
-      sasl_secret_t *n = libmemcached_malloc(clone, src->len + 1 + sizeof(*n));
+      sasl_secret_t *src= (sasl_secret_t *)source->sasl.callbacks[x].context;
+      sasl_secret_t *n= (sasl_secret_t*)libmemcached_malloc(clone, src->len + 1 + sizeof(*n));
       if (n == NULL)
       {
         /* Failed to allocate memory, clean up previously allocated memory */
@@ -406,3 +450,26 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
 
   return MEMCACHED_SUCCESS;
 }
+
+#else
+
+void memcached_set_sasl_callbacks(memcached_st *, const sasl_callback_t *)
+{
+}
+
+sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *)
+{
+  return NULL;
+}
+
+memcached_return_t memcached_set_sasl_auth_data(memcached_st *, const char *, const char *)
+{
+  return MEMCACHED_NOT_SUPPORTED;
+}
+
+memcached_return_t memcached_clone_sasl(memcached_st *, const  memcached_st *)
+{
+  return MEMCACHED_NOT_SUPPORTED;
+}
+
+#endif
