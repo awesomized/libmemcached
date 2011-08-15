@@ -59,18 +59,6 @@ using namespace std;
 using namespace memcache;
 using namespace libtest;
 
-extern "C" {
-   test_return_t basic_test(memcached_st *memc);
-   test_return_t increment_test(memcached_st *memc);
-   test_return_t basic_master_key_test(memcached_st *memc);
-   test_return_t mget_result_function(memcached_st *memc);
-   test_return_t basic_behavior(memcached_st *memc);
-   test_return_t mget_test(memcached_st *memc);
-   memcached_return_t callback_counter(const memcached_st *,
-                                       memcached_result_st *,
-                                       void *context);
-}
-
 static void populate_vector(vector<char> &vec, const string &str)
 {
   vec.reserve(str.length());
@@ -86,7 +74,7 @@ static void copy_vec_to_string(vector<char> &vec, string &str)
   }
 }
 
-test_return_t basic_test(memcached_st *memc)
+static test_return_t basic_test(memcached_st *memc)
 {
   Memcache foo(memc);
   const string value_set("This is some data");
@@ -104,7 +92,7 @@ test_return_t basic_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t increment_test(memcached_st *original)
+static test_return_t increment_test(memcached_st *original)
 {
   Memcache mcach(original);
   const string key("blah");
@@ -139,7 +127,7 @@ test_return_t increment_test(memcached_st *original)
   return TEST_SUCCESS;
 }
 
-test_return_t basic_master_key_test(memcached_st *original)
+static test_return_t basic_master_key_test(memcached_st *original)
 {
   Memcache foo(original);
   const string value_set("Data for server A");
@@ -167,19 +155,7 @@ test_return_t basic_master_key_test(memcached_st *original)
   return TEST_SUCCESS;
 }
 
-/* Count the results */
-memcached_return_t callback_counter(const memcached_st *,
-                                    memcached_result_st *,
-                                    void *context)
-{
-  unsigned int *counter= static_cast<unsigned int *>(context);
-
-  *counter= *counter +1;
-
-  return MEMCACHED_SUCCESS;
-}
-
-test_return_t mget_test(memcached_st *original)
+static test_return_t mget_test(memcached_st *original)
 {
   Memcache memc(original);
   memcached_return_t mc_rc;
@@ -226,7 +202,7 @@ test_return_t mget_test(memcached_st *original)
   return TEST_SUCCESS;
 }
 
-test_return_t basic_behavior(memcached_st *original)
+static test_return_t basic_behavior(memcached_st *original)
 {
   Memcache memc(original);
   uint64_t value= 1;
@@ -236,6 +212,57 @@ test_return_t basic_behavior(memcached_st *original)
 
   return TEST_SUCCESS;
 }
+
+static test_return_t error_test(memcached_st *)
+{
+  Memcache memc("--server=localhost:0");
+  std::vector<char> value;
+
+  test_false(memc.set("key", value, time_t(0), uint32_t(0)));
+
+  test_true(memc.error());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t error_std_string_test(memcached_st *)
+{
+  Memcache memc("--server=localhost:0");
+  std::vector<char> value;
+
+  test_false(memc.set("key", value, time_t(0), uint32_t(0)));
+
+  std::string error_message;
+  test_true(memc.error(error_message));
+  test_false(error_message.empty());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t error_memcached_return_t_test(memcached_st *)
+{
+  Memcache memc("--server=localhost:0");
+  std::vector<char> value;
+
+  test_false(memc.set("key", value, time_t(0), uint32_t(0)));
+
+  memcached_return_t rc;
+  test_true(memc.error(rc));
+  test_compare(MEMCACHED_CONNECTION_FAILURE, rc);
+
+  return TEST_SUCCESS;
+}
+
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-fpermissive"
+#endif
+
+test_st error_tests[] ={
+  { "error()", 0, error_test },
+  { "error(std::string&)", 0, error_std_string_test },
+  { "error(memcached_return_t&)", 0, error_memcached_return_t_test },
+  {0, 0, 0}
+};
 
 test_st tests[] ={
   { "basic", 0,
@@ -253,6 +280,7 @@ test_st tests[] ={
 
 collection_st collection[] ={
   {"block", 0, 0, tests},
+  {"error()", 0, 0, error_tests},
   {0, 0, 0, 0}
 };
 

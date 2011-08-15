@@ -39,7 +39,9 @@
 memcached_return_t initialize_query(memcached_st *self)
 {
   if (not self)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   self->query_id++;
 
@@ -59,7 +61,9 @@ memcached_return_t initialize_query(memcached_st *self)
 memcached_return_t initialize_const_query(const memcached_st *self)
 {
   if (not self)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   if (memcached_server_count(self) == 0)
   {
