@@ -53,8 +53,15 @@
 #include <fnmatch.h>
 #endif
 
+static inline bool is_pid_valid(const pid_t pid)
+{
+  return (pid > 1) ? true : false;
+}
+
 #include <libtest/gearmand.h>
 #include <libtest/blobslap_worker.h>
 #include <libtest/memcached.h>
+
+#include <libtest/libtool.hpp>
 
 #include <libtest/test.hpp>

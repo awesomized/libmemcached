@@ -165,11 +165,9 @@ static void _free(memcached_st *ptr, bool release_st)
 
   memcached_error_free(*ptr);
 
-  if (ptr->sasl.callbacks)
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT and ptr->sasl.callbacks)
   {
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
     memcached_destroy_sasl_auth_data(ptr);
-#endif
   }
 
   if (release_st)
@@ -374,8 +372,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->_namespace= memcached_array_clone(new_clone, source->_namespace);
   new_clone->configure.filename= memcached_array_clone(new_clone, source->_namespace);
 
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (source->sasl.callbacks)
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT and source->sasl.callbacks)
   {
     if (memcached_clone_sasl(new_clone, source) != MEMCACHED_SUCCESS)
     {
@@ -383,7 +380,6 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
       return NULL;
     }
   }
-#endif
 
   rc= run_distribution(new_clone);
 

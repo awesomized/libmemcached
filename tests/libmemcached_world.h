@@ -28,10 +28,15 @@ struct libmemcached_test_container_st
 };
 
 #define SERVERS_TO_CREATE 5
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    error= TEST_SKIPPED;
+    return NULL;
+  }
+
   in_port_t max_port;
   for (uint32_t x= 0; x < SERVERS_TO_CREATE; x++)
   {
@@ -52,20 +57,43 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
     max_port= port;
     const char *argv[1]= { "memcached" };
-    if (not server_startup(servers, "memcached", port, 1, argv))
+    if (servers.sasl())
     {
-      error= TEST_FAILURE;
-      return NULL;
+      if (not server_startup(servers, "memcached-sasl", port, 1, argv))
+      {
+        error= TEST_FAILURE;
+        return NULL;
+      }
+    }
+    else
+    {
+      if (not server_startup(servers, "memcached", port, 1, argv))
+      {
+        error= TEST_FAILURE;
+        return NULL;
+      }
     }
   }
 
   if (servers.socket())
   {
-    const char *argv[1]= { "memcached" };
-    if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+    if (servers.sasl())
     {
-      error= TEST_FAILURE;
-      return NULL;
+      const char *argv[1]= { "memcached" };
+      if (not servers.start_socket_server("memcached-sasl", max_port +1, 1, argv))
+      {
+        error= TEST_FAILURE;
+        return NULL;
+      }
+    }
+    else
+    {
+      const char *argv[1]= { "memcached" };
+      if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+      {
+        error= TEST_FAILURE;
+        return NULL;
+      }
     }
   }
 
@@ -94,6 +122,21 @@ static test_return_t world_container_startup(libmemcached_test_container_st *con
   test_true(not container->parent);
   container->parent= memcached(container->construct.option_string().c_str(), container->construct.option_string().size());
   test_true(container->parent);
+
+  if (container->construct.sasl())
+  {
+    if (memcached_failed(memcached_behavior_set(container->parent, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
+    {
+      memcached_free(container->parent);
+      return TEST_FAILURE;
+    }
+
+    if (memcached_failed(memcached_set_sasl_auth_data(container->parent, container->construct.username().c_str(), container->construct.password().c_str())))
+    {
+      memcached_free(container->parent);
+      return TEST_FAILURE;
+    }
+  }
 
   for (uint32_t host= 0; host < memcached_server_count(container->parent); ++host)
   {
@@ -174,8 +217,11 @@ static test_return_t world_on_error(test_return_t test_state, libmemcached_test_
 static bool world_destroy(void *object)
 {
   libmemcached_test_container_st *container= (libmemcached_test_container_st *)object;
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-  sasl_done();
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT)
+  {
+    sasl_done();
+  }
 #endif
 
   delete container;

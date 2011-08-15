@@ -15,12 +15,14 @@ libmemcached_libmemcachedprotocol_la_SOURCES=  \
 libmemcached_libmemcachedprotocol_la_CFLAGS= \
 					     ${AM_CFLAGS} \
 					     ${NO_CONVERSION} \
-					     ${PTHREAD_CFLAGS} \
 					     -DBUILDING_LIBMEMCACHED
+libmemcached_libmemcachedprotocol_la_CFLAGS+= ${PTHREAD_CFLAGS}
 
 libmemcached_libmemcachedprotocol_la_CXXFLAGS= \
 					       ${AM_CXXFLAGS} \
-					       ${PTHREAD_CFLAGS} \
 					       -DBUILDING_LIBMEMCACHED
+libmemcached_libmemcachedprotocol_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
 
-libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS} ${PTHREAD_LIBS} -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}
+libmemcached_libmemcachedprotocol_la_LIBADD= ${PTHREAD_LIBS}
+libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS}
+libmemcached_libmemcachedprotocol_la_LDFLAGS+= -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}

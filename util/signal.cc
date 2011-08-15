@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  libtest
+ *  DD Util
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -20,13 +20,19 @@
  */
 
 
-#include <libtest/common.h>
+#include <config.h>
 
+#include <cassert>
+#include <cerrno>
 #include <csignal>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
-#include <libtest/signal.h>
+#include <util/signal.hpp>
 
-using namespace libtest;
+namespace datadifferential {
+namespace util {
 
 #define MAGIC_MEMORY 123569
 
@@ -74,12 +80,10 @@ void SignalThread::post()
 void SignalThread::test()
 {
   assert(magic_memory == MAGIC_MEMORY);
-  if (not getenv("LIBTEST_IN_GDB"))
-  {
-    assert(sigismember(&set, SIGABRT));
-    assert(sigismember(&set, SIGQUIT));
-    assert(sigismember(&set, SIGINT));
-  }
+  assert(sigismember(&set, SIGABRT));
+  assert(sigismember(&set, SIGINT));
+  assert(sigismember(&set, SIGQUIT));
+  assert(sigismember(&set, SIGTERM));
   assert(sigismember(&set, SIGUSR2));
 }
 
@@ -115,24 +119,33 @@ static void *sig_thread(void *arg)
 
     if (context->wait(sig) == -1)
     {
-      Error << "sigwait() returned errno:" << strerror(errno);
+      std::cerr << "sigwait() returned errno:" << strerror(errno) << std::endl;
       continue;
     }
 
     switch (sig)
     {
-    case SIGABRT:
     case SIGUSR2:
+      break;
+
+    case SIGABRT:
     case SIGINT:
     case SIGQUIT:
+    case SIGTERM:
       if (context->is_shutdown() == false)
       {
         context->set_shutdown(SHUTDOWN_FORCED);
       }
+
+      if (context->exit_on_signal())
+      {
+        exit(EXIT_SUCCESS);
+      }
+
       break;
 
     default:
-      Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
+      std::cerr << "Signal handling thread got unexpected signal " <<  strsignal(sig) << std::endl;
       break;
     }
   }
@@ -142,19 +155,18 @@ static void *sig_thread(void *arg)
 
 }
 
-SignalThread::SignalThread() :
+SignalThread::SignalThread(bool exit_on_signal_arg) :
+  _exit_on_signal(exit_on_signal_arg),
   magic_memory(MAGIC_MEMORY),
   thread(pthread_self())
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
   sigemptyset(&set);
-  if (not getenv("LIBTEST_IN_GDB"))
-  {
-    sigaddset(&set, SIGABRT);
-    sigaddset(&set, SIGQUIT);
-    sigaddset(&set, SIGINT);
-  }
 
+  sigaddset(&set, SIGABRT);
+  sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGQUIT);
+  sigaddset(&set, SIGTERM);
   sigaddset(&set, SIGUSR2);
 
   sem_init(&lock, 0, 0);
@@ -165,33 +177,16 @@ bool SignalThread::setup()
 {
   set_shutdown(SHUTDOWN_RUNNING);
 
-  sigset_t old_set;
-  sigemptyset(&old_set);
-  pthread_sigmask(SIG_BLOCK, NULL, &old_set);
-
-  if (sigismember(&old_set, SIGQUIT))
-  {
-    Error << strsignal(SIGQUIT) << " has been previously set.";
-  }
-  if (sigismember(&old_set, SIGINT))
-  {
-    Error << strsignal(SIGINT) << " has been previously set.";
-  }
-  if (sigismember(&old_set, SIGUSR2))
-  {
-    Error << strsignal(SIGUSR2) << " has been previously set.";
-  }
-
   int error;
   if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
   {
-    Error << "pthread_sigmask() died during pthread_sigmask(" << strerror(error) << ")";
+    std::cerr << "pthread_sigmask() died during pthread_sigmask(" << strerror(error) << ")" << std::endl;
     return false;
   }
 
   if ((error= pthread_create(&thread, NULL, &sig_thread, this)) != 0)
   {
-    Error << "pthread_create() died during pthread_create(" << strerror(error) << ")";
+    std::cerr << "pthread_create() died during pthread_create(" << strerror(error) << ")" << std::endl;
     return false;
   }
 
@@ -199,3 +194,6 @@ bool SignalThread::setup()
 
   return true;
 }
+
+} /* namespace util */
+} /* namespace datadifferential */

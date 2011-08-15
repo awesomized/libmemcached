@@ -54,20 +54,29 @@ AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
 LT_INIT
 m4_include([m4/memcached.m4])
+m4_include([m4/memcached_sasl.m4])
+
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
+AC_SUBST(_WITH_LIBMEMCACHED_SUPPORT, ["_WITH_LIBMEMCACHED_SUPPORT 1"])
 
 AM_CONDITIONAL(BUILDING_GEARMAN, false)
 AM_CONDITIONAL(HAVE_LIBGEARMAN, false)
-AC_DEFINE([GEARMAN_BINARY], [0], [dummy variable])
+AC_SUBST(_WITH_LIBGEARMAN_SUPPORT, ["_WITH_LIBGEARMAN_SUPPORT 0"])
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
 PANDORA_HAVE_LIBEVENT
-my_saved_libs="$LIBS"
-LIBS=
-LIBS="$my_saved_libs"
+
+case "$target_os" in
+  *linux*)
+       AS_IF([test "x$GCC" = "xyes"],
+             [
+              LDFLAGS="$LDFLAGS -z relro -z now"
+              ])
+   ;;
+   esac
 
 dnl Specialty checks
 ACX_PTHREAD
@@ -110,6 +119,7 @@ AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_HEADERS([sasl/sasl.h])
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
@@ -131,7 +141,13 @@ AC_TYPE_UINT8_T
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],
-      [LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1"])
+      [
+        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
+      ],
+      [
+        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
+       ]
+      )
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
 AC_CHECK_HEADERS([atomic.h])

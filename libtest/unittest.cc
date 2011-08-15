@@ -140,7 +140,9 @@ static test_return_t var_log_exists_test(void *)
 static test_return_t var_tmp_test(void *)
 {
   FILE *file= fopen("var/tmp/junk", "w+");
-  test_true(file);
+  char buffer[1024];
+  const char *dir= getcwd(buffer, sizeof(buffer));
+  test_true_got(file, dir);
   fclose(file);
   return TEST_SUCCESS;
 }
@@ -178,16 +180,6 @@ static test_return_t var_log_rm_test(void *)
   test_true(unlink("var/log/junk") == 0);
   return TEST_SUCCESS;
 }
-
-
-#if 0
-static test_return_t pause_test(void *)
-{
-  (void)getchar();
-  return TEST_SUCCESS;
-}
-#endif
-
 
 static test_return_t gearmand_cycle_test(void *object)
 {

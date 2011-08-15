@@ -47,18 +47,22 @@ bool _compare_true_hint(const char *file, int line, const char *func, T_comparab
 }
 
 template <class T_comparable>
-bool _compare(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual)
+bool _compare(const char *file, int line, const char *func, const T_comparable __expected, const T_comparable __actual)
 {
   if (__expected != __actual)
   {
     if (typeid(__expected) == typeid(test_return_t))
     {
+      const char *expected_str= test_strerror(test_return_t(__expected));
+      const char *got_str= test_strerror(test_return_t(__actual));
+
       libtest::stream::make_cerr(file, line, func) << "Expected \"" 
-        << test_strerror(test_return_t(__expected)) 
+        << expected_str
         << "\" got \"" 
-        << test_strerror(test_return_t(__actual)) << "\"";
+        << got_str
+        << "\"";
     }
-#if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED
+#if (defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED)
     else if (typeid(__expected) == typeid(memcached_return_t))
     {
       libtest::stream::make_cerr(file, line, func) << "Expected \"" 

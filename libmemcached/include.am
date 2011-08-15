@@ -141,10 +141,8 @@ libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD= $(LIBM)
 libmemcached_libmemcached_la_LDFLAGS+= ${AM_LDFLAGS} -version-info ${MEMCACHED_LIBRARY_VERSION}
 
-if HAVE_SASL
-libmemcached_libmemcached_la_LDFLAGS+= $(LTLIBSASL) $(LTLIBSASL2)
-libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.c
-endif
+libmemcached_libmemcached_la_LIBADD+= $(LTLIBSASL) $(LTLIBSASL2)
+libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.cc
 
 if HAVE_DTRACE
 BUILT_SOURCES+= libmemcached/dtrace_probes.h

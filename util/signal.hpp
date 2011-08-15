@@ -19,54 +19,55 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <libtest/common.h>
 
-using namespace libtest;
 
-#include <cstdlib>
-#include <string>
-#include <sstream>
+#pragma once 
 
-namespace libtest {
+#include <pthread.h>
+#include <semaphore.h>
 
-bool exec_cmdline(const std::string& executable, const char *args[])
-{
-  std::stringstream arg_buffer;
+namespace datadifferential {
+namespace util {
 
-  arg_buffer << libtool();
+enum shutdown_t {
+  SHUTDOWN_RUNNING,
+  SHUTDOWN_GRACEFUL,
+  SHUTDOWN_FORCED
+};
 
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+class SignalThread {
+  bool _exit_on_signal;
+  sigset_t set;
+  sem_t lock;
+  uint64_t magic_memory;
+  volatile shutdown_t __shutdown;
+  pthread_mutex_t shutdown_mutex;
+  pthread_t thread;
+
+public:
+
+  SignalThread(bool exit_on_signal_arg= false);
+
+  void test();
+  void post();
+  bool setup();
+
+  bool exit_on_signal()
   {
-    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
-    arg_buffer << " ";
+    return _exit_on_signal;
   }
 
-  arg_buffer << executable;
-  for (const char **ptr= args; *ptr; ++ptr)
+  int wait(int& sig)
   {
-    arg_buffer << " " << *ptr;
+    return sigwait(&set, &sig);
   }
 
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    std::cerr << std::endl << arg_buffer.str() << std::endl;
-  }
-  else
-  {
-    arg_buffer << " > /dev/null 2>&1";
-  }
+  ~SignalThread();
 
-  if (system(arg_buffer.str().c_str()) == -1)
-  {
-    return false;
-  }
+  void set_shutdown(shutdown_t arg);
+  bool is_shutdown();
+  shutdown_t get_shutdown();
+};
 
-  return true;
-}
-
-const char *gearmand_binary() 
-{
-  return GEARMAND_BINARY;
-}
-
-} // namespace exec_cmdline
+} /* namespace util */
+} /* namespace datadifferential */

@@ -37,6 +37,7 @@ using namespace libtest;
 #include <cstring>
 #include <iostream>
 #include <signal.h>
+#include <sstream>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -66,13 +67,12 @@ public:
   bool call(const bool success, const std::string &response)
   {
     _pid= -1;
-
     if (success and response.size())
     {
       _pid= atoi(response.c_str());
     }
 
-    if (_pid < 1)
+    if (is_pid_valid(_pid) == false)
     {
       _pid= -1;
       return false;
@@ -90,7 +90,9 @@ private:
 public:
   Gearmand(const std::string& host_arg, in_port_t port_arg) :
     libtest::Server(host_arg, port_arg)
-  { }
+  {
+    set_pid_file();
+  }
 
   pid_t get_pid(bool error_is_ok)
   {
@@ -182,9 +184,6 @@ public:
 
   bool build(int argc, const char *argv[]);
 };
-
-
-#include <sstream>
 
 bool Gearmand::build(int argc, const char *argv[])
 {

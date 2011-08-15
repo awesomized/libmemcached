@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached C sasl test app
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -34,19 +34,23 @@
  *
  */
 
-#pragma once
+/*
+ * @file @brief C dummy test, aka testing C linking, etc
+ */
 
-#ifdef __cplusplus
-extern "C" {
+#include <stdlib.h>
+
+#ifdef HAVE_SASL_SASL_H
+#include <sasl/sasl.h>
 #endif
 
-LIBMEMCACHED_API
-pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_return_t *ret);
+#include <libmemcached/memcached.h>
 
-LIBMEMCACHED_API
-pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char *username, const char *password,  memcached_return_t *ret);
+int main(void)
+{
+  memcached_st *memc= memcached_create(NULL);
+  memcached_free(memc);
 
-#ifdef __cplusplus
+  return EXIT_SUCCESS;
 }
-#endif
 

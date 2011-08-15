@@ -20,53 +20,39 @@
  */
 
 #include <libtest/common.h>
-
-using namespace libtest;
-
-#include <cstdlib>
 #include <string>
-#include <sstream>
+
+char _libtool[1024]= { 0 };
 
 namespace libtest {
 
-bool exec_cmdline(const std::string& executable, const char *args[])
+const char *libtool(void)
 {
-  std::stringstream arg_buffer;
-
-  arg_buffer << libtool();
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  if (_libtool[0])
   {
-    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
-    arg_buffer << " ";
+    std::string libtool_buffer;
+    if (getenv("srcdir"))
+    {
+      libtool_buffer+= getenv("srcdir");
+      libtool_buffer+= "/";
+    }
+    else
+    {
+      libtool_buffer+= "./";
+    }
+
+    libtool_buffer+= "libtool";
+    if (access(libtool_buffer.c_str(), R_OK | W_OK | X_OK))
+    {
+      return NULL;
+    }
+
+    libtool_buffer+= " --mode=execute ";
+
+    snprintf(_libtool, sizeof(_libtool), "%s", libtool_buffer.c_str());
   }
 
-  arg_buffer << executable;
-  for (const char **ptr= args; *ptr; ++ptr)
-  {
-    arg_buffer << " " << *ptr;
-  }
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    std::cerr << std::endl << arg_buffer.str() << std::endl;
-  }
-  else
-  {
-    arg_buffer << " > /dev/null 2>&1";
-  }
-
-  if (system(arg_buffer.str().c_str()) == -1)
-  {
-    return false;
-  }
-
-  return true;
+  return _libtool;
 }
 
-const char *gearmand_binary() 
-{
-  return GEARMAND_BINARY;
 }
-
-} // namespace exec_cmdline

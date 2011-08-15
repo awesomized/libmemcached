@@ -27,5 +27,9 @@ libtest::Server *build_memcached(const std::string& hostname, const in_port_t tr
 
 libtest::Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port);
 
+libtest::Server *build_memcached_sasl(const std::string& hostname, const in_port_t try_port, const std::string& username, const std::string& password);
+
+libtest::Server *build_memcached_sasl_socket(const std::string& socket_file, const in_port_t try_port, const std::string& username, const std::string& password);
+
 }
 

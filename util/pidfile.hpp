@@ -37,7 +37,6 @@
 
 #pragma once
 
-
 #include <string>
 
 namespace datadifferential {
@@ -59,7 +58,7 @@ public:
 
 private:
   int _last_errno;
-  std::string _filename;
+  const std::string _filename;
   std::string _error_message;
 };
 

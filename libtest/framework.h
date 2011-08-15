@@ -143,6 +143,11 @@ public:
   {
     _servers.set_socket();
   }
+
+  void set_sasl(const std::string& username_arg, const std::string& password_arg)
+  {
+    _servers.set_sasl(username_arg, password_arg);
+  }
   
   /**
     Runner represents the callers for the tests. If not implemented we will use

@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/types.h>
@@ -114,14 +115,18 @@ pid_t kill_file(const std::string &filename)
   return ret;
 }
 
-pid_t get_pid_from_file(const std::string &filename)
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define LIBTEST_AT __FILE__ ":" TOSTRING(__LINE__)
+
+pid_t get_pid_from_file(const std::string &filename, std::stringstream& error_message)
 {
   pid_t ret= -1;
   FILE *fp;
 
   if (filename.empty())
   {
-    Error << "empty pid file";
+    error_message << LIBTEST_AT << " empty pid file";
     return ret;
   }
 
@@ -135,11 +140,23 @@ pid_t get_pid_from_file(const std::string &filename)
     if (ptr)
     {
       ret= (pid_t)atoi(pid_buffer);
-      if (ret <= 0)
+      if (ret < 1)
       {
-        return ret;
+        error_message << LIBTEST_AT << " Invalid pid was read from file " << filename;
       }
     }
+    else
+    {
+      error_message << LIBTEST_AT << " File " << filename << " was empty ";
+    }
+
+    return ret;
+  }
+  else
+  {
+    char buffer[1024];
+    char *current_directory= getcwd(buffer, sizeof(buffer));
+    error_message << "Error while opening " << current_directory << "/" << filename << " " << strerror(errno);
   }
   
   return ret;

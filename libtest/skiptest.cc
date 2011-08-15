@@ -19,54 +19,30 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <libtest/common.h>
+
+#include <config.h>
+
+#include <libtest/test.hpp>
+
+#include <cstdlib>
+#include <unistd.h>
 
 using namespace libtest;
 
-#include <cstdlib>
-#include <string>
-#include <sstream>
 
-namespace libtest {
+collection_st collection[] ={
+  {0, 0, 0, 0}
+};
 
-bool exec_cmdline(const std::string& executable, const char *args[])
+static void *world_create(server_startup_st&, test_return_t& rc)
 {
-  std::stringstream arg_buffer;
+  rc= TEST_SKIPPED;
 
-  arg_buffer << libtool();
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
-    arg_buffer << " ";
-  }
-
-  arg_buffer << executable;
-  for (const char **ptr= args; *ptr; ++ptr)
-  {
-    arg_buffer << " " << *ptr;
-  }
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    std::cerr << std::endl << arg_buffer.str() << std::endl;
-  }
-  else
-  {
-    arg_buffer << " > /dev/null 2>&1";
-  }
-
-  if (system(arg_buffer.str().c_str()) == -1)
-  {
-    return false;
-  }
-
-  return true;
+  return NULL;
 }
 
-const char *gearmand_binary() 
+void get_world(Framework *world)
 {
-  return GEARMAND_BINARY;
+  world->collections= collection;
+  world->_create= world_create;
 }
-
-} // namespace exec_cmdline

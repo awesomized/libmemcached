@@ -593,18 +593,19 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st ptr)
   case MEMCACHED_CONNECTION_UDP:
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(ptr);
-#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-    if (ptr->fd != INVALID_SOCKET and ptr->root->sasl.callbacks)
+    if (LIBMEMCACHED_WITH_SASL_SUPPORT)
     {
-      rc= memcached_sasl_authenticate_connection(ptr);
-      if (memcached_failed(rc) and ptr->fd != INVALID_SOCKET)
+      if (ptr->fd != INVALID_SOCKET and ptr->root->sasl.callbacks)
       {
-        WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-        (void)closesocket(ptr->fd);
-        ptr->fd= INVALID_SOCKET;
+        rc= memcached_sasl_authenticate_connection(ptr);
+        if (memcached_failed(rc) and ptr->fd != INVALID_SOCKET)
+        {
+          WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+          (void)closesocket(ptr->fd);
+          ptr->fd= INVALID_SOCKET;
+        }
       }
     }
-#endif
     break;
 
   case MEMCACHED_CONNECTION_UNIX_SOCKET:

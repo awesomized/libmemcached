@@ -11,18 +11,18 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <unistd.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
 #include <getopt.h>
-#include <sys/types.h>
+#include <inttypes.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <strings.h>
-#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <libmemcached/memcached.h>
 
@@ -89,8 +89,18 @@ int main(int argc, char *argv[])
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
-  if (!initialize_sasl(memc, opt_username, opt_passwd))
+
+  if (opt_username and LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
+    memcached_free(memc);
+    std::cerr << "--username was supplied, but binary was not built with SASL support." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  if (opt_username and initialize_sasl(memc, opt_username, opt_passwd) == false)
+  {
+    std::cerr << "Failed to initialize SASL support." << std::endl;
+
     memcached_free(memc);
     return EXIT_FAILURE;
   }

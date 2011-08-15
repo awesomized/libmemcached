@@ -281,6 +281,7 @@ collection_st collection[] ={
 };
 
 
+#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 #define SERVERS_TO_CREATE 5
 
 #include "libmemcached_world.h"

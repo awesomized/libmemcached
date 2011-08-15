@@ -127,7 +127,7 @@ bool Server::cycle()
 
   // Try to ping, and kill the server #limit number of times
   pid_t current_pid;
-  while (--limit and (current_pid= get_pid()) != -1)
+  while (--limit and is_pid_valid(current_pid= get_pid()))
   {
     if (kill(current_pid))
     {
@@ -192,22 +192,22 @@ bool Server::start()
     return false;
   }
 
-  if (is_helgrind())
+  if (is_helgrind() or is_valgrind())
   {
     sleep(4);
   }
 
   if (pid_file_option() and not pid_file().empty())
   {
-    Wait wait(pid_file());
+    Wait wait(pid_file(), 8);
 
     if (not wait.successful())
     {
-      Error << "Unable to open pidfile: " << pid_file();
+      Error << "Unable to open pidfile for: " << _running;
     }
   }
 
-  int count= is_helgrind() ? 20 : 5;
+  int count= is_helgrind() or is_valgrind() ? 20 : 5;
   while (not ping() and --count)
   {
     nap();
@@ -215,7 +215,12 @@ bool Server::start()
 
   if (count == 0)
   {
-    Error << "Failed to ping() server once started:" << *this;
+    // If we happen to have a pid file, lets try to kill it
+    if (pid_file_option() and not pid_file().empty())
+    {
+      kill_file(pid_file());
+    }
+    Error << "Failed to ping() server started with:" << _running;
     _running.clear();
     return false;
   }
@@ -316,10 +321,9 @@ bool Server::set_log_file()
 void Server::rebuild_base_command()
 {
   _base_command.clear();
-  if (is_libtool() and getenv("LIBTOOL_COMMAND"))
+  if (is_libtool())
   {
-    _base_command+= getenv("LIBTOOL_COMMAND");
-    _base_command+= " ";
+    _base_command+= libtool();
   }
 
   if (is_debug() and getenv("GDB_COMMAND"))
@@ -364,7 +368,7 @@ bool Server::args(std::string& options)
   // Update pid_file
   if (pid_file_option())
   {
-    if (not set_pid_file())
+    if (_pid_file.empty() and not set_pid_file())
     {
       return false;
     }
@@ -563,7 +567,7 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
   else if (server_type.compare("blobslap_worker") == 0)
   {
-    if (GEARMAND_BINARY)
+    if (GEARMAND_BINARY and GEARMAND_BLOBSLAP_WORKER)
     {
       if (HAVE_LIBGEARMAN)
       {
@@ -577,6 +581,24 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
     else
     {
       Error << "No gearmand binary is available";
+    }
+  }
+  else if (server_type.compare("memcached-sasl") == 0)
+  {
+    if (MEMCACHED_SASL_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached_sasl("localhost", try_port, construct.username(), construct.password());
+      }
+      else
+      {
+        Error << "Libmemcached was not found";
+      }
+    }
+    else
+    {
+      Error << "No memcached binary that was compiled with sasl is available";
     }
   }
   else if (server_type.compare("memcached") == 0)
@@ -663,6 +685,24 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
   else if (server_type.compare("gearmand") == 0)
   {
     Error << "Socket files are not supported for gearmand yet";
+  }
+  else if (server_type.compare("memcached-sasl") == 0)
+  {
+    if (MEMCACHED_SASL_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached_sasl_socket("localhost", try_port, username(), password());
+      }
+      else
+      {
+        Error << "Libmemcached was not found";
+      }
+    }
+    else
+    {
+      Error << "No memcached binary is available";
+    }
   }
   else if (server_type.compare("memcached") == 0)
   {

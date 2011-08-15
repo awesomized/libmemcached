@@ -19,54 +19,10 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <libtest/common.h>
-
-using namespace libtest;
-
-#include <cstdlib>
-#include <string>
-#include <sstream>
+#pragma once
 
 namespace libtest {
 
-bool exec_cmdline(const std::string& executable, const char *args[])
-{
-  std::stringstream arg_buffer;
+const char *libtool(void);
 
-  arg_buffer << libtool();
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
-    arg_buffer << " ";
-  }
-
-  arg_buffer << executable;
-  for (const char **ptr= args; *ptr; ++ptr)
-  {
-    arg_buffer << " " << *ptr;
-  }
-
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    std::cerr << std::endl << arg_buffer.str() << std::endl;
-  }
-  else
-  {
-    arg_buffer << " > /dev/null 2>&1";
-  }
-
-  if (system(arg_buffer.str().c_str()) == -1)
-  {
-    return false;
-  }
-
-  return true;
 }
-
-const char *gearmand_binary() 
-{
-  return GEARMAND_BINARY;
-}
-
-} // namespace exec_cmdline

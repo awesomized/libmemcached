@@ -36,6 +36,7 @@ struct Server {
 private:
   bool _is_socket;
   std::string _socket;
+  std::string _sasl;
   std::string _pid_file;
   std::string _log_file;
   std::string _base_command; // executable command which include libtool, valgrind, gdb, etc
@@ -170,13 +171,13 @@ public:
 
 protected:
   void nap();
+  bool set_pid_file();
 
 private:
   bool is_helgrind() const;
   bool is_valgrind() const;
   bool is_debug() const;
   bool set_log_file();
-  bool set_pid_file();
   bool set_socket_file();
   void rebuild_base_command();
   void reset_pid();
@@ -189,6 +190,9 @@ class server_startup_st
 private:
   std::string server_list;
   bool _socket;
+  bool _sasl;
+  std::string _username;
+  std::string _password;
 
 public:
 
@@ -197,6 +201,7 @@ public:
 
   server_startup_st() :
     _socket(false),
+    _sasl(false),
     udp(0)
   { }
 
@@ -209,6 +214,17 @@ public:
     return servers.size();
   }
 
+  const std::string& password() const
+  {
+    return _password;
+  }
+
+  const std::string& username() const
+  {
+    return _username;
+  }
+
+
   bool is_debug() const;
   bool is_helgrind() const;
   bool is_valgrind() const;
@@ -218,9 +234,21 @@ public:
     return _socket;
   }
 
+  bool sasl()
+  {
+    return _sasl;
+  }
+
   void set_socket()
   {
     _socket= true;
+  }
+
+  void set_sasl(const std::string& username_arg, const std::string& password_arg)
+  {
+    _sasl= true;
+    _username= username_arg;
+    _password= password_arg;
   }
 
 
