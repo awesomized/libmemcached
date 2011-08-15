@@ -462,21 +462,25 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
 
 memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_return_t *error)
 {
+  memcached_return_t unused;
+  if (error == NULL)
+  {
+    error= &unused;
+  }
+
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(self)))
   {
-    if (error)
-      *error= rc;
+    *error= rc;
 
     return NULL;
   }
 
   WATCHPOINT_ASSERT(error);
 
-  unlikely (self->flags.use_udp)
+  if (self->flags.use_udp)
   {
-    if (error)
-      *error= MEMCACHED_NOT_SUPPORTED;
+    *error= memcached_set_error(*self, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
 
     return NULL;
   }
@@ -485,8 +489,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
 
   if (not stats)
   {
-    if (error)
-      *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
 
     return NULL;
   }
@@ -521,8 +524,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     }
   }
 
-  if (error)
-    *error= rc;
+  *error= rc;
 
   return stats;
 }

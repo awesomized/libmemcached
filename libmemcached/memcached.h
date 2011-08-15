@@ -71,6 +71,7 @@
 #include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
 #include <libmemcached/hash.h>
+#include <libmemcached/namespace.h>
 #include <libmemcached/options.h>
 #include <libmemcached/parse.h>
 #include <libmemcached/quit.h>

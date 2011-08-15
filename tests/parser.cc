@@ -46,9 +46,7 @@ using namespace libtest;
 #include <cerrno>
 #include <cassert>
 
-#define BUILDING_LIBMEMCACHED
-// !NEVER use common.h, always use memcached.h in your own apps
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 
 #include <tests/parser.h>

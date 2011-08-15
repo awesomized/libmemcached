@@ -15,7 +15,9 @@
 
 using namespace libtest;
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/server_instance.h>
+#include <libmemcached/io.h>
 
 #include <assert.h>
 #include <stdio.h>
