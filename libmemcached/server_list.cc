@@ -66,6 +66,7 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
     port= MEMCACHED_DEFAULT_PORT;
   }
 
+
   /* Increment count for hosts */
   count= 1;
   if (ptr != NULL)
@@ -80,8 +81,9 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
     return NULL;
   }
 
+  memcached_string_t _hostname= { memcached_string_make_from_cstr(hostname) };
   /* @todo Check return type */
-  if (not __server_create_with(NULL, &new_host_list[count-1], hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET))
+  if (not __server_create_with(NULL, &new_host_list[count-1], _hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET))
   {
     *error= memcached_set_errno(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     return NULL;
