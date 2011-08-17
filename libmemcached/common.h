@@ -63,6 +63,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>

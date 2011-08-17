@@ -11,22 +11,23 @@
 
 #include "config.h"
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <unistd.h>
+#include <cerrno>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
 #include <getopt.h>
-#include <sys/types.h>
+#include <iostream>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <strings.h>
-#include <string.h>
 #include <sys/types.h>
-#include <stdlib.h>
-#include <limits.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 #include <libmemcached/memcached.h>

@@ -20,17 +20,16 @@
 #include "poll/poll.h"
 #endif
 
-#include <assert.h>
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <ctype.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
 #include <pthread.h>
 #include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 
