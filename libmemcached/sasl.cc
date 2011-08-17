@@ -41,6 +41,7 @@
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 
 #include <sasl/sasl.h>
+#include <pthread.h>
 
 void memcached_set_sasl_callbacks(memcached_st *ptr,
                                   const sasl_callback_t *callbacks)
@@ -95,6 +96,23 @@ static memcached_return_t resolve_names(memcached_server_st& server, char *laddr
   (void)snprintf(raddr, raddr_length, "%s;%s", host, port);
 
   return MEMCACHED_SUCCESS;
+}
+
+static void sasl_shutdown_function()
+{
+  sasl_done();
+}
+
+static int sasl_startup_state= SASL_OK;
+static pthread_once_t sasl_startup_once= PTHREAD_ONCE_INIT;
+static void sasl_startup_function(void)
+{
+  sasl_startup_state= sasl_client_init(NULL);
+
+  if (sasl_startup_state == SASL_OK)
+  {
+    (void)atexit(sasl_shutdown_function);
+  }
 }
 
 memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server)
@@ -158,18 +176,27 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
     return rc;
   }
 
-  int ret;
-  if ((ret= sasl_client_init(NULL)) != SASL_OK)
+  int pthread_error;
+  if ((pthread_error= pthread_once(&sasl_startup_once, sasl_startup_function)) != 0)
   {
-    const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+    return memcached_set_errno(*server, pthread_error, MEMCACHED_AT);
+  }
+
+  if (sasl_startup_state != SASL_OK)
+  {
+    const char *sasl_error_msg= sasl_errstring(sasl_startup_state, NULL, NULL);
     return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
                                memcached_string_make_from_cstr(sasl_error_msg));
   }
 
   sasl_conn_t *conn;
+  int ret;
   if ((ret= sasl_client_new("memcached", server->hostname, laddr, raddr, server->root->sasl.callbacks, 0, &conn) ) != SASL_OK)
   {
     const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+
+    sasl_dispose(&conn);
+
     return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
                                memcached_string_make_from_cstr(sasl_error_msg));
   }
@@ -181,6 +208,9 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
   if (ret != SASL_OK and ret != SASL_CONTINUE)
   {
     const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
+
+    sasl_dispose(&conn);
+
     return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
                                memcached_string_make_from_cstr(sasl_error_msg));
   }
@@ -274,6 +304,12 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
   if (ptr == NULL or username == NULL or password == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  memcached_return_t ret;
+  if (memcached_failed(ret= memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
+  {
+    return memcached_set_error(*ptr, ret, MEMCACHED_AT, memcached_literal_param("Unable change to binary protocol which is required for SASL."));
   }
 
   memcached_destroy_sasl_auth_data(ptr);

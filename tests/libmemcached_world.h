@@ -37,6 +37,14 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
+  // Assume we are running under valgrind, and bail
+  if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
+  {
+    error= TEST_SKIPPED;
+    return NULL;
+  }
+
+
   in_port_t max_port;
   for (uint32_t x= 0; x < SERVERS_TO_CREATE; x++)
   {

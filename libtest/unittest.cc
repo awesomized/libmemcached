@@ -229,6 +229,27 @@ static test_return_t memcached_socket_cycle_test(void *object)
   return TEST_SKIPPED;
 }
 
+static test_return_t memcached_sasl_test(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  if (getenv("TESTS_ENVIRONMENT"))
+  {
+    return TEST_SKIPPED;
+  }
+
+  if (MEMCACHED_SASL_BINARY and HAVE_LIBMEMCACHED)
+  {
+    const char *argv[1]= { "cycle_memcached_sasl" };
+    test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
+
+    return TEST_SUCCESS;
+  }
+
+  return TEST_SKIPPED;
+}
+
 test_st gearmand_tests[] ={
 #if 0
   {"pause", 0, pause_test },
@@ -240,6 +261,7 @@ test_st gearmand_tests[] ={
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
+  {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
   {0, 0, 0}
 };
 

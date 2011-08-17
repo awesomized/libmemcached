@@ -118,12 +118,6 @@ pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char
     return -1;
   }
 
-  if (memcached_failed(*ret= memcached_behavior_set(memc_ptr, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
-  {
-    memcached_free(memc_ptr);
-    return false;
-  }
-
   if (memcached_failed(*ret= memcached_set_sasl_auth_data(memc_ptr, username, password)))
   {
     memcached_free(memc_ptr);
@@ -148,7 +142,9 @@ pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char
       memcached_server_instance_st instance=
         memcached_server_instance_by_position(memc_ptr, 0);
 
+#if 0
       assert_msg(instance and instance->error_messages, " ");
+#endif
       if (instance and instance->error_messages)
       {
         rc= memcached_server_error_return(instance);

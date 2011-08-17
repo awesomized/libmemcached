@@ -370,14 +370,14 @@ valgrind-udp: tests/testudp
 valgrind-plus: tests/testplus
 	@$(VALGRIND_COMMAND) tests/testplus
 
+valgrind-sasl: tests/sasl
+	@$(VALGRIND_COMMAND) tests/sasl
+
 valgrind-hash: tests/testhashkit
 	@$(VALGRIND_COMMAND) tests/testhashkit
 
 valgrind-hashplus: tests/hash_plus
 	@$(VALGRIND_COMMAND) tests/hash_plus
-
-.PHONY += valgrind
-valgrind: valgrind-cycle valgrind-mem valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
 
 helgrind-cycle: tests/cycle
 	@$(HELGRIND_COMMAND) tests/cycle

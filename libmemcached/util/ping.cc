@@ -101,12 +101,6 @@ bool libmemcached_util_ping2(const char *hostname, in_port_t port, const char *u
     return false;
   }
 
-  if (memcached_failed(*ret= memcached_behavior_set(memc_ptr, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
-  {
-    memcached_free(memc_ptr);
-    return false;
-  }
-
   if (memcached_failed(*ret= memcached_set_sasl_auth_data(memc_ptr, username, password)))
   {
     memcached_free(memc_ptr);

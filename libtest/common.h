@@ -63,5 +63,6 @@ static inline bool is_pid_valid(const pid_t pid)
 #include <libtest/memcached.h>
 
 #include <libtest/libtool.hpp>
+#include <libtest/killpid.h>
 
 #include <libtest/test.hpp>

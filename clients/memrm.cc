@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
       opt_servers= strdup(temp);
     else
     {
-      fprintf(stderr, "No Servers provided\n");
-      exit(1);
+      std::cerr << "No Servers provided" << std::endl;
+      return EXIT_FAILURE;
     }
   }
 
@@ -74,28 +74,35 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-
-  if (opt_username and initialize_sasl(memc, opt_username, opt_passwd) == false)
+  if (opt_username)
   {
-    std::cerr << "Failed to initialize SASL support." << std::endl;
-
-    memcached_free(memc);
-    return EXIT_FAILURE;
+    memcached_return_t ret;
+    if (memcached_failed(ret= memcached_set_sasl_auth_data(memc, opt_username, opt_passwd)))
+    {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
+      memcached_free(memc);
+      return EXIT_FAILURE;
+    }
   }
 
   while (optind < argc)
   {
     if (opt_verbose)
-      printf("key: %s\nexpires: %llu\n", argv[optind], (unsigned long long)opt_expire);
-    rc = memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
-
-    if (rc != MEMCACHED_SUCCESS)
     {
-      fprintf(stderr, "memrm: %s: memcache error %s",
-	      argv[optind], memcached_strerror(memc, rc));
+      std::cout << "key: " << argv[optind] << std::endl;
+      std::cout << "expires: " << opt_expire << std::endl;
+    }
+    rc= memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
+
+    if (memcached_failed(rc))
+    {
+      std::cerr << PROGRAM_NAME << ": " << argv[optind] << ": error " << memcached_strerror(memc, rc) << std::endl; 
+
       if (memcached_last_error_errno(memc))
-	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
-      fprintf(stderr, "\n");
+      {
+        std::cerr << " system error " << strerror(memcached_last_error_errno(memc));
+      }
+      std::cerr << std::endl;
 
       return_code= -1;
     }
@@ -110,8 +117,6 @@ int main(int argc, char *argv[])
 
   if (opt_hash)
     free(opt_hash);
-
-  shutdown_sasl();
 
   return return_code;
 }

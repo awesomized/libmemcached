@@ -144,6 +144,10 @@ libmemcached_libmemcached_la_LDFLAGS+= ${AM_LDFLAGS} -version-info ${MEMCACHED_L
 
 libmemcached_libmemcached_la_LIBADD+= $(LTLIBSASL) $(LTLIBSASL2)
 libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.cc
+if HAVE_SASL
+libmemcached_libmemcached_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
+libmemcached_libmemcached_la_LIBADD+= ${PTHREAD_LIBS}
+endif
 
 if HAVE_DTRACE
 BUILT_SOURCES+= libmemcached/dtrace_probes.h
