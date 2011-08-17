@@ -38,6 +38,10 @@
 
 #pragma once
 
+#ifndef WIN32
+#include <netdb.h>
+#endif
+
 enum memcached_server_state_t {
   MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
   MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered

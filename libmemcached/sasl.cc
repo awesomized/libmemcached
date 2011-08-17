@@ -98,12 +98,15 @@ static memcached_return_t resolve_names(memcached_server_st& server, char *laddr
   return MEMCACHED_SUCCESS;
 }
 
+extern "C" {
+
 static void sasl_shutdown_function()
 {
   sasl_done();
 }
 
-static int sasl_startup_state= SASL_OK;
+static volatile int sasl_startup_state= SASL_OK;
+pthread_mutex_t sasl_startup_state_LOCK= PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t sasl_startup_once= PTHREAD_ONCE_INIT;
 static void sasl_startup_function(void)
 {
@@ -114,6 +117,8 @@ static void sasl_startup_function(void)
     (void)atexit(sasl_shutdown_function);
   }
 }
+
+} // extern "C"
 
 memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server)
 {
@@ -182,12 +187,14 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
     return memcached_set_errno(*server, pthread_error, MEMCACHED_AT);
   }
 
+  (void)pthread_mutex_lock(&sasl_startup_state_LOCK);
   if (sasl_startup_state != SASL_OK)
   {
     const char *sasl_error_msg= sasl_errstring(sasl_startup_state, NULL, NULL);
     return memcached_set_error(*server, MEMCACHED_AUTH_PROBLEM, MEMCACHED_AT, 
                                memcached_string_make_from_cstr(sasl_error_msg));
   }
+  (void)pthread_mutex_unlock(&sasl_startup_state_LOCK);
 
   sasl_conn_t *conn;
   int ret;

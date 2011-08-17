@@ -9,14 +9,13 @@
  *
  */
 
-#include "config.h"
+#include <config.h>
 
-#include <iostream>
-#include <stdio.h>
-#include <inttypes.h>
-#include <string.h>
-#include <unistd.h>
+#include <cstdio>
+#include <cstring>
 #include <getopt.h>
+#include <iostream>
+#include <unistd.h>
 #include <libmemcached/memcached.h>
 
 #include "utilities.h"

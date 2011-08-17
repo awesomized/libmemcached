@@ -1497,6 +1497,34 @@ static test_return_t decrement_with_initial_by_key_test(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
+static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
+{
+  memcached_st *memc= memcached_clone(NULL, orig_memc);
+
+  test_skip(TEST_SUCCESS, pre_binary(memc));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)"namespace:"));
+
+  memcached_return_t rc;
+  rc= memcached_set(memc,
+                    test_literal_param("number"),
+                    test_literal_param("0"),
+                    (time_t)0, (uint32_t)0);
+  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+
+  uint64_t new_number;
+  test_compare(MEMCACHED_SUCCESS, memcached_increment(memc, 
+                                                      test_literal_param("number"), 
+                                                      1, &new_number));
+  test_compare(uint64_t(1), new_number);
+
+  test_compare(MEMCACHED_SUCCESS, memcached_increment(memc,
+                                                      test_literal_param("number"),
+                                                      1, &new_number));
+  test_compare(uint64_t(2), new_number);
+
+  return TEST_SUCCESS;
+}
 
 static test_return_t quit_test(memcached_st *memc)
 {
@@ -5853,6 +5881,7 @@ test_st tests[] ={
   {"increment_with_initial_by_key", true, (test_callback_fn*)increment_with_initial_by_key_test },
   {"decrement_by_key", false, (test_callback_fn*)decrement_by_key_test },
   {"decrement_with_initial_by_key", true, (test_callback_fn*)decrement_with_initial_by_key_test },
+  {"binary_increment_with_prefix", 1, (test_callback_fn*)binary_increment_with_prefix_test },
   {"quit", false, (test_callback_fn*)quit_test },
   {"mget", true, (test_callback_fn*)mget_test },
   {"mget_result", true, (test_callback_fn*)mget_result_test },
