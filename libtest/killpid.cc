@@ -85,15 +85,43 @@ bool kill_pid(pid_t pid_arg)
   return true;
 }
 
-
-pid_t kill_file(const std::string &filename)
+bool check_pid(const std::string &filename)
 {
-  pid_t ret= -1;
-  FILE *fp;
-
   if (filename.empty())
-    return ret;
+  {
+    return false;
+  }
 
+  FILE *fp;
+  if ((fp= fopen(filename.c_str(), "r")))
+  {
+    char pid_buffer[1024];
+
+    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
+    fclose(fp);
+
+    if (ptr)
+    {
+      pid_t pid= (pid_t)atoi(pid_buffer);
+      if (pid > 0)
+      {
+        return (::kill(pid, 0) == 0);
+      }
+    }
+  }
+  
+  return false;
+}
+
+
+bool kill_file(const std::string &filename)
+{
+  if (filename.empty())
+  {
+    return true;
+  }
+
+  FILE *fp;
   if ((fp= fopen(filename.c_str(), "r")))
   {
     char pid_buffer[1024];
@@ -106,13 +134,15 @@ pid_t kill_file(const std::string &filename)
       pid_t pid= (pid_t)atoi(pid_buffer);
       if (pid != 0)
       {
-        kill_pid(pid);
+        bool ret= kill_pid(pid);
         unlink(filename.c_str()); // If this happens we may be dealing with a dead server that left its pid file.
+
+        return ret;
       }
     }
   }
   
-  return ret;
+  return false;
 }
 
 #define STRINGIFY(x) #x

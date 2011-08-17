@@ -97,28 +97,14 @@ public:
     }
 
     pid_t local_pid;
-    memcached_return_t rc;
+    memcached_return_t rc= MEMCACHED_SUCCESS;
     if (has_socket())
     {
-      if (username().empty())
-      {
-        local_pid= libmemcached_util_getpid(socket().c_str(), 0, &rc);
-      }
-      else
-      {
-        local_pid= libmemcached_util_getpid2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
-      }
+      local_pid= libmemcached_util_getpid(socket().c_str(), 0, &rc);
     }
     else
     {
-      if (username().empty())
-      {
-        local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
-      }
-      else
-      {
-        local_pid= libmemcached_util_getpid2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
-      }
+      local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
     }
 
     if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
@@ -148,37 +134,16 @@ public:
 
     if (has_socket())
     {
-      if (username().empty())
-      {
         ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
-      }
-      else
-      {
-        ret= libmemcached_util_ping2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
-      }
     }
     else
     {
-      if (username().empty())
-      {
-        ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
-      }
-      else
-      {
-        ret= libmemcached_util_ping2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
-      }
+      ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
     }
 
     if (memcached_failed(rc) or not ret)
     {
-      if (username().empty())
-      {
-        Error << "libmemcached_util_ping(" << hostname() << ", " << port() << ") error: " << memcached_strerror(NULL, rc);
-      }
-      else
-      {
-        Error << "libmemcached_util_ping2(" << hostname() << ", " << port() << ", " << username() << ", " << password() << ") error: " << memcached_strerror(NULL, rc);
-      }
+      Error << "libmemcached_util_ping(" << hostname() << ", " << port() << ") error: " << memcached_strerror(NULL, rc);
     }
 
     return ret;
@@ -260,6 +225,73 @@ public:
     return MEMCACHED_SASL_BINARY;
   }
 
+  pid_t get_pid(bool error_is_ok)
+  {
+    // Memcached is slow to start, so we need to do this
+    if (not pid_file().empty())
+    {
+      Wait wait(pid_file(), 0);
+
+      if (error_is_ok and not wait.successful())
+      {
+        Error << "Pidfile was not found:" << pid_file();
+        return -1;
+      }
+    }
+
+    pid_t local_pid;
+    memcached_return_t rc;
+    if (has_socket())
+    {
+      local_pid= libmemcached_util_getpid2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
+    }
+    else
+    {
+      local_pid= libmemcached_util_getpid2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
+    }
+
+    if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
+    {
+      Error << "libmemcached_util_getpid2(" << memcached_strerror(NULL, rc) << ") username: " << username() << " password: " << password() << " pid: " << local_pid << " for:" << *this;
+    }
+
+    return local_pid;
+  }
+
+  bool ping()
+  {
+    // Memcached is slow to start, so we need to do this
+    if (not pid_file().empty())
+    {
+      Wait wait(pid_file(), 0);
+
+      if (not wait.successful())
+      {
+        Error << "Pidfile was not found:" << pid_file();
+        return -1;
+      }
+    }
+
+    memcached_return_t rc;
+    bool ret;
+
+    if (has_socket())
+    {
+      ret= libmemcached_util_ping2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
+    }
+    else
+    {
+      ret= libmemcached_util_ping2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
+    }
+
+    if (memcached_failed(rc) or not ret)
+    {
+      Error << "libmemcached_util_ping2(" << hostname() << ", " << port() << ", " << username() << ", " << password() << ") error: " << memcached_strerror(NULL, rc);
+    }
+
+    return ret;
+  }
+
 };
 
 
@@ -308,11 +340,21 @@ libtest::Server *build_memcached_socket(const std::string& socket_file, const in
 
 libtest::Server *build_memcached_sasl(const std::string& hostname, const in_port_t try_port, const std::string& username, const std::string &password)
 {
+  if (username.empty())
+  {
+    return new MemcachedSaSL(hostname, try_port, false,  "memcached", "memcached");
+  }
+
   return new MemcachedSaSL(hostname, try_port, false,  username, password);
 }
 
 libtest::Server *build_memcached_sasl_socket(const std::string& socket_file, const in_port_t try_port, const std::string& username, const std::string &password)
 {
+  if (username.empty())
+  {
+    return new MemcachedSaSL(socket_file, try_port, true, "memcached", "memcached");
+  }
+
   return new MemcachedSaSL(socket_file, try_port, true, username, password);
 }
 

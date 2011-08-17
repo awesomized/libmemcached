@@ -153,6 +153,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
+  server->address_info= NULL;
   int errcode;
   switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
   {

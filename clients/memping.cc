@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
 
   free(opt_servers);
 
-  shutdown_sasl();
-
   return exit_code;
 }
 

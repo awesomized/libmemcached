@@ -108,7 +108,7 @@ void memcached_server_free(memcached_server_st *ptr);
 
 LIBMEMCACHED_LOCAL
 memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            const memcached_server_st *source);
+                                            memcached_server_st *source);
 
 LIBMEMCACHED_API
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);

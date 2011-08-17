@@ -23,7 +23,7 @@
 #pragma once
 
 enum test_return_t {
-  TEST_SUCCESS= 0, /* Backwards compatibility */
+  TEST_SUCCESS,
   TEST_FAILURE,
   TEST_MEMORY_ALLOCATION_FAILURE,
   TEST_SKIPPED,

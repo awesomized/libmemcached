@@ -41,7 +41,8 @@
 #include <libmemcached/common.h>
 
 static inline void _server_init(memcached_server_st *self, memcached_st *root,
-                                const char *hostname, in_port_t port,
+                                const memcached_string_t& hostname,
+                                in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
 {
   self->options.is_shutting_down= false;
@@ -80,14 +81,8 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
 
   self->root= root;
   self->limit_maxbytes= 0;
-  if (hostname)
-  {
-    strncpy(self->hostname, hostname, NI_MAXHOST - 1);
-  }
-  else
-  {
-    self->hostname[0]= 0;
-  }
+  memcpy(self->hostname, hostname.c_str, hostname.size);
+  self->hostname[hostname.size]= 0;
 }
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
@@ -97,7 +92,9 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
    self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
 
     if (not self)
+    {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
+    }
 
     self->options.is_allocated= true;
   }
@@ -111,11 +108,19 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
   return self;
 }
 
-memcached_server_st *__server_create_with(const memcached_st *memc,
+memcached_server_st *__server_create_with(memcached_st *memc,
                                           memcached_server_write_instance_st self,
-                                          const char *hostname, in_port_t port,
-                                          uint32_t weight, memcached_connection_t type)
+                                          const memcached_string_t& hostname,
+                                          const in_port_t port,
+                                          uint32_t weight, 
+                                          const memcached_connection_t type)
 {
+  if (memcached_is_valid_servername(hostname) == false)
+  {
+    memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid hostname provided"));
+    return NULL;
+  }
+
   self= _server_create(self, memc);
 
   if (not self)
@@ -143,6 +148,7 @@ void __server_free(memcached_server_st *self)
   {
     freeaddrinfo(self->address_info);
     self->address_info= NULL;
+    self->address_info_next= NULL;
   }
 
   memcached_error_free(*self);
@@ -175,14 +181,18 @@ void memcached_server_free(memcached_server_st *self)
   If we do not have a valid object to clone from, we toss an error.
 */
 memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            const memcached_server_st *source)
+                                            memcached_server_st *source)
 {
   /* We just do a normal create if source is missing */
   if (not source)
+  {
     return NULL;
+  }
 
+  memcached_string_t hostname= { memcached_string_make_from_cstr(source->hostname) };
   destination= __server_create_with(source->root, destination,
-                                    source->hostname, source->port, source->weight,
+                                    hostname,
+                                    source->port, source->weight,
                                     source->type);
   if (not destination)
   {

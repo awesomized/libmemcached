@@ -97,12 +97,15 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (opt_username and initialize_sasl(memc, opt_username, opt_passwd) == false)
+  if (opt_username)
   {
-    std::cerr << "Failed to initialize SASL support." << std::endl;
-
-    memcached_free(memc);
-    return EXIT_FAILURE;
+    memcached_return_t ret;
+    if (memcached_failed(ret= memcached_set_sasl_auth_data(memc, opt_username, opt_passwd)))
+    {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
+      memcached_free(memc);
+      return EXIT_FAILURE;
+    }
   }
 
   rc= memcached_dump(memc, callbacks, NULL, 1);
@@ -121,8 +124,6 @@ int main(int argc, char *argv[])
     free(opt_servers);
   if (opt_hash)
     free(opt_hash);
-
-  shutdown_sasl();
 
   return EXIT_SUCCESS;
 }

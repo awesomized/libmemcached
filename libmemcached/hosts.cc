@@ -41,11 +41,6 @@
 #include <sys/time.h>
 
 /* Protoypes (static) */
-static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
-                                     in_port_t port,
-                                     uint32_t weight,
-                                     memcached_connection_t type);
-
 static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
@@ -342,6 +337,51 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return_t server_add(memcached_st *ptr, 
+                                     const memcached_string_t& hostname,
+                                     in_port_t port,
+                                     uint32_t weight,
+                                     memcached_connection_t type)
+{
+  assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
+  if ( (ptr->flags.use_udp and type != MEMCACHED_CONNECTION_UDP)
+      or ( (type == MEMCACHED_CONNECTION_UDP) and (not ptr->flags.use_udp) ) )
+  {
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_HOST_PROTOCOL, MEMCACHED_AT);
+  }
+
+  memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
+                                                                                             sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
+
+  if (not new_host_list)
+  {
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
+
+  memcached_server_list_set(ptr, new_host_list);
+
+  /* TODO: Check return type */
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+
+  if (not __server_create_with(ptr, instance, hostname, port, weight, type))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+  }
+
+  if (weight > 1)
+  {
+    ptr->ketama.weighted= true;
+  }
+
+  ptr->number_of_hosts++;
+
+  // @note we place the count in the bottom of the server list
+  instance= memcached_server_instance_fetch(ptr, 0);
+  memcached_servers_set_count(instance, memcached_server_count(ptr));
+
+  return run_distribution(ptr);
+}
+
 
 memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list)
 {
@@ -377,8 +417,10 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
     WATCHPOINT_ASSERT(instance);
 
-    if (not __server_create_with(ptr, instance, list[x].hostname,
-                                 list[x].port, list[x].weight, list[x].type))
+    memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
+    if (__server_create_with(ptr, instance, 
+                             hostname,
+                             list[x].port, list[x].weight, list[x].type) == NULL)
     {
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
@@ -411,10 +453,18 @@ memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *pt
                                                                 const char *filename,
                                                                 uint32_t weight)
 {
-  if (! filename)
+  if (ptr == NULL)
+  {
     return MEMCACHED_FAILURE;
+  }
 
-  return server_add(ptr, filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
+  memcached_string_t _filename= { memcached_string_make_from_cstr(filename) };
+  if (memcached_is_valid_servername(_filename) == false)
+  {
+    memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid filename for socket provided"));
+  }
+
+  return server_add(ptr, _filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
 }
 
 memcached_return_t memcached_server_add_udp(memcached_st *ptr,
@@ -429,13 +479,28 @@ memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
                                                         in_port_t port,
                                                         uint32_t weight)
 {
+  if (ptr == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
   if (not port)
+  {
     port= MEMCACHED_DEFAULT_PORT;
+  }
 
   if (not hostname)
+  {
     hostname= "localhost";
+  }
 
-  return server_add(ptr, hostname, port, weight, MEMCACHED_CONNECTION_UDP);
+  memcached_string_t _hostname= { memcached_string_make_from_cstr(hostname) };
+  if (memcached_is_valid_servername(_hostname) == false)
+  {
+    memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid hostname provided"));
+  }
+
+  return server_add(ptr, _hostname, port, weight, MEMCACHED_CONNECTION_UDP);
 }
 
 memcached_return_t memcached_server_add(memcached_st *ptr,
@@ -450,55 +515,31 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
                                                     in_port_t port,
                                                     uint32_t weight)
 {
-  if (not port)
+  if (ptr == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  if (port == 0)
+  {
     port= MEMCACHED_DEFAULT_PORT;
+  }
 
-  if (not hostname)
+  size_t hostname_length= hostname ? strlen(hostname) : 0;
+  if (hostname_length == 0)
+  {
     hostname= "localhost";
-
-  return server_add(ptr, hostname, port, weight, hostname[0] == '/' ? MEMCACHED_CONNECTION_UNIX_SOCKET  : MEMCACHED_CONNECTION_TCP);
-}
-
-static memcached_return_t server_add(memcached_st *ptr, const char *hostname,
-                                     in_port_t port,
-                                     uint32_t weight,
-                                     memcached_connection_t type)
-{
-
-  if ( (ptr->flags.use_udp and type != MEMCACHED_CONNECTION_UDP)
-      or ( (type == MEMCACHED_CONNECTION_UDP) and (not ptr->flags.use_udp) ) )
-  {
-    return MEMCACHED_INVALID_HOST_PROTOCOL;
+    hostname_length= sizeof("localhost") -1;
   }
 
-  memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
-                                                                                             sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
+  memcached_string_t _hostname= { hostname, hostname_length };
 
-  if (not new_host_list)
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-
-  memcached_server_list_set(ptr, new_host_list);
-
-  /* TODO: Check return type */
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
-
-  if (not __server_create_with(ptr, instance, hostname, port, weight, type))
+  if (memcached_is_valid_servername(_hostname) == false)
   {
-    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid hostname provided"));
   }
 
-  if (weight > 1)
-  {
-    ptr->ketama.weighted= true;
-  }
-
-  ptr->number_of_hosts++;
-
-  // @note we place the count in the bottom of the server list
-  instance= memcached_server_instance_fetch(ptr, 0);
-  memcached_servers_set_count(instance, memcached_server_count(ptr));
-
-  return run_distribution(ptr);
+  return server_add(ptr, _hostname, port, weight, _hostname.c_str[0] == '/' ? MEMCACHED_CONNECTION_UNIX_SOCKET  : MEMCACHED_CONNECTION_TCP);
 }
 
 memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
@@ -512,7 +553,9 @@ memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
   memcpy(buffer, hostname, hostname_length);
   buffer[hostname_length]= 0;
 
-  return server_add(ptr, buffer,
+  memcached_string_t _hostname= { buffer, hostname_length };
+
+  return server_add(ptr, _hostname,
                     port,
                     weight,
                     MEMCACHED_CONNECTION_TCP);

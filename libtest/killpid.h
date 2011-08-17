@@ -25,6 +25,13 @@
 
 bool kill_pid(pid_t pid_arg);
 
-pid_t kill_file(const std::string &filename);
+bool kill_file(const std::string &filename);
+
+bool check_pid(const std::string &filename);
 
 pid_t get_pid_from_file(const std::string &filename, std::stringstream& error_message);
+
+static inline bool check_pid(pid_t pid_arg)
+{
+  return (pid_arg > 1);
+}

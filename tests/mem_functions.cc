@@ -68,16 +68,18 @@
 #define SMALL_STRING_LEN 1024
 
 #include <libtest/test.hpp>
-#include "tests/deprecated.h"
-#include "tests/parser.h"
-#include "tests/ketama.h"
-#include "tests/pool.h"
-#include "tests/namespace.h"
-#include "tests/replication.h"
-#include "tests/debug.h"
+
 #include "tests/basic.h"
+#include "tests/debug.h"
+#include "tests/deprecated.h"
 #include "tests/error_conditions.h"
+#include "tests/ketama.h"
+#include "tests/namespace.h"
+#include "tests/parser.h"
+#include "tests/pool.h"
 #include "tests/print.h"
+#include "tests/replication.h"
+#include "tests/server_add.h"
 #include "tests/virtual_buckets.h"
 
 using namespace libtest;
@@ -3875,7 +3877,7 @@ static test_return_t deprecated_set_memory_alloc(memcached_st *memc)
 
 static test_return_t set_memory_alloc(memcached_st *memc)
 {
-  test_compare(MEMCACHED_FAILURE,
+  test_compare(MEMCACHED_INVALID_ARGUMENTS,
                memcached_set_memory_allocators(memc, NULL, my_free,
                                                my_realloc, my_calloc, NULL));
 
@@ -6131,6 +6133,12 @@ test_st virtual_bucket_tests[] ={
   {0, 0, (test_callback_fn*)0}
 };
 
+test_st memcached_server_add_tests[] ={
+  {"memcached_server_add(\"\")", false, (test_callback_fn*)memcached_server_add_empty_test },
+  {"memcached_server_add(NULL)", false, (test_callback_fn*)memcached_server_add_null_test },
+  {0, 0, (test_callback_fn*)0}
+};
+
 test_st namespace_tests[] ={
   {"basic tests", true, (test_callback_fn*)selection_of_namespace_tests },
   {"increment", true, (test_callback_fn*)memcached_increment_namespace },
@@ -6145,6 +6153,7 @@ collection_st collection[] ={
   {"basic", 0, 0, basic_tests},
   {"hsieh_availability", 0, 0, hsieh_availability},
   {"murmur_availability", 0, 0, murmur_availability},
+  {"memcached_server_add", 0, 0, memcached_server_add_tests},
   {"block", 0, 0, tests},
   {"binary", (test_callback_fn*)pre_binary, 0, tests},
   {"nonblock", (test_callback_fn*)pre_nonblock, 0, tests},

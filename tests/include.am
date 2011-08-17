@@ -36,6 +36,7 @@ noinst_HEADERS+= \
 		 tests/pool.h \
 		 tests/print.h \
 		 tests/replication.h \
+		 tests/server_add.h \
 		 tests/string.h \
 		 tests/virtual_buckets.h
 
@@ -77,6 +78,7 @@ tests_testapp_SOURCES= \
 		       tests/pool.cc \
 		       tests/print.cc \
 		       tests/replication.cc \
+		       tests/server_add.cc \
 		       tests/virtual_buckets.cc
 tests_testapp_SOURCES+= clients/generator.cc clients/execute.cc
 tests_testapp_DEPENDENCIES= \
@@ -368,14 +370,14 @@ valgrind-udp: tests/testudp
 valgrind-plus: tests/testplus
 	@$(VALGRIND_COMMAND) tests/testplus
 
+valgrind-sasl: tests/sasl
+	@$(VALGRIND_COMMAND) tests/sasl
+
 valgrind-hash: tests/testhashkit
 	@$(VALGRIND_COMMAND) tests/testhashkit
 
 valgrind-hashplus: tests/hash_plus
 	@$(VALGRIND_COMMAND) tests/hash_plus
-
-.PHONY += valgrind
-valgrind: valgrind-cycle valgrind-mem valgrind-udp valgrind-plus valgrind-hash valgrind-hashplus
 
 helgrind-cycle: tests/cycle
 	@$(HELGRIND_COMMAND) tests/cycle
