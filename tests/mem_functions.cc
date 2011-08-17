@@ -1278,7 +1278,7 @@ static test_return_t mget_end(memcached_st *memc)
 
   // this should indicate end
   string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
-  test_true(rc == MEMCACHED_END);
+  test_compare(MEMCACHED_END, rc);
 
   return TEST_SUCCESS;
 }
@@ -2622,8 +2622,7 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
 
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
-  int32_t timeout= 0;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, (uint64_t)timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, uint64_t(0));
 
   char *value= (char*)malloc(value_length * sizeof(char));
 

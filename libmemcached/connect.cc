@@ -43,8 +43,8 @@
 static memcached_return_t connect_poll(memcached_server_st *ptr)
 {
   struct pollfd fds[1];
-  fds[0].fd = ptr->fd;
-  fds[0].events = POLLOUT;
+  fds[0].fd= ptr->fd;
+  fds[0].events= POLLOUT;
 
   size_t loop_max= 5;
 
@@ -186,7 +186,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
 static inline void set_socket_nonblocking(memcached_server_st *ptr)
 {
 #ifdef WIN32
-  u_long arg = 1;
+  u_long arg= 1;
   if (ioctlsocket(ptr->fd, FIONBIO, &arg) == SOCKET_ERROR)
   {
     memcached_set_errno(*ptr, get_socket_errno(), NULL);
