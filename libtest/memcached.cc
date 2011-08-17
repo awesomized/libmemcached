@@ -97,7 +97,7 @@ public:
     }
 
     pid_t local_pid;
-    memcached_return_t rc;
+    memcached_return_t rc= MEMCACHED_SUCCESS;
     if (has_socket())
     {
       local_pid= libmemcached_util_getpid(socket().c_str(), 0, &rc);
