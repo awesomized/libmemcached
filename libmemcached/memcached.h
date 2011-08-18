@@ -124,7 +124,7 @@ struct memcached_st {
   uint32_t io_key_prefetch;
   uint32_t tcp_keepidle;
   int32_t poll_timeout;
-  int32_t connect_timeout;
+  int32_t connect_timeout; // How long we will wait on connect() before we will timeout
   int32_t retry_timeout;
   int send_size;
   int recv_size;
