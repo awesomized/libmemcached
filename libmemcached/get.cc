@@ -469,7 +469,9 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     {
       rc= memcached_connect(instance);
       if (memcached_failed(rc))
+      {
         continue;
+      }
     }
 
     protocol_binary_request_getk request= { }; //= {.bytes= {0}};
@@ -589,16 +591,21 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
         server += start;
 
       while (server >= memcached_server_count(ptr))
+      {
         server -= memcached_server_count(ptr);
+      }
 
       if (dead_servers[server])
+      {
         continue;
+      }
 
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server);
 
       if (memcached_server_response_count(instance) == 0)
       {
         rc= memcached_connect(instance);
+
         if (memcached_failed(rc))
         {
           memcached_io_reset(instance);

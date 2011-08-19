@@ -90,7 +90,11 @@ static inline bool _memcached_init(memcached_st *self)
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
   if (not hashkit_create(&self->hashkit))
+  {
     return false;
+  }
+
+  self->server_info.version= 0;
 
   self->ketama.continuum= NULL;
   self->ketama.continuum_count= 0;
@@ -104,7 +108,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->snd_timeout= 0;
   self->rcv_timeout= 0;
-  self->server_failure_limit= 0;
+  self->server_failure_limit= MEMCACHED_SERVER_FAILURE_LIMIT;
   self->query_id= 1; // 0 is considered invalid
 
   /* TODO, Document why we picked these defaults */
@@ -116,7 +120,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->io_key_prefetch= 0;
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
-  self->retry_timeout= 0;
+  self->retry_timeout= MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT;
 
   self->send_size= -1;
   self->recv_size= -1;
@@ -156,7 +160,9 @@ static void _free(memcached_st *ptr, bool release_st)
   memcached_server_free(ptr->last_disconnected_server);
 
   if (ptr->on_cleanup)
+  {
     ptr->on_cleanup(ptr);
+  }
 
   libmemcached_free(ptr, ptr->ketama.continuum);
 
@@ -205,13 +211,13 @@ memcached_st *memcached_create(memcached_st *ptr)
   memcached_set_processing_input(ptr, false);
 #endif
 
-  if (! _memcached_init(ptr))
+  if (_memcached_init(ptr) == false)
   {
     memcached_free(ptr);
     return NULL;
   }
 
-  if (! memcached_result_create(ptr, &ptr->result))
+  if (memcached_result_create(ptr, &ptr->result) == NULL)
   {
     memcached_free(ptr);
     return NULL;
@@ -232,7 +238,9 @@ memcached_st *memcached(const char *string, size_t length)
   }
 
   if (not length)
+  {
     return self;
+  }
 
   memcached_return_t rc= memcached_parse_configuration(self, string, length);
 
@@ -255,7 +263,9 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 {
   WATCHPOINT_ASSERT(ptr);
   if (not ptr)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   bool stored_is_allocated= memcached_is_allocated(ptr);
   uint64_t query_id= ptr->query_id;
@@ -274,33 +284,32 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
 void memcached_servers_reset(memcached_st *self)
 {
-  if (not self)
-    return;
+  if (self)
+  {
+    memcached_server_list_free(memcached_server_list(self));
 
-  memcached_server_list_free(memcached_server_list(self));
-
-  memcached_server_list_set(self, NULL);
-  self->number_of_hosts= 0;
-  memcached_server_free(self->last_disconnected_server);
-  self->last_disconnected_server= NULL;
-  self->server_failure_limit= 0;
+    memcached_server_list_set(self, NULL);
+    self->number_of_hosts= 0;
+    memcached_server_free(self->last_disconnected_server);
+    self->last_disconnected_server= NULL;
+  }
 }
 
 void memcached_reset_last_disconnected_server(memcached_st *self)
 {
-  if (not self)
-    return;
-
-  memcached_server_free(self->last_disconnected_server);
-  self->last_disconnected_server= NULL;
+  if (self)
+  {
+    memcached_server_free(self->last_disconnected_server);
+    self->last_disconnected_server= NULL;
+  }
 }
 
 void memcached_free(memcached_st *ptr)
 {
-  if (not ptr)
-    return;
-
-  _free(ptr, true);
+  if (ptr)
+  {
+    _free(ptr, true);
+  }
 }
 
 /*
@@ -359,9 +368,11 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->tcp_keepidle= source->tcp_keepidle;
 
   if (memcached_server_count(source))
+  {
     rc= memcached_push(new_clone, source);
+  }
 
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc))
   {
     memcached_free(new_clone);
 
@@ -374,16 +385,14 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
   if (LIBMEMCACHED_WITH_SASL_SUPPORT and source->sasl.callbacks)
   {
-    if (memcached_clone_sasl(new_clone, source) != MEMCACHED_SUCCESS)
+    if (memcached_failed(memcached_clone_sasl(new_clone, source)))
     {
       memcached_free(new_clone);
       return NULL;
     }
   }
 
-  rc= run_distribution(new_clone);
-
-  if (rc != MEMCACHED_SUCCESS)
+  if (memcached_failed(run_distribution(new_clone)))
   {
     memcached_free(new_clone);
 
@@ -391,7 +400,9 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   }
 
   if (source->on_clone)
+  {
     source->on_clone(new_clone, source);
+  }
 
   return new_clone;
 }

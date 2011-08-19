@@ -422,7 +422,7 @@ static test_return_t libmemcached_string_distribution_test(memcached_st *)
   return TEST_SUCCESS;
 }
 
-static test_return_t error_test(memcached_st *memc)
+static test_return_t memcached_return_t_TEST(memcached_st *memc)
 {
   uint32_t values[] = { 851992627U, 2337886783U, 4109241422U, 4001849190U,
                         982370485U, 1263635348U, 4242906218U, 3829656100U,
@@ -435,7 +435,8 @@ static test_return_t error_test(memcached_st *memc)
                         54481931U, 4186304426U, 1741088401U, 2979625118U,
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
                         1769812374U, 2302537950U, 1110330676U, 3365377466U, 
-                        1336171666U, 3021258493U, 2334992265U, 3365377466U };
+                        1336171666U, 3021258493U, 2334992265U, 3861994737U, 
+                        3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
   for (int rc= int(MEMCACHED_SUCCESS); rc < int(MEMCACHED_MAXIMUM_RETURN); ++rc)
@@ -446,12 +447,12 @@ static test_return_t error_test(memcached_st *memc)
                                             MEMCACHED_HASH_JENKINS);
     if (values[rc] != hash_val)
     {
-      fprintf(stderr, "\n\nYou have updated memcached_return_t without updating the error_test\n");
+      fprintf(stderr, "\n\nYou have updated memcached_return_t without updating the memcached_return_t_TEST\n");
       fprintf(stderr, "%u, %s, (%u)\n\n", (uint32_t)rc, memcached_strerror(memc, memcached_return_t(rc)), hash_val);
     }
     test_compare(values[rc], hash_val);
   }
-  test_compare(47, int(MEMCACHED_MAXIMUM_RETURN));
+  test_compare(48, int(MEMCACHED_MAXIMUM_RETURN));
 
   return TEST_SUCCESS;
 }
@@ -1522,6 +1523,7 @@ static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
                                                       test_literal_param("number"),
                                                       1, &new_number));
   test_compare(uint64_t(2), new_number);
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -2614,9 +2616,7 @@ static test_return_t user_supplied_bug9(memcached_st *memc)
 /* We are testing with aggressive timeout to get failures */
 static test_return_t user_supplied_bug10(memcached_st *memc)
 {
-  const char *key= "foo";
   size_t value_length= 512;
-  size_t key_len= 3;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
 
@@ -2633,9 +2633,12 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
 
   for (unsigned int x= 1; x <= 100000; ++x)
   {
-    memcached_return_t rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+    memcached_return_t rc= memcached_set(mclone, 
+                                         test_literal_param("foo"),
+                                         value, value_length, 0, 0);
 
-    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_BUFFERED or rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_CONNECTION_FAILURE, 
+    test_true_got((rc == MEMCACHED_SUCCESS or rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_BUFFERED or rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_CONNECTION_FAILURE 
+                  or rc == MEMCACHED_SERVER_TEMPORARILY_DISABLED), 
                   memcached_strerror(NULL, rc));
 
     if (rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_TIMEOUT)
@@ -3219,12 +3222,13 @@ static test_return_t generate_data_with_stats(memcached_st *memc)
   for (host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
   {
     /* This test was changes so that "make test" would work properlly */
-#ifdef DEBUG
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, host_index);
+    if (DEBUG)
+    {
+      memcached_server_instance_st instance=
+        memcached_server_instance_by_position(memc, host_index);
 
-    printf("\nserver %u|%s|%u bytes: %llu\n", host_index, instance->hostname, instance->port, (unsigned long long)(stat_p + host_index)->bytes);
-#endif
+      printf("\nserver %u|%s|%u bytes: %llu\n", host_index, instance->hostname, instance->port, (unsigned long long)(stat_p + host_index)->bytes);
+    }
     test_true((unsigned long long)(stat_p + host_index)->bytes);
   }
 
@@ -5259,7 +5263,7 @@ static test_return_t test_multiple_get_last_disconnect(memcached_st *)
     {
       const char *msg=  memcached_strerror(memc, memcached_return_t(x));
       memcached_return_t ret= memcached_set(memc, msg, strlen(msg), NULL, 0, (time_t)0, (uint32_t)0);
-      test_compare_got(MEMCACHED_CONNECTION_FAILURE, ret, memcached_last_error_message(memc));
+      test_true_got((ret == MEMCACHED_CONNECTION_FAILURE or ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED), memcached_last_error_message(memc));
 
       memcached_server_instance_st disconnected_server= memcached_server_get_last_disconnect(memc);
       test_true(disconnected_server);
@@ -5281,66 +5285,6 @@ static test_return_t test_multiple_get_last_disconnect(memcached_st *)
 static test_return_t test_verbosity(memcached_st *memc)
 {
   memcached_verbosity(memc, 3);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t test_server_failure(memcached_st *memc)
-{
-  if (memcached_server_count(memc) < 2)
-    return TEST_SKIPPED;
-
-  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
-
-  memcached_st *local_memc= memcached_create(NULL);
-
-  memcached_server_add(local_memc, memcached_server_name(instance), memcached_server_port(instance));
-  memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 2);
-
-  uint32_t server_count= memcached_server_count(local_memc);
-  test_compare(1U, server_count);
-
-  // Disable the server
-  instance= memcached_server_instance_by_position(local_memc, 0);
-  ((memcached_server_write_instance_st)instance)->server_failure_counter= 2;
-
-  memcached_return_t rc;
-  test_compare_got(MEMCACHED_SERVER_MARKED_DEAD,
-                   rc= memcached_set(local_memc, "foo", strlen("foo"), NULL, 0, (time_t)0, (uint32_t)0),
-                   memcached_last_error_message(local_memc));
-
-  ((memcached_server_write_instance_st)instance)->server_failure_counter= 0;
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_set(local_memc, "foo", strlen("foo"), NULL, 0, (time_t)0, (uint32_t)0));
-#if 0
-  memcached_last_error_message(local_memc));
-#endif
-
-
-  memcached_free(local_memc);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t test_cull_servers(memcached_st *memc)
-{
-  uint32_t count= memcached_server_count(memc);
-
-  if (count < 2)
-  {
-    return TEST_SKIPPED;
-  }
-
-  // Do not do this in your code, it is not supported.
-  memc->servers[1].options.is_dead= true;
-  memc->state.is_time_for_rebuild= true;
-
-  uint32_t new_count= memcached_server_count(memc);
-  test_compare(count, new_count);
-
-#if 0
-  test_true(count == new_count + 1 );
-#endif
 
   return TEST_SUCCESS;
 }
@@ -5857,7 +5801,6 @@ test_st tests[] ={
   {"connection_test", false, (test_callback_fn*)connection_test},
   {"callback_test", false, (test_callback_fn*)callback_test},
   {"userdata_test", false, (test_callback_fn*)userdata_test},
-  {"error", false, (test_callback_fn*)error_test },
   {"set", false, (test_callback_fn*)set_test },
   {"set2", false, (test_callback_fn*)set_test2 },
   {"set3", false, (test_callback_fn*)set_test3 },
@@ -5903,8 +5846,6 @@ test_st tests[] ={
   {"memcached_pool_test", true, (test_callback_fn*)memcached_pool_test },
   {"test_get_last_disconnect", true, (test_callback_fn*)test_get_last_disconnect},
   {"verbosity", true, (test_callback_fn*)test_verbosity},
-  {"test_server_failure", true, (test_callback_fn*)test_server_failure},
-  {"cull_servers", true, (test_callback_fn*)test_cull_servers},
   {"memcached_stat_execute", true, (test_callback_fn*)memcached_stat_execute_test},
   {0, 0, 0}
 };
@@ -5933,6 +5874,7 @@ test_st basic_tests[] ={
   {"reset heap", true, (test_callback_fn*)basic_reset_heap_test},
   {"reset stack clone", true, (test_callback_fn*)basic_reset_stack_clone_test},
   {"reset heap clone", true, (test_callback_fn*)basic_reset_heap_clone_test},
+  {"memcached_return_t", false, (test_callback_fn*)memcached_return_t_TEST },
   {0, 0, 0}
 };
 
@@ -6216,7 +6158,7 @@ collection_st collection[] ={
   {"async", (test_callback_fn*)pre_nonblock, 0, async_tests},
   {"async(BINARY)", (test_callback_fn*)pre_nonblock_binary, 0, async_tests},
   {"Cal Haldenbrand's tests", 0, 0, haldenbrand_tests},
-  {"user", 0, 0, user_tests},
+  {"user written tests", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", (test_callback_fn*)pre_hsieh, 0, generate_tests},
   {"generate_ketama", (test_callback_fn*)pre_behavior_ketama, 0, generate_tests},

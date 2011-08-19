@@ -75,31 +75,55 @@ Server* server_startup_st::pop_server()
   return tmp;
 }
 
-void server_startup_st::shutdown(bool remove)
+bool server_startup_st::shutdown(uint32_t number_of_host)
 {
-  if (remove)
+  assert(servers.size() > number_of_host);
+  if (servers.size() > number_of_host)
   {
-    for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+    Server* tmp= servers[number_of_host];
+
+    if (tmp and tmp->has_pid() and not tmp->kill(tmp->pid()))
+    { }
+    else
     {
-      delete *iter;
+      return true;
     }
-    servers.clear();
   }
-  else
+
+  return false;
+}
+
+void server_startup_st::shutdown_and_remove()
+{
+  for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
   {
-    for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+    delete *iter;
+  }
+  servers.clear();
+}
+
+void server_startup_st::shutdown()
+{
+  for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    if ((*iter)->has_pid() and not (*iter)->kill((*iter)->pid()))
     {
-      if ((*iter)->has_pid() and not (*iter)->kill((*iter)->pid()))
-      {
-        Error << "Unable to kill:" <<  *(*iter);
-      }
+      Error << "Unable to kill:" <<  *(*iter);
     }
+  }
+}
+
+void server_startup_st::restart()
+{
+  for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    (*iter)->start();
   }
 }
 
 server_startup_st::~server_startup_st()
 {
-  shutdown(true);
+  shutdown_and_remove();
 }
 
 bool server_startup_st::is_debug() const

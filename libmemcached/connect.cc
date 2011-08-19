@@ -37,6 +37,8 @@
 
 
 #include <libmemcached/common.h>
+
+#include <cassert>
 #include <ctime>
 #include <sys/time.h>
 
@@ -343,7 +345,7 @@ static void set_socket_options(memcached_server_st *server)
 static memcached_return_t unix_socket_connect(memcached_server_st *server)
 {
 #ifndef WIN32
-  WATCHPOINT_ASSERT(server->fd == -1);
+  WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
 
   if ((server->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   {
@@ -398,7 +400,7 @@ static memcached_return_t network_connect(memcached_server_st *server)
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
   WATCHPOINT_ASSERT(server->cursor_active == 0);
 
-  if (not server->address_info)
+  if (server->address_info == NULL or server->address_info_next == NULL)
   {
     WATCHPOINT_ASSERT(server->state == MEMCACHED_SERVER_STATE_NEW);
     memcached_return_t rc;
@@ -421,11 +423,13 @@ static memcached_return_t network_connect(memcached_server_st *server)
     }
 
     if (memcached_failed(rc))
+    {
       return rc;
+    }
   }
 
   /* Create the socket */
-  while (server->address_info_next && server->fd == INVALID_SOCKET)
+  while (server->address_info_next and server->fd == INVALID_SOCKET)
   {
     /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
     if (server->type == MEMCACHED_CONNECTION_UDP && server->address_info_next->ai_family != AF_INET)
@@ -510,16 +514,6 @@ static memcached_return_t network_connect(memcached_server_st *server)
   }
 
   WATCHPOINT_STRING("Never got a good file descriptor");
-  /* Failed to connect. schedule next retry */
-  if (server->root->retry_timeout)
-  {
-    struct timeval next_time;
-
-    if (gettimeofday(&next_time, NULL) == 0)
-    {
-      server->next_retry= next_time.tv_sec + server->root->retry_timeout;
-    }
-  }
 
   if (memcached_has_current_error(*server))
   {
@@ -534,19 +528,68 @@ static memcached_return_t network_connect(memcached_server_st *server)
   return memcached_set_error(*server, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT); /* The last error should be from connect() */
 }
 
-void set_last_disconnected_host(memcached_server_write_instance_st self)
-{
-  // const_cast
-  memcached_st *root= (memcached_st *)self->root;
 
-  memcached_server_free(root->last_disconnected_server);
-  root->last_disconnected_server= memcached_server_clone(NULL, self);
+/*
+  backoff_handling()
+
+  Based on time/failure count fail the connect without trying. This prevents waiting in a state where
+  we get caught spending cycles just waiting.
+*/
+static memcached_return_t backoff_handling(memcached_server_write_instance_st server, bool& in_timeout)
+{
+  /* 
+    If we hit server_failure_limit then something is completely wrong about the server.
+
+    1) If autoeject is enabled we do that.
+    2) If not? We go into timeout again, there is much else to do :(
+  */
+  if (server->server_failure_counter >= server->root->server_failure_limit)
+  {
+    /*
+      We just auto_eject if we hit this point 
+    */
+    if (_is_auto_eject_host(server->root))
+    {
+      set_last_disconnected_host(server);
+      run_distribution((memcached_st *)server->root);
+
+      return memcached_set_error(*server, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
+    }
+
+    server->state= MEMCACHED_SERVER_STATE_IN_TIMEOUT;
+
+    // Sanity check/setting
+    if (server->next_retry == 0)
+    {
+      server->next_retry= 1;
+    }
+  }
+
+  if (server->state == MEMCACHED_SERVER_STATE_IN_TIMEOUT)
+  {
+    struct timeval curr_time;
+    bool _gettime_success= (gettimeofday(&curr_time, NULL) == 0);
+
+    /*
+      If next_retry is less then our current time, then we reset and try everything again.
+    */
+    if (_gettime_success and server->next_retry < curr_time.tv_sec)
+    {
+      server->state= MEMCACHED_SERVER_STATE_NEW;
+    }
+    else
+    {
+      return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT);
+    }
+
+    in_timeout= true;
+  }
+
+  return MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_connect(memcached_server_write_instance_st server)
 {
-  memcached_return_t rc= MEMCACHED_NO_SERVERS;
-
   if (server->fd != INVALID_SOCKET)
   {
     return MEMCACHED_SUCCESS;
@@ -554,38 +597,12 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
 
   LIBMEMCACHED_MEMCACHED_CONNECT_START();
 
-  /* both retry_timeout and server_failure_limit must be set in order to delay retrying a server on error. */
-  WATCHPOINT_ASSERT(server->root);
-  if (server->root->retry_timeout and server->next_retry)
-  {
-    struct timeval curr_time;
-
-    gettimeofday(&curr_time, NULL);
-
-    // We should optimize this to remove the allocation if the server was
-    // the last server to die
-    if (server->next_retry > curr_time.tv_sec)
-    {
-      set_last_disconnected_host(server);
-
-      return memcached_set_error(*server, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
-    }
-  }
-
-  // If we are over the counter failure, we just fail. Reject host only
-  // works if you have a set number of failures.
-  if (server->root->server_failure_limit and server->server_failure_counter >= server->root->server_failure_limit)
+  bool in_timeout= false;
+  memcached_return_t rc;
+  if (memcached_failed(rc= backoff_handling(server, in_timeout)))
   {
     set_last_disconnected_host(server);
-
-    // @todo fix this by fixing behavior to no longer make use of
-    // memcached_st
-    if (_is_auto_eject_host(server->root))
-    {
-      run_distribution((memcached_st *)server->root);
-    }
-
-    return memcached_set_error(*server, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
+    return rc;
   }
 
   /* We need to clean up the multi startup piece */
@@ -594,6 +611,7 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
   case MEMCACHED_CONNECTION_UDP:
   case MEMCACHED_CONNECTION_TCP:
     rc= network_connect(server);
+
     if (LIBMEMCACHED_WITH_SASL_SUPPORT)
     {
       if (server->fd != INVALID_SOCKET and server->root->sasl.callbacks)
@@ -616,22 +634,28 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
 
   if (memcached_success(rc))
   {
-    server->server_failure_counter= 0;
-    server->next_retry= 0;
+    memcached_mark_server_as_clean(server);
+    return rc;
   }
-  else if (memcached_has_current_error(*server))
+
+  set_last_disconnected_host(server);
+  if (memcached_has_current_error(*server))
   {
-    server->server_failure_counter++;
-    set_last_disconnected_host(server);
+    memcached_mark_server_for_timeout(server);
+    assert(memcached_failed(memcached_server_error_return(server)));
   }
   else
   {
     memcached_set_error(*server, rc, MEMCACHED_AT);
-    server->server_failure_counter++;
-    set_last_disconnected_host(server);
+    memcached_mark_server_for_timeout(server);
   }
 
   LIBMEMCACHED_MEMCACHED_CONNECT_END();
+
+  if (in_timeout)
+  {
+    return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT);
+  }
 
   return rc;
 }

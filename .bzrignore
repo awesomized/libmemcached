@@ -110,6 +110,7 @@ tests/atomsmasher
 tests/c_sasl_test
 tests/c_test
 tests/cycle
+tests/failure
 tests/hash_plus
 tests/hashplus
 tests/internals

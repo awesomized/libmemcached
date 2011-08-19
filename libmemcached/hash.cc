@@ -132,7 +132,7 @@ static inline void _regen_for_auto_eject(memcached_st *ptr)
   {
     struct timeval now;
 
-    if (gettimeofday(&now, NULL) == 0 &&
+    if (gettimeofday(&now, NULL) == 0 and
         now.tv_sec > ptr->ketama.next_distribution_rebuild)
     {
       run_distribution(ptr);

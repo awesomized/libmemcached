@@ -113,6 +113,9 @@ struct memcached_st {
 
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
+  struct {
+    unsigned int version;
+  } server_info;
   uint32_t number_of_hosts;
   memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;

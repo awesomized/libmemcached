@@ -161,7 +161,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
       }
       else
       {
-        if (ptr->ketama.next_distribution_rebuild == 0 || list[host_index].next_retry < ptr->ketama.next_distribution_rebuild)
+        if (ptr->ketama.next_distribution_rebuild == 0 or list[host_index].next_retry < ptr->ketama.next_distribution_rebuild)
         {
           ptr->ketama.next_distribution_rebuild= list[host_index].next_retry;
         }
@@ -189,7 +189,9 @@ static memcached_return_t update_continuum(memcached_st *ptr)
                                                                             sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
 
     if (new_ptr == 0)
+    {
       return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    }
 
     ptr->ketama.continuum= new_ptr;
     ptr->ketama.continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
@@ -200,7 +202,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   {
     for (uint32_t host_index = 0; host_index < memcached_server_count(ptr); ++host_index)
     {
-      if (! is_auto_ejecting || list[host_index].next_retry <= now.tv_sec)
+      if (is_auto_ejecting == false or list[host_index].next_retry <= now.tv_sec)
       {
         total_weight += list[host_index].weight;
       }
@@ -209,21 +211,24 @@ static memcached_return_t update_continuum(memcached_st *ptr)
 
   for (uint32_t host_index= 0; host_index < memcached_server_count(ptr); ++host_index)
   {
-    if (is_auto_ejecting && list[host_index].next_retry > now.tv_sec)
+    if (is_auto_ejecting and list[host_index].next_retry > now.tv_sec)
+    {
       continue;
+    }
 
     if (is_ketama_weighted)
     {
-        float pct = (float)list[host_index].weight / (float)total_weight;
+        float pct= (float)list[host_index].weight / (float)total_weight;
         pointer_per_server= (uint32_t) ((floorf((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
         pointer_per_hash= 4;
-#ifdef DEBUG
-        printf("ketama_weighted:%s|%d|%llu|%u\n",
-               list[host_index].hostname,
-               list[host_index].port,
-               (unsigned long long)list[host_index].weight,
-               pointer_per_server);
-#endif
+        if (DEBUG)
+        {
+          printf("ketama_weighted:%s|%d|%llu|%u\n",
+                 list[host_index].hostname,
+                 list[host_index].port,
+                 (unsigned long long)list[host_index].weight,
+                 pointer_per_server);
+        }
     }
 
 
@@ -249,9 +254,12 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                      memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
         }
-#ifdef DEBUG
-        printf("update_continuum: key is %s\n", sort_host);
-#endif
+
+        if (DEBUG)
+        {
+          fprintf(stdout, "update_continuum: key is %s\n", sort_host);
+        }
+
         if (is_ketama_weighted)
         {
           for (uint32_t x= 0; x < pointer_per_hash; x++)
@@ -327,12 +335,13 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   ptr->ketama.continuum_points_counter= pointer_counter;
   qsort(ptr->ketama.continuum, ptr->ketama.continuum_points_counter, sizeof(memcached_continuum_item_st), continuum_item_cmp);
 
-#ifdef DEBUG
-  for (uint32_t pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
+  if (DEBUG)
   {
-    WATCHPOINT_ASSERT(ptr->ketama.continuum[pointer_index].value <= ptr->ketama.continuum[pointer_index + 1].value);
+    for (uint32_t pointer_index= 0; memcached_server_count(ptr) && pointer_index < ((live_servers * MEMCACHED_POINTS_PER_SERVER) - 1); pointer_index++)
+    {
+      WATCHPOINT_ASSERT(ptr->ketama.continuum[pointer_index].value <= ptr->ketama.continuum[pointer_index + 1].value);
+    }
   }
-#endif
 
   return MEMCACHED_SUCCESS;
 }

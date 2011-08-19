@@ -38,6 +38,7 @@ private:
   std::string server_list;
   bool _socket;
   bool _sasl;
+  uint32_t _count;
   std::string _username;
   std::string _password;
 
@@ -49,17 +50,25 @@ public:
   server_startup_st() :
     _socket(false),
     _sasl(false),
+    _count(5),
     udp(0)
   { }
 
   bool start_socket_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[]);
 
-  std::string option_string() const;
-
-  size_t count() const
+  uint32_t count() const
   {
-    return servers.size();
+    return _count;
   }
+
+  void set_count(uint32_t arg)
+  {
+    _count= arg;
+  }
+
+  void restart();
+
+  std::string option_string() const;
 
   const std::string& password() const
   {
@@ -99,7 +108,10 @@ public:
   }
 
 
-  void shutdown(bool remove= false);
+  void shutdown_and_remove();
+  void shutdown();
+  bool shutdown(uint32_t number_of_host);
+
   void push_server(Server *);
   Server *pop_server();
 

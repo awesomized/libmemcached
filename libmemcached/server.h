@@ -46,7 +46,8 @@ enum memcached_server_state_t {
   MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
   MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered
   MEMCACHED_SERVER_STATE_IN_PROGRESS,
-  MEMCACHED_SERVER_STATE_CONNECTED
+  MEMCACHED_SERVER_STATE_CONNECTED,
+  MEMCACHED_SERVER_STATE_IN_TIMEOUT
 };
 
 struct memcached_server_st {
@@ -63,6 +64,7 @@ struct memcached_server_st {
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
   uint32_t weight;
+  uint32_t version;
   enum memcached_server_state_t state;
   struct {
     uint32_t read;

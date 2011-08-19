@@ -148,6 +148,11 @@ public:
   {
     _servers.set_sasl(username_arg, password_arg);
   }
+
+  libtest::server_startup_st& servers()
+  {
+    return _servers;
+  }
   
   /**
     Runner represents the callers for the tests. If not implemented we will use

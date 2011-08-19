@@ -27,8 +27,6 @@ struct libmemcached_test_container_st
   { }
 };
 
-#define SERVERS_TO_CREATE 5
-
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
   if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
@@ -45,8 +43,8 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   }
 
 
-  in_port_t max_port;
-  for (uint32_t x= 0; x < SERVERS_TO_CREATE; x++)
+  in_port_t max_port= TEST_PORT_BASE;
+  for (uint32_t x= 0; x < servers.count(); x++)
   {
     in_port_t port;
 

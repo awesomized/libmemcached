@@ -69,17 +69,17 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->address_info_next= NULL;
 
   self->state= MEMCACHED_SERVER_STATE_NEW;
+  self->next_retry= 0;
 
+  self->root= root;
   if (root)
   {
-    self->next_retry= root->retry_timeout;
+    self->version= ++root->server_info.version;
   }
   else
   {
-    self->next_retry= 0;
+    self->version= UINT_MAX;
   }
-
-  self->root= root;
   self->limit_maxbytes= 0;
   memcpy(self->hostname, hostname.c_str, hostname.size);
   self->hostname[hostname.size]= 0;
