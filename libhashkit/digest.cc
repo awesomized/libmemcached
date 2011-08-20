@@ -48,11 +48,12 @@ uint32_t libhashkit_digest(const char *key, size_t key_length, hashkit_hash_algo
   case HASHKIT_HASH_CUSTOM:
   case HASHKIT_HASH_MAX:
   default:
-#ifdef HAVE_DEBUG
-    fprintf(stderr, "hashkit_hash_t was extended but libhashkit_generate_value was not updated\n");
-    fflush(stderr);
-    assert(0);
-#endif
+    if (DEBUG)
+    {
+      fprintf(stderr, "hashkit_hash_t was extended but libhashkit_generate_value was not updated\n");
+      fflush(stderr);
+      assert(0);
+    }
     break;
   }
 

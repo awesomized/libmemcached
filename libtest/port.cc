@@ -19,50 +19,55 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <libtest/common.h>
 
-/*
-  Structures for generic tests.
-*/
-
-#include <cstdio>
+#include <cassert>
 #include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
+#include <cstring>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <ctime>
+#include <fnmatch.h>
+#include <iostream>
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+#include <signal.h>
 
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/server_container.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/port.h>
 #include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
+#include <libtest/signal.h>
 
-#pragma once
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 
-LIBTEST_API
-in_port_t default_port();
+using namespace libtest;
 
-LIBTEST_API
-void set_default_port(in_port_t port);
+static in_port_t global_port= 0;
+static in_port_t global_max_port= 0;
 
-LIBTEST_API
-const char* default_socket();
+in_port_t default_port()
+{
+  return global_port;
+}
+ 
+void set_default_port(in_port_t port)
+{
+  global_port= port;
+}
 
-LIBTEST_API
-void set_default_socket(const char *socket);
+in_port_t max_port()
+{
+  return global_max_port;
+}
+ 
+void set_max_port(in_port_t port)
+{
+  if (port > global_max_port)
+  {
+    global_max_port= port;
+  }
 
-LIBTEST_API
-bool test_is_local(void);
+  global_max_port= port;
+}

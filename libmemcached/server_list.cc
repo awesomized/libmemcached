@@ -118,7 +118,12 @@ uint32_t memcached_server_list_count(const memcached_server_list_st self)
 
 memcached_server_st *memcached_server_list(const memcached_st *self)
 {
-  return self->servers;
+  if (self)
+  {
+    return self->servers;
+  }
+
+  return NULL;
 }
 
 void memcached_server_list_set(memcached_st *self, memcached_server_st *list)

@@ -39,9 +39,67 @@
 
 #include <libmemcached/basic_string.h>
 
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
+#include <cassert>
+
 static inline bool memcached_is_valid_servername(const memcached_string_t& arg)
 {
   return arg.size > 0 or arg.size < NI_MAXHOST;
+}
+
+static inline void memcached_mark_server_as_clean(memcached_server_write_instance_st server)
+{
+  server->server_failure_counter= 0;
+  server->next_retry= 0;
+}
+
+
+static inline void set_last_disconnected_host(memcached_server_write_instance_st self)
+{
+  assert(self->root);
+  if (self->root == NULL)
+  {
+    return;
+  }
+
+  if (self->root->last_disconnected_server and self->root->last_disconnected_server->version == self->version)
+  {
+    return;
+  }
+
+  // const_cast
+  memcached_st *root= (memcached_st *)self->root;
+
+  memcached_server_free(root->last_disconnected_server);
+  root->last_disconnected_server= memcached_server_clone(NULL, self);
+  root->last_disconnected_server->version= self->version;
+}
+
+static inline void memcached_mark_server_for_timeout(memcached_server_write_instance_st server)
+{
+  if (server->state != MEMCACHED_SERVER_STATE_IN_TIMEOUT)
+  {
+    struct timeval next_time;
+    if (gettimeofday(&next_time, NULL) == 0)
+    {
+      server->next_retry= next_time.tv_sec +server->root->retry_timeout;
+    }
+    else
+    {
+      server->next_retry= 1; // Setting the value to 1 causes the timeout to occur immediatly
+    }
+
+    server->state= MEMCACHED_SERVER_STATE_IN_TIMEOUT;
+    if (server->server_failure_counter_query_id != server->root->query_id)
+    {
+      server->server_failure_counter++;
+      server->server_failure_counter_query_id= server->root->query_id;
+    }
+    set_last_disconnected_host(server);
+  }
 }
 
 LIBMEMCACHED_LOCAL

@@ -33,8 +33,6 @@ using namespace libtest;
 
 #include <libtest/server.h>
 
-#define SERVERS_TO_CREATE 5
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
@@ -490,8 +488,6 @@ collection_st collection[] ={
   {"udp_binary_io", (test_callback_fn*)binary_init_udp, 0, upd_io_tests},
   {0, 0, 0, 0}
 };
-
-#define SERVERS_TO_CREATE 5
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 #include "libmemcached_world.h"

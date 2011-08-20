@@ -53,7 +53,9 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                           uint64_t data)
 {
   if (not ptr)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   switch (flag)
   {
@@ -85,7 +87,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->flags.auto_eject_hosts= bool(data);
 
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
-    ptr->server_failure_limit= (uint32_t)data;
+    if (data == 0)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                        memcached_literal_param("MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT requires a value greater then zero."));
+    }
+    ptr->server_failure_limit= uint32_t(data);
     break;
 
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
@@ -189,7 +196,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
-    ptr->retry_timeout= (int32_t)data;
+    if (data == 0)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                        memcached_literal_param("MEMCACHED_BEHAVIOR_RETRY_TIMEOUT requires a value greater then zero."));
+    }
+    ptr->retry_timeout= int32_t(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
@@ -461,8 +473,10 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
     {
       ptr->ketama.weighted= false;
     }
+
     ptr->distribution= type;
     run_distribution(ptr);
+
     return MEMCACHED_SUCCESS;
   }
 

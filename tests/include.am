@@ -130,6 +130,13 @@ tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES)
 check_PROGRAMS+= tests/testplus
 noinst_PROGRAMS+= tests/testplus
 
+tests_failure_SOURCES= tests/failure.cc
+tests_failure_CXXFLAGS = $(AM_CXXFLAGS)
+tests_failure_DEPENDENCIES= $(TESTS_LDADDS)
+tests_failure_LDADD= $(tests_failure_DEPENDENCIES)
+check_PROGRAMS+= tests/failure
+noinst_PROGRAMS+= tests/failure
+
 tests_atomsmasher_SOURCES= \
 			   tests/atomsmasher.cc \
 			   tests/debug.cc \
@@ -355,11 +362,17 @@ gdb-hashplus: tests/hash_plus
 gdb-cycle: tests/cycle
 	@$(DEBUG_COMMAND) tests/cycle
 
+gdb-failure: tests/failure
+	@$(DEBUG_COMMAND) tests/failure
+
 valgrind-cycle: tests/cycle
 	$(VALGRIND_COMMAND) tests/cycle
 
 valgrind-mem: tests/testapp
 	@$(VALGRIND_COMMAND) tests/testapp
+
+valgrind-failure: tests/failure
+	@$(VALGRIND_COMMAND) tests/failure
 
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND) tests/atomsmasher

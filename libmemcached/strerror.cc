@@ -182,6 +182,9 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
   case MEMCACHED_IN_PROGRESS:
     return "OPERATION IN PROCESS";
 
+  case MEMCACHED_SERVER_TEMPORARILY_DISABLED:
+    return "SERVER HAS FAILED AND IS DISABLED UNTIL TIMED RETRY";
+
   default:
   case MEMCACHED_MAXIMUM_RETURN:
     return "INVALID memcached_return_t";

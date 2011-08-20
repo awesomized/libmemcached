@@ -252,7 +252,7 @@ Find the current size of SO_RCVBUF. A value of 0 means either an error occured o
 
 .. c:type:: MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
  
-When enabled a host which is problematic will only be checked for usage based on the amount of time set by this behavior.  
+When enabled a host which is problematic will only be checked for usage based on the amount of time set by this behavior. The value is in seconds.
 
 
 .. c:type:: MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY

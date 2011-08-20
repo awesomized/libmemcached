@@ -53,6 +53,7 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->fd= -1;
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
+  self->server_failure_counter_query_id= 0;
   self->weight= weight ? weight : 1; // 1 is the default weight value
   WATCHPOINT_SET(self->io_wait_count.read= 0);
   WATCHPOINT_SET(self->io_wait_count.write= 0);
@@ -69,17 +70,17 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->address_info_next= NULL;
 
   self->state= MEMCACHED_SERVER_STATE_NEW;
+  self->next_retry= 0;
 
+  self->root= root;
   if (root)
   {
-    self->next_retry= root->retry_timeout;
+    self->version= ++root->server_info.version;
   }
   else
   {
-    self->next_retry= 0;
+    self->version= UINT_MAX;
   }
-
-  self->root= root;
   self->limit_maxbytes= 0;
   memcpy(self->hostname, hostname.c_str, hostname.size);
   self->hostname[hostname.size]= 0;

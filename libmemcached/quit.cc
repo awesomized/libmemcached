@@ -112,8 +112,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
 
   if (io_death)
   {
-    ptr->server_failure_counter++;
-    set_last_disconnected_host(ptr);
+    memcached_mark_server_for_timeout(ptr);
   }
 }
 
