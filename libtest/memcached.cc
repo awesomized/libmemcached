@@ -87,9 +87,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (error_is_ok and not wait.successful())
+      if (error_is_ok and not wait_for_pidfile())
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -120,9 +118,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (not wait.successful())
+      if (not wait_for_pidfile())
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -230,9 +226,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (error_is_ok and not wait.successful())
+      if (error_is_ok and not wait_for_pidfile())
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -263,9 +257,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      Wait wait(pid_file(), 0);
-
-      if (not wait.successful())
+      if (not wait_for_pidfile())
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;

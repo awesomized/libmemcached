@@ -155,6 +155,13 @@ bool Server::command(std::string& command_arg)
   return false;
 }
 
+bool Server::wait_for_pidfile() const
+{
+  Wait wait(pid_file(), 4);
+
+  return wait.successful();
+}
+
 bool Server::start()
 {
   // If we find that we already have a pid then kill it.
