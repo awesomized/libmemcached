@@ -147,6 +147,8 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   Outn();
   (void)try_port;
 
+  set_max_port(try_port);
+
   // Look to see if we are being provided ports to use
   {
     char variable_buffer[1024];

@@ -69,6 +69,7 @@ noinst_HEADERS+= \
 		 libtest/libtool.hpp \
 		 libtest/memcached.h \
 		 libtest/runner.h \
+		 libtest/port.h \
 		 libtest/server.h \
 		 libtest/server_container.h \
 		 libtest/signal.h \
@@ -88,6 +89,7 @@ libtest_libtest_la_SOURCES= \
 			    libtest/killpid.cc \
 			    libtest/libtool.cc \
 			    libtest/runner.cc \
+			    libtest/port.cc \
 			    libtest/server.cc \
 			    libtest/server_container.cc \
 			    libtest/signal.cc \

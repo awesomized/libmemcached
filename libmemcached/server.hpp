@@ -93,7 +93,11 @@ static inline void memcached_mark_server_for_timeout(memcached_server_write_inst
     }
 
     server->state= MEMCACHED_SERVER_STATE_IN_TIMEOUT;
-    server->server_failure_counter++;
+    if (server->server_failure_counter_query_id != server->root->query_id)
+    {
+      server->server_failure_counter++;
+      server->server_failure_counter_query_id= server->root->query_id;
+    }
     set_last_disconnected_host(server);
   }
 }

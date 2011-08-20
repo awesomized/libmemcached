@@ -44,18 +44,7 @@
 
 using namespace libtest;
 
-static in_port_t global_port= 0;
 static char global_socket[1024];
-
-in_port_t default_port()
-{
-  return global_port;
-}
- 
-void set_default_port(in_port_t port)
-{
-  global_port= port;
-}
 
 const char *default_socket()
 {

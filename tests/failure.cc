@@ -71,6 +71,22 @@ static test_return_t shutdown_servers(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t add_shutdown_servers(memcached_st *memc)
+{
+  while (memcached_server_count(memc) < 2)
+  {
+    const char *argv[1]= { "add_shutdown_server" };
+    in_port_t port= max_port() +1;
+    test_true(global_framework->servers().start_socket_server("memcached", port, 1, argv));
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", port));
+  }
+
+  // Disable a single server, just the first
+  global_framework->servers().shutdown(0);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t restart_servers(memcached_st *)
 {
   // Restart the servers
@@ -142,6 +158,29 @@ static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_to_success_TEST(memca
   return TEST_SUCCESS;
 }
 
+static test_return_t MEMCACHED_SERVER_MARKED_DEAD_TEST(memcached_st *memc)
+{
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 30));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, true));
+
+  memcached_return_t ret;
+  do {
+    ret= memcached_set(memc,
+                       test_literal_param("foo"),
+                       NULL, 0, time_t(0), uint32_t(0));
+  } while (ret == MEMCACHED_SUCCESS or ret == MEMCACHED_CONNECTION_FAILURE);
+  test_compare(MEMCACHED_SERVER_TEMPORARILY_DISABLED, ret);
+
+  do {
+    sleep(3);
+    ret= memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0));
+  } while (ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED or ret == MEMCACHED_SUCCESS);
+
+  test_compare_got(MEMCACHED_SERVER_MARKED_DEAD, ret, memcached_last_error_message(memc));
+
+  return TEST_SUCCESS;
+}
+
 test_st cull_TESTS[] ={
   { "cull servers", true, (test_callback_fn*)cull_TEST },
   { 0, 0, 0 }
@@ -153,9 +192,15 @@ test_st server_temporarily_disabled_TESTS[] ={
   { 0, 0, 0 }
 };
 
+test_st server_permanently_disabled_TESTS[] ={
+  { "memcached_set(MEMCACHED_SERVER_MARKED_DEAD)", true, (test_callback_fn*)MEMCACHED_SERVER_MARKED_DEAD_TEST },
+  { 0, 0, 0 }
+};
+
 collection_st collection[] ={
   { "cull", (test_callback_fn*)shutdown_servers, (test_callback_fn*)restart_servers, cull_TESTS },
   { "server failed", (test_callback_fn*)shutdown_servers, (test_callback_fn*)restart_servers, server_temporarily_disabled_TESTS },
+  { "server eject", (test_callback_fn*)add_shutdown_servers, (test_callback_fn*)restart_servers, server_permanently_disabled_TESTS },
   { 0, 0, 0, 0 }
 };
 

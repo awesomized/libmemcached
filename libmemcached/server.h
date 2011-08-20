@@ -63,6 +63,7 @@ struct memcached_server_st {
   memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
+  uint64_t server_failure_counter_query_id;
   uint32_t weight;
   uint32_t version;
   enum memcached_server_state_t state;
