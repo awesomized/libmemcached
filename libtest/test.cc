@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 
   world= new Framework();
 
-  if (not world)
+  if (world == NULL)
   {
     Error << "Failed to create Framework()";
     return EXIT_FAILURE;

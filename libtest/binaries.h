@@ -19,51 +19,18 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
-/*
-  Structures for generic tests.
-*/
-
-#include <cstdio>
-#include <cstdlib>
-#include <stdint.h>
-#include <arpa/inet.h>
-
-#include <libtest/visibility.h>
-#include <libtest/version.h>
-
-#include <libtest/error.h>
-#include <libtest/server.h>
-#include <libtest/server_container.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/strerror.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/port.h>
-#include <libtest/stats.h>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/stream.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
-#include <libtest/binaries.h>
-
 #pragma once
 
-LIBTEST_API
-in_port_t default_port();
+namespace libtest {
 
 LIBTEST_API
-void set_default_port(in_port_t port);
+bool has_memcached_binary();
 
 LIBTEST_API
-const char* default_socket();
+bool has_memcached_sasl_binary();
 
 LIBTEST_API
-void set_default_socket(const char *socket);
+bool has_gearmand_binary();
 
-LIBTEST_API
-bool test_is_local(void);
+} // namespace libtest
+

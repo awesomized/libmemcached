@@ -13,6 +13,7 @@
 noinst_HEADERS+= \
 		 util/daemon.hpp \
 		 util/instance.hpp \
+		 util/logfile.hpp \
 		 util/operation.hpp \
 		 util/signal.hpp \
 		 util/string.hpp \

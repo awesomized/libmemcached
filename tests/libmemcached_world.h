@@ -29,7 +29,13 @@ struct libmemcached_test_container_st
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
-  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  if (HAVE_MEMCACHED_BINARY == 0)
+  {
+    error= TEST_FATAL;
+    return NULL;
+  }
+
+  if (servers.sasl() and (LIBMEMCACHED_WITH_SASL_SUPPORT == 0 or MEMCACHED_SASL_BINARY == 0))
   {
     error= TEST_SKIPPED;
     return NULL;
@@ -67,7 +73,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     {
       if (not server_startup(servers, "memcached-sasl", port, 1, argv))
       {
-        error= TEST_FAILURE;
+        error= TEST_FATAL;
         return NULL;
       }
     }
@@ -75,7 +81,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     {
       if (not server_startup(servers, "memcached", port, 1, argv))
       {
-        error= TEST_FAILURE;
+        error= TEST_FATAL;
         return NULL;
       }
     }
@@ -88,7 +94,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
       const char *argv[1]= { "memcached" };
       if (not servers.start_socket_server("memcached-sasl", max_port +1, 1, argv))
       {
-        error= TEST_FAILURE;
+        error= TEST_FATAL;
         return NULL;
       }
     }
@@ -97,7 +103,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
       const char *argv[1]= { "memcached" };
       if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
       {
-        error= TEST_FAILURE;
+        error= TEST_FATAL;
         return NULL;
       }
     }
