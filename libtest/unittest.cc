@@ -219,7 +219,7 @@ static test_return_t _compare_gearman_return_t_test(void *)
 {
   test_skip(HAVE_LIBGEARMAN, true);
 #if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN
-    test_compare(GEARMAN_SUCCESS, GEARMAN_SUCCESS);
+  test_compare(GEARMAN_SUCCESS, GEARMAN_SUCCESS);
 #endif
 
   return TEST_SUCCESS;
@@ -230,8 +230,9 @@ static test_return_t gearmand_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (HAVE_LIBGEARMAN)
+  if (HAVE_LIBGEARMAN and GEARMAND_BINARY)
   {
+    test_true(has_gearmand_binary());
     const char *argv[1]= { "cycle_gearmand" };
     test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
 
@@ -248,6 +249,7 @@ static test_return_t memcached_cycle_test(void *object)
 
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
   {
+    test_true(has_memcached_binary());
     const char *argv[1]= { "cycle_memcached" };
     test_true(server_startup(*servers, "memcached", 9998, 1, argv));
 
@@ -264,6 +266,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
 
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED)
   {
+    test_true(has_memcached_binary());
     const char *argv[1]= { "cycle_memcached" };
     test_true(servers->start_socket_server("memcached", 9997, 1, argv));
 
@@ -285,6 +288,7 @@ static test_return_t memcached_sasl_test(void *object)
 
   if (MEMCACHED_SASL_BINARY and HAVE_LIBMEMCACHED)
   {
+    test_true(has_memcached_sasl_binary());
     const char *argv[1]= { "cycle_memcached_sasl" };
     test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
 

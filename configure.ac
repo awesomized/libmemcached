@@ -55,6 +55,7 @@ AC_SUBST(HASHKIT_LIBRARY_VERSION)
 LT_INIT
 m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
+m4_include([m4/gearmand.m4])
 
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
