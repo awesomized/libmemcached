@@ -1095,7 +1095,7 @@ static test_return_t set_test3(memcached_st *memc)
     memcached_return_t rc= memcached_set(memc, key, strlen(key),
                                          value, value_length,
                                          (time_t)0, (uint32_t)0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
 
@@ -1537,7 +1537,7 @@ static test_return_t quit_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)10, (uint32_t)3);
-  test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+  test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   memcached_quit(memc);
 
   rc= memcached_set(memc, key, strlen(key),
@@ -1582,7 +1582,7 @@ static test_return_t mget_result_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x],
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   }
 
   test_compare(MEMCACHED_SUCCESS,
@@ -1631,7 +1631,7 @@ static test_return_t mget_result_alloc_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x],
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   }
 
   test_compare(MEMCACHED_SUCCESS,
@@ -1728,7 +1728,7 @@ static test_return_t mget_test(memcached_st *memc)
     rc= memcached_set(memc, keys[x], key_length[x],
                       keys[x], key_length[x],
                       (time_t)50, (uint32_t)9);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   }
   test_compare(MEMCACHED_SUCCESS,
                memcached_mget(memc, keys, key_length, 3));
@@ -1784,7 +1784,7 @@ static test_return_t mget_execute(memcached_st *memc)
     test_true(keys[x] != NULL);
     uint64_t query_id= memcached_query_id(memc);
     rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
 
@@ -4047,17 +4047,17 @@ static test_return_t poll_timeout(memcached_st *memc)
 
 static test_return_t noreply_test(memcached_st *memc)
 {
-  memcached_return_t ret;
-  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1);
-  test_true(ret == MEMCACHED_SUCCESS);
-  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
-  test_true(ret == MEMCACHED_SUCCESS);
-  ret= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1);
-  test_true(ret == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1));
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1));
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1));
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY) == 1);
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS) == 1);
   test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS) == 1);
 
+  memcached_return_t ret;
   for (int count=0; count < 5; ++count)
   {
     for (size_t x= 0; x < 100; ++x)
@@ -4089,7 +4089,7 @@ static test_return_t noreply_test(memcached_st *memc)
         test_true(count);
         break;
       }
-      test_true(ret == MEMCACHED_SUCCESS || ret == MEMCACHED_BUFFERED);
+      test_true_got(ret == MEMCACHED_SUCCESS or ret == MEMCACHED_BUFFERED, memcached_strerror(NULL, ret));
     }
 
     /*
@@ -4106,7 +4106,7 @@ static test_return_t noreply_test(memcached_st *memc)
     }
 
     test_true(no_msg == 0);
-    test_true(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS, memcached_flush_buffers(memc));
 
     /*
      ** Now validate that all items was set properly!
@@ -4124,7 +4124,7 @@ static test_return_t noreply_test(memcached_st *memc)
       uint32_t flags;
       char* value=memcached_get(memc, key, strlen(key),
                                 &length, &flags, &ret);
-      test_true(ret == MEMCACHED_SUCCESS && value != NULL);
+      test_true_got(ret == MEMCACHED_SUCCESS && value != NULL, memcached_strerror(NULL, ret));
       switch (count)
       {
       case 0: /* FALLTHROUGH */
@@ -4156,26 +4156,26 @@ static test_return_t noreply_test(memcached_st *memc)
   uint32_t flags;
   memcached_result_st results_obj;
   memcached_result_st *results;
-  ret= memcached_mget(memc, keys, lengths, 1);
-  test_true(ret == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_mget(memc, keys, lengths, 1));
 
   results= memcached_result_create(memc, &results_obj);
   test_true(results);
   results= memcached_fetch_result(memc, &results_obj, &ret);
   test_true(results);
-  test_true(ret == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, ret);
   uint64_t cas= memcached_result_cas(results);
   memcached_result_free(&results_obj);
 
-  ret= memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas);
-  test_true(ret == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas));
 
   /*
    * The item will have a new cas value, so try to set it again with the old
    * value. This should fail!
    */
-  ret= memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas);
-  test_true(ret == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_cas(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0, cas));
   test_true(memcached_flush_buffers(memc) == MEMCACHED_SUCCESS);
   char* value=memcached_get(memc, keys[0], lengths[0], &length, &flags, &ret);
   test_true(ret == MEMCACHED_SUCCESS && value != NULL);
