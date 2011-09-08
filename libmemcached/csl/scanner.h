@@ -190,11 +190,6 @@ typedef void* yyscan_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
-
 /* %if-not-reentrant */
 /* %endif */
 
@@ -202,6 +197,11 @@ typedef size_t yy_size_t;
 /* %if-not-reentrant */
 /* %endif */
 /* %endif */
+
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
@@ -225,7 +225,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -281,7 +281,7 @@ void config_pop_buffer_state (yyscan_t yyscanner );
 
 YY_BUFFER_STATE config__scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
 YY_BUFFER_STATE config__scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE config__scan_bytes (yyconst char *bytes,yy_size_t len ,yyscan_t yyscanner );
+YY_BUFFER_STATE config__scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
 
 /* %endif */
 
@@ -362,13 +362,17 @@ FILE *config_get_out (yyscan_t yyscanner );
 
 void config_set_out  (FILE * out_str ,yyscan_t yyscanner );
 
-yy_size_t config_get_leng (yyscan_t yyscanner );
+int config_get_leng (yyscan_t yyscanner );
 
 char *config_get_text (yyscan_t yyscanner );
 
 int config_get_lineno (yyscan_t yyscanner );
 
 void config_set_lineno (int line_number ,yyscan_t yyscanner );
+
+int config_get_column  (yyscan_t yyscanner );
+
+void config_set_column (int column_no ,yyscan_t yyscanner );
 
 /* %if-bison-bridge */
 
@@ -472,6 +476,6 @@ extern int config_lex \
 #line 201 "libmemcached/csl/scanner.l"
 
 
-#line 476 "libmemcached/csl/scanner.h"
+#line 480 "libmemcached/csl/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */
