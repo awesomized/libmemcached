@@ -65,6 +65,8 @@ noinst_HEADERS+= \
 		 libtest/framework.h \
 		 libtest/gearmand.h \
 		 libtest/get.h \
+		 libtest/is_pid.hpp \
+		 libtest/is_local.hpp \
 		 libtest/killpid.h \
 		 libtest/libtool.hpp \
 		 libtest/memcached.h \
@@ -73,6 +75,7 @@ noinst_HEADERS+= \
 		 libtest/server.h \
 		 libtest/server_container.h \
 		 libtest/signal.h \
+		 libtest/socket.hpp \
 		 libtest/stats.h \
 		 libtest/stream.h \
 		 libtest/strerror.h \
@@ -86,7 +89,9 @@ noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES= \
 			    libtest/binaries.cc \
 			    libtest/cmdline.cc \
+			    libtest/core.cc \
 			    libtest/framework.cc \
+			    libtest/is_local.cc \
 			    libtest/killpid.cc \
 			    libtest/libtool.cc \
 			    libtest/port.cc \
@@ -94,6 +99,8 @@ libtest_libtest_la_SOURCES= \
 			    libtest/server.cc \
 			    libtest/server_container.cc \
 			    libtest/signal.cc \
+			    libtest/socket.cc \
+			    libtest/strerror.cc \
 			    libtest/test.cc
 
 libtest_libtest_la_CXXFLAGS= ${AM_CXXFLAGS}

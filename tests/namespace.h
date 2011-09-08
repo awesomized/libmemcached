@@ -37,5 +37,5 @@
 
 #pragma once
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t memcached_increment_namespace(memcached_st *memc);

@@ -21,8 +21,12 @@
 
 #pragma once
 
+namespace libtest {
+
 /**
   @note Friendly print function for errors.
 */
 LIBTEST_API
 const char *test_strerror(test_return_t code);
+
+} // namespace libtest

@@ -25,9 +25,11 @@
 #include <libmemcached/csl/parser.h>
 #include <libmemcached/csl/symbol.h>
 
+#ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 #define YY_EXTRA_TYPE Context*
 

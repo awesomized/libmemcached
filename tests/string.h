@@ -41,25 +41,25 @@
 extern "C" {
 #endif
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_static_null(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_null(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_with_size(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_with_size_toobig(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_append(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_append_toobig(void *);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t string_alloc_append_multiple(void *);
 
 #ifdef	__cplusplus

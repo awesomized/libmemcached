@@ -3316,7 +3316,7 @@ static test_return_t mget_read(memcached_st *memc)
     unsigned int keys_returned;
     test_compare(TEST_SUCCESS, fetch_all_results(memc, keys_returned, MEMCACHED_SUCCESS));
     test_true(keys_returned > 0);
-    test_compare_got(global_count, keys_returned, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+    test_compare_warn_hint(global_count, keys_returned, "Possible false, positive, memcached may have ejected key/value based on memory needs");
   }
 
   return TEST_SUCCESS;

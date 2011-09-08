@@ -52,7 +52,12 @@ AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 HASHKIT_LIBRARY_VERSION=1:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
-LT_INIT
+LT_PREREQ([2.2])
+LT_INIT()
+LT_LANG([C++])
+LT_LANG([C])
+gl_VISIBILITY
+
 m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
@@ -80,7 +85,7 @@ case "$target_os" in
    esac
 
 dnl Specialty checks
-ACX_PTHREAD
+AX_PTHREAD
 CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB

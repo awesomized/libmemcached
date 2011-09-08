@@ -23,32 +23,41 @@
 #pragma once
 
 #if defined(BUILDING_LIBTEST)
-# if defined(HAVE_VISIBILITY)
+# if defined(HAVE_VISIBILITY) && HAVE_VISIBILITY
 #  define LIBTEST_API __attribute__ ((visibility("default")))
-#  define LIBTEST_INTERNAL_API __attribute__ ((visibility("hidden")))
-#  define LIBTEST_API_DEPRECATED __attribute__ ((deprecated,visibility("default")))
-#  define LIBTEST_LOCAL  __attribute__ ((visibility("hidden")))
+#  define LIBTEST_LOCAL  __attribute__ ((visibility("default")))
 # elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 #  define LIBTEST_API __global
-#  define LIBTEST_INTERNAL_API __hidden
-#  define LIBTEST_API_DEPRECATED __global
-#  define LIBTEST_LOCAL __hidden
+#  define LIBTEST_LOCAL __global
 # elif defined(_MSC_VER)
-#  define LIBTEST_API extern __declspec(dllexport)
-#  define LIBTEST_INTERNAL_API extern __declspec(dllexport)
-#  define LIBTEST_DEPRECATED_API extern __declspec(dllexport)
-#  define LIBTEST_LOCAL
-# endif /* defined(HAVE_VISIBILITY) */
-#else  /* defined(BUILDING_LIBTEST) */
-# if defined(_MSC_VER)
-#  define LIBTEST_API extern __declspec(dllimport)
-#  define LIBTEST_INTERNAL_API extern __declspec(dllimport)
-#  define LIBTEST_API_DEPRECATED extern __declspec(dllimport)
-#  define LIBTEST_LOCAL
+#  define LIBTEST_API extern __declspec(dllexport) 
+#  define LIBTEST_LOCAL extern __declspec(dllexport)
 # else
 #  define LIBTEST_API
-#  define LIBTEST_INTERNAL_API
-#  define LIBTEST_API_DEPRECATED
 #  define LIBTEST_LOCAL
-# endif /* defined(_MSC_VER) */
-#endif /* defined(BUILDING_LIBTEST) */
+# endif
+#else
+# if defined(BUILDING_LIBTEST)
+#  if defined(HAVE_VISIBILITY) && HAVE_VISIBILITY
+#   define LIBTEST_API __attribute__ ((visibility("default")))
+#   define LIBTEST_LOCAL  __attribute__ ((visibility("hidden")))
+#  elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+#   define LIBTEST_API __global
+#   define LIBTEST_LOCAL __hidden
+#  elif defined(_MSC_VER)
+#   define LIBTEST_API extern __declspec(dllexport) 
+#   define LIBTEST_LOCAL
+#  else
+#   define LIBTEST_API
+#   define LIBTEST_LOCAL
+#  endif /* defined(HAVE_VISIBILITY) */
+# else  /* defined(BUILDING_LIBTEST) */
+#  if defined(_MSC_VER)
+#   define LIBTEST_API extern __declspec(dllimport) 
+#   define LIBTEST_LOCAL
+#  else
+#   define LIBTEST_API
+#   define LIBTEST_LOCAL
+#  endif /* defined(_MSC_VER) */
+# endif /* defined(BUILDING_LIBTEST) */
+#endif /* defined(BUILDING_LIBTESTINTERNAL) */

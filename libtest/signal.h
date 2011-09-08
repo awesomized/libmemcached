@@ -25,6 +25,7 @@
 
 #include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
 
 enum shutdown_t {
   SHUTDOWN_RUNNING,

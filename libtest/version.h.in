@@ -22,13 +22,5 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define LIBTEST_VERSION_STRING "@VERSION@"
 #define LIBTEST_VERSION_HEX @HEX_VERSION@
-
-#ifdef __cplusplus
-}
-#endif

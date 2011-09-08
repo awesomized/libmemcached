@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t memcached_pool_test(memcached_st *);
 
 #ifdef	__cplusplus

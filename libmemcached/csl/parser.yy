@@ -42,7 +42,9 @@
 #include <libmemcached/csl/symbol.h>
 #include <libmemcached/csl/scanner.h>
 
+#ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
