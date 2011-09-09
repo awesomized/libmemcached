@@ -1,6 +1,6 @@
-.TH "MEMCACHED_VERBOSITY" "3" "September 09, 2011" "0.52" "libmemcached"
+.TH "MEMCACHED_LAST_ERROR_MESSAGE" "3" "September 09, 2011" "0.52" "libmemcached"
 .SH NAME
-memcached_verbosity \- libmemcached Documentation
+memcached_last_error_message \- libmemcached Documentation
 .
 .nr rst2man-indent-level 0
 .
@@ -30,28 +30,24 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .\" Man page generated from reStructeredText.
 .
-.sp
-Modifiy verbosity of servers
 .SH SYNOPSIS
 .sp
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_verbosity (memcached_st *ptr, unsigned int verbosity);
+.B const char *memcached_last_error_message(memcached_st *);
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_verbosity()\fP modifies the "verbosity" of the
-memcached(1) servers referenced in the \fBmemcached_st\fP  parameter.
+\fBmemcached_last_error_message()\fP is used to return the last error
+message that the server responded too. If this error came from a specific
+server, its hostname and port will be provided in the error message.
 .SH RETURN
 .sp
-A value of type \fBmemcached_return_t\fP is returned.
-.sp
-On success that value will be \fBMEMCACHED_SUCCESS\fP.
-.sp
-Use \fBmemcached_strerror()\fP to translate this value to a printable string.
+memcached_last_error_message() returns a const char* which does not need to be
+de\-allocated. If no error has occurred then it will return NULL.
 .SH HOME
 .sp
 To find out more information please check:

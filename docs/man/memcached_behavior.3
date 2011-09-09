@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR" "3" "July 21, 2011" "0.51" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR" "3" "September 09, 2011" "0.52" "libmemcached"
 .SH NAME
 memcached_behavior \- libmemcached Documentation
 .
@@ -306,7 +306,7 @@ If enabled any hosts which have been flagged as disabled will be removed from th
 .B MEMCACHED_BEHAVIOR_RETRY_TIMEOUT
 .UNINDENT
 .sp
-When enabled a host which is problematic will only be checked for usage based on the amount of time set by this behavior.
+When enabled a host which is problematic will only be checked for usage based on the amount of time set by this behavior. The value is in seconds.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY
