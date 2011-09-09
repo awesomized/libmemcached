@@ -101,6 +101,7 @@ man_MANS+= \
 	   docs/man/memcached_server_push.3 \
 	   docs/man/memcached_servers_parse.3 \
 	   docs/man/memcached_set.3 \
+	   docs/man/memcached_last_error_message.3 \
 	   docs/man/memcached_set_by_key.3 \
 	   docs/man/memcached_set_memory_allocators.3 \
 	   docs/man/memcached_set_sasl_callbacks.3 \
