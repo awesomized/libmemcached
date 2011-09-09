@@ -253,27 +253,23 @@ static test_return_t error_memcached_return_t_test(memcached_st *)
   return TEST_SUCCESS;
 }
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-fpermissive"
-#endif
-
 test_st error_tests[] ={
-  { "error()", 0, error_test },
-  { "error(std::string&)", 0, error_std_string_test },
-  { "error(memcached_return_t&)", 0, error_memcached_return_t_test },
+  { "error()", false, reinterpret_cast<test_callback_fn*>(error_test) },
+  { "error(std::string&)", false, reinterpret_cast<test_callback_fn*>(error_std_string_test) },
+  { "error(memcached_return_t&)", false, reinterpret_cast<test_callback_fn*>(error_memcached_return_t_test) },
   {0, 0, 0}
 };
 
 test_st tests[] ={
-  { "basic", 0,
+  { "basic", false,
     reinterpret_cast<test_callback_fn*>(basic_test) },
-  { "basic_master_key", 0,
+  { "basic_master_key", false,
     reinterpret_cast<test_callback_fn*>(basic_master_key_test) },
-  { "increment_test", 0,
+  { "increment_test", false,
     reinterpret_cast<test_callback_fn*>(increment_test) },
-  { "mget", 1,
+  { "mget", true,
     reinterpret_cast<test_callback_fn*>(mget_test) },
-  { "basic_behavior", 0,
+  { "basic_behavior", false,
     reinterpret_cast<test_callback_fn*>(basic_behavior) },
   {0, 0, 0}
 };

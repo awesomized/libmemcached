@@ -26,9 +26,6 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-#include <libtest/stream.h>
-#include <libtest/comparison.hpp>
-
 /**
   A structure describing the test case.
 */
@@ -45,7 +42,7 @@ do \
     fprintf(stderr, "\n%s:%d: Assertion failed for %s: ", __FILE__, __LINE__, __func__);\
     perror(#A); \
     fprintf(stderr, "\n"); \
-    create_core(); \
+    libtest::create_core(); \
     assert((A)); \
   } \
 } while (0)
@@ -56,7 +53,7 @@ do \
   if ((A)) { \
     fprintf(stderr, "\n%s:%d: Assertion failed %s, with message %s, in %s", __FILE__, __LINE__, (B), #A, __func__ );\
     fprintf(stderr, "\n"); \
-    create_core(); \
+    libtest::create_core(); \
     assert((A)); \
   } \
 } while (0)
@@ -66,7 +63,7 @@ do \
 { \
   if (! (A)) { \
     fprintf(stderr, "\n%s:%d: Assertion \"%s\" failed, in %s\n", __FILE__, __LINE__, #A, __func__);\
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -76,7 +73,7 @@ do \
 { \
   if (! (A)) { \
     fprintf(stderr, "\n%s:%d: Assertion \"%s\" failed, in %s\n", __FILE__, __LINE__, #A, __func__);\
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -84,9 +81,9 @@ do \
 #define test_true_got(__expected, __hint) \
 do \
 { \
-  if (not libtest::_compare_true_hint(__FILE__, __LINE__, __func__, ((__expected)), #__expected, ((__hint)))) \
+  if (not libtest::_compare_truth_hint(__FILE__, __LINE__, __func__, ((__expected)), #__expected, ((__hint)))) \
   { \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -105,7 +102,7 @@ do \
 { \
   if (1) { \
     fprintf(stderr, "\n%s:%d: Failed with %s, in %s\n", __FILE__, __LINE__, #A, __func__);\
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -116,7 +113,7 @@ do \
 { \
   if ((A)) { \
     fprintf(stderr, "\n%s:%d: Assertion failed %s, in %s\n", __FILE__, __LINE__, #A, __func__);\
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -126,7 +123,7 @@ do \
 { \
   if ((A)) { \
     fprintf(stderr, "\n%s:%d: Assertion failed %s with %s\n", __FILE__, __LINE__, #A, (B));\
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -136,7 +133,7 @@ do \
 { \
   if (not libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)))) \
   { \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -146,7 +143,7 @@ do \
 { \
   if (not libtest::_compare_zero(__FILE__, __LINE__, __func__, ((__actual)))) \
   { \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -156,9 +153,33 @@ do \
 { \
   if (not libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint))) \
   { \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
+} while (0)
+
+#define test_compare_warn(__expected, __actual) \
+do \
+{ \
+  void(libtest::_compare(__FILE__, __LINE__, __func__, (__expected), (__actual))); \
+} while (0)
+
+#define test_compare_warn_hint(__expected, __actual, __hint) \
+do \
+{ \
+  libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint)); \
+} while (0)
+
+#define test_warn(__truth) \
+do \
+{ \
+  void(libtest::_truth(__FILE__, __LINE__, __func__, (__truth))); \
+} while (0)
+
+#define test_warn_hint(__truth, __hint) \
+do \
+{ \
+  void(libtest::_compare_truth_hint(__FILE__, __LINE__, __func__, (__truth), #__truth, (__hint))); \
 } while (0)
 
 
@@ -168,7 +189,7 @@ do \
   if (strcmp((A), (B))) \
   { \
     fprintf(stderr, "\n%s:%d: Expected %s, got %s\n", __FILE__, __LINE__, (A), (B)); \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)
@@ -179,7 +200,7 @@ do \
   if (memcmp((A), (B), (C))) \
   { \
     fprintf(stderr, "\n%s:%d: %.*s -> %.*s\n", __FILE__, __LINE__, (int)(C), (char *)(A), (int)(C), (char *)(B)); \
-    create_core(); \
+    libtest::create_core(); \
     return TEST_FAILURE; \
   } \
 } while (0)

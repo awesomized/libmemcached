@@ -22,5 +22,9 @@
 
 #pragma once
 
+namespace libtest {
+
 LIBTEST_API
 void create_core(void);
+
+} // namespace libtest

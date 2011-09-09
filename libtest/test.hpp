@@ -33,15 +33,19 @@
 #include <libtest/version.h>
 
 #include <libtest/error.h>
+#include <libtest/strerror.h>
+#include <libtest/stream.h>
+#include <libtest/comparison.hpp>
 #include <libtest/server.h>
 #include <libtest/server_container.h>
 #include <libtest/wait.h>
 #include <libtest/callbacks.h>
 #include <libtest/test.h>
-#include <libtest/strerror.h>
 #include <libtest/core.h>
 #include <libtest/runner.h>
 #include <libtest/port.h>
+#include <libtest/is_local.hpp>
+#include <libtest/socket.hpp>
 #include <libtest/stats.h>
 #include <libtest/collection.h>
 #include <libtest/framework.h>
@@ -50,20 +54,3 @@
 #include <libtest/cmdline.h>
 #include <libtest/string.hpp>
 #include <libtest/binaries.h>
-
-#pragma once
-
-LIBTEST_API
-in_port_t default_port();
-
-LIBTEST_API
-void set_default_port(in_port_t port);
-
-LIBTEST_API
-const char* default_socket();
-
-LIBTEST_API
-void set_default_socket(const char *socket);
-
-LIBTEST_API
-bool test_is_local(void);

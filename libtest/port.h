@@ -26,6 +26,8 @@
 
 #pragma once
 
+namespace libtest {
+
 LIBTEST_API
 in_port_t default_port();
 
@@ -37,3 +39,5 @@ in_port_t max_port();
 
 LIBTEST_API
 void set_max_port(in_port_t port);
+
+} // namespace libtest

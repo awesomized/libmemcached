@@ -42,10 +42,10 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_array_clone(memcached_st *memc, const memcached_array_st *original);
+memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original);
 
 LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_strcpy(memcached_st *memc, const char *str, size_t str_length);
+memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length);
 
 LIBMEMCACHED_LOCAL
 void memcached_array_free(memcached_array_st *array);

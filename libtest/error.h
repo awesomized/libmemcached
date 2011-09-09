@@ -31,5 +31,12 @@ enum test_return_t {
 };
 
 
-#define test_failed(__test_return_t) ((__test_return_t) != TEST_SUCCESS)
-#define test_success(__test_return_t) ((__test_return_t) == TEST_SUCCESS)
+static inline bool test_success(test_return_t rc)
+{
+  return (rc == TEST_SUCCESS);
+}
+
+static inline bool test_failed(test_return_t rc)
+{
+  return (rc != TEST_SUCCESS);
+}

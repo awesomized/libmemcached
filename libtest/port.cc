@@ -47,6 +47,8 @@ using namespace libtest;
 static in_port_t global_port= 0;
 static in_port_t global_max_port= 0;
 
+namespace libtest {
+
 in_port_t default_port()
 {
   return global_port;
@@ -71,3 +73,5 @@ void set_max_port(in_port_t port)
 
   global_max_port= port;
 }
+
+} // namespace libtest

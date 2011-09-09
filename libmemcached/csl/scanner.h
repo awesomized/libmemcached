@@ -10,16 +10,18 @@
 #include <libmemcached/csl/parser.h>
 #include <libmemcached/csl/symbol.h>
 
+#ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 #define YY_EXTRA_TYPE Context*
 
 
 
 
-#line 23 "libmemcached/csl/scanner.h"
+#line 25 "libmemcached/csl/scanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -471,9 +473,9 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 199 "libmemcached/csl/scanner.l"
+#line 201 "libmemcached/csl/scanner.l"
 
 
-#line 478 "libmemcached/csl/scanner.h"
+#line 480 "libmemcached/csl/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */

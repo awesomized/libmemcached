@@ -43,22 +43,22 @@
 extern "C" {
 #endif
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_init_test(memcached_st *junk);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_clone_test(memcached_st *memc);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_reset_stack_test(memcached_st *junk);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_reset_heap_test(memcached_st *junk);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_reset_stack_clone_test(memcached_st *memc);
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t basic_reset_heap_clone_test(memcached_st *memc);
 
 #ifdef	__cplusplus

@@ -19,50 +19,15 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/*
-  Common include file for libtest
-*/
+#include <libtest/common.h>
 
-#pragma once
 
-#include <config.h>
+namespace libtest {
 
-#include <cassert>
-#include <cerrno>
-#include <cstdlib>
-#include <sstream>
-#include <string>
+bool test_is_local()
+{
+  return (getenv("LIBTEST_LOCAL"));
+}
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
-#ifdef HAVE_SYS_RESOURCE_H 
-#include <sys/resource.h> 
-#endif
- 
-#ifdef HAVE_FNMATCH_H
-#include <fnmatch.h>
-#endif
-
-#include <libtest/test.hpp>
-
-#include <libtest/is_pid.hpp>
-
-#include <libtest/gearmand.h>
-#include <libtest/blobslap_worker.h>
-#include <libtest/memcached.h>
-
-#include <libtest/libtool.hpp>
-#include <libtest/killpid.h>
-#include <libtest/stats.h>
-#include <libtest/signal.h>
+} // namespace libtest
 
