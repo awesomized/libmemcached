@@ -43,7 +43,7 @@ struct memcached_st;
 extern "C" {
 #endif
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 test_return_t virtual_back_map(memcached_st *);
 
 #ifdef	__cplusplus

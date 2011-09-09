@@ -37,7 +37,7 @@
 
 #pragma once
 
-test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys, bool key_matches_value= false);
+test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys, bool key_matches_value= false, bool require_all= false);
 
 test_return_t confirm_keys_dont_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys);
 

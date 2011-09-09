@@ -355,8 +355,6 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                                 uint64_t cas,
                                                 memcached_storage_action_t verb)
 {
-  WATCHPOINT_ASSERT(!(value == NULL && value_length > 0));
-
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(ptr)))
   {

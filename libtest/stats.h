@@ -21,6 +21,7 @@
 
 
 #pragma once
+
 struct Stats {
   int32_t collection_success;
   int32_t collection_skipped;

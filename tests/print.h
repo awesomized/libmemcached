@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-LIBTEST_INTERNAL_API
+LIBTEST_LOCAL
 memcached_return_t server_print_callback(const memcached_st *ptr,
                                          const memcached_server_st *server,
                                          void *context);

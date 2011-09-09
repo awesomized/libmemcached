@@ -40,7 +40,9 @@
 void _libmemcached_free(const memcached_st*, void *mem, void*)
 {
   if (mem)
+  {
     free(mem);
+  }
 }
 
 void *_libmemcached_malloc(const memcached_st *, size_t size, void *)
@@ -59,7 +61,9 @@ void *_libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size, 
   {
      void *ret = _libmemcached_malloc(self, nelem * size, context);
      if (not ret)
+     {
        memset(ret, 0, nelem * size);
+     }
 
      return ret;
   }
@@ -80,6 +84,11 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *self,
                                                    memcached_calloc_fn mem_calloc,
                                                    void *context)
 {
+  if (self == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
   /* All should be set, or none should be set */
   if (mem_malloc == NULL && mem_free == NULL && mem_realloc == NULL && mem_calloc == NULL) 
   {
@@ -87,7 +96,7 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *self,
   }
   else if (mem_malloc == NULL || mem_free == NULL || mem_realloc == NULL || mem_calloc == NULL)
   {
-    return MEMCACHED_FAILURE;
+    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("NULL parameter provided for one or more allocators"));
   }
   else
   {
@@ -112,6 +121,11 @@ void memcached_get_memory_allocators(const memcached_st *self,
                                      memcached_realloc_fn *mem_realloc,
                                      memcached_calloc_fn *mem_calloc)
 {
+  if (self == NULL)
+  {
+    return;
+  }
+
   *mem_malloc= self->allocators.malloc;
   *mem_free= self->allocators.free;
   *mem_realloc= self->allocators.realloc;

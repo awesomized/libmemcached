@@ -69,11 +69,15 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-
-  if (!initialize_sasl(memc, opt_username, opt_passwd))
+  if (opt_username)
   {
-    memcached_free(memc);
-    return EXIT_FAILURE;
+    memcached_return_t ret;
+    if (memcached_failed(ret= memcached_set_sasl_auth_data(memc, opt_username, opt_passwd)))
+    {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
+      memcached_free(memc);
+      return EXIT_FAILURE;
+    }
   }
 
   rc = memcached_flush(memc, opt_expire);
@@ -89,8 +93,6 @@ int main(int argc, char *argv[])
   memcached_free(memc);
 
   free(opt_servers);
-
-  shutdown_sasl();
 
   return EXIT_SUCCESS;
 }

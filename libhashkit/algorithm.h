@@ -11,8 +11,7 @@
  * @brief HashKit Header
  */
 
-#ifndef HASHKIT_ALGORITHM_H
-#define HASHKIT_ALGORITHM_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,5 +91,3 @@ void libhashkit_md5_signature(const unsigned char *key, size_t length, unsigned 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* HASHKIT_ALGORITHM_H */

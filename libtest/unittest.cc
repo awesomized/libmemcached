@@ -24,6 +24,14 @@
 
 #include <libtest/test.hpp>
 
+#if defined(LIBTEST_WITH_LIBMEMCACHED_SUPPORT) && LIBTEST_WITH_LIBMEMCACHED_SUPPORT
+#include <libmemcached/memcached.h>
+#endif
+
+#if defined(LIBTEST_WITH_LIBGEARMAN_SUPPORT) && LIBTEST_WITH_LIBGEARMAN_SUPPORT
+#include <libgearman/gearman.h>
+#endif
+
 #include <cstdlib>
 #include <unistd.h>
 
@@ -50,6 +58,15 @@ static test_return_t HELGRIND_COMMAND_test(void *)
 static test_return_t GDB_COMMAND_test(void *)
 {
   test_true(getenv("GDB_COMMAND"));
+  return TEST_SUCCESS;
+}
+
+static test_return_t test_success_equals_one_test(void *)
+{
+  test_skip(HAVE_LIBMEMCACHED, true);
+#if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED 
+  test_zero(MEMCACHED_SUCCESS);
+#endif
   return TEST_SUCCESS;
 }
 
@@ -181,13 +198,41 @@ static test_return_t var_log_rm_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t _compare_test_return_t_test(void *)
+{
+  test_compare(TEST_SUCCESS, TEST_SUCCESS);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t _compare_memcached_return_t_test(void *)
+{
+  test_skip(HAVE_LIBMEMCACHED, true);
+#if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED 
+  test_compare(MEMCACHED_SUCCESS, MEMCACHED_SUCCESS);
+#endif
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t _compare_gearman_return_t_test(void *)
+{
+  test_skip(HAVE_LIBGEARMAN, true);
+#if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN
+  test_compare(GEARMAN_SUCCESS, GEARMAN_SUCCESS);
+#endif
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t gearmand_cycle_test(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (HAVE_LIBGEARMAN)
+  if (HAVE_LIBGEARMAN and GEARMAND_BINARY)
   {
+    test_true(has_gearmand_binary());
     const char *argv[1]= { "cycle_gearmand" };
     test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
 
@@ -204,6 +249,7 @@ static test_return_t memcached_cycle_test(void *object)
 
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
   {
+    test_true(has_memcached_binary());
     const char *argv[1]= { "cycle_memcached" };
     test_true(server_startup(*servers, "memcached", 9998, 1, argv));
 
@@ -220,8 +266,31 @@ static test_return_t memcached_socket_cycle_test(void *object)
 
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED)
   {
+    test_true(has_memcached_binary());
     const char *argv[1]= { "cycle_memcached" };
     test_true(servers->start_socket_server("memcached", 9997, 1, argv));
+
+    return TEST_SUCCESS;
+  }
+
+  return TEST_SKIPPED;
+}
+
+static test_return_t memcached_sasl_test(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  if (getenv("TESTS_ENVIRONMENT"))
+  {
+    return TEST_SKIPPED;
+  }
+
+  if (MEMCACHED_SASL_BINARY and HAVE_LIBMEMCACHED)
+  {
+    test_true(has_memcached_sasl_binary());
+    const char *argv[1]= { "cycle_memcached_sasl" };
+    test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
 
     return TEST_SUCCESS;
   }
@@ -240,6 +309,7 @@ test_st gearmand_tests[] ={
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
+  {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
   {0, 0, 0}
 };
 
@@ -252,8 +322,9 @@ test_st environment_tests[] ={
 };
 
 test_st tests_log[] ={
-  {"TEST_SUCCESS", 0, test_success_test },
-  {"TEST_FAILURE", 0, test_failure_test },
+  {"TEST_SUCCESS", false, test_success_test },
+  {"TEST_FAILURE", false, test_failure_test },
+  {"TEST_SUCCESS == 0", false, test_success_equals_one_test },
   {0, 0, 0}
 };
 
@@ -277,11 +348,19 @@ test_st directories_tests[] ={
   {0, 0, 0}
 };
 
+test_st comparison_tests[] ={
+  {"_compare(test_return_t)", 0, _compare_test_return_t_test },
+  {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
+  {"_compare(gearman_return_t)", 0, _compare_gearman_return_t_test },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"environment", 0, 0, environment_tests},
   {"return values", 0, 0, tests_log},
   {"local", 0, 0, local_log},
   {"directories", 0, 0, directories_tests},
+  {"comparison", 0, 0, comparison_tests},
   {"gearmand", 0, 0, gearmand_tests},
   {"memcached", 0, 0, memcached_tests},
   {0, 0, 0, 0}

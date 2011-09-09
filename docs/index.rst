@@ -19,8 +19,7 @@ Basics
    memcached_create
    libmemcached_examples
    libmemcached_configuration
-   error_messages
-
+   libmemcached/memcached_last_error_message
 
 #################
 Working with data
@@ -58,6 +57,7 @@ Advanced Topics
    memcached_server_st
    memcached_servers
    memcached_strerror
+   error_messages
    memcached_user_data
    memcached_verbosity
    memcached_version

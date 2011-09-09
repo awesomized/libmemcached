@@ -71,6 +71,7 @@
 #include <libmemcached/flush_buffers.h>
 #include <libmemcached/get.h>
 #include <libmemcached/hash.h>
+#include <libmemcached/namespace.h>
 #include <libmemcached/options.h>
 #include <libmemcached/parse.h>
 #include <libmemcached/quit.h>
@@ -112,6 +113,9 @@ struct memcached_st {
 
   memcached_server_distribution_t distribution;
   hashkit_st hashkit;
+  struct {
+    unsigned int version;
+  } server_info;
   uint32_t number_of_hosts;
   memcached_server_st *servers;
   memcached_server_st *last_disconnected_server;
@@ -123,7 +127,7 @@ struct memcached_st {
   uint32_t io_key_prefetch;
   uint32_t tcp_keepidle;
   int32_t poll_timeout;
-  int32_t connect_timeout;
+  int32_t connect_timeout; // How long we will wait on connect() before we will timeout
   int32_t retry_timeout;
   int send_size;
   int recv_size;

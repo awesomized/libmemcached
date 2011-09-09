@@ -11,22 +11,23 @@
 
 #include "config.h"
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <unistd.h>
+#include <cerrno>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
 #include <getopt.h>
-#include <sys/types.h>
+#include <iostream>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <strings.h>
-#include <string.h>
 #include <sys/types.h>
-#include <stdlib.h>
-#include <limits.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 #include <libmemcached/memcached.h>
@@ -123,11 +124,15 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (initialize_sasl(memc, opt_username, opt_passwd) == false)
+  if (opt_username)
   {
-    std::cerr << "Failed to initialize SASL support." << std::endl;
-    memcached_free(memc);
-    return EXIT_FAILURE;
+    memcached_return_t ret;
+    if (memcached_failed(ret= memcached_set_sasl_auth_data(memc, opt_username, opt_passwd)))
+    {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
+      memcached_free(memc);
+      return EXIT_FAILURE;
+    }
   }
 
   while (optind < argc)
@@ -216,7 +221,6 @@ int main(int argc, char *argv[])
     free(opt_servers);
   if (opt_hash)
     free(opt_hash);
-  shutdown_sasl();
 
   return return_code;
 }

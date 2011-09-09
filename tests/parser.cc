@@ -46,9 +46,7 @@ using namespace libtest;
 #include <cerrno>
 #include <cassert>
 
-#define BUILDING_LIBMEMCACHED
-// !NEVER use common.h, always use memcached.h in your own apps
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 
 #include <tests/parser.h>
@@ -650,7 +648,11 @@ test_return_t regression_bug_71231153_poll(memcached_st *)
     char *value= memcached_get(memc, test_literal_param("test"), &value_len, NULL, &rc);
     test_false(value);
     test_zero(value_len);
+#ifdef __APPLE__
+    test_compare_got(MEMCACHED_CONNECTION_FAILURE, rc, memcached_last_error_message(memc));
+#else
     test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
+#endif
 
     memcached_free(memc);
   }

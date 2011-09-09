@@ -34,8 +34,6 @@
  *
  */
 
-#include "config.h"
-
 #include <libmemcached/protocol/common.h>
 #include <libmemcached/byteorder.h>
 

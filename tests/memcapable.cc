@@ -58,7 +58,7 @@ static test_return_t help_test(void *)
   snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
   const char *args[]= { buffer, "--help", 0 };
 
-  test_success(exec_cmdline(executable, args));
+  test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 
@@ -68,7 +68,7 @@ static test_return_t ascii_test(void *)
   snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
   const char *args[]= { buffer, " -a ", 0 };
 
-  test_success(exec_cmdline(executable, args));
+  test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 
@@ -78,7 +78,7 @@ static test_return_t binary_test(void *)
   snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
   const char *args[]= { buffer, " -b ", 0 };
 
-  test_success(exec_cmdline(executable, args));
+  test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 

@@ -41,6 +41,7 @@ clients/memdump
 clients/memerror
 clients/memflush
 clients/memparse
+clients/memping
 clients/memrm
 clients/memslap
 clients/memstat
@@ -80,7 +81,9 @@ libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
 libtest/.hg/
 libtest/.hgignore
+libtest/skiptest
 libtest/unittest
+libtest/version.h
 libtest/wait
 libtool
 libtool.m4
@@ -104,8 +107,10 @@ support/libmemcached.pc
 support/libmemcached.spec
 tags
 tests/atomsmasher
+tests/c_sasl_test
 tests/c_test
 tests/cycle
+tests/failure
 tests/hash_plus
 tests/hashplus
 tests/internals
@@ -113,15 +118,12 @@ tests/memcapable
 tests/memplus
 tests/memslap
 tests/output.cmp
+tests/sasl
 tests/startservers
 tests/testapp
 tests/testhashkit
 tests/testplus
 tests/testudp
 tests/var/
+tmp_chroot
 unittests/unittests
-libtest/version.h
-clients/memping
-libtest/skiptest
-tests/sasl
-tests/c_sasl_test

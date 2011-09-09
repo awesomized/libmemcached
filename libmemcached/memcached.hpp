@@ -98,6 +98,32 @@ public:
     return memcached_strerror(NULL, rc);
   }
 
+  bool error(std::string& error_message) const
+  {
+    if (memcached_failed(memcached_last_error(memc)))
+    {
+      error_message+= memcached_last_error_message(memc);
+      return true;
+    }
+
+    return false;
+  }
+
+  bool error() const
+  {
+    if (memcached_failed(memcached_last_error(memc)))
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool error(memcached_return_t& arg) const
+  {
+    arg= memcached_last_error(memc);
+    return memcached_failed(arg);
+  }
 
   bool setBehavior(memcached_behavior_t flag, uint64_t data)
   {
@@ -330,7 +356,7 @@ public:
                                          key.c_str(), key.length(),
                                          &value[0], value.size(),
                                          expiration, flags);
-    return (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    return memcached_success(rc);
   }
 
   /**

@@ -63,6 +63,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include <libmemcached/memcached.h>
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
@@ -116,6 +120,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #ifdef __cplusplus
 #include <libmemcached/backtrace.hpp>
 #include <libmemcached/assert.hpp>
+#include <libmemcached/server.hpp>
 #endif
 
 #include <libmemcached/continuum.hpp>
@@ -150,9 +155,6 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
-LIBMEMCACHED_LOCAL
-void set_last_disconnected_host(memcached_server_write_instance_st ptr);
-
 #ifdef __cplusplus
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_key_test(const memcached_st& memc,
@@ -163,14 +165,6 @@ memcached_return_t memcached_key_test(const memcached_st& memc,
 
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_purge(memcached_server_write_instance_st ptr);
-
-LIBMEMCACHED_LOCAL
-  memcached_server_st *__server_create_with(const memcached_st *memc,
-                                            memcached_server_write_instance_st host,
-                                            const char *hostname,
-                                            in_port_t port,
-                                            uint32_t weight,
-                                            memcached_connection_t type);
 
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)

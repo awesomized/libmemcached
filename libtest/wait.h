@@ -38,6 +38,12 @@ public:
     uint32_t this_wait;
     uint32_t retry;
 
+    if (filename.empty())
+    {
+      _successful= false;
+      return;
+    }
+
     for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
     {
       if (access(filename.c_str(), R_OK) == 0)

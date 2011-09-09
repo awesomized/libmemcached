@@ -97,7 +97,7 @@ static memcached_return_t server_wrapper_for_dump_callback(const memcached_st *,
 }
 
 
-test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys, bool key_matches_value)
+test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, const size_t number_of_keys, bool key_matches_value, bool require_all)
 {
   for (size_t x= 0; x < number_of_keys; ++x)
   {
@@ -107,12 +107,27 @@ test_return_t confirm_keys_exist(memcached_st *memc, const char * const *keys, c
                                test_string_make_from_cstr(keys[x]), // Keys
                                &value_length,
                                0, &rc);
-    test_true_got(value, keys[x]);
-    if (key_matches_value)
+    if (require_all)
     {
-      test_strcmp(keys[x], value);
+      test_true_got(value, keys[x]);
+      if (key_matches_value)
+      {
+        test_strcmp(keys[x], value);
+      }
     }
-    free(value);
+    else if (memcached_success(rc))
+    {
+      test_warn_hint(value, keys[x]);
+      if (value and key_matches_value)
+      {
+        test_strcmp(keys[x], value);
+      }
+    }
+
+    if (value)
+    {
+      free(value);
+    }
   }
 
   return TEST_SUCCESS;

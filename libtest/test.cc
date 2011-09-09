@@ -35,46 +35,11 @@
 
 #include <signal.h>
 
-#include <libtest/stats.h>
-#include <libtest/signal.h>
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
 using namespace libtest;
-
-static in_port_t global_port= 0;
-static char global_socket[1024];
-
-in_port_t default_port()
-{
-  return global_port;
-}
- 
-void set_default_port(in_port_t port)
-{
-  global_port= port;
-}
-
-const char *default_socket()
-{
-  assert(global_socket[0]);
-  return global_socket;
-}
-
-bool test_is_local()
-{
-  return (getenv("LIBTEST_LOCAL"));
-}
-
-void set_default_socket(const char *socket)
-{
-  if (socket)
-  {
-    strncpy(global_socket, socket, strlen(socket));
-  }
-}
 
 static void stats_print(Stats *stats)
 {
@@ -103,45 +68,6 @@ static long int timedif(struct timeval a, struct timeval b)
   s = (long)(a.tv_sec - b.tv_sec);
   s *= 1000;
   return s + us;
-}
-
-const char *test_strerror(test_return_t code)
-{
-  switch (code) {
-  case TEST_SUCCESS:
-    return "ok";
-
-  case TEST_FAILURE:
-    return "failed";
-
-  case TEST_MEMORY_ALLOCATION_FAILURE:
-    return "memory allocation";
-
-  case TEST_SKIPPED:
-    return "skipped";
-
-  case TEST_FATAL:
-    break;
-  }
-
-  return "failed";
-}
-
-void create_core(void)
-{
-  if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL)
-  {
-    pid_t pid= fork();
-
-    if (pid == 0)
-    {
-      abort();
-    }
-    else
-    {
-      while (waitpid(pid, NULL, 0) != pid) {};
-    }
-  }
 }
 
 static Framework *world= NULL;
@@ -181,7 +107,7 @@ int main(int argc, char *argv[])
 
   world= new Framework();
 
-  if (not world)
+  if (world == NULL)
   {
     Error << "Failed to create Framework()";
     return EXIT_FAILURE;

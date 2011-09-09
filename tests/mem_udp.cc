@@ -15,7 +15,9 @@
 
 using namespace libtest;
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/server_instance.h>
+#include <libmemcached/io.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -30,8 +32,6 @@ using namespace libtest;
 #include <time.h>
 
 #include <libtest/server.h>
-
-#define SERVERS_TO_CREATE 5
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -488,8 +488,6 @@ collection_st collection[] ={
   {"udp_binary_io", (test_callback_fn*)binary_init_udp, 0, upd_io_tests},
   {0, 0, 0, 0}
 };
-
-#define SERVERS_TO_CREATE 5
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
 #include "libmemcached_world.h"

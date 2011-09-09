@@ -38,11 +38,16 @@
 
 #pragma once
 
+#ifndef WIN32
+#include <netdb.h>
+#endif
+
 enum memcached_server_state_t {
   MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
   MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered
   MEMCACHED_SERVER_STATE_IN_PROGRESS,
-  MEMCACHED_SERVER_STATE_CONNECTED
+  MEMCACHED_SERVER_STATE_CONNECTED,
+  MEMCACHED_SERVER_STATE_IN_TIMEOUT
 };
 
 struct memcached_server_st {
@@ -58,7 +63,9 @@ struct memcached_server_st {
   memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t server_failure_counter;
+  uint64_t server_failure_counter_query_id;
   uint32_t weight;
+  uint32_t version;
   enum memcached_server_state_t state;
   struct {
     uint32_t read;
@@ -108,7 +115,7 @@ void memcached_server_free(memcached_server_st *ptr);
 
 LIBMEMCACHED_LOCAL
 memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            const memcached_server_st *source);
+                                            memcached_server_st *source);
 
 LIBMEMCACHED_API
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);

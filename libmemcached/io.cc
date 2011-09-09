@@ -547,8 +547,8 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
     }
   }
 
-  ptr->server_failure_counter= 0;
   *nread = (ssize_t)(buffer_ptr - (char*)buffer);
+
   return MEMCACHED_SUCCESS;
 }
 

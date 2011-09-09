@@ -23,9 +23,6 @@
 #include <libtest/common.h>
 
 #include <libtest/blobslap_worker.h>
-#include <libtest/killpid.h>
-
-using namespace libtest;
 
 #include <cassert>
 #include <cerrno>
@@ -44,7 +41,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-using namespace libtest;
+namespace libtest {
 
 class BlobslapWorker : public Server
 {
@@ -170,11 +167,9 @@ bool BlobslapWorker::build(int argc, const char *argv[])
   return true;
 }
 
-namespace libtest {
-
 Server *build_blobslap_worker(in_port_t try_port)
 {
   return new BlobslapWorker(try_port);
 }
 
-}
+} // namespace libtest

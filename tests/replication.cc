@@ -40,7 +40,8 @@
 
 using namespace libtest;
 
-#include <libmemcached/common.h>
+#include <libmemcached/memcached.h>
+#include <libmemcached/server_instance.h>
 #include <tests/replication.h>
 #include <tests/debug.h>
 
@@ -265,8 +266,8 @@ test_return_t replication_delete_test(memcached_st *memc_just_cloned)
   memcached_flush_buffers(memc_replicated);
 
   // Confirm keys with replication read
-  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_replicated, keys, test_array_length(keys), true));
-  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_not_replicate, keys, test_array_length(keys), true));
+  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_replicated, keys, test_array_length(keys), true, true));
+  test_compare(TEST_SUCCESS, confirm_keys_exist(memc_not_replicate, keys, test_array_length(keys), true, true));
 
   /* Delete the items from all of the servers except 1, we use the non replicated memc so that we know we deleted the keys */
   for (size_t x= 0; x < test_array_length(keys); ++x)
