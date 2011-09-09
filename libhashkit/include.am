@@ -54,17 +54,11 @@ if INCLUDE_MURMUR_SRC
 libhashkit_libhashkit_la_SOURCES+= libhashkit/murmur.cc
 endif
 
-libhashkit_libhashkit_la_CPPFLAGS= \
-				   ${AM_CPPFLAGS} \
-				   -DBUILDING_HASHKIT
+libhashkit_libhashkit_la_CPPFLAGS= -DBUILDING_HASHKIT
 
-libhashkit_libhashkit_la_CFLAGS= \
-				   ${AM_CFLAGS} \
-				   -DBUILDING_HASHKIT
+libhashkit_libhashkit_la_CFLAGS= -DBUILDING_HASHKIT
 
-libhashkit_libhashkit_la_CXXFLAGS= \
-				   ${AM_CXXFLAGS} \
-				   -DBUILDING_HASHKIT
+libhashkit_libhashkit_la_CXXFLAGS= -DBUILDING_HASHKIT
 
 libhashkit_libhashkit_la_LDFLAGS= \
 				  $(LIBM) \

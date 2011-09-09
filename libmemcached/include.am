@@ -83,15 +83,9 @@ nobase_include_HEADERS+= \
 			 libmemcached/watchpoint.h
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
-libmemcached_libmemcached_la_CFLAGS= \
-				     ${AM_CFLAGS} \
-				     ${NO_CONVERSION} \
-				     -DBUILDING_LIBMEMCACHED
+libmemcached_libmemcached_la_CFLAGS= -DBUILDING_LIBMEMCACHED
 
-libmemcached_libmemcached_la_CXXFLAGS= \
-				       ${AM_CXXFLAGS} \
-				       ${NO_CONVERSION} \
-				       -DBUILDING_LIBMEMCACHED
+libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 
 libmemcached_libmemcached_la_SOURCES+= \
 				       ${libhashkit_libhashkit_la_SOURCES} \
@@ -140,7 +134,7 @@ libmemcached/options.cc: libmemcached/csl/parser.h
 
 libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD= $(LIBM)
-libmemcached_libmemcached_la_LDFLAGS+= ${AM_LDFLAGS} -version-info ${MEMCACHED_LIBRARY_VERSION}
+libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION}
 
 libmemcached_libmemcached_la_LIBADD+= $(LTLIBSASL) $(LTLIBSASL2)
 libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.cc
