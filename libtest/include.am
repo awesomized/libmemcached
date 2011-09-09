@@ -53,6 +53,7 @@ distclean-libtest-check:
 	-rm -rf tmp_chroot
 
 noinst_HEADERS+= \
+		 libtest/binaries.h \
 		 libtest/blobslap_worker.h \
 		 libtest/callbacks.h \
 		 libtest/cmdline.h \

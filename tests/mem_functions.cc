@@ -2917,10 +2917,10 @@ static test_return_t user_supplied_bug19(memcached_st *)
 /* CAS test from Andei */
 static test_return_t user_supplied_bug20(memcached_st *memc)
 {
-  const char *key = "abc";
-  size_t key_len = strlen("abc");
+  const char *key= "abc";
+  size_t key_len= strlen("abc");
 
-  test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true));
 
   test_compare(MEMCACHED_SUCCESS,
                memcached_set(memc,
@@ -2974,7 +2974,7 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   test_true(memc_clone);
 
   /* only binproto uses getq for mget */
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
 
   /* empty the cache to ensure misses (hence non-responses) */
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc_clone, 0));
@@ -3055,19 +3055,18 @@ static test_return_t user_supplied_bug21(memcached_st *memc)
 
 static test_return_t output_ketama_weighted_keys(memcached_st *)
 {
-  memcached_return_t rc;
   memcached_st *memc= memcached_create(NULL);
   test_true(memc);
 
 
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, true));
 
   uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  test_true(value == 1);
+  test_compare(value, uint64_t(1));
 
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5));
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
   test_true(value == MEMCACHED_HASH_MD5);
@@ -3595,7 +3594,7 @@ static test_return_t pre_behavior_ketama(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, rc);
 
   uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA);
-  test_true(value == 1);
+  test_compare(value, uint64_t(1));
 
   return TEST_SUCCESS;
 }
@@ -3606,13 +3605,13 @@ static test_return_t pre_behavior_ketama_weighted(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, rc);
 
   uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  test_true(value == 1);
+  test_compare(value, uint64_t(1));
 
-  rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5));
 
   value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
-  test_true(value == MEMCACHED_HASH_MD5);
+  test_compare(MEMCACHED_HASH_MD5, memcached_hash_t(value));
 
   return TEST_SUCCESS;
 }
@@ -4318,20 +4317,32 @@ static test_return_t util_version_test(memcached_st *memc)
   test_true(if_successful == true);
 
   if (instance->micro_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, (uint8_t)(instance->micro_version -1));
+  }
   else if (instance->minor_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, instance->major_version, (uint8_t)(instance->minor_version - 1), instance->micro_version);
+  }
   else if (instance->major_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, (uint8_t)(instance->major_version -1), instance->minor_version, instance->micro_version);
+  }
 
   test_true(if_successful == true);
 
   if (instance->micro_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, instance->major_version, instance->minor_version, (uint8_t)(instance->micro_version +1));
+  }
   else if (instance->minor_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, instance->major_version, (uint8_t)(instance->minor_version +1), instance->micro_version);
+  }
   else if (instance->major_version > 0)
+  {
     if_successful= libmemcached_util_version_check(memc, (uint8_t)(instance->major_version +1), instance->minor_version, instance->micro_version);
+  }
 
   test_true(if_successful == false);
 
@@ -4724,10 +4735,9 @@ static test_return_t memcached_get_MEMCACHED_NOTFOUND(memcached_st *memc)
   size_t len;
   uint32_t flags;
   memcached_return rc;
-  char *value;
 
   // See if memcached is reachable.
-  value= memcached_get(memc, key, strlen(key), &len, &flags, &rc);
+  char *value= memcached_get(memc, key, strlen(key), &len, &flags, &rc);
 
   test_false(value);
   test_zero(len);
