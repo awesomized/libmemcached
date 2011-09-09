@@ -19,6 +19,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#pragma once
+
 static inline bool is_pid_valid(const pid_t pid)
 {
   return (pid > 1) ? true : false;
