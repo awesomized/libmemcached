@@ -45,8 +45,8 @@ bool _compare_truth_hint(const char *file, int line, const char *func, T_compara
   return true;
 }
 
-template <class T_comparable>
-bool _compare(const char *file, int line, const char *func, const T_comparable __expected, const T_comparable __actual)
+template <class T1_comparable, class T2_comparable>
+bool _compare(const char *file, int line, const char *func, const T1_comparable __expected, const T2_comparable __actual)
 {
   if (__expected != __actual)
   {
@@ -113,8 +113,8 @@ bool _truth(const char *file, int line, const char *func, T_comparable __truth)
   return true;
 }
 
-template <class T_comparable, class T_hint>
-bool _compare_hint(const char *file, int line, const char *func, T_comparable __expected, T_comparable __actual, T_hint __hint)
+template <class T1_comparable, class T2_comparable, class T_hint>
+bool _compare_hint(const char *file, int line, const char *func, T1_comparable __expected, T2_comparable __actual, T_hint __hint)
 {
   if (__expected != __actual)
   {

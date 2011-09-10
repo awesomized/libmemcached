@@ -36,7 +36,8 @@ libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/behavior.cc \
 				  libhashkit/crc32.cc \
 				  libhashkit/digest.cc \
-				  libhashkit/fnv.cc \
+				  libhashkit/fnv_32.cc \
+				  libhashkit/fnv_64.cc \
 				  libhashkit/function.cc \
 				  libhashkit/hashkit.cc \
 				  libhashkit/jenkins.cc \
