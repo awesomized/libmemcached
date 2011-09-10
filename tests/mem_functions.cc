@@ -5579,7 +5579,7 @@ static test_return_t regression_bug_655423(memcached_st *memc)
 
     test_compare(MEMCACHED_SUCCESS, rc);
     test_true(value);
-    test_compare(100UL, value_length);
+    test_compare(100LLU, value_length);
     free(value);
   }
 
