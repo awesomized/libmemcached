@@ -400,9 +400,13 @@ static memcached_return_t network_connect(memcached_server_st *server)
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
   WATCHPOINT_ASSERT(server->cursor_active == 0);
 
+  /*
+    We want to check both of these because if address_info_next has been fully tried, we want to do a new lookup to make sure we have picked up on any new DNS information.
+  */
   if (server->address_info == NULL or server->address_info_next == NULL)
   {
     WATCHPOINT_ASSERT(server->state == MEMCACHED_SERVER_STATE_NEW);
+    server->address_info_next= NULL;
     memcached_return_t rc;
     uint32_t counter= 5;
     while (--counter)
@@ -426,6 +430,12 @@ static memcached_return_t network_connect(memcached_server_st *server)
     {
       return rc;
     }
+  }
+
+  if (server->address_info_next == NULL)
+  {
+    server->address_info_next= server->address_info;
+    server->state= MEMCACHED_SERVER_STATE_ADDRINFO;
   }
 
   /* Create the socket */
