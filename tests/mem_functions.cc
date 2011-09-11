@@ -992,12 +992,11 @@ static memcached_return_t delete_trigger(memcached_st *,
 static test_return_t delete_through(memcached_st *memc)
 {
   memcached_trigger_delete_key_fn callback;
-  memcached_return_t rc;
 
   callback= (memcached_trigger_delete_key_fn)delete_trigger;
 
-  rc= memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback));
 
   return TEST_SUCCESS;
 }
@@ -4007,12 +4006,11 @@ static test_return_t pre_settimer(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t poll_timeout(memcached_st *memc)
+static test_return_t MEMCACHED_BEHAVIOR_POLL_TIMEOUT_test(memcached_st *memc)
 {
   const uint64_t timeout= 100; // Not using, just checking that it sets
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout);
-
 
   test_compare(timeout, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT));
 
@@ -4027,12 +4025,12 @@ static test_return_t noreply_test(memcached_st *memc)
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1));
   test_compare(MEMCACHED_SUCCESS, 
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1));
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY) == 1);
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS) == 1);
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS) == 1);
+  test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY));
+  test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS));
+  test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS));
 
   memcached_return_t ret;
-  for (int count=0; count < 5; ++count)
+  for (int count= 0; count < 5; ++count)
   {
     for (size_t x= 0; x < 100; ++x)
     {
@@ -5842,6 +5840,7 @@ test_st behavior_tests[] ={
   {"MEMCACHED_BEHAVIOR_CORK", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_CORK_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
+  {"MEMCACHED_BEHAVIOR_POLL_TIMEOUT", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_POLL_TIMEOUT_test},
   {0, 0, 0}
 };
 
@@ -6126,7 +6125,6 @@ collection_st collection[] ={
   {"ketama_auto_eject_hosts", (test_callback_fn*)pre_behavior_ketama, 0, ketama_auto_eject_hosts},
   {"unix_socket", (test_callback_fn*)pre_unix_socket, 0, tests},
   {"unix_socket_nodelay", (test_callback_fn*)pre_nodelay, 0, tests},
-  {"poll_timeout", (test_callback_fn*)poll_timeout, 0, tests},
   {"gets", (test_callback_fn*)enable_cas, 0, tests},
   {"consistent_crc", (test_callback_fn*)enable_consistent_crc, 0, tests},
   {"consistent_hsieh", (test_callback_fn*)enable_consistent_hsieh, 0, tests},
