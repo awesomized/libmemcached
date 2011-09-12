@@ -1,3 +1,9 @@
+0.52 Sun Sep 11 22:16:08 PDT 2011
+  * Build fixes for Ubuntu/Suse.
+  * Fixes for OSX Lion.
+  * Bug fix for looping back through dns lookups under certain failures.
+  * Fixes related to dead server failures.
+
 0.51 Thu Jul 21 11:08:58 PDT 2011
   * memcached_callback_set() now takes its data argument as const
   * Update to tests.
