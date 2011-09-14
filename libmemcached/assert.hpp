@@ -41,7 +41,7 @@
 #include <cstdio>
 
 #ifdef NDEBUG
-#define	assert(__expr, __mesg)	((void)0)
+#define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
 #else
 
 #define assert_msg(__expr, __mesg) \

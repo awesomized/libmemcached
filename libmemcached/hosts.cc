@@ -219,7 +219,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     if (is_ketama_weighted)
     {
         float pct= (float)list[host_index].weight / (float)total_weight;
-        pointer_per_server= (uint32_t) ((floorf((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
+        pointer_per_server= (uint32_t) ((floor((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
         pointer_per_hash= 4;
         if (DEBUG)
         {
