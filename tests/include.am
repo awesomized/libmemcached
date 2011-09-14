@@ -313,10 +313,6 @@ test-mem: tests/var tests/testapp
 test-sasl: tests/sasl
 	@tests/sasl
 
-
-test-udp: tests/var tests/testudp
-	@tests/testudp
-
 test-atom: tests/var tests/atomsmasher
 	@tests/atomsmasher
 

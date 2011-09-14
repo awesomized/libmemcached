@@ -96,6 +96,12 @@ collection_st collection[] ={
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
+  if (HAVE_MEMCACHED_BINARY == 0)
+  {
+    error= TEST_FATAL;
+    return NULL;
+  }
+
   const char *argv[1]= { "memcapable" };
   if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
   {
