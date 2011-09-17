@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Test memcapable
+ *  Test memstat
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -54,17 +54,19 @@ static std::string executable;
 
 static test_return_t quiet_test(void *)
 {
-  const char *args[]= { "-q", 0 };
+  const char *args[]= { "--quiet", 0 };
 
   test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 
+
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "-q", "--help", 0 };
+  const char *args[]= { "--help", "--quiet", 0 };
 
   test_true(exec_cmdline(executable, args));
+
   return TEST_SUCCESS;
 }
 
@@ -72,7 +74,7 @@ static test_return_t ascii_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "-q", buffer, " -a ", 0 };
+  const char *args[]= { "--quiet", buffer, " -a ", 0 };
 
   test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
@@ -82,13 +84,13 @@ static test_return_t binary_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "-q", buffer, " -b ", 0 };
+  const char *args[]= { "--quiet", buffer, " -b ", 0 };
 
   test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 
-test_st memcapable_tests[] ={
+test_st memstat_tests[] ={
   {"--quiet", 0, quiet_test},
   {"--help", 0, help_test},
   {"-a, ascii", 0, ascii_test},
@@ -97,7 +99,7 @@ test_st memcapable_tests[] ={
 };
 
 collection_st collection[] ={
-  {"memcapable", 0, 0, memcapable_tests },
+  {"memstat", 0, 0, memstat_tests },
   {0, 0, 0, 0}
 };
 
@@ -109,7 +111,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memcapable" };
+  const char *argv[1]= { "memstat" };
   if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
   {
     error= TEST_FAILURE;
@@ -121,7 +123,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memcapable";
+  executable= "./clients/memstat";
   world->collections= collection;
   world->_create= world_create;
 }

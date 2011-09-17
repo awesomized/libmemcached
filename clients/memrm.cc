@@ -37,10 +37,7 @@ static void options_parse(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
   memcached_st *memc;
-  memcached_return_t rc;
   memcached_server_st *servers;
-
-  int return_code= 0;
 
   options_parse(argc, argv);
   initialize_sockets();
@@ -50,7 +47,9 @@ int main(int argc, char *argv[])
     char *temp;
 
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
       std::cerr << "No Servers provided" << std::endl;
@@ -85,26 +84,39 @@ int main(int argc, char *argv[])
     }
   }
 
+  int return_code= EXIT_SUCCESS;
+
   while (optind < argc)
   {
-    if (opt_verbose)
-    {
-      std::cout << "key: " << argv[optind] << std::endl;
-      std::cout << "expires: " << opt_expire << std::endl;
-    }
-    rc= memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
+    memcached_return_t rc= memcached_delete(memc, argv[optind], strlen(argv[optind]), opt_expire);
 
-    if (memcached_failed(rc))
+    if (rc == MEMCACHED_NOTFOUND)
     {
-      std::cerr << PROGRAM_NAME << ": " << argv[optind] << ": error " << memcached_strerror(memc, rc) << std::endl; 
-
-      if (memcached_last_error_errno(memc))
+      if (opt_verbose)
       {
-        std::cerr << " system error " << strerror(memcached_last_error_errno(memc));
+        std::cerr << "Could not find key \"" << argv[optind] << "\"" << std::endl;
       }
-      std::cerr << std::endl;
+    }
+    else if (memcached_failed(rc))
+    {
+      if (opt_verbose)
+      {
+        std::cerr << "Failed to delete key \"" << argv[optind] << "\" :" <<  memcached_last_error_message(memc) << std::endl;
+      }
 
-      return_code= -1;
+      return_code= EXIT_FAILURE;
+    }
+    else // success
+    {
+      if (opt_verbose)
+      {
+        std::cout << "Deleted key " << argv[optind];
+        if (opt_expire)
+        {
+          std::cout << " expires: " << opt_expire << std::endl;
+        }
+        std::cout << std::endl;
+      }
     }
 
     optind++;
@@ -113,10 +125,14 @@ int main(int argc, char *argv[])
   memcached_free(memc);
 
   if (opt_servers)
+  {
     free(opt_servers);
+  }
 
   if (opt_hash)
+  {
     free(opt_hash);
+  }
 
   return return_code;
 }
@@ -133,6 +149,7 @@ static void options_parse(int argc, char *argv[])
   {
     {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
     {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+    {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
     {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
     {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -143,52 +160,86 @@ static void options_parse(int argc, char *argv[])
     {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
     {0, 0, 0, 0},
   };
+
+  bool opt_version= false;
+  bool opt_help= false;
   int option_index= 0;
-  int option_rv;
 
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
-    if (option_rv == -1) break;
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    if (option_rv == -1) 
+    {
+      break;
+    }
+
     switch (option_rv)
     {
     case 0:
       break;
+
     case OPT_BINARY:
       opt_binary = 1;
       break;
+
     case OPT_VERBOSE: /* --verbose or -v */
       opt_verbose = OPT_VERBOSE;
       break;
+
     case OPT_DEBUG: /* --debug or -d */
       opt_verbose = OPT_DEBUG;
       break;
+
     case OPT_VERSION: /* --version or -V */
-      version_command(PROGRAM_NAME);
+      opt_version= true;
       break;
+
     case OPT_HELP: /* --help or -h */
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+      opt_help= true;
       break;
+
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
+
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
       break;
+
     case OPT_HASH:
       opt_hash= strdup(optarg);
       break;
+
     case OPT_USERNAME:
       opt_username= optarg;
       break;
+
     case OPT_PASSWD:
       opt_passwd= optarg;
       break;
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
     case '?':
       /* getopt_long already printed an error message. */
-      exit(1);
+      exit(EXIT_SUCCESS);
+
     default:
       abort();
     }
+  }
+
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+    exit(EXIT_SUCCESS);
   }
 }

@@ -821,10 +821,11 @@ static test_return_t bad_key_test(memcached_st *memc)
   memcached_st *memc_clone;
   size_t max_keylen= 0xffff;
 
-  // Just skip if we are in binary mode.
   uint64_t query_id= memcached_query_id(memc);
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
-    return TEST_SKIPPED;
+  
+  // Just skip if we are in binary mode.
+  test_skip(false, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+
   test_compare(query_id, memcached_query_id(memc)); // We should not increase the query_id for memcached_behavior_get()
 
   memc_clone= memcached_clone(NULL, memc);
@@ -890,20 +891,16 @@ static test_return_t bad_key_test(memcached_st *memc)
 
     std::vector <char> longkey;
     longkey.insert(longkey.end(), max_keylen +1, 'a');
-    if (longkey.size())
+    test_compare(longkey.size(), max_keylen +1);
     {
       size_t string_length;
-      char *string= memcached_get(memc_clone, &longkey[0], max_keylen,
-                                  &string_length, &flags, &rc);
+      test_null(memcached_get(memc_clone, &longkey[0], max_keylen, &string_length, &flags, &rc));
       test_compare(MEMCACHED_NOTFOUND, rc);
       test_zero(string_length);
-      test_false(string);
 
-      string= memcached_get(memc_clone, &longkey[0], max_keylen +1,
-                            &string_length, &flags, &rc);
+      test_null(memcached_get(memc_clone, &longkey[0], max_keylen +1, &string_length, &flags, &rc));
       test_compare(MEMCACHED_BAD_KEY_PROVIDED, rc);
       test_zero(string_length);
-      test_false(string);
     }
   }
 

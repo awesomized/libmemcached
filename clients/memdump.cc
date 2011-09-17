@@ -35,7 +35,7 @@
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
 
-static int opt_binary=0;
+static bool opt_binary=0;
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
@@ -43,47 +43,51 @@ static char *opt_username;
 static char *opt_passwd;
 
 /* Print the keys and counter how many were found */
-static memcached_return_t key_printer(const memcached_st *ptr,
+static memcached_return_t key_printer(const memcached_st *,
                                       const char *key, size_t key_length,
-                                      void *context)
+                                      void *)
 {
-  (void)ptr;(void)context;
-  printf("%.*s\n", (uint32_t)key_length, key);
+  std::cout.write(key, key_length);
+  std::cout << std::endl;
 
   return MEMCACHED_SUCCESS;
 }
 
 int main(int argc, char *argv[])
 {
-  memcached_st *memc;
-  memcached_return_t rc;
-  memcached_server_st *servers;
   memcached_dump_fn callbacks[1];
 
   callbacks[0]= &key_printer;
 
   options_parse(argc, argv);
 
-  memc= memcached_create(NULL);
+  memcached_st *memc= memcached_create(NULL);
   process_hash_option(memc, opt_hash);
 
-  if (!opt_servers)
+  if (opt_servers == NULL)
   {
     char *temp;
 
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
-      fprintf(stderr, "No Servers provided\n");
-      exit(1);
+      std::cerr << "No Servers provided" << std::endl;
+      exit(EXIT_FAILURE);
     }
   }
 
+  memcached_server_st *servers;
   if (opt_servers)
+  {
     servers= memcached_servers_parse(opt_servers);
+  }
   else
+  {
     servers= memcached_servers_parse(argv[--argc]);
+  }
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
@@ -108,35 +112,39 @@ int main(int argc, char *argv[])
     }
   }
 
-  rc= memcached_dump(memc, callbacks, NULL, 1);
+  memcached_return_t rc= memcached_dump(memc, callbacks, NULL, 1);
 
-  if (rc != MEMCACHED_SUCCESS)
+  int exit_code= EXIT_SUCCESS;
+  if (memcached_failed(rc))
   {
-    fprintf(stderr, "memdump: memcache error %s", memcached_strerror(memc, rc));
-    if (memcached_last_error_errno(memc))
-      fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
-    fprintf(stderr, "\n");
+    if (opt_verbose)
+    {
+      std::cerr << "Failed to dump keys: " << memcached_last_error_message(memc) << std::endl;
+    }
+    exit_code= EXIT_FAILURE;
   }
 
   memcached_free(memc);
 
   if (opt_servers)
+  {
     free(opt_servers);
+  }
   if (opt_hash)
+  {
     free(opt_hash);
+  }
 
-  return EXIT_SUCCESS;
+  return exit_code;
 }
 
 static void options_parse(int argc, char *argv[])
 {
-  int option_index= 0;
-  int option_rv;
-
   static struct option long_options[]=
     {
       {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
       {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
       {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -147,9 +155,12 @@ static void options_parse(int argc, char *argv[])
       {0, 0, 0, 0}
     };
 
+  int option_index= 0;
+  bool opt_version= false;
+  bool opt_help= false;
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
 
     if (option_rv == -1) break;
 
@@ -157,38 +168,64 @@ static void options_parse(int argc, char *argv[])
     {
     case 0:
       break;
+
     case OPT_BINARY:
-      opt_binary = 1;
+      opt_binary= true;
       break;
+
     case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = OPT_VERBOSE;
+      opt_verbose= OPT_VERBOSE;
       break;
+
     case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = OPT_DEBUG;
+      opt_verbose= OPT_DEBUG;
       break;
+
     case OPT_VERSION: /* --version or -V */
-      version_command(PROGRAM_NAME);
+      opt_verbose= true;
       break;
+
     case OPT_HELP: /* --help or -h */
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, NULL);
+      opt_help= true;
       break;
+
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
+
     case OPT_HASH:
       opt_hash= strdup(optarg);
       break;
+
     case OPT_USERNAME:
        opt_username= optarg;
        break;
+
     case OPT_PASSWD:
        opt_passwd= optarg;
        break;
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
     case '?':
       /* getopt_long already printed an error message. */
       exit(1);
     default:
       abort();
     }
+  }
+
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, NULL);
+    exit(EXIT_SUCCESS);
   }
 }

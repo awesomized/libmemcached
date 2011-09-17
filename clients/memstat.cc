@@ -11,13 +11,15 @@
  *          Brian Aker
  *          Toru Maesaka
  */
-#include "config.h"
+#include <config.h>
 
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <iostream>
 #include <fcntl.h>
 #include <getopt.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -49,6 +51,7 @@ static struct option long_options[]=
   {(OPTIONSTRING)"args", required_argument, NULL, OPT_STAT_ARGS},
   {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
   {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+  {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
   {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
   {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
   {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -83,17 +86,17 @@ int main(int argc, char *argv[])
   options_parse(argc, argv);
   initialize_sockets();
 
-  if (! opt_servers)
+  if (opt_servers == false)
   {
     char *temp;
-
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
-      fprintf(stderr, "No Servers provided\n\n");
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, 0);
-      exit(1);
+      std::cerr << "No Servers provided" << std::endl;
+      return EXIT_FAILURE;
     }
   }
 
@@ -307,43 +310,71 @@ static void options_parse(int argc, char *argv[])
   };
 
   int option_index= 0;
-  int option_rv;
 
+  bool opt_version= false;
+  bool opt_help= false;
   while (1) 
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:a", long_options, &option_index);
-    if (option_rv == -1) break;
+    int option_rv= getopt_long(argc, argv, "Vhvds:a", long_options, &option_index);
+
+    if (option_rv == -1)
+      break;
+
     switch (option_rv)
     {
     case 0:
       break;
+
     case OPT_VERBOSE: /* --verbose or -v */
       opt_verbose = OPT_VERBOSE;
       break;
+
     case OPT_DEBUG: /* --debug or -d */
       opt_verbose = OPT_DEBUG;
       break;
+
     case OPT_VERSION: /* --version or -V */
-      version_command(PROGRAM_NAME);
+      opt_version= true;
       break;
+
     case OPT_HELP: /* --help or -h */
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+      opt_help= true;
       break;
+
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
+
     case OPT_STAT_ARGS:
       stat_args= strdup(optarg);
       break;
+
     case OPT_ANALYZE: /* --analyze or -a */
       opt_analyze= OPT_ANALYZE;
       analyze_mode= (optarg) ? strdup(optarg) : NULL;
       break;
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
     case '?':
       /* getopt_long already printed an error message. */
       exit(1);
     default:
       abort();
     }
+  }
+
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+    exit(EXIT_SUCCESS);
   }
 }

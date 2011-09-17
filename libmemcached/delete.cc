@@ -56,7 +56,6 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
                                            const char *key, size_t key_length,
                                            time_t expiration)
 {
-  bool to_write;
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   memcached_server_write_instance_st instance;
 
@@ -80,7 +79,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
-  to_write= (ptr->flags.buffer_requests) ? false : true;
+  bool to_write= (ptr->flags.buffer_requests) ? false : true;
 
   bool no_reply= (ptr->flags.no_reply);
 
@@ -120,7 +119,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 
           if (instance->minor_version == 0)
           {
-             if (no_reply || ! to_write)
+             if (no_reply or to_write == false)
              {
                 /* We might get out of sync with the server if we
                  * send this command to a server newer than 1.2.x..
@@ -155,7 +154,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
       goto error;
     }
 
-    if (ptr->flags.use_udp && ! to_write)
+    if (ptr->flags.use_udp and to_write == false)
     {
       if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
         return MEMCACHED_WRITE_FAILURE;
@@ -170,21 +169,27 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   }
 
   if (rc != MEMCACHED_SUCCESS)
+  {
     goto error;
+  }
 
-  if (! to_write)
+  if (to_write == false)
   {
     rc= MEMCACHED_BUFFERED;
   }
-  else if (!no_reply)
+  else if (no_reply == false)
   {
     rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
     if (rc == MEMCACHED_DELETED)
+    {
       rc= MEMCACHED_SUCCESS;
+    }
   }
 
-  if (rc == MEMCACHED_SUCCESS && ptr->delete_trigger)
+  if (rc == MEMCACHED_SUCCESS and ptr->delete_trigger)
+  {
     ptr->delete_trigger(ptr, key, key_length);
+  }
 
 error:
   LIBMEMCACHED_MEMCACHED_DELETE_END();

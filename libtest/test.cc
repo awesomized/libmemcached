@@ -150,7 +150,10 @@ int main(int argc, char *argv[])
   }
   else if (getenv("TEST_COLLECTION"))
   {
-    collection_to_run= getenv("TEST_COLLECTION");
+    if (strlen(getenv("TEST_COLLECTION")))
+    {
+      collection_to_run= getenv("TEST_COLLECTION");
+    }
   }
 
   if (collection_to_run)

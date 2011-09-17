@@ -174,12 +174,61 @@ tests_memcapable_LDADD=  $(tests_memcapable_DEPENDENCIES)
 check_PROGRAMS+= tests/memcapable
 noinst_PROGRAMS+= tests/memcapable
 
+tests_memstat_SOURCES= tests/memstat.cc
+tests_memstat_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memstat_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memstat_LDADD=  $(tests_memstat_DEPENDENCIES)
+check_PROGRAMS+= tests/memstat
+noinst_PROGRAMS+= tests/memstat
+
+tests_memcp_SOURCES= tests/memcp.cc
+tests_memcp_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memcp_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memcp_LDADD=  $(tests_memcp_DEPENDENCIES)
+check_PROGRAMS+= tests/memcp
+noinst_PROGRAMS+= tests/memcp
+
+tests_memflush_SOURCES= tests/memflush.cc
+tests_memflush_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memflush_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memflush_LDADD=  $(tests_memflush_DEPENDENCIES)
+check_PROGRAMS+= tests/memflush
+noinst_PROGRAMS+= tests/memflush
+
+tests_memrm_SOURCES= tests/memrm.cc
+tests_memrm_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memrm_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memrm_LDADD=  $(tests_memrm_DEPENDENCIES)
+check_PROGRAMS+= tests/memrm
+noinst_PROGRAMS+= tests/memrm
+
+tests_memcat_SOURCES= tests/memcat.cc
+tests_memcat_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memcat_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memcat_LDADD=  $(tests_memcat_DEPENDENCIES)
+check_PROGRAMS+= tests/memcat
+noinst_PROGRAMS+= tests/memcat
+
+tests_memerror_SOURCES= tests/memerror.cc
+tests_memerror_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memerror_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memerror_LDADD=  $(tests_memerror_DEPENDENCIES)
+check_PROGRAMS+= tests/memerror
+noinst_PROGRAMS+= tests/memerror
+
 tests_memslap_SOURCES= tests/memslap.cc
 tests_memslap_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_memslap_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
 tests_memslap_LDADD=  $(tests_memslap_DEPENDENCIES)
 check_PROGRAMS+= tests/memslap
 noinst_PROGRAMS+= tests/memslap
+
+tests_memdump_SOURCES= tests/memdump.cc
+tests_memdump_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memdump_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memdump_LDADD=  $(tests_memdump_DEPENDENCIES)
+check_PROGRAMS+= tests/memdump
+noinst_PROGRAMS+= tests/memdump
  
 # Test linking with C application
 tests_c_test_SOURCES= tests/c_test.c
@@ -200,30 +249,8 @@ test: check
 check-local: $(TEST_DOCS)
 	@echo "Tests completed"
 
-test-x: test-plus test-memcat test-memcp test-memrm test-memerror test-memdump test-memflush test-memstat
+test-x: test-plus test-memcp test-memdump test-memflush test-memstat
 	@echo "Tests completed"
-
-test-memcat: clients/memcat clients/memcp
-	@echo "Testing memcat"
-	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcp --servers="localhost:12555" `pwd`/clients/memcp
-	@clients/memcat --servers="localhost:12555" memcp > `pwd`/tests/scratch
-	@clients/memcat --servers="localhost:12555" --file=`pwd`/tests/scratch2 memcp
-#	@diff clients/memcp tests/scratch
-	@cat `pwd`/tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm `pwd`/tests/Xumemc.pid
-	@rm `pwd`/tests/scratch
-	@rm `pwd`/tests/scratch2
-
-valgrind-memcat: clients/memcat clients/memcp
-	@echo "Testing memcat"
-	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcp --servers="localhost:12555" clients/memcp
-	@$(VALGRIND_COMMAND) clients/memcat --servers="localhost:12555" memcp > tests/scratch
-#	@diff clients/memcp tests/scratch
-	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm tests/Xumemc.pid
-	@rm tests/scratch
 
 test-memcp: clients/memcp
 	@echo "Testing memcp"
@@ -236,22 +263,6 @@ valgrind-memcp: clients/memcat clients/memcp
 	@echo "Testing memcp"
 	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
 	@$(VALGRIND_COMMAND) clients/memcp --servers="localhost:12555" clients/memcp clients/memcat clients/memstat
-	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm tests/Xumemc.pid
-
-test-memrm: clients/memrm clients/memcp
-	@echo "Testing memrm"
-	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcp --servers="localhost:12555" clients/memcat
-	@clients/memrm --servers="localhost:12555" memcat
-	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
-	@rm tests/Xumemc.pid
-
-valgrind-memrm: clients/memcat clients/memcp
-	@echo "Testing memrm"
-	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555
-	@clients/memcp --servers="localhost:12555" clients/memcat
-	@$(VALGRIND_COMMAND) clients/memrm --servers="localhost:12555" memcat
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
@@ -298,14 +309,6 @@ valgrind-memstat: clients/memstat
 	@$(VALGRIND_COMMAND) clients/memstat --servers="localhost:12555" > /dev/null
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
-
-test-memerror: clients/memerror
-	@echo "Testing memerror"
-	@clients/memerror 0 > /dev/null
-
-valgrind-memerror: clients/memerror
-	@echo "Testing memerror"
-	@$(VALGRIND_COMMAND) clients/memerror 0 > /dev/null
 
 test-mem: tests/var tests/testapp
 	@tests/testapp

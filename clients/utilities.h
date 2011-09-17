@@ -58,6 +58,7 @@ void process_hash_option(memcached_st *memc, char *opt_hash);
 bool initialize_sasl(memcached_st *memc, char *user, char *password);
 void shutdown_sasl(void);
 void initialize_sockets(void);
+void close_stdio(void);
 
 #ifdef __cplusplus
 } // extern "C"

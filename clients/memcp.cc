@@ -41,7 +41,7 @@
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);
 
-static int opt_binary=0;
+static bool opt_binary= false;
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
@@ -80,19 +80,14 @@ static long strtol_wrapper(const char *nptr, int base, bool *error)
 
 int main(int argc, char *argv[])
 {
-  memcached_st *memc;
-  memcached_return_t rc;
-  memcached_server_st *servers;
-
-  int return_code= 0;
 
   options_parse(argc, argv);
   initialize_sockets();
 
-  memc= memcached_create(NULL);
+  memcached_st *memc= memcached_create(NULL);
   process_hash_option(memc, opt_hash);
 
-  if (!opt_servers)
+  if (opt_servers == NULL)
   {
     char *temp;
 
@@ -102,15 +97,20 @@ int main(int argc, char *argv[])
     }
     else
     {
-      fprintf(stderr, "No Servers provided\n");
-      exit(1);
+      std::cerr << "No Servers provided" << std::endl;
+      exit(EXIT_FAILURE);
     }
   }
 
+  memcached_server_st *servers;
   if (opt_servers)
+  {
     servers= memcached_servers_parse(opt_servers);
+  }
   else
+  {
     servers= memcached_servers_parse(argv[--argc]);
+  }
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
@@ -135,29 +135,33 @@ int main(int argc, char *argv[])
     }
   }
 
+  int exit_code= EXIT_SUCCESS;
   while (optind < argc)
   {
-    struct stat sbuf;
-    int fd;
-    char *ptr;
-    ssize_t read_length;
-    char *file_buffer_ptr;
-
-    fd= open(argv[optind], O_RDONLY);
+    int fd= open(argv[optind], O_RDONLY);
     if (fd < 0)
     {
-      fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
-      optind++;
+      if (opt_verbose)
+      {
+        fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
+        optind++;
+      }
+      exit_code= EXIT_FAILURE;
       continue;
     }
 
+    struct stat sbuf;
     (void)fstat(fd, &sbuf);
 
-    ptr= rindex(argv[optind], '/');
+    char *ptr= rindex(argv[optind], '/');
     if (ptr)
+    {
       ptr++;
+    }
     else
+    {
       ptr= argv[optind];
+    }
 
     if (opt_verbose)
     {
@@ -168,16 +172,18 @@ int main(int argc, char *argv[])
 	     ptr, opt_flags, (unsigned long)opt_expires);
     }
 
+    char *file_buffer_ptr;
     if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
     {
       fprintf(stderr, "malloc: %s\n", strerror(errno));
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
+    ssize_t read_length;
     if ((read_length= read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
     {
       fprintf(stderr, "read: %s\n", strerror(errno));
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     if (read_length != sbuf.st_size)
@@ -186,6 +192,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
 
+    memcached_return_t rc;
     if (opt_method == OPT_ADD)
       rc= memcached_add(memc, ptr, strlen(ptr),
                         file_buffer_ptr, (size_t)sbuf.st_size,
@@ -207,7 +214,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
       fprintf(stderr, "\n");
 
-      return_code= -1;
+      exit_code= EXIT_FAILURE;
     }
 
     free(file_buffer_ptr);
@@ -222,14 +229,11 @@ int main(int argc, char *argv[])
   if (opt_hash)
     free(opt_hash);
 
-  return return_code;
+  return exit_code;
 }
 
 static void options_parse(int argc, char *argv[])
 {
-  int option_index= 0;
-  int option_rv;
-
   memcached_programs_help_st help_options[]=
   {
     {0},
@@ -239,6 +243,7 @@ static void options_parse(int argc, char *argv[])
     {
       {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
       {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
       {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -254,34 +259,45 @@ static void options_parse(int argc, char *argv[])
       {0, 0, 0, 0},
     };
 
+  bool opt_version= false;
+  bool opt_help= false;
+  int option_index= 0;
+
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
 
-    if (option_rv == -1) break;
+    if (option_rv == -1)
+      break;
 
     switch (option_rv)
     {
     case 0:
       break;
     case OPT_BINARY:
-      opt_binary = 1;
+      opt_binary= true;
       break;
+
     case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = OPT_VERBOSE;
+      opt_verbose= OPT_VERBOSE;
       break;
+
     case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = OPT_DEBUG;
+      opt_verbose= OPT_DEBUG;
       break;
+
     case OPT_VERSION: /* --version or -V */
-      version_command(PROGRAM_NAME);
+      opt_version= true;
       break;
+
     case OPT_HELP: /* --help or -h */
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+      opt_help= true;
       break;
+
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
+
     case OPT_FLAG: /* --flag */
       {
         bool strtol_error;
@@ -291,8 +307,9 @@ static void options_parse(int argc, char *argv[])
           fprintf(stderr, "Bad value passed via --flag\n");
           exit(1);
         }
-        break;
       }
+      break;
+
     case OPT_EXPIRE: /* --expire */
       {
         bool strtol_error;
@@ -303,29 +320,53 @@ static void options_parse(int argc, char *argv[])
           exit(1);
         }
       }
+      break;
+
     case OPT_SET:
       opt_method= OPT_SET;
       break;
+
     case OPT_REPLACE:
       opt_method= OPT_REPLACE;
       break;
+
     case OPT_ADD:
       opt_method= OPT_ADD;
       break;
+
     case OPT_HASH:
       opt_hash= strdup(optarg);
       break;
+
     case OPT_USERNAME:
       opt_username= optarg;
       break;
+
     case OPT_PASSWD:
       opt_passwd= optarg;
       break;
-   case '?':
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
+    case '?':
       /* getopt_long already printed an error message. */
       exit(1);
     default:
       abort();
     }
+  }
+
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+    exit(EXIT_SUCCESS);
   }
 }
