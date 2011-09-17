@@ -51,6 +51,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <libmemcached/memcached.h>
 
@@ -141,7 +142,7 @@ pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
                            unsigned int *actual_loaded);
 void flush_all(memcached_st *memc);
 
-static int opt_binary= 0;
+static bool opt_binary= 0;
 static int opt_verbose= 0;
 static int opt_flush= 0;
 static int opt_non_blocking_io= 0;
@@ -360,6 +361,7 @@ void options_parse(int argc, char *argv[])
     {
       {(OPTIONSTRING)"concurrency", required_argument, NULL, OPT_SLAP_CONCURRENCY},
       {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+      {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
       {(OPTIONSTRING)"execute-number", required_argument, NULL, OPT_SLAP_EXECUTE_NUMBER},
       {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
       {(OPTIONSTRING)"flush", no_argument, &opt_flush, OPT_FLUSH},
@@ -376,13 +378,15 @@ void options_parse(int argc, char *argv[])
       {0, 0, 0, 0},
     };
 
+  bool opt_help= false;
+  bool opt_version= false;
   int option_index= 0;
-  int option_rv;
-
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+
     if (option_rv == -1) break;
+
     switch (option_rv)
     {
     case 0:
@@ -399,11 +403,11 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_BINARY:
-      opt_binary = 1;
+      opt_binary= true;
       break;
 
     case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = OPT_VERBOSE;
+      opt_verbose= OPT_VERBOSE;
       break;
 
     case OPT_DEBUG: /* --debug or -d */
@@ -411,11 +415,11 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_VERSION: /* --version or -V */
-      version_command(PROGRAM_NAME);
+      opt_version= true;
       break;
 
     case OPT_HELP: /* --help or -h */
-      help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+      opt_help= true;
       break;
 
     case OPT_SERVERS: /* --servers or -s */
@@ -423,28 +427,28 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_SLAP_TEST:
-      if (!strcmp(optarg, "get"))
+      if (strcmp(optarg, "get") == 0)
       {
         if (opt_udp_io == 1)
         {
           fprintf(stderr, "You can not run a get test in UDP mode. UDP mode "
                   "does not currently support get ops.\n");
-          exit(1);
+          exit(EXIT_FAILURE);
         }
         opt_test= GET_TEST ;
       }
-      else if (!strcmp(optarg, "set"))
+      else if (strcmp(optarg, "set") == 0)
       {
         opt_test= SET_TEST;
       }
-      else if (!strcmp(optarg, "mget"))
+      else if (strcmp(optarg, "mget") == 0)
       {
         opt_test= MGET_TEST;
       }
       else
       {
         fprintf(stderr, "Your test, %s, is not a known test\n", optarg);
-        exit(1);
+        exit(EXIT_FAILURE);
       }
       break;
 
@@ -460,16 +464,33 @@ void options_parse(int argc, char *argv[])
       opt_createial_load= (unsigned int)strtoul(optarg, (char **)NULL, 10);
       break;
 
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
+
     case '?':
       /* getopt_long already printed an error message. */
-      exit(1);
+      exit(EXIT_FAILURE);
 
     default:
       abort();
     }
   }
 
-  if ((opt_test == GET_TEST or opt_test == MGET_TEST) && opt_createial_load == 0)
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+    exit(EXIT_SUCCESS);
+  }
+
+  if ((opt_test == GET_TEST or opt_test == MGET_TEST) and opt_createial_load == 0)
     opt_createial_load= DEFAULT_INITIAL_LOAD;
 
   if (opt_execute_number == 0)

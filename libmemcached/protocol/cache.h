@@ -1,22 +1,56 @@
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
+ *
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 /* -*- Mode: C; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
-#ifndef CACHE_H
-#define CACHE_H
+#pragma once
+
 #include <pthread.h>
 
 #ifdef HAVE_UMEM_H
-#include <umem.h>
-#define cache_t umem_cache_t
-#define cache_alloc(a) umem_cache_alloc(a, UMEM_DEFAULT)
-#define cache_free(a, b) umem_cache_free(a, b)
-#define cache_create(a,b,c,d,e) umem_cache_create((char*)a, b, c, d, e, NULL, NULL, NULL, 0)
-#define cache_destroy(a) umem_cache_destroy(a);
-
+# include <umem.h>
+# define cache_t umem_cache_t
+# define cache_alloc(a) umem_cache_alloc(a, UMEM_DEFAULT)
+# define cache_free(a, b) umem_cache_free(a, b)
+# define cache_create(a,b,c,d,e) umem_cache_create((char*)a, b, c, d, e, NULL, NULL, NULL, 0)
+# define cache_destroy(a) umem_cache_destroy(a);
 #else
-
-#ifndef NDEBUG
+# ifndef NDEBUG
 /* may be used for debug purposes */
 extern int cache_error;
-#endif
+# endif
 
 /**
  * Constructor used to initialize allocated objects
@@ -111,6 +145,4 @@ void* cache_alloc(cache_t* handle);
  * @param ptr pointer to the object to return.
  */
 void cache_free(cache_t* handle, void* ptr);
-#endif
-
-#endif
+#endif //  HAVE_UMEM_H

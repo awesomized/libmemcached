@@ -8,12 +8,18 @@
  * Summary:
  *
  */
-#include "config.h"
+#include <config.h>
 
 #include <clients/utilities.h>
+
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctype.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 long int timedif(struct timeval a, struct timeval b)
@@ -30,8 +36,40 @@ long int timedif(struct timeval a, struct timeval b)
 void version_command(const char *command_name)
 {
   printf("%s v%u.%u\n", command_name, 1U, 0U);
-  exit(0);
+  exit(EXIT_SUCCESS);
 }
+
+void close_stdio(void)
+{
+  int fd;
+  if ((fd = open("/dev/null", O_RDWR, 0)) < 0)
+  {
+    return;
+  }
+  else
+  {
+    if (dup2(fd, STDIN_FILENO) < 0)
+    {
+      return;
+    }
+
+    if (dup2(fd, STDOUT_FILENO) < 0)
+    {
+      return;
+    }
+
+    if (dup2(fd, STDERR_FILENO) < 0)
+    {
+      return;
+    }
+
+    if (fd > STDERR_FILENO)
+    {
+      close(fd);
+    }
+  }
+}
+
 
 static const char *lookup_help(memcached_options option)
 {
@@ -41,6 +79,7 @@ static const char *lookup_help(memcached_options option)
   case OPT_VERSION: return("Display the version of the application and then exit.");
   case OPT_HELP: return("Display this message and then exit.");
   case OPT_VERBOSE: return("Give more details on the progression of the application.");
+  case OPT_QUIET: return("stderr and stdin will be closed at application startup.");
   case OPT_DEBUG: return("Provide output only useful for debugging.");
   case OPT_FLAG: return("Provide flag information for storage operation.");
   case OPT_EXPIRE: return("Set the expire option for the object.");
@@ -91,7 +130,7 @@ void help_command(const char *command_name, const char *description,
   }
 
   printf("\n");
-  exit(0);
+  exit(EXIT_SUCCESS);
 }
 
 void process_hash_option(memcached_st *memc, char *opt_hash)
@@ -116,14 +155,14 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   else
   {
     fprintf(stderr, "hash: type not recognized %s\n", opt_hash);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, set);
   if (rc != MEMCACHED_SUCCESS)
   {
     fprintf(stderr, "hash: memcache error %s\n", memcached_strerror(memc, rc));
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 

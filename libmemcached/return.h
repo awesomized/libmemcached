@@ -115,4 +115,15 @@ static inline bool memcached_failed(memcached_return_t rc)
           rc != MEMCACHED_VALUE);
 }
 
+static inline bool memcached_fatal(memcached_return_t rc)
+{
+  return (rc != MEMCACHED_SUCCESS && 
+          rc != MEMCACHED_END && 
+          rc != MEMCACHED_STORED && 
+          rc != MEMCACHED_STAT && 
+          rc != MEMCACHED_DELETED &&
+          rc != MEMCACHED_BUFFERED &&
+          rc != MEMCACHED_VALUE);
+}
+
 #define memcached_continue(__memcached_return_t) ((__memcached_return_t) == MEMCACHED_IN_PROGRESS)

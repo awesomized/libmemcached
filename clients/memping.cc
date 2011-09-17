@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-static int opt_binary= 0;
+static bool opt_binary= false;
 static int opt_verbose= 0;
 static time_t opt_expire= 0;
 static char *opt_servers= NULL;
@@ -88,6 +88,7 @@ void options_parse(int argc, char *argv[])
   {
     {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
     {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+    {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
     {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
     {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
     {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -97,49 +98,78 @@ void options_parse(int argc, char *argv[])
     {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
     {0, 0, 0, 0},
   };
-  int option_index= 0;
-  int option_rv;
 
+  bool opt_version= false;
+  bool opt_help= false;
+  int option_index= 0;
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+
     if (option_rv == -1) break;
+
     switch (option_rv)
     {
     case 0:
       break;
+
     case OPT_BINARY:
-      opt_binary = 1;
+      opt_binary= true;
       break;
+
     case OPT_VERBOSE: /* --verbose or -v */
       opt_verbose = OPT_VERBOSE;
       break;
+
     case OPT_DEBUG: /* --debug or -d */
       opt_verbose = OPT_DEBUG;
       break;
+
     case OPT_VERSION: /* --version or -V */
       version_command(PROGRAM_NAME);
       break;
+
     case OPT_HELP: /* --help or -h */
       help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
       break;
+
     case OPT_SERVERS: /* --servers or -s */
       opt_servers= strdup(optarg);
       break;
+
     case OPT_EXPIRE: /* --expire */
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
       break;
+
     case OPT_USERNAME:
       opt_username= optarg;
       break;
+
     case OPT_PASSWD:
       opt_passwd= optarg;
       break;
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
     case '?':
       /* getopt_long already printed an error message. */
       exit(1);
     default:
       abort();
     }
+  }
+
+  if (opt_version)
+  {
+    version_command(PROGRAM_NAME);
+    exit(EXIT_SUCCESS);
+  }
+
+  if (opt_help)
+  {
+    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
+    exit(EXIT_SUCCESS);
   }
 }

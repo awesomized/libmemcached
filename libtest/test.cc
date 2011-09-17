@@ -139,7 +139,6 @@ int main(int argc, char *argv[])
   case TEST_FATAL:
   case TEST_FAILURE:
   case TEST_MEMORY_ALLOCATION_FAILURE:
-    Error << argv[0] << " failed in Framework::create()";
     delete world;
     return EXIT_FAILURE;
   }
@@ -151,7 +150,10 @@ int main(int argc, char *argv[])
   }
   else if (getenv("TEST_COLLECTION"))
   {
-    collection_to_run= getenv("TEST_COLLECTION");
+    if (strlen(getenv("TEST_COLLECTION")))
+    {
+      collection_to_run= getenv("TEST_COLLECTION");
+    }
   }
 
   if (collection_to_run)

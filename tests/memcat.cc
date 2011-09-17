@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Test memslap
+ *  Test memcat
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -68,91 +68,67 @@ static test_return_t help_test(void *)
   return TEST_SUCCESS;
 }
 
-static test_return_t server_test(void *)
+static test_return_t cat_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, 0 };
+  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  const char *args[]= { "--quiet", buffer, "foo", 0 };
+
+  memcached_st *memc= memcached(buffer, strlen(buffer));
+  test_true(memc);
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_set(memc, test_literal_param("foo"), 0, 0, 0, 0));
+
+  memcached_return_t rc;
+  test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
+  test_compare(MEMCACHED_SUCCESS, rc);
 
   test_true(exec_cmdline(executable, args));
+
+  test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
+  test_compare(MEMCACHED_SUCCESS, rc);
+
+  memcached_free(memc);
+
   return TEST_SUCCESS;
 }
 
-static test_return_t server_concurrency_test(void *)
+static test_return_t NOT_FOUND_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", 0 };
+  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  const char *args[]= { "--quiet", buffer, "foo", 0 };
+
+  memcached_st *memc= memcached(buffer, strlen(buffer));
+  test_true(memc);
+
+  test_compare(MEMCACHED_SUCCESS, memcached_flush(memc, 0));
+
+  memcached_return_t rc;
+  test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
+  test_compare(MEMCACHED_NOTFOUND, rc);
 
   test_true(exec_cmdline(executable, args));
+
+  test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
+  test_compare(MEMCACHED_NOTFOUND, rc);
+
+  memcached_free(memc);
+
   return TEST_SUCCESS;
 }
 
-static test_return_t server_concurrency_initial_load_test(void *)
-{
-  char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
-static test_return_t server_concurrency_initial_load_execute_number_test(void *)
-{
-  char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
-static test_return_t server_concurrency_initial_load_execute_number_test_get_test(void *)
-{
-  char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=get", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
-static test_return_t server_concurrency_initial_load_execute_number_test_set_test(void *)
-{
-  char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
-static test_return_t server_concurrency_initial_load_execute_number_test_set_non_blocking_test(void *)
-{
-  char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", "--non-blocking", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
-test_st memslap_tests[] ={
+test_st memcat_tests[] ={
   {"--quiet", true, quiet_test },
   {"--help", true, help_test },
-  {"--server_test", true, server_test },
-  {"--concurrency=10", true, server_concurrency_test },
-  {"--initial-load=1000", true, server_concurrency_initial_load_test },
-  {"--execute-number=10", true, server_concurrency_initial_load_execute_number_test },
-  {"--test=get", true, server_concurrency_initial_load_execute_number_test_get_test },
-  {"--test=set", true, server_concurrency_initial_load_execute_number_test_set_test },
-  {"--test=set --non-blockin", true, server_concurrency_initial_load_execute_number_test_set_non_blocking_test },
+  {"cat(FOUND)", true, cat_test },
+  {"cat(NOT_FOUND)", true, NOT_FOUND_test },
   {0, 0, 0}
 };
 
 collection_st collection[] ={
-  {"memslap", 0, 0, memslap_tests },
+  {"memcat", 0, 0, memcat_tests },
   {0, 0, 0, 0}
 };
 
@@ -164,7 +140,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memslap" };
+  const char *argv[1]= { "memcat" };
   if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
   {
     error= TEST_FAILURE;
@@ -176,7 +152,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memslap";
+  executable= "clients/memcat";
   world->collections= collection;
   world->_create= world_create;
 }

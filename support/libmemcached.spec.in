@@ -82,6 +82,10 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libhashkit.la
 %exclude %{_libdir}/libmemcachedutil.la
 %exclude %{_libdir}/libmemcachedprotocol.la
+%exclude %{_libdir}/libmemcached.a
+%exclude %{_libdir}/libhashkit.a
+%exclude %{_libdir}/libmemcachedutil.a
+%exclude %{_libdir}/libmemcachedprotocol.a
 %{_libdir}/libhashkit.so.1.0.0
 %{_libdir}/libmemcached.so.8.0.0
 %{_libdir}/libmemcachedutil.so.2.0.0
@@ -116,7 +120,6 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit/strerror.h
 %{_includedir}/libhashkit/types.h
 %{_includedir}/libhashkit/visibility.h
-%{_includedir}/libhashkit/hashkit.hpp
 
 %{_includedir}/libmemcached/allocators.h
 %{_includedir}/libmemcached/analyze.h

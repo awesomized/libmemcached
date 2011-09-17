@@ -35,10 +35,10 @@ bool exec_cmdline(const std::string& executable, const char *args[])
 
   arg_buffer << libtool();
 
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
+  if (getenv("PWD"))
   {
-    arg_buffer << getenv("LIBTEST_TEST_ENVIRONMENT");
-    arg_buffer << " ";
+    arg_buffer << getenv("PWD");
+    arg_buffer << "/";
   }
 
   arg_buffer << executable;
@@ -47,14 +47,9 @@ bool exec_cmdline(const std::string& executable, const char *args[])
     arg_buffer << " " << *ptr;
   }
 
-  if (getenv("LIBTEST_TEST_ENVIRONMENT"))
-  {
-    std::cerr << std::endl << arg_buffer.str() << std::endl;
-  }
-  else
-  {
+#if 0
     arg_buffer << " > /dev/null 2>&1";
-  }
+#endif
 
   if (system(arg_buffer.str().c_str()) == -1)
   {

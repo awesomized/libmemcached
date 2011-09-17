@@ -1973,17 +1973,19 @@ int main(int argc, char **argv)
 
 
 
-  while ((cmd= getopt(argc, argv, "t:vch:p:PT:?ab")) != EOF)
+  while ((cmd= getopt(argc, argv, "qt:vch:p:PT:?ab")) != EOF)
   {
     switch (cmd) {
     case 'a':
       tests.ascii= true;
       tests.binary= false;
       break;
+
     case 'b':
       tests.ascii= false;
       tests.binary= true;
       break;
+
     case 't':
       timeout= atoi(optarg);
       if (timeout == 0)
@@ -1992,18 +1994,29 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
       }
       break;
+
     case 'v': verbose= true;
       break;
+
     case 'c': do_core= true;
       break;
+
     case 'h': hostname= optarg;
       break;
+
     case 'p': port= optarg;
       break;
+
+    case 'q':
+      close_stdio();
+      break;
+
     case 'P': prompt= true;
       break;
+
     case 'T': testname= optarg;
        break;
+
     default:
       fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n] [-P] [-T testname]'\n"
               "\t-c\tGenerate coredump if a test fails\n"

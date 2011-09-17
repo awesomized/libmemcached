@@ -23,7 +23,7 @@ static inline hashkit_st *_hashkit_create(hashkit_st *self)
 {
   if (not self)
   {
-    self= new hashkit_st;
+    self= (hashkit_st*)calloc(1, sizeof(hashkit_st));
     if (not self)
     {
       return NULL;
@@ -55,7 +55,7 @@ void hashkit_free(hashkit_st *self)
 {
   if (hashkit_is_allocated(self))
   {
-    delete self;
+    free(self);
   }
 }
 

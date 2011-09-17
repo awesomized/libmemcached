@@ -148,6 +148,8 @@ do \
   } \
 } while (0)
 
+#define test_null test_zero
+
 #define test_compare_got(__expected, __actual, __hint) \
 do \
 { \

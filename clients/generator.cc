@@ -9,12 +9,15 @@
  *
  */
 
-#include "config.h"
+#include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <unistd.h>
 
 #include "generator.h"
 
@@ -40,13 +43,11 @@ static void get_random_string(char *buffer, size_t size)
 
 void pairs_free(pairs_st *pairs)
 {
-  uint32_t x;
-
-  if (! pairs)
+  if (pairs == NULL)
     return;
 
   /* We free until we hit the null pair we stores during creation */
-  for (x= 0; pairs[x].key; x++)
+  for (uint32_t x= 0; pairs[x].key; x++)
   {
     free(pairs[x].key);
     if (pairs[x].value)
@@ -58,27 +59,30 @@ void pairs_free(pairs_st *pairs)
 
 pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
 {
-  unsigned int x;
-  pairs_st *pairs;
+  pairs_st *pairs= (pairs_st*)calloc((size_t)number_of + 1, sizeof(pairs_st));
 
-  pairs= (pairs_st*)calloc((size_t)number_of + 1, sizeof(pairs_st));
-
-  if (!pairs)
+  if (pairs == NULL)
+  {
     goto error;
+  }
 
-  for (x= 0; x < number_of; x++)
+  for (uint64_t x= 0; x < number_of; x++)
   {
     pairs[x].key= (char *)calloc(100, sizeof(char));
-    if (!pairs[x].key)
+
+    if (pairs[x].key == NULL)
       goto error;
+
     get_random_string(pairs[x].key, 100);
     pairs[x].key_length= 100;
 
     if (value_length)
     {
       pairs[x].value= (char *)calloc(value_length, sizeof(char));
-      if (!pairs[x].value)
+
+      if (pairs[x].value == NULL)
         goto error;
+
       get_random_string(pairs[x].value, value_length);
       pairs[x].value_length= value_length;
     }
@@ -91,6 +95,6 @@ pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
 
   return pairs;
 error:
-    fprintf(stderr, "Memory Allocation failure in pairs_generate.\n");
-    exit(0);
+  std::cerr << "Memory Allocation failure in pairs_generate." << std::endl;
+  exit(EXIT_SUCCESS);
 }

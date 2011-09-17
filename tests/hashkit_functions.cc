@@ -192,7 +192,7 @@ static test_return_t crc_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_crc32(*ptr, strlen(*ptr));
-    assert(crc_values[x] == hash_val);
+    test_compare(crc_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -209,7 +209,7 @@ static test_return_t fnv1_64_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_fnv1_64(*ptr, strlen(*ptr));
-    assert(fnv1_64_values[x] == hash_val);
+    test_compare(fnv1_64_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -226,7 +226,7 @@ static test_return_t fnv1a_64_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_fnv1a_64(*ptr, strlen(*ptr));
-    assert(fnv1a_64_values[x] == hash_val);
+    test_compare(fnv1a_64_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -243,7 +243,7 @@ static test_return_t fnv1_32_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_fnv1_32(*ptr, strlen(*ptr));
-    assert(fnv1_32_values[x] == hash_val);
+    test_compare(fnv1_32_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -260,7 +260,7 @@ static test_return_t fnv1a_32_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_fnv1a_32(*ptr, strlen(*ptr));
-    assert(fnv1a_32_values[x] == hash_val);
+    test_compare(fnv1a_32_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -281,7 +281,7 @@ static test_return_t hsieh_run (hashkit_st *hashk)
 #else
     hash_val= 1;
 #endif
-    assert(hsieh_values[x] == hash_val);
+    test_compare(hsieh_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -307,7 +307,7 @@ static test_return_t murmur_run (hashkit_st *hashk)
 #else
     hash_val= 1;
 #endif
-    assert(murmur_values[x] == hash_val);
+    test_compare(murmur_values[x], hash_val);
   }
 
   return TEST_SUCCESS;
@@ -325,7 +325,7 @@ static test_return_t jenkins_run (hashkit_st *hashk)
     uint32_t hash_val;
 
     hash_val= libhashkit_jenkins(*ptr, strlen(*ptr));
-    assert(jenkins_values[x] == hash_val);
+    test_compare(jenkins_values[x], hash_val);
   }
 
   return TEST_SUCCESS;

@@ -192,6 +192,7 @@ void options_parse(int argc, char *argv[])
     {
       {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
       {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
+      {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
       {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -242,6 +243,11 @@ void options_parse(int argc, char *argv[])
     case OPT_FILE:
       opt_file= optarg;
       break;
+
+    case OPT_QUIET:
+      close_stdio();
+      break;
+
     case '?':
       /* getopt_long already printed an error message. */
       exit(1);
