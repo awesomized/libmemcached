@@ -30,6 +30,7 @@ Working with data
 
    memcached_auto
    memcached_delete
+   libmemcached/memcached_exist
    memcached_flush_buffers
    memcached_flush
    memcached_get

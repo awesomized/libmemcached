@@ -54,6 +54,8 @@ man_MANS+= \
 	   docs/man/memcached_decrement_with_initial.3 \
 	   docs/man/memcached_delete.3 \
 	   docs/man/memcached_delete_by_key.3 \
+	   docs/man/memcached_exist.3 \
+	   docs/man/memcached_exist_by_key.3 \
 	   docs/man/memcached_destroy_sasl_auth_data.3 \
 	   docs/man/memcached_dump.3 \
 	   docs/man/memcached_fetch.3 \
@@ -123,7 +125,6 @@ man_MANS+= \
 	   docs/man/memrm.1 \
 	   docs/man/memslap.1 \
 	   docs/man/memstat.1
-
 
 if HAVE_SPHINX
 sphinx-help:

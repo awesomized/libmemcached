@@ -263,6 +263,8 @@ man_pages = [
   ('memcached_create', 'memcached_servers_reset', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_delete', 'memcached_delete', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_delete', 'memcached_delete_by_key', u'libmemcached Documentation', [u'Brian Aker'], 3),
+  ('libmemcached/memcached_exist', 'memcached_exist', u'libmemcached Documentation', [u'Brian Aker'], 3),
+  ('libmemcached/memcached_exist', 'memcached_exist_by_key', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_dump', 'memcached_dump', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_flush', 'memcached_flush', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_flush_buffers', 'memcached_flush_buffers', u'libmemcached Documentation', [u'Brian Aker'], 3),

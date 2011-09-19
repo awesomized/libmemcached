@@ -134,3 +134,5 @@ tests/memflush
 tests/memrm
 tests/memstat
 tests/memcat
+clients/memexist
+tests/memexist

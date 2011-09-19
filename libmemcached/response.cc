@@ -401,7 +401,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   header.response.cas= memcached_ntohll(header.response.cas);
   uint32_t bodylen= header.response.bodylen;
 
-  if (header.response.status == PROTOCOL_BINARY_RESPONSE_SUCCESS ||
+  if (header.response.status == PROTOCOL_BINARY_RESPONSE_SUCCESS or
       header.response.status == PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE)
   {
     switch (header.response.opcode)
@@ -601,13 +601,15 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_CMD_APPENDQ:
     case PROTOCOL_BINARY_CMD_PREPENDQ:
       return binary_read_one_response(ptr, buffer, buffer_length, result);
+
     default:
       break;
     }
   }
 
   rc= MEMCACHED_SUCCESS;
-  unlikely(header.response.status != 0)
+  if (header.response.status != 0)
+  {
     switch (header.response.status)
     {
     case PROTOCOL_BINARY_RESPONSE_KEY_ENOENT:
@@ -645,6 +647,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       rc= MEMCACHED_PROTOCOL_ERROR;
       break;
     }
+  }
 
   return rc;
 }

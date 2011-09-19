@@ -25,6 +25,7 @@ noinst_HEADERS+= \
 		 tests/basic.h \
 		 tests/debug.h \
 		 tests/error_conditions.h \
+		 tests/exist.h \
 		 tests/hash_results.h \
 		 tests/ketama.h \
 		 tests/ketama_test_cases.h \
@@ -71,6 +72,7 @@ tests_testapp_SOURCES= \
 		       tests/debug.cc \
 		       tests/deprecated.cc \
 		       tests/error_conditions.cc \
+		       tests/exist.cc \
 		       tests/ketama.cc \
 		       tests/mem_functions.cc \
 		       tests/namespace.cc \
@@ -201,6 +203,13 @@ tests_memrm_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
 tests_memrm_LDADD=  $(tests_memrm_DEPENDENCIES)
 check_PROGRAMS+= tests/memrm
 noinst_PROGRAMS+= tests/memrm
+
+tests_memexist_SOURCES= tests/memexist.cc
+tests_memexist_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+tests_memexist_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS)
+tests_memexist_LDADD=  $(tests_memexist_DEPENDENCIES)
+check_PROGRAMS+= tests/memexist
+noinst_PROGRAMS+= tests/memexist
 
 tests_memcat_SOURCES= tests/memcat.cc
 tests_memcat_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)

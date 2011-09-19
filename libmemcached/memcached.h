@@ -66,6 +66,7 @@
 #include <libmemcached/callback.h>
 #include <libmemcached/delete.h>
 #include <libmemcached/dump.h>
+#include <libmemcached/exist.h>
 #include <libmemcached/fetch.h>
 #include <libmemcached/flush.h>
 #include <libmemcached/flush_buffers.h>
