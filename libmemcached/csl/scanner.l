@@ -31,6 +31,8 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
+#define YY_NO_INPUT
+
 #define YY_EXTRA_TYPE Context*
 
 }

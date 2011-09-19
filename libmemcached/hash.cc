@@ -64,7 +64,6 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
       uint32_t num= ptr->ketama.continuum_points_counter;
       WATCHPOINT_ASSERT(ptr->ketama.continuum);
 
-      hash= hash;
       memcached_continuum_item_st *begin, *end, *left, *right, *middle;
       begin= left= ptr->ketama.continuum;
       end= right= ptr->ketama.continuum + num;
