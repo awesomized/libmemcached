@@ -16,6 +16,7 @@ bin_PROGRAMS+= \
 	clients/memcp \
 	clients/memdump \
 	clients/memerror \
+	clients/memexist \
 	clients/memflush \
 	clients/memparse \
 	clients/memping \
@@ -65,6 +66,9 @@ clients_memstat_LDADD= $(CLIENTS_LDADDS)
 
 clients_memrm_SOURCES= clients/memrm.cc
 clients_memrm_LDADD= $(CLIENTS_LDADDS)
+
+clients_memexist_SOURCES= clients/memexist.cc
+clients_memexist_LDADD= $(CLIENTS_LDADDS)
 
 clients_memflush_SOURCES= clients/memflush.cc
 clients_memflush_LDADD= $(CLIENTS_LDADDS)

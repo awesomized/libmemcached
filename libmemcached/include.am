@@ -49,6 +49,7 @@ nobase_include_HEADERS+= \
 			 libmemcached/delete.h \
 			 libmemcached/dump.h \
 			 libmemcached/error.h \
+			 libmemcached/exist.h \
 			 libmemcached/exception.hpp \
 			 libmemcached/fetch.h \
 			 libmemcached/flush.h \
@@ -102,6 +103,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/do.cc \
 				       libmemcached/dump.cc \
 				       libmemcached/error.cc \
+				       libmemcached/exist.cc \
 				       libmemcached/fetch.cc \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \

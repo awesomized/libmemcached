@@ -126,7 +126,9 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   if (verb == APPEND_OP || verb == PREPEND_OP)
+  {
     send_length -= 8; /* append & prepend does not contain extras! */
+  }
   else
   {
     request.message.header.request.extlen= 8;
@@ -138,7 +140,9 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
                                                             request.message.header.request.extlen));
 
   if (cas)
+  {
     request.message.header.request.cas= memcached_htonll(cas);
+  }
 
   flush= (bool) ((server->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
 

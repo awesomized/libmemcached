@@ -73,6 +73,7 @@
 #include "tests/debug.h"
 #include "tests/deprecated.h"
 #include "tests/error_conditions.h"
+#include "tests/exist.h"
 #include "tests/ketama.h"
 #include "tests/namespace.h"
 #include "tests/parser.h"
@@ -5827,6 +5828,10 @@ test_st tests[] ={
   {"test_get_last_disconnect", true, (test_callback_fn*)test_get_last_disconnect},
   {"verbosity", true, (test_callback_fn*)test_verbosity},
   {"memcached_stat_execute", true, (test_callback_fn*)memcached_stat_execute_test},
+  {"memcached_exist(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_exist_NOTFOUND },
+  {"memcached_exist(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_SUCCESS },
+  {"memcached_exist_by_key(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_exist_by_key_NOTFOUND },
+  {"memcached_exist_by_key(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_by_key_SUCCESS },
   {0, 0, 0}
 };
 
