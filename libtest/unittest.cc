@@ -298,6 +298,33 @@ static test_return_t memcached_sasl_test(void *object)
   return TEST_SKIPPED;
 }
 
+static test_return_t wait_BINARY(void *)
+{
+  const char *args[]= { "--quiet", 0 };
+
+  test_true(exec_cmdline("libtest/wait", args));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t wait_help_BINARY(void *)
+{
+  const char *args[]= { "--quiet", "--help", 0 };
+
+  test_true(exec_cmdline("libtest/wait", args));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t wait_version_BINARY(void *)
+{
+  const char *args[]= { "--quiet", "--version", 0 };
+
+  test_true(exec_cmdline("libtest/wait", args));
+
+  return TEST_SUCCESS;
+}
+
 test_st gearmand_tests[] ={
 #if 0
   {"pause", 0, pause_test },
@@ -355,6 +382,13 @@ test_st comparison_tests[] ={
   {0, 0, 0}
 };
 
+test_st cmdline_tests[] ={
+  {"wait --quiet", 0, wait_BINARY },
+  {"wait --quiet --help", 0, wait_help_BINARY },
+  {"wait --quiet --version", 0, wait_version_BINARY },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"environment", 0, 0, environment_tests},
   {"return values", 0, 0, tests_log},
@@ -363,6 +397,7 @@ collection_st collection[] ={
   {"comparison", 0, 0, comparison_tests},
   {"gearmand", 0, 0, gearmand_tests},
   {"memcached", 0, 0, memcached_tests},
+  {"cmdline", 0, 0, cmdline_tests},
   {0, 0, 0, 0}
 };
 
