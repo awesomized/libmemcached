@@ -572,9 +572,11 @@ static test_return_t cas2_test(memcached_st *memc)
     test_compare(MEMCACHED_SUCCESS, rc);
   }
 
-  rc= memcached_mget(memc, keys, key_length, 3);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_mget(memc, keys, key_length, 3));
 
   results= memcached_result_create(memc, &results_obj);
+  test_true(results);
 
   results= memcached_fetch_result(memc, &results_obj, &rc);
   test_true(results);
@@ -617,9 +619,11 @@ static test_return_t cas_test(memcached_st *memc)
                     (time_t)0, (uint32_t)0);
   test_compare(MEMCACHED_SUCCESS, rc);
 
-  rc= memcached_mget(memc, keys, keylengths, 1);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_mget(memc, keys, keylengths, 1));
 
   results= memcached_result_create(memc, &results_obj);
+  test_true(results);
 
   results= memcached_fetch_result(memc, &results_obj, &rc);
   test_true(results);
@@ -840,7 +844,7 @@ static test_return_t bad_key_test(memcached_st *memc)
   /* All keys are valid in the binary protocol (except for length) */
   if (not memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
   {
-    query_id= memcached_query_id(memc_clone);
+    uint64_t before_query_id= memcached_query_id(memc_clone);
     {
       size_t string_length;
       char *string= memcached_get(memc_clone, key, strlen(key),
@@ -849,6 +853,7 @@ static test_return_t bad_key_test(memcached_st *memc)
       test_zero(string_length);
       test_false(string);
     }
+    test_compare(before_query_id, memcached_query_id(memc_clone) +1);
 
     query_id= memcached_query_id(memc_clone);
     test_compare(MEMCACHED_SUCCESS,
@@ -1263,6 +1268,7 @@ static test_return_t mget_end(memcached_st *memc)
   // this should indicate end
   string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
   test_compare(MEMCACHED_END, rc);
+  test_null(string);
 
   // now get just one
   rc= memcached_mget(memc, keys, lengths, 1);
@@ -1279,6 +1285,7 @@ static test_return_t mget_end(memcached_st *memc)
   // this should indicate end
   string= memcached_fetch(memc, key, &key_length, &string_length, &flags, &rc);
   test_compare(MEMCACHED_END, rc);
+  test_null(string);
 
   return TEST_SUCCESS;
 }
@@ -3304,6 +3311,7 @@ static test_return_t mget_read_result(memcached_st *memc)
   {
     memcached_result_st results_obj;
     memcached_result_st *results= memcached_result_create(memc, &results_obj);
+    test_true(results);
 
     memcached_return_t rc;
     while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
@@ -3374,6 +3382,8 @@ static test_return_t mget_read_partial_result(memcached_st *memc)
   {
     memcached_result_st results_obj;
     memcached_result_st *results= memcached_result_create(memc, &results_obj);
+    test_true(results);
+    test_false(memcached_is_allocated(results));
 
     memcached_return_t rc;
     while ((results= memcached_fetch_result(memc, &results_obj, &rc)))
@@ -3733,6 +3743,7 @@ static test_return_t selection_of_namespace_tests(memcached_st *memc)
 
   /* Make sure be default none exists */
   value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
+  test_null(value);
   test_compare_got(MEMCACHED_FAILURE, rc, memcached_strerror(NULL, rc));
 
   /* Test a clean set */
@@ -3804,6 +3815,7 @@ static test_return_t set_namespace(memcached_st *memc)
 
   /* Make sure be default none exists */
   value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
+  test_null(value);
   test_compare_got(MEMCACHED_FAILURE, rc, memcached_strerror(NULL, rc));
 
   /* Test a clean set */

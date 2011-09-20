@@ -306,7 +306,6 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       return -1;
     }
   }
-  ssize_t sent_length;
   size_t return_length;
   char *local_write_ptr= ptr->write_buffer;
   size_t write_length= ptr->write_buffer_offset;
@@ -340,10 +339,10 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
-    sent_length= 0;
     if (ptr->type == MEMCACHED_CONNECTION_UDP)
       increment_udp_message_id(ptr);
 
+    ssize_t sent_length= 0;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     if (with_flush)
     {
@@ -408,7 +407,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     }
 
     if (ptr->type == MEMCACHED_CONNECTION_UDP and
-        (size_t)sent_length != write_length)
+        size_t(sent_length) != write_length)
     {
       memcached_quit_server(ptr, true);
       *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);

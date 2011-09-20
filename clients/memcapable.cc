@@ -1335,7 +1335,10 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   verify(strncmp(buffer, "VALUE ", 6) == 0);
   char *end= strchr(buffer + 6, ' ');
   verify(end != NULL);
-  *end= '\0';
+  if (end)
+  {
+    *end= '\0';
+  }
   *key= strdup(buffer + 6);
   verify(*key != NULL);
   char *ptr= end + 1;
@@ -1347,9 +1350,9 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   *ndata = (ssize_t)strtoul(end, &end, 10); /* size */
   verify(ptr != end);
   verify(end != NULL);
-  while (*end != '\n' && isspace(*end))
+  while (end and *end != '\n' and isspace(*end))
     ++end;
-  verify(*end == '\n');
+  verify(end and *end == '\n');
 
   *value= static_cast<char*>(malloc((size_t)*ndata));
   verify(*value != NULL);
@@ -1383,9 +1386,11 @@ static enum test_return ascii_get_value(const char *key, const char *value)
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
-  while (*end != '\n' && isspace(*end))
+  while (end and *end != '\n' and isspace(*end))
+  {
     ++end;
-  verify(*end == '\n');
+  }
+  verify(end and *end == '\n');
 
   execute(retry_read(buffer, datasize));
   verify(memcmp(buffer, value, datasize) == 0);
@@ -1444,9 +1449,11 @@ static enum test_return ascii_gets_value(const char *key, const char *value,
   verify(val == datasize);
   verify(end != NULL);
 
-  while (*end != '\n' && isspace(*end))
+  while (end and *end != '\n' and isspace(*end))
+  {
     ++end;
-  verify(*end == '\n');
+  }
+  verify(end and *end == '\n');
 
   execute(retry_read(buffer, datasize));
   verify(memcmp(buffer, value, datasize) == 0);

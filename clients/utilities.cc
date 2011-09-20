@@ -143,15 +143,25 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
 
   set= MEMCACHED_HASH_DEFAULT; /* Just here to solve warning */
   if (!strcasecmp(opt_hash, "CRC"))
+  {
     set= MEMCACHED_HASH_CRC;
+  }
   else if (!strcasecmp(opt_hash, "FNV1_64"))
+  {
     set= MEMCACHED_HASH_FNV1_64;
+  }
   else if (!strcasecmp(opt_hash, "FNV1A_64"))
+  {
     set= MEMCACHED_HASH_FNV1A_64;
+  }
   else if (!strcasecmp(opt_hash, "FNV1_32"))
+  {
     set= MEMCACHED_HASH_FNV1_32;
+  }
   else if (!strcasecmp(opt_hash, "FNV1A_32"))
+  {
     set= MEMCACHED_HASH_FNV1A_32;
+  }
   else
   {
     fprintf(stderr, "hash: type not recognized %s\n", opt_hash);

@@ -201,7 +201,6 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   /* We add two bytes so that we can walk the \r\n */
   if (memcached_failed(memcached_string_check(&result->value, value_length +2)))
   {
-    value_length= 0;
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 

@@ -433,8 +433,7 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
       string_ptr= end_ptr + 1;
       for (end_ptr= string_ptr; !(isspace(*end_ptr)); end_ptr++) {};
       value= string_ptr;
-      value[(size_t)(end_ptr-string_ptr)]= 0;
-      string_ptr= end_ptr + 2;
+      value[(size_t)(end_ptr -string_ptr)]= 0;
       if (memc_stat)
       {
         unlikely((set_data(memc_stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)

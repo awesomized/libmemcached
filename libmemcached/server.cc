@@ -195,7 +195,7 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                     hostname,
                                     source->port, source->weight,
                                     source->type);
-  if (not destination)
+  if (destination)
   {
     if (source->error_messages)
     {
