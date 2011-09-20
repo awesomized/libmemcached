@@ -133,6 +133,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/delete.h
 %{_includedir}/libmemcached/dump.h
 %{_includedir}/libmemcached/error.h
+%{_includedir}/libmemcached/exist.h
 %{_includedir}/libmemcached/exception.hpp
 %{_includedir}/libmemcached/fetch.h
 %{_includedir}/libmemcached/flush.h
@@ -271,6 +272,8 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_stat_get_value.3.gz
 %{_mandir}/man3/memcached_stat_servername.3.gz
 %{_mandir}/man3/memcached_strerror.3.gz
+%{_mandir}/man3/memcached_exist.3.gz
+%{_mandir}/man3/memcached_exist_by_key.3.gz
 %{_mandir}/man3/memcached_verbosity.3.gz
 %{_mandir}/man3/memcached_version.3.gz
 
