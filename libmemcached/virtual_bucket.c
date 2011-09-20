@@ -71,7 +71,8 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
   virtual_bucket->replicas= replicas;
   self->virtual_bucket= virtual_bucket;
 
-  for (uint32_t x=0; x < buckets; x++)
+  uint32_t x= 0;
+  for (; x < buckets; x++)
   {
     virtual_bucket->buckets[x].master= host_map[x];
     if (forward_map)

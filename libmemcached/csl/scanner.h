@@ -16,12 +16,14 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
+#define YY_NO_INPUT
+
 #define YY_EXTRA_TYPE Context*
 
 
 
 
-#line 25 "libmemcached/csl/scanner.h"
+#line 27 "libmemcached/csl/scanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -473,9 +475,9 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 201 "libmemcached/csl/scanner.l"
+#line 203 "libmemcached/csl/scanner.l"
 
 
-#line 480 "libmemcached/csl/scanner.h"
+#line 482 "libmemcached/csl/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */

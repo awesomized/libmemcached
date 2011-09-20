@@ -241,7 +241,6 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
   if ((rc= memcached_vdo(instance, vector,  3, flush)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(instance);
-    rc= (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
   }
 
   unlikely (ptr->number_of_replicas > 0)

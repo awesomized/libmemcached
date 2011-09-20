@@ -39,14 +39,13 @@
 #include <libhashkit/common.h>
 
 /* FNV hash'es lifted from Dustin Sallings work */
-static uint64_t FNV_64_INIT= 0xcbf29ce484222325LLU;
-static uint64_t FNV_64_PRIME= 0x100000001b3LLU;
+static uint64_t FNV_64_INIT= 0xcbf29ce484222325;
+static uint64_t FNV_64_PRIME= 0x100000001b3;
 
-uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *context)
+uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *)
 {
   /* Thanks to pierre@demartines.com for the pointer */
   uint64_t hash= FNV_64_INIT;
-  (void)context;
 
   for (size_t x= 0; x < key_length; x++)
   {
@@ -57,10 +56,9 @@ uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *context)
   return (uint32_t)hash;
 }
 
-uint32_t hashkit_fnv1a_64(const char *key, size_t key_length, void *context)
+uint32_t hashkit_fnv1a_64(const char *key, size_t key_length, void *)
 {
   uint32_t hash= (uint32_t) FNV_64_INIT;
-  (void)context;
 
   for (size_t x= 0; x < key_length; x++)
   {

@@ -116,6 +116,7 @@ AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNCS([strtol])
 AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([strtoull])
+
 AC_CHECK_HEADERS([arpa/inet.h])
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([libintl.h])
@@ -126,6 +127,8 @@ AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_HEADERS([sasl/sasl.h])
+AC_CXX_HEADER_STDCXX_98
+
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK

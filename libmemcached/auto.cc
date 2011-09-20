@@ -75,6 +75,11 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
+  if (rc != MEMCACHED_SUCCESS)
+  {
+    return memcached_set_error(*instance, rc, MEMCACHED_AT);
+  }
+
   /*
     So why recheck responce? Because the protocol is brain dead :)
     The number returned might end up equaling one of the string

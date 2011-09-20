@@ -415,8 +415,10 @@ void memcached_error_free(memcached_server_st& self)
 
 const char *memcached_last_error_message(memcached_st *memc)
 {
-  if (not memc)
+  if (memc == NULL)
+  {
     return memcached_strerror(memc, MEMCACHED_INVALID_ARGUMENTS);
+  }
 
   if (not memc->error_messages)
     return memcached_strerror(memc, MEMCACHED_SUCCESS);
@@ -446,8 +448,10 @@ bool memcached_has_current_error(memcached_server_st& server)
 
 memcached_return_t memcached_last_error(memcached_st *memc)
 {
-  if (not memc)
+  if (memc == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   if (not memc->error_messages)
     return MEMCACHED_SUCCESS;
@@ -457,19 +461,25 @@ memcached_return_t memcached_last_error(memcached_st *memc)
 
 int memcached_last_error_errno(memcached_st *memc)
 {
-  if (not memc)
+  if (memc == NULL)
+  {
     return 0;
+  }
 
   if (not memc->error_messages)
+  {
     return 0;
+  }
 
   return memc->error_messages->local_errno;
 }
 
 const char *memcached_server_error(memcached_server_instance_st server)
 {
-  if (not server)
-    return memcached_strerror(server->root, MEMCACHED_INVALID_ARGUMENTS);
+  if (server == NULL)
+  {
+    return NULL;
+  }
 
   if (not server->error_messages)
     return memcached_strerror(server->root, MEMCACHED_SUCCESS);
@@ -483,8 +493,10 @@ const char *memcached_server_error(memcached_server_instance_st server)
 
 memcached_error_t *memcached_error_copy(const memcached_server_st& server)
 {
-  if (not server.error_messages)
+  if (server.error_messages == NULL)
+  {
     return NULL;
+  }
 
   memcached_error_t *error= (memcached_error_t *)libmemcached_malloc(server.root, sizeof(memcached_error_t));
   memcpy(error, server.error_messages, sizeof(memcached_error_t));

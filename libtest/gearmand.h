@@ -24,7 +24,7 @@
 
 #include <arpa/inet.h>
 
-namespace libtest { class Server; }
+namespace libtest { struct Server; }
 
 namespace libtest {
 
