@@ -42,6 +42,12 @@
 #include <netdb.h>
 #endif
 
+#ifdef NI_MAXHOST
+#define MEMCACHED_NI_MAXHOST NI_MAXHOST
+#else
+#define MEMCACHED_NI_MAXHOST 1025
+#endif
+
 enum memcached_server_state_t {
   MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
   MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered
@@ -87,7 +93,7 @@ struct memcached_server_st {
   struct memcached_error_t *error_messages;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];
-  char hostname[NI_MAXHOST];
+  char hostname[MEMCACHED_NI_MAXHOST];
 };
 
 

@@ -56,7 +56,9 @@ cache_t* cache_create(const char *name, size_t bufsize, size_t align,
                       cache_constructor_t* constructor,
                       cache_destructor_t* destructor) {
     cache_t* ret = calloc(1, sizeof(cache_t));
-    char* nm = strdup(name);
+    size_t name_length= strlen(name);
+    char* nm= calloc(1, (sizeof(char) * name_length) +1);
+    memcpy(nm, name, name_length);
     void** ptr = calloc(initial_pool_size, bufsize);
     if (ret == NULL || nm == NULL || ptr == NULL ||
         pthread_mutex_init(&ret->mutex, NULL) == -1) {

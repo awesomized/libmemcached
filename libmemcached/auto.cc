@@ -75,9 +75,9 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
-  if (rc == MEMCACHED_SUCCESS)
+  if (rc != MEMCACHED_SUCCESS)
   {
-    return MEMCACHED_SUCCESS;
+    return memcached_set_error(*instance, rc, MEMCACHED_AT);
   }
 
   /*

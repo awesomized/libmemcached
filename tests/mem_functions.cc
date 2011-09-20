@@ -853,7 +853,7 @@ static test_return_t bad_key_test(memcached_st *memc)
       test_zero(string_length);
       test_false(string);
     }
-    test_compare(before_query_id, memcached_query_id(memc_clone) +1);
+    test_compare(before_query_id +1, memcached_query_id(memc_clone));
 
     query_id= memcached_query_id(memc_clone);
     test_compare(MEMCACHED_SUCCESS,
