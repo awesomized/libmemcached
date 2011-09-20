@@ -70,7 +70,6 @@ docs/doctest/
 docs/doctrees/
 docs/html/
 docs/linkcheck/
-docs/man/*
 docs/text
 example/memcached_light
 libhashkit/configure.h
