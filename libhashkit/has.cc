@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  HashKit library
+ *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,51 +34,46 @@
  *
  */
 
-
 #include <libhashkit/common.h>
 
+bool libhashkit_has_algorithm(const hashkit_hash_algorithm_t algo)
+{
+  switch (algo)
+  {
+  case HASHKIT_HASH_FNV1_64:
+  case HASHKIT_HASH_FNV1A_64:
 #if __WORDSIZE == 64 && defined(HAVE_FNV64_HASH)
-
-/* FNV hash'es lifted from Dustin Sallings work */
-static uint64_t FNV_64_INIT= 0xcbf29ce484222325;
-static uint64_t FNV_64_PRIME= 0x100000001b3;
-
-uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *)
-{
-  /* Thanks to pierre@demartines.com for the pointer */
-  uint64_t hash= FNV_64_INIT;
-
-  for (size_t x= 0; x < key_length; x++)
-  {
-    hash *= FNV_64_PRIME;
-    hash ^= (uint64_t)key[x];
-  }
-
-  return (uint32_t)hash;
-}
-
-uint32_t hashkit_fnv1a_64(const char *key, size_t key_length, void *)
-{
-  uint32_t hash= (uint32_t) FNV_64_INIT;
-
-  for (size_t x= 0; x < key_length; x++)
-  {
-    uint32_t val= (uint32_t)key[x];
-    hash ^= val;
-    hash *= (uint32_t) FNV_64_PRIME;
-  }
-
-  return hash;
-}
-
+    return true;
 #else
-uint32_t hashkit_fnv1_64(const char *, size_t, void *)
-{
-  return 0;
-}
-
-uint32_t hashkit_fnv1a_64(const char *, size_t, void *)
-{
-  return 0;
-}
+    return false;
 #endif
+
+  case HASHKIT_HASH_HSIEH:
+#ifdef HAVE_HSIEH_HASH
+    return true;
+#else
+    return false;
+#endif
+
+  case HASHKIT_HASH_MURMUR:
+#ifdef HAVE_MURMUR_HASH
+    return true;
+#else
+    return false;
+#endif
+
+  case HASHKIT_HASH_FNV1_32:
+  case HASHKIT_HASH_FNV1A_32:
+  case HASHKIT_HASH_DEFAULT:
+  case HASHKIT_HASH_MD5:
+  case HASHKIT_HASH_CRC:
+  case HASHKIT_HASH_JENKINS:
+  case HASHKIT_HASH_CUSTOM:
+    return true;
+
+  case HASHKIT_HASH_MAX:
+    break;
+  }
+
+  return false;
+}

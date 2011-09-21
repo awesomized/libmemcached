@@ -114,6 +114,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit/configure.h
 %{_includedir}/libhashkit/digest.h
 %{_includedir}/libhashkit/function.h
+%{_includedir}/libhashkit/has.h
 %{_includedir}/libhashkit/hashkit.h
 %{_includedir}/libhashkit/hashkit.hpp
 %{_includedir}/libhashkit/str_algorithm.h
