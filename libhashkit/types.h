@@ -47,8 +47,15 @@ typedef enum {
   HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
 } hashkit_return_t;
 
-#define hashkit_success(X) ((X) == HASHKIT_SUCCESS)
-#define hashkit_failed(X) ((X) != HASHKIT_SUCCESS)
+static inline bool hashkit_success(const hashkit_return_t rc)
+{
+  return (rc == HASHKIT_SUCCESS);
+}
+
+static inline bool hashkit_failed(const hashkit_return_t rc)
+{
+  return (rc != HASHKIT_SUCCESS);
+}
 
 typedef enum {
   HASHKIT_HASH_DEFAULT= 0, // hashkit_one_at_a_time()

@@ -493,7 +493,9 @@ memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st
 memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_hash_t type)
 {
   if (hashkit_success(hashkit_set_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                              memcached_literal_param("Invalid memcached_hash_t()"));

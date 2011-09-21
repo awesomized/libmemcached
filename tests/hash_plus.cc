@@ -16,19 +16,17 @@ using namespace libtest;
 
 #include "hash_results.h"
 
-static test_return_t exists_test(void *obj)
+static test_return_t exists_test(void *)
 {
   Hashkit hashk;
-  (void)obj;
   (void)hashk;
 
   return TEST_SUCCESS;
 }
 
-static test_return_t new_test(void *obj)
+static test_return_t new_test(void *)
 {
   Hashkit *hashk= new Hashkit;
-  (void)obj;
 
   (void)hashk;
 
@@ -37,11 +35,10 @@ static test_return_t new_test(void *obj)
   return TEST_SUCCESS;
 }
 
-static test_return_t copy_test(void *obj)
+static test_return_t copy_test(void *)
 {
   Hashkit *hashk= new Hashkit;
   Hashkit *copy(hashk);
-  (void)obj;
 
   (void)copy;
 
@@ -50,11 +47,10 @@ static test_return_t copy_test(void *obj)
   return TEST_SUCCESS;
 }
 
-static test_return_t assign_test(void *obj)
+static test_return_t assign_test(void *)
 {
   Hashkit hashk;
   Hashkit copy;
-  (void)obj;
 
   copy= hashk;
 
@@ -92,6 +88,11 @@ static test_return_t set_function_test(void *)
   {
     hashkit_return_t rc= hashk.set_function(*algo);
 
+    if (rc == HASHKIT_INVALID_ARGUMENT)
+    {
+      continue;
+    }
+
     test_compare(HASHKIT_SUCCESS, rc);
 
     uint32_t *list;
@@ -126,17 +127,11 @@ static test_return_t set_function_test(void *)
       break;
 
     case HASHKIT_HASH_HSIEH:
-#ifndef HAVE_HSIEH_HASH
-      continue;
-#endif
       list= hsieh_values;
       break;
 
     case HASHKIT_HASH_MURMUR:
 #ifdef WORDS_BIGENDIAN
-      continue;
-#endif
-#ifndef HAVE_MURMUR_HASH
       continue;
 #endif
       list= murmur_values;
@@ -170,25 +165,23 @@ static test_return_t set_function_test(void *)
   return TEST_SUCCESS;
 }
 
-static test_return_t set_distribution_function_test(void *obj)
+static test_return_t set_distribution_function_test(void *)
 {
   Hashkit hashk;
   hashkit_return_t rc;
-  (void)obj;
 
   rc= hashk.set_distribution_function(HASHKIT_HASH_CUSTOM);
   test_true_got(rc == HASHKIT_FAILURE or rc == HASHKIT_INVALID_ARGUMENT, hashkit_strerror(NULL, rc));
 
-  rc= hashk.set_distribution_function(HASHKIT_HASH_JENKINS);
-  test_true(rc == HASHKIT_SUCCESS);
+  test_compare(HASHKIT_SUCCESS,
+               hashk.set_distribution_function(HASHKIT_HASH_JENKINS));
 
   return TEST_SUCCESS;
 }
 
-static test_return_t compare_function_test(void *obj)
+static test_return_t compare_function_test(void *)
 {
   Hashkit a, b;
-  (void)obj;
 
   b= a;
   
