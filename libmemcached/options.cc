@@ -82,17 +82,26 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
 {
   memcached_st memc, *memc_ptr;
 
-  if (error_buffer_size)
+  if (option_string == NULL or length == 0)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  if (error_buffer and error_buffer_size)
+  {
     error_buffer[0]= 0;
+  }
 
   if (not (memc_ptr= memcached_create(&memc)))
+  {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
 
   memcached_return_t rc= memcached_parse_configuration(memc_ptr, option_string, length);
   if (memcached_failed(rc) and error_buffer and error_buffer_size)
   {
     strncpy(error_buffer, memcached_last_error_message(memc_ptr), error_buffer_size);
-    error_buffer[length -1]= 0;
+    error_buffer[error_buffer_size -1]= 0;
   }
 
   bool has_filename= memcached_behavior_get(memc_ptr, MEMCACHED_BEHAVIOR_LOAD_FROM_FILE);
@@ -102,9 +111,10 @@ memcached_return_t libmemcached_check_configuration(const char *option_string, s
     assert_msg(memcached_parse_filename_length(memc_ptr), "Invalid configuration file");
     rc= _parse_file_options(*memc_ptr, memc_ptr->configure.filename);
 
-    if (memcached_failed(rc) and error_buffer && error_buffer_size)
+    if (memcached_failed(rc) and error_buffer and error_buffer_size)
     {
       strncpy(error_buffer, memcached_last_error_message(memc_ptr), error_buffer_size);
+      error_buffer[error_buffer_size -1]= 0;
     }
   }
 

@@ -5651,6 +5651,27 @@ static test_return_t regression_bug_490520(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+
+static test_return_t regression_bug_854604(memcached_st *)
+{
+  char buffer[1024];
+
+  test_compare(MEMCACHED_INVALID_ARGUMENTS, libmemcached_check_configuration(0, 0, buffer, 0));
+
+  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 0));
+  
+  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 1));
+  test_compare(buffer[0], 0);
+  
+  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 10));
+  test_true(strlen(buffer));
+
+  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, sizeof(buffer)));
+  test_true(strlen(buffer));
+  
+  return TEST_SUCCESS;
+}
+
 static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
@@ -5961,6 +5982,7 @@ test_st regression_tests[]= {
   {"lp:71231153 poll()", true, (test_callback_fn*)regression_bug_71231153_poll },
   {"lp:655423", true, (test_callback_fn*)regression_bug_655423 },
   {"lp:490520", true, (test_callback_fn*)regression_bug_490520 },
+  {"lp:854604", true, (test_callback_fn*)regression_bug_854604 },
   {0, false, (test_callback_fn*)0}
 };
 
