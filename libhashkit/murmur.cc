@@ -17,6 +17,8 @@
 
 #include <libhashkit/common.h>
 
+#ifdef HAVE_MURMUR_HASH
+
 uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 {
   /*
@@ -75,3 +77,10 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 
   return h;
 }
+
+#else
+uint32_t hashkit_murmur(const char *, size_t , void *)
+{
+  return 0;
+}
+#endif

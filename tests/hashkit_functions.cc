@@ -61,30 +61,28 @@ struct hash_test_st
   bool _unused;
 };
 
-static test_return_t init_test(void *not_used)
+static test_return_t init_test(void *)
 {
   hashkit_st hashk;
   hashkit_st *hashk_ptr;
-  (void)not_used;
 
   hashk_ptr= hashkit_create(&hashk);
   test_true(hashk_ptr);
   test_true(hashk_ptr == &hashk);
-  test_true(hashkit_is_allocated(hashk_ptr) == false);
+  test_false(hashkit_is_allocated(hashk_ptr));
 
   hashkit_free(hashk_ptr);
 
   return TEST_SUCCESS;
 }
 
-static test_return_t allocation_test(void *not_used)
+static test_return_t allocation_test(void *)
 {
   hashkit_st *hashk_ptr;
-  (void)not_used;
 
   hashk_ptr= hashkit_create(NULL);
   test_true(hashk_ptr);
-  test_true(hashkit_is_allocated(hashk_ptr) == true);
+  test_true(hashkit_is_allocated(hashk_ptr));
   hashkit_free(hashk_ptr);
 
   return TEST_SUCCESS;
@@ -93,7 +91,7 @@ static test_return_t allocation_test(void *not_used)
 static test_return_t clone_test(hashkit_st *hashk)
 {
   // First we make sure that the testing system is giving us what we expect.
-  assert(&global_hashk == hashk);
+  test_true(&global_hashk == hashk);
 
   // Second we test if hashk is even valid
 
@@ -147,149 +145,126 @@ static test_return_t clone_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-static test_return_t one_at_a_time_run (hashkit_st *hashk)
+static test_return_t one_at_a_time_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_one_at_a_time(*ptr, strlen(*ptr));
-    test_true(one_at_a_time_values[x] == hash_val);
+    test_compare(one_at_a_time_values[x],
+                 libhashkit_one_at_a_time(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t md5_run (hashkit_st *hashk)
+static test_return_t md5_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_md5(*ptr, strlen(*ptr));
-    test_true(md5_values[x] == hash_val);
+    test_compare(md5_values[x],
+                 libhashkit_md5(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t crc_run (hashkit_st *hashk)
+static test_return_t crc_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_crc32(*ptr, strlen(*ptr));
-    test_compare(crc_values[x], hash_val);
+    test_compare(crc_values[x],
+                 libhashkit_crc32(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1_64_run (hashkit_st *hashk)
+static test_return_t fnv1_64_run (hashkit_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_FNV1_64));
+
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_fnv1_64(*ptr, strlen(*ptr));
-    test_compare(fnv1_64_values[x], hash_val);
+    test_compare(fnv1_64_values[x],
+                 libhashkit_fnv1_64(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1a_64_run (hashkit_st *hashk)
+static test_return_t fnv1a_64_run (hashkit_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_FNV1A_64));
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_fnv1a_64(*ptr, strlen(*ptr));
-    test_compare(fnv1a_64_values[x], hash_val);
+    test_compare(fnv1a_64_values[x],
+                 libhashkit_fnv1a_64(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1_32_run (hashkit_st *hashk)
+static test_return_t fnv1_32_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_fnv1_32(*ptr, strlen(*ptr));
-    test_compare(fnv1_32_values[x], hash_val);
+    test_compare(fnv1_32_values[x],
+                 libhashkit_fnv1_32(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t fnv1a_32_run (hashkit_st *hashk)
+static test_return_t fnv1a_32_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_fnv1a_32(*ptr, strlen(*ptr));
-    test_compare(fnv1a_32_values[x], hash_val);
+    test_compare(fnv1a_32_values[x],
+                 libhashkit_fnv1a_32(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t hsieh_run (hashkit_st *hashk)
+static test_return_t hsieh_run (hashkit_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_HSIEH));
+
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-#ifdef HAVE_HSIEH_HASH
-    hash_val= libhashkit_hsieh(*ptr, strlen(*ptr));
-#else
-    hash_val= 1;
-#endif
-    test_compare(hsieh_values[x], hash_val);
+    test_compare(hsieh_values[x],
+                 libhashkit_hsieh(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 }
 
-static test_return_t murmur_run (hashkit_st *hashk)
+static test_return_t murmur_run (hashkit_st *)
 {
-  (void)hashk;
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR));
 
 #ifdef WORDS_BIGENDIAN
   (void)murmur_values;
@@ -300,32 +275,23 @@ static test_return_t murmur_run (hashkit_st *hashk)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-#ifdef HAVE_MURMUR_HASH
-    hash_val= libhashkit_murmur(*ptr, strlen(*ptr));
-#else
-    hash_val= 1;
-#endif
-    test_compare(murmur_values[x], hash_val);
+    test_compare(murmur_values[x],
+                 libhashkit_murmur(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
 #endif
 }
 
-static test_return_t jenkins_run (hashkit_st *hashk)
+static test_return_t jenkins_run (hashkit_st *)
 {
   uint32_t x;
   const char **ptr;
-  (void)hashk;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= libhashkit_jenkins(*ptr, strlen(*ptr));
-    test_compare(jenkins_values[x], hash_val);
+    test_compare(jenkins_values[x],
+                 libhashkit_jenkins(*ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
@@ -360,56 +326,54 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     const char **ptr;
     uint32_t *list;
 
+    test_skip(true, libhashkit_has_algorithm(static_cast<hashkit_hash_algorithm_t>(algo)));
+
     hashkit_return_t rc= hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
 
-    /* Hsieh is disabled most of the time for patent issues */
-#ifndef HAVE_HSIEH_HASH
-    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
-      continue;
-#endif
-
-#ifndef HAVE_MURMUR_HASH
-    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_MURMUR)
-      continue;
-#endif
-
-    if (rc == HASHKIT_INVALID_ARGUMENT && algo == HASHKIT_HASH_CUSTOM)
-      continue;
-
-    test_true_got(rc == HASHKIT_SUCCESS, hashkit_strerror(NULL, rc));
+    test_compare_got(HASHKIT_SUCCESS, rc, hashkit_strerror(NULL, rc));
 
     switch (algo)
     {
     case HASHKIT_HASH_DEFAULT:
       list= one_at_a_time_values;
       break;
+
     case HASHKIT_HASH_MD5:
       list= md5_values;
       break;
+
     case HASHKIT_HASH_CRC:
       list= crc_values;
       break;
+
     case HASHKIT_HASH_FNV1_64:
       list= fnv1_64_values;
       break;
+
     case HASHKIT_HASH_FNV1A_64:
       list= fnv1a_64_values;
       break;
+
     case HASHKIT_HASH_FNV1_32:
       list= fnv1_32_values;
       break;
+
     case HASHKIT_HASH_FNV1A_32:
       list= fnv1a_32_values;
       break;
+
     case HASHKIT_HASH_HSIEH:
       list= hsieh_values;
       break;
+
     case HASHKIT_HASH_MURMUR:
       list= murmur_values;
       break;
+
     case HASHKIT_HASH_JENKINS:
       list= jenkins_values;
       break;
+
     case HASHKIT_HASH_CUSTOM:
     case HASHKIT_HASH_MAX:
     default:
@@ -422,10 +386,8 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     {
       for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
       {
-        uint32_t hash_val;
-
-        hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
-        test_true(list[x] == hash_val);
+        test_compare(list[x],
+                     hashkit_digest(hashk, *ptr, strlen(*ptr)));
       }
     }
     else
@@ -437,28 +399,24 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
   return TEST_SUCCESS;
 }
 
-static uint32_t hash_test_function(const char *string, size_t string_length, void *context)
+static uint32_t hash_test_function(const char *string, size_t string_length, void *)
 {
-  (void)context;
   return libhashkit_md5(string, string_length);
 }
 
 static test_return_t hashkit_set_custom_function_test(hashkit_st *hashk)
 {
-  hashkit_return_t rc;
   uint32_t x;
   const char **ptr;
 
 
-  rc= hashkit_set_custom_function(hashk, hash_test_function, NULL);
-  test_true(rc == HASHKIT_SUCCESS);
+  test_compare(HASHKIT_SUCCESS, 
+               hashkit_set_custom_function(hashk, hash_test_function, NULL));
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= hashkit_digest(hashk, *ptr, strlen(*ptr));
-    test_true(md5_values[x] == hash_val);
+    test_compare(md5_values[x], 
+                 hashkit_digest(hashk, *ptr, strlen(*ptr)));
   }
 
   return TEST_SUCCESS;
@@ -471,13 +429,10 @@ static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
     hashkit_return_t rc= hashkit_set_distribution_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
 
     /* Hsieh is disabled most of the time for patent issues */
-    if (rc == HASHKIT_FAILURE && algo == HASHKIT_HASH_HSIEH)
+    if (rc == HASHKIT_INVALID_ARGUMENT)
       continue;
 
-    if (rc == HASHKIT_INVALID_ARGUMENT && algo == HASHKIT_HASH_CUSTOM)
-      continue;
-
-    test_true(rc == HASHKIT_SUCCESS);
+    test_compare(HASHKIT_SUCCESS, rc);
   }
 
   return TEST_SUCCESS;
@@ -485,8 +440,8 @@ static test_return_t hashkit_set_distribution_function_test(hashkit_st *hashk)
 
 static test_return_t hashkit_set_custom_distribution_function_test(hashkit_st *hashk)
 {
-  hashkit_return_t rc= hashkit_set_custom_distribution_function(hashk, hash_test_function, NULL);
-  test_true(rc == HASHKIT_SUCCESS);
+  test_compare(HASHKIT_SUCCESS,
+               hashkit_set_custom_distribution_function(hashk, hash_test_function, NULL));
 
   return TEST_SUCCESS;
 }
@@ -497,13 +452,16 @@ static test_return_t hashkit_get_function_test(hashkit_st *hashk)
   for (int algo= int(HASHKIT_HASH_DEFAULT); algo < int(HASHKIT_HASH_MAX); algo++)
   {
 
-    if (HASHKIT_HASH_CUSTOM or HASHKIT_HASH_HSIEH)
+    if (HASHKIT_HASH_CUSTOM)
+    {
       continue;
+    }
+    test_skip(true, libhashkit_has_algorithm(static_cast<hashkit_hash_algorithm_t>(algo)));
 
-    hashkit_return_t rc= hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
-    test_true(rc == HASHKIT_SUCCESS);
+    test_compare(HASHKIT_SUCCESS,
+                 hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo)));
 
-    test_true(hashkit_get_function(hashk) == algo);
+    test_compare(hashkit_get_function(hashk), algo);
   }
   return TEST_SUCCESS;
 }
@@ -529,13 +487,9 @@ test_st hashkit_st_functions[] ={
   {0, 0, 0}
 };
 
-static test_return_t libhashkit_digest_test(hashkit_st *hashk)
+static test_return_t libhashkit_digest_test(hashkit_st *)
 {
-
-  (void)hashk;
-
-  uint32_t value= libhashkit_digest("a", sizeof("a"), HASHKIT_HASH_DEFAULT);
-  test_true(value);
+  test_true(libhashkit_digest("a", sizeof("a"), HASHKIT_HASH_DEFAULT));
 
   return TEST_SUCCESS;
 }

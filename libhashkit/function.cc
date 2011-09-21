@@ -10,50 +10,74 @@
 
 static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *self, hashkit_hash_algorithm_t hash_algorithm)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_INVALID_ARGUMENT;
+  }
+
   switch (hash_algorithm)
   {
-  case HASHKIT_HASH_DEFAULT:
-    self->function= hashkit_one_at_a_time;
-    break;
   case HASHKIT_HASH_MD5:
     self->function= hashkit_md5;
     break;
+
   case HASHKIT_HASH_CRC:
     self->function= hashkit_crc32;
     break;
+
   case HASHKIT_HASH_FNV1_64:
-    self->function= hashkit_fnv1_64;
-    break;
+    if (libhashkit_has_algorithm(HASHKIT_HASH_FNV1_64))
+    {
+      self->function= hashkit_fnv1_64;
+      break;
+    }
+    return HASHKIT_INVALID_ARGUMENT;
+
   case HASHKIT_HASH_FNV1A_64:
-    self->function= hashkit_fnv1a_64;
-    break;
+    if (libhashkit_has_algorithm(HASHKIT_HASH_FNV1_64))
+    {
+      self->function= hashkit_fnv1a_64;
+      break;
+    }
+    return HASHKIT_INVALID_ARGUMENT;
+
   case HASHKIT_HASH_FNV1_32:
     self->function= hashkit_fnv1_32;
     break;
+
   case HASHKIT_HASH_FNV1A_32:
     self->function= hashkit_fnv1a_32;
     break;
+
   case HASHKIT_HASH_HSIEH:
-#ifdef HAVE_HSIEH_HASH
-    self->function= hashkit_hsieh;
-    break;    
-#else
-    return HASHKIT_FAILURE;
-#endif
+    if (libhashkit_has_algorithm(HASHKIT_HASH_HSIEH))
+    {
+      self->function= hashkit_hsieh;
+      break;    
+    }
+    return HASHKIT_INVALID_ARGUMENT;
+
   case HASHKIT_HASH_MURMUR:
-#ifdef HAVE_MURMUR_HASH
-    self->function= hashkit_murmur;
-    break;    
-#else
-    return HASHKIT_FAILURE;
-#endif
+    if (libhashkit_has_algorithm(HASHKIT_HASH_MURMUR))
+    {
+      self->function= hashkit_murmur;
+      break;    
+    }
+    return HASHKIT_INVALID_ARGUMENT;
+
   case HASHKIT_HASH_JENKINS:
     self->function= hashkit_jenkins;
     break;    
+
   case HASHKIT_HASH_CUSTOM:
     return HASHKIT_INVALID_ARGUMENT;
+
+  case HASHKIT_HASH_DEFAULT:
+    self->function= hashkit_one_at_a_time;
+    break;
+
   case HASHKIT_HASH_MAX:
-  default:
+    self->function= hashkit_one_at_a_time;
     return HASHKIT_INVALID_HASH;
   }
 
@@ -74,6 +98,11 @@ hashkit_return_t hashkit_set_distribution_function(hashkit_st *self, hashkit_has
 
 static hashkit_return_t _set_custom_function(struct hashkit_st::hashkit_function_st *self, hashkit_hash_fn function, void *context)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_INVALID_ARGUMENT;
+  }
+
   if (function)
   {
     self->function= function;
@@ -87,11 +116,22 @@ static hashkit_return_t _set_custom_function(struct hashkit_st::hashkit_function
 
 hashkit_return_t hashkit_set_custom_function(hashkit_st *self, hashkit_hash_fn function, void *context)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_INVALID_ARGUMENT;
+  }
+
+
   return _set_custom_function(&self->base_hash, function, context);
 }
 
 hashkit_return_t hashkit_set_custom_distribution_function(hashkit_st *self, hashkit_hash_fn function, void *context)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_INVALID_ARGUMENT;
+  }
+
   return _set_custom_function(&self->distribution_hash, function, context);
 }
 
@@ -125,18 +165,14 @@ static hashkit_hash_algorithm_t get_function_type(const hashkit_hash_fn function
   {
     return HASHKIT_HASH_FNV1A_32;
   }
-#ifdef HAVE_HSIEH_HASH
   else if (function == hashkit_hsieh)
   {
     return HASHKIT_HASH_HSIEH;
   }
-#endif
-#ifdef HAVE_MURMUR_HASH
   else if (function == hashkit_murmur)
   {
     return HASHKIT_HASH_MURMUR;
   }
-#endif
   else if (function == hashkit_jenkins)
   {
     return HASHKIT_HASH_JENKINS;
@@ -147,10 +183,20 @@ static hashkit_hash_algorithm_t get_function_type(const hashkit_hash_fn function
 
 hashkit_hash_algorithm_t hashkit_get_function(const hashkit_st *self)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_HASH_DEFAULT;
+  }
+
   return get_function_type(self->base_hash.function);
 }
 
 hashkit_hash_algorithm_t hashkit_get_distribution_function(const hashkit_st *self)
 {
+  if (self == NULL)
+  {
+    return HASHKIT_HASH_DEFAULT;
+  }
+
   return get_function_type(self->distribution_hash.function);
 }

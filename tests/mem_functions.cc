@@ -3525,13 +3525,8 @@ static test_return_t pre_nonblock_binary(memcached_st *memc)
 
 static test_return_t pre_murmur(memcached_st *memc)
 {
-#ifdef HAVE_MURMUR_HASH
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR));
   return TEST_SUCCESS;
-#else
-  (void) memc;
-  return TEST_SKIPPED;
-#endif
 }
 
 static test_return_t pre_jenkins(memcached_st *memc)
@@ -3558,25 +3553,20 @@ static test_return_t pre_crc(memcached_st *memc)
 
 static test_return_t pre_hsieh(memcached_st *memc)
 {
-#ifdef HAVE_HSIEH_HASH
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_HSIEH));
   return TEST_SUCCESS;
-#else
-  (void) memc;
-  return TEST_SKIPPED;
-#endif
 }
 
 static test_return_t pre_hash_fnv1_64(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR));
 
   return TEST_SUCCESS;
 }
 
 static test_return_t pre_hash_fnv1a_64(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1A_64);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_FNV1A_64));
 
   return TEST_SUCCESS;
 }
@@ -4436,26 +4426,30 @@ static test_return_t hash_sanity_test (memcached_st *memc)
 
 static test_return_t hsieh_avaibility_test (memcached_st *memc)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_HSIEH));
+
   memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
 #ifdef HAVE_HSIEH_HASH
   expected_rc= MEMCACHED_SUCCESS;
 #endif
   memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
                                                 (uint64_t)MEMCACHED_HASH_HSIEH);
-  test_true(rc == expected_rc);
+  test_compare(expected_rc, rc);
 
   return TEST_SUCCESS;
 }
 
 static test_return_t murmur_avaibility_test (memcached_st *memc)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR));
+
   memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
 #ifdef HAVE_MURMUR_HASH
   expected_rc= MEMCACHED_SUCCESS;
 #endif
   memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
                                                 (uint64_t)MEMCACHED_HASH_MURMUR);
-  test_true(rc == expected_rc);
+  test_compare(expected_rc, rc);
 
   return TEST_SUCCESS;
 }
@@ -4467,10 +4461,8 @@ static test_return_t one_at_a_time_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_DEFAULT);
-    test_true(one_at_a_time_values[x] == hash_val);
+    test_compare(one_at_a_time_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_DEFAULT));
   }
 
   return TEST_SUCCESS;
@@ -4483,10 +4475,8 @@ static test_return_t md5_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MD5);
-    test_true(md5_values[x] == hash_val);
+    test_compare(md5_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MD5));
   }
 
   return TEST_SUCCESS;
@@ -4499,10 +4489,8 @@ static test_return_t crc_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_CRC);
-    test_true(crc_values[x] == hash_val);
+    test_compare(crc_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_CRC));
   }
 
   return TEST_SUCCESS;
@@ -4510,15 +4498,15 @@ static test_return_t crc_run (memcached_st *)
 
 static test_return_t fnv1_64_run (memcached_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_FNV1_64));
+
   uint32_t x;
   const char **ptr;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_64);
-    test_true(fnv1_64_values[x] == hash_val);
+    test_compare(fnv1_64_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_64));
   }
 
   return TEST_SUCCESS;
@@ -4526,15 +4514,15 @@ static test_return_t fnv1_64_run (memcached_st *)
 
 static test_return_t fnv1a_64_run (memcached_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_FNV1A_64));
+
   uint32_t x;
   const char **ptr;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_64);
-    test_true(fnv1a_64_values[x] == hash_val);
+    test_compare(fnv1a_64_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_64));
   }
 
   return TEST_SUCCESS;
@@ -4547,10 +4535,8 @@ static test_return_t fnv1_32_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_32);
-    test_true(fnv1_32_values[x] == hash_val);
+    test_compare(fnv1_32_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1_32));
   }
 
   return TEST_SUCCESS;
@@ -4563,10 +4549,8 @@ static test_return_t fnv1a_32_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_32);
-    test_true(fnv1a_32_values[x] == hash_val);
+    test_compare(fnv1a_32_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_FNV1A_32));
   }
 
   return TEST_SUCCESS;
@@ -4574,15 +4558,15 @@ static test_return_t fnv1a_32_run (memcached_st *)
 
 static test_return_t hsieh_run (memcached_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_HSIEH));
+
   uint32_t x;
   const char **ptr;
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_HSIEH);
-    test_true(hsieh_values[x] == hash_val);
+    test_compare(hsieh_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_HSIEH));
   }
 
   return TEST_SUCCESS;
@@ -4590,6 +4574,8 @@ static test_return_t hsieh_run (memcached_st *)
 
 static test_return_t murmur_run (memcached_st *)
 {
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR));
+
 #ifdef WORDS_BIGENDIAN
   (void)murmur_values;
   return TEST_SKIPPED;
@@ -4599,10 +4585,8 @@ static test_return_t murmur_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MURMUR);
-    test_true(murmur_values[x] == hash_val);
+    test_compare(murmur_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MURMUR));
   }
 
   return TEST_SUCCESS;
@@ -4616,24 +4600,20 @@ static test_return_t jenkins_run (memcached_st *)
 
   for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
   {
-    uint32_t hash_val;
-
-    hash_val= memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_JENKINS);
-    test_true(jenkins_values[x] == hash_val);
+    test_compare(jenkins_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_JENKINS));
   }
 
   return TEST_SUCCESS;
 }
 
-static uint32_t hash_md5_test_function(const char *string, size_t string_length, void *context)
+static uint32_t hash_md5_test_function(const char *string, size_t string_length, void *)
 {
-  (void)context;
   return libhashkit_md5(string, string_length);
 }
 
-static uint32_t hash_crc_test_function(const char *string, size_t string_length, void *context)
+static uint32_t hash_crc_test_function(const char *string, size_t string_length, void *)
 {
-  (void)context;
   return libhashkit_crc32(string, string_length);
 }
 

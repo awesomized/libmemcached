@@ -221,12 +221,9 @@ scanner_variable_t distribution_strings[]= {
 scanner_variable_t hash_strings[]= {
   { ARRAY,  make_scanner_string("--HASH=CRC"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1A_32"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=FNV1A_64"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1_32"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=FNV1_64"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=JENKINS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=MD5"), scanner_string_null, NULL },
-  { ARRAY,  make_scanner_string("--HASH=MURMUR"), scanner_string_null, NULL },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
 

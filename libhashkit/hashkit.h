@@ -48,6 +48,7 @@
 #include <libhashkit/visibility.h>
 #include <libhashkit/configure.h>
 #include <libhashkit/types.h>
+#include <libhashkit/has.h>
 #include <libhashkit/algorithm.h>
 #include <libhashkit/behavior.h>
 #include <libhashkit/digest.h>
