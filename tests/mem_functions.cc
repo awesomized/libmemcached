@@ -52,6 +52,7 @@
 #include <cerrno>
 #include <memory>
 #include <pthread.h>
+#include <semaphore.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -824,7 +825,6 @@ static test_return_t bad_key_test(memcached_st *memc)
   const char *key= "foo bad";
   uint32_t flags;
   memcached_st *memc_clone;
-  size_t max_keylen= 0xffff;
 
   uint64_t query_id= memcached_query_id(memc);
   
@@ -886,8 +886,6 @@ static test_return_t bad_key_test(memcached_st *memc)
                  memcached_mget_by_key(memc_clone, "foo daddy", 9, keys, key_lengths, 1));
     test_compare(query_id +1, memcached_query_id(memc_clone));
 
-    max_keylen= 250;
-
     /* The following test should be moved to the end of this function when the
        memcached server is updated to allow max size length of the keys in the
        binary protocol
@@ -896,15 +894,16 @@ static test_return_t bad_key_test(memcached_st *memc)
                  memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
     std::vector <char> longkey;
-    longkey.insert(longkey.end(), max_keylen +1, 'a');
-    test_compare(longkey.size(), max_keylen +1);
+    longkey.insert(longkey.end(), MEMCACHED_MAX_KEY, 'a');
+    test_compare(longkey.size(), size_t(MEMCACHED_MAX_KEY));
     {
       size_t string_length;
-      test_null(memcached_get(memc_clone, &longkey[0], max_keylen, &string_length, &flags, &rc));
+      // We subtract 1
+      test_null(memcached_get(memc_clone, &longkey[0], longkey.size() -1, &string_length, &flags, &rc));
       test_compare(MEMCACHED_NOTFOUND, rc);
       test_zero(string_length);
 
-      test_null(memcached_get(memc_clone, &longkey[0], max_keylen +1, &string_length, &flags, &rc));
+      test_null(memcached_get(memc_clone, &longkey[0], longkey.size(), &string_length, &flags, &rc));
       test_compare(MEMCACHED_BAD_KEY_PROVIDED, rc);
       test_zero(string_length);
     }
@@ -4159,10 +4158,9 @@ static test_return_t noreply_test(memcached_st *memc)
 static test_return_t analyzer_test(memcached_st *memc)
 {
   memcached_return_t rc;
-  memcached_stat_st *memc_stat;
   memcached_analysis_st *report;
 
-  memc_stat= memcached_stat(memc, NULL, &rc);
+  memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
   test_compare(MEMCACHED_SUCCESS, rc);
   test_true(memc_stat);
 
@@ -4195,25 +4193,46 @@ static test_return_t dump_test(memcached_st *memc)
 }
 
 struct test_pool_context_st {
+  volatile memcached_return_t rc;
   memcached_pool_st* pool;
   memcached_st* mmc;
+  sem_t lock;
+
+  test_pool_context_st(memcached_pool_st *pool_arg, memcached_st *memc_arg):
+    rc(MEMCACHED_FAILURE),
+    pool(pool_arg),
+    mmc(memc_arg)
+  {
+    sem_init(&lock, 0, 0);
+  }
+
+  ~test_pool_context_st()
+  {
+    sem_destroy(&lock);
+  }
 };
 
 static void* connection_release(void *arg)
 {
   test_pool_context_st *resource= static_cast<test_pool_context_st *>(arg);
+  assert(resource);
+  if (resource == NULL)
+  {
+    abort();
+  }
 
-  usleep(250);
+  sem_wait(&resource->lock);
   // Release all of the memc we are holding
-  assert(memcached_success(memcached_pool_push(resource->pool, resource->mmc)));
-  return arg;
+  resource->rc= memcached_pool_push(resource->pool, resource->mmc);
+
+  pthread_exit(arg);
 }
 
 #define POOL_SIZE 10
 static test_return_t connection_pool_test(memcached_st *memc)
 {
   memcached_pool_st* pool= memcached_pool_create(memc, 5, POOL_SIZE);
-  test_true(pool != NULL);
+  test_true(pool);
   memcached_st *mmc[POOL_SIZE];
   memcached_return_t rc;
 
@@ -4221,34 +4240,96 @@ static test_return_t connection_pool_test(memcached_st *memc)
   for (size_t x= 0; x < POOL_SIZE; ++x)
   {
     mmc[x]= memcached_pool_pop(pool, false, &rc);
-    test_true(mmc[x] != NULL);
+    test_true(mmc[x]);
     test_compare(MEMCACHED_SUCCESS, rc);
   }
 
   // All memc should be gone
-  test_true(memcached_pool_pop(pool, false, &rc) == NULL);
+  test_null(memcached_pool_pop(pool, false, &rc));
   test_compare(MEMCACHED_SUCCESS, rc);
 
-  pthread_t tid;
-  test_pool_context_st item= { pool, mmc[9] };
+  /*
+    @note This comment was written to describe what was believed to be the original authors intent.
 
-  pthread_create(&tid, NULL, connection_release, &item);
-  mmc[9]= memcached_pool_pop(pool, true, &rc);
+    This portion of the test creates a thread that will wait until told to free a memcached_st
+    that will be grabbed by the main thread.
+
+    It is believed that this tests whether or not we are handling ownership correctly.
+  */
+  {
+    pthread_t tid;
+    test_pool_context_st item(pool, mmc[9]);
+
+    test_zero(pthread_create(&tid, NULL, connection_release, &item));
+    mmc[9]= memcached_pool_pop(pool, true, &rc);
+    if (rc != MEMCACHED_SUCCESS)
+    {
+      sem_post(&item.lock);
+      pthread_join(tid, NULL);
+    }
+    else if (rc == MEMCACHED_TIMEOUT)
+    {
+      Error << "Possible timing issue with memcached_pool_pop";
+    }
+    else
+    {
+      test_compare(MEMCACHED_SUCCESS, rc);
+    }
+
+    sem_post(&item.lock);
+    pthread_join(tid, NULL);
+    if (rc == MEMCACHED_SUCCESS)
+    {
+      test_compare(MEMCACHED_SUCCESS, item.rc);
+      test_true(mmc[9]);
+    }
+  }
+
+  // Release them..
+  for (size_t x= 0; x < POOL_SIZE; ++x)
+  {
+    if (mmc[x])
+    {
+      test_compare(MEMCACHED_SUCCESS, memcached_pool_push(pool, mmc[x]));
+    }
+  }
+  test_true(memcached_pool_destroy(pool) == memc);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t connection_pool2_test(memcached_st *memc)
+{
+  memcached_pool_st* pool= memcached_pool_create(memc, 5, POOL_SIZE);
+  test_true(pool);
+  memcached_st *mmc[POOL_SIZE];
+  memcached_return_t rc;
+
+  // Fill up our array that we will store the memc that are in the pool
+  for (size_t x= 0; x < POOL_SIZE; ++x)
+  {
+    mmc[x]= memcached_pool_pop(pool, false, &rc);
+    test_true(mmc[x]);
+    test_compare(MEMCACHED_SUCCESS, rc);
+  }
+
+  // All memc should be gone
+  test_null(memcached_pool_pop(pool, false, &rc));
   test_compare(MEMCACHED_SUCCESS, rc);
-  pthread_join(tid, NULL);
-  test_true(mmc[9]);
-  const char *key= "key";
-  size_t keylen= strlen(key);
 
   // verify that I can do ops with all connections
   test_compare(MEMCACHED_SUCCESS,
-               memcached_set(mmc[0], key, keylen, "0", 1, 0, 0));
+               memcached_set(mmc[0],
+                             test_literal_param("key"),
+                             "0", 1, 0, 0));
 
   for (uint64_t x= 0; x < POOL_SIZE; ++x)
   {
     uint64_t number_value;
     test_compare(MEMCACHED_SUCCESS,
-                 memcached_increment(mmc[x], key, keylen, 1, &number_value));
+                 memcached_increment(mmc[x], 
+                                     test_literal_param("key"),
+                                     1, &number_value));
     test_compare(number_value, (x+1));
   }
 
@@ -4266,8 +4347,8 @@ static test_return_t connection_pool_test(memcached_st *memc)
   mmc[0]= memcached_pool_pop(pool, false, &rc);
   test_true(mmc[0]);
 
-  rc= memcached_pool_behavior_set(pool, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, 9999);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_pool_behavior_set(pool, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK, 9999));
 
   mmc[1]= memcached_pool_pop(pool, false, &rc);
   test_true(mmc[1]);
@@ -4428,13 +4509,9 @@ static test_return_t hsieh_avaibility_test (memcached_st *memc)
 {
   test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_HSIEH));
 
-  memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
-#ifdef HAVE_HSIEH_HASH
-  expected_rc= MEMCACHED_SUCCESS;
-#endif
-  memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
-                                                (uint64_t)MEMCACHED_HASH_HSIEH);
-  test_compare(expected_rc, rc);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
+                                      (uint64_t)MEMCACHED_HASH_HSIEH));
 
   return TEST_SUCCESS;
 }
@@ -4443,13 +4520,8 @@ static test_return_t murmur_avaibility_test (memcached_st *memc)
 {
   test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR));
 
-  memcached_return_t expected_rc= MEMCACHED_INVALID_ARGUMENTS;
-#ifdef HAVE_MURMUR_HASH
-  expected_rc= MEMCACHED_SUCCESS;
-#endif
-  memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH,
-                                                (uint64_t)MEMCACHED_HASH_MURMUR);
-  test_compare(expected_rc, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_MURMUR));
 
   return TEST_SUCCESS;
 }
@@ -5836,7 +5908,8 @@ test_st tests[] ={
   {"delete_through", true, (test_callback_fn*)delete_through },
   {"noreply", true, (test_callback_fn*)noreply_test},
   {"analyzer", true, (test_callback_fn*)analyzer_test},
-  {"connectionpool", true, (test_callback_fn*)connection_pool_test },
+  {"memcached_pool_st", true, (test_callback_fn*)connection_pool_test },
+  {"memcached_pool_st #2", true, (test_callback_fn*)connection_pool2_test },
   {"memcached_pool_test", true, (test_callback_fn*)memcached_pool_test },
   {"test_get_last_disconnect", true, (test_callback_fn*)test_get_last_disconnect},
   {"verbosity", true, (test_callback_fn*)test_verbosity},
