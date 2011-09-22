@@ -164,14 +164,14 @@ static bool grow_pool(memcached_pool_st* pool)
 
 static inline memcached_pool_st *_pool_create(memcached_st* master, uint32_t initial, uint32_t max)
 {
-  if (! initial || ! max || initial > max)
+  if (initial == 0 or max == 0 or (initial > max))
   {
     errno= EINVAL;
     return NULL;
   }
 
   memcached_pool_st *object= new (std::nothrow) memcached_pool_st(master, max);
-  if (not object)
+  if (object == NULL)
   {
     errno= ENOMEM; // Set this for the failed calloc
     return NULL;
@@ -199,12 +199,13 @@ memcached_pool_st * memcached_pool(const char *option_string, size_t option_stri
 {
   memcached_st *memc= memcached(option_string, option_string_length);
 
-  if (not memc)
+  if (memc == NULL)
+  {
     return NULL;
+  }
 
-  memcached_pool_st *self;
-  self= memcached_pool_create(memc, memc->configure.initial_pool_size, memc->configure.max_pool_size);
-  if (not self)
+  memcached_pool_st *self= memcached_pool_create(memc, memc->configure.initial_pool_size, memc->configure.max_pool_size);
+  if (self == NULL)
   {
     memcached_free(memc);
     errno= ENOMEM;
@@ -219,8 +220,10 @@ memcached_pool_st * memcached_pool(const char *option_string, size_t option_stri
 
 memcached_st*  memcached_pool_destroy(memcached_pool_st* pool)
 {
-  if (not pool)
+  if (pool == NULL)
+  {
     return NULL;
+  }
 
   // Legacy that we return the original structure
   memcached_st *ret= NULL;
@@ -240,11 +243,17 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
                                  bool block,
                                  memcached_return_t *rc)
 {
-  assert(pool);
-  assert(rc);
-  if (not pool ||  not rc)
+  memcached_return_t not_used;
+  if (rc == NULL)
   {
+    rc= &not_used;
+  }
+
+  if (pool == NULL)
+  {
+    *rc= MEMCACHED_INVALID_ARGUMENTS;
     errno= EINVAL;
+
     return NULL;
   }
 
@@ -262,18 +271,29 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
     }
     else if (pool->current_size == pool->size)
     {
-      if (not block)
+      if (block == false)
       {
         *rc= mutex_exit(&pool->mutex); // this should be a different error
         return NULL;
       }
 
-      if (pthread_cond_wait(&pool->cond, &pool->mutex) == -1)
+      struct timespec time_to_wait= {0, 0};
+      time_to_wait.tv_sec = time(NULL) +5;
+      int thread_ret;
+      if ((thread_ret= pthread_cond_timedwait(&pool->cond, &pool->mutex, &time_to_wait)) != 0)
       {
-        int err= errno;
         mutex_exit(&pool->mutex);
-        errno= err;
-        *rc= MEMCACHED_ERRNO;
+        errno= thread_ret;
+
+        if (thread_ret == ETIMEDOUT)
+        {
+          *rc= MEMCACHED_TIMEOUT;
+        }
+        else
+        {
+          *rc= MEMCACHED_ERRNO;
+        }
+
         return NULL;
       }
     }
@@ -283,8 +303,7 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
       *rc= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
       return NULL;
     }
-  }
-  while (ret == NULL);
+  } while (ret == NULL);
 
   *rc= mutex_exit(&pool->mutex);
 
@@ -293,16 +312,25 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
 
 memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *released)
 {
-  if (not pool)
+  if (pool == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  if (released == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_return_t rc= mutex_enter(&pool->mutex);
 
   if (rc != MEMCACHED_SUCCESS)
+  {
     return rc;
+  }
 
   /* Someone updated the behavior on the object.. */
-  if (not pool->compare_version(released))
+  if (pool->compare_version(released) == false)
   {
     memcached_free(released);
     if (not (released= memcached_clone(NULL, pool->master)))
@@ -313,7 +341,7 @@ memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *re
 
   pool->server_pool[++pool->firstfree]= released;
 
-  if (pool->firstfree == 0 && pool->current_size == pool->size)
+  if (pool->firstfree == 0 and pool->current_size == pool->size)
   {
     /* we might have people waiting for a connection.. wake them up :-) */
     pthread_cond_broadcast(&pool->cond);
@@ -321,7 +349,9 @@ memcached_return_t memcached_pool_push(memcached_pool_st* pool, memcached_st *re
 
   memcached_return_t rval= mutex_exit(&pool->mutex);
   if (rc == MEMCACHED_SOME_ERRORS)
+  {
     return rc;
+  }
 
   return rval;
 }
@@ -331,8 +361,10 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
                                                memcached_behavior_t flag,
                                                uint64_t data)
 {
-  if (not pool)
+  if (pool == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
@@ -377,8 +409,10 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool,
                                                memcached_behavior_t flag,
                                                uint64_t *value)
 {
-  if (! pool)
+  if (pool == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_return_t rc= mutex_enter(&pool->mutex);
   if (rc != MEMCACHED_SUCCESS)
