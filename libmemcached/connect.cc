@@ -212,9 +212,9 @@ static inline void set_socket_nonblocking(memcached_server_st *server)
     do
     {
       rval= fcntl(server->fd, F_SETFL, flags | O_NONBLOCK);
-    } while (rval == -1 && (errno == EINTR || errno == EAGAIN));
+    } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
 
-    unlikely (rval == -1)
+    if (rval == -1)
     {
       memcached_set_errno(*server, errno, NULL);
     }
