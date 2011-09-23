@@ -210,7 +210,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     return rc;
   }
 
-  unlikely (ptr->flags.use_udp)
+  if (ptr->flags.use_udp)
   {
     return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
   }
@@ -228,7 +228,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   }
 
   bool is_group_key_set= false;
-  if (group_key && group_key_length)
+  if (group_key and group_key_length)
   {
     if (memcached_failed(memcached_key_test(*ptr, (const char * const *)&group_key, &group_key_length, 1)))
     {

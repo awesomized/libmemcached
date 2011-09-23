@@ -50,6 +50,7 @@ AC_DEFUN([PANDORA_PLATFORM],[
     TARGET_LINUX="true"
     AC_SUBST(TARGET_LINUX)
     AC_DEFINE([TARGET_OS_LINUX], [1], [Whether we build for Linux])
+    AM_CONDITIONAL(TARGET_LINUX, [test "x${TARGET_LINUX}" = "xtrue"])
       ;;
     *darwin*)
       TARGET_OSX="true"
