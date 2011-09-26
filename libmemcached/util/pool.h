@@ -63,6 +63,11 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
 LIBMEMCACHED_API
 memcached_return_t memcached_pool_push(memcached_pool_st* pool,
                                        memcached_st* mmc);
+LIBMEMCACHED_API
+  memcached_return_t memcached_pool_release(memcached_pool_st* pool, memcached_st* mmc);
+
+LIBMEMCACHED_API
+memcached_st* memcached_pool_fetch(memcached_pool_st*, struct timespec* relative_time, memcached_return_t* rc);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_pool_behavior_set(memcached_pool_st *ptr,

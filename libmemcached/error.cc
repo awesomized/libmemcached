@@ -361,10 +361,12 @@ memcached_return_t memcached_set_errno(memcached_server_st& self, int local_errn
 
 static void _error_print(const memcached_error_t *error)
 {
-  if (not error)
+  if (error == NULL)
+  {
     return;
+  }
 
-  if (not error->size)
+  if (error->size == 0)
   {
     fprintf(stderr, "%s\n", memcached_strerror(NULL, error->rc) );
   }
