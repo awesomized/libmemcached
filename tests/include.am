@@ -420,23 +420,3 @@ helgrind-hash: tests/testhashkit
 
 helgrind-hashplus: tests/hash_plus
 	@$(HELGRIND_COMMAND) tests/hash_plus
-
-.PHONY += helgrind
-helgrind: helgrind-cycle helgrind-mem helgrind-udp helgrind-plus helgrind-hash helgrind-hashplus
-
-.PHONY += cachegrind
-CLEANFILES += tests/cachegrind.out
-cachegrind:
-	rm -f tests/cachegrind.out.*
-	$(LIBTOOL) --mode=execute valgrind --tool=cachegrind --cachegrind-out-file=tests/cachegrind.out.%p --branch-sim=yes tests/testapp
-	cg_annotate tests/cachegrind.out.* --auto=yes > tests/cachegrind.out
-
-.PHONY += callgrind
-CLEANFILES += tests/callgrind.out
-callgrind:
-	rm -f tests/callgrind.out.*
-	$(LIBTOOL) --mode=execute valgrind --tool=callgrind --callgrind-out-file=tests/callgrind.out.%p  tests/testapp
-	callgrind_annotate tests/callgrind.out.* --auto=yes > tests/callgrind.out
-
-hudson-valgrind: tests/testapp
-	$(VALGRIND_COMMAND) --log-file=tests/valgrind.out tests/testapp

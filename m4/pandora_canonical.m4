@@ -214,10 +214,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [Define if system doesn't define])
   ])
 
-  AC_CHECK_LIBM
-  dnl Bug on FreeBSD - LIBM check doesn't set the damn variable
-  AC_SUBST([LIBM])
-  
   AC_CHECK_FUNC(setsockopt, [], [AC_CHECK_LIB(socket, setsockopt)])
   AC_CHECK_FUNC(bind, [], [AC_CHECK_LIB(bind, bind)])
 

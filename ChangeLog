@@ -1,3 +1,9 @@
+0.53
+  * Fix for FreeBSD/OpenBSD and -lm
+  * Added memcached_exist()
+  * Fix for memory when using config test.
+  * CLI gained --quiet
+
 0.52 Sun Sep 11 22:16:08 PDT 2011
   * Build fixes for Ubuntu/Suse.
   * Fixes for OSX Lion.
