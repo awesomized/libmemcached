@@ -45,6 +45,7 @@ AC_DEFUN([PANDORA_PLATFORM],[
 
   PANDORA_OPTIMIZE_BITFIELD=1
 
+  TARGET_LINUX="false"
   case "$target_os" in
     *linux*)
     TARGET_LINUX="true"

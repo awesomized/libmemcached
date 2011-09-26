@@ -80,12 +80,15 @@ man_MANS+= \
 	   docs/man/memcached_mget_by_key.3 \
 	   docs/man/memcached_mget_execute.3  \
 	   docs/man/memcached_mget_execute_by_key.3  \
+	   docs/man/memcached_pool.3 \
 	   docs/man/memcached_pool_behavior_get.3 \
 	   docs/man/memcached_pool_behavior_set.3 \
 	   docs/man/memcached_pool_create.3 \
 	   docs/man/memcached_pool_destroy.3 \
+	   docs/man/memcached_pool_fetch.3 \
 	   docs/man/memcached_pool_pop.3 \
 	   docs/man/memcached_pool_push.3 \
+	   docs/man/memcached_pool_release.3 \
 	   docs/man/memcached_pool_st.3 \
 	   docs/man/memcached_prepend.3 \
 	   docs/man/memcached_prepend_by_key.3 \
