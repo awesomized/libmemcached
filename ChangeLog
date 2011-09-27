@@ -1,4 +1,4 @@
-0.53
+0.53 Mon Sep 26 20:50:33 PDT 2011
   * Fix for FreeBSD/OpenBSD and -lm
   * Added memcached_exist()
   * Fix for memory when using config test.
