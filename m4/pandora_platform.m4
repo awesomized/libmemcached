@@ -45,13 +45,11 @@ AC_DEFUN([PANDORA_PLATFORM],[
 
   PANDORA_OPTIMIZE_BITFIELD=1
 
-  TARGET_LINUX="false"
   case "$target_os" in
     *linux*)
     TARGET_LINUX="true"
     AC_SUBST(TARGET_LINUX)
     AC_DEFINE([TARGET_OS_LINUX], [1], [Whether we build for Linux])
-    AM_CONDITIONAL(TARGET_LINUX, [test "x${TARGET_LINUX}" = "xtrue"])
       ;;
     *darwin*)
       TARGET_OSX="true"
@@ -90,6 +88,7 @@ AC_DEFUN([PANDORA_PLATFORM],[
       AM_CFLAGS="${AM_CFLAGS} -I\${top_srcdir}/win32/mingw -I\${top_builddir}/win32/mingw -I\${top_srcdir}/win32 -I\${top_builddir}/win32"
       ;;
   esac
+  AM_CONDITIONAL(TARGET_LINUX, [test "x${TARGET_LINUX}" = "xtrue"])
   AM_CONDITIONAL(BUILD_WIN32, [test "x${TARGET_WINDOWS}" = "xtrue"])
 
   AC_SUBST(PANDORA_OPTIMIZE_BITFIELD)
