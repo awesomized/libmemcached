@@ -84,7 +84,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
 
   if (ptr->flags.binary_protocol)
   {
-    likely (! expiration)
+    if (expiration == 0)
     {
       rc= binary_delete(ptr, server_key, key, key_length, to_write);
     }
@@ -97,7 +97,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   {
     int send_length;
 
-    unlikely (expiration)
+    if (expiration)
     {
        if ((instance->major_version == 1 &&
             instance->minor_version > 2) ||
