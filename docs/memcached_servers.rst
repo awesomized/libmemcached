@@ -20,7 +20,7 @@ SYNOPSIS
 
 .. c:function:: memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list) 
 
-.. c:function:: memcached_server_instance_st memcached_server_by_key (const memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error)
+.. c:function:: memcached_server_instance_st memcached_server_by_key (memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error)
 
 .. c:function:: memcached_server_instance_st memcached_server_get_last_disconnect (const memcached_st *ptr)
 

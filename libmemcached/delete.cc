@@ -45,188 +45,135 @@ memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t k
                                  key, key_length, expiration);
 }
 
-static inline memcached_return_t binary_delete(memcached_st *ptr,
-                                               uint32_t server_key,
-                                               const char *key,
-                                               size_t key_length,
-                                               bool flush);
-
-memcached_return_t memcached_delete_by_key(memcached_st *ptr,
-                                           const char *group_key, size_t group_key_length,
-                                           const char *key, size_t key_length,
-                                           time_t expiration)
+static inline memcached_return_t ascii_delete(memcached_st *ptr,
+                                              memcached_server_write_instance_st instance,
+                                              uint32_t ,
+                                              const char *key,
+                                              size_t key_length,
+                                              uint64_t expiration,
+                                              bool& reply,
+                                              bool& flush)
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  memcached_server_write_instance_st instance;
+  int send_length;
 
-  LIBMEMCACHED_MEMCACHED_DELETE_START();
-
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (expiration)
   {
-    return rc;
-  }
-
-  rc= memcached_validate_key_length(key_length,
-                                    ptr->flags.binary_protocol);
-
-  if (memcached_failed(rc))
-  {
-    return rc;
-  }
-
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  instance= memcached_server_instance_fetch(ptr, server_key);
-
-  bool to_write= (ptr->flags.buffer_requests) ? false : true;
-
-  bool no_reply= (ptr->flags.no_reply);
-
-  if (ptr->flags.binary_protocol)
-  {
-    if (expiration == 0)
+    if ((instance->major_version == 1 and
+         instance->minor_version > 2) or
+        instance->major_version > 1)
     {
-      rc= binary_delete(ptr, server_key, key, key_length, to_write);
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+                                 memcached_literal_param("Memcached server version does not allow expiration of deleted items"));
     }
     else
     {
-      rc= MEMCACHED_INVALID_ARGUMENTS;
+      /* ensure that we are connected, otherwise we might bump the
+       * command counter before connection */
+      memcached_return_t rc;
+      if ((rc= memcached_connect(instance)) != MEMCACHED_SUCCESS)
+      {
+        WATCHPOINT_ERROR(rc);
+        return rc;
+      }
+
+      if (instance->minor_version == 0)
+      {
+        if (reply == false or flush == false)
+        {
+          /* We might get out of sync with the server if we send this command
+           * to a server newer than 1.2.x..  enable reply and buffered mode.
+         */
+          flush= true;
+          if (reply == false)
+          {
+            memcached_server_response_increment(instance);
+          }
+          reply= true;
+        }
+      }
+
+      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                            "delete %.*s%.*s %u%s\r\n",
+                            memcached_print_array(ptr->_namespace),
+                            (int) key_length, key,
+                            (uint32_t)expiration,
+                            reply ? "" :  " noreply");
     }
   }
   else
   {
-    int send_length;
+    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
+                          "delete %.*s%.*s%s\r\n",
+                          memcached_print_array(ptr->_namespace),
+                          (int)key_length, key, 
+                          reply ? "" :  " noreply");
+  }
 
-    if (expiration)
-    {
-       if ((instance->major_version == 1 &&
-            instance->minor_version > 2) ||
-           instance->major_version > 1)
-       {
-         rc= MEMCACHED_INVALID_ARGUMENTS;
-         goto error;
-       }
-       else
-       {
-          /* ensure that we are connected, otherwise we might bump the
-           * command counter before connection */
-          if ((rc= memcached_connect(instance)) != MEMCACHED_SUCCESS)
-          {
-            WATCHPOINT_ERROR(rc);
-            return rc;
-          }
-
-          if (instance->minor_version == 0)
-          {
-             if (no_reply or to_write == false)
-             {
-                /* We might get out of sync with the server if we
-                 * send this command to a server newer than 1.2.x..
-                 * disable no_reply and buffered mode.
-                 */
-                to_write= true;
-                if (no_reply)
-                   memcached_server_response_increment(instance);
-                no_reply= false;
-             }
-          }
-          send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                                "delete %.*s%.*s %u%s\r\n",
-                                memcached_print_array(ptr->_namespace),
-                                (int) key_length, key,
-                                (uint32_t)expiration,
-                                no_reply ? " noreply" :"" );
-       }
-    }
-    else
-    {
-      send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                            "delete %.*s%.*s%s\r\n",
-                            memcached_print_array(ptr->_namespace),
-                            (int)key_length, key, no_reply ? " noreply" :"");
-    }
-
-    if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
-    {
-      rc=  memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
+  {
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-      goto error;
-    }
+  }
 
-    if (ptr->flags.use_udp and to_write == false)
+  if (ptr->flags.use_udp and flush == false)
+  {
+    if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
     {
-      if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-        return MEMCACHED_WRITE_FAILURE;
-
-      if (send_length + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-      {
-        memcached_io_write(instance, NULL, 0, true);
-      }
+      return MEMCACHED_WRITE_FAILURE;
     }
 
-    rc= memcached_do(instance, buffer, (size_t)send_length, to_write);
-  }
-
-  if (rc != MEMCACHED_SUCCESS)
-  {
-    goto error;
-  }
-
-  if (to_write == false)
-  {
-    rc= MEMCACHED_BUFFERED;
-  }
-  else if (no_reply == false)
-  {
-    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-    if (rc == MEMCACHED_DELETED)
+    if (send_length +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      rc= MEMCACHED_SUCCESS;
+      memcached_io_write(instance, NULL, 0, true);
     }
   }
 
-  if (rc == MEMCACHED_SUCCESS and ptr->delete_trigger)
-  {
-    ptr->delete_trigger(ptr, key, key_length);
-  }
-
-error:
-  LIBMEMCACHED_MEMCACHED_DELETE_END();
-  return rc;
+  return memcached_do(instance, buffer, (size_t)send_length, flush);
 }
 
 static inline memcached_return_t binary_delete(memcached_st *ptr,
+                                               memcached_server_write_instance_st instance,
                                                uint32_t server_key,
                                                const char *key,
                                                size_t key_length,
-                                               bool flush)
+                                               time_t expiration,
+                                               bool& reply,
+                                               bool& flush)
 {
-  memcached_server_write_instance_st instance;
   protocol_binary_request_delete request= {};
 
-  instance= memcached_server_instance_fetch(ptr, server_key);
+  // No expiration is supported in the binary protocol
+  if (expiration)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  if (ptr->flags.no_reply)
+  if (reply)
   {
-    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
   }
   else
   {
-    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
   }
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(ptr->_namespace)));
 
-  if (ptr->flags.use_udp && ! flush)
+  if (ptr->flags.use_udp and flush == false)
   {
     size_t cmd_size= sizeof(request.bytes) + key_length;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
+    {
       return MEMCACHED_WRITE_FAILURE;
+    }
 
-    if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+    if (cmd_size +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
+    {
       memcached_io_write(instance, NULL, 0, true);
+    }
   }
 
   struct libmemcached_io_vector_st vector[]=
@@ -243,7 +190,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
     memcached_io_reset(instance);
   }
 
-  unlikely (ptr->number_of_replicas > 0)
+  if (ptr->number_of_replicas > 0)
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
 
@@ -268,5 +215,84 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
     }
   }
 
+  return rc;
+}
+
+memcached_return_t memcached_delete_by_key(memcached_st *ptr,
+                                           const char *group_key, size_t group_key_length,
+                                           const char *key, size_t key_length,
+                                           time_t expiration)
+{
+  LIBMEMCACHED_MEMCACHED_DELETE_START();
+
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr)))
+  {
+    return rc;
+  }
+
+  rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol);
+  if (memcached_failed(rc))
+  {
+    return rc;
+  }
+  
+  // If a delete trigger exists, we need a response, so no buffering/noreply
+  if (ptr->delete_trigger)
+  {
+    if (ptr->flags.buffer_requests)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+                                 memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
+    }
+
+    if (ptr->flags.no_reply)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+                                 memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
+    }
+  }
+
+
+  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+
+  bool to_write= (ptr->flags.buffer_requests) ? false : true;
+
+  // Invert the logic to make it simpler to read the code
+  bool reply= (ptr->flags.no_reply) ? false : true;
+
+  if (ptr->flags.binary_protocol)
+  {
+    rc= binary_delete(ptr, instance, server_key, key, key_length, expiration, reply, to_write);
+  }
+  else
+  {
+    rc= ascii_delete(ptr, instance, server_key, key, key_length, expiration, reply, to_write);
+  }
+
+  if (rc == MEMCACHED_SUCCESS)
+  {
+    if (to_write == false)
+    {
+      rc= MEMCACHED_BUFFERED;
+    }
+    else if (reply)
+    {
+      char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+      rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+      if (rc == MEMCACHED_DELETED)
+      {
+        rc= MEMCACHED_SUCCESS;
+      }
+    }
+
+    if (rc == MEMCACHED_SUCCESS and ptr->delete_trigger)
+    {
+      ptr->delete_trigger(ptr, key, key_length);
+    }
+  }
+
+  LIBMEMCACHED_MEMCACHED_DELETE_END();
   return rc;
 }

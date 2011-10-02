@@ -3802,10 +3802,10 @@ static test_return_t set_namespace(memcached_st *memc)
   const char *key= "mine";
   char *value;
 
-  /* Make sure be default none exists */
+  // Make sure we default to a null namespace
   value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
   test_null(value);
-  test_compare_got(MEMCACHED_FAILURE, rc, memcached_strerror(NULL, rc));
+  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
 
   /* Test a clean set */
   test_compare(MEMCACHED_SUCCESS,
@@ -4358,6 +4358,10 @@ static void* connection_release(void *arg)
 
 static test_return_t connection_pool3_test(memcached_st *memc)
 {
+#ifdef __APPLE__
+  return TEST_SKIPPED;
+#endif
+
   memcached_pool_st* pool= memcached_pool_create(memc, 1, 1);
   test_true(pool);
 
@@ -4385,6 +4389,7 @@ static test_return_t connection_pool3_test(memcached_st *memc)
 
   memcached_return_t rc;
   memcached_st *pop_memc;
+  // We do a hard loop, and try N times
   int counter= 5;
   do
   {
@@ -4394,8 +4399,9 @@ static test_return_t connection_pool3_test(memcached_st *memc)
     if (memcached_failed(rc))
     {
       test_null(pop_memc);
+      test_true(rc != MEMCACHED_TIMEOUT); // As long as relative_time is zero, MEMCACHED_TIMEOUT is invalid
     }
-  } while (rc == MEMCACHED_TIMEOUT and --counter);
+  } while (--counter);
 
   if (memcached_failed(rc)) // Cleanup thread since we will exit once we test.
   {

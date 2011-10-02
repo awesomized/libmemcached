@@ -120,6 +120,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/backtrace.hpp>
 #include <libmemcached/assert.hpp>
 #include <libmemcached/server.hpp>
+#include <libmemcached/key.hpp>
 #endif
 
 #include <libmemcached/continuum.hpp>
@@ -154,42 +155,8 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
-#ifdef __cplusplus
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_key_test(const memcached_st& memc,
-                                      const char * const *keys,
-                                      const size_t *key_length,
-                                      size_t number_of_keys);
-#endif
-
 LIBMEMCACHED_LOCAL
 memcached_return_t memcached_purge(memcached_server_write_instance_st ptr);
-
-
-static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
-{
-  if (key_length == 0)
-  {
-    return MEMCACHED_BAD_KEY_PROVIDED;
-  }
-
-  if (binary)
-  {
-    if (key_length > 0xffff)
-    {
-      return MEMCACHED_BAD_KEY_PROVIDED;
-    }
-  }
-  else
-  {
-    if (key_length >= MEMCACHED_MAX_KEY)
-    {
-      return MEMCACHED_BAD_KEY_PROVIDED;
-    }
-  }
-
-  return MEMCACHED_SUCCESS;
-}
 
 #ifdef __cplusplus
 }

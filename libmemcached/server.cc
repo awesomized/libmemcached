@@ -258,7 +258,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
+memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
                                                      const char *key,
                                                      size_t key_length,
                                                      memcached_return_t *error)

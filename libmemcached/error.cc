@@ -62,7 +62,9 @@ static void _set(memcached_server_st& server, memcached_st& memc)
 
   memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
   if (not error) // Bad business if this happens
+  {
     return;
+  }
 
   memcpy(error, memc.error_messages, sizeof(memcached_error_t));
   error->next= server.error_messages;

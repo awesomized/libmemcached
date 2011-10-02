@@ -25,12 +25,13 @@ noinst_HEADERS+= \
 		 libmemcached/io.h \
 		 libmemcached/io.hpp \
 		 libmemcached/is.h \
+		 libmemcached/key.hpp \
 		 libmemcached/libmemcached_probes.h \
+		 libmemcached/memcached/protocol_binary.h \
+		 libmemcached/memcached/vbucket.h \
 		 libmemcached/memory.h \
 		 libmemcached/namespace.h \
 		 libmemcached/options.hpp \
-		 libmemcached/memcached/protocol_binary.h \
-		 libmemcached/memcached/vbucket.h \
 		 libmemcached/protocol/ascii_handler.h \
 		 libmemcached/protocol/binary_handler.h \
 		 libmemcached/protocol/cache.h \

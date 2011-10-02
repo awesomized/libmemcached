@@ -108,10 +108,10 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
                                            uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
-  memcached_server_instance_st memcached_server_by_key(const memcached_st *ptr,
-                                                        const char *key,
-                                                        size_t key_length,
-                                                        memcached_return_t *error);
+  memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
+                                                       const char *key,
+                                                       size_t key_length,
+                                                       memcached_return_t *error);
 
 LIBMEMCACHED_API
 void memcached_server_error_reset(memcached_server_st *ptr);
