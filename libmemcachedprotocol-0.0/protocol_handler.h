@@ -18,10 +18,10 @@
 # include <stdbool.h>
 #endif
 
-#include <libmemcached/platform.h>
-#include <libmemcached/memcached/protocol_binary.h>
-#include <libmemcached/visibility.h>
-#include <libmemcached/protocol/callback.h>
+#include <libmemcached-1.0/visibility.h>
+#include <libmemcached-1.0/platform.h>
+#include <libmemcachedprotocol-0.0/protocol_binary.h>
+#include <libmemcachedprotocol-0.0/callback.h>
 
 /* Forward declarations */
 /*

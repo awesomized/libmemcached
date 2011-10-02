@@ -6,8 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#ifndef HASHKIT_STRERROR_H
-#define HASHKIT_STRERROR_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,5 +18,3 @@ HASHKIT_API
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* HASHKIT_STRERROR_H */

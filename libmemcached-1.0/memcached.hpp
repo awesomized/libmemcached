@@ -14,8 +14,10 @@
 
 #pragma once
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
+#if 0
 #include <libmemcached/exception.hpp>
+#endif
 
 #include <string.h>
 

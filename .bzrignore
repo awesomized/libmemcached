@@ -73,9 +73,9 @@ docs/linkcheck/
 docs/man/*
 docs/text
 example/memcached_light
-libhashkit/configure.h
+libhashkit-1.0/configure.h
 libmemcached-?.??/
-libmemcached/configure.h
+libmemcached-1.0/configure.h
 libmemcached/dtrace_probes.h
 libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
@@ -136,3 +136,4 @@ tests/memstat
 tests/memcat
 clients/memexist
 tests/memexist
+libmemcached/configure.h

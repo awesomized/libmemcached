@@ -173,7 +173,6 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/verbosity.h
 %{_includedir}/libmemcached/version.h
 %{_includedir}/libmemcached/visibility.h
-%{_includedir}/libmemcached/watchpoint.h
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
 %{_libdir}/libmemcachedprotocol.so

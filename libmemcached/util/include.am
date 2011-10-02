@@ -2,14 +2,6 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-nobase_include_HEADERS+= \
-			 libmemcached/memcached_util.h \
-			 libmemcached/util.h \
-			 libmemcached/util/flush.h \
-			 libmemcached/util/pid.h \
-			 libmemcached/util/ping.h \
-			 libmemcached/util/pool.h \
-			 libmemcached/util/version.h
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 
 libmemcached_libmemcachedutil_la_SOURCES= \

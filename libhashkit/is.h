@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  HashKit library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -34,7 +34,10 @@
  *
  */
 
+
+
 #pragma once
 
-#include <libmemcachedutil-1.0/util.h>
+#define hashkit_is_allocated(__object) ((__object)->options.is_allocated)
+#define hashkit_is_initialized(__object) ((__object)->options.is_initialized)
 

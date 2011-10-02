@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <libmemcached/basic_string.h>
-
 /**
   Strings are always under our control so we make some assumptions
   about them.

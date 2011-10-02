@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  HashKit library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2009-2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -34,7 +35,59 @@
  *
  */
 
+
 #pragma once
 
-#include <libmemcachedutil-1.0/util.h>
 
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif
+#include <inttypes.h>
+#include <sys/types.h>
+
+#include <libhashkit-1.0/visibility.h>
+#include <libhashkit-1.0/configure.h>
+#include <libhashkit-1.0/types.h>
+#include <libhashkit-1.0/has.h>
+#include <libhashkit-1.0/algorithm.h>
+#include <libhashkit-1.0/behavior.h>
+#include <libhashkit-1.0/digest.h>
+#include <libhashkit-1.0/function.h>
+#include <libhashkit-1.0/str_algorithm.h>
+#include <libhashkit-1.0/strerror.h>
+
+struct hashkit_st
+{
+  struct hashkit_function_st {
+    hashkit_hash_fn function;
+    void *context;
+  } base_hash, distribution_hash;
+
+  struct {
+    bool is_base_same_distributed:1;
+  } flags;
+
+  struct {
+    bool is_allocated:1;
+  } options;
+};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+HASHKIT_API
+hashkit_st *hashkit_create(hashkit_st *hash);
+
+HASHKIT_API
+hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
+
+HASHKIT_API
+bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
+
+HASHKIT_API
+void hashkit_free(hashkit_st *hash);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif

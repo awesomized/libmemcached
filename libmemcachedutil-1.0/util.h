@@ -3,6 +3,7 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -36,5 +37,8 @@
 
 #pragma once
 
-#include <libmemcachedutil-1.0/util.h>
-
+#include <libmemcachedutil-1.0/pid.h>
+#include <libmemcachedutil-1.0/flush.h>
+#include <libmemcachedutil-1.0/ping.h>
+#include <libmemcachedutil-1.0/pool.h>
+#include <libmemcachedutil-1.0/version.h>

@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libmemcached/protocol_handler.h>
+#include <libmemcachedprotocol-0.0//protocol_handler.h>
 #include <example/byteorder.h>
-#include "storage.h"
-#include "memcached_light.h"
+#include "example/storage.h"
+#include "example/memcached_light.h"
 
 static protocol_binary_response_status noop_command_handler(const void *cookie,
                                                             protocol_binary_request_header *header,

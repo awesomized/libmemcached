@@ -37,9 +37,5 @@
 
 #pragma once
 
+#include <libmemcachedutil-1.0/util.h>
 
-#include <libmemcached/util/pid.h>
-#include <libmemcached/util/flush.h>
-#include <libmemcached/util/ping.h>
-#include <libmemcached/util/pool.h>
-#include <libmemcached/util/version.h>

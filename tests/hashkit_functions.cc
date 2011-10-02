@@ -46,8 +46,9 @@ using namespace libtest;
 #include <cstring>
 
 #include <libhashkit/hashkit.h>
+#include <libhashkit/is.h>
 
-#include "hash_results.h"
+#include "tests/hash_results.h"
 
 static hashkit_st global_hashk;
 

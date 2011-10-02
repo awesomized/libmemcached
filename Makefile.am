@@ -32,6 +32,9 @@ include clients/include.am
 include docs/include.am
 include example/include.am
 include libhashkit/include.am
+include libmemcached-1.0/include.am
+include libhashkit-1.0/include.am
+include libmemcachedprotocol-0.0/include.am
 include libmemcached/include.am
 include libmemcached/util/include.am
 include libmemcached/protocol/include.am

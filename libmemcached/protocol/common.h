@@ -42,8 +42,7 @@
 #endif
 #include <assert.h>
 
-#include <libmemcached/visibility.h>
-#include <libmemcached/protocol_handler.h>
+#include <libmemcachedprotocol-0.0/protocol_handler.h>
 #include <libmemcached/protocol/cache.h>
 
 /*

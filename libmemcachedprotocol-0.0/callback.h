@@ -5,8 +5,8 @@
  *
  * Author: Trond Norbye
  */
-#ifndef LIBMEMCACHEDPROTOCOL_CALLBACK_H
-#define LIBMEMCACHEDPROTOCOL_CALLBACK_H
+
+#pragma once
 
 /**
  * Callback to send data back from a successful GET/GETQ/GETK/GETKQ command
@@ -414,5 +414,3 @@ typedef struct {
       memcached_binary_protocol_callback_v1_st v1;
    } interface;
 } memcached_binary_protocol_callback_st;
-
-#endif

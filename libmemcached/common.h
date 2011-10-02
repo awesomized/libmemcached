@@ -67,10 +67,9 @@
 #include <strings.h>
 #endif
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
-#include <libmemcached/namespace.h>
 
 #include <libmemcached/server_instance.h>
 

@@ -43,7 +43,7 @@
 #include <signal.h>
 #endif
 
-#include "cache.h"
+#include <libmemcached/protocol/cache.h>
 
 #ifndef NDEBUG
 const uint64_t redzone_pattern = 0xdeadbeefcafebabe;

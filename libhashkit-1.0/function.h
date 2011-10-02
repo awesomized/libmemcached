@@ -6,8 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#ifndef HASHKIT_FUNCTION_H
-#define HASHKIT_FUNCTION_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,5 +39,3 @@ hashkit_hash_algorithm_t hashkit_get_distribution_function(const hashkit_st *sel
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* HASHKIT_FUNCTION_H */
