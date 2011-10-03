@@ -4374,6 +4374,11 @@ static test_return_t connection_pool3_test(memcached_st *memc)
     struct timespec relative_time= { 0, 0 };
     pop_memc= memcached_pool_fetch(pool, &relative_time, &rc);
 
+    if (memcached_success(rc))
+    {
+      break;
+    }
+
     if (memcached_failed(rc))
     {
       test_null(pop_memc);
