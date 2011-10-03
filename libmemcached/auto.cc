@@ -145,9 +145,9 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
 
   struct libmemcached_io_vector_st vector[]=
   {
-    { sizeof(request.bytes), request.bytes },
-    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-    { key_length, key }
+    { request.bytes, sizeof(request.bytes) },
+    { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+    { key, key_length }
   };
 
   memcached_return_t rc;
@@ -158,7 +158,9 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   }
 
   if (no_reply)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   return memcached_response(instance, (char*)value, sizeof(*value), NULL);
 }

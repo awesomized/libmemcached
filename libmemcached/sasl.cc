@@ -231,9 +231,9 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
 
     struct libmemcached_io_vector_st vector[]=
     {
-      { sizeof(request.bytes), request.bytes },
-      { keylen, chosenmech },
-      { len, data }
+      { request.bytes, sizeof(request.bytes) },
+      { chosenmech, keylen },
+      { data, len }
     };
 
     if (memcached_io_writev(server, vector, 3, true) == -1)

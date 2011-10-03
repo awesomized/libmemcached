@@ -60,8 +60,8 @@ struct udp_datagram_header_st
 
 struct libmemcached_io_vector_st
 {
-  size_t length;
   const void *buffer;
+  size_t length;
 };
 
 #ifdef __cplusplus

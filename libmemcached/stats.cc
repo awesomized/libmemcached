@@ -333,8 +333,8 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 
     struct libmemcached_io_vector_st vector[]=
     {
-      { sizeof(request.bytes), request.bytes },
-      { len, args }
+      { request.bytes, sizeof(request.bytes) },
+      { args, len }
     };
 
     if (memcached_vdo(instance, vector, 2, true) != MEMCACHED_SUCCESS)

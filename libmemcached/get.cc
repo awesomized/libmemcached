@@ -298,10 +298,10 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     struct libmemcached_io_vector_st vector[]=
     {
-      { get_command_length, get_command },
-      { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-      { key_length[x], keys[x] },
-      { 1, " " }
+      { get_command, get_command_length },
+      { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+      { keys[x], key_length[x] },
+      { memcached_literal_param(" ") }
     };
 
 
@@ -500,9 +500,9 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     struct libmemcached_io_vector_st vector[]=
     {
-      { sizeof(request.bytes), request.bytes },
-      { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-      { key_length[x], keys[x] }
+      { request.bytes, sizeof(request.bytes) },
+      { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+      { keys[x], key_length[x] }
     };
 
     if (memcached_io_writev(instance, vector, 3, flush) == -1)
@@ -634,9 +634,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
      */
       struct libmemcached_io_vector_st vector[]=
       {
-        { sizeof(request.bytes), request.bytes },
-        { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-        { key_length[x], keys[x] }
+        { request.bytes, sizeof(request.bytes) },
+        { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+        { keys[x], key_length[x] }
       };
 
       if (memcached_io_writev(instance, vector, 3, true) == -1)
@@ -652,7 +652,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
     }
 
     if (success)
+    {
       break;
+    }
   }
 
   return rc;

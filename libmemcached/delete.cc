@@ -178,9 +178,9 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
   struct libmemcached_io_vector_st vector[]=
   {
-    { sizeof(request.bytes), request.bytes},
-    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-    { key_length, key },
+    { request.bytes, sizeof(request.bytes) },
+    { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+    { key, key_length }
   };
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
