@@ -60,22 +60,26 @@ memcached_return_t memcached_callback_set(memcached_st *ptr,
 
   case MEMCACHED_CALLBACK_DELETE_TRIGGER:
     {
-      if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS)) 
+      if (data) // NULL would mean we are disabling.
       {
-        return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
-      }
+        if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS)) 
+        {
+          return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
+        }
 
-      if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_NOREPLY)) 
-      {
-        return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
+        if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_NOREPLY)) 
+        {
+          return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
+        }
       }
 
       memcached_trigger_delete_key_fn func= *(memcached_trigger_delete_key_fn *)&data;
       ptr->delete_trigger= func;
       break;
     }
+
   case MEMCACHED_CALLBACK_MAX:
-    return MEMCACHED_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid callback supplied"));
   }
 
   return MEMCACHED_SUCCESS;

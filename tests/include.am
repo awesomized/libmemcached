@@ -23,6 +23,7 @@ EXTRA_DIST+= \
 
 noinst_HEADERS+= \
 		 tests/basic.h \
+		 tests/callbacks.h \
 		 tests/debug.h \
 		 tests/error_conditions.h \
 		 tests/exist.h \
@@ -77,6 +78,7 @@ tests_testapp_SOURCES= \
 		       tests/mem_functions.cc \
 		       tests/namespace.cc \
 		       tests/parser.cc \
+		       tests/callbacks.cc \
 		       tests/pool.cc \
 		       tests/print.cc \
 		       tests/replication.cc \

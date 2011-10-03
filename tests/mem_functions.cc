@@ -78,6 +78,7 @@
 #include "tests/ketama.h"
 #include "tests/namespace.h"
 #include "tests/parser.h"
+#include "tests/callbacks.h"
 #include "tests/pool.h"
 #include "tests/print.h"
 #include "tests/replication.h"
@@ -977,28 +978,6 @@ static test_return_t read_through(memcached_st *memc)
   test_true(string[sizeof(READ_THROUGH_VALUE) -1] == 0);
   test_strcmp(READ_THROUGH_VALUE, string);
   free(string);
-
-  return TEST_SUCCESS;
-}
-
-static memcached_return_t delete_trigger(memcached_st *,
-                                         const char *key,
-                                         size_t key_length)
-{
-  assert(key);
-  assert(key_length);
-
-  return MEMCACHED_SUCCESS;
-}
-
-static test_return_t delete_through(memcached_st *memc)
-{
-  memcached_trigger_delete_key_fn callback;
-
-  callback= (memcached_trigger_delete_key_fn)delete_trigger;
-
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback));
 
   return TEST_SUCCESS;
 }
@@ -3733,7 +3712,7 @@ static test_return_t selection_of_namespace_tests(memcached_st *memc)
   /* Make sure be default none exists */
   value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
   test_null(value);
-  test_compare_got(MEMCACHED_FAILURE, rc, memcached_strerror(NULL, rc));
+  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
 
   /* Test a clean set */
   test_compare(MEMCACHED_SUCCESS,
@@ -3749,8 +3728,8 @@ static test_return_t selection_of_namespace_tests(memcached_st *memc)
                memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
   value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
-  test_false(value);
-  test_compare_got(MEMCACHED_FAILURE, rc, memcached_strerror(NULL, rc));
+  test_null(value);
+  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
 
   /* Now setup for main test */
   test_compare(MEMCACHED_SUCCESS,
@@ -3770,9 +3749,8 @@ static test_return_t selection_of_namespace_tests(memcached_st *memc)
                  memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
     value= (char*)memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
-    test_false(value);
-    test_true(rc == MEMCACHED_FAILURE);
-    test_true(value == NULL);
+    test_null(value);
+    test_compare(MEMCACHED_SUCCESS, rc);
 
     /* Test a long key for failure */
     /* TODO, extend test to determine based on setting, what result should be */
@@ -5960,7 +5938,7 @@ test_st tests[] ={
   {"bad_key", true, (test_callback_fn*)bad_key_test },
   {"memcached_server_cursor", true, (test_callback_fn*)memcached_server_cursor_test },
   {"read_through", true, (test_callback_fn*)read_through },
-  {"delete_through", true, (test_callback_fn*)delete_through },
+  {"delete_through", true, (test_callback_fn*)test_MEMCACHED_CALLBACK_DELETE_TRIGGER },
   {"noreply", true, (test_callback_fn*)noreply_test},
   {"analyzer", true, (test_callback_fn*)analyzer_test},
   {"memcached_pool_st", true, (test_callback_fn*)connection_pool_test },
@@ -5985,6 +5963,7 @@ test_st behavior_tests[] ={
   {"MEMCACHED_BEHAVIOR_TCP_KEEPALIVE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPALIVE_test},
   {"MEMCACHED_BEHAVIOR_TCP_KEEPIDLE", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test},
   {"MEMCACHED_BEHAVIOR_POLL_TIMEOUT", false, (test_callback_fn*)MEMCACHED_BEHAVIOR_POLL_TIMEOUT_test},
+  {"MEMCACHED_CALLBACK_DELETE_TRIGGER_and_MEMCACHED_BEHAVIOR_NOREPLY", false, (test_callback_fn*)test_MEMCACHED_CALLBACK_DELETE_TRIGGER_and_MEMCACHED_BEHAVIOR_NOREPLY},
   {0, 0, 0}
 };
 
