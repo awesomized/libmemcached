@@ -4,8 +4,8 @@
 noinst_HEADERS+= win32/wrappers.h
 
 if BUILD_WIN32_WRAPPERS
+libhashkit_libhashkit_la_LDFLAGS+=-no-undefined
 libmemcached_libmemcached_la_LDFLAGS+=-no-undefined
 libmemcached_libmemcachedprotocol_la_LDFLAGS+=-no-undefined
 libmemcached_libmemcachedutil_la_LDFLAGS+=-no-undefined
-libhashkit_libhashkit_la_LDFLAGS+=-no-undefined
 endif

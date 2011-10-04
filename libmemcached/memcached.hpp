@@ -36,23 +36,5 @@
 
 #pragma once
 
-#ifndef WIN32
-#include <netdb.h>
-#endif
-
-#include <sys/types.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-LIBMEMCACHED_API
-pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_return_t *ret);
-
-LIBMEMCACHED_API
-pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char *username, const char *password,  memcached_return_t *ret);
-
-#ifdef __cplusplus
-}
-#endif
+#include <libmemcached-1.0/memcached.hpp>
 

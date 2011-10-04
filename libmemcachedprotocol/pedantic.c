@@ -35,10 +35,9 @@
  */
 
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
-#include <libmemcached/protocol/common.h>
+#include <libmemcachedprotocol/common.h>
 
 #include <sys/types.h>
-#include <inttypes.h>
 
 #define ensure(a) if (!(a)) { return false; }
 

@@ -11,12 +11,13 @@
 
 lib_LTLIBRARIES+= libhashkit/libhashkit.la
 
-EXTRA_DIST+= \
-	     libhashkit/configure.h.in
-
-
 noinst_HEADERS+= \
-		 libhashkit/common.h
+		 libhashkit/common.h \
+		 libhashkit/is.h
+
+
+nobase_include_HEADERS+= \
+			 libhashkit/hashkit.h
 
 libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/algorithm.cc \

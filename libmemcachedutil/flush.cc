@@ -3,7 +3,6 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -33,9 +32,29 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+ * Summary: connects to a host, and then flushes it (memcached_flush(3)).
+ *
  */
 
-#pragma once
+#include <libmemcachedutil/common.h>
 
-#include <libmemcachedutil-1.0/util.h>
 
+bool libmemcached_util_flush(const char *hostname, in_port_t port, memcached_return_t *ret)
+{
+  memcached_st *memc_ptr= memcached_create(NULL);
+
+  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
+  if (memcached_success(rc))
+  {
+    rc= memcached_flush(memc_ptr, 0);
+  }
+
+  memcached_free(memc_ptr);
+
+  if (ret)
+  {
+    *ret= rc;
+  }
+
+  return memcached_success(rc);
+}

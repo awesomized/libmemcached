@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached Utility library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -36,26 +36,10 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#pragma once
 
+#include <config.h>
 
-bool libmemcached_util_flush(const char *hostname, in_port_t port, memcached_return_t *ret)
-{
-  memcached_st *memc_ptr= memcached_create(NULL);
-
-  memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
-  if (memcached_success(rc))
-  {
-    rc= memcached_flush(memc_ptr, 0);
-  }
-
-  memcached_free(memc_ptr);
-
-  if (ret)
-  {
-    *ret= rc;
-  }
-
-  return memcached_success(rc);
-}
+#include <libmemcachedutil-1.0/util.h>
+#include <libmemcached/assert.hpp>
+#include <libmemcached/backtrace.hpp>

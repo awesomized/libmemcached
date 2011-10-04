@@ -36,8 +36,7 @@
  */
 
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#include <libmemcachedutil/common.h>
 
 struct local_context
 {
@@ -48,13 +47,12 @@ struct local_context
   bool truth;
 };
 
-static memcached_return_t check_server_version(const memcached_st *ptr,
+static memcached_return_t check_server_version(const memcached_st *,
                                                const memcached_server_st *instance,
                                                void *context)
 {
   /* Do Nothing */
   struct local_context *check= (struct local_context *)context;
-  (void)ptr;
 
   if (instance->major_version != UINT8_MAX &&
       instance->major_version >= check->major_version &&

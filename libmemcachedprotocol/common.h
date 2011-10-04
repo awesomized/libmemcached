@@ -42,8 +42,9 @@
 #endif
 #include <assert.h>
 
-#include <libmemcachedprotocol-0.0/protocol_handler.h>
-#include <libmemcached/protocol/cache.h>
+#include <libmemcachedprotocol-0.0/handler.h>
+#include <libmemcachedprotocol/cache.h>
+#include <libmemcached/byteorder.h>
 
 /*
  * I don't really need the following two functions as function pointers

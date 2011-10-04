@@ -4,13 +4,20 @@
 
 
 lib_LTLIBRARIES+= libmemcached/libmemcachedprotocol.la
+
+noinst_HEADERS+= \
+		 libmemcachedprotocol/ascii_handler.h \
+		 libmemcachedprotocol/binary_handler.h \
+		 libmemcachedprotocol/cache.h \
+		 libmemcachedprotocol/common.h
+
 libmemcached_libmemcachedprotocol_la_SOURCES=  \
 					       libmemcached/byteorder.cc \
-					       libmemcached/protocol/ascii_handler.c \
-					       libmemcached/protocol/binary_handler.c \
-					       libmemcached/protocol/cache.c \
-					       libmemcached/protocol/pedantic.c \
-					       libmemcached/protocol/protocol_handler.c
+					       libmemcachedprotocol/ascii_handler.c \
+					       libmemcachedprotocol/binary_handler.c \
+					       libmemcachedprotocol/cache.c \
+					       libmemcachedprotocol/handler.c \
+					       libmemcachedprotocol/pedantic.c
 
 libmemcached_libmemcachedprotocol_la_CFLAGS= \
 					     ${AM_CFLAGS} \

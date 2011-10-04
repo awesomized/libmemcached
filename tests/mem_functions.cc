@@ -42,11 +42,11 @@
   Test cases
 */
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 #include <libmemcached/is.h>
 #include <libmemcached/server_instance.h>
 
-#include <libhashkit/hashkit.h>
+#include <libhashkit-1.0/hashkit.h>
 
 #include <cassert>
 #include <cerrno>
@@ -87,7 +87,7 @@
 
 using namespace libtest;
 
-#include <libmemcached/memcached_util.h>
+#include <libmemcached/util.h>
 
 #include "hash_results.h"
 

@@ -37,8 +37,7 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
+#include <libmemcachedutil/common.h>
 
 bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
 {

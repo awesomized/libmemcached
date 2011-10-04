@@ -38,7 +38,7 @@
 #pragma once
 
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 
 #ifdef __cplusplus
 extern "C" {

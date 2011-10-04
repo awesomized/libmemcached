@@ -7,9 +7,13 @@ libmemcached_libmemcached_la_SOURCES =
 include libmemcached/csl/include.am
 
 EXTRA_DIST+= \
-	     libmemcached/configure.h.in \
 	     libmemcached/libmemcached_probes.d \
 	     libmemcached/memcached/README.txt
+
+nobase_include_HEADERS+= \
+			 libmemcached/memcached.h \
+			 libmemcached/memcached.hpp \
+			 libmemcached/util.h
 
 noinst_HEADERS+= \
 		 libmemcached/array.h \
@@ -32,10 +36,6 @@ noinst_HEADERS+= \
 		 libmemcached/memory.h \
 		 libmemcached/namespace.h \
 		 libmemcached/options.hpp \
-		 libmemcached/protocol/ascii_handler.h \
-		 libmemcached/protocol/binary_handler.h \
-		 libmemcached/protocol/cache.h \
-		 libmemcached/protocol/common.h \
 		 libmemcached/response.h \
 		 libmemcached/server.hpp \
 		 libmemcached/server_instance.h \

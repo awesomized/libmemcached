@@ -36,10 +36,7 @@
  */
 
 
-#include <libmemcached/common.h>
-#include <libmemcached/memcached_util.h>
-
-#include <libmemcached/error.hpp>
+#include <libmemcachedutil/common.h>
 
 #include <cassert>
 #include <cerrno>

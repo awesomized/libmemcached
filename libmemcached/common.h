@@ -115,6 +115,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/initialize_query.h>
 #include <libmemcached/response.h>
 #include <libmemcached/namespace.h>
+#include <libmemcached/virtual_bucket.h>
 
 #ifdef __cplusplus
 #include <libmemcached/backtrace.hpp>

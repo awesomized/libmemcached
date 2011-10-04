@@ -5,7 +5,6 @@
 
 nobase_include_HEADERS+= \
 			 libmemcachedutil-1.0/flush.h \
-			 libmemcachedutil-1.0/memcached_util.h \
 			 libmemcachedutil-1.0/pid.h \
 			 libmemcachedutil-1.0/ping.h \
 			 libmemcachedutil-1.0/pool.h \
