@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2010 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,54 +35,7 @@
  *
  */
 
+#pragma once
 
-#include <libmemcachedutil/common.h>
-#include <cassert>
-
-struct local_context
-{
-  uint8_t major_version;
-  uint8_t minor_version;
-  uint8_t micro_version;
-
-  bool truth;
-};
-
-static memcached_return_t check_server_version(const memcached_st *,
-                                               const memcached_server_st *instance,
-                                               void *context)
-{
-  /* Do Nothing */
-  struct local_context *check= (struct local_context *)context;
-
-  if (instance->major_version != UINT8_MAX &&
-      instance->major_version >= check->major_version and
-      instance->minor_version >= check->minor_version and
-      instance->micro_version >= check->micro_version )
-  {
-    return MEMCACHED_SUCCESS;
-  }
-
-  check->truth= false;
-
-  return MEMCACHED_FAILURE;
-}
-
-bool libmemcached_util_version_check(memcached_st *memc,
-                                     uint8_t major_version,
-                                     uint8_t minor_version,
-                                     uint8_t micro_version)
-{
-  if (memcached_failed(memcached_version(memc)))
-  {
-    return false;
-  }
-
-  struct local_context check= { major_version, minor_version, micro_version, true };
-
-  memcached_server_fn callbacks[1];
-  callbacks[0]= check_server_version;
-  memcached_server_cursor(memc, callbacks, (void *)&check,  1);
-
-  return check.truth;
-}
+test_return_t test_memcached_touch(memcached_st *);
+test_return_t test_memcached_touch_by_key(memcached_st *);

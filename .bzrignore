@@ -137,3 +137,5 @@ tests/memcat
 clients/memexist
 tests/memexist
 libmemcached/configure.h
+clients/memtouch
+tests/memtouch

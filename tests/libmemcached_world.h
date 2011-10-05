@@ -131,9 +131,10 @@ static test_return_t world_container_startup(libmemcached_test_container_st *con
                                                     buffer, sizeof(buffer)),
                    container->construct.option_string().c_str());
 
-  test_true(not container->parent);
+  test_null(container->parent);
   container->parent= memcached(container->construct.option_string().c_str(), container->construct.option_string().size());
   test_true(container->parent);
+  test_compare(MEMCACHED_SUCCESS, memcached_version(container->parent));
 
   if (container->construct.sasl())
   {
@@ -175,7 +176,7 @@ static test_return_t world_container_shutdown(libmemcached_test_container_st *co
 static test_return_t world_test_startup(libmemcached_test_container_st *container)
 {
   test_true(container);
-  test_true(not container->memc);
+  test_null(container->memc);
   test_true(container->parent);
   container->memc= memcached_clone(NULL, container->parent);
   test_true(container->memc);
@@ -216,9 +217,8 @@ static test_return_t world_post_run(libmemcached_test_container_st *container)
   return TEST_SUCCESS;
 }
 
-static test_return_t world_on_error(test_return_t test_state, libmemcached_test_container_st *container)
+static test_return_t world_on_error(test_return_t , libmemcached_test_container_st *container)
 {
-  (void)test_state;
   test_true(container->memc);
   memcached_free(container->memc);
   container->memc= NULL;

@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -36,53 +36,24 @@
  */
 
 
-#include <libmemcachedutil/common.h>
-#include <cassert>
+#pragma once
 
-struct local_context
-{
-  uint8_t major_version;
-  uint8_t minor_version;
-  uint8_t micro_version;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  bool truth;
-};
 
-static memcached_return_t check_server_version(const memcached_st *,
-                                               const memcached_server_st *instance,
-                                               void *context)
-{
-  /* Do Nothing */
-  struct local_context *check= (struct local_context *)context;
+LIBMEMCACHED_API
+memcached_return_t memcached_touch(memcached_st *ptr,
+                                   const char *key, size_t key_length,
+                                   time_t expiration);
 
-  if (instance->major_version != UINT8_MAX &&
-      instance->major_version >= check->major_version and
-      instance->minor_version >= check->minor_version and
-      instance->micro_version >= check->micro_version )
-  {
-    return MEMCACHED_SUCCESS;
-  }
+LIBMEMCACHED_API
+memcached_return_t memcached_touch_by_key(memcached_st *ptr,
+                                          const char *group_key, size_t group_key_length,
+                                          const char *key, size_t key_length,
+                                          time_t expiration);
 
-  check->truth= false;
-
-  return MEMCACHED_FAILURE;
+#ifdef __cplusplus
 }
-
-bool libmemcached_util_version_check(memcached_st *memc,
-                                     uint8_t major_version,
-                                     uint8_t minor_version,
-                                     uint8_t micro_version)
-{
-  if (memcached_failed(memcached_version(memc)))
-  {
-    return false;
-  }
-
-  struct local_context check= { major_version, minor_version, micro_version, true };
-
-  memcached_server_fn callbacks[1];
-  callbacks[0]= check_server_version;
-  memcached_server_cursor(memc, callbacks, (void *)&check,  1);
-
-  return check.truth;
-}
+#endif

@@ -124,7 +124,7 @@ memcached_server_st *__server_create_with(memcached_st *memc,
 
   self= _server_create(self, memc);
 
-  if (not self)
+  if (self == NULL)
   {
     return NULL;
   }
@@ -166,8 +166,10 @@ void __server_free(memcached_server_st *self)
 
 void memcached_server_free(memcached_server_st *self)
 {
-  if (not self)
+  if (self == NULL)
+  {
     return;
+  }
 
   if (memcached_server_list_count(self))
   {
@@ -185,7 +187,7 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                             memcached_server_st *source)
 {
   /* We just do a normal create if source is missing */
-  if (not source)
+  if (source == NULL)
   {
     return NULL;
   }
@@ -263,12 +265,14 @@ memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
                                                      size_t key_length,
                                                      memcached_return_t *error)
 {
-  memcached_return_t rc;
   memcached_return_t unused;
-
   if (not error)
+  {
     error= &unused;
+  }
 
+
+  memcached_return_t rc;
   if (memcached_failed(rc= initialize_const_query(ptr)))
   {
     *error= rc;

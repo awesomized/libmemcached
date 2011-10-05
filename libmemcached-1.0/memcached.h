@@ -80,6 +80,7 @@
 #include <libmemcached-1.0/server_list.h>
 #include <libmemcached-1.0/storage.h>
 #include <libmemcached-1.0/strerror.h>
+#include <libmemcached-1.0/touch.h>
 #include <libmemcached-1.0/verbosity.h>
 #include <libmemcached-1.0/version.h>
 #include <libmemcached-1.0/sasl.h>

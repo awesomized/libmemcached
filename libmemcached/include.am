@@ -68,6 +68,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \
 				       libmemcached/get.cc \
+				       libmemcached/touch.cc \
 				       libmemcached/hash.cc \
 				       libmemcached/hosts.cc \
 				       libmemcached/initialize_query.cc \

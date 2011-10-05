@@ -28,6 +28,8 @@ memslap - Generate testing loads on a memcached cluster.
 memcp - Copy files to memcached servers.
 memerror - Creates human readable messages from libmemecached error codes.
 memcapable - Verify a memcached server for protocol behavior.
+memexist - Check for the existance of a key.
+memtouch - Update the expiration value of a key.
 
 
 %package devel
@@ -151,6 +153,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached-1.0/dump.h
 %{_includedir}/libmemcached-1.0/error.h
 %{_includedir}/libmemcached-1.0/exist.h
+%{_includedir}/libmemcached-1.0/touch.h
 %{_includedir}/libmemcached-1.0/exception.hpp
 %{_includedir}/libmemcached-1.0/fetch.h
 %{_includedir}/libmemcached-1.0/flush.h
@@ -281,6 +284,8 @@ you will need to install %{name}-devel.
 %{_mandir}/man3/memcached_strerror.3.gz
 %{_mandir}/man3/memcached_exist.3.gz
 %{_mandir}/man3/memcached_exist_by_key.3.gz
+%{_mandir}/man3/memcached_touch.3.gz
+%{_mandir}/man3/memcached_touch_by_key.3.gz
 %{_mandir}/man3/memcached_verbosity.3.gz
 %{_mandir}/man3/memcached_version.3.gz
 

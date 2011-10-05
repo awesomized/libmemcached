@@ -39,6 +39,7 @@ nobase_include_HEADERS+= \
 			 libmemcached-1.0/storage.h \
 			 libmemcached-1.0/strerror.h \
 			 libmemcached-1.0/string.h \
+			 libmemcached-1.0/touch.h \
 			 libmemcached-1.0/types.h \
 			 libmemcached-1.0/verbosity.h \
 			 libmemcached-1.0/version.h \
