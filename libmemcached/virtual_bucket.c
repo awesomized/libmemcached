@@ -36,8 +36,7 @@
  */
 
 #include <config.h>
-#include <libmemcached/memcached.h>
-#include <libmemcached/virtual_bucket.h>
+#include <libmemcached/common.h>
 
 struct bucket_t {
   uint32_t master;
@@ -58,7 +57,9 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
                                                    const uint32_t replicas)
 {
   if (! self || ! host_map || ! buckets)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_virtual_bucket_free(self);
 

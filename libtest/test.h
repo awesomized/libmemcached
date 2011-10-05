@@ -160,6 +160,8 @@ do \
   } \
 } while (0)
 
+#define test_compare_hint test_compare_got
+
 #define test_compare_warn(__expected, __actual) \
 do \
 { \

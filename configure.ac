@@ -183,8 +183,8 @@ SOCKET_SEND_FLAGS
 AC_CONFIG_FILES([
   Makefile
   docs/conf.py
-  libhashkit/configure.h
-  libmemcached/configure.h
+  libhashkit-1.0/configure.h
+  libmemcached-1.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

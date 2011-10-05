@@ -3,7 +3,6 @@
  *  HashKit library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2009-2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -38,59 +37,4 @@
 
 #pragma once
 
-
-#if !defined(__cplusplus)
-# include <stdbool.h>
-#endif
-#include <inttypes.h>
-#include <sys/types.h>
-
-#include <libhashkit/visibility.h>
-#include <libhashkit/configure.h>
-#include <libhashkit/types.h>
-#include <libhashkit/has.h>
-#include <libhashkit/algorithm.h>
-#include <libhashkit/behavior.h>
-#include <libhashkit/digest.h>
-#include <libhashkit/function.h>
-#include <libhashkit/str_algorithm.h>
-#include <libhashkit/strerror.h>
-
-struct hashkit_st
-{
-  struct hashkit_function_st {
-    hashkit_hash_fn function;
-    void *context;
-  } base_hash, distribution_hash;
-
-  struct {
-    bool is_base_same_distributed:1;
-  } flags;
-
-  struct {
-    bool is_allocated:1;
-  } options;
-};
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-HASHKIT_API
-hashkit_st *hashkit_create(hashkit_st *hash);
-
-HASHKIT_API
-hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
-
-HASHKIT_API
-bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
-
-HASHKIT_API
-void hashkit_free(hashkit_st *hash);
-
-#define hashkit_is_allocated(__object) ((__object)->options.is_allocated)
-#define hashkit_is_initialized(__object) ((__object)->options.is_initialized)
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
+#include <libhashkit-1.0/hashkit.h>

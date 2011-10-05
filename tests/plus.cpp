@@ -40,7 +40,7 @@
 /*
   C++ interface test
 */
-#include <libmemcached/memcached.hpp>
+#include <libmemcached-1.0/memcached.hpp>
 #include <libtest/test.hpp>
 
 #include <cstdio>

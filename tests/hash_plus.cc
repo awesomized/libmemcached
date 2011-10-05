@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <libhashkit/hashkit.hpp>
+#include <libhashkit-1.0/hashkit.hpp>
 
 using namespace libtest;
 

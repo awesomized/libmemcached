@@ -1,9 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Libmemcached Client and Server 
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,25 +37,6 @@
 
 #pragma once
 
-struct memcached_callback_st {
-  memcached_execute_fn *callback;
-  void *context;
-  uint32_t number_of_callback;
-};
+test_return_t test_MEMCACHED_CALLBACK_DELETE_TRIGGER(memcached_st *);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-LIBMEMCACHED_API
-memcached_return_t memcached_callback_set(memcached_st *ptr,
-                                          const memcached_callback_t flag,
-                                          const void *data);
-LIBMEMCACHED_API
-void *memcached_callback_get(memcached_st *ptr,
-                             const memcached_callback_t flag,
-                             memcached_return_t *error);
-
-#ifdef __cplusplus
-}
-#endif
+test_return_t test_MEMCACHED_CALLBACK_DELETE_TRIGGER_and_MEMCACHED_BEHAVIOR_NOREPLY(memcached_st *);

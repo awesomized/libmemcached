@@ -40,14 +40,14 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
 {
   struct libmemcached_io_vector_st vector[]=
   {
-    { sizeof("add ") -1, "add " },
-    { memcached_array_size(memc->_namespace), memcached_array_string(memc->_namespace) },
-    { key_length, key },
-    { sizeof(" 0") -1, " 0" },
-    { sizeof(" 2678400") -1, " 2678400" },
-    { sizeof(" 0") -1, " 0" },
-    { 2, "\r\n" },
-    { 2, "\r\n" }
+    { memcached_literal_param("add ") },
+    { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
+    { key, key_length },
+    { memcached_literal_param(" 0") },
+    { memcached_literal_param(" 2678400") },
+    { memcached_literal_param(" 0") },
+    { memcached_literal_param("\r\n") },
+    { memcached_literal_param("\r\n") }
   };
 
   /* Send command header */
@@ -89,9 +89,9 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
 
   struct libmemcached_io_vector_st vector[]=
   {
-    { send_length, request.bytes },
-    { memcached_array_size(memc->_namespace), memcached_array_string(memc->_namespace) },
-    { key_length, key }
+    { request.bytes, send_length },
+    { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
+    { key, key_length }
   };
 
   /* write the header */

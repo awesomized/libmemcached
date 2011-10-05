@@ -43,26 +43,23 @@ struct context_st
   const char *buffer;
 };
 
-static memcached_return_t _set_verbosity(const memcached_st *ptr,
+static memcached_return_t _set_verbosity(const memcached_st *,
                                          const memcached_server_st *server,
                                          void *context)
 {
-  memcached_return_t rc;
-  memcached_st local_memc;
-  memcached_st *memc_ptr;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-
   struct context_st *execute= (struct context_st *)context;
-  (void)ptr;
 
-  memc_ptr= memcached_create(&local_memc);
+  memcached_st local_memc;
+  memcached_st *memc_ptr= memcached_create(&local_memc);
 
-  rc= memcached_server_add(memc_ptr, memcached_server_name(server), memcached_server_port(server));
+  memcached_return_t rc= memcached_server_add(memc_ptr, memcached_server_name(server), memcached_server_port(server));
 
   if (rc == MEMCACHED_SUCCESS)
   {
-    memcached_server_write_instance_st instance=
-      memcached_server_instance_fetch(memc_ptr, 0);
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc_ptr, 0);
+
 
     rc= memcached_do(instance, execute->buffer, execute->length, true);
 

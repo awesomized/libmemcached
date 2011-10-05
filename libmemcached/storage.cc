@@ -162,10 +162,10 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
   struct libmemcached_io_vector_st vector[]=
   {
-    { send_length, request.bytes },
-    { memcached_array_size(ptr->_namespace), memcached_array_string(ptr->_namespace) },
-    { key_length, key },
-    { value_length, value }
+    { request.bytes, send_length },
+    { memcached_array_string(ptr->_namespace),  memcached_array_size(ptr->_namespace) },
+    { key, key_length },
+    { value, value_length }
   };
 
   /* write the header */
@@ -307,9 +307,9 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
   {
     struct libmemcached_io_vector_st vector[]=
     {
-      { write_length, buffer },
-      { value_length, value },
-      { 2, "\r\n" }
+      { buffer, write_length },
+      { value, value_length },
+      { memcached_literal_param("\r\n") }
     };
 
     if (ptr->flags.buffer_requests && verb == SET_OP)

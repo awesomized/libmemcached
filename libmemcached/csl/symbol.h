@@ -37,9 +37,7 @@
 
 #pragma once
 
-#include <libmemcached/basic_string.h>
-#include <libmemcached/constants.h>
-#include <libmemcached/csl/server.h>
+#include <libmemcached/csl/common.h>
 
 union YYSTYPE
 {

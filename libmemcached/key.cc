@@ -37,16 +37,43 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t memcached_key_test(const memcached_st &memc,
+memcached_return_t memcached_key_test(memcached_st &memc,
                                       const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys)
 {
+  if (keys == NULL or key_length == NULL)
+  {
+    return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+  }
+
   if (not memc.flags.verify_key)
+  {
+    for (uint32_t x= 0; x < number_of_keys; x++)
+    {
+      memcached_return_t rc= memcached_validate_key_length(*(key_length +x), false);
+      if (memcached_failed(rc))
+      {
+        return rc;
+      }
+    }
+
     return MEMCACHED_SUCCESS;
+  }
 
   if (memc.flags.binary_protocol)
+  {
+    for (uint32_t x= 0; x < number_of_keys; x++)
+    {
+      memcached_return_t rc= memcached_validate_key_length(*(key_length +x), false);
+      if (memcached_failed(rc))
+      {
+        return rc;
+      }
+    }
+
     return MEMCACHED_SUCCESS;
+  }
 
   for (uint32_t x= 0; x < number_of_keys; x++)
   {

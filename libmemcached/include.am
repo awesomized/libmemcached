@@ -7,11 +7,16 @@ libmemcached_libmemcached_la_SOURCES =
 include libmemcached/csl/include.am
 
 EXTRA_DIST+= \
-	     libmemcached/configure.h.in \
 	     libmemcached/libmemcached_probes.d \
 	     libmemcached/memcached/README.txt
 
+nobase_include_HEADERS+= \
+			 libmemcached/memcached.h \
+			 libmemcached/memcached.hpp \
+			 libmemcached/util.h
+
 noinst_HEADERS+= \
+		 libmemcached/array.h \
 		 libmemcached/assert.hpp \
 		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
@@ -24,64 +29,19 @@ noinst_HEADERS+= \
 		 libmemcached/io.h \
 		 libmemcached/io.hpp \
 		 libmemcached/is.h \
+		 libmemcached/key.hpp \
 		 libmemcached/libmemcached_probes.h \
+		 libmemcached/memcached/protocol_binary.h \
+		 libmemcached/memcached/vbucket.h \
 		 libmemcached/memory.h \
+		 libmemcached/namespace.h \
 		 libmemcached/options.hpp \
-		 libmemcached/protocol/ascii_handler.h \
-		 libmemcached/protocol/binary_handler.h \
-		 libmemcached/protocol/common.h \
 		 libmemcached/response.h \
 		 libmemcached/server.hpp \
 		 libmemcached/server_instance.h \
 		 libmemcached/string.hpp \
-		 libmemcached/virtual_bucket.h
-
-nobase_include_HEADERS+= \
-			 libmemcached/allocators.h \
-			 libmemcached/analyze.h \
-			 libmemcached/array.h \
-			 libmemcached/auto.h \
-			 libmemcached/basic_string.h \
-			 libmemcached/behavior.h \
-			 libmemcached/callback.h \
-			 libmemcached/configure.h \
-			 libmemcached/constants.h \
-			 libmemcached/delete.h \
-			 libmemcached/dump.h \
-			 libmemcached/error.h \
-			 libmemcached/exist.h \
-			 libmemcached/exception.hpp \
-			 libmemcached/fetch.h \
-			 libmemcached/flush.h \
-			 libmemcached/flush_buffers.h \
-			 libmemcached/get.h \
-			 libmemcached/hash.h \
-			 libmemcached/memcached.h \
-			 libmemcached/memcached.hpp \
-			 libmemcached/memcached/protocol_binary.h \
-			 libmemcached/memcached/vbucket.h \
-			 libmemcached/options.h \
-			 libmemcached/parse.h \
-			 libmemcached/namespace.h \
-			 libmemcached/protocol/cache.h \
-			 libmemcached/protocol/callback.h \
-			 libmemcached/protocol_handler.h \
-			 libmemcached/quit.h \
-			 libmemcached/return.h \
-                         libmemcached/platform.h \
-			 libmemcached/result.h \
-                         libmemcached/sasl.h \
-			 libmemcached/server.h \
-			 libmemcached/server_list.h \
-			 libmemcached/stats.h \
-			 libmemcached/storage.h \
-			 libmemcached/strerror.h \
-			 libmemcached/string.h \
-			 libmemcached/types.h \
-			 libmemcached/verbosity.h \
-			 libmemcached/version.h \
-			 libmemcached/visibility.h \
-			 libmemcached/watchpoint.h
+		 libmemcached/virtual_bucket.h \
+		 libmemcached/watchpoint.h
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 libmemcached_libmemcached_la_CFLAGS= -DBUILDING_LIBMEMCACHED
@@ -108,6 +68,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \
 				       libmemcached/get.cc \
+				       libmemcached/touch.cc \
 				       libmemcached/hash.cc \
 				       libmemcached/hosts.cc \
 				       libmemcached/initialize_query.cc \

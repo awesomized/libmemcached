@@ -45,9 +45,10 @@ using namespace libtest;
 #include <cstdlib>
 #include <cstring>
 
-#include <libhashkit/hashkit.h>
+#include <libhashkit-1.0/hashkit.h>
+#include <libhashkit/is.h>
 
-#include "hash_results.h"
+#include "tests/hash_results.h"
 
 static hashkit_st global_hashk;
 

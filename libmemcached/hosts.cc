@@ -362,9 +362,9 @@ static memcached_return_t server_add(memcached_st *ptr,
   memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
                                                                                              sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
 
-  if (not new_host_list)
+  if (new_host_list == NULL)
   {
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
   memcached_server_list_set(ptr, new_host_list);
@@ -372,7 +372,7 @@ static memcached_return_t server_add(memcached_st *ptr,
   /* TODO: Check return type */
   memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
 
-  if (not __server_create_with(ptr, instance, hostname, port, weight, type))
+  if (__server_create_with(ptr, instance, hostname, port, weight, type) == NULL)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }

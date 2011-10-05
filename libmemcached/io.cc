@@ -610,13 +610,10 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
 static ssize_t _io_write(memcached_server_write_instance_st ptr,
                          const void *buffer, size_t length, bool with_flush)
 {
-  size_t original_length;
-  const char* buffer_ptr;
-
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
-  original_length= length;
-  buffer_ptr= static_cast<const char *>(buffer);
+  size_t original_length= length;
+  const char *buffer_ptr= static_cast<const char *>(buffer);
 
   while (length)
   {

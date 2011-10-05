@@ -38,4 +38,5 @@
 #pragma once
 
 #include <libmemcached/common.h>
+#include <libmemcached/csl/server.h>
 

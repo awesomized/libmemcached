@@ -44,7 +44,7 @@ extern "C" {
 LIBMEMCACHED_LOCAL
   memcached_return_t memcached_set_namespace(memcached_st *self, const char *str, size_t length);
 
-LIBMEMCACHED_API
+LIBMEMCACHED_LOCAL
   const char * memcached_get_namespace(memcached_st *self);
 
 #ifdef __cplusplus
