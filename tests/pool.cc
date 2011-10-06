@@ -51,6 +51,11 @@ using namespace libtest;
 #include <libmemcached/util.h>
 #include <tests/pool.h>
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
+
 test_return_t memcached_pool_test(memcached_st *)
 {
   memcached_return_t rc;
