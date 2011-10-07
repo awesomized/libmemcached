@@ -42,6 +42,10 @@
 
 using namespace libtest;
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
 static memcached_return_t delete_trigger(memcached_st *,
                                          const char *key,
                                          size_t key_length)

@@ -910,6 +910,7 @@ static test_return_t bad_key_test(memcached_st *memc)
                  memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
     std::vector <char> longkey;
+    longkey.reserve(MEMCACHED_MAX_KEY);
     longkey.insert(longkey.end(), MEMCACHED_MAX_KEY, 'a');
     test_compare(longkey.size(), size_t(MEMCACHED_MAX_KEY));
     {
@@ -1054,15 +1055,12 @@ static test_return_t get_test2(memcached_st *memc)
 
 static test_return_t set_test2(memcached_st *memc)
 {
-  const char *key= "foo";
-  const char *value= "train in the brain";
-  size_t value_length= strlen(value);
-
   for (uint32_t x= 0; x < 10; x++)
   {
-    memcached_return_t rc= memcached_set(memc, key, strlen(key),
-                                         value, value_length,
-                                         (time_t)0, (uint32_t)0);
+    memcached_return_t rc= memcached_set(memc,
+                                         test_literal_param("foo"),
+                                         test_literal_param("train in the brain"),
+                                         time_t(0), uint32_t(0));
     test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
   }
 
@@ -1073,12 +1071,11 @@ static test_return_t set_test3(memcached_st *memc)
 {
   size_t value_length= 8191;
 
-  char *value= (char*)malloc(value_length);
-  test_true(value);
-
+  std::vector<char> value;
+  value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
-    value[x] = (char) (x % 127);
+    value.push_back(char(x % 127));
   }
 
   /* The dump test relies on there being at least 32 items in memcached */
@@ -1090,13 +1087,11 @@ static test_return_t set_test3(memcached_st *memc)
 
     uint64_t query_id= memcached_query_id(memc);
     memcached_return_t rc= memcached_set(memc, key, strlen(key),
-                                         value, value_length,
+                                         &value[0], value.size(),
                                          (time_t)0, (uint32_t)0);
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
-
-  free(value);
 
   return TEST_SUCCESS;
 }
@@ -1106,17 +1101,16 @@ static test_return_t get_test3(memcached_st *memc)
   const char *key= "foo";
   size_t value_length= 8191;
 
-  char *value= (char*)malloc(value_length);
-  test_true(value);
-
+  std::vector<char> value;
+  value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
-    value[x] = (char) (x % 127);
+    value.push_back(char(x % 127));
   }
 
   memcached_return_t rc;
   rc= memcached_set(memc, key, strlen(key),
-                    value, value_length,
+                    &value[0], value.size(),
                     (time_t)0, (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
@@ -1128,10 +1122,9 @@ static test_return_t get_test3(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, rc);
   test_true(string);
   test_compare(string_length, value_length);
-  test_memcmp(string, value, string_length);
+  test_memcmp(string, &value[0], string_length);
 
   free(string);
-  free(value);
 
   return TEST_SUCCESS;
 }
@@ -1141,16 +1134,15 @@ static test_return_t get_test4(memcached_st *memc)
   const char *key= "foo";
   size_t value_length= 8191;
 
-  char *value= (char*)malloc(value_length);
-  test_true(value);
-
+  std::vector<char> value;
+  value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
-    value[x] = (char) (x % 127);
+    value.push_back(char(x % 127));
   }
 
   memcached_return_t rc= memcached_set(memc, key, strlen(key),
-                                       value, value_length,
+                                       &value[0], value.size(),
                                        (time_t)0, (uint32_t)0);
   test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
@@ -1164,11 +1156,9 @@ static test_return_t get_test4(memcached_st *memc)
     test_compare(MEMCACHED_SUCCESS, rc);
     test_true(string);
     test_compare(string_length, value_length);
-    test_memcmp(string, value, string_length);
+    test_memcmp(string, &value[0], string_length);
     free(string);
   }
-
-  free(value);
 
   return TEST_SUCCESS;
 }
@@ -2275,8 +2265,9 @@ static test_return_t user_supplied_bug2(memcached_st *memc)
 /* Do a large mget() over all the keys we think exist */
 static test_return_t user_supplied_bug3(memcached_st *memc)
 {
-  test_compare(true, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 1));
-  test_compare(true, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
+
 #ifdef NOT_YET
   setter = 20 * 1024576;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, setter);
@@ -2623,18 +2614,19 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, uint64_t(0));
 
-  char *value= (char*)malloc(value_length * sizeof(char));
-
-  for (unsigned int x= 0; x < value_length; x++)
+  std::vector<char> value;
+  value.reserve(value_length);
+  for (uint32_t x= 0; x < value_length; x++)
   {
-    value[x]= (char) (x % 127);
+    value.push_back(char(x % 127));
   }
 
   for (unsigned int x= 1; x <= 100000; ++x)
   {
     memcached_return_t rc= memcached_set(mclone, 
                                          test_literal_param("foo"),
-                                         value, value_length, 0, 0);
+                                         &value[0], value.size(),
+                                         0, 0);
 
     test_true_got((rc == MEMCACHED_SUCCESS or rc == MEMCACHED_WRITE_FAILURE or rc == MEMCACHED_BUFFERED or rc == MEMCACHED_TIMEOUT or rc == MEMCACHED_CONNECTION_FAILURE 
                    or rc == MEMCACHED_SERVER_TEMPORARILY_DISABLED), 
@@ -2646,7 +2638,6 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
     }
   }
 
-  free(value);
   memcached_free(mclone);
 
   return TEST_SUCCESS;
@@ -2657,35 +2648,28 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
 */
 static test_return_t user_supplied_bug11(memcached_st *memc)
 {
-  const char *key= "foo";
-  size_t value_length= 512;
-  size_t key_len= 3;
-  unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
 
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, set);
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
-  int32_t timeout= -1;
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, (size_t)timeout);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, true);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
+  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, size_t(-1));
 
-  timeout= (int32_t)memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT);
+  test_compare(-1, int32_t(memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT)));
 
-  test_true(timeout == -1);
 
-  char *value= (char*)malloc(value_length * sizeof(char));
-
-  for (unsigned int x= 0; x < value_length; x++)
+  std::vector<char> value;
+  value.reserve(512);
+  for (unsigned int x= 0; x < 512; x++)
   {
-    value[x]= (char) (x % 127);
+    value.push_back(char(x % 127));
   }
 
   for (unsigned int x= 1; x <= 100000; ++x)
   {
-    memcached_return_t rc= memcached_set(mclone, key, key_len,value, value_length, 0, 0);
+    memcached_return_t rc= memcached_set(mclone, test_literal_param("foo"), &value[0], value.size(), 0, 0);
     (void)rc;
   }
 
-  free(value);
   memcached_free(mclone);
 
   return TEST_SUCCESS;
@@ -2709,7 +2693,6 @@ static test_return_t user_supplied_bug12(memcached_st *memc)
 
   rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
                           1, &number_value);
-
   test_true(value == NULL);
   /* The binary protocol will set the key if it doesn't exist */
   if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1)
@@ -2783,6 +2766,7 @@ static test_return_t user_supplied_bug14(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
 
   std::vector<char> value;
+  value.reserve(18000);
   for (size_t x= 0; x < 18000; x++)
   {
     value.push_back((char) (x % 127));
