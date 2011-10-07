@@ -35,7 +35,6 @@
  *
  */
 
-#include <config.h>
 #include <libmemcached/common.h>
 
 struct bucket_t {
@@ -65,8 +64,11 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
 
   struct memcached_virtual_bucket_t *virtual_bucket= (struct memcached_virtual_bucket_t *)malloc(sizeof(struct memcached_virtual_bucket_t) + sizeof(struct bucket_t) *buckets);
   
-  if (! virtual_bucket)
+  if (virtual_bucket == NULL)
+  {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
+
 
   virtual_bucket->size= buckets;
   virtual_bucket->replicas= replicas;
@@ -85,18 +87,21 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
       virtual_bucket->buckets[x].forward= 0;
     }
   }
-  
 
   return MEMCACHED_SUCCESS;
 }
 
 void memcached_virtual_bucket_free(memcached_st *self)
 {
-  if (! self)
+  if (self == NULL)
+  {
     return;
+  }
 
-  if (! self->virtual_bucket)
+  if (self->virtual_bucket == NULL)
+  {
     return;
+  }
 
   free(self->virtual_bucket);
   self->virtual_bucket= NULL;
@@ -104,11 +109,15 @@ void memcached_virtual_bucket_free(memcached_st *self)
 
 uint32_t memcached_virtual_bucket_get(const memcached_st *self, uint32_t digest)
 {
-  if (! self)
+  if (self == NULL)
+  {
     return 0;
+  }
 
-  if (! self->virtual_bucket)
+  if (self->virtual_bucket == NULL)
+  {
     return 0;
+  }
 
   if (self->virtual_bucket)
   {
