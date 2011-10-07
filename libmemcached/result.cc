@@ -101,8 +101,10 @@ void memcached_result_reset(memcached_result_st *ptr)
 
 void memcached_result_free(memcached_result_st *ptr)
 {
-  if (not ptr)
+  if (ptr == NULL)
+  {
     return;
+  }
 
   memcached_string_free(&ptr->value);
 

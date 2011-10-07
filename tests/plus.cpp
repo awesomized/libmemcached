@@ -205,17 +205,15 @@ static test_return_t mget_test(memcached_st *original)
 static test_return_t basic_behavior(memcached_st *original)
 {
   Memcache memc(original);
-  uint64_t value= 1;
-  test_true(memc.setBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY, value));
-  uint64_t behavior= memc.getBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY);
-  test_compare(behavior, value);
+  test_true(memc.setBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY, true));
+  test_compare(true, memc.getBehavior(MEMCACHED_BEHAVIOR_VERIFY_KEY));
 
   return TEST_SUCCESS;
 }
 
 static test_return_t error_test(memcached_st *)
 {
-  Memcache memc("--server=localhost:0");
+  Memcache memc("--server=localhost:178");
   std::vector<char> value;
 
   test_false(memc.set("key", value, time_t(0), uint32_t(0)));
@@ -227,7 +225,7 @@ static test_return_t error_test(memcached_st *)
 
 static test_return_t error_std_string_test(memcached_st *)
 {
-  Memcache memc("--server=localhost:0");
+  Memcache memc("--server=localhost:178");
   std::vector<char> value;
 
   test_false(memc.set("key", value, time_t(0), uint32_t(0)));
@@ -241,7 +239,7 @@ static test_return_t error_std_string_test(memcached_st *)
 
 static test_return_t error_memcached_return_t_test(memcached_st *)
 {
-  Memcache memc("--server=localhost:0");
+  Memcache memc("--server=localhost:178");
   std::vector<char> value;
 
   test_false(memc.set("key", value, time_t(0), uint32_t(0)));
