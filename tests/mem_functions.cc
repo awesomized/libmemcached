@@ -2019,18 +2019,16 @@ static test_return_t behavior_test(memcached_st *memc)
   test_zero(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY));
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, MEMCACHED_HASH_DEFAULT);
-  test_compare(MEMCACHED_HASH_DEFAULT, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH));
+  test_compare(uint64_t(MEMCACHED_HASH_DEFAULT), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH));
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, MEMCACHED_HASH_CRC);
-  test_compare(MEMCACHED_HASH_CRC, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH));
+  test_compare(uint64_t(MEMCACHED_HASH_CRC), memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH));
 
-  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
-  test_true(value > 0);
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE));
 
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
-  test_true(value > 0);
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE));
 
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
+  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, value +1);
   test_compare((value +1),  memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS));
 
