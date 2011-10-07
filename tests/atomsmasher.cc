@@ -17,7 +17,6 @@
 #include <libtest/test.hpp>
 
 #include <libmemcached/memcached.h>
-#include <libmemcached/watchpoint.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -99,8 +98,7 @@ infinite:
       }
       else
       {
-        WATCHPOINT_ERROR(rc);
-        WATCHPOINT_ASSERT(rc);
+        test_compare(MEMCACHED_SUCCESS, rc);
       }
     }
     else
@@ -112,8 +110,7 @@ infinite:
                         0, 0);
       if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
       {
-        WATCHPOINT_ERROR(rc);
-        WATCHPOINT_ASSERT(0);
+        test_compare(MEMCACHED_SUCCESS, rc);
       }
     }
   }

@@ -38,7 +38,7 @@
 
 memcached_return_t initialize_query(memcached_st *self)
 {
-  if (not self)
+  if (self == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }

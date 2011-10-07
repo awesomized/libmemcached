@@ -90,11 +90,11 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *self,
   }
 
   /* All should be set, or none should be set */
-  if (mem_malloc == NULL && mem_free == NULL && mem_realloc == NULL && mem_calloc == NULL) 
+  if (mem_malloc == NULL and mem_free == NULL and mem_realloc == NULL and mem_calloc == NULL) 
   {
     self->allocators= memcached_allocators_return_default();
   }
-  else if (mem_malloc == NULL || mem_free == NULL || mem_realloc == NULL || mem_calloc == NULL)
+  else if (mem_malloc == NULL or mem_free == NULL or mem_realloc == NULL or mem_calloc == NULL)
   {
     return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("NULL parameter provided for one or more allocators"));
   }

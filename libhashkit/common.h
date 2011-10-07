@@ -16,7 +16,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <libhashkit/hashkit.h>
+#include <libhashkit-1.0/hashkit.h>
+#include <libhashkit/is.h>
 
 #ifdef __cplusplus
 extern "C" {

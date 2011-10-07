@@ -37,13 +37,7 @@
 
 #pragma once
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-LIBTEST_LOCAL
 test_return_t memcached_pool_test(memcached_st *);
-
-#ifdef	__cplusplus
-}
-#endif
+test_return_t connection_pool_test(memcached_st *);
+test_return_t connection_pool2_test(memcached_st *);
+test_return_t connection_pool3_test(memcached_st *);

@@ -23,6 +23,6 @@ switch (error)
                         [ av_cv_eagain_ewouldblock=no ],
                         [ av_cv_eagain_ewouldblock=yes ])
         ])
-    AS_IF([test "x$ac_cv_eagain_ewouldblock" = "xyes"],[
+    AS_IF([test "x$av_cv_eagain_ewouldblock" = "xno"],[
           AC_DEFINE([USE_EAGAIN], [1], [Define to true if you need to test for eagain])])
 ])

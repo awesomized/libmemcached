@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -71,7 +71,9 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
            rc == MEMCACHED_PROTOCOL_ERROR or
            rc == MEMCACHED_CLIENT_ERROR or
            rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+  {
     memcached_io_reset(ptr);
+  }
 
   return rc;
 }
@@ -124,7 +126,9 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   ssize_t read_length= 0;
 
   if (ptr->root->flags.use_udp)
+  {
     return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
+  }
 
   WATCHPOINT_ASSERT(ptr->root);
   end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
@@ -280,6 +284,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     }
   case 'O': /* OK */
     return MEMCACHED_SUCCESS;
+
   case 'S': /* STORED STATS SERVER_ERROR */
     {
       if (buffer[2] == 'A') /* STORED STATS */
@@ -328,9 +333,13 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   case 'N': /* NOT_FOUND */
     {
       if (buffer[4] == 'F')
+      {
         return MEMCACHED_NOTFOUND;
+      }
       else if (buffer[4] == 'S')
+      {
         return MEMCACHED_NOTSTORED;
+      }
       else
       {
         WATCHPOINT_STRING(buffer);
@@ -340,11 +349,17 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   case 'E': /* PROTOCOL ERROR or END */
     {
       if (buffer[1] == 'N')
+      {
         return MEMCACHED_END;
+      }
       else if (buffer[1] == 'R')
+      {
         return MEMCACHED_PROTOCOL_ERROR;
+      }
       else if (buffer[1] == 'X')
+      {
         return MEMCACHED_DATA_EXISTS;
+      }
       else
       {
         WATCHPOINT_STRING(buffer);
@@ -352,12 +367,25 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       }
 
     }
+  case 'T': /* TOUCHED */
+    {
+      if (buffer[1] == 'O' and buffer[2] == 'U' 
+          and buffer[3] == 'C' and buffer[4] == 'H' 
+          and buffer[5] == 'E' and buffer[6] == 'D')
+      {
+        return MEMCACHED_SUCCESS;
+      }
+    }
+    return MEMCACHED_UNKNOWN_READ_FAILURE;
+
   case 'I': /* CLIENT ERROR */
     /* We add back in one because we will need to search for END */
     memcached_server_response_increment(ptr);
     return MEMCACHED_ITEM;
+
   case 'C': /* CLIENT ERROR */
     return MEMCACHED_CLIENT_ERROR;
+
   default:
     {
       unsigned long long auto_return_value;
@@ -511,15 +539,18 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_CMD_APPEND:
     case PROTOCOL_BINARY_CMD_PREPEND:
     case PROTOCOL_BINARY_CMD_DELETE:
+    case PROTOCOL_BINARY_CMD_TOUCH:
       {
         WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_SUCCESS;
       }
+
     case PROTOCOL_BINARY_CMD_NOOP:
       {
         WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_END;
       }
+
     case PROTOCOL_BINARY_CMD_STAT:
       {
         if (bodylen == 0)

@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libmemcached/protocol_handler.h>
+#include <libmemcachedprotocol-0.0/handler.h>
 #include <example/byteorder.h>
 #include "storage.h"
 

@@ -28,16 +28,22 @@ EXTRA_DIST= \
 
 libmemcached_libmemcached_la_LDFLAGS=
 
+include libtest/include.am
+
+include libhashkit-1.0/include.am
+include libmemcached-1.0/include.am
+include libmemcachedprotocol-0.0/include.am
+include libmemcachedutil-1.0/include.am
+
 include clients/include.am
 include docs/include.am
 include example/include.am
 include libhashkit/include.am
 include libmemcached/include.am
-include libmemcached/util/include.am
-include libmemcached/protocol/include.am
+include libmemcachedutil/include.am
+include libmemcachedprotocol/include.am
 include libmemcachedinternal/include.am
 include libmemcachedinternal/util/include.am
-include libtest/include.am
 include poll/include.am
 include support/include.am
 include tests/include.am

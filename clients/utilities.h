@@ -12,9 +12,8 @@
 #pragma once
 
 #include <getopt.h>
-#include <libmemcached/memcached.h>
-#include "libmemcached/watchpoint.h"
-#include "client_options.h"
+#include <libmemcached-1.0/memcached.h>
+#include "clients/client_options.h"
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>

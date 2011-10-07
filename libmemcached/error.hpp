@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/error.h>
+#include <libmemcached/common.h>
 
 #pragma once
 
