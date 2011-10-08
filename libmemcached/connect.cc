@@ -144,7 +144,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
 #if 0
   hints.ai_family= AF_INET;
 #endif
-  if (server->type == MEMCACHED_CONNECTION_UDP)
+  if (memcached_is_udp(server->root))
   {
     hints.ai_protocol= IPPROTO_UDP;
     hints.ai_socktype= SOCK_DGRAM;
@@ -226,7 +226,7 @@ static void set_socket_options(memcached_server_st *server)
 {
   assert_msg(server->fd != -1, "invalid socket was passed to set_socket_options()");
 
-  if (server->type == MEMCACHED_CONNECTION_UDP)
+  if (memcached_is_udp(server->root))
   {
     return;
   }
@@ -442,7 +442,7 @@ static memcached_return_t network_connect(memcached_server_st *server)
   while (server->address_info_next and server->fd == INVALID_SOCKET)
   {
     /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
-    if (server->type == MEMCACHED_CONNECTION_UDP && server->address_info_next->ai_family != AF_INET)
+    if (memcached_is_udp(server->root) and server->address_info_next->ai_family != AF_INET)
     {
       server->address_info_next= server->address_info_next->ai_next;
       continue;
@@ -613,6 +613,11 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
   {
     set_last_disconnected_host(server);
     return rc;
+  }
+
+  if (LIBMEMCACHED_WITH_SASL_SUPPORT and server->root->sasl.callbacks and memcached_is_udp(server->root))
+  {
+    return memcached_set_error(*server, MEMCACHED_INVALID_HOST_PROTOCOL, MEMCACHED_AT, memcached_literal_param("SASL is not supported for UDP connections"));
   }
 
   /* We need to clean up the multi startup piece */

@@ -89,7 +89,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
-  if (not hashkit_create(&self->hashkit))
+  if (hashkit_create(&self->hashkit) == NULL)
   {
     return false;
   }
@@ -190,20 +190,20 @@ static void _free(memcached_st *ptr, bool release_st)
 
 memcached_st *memcached_create(memcached_st *ptr)
 {
-  if (ptr == NULL)
+  if (ptr)
+  {
+    ptr->options.is_allocated= false;
+  }
+  else
   {
     ptr= (memcached_st *)malloc(sizeof(memcached_st));
 
-    if (not ptr)
+    if (ptr == NULL)
     {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
     }
 
     ptr->options.is_allocated= true;
-  }
-  else
-  {
-    ptr->options.is_allocated= false;
   }
 
 #if 0
@@ -231,19 +231,18 @@ memcached_st *memcached_create(memcached_st *ptr)
 memcached_st *memcached(const char *string, size_t length)
 {
   memcached_st *self= memcached_create(NULL);
-  if (not self)
+  if (self == NULL)
   {
     errno= ENOMEM;
     return NULL;
   }
 
-  if (not length)
+  if (length == 0)
   {
     return self;
   }
 
   memcached_return_t rc= memcached_parse_configuration(self, string, length);
-
   if (memcached_success(rc) and memcached_parse_filename(self))
   {
     rc= memcached_parse_configure_file(*self, memcached_parse_filename(self), memcached_parse_filename_length(self));
@@ -319,20 +318,22 @@ void memcached_free(memcached_st *ptr)
 */
 memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 {
-  memcached_return_t rc= MEMCACHED_SUCCESS;
-
-  if (not source)
+  if (source == NULL)
+  {
     return memcached_create(clone);
+  }
 
-  if (clone && memcached_is_allocated(clone))
+  if (clone and memcached_is_allocated(clone))
   {
     return NULL;
   }
 
   memcached_st *new_clone= memcached_create(clone);
 
-  if (not new_clone)
+  if (new_clone == NULL)
+  {
     return NULL;
+  }
 
   new_clone->flags= source->flags;
   new_clone->send_size= source->send_size;
@@ -342,7 +343,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->retry_timeout= source->retry_timeout;
   new_clone->distribution= source->distribution;
 
-  if (not hashkit_clone(&new_clone->hashkit, &source->hashkit))
+  if (hashkit_clone(&new_clone->hashkit, &source->hashkit) == NULL)
   {
     memcached_free(new_clone);
     return NULL;
@@ -369,14 +370,10 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
   if (memcached_server_count(source))
   {
-    rc= memcached_push(new_clone, source);
-  }
-
-  if (memcached_failed(rc))
-  {
-    memcached_free(new_clone);
-
-    return NULL;
+    if (memcached_failed(memcached_push(new_clone, source)))
+    {
+      return NULL;
+    }
   }
 
 

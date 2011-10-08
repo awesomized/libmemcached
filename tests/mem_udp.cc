@@ -15,15 +15,15 @@
 
 using namespace libtest;
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 #include <libmemcached/server_instance.h>
 #include <libmemcached/io.h>
+#include <libmemcachedutil-1.0/util.h>
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,35 +42,30 @@ using namespace libtest;
 */
 static test_return_t pre_binary(memcached_st *memc)
 {
-  memcached_return_t rc= MEMCACHED_FAILURE;
-  memcached_st *memc_clone;
-  memcached_server_instance_st instance;
-
-  memc_clone= memcached_clone(NULL, memc);
+  memcached_st *memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
+
   // The memcached_version needs to be done on a clone, because the server
   // will not toggle protocol on an connection.
   memcached_version(memc_clone);
 
-  instance= memcached_server_instance_by_position(memc_clone, 0);
-
-  if (instance->major_version >= 1 && instance->minor_version > 2)
-  {
-    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-    test_true(rc == MEMCACHED_SUCCESS);
-    test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
-  }
+  test_compare(MEMCACHED_SUCCESS, memcached_version(memc));
+  test_compare(true, libmemcached_util_version_check(memc, 1, 2, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
+  test_compare(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
   memcached_free(memc_clone);
 
-  return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
+  return TEST_SUCCESS;
 }
 
 static void increment_request_id(uint16_t *id)
 {
   (*id)++;
   if ((*id & UDP_REQUEST_ID_THREAD_MASK) != 0)
+  {
     *id= 0;
+  }
 }
 
 static uint16_t *get_udp_request_ids(memcached_st *memc)
@@ -80,8 +75,7 @@ static uint16_t *get_udp_request_ids(memcached_st *memc)
 
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, x);
+    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
 
     ids[x]= get_udp_datagram_request_id((struct udp_datagram_header_st *) ((memcached_server_instance_st )instance)->write_buffer);
   }
@@ -115,49 +109,14 @@ static test_return_t post_udp_op_check(memcached_st *memc, uint16_t *expected_re
 **/
 static test_return_t init_udp(memcached_st *memc)
 {
-  memcached_version(memc);
-#if 0
-  memcached_server_instance_st instance=
-    memcached_server_instance_by_position(memc, 0);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, true));
 
-  /* For the time being, only support udp test for >= 1.2.6 && < 1.3 */
-  if (instance->major_version != 1 || instance->minor_version != 2
-          || instance->micro_version < 6)
-    return TEST_SKIPPED;
-
-  uint32_t num_hosts= memcached_server_count(memc);
-  memcached_server_st servers[num_hosts];
-  memcpy(servers, memcached_server_list(memc), sizeof(memcached_server_st) * num_hosts);
-  for (uint32_t x= 0; x < num_hosts; x++)
-  {
-   memcached_server_instance_st set_instance=
-     memcached_server_instance_by_position(memc, x);
-
-    memcached_server_free(((memcached_server_write_instance_st)set_instance));
-  }
-
-  memc->number_of_hosts= 0;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1);
-  for (uint32_t x= 0; x < num_hosts; x++)
-  {
-    memcached_server_instance_st set_instance=
-      memcached_server_instance_by_position(memc, x);
-
-    test_true(memcached_server_add_udp(memc, servers[x].hostname, servers[x].port) == MEMCACHED_SUCCESS);
-    test_true(set_instance->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
-  }
-#endif
-
-  return TEST_SKIPPED;
+  return TEST_SUCCESS;
 }
 
 static test_return_t binary_init_udp(memcached_st *memc)
 {
-  test_return_t test_rc;
-  test_rc= pre_binary(memc);
-
-  if (test_rc != TEST_SUCCESS)
-    return test_rc;
+  test_skip(TEST_SUCCESS, pre_binary(memc));
 
   return init_udp(memc);
 }
@@ -198,20 +157,17 @@ static test_return_t add_udp_server_tcp_client_test(memcached_st *memc)
 
 static test_return_t set_udp_behavior_test(memcached_st *memc)
 {
-
   memcached_quit(memc);
-  memc->number_of_hosts= 0;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, memc->distribution);
-  test_true(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, 1) == MEMCACHED_SUCCESS);
+
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, memc->distribution));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, true));
   test_true(memc->flags.use_udp);
   test_true(memc->flags.no_reply);
 
-  test_true(memcached_server_count(memc) == 0);
-
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP,0);
-  test_true(! (memc->flags.use_udp));
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY,0);
-  test_true(! (memc->flags.no_reply));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, false));
+  test_false(memc->flags.use_udp);
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, false));
+  test_false(memc->flags.no_reply);
 
   return TEST_SUCCESS;
 }
@@ -222,24 +178,20 @@ static test_return_t udp_set_test(memcached_st *memc)
 
   for (size_t x= 0; x < num_iters;x++)
   {
-    memcached_return_t rc;
-    const char *key= "foo";
-    const char *value= "when we sanitize";
     uint16_t *expected_ids= get_udp_request_ids(memc);
-    unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, server_key);
+    unsigned int server_key= memcached_generate_hash(memc, test_literal_param("foo"));
+    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, server_key);
     size_t init_offset= instance->write_buffer_offset;
 
-    rc= memcached_set(memc, key, strlen(key),
-                      value, strlen(value),
-                      (time_t)0, (uint32_t)0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    memcached_return_t rc= memcached_set(memc, test_literal_param("foo"),
+                                         test_literal_param("when we sanitize"),
+                                         (time_t)0, (uint32_t)0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
     /** NB, the check below assumes that if new write_ptr is less than
      *  the original write_ptr that we have flushed. For large payloads, this
      *  maybe an invalid assumption, but for the small payload we have it is OK
      */
-    if (rc == MEMCACHED_SUCCESS ||
+    if (rc == MEMCACHED_SUCCESS or
             instance->write_buffer_offset < init_offset)
       increment_request_id(&expected_ids[server_key]);
 
@@ -254,48 +206,47 @@ static test_return_t udp_set_test(memcached_st *memc)
     }
     test_true(post_udp_op_check(memc, expected_ids) == TEST_SUCCESS);
   }
+
   return TEST_SUCCESS;
 }
 
 static test_return_t udp_buffered_set_test(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
-  return udp_set_test(memc);
+  test_compare(MEMCACHED_INVALID_ARGUMENTS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true));
+  return TEST_SUCCESS;
 }
 
 static test_return_t udp_set_too_big_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  const char *key= "bar";
   char value[MAX_UDP_DATAGRAM_LENGTH];
   uint16_t *expected_ids= get_udp_request_ids(memc);
-  rc= memcached_set(memc, key, strlen(key),
-                    value, MAX_UDP_DATAGRAM_LENGTH,
-                    (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_WRITE_FAILURE);
+
+  memset(value, int('f'), sizeof(value));
+
+  test_compare_hint(MEMCACHED_WRITE_FAILURE, memcached_set(memc, test_literal_param("bar"), value, sizeof(value), time_t(0), uint32_t(0)),
+                    memcached_last_error_message(memc));
 
   return post_udp_op_check(memc,expected_ids);
 }
 
 static test_return_t udp_delete_test(memcached_st *memc)
 {
-  unsigned int num_iters= 1025; //request id rolls over at 1024
-
-  for (size_t x= 0; x < num_iters;x++)
+  //request id rolls over at 1024
+  for (size_t x= 0; x < 1025; x++)
   {
-    memcached_return_t rc;
-    const char *key= "foo";
     uint16_t *expected_ids=get_udp_request_ids(memc);
-    unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc, server_key);
+    unsigned int server_key= memcached_generate_hash(memc, test_literal_param("foo"));
+    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, server_key);
     size_t init_offset= instance->write_buffer_offset;
 
-    rc= memcached_delete(memc, key, strlen(key), 0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    memcached_return_t rc= memcached_delete(memc, test_literal_param("foo"), 0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
-    if (rc == MEMCACHED_SUCCESS || instance->write_buffer_offset < init_offset)
+    if (rc == MEMCACHED_SUCCESS or instance->write_buffer_offset < init_offset)
+    {
       increment_request_id(&expected_ids[server_key]);
+    }
+
     if (rc == MEMCACHED_SUCCESS)
     {
       test_true(instance->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH);
@@ -318,7 +269,6 @@ static test_return_t udp_buffered_delete_test(memcached_st *memc)
 
 static test_return_t udp_verbosity_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
 
   for (size_t x= 0; x < memcached_server_count(memc); x++)
@@ -326,8 +276,8 @@ static test_return_t udp_verbosity_test(memcached_st *memc)
     increment_request_id(&expected_ids[x]);
   }
 
-  rc= memcached_verbosity(memc,3);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, memcached_verbosity(memc, 3));
+
   return post_udp_op_check(memc,expected_ids);
 }
 
@@ -340,94 +290,85 @@ static test_return_t udp_quit_test(memcached_st *memc)
 
 static test_return_t udp_flush_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   uint16_t *expected_ids= get_udp_request_ids(memc);
 
   for (size_t x= 0; x < memcached_server_count(memc); x++)
   {
     increment_request_id(&expected_ids[x]);
   }
+  test_compare_hint(MEMCACHED_SUCCESS, memcached_flush(memc, 0), memcached_last_error_message(memc));
 
-  rc= memcached_flush(memc,0);
-  test_true(rc == MEMCACHED_SUCCESS);
-  return post_udp_op_check(memc,expected_ids);
+  return post_udp_op_check(memc, expected_ids);
 }
 
 static test_return_t udp_incr_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  const char *key= "incr";
-  const char *value= "1";
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc, test_literal_param("incr"), 
+                                                test_literal_param("1"),
+                                                (time_t)0, (uint32_t)0));
 
-  test_true(rc == MEMCACHED_SUCCESS);
   uint16_t *expected_ids= get_udp_request_ids(memc);
-  unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
+  unsigned int server_key= memcached_generate_hash(memc, test_literal_param("incr"));
   increment_request_id(&expected_ids[server_key]);
+
   uint64_t newvalue;
-  rc= memcached_increment(memc, key, strlen(key), 1, &newvalue);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, memcached_increment(memc, test_literal_param("incr"), 1, &newvalue));
+
   return post_udp_op_check(memc, expected_ids);
 }
 
 static test_return_t udp_decr_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  const char *key= "decr";
-  const char *value= "1";
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc, 
+                                                test_literal_param("decr"),
+                                                test_literal_param("1"),
+                                                (time_t)0, (uint32_t)0));
 
-  test_true(rc == MEMCACHED_SUCCESS);
   uint16_t *expected_ids= get_udp_request_ids(memc);
-  unsigned int server_key= memcached_generate_hash(memc, key, strlen(key));
+  unsigned int server_key= memcached_generate_hash(memc, test_literal_param("decr"));
   increment_request_id(&expected_ids[server_key]);
+
   uint64_t newvalue;
-  rc= memcached_decrement(memc, key, strlen(key), 1, &newvalue);
-  test_true(rc == MEMCACHED_SUCCESS);
+  test_compare(MEMCACHED_SUCCESS, memcached_decrement(memc, test_literal_param("decr"), 1, &newvalue));
+
   return post_udp_op_check(memc, expected_ids);
 }
 
 
 static test_return_t udp_stat_test(memcached_st *memc)
 {
-  memcached_stat_st * rv= NULL;
   memcached_return_t rc;
   char args[]= "";
   uint16_t *expected_ids = get_udp_request_ids(memc);
-  rv = memcached_stat(memc, args, &rc);
+  memcached_stat_st *rv = memcached_stat(memc, args, &rc);
   free(rv);
-  test_true(rc == MEMCACHED_NOT_SUPPORTED);
+  test_compare(MEMCACHED_NOT_SUPPORTED, rc);
+
   return post_udp_op_check(memc, expected_ids);
 }
 
 static test_return_t udp_version_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   uint16_t *expected_ids = get_udp_request_ids(memc);
-  rc = memcached_version(memc);
-  test_true(rc == MEMCACHED_NOT_SUPPORTED);
+
+  test_compare(MEMCACHED_NOT_SUPPORTED, memcached_version(memc));
+
   return post_udp_op_check(memc, expected_ids);
 }
 
 static test_return_t udp_get_test(memcached_st *memc)
 {
   memcached_return_t rc;
-  const char *key= "foo";
   size_t vlen;
   uint16_t *expected_ids = get_udp_request_ids(memc);
-  char *val= memcached_get(memc, key, strlen(key), &vlen, (uint32_t)0, &rc);
-  test_true(rc == MEMCACHED_NOT_SUPPORTED);
-  test_true(val == NULL);
+  test_null(memcached_get(memc, test_literal_param("foo"), &vlen, (uint32_t)0, &rc));
+  test_compare(MEMCACHED_NOT_SUPPORTED, rc);
+
   return post_udp_op_check(memc, expected_ids);
 }
 
 static test_return_t udp_mixed_io_test(memcached_st *memc)
 {
-  test_st current_op;
   test_st mixed_io_ops [] ={
     {"udp_set_test", 0,
       (test_callback_fn*)udp_set_test},
@@ -439,8 +380,10 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
       (test_callback_fn*)udp_verbosity_test},
     {"udp_quit_test", 0,
       (test_callback_fn*)udp_quit_test},
+#if 0
     {"udp_flush_test", 0,
       (test_callback_fn*)udp_flush_test},
+#endif
     {"udp_incr_test", 0,
       (test_callback_fn*)udp_incr_test},
     {"udp_decr_test", 0,
@@ -451,8 +394,8 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
 
   for (size_t x= 0; x < 500; x++)
   {
-    current_op= mixed_io_ops[random() % 9];
-    test_true(current_op.test_fn(memc) == TEST_SUCCESS);
+    test_st current_op= mixed_io_ops[(random() % 8)];
+    test_compare(TEST_SUCCESS, current_op.test_fn(memc));
   }
   return TEST_SUCCESS;
 }
