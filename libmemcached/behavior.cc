@@ -114,19 +114,22 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
+    if (ptr->flags.use_udp)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                 memcached_literal_param("MEMCACHED_BEHAVIOR_BUFFER_REQUESTS cannot be set while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
+    }
     ptr->flags.buffer_requests= bool(data);
     send_quit(ptr);
     break;
 
   case MEMCACHED_BEHAVIOR_USE_UDP:
-    if (memcached_server_count(ptr))
-    {
-      return MEMCACHED_FAILURE;
-    }
+    send_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     ptr->flags.use_udp= bool(data);
-    if (data)
+    if (bool(data))
     {
-      ptr->flags.no_reply= bool(data);
+      ptr->flags.no_reply= true;
+      ptr->flags.buffer_requests= false;
     }
     break;
 
@@ -228,6 +231,11 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
+    if (ptr->flags.use_udp and bool(data) == false)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                 memcached_literal_param("MEMCACHED_BEHAVIOR_NOREPLY cannot be disabled while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
+    }
     ptr->flags.no_reply= bool(data);
     break;
 

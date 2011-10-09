@@ -45,11 +45,10 @@ static memcached_return_t update_continuum(memcached_st *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
 {
-  int return_value;
   memcached_server_instance_st a= (memcached_server_instance_st)p1;
   memcached_server_instance_st b= (memcached_server_instance_st)p2;
 
-  return_value= strcmp(a->hostname, b->hostname);
+  int return_value= strcmp(a->hostname, b->hostname);
 
   if (return_value == 0)
   {
@@ -353,11 +352,6 @@ static memcached_return_t server_add(memcached_st *ptr,
                                      memcached_connection_t type)
 {
   assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
-  if ( (ptr->flags.use_udp and type != MEMCACHED_CONNECTION_UDP)
-      or ( (type == MEMCACHED_CONNECTION_UDP) and (not ptr->flags.use_udp) ) )
-  {
-    return memcached_set_error(*ptr, MEMCACHED_INVALID_HOST_PROTOCOL, MEMCACHED_AT);
-  }
 
   memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
                                                                                              sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
@@ -394,7 +388,7 @@ static memcached_return_t server_add(memcached_st *ptr,
 
 memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list)
 {
-  if (not list)
+  if (list == NULL)
   {
     return MEMCACHED_SUCCESS;
   }
@@ -405,20 +399,16 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
   new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
 									sizeof(memcached_server_st) * (count + memcached_server_count(ptr))));
 
-  if (not new_host_list)
+  if (new_host_list == NULL)
+  {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
 
   memcached_server_list_set(ptr, new_host_list);
 
   for (uint32_t x= 0; x < count; x++)
   {
     memcached_server_write_instance_st instance;
-
-    if ((ptr->flags.use_udp && list[x].type != MEMCACHED_CONNECTION_UDP)
-        or ((list[x].type == MEMCACHED_CONNECTION_UDP) and not (ptr->flags.use_udp)) )
-    {
-      return MEMCACHED_INVALID_HOST_PROTOCOL;
-    }
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
@@ -484,32 +474,16 @@ memcached_return_t memcached_server_add_udp(memcached_st *ptr,
 }
 
 memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
-                                                        const char *hostname,
-                                                        in_port_t port,
-                                                        uint32_t weight)
+                                                        const char *,
+                                                        in_port_t,
+                                                        uint32_t)
 {
   if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (not port)
-  {
-    port= MEMCACHED_DEFAULT_PORT;
-  }
-
-  if (not hostname)
-  {
-    hostname= "localhost";
-  }
-
-  memcached_string_t _hostname= { memcached_string_make_from_cstr(hostname) };
-  if (memcached_is_valid_servername(_hostname) == false)
-  {
-    memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid hostname provided"));
-  }
-
-  return server_add(ptr, _hostname, port, weight, MEMCACHED_CONNECTION_UDP);
+  return memcached_set_error(*ptr, MEMCACHED_DEPRECATED, MEMCACHED_AT);
 }
 
 memcached_return_t memcached_server_add(memcached_st *ptr,
@@ -538,7 +512,7 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
   if (hostname_length == 0)
   {
     hostname= "localhost";
-    hostname_length= sizeof("localhost") -1;
+    hostname_length= memcached_literal_param_size("localhost");
   }
 
   memcached_string_t _hostname= { hostname, hostname_length };
