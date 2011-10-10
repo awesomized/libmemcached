@@ -594,7 +594,7 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
 void memcached_stat_free(const memcached_st *, memcached_stat_st *memc_stat)
 {
   WATCHPOINT_ASSERT(memc_stat); // Be polite, but when debugging catch this as an error
-  if (not memc_stat)
+  if (memc_stat == NULL)
   {
     return;
   }

@@ -132,7 +132,7 @@ memcached_server_st *__server_create_with(memcached_st *memc,
   _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
 
-  if (type == MEMCACHED_CONNECTION_UDP)
+  if (memc and memcached_is_udp(memc))
   {
     self->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
     memcached_io_init_udp_header(self, 0);

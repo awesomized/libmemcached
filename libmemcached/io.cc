@@ -315,14 +315,13 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   // UDP Sanity check, make sure that we are not sending somthing too big
-  if (ptr->type == MEMCACHED_CONNECTION_UDP && write_length > MAX_UDP_DATAGRAM_LENGTH)
+  if (memcached_is_udp(ptr->root) and write_length > MAX_UDP_DATAGRAM_LENGTH)
   {
     *error= MEMCACHED_WRITE_FAILURE;
     return -1;
   }
 
-  if (ptr->write_buffer_offset == 0 || (ptr->type == MEMCACHED_CONNECTION_UDP
-                                        && ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
+  if (ptr->write_buffer_offset == 0 or (memcached_is_udp(ptr->root) and ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
   {
     return 0;
   }
@@ -339,8 +338,10 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
-    if (ptr->type == MEMCACHED_CONNECTION_UDP)
+    if (memcached_is_udp(ptr->root))
+    {
       increment_udp_message_id(ptr);
+    }
 
     ssize_t sent_length= 0;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
@@ -375,8 +376,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
            * buffer for more data and retry the write before
            * waiting..
          */
-          if (repack_input_buffer(ptr) or
-              process_input_buffer(ptr))
+          if (repack_input_buffer(ptr) or process_input_buffer(ptr))
           {
             continue;
           }
@@ -406,19 +406,18 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       }
     }
 
-    if (ptr->type == MEMCACHED_CONNECTION_UDP and
-        size_t(sent_length) != write_length)
+    if (memcached_is_udp(ptr->root) and size_t(sent_length) != write_length)
     {
       memcached_quit_server(ptr, true);
       *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
       return -1;
     }
 
-    ptr->io_bytes_sent += (uint32_t) sent_length;
+    ptr->io_bytes_sent+= uint32_t(sent_length);
 
     local_write_ptr+= sent_length;
-    write_length-= (uint32_t) sent_length;
-    return_length+= (uint32_t) sent_length;
+    write_length-= uint32_t(sent_length);
+    return_length+= uint32_t(sent_length);
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
@@ -427,10 +426,14 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
 
   // if we are a udp server, the begining of the buffer is reserverd for
   // the upd frame header
-  if (ptr->type == MEMCACHED_CONNECTION_UDP)
+  if (memcached_is_udp(ptr->root))
+  {
     ptr->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
+  }
   else
+  {
     ptr->write_buffer_offset= 0;
+  }
 
   return (ssize_t) return_length;
 }
@@ -621,7 +624,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
     size_t should_write;
     size_t buffer_end;
 
-    if (ptr->type == MEMCACHED_CONNECTION_UDP)
+    if (memcached_is_udp(ptr->root))
     {
       //UDP does not support partial writes
       buffer_end= MAX_UDP_DATAGRAM_LENGTH;
@@ -644,7 +647,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
     buffer_ptr+= should_write;
     length-= should_write;
 
-    if (ptr->write_buffer_offset == buffer_end && ptr->type != MEMCACHED_CONNECTION_UDP)
+    if (ptr->write_buffer_offset == buffer_end and memcached_is_udp(ptr->root) == false)
     {
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 

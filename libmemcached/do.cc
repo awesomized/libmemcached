@@ -30,7 +30,7 @@ memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const vo
   ** before they start writing, if there is any data in buffer, clear it out,
   ** otherwise we might get a partial write.
   **/
-  if (ptr->type == MEMCACHED_CONNECTION_UDP && with_flush && ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
+  if (memcached_is_udp(ptr->root) and with_flush and ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
   {
     memcached_io_write(ptr, NULL, 0, true);
   }
@@ -70,9 +70,13 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
   ** before they start writing, if there is any data in buffer, clear it out,
   ** otherwise we might get a partial write.
   **/
-  if (ptr->type == MEMCACHED_CONNECTION_UDP && with_flush && ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
+  if (memcached_is_udp(ptr->root) and with_flush and ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
   {
-    memcached_io_write(ptr, NULL, 0, true);
+    if (memcached_io_write(ptr, NULL, 0, true) == -1)
+    {
+      memcached_io_reset(ptr);
+      return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+    }
   }
 
   ssize_t sent_length= memcached_io_writev(ptr, vector, count, with_flush);
