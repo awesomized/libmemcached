@@ -149,11 +149,8 @@ libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
-libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN
-libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY="\"${abs_top_builddir}/gearmand/gearmand\""
 libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BLOBSLAP_WORKER="\"${abs_top_builddir}/benchmark/blobslap_worker\""
 
-libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN
 libtest_unittest_LDADD+= libgearman/libgearman.la
 libtest_unittest_DEPENDENCIES+= libgearman/libgearman.la
 else
@@ -164,12 +161,9 @@ libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
-else
-libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BINARY=0
 libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BLOBSLAP_WORKER=0
-libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
-libtest_unittest_CXXFLAGS+= -DGEARMAND_BINARY=0
-libtest_unittest_CXXFLAGS+= -DHAVE_LIBGEARMAN=0
+else
+libtest_libtest_la_CXXFLAGS+= -DGEARMAND_BLOBSLAP_WORKER=0
 endif
 endif
 
