@@ -61,14 +61,13 @@ gl_VISIBILITY
 m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
+m4_include([m4/libgearman.m4])
 
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
 AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enables libmemcached Support])
 
 AM_CONDITIONAL(BUILDING_GEARMAN, false)
-AM_CONDITIONAL(HAVE_LIBGEARMAN, false)
-AC_DEFINE([HAVE_LIBGEARMAN], [0], [Enables libgearman Support])
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
