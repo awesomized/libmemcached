@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include <vector>
+#include <iostream>
+
 namespace libtest {
 
 /**
@@ -30,3 +33,7 @@ LIBTEST_API
 const char *test_strerror(test_return_t code);
 
 } // namespace libtest
+
+std::ostream& operator<<(std::ostream& output, const enum test_return_t &arg);
+std::ostream& operator<<(std::ostream& output, const std::vector<char> &arg);
+

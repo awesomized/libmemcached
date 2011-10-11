@@ -46,3 +46,16 @@ const char *test_strerror(test_return_t code)
 }
 
 } // namespace libtest
+
+
+std::ostream& operator<<(std::ostream& output, const enum test_return_t &arg)
+{
+  output << libtest::test_strerror(arg);
+  return output;
+}
+
+std::ostream& operator<<(std::ostream& output, const std::vector<char> &arg)
+{
+  output << "std::vector<char>:" << arg.size(); 
+  return output;
+}

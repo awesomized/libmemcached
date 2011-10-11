@@ -134,6 +134,7 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcachedutil-1.0/flush.h
 %{_includedir}/libmemcachedutil-1.0/pid.h
 %{_includedir}/libmemcachedutil-1.0/ping.h
+%{_includedir}/libmemcachedutil-1.0/ostream.hpp
 %{_includedir}/libmemcachedutil-1.0/pool.h
 %{_includedir}/libmemcachedutil-1.0/version.h
 

@@ -215,7 +215,7 @@ public:
 
       // Actual value, null terminated
       ret_val.reserve(memcached_result_length(result) +1);
-      ret_val.assign(memcached_result_value(result), 
+      ret_val.assign(memcached_result_value(result),
                      memcached_result_value(result) +memcached_result_length(result));
 
       // Misc
@@ -255,7 +255,7 @@ public:
     if (value != NULL && ret_val.empty())
     {
       ret_val.reserve(value_length);
-      ret_val.assign(value, value + value_length);
+      ret_val.assign(value, value +value_length);
       free(value);
       return true;
     }
@@ -290,7 +290,7 @@ public:
     if (value)
     {
       ret_val.reserve(value_length);
-      ret_val.assign(value, value + value_length);
+      ret_val.assign(value, value +value_length);
       free(value);
       return true;
     }
