@@ -16,6 +16,7 @@ Basics
    :maxdepth: 1
 
    libmemcached
+   versioning
    memcached_create
    libmemcached_examples
    libmemcached_configuration
