@@ -86,6 +86,7 @@ static test_return_t basic_test(memcached_st *memc)
   test_true(foo.set("mine", value, 0, 0));
   test_true(foo.get("mine", test_value));
 
+  test_compare(test_value.size(), value.size());
   test_memcmp(&test_value[0], &value[0], test_value.size());
   test_false(foo.set("", value, 0, 0));
 
