@@ -54,11 +54,9 @@ config/compile
 config/config.guess
 config/config.sub
 config/depcomp
-config/install-sh
 config/ltmain.sh
 config/missing
 config/pandora_vc_revinfo
-config/plugin.ac
 config/top.h
 configure
 configure.scan
