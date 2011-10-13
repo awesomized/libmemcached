@@ -1,4 +1,4 @@
-1.0 
+1.01 
 * Dropped libmemcached/memcached_util.h (undocumented header file)
 * Added memcached_touch() and memcached_touch_by_key()
 * UDP support restructured to toggle on a complete memcached_st structure.
