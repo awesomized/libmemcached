@@ -7,7 +7,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[0.53],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.01],[http://libmemcached.org/])
 
 AC_CONFIG_AUX_DIR(config)
 
