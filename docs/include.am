@@ -54,19 +54,19 @@ man_MANS+= \
 	   docs/man/memcached_decrement_with_initial.3 \
 	   docs/man/memcached_delete.3 \
 	   docs/man/memcached_delete_by_key.3 \
-	   docs/man/memcached_exist.3 \
-	   docs/man/memcached_exist_by_key.3 \
+	   docs/man/libmemcached_check_configuration.3 \
+	   docs/man/libmemcached_configuration.3 \
+	   docs/man/memcached.3 \
 	   docs/man/memcached_destroy_sasl_auth_data.3 \
 	   docs/man/memcached_dump.3 \
+	   docs/man/memcached_exist.3 \
+	   docs/man/memcached_exist_by_key.3 \
 	   docs/man/memcached_fetch.3 \
 	   docs/man/memcached_fetch_execute.3 \
 	   docs/man/memcached_fetch_result.3 \
 	   docs/man/memcached_flush_buffers.3 \
 	   docs/man/memcached_free.3 \
 	   docs/man/memcached_generate_hash.3 \
-	   docs/man/libmemcached_check_configuration.3 \
-	   docs/man/libmemcached_configuration.3 \
-	   docs/man/memcached.3 \
 	   docs/man/memcached_generate_hash_value.3 \
 	   docs/man/memcached_get.3 \
 	   docs/man/memcached_get_by_key.3 \
@@ -95,6 +95,7 @@ man_MANS+= \
 	   docs/man/memcached_quit.3 \
 	   docs/man/memcached_replace.3 \
 	   docs/man/memcached_replace_by_key.3 \
+	   docs/man/memcached_last_error_message.3 \
 	   docs/man/memcached_sasl_set_auth_data.3 \
 	   docs/man/memcached_server_add.3 \
 	   docs/man/memcached_server_count.3 \
@@ -106,7 +107,6 @@ man_MANS+= \
 	   docs/man/memcached_server_push.3 \
 	   docs/man/memcached_servers_parse.3 \
 	   docs/man/memcached_set.3 \
-	   docs/man/memcached_last_error_message.3 \
 	   docs/man/memcached_set_by_key.3 \
 	   docs/man/memcached_set_memory_allocators.3 \
 	   docs/man/memcached_set_sasl_callbacks.3 \
@@ -117,6 +117,8 @@ man_MANS+= \
 	   docs/man/memcached_stat_get_value.3 \
 	   docs/man/memcached_stat_servername.3 \
 	   docs/man/memcached_strerror.3 \
+	   docs/man/memcached_touch.3 \
+	   docs/man/memcached_touch_by_key.3 \
 	   docs/man/memcached_verbosity.3 \
 	   docs/man/memcached_version.3 \
 	   docs/man/memcapable.1 \
