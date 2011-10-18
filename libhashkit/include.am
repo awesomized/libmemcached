@@ -29,7 +29,6 @@ libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/function.cc \
 				  libhashkit/has.cc \
 				  libhashkit/hashkit.cc \
-				  libhashkit/hsieh.cc \
 				  libhashkit/jenkins.cc \
 				  libhashkit/ketama.cc \
 				  libhashkit/md5.cc \
@@ -38,6 +37,11 @@ libhashkit_libhashkit_la_SOURCES= \
 				  libhashkit/str_algorithm.cc \
 				  libhashkit/strerror.cc
 
+if INCLUDE_HSIEH_SRC
+libhashkit_libhashkit_la_SOURCES+= libhashkit/hsieh.cc
+else
+libhashkit_libhashkit_la_SOURCES+= libhashkit/nohsieh.cc
+endif
 
 
 libhashkit_libhashkit_la_CPPFLAGS= -DBUILDING_HASHKIT
