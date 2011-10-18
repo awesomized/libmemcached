@@ -64,6 +64,15 @@ Advanced Topics
    memcached_verbosity
    memcached_version
 
+##################
+Interface Versions
+##################
+
+.. toctree::
+   :titlesonly:
+
+   libmemcached-1.0/index
+   libmemcached-1.1/index
 
 ####################
 Deprecated Functions
