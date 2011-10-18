@@ -2125,6 +2125,7 @@ static int ms_add_iov(ms_conn_t *c, const void *buf, int len)
      */
     limit_to_mtu= c->udp;
 
+#ifdef IOV_MAX
     /* We may need to start a new msghdr if this one is full. */
     if ((m->msg_iovlen == IOV_MAX)
         || (limit_to_mtu && (c->msgbytes >= UDP_MAX_SEND_PAYLOAD_SIZE)))
@@ -2132,6 +2133,7 @@ static int ms_add_iov(ms_conn_t *c, const void *buf, int len)
       ms_add_msghdr(c);
       m= &c->msglist[c->msgused - 1];
     }
+#endif
 
     if (ms_ensure_iov_space(c) != 0)
       return -1;
