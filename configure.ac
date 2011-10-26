@@ -148,6 +148,12 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_C_INLINE
+AC_C_VOLATILE
+AC_C_RESTRICT
+
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],
       [

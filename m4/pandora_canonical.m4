@@ -6,23 +6,6 @@ dnl with or without modifications, as long as this notice is preserved.
 dnl Which version of the canonical setup we're using
 AC_DEFUN([PANDORA_CANONICAL_VERSION],[0.175])
 
-AC_DEFUN([PANDORA_FORCE_DEPEND_TRACKING],[
-  AC_ARG_ENABLE([fat-binaries],
-    [AS_HELP_STRING([--enable-fat-binaries],
-      [Enable fat binary support on OSX @<:@default=off@:>@])],
-    [ac_enable_fat_binaries="$enableval"],
-    [ac_enable_fat_binaries="no"])
-
-  dnl Force dependency tracking on for Sun Studio builds
-  AS_IF([test "x${enable_dependency_tracking}" = "x"],[
-    enable_dependency_tracking=yes
-  ])
-  dnl If we're building OSX Fat Binaries, we have to turn off -M options
-  AS_IF([test "x${ac_enable_fat_binaries}" = "xyes"],[
-    enable_dependency_tracking=no
-  ])
-])
-
 AC_DEFUN([PANDORA_BLOCK_BAD_OPTIONS],[
   AS_IF([test "x${prefix}" = "x"],[
     AC_MSG_ERROR([--prefix requires an argument])
@@ -31,7 +14,6 @@ AC_DEFUN([PANDORA_BLOCK_BAD_OPTIONS],[
 
 dnl The standard setup for how we build Pandora projects
 AC_DEFUN([PANDORA_CANONICAL_TARGET],[
-  AC_REQUIRE([PANDORA_FORCE_DEPEND_TRACKING])
   ifdef([m4_define],,[define([m4_define],   defn([define]))])
   ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])
   m4_define([PCT_ALL_ARGS],[$*])
@@ -149,12 +131,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   PANDORA_CHECK_C_VERSION
   PANDORA_CHECK_CXX_VERSION
 
-  AC_C_BIGENDIAN
-  AC_C_CONST
-  AC_C_INLINE
-  AC_C_VOLATILE
-  AC_C_RESTRICT
-
   AC_HEADER_TIME
   AC_STRUCT_TM
   AC_TYPE_SIZE_T
@@ -221,17 +197,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   PANDORA_OPTIMIZE
 
-  AC_LANG_PUSH(C++)
-  # Test whether madvise() is declared in C++ code -- it is not on some
-  # systems, such as Solaris
-  AC_CHECK_DECLS([madvise], [], [], [AC_INCLUDES_DEFAULT[
-  #if HAVE_SYS_MMAN_H
-  #include <sys/types.h>
-  #include <sys/mman.h>
-  #endif
-  ]])
-  AC_LANG_POP()
-
   PANDORA_HAVE_GCC_ATOMICS
 
   PANDORA_HEADER_ASSERT
@@ -242,9 +207,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   AC_LIB_PREFIX
   PANDORA_HAVE_BETTER_MALLOC
-  PANDORA_WITH_VALGRIND
 
-  AC_CHECK_PROGS([DOXYGEN], [doxygen])
   AC_CHECK_PROGS([PERL], [perl])
   AC_CHECK_PROGS([DPKG_GENSYMBOLS], [dpkg-gensymbols], [:])
   AC_CHECK_PROGS([LCOV], [lcov], [echo lcov not found])
