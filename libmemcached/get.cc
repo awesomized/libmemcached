@@ -418,7 +418,9 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
                                                  unsigned int number_of_callbacks)
 {
   if ((ptr->flags.binary_protocol) == 0)
+  {
     return MEMCACHED_NOT_SUPPORTED;
+  }
 
   memcached_return_t rc;
   memcached_callback_st *original_callbacks= ptr->callbacks;

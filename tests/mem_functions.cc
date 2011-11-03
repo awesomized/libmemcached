@@ -106,16 +106,47 @@ static size_t global_keys_length[GLOBAL_COUNT];
 */
 static test_return_t pre_binary(memcached_st *memc)
 {
-  memcached_return_t rc= MEMCACHED_FAILURE;
+  test_skip(true, libmemcached_util_version_check(memc, 1, 4, 4));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
 
-  if (libmemcached_util_version_check(memc, 1, 4, 4))
+  return TEST_SUCCESS;
+}
+
+static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
+{
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  memcached_server_instance_st instance= memcached_server_instance_by_position(original_memc, 0);
+
+  char server_string[1024];
+  int server_string_length;
+  if (options)
   {
-    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-    test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d %s", 
+                                   memcached_server_name(instance), int(memcached_server_port(instance)),
+                                   options);
+  }
+  else
+  {
+    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d",
+                                   memcached_server_name(instance), int(memcached_server_port(instance)));
   }
 
-  return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
+  if (server_string_length <= 0)
+  {
+    return NULL;
+  }
+
+  char buffer[1024];
+  if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, buffer, sizeof(buffer))))
+  {
+    Error << "Failed to parse " << server_string_length;
+    return NULL;
+  }
+
+  return memcached(server_string, server_string_length);
 }
 
 
@@ -1740,19 +1771,12 @@ static test_return_t mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t mget_execute(memcached_st *memc)
+static test_return_t mget_execute(memcached_st *original_memc)
 {
-  bool binary= false;
+  test_skip(true, memcached_behavior_get(original_memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
-    binary= true;
-
-  /*
-   * I only want to hit _one_ server so I know the number of requests I'm
-   * sending in the pipeline.
-   */
-  uint32_t number_of_hosts= memc->number_of_hosts;
-  memc->number_of_hosts= 1;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
+  test_true(memc);
 
   size_t max_keys= 20480;
 
@@ -1762,7 +1786,6 @@ static test_return_t mget_execute(memcached_st *memc)
 
   /* First add all of the items.. */
   char blob[1024] = {0};
-  memcached_return_t rc;
 
   for (size_t x= 0; x < max_keys; ++x)
   {
@@ -1772,7 +1795,7 @@ static test_return_t mget_execute(memcached_st *memc)
     keys[x]= strdup(k);
     test_true(keys[x] != NULL);
     uint64_t query_id= memcached_query_id(memc);
-    rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    memcached_return_t rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
@@ -1780,12 +1803,11 @@ static test_return_t mget_execute(memcached_st *memc)
   /* Try to get all of them with a large multiget */
   size_t counter= 0;
   memcached_execute_fn callbacks[]= { &callback_counter };
-  rc= memcached_mget_execute(memc, (const char**)keys, key_length,
-                             max_keys, callbacks, &counter, 1);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_mget_execute(memc, (const char**)keys, key_length,
+                                      max_keys, callbacks, &counter, 1));
 
-  if (memcached_success(rc))
   {
-    test_true(binary);
     uint64_t query_id= memcached_query_id(memc);
     test_compare(MEMCACHED_SUCCESS, 
                  memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
@@ -1793,14 +1815,6 @@ static test_return_t mget_execute(memcached_st *memc)
 
     /* Verify that we got all of the items */
     test_true(counter == max_keys);
-  }
-  else if (rc == MEMCACHED_NOT_SUPPORTED)
-  {
-    test_true(counter == 0);
-  }
-  else
-  {
-    test_fail("note: this test functions differently when in binary mode");
   }
 
   /* Release all allocated resources */
@@ -1811,7 +1825,8 @@ static test_return_t mget_execute(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
+
   return TEST_SUCCESS;
 }
 
@@ -4423,7 +4438,7 @@ static test_return_t memcached_get_hashkit_test (memcached_st *)
   const char **ptr;
   hashkit_st new_kit;
 
-  memcached_st *memc= memcached(test_literal_param("--server=localhost:1 --server=localhost:2 --server=localhost:3 --server=localhost:4 --server=localhost5"));
+  memcached_st *memc= memcached(test_literal_param("--server=localhost:1 --server=localhost:2 --server=localhost:3 --server=localhost:4 --server=localhost5 --DISTRIBUTION=modula"));
 
   uint32_t md5_hosts[]= {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U};
   uint32_t crc_hosts[]= {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U};
@@ -4611,9 +4626,9 @@ static test_return_t regression_bug_434484(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t regression_bug_434843(memcached_st *memc)
+static test_return_t regression_bug_434843(memcached_st *original_memc)
 {
-  test_skip(TEST_SUCCESS, pre_binary(memc));
+  test_skip(TEST_SUCCESS, pre_binary(original_memc));
 
   memcached_return_t rc;
   size_t counter= 0;
@@ -4625,8 +4640,8 @@ static test_return_t regression_bug_434843(memcached_st *memc)
    * 1024 (that should satisfy most users don't you think?). Future versions
    * will include a mget_execute function call if you need a higher number.
  */
-  uint32_t number_of_hosts= memcached_server_count(memc);
-  memc->number_of_hosts= 1;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
+
   const size_t max_keys= 1024;
   char **keys= (char**)calloc(max_keys, sizeof(char*));
   size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
@@ -4681,7 +4696,7 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -5192,26 +5207,23 @@ static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
 /*
  * Test that ensures mget_execute does not end into recursive calls that finally fails
  */
-static test_return_t regression_bug_490486(memcached_st *memc)
+static test_return_t regression_bug_490486(memcached_st *original_memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 3600);
 
 #ifdef __APPLE__
   return TEST_SKIPPED; // My MAC can't handle this test
 #endif
 
+  test_skip(TEST_SUCCESS, pre_binary(original_memc));
+
   /*
    * I only want to hit _one_ server so I know the number of requests I'm
    * sending in the pipeline.
  */
-  uint32_t number_of_hosts= memc->number_of_hosts;
-  memc->number_of_hosts= 1;
-  size_t max_keys= 20480;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL --POLL-TIMEOUT=1000 --REMOVE-FAILED-SERVERS=1 --RETRY-TIMEOUT=3600");
+  test_true(memc);
 
+  size_t max_keys= 20480;
 
   char **keys= (char **)calloc(max_keys, sizeof(char*));
   size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
@@ -5269,7 +5281,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
