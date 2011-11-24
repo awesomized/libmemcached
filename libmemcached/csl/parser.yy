@@ -250,48 +250,53 @@ expression:
 behaviors:
           NAMESPACE string
           {
+            if (memcached_callback_get(context->memc, MEMCACHED_CALLBACK_PREFIX_KEY, NULL))
+            {
+              parser_abort(context, "--NAMESPACE can only be called once");
+            }
+
             if ((context->rc= memcached_set_namespace(context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, memcached_last_error_message(context->memc));
             }
           }
         | DISTRIBUTION distribution
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, memcached_last_error_message(context->memc));;
             }
           }
         | DISTRIBUTION distribution ',' hash
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, NULL);
             }
             if ((context->rc= memcached_behavior_set_distribution_hash(context->memc, $4)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, NULL);
             }
           }
         | HASH hash
           {
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);; 
+              parser_abort(context, NULL); 
             }
           }
         | behavior_number NUMBER
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, NULL);
             }
           }
         | behavior_boolean
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, true)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);;
+              parser_abort(context, NULL);
             }
           }
         |  USER_DATA

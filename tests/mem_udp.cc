@@ -173,6 +173,8 @@ static test_return_t udp_set_test(memcached_st *memc)
 {
   unsigned int num_iters= 1025; //request id rolls over at 1024
 
+  test_true(memc);
+
   for (size_t x= 0; x < num_iters;x++)
   {
     Expected expected_ids;
@@ -183,7 +185,7 @@ static test_return_t udp_set_test(memcached_st *memc)
 
     memcached_return_t rc= memcached_set(memc, test_literal_param("foo"),
                                          test_literal_param("when we sanitize"),
-                                         (time_t)0, (uint32_t)0);
+                                         time_t(0), uint32_t(0));
     test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
     /** NB, the check below assumes that if new write_ptr is less than
      *  the original write_ptr that we have flushed. For large payloads, this
@@ -212,12 +214,14 @@ static test_return_t udp_set_test(memcached_st *memc)
 
 static test_return_t udp_buffered_set_test(memcached_st *memc)
 {
+  test_true(memc);
   test_compare(MEMCACHED_INVALID_ARGUMENTS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true));
   return TEST_SUCCESS;
 }
 
 static test_return_t udp_set_too_big_test(memcached_st *memc)
 {
+  test_true(memc);
   char value[MAX_UDP_DATAGRAM_LENGTH];
   Expected expected_ids;
   get_udp_request_ids(memc, expected_ids);
@@ -232,6 +236,8 @@ static test_return_t udp_set_too_big_test(memcached_st *memc)
 
 static test_return_t udp_delete_test(memcached_st *memc)
 {
+  test_true(memc);
+
   //request id rolls over at 1024
   for (size_t x= 0; x < 1025; x++)
   {

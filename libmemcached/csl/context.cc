@@ -42,15 +42,14 @@ void Context::abort(const char *error_arg, yytokentype last_token, const char *l
 {
   rc= MEMCACHED_PARSE_ERROR;
   (void)last_token;
-  (void)last_token_str;
 
   if (error_arg)
   {
-    memcached_set_parser_error(*memc, MEMCACHED_AT, "Error occured while parsing: %s", error_arg);
+    memcached_set_parser_error(*memc, MEMCACHED_AT, "%s", error_arg);
     return;
   }
 
-  memcached_set_parser_error(*memc, MEMCACHED_AT, "Error occured while parsing: %s", memcached_strerror(NULL, MEMCACHED_PARSE_ERROR));
+  memcached_set_parser_error(*memc, MEMCACHED_AT, "%s", last_token_str ? last_token_str : " ");
 }
 
 void Context::error(const char *error_arg, yytokentype last_token, const char *last_token_str)

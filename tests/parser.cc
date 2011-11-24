@@ -41,7 +41,6 @@
 using namespace libtest;
 
 #include <vector>
-#include <iostream>
 #include <string>
 #include <cerrno>
 #include <cassert>
@@ -456,6 +455,7 @@ test_return_t random_statement_build_test(memcached_st*)
   for (scanner_variable_t *ptr= hash_strings; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);
 
+  bool seen_namespace= false;
   for (uint32_t x= 0; x < RANDOM_STRINGS; x++)
   {
     std::string random_options;
@@ -463,38 +463,36 @@ test_return_t random_statement_build_test(memcached_st*)
     uint32_t number_of= random() % option_list.size();
     for (uint32_t options= 0; options < number_of; options++)
     {
-      random_options+= option_list[random() % option_list.size()]->c_str;
+      std::string random_string= option_list[random() % option_list.size()]->c_str;
+      bool is_namespace= memcmp(random_string.c_str(), test_literal_param("--NAMESPACE")) == 0;
+
+      if (is_namespace and seen_namespace)
+      {
+        continue;
+      }
+
+      if (is_namespace)
+      {
+        seen_namespace= true;
+      }
+
+      random_options+= random_string;
       random_options+= " ";
     }
 
-    memcached_st *memc_ptr= memcached(random_options.c_str(), random_options.size() -1);
-    if (not memc_ptr)
+    if (random_options.size() <= 1)
     {
-      switch (errno) 
-      {
-      case EINVAL:
-#if 0 // Testing framework is not smart enough for this just yet.
-        {
-          // We will try to find the specific error
-          char buffer[2048];
-          memcached_return_t rc= libmemcached_check_configuration(random_options.c_str(), random_options.size(), buffer, sizeof(buffer));
-          test_true_got(rc != MEMCACHED_SUCCESS, "memcached_create_with_options() failed whiled libmemcached_check_configuration() was successful");
-          std::cerr << "Error occured on " << random_options.c_str() << " : " << buffer << std::endl;
-          return TEST_FAILURE;
-        }
-#endif
-        break;
-      case ENOMEM:
-        std::cerr << "Failed to allocate memory for memcached_create_with_options()" << std::endl;
-        memcached_free(memc_ptr);
-        return TEST_FAILURE;
-      default:
-        std::cerr << "Unknown error from memcached_create_with_options?!!" << std::endl;
-        memcached_free(memc_ptr);
-        return TEST_FAILURE;
-      }
+      continue;
     }
-    memcached_free(memc_ptr);
+
+    char buffer[BUFSIZ];
+    memcached_return_t rc= libmemcached_check_configuration(random_options.c_str(), random_options.size() -1, buffer, sizeof(buffer));
+
+    if (memcached_failed(rc))
+    {
+      Error << "libmemcached_check_configuration(" << random_options << ") : " << buffer;
+      return TEST_FAILURE;
+    }
   }
 
   return TEST_SUCCESS;
@@ -558,7 +556,7 @@ static memcached_return_t dump_socket_information(const memcached_st *,
 
   if (strcmp(memcached_server_name(instance), check->socket))
   {
-    std::cerr << std::endl << __FILE__ << ":" << __LINE__ << " " << memcached_server_name(instance) << " != " << check->socket << std::endl;
+    Error << memcached_server_name(instance) << " != " << check->socket;
     return MEMCACHED_FAILURE;
   }
 
