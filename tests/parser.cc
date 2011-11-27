@@ -467,13 +467,17 @@ test_return_t random_statement_build_test(memcached_st*)
     bool has_distribution;
     bool has_buffer_requests;
     bool has_udp;
+    bool has_binary;
+    bool has_verify_key;
 
     used_options_st() :
       has_hash(false),
       has_namespace(false),
       has_distribution(false),
       has_buffer_requests(false),
-      has_udp(false)
+      has_udp(false),
+      has_binary(false),
+      has_verify_key(false)
     {
     }
   } used_options;
@@ -541,6 +545,34 @@ test_return_t random_statement_build_test(memcached_st*)
         used_options.has_buffer_requests= true;
 
         if (used_options.has_udp)
+        {
+          continue;
+        }
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--BINARY-PROTOCOL")) == 0)
+      {
+        if (used_options.has_binary)
+        {
+          continue;
+        }
+        used_options.has_binary= true;
+
+        if (used_options.has_verify_key)
+        {
+          continue;
+        }
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--VERIFY-KEY")) == 0)
+      {
+        if (used_options.has_verify_key)
+        {
+          continue;
+        }
+        used_options.has_verify_key= true;
+
+        if (used_options.has_binary)
         {
           continue;
         }
