@@ -249,7 +249,17 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
   {
     test_true(container);
     test_true(container->memc);
-    return func(container->memc);
+    test_return_t ret;
+    try {
+      ret= func(container->memc);
+    }
+    catch (std::exception& e)
+    {
+      Error << e.what();
+      return TEST_FAILURE;
+    }
+
+    return ret;
   }
 
   return TEST_SUCCESS;

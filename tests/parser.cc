@@ -223,7 +223,9 @@ scanner_variable_t hash_strings[]= {
   { ARRAY,  make_scanner_string("--HASH=CRC"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1A_32"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH=FNV1_32"), scanner_string_null, NULL },
+#if 0
   { ARRAY,  make_scanner_string("--HASH=JENKINS"), scanner_string_null, NULL },
+#endif
   { ARRAY,  make_scanner_string("--HASH=MD5"), scanner_string_null, NULL },
   { NIL, scanner_string_null, scanner_string_null, NULL}
 };
@@ -234,10 +236,10 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true_op
   for (scanner_variable_t *ptr= scanner; ptr->type != NIL; ptr++)
   {
     memcached_st *memc= memcached(ptr->option.c_str, ptr->option.size);
-    
-    // The case that it should have parsed, but it didn't. We will inspect
-    // for an error with libmemcached_check_configuration()
-    if (not memc and test_true_opt)
+
+    // The case that it should have parsed, but it didn't. We will inspect for
+    // an error with libmemcached_check_configuration()
+    if (memc == NULL and test_true_opt)
     {
       char buffer[2048];
       bool success= libmemcached_check_configuration(ptr->option.c_str, ptr->option.size, buffer, sizeof(buffer));
@@ -246,6 +248,7 @@ static test_return_t _test_option(scanner_variable_t *scanner, bool test_true_op
       temp+= " with option string:";
       temp+= ptr->option.c_str;
       test_true_got(success, temp.c_str());
+      Error << "Failed for " << temp;
 
       return TEST_FAILURE; // The line above should fail since memc should be null
     }
@@ -333,11 +336,9 @@ test_return_t test_namespace_keyword(memcached_st*)
 
 test_return_t memcached_create_with_options_with_filename(memcached_st*)
 {
-  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
-    return TEST_SKIPPED;
+  test_skip(0, access(SUPPORT_EXAMPLE_CNF, R_OK));
 
-  memcached_st *memc_ptr;
-  memc_ptr= memcached(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""));
+  memcached_st *memc_ptr= memcached(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""));
   test_true_got(memc_ptr, "memcached() failed");
   memcached_free(memc_ptr);
 
@@ -346,56 +347,58 @@ test_return_t memcached_create_with_options_with_filename(memcached_st*)
 
 test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*)
 {
-  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
-    return TEST_SKIPPED;
+  test_skip(0, access(SUPPORT_EXAMPLE_CNF, R_OK));
 
-  memcached_return_t rc;
   char buffer[BUFSIZ];
 
-  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_SUCCESS, (rc == MEMCACHED_ERRNO) ? strerror(errno) : memcached_strerror(NULL, rc));
+  test_compare_hint(MEMCACHED_SUCCESS,
+                    libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer)),
+                    buffer);
 
-  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer));
-  test_false_with(rc == MEMCACHED_SUCCESS, memcached_strerror(NULL, rc));
+  test_compare_hint(MEMCACHED_SUCCESS,
+                    libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer)),
+                    buffer);
 
-  rc= libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer));
-  test_true_got(rc == MEMCACHED_ERRNO, memcached_strerror(NULL, rc));
+  test_compare_hint(MEMCACHED_ERRNO,
+                    libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"bad-path/example.cnf\""), buffer, sizeof(buffer)),
+                    buffer) ;
 
   return TEST_SUCCESS;
 }
 
 test_return_t libmemcached_check_configuration_test(memcached_st*)
 {
-  memcached_return_t rc;
   char buffer[BUFSIZ];
-
   test_compare(MEMCACHED_SUCCESS,
                libmemcached_check_configuration(test_literal_param("--server=localhost"), buffer, sizeof(buffer)));
 
-  rc= libmemcached_check_configuration(test_literal_param("--dude=localhost"), buffer, sizeof(buffer));
-  test_false_with(rc == MEMCACHED_SUCCESS, buffer);
-  test_true(rc == MEMCACHED_PARSE_ERROR);
+  test_compare_hint(MEMCACHED_PARSE_ERROR,
+                    libmemcached_check_configuration(test_literal_param("--dude=localhost"), buffer, sizeof(buffer)),
+                    buffer);
 
   return TEST_SUCCESS;
 }
 
 test_return_t memcached_create_with_options_test(memcached_st*)
 {
-  memcached_st *memc_ptr;
-  memc_ptr= memcached(test_literal_param("--server=localhost"));
-  test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
-  memcached_free(memc_ptr);
+  {
+    memcached_st *memc_ptr;
+    memc_ptr= memcached(test_literal_param("--server=localhost"));
+    test_true_got(memc_ptr, memcached_last_error_message(memc_ptr));
+    memcached_free(memc_ptr);
+  }
 
-  memc_ptr= memcached(test_literal_param("--dude=localhost"));
-  test_false_with(memc_ptr, memcached_last_error_message(memc_ptr));
+  {
+    memcached_st *memc_ptr= memcached(test_literal_param("--dude=localhost"));
+    test_false_with(memc_ptr, memcached_last_error_message(memc_ptr));
+  }
 
   return TEST_SUCCESS;
 }
 
 test_return_t test_include_keyword(memcached_st*)
 {
-  if (access(SUPPORT_EXAMPLE_CNF, R_OK))
-    return TEST_SKIPPED;
+  test_skip(0, access(SUPPORT_EXAMPLE_CNF, R_OK));
 
   char buffer[BUFSIZ];
   test_compare(MEMCACHED_SUCCESS, 
@@ -432,7 +435,7 @@ test_return_t test_error_keyword(memcached_st*)
   return TEST_SUCCESS;
 }
 
-#define RANDOM_STRINGS 100
+#define RANDOM_STRINGS 1000
 test_return_t random_statement_build_test(memcached_st*)
 {
   std::vector<scanner_string_st *> option_list;
@@ -455,7 +458,26 @@ test_return_t random_statement_build_test(memcached_st*)
   for (scanner_variable_t *ptr= hash_strings; ptr->type != NIL; ptr++)
     option_list.push_back(&ptr->option);
 
-  bool seen_namespace= false;
+  std::vector<bool> used_list;
+  used_list.resize(option_list.size());
+
+  struct used_options_st {
+    bool has_hash;
+    bool has_namespace;
+    bool has_distribution;
+    bool has_buffer_requests;
+    bool has_udp;
+
+    used_options_st() :
+      has_hash(false),
+      has_namespace(false),
+      has_distribution(false),
+      has_buffer_requests(false),
+      has_udp(false)
+    {
+    }
+  } used_options;
+
   for (uint32_t x= 0; x < RANDOM_STRINGS; x++)
   {
     std::string random_options;
@@ -463,17 +485,79 @@ test_return_t random_statement_build_test(memcached_st*)
     uint32_t number_of= random() % option_list.size();
     for (uint32_t options= 0; options < number_of; options++)
     {
-      std::string random_string= option_list[random() % option_list.size()]->c_str;
-      bool is_namespace= memcmp(random_string.c_str(), test_literal_param("--NAMESPACE")) == 0;
+      size_t option_list_position= random() % option_list.size();
 
-      if (is_namespace and seen_namespace)
+      if (used_list[option_list_position])
       {
         continue;
       }
+      used_list[option_list_position]= true;
 
-      if (is_namespace)
+      std::string random_string= option_list[option_list_position]->c_str;
+
+      if (random_string.compare(0, test_literal_compare_param("--HASH")) == 0)
       {
-        seen_namespace= true;
+        if (used_options.has_hash)
+        {
+          continue;
+        }
+
+        if (used_options.has_distribution)
+        {
+          continue;
+        }
+        used_options.has_hash= true;
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--NAMESPACE")) == 0)
+      {
+        if (used_options.has_namespace)
+        {
+          continue;
+        }
+        used_options.has_namespace= true;
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--USE-UDP")) == 0)
+      {
+        if (used_options.has_udp)
+        {
+          continue;
+        }
+        used_options.has_udp= true;
+
+        if (used_options.has_buffer_requests)
+        {
+          continue;
+        }
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--BUFFER-REQUESTS")) == 0)
+      {
+        if (used_options.has_buffer_requests)
+        {
+          continue;
+        }
+        used_options.has_buffer_requests= true;
+
+        if (used_options.has_udp)
+        {
+          continue;
+        }
+      }
+
+      if (random_string.compare(0, test_literal_compare_param("--DISTRIBUTION")) == 0)
+      {
+        if (used_options.has_distribution)
+        {
+          continue;
+        }
+
+        if (used_options.has_hash)
+        {
+          continue;
+        }
+        used_options.has_distribution= true;
       }
 
       random_options+= random_string;
@@ -485,9 +569,10 @@ test_return_t random_statement_build_test(memcached_st*)
       continue;
     }
 
-    char buffer[BUFSIZ];
-    memcached_return_t rc= libmemcached_check_configuration(random_options.c_str(), random_options.size() -1, buffer, sizeof(buffer));
+    random_options.resize(random_options.size() -1);
 
+    char buffer[BUFSIZ];
+    memcached_return_t rc= libmemcached_check_configuration(random_options.c_str(), random_options.size(), buffer, sizeof(buffer));
     if (memcached_failed(rc))
     {
       Error << "libmemcached_check_configuration(" << random_options << ") : " << buffer;

@@ -106,6 +106,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/string.hpp>
 #include <libmemcached/io.hpp>
 #include <libmemcached/do.hpp>
+#include <libmemcached/close_socket.hpp>
 #endif
 #include <libmemcached/internal.h>
 #include <libmemcached/array.h>

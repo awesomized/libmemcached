@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Configure Scripting Language
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,93 +38,42 @@
 
 #pragma once
 
-#include <libmemcached/csl/common.h>
-#include <libmemcached/csl/parser.h>
 
-class Context
+/* To hide the platform differences between MS Windows and Unix, I am
+ * going to use the Microsoft way and #define the Microsoft-specific
+ * functions to the unix way. Microsoft use a separate subsystem for sockets,
+ * but Unix normally just use a filedescriptor on the same functions. It is
+ * a lot easier to map back to the unix way with macros than going the other
+ * way without side effect ;-)
+ */
+#ifdef WIN32
+#include "win32/wrappers.h"
+#define get_socket_errno() WSAGetLastError()
+#else
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define closesocket(a) close(a)
+#define get_socket_errno() errno
+#endif
+
+#ifdef __cplusplus
+static inline void memcached_close_socket(int& socket_fd)
 {
-public:
-  Context(const char *option_string, size_t option_string_length, memcached_st *memc_arg,
-          memcached_return_t &rc_arg) :
-    previous_token(END),
-    scanner(NULL),
-    begin(NULL),
-    pos(0),
-    memc(NULL),
-    rc(rc_arg),
-    _is_server(false),
-    _end(false),
-    _has_hash(false)
-  {
-    _hostname[0]= 0;
-    buf= option_string;
-    length= option_string_length;
-    memc= memc_arg;
-    init_scanner();
-    rc= MEMCACHED_SUCCESS;
-  }
+  closesocket(socket_fd);
+  socket_fd= INVALID_SOCKET;
+}
+#endif
 
-  bool end()
-  {
-    return _end;
-  }
+#ifndef HAVE_MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
 
-  void start();
+#ifndef HAVE_MSG_DONTWAIT
+#define MSG_DONTWAIT 0
+#endif
 
-  void set_end()
-  {
-    rc= MEMCACHED_SUCCESS;
-    _end= true;
-  }
+#ifndef HAVE_MSG_MORE
+#define MSG_MORE 0
+#endif
 
-  bool set_hash(memcached_hash_t hash);
 
-  void set_server()
-  {
-    _is_server= true;
-  }
-
-  void unset_server()
-  {
-    _is_server= false;
-  }
-
-  bool is_server() const
-  {
-    return _is_server;
-  }
-
-  const char *set_hostname(const char *str, size_t size);
-
-  const char *hostname() const
-  {
-    return _hostname;
-  }
-
-  void abort(const char *, yytokentype, const char *);
-  void error(const char *, yytokentype, const char* );
-
-  ~Context()
-  {
-    destroy_scanner();
-  }
-
-  yytokentype previous_token;
-  void *scanner;
-  const char *buf;
-  const char *begin;
-  size_t pos;
-  size_t length;
-  memcached_st *memc;
-  memcached_return_t &rc;
-
-protected:
-  void init_scanner();   
-  void destroy_scanner();
-
-private:
-  bool _is_server;
-  bool _end;
-  char _hostname[NI_MAXHOST];
-  bool _has_hash;
-}; 

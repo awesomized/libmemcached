@@ -49,7 +49,13 @@ void Context::abort(const char *error_arg, yytokentype last_token, const char *l
     return;
   }
 
-  memcached_set_parser_error(*memc, MEMCACHED_AT, "%s", last_token_str ? last_token_str : " ");
+  if (last_token_str)
+  {
+    memcached_set_parser_error(*memc, MEMCACHED_AT, "%s", last_token_str);
+    return;
+  }
+
+  memcached_set_parser_error(*memc, MEMCACHED_AT, "unknown parsing error");
 }
 
 void Context::error(const char *error_arg, yytokentype last_token, const char *last_token_str)
@@ -100,3 +106,17 @@ const char *Context::set_hostname(const char *str, size_t size)
   return _hostname;
 }
 
+bool Context::set_hash(memcached_hash_t hash)
+{
+  if (_has_hash)
+  {
+    return false;
+  }
+
+  if ((memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, hash)) != MEMCACHED_SUCCESS)
+  {
+    return false;
+  }
+
+  return _has_hash= true;
+}

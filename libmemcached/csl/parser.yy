@@ -188,7 +188,7 @@ statement:
         | ERROR
           {
             context->rc= MEMCACHED_PARSE_USER_ERROR;
-            parser_abort(context, NULL);
+            parser_abort(context, "ERROR called directly");
           }
         | RESET
           {
@@ -202,7 +202,7 @@ statement:
           {
             if ((context->rc= memcached_parse_configure_file(*context->memc, $3.c_str, $3.size)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);
+              parser_abort(context, "Failed to parse configuration file");
             }
           }
         ;
@@ -213,7 +213,9 @@ expression:
           {
             if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
             {
-              parser_abort(context, NULL);
+              char buffer[1024];
+              snprintf(buffer, sizeof(buffer), "Failed to add server: %s:%u", $2.c_str, uint32_t($3));
+              parser_abort(context, buffer);
             }
             context->unset_server();
           }
@@ -221,7 +223,9 @@ expression:
           {
             if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
             {
-              parser_abort(context, NULL);
+              char buffer[1024];
+              snprintf(buffer, sizeof(buffer), "Failed to add server: %s:%u", $2.c_str, uint32_t($3));
+              parser_abort(context, buffer);
             }
             context->unset_server();
           }
@@ -229,7 +233,9 @@ expression:
           {
             if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, $3)))
             {
-              parser_abort(context, NULL);
+              char buffer[1024];
+              snprintf(buffer, sizeof(buffer), "Failed to add server: %s", $2.c_str);
+              parser_abort(context, buffer);
             }
           }
         | CONFIGURE_FILE string
@@ -262,6 +268,12 @@ behaviors:
           }
         | DISTRIBUTION distribution
           {
+            // Check to see if DISTRIBUTION has already been set
+            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
+            {
+              parser_abort(context, "--DISTRIBUTION can only be called once");
+            }
+
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, memcached_last_error_message(context->memc));;
@@ -269,34 +281,38 @@ behaviors:
           }
         | DISTRIBUTION distribution ',' hash
           {
+            // Check to see if DISTRIBUTION has already been set
             if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);
+              parser_abort(context, "--DISTRIBUTION can only be called once");
             }
+
             if ((context->rc= memcached_behavior_set_distribution_hash(context->memc, $4)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);
+              parser_abort(context, "Unable to set the hash for the DISTRIBUTION requested");
             }
           }
         | HASH hash
           {
-            if ((context->rc= memcached_behavior_set(context->memc, MEMCACHED_BEHAVIOR_HASH, $2)) != MEMCACHED_SUCCESS)
+            if (context->set_hash($2) == false)
             {
-              parser_abort(context, NULL); 
+              parser_abort(context, "--HASH can only be set once");
             }
           }
         | behavior_number NUMBER
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, $2)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);
+              parser_abort(context, "Unable to set behavior");
             }
           }
         | behavior_boolean
           {
             if ((context->rc= memcached_behavior_set(context->memc, $1, true)) != MEMCACHED_SUCCESS)
             {
-              parser_abort(context, NULL);
+              char buffer[1024];
+              snprintf(buffer, sizeof(buffer), "Could not set: %s", libmemcached_string_behavior($1));
+              parser_abort(context, buffer);
             }
           }
         |  USER_DATA
