@@ -941,8 +941,11 @@ static test_return_t bad_key_test(memcached_st *memc)
                  memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
     std::vector <char> longkey;
-    longkey.reserve(MEMCACHED_MAX_KEY);
-    longkey.insert(longkey.end(), MEMCACHED_MAX_KEY, 'a');
+    {
+      std::vector<char>::iterator it= longkey.begin();
+      longkey.insert(it, MEMCACHED_MAX_KEY, 'a');
+    }
+
     test_compare(longkey.size(), size_t(MEMCACHED_MAX_KEY));
     {
       size_t string_length;
@@ -3463,7 +3466,7 @@ static test_return_t pre_jenkins(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_JENKINS);
 
-  return TEST_SUCCESS;
+  return TEST_SKIPPED;
 }
 
 
