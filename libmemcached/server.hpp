@@ -43,6 +43,24 @@
 
 #include <cassert>
 
+memcached_server_st *__server_create_with(memcached_st *memc,
+                                          memcached_server_write_instance_st host,
+                                          const memcached_string_t& hostname,
+                                          const in_port_t port,
+                                          uint32_t weight,
+                                          const memcached_connection_t type);
+
+memcached_server_st *memcached_server_clone(memcached_server_st *destination,
+                                            memcached_server_st *source);
+
+memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
+                                               const char *hostname,
+                                               size_t hostname_length,
+                                               in_port_t port,
+                                               uint32_t weight);
+
+void __server_free(memcached_server_st *);
+
 static inline bool memcached_is_valid_servername(const memcached_string_t& arg)
 {
   return arg.size > 0 or arg.size < NI_MAXHOST;
@@ -99,11 +117,3 @@ static inline void memcached_mark_server_for_timeout(memcached_server_write_inst
     set_last_disconnected_host(server);
   }
 }
-
-LIBMEMCACHED_LOCAL
-  memcached_server_st *__server_create_with(memcached_st *memc,
-                                            memcached_server_write_instance_st host,
-                                            const memcached_string_t& hostname,
-                                            const in_port_t port,
-                                            uint32_t weight,
-                                            const memcached_connection_t type);

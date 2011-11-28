@@ -119,10 +119,6 @@ void memcached_server_error_reset(memcached_server_st *ptr);
 LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
 
-LIBMEMCACHED_LOCAL
-memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            memcached_server_st *source);
-
 LIBMEMCACHED_API
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);
 
@@ -137,13 +133,6 @@ memcached_return_t memcached_server_add_unix_socket(memcached_st *ptr,
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add(memcached_st *ptr,
                                         const char *hostname, in_port_t port);
-
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
-                                                 const char *hostname,
-                                                 size_t hostname_length,
-                                                 in_port_t port,
-                                                 uint32_t weight);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
@@ -173,10 +162,6 @@ in_port_t memcached_server_port(const memcached_server_instance_st self);
 
 LIBMEMCACHED_API
 const char *memcached_server_type(const memcached_server_instance_st ptr);
-
-
-LIBMEMCACHED_LOCAL
-void __server_free(memcached_server_st *);
 
 #ifdef __cplusplus
 } // extern "C"
