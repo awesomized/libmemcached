@@ -87,7 +87,7 @@ static inline bool _memcached_init(memcached_st *self)
 
   self->virtual_bucket= NULL;
 
-  self->distribution= MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY;
+  self->distribution= MEMCACHED_DISTRIBUTION_MODULA;
 
   if (hashkit_create(&self->hashkit) == NULL)
   {
