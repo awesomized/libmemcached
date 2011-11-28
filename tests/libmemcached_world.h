@@ -48,7 +48,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-
   in_port_t max_port= TEST_PORT_BASE;
   for (uint32_t x= 0; x < servers.count(); x++)
   {

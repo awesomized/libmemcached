@@ -3122,17 +3122,16 @@ static test_return_t generate_data(memcached_st *memc)
 
 static test_return_t generate_data_with_stats(memcached_st *memc)
 {
-  uint32_t host_index= 0;
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_true(check_execute == global_count);
+  test_compare(check_execute, global_count);
 
   // @todo hosts used size stats
   memcached_return_t rc;
   memcached_stat_st *stat_p= memcached_stat(memc, NULL, &rc);
   test_true(stat_p);
 
-  for (host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
+  for (uint32_t host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
   {
     /* This test was changes so that "make test" would work properlly */
     if (DEBUG)

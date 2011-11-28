@@ -180,6 +180,7 @@ static test_return_t udp_set_test(memcached_st *memc)
     Expected expected_ids;
     get_udp_request_ids(memc, expected_ids);
     unsigned int server_key= memcached_generate_hash(memc, test_literal_param("foo"));
+    test_true(server_key < memcached_server_count(memc));
     memcached_server_instance_st instance= memcached_server_instance_by_position(memc, server_key);
     size_t init_offset= instance->write_buffer_offset;
 
@@ -453,7 +454,7 @@ collection_st collection[] ={
 };
 
 #define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
-#include "libmemcached_world.h"
+#include "tests/libmemcached_world.h"
 
 void get_world(Framework *world)
 {
