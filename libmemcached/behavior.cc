@@ -384,7 +384,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_SNDBUF, &sock_size, &sock_length) < 0)
         {
-          memcached_set_errno(*ptr, errno, MEMCACHED_AT);
+          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           return 0; /* Zero means error */
         }
       }
@@ -420,10 +420,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
         if (getsockopt(instance->fd, SOL_SOCKET, SO_RCVBUF, &sock_size, &sock_length) < 0)
         {
-          memcached_set_errno(*ptr, errno, MEMCACHED_AT);
+          memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           return 0; /* Zero means error */
         }
-
       }
 
       return (uint64_t) sock_size;

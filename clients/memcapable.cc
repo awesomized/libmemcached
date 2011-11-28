@@ -33,7 +33,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcached/close_socket.hpp>
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
 #include <clients/utilities.h>
@@ -132,7 +133,7 @@ static memcached_socket_t set_noblock(void)
   if (flags == -1)
   {
     perror("Failed to get socket flags");
-    closesocket(sock);
+    memcached_close_socket(sock);
     return INVALID_SOCKET;
   }
 
@@ -141,7 +142,7 @@ static memcached_socket_t set_noblock(void)
     if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
     {
       perror("Failed to set socket to nonblocking mode");
-      closesocket(sock);
+      memcached_close_socket(sock);
       return INVALID_SOCKET;
     }
   }

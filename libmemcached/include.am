@@ -22,6 +22,7 @@ noinst_HEADERS+= \
 		 libmemcached/byteorder.h \
 		 libmemcached/common.h \
 		 libmemcached/continuum.hpp \
+		 libmemcached/close_socket.hpp \
 		 libmemcached/do.hpp \
 		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
@@ -97,6 +98,7 @@ libmemcached/options.cc: libmemcached/csl/parser.h
 
 libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD=
+libmemcached_libmemcached_la_LDFLAGS=
 if TARGET_LINUX
 libmemcached_libmemcached_la_LIBADD+= -lm
 endif

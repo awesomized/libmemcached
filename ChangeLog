@@ -1,5 +1,4 @@
 1.0.3
-* Change default distribution to be consistent
 
 1.0.2 Mon Oct 24 08:00:48 PDT 2011
 * Dropped libmemcached/memcached_util.h (undocumented header file)

@@ -90,7 +90,6 @@ void *memcached_callback_get(memcached_st *ptr,
                              memcached_return_t *error)
 {
   memcached_return_t local_error;
-
   if (error == NULL)
   {
     error = &local_error;

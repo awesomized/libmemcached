@@ -185,6 +185,9 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
   case MEMCACHED_SERVER_TEMPORARILY_DISABLED:
     return "SERVER HAS FAILED AND IS DISABLED UNTIL TIMED RETRY";
 
+  case MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE:
+    return "SERVER FAILED TO ALLOCATE OBJECT";
+
   default:
   case MEMCACHED_MAXIMUM_RETURN:
     return "INVALID memcached_return_t";

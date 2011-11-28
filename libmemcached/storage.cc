@@ -276,7 +276,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     WATCHPOINT_ASSERT(write_length < MEMCACHED_DEFAULT_COMMAND_SIZE);
   }
 
-  if (ptr->flags.use_udp and ptr->flags.buffer_requests)
+  if (ptr->flags.use_udp)
   {
     size_t cmd_size= write_length + value_length +2;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)

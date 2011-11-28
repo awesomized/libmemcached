@@ -26,8 +26,6 @@ EXTRA_DIST= \
 	    config/pandora-plugin \
 	    config/uncrustify.cfg
 
-libmemcached_libmemcached_la_LDFLAGS=
-
 include libtest/include.am
 
 include libhashkit-1.0/include.am
