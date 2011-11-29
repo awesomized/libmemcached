@@ -54,9 +54,6 @@ memcached_return_t memcached_set_hashkit(memcached_st *ptr, hashkit_st *hashk);
 LIBMEMCACHED_API
 uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length);
 
-LIBMEMCACHED_LOCAL
-uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const char *key, size_t key_length);
-
 LIBMEMCACHED_API
 void memcached_autoeject(memcached_st *ptr);
 

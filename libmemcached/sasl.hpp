@@ -37,32 +37,6 @@
 
 #pragma once
 
+memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st *source);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* Server List Public functions */
-LIBMEMCACHED_API
-  void memcached_server_list_free(memcached_server_list_st ptr);
-
-LIBMEMCACHED_API
-  memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list);
-
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append(memcached_server_list_st ptr,
-                                                        const char *hostname,
-                                                        in_port_t port,
-                                                        memcached_return_t *error);
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append_with_weight(memcached_server_list_st ptr,
-                                                                    const char *hostname,
-                                                                    in_port_t port,
-                                                                    uint32_t weight,
-                                                                    memcached_return_t *error);
-LIBMEMCACHED_API
-  uint32_t memcached_server_list_count(const memcached_server_list_st ptr);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
+memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server);

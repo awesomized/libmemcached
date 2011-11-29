@@ -44,4 +44,42 @@
 #define memcached_string_make_from_cstr util_string_make_from_cstr
 #define memcached_array_length util_array_length
 
+/**
+  Strings are always under our control so we make some assumptions
+  about them.
 
+  1) is_initialized is always valid.
+  2) A string once intialized will always be, until free where we
+     unset this flag.
+  3) A string always has a root.
+*/
+
+memcached_string_st *memcached_string_create(memcached_st *ptr,
+                                             memcached_string_st *string,
+                                             size_t initial_size);
+
+memcached_return_t memcached_string_check(memcached_string_st *string, size_t need);
+
+char *memcached_string_c_copy(memcached_string_st *string);
+
+memcached_return_t memcached_string_append_character(memcached_string_st *string,
+                                                     char character);
+
+memcached_return_t memcached_string_append(memcached_string_st *string,
+                                           const char *value, size_t length);
+
+memcached_return_t memcached_string_reset(memcached_string_st *string);
+
+void memcached_string_free(memcached_string_st *string);
+
+size_t memcached_string_length(const memcached_string_st *self);
+
+size_t memcached_string_size(const memcached_string_st *self);
+
+const char *memcached_string_value(const memcached_string_st *self);
+
+char *memcached_string_take_value(memcached_string_st *self);
+
+char *memcached_string_value_mutable(const memcached_string_st *self);
+
+void memcached_string_set_length(memcached_string_st *self, size_t length);

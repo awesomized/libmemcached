@@ -67,21 +67,6 @@ void memcached_get_memory_allocators(const memcached_st *ptr,
 LIBMEMCACHED_API
 void *memcached_get_memory_allocators_context(const memcached_st *ptr);
 
-LIBMEMCACHED_LOCAL
-void _libmemcached_free(const memcached_st *ptr, void *mem, void *context);
-
-LIBMEMCACHED_LOCAL
-void *_libmemcached_malloc(const memcached_st *ptr, const size_t size, void *context);
-
-LIBMEMCACHED_LOCAL
-void *_libmemcached_realloc(const memcached_st *ptr, void *mem, const size_t size, void *context);
-
-LIBMEMCACHED_LOCAL
-void *_libmemcached_calloc(const memcached_st *ptr, size_t nelem, size_t size, void *context);
-
-LIBMEMCACHED_LOCAL
-struct memcached_allocator_t memcached_allocators_return_default(void);
-
 #ifdef __cplusplus
 }
 #endif

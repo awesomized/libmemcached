@@ -53,11 +53,13 @@ libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 libmemcached_libmemcached_la_SOURCES+= \
 				       ${libhashkit_libhashkit_la_SOURCES} \
 				       libmemcached/allocators.cc \
+				       libmemcached/allocators.hpp \
 				       libmemcached/analyze.cc \
 				       libmemcached/array.c \
 				       libmemcached/auto.cc \
 				       libmemcached/backtrace.cc \
 				       libmemcached/behavior.cc \
+				       libmemcached/behavior.hpp \
 				       libmemcached/byteorder.cc \
 				       libmemcached/callback.cc \
 				       libmemcached/connect.cc \
@@ -70,26 +72,30 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/flush.cc \
 				       libmemcached/flush_buffers.cc \
 				       libmemcached/get.cc \
-				       libmemcached/touch.cc \
 				       libmemcached/hash.cc \
+				       libmemcached/hash.hpp \
 				       libmemcached/hosts.cc \
 				       libmemcached/initialize_query.cc \
 				       libmemcached/io.cc \
 				       libmemcached/key.cc \
 				       libmemcached/memcached.cc \
+				       libmemcached/namespace.cc \
 				       libmemcached/options.cc \
 				       libmemcached/parse.cc \
-				       libmemcached/namespace.cc \
 				       libmemcached/purge.cc \
 				       libmemcached/quit.cc \
+				       libmemcached/quit.hpp \
 				       libmemcached/response.cc \
 				       libmemcached/result.cc \
+				       libmemcached/sasl.hpp \
 				       libmemcached/server.cc \
 				       libmemcached/server_list.cc \
+				       libmemcached/server_list.hpp \
 				       libmemcached/stats.cc \
 				       libmemcached/storage.cc \
 				       libmemcached/strerror.cc \
 				       libmemcached/string.cc \
+				       libmemcached/touch.cc \
 				       libmemcached/verbosity.cc \
 				       libmemcached/version.cc \
 				       libmemcached/virtual_bucket.c
