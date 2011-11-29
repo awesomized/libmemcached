@@ -129,7 +129,7 @@ static memcached_return_t connect_poll(memcached_server_st *server)
   return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
 }
 
-static memcached_return_t set_hostinfo(memcached_server_st *server)
+memcached_return_t set_hostinfo(memcached_server_st *server)
 {
   if (server->address_info)
   {

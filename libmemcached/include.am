@@ -20,9 +20,10 @@ noinst_HEADERS+= \
 		 libmemcached/assert.hpp \
 		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
-		 libmemcached/common.h \
-		 libmemcached/continuum.hpp \
 		 libmemcached/close_socket.hpp \
+		 libmemcached/common.h \
+		 libmemcached/connect.hpp \
+		 libmemcached/continuum.hpp \
 		 libmemcached/do.hpp \
 		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \

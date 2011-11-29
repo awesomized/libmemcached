@@ -138,6 +138,11 @@ memcached_server_st *__server_create_with(memcached_st *memc,
     memcached_io_init_udp_header(self, 0);
   }
 
+  if (memc)
+  {
+    set_hostinfo(self);
+  }
+
   return self;
 }
 
@@ -197,14 +202,6 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                     hostname,
                                     source->port, source->weight,
                                     source->type);
-  if (destination)
-  {
-    if (source->error_messages)
-    {
-      destination->error_messages= memcached_error_copy(*source);
-    }
-  }
-
   return destination;
 
 }

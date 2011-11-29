@@ -68,12 +68,16 @@ char *memcached_get_by_key(memcached_st *ptr,
 {
   memcached_return_t unused;
   if (error == NULL)
+  {
     error= &unused;
+  }
 
-  unlikely (ptr->flags.use_udp)
+  if (ptr->flags.use_udp)
   {
     if (value_length) 
+    {
       *value_length= 0;
+    }
 
     *error= memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
     return NULL;
