@@ -3,7 +3,6 @@
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -38,31 +37,8 @@
 #pragma once
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+uint32_t memcached_servers_set_count(memcached_server_list_st servers, uint32_t count);
 
-/* Server List Public functions */
-LIBMEMCACHED_API
-  void memcached_server_list_free(memcached_server_list_st ptr);
+memcached_server_st *memcached_server_list(const memcached_st *);
 
-LIBMEMCACHED_API
-  memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list);
-
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append(memcached_server_list_st ptr,
-                                                        const char *hostname,
-                                                        in_port_t port,
-                                                        memcached_return_t *error);
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append_with_weight(memcached_server_list_st ptr,
-                                                                    const char *hostname,
-                                                                    in_port_t port,
-                                                                    uint32_t weight,
-                                                                    memcached_return_t *error);
-LIBMEMCACHED_API
-  uint32_t memcached_server_list_count(const memcached_server_list_st ptr);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
+void memcached_server_list_set(memcached_st *self, memcached_server_list_st list);

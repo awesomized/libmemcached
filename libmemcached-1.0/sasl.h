@@ -63,12 +63,6 @@ memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr);
 LIBMEMCACHED_API
 sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
 
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st *source);
-
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server);
-
 #ifdef __cplusplus
 }
 #endif
