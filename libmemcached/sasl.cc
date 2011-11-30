@@ -321,7 +321,7 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
 
   memcached_destroy_sasl_auth_data(ptr);
 
-  sasl_callback_t *callbacks= (sasl_callback_t*)libmemcached_calloc(ptr, 4, sizeof(sasl_callback_t));
+  sasl_callback_t *callbacks= libmemcached_xcalloc(ptr, 4, sasl_callback_t);
   size_t password_length= strlen(password);
   size_t username_length= strlen(username);
   char *name= (char *)libmemcached_malloc(ptr, username_length +1);
@@ -441,7 +441,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
     ++total;
   }
 
-  sasl_callback_t *callbacks= (sasl_callback_t*)libmemcached_calloc(clone, total +1, sizeof(sasl_callback_t));
+  sasl_callback_t *callbacks= libmemcached_xcalloc(clone, total +1, sasl_callback_t);
   if (callbacks == NULL)
   {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;

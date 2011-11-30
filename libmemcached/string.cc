@@ -43,7 +43,6 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
   if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
     size_t current_offset= (size_t) (string->end - string->string);
-    char *new_value;
     size_t adjust;
     size_t new_size;
 
@@ -56,9 +55,9 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     if (new_size < need)
       return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
-    new_value= static_cast<char *>(libmemcached_realloc(string->root, string->string, new_size, sizeof(char)));
+    char *new_value= libmemcached_xrealloc(string->root, string->string, new_size, char);
 
-    if (not new_value)
+    if (new_value == NULL)
     {
       return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
