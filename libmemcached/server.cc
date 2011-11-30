@@ -90,7 +90,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
 {
   if (not self)
   {
-   self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
+   self= libmemcached_xmalloc(memc, struct memcached_server_st);
 
     if (not self)
     {

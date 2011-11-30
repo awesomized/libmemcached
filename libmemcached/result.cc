@@ -68,7 +68,7 @@ memcached_result_st *memcached_result_create(const memcached_st *memc,
   }
   else
   {
-    ptr= static_cast<memcached_result_st *>(libmemcached_malloc(memc, sizeof(memcached_result_st)));
+    ptr= libmemcached_xmalloc(memc, memcached_result_st);
 
     if (not ptr)
     {

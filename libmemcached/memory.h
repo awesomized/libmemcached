@@ -57,16 +57,19 @@ static inline void *libmemcached_malloc(const memcached_st *self, const size_t s
 
   return malloc(size);
 }
+#define libmemcached_xmalloc(__memcachd_st, __type) ((__type *)libmemcached_malloc((__memcachd_st), sizeof(__type)))
 
-static inline void *libmemcached_realloc(const memcached_st *self, void *mem, const size_t size)
+static inline void *libmemcached_realloc(const memcached_st *self, void *mem, size_t nmemb,  const size_t size)
 {
   if (self)
   {
-    return self->allocators.realloc(self, mem, size, self->allocators.context);
+    return self->allocators.realloc(self, mem, nmemb * size, self->allocators.context);
   }
 
   return realloc(mem, size);
 }
+#define libmemcached_xrealloc(__memcachd_st, __mem, __nelem, __type) ((__type *)libmemcached_realloc((__memcachd_st), (__mem), (__nelem), sizeof(__type)))
+#define libmemcached_xvalloc(__memcachd_st, __nelem, __type) ((__type *)libmemcached_realloc((__memcachd_st), NULL, (__nelem), sizeof(__type)))
 
 static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size)
 {
@@ -77,3 +80,4 @@ static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, 
 
   return calloc(nelem, size);
 }
+#define libmemcached_xcalloc(__memcachd_st, __nelem, __type) ((__type *)libmemcached_calloc((__memcachd_st), (__nelem), sizeof(__type)))

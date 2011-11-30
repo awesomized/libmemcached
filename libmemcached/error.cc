@@ -62,7 +62,7 @@ static void _set(memcached_server_st& server, memcached_st& memc)
     return;
   }
 
-  memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
+  memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
   if (error == NULL) // Bad business if this happens
   {
     return;
@@ -112,7 +112,7 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
     rc= MEMCACHED_CONNECTION_FAILURE;
   }
 
-  memcached_error_t *error= (struct memcached_error_t *)libmemcached_malloc(&memc, sizeof(struct memcached_error_t));
+  memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
   if (error == NULL) // Bad business if this happens
   {
     return;
@@ -533,7 +533,7 @@ memcached_error_t *memcached_error_copy(const memcached_server_st& server)
     return NULL;
   }
 
-  memcached_error_t *error= (memcached_error_t *)libmemcached_malloc(server.root, sizeof(memcached_error_t));
+  memcached_error_t *error= libmemcached_xmalloc(server.root, memcached_error_t);
   memcpy(error, server.error_messages, sizeof(memcached_error_t));
   error->next= NULL;
 
