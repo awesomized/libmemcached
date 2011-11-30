@@ -60,7 +60,7 @@ void *_libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size, 
   if (self->allocators.malloc != _libmemcached_malloc)
   {
      void *ret = _libmemcached_malloc(self, nelem * size, context);
-     if (not ret)
+     if (ret == NULL)
      {
        memset(ret, 0, nelem * size);
      }

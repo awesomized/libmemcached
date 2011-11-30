@@ -680,8 +680,8 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
                               keys, key_length, number_of_keys, mget_mode);
   }
 
-  uint32_t* hash= static_cast<uint32_t*>(libmemcached_malloc(ptr, sizeof(uint32_t) * number_of_keys));
-  bool* dead_servers= static_cast<bool*>(libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(bool)));
+  uint32_t* hash= libmemcached_xvalloc(ptr, number_of_keys, uint32_t);
+  bool* dead_servers= libmemcached_xcalloc(ptr, memcached_server_count(ptr), bool);
 
   if (hash == NULL || dead_servers == NULL)
   {

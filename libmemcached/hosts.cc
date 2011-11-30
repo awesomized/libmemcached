@@ -185,7 +185,8 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     memcached_continuum_item_st *new_ptr;
 
     new_ptr= static_cast<memcached_continuum_item_st*>(libmemcached_realloc(ptr, ptr->ketama.continuum,
-                                                                            sizeof(memcached_continuum_item_st) * (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server));
+                                                                            (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server,
+                                                                            sizeof(memcached_continuum_item_st)));
 
     if (new_ptr == 0)
     {
@@ -354,7 +355,8 @@ static memcached_return_t server_add(memcached_st *ptr,
   assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
 
   memcached_server_st *new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
-                                                                                             sizeof(memcached_server_st) * (ptr->number_of_hosts + 1)));
+                                                                                             (ptr->number_of_hosts + 1),
+                                                                                             sizeof(memcached_server_st)));
 
   if (new_host_list == NULL)
   {
@@ -397,7 +399,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
   memcached_server_st *new_host_list;
   new_host_list= static_cast<memcached_server_st*>(libmemcached_realloc(ptr, memcached_server_list(ptr),
-									sizeof(memcached_server_st) * (count + memcached_server_count(ptr))));
+                                                                        (count + memcached_server_count(ptr)), sizeof(memcached_server_st)));
 
   if (new_host_list == NULL)
   {

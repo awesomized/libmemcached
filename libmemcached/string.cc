@@ -56,7 +56,7 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
     if (new_size < need)
       return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
-    new_value= static_cast<char *>(libmemcached_realloc(string->root, string->string, new_size));
+    new_value= static_cast<char *>(libmemcached_realloc(string->root, string->string, new_size, sizeof(char)));
 
     if (not new_value)
     {
@@ -91,7 +91,7 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   }
   else
   {
-    self= static_cast<memcached_string_st *>(libmemcached_malloc(memc, sizeof(memcached_string_st)));
+    self= libmemcached_xmalloc(memc, memcached_string_st);
 
     if (self == NULL)
     {
