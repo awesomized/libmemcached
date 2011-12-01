@@ -55,12 +55,14 @@ memcached_return_t initialize_query(memcached_st *self)
     return memcached_set_error(*self, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
   }
 
+  memcached_error_free(*self);
+
   return MEMCACHED_SUCCESS;
 }
 
 memcached_return_t initialize_const_query(const memcached_st *self)
 {
-  if (not self)
+  if (self == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }

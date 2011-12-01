@@ -52,7 +52,8 @@ public:
     memc(NULL),
     rc(rc_arg),
     _is_server(false),
-    _end(false)
+    _end(false),
+    _has_hash(false)
   {
     _hostname[0]= 0;
     buf= option_string;
@@ -75,6 +76,8 @@ public:
     _end= true;
   }
 
+  bool set_hash(memcached_hash_t hash);
+
   void set_server()
   {
     _is_server= true;
@@ -85,14 +88,14 @@ public:
     _is_server= false;
   }
 
-  bool is_server()
+  bool is_server() const
   {
     return _is_server;
   }
 
   const char *set_hostname(const char *str, size_t size);
 
-  const char *hostname()
+  const char *hostname() const
   {
     return _hostname;
   }
@@ -122,4 +125,5 @@ private:
   bool _is_server;
   bool _end;
   char _hostname[NI_MAXHOST];
+  bool _has_hash;
 }; 

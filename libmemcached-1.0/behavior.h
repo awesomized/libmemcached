@@ -65,9 +65,6 @@ memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, m
 LIBMEMCACHED_API
 memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr);
 
-LIBMEMCACHED_LOCAL
-bool _is_auto_eject_host(const memcached_st *ptr);
-
 LIBMEMCACHED_API
   const char *libmemcached_string_behavior(const memcached_behavior_t flag);
 

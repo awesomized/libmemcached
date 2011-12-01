@@ -64,12 +64,14 @@ static memcached_return_t connect_poll(memcached_server_st *server)
       {
         int err;
         socklen_t len= sizeof (err);
-        (void)getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-
-        // We check the value to see what happened wth the socket.
-        if (err == 0)
+        if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
         {
-          return MEMCACHED_SUCCESS;
+          // We check the value to see what happened wth the socket.
+          if (err == 0)
+          {
+            return MEMCACHED_SUCCESS;
+          }
+          errno= err;
         }
 
         return memcached_set_errno(*server, err, MEMCACHED_AT);
@@ -99,21 +101,26 @@ static memcached_return_t connect_poll(memcached_server_st *server)
         if (fds[0].revents & POLLERR)
         {
           int err;
-          socklen_t len= sizeof (err);
-          (void)getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          memcached_set_errno(*server, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
+          socklen_t len= sizeof(err);
+          if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+          {
+            if (err == 0)
+            {
+              // This should never happen, if it does? Punt.  
+              continue;
+            }
+            errno= err;
+          }
         }
-        else
-        {
-          memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
-        }
+
+        int local_errno= get_socket_errno(); // We cache in case closesocket() modifies errno
 
         assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
         (void)closesocket(server->fd);
         server->fd= INVALID_SOCKET;
         server->state= MEMCACHED_SERVER_STATE_NEW;
 
-        return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
+        return memcached_set_errno(*server, local_errno, MEMCACHED_AT);
       }
     }
   }
@@ -122,7 +129,7 @@ static memcached_return_t connect_poll(memcached_server_st *server)
   return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
 }
 
-static memcached_return_t set_hostinfo(memcached_server_st *server)
+memcached_return_t set_hostinfo(memcached_server_st *server)
 {
   if (server->address_info)
   {

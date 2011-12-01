@@ -90,7 +90,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
 {
   if (not self)
   {
-   self= (memcached_server_st *)libmemcached_malloc(memc, sizeof(memcached_server_st));
+   self= libmemcached_xmalloc(memc, struct memcached_server_st);
 
     if (not self)
     {
@@ -136,6 +136,11 @@ memcached_server_st *__server_create_with(memcached_st *memc,
   {
     self->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
     memcached_io_init_udp_header(self, 0);
+  }
+
+  if (memc)
+  {
+    set_hostinfo(self);
   }
 
   return self;
@@ -197,14 +202,6 @@ memcached_server_st *memcached_server_clone(memcached_server_st *destination,
                                     hostname,
                                     source->port, source->weight,
                                     source->type);
-  if (destination)
-  {
-    if (source->error_messages)
-    {
-      destination->error_messages= memcached_error_copy(*source);
-    }
-  }
-
   return destination;
 
 }

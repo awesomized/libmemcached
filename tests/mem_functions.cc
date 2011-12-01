@@ -106,16 +106,47 @@ static size_t global_keys_length[GLOBAL_COUNT];
 */
 static test_return_t pre_binary(memcached_st *memc)
 {
-  memcached_return_t rc= MEMCACHED_FAILURE;
+  test_skip(true, libmemcached_util_version_check(memc, 1, 4, 4));
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
 
-  if (libmemcached_util_version_check(memc, 1, 4, 4))
+  return TEST_SUCCESS;
+}
+
+static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
+{
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  memcached_server_instance_st instance= memcached_server_instance_by_position(original_memc, 0);
+
+  char server_string[1024];
+  int server_string_length;
+  if (options)
   {
-    rc = memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-    test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1);
+    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d %s", 
+                                   memcached_server_name(instance), int(memcached_server_port(instance)),
+                                   options);
+  }
+  else
+  {
+    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d",
+                                   memcached_server_name(instance), int(memcached_server_port(instance)));
   }
 
-  return rc == MEMCACHED_SUCCESS ? TEST_SUCCESS : TEST_SKIPPED;
+  if (server_string_length <= 0)
+  {
+    return NULL;
+  }
+
+  char buffer[1024];
+  if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, buffer, sizeof(buffer))))
+  {
+    Error << "Failed to parse " << server_string_length;
+    return NULL;
+  }
+
+  return memcached(server_string, server_string_length);
 }
 
 
@@ -454,7 +485,7 @@ static test_return_t memcached_return_t_TEST(memcached_st *memc)
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
                         1769812374U, 2302537950U, 1110330676U, 3365377466U, 
                         1336171666U, 3021258493U, 2334992265U, 3861994737U, 
-                        3365377466U };
+                        3582734124, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
   for (int rc= int(MEMCACHED_SUCCESS); rc < int(MEMCACHED_MAXIMUM_RETURN); ++rc)
@@ -470,7 +501,7 @@ static test_return_t memcached_return_t_TEST(memcached_st *memc)
     }
     test_compare(values[rc], hash_val);
   }
-  test_compare(48, int(MEMCACHED_MAXIMUM_RETURN));
+  test_compare(49, int(MEMCACHED_MAXIMUM_RETURN));
 
   return TEST_SUCCESS;
 }
@@ -910,8 +941,11 @@ static test_return_t bad_key_test(memcached_st *memc)
                  memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
     std::vector <char> longkey;
-    longkey.reserve(MEMCACHED_MAX_KEY);
-    longkey.insert(longkey.end(), MEMCACHED_MAX_KEY, 'a');
+    {
+      std::vector<char>::iterator it= longkey.begin();
+      longkey.insert(it, MEMCACHED_MAX_KEY, 'a');
+    }
+
     test_compare(longkey.size(), size_t(MEMCACHED_MAX_KEY));
     {
       size_t string_length;
@@ -1740,19 +1774,12 @@ static test_return_t mget_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t mget_execute(memcached_st *memc)
+static test_return_t mget_execute(memcached_st *original_memc)
 {
-  bool binary= false;
+  test_skip(true, memcached_behavior_get(original_memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) != 0)
-    binary= true;
-
-  /*
-   * I only want to hit _one_ server so I know the number of requests I'm
-   * sending in the pipeline.
-   */
-  uint32_t number_of_hosts= memc->number_of_hosts;
-  memc->number_of_hosts= 1;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
+  test_true(memc);
 
   size_t max_keys= 20480;
 
@@ -1762,7 +1789,6 @@ static test_return_t mget_execute(memcached_st *memc)
 
   /* First add all of the items.. */
   char blob[1024] = {0};
-  memcached_return_t rc;
 
   for (size_t x= 0; x < max_keys; ++x)
   {
@@ -1772,7 +1798,7 @@ static test_return_t mget_execute(memcached_st *memc)
     keys[x]= strdup(k);
     test_true(keys[x] != NULL);
     uint64_t query_id= memcached_query_id(memc);
-    rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    memcached_return_t rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
@@ -1780,12 +1806,11 @@ static test_return_t mget_execute(memcached_st *memc)
   /* Try to get all of them with a large multiget */
   size_t counter= 0;
   memcached_execute_fn callbacks[]= { &callback_counter };
-  rc= memcached_mget_execute(memc, (const char**)keys, key_length,
-                             max_keys, callbacks, &counter, 1);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_mget_execute(memc, (const char**)keys, key_length,
+                                      max_keys, callbacks, &counter, 1));
 
-  if (memcached_success(rc))
   {
-    test_true(binary);
     uint64_t query_id= memcached_query_id(memc);
     test_compare(MEMCACHED_SUCCESS, 
                  memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
@@ -1793,14 +1818,6 @@ static test_return_t mget_execute(memcached_st *memc)
 
     /* Verify that we got all of the items */
     test_true(counter == max_keys);
-  }
-  else if (rc == MEMCACHED_NOT_SUPPORTED)
-  {
-    test_true(counter == 0);
-  }
-  else
-  {
-    test_fail("note: this test functions differently when in binary mode");
   }
 
   /* Release all allocated resources */
@@ -1811,7 +1828,8 @@ static test_return_t mget_execute(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
+
   return TEST_SUCCESS;
 }
 
@@ -1839,11 +1857,10 @@ static test_return_t block_add_regression(memcached_st *memc)
   /* First add all of the items.. */
   for (size_t x= 0; x < REGRESSION_BINARY_VS_BLOCK_COUNT; ++x)
   {
-    memcached_return_t rc;
     char blob[1024] = {0};
 
-    rc= memcached_add_by_key(memc, "bob", 3, global_pairs[x].key, global_pairs[x].key_length, blob, sizeof(blob), 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    memcached_return_t rc= memcached_add_by_key(memc, "bob", 3, global_pairs[x].key, global_pairs[x].key_length, blob, sizeof(blob), 0, 0);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE, memcached_strerror(NULL, rc));
   }
 
   return TEST_SUCCESS;
@@ -1851,9 +1868,9 @@ static test_return_t block_add_regression(memcached_st *memc)
 
 static test_return_t binary_add_regression(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
   test_return_t rc= block_add_regression(memc);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 0);
+
   return rc;
 }
 
@@ -2225,32 +2242,32 @@ static test_return_t user_supplied_bug3(memcached_st *memc)
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 #endif
 
-  size_t key_lengths[HALDENBRAND_KEY_COUNT];
-  char **keys= static_cast<char **>(calloc(HALDENBRAND_KEY_COUNT, sizeof(char *)));
-  test_true(keys);
-  for (uint32_t x= 0; x < HALDENBRAND_KEY_COUNT; x++)
+  std::vector<size_t> key_lengths;
+  key_lengths.resize(HALDENBRAND_KEY_COUNT);
+  std::vector<char *> keys;
+  keys.resize(key_lengths.size());
+  for (uint32_t x= 0; x < key_lengths.size(); x++)
   {
     char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
     int key_length= snprintf(key, sizeof(key), "%u", x);
-    test_true(key_length);
+    test_true(key_length > 0 and key_length < MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1);
     keys[x]= strdup(key);
-    test_true(keys[x]);
     key_lengths[x]= key_length;
-    test_compare(size_t(key_length), strlen(keys[x]));
   }
 
   test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(memc, (const char **)keys, key_lengths, HALDENBRAND_KEY_COUNT));
+               memcached_mget(memc, &keys[0], &key_lengths[0], key_lengths.size()));
 
   unsigned int keys_returned;
   test_compare(TEST_SUCCESS, fetch_all_results(memc, keys_returned, MEMCACHED_SUCCESS));
   test_compare(HALDENBRAND_KEY_COUNT, keys_returned);
 
-  for (uint32_t x= 0; x < HALDENBRAND_KEY_COUNT; x++)
+  for (std::vector<char *>::iterator iter= keys.begin();
+       iter != keys.end();
+       iter++)
   {
-    free(keys[x]);
+    free(*iter);
   }
-  free(keys);
 
   return TEST_SUCCESS;
 }
@@ -2483,11 +2500,11 @@ static test_return_t user_supplied_bug7(memcached_st *memc)
   memcached_flush(memc, 0);
 
   flags= 245;
-  memcached_return_t rc= memcached_set(memc, keys, key_length,
-                                       insert_data, VALUE_SIZE_BUG5,
-                                       (time_t)0, flags);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc, keys, key_length,
+                                                insert_data, VALUE_SIZE_BUG5,
+                                                (time_t)0, flags));
 
+  memcached_return_t rc;
   flags= 0;
   value= memcached_get(memc, keys, key_length,
                        &value_length, &flags, &rc);
@@ -2636,12 +2653,12 @@ static test_return_t user_supplied_bug12(memcached_st *memc)
 
   value= memcached_get(memc, "autoincrement", strlen("autoincrement"),
                        &value_length, &flags, &rc);
-  test_true(value == NULL);
+  test_null(value);
   test_compare(MEMCACHED_NOTFOUND, rc);
 
   rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
                           1, &number_value);
-  test_true(value == NULL);
+  test_null(value);
   /* The binary protocol will set the key if it doesn't exist */
   if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == 1)
   {
@@ -2652,18 +2669,16 @@ static test_return_t user_supplied_bug12(memcached_st *memc)
     test_compare(MEMCACHED_NOTFOUND, rc);
   }
 
-  rc= memcached_set(memc, "autoincrement", strlen("autoincrement"), "1", 1, 0, 0);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_set(memc, "autoincrement", strlen("autoincrement"), "1", 1, 0, 0));
 
-  value= memcached_get(memc, "autoincrement", strlen("autoincrement"),
-                       &value_length, &flags, &rc);
+  value= memcached_get(memc, "autoincrement", strlen("autoincrement"), &value_length, &flags, &rc);
   test_true(value);
-  test_compare(MEMCACHED_SUCCESS, rc);
   free(value);
 
-  rc= memcached_increment(memc, "autoincrement", strlen("autoincrement"),
-                          1, &number_value);
-  test_true(number_value == 2);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_increment(memc, "autoincrement", strlen("autoincrement"), 1, &number_value));
+  test_compare(2UL, number_value);
 
   return TEST_SUCCESS;
 }
@@ -2908,25 +2923,24 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   /* empty the cache to ensure misses (hence non-responses) */
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc_clone, 0));
 
-  size_t* key_lengths= new (std::nothrow) size_t[key_count];
-  test_true(key_lengths);
-  char **keys= static_cast<char **>(calloc(key_count, sizeof(char *)));
-  test_true(keys);
-  for (unsigned int x= 0; x < key_count; x++)
+  std::vector<size_t> key_lengths;
+  key_lengths.resize(key_count);
+  std::vector<char *> keys;
+  keys.resize(key_lengths.size());
+  for (unsigned int x= 0; x < key_lengths.size(); x++)
   {
-    char buffer[30];
-
-    snprintf(buffer, 30, "%u", x);
-    keys[x]= strdup(buffer);
-    test_true(keys[x]);
-    key_lengths[x]= strlen(keys[x]);
+    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+    int key_length= snprintf(key, sizeof(key), "%u", x);
+    test_true(key_length > 0 and key_length < MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1);
+    keys[x]= strdup(key);
+    key_lengths[x]= key_length;
   }
 
   oldalarm= signal(SIGALRM, fail);
   alarm(5);
 
   test_compare_got(MEMCACHED_SUCCESS,
-                   memcached_mget(memc_clone, (const char **)keys, key_lengths, key_count), memcached_last_error_message(memc_clone));
+                   memcached_mget(memc_clone, &keys[0], &key_lengths[0], key_count), memcached_last_error_message(memc_clone));
 
   alarm(0);
   signal(SIGALRM, oldalarm);
@@ -2948,12 +2962,12 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   test_false(return_key[0]);
   test_false(return_value);
 
-  for (unsigned int x= 0; x < key_count; x++)
+  for (std::vector<char *>::iterator iter= keys.begin();
+       iter != keys.end();
+       iter++)
   {
-    free(keys[x]);
+    free(*iter);
   }
-  free(keys);
-  delete [] key_lengths;
 
   memcached_free(memc_clone);
 
@@ -3108,17 +3122,16 @@ static test_return_t generate_data(memcached_st *memc)
 
 static test_return_t generate_data_with_stats(memcached_st *memc)
 {
-  uint32_t host_index= 0;
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_true(check_execute == global_count);
+  test_compare(check_execute, global_count);
 
   // @todo hosts used size stats
   memcached_return_t rc;
   memcached_stat_st *stat_p= memcached_stat(memc, NULL, &rc);
   test_true(stat_p);
 
-  for (host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
+  for (uint32_t host_index= 0; host_index < SERVERS_TO_CREATE; host_index++)
   {
     /* This test was changes so that "make test" would work properlly */
     if (DEBUG)
@@ -3452,7 +3465,7 @@ static test_return_t pre_jenkins(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_HASH, (uint64_t)MEMCACHED_HASH_JENKINS);
 
-  return TEST_SUCCESS;
+  return TEST_SKIPPED;
 }
 
 
@@ -4423,7 +4436,7 @@ static test_return_t memcached_get_hashkit_test (memcached_st *)
   const char **ptr;
   hashkit_st new_kit;
 
-  memcached_st *memc= memcached(test_literal_param("--server=localhost:1 --server=localhost:2 --server=localhost:3 --server=localhost:4 --server=localhost5"));
+  memcached_st *memc= memcached(test_literal_param("--server=localhost:1 --server=localhost:2 --server=localhost:3 --server=localhost:4 --server=localhost5 --DISTRIBUTION=modula"));
 
   uint32_t md5_hosts[]= {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U};
   uint32_t crc_hosts[]= {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U};
@@ -4611,9 +4624,9 @@ static test_return_t regression_bug_434484(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t regression_bug_434843(memcached_st *memc)
+static test_return_t regression_bug_434843(memcached_st *original_memc)
 {
-  test_skip(TEST_SUCCESS, pre_binary(memc));
+  test_skip(TEST_SUCCESS, pre_binary(original_memc));
 
   memcached_return_t rc;
   size_t counter= 0;
@@ -4625,8 +4638,8 @@ static test_return_t regression_bug_434843(memcached_st *memc)
    * 1024 (that should satisfy most users don't you think?). Future versions
    * will include a mget_execute function call if you need a higher number.
  */
-  uint32_t number_of_hosts= memcached_server_count(memc);
-  memc->number_of_hosts= 1;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
+
   const size_t max_keys= 1024;
   char **keys= (char**)calloc(max_keys, sizeof(char*));
   size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
@@ -4681,7 +4694,7 @@ static test_return_t regression_bug_434843(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -5192,26 +5205,23 @@ static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
 /*
  * Test that ensures mget_execute does not end into recursive calls that finally fails
  */
-static test_return_t regression_bug_490486(memcached_st *memc)
+static test_return_t regression_bug_490486(memcached_st *original_memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 3600);
 
 #ifdef __APPLE__
   return TEST_SKIPPED; // My MAC can't handle this test
 #endif
 
+  test_skip(TEST_SUCCESS, pre_binary(original_memc));
+
   /*
    * I only want to hit _one_ server so I know the number of requests I'm
    * sending in the pipeline.
  */
-  uint32_t number_of_hosts= memc->number_of_hosts;
-  memc->number_of_hosts= 1;
-  size_t max_keys= 20480;
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL --POLL-TIMEOUT=1000 --REMOVE-FAILED-SERVERS=1 --RETRY-TIMEOUT=3600");
+  test_true(memc);
 
+  size_t max_keys= 20480;
 
   char **keys= (char **)calloc(max_keys, sizeof(char*));
   size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
@@ -5269,7 +5279,7 @@ static test_return_t regression_bug_490486(memcached_st *memc)
   free(keys);
   free(key_length);
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -5630,7 +5640,9 @@ test_st tests[] ={
   {"analyzer", true, (test_callback_fn*)analyzer_test},
   {"memcached_pool_st", true, (test_callback_fn*)connection_pool_test },
   {"memcached_pool_st #2", true, (test_callback_fn*)connection_pool2_test },
+#if 0
   {"memcached_pool_st #3", true, (test_callback_fn*)connection_pool3_test },
+#endif
   {"memcached_pool_test", true, (test_callback_fn*)memcached_pool_test },
   {"test_get_last_disconnect", true, (test_callback_fn*)test_get_last_disconnect},
   {"verbosity", true, (test_callback_fn*)test_verbosity},

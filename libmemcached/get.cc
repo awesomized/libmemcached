@@ -68,12 +68,16 @@ char *memcached_get_by_key(memcached_st *ptr,
 {
   memcached_return_t unused;
   if (error == NULL)
+  {
     error= &unused;
+  }
 
-  unlikely (ptr->flags.use_udp)
+  if (ptr->flags.use_udp)
   {
     if (value_length) 
+    {
       *value_length= 0;
+    }
 
     *error= memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
     return NULL;
@@ -418,7 +422,9 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
                                                  unsigned int number_of_callbacks)
 {
   if ((ptr->flags.binary_protocol) == 0)
+  {
     return MEMCACHED_NOT_SUPPORTED;
+  }
 
   memcached_return_t rc;
   memcached_callback_st *original_callbacks= ptr->callbacks;
@@ -674,8 +680,8 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
                               keys, key_length, number_of_keys, mget_mode);
   }
 
-  uint32_t* hash= static_cast<uint32_t*>(libmemcached_malloc(ptr, sizeof(uint32_t) * number_of_keys));
-  bool* dead_servers= static_cast<bool*>(libmemcached_calloc(ptr, memcached_server_count(ptr), sizeof(bool)));
+  uint32_t* hash= libmemcached_xvalloc(ptr, number_of_keys, uint32_t);
+  bool* dead_servers= libmemcached_xcalloc(ptr, memcached_server_count(ptr), bool);
 
   if (hash == NULL || dead_servers == NULL)
   {

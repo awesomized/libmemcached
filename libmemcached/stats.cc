@@ -486,7 +486,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     return NULL;
   }
 
-  memcached_stat_st *stats= static_cast<memcached_stat_st *>(libmemcached_calloc(self, memcached_server_count(self), sizeof(memcached_stat_st)));
+  memcached_stat_st *stats= libmemcached_xcalloc(self, memcached_server_count(self), memcached_stat_st);
 
   if (not stats)
   {

@@ -42,11 +42,13 @@
 bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_return_t *ret)
 {
   memcached_return_t unused;
-  if (not ret)
+  if (ret == NULL)
+  {
     ret= &unused;
+  }
 
   memcached_st *memc_ptr= memcached_create(NULL);
-  if (not memc_ptr)
+  if (memc_ptr == NULL)
   {
     *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return false;

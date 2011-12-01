@@ -1,9 +1,10 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  Copyright (C) 2006-2009 Brian Aker
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -38,31 +39,41 @@
 #pragma once
 
 
-#ifdef __cplusplus
-extern "C" {
+/* To hide the platform differences between MS Windows and Unix, I am
+ * going to use the Microsoft way and #define the Microsoft-specific
+ * functions to the unix way. Microsoft use a separate subsystem for sockets,
+ * but Unix normally just use a filedescriptor on the same functions. It is
+ * a lot easier to map back to the unix way with macros than going the other
+ * way without side effect ;-)
+ */
+#ifdef WIN32
+#include "win32/wrappers.h"
+#define get_socket_errno() WSAGetLastError()
+#else
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define closesocket(a) close(a)
+#define get_socket_errno() errno
 #endif
 
-/* Server List Public functions */
-LIBMEMCACHED_API
-  void memcached_server_list_free(memcached_server_list_st ptr);
-
-LIBMEMCACHED_API
-  memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list);
-
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append(memcached_server_list_st ptr,
-                                                        const char *hostname,
-                                                        in_port_t port,
-                                                        memcached_return_t *error);
-LIBMEMCACHED_API
-  memcached_server_list_st memcached_server_list_append_with_weight(memcached_server_list_st ptr,
-                                                                    const char *hostname,
-                                                                    in_port_t port,
-                                                                    uint32_t weight,
-                                                                    memcached_return_t *error);
-LIBMEMCACHED_API
-  uint32_t memcached_server_list_count(const memcached_server_list_st ptr);
-
 #ifdef __cplusplus
-} // extern "C"
+static inline void memcached_close_socket(int& socket_fd)
+{
+  closesocket(socket_fd);
+  socket_fd= INVALID_SOCKET;
+}
 #endif
+
+#ifndef HAVE_MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
+
+#ifndef HAVE_MSG_DONTWAIT
+#define MSG_DONTWAIT 0
+#endif
+
+#ifndef HAVE_MSG_MORE
+#define MSG_MORE 0
+#endif
+
+

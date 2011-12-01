@@ -233,7 +233,6 @@ memcached_st *memcached(const char *string, size_t length)
   memcached_st *self= memcached_create(NULL);
   if (self == NULL)
   {
-    errno= ENOMEM;
     return NULL;
   }
 
@@ -251,7 +250,6 @@ memcached_st *memcached(const char *string, size_t length)
   if (memcached_failed(rc))
   {
     memcached_free(self);
-    errno= EINVAL;
     return NULL;
   }
 

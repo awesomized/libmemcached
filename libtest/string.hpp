@@ -25,6 +25,7 @@
 #include "util/string.hpp"
 
 #define test_literal_param util_literal_param
+#define test_literal_compare_param util_literal_compare_param
 #define test_literal_param_size util_literal_param_size
 #define test_string_make_from_cstr util_string_make_from_cstr
 #define test_array_length util_array_length

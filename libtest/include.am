@@ -35,6 +35,9 @@ export GDB_COMMAND
 valgrind:
 	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_COMMAND)\""
 
+gdb:
+	@echo make check TESTS_ENVIRONMENT="\"$(GDB_COMMAND)\""
+
 helgrind:
 	@echo make check TESTS_ENVIRONMENT="\"$(HELGRIND_COMMAND)\""
 

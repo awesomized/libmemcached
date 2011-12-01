@@ -268,16 +268,23 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
         {
           int err;
           socklen_t len= sizeof (err);
-          (void)getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len);
-          memcached_set_errno(*ptr, (err == 0) ? get_socket_errno() : err, MEMCACHED_AT);
+          if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+          {
+            if (err == 0)
+            {
+              continue;
+            }
+            errno= err;
+          }
         }
         else
         {
           memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         }
+        int local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
         memcached_quit_server(ptr, true);
 
-        return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        return memcached_set_errno(*ptr, local_errno, MEMCACHED_AT);
       }
     }
   }

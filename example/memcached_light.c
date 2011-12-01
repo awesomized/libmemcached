@@ -35,9 +35,10 @@
 #include <event.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
+#include <libmemcached/close_socket.hpp>
 #include <example/byteorder.h>
-#include "storage.h"
-#include "memcached_light.h"
+#include "example/storage.h"
+#include "example/memcached_light.h"
 
 extern memcached_binary_protocol_callback_st interface_v0_impl;
 extern memcached_binary_protocol_callback_st interface_v1_impl;

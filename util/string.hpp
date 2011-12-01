@@ -47,6 +47,8 @@
 #define util_literal_param(X) (X), (static_cast<size_t>((sizeof(X) - 1)))
 #define util_literal_param_size(X) static_cast<size_t>(sizeof(X) - 1)
 
+#define util_literal_compare_param(X) (static_cast<size_t>((sizeof(X) - 1))), (X)
+
 #define util_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
 
 #define util_array_length(__array) sizeof(__array)/sizeof(&__array)

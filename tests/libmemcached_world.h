@@ -48,7 +48,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-
   in_port_t max_port= TEST_PORT_BASE;
   for (uint32_t x= 0; x < servers.count(); x++)
   {
@@ -249,7 +248,17 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
   {
     test_true(container);
     test_true(container->memc);
-    return func(container->memc);
+    test_return_t ret;
+    try {
+      ret= func(container->memc);
+    }
+    catch (std::exception& e)
+    {
+      Error << e.what();
+      return TEST_FAILURE;
+    }
+
+    return ret;
   }
 
   return TEST_SUCCESS;
