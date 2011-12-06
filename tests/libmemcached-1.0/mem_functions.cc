@@ -90,7 +90,7 @@ using namespace libtest;
 
 #include <libmemcached/util.h>
 
-#include "hash_results.h"
+#include "tests/hash_results.h"
 
 #define GLOBAL_COUNT 10000
 #define GLOBAL2_COUNT 100

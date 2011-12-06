@@ -190,6 +190,7 @@ AC_CONFIG_FILES([
   docs/conf.py
   libhashkit-1.0/configure.h
   libmemcached-1.0/configure.h
+  libmemcached-1.2/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

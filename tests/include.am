@@ -22,26 +22,8 @@ EXTRA_DIST+= \
 	     tests/output_plus.res
 
 noinst_HEADERS+= \
-		 tests/basic.h \
-		 tests/callbacks.h \
-		 tests/debug.h \
-		 tests/error_conditions.h \
 		 tests/exist.h \
-		 tests/hash_results.h \
-		 tests/ketama.h \
-		 tests/ketama_test_cases.h \
-		 tests/ketama_test_cases_spy.h \
-		 tests/libmemcached_world.h \
-		 tests/namespace.h \
-		 tests/parser.h \
-		 tests/touch.h \
-		 tests/deprecated.h \
-		 tests/pool.h \
-		 tests/print.h \
-		 tests/replication.h \
-		 tests/server_add.h \
-		 tests/string.h \
-		 tests/virtual_buckets.h
+		 tests/libmemcached_world.h
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
@@ -54,87 +36,7 @@ tests_cycle_LDADD+= ${PTHREAD_LIBS}
 check_PROGRAMS+= tests/cycle
 noinst_PROGRAMS+= tests/cycle
 
-# Test internals
-tests_internals_SOURCES= tests/internals.cc
-tests_internals_SOURCES+= tests/string.cc
-tests_internals_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
-tests_internals_DEPENDENCIES= libmemcachedinternal/libmemcachedinternal.la libtest/libtest.la  libmemcachedinternal/libmemcachedutilinternal.la
-tests_internals_LDADD= libmemcachedinternal/libmemcachedinternal.la
-tests_internals_LDADD+= ${PTHREAD_LIBS}
-tests_internals_LDADD+= libmemcachedinternal/libmemcachedutilinternal.la
-tests_internals_LDADD+= libtest/libtest.la
-check_PROGRAMS+= tests/internals
-noinst_PROGRAMS+= tests/internals
-
-
-tests_testapp_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
-tests_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testapp_SOURCES= \
-		       tests/basic.cc \
-		       tests/debug.cc \
-		       tests/deprecated.cc \
-		       tests/error_conditions.cc \
-		       tests/exist.cc \
-		       tests/ketama.cc \
-		       tests/mem_functions.cc \
-		       tests/namespace.cc \
-		       tests/parser.cc \
-		       tests/touch.cc \
-		       tests/callbacks.cc \
-		       tests/pool.cc \
-		       tests/print.cc \
-		       tests/replication.cc \
-		       tests/server_add.cc \
-		       tests/virtual_buckets.cc
-tests_testapp_SOURCES+= clients/generator.cc clients/execute.cc
-tests_testapp_DEPENDENCIES= \
-			    libmemcached/libmemcached.la \
-			    libtest/libtest.la
-			    libhashkit/libhashkit.la \
-			    libmemcached/libmemcachedutil.la
-tests_testapp_LDADD= \
-		     ${PTHREAD_LIBS} \
-		     libmemcached/libmemcached.la \
-		     libmemcached/libmemcachedutil.la \
-		     libtest/libtest.la \
-		     libhashkit/libhashkit.la
-check_PROGRAMS+= tests/testapp
-noinst_PROGRAMS+= tests/testapp
-
-tests_sasl_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
-tests_sasl_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_sasl_SOURCES= \
-		    tests/basic.cc \
-		    tests/debug.cc \
-		    tests/deprecated.cc \
-		    tests/error_conditions.cc \
-		    tests/ketama.cc \
-		    tests/sasl.cc \
-		    tests/namespace.cc \
-		    tests/parser.cc \
-		    tests/pool.cc \
-		    tests/print.cc \
-		    tests/replication.cc \
-		    tests/virtual_buckets.cc
-tests_sasl_SOURCES+= clients/generator.cc clients/execute.cc
-tests_sasl_DEPENDENCIES= \
-			 libmemcached/libmemcached.la \
-			 libtest/libtest.la
-tests_sasl_LDADD= \
-		  ${PTHREAD_LIBS} \
-		  libmemcached/libmemcached.la \
-		  libmemcached/libmemcachedutil.la \
-		  libtest/libtest.la \
-		  libhashkit/libhashkit.la
-check_PROGRAMS+= tests/sasl
-noinst_PROGRAMS+= tests/sasl
-
-tests_testplus_SOURCES= tests/plus.cpp
-tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
-tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES)
-check_PROGRAMS+= tests/testplus
-noinst_PROGRAMS+= tests/testplus
+include tests/libmemcached-1.0/include.am
 
 tests_failure_SOURCES= tests/failure.cc
 tests_failure_CXXFLAGS = $(AM_CXXFLAGS)
@@ -142,23 +44,6 @@ tests_failure_DEPENDENCIES= $(TESTS_LDADDS)
 tests_failure_LDADD= $(tests_failure_DEPENDENCIES)
 check_PROGRAMS+= tests/failure
 noinst_PROGRAMS+= tests/failure
-
-tests_atomsmasher_SOURCES= \
-			   tests/atomsmasher.cc \
-			   tests/debug.cc \
-			   tests/print.cc \
-			   clients/generator.cc \
-			   clients/execute.cc
-tests_atomsmasher_DEPENDENCIES= $(TESTS_LDADDS)
-tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES)
-noinst_PROGRAMS+= tests/atomsmasher
-
-tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testudp_SOURCES= tests/mem_udp.cc
-tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
-tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES)
-check_PROGRAMS+= tests/testudp
-noinst_PROGRAMS+= tests/testudp
 
 tests_testhashkit_SOURCES = tests/hashkit_functions.cc
 tests_testhashkit_DEPENDENCIES = libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)

@@ -1,0 +1,12 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+# This is not a public interface yet.
+
+EXTRA_DIST+= \
+	     libmemcached-1.2/configure.h.in
+
+noinst_HEADERS+= \
+		 libmemcached-1.2/memcached.h
+
