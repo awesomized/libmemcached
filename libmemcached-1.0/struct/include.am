@@ -1,0 +1,15 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+nobase_include_HEADERS+= \
+			 libmemcached-1.0/struct/allocator.h \
+			 libmemcached-1.0/struct/analysis.h \
+			 libmemcached-1.0/struct/callback.h \
+			 libmemcached-1.0/struct/memcached.h \
+			 libmemcached-1.0/struct/result.h \
+			 libmemcached-1.0/struct/sasl.h \
+			 libmemcached-1.0/struct/server.h \
+			 libmemcached-1.0/struct/stat.h \
+			 libmemcached-1.0/struct/string.h
+

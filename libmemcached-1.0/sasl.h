@@ -67,11 +67,4 @@ sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
 }
 #endif
 
-struct memcached_sasl_st {
-  sasl_callback_t *callbacks;
-  /*
-   ** Did we allocate data inside the callbacks, or did the user
-   ** supply that.
- */
-  bool is_allocated;
-};
+#include <libmemcached-1.0/struct/sasl.h>

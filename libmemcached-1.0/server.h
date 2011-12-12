@@ -38,64 +38,7 @@
 
 #pragma once
 
-#ifndef WIN32
-#include <netdb.h>
-#endif
-
-#ifdef NI_MAXHOST
-#define MEMCACHED_NI_MAXHOST NI_MAXHOST
-#else
-#define MEMCACHED_NI_MAXHOST 1025
-#endif
-
-enum memcached_server_state_t {
-  MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
-  MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered
-  MEMCACHED_SERVER_STATE_IN_PROGRESS,
-  MEMCACHED_SERVER_STATE_CONNECTED,
-  MEMCACHED_SERVER_STATE_IN_TIMEOUT
-};
-
-struct memcached_server_st {
-  struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
-    bool is_shutting_down:1;
-    bool is_dead:1;
-  } options;
-  uint32_t number_of_hosts;
-  uint32_t cursor_active;
-  in_port_t port;
-  memcached_socket_t fd;
-  uint32_t io_bytes_sent; /* # bytes sent since last read */
-  uint32_t server_failure_counter;
-  uint64_t server_failure_counter_query_id;
-  uint32_t weight;
-  uint32_t version;
-  enum memcached_server_state_t state;
-  struct {
-    uint32_t read;
-    uint32_t write;
-  } io_wait_count;
-  uint8_t major_version; // Default definition of UINT8_MAX means that it has not been set.
-  uint8_t micro_version; // ditto
-  uint8_t minor_version; // ditto
-  memcached_connection_t type;
-  char *read_ptr;
-  size_t read_buffer_length;
-  size_t read_data_length;
-  size_t write_buffer_offset;
-  struct addrinfo *address_info;
-  struct addrinfo *address_info_next;
-  time_t next_retry;
-  memcached_st *root;
-  uint64_t limit_maxbytes;
-  struct memcached_error_t *error_messages;
-  char read_buffer[MEMCACHED_MAX_BUFFER];
-  char write_buffer[MEMCACHED_MAX_BUFFER];
-  char hostname[MEMCACHED_NI_MAXHOST];
-};
-
+#include <libmemcached-1.0/struct/server.h>
 
 #ifdef __cplusplus
 extern "C" {
