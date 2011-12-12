@@ -2,7 +2,8 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -46,11 +47,53 @@
 #endif
 
 #include <libmemcached-1.0/visibility.h>
+#include <libmemcached-1.0/configure.h>
+#include <libmemcached-1.0/platform.h>
+#include <libmemcached-1.0/constants.h>
+#include <libmemcached-1.0/return.h>
+#include <libmemcached-1.0/types.h>
+#include <libmemcached-1.0/basic_string.h>
+#include <libmemcached-1.0/string.h>
 #include <libmemcached-1.0/error.h>
+#include <libmemcached-1.0/stats.h>
+#include <libhashkit-1.0/hashkit.h>
+
+// Everything above this line must be in the order specified.
+#include <libmemcached-1.2/allocators.h>
+#include <libmemcached-1.2/analyze.h>
+#include <libmemcached-1.2/auto.h>
+#include <libmemcached-1.2/behavior.h>
+#include <libmemcached-1.2/callback.h>
+#include <libmemcached-1.2/delete.h>
+#include <libmemcached-1.2/dump.h>
+#include <libmemcached-1.2/exist.h>
+#include <libmemcached-1.2/fetch.h>
+#include <libmemcached-1.2/flush.h>
+#include <libmemcached-1.2/flush_buffers.h>
+#include <libmemcached-1.2/get.h>
+#include <libmemcached-1.2/hash.h>
+#include <libmemcached-1.2/options.h>
+#include <libmemcached-1.2/parse.h>
+#include <libmemcached-1.2/quit.h>
+#include <libmemcached-1.2/result.h>
+#include <libmemcached-1.2/server.h>
+#include <libmemcached-1.2/server_list.h>
+#include <libmemcached-1.2/storage.h>
+#include <libmemcached-1.2/strerror.h>
+#include <libmemcached-1.2/touch.h>
+#include <libmemcached-1.2/verbosity.h>
+#include <libmemcached-1.2/version.h>
+#include <libmemcached-1.2/sasl.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+LIBMEMCACHED_API
+void memcached_servers_reset(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_create(memcached_st *ptr);
 
 LIBMEMCACHED_API
 memcached_st *memcached(const char *string, size_t string_length);
@@ -59,13 +102,31 @@ LIBMEMCACHED_API
 void memcached_free(memcached_st *ptr);
 
 LIBMEMCACHED_API
-memcached_st *memcached_clone(memcached_st *destination, const memcached_st *source);
+memcached_return_t memcached_reset(memcached_st *ptr);
+
+LIBMEMCACHED_API
+void memcached_reset_last_disconnected_server(memcached_st *ptr);
+
+LIBMEMCACHED_API
+memcached_st *memcached_clone(memcached_st *clone, const memcached_st *ptr);
 
 LIBMEMCACHED_API
 void *memcached_get_user_data(const memcached_st *ptr);
 
 LIBMEMCACHED_API
 void *memcached_set_user_data(memcached_st *ptr, void *data);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source);
+
+LIBMEMCACHED_API
+memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key);
+
+LIBMEMCACHED_API
+uint32_t memcached_server_count(const memcached_st *);
+
+LIBMEMCACHED_API
+uint64_t memcached_query_id(const memcached_st *);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -1,5 +1,7 @@
 1.0.3
 
+* Fixed C compile issue with memcached_exist()
+
 1.0.2 Mon Oct 24 08:00:48 PDT 2011
 * Dropped libmemcached/memcached_util.h (undocumented header file)
 * Added memcached_touch() and memcached_touch_by_key()

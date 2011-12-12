@@ -2,8 +2,8 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,23 +35,9 @@
  *
  */
 
-#pragma once
+#include <libmemcached-1.0/struct/result.h>
 
-struct memcached_result_st {
-  uint32_t item_flags;
-  time_t item_expiration;
-  size_t key_length;
-  uint64_t item_cas;
-  memcached_st *root;
-  memcached_string_st value;
-  uint64_t count;
-  char item_key[MEMCACHED_MAX_KEY];
-  struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
-  } options;
-  /* Add result callback function */
-};
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {

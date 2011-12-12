@@ -36,6 +36,8 @@
 
 #pragma once
 
+#include <libmemcached-1.0/struct/memcached.h>
+
 static inline void libmemcached_free(const memcached_st *self, void *mem)
 {
   if (self)

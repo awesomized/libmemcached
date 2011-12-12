@@ -48,12 +48,11 @@ LIBMEMCACHED_API
   memcached_return_t memcached_last_error(memcached_st *);
 
 LIBMEMCACHED_API
-  const char *memcached_server_last_error_message(memcached_instance_st *);
+  const char *memcached_server_last_error_message(memcached_server_instance_st ptr);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_server_last_error(memcached_instance_st *);
+  memcached_return_t memcached_server_last_error(memcached_server_instance_st ptr);
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
-

@@ -2,8 +2,8 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,41 +37,6 @@
 
 
 #pragma once
-
-/* Public defines */
-#define MEMCACHED_DEFAULT_PORT 11211
-#define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
-#define MEMCACHED_MAX_BUFFER 8196
-#define MEMCACHED_MAX_HOST_SORT_LENGTH 86 /* Used for Ketama */
-#define MEMCACHED_POINTS_PER_SERVER 100
-#define MEMCACHED_POINTS_PER_SERVER_KETAMA 160
-#define MEMCACHED_CONTINUUM_SIZE MEMCACHED_POINTS_PER_SERVER*100 /* This would then set max hosts to 100 */
-#define MEMCACHED_STRIDE 4
-#define MEMCACHED_DEFAULT_TIMEOUT 5000
-#define MEMCACHED_DEFAULT_CONNECT_TIMEOUT 4000
-#define MEMCACHED_CONTINUUM_ADDITION 10 /* How many extra slots we should build for in the continuum */
-#define MEMCACHED_PREFIX_KEY_MAX_SIZE 128
-#define MEMCACHED_EXPIRATION_NOT_ADD 0xffffffffU
-#define MEMCACHED_VERSION_STRING_LENGTH 24
-#define MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH 20
-#define MEMCACHED_SERVER_FAILURE_LIMIT 5
-#define MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT 2
-
-
-enum memcached_server_distribution_t {
-  MEMCACHED_DISTRIBUTION_MODULA,
-  MEMCACHED_DISTRIBUTION_CONSISTENT,
-  MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA,
-  MEMCACHED_DISTRIBUTION_RANDOM,
-  MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY,
-  MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED,
-  MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET,
-  MEMCACHED_DISTRIBUTION_CONSISTENT_MAX
-};
-
-#ifndef __cplusplus
-typedef enum memcached_server_distribution_t memcached_server_distribution_t;
-#endif
 
 enum memcached_behavior_t {
   MEMCACHED_BEHAVIOR_NO_BLOCK,
@@ -115,53 +80,4 @@ enum memcached_behavior_t {
 
 #ifndef __cplusplus
 typedef enum memcached_behavior_t memcached_behavior_t;
-#endif
-
-enum memcached_callback_t {
-  MEMCACHED_CALLBACK_PREFIX_KEY = 0,
-  MEMCACHED_CALLBACK_USER_DATA = 1,
-  MEMCACHED_CALLBACK_CLEANUP_FUNCTION = 2,
-  MEMCACHED_CALLBACK_CLONE_FUNCTION = 3,
-  MEMCACHED_CALLBACK_GET_FAILURE = 7,
-  MEMCACHED_CALLBACK_DELETE_TRIGGER = 8,
-  MEMCACHED_CALLBACK_MAX,
-  MEMCACHED_CALLBACK_NAMESPACE= MEMCACHED_CALLBACK_PREFIX_KEY
-};
-
-#ifndef __cplusplus
-typedef enum memcached_callback_t memcached_callback_t;
-#endif
-
-enum memcached_hash_t {
-  MEMCACHED_HASH_DEFAULT= 0,
-  MEMCACHED_HASH_MD5,
-  MEMCACHED_HASH_CRC,
-  MEMCACHED_HASH_FNV1_64,
-  MEMCACHED_HASH_FNV1A_64,
-  MEMCACHED_HASH_FNV1_32,
-  MEMCACHED_HASH_FNV1A_32,
-  MEMCACHED_HASH_HSIEH,
-  MEMCACHED_HASH_MURMUR,
-  MEMCACHED_HASH_JENKINS,
-  MEMCACHED_HASH_CUSTOM,
-  MEMCACHED_HASH_MAX
-};
-
-#ifndef __cplusplus
-typedef enum memcached_hash_t memcached_hash_t;
-#endif
-
-enum memcached_connection_t {
-  MEMCACHED_CONNECTION_TCP,
-  MEMCACHED_CONNECTION_UDP,
-  MEMCACHED_CONNECTION_UNIX_SOCKET
-};
-
-enum {
-  MEMCACHED_CONNECTION_UNKNOWN= 0,
-  MEMCACHED_CONNECTION_MAX= 0
-};
-
-#ifndef __cplusplus
-typedef enum memcached_connection_t memcached_connection_t;
 #endif

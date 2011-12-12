@@ -23,6 +23,7 @@ EXTRA_DIST+= \
 
 noinst_HEADERS+= \
 		 tests/exist.h \
+		 tests/hash_results.h \
 		 tests/libmemcached_world.h
 
 # Cycle should always run first
@@ -134,20 +135,6 @@ tests_memdump_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memdump
 tests_memdump_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memdump
 noinst_PROGRAMS+= tests/memdump
- 
-# Test linking with C application
-tests_c_test_SOURCES= tests/c_test.c
-tests_c_test_LDADD= libmemcached/libmemcached.la
-tests_c_test_DEPENDENCIES= libmemcached/libmemcached.la
-check_PROGRAMS+=tests/c_test
-noinst_PROGRAMS+=tests/c_test
-
-# Test linking with C application/SASL include
-tests_c_sasl_test_SOURCES= tests/c_sasl_test.c
-tests_c_sasl_test_LDADD= libmemcached/libmemcached.la
-tests_c_sasl_test_DEPENDENCIES= libmemcached/libmemcached.la
-check_PROGRAMS+=tests/c_sasl_test
-noinst_PROGRAMS+=tests/c_sasl_test
 
 test: check
 

@@ -14,7 +14,7 @@
 
 using namespace libtest;
 
-#include "hash_results.h"
+#include "tests/hash_results.h"
 
 static test_return_t exists_test(void *)
 {

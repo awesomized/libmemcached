@@ -191,6 +191,7 @@ AC_CONFIG_FILES([
   libhashkit-1.0/configure.h
   libmemcached-1.0/configure.h
   libmemcached-1.2/configure.h
+  libmemcached-2.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

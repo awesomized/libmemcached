@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached C sasl test app
+ *  Libmemcached C test app
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -40,15 +40,20 @@
 
 #include <stdlib.h>
 
-#ifdef HAVE_SASL_SASL_H
-#include <sasl/sasl.h>
-#endif
-
 #include <libmemcached/memcached.h>
 
 int main(void)
 {
+  (void)memcached_success(MEMCACHED_SUCCESS);
+  (void)memcached_failed(MEMCACHED_SUCCESS);
+  (void)memcached_continue(MEMCACHED_SUCCESS);
+
   memcached_st *memc= memcached_create(NULL);
+  
+  if (memc == NULL)
+  {
+    return EXIT_FAILURE;
+  }
   memcached_free(memc);
 
   return EXIT_SUCCESS;

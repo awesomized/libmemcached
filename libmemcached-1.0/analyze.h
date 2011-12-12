@@ -35,19 +35,9 @@
  *
  */
 
-#pragma once
+#include <libmemcached-1.0/struct/analysis.h>
 
-struct memcached_analysis_st {
-  memcached_st *root;
-  uint32_t average_item_size;
-  uint32_t longest_uptime;
-  uint32_t least_free_server;
-  uint32_t most_consumed_server;
-  uint32_t oldest_server;
-  double pool_hit_ratio;
-  uint64_t most_used_bytes;
-  uint64_t least_remaining_bytes;
-};
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {

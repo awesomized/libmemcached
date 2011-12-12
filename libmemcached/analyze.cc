@@ -1,4 +1,4 @@
-#include "common.h"
+#include <libmemcached/common.h>
 
 static void calc_largest_consumption(memcached_analysis_st *result,
                                      const uint32_t server_num,
@@ -65,16 +65,17 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 {
   uint64_t total_items= 0, total_bytes= 0;
   uint64_t total_get_cmds= 0, total_get_hits= 0;
-  uint32_t server_count, x;
-  memcached_analysis_st *result;
+  uint32_t server_count;
 
   if (not memc or not memc_stat)
+  {
     return NULL;
+  }
 
   *error= MEMCACHED_SUCCESS;
   server_count= memcached_server_count(memc);
-  result= (memcached_analysis_st*)calloc(memcached_server_count(memc),
-                                         sizeof(memcached_analysis_st));
+  memcached_analysis_st *result= (memcached_analysis_st*)calloc(memcached_server_count(memc),
+                                                                sizeof(memcached_analysis_st));
 
   if (not result)
   {
@@ -84,7 +85,7 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 
   result->root= memc;
 
-  for (x= 0; x < server_count; x++)
+  for (uint32_t x= 0; x < server_count; x++)
   {
     calc_largest_consumption(result, x, memc_stat[x].bytes);
     calc_oldest_node(result, x, memc_stat[x].uptime);

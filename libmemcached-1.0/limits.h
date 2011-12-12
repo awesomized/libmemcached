@@ -2,8 +2,8 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,25 +35,12 @@
  *
  */
 
+
 #pragma once
 
-/**
-  Strings are always under our control so we make some assumptions
-  about them.
-
-  1) is_initialized is always valid.
-  2) A string once intialized will always be, until free where we
-     unset this flag.
-  3) A string always has a root.
-*/
-
-struct memcached_string_st {
-  char *end;
-  char *string;
-  size_t current_size;
-  memcached_st *root;
-  struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
-  } options;
-};
+#define MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH 20
+#define MEMCACHED_MAX_BUFFER 8196
+#define MEMCACHED_MAX_HOST_SORT_LENGTH 86 /* Used for Ketama */
+#define MEMCACHED_MAX_KEY 251 /* We add one to have it null terminated */
+#define MEMCACHED_PREFIX_KEY_MAX_SIZE 128
+#define MEMCACHED_VERSION_STRING_LENGTH 24
