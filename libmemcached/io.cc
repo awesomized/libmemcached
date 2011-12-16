@@ -354,11 +354,11 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     if (with_flush)
     {
-      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
+      sent_length= ::send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
     }
     else
     {
-      sent_length= send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
+      sent_length= ::send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
     }
 
     if (sent_length == SOCKET_ERROR)

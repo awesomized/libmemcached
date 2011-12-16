@@ -71,7 +71,9 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
 
   memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
   if (no_reply or memcached_failed(rc))
+  {
     return rc;
+  }
 
   rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 

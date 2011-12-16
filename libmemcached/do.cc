@@ -11,46 +11,22 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t memcached_do(memcached_server_write_instance_st ptr, const void *command,
-                                size_t command_length, bool with_flush)
+memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
+                                const void *command,
+                                size_t command_length,
+                                bool with_flush)
 {
   assert_msg(command_length, "Programming error, somehow a command had a length of zero");
   assert_msg(command, "Programming error, somehow a command was NULL");
 
-  memcached_return_t rc;
-  if (memcached_failed(rc= memcached_connect(ptr)))
-  {
-    WATCHPOINT_ASSERT(rc == memcached_last_error(ptr->root));
-    WATCHPOINT_ERROR(rc);
-    return rc;
-  }
+  libmemcached_io_vector_st vector[1]= { { command, command_length } };
 
-  /*
-  ** Since non buffering ops in UDP mode dont check to make sure they will fit
-  ** before they start writing, if there is any data in buffer, clear it out,
-  ** otherwise we might get a partial write.
-  **/
-  if (memcached_is_udp(ptr->root) and with_flush and ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
-  {
-    memcached_io_write(ptr, NULL, 0, true);
-  }
-
-  ssize_t sent_length= memcached_io_write(ptr, command, command_length, with_flush);
-
-  if (sent_length == -1 or size_t(sent_length) != command_length)
-  {
-    rc= MEMCACHED_WRITE_FAILURE;
-  }
-  else if ((ptr->root->flags.no_reply) == 0)
-  {
-    memcached_server_response_increment(ptr);
-  }
-
-  return rc;
+  return memcached_vdo(ptr, vector, 1, with_flush);
 }
 
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
-                                 const struct libmemcached_io_vector_st *vector, size_t count,
+                                 const struct libmemcached_io_vector_st *vector,
+                                 size_t count,
                                  bool with_flush)
 {
   memcached_return_t rc;
