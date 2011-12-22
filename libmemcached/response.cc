@@ -184,7 +184,9 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   value_length= (size_t)strtoull(next_ptr, &string_ptr, 10);
 
   if (end_ptr == string_ptr)
+  {
     goto read_error;
+  }
 
   /* Skip spaces */
   if (*string_ptr == '\r')
@@ -388,13 +390,19 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
   default:
     {
-      unsigned long long auto_return_value;
+      unsigned long long int auto_return_value= strtoull(buffer, (char **)NULL, 10);
 
-      if (sscanf(buffer, "%llu", &auto_return_value) == 1)
-        return MEMCACHED_SUCCESS;
+      if (auto_return_value == ULLONG_MAX and errno == ERANGE)
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
+      else if (errno == EINVAL)
+      {
+        return MEMCACHED_UNKNOWN_READ_FAILURE;
+      }
 
       WATCHPOINT_STRING(buffer);
-      return MEMCACHED_UNKNOWN_READ_FAILURE;
+      return MEMCACHED_SUCCESS;
     }
   }
 

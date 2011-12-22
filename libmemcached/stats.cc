@@ -1,7 +1,40 @@
-/*
-*/
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
+ *
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
-#include "common.h"
+#include <libmemcached/common.h>
 
 static const char *memcached_stat_keys[] = {
   "pid",
@@ -53,7 +86,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
     WATCHPOINT_STRING(key);
     return MEMCACHED_UNKNOWN_STAT_KEY;
   }
-  else if (not strcmp("pid", key))
+  else if (strcmp("pid", key) == 0)
   {
     int64_t temp= strtoll(value, (char **)NULL, 10);
 
@@ -400,27 +433,23 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             memcached_server_write_instance_st instance,
                                             struct local_context *check)
 {
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  int send_length;
-
+  int send_length= 0;
   if (args)
   {
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "stats %s\r\n", args);
-  }
-  else
-  {
-    send_length= (size_t) snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, "stats\r\n");
+    send_length= strlen(args);
   }
 
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
+  struct libmemcached_io_vector_st vector[]=
   {
-    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-  }
+    { memcached_literal_param("stats ") },
+    { args, send_length },
+    { memcached_literal_param("\r\n") }
+  };
 
-  memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
+  memcached_return_t rc= memcached_vdo(instance, vector, 3, true);
   if (memcached_success(rc))
   {
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     while ((rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL)) == MEMCACHED_STAT)
     {
       char *string_ptr, *end_ptr;
@@ -456,9 +485,11 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
   }
 
   if (rc == MEMCACHED_END)
+  {
     return MEMCACHED_SUCCESS;
-  else
-    return rc;
+  }
+
+  return rc;
 }
 
 memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_return_t *error)
