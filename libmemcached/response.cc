@@ -269,32 +269,35 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   switch(buffer[0])
   {
   case 'V': /* VALUE || VERSION */
-    if (buffer[1] == 'A') /* VALUE */
+    if (buffer[1] == 'A' and buffer[2] == 'L' and buffer[3] == 'U' and buffer[4] == 'E') /* VALUE */
     {
       /* We add back in one because we will need to search for END */
       memcached_server_response_increment(ptr);
       return textual_value_fetch(ptr, buffer, result);
     }
-    else if (buffer[1] == 'E') /* VERSION */
+    else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'S' and buffer[4] == 'I' and buffer[5] == 'O' and buffer[6] == 'N') /* VERSION */
     {
       return MEMCACHED_SUCCESS;
     }
-    else
-    {
-      WATCHPOINT_STRING(buffer);
-      return MEMCACHED_UNKNOWN_READ_FAILURE;
-    }
+    break;
+
   case 'O': /* OK */
-    return MEMCACHED_SUCCESS;
+    if (buffer[1] == 'K')
+    {
+      return MEMCACHED_SUCCESS;
+    }
+    break;
 
   case 'S': /* STORED STATS SERVER_ERROR */
     {
-      if (buffer[2] == 'A') /* STORED STATS */
+      if (buffer[1] == 'T' and buffer[2] == 'A' and buffer[3] == 'T') /* STORED STATS */
       {
         memcached_server_response_increment(ptr);
         return MEMCACHED_STAT;
       }
-      else if (buffer[1] == 'E') /* SERVER_ERROR */
+      else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'V' and buffer[4] == 'E' and buffer[5] == 'R'
+               and buffer[6] == '_' 
+               and buffer[7] == 'E' and buffer[8] == 'R' and buffer[9] == 'R' and buffer[10] == 'O' and buffer[11] == 'R' ) /* SERVER_ERROR */
       {
         if (total_read == memcached_literal_param_size("SERVER_ERROR"))
         {
@@ -319,38 +322,40 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
         return memcached_set_error(*ptr, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
       }
-      else if (buffer[1] == 'T')
+      else if (buffer[1] == 'T' and buffer[2] == 'O' and buffer[3] == 'R' and buffer[4] == 'E' and buffer[5] == 'D')
       {
         return MEMCACHED_STORED;
       }
-      else
-      {
-        WATCHPOINT_STRING(buffer);
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
     }
+    break;
+
   case 'D': /* DELETED */
-    return MEMCACHED_DELETED;
+      if (buffer[1] == 'E' and buffer[2] == 'L' and buffer[3] == 'E' and buffer[4] == 'T' and buffer[5] == 'E' and buffer[6] == 'D')
+      {
+        return MEMCACHED_DELETED;
+      }
+      break;
 
   case 'N': /* NOT_FOUND */
     {
-      if (buffer[4] == 'F')
+      if (buffer[1] == 'O' and buffer[2] == 'T' 
+          and buffer[3] == '_'
+          and buffer[4] == 'F' and buffer[5] == 'O' and buffer[6] == 'U' and buffer[7] == 'N' and buffer[8] == 'D')
       {
         return MEMCACHED_NOTFOUND;
       }
-      else if (buffer[4] == 'S')
+      else if (buffer[1] == 'O' and buffer[2] == 'T' 
+               and buffer[3] == '_'
+               and buffer[4] == 'S' and buffer[5] == 'T' and buffer[6] == 'O' and buffer[7] == 'R' and buffer[8] == 'E' and buffer[9] == 'D')
       {
         return MEMCACHED_NOTSTORED;
       }
-      else
-      {
-        WATCHPOINT_STRING(buffer);
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
     }
+    break;
+
   case 'E': /* PROTOCOL ERROR or END */
     {
-      if (buffer[1] == 'N')
+      if (buffer[1] == 'N' and buffer[2] == 'D')
       {
         return MEMCACHED_END;
       }
@@ -358,37 +363,48 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       {
         return MEMCACHED_PROTOCOL_ERROR;
       }
-      else if (buffer[1] == 'X')
+      else if (buffer[1] == 'X' and buffer[2] == 'I' and buffer[3] == 'S' and buffer[4] == 'T' and buffer[5] == 'S')
       {
         return MEMCACHED_DATA_EXISTS;
       }
-      else
-      {
-        WATCHPOINT_STRING(buffer);
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
-      }
-
     }
+    break;
+
   case 'T': /* TOUCHED */
     {
-      if (buffer[1] == 'O' and buffer[2] == 'U' 
-          and buffer[3] == 'C' and buffer[4] == 'H' 
-          and buffer[5] == 'E' and buffer[6] == 'D')
+      if (buffer[1] == 'O' and buffer[2] == 'U' and buffer[3] == 'C' and buffer[4] == 'H' and buffer[5] == 'E' and buffer[6] == 'D')
       {
         return MEMCACHED_SUCCESS;
       }
     }
-    return MEMCACHED_UNKNOWN_READ_FAILURE;
+    break;
 
   case 'I': /* ITEM */
-    /* We add back in one because we will need to search for END */
-    memcached_server_response_increment(ptr);
-    return MEMCACHED_ITEM;
+    if (buffer[1] == 'T' and buffer[2] == 'E' and buffer[3] == 'M')
+    {
+      /* We add back in one because we will need to search for END */
+      memcached_server_response_increment(ptr);
+      return MEMCACHED_ITEM;
+    }
+    break;
 
   case 'C': /* CLIENT ERROR */
-    return MEMCACHED_CLIENT_ERROR;
+    if (buffer[1] == 'L' and buffer[2] == 'I' and buffer[3] == 'E' and buffer[4] == 'N' and buffer[5] == 'T')
+    {
+      return MEMCACHED_CLIENT_ERROR;
+    }
+    break;
 
-  default:
+  case '0': /* INCR/DECR response */
+  case '1': /* INCR/DECR response */
+  case '2': /* INCR/DECR response */
+  case '3': /* INCR/DECR response */
+  case '4': /* INCR/DECR response */
+  case '5': /* INCR/DECR response */
+  case '6': /* INCR/DECR response */
+  case '7': /* INCR/DECR response */
+  case '8': /* INCR/DECR response */
+  case '9': /* INCR/DECR response */
     {
       unsigned long long int auto_return_value= strtoull(buffer, (char **)NULL, 10);
 
@@ -404,9 +420,12 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       WATCHPOINT_STRING(buffer);
       return MEMCACHED_SUCCESS;
     }
+
+  default:
+    break;
   }
 
-  /* NOTREACHED */
+  return MEMCACHED_UNKNOWN_READ_FAILURE;
 }
 
 static memcached_return_t binary_read_one_response(memcached_server_write_instance_st ptr,
