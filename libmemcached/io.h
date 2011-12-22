@@ -80,3 +80,9 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+size_t io_vector_total_size(libmemcached_io_vector_st* vector, const size_t number_of);
+
+#endif

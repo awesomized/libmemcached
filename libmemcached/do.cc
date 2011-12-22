@@ -13,8 +13,8 @@
 
 memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
                                 const void *command,
-                                size_t command_length,
-                                bool with_flush)
+                                const size_t command_length,
+                                const bool with_flush)
 {
   assert_msg(command_length, "Programming error, somehow a command had a length of zero");
   assert_msg(command, "Programming error, somehow a command was NULL");
@@ -26,8 +26,8 @@ memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
 
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
                                  const struct libmemcached_io_vector_st *vector,
-                                 size_t count,
-                                 bool with_flush)
+                                 const size_t count,
+                                 const bool with_flush)
 {
   memcached_return_t rc;
 

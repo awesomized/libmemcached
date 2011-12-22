@@ -1,10 +1,40 @@
-/* libMemcached Functions Test
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 /*
   Sample test application.
@@ -111,8 +141,25 @@ static test_return_t init_udp(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t init_udp_valgrind(memcached_st *memc)
+{
+  if (getenv("TESTS_ENVIRONMENT"))
+  {
+    return TEST_SKIPPED; 
+  }
+
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, true));
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t binary_init_udp(memcached_st *memc)
 {
+  if (getenv("TESTS_ENVIRONMENT"))
+  {
+    return TEST_SKIPPED; 
+  }
+
   test_skip(TEST_SUCCESS, pre_binary(memc));
 
   return init_udp(memc);
@@ -171,7 +218,13 @@ static test_return_t set_udp_behavior_test(memcached_st *memc)
 
 static test_return_t udp_set_test(memcached_st *memc)
 {
-  unsigned int num_iters= 1025; //request id rolls over at 1024
+  // Assume we are running under valgrind, and bail 
+  if (getenv("TESTS_ENVIRONMENT"))
+  {
+    return TEST_SUCCESS; 
+  }
+
+  const unsigned int num_iters= 1025; //request id rolls over at 1024
 
   test_true(memc);
 
@@ -229,7 +282,10 @@ static test_return_t udp_set_too_big_test(memcached_st *memc)
 
   memset(value, int('f'), sizeof(value));
 
-  test_compare_hint(MEMCACHED_WRITE_FAILURE, memcached_set(memc, test_literal_param("bar"), value, sizeof(value), time_t(0), uint32_t(0)),
+  test_compare_hint(MEMCACHED_WRITE_FAILURE,
+                    memcached_set(memc, test_literal_param("bar"), 
+                                  test_literal_param(value),
+                                  time_t(0), uint32_t(0)),
                     memcached_last_error_message(memc));
 
   return post_udp_op_check(memc, expected_ids);
@@ -448,7 +504,7 @@ test_st upd_io_tests[] ={
 
 collection_st collection[] ={
   {"udp_setup", (test_callback_fn*)init_udp, 0, udp_setup_server_tests},
-  {"udp_io", (test_callback_fn*)init_udp, 0, upd_io_tests},
+  {"udp_io", (test_callback_fn*)init_udp_valgrind, 0, upd_io_tests},
   {"udp_binary_io", (test_callback_fn*)binary_init_udp, 0, upd_io_tests},
   {0, 0, 0, 0}
 };

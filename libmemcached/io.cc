@@ -692,6 +692,18 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
   return _io_write(ptr, buffer, length, with_flush);
 }
 
+size_t io_vector_total_size(libmemcached_io_vector_st* vector, const size_t number_of)
+{
+  ssize_t total= 0;
+
+  for (size_t x= 0; x < number_of; x++)
+  {
+    total+= vector->length;
+  }
+
+  return total;
+}
+
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
                             const struct libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush)
@@ -702,11 +714,14 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
   {
     ssize_t returnable;
 
-    if ((returnable= _io_write(ptr, vector->buffer, vector->length, false)) == -1)
+    if (vector->length)
     {
-      return -1;
+      if ((returnable= _io_write(ptr, vector->buffer, vector->length, false)) == -1)
+      {
+        return -1;
+      }
+      total+= returnable;
     }
-    total+= returnable;
   }
 
   if (with_flush)
@@ -858,7 +873,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
   total_nr= 0;
   bool line_complete= false;
 
-  while (not line_complete)
+  while (line_complete == false)
   {
     if (ptr->read_buffer_length == 0)
     {
@@ -880,7 +895,9 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
       }
 
       if (*buffer_ptr == '\n')
+      {
         line_complete= true;
+      }
 
       ++buffer_ptr;
       ++total_nr;
@@ -891,7 +908,9 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
     {
       *buffer_ptr = *ptr->read_ptr;
       if (*buffer_ptr == '\n')
+      {
         line_complete = true;
+      }
       --ptr->read_buffer_length;
       ++ptr->read_ptr;
       ++total_nr;
@@ -899,7 +918,9 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
     }
 
     if (total_nr == size)
+    {
       return MEMCACHED_PROTOCOL_ERROR;
+    }
   }
 
   return MEMCACHED_SUCCESS;
@@ -908,7 +929,9 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
 memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_st ptr, uint16_t thread_id)
 {
   if (thread_id > UDP_REQUEST_ID_MAX_THREAD_ID)
+  {
     return MEMCACHED_FAILURE;
+  }
 
   struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
   header->request_id= htons((uint16_t) (generate_udp_request_thread_id(thread_id)));

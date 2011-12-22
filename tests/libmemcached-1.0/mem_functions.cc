@@ -112,6 +112,16 @@ static test_return_t pre_binary(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static bool return_value_based_on_buffering(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS))
+  {
+    return MEMCACHED_BUFFERED;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {
   /*
@@ -820,17 +830,18 @@ static test_return_t replace_test(memcached_st *memc)
 
 static test_return_t delete_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  const char *key= "foo";
-  const char *value= "when we sanitize";
+  test_compare(return_value_based_on_buffering(memc), 
+               memcached_set(memc, 
+                             test_literal_param(__func__),
+                             test_literal_param("when we sanitize"),
+                             time_t(0), uint32_t(0)));
 
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
-
-  rc= memcached_delete(memc, key, strlen(key), (time_t)0);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  memcached_return_t rc= memcached_delete(memc, 
+                                          test_literal_param(__func__),
+                                          time_t(0));
+  test_compare_hint(MEMCACHED_SUCCESS,
+                    rc,
+                    memcached_last_error_message(memc));
 
   return TEST_SUCCESS;
 }
@@ -1042,7 +1053,7 @@ static test_return_t get_test(memcached_st *memc)
 
   uint64_t query_id= memcached_query_id(memc);
   rc= memcached_delete(memc, key, strlen(key), (time_t)0);
-  test_true(rc == MEMCACHED_BUFFERED || rc == MEMCACHED_NOTFOUND);
+  test_true_got(rc == MEMCACHED_BUFFERED || rc == MEMCACHED_NOTFOUND, memcached_last_error_message(memc));
   test_compare(query_id +1, memcached_query_id(memc));
 
   string= memcached_get(memc, key, strlen(key),

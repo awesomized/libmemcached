@@ -52,18 +52,16 @@ static inline memcached_return_t ascii_delete(memcached_st *ptr,
                                               bool& reply,
                                               bool& flush)
 {
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  int send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                            "delete %.*s%.*s%s\r\n",
-                            memcached_print_array(ptr->_namespace),
-                            (int)key_length, key, 
-                            reply ? "" :  " noreply");
-
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
+  struct libmemcached_io_vector_st vector[]=
   {
-    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-  }
+    { memcached_literal_param("delete ") },
+    { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+    { key, key_length },
+    { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
+    { memcached_literal_param("\r\n") }
+  };
+
+  size_t send_length= io_vector_total_size(vector, 5);
 
   if (ptr->flags.use_udp and flush == false)
   {
@@ -78,7 +76,8 @@ static inline memcached_return_t ascii_delete(memcached_st *ptr,
     }
   }
 
-  return memcached_do(instance, buffer, (size_t)send_length, flush);
+  /* Send command header */
+  return memcached_vdo(instance, vector, 5, flush);
 }
 
 static inline memcached_return_t binary_delete(memcached_st *ptr,
