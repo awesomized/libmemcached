@@ -61,11 +61,22 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
         request.message.header.request.magic = PROTOCOL_BINARY_REQ;
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
-        rc= memcached_do(ptr, request.bytes, sizeof(request.bytes), true);
+
+        struct libmemcached_io_vector_st vector[]=
+        {
+          { request.bytes, sizeof(request.bytes) }
+        };
+
+        rc= memcached_vdo(ptr, vector, 1, true);
       }
       else
       {
-        rc= memcached_do(ptr, memcached_literal_param("quit\r\n"), true);
+        struct libmemcached_io_vector_st vector[]=
+        {
+          { memcached_literal_param("quit\r\n") }
+        };
+
+        rc= memcached_vdo(ptr, vector, 1, true);
       }
 
       WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_FETCH_NOTFINISHED);

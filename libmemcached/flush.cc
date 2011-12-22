@@ -143,8 +143,13 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;
     }
 
+    struct libmemcached_io_vector_st vector[]=
+    {
+      { request.bytes, sizeof(request.bytes) }
+    };
+
     memcached_return_t rrc;
-    if ((rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), true)))
+    if ((rrc= memcached_vdo(instance, vector, 1, true)))
     {
       memcached_set_error(*instance, rrc, MEMCACHED_AT);
       memcached_io_reset(instance);
