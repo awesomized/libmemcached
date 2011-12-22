@@ -66,20 +66,14 @@ memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
 static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
                                                   time_t expiration)
 {
-  bool reply= ptr->flags.no_reply ? false : true;
+  // Invert the logic to make it simpler to read the code
+  bool reply= (ptr->flags.no_reply) ? false : true;
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  int send_length;
+  int send_length= 0;
   if (expiration)
   {
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "flush_all %llu%s\r\n",
-                          (unsigned long long)expiration, reply ? "" :  " noreply");
-  }
-  else
-  {
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "flush_all%s\r\n", reply ? "" : " noreply");
+    send_length= snprintf(buffer, sizeof(buffer), "%llu", (unsigned long long)expiration);
   }
 
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE or send_length < 0)
@@ -88,13 +82,20 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
   }
 
+  struct libmemcached_io_vector_st vector[]=
+  {
+    { memcached_literal_param("flush_all ") },
+    { buffer, send_length },
+    { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
+    { memcached_literal_param("\r\n") }
+  };
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
-  for (unsigned int x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    memcached_return_t rrc= memcached_do(instance, buffer, (size_t)send_length, true);
+    memcached_return_t rrc= memcached_vdo(instance, vector, 4, true);
     if (rrc == MEMCACHED_SUCCESS and reply == true)
     {
       char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
