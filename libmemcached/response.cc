@@ -354,7 +354,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       {
         return MEMCACHED_END;
       }
-      else if (buffer[1] == 'R')
+      else if (buffer[1] == 'R' and buffer[2] == 'R' and buffer[3] == 'O' and buffer[4] == 'R')
       {
         return MEMCACHED_PROTOCOL_ERROR;
       }
@@ -380,7 +380,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     }
     return MEMCACHED_UNKNOWN_READ_FAILURE;
 
-  case 'I': /* CLIENT ERROR */
+  case 'I': /* ITEM */
     /* We add back in one because we will need to search for END */
     memcached_server_response_increment(ptr);
     return MEMCACHED_ITEM;
