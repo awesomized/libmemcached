@@ -38,7 +38,7 @@
 #include <libmemcached/common.h>
 
 static memcached_return_t text_incr_decr(memcached_st *ptr,
-                                         const char *verb,
+                                         const bool is_incr,
                                          const char *group_key, size_t group_key_length,
                                          const char *key, size_t key_length,
                                          uint64_t offset,
@@ -47,7 +47,9 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
   memcached_server_write_instance_st instance;
-  bool no_reply= ptr->flags.no_reply;
+  
+  // Invert the logic to make it simpler to read the code
+  bool reply= (ptr->flags.no_reply) ? false : true;
 
   if (memcached_failed(memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
@@ -58,24 +60,35 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   int send_length;
-  send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                        "%s %.*s%.*s %" PRIu64 "%s\r\n", verb,
-                        memcached_print_array(ptr->_namespace),
-                        (int)key_length, key,
-                        offset, no_reply ? " noreply" : "");
+  send_length= snprintf(buffer, sizeof(buffer), " %" PRIu64, offset);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
   }
 
-  memcached_return_t rc= memcached_do(instance, buffer, (size_t)send_length, true);
-  if (no_reply or memcached_failed(rc))
+  struct libmemcached_io_vector_st vector[]=
+  {
+    { memcached_literal_param("incr ") },
+    { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+    { key, key_length },
+    { buffer, send_length },
+    { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
+    { memcached_literal_param("\r\n") }
+  };
+
+  if (is_incr == false)
+  {
+    vector[0].buffer= "decr ";
+  }
+
+  memcached_return_t rc= memcached_vdo(instance, vector, 6, true);
+  if (reply == false or memcached_failed(rc))
   {
     return rc;
   }
 
-  rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+  rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
 
   if (rc != MEMCACHED_SUCCESS)
   {
@@ -216,7 +229,7 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
   }
   else
   {
-     rc= text_incr_decr(ptr, "incr", group_key, group_key_length, key, key_length, offset, value);
+     rc= text_incr_decr(ptr, true, group_key, group_key_length, key, key_length, offset, value);
   }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_END();
@@ -258,7 +271,7 @@ memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= text_incr_decr(ptr, "decr", group_key, group_key_length, key, key_length, offset, value);
+    rc= text_incr_decr(ptr, false, group_key, group_key_length, key, key_length, offset, value);
   }
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_END();
