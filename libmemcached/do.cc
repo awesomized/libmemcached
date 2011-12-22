@@ -11,19 +11,6 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
-                                const void *command,
-                                const size_t command_length,
-                                const bool with_flush)
-{
-  assert_msg(command_length, "Programming error, somehow a command had a length of zero");
-  assert_msg(command, "Programming error, somehow a command was NULL");
-
-  libmemcached_io_vector_st vector[1]= { { command, command_length } };
-
-  return memcached_vdo(ptr, vector, 1, with_flush);
-}
-
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
                                  const struct libmemcached_io_vector_st *vector,
                                  const size_t count,
