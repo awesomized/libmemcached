@@ -59,8 +59,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
   instance= memcached_server_instance_fetch(ptr, server_key);
 
-  int send_length;
-  send_length= snprintf(buffer, sizeof(buffer), " %" PRIu64, offset);
+  int send_length= snprintf(buffer, sizeof(buffer), " %" PRIu64, offset);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
