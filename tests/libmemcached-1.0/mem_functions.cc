@@ -95,7 +95,7 @@ using namespace libtest;
 #define GLOBAL_COUNT 10000
 #define GLOBAL2_COUNT 100
 #define SERVERS_TO_CREATE 5
-static uint32_t global_count;
+static uint32_t global_count= GLOBAL2_COUNT;
 
 static pairs_st *global_pairs;
 static const char *global_keys[GLOBAL_COUNT];
@@ -3126,7 +3126,7 @@ static test_return_t generate_data(memcached_st *memc)
 {
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_compare(check_execute, global_count);
+  test_compare(global_count, check_execute);
 
   return TEST_SUCCESS;
 }

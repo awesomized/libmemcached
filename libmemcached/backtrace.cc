@@ -40,69 +40,106 @@
 #include <cstring>
 #include <cstdlib>
 
-#ifdef __GNUC__
-#ifdef HAVE_BACKTRACE
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
-#include <cxxabi.h>
-#endif // HAVE_BACKTRACE
-#endif // __GNUC__
+#endif
 
+#ifdef HAVE_CXXABI_H
+#include <cxxabi.h>
+#endif
+
+#ifdef HAVE_GCC_ABI_DEMANGLE
+#define USE_DEMANGLE 1
+#else
+#define USE_DEMANGLE 0
+#endif
 
 void custom_backtrace(void)
 {
-#ifdef __GNUC__
-#ifdef HAVE_BACKTRACE
+#ifdef HAVE_EXECINFO_H
   void *array[50];
 
   size_t size= backtrace(array, 50);
   char **strings= backtrace_symbols(array, size);
 
+  if (strings == NULL)
+  {
+    return;
+  }
+
   fprintf(stderr, "Number of stack frames obtained: %lu\n", (unsigned long)size);
+
+  char *named_function= (char *)::realloc(NULL, 1024);
+  
+  if (named_function == NULL)
+  {
+    ::free(strings);
+    return;
+  }
 
   for (size_t x= 1; x < size; x++) 
   {
-    size_t sz= 200;
-    char *function= (char *)malloc(sz);
-    char *begin= 0;
-    char *end= 0;
-
-    for (char *j = strings[x]; *j; ++j)
+    if (USE_DEMANGLE)
     {
-      if (*j == '(') {
-        begin = j;
-      }
-      else if (*j == '+') {
-        end = j;
-      }
-    }
-    if (begin && end)
-    {
-      begin++;
-      *end= '\0';
-
-      int status;
-      char *ret = abi::__cxa_demangle(begin, function, &sz, &status);
-      if (ret) 
+      size_t sz= 200;
+      char *named_function_ptr= (char *)::realloc(named_function, sz);
+      if (named_function_ptr == NULL)
       {
-        function= ret;
+        continue;
+      }
+      named_function= named_function_ptr;
+
+      char *begin_name= 0;
+      char *begin_offset= 0;
+      char *end_offset= 0;
+
+      for (char *j= strings[x]; *j; ++j)
+      {
+        if (*j == '(')
+        {
+          begin_name= j;
+        }
+        else if (*j == '+')
+        {
+          begin_offset= j;
+        }
+        else if (*j == ')' and begin_offset) 
+        {
+          end_offset= j;
+          break;
+        }
+      }
+
+      if (begin_name and begin_offset and end_offset and begin_name < begin_offset)
+      {
+        *begin_name++= '\0';
+        *begin_offset++= '\0';
+        *end_offset= '\0';
+
+        int status;
+        char *ret= abi::__cxa_demangle(begin_name, named_function, &sz, &status);
+        if (ret) // realloc()'ed string
+        {
+          named_function= ret;
+          fprintf(stderr, "  %s : %s()+%s\n", strings[x], begin_name, begin_offset);
+        }
+        else
+        {
+          fprintf(stderr, "  %s : %s()+%s\n", strings[x], begin_name, begin_offset);
+        }
       }
       else
       {
-        strncpy(function, begin, sz);
-        strncat(function, "()", sz);
-        function[sz-1] = '\0';
+        fprintf(stderr, " %s\n", strings[x]);
       }
-      fprintf(stderr, "%s\n", function);
     }
     else
     {
-      fprintf(stderr, "%s\n", strings[x]);
+      fprintf(stderr, " unmangled: %s\n", strings[x]);
     }
-    free(function);
   }
 
-
-  free (strings);
-#endif // HAVE_BACKTRACE
-#endif // __GNUC__
+  ::free(named_function);
+  ::free(strings);
+#endif // HAVE_EXECINFO_H
 }

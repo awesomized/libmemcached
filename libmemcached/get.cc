@@ -259,7 +259,9 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
       if (ptr->flags.no_block)
+      {
         (void)memcached_io_write(instance, NULL, 0, true);
+      }
 
       while(memcached_server_response_count(instance))
         (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);

@@ -364,7 +364,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       socklen_t sock_length= sizeof(int);
 
       if (ptr->send_size != -1) // If value is -1 then we are using the default
+      {
         return (uint64_t) ptr->send_size;
+      }
 
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, 0);
 

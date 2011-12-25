@@ -458,7 +458,9 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 
   if (ptr->fd == INVALID_SOCKET)
   {
+#if 0
     assert_msg(int(ptr->state) <= int(MEMCACHED_SERVER_STATE_ADDRINFO), "Programmer error, invalid socket state");
+#endif
     return MEMCACHED_CONNECTION_FAILURE;
   }
 

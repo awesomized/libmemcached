@@ -37,5 +37,4 @@
 
 #pragma once
 
-LIBMEMCACHED_LOCAL
 void custom_backtrace(void);

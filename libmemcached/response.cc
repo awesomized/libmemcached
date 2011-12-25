@@ -67,10 +67,11 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
     rc= textual_read_one_response(ptr, buffer, buffer_length, result);
   }
 
-  unlikely(rc == MEMCACHED_UNKNOWN_READ_FAILURE or
-           rc == MEMCACHED_PROTOCOL_ERROR or
-           rc == MEMCACHED_CLIENT_ERROR or
-           rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+  if (rc == MEMCACHED_UNKNOWN_READ_FAILURE or
+      rc == MEMCACHED_READ_FAILURE or
+      rc == MEMCACHED_PROTOCOL_ERROR or
+      rc == MEMCACHED_CLIENT_ERROR or
+      rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
   {
     memcached_io_reset(ptr);
   }
@@ -359,7 +360,9 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       {
         return MEMCACHED_END;
       }
-      else if (buffer[1] == 'R' and buffer[2] == 'R' and buffer[3] == 'O' and buffer[4] == 'R')
+      else if (buffer[1] == 'R' and buffer[2] == 'O' and buffer[3] == 'T' and buffer[4] == 'O' and buffer[5] == 'C' and buffer[6] == 'O' and buffer[7] == 'L'
+               and buffer[8] == '_'
+               and buffer[9] == 'E' and buffer[10] == 'R' and buffer[11] == 'R' and buffer[12] == 'O' and buffer[13] == 'R')
       {
         return MEMCACHED_PROTOCOL_ERROR;
       }
@@ -524,7 +527,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_CMD_INCREMENT:
     case PROTOCOL_BINARY_CMD_DECREMENT:
       {
-        if (bodylen != sizeof(uint64_t) || buffer_length != sizeof(uint64_t))
+        if (bodylen != sizeof(uint64_t) or buffer_length != sizeof(uint64_t))
         {
           return MEMCACHED_PROTOCOL_ERROR;
         }

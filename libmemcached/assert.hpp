@@ -49,7 +49,7 @@ do \
 { \
   if (not (__expr)) \
   { \
-    fprintf(stderr, "\nAssertion \"%s\" failed for function \"%s\" likely for %s, at %s:%d\n", #__expr, __func__, (#__mesg),  __FILE__, __LINE__);\
+    fprintf(stderr, "\n%s:%d Assertion \"%s\" failed for function \"%s\" likely for %s\n", __FILE__, __LINE__, #__expr, __func__, (#__mesg));\
     custom_backtrace(); \
     abort(); \
   } \

@@ -48,7 +48,7 @@ memcached_return_t memcached_flush_buffers(memcached_st *memc)
 
     if (instance->write_buffer_offset != 0) 
     {
-      if (instance->fd == -1 &&
+      if (instance->fd == INVALID_SOCKET and
           (ret= memcached_connect(instance)) != MEMCACHED_SUCCESS)
       {
         WATCHPOINT_ERROR(ret);

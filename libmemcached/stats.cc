@@ -236,7 +236,7 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 
   *error= MEMCACHED_SUCCESS;
 
-  if (not memcmp("pid", key, sizeof("pid") -1))
+  if (memcmp("pid", key, sizeof("pid") -1) == 0)
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lld", (signed long long)memc_stat->pid);
   }
