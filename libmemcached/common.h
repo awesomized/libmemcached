@@ -122,7 +122,9 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
 #include <libmemcached/initialize_query.h>
+#ifdef __cplusplus
 #include <libmemcached/response.h>
+#endif
 #include <libmemcached/namespace.h>
 #include <libmemcached/virtual_bucket.h>
 

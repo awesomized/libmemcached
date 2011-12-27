@@ -187,8 +187,10 @@ read_error:
 
 static memcached_return_t textual_read_one_response(memcached_server_write_instance_st ptr,
                                                     char *buffer, size_t buffer_length,
-                                                    memcached_result_st *result)
+                                                    memcached_result_st *result,
+                                                    uint64_t& numeric_value)
 {
+  numeric_value= UINT64_MAX;
   size_t total_read;
   memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length, total_read);
 
@@ -349,6 +351,8 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       {
         return MEMCACHED_UNKNOWN_READ_FAILURE;
       }
+
+      numeric_value= uint64_t(auto_return_value);
 
       WATCHPOINT_STRING(buffer);
       return MEMCACHED_SUCCESS;
@@ -646,6 +650,16 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
                                                char *buffer, size_t buffer_length,
                                                memcached_result_st *result)
 {
+  uint64_t numeric_value;
+
+  return memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+}
+
+memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
+                                               char *buffer, size_t buffer_length,
+                                               memcached_result_st *result,
+                                               uint64_t& numeric_value)
+{
   memcached_server_response_decrement(ptr);
 
   if (result == NULL)
@@ -661,7 +675,7 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   }
   else
   {
-    rc= textual_read_one_response(ptr, buffer, buffer_length, result);
+    rc= textual_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
   }
 
   if (rc == MEMCACHED_UNKNOWN_READ_FAILURE or
@@ -680,6 +694,16 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result)
 {
+  uint64_t numeric_value;
+
+  return memcached_response(ptr, buffer, buffer_length, result, numeric_value);
+}
+
+memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
+                                      char *buffer, size_t buffer_length,
+                                      memcached_result_st *result,
+                                      uint64_t& numeric_value)
+{
   /* We may have old commands in the buffer not set, first purge */
   if ((ptr->root->flags.no_block) && (memcached_is_processing_input(ptr->root) == false))
   {
@@ -695,7 +719,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
   {
     while (memcached_server_response_count(ptr) > 1)
     {
-      memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result);
+      memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
 
       if (rc != MEMCACHED_END &&
           rc != MEMCACHED_STORED &&
@@ -711,5 +735,5 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
     }
   }
 
-  return memcached_read_one_response(ptr, buffer, buffer_length, result);
+  return memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
 }

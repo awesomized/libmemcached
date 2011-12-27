@@ -37,21 +37,21 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Read a single response from the server */
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
                                                char *buffer, size_t buffer_length,
                                                memcached_result_st *result);
 
-LIBMEMCACHED_LOCAL
+memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
+                                               char *buffer, size_t buffer_length,
+                                               memcached_result_st *result,
+                                               uint64_t& numeric_value);
+
 memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result);
 
-#ifdef __cplusplus
-}
-#endif
+memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
+                                      char *buffer, size_t buffer_length,
+                                      memcached_result_st *result,
+                                      uint64_t& numeric_value);

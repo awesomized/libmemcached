@@ -42,7 +42,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
                                          const char *group_key, size_t group_key_length,
                                          const char *key, size_t key_length,
                                          uint64_t offset,
-                                         uint64_t *value)
+                                         uint64_t& numeric_value)
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   uint32_t server_key;
@@ -84,43 +84,11 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   memcached_return_t rc= memcached_vdo(instance, vector, 6, true);
   if (reply == false or memcached_failed(rc))
   {
+    numeric_value= UINT64_MAX;
     return rc;
   }
 
-  rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
-
-  if (rc != MEMCACHED_SUCCESS)
-  {
-    return memcached_set_error(*instance, rc, MEMCACHED_AT);
-  }
-
-  /*
-    So why recheck responce? Because the protocol is brain dead :)
-    The number returned might end up equaling one of the string
-    values. Less chance of a mistake with strncmp() so we will
-    use it. We still called memcached_response() though since it
-    worked its magic for non-blocking IO.
-  */
-  if (not strncmp(buffer, memcached_literal_param("ERROR\r\n")))
-  {
-    *value= 0;
-    rc= MEMCACHED_PROTOCOL_ERROR;
-  }
-  else if (not strncmp(buffer, memcached_literal_param("CLIENT_ERROR\r\n")))
-  {
-    *value= 0;
-    rc= MEMCACHED_PROTOCOL_ERROR;
-  }
-  else if (not strncmp(buffer, memcached_literal_param("NOT_FOUND\r\n")))
-  {
-    *value= 0;
-    rc= MEMCACHED_NOTFOUND;
-  }
-  else
-  {
-    *value= strtoull(buffer, (char **)NULL, 10);
-    rc= MEMCACHED_SUCCESS;
-  }
+  rc= memcached_response(instance, buffer, sizeof(buffer), NULL, numeric_value);
 
   return memcached_set_error(*instance, rc, MEMCACHED_AT);
 }
@@ -228,7 +196,7 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
   }
   else
   {
-     rc= text_incr_decr(ptr, true, group_key, group_key_length, key, key_length, offset, value);
+     rc= text_incr_decr(ptr, true, group_key, group_key_length, key, key_length, offset, *value);
   }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_END();
@@ -270,7 +238,7 @@ memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= text_incr_decr(ptr, false, group_key, group_key_length, key, key_length, offset, value);
+    rc= text_incr_decr(ptr, false, group_key, group_key_length, key, key_length, offset, *value);
   }
 
   LIBMEMCACHED_MEMCACHED_DECREMENT_END();
