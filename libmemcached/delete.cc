@@ -61,10 +61,10 @@ static inline memcached_return_t ascii_delete(memcached_st *ptr,
     { memcached_literal_param("\r\n") }
   };
 
-  size_t send_length= io_vector_total_size(vector, 5);
-
-  if (ptr->flags.use_udp and flush == false)
+  if (memcached_is_udp(instance->root))
   {
+    size_t send_length= io_vector_total_size(vector, 5);
+
     if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
     {
       return MEMCACHED_WRITE_FAILURE;

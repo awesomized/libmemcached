@@ -60,7 +60,7 @@ static memcached_return_t text_incr_decr(memcached_st *ptr,
   instance= memcached_server_instance_fetch(ptr, server_key);
 
   int send_length= snprintf(buffer, sizeof(buffer), " %" PRIu64, offset);
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE || send_length < 0)
+  if (size_t(send_length) >= sizeof(buffer) or send_length < 0)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));

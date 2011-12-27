@@ -239,72 +239,73 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 static memcached_return_t memcached_send_ascii(memcached_st *ptr,
                                                memcached_server_write_instance_st instance,
                                                const char *key,
-                                               size_t key_length,
+                                               const size_t key_length,
                                                const char *value,
-                                               size_t value_length,
-                                               time_t expiration,
-                                               uint32_t flags,
-                                               uint64_t cas,
-                                               bool flush,
-                                               memcached_storage_action_t verb)
+                                               const size_t value_length,
+                                               const time_t expiration,
+                                               const uint32_t flags,
+                                               const uint64_t cas,
+                                               const bool flush,
+                                               const memcached_storage_action_t verb)
 {
-  size_t write_length;
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+  // Invert the logic to make it simpler to read the code
+  bool reply= (ptr->flags.no_reply) ? false : true;
 
+  char flags_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int flags_buffer_length= snprintf(flags_buffer, sizeof(flags_buffer), " %u", flags);
+  if (size_t(flags_buffer_length) >= sizeof(flags_buffer) or flags_buffer_length < 0)
+  {
+    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
+  }
+
+  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int expiration_buffer_length= snprintf(expiration_buffer, sizeof(expiration_buffer), " %llu", (unsigned long long)expiration);
+  if (size_t(expiration_buffer_length) >= sizeof(expiration_buffer) or expiration_buffer_length < 0)
+  {
+    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
+  }
+
+  char value_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int value_buffer_length= snprintf(value_buffer, sizeof(value_buffer), " %llu", (unsigned long long)value_length);
+  if (size_t(value_buffer_length) >= sizeof(value_buffer) or value_buffer_length < 0)
+  {
+    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
+  }
+
+  char cas_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int cas_buffer_length= 0;
   if (cas)
   {
-    int check_length;
-    check_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE,
-                           "%s %.*s%.*s %u %llu %lu %llu%s\r\n",
-                           storage_op_string(verb),
-                           memcached_print_array(ptr->_namespace),
-                           (int)key_length, key, flags,
-                           (unsigned long long)expiration, (unsigned long)value_length,
-                           (unsigned long long)cas,
-                           (ptr->flags.no_reply) ? " noreply" : "");
-    if (check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE or check_length < 0)
+    cas_buffer_length= snprintf(cas_buffer, sizeof(cas_buffer), " %llu", (unsigned long long)cas);
+    if (size_t(cas_buffer_length) >= sizeof(cas_buffer) or cas_buffer_length < 0)
     {
       return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                                 memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+                                 memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
     }
-    write_length= check_length;
-  }
-  else
-  {
-    char *buffer_ptr= buffer;
-    const char *command= storage_op_string(verb);
-
-    /* Copy in the command, no space needed, we handle that in the command function*/
-    memcpy(buffer_ptr, command, strlen(command));
-
-    /* Copy in the key prefix, switch to the buffer_ptr */
-    buffer_ptr= (char *)memcpy((char *)(buffer_ptr + strlen(command)), (char *)memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace));
-
-    /* Copy in the key, adjust point if a key prefix was used. */
-    buffer_ptr= (char *)memcpy(buffer_ptr + memcached_array_size(ptr->_namespace),
-                               key, key_length);
-    buffer_ptr+= key_length;
-    buffer_ptr[0]=  ' ';
-    buffer_ptr++;
-
-    write_length= (size_t)(buffer_ptr - buffer);
-    int check_length= snprintf(buffer_ptr, MEMCACHED_DEFAULT_COMMAND_SIZE -(size_t)(buffer_ptr - buffer),
-                               "%u %llu %lu%s\r\n",
-                               flags,
-                               (unsigned long long)expiration, (unsigned long)value_length,
-                               ptr->flags.no_reply ? " noreply" : "");
-    if ((size_t)check_length >= MEMCACHED_DEFAULT_COMMAND_SIZE -size_t(buffer_ptr - buffer) or check_length < 0)
-    {
-      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                              memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-    }
-
-    write_length+= (size_t)check_length;
-    WATCHPOINT_ASSERT(write_length < MEMCACHED_DEFAULT_COMMAND_SIZE);
   }
 
-  if (ptr->flags.use_udp)
+  struct libmemcached_io_vector_st vector[]=
   {
+    { storage_op_string(verb), strlen(storage_op_string(verb))},
+    { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
+    { key, key_length },
+    { flags_buffer, flags_buffer_length },
+    { expiration_buffer, expiration_buffer_length },
+    { value_buffer, value_buffer_length },
+    { cas_buffer, cas_buffer_length },
+    { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
+    { memcached_literal_param("\r\n") },
+    { value, value_length },
+    { memcached_literal_param("\r\n") }
+  };
+
+  if (memcached_is_udp(instance->root))
+  {
+    size_t write_length= io_vector_total_size(vector, 11);
+
     size_t cmd_size= write_length + value_length +2;
     if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
     {
@@ -317,25 +318,8 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     }
   }
 
-  if (write_length >= MEMCACHED_DEFAULT_COMMAND_SIZE)
-  {
-    return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-  }
-
-  struct libmemcached_io_vector_st vector[]=
-  {
-    { buffer, write_length },
-    { value, value_length },
-    { memcached_literal_param("\r\n") }
-  };
-
-  if (memcached_is_udp(instance->root) and  (write_length +value_length +memcached_literal_param_size("\r\n") +UDP_DATAGRAM_HEADER_LENGTH > MAX_UDP_DATAGRAM_LENGTH))
-  {
-    return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT, memcached_literal_param("UDP packet is too large"));
-  }
-
   /* Send command header */
-  memcached_return_t rc=  memcached_vdo(instance, vector, 3, flush);
+  memcached_return_t rc=  memcached_vdo(instance, vector, 11, flush);
   if (rc == MEMCACHED_SUCCESS)
   {
     if (ptr->flags.no_reply and flush)
@@ -348,6 +332,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     }
     else
     {
+      char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
       rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
       if (rc == MEMCACHED_STORED)
@@ -374,9 +359,9 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
                                                 const char *group_key, size_t group_key_length,
                                                 const char *key, size_t key_length,
                                                 const char *value, size_t value_length,
-                                                time_t expiration,
-                                                uint32_t flags,
-                                                uint64_t cas,
+                                                const time_t expiration,
+                                                const uint32_t flags,
+                                                const uint64_t cas,
                                                 memcached_storage_action_t verb)
 {
   memcached_return_t rc;
