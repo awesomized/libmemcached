@@ -294,9 +294,9 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
 }
 
-static ssize_t io_flush(memcached_server_write_instance_st ptr,
-                        const bool with_flush,
-                        memcached_return_t *error)
+static bool io_flush(memcached_server_write_instance_st ptr,
+                     const bool with_flush,
+                     memcached_return_t *error)
 {
   /*
    ** We might want to purge the input buffer if we haven't consumed
@@ -310,7 +310,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
 
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
     {
-      return -1;
+      return false;
     }
   }
   size_t return_length;
@@ -325,12 +325,12 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
   if (memcached_is_udp(ptr->root) and write_length > MAX_UDP_DATAGRAM_LENGTH)
   {
     *error= MEMCACHED_WRITE_FAILURE;
-    return -1;
+    return false;
   }
 
   if (ptr->write_buffer_offset == 0 or (memcached_is_udp(ptr->root) and ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
   {
-    return 0;
+    return true;
   }
 
   /* Looking for memory overflows */
@@ -396,12 +396,12 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
           else if (rc == MEMCACHED_TIMEOUT)
           {
             *error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
-            return -1;
+            return false;
           }
 
           memcached_quit_server(ptr, true);
           *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-          return -1;
+          return false;
         }
       case ENOTCONN:
       case EPIPE:
@@ -409,7 +409,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
         memcached_quit_server(ptr, true);
         *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
-        return -1;
+        return false;
       }
     }
 
@@ -417,7 +417,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     {
       memcached_quit_server(ptr, true);
       *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-      return -1;
+      return false;
     }
 
     ptr->io_bytes_sent+= uint32_t(sent_length);
@@ -442,7 +442,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
     ptr->write_buffer_offset= 0;
   }
 
-  return (ssize_t) return_length;
+  return true;
 }
 
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
@@ -661,16 +661,9 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
       memcached_return_t rc;
-      ssize_t sent_length= io_flush(ptr, with_flush, &rc);
-      if (sent_length == -1)
+      if (io_flush(ptr, with_flush, &rc) == false)
       {
         return -1;
-      }
-
-      /* If io_flush calls memcached_purge, sent_length may be 0 */
-      unlikely (sent_length != 0)
-      {
-        WATCHPOINT_ASSERT(sent_length == (ssize_t)buffer_end);
       }
     }
   }
@@ -679,7 +672,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   {
     memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    if (io_flush(ptr, with_flush, &rc) == -1)
+    if (io_flush(ptr, with_flush, &rc) == false)
     {
       return -1;
     }
