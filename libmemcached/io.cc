@@ -408,7 +408,7 @@ static ssize_t io_flush(memcached_server_write_instance_st ptr,
       default:
         memcached_quit_server(ptr, true);
         *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-        WATCHPOINT_ASSERT(ptr->fd == -1);
+        WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
         return -1;
       }
     }
