@@ -260,11 +260,13 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
       if (ptr->flags.no_block)
       {
-        (void)memcached_io_write(instance, NULL, 0, true);
+        memcached_io_write(instance);
       }
 
       while(memcached_server_response_count(instance))
+      {
         (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
+      }
     }
   }
 
@@ -541,12 +543,11 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     for (uint32_t x= 0; x < memcached_server_count(ptr); ++x)
     {
-      memcached_server_write_instance_st instance=
-        memcached_server_instance_fetch(ptr, x);
+      memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
       if (memcached_server_response_count(instance))
       {
-        if (memcached_io_write(instance, NULL, 0, true) == -1)
+        if (memcached_io_write(instance) == false)
         {
           memcached_server_response_reset(instance);
           memcached_io_reset(instance);

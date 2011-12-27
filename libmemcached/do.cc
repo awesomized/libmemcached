@@ -35,7 +35,7 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
   **/
   if (memcached_is_udp(ptr->root) and with_flush and ptr->write_buffer_offset > UDP_DATAGRAM_HEADER_LENGTH)
   {
-    if (memcached_io_write(ptr, NULL, 0, true) == -1)
+    if (memcached_io_write(ptr) == false)
     {
       memcached_io_reset(ptr);
       return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);

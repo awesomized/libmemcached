@@ -54,14 +54,18 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
     return MEMCACHED_SUCCESS;
   }
 
-  /* memcached_io_write and memcached_response may call memcached_purge
-    so we need to be able stop any recursion.. */
+  /*
+    memcached_io_write and memcached_response may call memcached_purge
+    so we need to be able stop any recursion.. 
+  */
   memcached_set_purging(root, true);
 
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-  /* Force a flush of the buffer to ensure that we don't have the n-1 pending
-    requests buffered up.. */
-  if (memcached_io_write(ptr, NULL, 0, true) == -1)
+  /* 
+    Force a flush of the buffer to ensure that we don't have the n-1 pending
+    requests buffered up.. 
+  */
+  if (memcached_io_write(ptr) == false)
   {
     memcached_set_purging(root, true);
 

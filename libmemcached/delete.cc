@@ -72,7 +72,7 @@ static inline memcached_return_t ascii_delete(memcached_st *ptr,
 
     if (send_length +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      memcached_io_write(instance, NULL, 0, true);
+      memcached_io_write(instance);
     }
   }
 
@@ -113,7 +113,7 @@ static inline memcached_return_t binary_delete(memcached_st *ptr,
 
     if (cmd_size +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      memcached_io_write(instance, NULL, 0, true);
+      memcached_io_write(instance);
     }
   }
 

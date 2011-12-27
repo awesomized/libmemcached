@@ -296,7 +296,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
 static bool io_flush(memcached_server_write_instance_st ptr,
                      const bool with_flush,
-                     memcached_return_t *error)
+                     memcached_return_t& error)
 {
   /*
    ** We might want to purge the input buffer if we haven't consumed
@@ -313,18 +313,17 @@ static bool io_flush(memcached_server_write_instance_st ptr,
       return false;
     }
   }
-  size_t return_length;
   char *local_write_ptr= ptr->write_buffer;
   size_t write_length= ptr->write_buffer_offset;
 
-  *error= MEMCACHED_SUCCESS;
+  error= MEMCACHED_SUCCESS;
 
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   // UDP Sanity check, make sure that we are not sending somthing too big
   if (memcached_is_udp(ptr->root) and write_length > MAX_UDP_DATAGRAM_LENGTH)
   {
-    *error= MEMCACHED_WRITE_FAILURE;
+    error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
     return false;
   }
 
@@ -340,7 +339,6 @@ static bool io_flush(memcached_server_write_instance_st ptr,
   WATCHPOINT_ASSERT((ptr->write_buffer + MEMCACHED_MAX_BUFFER) >= (local_write_ptr + write_length));
 #endif
 
-  return_length= 0;
   while (write_length)
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
@@ -395,19 +393,19 @@ static bool io_flush(memcached_server_write_instance_st ptr,
           }
           else if (rc == MEMCACHED_TIMEOUT)
           {
-            *error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+            error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
             return false;
           }
 
           memcached_quit_server(ptr, true);
-          *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+          error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           return false;
         }
       case ENOTCONN:
       case EPIPE:
       default:
         memcached_quit_server(ptr, true);
-        *error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        error= memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
         WATCHPOINT_ASSERT(ptr->fd == INVALID_SOCKET);
         return false;
       }
@@ -416,7 +414,7 @@ static bool io_flush(memcached_server_write_instance_st ptr,
     if (memcached_is_udp(ptr->root) and size_t(sent_length) != write_length)
     {
       memcached_quit_server(ptr, true);
-      *error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+      error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
       return false;
     }
 
@@ -424,15 +422,9 @@ static bool io_flush(memcached_server_write_instance_st ptr,
 
     local_write_ptr+= sent_length;
     write_length-= uint32_t(sent_length);
-    return_length+= uint32_t(sent_length);
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
-  // Need to study this assert() WATCHPOINT_ASSERT(return_length ==
-  // ptr->write_buffer_offset);
-
-  // if we are a udp server, the begining of the buffer is reserverd for
-  // the upd frame header
   if (memcached_is_udp(ptr->root))
   {
     ptr->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
@@ -661,7 +653,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
       memcached_return_t rc;
-      if (io_flush(ptr, with_flush, &rc) == false)
+      if (io_flush(ptr, with_flush, rc) == false)
       {
         return -1;
       }
@@ -672,7 +664,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   {
     memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    if (io_flush(ptr, with_flush, &rc) == false)
+    if (io_flush(ptr, with_flush, rc) == false)
     {
       return -1;
     }
@@ -681,8 +673,13 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   return (ssize_t) original_length;
 }
 
+bool memcached_io_write(memcached_server_write_instance_st ptr)
+{
+  return (_io_write(ptr, NULL, 0, true) >= 0);
+}
+
 ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
-                           const void *buffer, size_t length, bool with_flush)
+                           const void *buffer, const size_t length, const bool with_flush)
 {
   return _io_write(ptr, buffer, length, with_flush);
 }
@@ -721,7 +718,7 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
 
   if (with_flush)
   {
-    if (memcached_io_write(ptr, NULL, 0, true) == -1)
+    if (memcached_io_write(ptr) == false)
     {
       return -1;
     }
@@ -762,11 +759,12 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 
   for (uint32_t x= 0; x < memcached_server_count(memc) && host_index < MAX_SERVERS_TO_POLL; ++x)
   {
-    memcached_server_write_instance_st instance=
-      memcached_server_instance_fetch(memc, x);
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, x);
 
     if (instance->read_buffer_length > 0) /* I have data in the buffer */
+    {
       return instance;
+    }
 
     if (memcached_server_response_count(instance) > 0)
     {

@@ -55,7 +55,7 @@ memcached_return_t memcached_flush_buffers(memcached_st *memc)
         return ret;
       }
 
-      if (memcached_io_write(instance, NULL, 0, true) == -1)
+      if (memcached_io_write(instance) == false)
       {
         ret= MEMCACHED_SOME_ERRORS;
       }

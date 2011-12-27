@@ -171,7 +171,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
     if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      memcached_io_write(server, NULL, 0, true);
+      memcached_io_write(server);
     }
   }
 
@@ -314,7 +314,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
 
     if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
     {
-      memcached_io_write(instance, NULL, 0, true);
+      memcached_io_write(instance);
     }
   }
 
