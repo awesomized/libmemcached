@@ -3942,11 +3942,11 @@ static test_return_t MEMCACHED_BEHAVIOR_POLL_TIMEOUT_test(memcached_st *memc)
 static test_return_t noreply_test(memcached_st *memc)
 {
   test_compare(MEMCACHED_SUCCESS, 
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, true));
   test_compare(MEMCACHED_SUCCESS, 
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true));
   test_compare(MEMCACHED_SUCCESS, 
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true));
   test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NOREPLY));
   test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS));
   test_compare(1LLU, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS));
@@ -5096,14 +5096,14 @@ static test_return_t memcached_stat_execute_test(memcached_st *memc)
   memcached_return_t rc= memcached_stat_execute(memc, NULL, stat_printer, NULL);
   test_compare(MEMCACHED_SUCCESS, rc);
 
-  rc= memcached_stat_execute(memc, "slabs", stat_printer, NULL);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_stat_execute(memc, "slabs", stat_printer, NULL));
 
-  rc= memcached_stat_execute(memc, "items", stat_printer, NULL);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_stat_execute(memc, "items", stat_printer, NULL));
 
-  rc= memcached_stat_execute(memc, "sizes", stat_printer, NULL);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_stat_execute(memc, "sizes", stat_printer, NULL));
 
   return TEST_SUCCESS;
 }
@@ -5133,7 +5133,7 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
   rc= memcached_set(memc, key, strlen(key),
                     value, strlen(value),
                     (time_t)0, (uint32_t)0);
-  test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+  test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
 
   instance= memcached_server_instance_by_position(memc, 0);
@@ -5163,51 +5163,43 @@ static test_return_t wrong_failure_counter_test(memcached_st *memc)
  */
 static test_return_t wrong_failure_counter_two_test(memcached_st *memc)
 {
-  memcached_return rc;
-
-  memcached_st *memc_clone;
-  memc_clone= memcached_clone(NULL, memc);
-  test_true(memc_clone);
-
   /* Set value to force connection to the server */
   const char *key= "marmotte";
   const char *value= "milka";
-  char *string = NULL;
-  size_t string_length;
-  uint32_t flags;
 
-  rc= memcached_set(memc_clone, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
-  test_true_got(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
+  test_compare_hint(MEMCACHED_SUCCESS,
+                    memcached_set(memc, key, strlen(key),
+                                  value, strlen(value),
+                                  (time_t)0, (uint32_t)0),
+                    memcached_last_error_message(memc));
 
 
   /* put failure limit to 1 */
   test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, true));
 
   /* Put a retry timeout to effectively activate failure_limit effect */
   test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, true));
 
   /* change behavior that triggers memcached_quit()*/
   test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
+               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true));
 
 
   /* Check if we still are connected */
-  string= memcached_get(memc_clone, key, strlen(key),
-                        &string_length, &flags, &rc);
+  uint32_t flags;
+  size_t string_length;
+  memcached_return rc;
+  char *string= memcached_get(memc, key, strlen(key),
+                              &string_length, &flags, &rc);
 
   test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
   test_true(string);
   free(string);
-  memcached_free(memc_clone);
 
   return TEST_SUCCESS;
 }
-
-
 
 
 /*
