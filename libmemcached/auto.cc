@@ -108,10 +108,14 @@ static memcached_return_t binary_incr_decr(memcached_st *ptr, uint8_t cmd,
   if (no_reply)
   {
     if(cmd == PROTOCOL_BINARY_CMD_DECREMENT)
+    {
       cmd= PROTOCOL_BINARY_CMD_DECREMENTQ;
+    }
 
     if(cmd == PROTOCOL_BINARY_CMD_INCREMENT)
+    {
       cmd= PROTOCOL_BINARY_CMD_INCREMENTQ;
+    }
   }
   protocol_binary_request_incr request= {}; // = {.bytes= {0}};
 
@@ -254,12 +258,6 @@ memcached_return_t memcached_increment_with_initial(memcached_st *ptr,
                                                     time_t expiration,
                                                     uint64_t *value)
 {
-  uint64_t local_value;
-  if (value == NULL)
-  {
-    value= &local_value;
-  }
-
   return memcached_increment_with_initial_by_key(ptr, key, key_length,
                                                  key, key_length,
                                                  offset, initial, expiration, value);
@@ -318,12 +316,6 @@ memcached_return_t memcached_decrement_with_initial(memcached_st *ptr,
                                                     time_t expiration,
                                                     uint64_t *value)
 {
-  uint64_t local_value;
-  if (value == NULL)
-  {
-    value= &local_value;
-  }
-
   return memcached_decrement_with_initial_by_key(ptr, key, key_length,
                                                  key, key_length,
                                                  offset, initial, expiration, value);
@@ -346,16 +338,15 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
   }
 
   memcached_return_t rc;
-  if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
-  {
-    return rc;
-  }
-
   if (memcached_failed(rc= initialize_query(ptr)))
   {
     return rc;
   }
 
+  if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
+  {
+    return rc;
+  }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
   if (ptr->flags.binary_protocol)
