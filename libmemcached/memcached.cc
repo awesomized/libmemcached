@@ -40,31 +40,6 @@
 #include <libmemcached/options.hpp>
 #include <libmemcached/virtual_bucket.h>
 
-#if 0
-static const memcached_st global_copy= {
-  .state= {
-    .is_purging= false, // .is_purging
-    .is_processing_input= false, // is_processing_input
-    .is_time_for_rebuild= false,
-  },
-  .flags= {
-    .auto_eject_hosts= false,
-    .binary_protocol= false,
-    .buffer_requests= false,
-    .hash_with_namespace= false,
-    .no_block= false,
-    .no_reply= false,
-    .randomize_replica_read= false,
-    .support_cas= false,
-    .tcp_nodelay= false,
-    .use_sort_hosts= false,
-    .use_udp= false,
-    .verify_key= false,
-    .tcp_keepalive= false,
-  },
-};
-#endif
-
 static inline bool _memcached_init(memcached_st *self)
 {
   self->state.is_purging= false;
@@ -76,7 +51,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->flags.buffer_requests= false;
   self->flags.hash_with_namespace= false;
   self->flags.no_block= false;
-  self->flags.no_reply= false;
+  self->flags.reply= true;
   self->flags.randomize_replica_read= false;
   self->flags.support_cas= false;
   self->flags.tcp_nodelay= false;

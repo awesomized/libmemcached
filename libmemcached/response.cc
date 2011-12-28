@@ -705,7 +705,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       uint64_t& numeric_value)
 {
   /* We may have old commands in the buffer not set, first purge */
-  if ((ptr->root->flags.no_block) && (memcached_is_processing_input(ptr->root) == false))
+  if ((ptr->root->flags.no_block) and (memcached_is_processing_input(ptr->root) == false))
   {
     (void)memcached_io_write(ptr);
   }
@@ -715,7 +715,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
    * returned the last one. Purge all pending messages to ensure backwards
    * compatibility.
  */
-  if (ptr->root->flags.binary_protocol == false)
+  if (memcached_is_binary(ptr->root) == false)
   {
     while (memcached_server_response_count(ptr) > 1)
     {

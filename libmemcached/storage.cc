@@ -74,9 +74,9 @@ static inline const char *storage_op_string(memcached_storage_action_t verb)
   return "set ";
 }
 
-static inline uint8_t get_com_code(memcached_storage_action_t verb, bool noreply)
+static inline uint8_t get_com_code(const memcached_storage_action_t verb, const bool reply)
 {
-  if (noreply)
+  if (reply == false)
   {
     switch (verb)
     {
@@ -124,22 +124,21 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
                                                 memcached_server_write_instance_st server,
                                                 uint32_t server_key,
                                                 const char *key,
-                                                size_t key_length,
+                                                const size_t key_length,
                                                 const char *value,
-                                                size_t value_length,
-                                                time_t expiration,
-                                                uint32_t flags,
-                                                uint64_t cas,
-                                                bool flush,
+                                                const size_t value_length,
+                                                const time_t expiration,
+                                                const uint32_t flags,
+                                                const uint64_t cas,
+                                                const bool flush,
+                                                const bool reply,
                                                 memcached_storage_action_t verb)
 {
   protocol_binary_request_set request= {};
   size_t send_length= sizeof(request.bytes);
 
-  bool noreply= server->root->flags.no_reply;
-
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  request.message.header.request.opcode= get_com_code(verb, noreply);
+  request.message.header.request.opcode= get_com_code(verb, reply);
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   if (verb == APPEND_OP or verb == PREPEND_OP)
@@ -161,20 +160,6 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     request.message.header.request.cas= memcached_htonll(cas);
   }
 
-  if (server->root->flags.use_udp and flush == false)
-  {
-    size_t cmd_size= send_length + key_length + value_length;
-
-    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return MEMCACHED_WRITE_FAILURE;
-    }
-    if (cmd_size + server->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-    {
-      memcached_io_write(server);
-    }
-  }
-
   struct libmemcached_io_vector_st vector[]=
   {
     { request.bytes, send_length },
@@ -189,7 +174,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   {
     memcached_io_reset(server);
 
-    if (ptr->error_messages == NULL)
+    if (memcached_has_error(ptr))
     {
       memcached_set_error(*server, rc, MEMCACHED_AT);
     }
@@ -197,7 +182,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     return MEMCACHED_WRITE_FAILURE;
   }
 
-  if (verb == SET_OP && ptr->number_of_replicas > 0)
+  if (verb == SET_OP and ptr->number_of_replicas > 0)
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
     WATCHPOINT_STRING("replicating");
@@ -228,7 +213,8 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     return MEMCACHED_BUFFERED;
   }
 
-  if (noreply)
+  // No reply always assumes success
+  if (reply == false)
   {
     return MEMCACHED_SUCCESS;
   }
@@ -246,11 +232,9 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
                                                const uint32_t flags,
                                                const uint64_t cas,
                                                const bool flush,
+                                               const bool reply,
                                                const memcached_storage_action_t verb)
 {
-  // Invert the logic to make it simpler to read the code
-  bool reply= (ptr->flags.no_reply) ? false : true;
-
   char flags_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
   int flags_buffer_length= snprintf(flags_buffer, sizeof(flags_buffer), " %u", flags);
   if (size_t(flags_buffer_length) >= sizeof(flags_buffer) or flags_buffer_length < 0)
@@ -302,43 +286,26 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     { memcached_literal_param("\r\n") }
   };
 
-  if (memcached_is_udp(instance->root))
-  {
-    size_t write_length= io_vector_total_size(vector, 11);
-
-    size_t cmd_size= write_length + value_length +2;
-    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-    }
-
-    if (cmd_size + instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-    {
-      memcached_io_write(instance);
-    }
-  }
-
   /* Send command header */
   memcached_return_t rc=  memcached_vdo(instance, vector, 11, flush);
   if (rc == MEMCACHED_SUCCESS)
   {
-    if (ptr->flags.no_reply and flush)
+    if (flush == false)
     {
-      rc= MEMCACHED_SUCCESS;
+      return MEMCACHED_BUFFERED;
     }
-    else if (flush == false)
-    {
-      rc= MEMCACHED_BUFFERED;
-    }
-    else
-    {
-      char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-      rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
-      if (rc == MEMCACHED_STORED)
-      {
-        rc= MEMCACHED_SUCCESS;
-      }
+    if (reply == false)
+    {
+      return MEMCACHED_SUCCESS;
+    }
+
+    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+    if (rc == MEMCACHED_STORED)
+    {
+      return MEMCACHED_SUCCESS;
     }
   }
 
@@ -347,9 +314,10 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     memcached_io_reset(instance);
   }
 
-  if (memcached_failed(rc) and ptr->error_messages == NULL)
+  assert(memcached_failed(rc));
+  if (memcached_has_error(ptr) == false)
   {
-    memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
   }
 
   return rc;
@@ -370,7 +338,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
+  if (memcached_failed(rc= memcached_validate_key_length(key_length, memcached_is_binary(ptr))))
   {
     return rc;
   }
@@ -386,23 +354,27 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   WATCHPOINT_SET(instance->io_wait_count.read= 0);
   WATCHPOINT_SET(instance->io_wait_count.write= 0);
 
-  bool flush= (bool) ((instance->root->flags.buffer_requests && verb == SET_OP) ? 0 : 1);
-  if (ptr->flags.binary_protocol)
+
+  bool flush= true;
+  if (memcached_is_buffering(instance->root) and verb == SET_OP)
   {
-    rc= memcached_send_binary(ptr, instance, server_key,
-                              key, key_length,
-                              value, value_length, expiration,
-                              flags, cas, flush, verb);
-  }
-  else
-  {
-    rc= memcached_send_ascii(ptr, instance,
-                             key, key_length,
-                             value, value_length, expiration,
-                             flags, cas, flush, verb);
+    flush= false;
   }
 
-  return rc;
+  bool reply= memcached_is_replying(ptr);
+
+  if (memcached_is_binary(ptr))
+  {
+    return memcached_send_binary(ptr, instance, server_key,
+                                 key, key_length,
+                                 value, value_length, expiration,
+                                 flags, cas, flush, reply, verb);
+  }
+
+  return memcached_send_ascii(ptr, instance,
+                              key, key_length,
+                              value, value_length, expiration,
+                              flags, cas, flush, reply, verb);
 }
 
 
@@ -431,6 +403,11 @@ memcached_return_t memcached_add(memcached_st *ptr,
   rc= memcached_send(ptr, key, key_length,
                      key, key_length, value, value_length,
                      expiration, flags, 0, ADD_OP);
+
+  if (rc == MEMCACHED_NOTSTORED or rc == MEMCACHED_DATA_EXISTS)
+  {
+    memcached_set_error(*ptr, rc, MEMCACHED_AT);
+  }
   LIBMEMCACHED_MEMCACHED_ADD_END();
   return rc;
 }
@@ -546,11 +523,9 @@ memcached_return_t memcached_prepend_by_key(memcached_st *ptr,
                                             time_t expiration,
                                             uint32_t flags)
 {
-  memcached_return_t rc;
-  rc= memcached_send(ptr, group_key, group_key_length,
-                     key, key_length, value, value_length,
-                     expiration, flags, 0, PREPEND_OP);
-  return rc;
+  return memcached_send(ptr, group_key, group_key_length,
+                        key, key_length, value, value_length,
+                        expiration, flags, 0, PREPEND_OP);
 }
 
 memcached_return_t memcached_append_by_key(memcached_st *ptr,
@@ -560,11 +535,9 @@ memcached_return_t memcached_append_by_key(memcached_st *ptr,
                                            time_t expiration,
                                            uint32_t flags)
 {
-  memcached_return_t rc;
-  rc= memcached_send(ptr, group_key, group_key_length,
-                     key, key_length, value, value_length,
-                     expiration, flags, 0, APPEND_OP);
-  return rc;
+  return memcached_send(ptr, group_key, group_key_length,
+                        key, key_length, value, value_length,
+                        expiration, flags, 0, APPEND_OP);
 }
 
 memcached_return_t memcached_cas_by_key(memcached_st *ptr,
@@ -575,10 +548,8 @@ memcached_return_t memcached_cas_by_key(memcached_st *ptr,
                                         uint32_t flags,
                                         uint64_t cas)
 {
-  memcached_return_t rc;
-  rc= memcached_send(ptr, group_key, group_key_length,
-                     key, key_length, value, value_length,
-                     expiration, flags, cas, CAS_OP);
-  return rc;
+  return  memcached_send(ptr, group_key, group_key_length,
+                         key, key_length, value, value_length,
+                         expiration, flags, cas, CAS_OP);
 }
 

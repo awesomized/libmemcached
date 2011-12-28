@@ -44,30 +44,6 @@ enum memc_read_or_write {
   MEM_WRITE
 };
 
-/*
- * The udp request id consists of two seperate sections
- *   1) The thread id
- *   2) The message number
- * The thread id should only be set when the memcached_st struct is created
- * and should not be changed.
- *
- * The message num is incremented for each new message we send, this function
- * extracts the message number from message_id, increments it and then
- * writes the new value back into the header
- */
-static void increment_udp_message_id(memcached_server_write_instance_st ptr)
-{
-  struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
-  uint16_t cur_req= get_udp_datagram_request_id(header);
-  int msg_num= get_msg_num_from_request_id(cur_req);
-  int thread_id= get_thread_id_from_request_id(cur_req);
-
-  if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK) != 0)
-    msg_num= 0;
-
-  header->request_id= htons((uint16_t) (thread_id | msg_num));
-}
-
 /**
  * Try to fill the input buffer for a server with as much
  * data as possible.
@@ -192,7 +168,7 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
 }
 
 static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
-                                  memc_read_or_write read_or_write)
+                                  const memc_read_or_write read_or_write)
 {
   struct pollfd fds;
   fds.fd= ptr->fd;
@@ -835,7 +811,7 @@ void memcached_io_reset(memcached_server_write_instance_st ptr)
  */
 memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
                                        void *dta,
-                                       size_t size)
+                                       const size_t size)
 {
   size_t offset= 0;
   char *data= static_cast<char *>(dta);
@@ -915,21 +891,6 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
       return MEMCACHED_PROTOCOL_ERROR;
     }
   }
-
-  return MEMCACHED_SUCCESS;
-}
-
-memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_st ptr, uint16_t thread_id)
-{
-  if (thread_id > UDP_REQUEST_ID_MAX_THREAD_ID)
-  {
-    return MEMCACHED_FAILURE;
-  }
-
-  struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
-  header->request_id= htons((uint16_t) (generate_udp_request_thread_id(thread_id)));
-  header->num_datagrams= htons(1);
-  header->sequence_number= htons(0);
 
   return MEMCACHED_SUCCESS;
 }

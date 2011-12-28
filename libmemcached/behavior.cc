@@ -128,8 +128,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->flags.use_udp= bool(data);
     if (bool(data))
     {
-      ptr->flags.no_reply= true;
+      ptr->flags.reply= false;
       ptr->flags.buffer_requests= false;
+    }
+    else
+    {
+      ptr->flags.reply= true;
     }
     break;
 
@@ -236,7 +240,9 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                  memcached_literal_param("MEMCACHED_BEHAVIOR_NOREPLY cannot be disabled while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
     }
-    ptr->flags.no_reply= bool(data);
+    // We reverse the logic here to make it easier to understand throughout the
+    // code.
+    ptr->flags.reply= bool(data) ? false : true;
     break;
 
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
@@ -439,7 +445,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.hash_with_namespace;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    return ptr->flags.no_reply;
+    return ptr->flags.reply ? false : true;
 
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
     return ptr->flags.auto_eject_hosts;

@@ -58,14 +58,20 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
     rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
     if (rc == MEMCACHED_NOTSTORED)
+    {
       rc= MEMCACHED_SUCCESS;
+    }
 
     if (rc == MEMCACHED_STORED)
+    {
       rc= MEMCACHED_NOTFOUND;
+    }
   }
 
   if (rc == MEMCACHED_WRITE_FAILURE)
+  {
     memcached_io_reset(instance);
+  }
 
   return rc;
 }

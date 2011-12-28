@@ -67,7 +67,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
                                                   time_t expiration)
 {
   // Invert the logic to make it simpler to read the code
-  bool reply= (ptr->flags.no_reply) ? false : true;
+  bool reply= memcached_is_replying(ptr);
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   int send_length= 0;
@@ -134,13 +134,13 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    if (ptr->flags.no_reply)
+    if (memcached_is_replying(ptr))
     {
-      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;
     }
     else
     {
-      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
     }
 
     struct libmemcached_io_vector_st vector[]=

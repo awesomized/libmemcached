@@ -47,7 +47,7 @@ static memcached_return_t _set_verbosity(const memcached_st *,
                                          const memcached_server_st *server,
                                          void *context)
 {
- const libmemcached_io_vector_st *execute= (const libmemcached_io_vector_st *)context;
+ libmemcached_io_vector_st *vector= (libmemcached_io_vector_st *)context;
 
   memcached_st local_memc;
   memcached_st *memc_ptr= memcached_create(&local_memc);
@@ -59,7 +59,7 @@ static memcached_return_t _set_verbosity(const memcached_st *,
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc_ptr, 0);
 
 
-    rc= memcached_vdo(instance, execute, 3, true);
+    rc= memcached_vdo(instance, vector, 3, true);
 
     if (rc == MEMCACHED_SUCCESS)
     {
