@@ -27,9 +27,10 @@ unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int numbe
     memcached_return_t rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
                                          pairs[x].value, pairs[x].value_length,
                                          0, 0);
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
+    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_BUFFERED)
     {
-      fprintf(stderr, "Failured on insert of %.*s\n",
+      fprintf(stderr, "Failure on insert (%s) of %.*s\n",
+              memcached_last_error_message(memc),
               (unsigned int)pairs[x].key_length, pairs[x].key);
     }
     else
@@ -65,12 +66,17 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
                          &value_length, &flags, &rc);
 
     if (rc != MEMCACHED_SUCCESS)
-      fprintf(stderr, "Failured on read of %.*s\n",
+    {
+      fprintf(stderr, "Failure on read(%s) of %.*s\n",
+              memcached_last_error_message(memc),
               (unsigned int)pairs[fetch_key].key_length, pairs[fetch_key].key);
+    }
     else
+    {
       retrieved++;
+    }
 
-    free(value);
+    ::free(value);
   }
 
   return retrieved;
