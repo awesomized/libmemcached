@@ -35,6 +35,12 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
   **/
   if (memcached_is_udp(instance->root))
   {
+    if (vector->buffer or vector->length)
+    {
+      return memcached_set_error(*instance->root, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
+                                 memcached_literal_param("UDP messages was attempted, but vector was not setup for it"));
+    }
+
     size_t write_length= io_vector_total_size(vector, 11) +UDP_DATAGRAM_HEADER_LENGTH;
 
     if (write_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)

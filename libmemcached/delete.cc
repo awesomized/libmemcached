@@ -61,21 +61,6 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
     { memcached_literal_param("\r\n") }
   };
 
-  if (memcached_is_udp(instance->root))
-  {
-    size_t send_length= io_vector_total_size(vector, 6);
-
-    if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return MEMCACHED_WRITE_FAILURE;
-    }
-
-    if (send_length +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-    {
-      memcached_io_write(instance);
-    }
-  }
-
   /* Send command header */
   return memcached_vdo(instance, vector, 6, flush);
 }
@@ -101,20 +86,6 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(instance->root->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
   request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(instance->root->_namespace)));
-
-  if (memcached_is_udp(instance->root))
-  {
-    size_t cmd_size= sizeof(request.bytes) + key_length;
-    if (cmd_size > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return MEMCACHED_WRITE_FAILURE;
-    }
-
-    if (cmd_size +instance->write_buffer_offset > MAX_UDP_DATAGRAM_LENGTH)
-    {
-      memcached_io_write(instance);
-    }
-  }
 
   libmemcached_io_vector_st vector[]=
   {
