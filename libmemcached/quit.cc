@@ -62,7 +62,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
 
-        struct libmemcached_io_vector_st vector[]=
+        libmemcached_io_vector_st vector[]=
         {
           { request.bytes, sizeof(request.bytes) }
         };
@@ -71,7 +71,7 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       }
       else
       {
-        struct libmemcached_io_vector_st vector[]=
+        libmemcached_io_vector_st vector[]=
         {
           { memcached_literal_param("quit\r\n") }
         };

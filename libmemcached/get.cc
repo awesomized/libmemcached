@@ -303,7 +303,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
     instance= memcached_server_instance_fetch(ptr, server_key);
 
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { get_command, get_command_length },
       { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
@@ -517,7 +517,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
     request.message.header.request.bodylen= htonl((uint32_t)( key_length[x] + memcached_array_size(ptr->_namespace)));
 
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { request.bytes, sizeof(request.bytes) },
       { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
@@ -650,7 +650,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
        * that we might have processed some of the responses etc. For now,
        * just make sure we work _correctly_
      */
-      struct libmemcached_io_vector_st vector[]=
+      libmemcached_io_vector_st vector[]=
       {
         { request.bytes, sizeof(request.bytes) },
         { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },

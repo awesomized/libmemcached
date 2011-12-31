@@ -160,7 +160,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     request.message.header.request.cas= memcached_htonll(cas);
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, send_length },
     { memcached_array_string(ptr->_namespace),  memcached_array_size(ptr->_namespace) },
@@ -271,7 +271,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
     }
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { storage_op_string(verb), strlen(storage_op_string(verb))},
     { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },

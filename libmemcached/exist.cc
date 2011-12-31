@@ -38,7 +38,7 @@
 
 static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write_instance_st instance, const char *key, size_t key_length)
 {
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("add ") },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
@@ -93,7 +93,7 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
                                                             +memcached_array_size(memc->_namespace)
                                                             +request.message.header.request.extlen));
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, send_length },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },

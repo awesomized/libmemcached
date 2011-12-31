@@ -360,7 +360,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
     request.message.header.request.keylen= htons(uint16_t(args_length));
     request.message.header.request.bodylen= htonl(uint32_t( args_length));
 
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { request.bytes, sizeof(request.bytes) },
       { args, args_length }
@@ -374,7 +374,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
   }
   else
   {
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { request.bytes, sizeof(request.bytes) }
     };
@@ -437,7 +437,7 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             memcached_server_write_instance_st instance,
                                             struct local_context *check)
 {
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("stats ") },
     { args, args_length },

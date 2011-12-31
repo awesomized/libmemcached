@@ -82,7 +82,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("flush_all ") },
     { buffer, send_length },
@@ -143,7 +143,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
     }
 
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { request.bytes, sizeof(request.bytes) }
     };

@@ -50,7 +50,7 @@ static memcached_return_t ascii_touch(memcached_server_write_instance_st instanc
                                memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("touch ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
@@ -82,7 +82,7 @@ static memcached_return_t binary_touch(memcached_server_write_instance_st instan
   request.message.header.request.bodylen= htonl((uint32_t)(key_length +memcached_array_size(instance->root->_namespace) +request.message.header.request.extlen));
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },

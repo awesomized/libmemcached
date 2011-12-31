@@ -229,7 +229,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
   do {
     /* send the packet */
 
-    struct libmemcached_io_vector_st vector[]=
+    libmemcached_io_vector_st vector[]=
     {
       { request.bytes, sizeof(request.bytes) },
       { chosenmech, keylen },

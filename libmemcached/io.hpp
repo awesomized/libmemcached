@@ -46,7 +46,7 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
                            const void *buffer, size_t length, bool with_flush);
 
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
-                            const struct libmemcached_io_vector_st *vector,
+                            libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush);
 
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);

@@ -51,7 +51,7 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
                                               const bool reply,
                                               const bool flush)
 {
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("delete ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
@@ -115,7 +115,7 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
     }
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },

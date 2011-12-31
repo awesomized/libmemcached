@@ -53,7 +53,7 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("incr ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
@@ -119,7 +119,7 @@ static memcached_return_t binary_incr_decr(memcached_server_write_instance_st in
   request.message.body.initial= memcached_htonll(initial);
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },

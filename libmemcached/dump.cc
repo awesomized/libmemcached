@@ -64,7 +64,7 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
                                    memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
       }
 
-      struct libmemcached_io_vector_st vector[]=
+      libmemcached_io_vector_st vector[]=
       {
         { memcached_literal_param("stats cachedump ") },
         { buffer, buffer_length },

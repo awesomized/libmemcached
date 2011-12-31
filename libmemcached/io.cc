@@ -674,7 +674,7 @@ size_t io_vector_total_size(libmemcached_io_vector_st* vector, const size_t numb
 }
 
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
-                            const struct libmemcached_io_vector_st *vector,
+                            libmemcached_io_vector_st *vector,
                             size_t number_of, bool with_flush)
 {
   ssize_t total= 0;
