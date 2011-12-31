@@ -44,7 +44,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
 memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
 {
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }

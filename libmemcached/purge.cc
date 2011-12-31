@@ -105,9 +105,11 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
       if (rc== MEMCACHED_PROTOCOL_ERROR or rc == MEMCACHED_UNKNOWN_READ_FAILURE or rc == MEMCACHED_READ_FAILURE)
       {
         WATCHPOINT_ERROR(rc);
-        ret= rc;
         memcached_io_reset(ptr);
-        memcached_set_error(*ptr, rc, MEMCACHED_AT);
+        ret= rc;
+#if 0
+        ret= memcached_set_error(*ptr, rc, MEMCACHED_AT);
+#endif
       }
 
       if (ptr->root->callbacks != NULL)

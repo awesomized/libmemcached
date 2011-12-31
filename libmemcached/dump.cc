@@ -142,7 +142,7 @@ error:
 memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
   memcached_return_t rc;
-  if ((rc= initialize_query(ptr)) != MEMCACHED_SUCCESS)
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }

@@ -36,16 +36,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+memcached_return_t initialize_query(memcached_st *self, bool increment_query_id);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t initialize_query(memcached_st *self);
-
-LIBMEMCACHED_LOCAL
 memcached_return_t initialize_const_query(const memcached_st *self);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif

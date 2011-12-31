@@ -41,37 +41,9 @@ const char * memcached_lib_version(void)
   return LIBMEMCACHED_VERSION_STRING;
 }
 
-static inline memcached_return_t memcached_version_binary(memcached_st *ptr);
-static inline memcached_return_t memcached_version_textual(memcached_st *ptr);
-
-memcached_return_t memcached_version(memcached_st *ptr)
-{
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
-  {
-    return rc;
-  }
-
-  if (ptr->flags.use_udp)
-  {
-    return MEMCACHED_NOT_SUPPORTED;
-  }
-
-  if (ptr->flags.binary_protocol)
-  {
-    rc= memcached_version_binary(ptr);
-  }
-  else
-  {
-    rc= memcached_version_textual(ptr);      
-  }
-
-  return rc;
-}
-
 static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
 {
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("version\r\n") },
   };
@@ -157,7 +129,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_VERSION;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { request.bytes, sizeof(request.bytes) }
   };
@@ -233,6 +205,31 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
       }
       instance->micro_version= uint8_t(version);
     }
+  }
+
+  return rc;
+}
+
+memcached_return_t memcached_version(memcached_st *ptr)
+{
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, true)))
+  {
+    return rc;
+  }
+
+  if (memcached_is_udp(ptr))
+  {
+    return MEMCACHED_NOT_SUPPORTED;
+  }
+
+  if (memcached_is_binary(ptr))
+  {
+    rc= memcached_version_binary(ptr);
+  }
+  else
+  {
+    rc= memcached_version_textual(ptr);      
   }
 
   return rc;

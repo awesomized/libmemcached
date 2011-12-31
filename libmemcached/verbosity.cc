@@ -75,6 +75,17 @@ static memcached_return_t _set_verbosity(const memcached_st *,
 
 memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
 {
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, false)))
+  {
+    return rc;
+  }
+
+  if (memcached_is_udp(ptr))
+  {
+    return MEMCACHED_NOT_SUPPORTED;
+  }
+
   memcached_server_fn callbacks[1];
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -86,7 +97,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
                                memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
   }
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
     { memcached_literal_param("verbosity ") },
     { buffer, send_length },

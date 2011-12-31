@@ -200,6 +200,54 @@ static test_return_t add_udp_server_tcp_client_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+static test_return_t version_TEST(memcached_st *memc)
+{
+  test_compare(MEMCACHED_NOT_SUPPORTED, memcached_version(memc));
+  return TEST_SUCCESS;
+}
+
+static test_return_t verbosity_TEST(memcached_st *memc)
+{
+  test_compare(MEMCACHED_NOT_SUPPORTED, memcached_verbosity(memc, 0));
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_get_TEST(memcached_st *memc)
+{
+  memcached_return_t rc;
+  test_null(memcached_get(memc,
+                          test_literal_param(__func__),
+                          0, 0, &rc));
+  test_compare(MEMCACHED_NOT_SUPPORTED, rc);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_mget_execute_by_key_TEST(memcached_st *memc)
+{
+  char **keys= NULL;
+  size_t *key_length= NULL;
+  test_compare(MEMCACHED_NOT_SUPPORTED,
+               memcached_mget_execute_by_key(memc,
+                                             test_literal_param(__func__), // Group key
+                                             keys, key_length, // Actual key
+                                             0, // Number of keys
+                                             0, // callbacks
+                                             0, // context
+                                             0)); // Number of callbacks
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_stat_TEST(memcached_st *memc)
+{
+  memcached_return_t rc;
+  test_null(memcached_stat(memc, 0, &rc));
+  test_compare(MEMCACHED_NOT_SUPPORTED, rc);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t set_udp_behavior_test(memcached_st *memc)
 {
   memcached_quit(memc);
@@ -470,6 +518,15 @@ static test_return_t udp_mixed_io_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_st compatibility_TESTS[] ={
+  {"version", 0, (test_callback_fn*)version_TEST },
+  {"version", 0, (test_callback_fn*)verbosity_TEST },
+  {"memcached_get()", 0, (test_callback_fn*)memcached_get_TEST },
+  {"memcached_mget_execute_by_key()", 0, (test_callback_fn*)memcached_mget_execute_by_key_TEST },
+  {"memcached_stat()", 0, (test_callback_fn*)memcached_stat_TEST },
+  {0, 0, 0}
+};
+
 test_st udp_setup_server_tests[] ={
   {"set_udp_behavior_test", 0, (test_callback_fn*)set_udp_behavior_test},
   {"add_tcp_server_udp_client_test", 0, (test_callback_fn*)add_tcp_server_udp_client_test},
@@ -497,6 +554,7 @@ test_st upd_io_tests[] ={
 
 collection_st collection[] ={
   {"udp_setup", (test_callback_fn*)init_udp, 0, udp_setup_server_tests},
+  {"compatibility", (test_callback_fn*)init_udp, 0, compatibility_TESTS},
   {"udp_io", (test_callback_fn*)init_udp_valgrind, 0, upd_io_tests},
   {"udp_binary_io", (test_callback_fn*)binary_init_udp, 0, upd_io_tests},
   {0, 0, 0, 0}

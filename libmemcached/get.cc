@@ -72,36 +72,35 @@ char *memcached_get_by_key(memcached_st *ptr,
     error= &unused;
   }
 
-  if (ptr->flags.use_udp)
+  uint64_t query_id= 0;
+  if (ptr)
   {
-    if (value_length) 
-    {
-      *value_length= 0;
-    }
-
-    *error= memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
-    return NULL;
+    query_id= ptr->query_id;
   }
-
-  uint64_t query_id= ptr->query_id;
-  (void)query_id;
 
   /* Request the key */
   *error= memcached_mget_by_key_real(ptr, group_key, group_key_length,
                                      (const char * const *)&key, &key_length, 
                                      1, false);
-  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
-
+  if (ptr)
+  {
+    assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
+  }
 
   if (memcached_failed(*error))
   {
-    if (memcached_has_current_error(*ptr)) // Find the most accurate error
+    if (ptr)
     {
-      *error= memcached_last_error(ptr);
+      if (memcached_has_current_error(*ptr)) // Find the most accurate error
+      {
+        *error= memcached_last_error(ptr);
+      }
     }
 
     if (value_length) 
+    {
       *value_length= 0;
+    }
 
     return NULL;
   }
@@ -209,12 +208,12 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }
 
-  if (ptr->flags.use_udp)
+  if (memcached_is_udp(ptr))
   {
     return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
   }
@@ -425,12 +424,22 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
                                                  void *context,
                                                  unsigned int number_of_callbacks)
 {
-  if ((ptr->flags.binary_protocol) == 0)
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, false)))
+  {
+    return rc;
+  }
+
+  if (memcached_is_udp(ptr))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
+  }
+
+  if (memcached_is_binary(ptr) == false)
   {
     return MEMCACHED_NOT_SUPPORTED;
   }
 
-  memcached_return_t rc;
   memcached_callback_st *original_callbacks= ptr->callbacks;
   memcached_callback_st cb= {
     callback,

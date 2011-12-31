@@ -170,7 +170,7 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
     value= &local_value;
   }
 
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }
@@ -222,7 +222,7 @@ memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
   }
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }
@@ -287,7 +287,7 @@ memcached_return_t memcached_increment_with_initial_by_key(memcached_st *ptr,
   }
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }
@@ -351,7 +351,7 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
   }
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }

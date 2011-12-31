@@ -114,7 +114,7 @@ memcached_return_t memcached_touch_by_key(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_TOUCH_START();
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }

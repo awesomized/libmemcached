@@ -439,7 +439,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
       ssize_t data_read;
       do
       {
-        data_read= recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
+        data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
         if (data_read == SOCKET_ERROR)
         {
           switch (get_socket_errno())
@@ -494,7 +494,8 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           WATCHPOINT_STRING("We had a zero length recv()");
           memcached_quit_server(ptr, true);
           *nread= -1;
-          return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
+          return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, 
+                                     memcached_literal_param("::rec() returned zero, server has disconnected"));
         }
       } while (data_read <= 0);
 

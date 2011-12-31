@@ -129,16 +129,15 @@ memcached_return_t memcached_exist_by_key(memcached_st *memc,
                                           const char *key, size_t key_length)
 {
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(memc)))
+  if (memcached_failed(rc= initialize_query(memc, true)))
   {
     return rc;
   }
 
-  if (memc->flags.use_udp)
+  if (memcached_is_udp(memc))
   {
     return MEMCACHED_NOT_SUPPORTED;
   }
-
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
   memcached_server_write_instance_st instance;

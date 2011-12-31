@@ -498,19 +498,18 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     error= &unused;
   }
 
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(self)))
+  if (memcached_failed(*error= initialize_query(self, true)))
   {
-    *error= rc;
     return NULL;
   }
 
-  if (self->flags.use_udp)
+  if (memcached_is_udp(self))
   {
     *error= memcached_set_error(*self, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
     return NULL;
   }
 
+  memcached_return_t rc;
   size_t args_length= 0;
   if (args)
   {
@@ -584,7 +583,7 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
     return rc;
   }
 
-  if (memcached_success(rc= initialize_query(memc_ptr)))
+  if (memcached_success(rc= initialize_query(memc_ptr, true)))
   {
     size_t args_length= 0;
     if (args)

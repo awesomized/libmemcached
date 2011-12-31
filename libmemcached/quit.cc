@@ -140,7 +140,8 @@ void send_quit(memcached_st *ptr)
 
 void memcached_quit(memcached_st *ptr)
 {
-  if (memcached_failed(initialize_query(ptr)))
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return;
   }

@@ -46,11 +46,6 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   ssize_t read_length= 0;
   size_t value_length;
 
-  if (ptr->root->flags.use_udp)
-  {
-    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
-  }
-
   WATCHPOINT_ASSERT(ptr->root);
   char *end_ptr= buffer + MEMCACHED_DEFAULT_COMMAND_SIZE;
 
@@ -345,11 +340,13 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
       if (auto_return_value == ULLONG_MAX and errno == ERANGE)
       {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
+        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+                                   memcached_literal_param("Numeric response was out of range"));
       }
       else if (errno == EINVAL)
       {
-        return MEMCACHED_UNKNOWN_READ_FAILURE;
+        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+                                   memcached_literal_param("Numeric response was out of range"));
       }
 
       numeric_value= uint64_t(auto_return_value);
@@ -362,7 +359,8 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     break;
   }
 
-  return MEMCACHED_UNKNOWN_READ_FAILURE;
+  return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+                             memcached_literal_param("Could not determine response"));
 }
 
 static memcached_return_t binary_read_one_response(memcached_server_write_instance_st ptr,
@@ -660,6 +658,11 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
                                                memcached_result_st *result,
                                                uint64_t& numeric_value)
 {
+  if (memcached_is_udp(ptr->root))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
+  }
+
   memcached_server_response_decrement(ptr);
 
   if (result == NULL)
@@ -704,6 +707,11 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       memcached_result_st *result,
                                       uint64_t& numeric_value)
 {
+  if (memcached_is_udp(ptr->root))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
+  }
+
   /* We may have old commands in the buffer not set, first purge */
   if ((ptr->root->flags.no_block) and (memcached_is_processing_input(ptr->root) == false))
   {

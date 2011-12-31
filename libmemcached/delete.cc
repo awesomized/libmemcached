@@ -165,7 +165,7 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }

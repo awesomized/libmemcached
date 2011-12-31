@@ -3120,7 +3120,7 @@ static test_return_t generate_data(memcached_st *memc)
 {
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_compare(global_count, check_execute);
+  test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
 
   return TEST_SUCCESS;
 }
