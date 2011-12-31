@@ -53,6 +53,7 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
 {
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { memcached_literal_param("delete ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length },
@@ -62,7 +63,7 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
 
   if (memcached_is_udp(instance->root))
   {
-    size_t send_length= io_vector_total_size(vector, 5);
+    size_t send_length= io_vector_total_size(vector, 6);
 
     if (send_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
     {
@@ -76,7 +77,7 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
   }
 
   /* Send command header */
-  return memcached_vdo(instance, vector, 5, flush);
+  return memcached_vdo(instance, vector, 6, flush);
 }
 
 static inline memcached_return_t binary_delete(memcached_server_write_instance_st instance,
@@ -117,6 +118,7 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length }
@@ -124,7 +126,7 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
 
   memcached_return_t rc= MEMCACHED_SUCCESS;
 
-  if ((rc= memcached_vdo(instance, vector,  3, flush)) != MEMCACHED_SUCCESS)
+  if ((rc= memcached_vdo(instance, vector,  4, flush)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(instance);
   }
@@ -135,15 +137,16 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
 
     for (uint32_t x= 0; x < instance->root->number_of_replicas; ++x)
     {
-      memcached_server_write_instance_st replica;
 
       ++server_key;
       if (server_key == memcached_server_count(instance->root))
+      {
         server_key= 0;
+      }
 
-      replica= memcached_server_instance_fetch(instance->root, server_key);
+      memcached_server_write_instance_st replica= memcached_server_instance_fetch(instance->root, server_key);
 
-      if (memcached_vdo(replica, vector, 3, flush) != MEMCACHED_SUCCESS)
+      if (memcached_vdo(replica, vector, 4, flush) != MEMCACHED_SUCCESS)
       {
         memcached_io_reset(replica);
       }

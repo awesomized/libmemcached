@@ -40,6 +40,7 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
 {
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { memcached_literal_param("add ") },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
     { key, key_length },
@@ -51,7 +52,7 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
   };
 
   /* Send command header */
-  memcached_return_t rc=  memcached_vdo(instance, vector, 8, true);
+  memcached_return_t rc=  memcached_vdo(instance, vector, 9, true);
   if (rc == MEMCACHED_SUCCESS)
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -95,6 +96,7 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, send_length },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
     { key, key_length }
@@ -102,7 +104,7 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
 
   /* write the header */
   memcached_return_t rc;
-  if ((rc= memcached_vdo(instance, vector, 3, true)) != MEMCACHED_SUCCESS)
+  if ((rc= memcached_vdo(instance, vector, 4, true)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(instance);
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;

@@ -55,6 +55,7 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { memcached_literal_param("incr ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length },
@@ -65,10 +66,10 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
 
   if (is_incr == false)
   {
-    vector[0].buffer= "decr ";
+    vector[1].buffer= "decr ";
   }
 
-  memcached_return_t rc= memcached_vdo(instance, vector, 6, true);
+  memcached_return_t rc= memcached_vdo(instance, vector, 7, true);
 
   if (reply == false)
   {
@@ -121,13 +122,14 @@ static memcached_return_t binary_incr_decr(memcached_server_write_instance_st in
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length }
   };
 
   memcached_return_t rc;
-  if (memcached_failed(rc= memcached_vdo(instance, vector, 3, true)))
+  if (memcached_failed(rc= memcached_vdo(instance, vector, 4, true)))
   {
     memcached_io_reset(instance);
     return MEMCACHED_WRITE_FAILURE;

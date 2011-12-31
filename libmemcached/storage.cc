@@ -162,6 +162,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, send_length },
     { memcached_array_string(ptr->_namespace),  memcached_array_size(ptr->_namespace) },
     { key, key_length },
@@ -170,7 +171,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
   /* write the header */
   memcached_return_t rc;
-  if ((rc= memcached_vdo(server, vector, 4, flush)) != MEMCACHED_SUCCESS)
+  if ((rc= memcached_vdo(server, vector, 5, flush)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(server);
 
@@ -197,7 +198,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
 
-      if (memcached_vdo(instance, vector, 4, false) != MEMCACHED_SUCCESS)
+      if (memcached_vdo(instance, vector, 5, false) != MEMCACHED_SUCCESS)
       {
         memcached_io_reset(instance);
       }
@@ -273,6 +274,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
 
   libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { storage_op_string(verb), strlen(storage_op_string(verb))},
     { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
     { key, key_length },
@@ -287,7 +289,7 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
   };
 
   /* Send command header */
-  memcached_return_t rc=  memcached_vdo(instance, vector, 11, flush);
+  memcached_return_t rc=  memcached_vdo(instance, vector, 12, flush);
   if (rc == MEMCACHED_SUCCESS)
   {
     if (flush == false)
