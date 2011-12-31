@@ -38,16 +38,14 @@
 
 #pragma once
 
-size_t io_vector_total_size(libmemcached_io_vector_st* vector, const size_t number_of);
-
 bool memcached_io_write(memcached_server_write_instance_st ptr);
 
 ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
                            const void *buffer, size_t length, bool with_flush);
 
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
-                            libmemcached_io_vector_st *vector,
-                            size_t number_of, bool with_flush);
+                            libmemcached_io_vector_st vector[],
+                            const size_t number_of, const bool with_flush);
 
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);
 

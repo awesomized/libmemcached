@@ -12,14 +12,13 @@
 #include <libmemcached/common.h>
 
 memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
-                                 libmemcached_io_vector_st *vector,
+                                 libmemcached_io_vector_st vector[],
                                  const size_t count,
                                  const bool with_flush)
 {
   memcached_return_t rc;
 
-  WATCHPOINT_ASSERT(count);
-  WATCHPOINT_ASSERT(vector);
+  assert_msg(vector, "Invalid vector passed");
 
   if (memcached_failed(rc= memcached_connect(instance)))
   {
@@ -35,17 +34,10 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
   **/
   if (memcached_is_udp(instance->root))
   {
-    if (vector->buffer or vector->length)
+    if (vector[0].buffer or vector[0].length)
     {
       return memcached_set_error(*instance->root, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
                                  memcached_literal_param("UDP messages was attempted, but vector was not setup for it"));
-    }
-
-    size_t write_length= io_vector_total_size(vector, 11) +UDP_DATAGRAM_HEADER_LENGTH;
-
-    if (write_length > MAX_UDP_DATAGRAM_LENGTH - UDP_DATAGRAM_HEADER_LENGTH)
-    {
-      return MEMCACHED_WRITE_FAILURE;
     }
 
     return MEMCACHED_NOT_SUPPORTED;

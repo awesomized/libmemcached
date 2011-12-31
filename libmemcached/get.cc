@@ -348,7 +348,9 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     LIBMEMCACHED_MEMCACHED_MGET_END();
 
     if (memcached_failed(rc))
+    {
       return rc;
+    }
 
     return memcached_set_error(*ptr, MEMCACHED_NO_SERVERS, MEMCACHED_AT);
   }
