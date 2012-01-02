@@ -2119,12 +2119,13 @@ static test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_re
 {
   keys_returned= 0;
 
-  memcached_result_st* result;
-  while ((result= memcached_fetch_result(memc, NULL, &rc)))
+  memcached_result_st* result= NULL;
+  while ((result= memcached_fetch_result(memc, result, &rc)))
   {
     test_compare(MEMCACHED_SUCCESS, rc);
     keys_returned+= 1;
   }
+  memcached_result_free(result);
 
   return TEST_SUCCESS;
 }

@@ -208,7 +208,7 @@ static test_return_t version_TEST(memcached_st *memc)
 
 static test_return_t verbosity_TEST(memcached_st *memc)
 {
-  test_compare(MEMCACHED_NOT_SUPPORTED, memcached_verbosity(memc, 0));
+  test_compare(MEMCACHED_SUCCESS, memcached_verbosity(memc, 0));
   return TEST_SUCCESS;
 }
 
@@ -320,17 +320,19 @@ static test_return_t udp_buffered_set_test(memcached_st *memc)
 static test_return_t udp_set_too_big_test(memcached_st *memc)
 {
   test_true(memc);
-  char value[MAX_UDP_DATAGRAM_LENGTH];
   Expected expected_ids;
   get_udp_request_ids(memc, expected_ids);
 
-  memset(value, int('f'), sizeof(value));
+  std::vector<char> value;
+  value.resize(1024 * 1024 * 10);
 
   test_compare_hint(MEMCACHED_WRITE_FAILURE,
-                    memcached_set(memc, test_literal_param("bar"), 
-                                  test_literal_param(value),
+                    memcached_set(memc,
+                                  test_literal_param(__func__), 
+                                  &value[0], value.size(),
                                   time_t(0), uint32_t(0)),
                     memcached_last_error_message(memc));
+  memcached_quit(memc);
 
   return post_udp_op_check(memc, expected_ids);
 }
@@ -401,6 +403,7 @@ static test_return_t udp_flush_test(memcached_st *memc)
   {
     increment_request_id(&expected_ids[x]);
   }
+  memcached_error_print(memc);
   test_compare_hint(MEMCACHED_SUCCESS, memcached_flush(memc, 0), memcached_last_error_message(memc));
 
   return post_udp_op_check(memc, expected_ids);

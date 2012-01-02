@@ -40,7 +40,22 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
                                  memcached_literal_param("UDP messages was attempted, but vector was not setup for it"));
     }
 
-    return MEMCACHED_NOT_SUPPORTED;
+    struct msghdr msg;
+    memset(&msg, 0, sizeof(msg));
+
+    increment_udp_message_id(instance);
+    vector[0].buffer= instance->write_buffer;
+    vector[0].length= UDP_DATAGRAM_HEADER_LENGTH;
+
+    msg.msg_iov= (struct iovec*)vector;
+    msg.msg_iovlen= count;
+
+    if (::sendmsg(instance->fd, &msg, 0) < 1)
+    {
+      return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+    }
+
+    return MEMCACHED_SUCCESS;
   }
 
   ssize_t sent_length= memcached_io_writev(instance, vector, count, with_flush);

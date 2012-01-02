@@ -359,8 +359,9 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     break;
   }
 
+  buffer[total_read]= 0;
   return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
-                             memcached_literal_param("Could not determine response"));
+                             buffer, total_read);
 }
 
 static memcached_return_t binary_read_one_response(memcached_server_write_instance_st ptr,
