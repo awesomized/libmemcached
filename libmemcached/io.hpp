@@ -52,7 +52,7 @@ memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_s
 void memcached_io_reset(memcached_server_write_instance_st ptr);
 
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
-                                     void *buffer, size_t length, ssize_t *nread);
+                                     void *buffer, size_t length, ssize_t& nread);
 
 /* Read a line (terminated by '\n') into the buffer */
 memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,

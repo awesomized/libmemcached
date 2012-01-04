@@ -44,23 +44,32 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
 {
   memcached_result_st *result_buffer= &ptr->result;
   memcached_return_t unused;
-  if (not error)
+  if (error == NULL)
+  {
     error= &unused;
+  }
 
-
-  unlikely (ptr->flags.use_udp)
+  if (memcached_is_udp(ptr))
   {
     if (value_length)
+    {
       *value_length= 0;
+    }
 
     if (key_length)
+    {
       *key_length= 0;
+    }
 
     if (flags)
+    {
       *flags= 0;
+    }
 
     if (key)
+    {
       *key= 0;
+    }
 
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
@@ -71,16 +80,24 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
   {
     WATCHPOINT_ASSERT(result_buffer == NULL);
     if (value_length)
+    {
       *value_length= 0;
+    }
 
     if (key_length)
+    {
       *key_length= 0;
+    }
 
     if (flags)
+    {
       *flags= 0;
+    }
 
     if (key)
+    {
       *key= 0;
+    }
 
     return NULL;
   }
@@ -96,26 +113,39 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     {
       *error= MEMCACHED_KEY_TOO_BIG;
       if (value_length)
+      {
         *value_length= 0;
+      }
 
-    if (key_length)
-      *key_length= 0;
+      if (key_length)
+      {
+        *key_length= 0;
+      }
 
-    if (flags)
-      *flags= 0;
+      if (flags)
+      {
+        *flags= 0;
+      }
 
-    if (key)
-      *key= 0;
+      if (key)
+      {
+        *key= 0;
+      }
 
       return NULL;
     }
+
     strncpy(key, result_buffer->item_key, result_buffer->key_length); // For the binary protocol we will cut off the key :(
     if (key_length)
+    {
       *key_length= result_buffer->key_length;
+    }
   }
 
   if (flags)
+  {
     *flags= result_buffer->item_flags;
+  }
 
   return memcached_string_take_value(&result_buffer->value);
 }
@@ -134,13 +164,13 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     return NULL;
   }
 
-  if (ptr->flags.use_udp)
+  if (memcached_is_udp(ptr))
   {
     *error= MEMCACHED_NOT_SUPPORTED;
     return NULL;
   }
 
-  if (not result)
+  if (result == NULL)
   {
     // If we have already initialized (ie it is in use) our internal, we
     // create one.

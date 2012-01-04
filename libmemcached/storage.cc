@@ -290,20 +290,22 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
 
   /* Send command header */
   memcached_return_t rc=  memcached_vdo(instance, vector, 12, flush);
+
+  // If we should not reply, return with MEMCACHED_SUCCESS, unless error
+  if (reply == false)
+  {
+    return memcached_success(rc) ? MEMCACHED_SUCCESS : rc; 
+  }
+
+  if (flush == false)
+  {
+    return memcached_success(rc) ? MEMCACHED_BUFFERED : rc; 
+  }
+
   if (rc == MEMCACHED_SUCCESS)
   {
-    if (flush == false)
-    {
-      return MEMCACHED_BUFFERED;
-    }
-
-    if (reply == false)
-    {
-      return MEMCACHED_SUCCESS;
-    }
-
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+    rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
 
     if (rc == MEMCACHED_STORED)
     {

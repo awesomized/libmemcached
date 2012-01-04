@@ -133,9 +133,10 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
   }
 
   /* SANITY CHECK: SASL can only be used with the binary protocol */
-  if (server->root->flags.binary_protocol == false)
+  if (memcached_is_binary(server->root) == false)
   {
-    return MEMCACHED_PROTOCOL_ERROR;
+    return  memcached_set_error(*server, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                memcached_literal_param("memcached_sasl_authenticate_connection() is not supported via the ASCII protocol"));
   }
 
   /* Try to get the supported mech from the server. Servers without SASL

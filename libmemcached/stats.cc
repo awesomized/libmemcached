@@ -543,7 +543,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(self, x);
 
     memcached_return_t temp_return;
-    if (self->flags.binary_protocol)
+    if (memcached_is_binary(self))
     {
       temp_return= binary_stats_fetch(stat_instance, args, args_length, instance, NULL);
     }

@@ -78,7 +78,6 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
   {
     memcached_result_st result;
     memcached_result_st *result_ptr;
-    char buffer[SMALL_STRING_LEN];
 
     /*
      * We need to increase the timeout, because we might be waiting for
@@ -94,9 +93,7 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
     for (uint32_t x= 0; x < no_msg; x++)
     {
       memcached_result_reset(result_ptr);
-      memcached_return_t rc= memcached_read_one_response(ptr, buffer,
-                                                         sizeof (buffer),
-                                                         result_ptr);
+      memcached_return_t rc= memcached_read_one_response(ptr, result_ptr);
       /*
        * Purge doesn't care for what kind of command results that is received.
        * The only kind of errors I care about if is I'm out of sync with the
@@ -115,7 +112,7 @@ memcached_return_t memcached_purge(memcached_server_write_instance_st ptr)
       if (ptr->root->callbacks != NULL)
       {
         memcached_callback_st cb = *ptr->root->callbacks;
-        if (rc == MEMCACHED_SUCCESS)
+        if (memcached_success(rc))
         {
           for (uint32_t y= 0; y < cb.number_of_callback; y++)
           {

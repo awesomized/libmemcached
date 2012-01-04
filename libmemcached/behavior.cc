@@ -114,7 +114,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    if (ptr->flags.use_udp)
+    if (memcached_is_udp(ptr))
     {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                  memcached_literal_param("MEMCACHED_BEHAVIOR_BUFFER_REQUESTS cannot be set while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
@@ -235,7 +235,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    if (ptr->flags.use_udp and bool(data) == false)
+    if (memcached_is_udp(ptr) and bool(data) == false)
     {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                  memcached_literal_param("MEMCACHED_BEHAVIOR_NOREPLY cannot be disabled while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
@@ -316,7 +316,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.buffer_requests;
 
   case MEMCACHED_BEHAVIOR_USE_UDP:
-    return ptr->flags.use_udp;
+    return memcached_is_udp(ptr);
 
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     return ptr->flags.tcp_nodelay;

@@ -419,7 +419,7 @@ memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_s
 }
 
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
-                                     void *buffer, size_t length, ssize_t *nread)
+                                     void *buffer, size_t length, ssize_t& nread)
 {
   assert_msg(ptr, "Programmer error, memcached_io_read() recieved an invalid memcached_server_write_instance_st"); // Programmer error
   char *buffer_ptr= static_cast<char *>(buffer);
@@ -475,7 +475,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           default:
             {
               memcached_quit_server(ptr, true);
-              *nread= -1;
+              nread= -1;
               return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
             }
           }
@@ -493,8 +493,8 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
           */
           WATCHPOINT_STRING("We had a zero length recv()");
           memcached_quit_server(ptr, true);
-          *nread= -1;
-          return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, 
+          nread= -1;
+          return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
                                      memcached_literal_param("::rec() returned zero, server has disconnected"));
         }
       } while (data_read <= 0);
@@ -527,7 +527,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
     }
   }
 
-  *nread = (ssize_t)(buffer_ptr - (char*)buffer);
+  nread= ssize_t(buffer_ptr - (char*)buffer);
 
   return MEMCACHED_SUCCESS;
 }
@@ -810,14 +810,14 @@ memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
     ssize_t nread;
     memcached_return_t rc;
 
-    while (memcached_continue(rc= memcached_io_read(ptr, data + offset, size - offset, &nread))) { };
+    while (memcached_continue(rc= memcached_io_read(ptr, data + offset, size - offset, nread))) { };
 
     if (memcached_failed(rc))
     {
       return rc;
     }
 
-    offset+= (size_t) nread;
+    offset+= size_t(nread);
   }
 
   return MEMCACHED_SUCCESS;
@@ -841,7 +841,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
        * the logic.
      */
       ssize_t nread;
-      memcached_return_t rc= memcached_io_read(ptr, buffer_ptr, 1, &nread);
+      memcached_return_t rc= memcached_io_read(ptr, buffer_ptr, 1, nread);
       if (memcached_failed(rc) and rc == MEMCACHED_IN_PROGRESS)
       {
         memcached_quit_server(ptr, true);

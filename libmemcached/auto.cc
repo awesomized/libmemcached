@@ -315,7 +315,8 @@ memcached_return_t memcached_increment_with_initial_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= MEMCACHED_PROTOCOL_ERROR;
+    rc=  memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                             memcached_literal_param("memcached_increment_with_initial_by_key() is not supported via the ASCII protocol"));
   }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_END();
@@ -380,7 +381,8 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
   }
   else
   {
-    rc= MEMCACHED_PROTOCOL_ERROR;
+    rc=  memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                             memcached_literal_param("memcached_decrement_with_initial_by_key() is not supported via the ASCII protocol"));
   }
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_END();

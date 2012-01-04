@@ -229,8 +229,8 @@ test-memcapable: tests/var tests/memcapable
 pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 
-gdb-mem: tests/testapp
-	@$(DEBUG_COMMAND)  tests/testapp
+gdb-mem: tests/var tests/libmemcached-1.0/testapp
+	@$(DEBUG_COMMAND)  tests/libmemcached-1.0/testapp
 
 gdb-sasl: tests/sasl
 	@$(DEBUG_COMMAND)  tests/sasl

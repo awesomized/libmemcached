@@ -146,7 +146,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
       some people lazy about using the return length.
     */
     size_t to_read= (value_length) + 2;
-    memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, &read_length);
+    memcached_return_t rrc= memcached_io_read(ptr, value_ptr, to_read, read_length);
     if (memcached_failed(rrc) and rrc == MEMCACHED_IN_PROGRESS)
     {
       memcached_quit_server(ptr, true);
@@ -181,7 +181,7 @@ read_error:
 }
 
 static memcached_return_t textual_read_one_response(memcached_server_write_instance_st ptr,
-                                                    char *buffer, size_t buffer_length,
+                                                    char *buffer, const size_t buffer_length,
                                                     memcached_result_st *result,
                                                     uint64_t& numeric_value)
 {
@@ -193,39 +193,49 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   {
     return rc;
   }
+  assert(total_read);
 
   switch(buffer[0])
   {
-  case 'V': /* VALUE || VERSION */
-    if (buffer[1] == 'A' and buffer[2] == 'L' and buffer[3] == 'U' and buffer[4] == 'E') /* VALUE */
+  case 'V':
     {
-      /* We add back in one because we will need to search for END */
-      memcached_server_response_increment(ptr);
-      return textual_value_fetch(ptr, buffer, result);
-    }
-    else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'S' and buffer[4] == 'I' and buffer[5] == 'O' and buffer[6] == 'N') /* VERSION */
-    {
-      return MEMCACHED_SUCCESS;
-    }
-    break;
-
-  case 'O': /* OK */
-    if (buffer[1] == 'K')
-    {
-      return MEMCACHED_SUCCESS;
+      // VALUE
+      if (buffer[1] == 'A' and buffer[2] == 'L' and buffer[3] == 'U' and buffer[4] == 'E') /* VALUE */
+      {
+        /* We add back in one because we will need to search for END */
+        memcached_server_response_increment(ptr);
+        return textual_value_fetch(ptr, buffer, result);
+      }
+      // VERSION
+      else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'S' and buffer[4] == 'I' and buffer[5] == 'O' and buffer[6] == 'N') /* VERSION */
+      {
+        return MEMCACHED_SUCCESS;
+      }
     }
     break;
 
-  case 'S': /* STORED STATS SERVER_ERROR */
+  case 'O':
     {
+      // OK
+      if (buffer[1] == 'K')
+      {
+        return MEMCACHED_SUCCESS;
+      }
+    }
+    break;
+
+  case 'S':
+    {
+      // STAT
       if (buffer[1] == 'T' and buffer[2] == 'A' and buffer[3] == 'T') /* STORED STATS */
       {
         memcached_server_response_increment(ptr);
         return MEMCACHED_STAT;
       }
+      // SERVER_ERROR
       else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'V' and buffer[4] == 'E' and buffer[5] == 'R'
                and buffer[6] == '_' 
-               and buffer[7] == 'E' and buffer[8] == 'R' and buffer[9] == 'R' and buffer[10] == 'O' and buffer[11] == 'R' ) /* SERVER_ERROR */
+               and buffer[7] == 'E' and buffer[8] == 'R' and buffer[9] == 'R' and buffer[10] == 'O' and buffer[11] == 'R' )
       {
         if (total_read == memcached_literal_param_size("SERVER_ERROR"))
         {
@@ -250,28 +260,34 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
         return memcached_set_error(*ptr, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
       }
-      else if (buffer[1] == 'T' and buffer[2] == 'O' and buffer[3] == 'R' and buffer[4] == 'E' and buffer[5] == 'D')
+      // STORED
+      else if (buffer[1] == 'T' and buffer[2] == 'O' and buffer[3] == 'R') //  and buffer[4] == 'E' and buffer[5] == 'D')
       {
         return MEMCACHED_STORED;
       }
     }
     break;
 
-  case 'D': /* DELETED */
+  case 'D':
+    {
+      // DELETED
       if (buffer[1] == 'E' and buffer[2] == 'L' and buffer[3] == 'E' and buffer[4] == 'T' and buffer[5] == 'E' and buffer[6] == 'D')
       {
         return MEMCACHED_DELETED;
       }
-      break;
+    }
+    break;
 
-  case 'N': /* NOT_FOUND */
+  case 'N':
     {
+      // NOT_FOUND
       if (buffer[1] == 'O' and buffer[2] == 'T' 
           and buffer[3] == '_'
           and buffer[4] == 'F' and buffer[5] == 'O' and buffer[6] == 'U' and buffer[7] == 'N' and buffer[8] == 'D')
       {
         return MEMCACHED_NOTFOUND;
       }
+      // NOT_STORED
       else if (buffer[1] == 'O' and buffer[2] == 'T' 
                and buffer[3] == '_'
                and buffer[4] == 'S' and buffer[5] == 'T' and buffer[6] == 'O' and buffer[7] == 'R' and buffer[8] == 'E' and buffer[9] == 'D')
@@ -283,16 +299,21 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
   case 'E': /* PROTOCOL ERROR or END */
     {
+      // END
       if (buffer[1] == 'N' and buffer[2] == 'D')
       {
         return MEMCACHED_END;
       }
+#if 0
+      // PROTOCOL_ERROR
       else if (buffer[1] == 'R' and buffer[2] == 'O' and buffer[3] == 'T' and buffer[4] == 'O' and buffer[5] == 'C' and buffer[6] == 'O' and buffer[7] == 'L'
                and buffer[8] == '_'
                and buffer[9] == 'E' and buffer[10] == 'R' and buffer[11] == 'R' and buffer[12] == 'O' and buffer[13] == 'R')
       {
         return MEMCACHED_PROTOCOL_ERROR;
       }
+#endif
+      // EXISTS
       else if (buffer[1] == 'X' and buffer[2] == 'I' and buffer[3] == 'S' and buffer[4] == 'T' and buffer[5] == 'S')
       {
         return MEMCACHED_DATA_EXISTS;
@@ -302,6 +323,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
   case 'T': /* TOUCHED */
     {
+      // TOUCHED
       if (buffer[1] == 'O' and buffer[2] == 'U' and buffer[3] == 'C' and buffer[4] == 'H' and buffer[5] == 'E' and buffer[6] == 'D')
       {
         return MEMCACHED_SUCCESS;
@@ -310,18 +332,26 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
     break;
 
   case 'I': /* ITEM */
-    if (buffer[1] == 'T' and buffer[2] == 'E' and buffer[3] == 'M')
     {
-      /* We add back in one because we will need to search for END */
-      memcached_server_response_increment(ptr);
-      return MEMCACHED_ITEM;
+      // ITEM
+      if (buffer[1] == 'T' and buffer[2] == 'E' and buffer[3] == 'M')
+      {
+        /* We add back in one because we will need to search for END */
+        memcached_server_response_increment(ptr);
+        return MEMCACHED_ITEM;
+      }
     }
     break;
 
   case 'C': /* CLIENT ERROR */
-    if (buffer[1] == 'L' and buffer[2] == 'I' and buffer[3] == 'E' and buffer[4] == 'N' and buffer[5] == 'T')
     {
-      return MEMCACHED_CLIENT_ERROR;
+      // CLIENT_ERROR
+      if (buffer[1] == 'L' and buffer[2] == 'I' and buffer[3] == 'E' and buffer[4] == 'N' and buffer[5] == 'T'
+          and buffer[6] == '_'
+          and buffer[7] == 'E' and buffer[8] == 'R' and buffer[9] == 'R' and buffer[10] == 'O' and buffer[11] == 'R')
+      {
+        return MEMCACHED_CLIENT_ERROR;
+      }
     }
     break;
 
@@ -360,12 +390,20 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   }
 
   buffer[total_read]= 0;
+#if 0
+  if (total_read >= sizeof("STORSTORED") -1)
+  {
+    fprintf(stderr, "%s:%d '%s', %.*s\n", __FILE__, __LINE__,
+            buffer, MEMCACHED_MAX_BUFFER, ptr->read_buffer);
+    assert(memcmp(buffer,"STORSTORED", sizeof("STORSTORED") -1));
+  }
+#endif
   return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                              buffer, total_read);
 }
 
 static memcached_return_t binary_read_one_response(memcached_server_write_instance_st ptr,
-                                                   char *buffer, size_t buffer_length,
+                                                   char *buffer, const size_t buffer_length,
                                                    memcached_result_st *result)
 {
   memcached_return_t rc;
@@ -379,7 +417,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
 
   if (header.response.magic != PROTOCOL_BINARY_RES)
   {
-    return MEMCACHED_PROTOCOL_ERROR;
+    return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
   }
 
   /*
@@ -462,7 +500,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       {
         if (bodylen != sizeof(uint64_t) or buffer_length != sizeof(uint64_t))
         {
-          return MEMCACHED_PROTOCOL_ERROR;
+          return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
         }
 
         WATCHPOINT_ASSERT(bodylen == buffer_length);
@@ -562,8 +600,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     default:
       {
         /* Command not implemented yet! */
-        WATCHPOINT_ASSERT(0);
-        return MEMCACHED_PROTOCOL_ERROR;
+        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
       }
     }
   }
@@ -636,8 +673,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_RESPONSE_EINVAL:
     case PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND:
     default:
-      /* @todo fix the error mappings */
-      rc= MEMCACHED_PROTOCOL_ERROR;
+      return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
       break;
     }
   }
@@ -645,25 +681,11 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
   return rc;
 }
 
-memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
-                                               char *buffer, size_t buffer_length,
-                                               memcached_result_st *result)
+static memcached_return_t _read_one_response(memcached_server_write_instance_st ptr,
+                                             char *buffer, const size_t buffer_length,
+                                             memcached_result_st *result,
+                                             uint64_t& numeric_value)
 {
-  uint64_t numeric_value;
-
-  return memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
-}
-
-memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
-                                               char *buffer, size_t buffer_length,
-                                               memcached_result_st *result,
-                                               uint64_t& numeric_value)
-{
-  if (memcached_is_udp(ptr->root))
-  {
-    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
-  }
-
   memcached_server_response_decrement(ptr);
 
   if (result == NULL)
@@ -673,13 +695,14 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   }
 
   memcached_return_t rc;
-  if (ptr->root->flags.binary_protocol)
+  if (memcached_is_binary(ptr->root))
   {
     rc= binary_read_one_response(ptr, buffer, buffer_length, result);
   }
   else
   {
     rc= textual_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+    assert(rc != MEMCACHED_PROTOCOL_ERROR);
   }
 
   if (rc == MEMCACHED_UNKNOWN_READ_FAILURE or
@@ -692,6 +715,21 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   }
 
   return rc;
+}
+
+memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
+                                               memcached_result_st *result)
+{
+  uint64_t numeric_value;
+  char buffer[SMALL_STRING_LEN];
+
+  if (memcached_is_udp(ptr->root))
+  {
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
+  }
+
+
+  return _read_one_response(ptr, buffer, sizeof(buffer), result, numeric_value);
 }
 
 memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
@@ -724,25 +762,33 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
    * returned the last one. Purge all pending messages to ensure backwards
    * compatibility.
  */
-  if (memcached_is_binary(ptr->root) == false)
+  if (memcached_is_binary(ptr->root) == false and memcached_server_response_count(ptr) > 1)
   {
+    memcached_result_st junked_result;
+    memcached_result_st *junked_result_ptr= memcached_result_create(ptr->root, &junked_result);
+
+    assert(junked_result_ptr);
+
     while (memcached_server_response_count(ptr) > 1)
     {
-      memcached_return_t rc= memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+      memcached_return_t rc= _read_one_response(ptr, buffer, buffer_length, junked_result_ptr, numeric_value);
 
-      if (rc != MEMCACHED_END &&
-          rc != MEMCACHED_STORED &&
-          rc != MEMCACHED_SUCCESS &&
-          rc != MEMCACHED_STAT &&
-          rc != MEMCACHED_DELETED &&
-          rc != MEMCACHED_NOTFOUND &&
-          rc != MEMCACHED_NOTSTORED &&
+      // @TODO should we return an error on another but a bad read case?
+      if (rc != MEMCACHED_END and
+          rc != MEMCACHED_STORED and
+          rc != MEMCACHED_SUCCESS and
+          rc != MEMCACHED_STAT and
+          rc != MEMCACHED_DELETED and
+          rc != MEMCACHED_NOTFOUND and
+          rc != MEMCACHED_NOTSTORED and
           rc != MEMCACHED_DATA_EXISTS)
       {
+        memcached_result_free(junked_result_ptr);
         return rc;
       }
     }
+    memcached_result_free(junked_result_ptr);
   }
 
-  return memcached_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+  return _read_one_response(ptr, buffer, buffer_length, result, numeric_value);
 }

@@ -39,13 +39,7 @@
 
 /* Read a single response from the server */
 memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
-                                               char *buffer, size_t buffer_length,
                                                memcached_result_st *result);
-
-memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
-                                               char *buffer, size_t buffer_length,
-                                               memcached_result_st *result,
-                                               uint64_t& numeric_value);
 
 memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
