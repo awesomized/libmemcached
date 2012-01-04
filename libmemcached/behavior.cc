@@ -114,7 +114,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
-    if (ptr->flags.use_udp)
+    if (memcached_is_udp(ptr))
     {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                  memcached_literal_param("MEMCACHED_BEHAVIOR_BUFFER_REQUESTS cannot be set while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
@@ -128,8 +128,12 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->flags.use_udp= bool(data);
     if (bool(data))
     {
-      ptr->flags.no_reply= true;
+      ptr->flags.reply= false;
       ptr->flags.buffer_requests= false;
+    }
+    else
+    {
+      ptr->flags.reply= true;
     }
     break;
 
@@ -231,12 +235,14 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    if (ptr->flags.use_udp and bool(data) == false)
+    if (memcached_is_udp(ptr) and bool(data) == false)
     {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                  memcached_literal_param("MEMCACHED_BEHAVIOR_NOREPLY cannot be disabled while MEMCACHED_BEHAVIOR_USE_UDP is enabled."));
     }
-    ptr->flags.no_reply= bool(data);
+    // We reverse the logic here to make it easier to understand throughout the
+    // code.
+    ptr->flags.reply= bool(data) ? false : true;
     break;
 
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
@@ -310,7 +316,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.buffer_requests;
 
   case MEMCACHED_BEHAVIOR_USE_UDP:
-    return ptr->flags.use_udp;
+    return memcached_is_udp(ptr);
 
   case MEMCACHED_BEHAVIOR_TCP_NODELAY:
     return ptr->flags.tcp_nodelay;
@@ -364,7 +370,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       socklen_t sock_length= sizeof(int);
 
       if (ptr->send_size != -1) // If value is -1 then we are using the default
+      {
         return (uint64_t) ptr->send_size;
+      }
 
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, 0);
 
@@ -437,7 +445,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.hash_with_namespace;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
-    return ptr->flags.no_reply;
+    return ptr->flags.reply ? false : true;
 
   case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
     return ptr->flags.auto_eject_hosts;

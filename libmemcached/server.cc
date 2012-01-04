@@ -50,7 +50,7 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
-  self->fd= -1;
+  self->fd= INVALID_SOCKET;
   self->io_bytes_sent= 0;
   self->server_failure_counter= 0;
   self->server_failure_counter_query_id= 0;
@@ -88,11 +88,11 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
 
 static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
 {
-  if (not self)
+  if (self == NULL)
   {
    self= libmemcached_xmalloc(memc, struct memcached_server_st);
 
-    if (not self)
+    if (self == NULL)
     {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
     }
@@ -131,9 +131,8 @@ memcached_server_st *__server_create_with(memcached_st *memc,
 
   _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
-
   if (memc and memcached_is_udp(memc))
-  {
+  { 
     self->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
     memcached_io_init_udp_header(self, 0);
   }

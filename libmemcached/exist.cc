@@ -38,8 +38,9 @@
 
 static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write_instance_st instance, const char *key, size_t key_length)
 {
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { memcached_literal_param("add ") },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
     { key, key_length },
@@ -51,21 +52,27 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
   };
 
   /* Send command header */
-  memcached_return_t rc=  memcached_vdo(instance, vector, 8, true);
+  memcached_return_t rc=  memcached_vdo(instance, vector, 9, true);
   if (rc == MEMCACHED_SUCCESS)
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
 
     if (rc == MEMCACHED_NOTSTORED)
+    {
       rc= MEMCACHED_SUCCESS;
+    }
 
     if (rc == MEMCACHED_STORED)
+    {
       rc= MEMCACHED_NOTFOUND;
+    }
   }
 
   if (rc == MEMCACHED_WRITE_FAILURE)
+  {
     memcached_io_reset(instance);
+  }
 
   return rc;
 }
@@ -87,8 +94,9 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
                                                             +memcached_array_size(memc->_namespace)
                                                             +request.message.header.request.extlen));
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, send_length },
     { memcached_array_string(memc->_namespace), memcached_array_size(memc->_namespace) },
     { key, key_length }
@@ -96,7 +104,7 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
 
   /* write the header */
   memcached_return_t rc;
-  if ((rc= memcached_vdo(instance, vector, 3, true)) != MEMCACHED_SUCCESS)
+  if ((rc= memcached_vdo(instance, vector, 4, true)) != MEMCACHED_SUCCESS)
   {
     memcached_io_reset(instance);
     return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
@@ -123,16 +131,15 @@ memcached_return_t memcached_exist_by_key(memcached_st *memc,
                                           const char *key, size_t key_length)
 {
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(memc)))
+  if (memcached_failed(rc= initialize_query(memc, true)))
   {
     return rc;
   }
 
-  if (memc->flags.use_udp)
+  if (memcached_is_udp(memc))
   {
     return MEMCACHED_NOT_SUPPORTED;
   }
-
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
   memcached_server_write_instance_st instance;

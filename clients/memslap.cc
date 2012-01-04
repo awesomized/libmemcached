@@ -53,6 +53,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <iostream>
+
 #include <libmemcached/memcached.h>
 
 #include "client_options.h"
@@ -152,7 +154,7 @@ static unsigned int opt_createial_load= 0;
 static unsigned int opt_concurrency= 0;
 static int opt_displayflag= 0;
 static char *opt_servers= NULL;
-static int opt_udp_io= 0;
+static bool opt_udp_io= false;
 test_t opt_test= SET_TEST;
 
 extern "C" {
@@ -243,26 +245,31 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
   memcached_st *memc= memcached_create(NULL);
 
+  memcached_server_push(memc, servers);
+
   /* We need to set udp behavior before adding servers to the client */
   if (opt_udp_io)
   {
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP,
-                           (uint64_t)opt_udp_io);
-    for (uint32_t x= 0; x < memcached_server_list_count(servers); x++ )
+    if (memcached_failed(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, opt_udp_io)))
     {
-      servers[x].type= MEMCACHED_CONNECTION_UDP;
+      std::cerr << "Failed to enable UDP." << std::endl;
+      memcached_free(memc);
+      exit(EXIT_FAILURE);
     }
   }
-  memcached_server_push(memc, servers);
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
                          (uint64_t)opt_binary);
 
   if (opt_flush)
+  {
     flush_all(memc);
+  }
 
   if (opt_createial_load)
+  {
     pairs= load_create_data(memc, opt_createial_load, &actual_loaded);
+  }
 
   char **keys= static_cast<char **>(calloc(actual_loaded, sizeof(char*)));
   size_t *key_lengths= static_cast<size_t *>(calloc(actual_loaded, sizeof(size_t)));
@@ -399,7 +406,7 @@ void options_parse(int argc, char *argv[])
                   "does not currently support get ops.\n");
         exit(1);
       }
-      opt_udp_io= 1;
+      opt_udp_io= true;
       break;
 
     case OPT_BINARY:

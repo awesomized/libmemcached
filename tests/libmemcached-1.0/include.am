@@ -123,6 +123,9 @@ tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES)
 check_PROGRAMS+= tests/testudp
 noinst_PROGRAMS+= tests/testudp
 
+test-udp: tests/testudp
+	@tests/testudp
+
 tests_testplus_SOURCES= tests/libmemcached-1.0/plus.cpp
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)

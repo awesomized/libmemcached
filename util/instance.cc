@@ -192,7 +192,7 @@ bool Instance::run()
             switch(errno)
             {
             default:
-              std::cerr << "Failed during send(" << strerror(errno) << ")" << std::endl;
+              std::cerr << "Failed dureng send(" << strerror(errno) << ")" << std::endl;
               break;
             }
           }

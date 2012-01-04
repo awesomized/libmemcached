@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  libmcachedd client library.
+ *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,6 +35,25 @@
  *
  */
 
-#pragma once
+#define MAX_UDP_DATAGRAM_LENGTH 1400
+#define UDP_DATAGRAM_HEADER_LENGTH 8
+#define UDP_REQUEST_ID_MSG_SIG_DIGITS 10
+#define UDP_REQUEST_ID_THREAD_MASK 0xFFFF << UDP_REQUEST_ID_MSG_SIG_DIGITS
+#define get_udp_datagram_request_id(A) ntohs((A)->request_id)
+#define get_udp_datagram_seq_num(A) ntohs((A)->sequence_number)
+#define get_udp_datagram_num_datagrams(A) ntohs((A)->num_datagrams)
+#define get_msg_num_from_request_id(A) ( (A) & (~(UDP_REQUEST_ID_THREAD_MASK)) )
+#define get_thread_id_from_request_id(A) ( (A) & (UDP_REQUEST_ID_THREAD_MASK) ) >> UDP_REQUEST_ID_MSG_SIG_DIGITS
+#define generate_udp_request_thread_id(A) (A) << UDP_REQUEST_ID_MSG_SIG_DIGITS
+#define UDP_REQUEST_ID_MAX_THREAD_ID get_thread_id_from_request_id(0xFFFF)
 
-void custom_backtrace(void);
+struct udp_datagram_header_st
+{
+  uint16_t request_id;
+  uint16_t sequence_number;
+  uint16_t num_datagrams;
+  uint16_t reserved;
+};
+
+bool memcached_io_init_udp_header(memcached_server_write_instance_st ptr, const uint16_t thread_id);
+void increment_udp_message_id(memcached_server_write_instance_st ptr);

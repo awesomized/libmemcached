@@ -42,6 +42,8 @@
 static void options_parse(int argc, char *argv[]);
 
 static bool opt_binary= false;
+static bool opt_udp= false;
+static bool opt_buffer= false;
 static int opt_verbose= 0;
 static char *opt_servers= NULL;
 static char *opt_hash= NULL;
@@ -61,8 +63,8 @@ static long strtol_wrapper(const char *nptr, int base, bool *error)
 
   /* Check for various possible errors */
 
-  if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-      || (errno != 0 && val == 0))
+  if ((errno == ERANGE and (val == LONG_MAX or val == LONG_MIN))
+      or (errno != 0 && val == 0))
   {
     *error= true;
     return EXIT_SUCCESS;
@@ -85,6 +87,37 @@ int main(int argc, char *argv[])
   initialize_sockets();
 
   memcached_st *memc= memcached_create(NULL);
+
+  if (opt_udp)
+  {
+    if (opt_verbose)
+    {
+      std::cout << "Enabling UDP" << std::endl;
+    }
+
+    if (memcached_failed(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, opt_udp)))
+    {
+      memcached_free(memc);
+      std::cerr << "Could not enable UDP protocol." << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
+  if (opt_buffer)
+  {
+    if (opt_verbose)
+    {
+      std::cout << "Enabling MEMCACHED_BEHAVIOR_BUFFER_REQUESTS" << std::endl;
+    }
+
+    if (memcached_failed(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, opt_buffer)))
+    {
+      memcached_free(memc);
+      std::cerr << "Could not enable MEMCACHED_BEHAVIOR_BUFFER_REQUESTS." << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
   process_hash_option(memc, opt_hash);
 
   if (opt_servers == NULL)
@@ -114,9 +147,7 @@ int main(int argc, char *argv[])
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,
-                         (uint64_t)opt_binary);
-
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
   if (opt_username and LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
     memcached_free(memc);
@@ -143,7 +174,7 @@ int main(int argc, char *argv[])
     {
       if (opt_verbose)
       {
-        fprintf(stderr, "memcp: %s: %s\n", argv[optind], strerror(errno));
+        std::cerr << "memcp " << argv[optind] << " " << strerror(errno) << std::endl;
         optind++;
       }
       exit_code= EXIT_FAILURE;
@@ -175,59 +206,65 @@ int main(int argc, char *argv[])
     char *file_buffer_ptr;
     if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
     {
-      fprintf(stderr, "malloc: %s\n", strerror(errno));
+      std::cerr << "Error allocating file buffer(" << strerror(errno) << ")" << std::endl;
       exit(EXIT_FAILURE);
     }
 
     ssize_t read_length;
-    if ((read_length= read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
+    if ((read_length= ::read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
     {
-      fprintf(stderr, "read: %s\n", strerror(errno));
+      std::cerr << "Error while reading file " << file_buffer_ptr << " (" << strerror(errno) << ")" << std::endl;
       exit(EXIT_FAILURE);
     }
 
     if (read_length != sbuf.st_size)
     {
-      fprintf(stderr, "Failure reading from file\n");
-      exit(1);
+      std::cerr << "Failure while reading file. Read length was not equal to stat() length" << std::endl;
+      exit(EXIT_FAILURE);
     }
 
     memcached_return_t rc;
     if (opt_method == OPT_ADD)
+    {
       rc= memcached_add(memc, ptr, strlen(ptr),
                         file_buffer_ptr, (size_t)sbuf.st_size,
 			opt_expires, opt_flags);
+    }
     else if (opt_method == OPT_REPLACE)
+    {
       rc= memcached_replace(memc, ptr, strlen(ptr),
 			    file_buffer_ptr, (size_t)sbuf.st_size,
 			    opt_expires, opt_flags);
+    }
     else
+    {
       rc= memcached_set(memc, ptr, strlen(ptr),
                         file_buffer_ptr, (size_t)sbuf.st_size,
                         opt_expires, opt_flags);
+    }
 
-    if (rc != MEMCACHED_SUCCESS)
+    if (memcached_failed(rc))
     {
-      fprintf(stderr, "memcp: %s: memcache error %s",
-	      ptr, memcached_strerror(memc, rc));
-      if (memcached_last_error_errno(memc))
-	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
-      fprintf(stderr, "\n");
-
+      std::cerr << "Error occrrured during operation: " << memcached_last_error_message(memc) << std::endl;
       exit_code= EXIT_FAILURE;
     }
 
-    free(file_buffer_ptr);
-    close(fd);
+    ::free(file_buffer_ptr);
+    ::close(fd);
     optind++;
   }
 
   memcached_free(memc);
 
   if (opt_servers)
+  {
     free(opt_servers);
+  }
+
   if (opt_hash)
+  {
     free(opt_hash);
+  }
 
   return exit_code;
 }
@@ -244,6 +281,8 @@ static void options_parse(int argc, char *argv[])
       {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
       {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
       {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
+      {(OPTIONSTRING)"udp", no_argument, NULL, OPT_UDP},
+      {(OPTIONSTRING)"buffer", no_argument, NULL, OPT_BUFFER},
       {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
       {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
@@ -274,6 +313,7 @@ static void options_parse(int argc, char *argv[])
     {
     case 0:
       break;
+
     case OPT_BINARY:
       opt_binary= true;
       break;
@@ -348,6 +388,14 @@ static void options_parse(int argc, char *argv[])
 
     case OPT_QUIET:
       close_stdio();
+      break;
+
+    case OPT_UDP:
+      opt_udp= true;
+      break;
+
+    case OPT_BUFFER:
+      opt_buffer= true;
       break;
 
     case '?':

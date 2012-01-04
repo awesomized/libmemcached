@@ -395,11 +395,11 @@ static void _error_print(const memcached_error_t *error)
 
   if (error->size == 0)
   {
-    fprintf(stderr, "%s\n", memcached_strerror(NULL, error->rc) );
+    fprintf(stderr, "\t%s\n", memcached_strerror(NULL, error->rc) );
   }
   else
   {
-    fprintf(stderr, "%s %s\n", memcached_strerror(NULL, error->rc), error->message);
+    fprintf(stderr, "\t%s %s\n", memcached_strerror(NULL, error->rc), error->message);
   }
 
   _error_print(error->next);
@@ -407,10 +407,19 @@ static void _error_print(const memcached_error_t *error)
 
 void memcached_error_print(const memcached_st *self)
 {
-  if (not self)
+  if (self == NULL)
+  {
     return;
+  }
 
   _error_print(self->error_messages);
+
+  for (uint32_t x= 0; x < memcached_server_count(self); x++)
+  {
+    memcached_server_instance_st instance= memcached_server_instance_by_position(self, x);
+
+    _error_print(instance->error_messages);
+  }
 }
 
 static void _error_free(memcached_error_t *error)

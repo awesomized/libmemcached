@@ -202,8 +202,8 @@ valgrind-memstat: clients/memstat
 	@cat tests/Xumemc.pid | xargs kill || echo "Failed to kill memcached server"
 	@rm tests/Xumemc.pid
 
-test-mem: tests/var tests/testapp
-	@tests/testapp
+test-mem: tests/var tests/libmemcached-1.0/testapp
+	@tests/libmemcached-1.0/testapp
 
 test-sasl: tests/sasl
 	@tests/sasl
@@ -229,17 +229,14 @@ test-memcapable: tests/var tests/memcapable
 pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 
-gdb-mem: tests/testapp
-	@$(DEBUG_COMMAND)  tests/testapp
+gdb-mem: tests/var tests/libmemcached-1.0/testapp
+	@$(DEBUG_COMMAND)  tests/libmemcached-1.0/testapp
 
 gdb-sasl: tests/sasl
 	@$(DEBUG_COMMAND)  tests/sasl
 
 gdb-atom: tests/atomsmasher
 	@$(DEBUG_COMMAND) tests/atomsmasher
-
-gdb-udp: tests/testudp
-	@$(DEBUG_COMMAND) tests/testudp
 
 gdb-plus: tests/testplus
 	$(DEBUG_COMMAND) tests/testplus
@@ -268,9 +265,6 @@ valgrind-failure: tests/failure
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND) tests/atomsmasher
 
-valgrind-udp: tests/testudp
-	$(VALGRIND_COMMAND) tests/testudp
-
 valgrind-plus: tests/testplus
 	@$(VALGRIND_COMMAND) tests/testplus
 
@@ -291,9 +285,6 @@ helgrind-mem: tests/testapp
 
 helgrind-atom: tests/atomsmasher
 	@$(HELGRIND_COMMAND) tests/atomsmasher
-
-helgrind-udp: tests/testudp
-	@$(HELGRIND_COMMAND) tests/testudp
 
 helgrind-plus: tests/testplus
 	@$(HELGRIND_COMMAND) tests/testplus

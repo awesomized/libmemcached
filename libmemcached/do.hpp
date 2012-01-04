@@ -37,13 +37,7 @@
 
 #pragma once
 
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_do(memcached_server_write_instance_st ptr,
-                                const void *commmand,
-                                size_t command_length,
-                                bool with_flush);
-
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
-                                 const struct libmemcached_io_vector_st *vector, size_t count,
-                                 bool with_flush);
+                                 libmemcached_io_vector_st vector[],
+                                 const size_t count,
+                                 const bool with_flush);

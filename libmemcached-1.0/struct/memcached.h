@@ -54,7 +54,7 @@ struct memcached_st {
     bool buffer_requests:1;
     bool hash_with_namespace:1;
     bool no_block:1; // Don't block
-    bool no_reply:1;
+    bool reply:1;
     bool randomize_replica_read:1;
     bool support_cas:1;
     bool tcp_nodelay:1;
