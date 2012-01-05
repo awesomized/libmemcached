@@ -131,7 +131,7 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
    ** We might be able to process some of the response messages if we
    ** have a callback set up
  */
-  if (ptr->root->callbacks != NULL && ptr->root->flags.use_udp == false)
+  if (ptr->root->callbacks != NULL)
   {
     /*
      * We might have responses... try to read them out and fire
@@ -296,18 +296,6 @@ static bool io_flush(memcached_server_write_instance_st ptr,
 
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
-  // UDP Sanity check, make sure that we are not sending somthing too big
-  if (memcached_is_udp(ptr->root) and write_length > MAX_UDP_DATAGRAM_LENGTH)
-  {
-    error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-    return false;
-  }
-
-  if (ptr->write_buffer_offset == 0 or (memcached_is_udp(ptr->root) and ptr->write_buffer_offset == UDP_DATAGRAM_HEADER_LENGTH))
-  {
-    return true;
-  }
-
   /* Looking for memory overflows */
 #if defined(DEBUG)
   if (write_length == MEMCACHED_MAX_BUFFER)
@@ -319,10 +307,6 @@ static bool io_flush(memcached_server_write_instance_st ptr,
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
-    if (memcached_is_udp(ptr->root))
-    {
-      increment_udp_message_id(ptr);
-    }
 
     ssize_t sent_length= 0;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
@@ -387,13 +371,6 @@ static bool io_flush(memcached_server_write_instance_st ptr,
       }
     }
 
-    if (memcached_is_udp(ptr->root) and size_t(sent_length) != write_length)
-    {
-      memcached_quit_server(ptr, true);
-      error= memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
-      return false;
-    }
-
     ptr->io_bytes_sent+= uint32_t(sent_length);
 
     local_write_ptr+= sent_length;
@@ -421,6 +398,7 @@ memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_s
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
                                      void *buffer, size_t length, ssize_t& nread)
 {
+  assert(memcached_is_udp(ptr->root) == false);
   assert_msg(ptr, "Programmer error, memcached_io_read() recieved an invalid memcached_server_write_instance_st"); // Programmer error
   char *buffer_ptr= static_cast<char *>(buffer);
 
@@ -535,6 +513,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
 {
   assert_msg(ptr, "Programmer error, invalid memcached_server_write_instance_st");
+  assert(memcached_is_udp(ptr->root) == false);
 
   if (ptr->fd == INVALID_SOCKET)
   {
@@ -592,6 +571,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
                          const void *buffer, size_t length, bool with_flush)
 {
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+  assert(memcached_is_udp(ptr->root) == false);
 
   size_t original_length= length;
   const char *buffer_ptr= static_cast<const char *>(buffer);
