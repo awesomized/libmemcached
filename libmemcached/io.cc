@@ -142,10 +142,8 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
     memcached_set_processing_input((memcached_st *)ptr->root, true);
 
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    memcached_return_t error;
     memcached_st *root= (memcached_st *)ptr->root;
-    error= memcached_response(ptr, buffer, sizeof(buffer),
-                              &root->result);
+    memcached_return_t error= memcached_response(ptr, buffer, sizeof(buffer), &root->result);
 
     memcached_set_processing_input(root, false);
 
@@ -378,14 +376,7 @@ static bool io_flush(memcached_server_write_instance_st ptr,
   }
 
   WATCHPOINT_ASSERT(write_length == 0);
-  if (memcached_is_udp(ptr->root))
-  {
-    ptr->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
-  }
-  else
-  {
-    ptr->write_buffer_offset= 0;
-  }
+  ptr->write_buffer_offset= 0;
 
   return true;
 }
