@@ -35,6 +35,7 @@ enum memcached_options {
   OPT_HASH,
   OPT_BINARY,
   OPT_UDP,
+  OPT_BUFFER,
   OPT_USERNAME,
   OPT_PASSWD,
   OPT_STAT_ARGS,

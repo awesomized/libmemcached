@@ -231,7 +231,7 @@ static inline void set_socket_nonblocking(memcached_server_st *server)
 
 static void set_socket_options(memcached_server_st *server)
 {
-  assert_msg(server->fd != -1, "invalid socket was passed to set_socket_options()");
+  assert_msg(server->fd != INVALID_SOCKET, "invalid socket was passed to set_socket_options()");
 
   if (memcached_is_udp(server->root))
   {

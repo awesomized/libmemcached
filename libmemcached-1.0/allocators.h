@@ -37,14 +37,6 @@
 
 #pragma once
 
-struct memcached_allocator_t {
-  memcached_calloc_fn calloc;
-  memcached_free_fn free;
-  memcached_malloc_fn malloc;
-  memcached_realloc_fn realloc;
-  void *context;
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif

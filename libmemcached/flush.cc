@@ -37,86 +37,8 @@
 #include <libmemcached/common.h>
 
 static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
-                                                 time_t expiration);
-static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
-                                                  time_t expiration);
-
-memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
-{
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
-  {
-    return rc;
-  }
-
-  LIBMEMCACHED_MEMCACHED_FLUSH_START();
-  if (ptr->flags.binary_protocol)
-  {
-    rc= memcached_flush_binary(ptr, expiration);
-  }
-  else
-  {
-    rc= memcached_flush_textual(ptr, expiration);
-  }
-  LIBMEMCACHED_MEMCACHED_FLUSH_END();
-
-  return rc;
-}
-
-static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
-                                                  time_t expiration)
-{
-  bool reply= ptr->flags.no_reply ? false : true;
-
-  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  int send_length;
-  if (expiration)
-  {
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "flush_all %llu%s\r\n",
-                          (unsigned long long)expiration, reply ? "" :  " noreply");
-  }
-  else
-  {
-    send_length= snprintf(buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, 
-                          "flush_all%s\r\n", reply ? "" : " noreply");
-  }
-
-  if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE or send_length < 0)
-  {
-    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
-  }
-
-
-  memcached_return_t rc= MEMCACHED_SUCCESS;
-  for (unsigned int x= 0; x < memcached_server_count(ptr); x++)
-  {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
-
-    memcached_return_t rrc= memcached_do(instance, buffer, (size_t)send_length, true);
-    if (rrc == MEMCACHED_SUCCESS and reply == true)
-    {
-      char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-      rrc= memcached_response(instance, response_buffer, sizeof(response_buffer), NULL);
-    }
-
-    if (memcached_failed(rrc))
-    {
-      // If an error has already been reported, then don't add to it
-      if (instance->error_messages == NULL)
-      {
-        memcached_set_error(*instance, rrc, MEMCACHED_AT);
-      }
-      rc= MEMCACHED_SOME_ERRORS;
-    }
-  }
-
-  return rc;
-}
-
-static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
-                                                 time_t expiration)
+                                                 time_t expiration,
+                                                 const bool reply)
 {
   protocol_binary_request_flush request= {};
 
@@ -133,19 +55,28 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    if (ptr->flags.no_reply)
-    {
-      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
-    }
-    else
+    if (reply)
     {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSH;
     }
+    else
+    {
+      request.message.header.request.opcode= PROTOCOL_BINARY_CMD_FLUSHQ;
+    }
+
+    libmemcached_io_vector_st vector[]=
+    {
+      { NULL, 0 },
+      { request.bytes, sizeof(request.bytes) }
+    };
 
     memcached_return_t rrc;
-    if ((rrc= memcached_do(instance, request.bytes, sizeof(request.bytes), true)))
+    if (memcached_failed(rrc= memcached_vdo(instance, vector, 2, true)))
     {
-      memcached_set_error(*instance, rrc, MEMCACHED_AT);
+      if (instance->error_messages == NULL or instance->root->error_messages == NULL)
+      {
+        memcached_set_error(*instance, rrc, MEMCACHED_AT);
+      }
       memcached_io_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
     } 
@@ -160,6 +91,82 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
       (void)memcached_response(instance, NULL, 0, NULL);
     }
   }
+
+  return rc;
+}
+
+static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
+                                                  time_t expiration,
+                                                  const bool reply)
+{
+  char buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int send_length= 0;
+  if (expiration)
+  {
+    send_length= snprintf(buffer, sizeof(buffer), "%llu", (unsigned long long)expiration);
+  }
+
+  if (size_t(send_length) >= sizeof(buffer) or send_length < 0)
+  {
+    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+  }
+
+  memcached_return_t rc= MEMCACHED_SUCCESS;
+  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  {
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+
+    libmemcached_io_vector_st vector[]=
+    {
+      { NULL, 0 },
+      { memcached_literal_param("flush_all ") },
+      { buffer, send_length },
+      { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
+      { memcached_literal_param("\r\n") }
+    };
+
+    memcached_return_t rrc= memcached_vdo(instance, vector, 5, true);
+    if (memcached_success(rrc) and reply == true)
+    {
+      char response_buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+      rrc= memcached_response(instance, response_buffer, sizeof(response_buffer), NULL);
+    }
+
+    if (memcached_failed(rrc))
+    {
+      // If an error has already been reported, then don't add to it
+      if (instance->error_messages == NULL or instance->root->error_messages == NULL)
+      {
+        memcached_set_error(*instance, rrc, MEMCACHED_AT);
+      }
+      rc= MEMCACHED_SOME_ERRORS;
+    }
+  }
+
+  return rc;
+}
+
+memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
+{
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, true)))
+  {
+    return rc;
+  }
+
+  bool reply= memcached_is_replying(ptr);
+
+  LIBMEMCACHED_MEMCACHED_FLUSH_START();
+  if (memcached_is_binary(ptr))
+  {
+    rc= memcached_flush_binary(ptr, expiration, reply);
+  }
+  else
+  {
+    rc= memcached_flush_textual(ptr, expiration, reply);
+  }
+  LIBMEMCACHED_MEMCACHED_FLUSH_END();
 
   return rc;
 }

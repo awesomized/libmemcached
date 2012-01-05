@@ -37,12 +37,6 @@
 
 #pragma once
 
-struct memcached_callback_st {
-  memcached_execute_fn *callback;
-  void *context;
-  uint32_t number_of_callback;
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif

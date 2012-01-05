@@ -127,6 +127,10 @@ AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_HEADERS([sasl/sasl.h])
+AC_CHECK_HEADERS([execinfo.h])
+AC_CHECK_HEADERS([cxxabi.h], 
+	AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
+	AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
 AC_CXX_HEADER_STDCXX_98
 
 AC_FUNC_ALLOCA
@@ -153,6 +157,8 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_VOLATILE
 AC_C_RESTRICT
+
+AX_CXX_GCC_ABI_DEMANGLE
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],
@@ -190,6 +196,8 @@ AC_CONFIG_FILES([
   docs/conf.py
   libhashkit-1.0/configure.h
   libmemcached-1.0/configure.h
+  libmemcached-1.2/configure.h
+  libmemcached-2.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec

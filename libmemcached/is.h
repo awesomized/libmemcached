@@ -40,9 +40,17 @@
 /* These are private */ 
 #define memcached_is_allocated(__object) ((__object)->options.is_allocated)
 #define memcached_is_udp(__object) ((__object)->flags.use_udp)
+#define memcached_is_verify_key(__object) ((__object)->flags.verify_key)
+#define memcached_is_binary(__object) ((__object)->flags.binary_protocol)
 #define memcached_is_initialized(__object) ((__object)->options.is_initialized)
 #define memcached_is_purging(__object) ((__object)->state.is_purging)
 #define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
+
+#define memcached_is_buffering(__object) ((__object)->flags.buffer_requests)
+#define memcached_is_replying(__object) ((__object)->flags.reply)
+
+#define memcached_has_error(__object) ((__object)->error_messages)
+
 #define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
 #define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
 #define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))

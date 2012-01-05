@@ -36,14 +36,17 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t initialize_query(memcached_st *self)
+memcached_return_t initialize_query(memcached_st *self, bool increment_query_id)
 {
   if (self == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  self->query_id++;
+  if (increment_query_id)
+  {
+    self->query_id++;
+  }
 
   if (self->state.is_time_for_rebuild)
   {

@@ -132,3 +132,11 @@ tests/memexist
 libmemcached/configure.h
 clients/memtouch
 tests/memtouch
+libmemcached-1.2/configure.h
+tests/libmemcached-1.0/internals
+tests/libmemcached-1.0/sasl
+tests/libmemcached-1.0/testapp
+libmemcached-2.0/configure.h
+libmemcached-1.0/t/c_test
+libmemcached-1.0/t/c_sasl_test
+libmemcached-1.0/t/cc_test

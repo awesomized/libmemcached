@@ -298,7 +298,7 @@ bool Memcached::build(int argc, const char *argv[])
     arg_buffer << " -u root ";
   }
 
-  arg_buffer << " -l 127.0.0.1 ";
+  arg_buffer << " -l localhost ";
   arg_buffer << " -m 128 ";
   arg_buffer << " -M ";
 

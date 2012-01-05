@@ -48,11 +48,13 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
   pid_t pid= -1;
 
   memcached_return_t unused;
-  if (not ret)
+  if (ret == NULL)
+  {
     ret= &unused;
+  }
 
   memcached_st *memc_ptr= memcached_create(NULL);
-  if (not memc_ptr)
+  if (memc_ptr == NULL)
   {
     *ret= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return -1;
@@ -72,8 +74,7 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
     }
     else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
     {
-      memcached_server_instance_st instance=
-        memcached_server_instance_by_position(memc_ptr, 0);
+      memcached_server_instance_st instance= memcached_server_instance_by_position(memc_ptr, 0);
 
       assert_msg(instance and instance->error_messages, " ");
       if (instance and instance->error_messages)

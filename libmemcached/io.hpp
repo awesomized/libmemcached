@@ -38,38 +38,35 @@
 
 #pragma once
 
-LIBMEMCACHED_LOCAL
+bool memcached_io_write(memcached_server_write_instance_st ptr);
+
+ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
+                           const void *buffer, size_t length, bool with_flush);
+
+ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
+                            libmemcached_io_vector_st vector[],
+                            const size_t number_of, const bool with_flush);
+
 memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr);
 
-LIBMEMCACHED_LOCAL
 void memcached_io_reset(memcached_server_write_instance_st ptr);
 
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
-                                     void *buffer, size_t length, ssize_t *nread);
+                                     void *buffer, size_t length, ssize_t& nread);
 
 /* Read a line (terminated by '\n') into the buffer */
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
                                          char *buffer_ptr,
                                          size_t size,
                                          size_t& total);
 
-LIBMEMCACHED_LOCAL
 void memcached_io_close(memcached_server_write_instance_st ptr);
 
 /* Read n bytes of data from the server and store them in dta */
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
                                        void *dta,
-                                       size_t size);
+                                       const size_t size);
 
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_io_init_udp_header(memcached_server_write_instance_st ptr,
-                                                uint16_t thread_id);
-
-LIBMEMCACHED_LOCAL
 memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st *memc);
 
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr);

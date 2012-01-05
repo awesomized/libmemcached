@@ -42,20 +42,26 @@ static memcached_return_t ascii_touch(memcached_server_write_instance_st instanc
                                       const char *key, size_t key_length,
                                       time_t expiration)
 {
-  char buffer[21];
-
-  int buffer_length= snprintf(buffer, sizeof(buffer), " %u", uint32_t(expiration));
-  struct libmemcached_io_vector_st vector[]=
+  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+  int expiration_buffer_length= snprintf(expiration_buffer, sizeof(expiration_buffer), " %llu", (unsigned long long)expiration);
+  if (size_t(expiration_buffer_length) >= sizeof(expiration_buffer) or expiration_buffer_length < 0)
   {
+    return memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
+  }
+
+  libmemcached_io_vector_st vector[]=
+  {
+    { NULL, 0 },
     { memcached_literal_param("touch ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length },
-    { buffer, buffer_length },
+    { expiration_buffer, expiration_buffer_length },
     { memcached_literal_param("\r\n") }
   };
 
   memcached_return_t rc;
-  if (memcached_failed(rc= memcached_vdo(instance, vector, 5, true)))
+  if (memcached_failed(rc= memcached_vdo(instance, vector, 6, true)))
   {
     memcached_io_reset(instance);
     return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
@@ -77,15 +83,16 @@ static memcached_return_t binary_touch(memcached_server_write_instance_st instan
   request.message.header.request.bodylen= htonl((uint32_t)(key_length +memcached_array_size(instance->root->_namespace) +request.message.header.request.extlen));
   request.message.body.expiration= htonl((uint32_t) expiration);
 
-  struct libmemcached_io_vector_st vector[]=
+  libmemcached_io_vector_st vector[]=
   {
+    { NULL, 0 },
     { request.bytes, sizeof(request.bytes) },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length }
   };
 
   memcached_return_t rc;
-  if (memcached_failed(rc= memcached_vdo(instance, vector, 3, true)))
+  if (memcached_failed(rc= memcached_vdo(instance, vector, 4, true)))
   {
     memcached_io_reset(instance);
     return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
@@ -109,7 +116,7 @@ memcached_return_t memcached_touch_by_key(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_TOUCH_START();
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr)))
+  if (memcached_failed(rc= initialize_query(ptr, true)))
   {
     return rc;
   }
@@ -137,7 +144,7 @@ memcached_return_t memcached_touch_by_key(memcached_st *ptr,
   }
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-  rc= memcached_read_one_response(instance, buffer, sizeof(buffer), NULL);
+  rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
 
   if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_NOTFOUND)
   {

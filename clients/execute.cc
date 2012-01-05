@@ -15,7 +15,7 @@
 */
 
 #include <config.h>
-#include "execute.h"
+#include "clients/execute.h"
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
@@ -27,10 +27,15 @@ unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int numbe
     memcached_return_t rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
                                          pairs[x].value, pairs[x].value_length,
                                          0, 0);
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_BUFFERED)
+    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_BUFFERED)
     {
-      fprintf(stderr, "Failured on insert of %.*s\n",
+      fprintf(stderr, "%s:%d Failure on insert (%s) of %.*s\n",
+              __FILE__, __LINE__,
+              memcached_last_error_message(memc),
               (unsigned int)pairs[x].key_length, pairs[x].key);
+      
+      // We will try to reconnect and see if that fixes the issue
+      memcached_quit(memc);
     }
     else
     {
@@ -54,23 +59,27 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 
   for (retrieved= 0,x= 0; x < number_of; x++)
   {
-    char *value;
     size_t value_length;
     uint32_t flags;
-    unsigned int fetch_key;
 
-    fetch_key= (unsigned int)((unsigned int)random() % number_of);
+    unsigned int fetch_key= (unsigned int)((unsigned int)random() % number_of);
 
-    value= memcached_get(memc, pairs[fetch_key].key, pairs[fetch_key].key_length,
-                         &value_length, &flags, &rc);
+    char *value= memcached_get(memc, pairs[fetch_key].key, pairs[fetch_key].key_length,
+                               &value_length, &flags, &rc);
 
     if (rc != MEMCACHED_SUCCESS)
-      fprintf(stderr, "Failured on read of %.*s\n",
+    {
+      fprintf(stderr, "%s:%d Failure on read(%s) of %.*s\n",
+              __FILE__, __LINE__,
+              memcached_last_error_message(memc),
               (unsigned int)pairs[fetch_key].key_length, pairs[fetch_key].key);
+    }
     else
+    {
       retrieved++;
+    }
 
-    free(value);
+    ::free(value);
   }
 
   return retrieved;
@@ -116,7 +125,8 @@ unsigned int execute_mget(memcached_st *memc,
     rc= memcached_fetch_execute(memc, callbacks, (void *)&retrieved, 1);
     if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_END)
     {
-      fprintf(stderr, "Failed to execute mget: %s\n",
+      fprintf(stderr, "%s:%d Failed to execute mget: %s\n",
+              __FILE__, __LINE__,
               memcached_strerror(memc, rc));
       memcached_quit(memc);
       return 0;
@@ -124,7 +134,8 @@ unsigned int execute_mget(memcached_st *memc,
   }
   else
   {
-    fprintf(stderr, "Failed to execute mget: %s\n",
+    fprintf(stderr, "%s:%d Failed to execute mget: %s\n",
+            __FILE__, __LINE__,
             memcached_strerror(memc, rc));
     memcached_quit(memc);
     return 0;

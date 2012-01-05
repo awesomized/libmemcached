@@ -42,6 +42,7 @@ noinst_HEADERS+= \
 		 libmemcached/server.hpp \
 		 libmemcached/server_instance.h \
 		 libmemcached/string.hpp \
+		 libmemcached/udp.hpp \
 		 libmemcached/virtual_bucket.h \
 		 libmemcached/watchpoint.h
 
@@ -98,6 +99,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/touch.cc \
 				       libmemcached/verbosity.cc \
 				       libmemcached/version.cc \
+				       libmemcached/udp.cc \
 				       libmemcached/virtual_bucket.c
 
 libmemcached/options.cc: libmemcached/csl/parser.h
