@@ -579,25 +579,9 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
   while (length)
   {
     char *write_ptr;
-    size_t should_write;
-    size_t buffer_end;
-
-    if (memcached_is_udp(ptr->root))
-    {
-      //UDP does not support partial writes
-      buffer_end= MAX_UDP_DATAGRAM_LENGTH;
-      should_write= length;
-      if (ptr->write_buffer_offset + should_write > buffer_end)
-      {
-        return -1;
-      }
-    }
-    else
-    {
-      buffer_end= MEMCACHED_MAX_BUFFER;
-      should_write= buffer_end - ptr->write_buffer_offset;
-      should_write= (should_write < length) ? should_write : length;
-    }
+    size_t buffer_end= MEMCACHED_MAX_BUFFER;
+    size_t should_write= buffer_end -ptr->write_buffer_offset;
+    should_write= (should_write < length) ? should_write : length;
 
     write_ptr= ptr->write_buffer + ptr->write_buffer_offset;
     memcpy(write_ptr, buffer_ptr, should_write);
@@ -605,7 +589,7 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
     buffer_ptr+= should_write;
     length-= should_write;
 
-    if (ptr->write_buffer_offset == buffer_end and memcached_is_udp(ptr->root) == false)
+    if (ptr->write_buffer_offset == buffer_end)
     {
       WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
