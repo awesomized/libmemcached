@@ -230,13 +230,16 @@ static test_return_t gearmand_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (HAVE_LIBGEARMAN and GEARMAND_BINARY)
+  if (GEARMAND_BINARY)
   {
-    test_true(has_gearmand_binary());
-    const char *argv[1]= { "cycle_gearmand" };
-    test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
+    if (HAVE_LIBGEARMAN)
+    {
+      test_true(has_gearmand_binary());
+      const char *argv[1]= { "cycle_gearmand" };
+      test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
 
-    return TEST_SUCCESS;
+      return TEST_SUCCESS;
+    }
   }
 
   return TEST_SKIPPED;
@@ -264,13 +267,16 @@ static test_return_t memcached_socket_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED)
+  if (MEMCACHED_BINARY)
   {
-    test_true(has_memcached_binary());
-    const char *argv[1]= { "cycle_memcached" };
-    test_true(servers->start_socket_server("memcached", 9997, 1, argv));
+    if (HAVE_LIBMEMCACHED)
+    {
+      test_true(has_memcached_binary());
+      const char *argv[1]= { "cycle_memcached" };
+      test_true(servers->start_socket_server("memcached", 9997, 1, argv));
 
-    return TEST_SUCCESS;
+      return TEST_SUCCESS;
+    }
   }
 
   return TEST_SKIPPED;
@@ -286,13 +292,16 @@ static test_return_t memcached_sasl_test(void *object)
     return TEST_SKIPPED;
   }
 
-  if (MEMCACHED_SASL_BINARY and HAVE_LIBMEMCACHED)
+  if (MEMCACHED_SASL_BINARY)
   {
-    test_true(has_memcached_sasl_binary());
-    const char *argv[1]= { "cycle_memcached_sasl" };
-    test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
+    if (HAVE_LIBMEMCACHED)
+    {
+      test_true(has_memcached_sasl_binary());
+      const char *argv[1]= { "cycle_memcached_sasl" };
+      test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
 
-    return TEST_SUCCESS;
+      return TEST_SUCCESS;
+    }
   }
 
   return TEST_SKIPPED;
