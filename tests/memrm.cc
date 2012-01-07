@@ -134,7 +134,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 {
   if (HAVE_MEMCACHED_BINARY == 0)
   {
-    error= TEST_FATAL;
+    error= TEST_SKIPPED;
     return NULL;
   }
 
