@@ -52,7 +52,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                           const memcached_behavior_t flag,
                                           uint64_t data)
 {
-  if (not ptr)
+  if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
@@ -153,7 +153,9 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     {
       if (data) // Turn on
+      {
         return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
+      }
 
       return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_MODULA);
     }
@@ -181,17 +183,17 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     if (ptr->flags.binary_protocol)
+    {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                         memcached_literal_param("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
+    }
     ptr->flags.verify_key= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
       ptr->flags.use_sort_hosts= bool(data);
-      run_distribution(ptr);
-
-      break;
+      return run_distribution(ptr);
     }
 
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
@@ -490,9 +492,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
     }
 
     ptr->distribution= type;
-    run_distribution(ptr);
-
-    return MEMCACHED_SUCCESS;
+    return run_distribution(ptr);
   }
 
   return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
@@ -604,11 +604,15 @@ memcached_return_t memcached_bucket_set(memcached_st *self,
 {
   memcached_return_t rc;
 
-  if (not self)
+  if (self == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
-  if (not host_map)
+  if (host_map == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_server_distribution_t old= memcached_behavior_get_distribution(self);
 
