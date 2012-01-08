@@ -48,6 +48,12 @@
 #define MEMCACHED_NI_MAXHOST 1025
 #endif
 
+#ifdef NI_MAXSERV
+#define MEMCACHED_NI_MAXSERV NI_MAXSERV
+#else
+#define MEMCACHED_NI_MAXSERV 32
+#endif
+
 enum memcached_server_state_t {
   MEMCACHED_SERVER_STATE_NEW, // fd == -1, no address lookup has been done
   MEMCACHED_SERVER_STATE_ADDRINFO, // ADDRRESS information has been gathered

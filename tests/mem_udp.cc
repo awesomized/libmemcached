@@ -434,7 +434,7 @@ static test_return_t udp_decr_test(memcached_st *memc)
                memcached_set(memc, 
                              test_literal_param(__func__),
                              test_literal_param("1"),
-                             (time_t)0, (uint32_t)0));
+                             time_t(0), uint32_t(0)));
 
   Expected expected_ids;
   get_udp_request_ids(memc, expected_ids);

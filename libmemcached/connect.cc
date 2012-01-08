@@ -554,6 +554,9 @@ static memcached_return_t network_connect(memcached_server_st *server)
 */
 static memcached_return_t backoff_handling(memcached_server_write_instance_st server, bool& in_timeout)
 {
+  struct timeval curr_time;
+  bool _gettime_success= (gettimeofday(&curr_time, NULL) == 0);
+
   /* 
     If we hit server_failure_limit then something is completely wrong about the server.
 
@@ -568,7 +571,21 @@ static memcached_return_t backoff_handling(memcached_server_write_instance_st se
     if (_is_auto_eject_host(server->root))
     {
       set_last_disconnected_host(server);
-      run_distribution((memcached_st *)server->root);
+
+      // Retry dead servers if requested
+      if (_gettime_success and server->root->dead_timeout > 0)
+      {
+        server->next_retry= curr_time.tv_sec +server->root->dead_timeout;
+
+        // We only retry dead servers once before assuming failure again
+        server->server_failure_counter= server->root->server_failure_limit -1;
+      }
+
+      memcached_return_t rc;
+      if (memcached_failed(rc= run_distribution((memcached_st *)server->root)))
+      {
+        return memcached_set_error(*server, rc, MEMCACHED_AT, memcached_literal_param("Backoff handling failed during run_distribution"));
+      }
 
       return memcached_set_error(*server, MEMCACHED_SERVER_MARKED_DEAD, MEMCACHED_AT);
     }
@@ -584,9 +601,6 @@ static memcached_return_t backoff_handling(memcached_server_write_instance_st se
 
   if (server->state == MEMCACHED_SERVER_STATE_IN_TIMEOUT)
   {
-    struct timeval curr_time;
-    bool _gettime_success= (gettimeofday(&curr_time, NULL) == 0);
-
     /*
       If next_retry is less then our current time, then we reset and try everything again.
     */
