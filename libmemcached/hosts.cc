@@ -236,21 +236,21 @@ static memcached_return_t update_continuum(memcached_st *ptr)
            pointer_index < pointer_per_server / pointer_per_hash;
            pointer_index++)
       {
-        char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
+        char sort_host[1 +MEMCACHED_NI_MAXHOST +1 +MEMCACHED_NI_MAXSERV +1 + MEMCACHED_NI_MAXSERV ]= "";
         int sort_host_length;
 
         // Spymemcached ketema key format is: hostname/ip:port-index
         // If hostname is not available then: /ip:port-index
-        sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+        sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                    "/%s:%u-%u",
                                    list[host_index].hostname,
                                    (uint32_t)list[host_index].port,
                                    pointer_index);
 
-        if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
+        if (size_t(sort_host_length) >= sizeof(sort_host) or sort_host_length < 0)
         {
           return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                                     memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+                                     memcached_literal_param("snprintf(sizeof(sort_host))"));
         }
 
         if (DEBUG)
@@ -281,29 +281,29 @@ static memcached_return_t update_continuum(memcached_st *ptr)
            pointer_index <= pointer_per_server / pointer_per_hash;
            pointer_index++)
       {
-        char sort_host[MEMCACHED_MAX_HOST_SORT_LENGTH]= "";
+        char sort_host[MEMCACHED_NI_MAXHOST +1 +MEMCACHED_NI_MAXSERV +1 +MEMCACHED_NI_MAXSERV]= "";
         int sort_host_length;
 
         if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
         {
-          sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+          sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s-%u",
                                      list[host_index].hostname,
                                      pointer_index - 1);
         }
         else
         {
-          sort_host_length= snprintf(sort_host, MEMCACHED_MAX_HOST_SORT_LENGTH,
+          sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s:%u-%u",
                                      list[host_index].hostname,
                                      (uint32_t)list[host_index].port,
                                      pointer_index - 1);
         }
 
-        if (sort_host_length >= MEMCACHED_MAX_HOST_SORT_LENGTH || sort_host_length < 0)
+        if (size_t(sort_host_length) >= sizeof(sort_host) or sort_host_length < 0)
         {
           return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
-                                     memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
+                                     memcached_literal_param("snprintf(sizeof(sort_host)))"));
         }
 
         if (is_ketama_weighted)

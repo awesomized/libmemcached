@@ -171,25 +171,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
     AC_DEFINE([TIME_T_UNSIGNED], 1, [Define to 1 if time_t is unsigned])
   ])
 
-  AC_CACHE_CHECK([if system defines RUSAGE_THREAD], [ac_cv_rusage_thread],[
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-      [[
-#include <sys/time.h>
-#include <sys/resource.h>
-      ]],[[
-      int x= RUSAGE_THREAD;
-      ]])
-    ],[
-      ac_cv_rusage_thread=yes
-    ],[
-      ac_cv_rusage_thread=no
-    ])
-  ])
-  AS_IF([test "$ac_cv_rusage_thread" = "no"],[
-    AC_DEFINE([RUSAGE_THREAD], [RUSAGE_SELF],
-      [Define if system doesn't define])
-  ])
-
   AC_CHECK_FUNC(setsockopt, [], [AC_CHECK_LIB(socket, setsockopt)])
   AC_CHECK_FUNC(bind, [], [AC_CHECK_LIB(bind, bind)])
 
