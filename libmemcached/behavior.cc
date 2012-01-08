@@ -213,6 +213,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
     ptr->retry_timeout= int32_t(data);
     break;
 
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    ptr->dead_timeout= int32_t(data);
+    break;
+
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     ptr->send_size= (int32_t)data;
     send_quit(ptr);
@@ -356,6 +360,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
     return (uint64_t)ptr->retry_timeout;
+
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    return uint64_t(ptr->dead_timeout);
 
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     return (uint64_t)ptr->snd_timeout;
@@ -555,6 +562,7 @@ const char *libmemcached_string_behavior(const memcached_behavior_t flag)
   case MEMCACHED_BEHAVIOR_VERIFY_KEY: return "MEMCACHED_BEHAVIOR_VERIFY_KEY";
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT: return "MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT";
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT: return "MEMCACHED_BEHAVIOR_RETRY_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT: return "MEMCACHED_BEHAVIOR_DEAD_TIMEOUT";
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED: return "MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED";
   case MEMCACHED_BEHAVIOR_KETAMA_HASH: return "MEMCACHED_BEHAVIOR_KETAMA_HASH";
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL: return "MEMCACHED_BEHAVIOR_BINARY_PROTOCOL";
