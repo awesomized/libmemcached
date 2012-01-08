@@ -96,6 +96,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->poll_timeout= MEMCACHED_DEFAULT_TIMEOUT;
   self->connect_timeout= MEMCACHED_DEFAULT_CONNECT_TIMEOUT;
   self->retry_timeout= MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT;
+  self->dead_timeout= MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT;
 
   self->send_size= -1;
   self->recv_size= -1;
@@ -234,7 +235,7 @@ memcached_st *memcached(const char *string, size_t length)
 memcached_return_t memcached_reset(memcached_st *ptr)
 {
   WATCHPOINT_ASSERT(ptr);
-  if (not ptr)
+  if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
@@ -314,6 +315,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->poll_timeout= source->poll_timeout;
   new_clone->connect_timeout= source->connect_timeout;
   new_clone->retry_timeout= source->retry_timeout;
+  new_clone->dead_timeout= source->dead_timeout;
   new_clone->distribution= source->distribution;
 
   if (hashkit_clone(&new_clone->hashkit, &source->hashkit) == NULL)

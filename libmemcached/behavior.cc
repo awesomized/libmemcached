@@ -52,7 +52,7 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                           const memcached_behavior_t flag,
                                           uint64_t data)
 {
-  if (not ptr)
+  if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
@@ -153,7 +153,9 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_KETAMA:
     {
       if (data) // Turn on
+      {
         return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
+      }
 
       return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_MODULA);
     }
@@ -181,17 +183,17 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_VERIFY_KEY:
     if (ptr->flags.binary_protocol)
+    {
       return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                         memcached_literal_param("MEMCACHED_BEHAVIOR_VERIFY_KEY if the binary protocol has been enabled."));
+    }
     ptr->flags.verify_key= bool(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     {
       ptr->flags.use_sort_hosts= bool(data);
-      run_distribution(ptr);
-
-      break;
+      return run_distribution(ptr);
     }
 
   case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
@@ -209,6 +211,10 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
                                         memcached_literal_param("MEMCACHED_BEHAVIOR_RETRY_TIMEOUT requires a value greater then zero."));
     }
     ptr->retry_timeout= int32_t(data);
+    break;
+
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    ptr->dead_timeout= int32_t(data);
     break;
 
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
@@ -355,6 +361,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
     return (uint64_t)ptr->retry_timeout;
 
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    return uint64_t(ptr->dead_timeout);
+
   case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
     return (uint64_t)ptr->snd_timeout;
 
@@ -490,9 +499,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
     }
 
     ptr->distribution= type;
-    run_distribution(ptr);
-
-    return MEMCACHED_SUCCESS;
+    return run_distribution(ptr);
   }
 
   return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
@@ -555,6 +562,7 @@ const char *libmemcached_string_behavior(const memcached_behavior_t flag)
   case MEMCACHED_BEHAVIOR_VERIFY_KEY: return "MEMCACHED_BEHAVIOR_VERIFY_KEY";
   case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT: return "MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT";
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT: return "MEMCACHED_BEHAVIOR_RETRY_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT: return "MEMCACHED_BEHAVIOR_DEAD_TIMEOUT";
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED: return "MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED";
   case MEMCACHED_BEHAVIOR_KETAMA_HASH: return "MEMCACHED_BEHAVIOR_KETAMA_HASH";
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL: return "MEMCACHED_BEHAVIOR_BINARY_PROTOCOL";
@@ -604,11 +612,15 @@ memcached_return_t memcached_bucket_set(memcached_st *self,
 {
   memcached_return_t rc;
 
-  if (not self)
+  if (self == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
-  if (not host_map)
+  if (host_map == NULL)
+  {
     return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
   memcached_server_distribution_t old= memcached_behavior_get_distribution(self);
 
