@@ -162,7 +162,8 @@ AX_CXX_GCC_ABI_DEMANGLE
 
 AC_CHECK_LIB([rt], [clock_gettime], 
              [
-              rt_lib="-lrt"
+              RT_LIB="-lrt"
+              AC_SUBST(RT_LIB)
               AC_DEFINE([HAVE_LIBRT], [ 1 ], [Have clock_gettime])
               ], 
              [
