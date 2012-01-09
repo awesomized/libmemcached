@@ -108,9 +108,6 @@ libmemcached/options.cc: libmemcached/csl/parser.h
 libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD=
 libmemcached_libmemcached_la_LDFLAGS=
-if TARGET_LINUX
-libmemcached_libmemcached_la_LIBADD+= -lm
-endif
 libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION}
 
 libmemcached_libmemcached_la_LIBADD+= $(LTLIBSASL) $(LTLIBSASL2)
