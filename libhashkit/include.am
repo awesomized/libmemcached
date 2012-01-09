@@ -52,9 +52,6 @@ libhashkit_libhashkit_la_CXXFLAGS= -DBUILDING_HASHKIT
 
 libhashkit_libhashkit_la_LIBADD=
 libhashkit_libhashkit_la_LDFLAGS= -version-info $(HASHKIT_LIBRARY_VERSION)
-if TARGET_LINUX
-libhashkit_libhashkit_la_LIBADD+= -lm
-endif
 
 # library used for testing
 noinst_LTLIBRARIES+= libhashkit/libhashkitinc.la

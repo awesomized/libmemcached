@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # LibmemcacheD
-# Copyright (C) 2011 Data Differential, http://datadifferential.com/
+# Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
 # All rights reserved.
 #
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.2],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.0.3],[http://libmemcached.org/])
 
 AC_CONFIG_AUX_DIR(config)
 
@@ -33,7 +33,7 @@ AC_CHECK_PROGS([LEX], ['flex'], [:])
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=8:0:0
+MEMCACHED_LIBRARY_VERSION=9:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
@@ -159,6 +159,17 @@ AC_C_VOLATILE
 AC_C_RESTRICT
 
 AX_CXX_GCC_ABI_DEMANGLE
+
+AC_CHECK_LIB([rt], [clock_gettime], 
+             [
+              rt_lib="-lrt"
+              AC_DEFINE([HAVE_LIBRT], [ 1 ], [Have clock_gettime])
+              ], 
+             [
+              AC_DEFINE([HAVE_LIBRT], [ 0 ], [Have clock_gettime])
+              ])
+
+AC_CHECK_LIB([m], [floor])
 
 dnl The sasl functions should only be visible if we build with sasl support
 AS_IF([test "x$ac_cv_sasl" = "xyes"],

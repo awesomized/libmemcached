@@ -1,6 +1,11 @@
-1.0.3
-
+1.0.3 Sun Jan  8 18:11:36 PST 2012
+* Increased size of sort buffer used during Ketama.
+* Added support for new behavior to handle dead servers.
+* Overall haul of UDP IO.
 * Fixed C compile issue with memcached_exist()
+* Numerous bug fixes.
+* Clang support for OSX.
+* All commands now using vector send support.
 
 1.0.2 Mon Oct 24 08:00:48 PDT 2011
 * Dropped libmemcached/memcached_util.h (undocumented header file)
