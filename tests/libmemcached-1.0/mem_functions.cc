@@ -78,6 +78,7 @@
 #include "tests/ketama.h"
 #include "tests/namespace.h"
 #include "tests/parser.h"
+#include "tests/libmemcached-1.0/dump.h"
 #include "tests/touch.h"
 #include "tests/callbacks.h"
 #include "tests/pool.h"
@@ -5664,6 +5665,7 @@ test_st tests[] ={
   {"memcached_exist_by_key(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_by_key_SUCCESS },
   {"memcached_touch", 0, (test_callback_fn*)test_memcached_touch},
   {"memcached_touch_with_prefix", 0, (test_callback_fn*)test_memcached_touch_by_key},
+  {"memcached_dump()", 0, (test_callback_fn*)memcached_dump_TEST },
   {0, 0, 0}
 };
 

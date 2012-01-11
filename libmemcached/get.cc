@@ -439,7 +439,8 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
 
   if (memcached_is_binary(ptr) == false)
   {
-    return MEMCACHED_NOT_SUPPORTED;
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT,
+                               memcached_literal_param("ASCII protocol is not supported for memcached_mget_execute_by_key()"));
   }
 
   memcached_callback_st *original_callbacks= ptr->callbacks;
@@ -498,14 +499,18 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     protocol_binary_request_getk request= { }; //= {.bytes= {0}};
     request.message.header.request.magic= PROTOCOL_BINARY_REQ;
     if (mget_mode)
+    {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
+    }
     else
+    {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
+    }
 
     memcached_return_t vk;
     vk= memcached_validate_key_length(key_length[x],
                                       ptr->flags.binary_protocol);
-    unlikely (vk != MEMCACHED_SUCCESS)
+    if (vk != MEMCACHED_SUCCESS)
     {
       if (x > 0)
       {

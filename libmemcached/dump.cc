@@ -53,8 +53,8 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
     memcached_server_write_instance_st instance;
     instance= memcached_server_instance_fetch(ptr, server_key);
 
-    /* 256 I BELIEVE is the upper limit of slabs */
-    for (uint32_t x= 0; x < 256; x++)
+    /* MAX_NUMBER_OF_SLAB_CLASSESdefined to 200 in Memcached 1.4.10 */
+    for (uint32_t x= 0; x < 200; x++)
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
       int buffer_length= snprintf(buffer, sizeof(buffer), "%u", x);
@@ -151,9 +151,9 @@ memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback
     No support for Binary protocol yet
     @todo Fix this so that we just flush, switch to ascii, and then go back to binary.
   */
-  if (ptr->flags.binary_protocol)
+  if (memcached_is_binary(ptr))
   {
-    return MEMCACHED_FAILURE;
+    return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, memcached_literal_param("Binary protocol is not supported for memcached_dump()"));
   }
 
   return ascii_dump(ptr, callback, context, number_of_callbacks);
