@@ -177,11 +177,6 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
-  {
-    return rc;
-  }
-
   if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
     return memcached_set_error(*ptr, rc, MEMCACHED_AT);

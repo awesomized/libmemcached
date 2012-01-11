@@ -342,14 +342,9 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_validate_key_length(key_length, memcached_is_binary(ptr))))
+  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
     return rc;
-  }
-
-  if (memcached_failed(memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
-  {
-    return MEMCACHED_BAD_KEY_PROVIDED;
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);

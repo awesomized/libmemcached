@@ -47,7 +47,7 @@ you will need to install %{name}-devel.
 %setup -q
 
 %{__mkdir} examples
-%{__cp} tests/*.{cc,cpp,h} examples/
+#%{__cp} tests/*.{cc,h} examples/
 
 
 %build
@@ -89,11 +89,11 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcachedutil.a
 %exclude %{_libdir}/libmemcachedprotocol.a
 %{_libdir}/libhashkit.so.1.0.0
-%{_libdir}/libmemcached.so.8.0.0
+%{_libdir}/libmemcached.so.9.0.0
 %{_libdir}/libmemcachedutil.so.2.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
 %{_libdir}/libhashkit.so.1
-%{_libdir}/libmemcached.so.8
+%{_libdir}/libmemcached.so.9
 %{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.2
 %{_mandir}/man1/memcapable.1.gz
@@ -142,25 +142,28 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached/memcached.hpp
 %{_includedir}/libmemcached/util.h
 
+%{_includedir}/libmemcached-1.0/alloc.h
 %{_includedir}/libmemcached-1.0/allocators.h
 %{_includedir}/libmemcached-1.0/analyze.h
 %{_includedir}/libmemcached-1.0/auto.h
 %{_includedir}/libmemcached-1.0/basic_string.h
 %{_includedir}/libmemcached-1.0/behavior.h
 %{_includedir}/libmemcached-1.0/callback.h
+%{_includedir}/libmemcached-1.0/callbacks.h
 %{_includedir}/libmemcached-1.0/configure.h
-%{_includedir}/libmemcached-1.0/constants.h
+%{_includedir}/libmemcached-1.0/defaults.h
 %{_includedir}/libmemcached-1.0/delete.h
+%{_includedir}/libmemcached-1.0/deprecated_types.h
 %{_includedir}/libmemcached-1.0/dump.h
 %{_includedir}/libmemcached-1.0/error.h
-%{_includedir}/libmemcached-1.0/exist.h
-%{_includedir}/libmemcached-1.0/touch.h
 %{_includedir}/libmemcached-1.0/exception.hpp
+%{_includedir}/libmemcached-1.0/exist.h
 %{_includedir}/libmemcached-1.0/fetch.h
 %{_includedir}/libmemcached-1.0/flush.h
 %{_includedir}/libmemcached-1.0/flush_buffers.h
 %{_includedir}/libmemcached-1.0/get.h
 %{_includedir}/libmemcached-1.0/hash.h
+%{_includedir}/libmemcached-1.0/limits.h
 %{_includedir}/libmemcached-1.0/memcached.h
 %{_includedir}/libmemcached-1.0/memcached.hpp
 %{_includedir}/libmemcached-1.0/options.h
@@ -175,8 +178,24 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached-1.0/stats.h
 %{_includedir}/libmemcached-1.0/storage.h
 %{_includedir}/libmemcached-1.0/strerror.h
-%{_includedir}/libmemcached-1.0/string.h
+%{_includedir}/libmemcached-1.0/struct/allocator.h
+%{_includedir}/libmemcached-1.0/struct/analysis.h
+%{_includedir}/libmemcached-1.0/struct/callback.h
+%{_includedir}/libmemcached-1.0/struct/memcached.h
+%{_includedir}/libmemcached-1.0/struct/result.h
+%{_includedir}/libmemcached-1.0/struct/sasl.h
+%{_includedir}/libmemcached-1.0/struct/server.h
+%{_includedir}/libmemcached-1.0/struct/stat.h
+%{_includedir}/libmemcached-1.0/struct/string.h
+%{_includedir}/libmemcached-1.0/touch.h
+%{_includedir}/libmemcached-1.0/triggers.h
 %{_includedir}/libmemcached-1.0/types.h
+%{_includedir}/libmemcached-1.0/types/behavior.h
+%{_includedir}/libmemcached-1.0/types/callback.h
+%{_includedir}/libmemcached-1.0/types/connection.h
+%{_includedir}/libmemcached-1.0/types/hash.h
+%{_includedir}/libmemcached-1.0/types/return.h
+%{_includedir}/libmemcached-1.0/types/server_distribution.h
 %{_includedir}/libmemcached-1.0/verbosity.h
 %{_includedir}/libmemcached-1.0/version.h
 %{_includedir}/libmemcached-1.0/visibility.h
