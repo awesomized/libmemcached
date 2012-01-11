@@ -129,8 +129,10 @@ AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_HEADERS([sasl/sasl.h])
 AC_CHECK_HEADERS([execinfo.h])
 AC_CHECK_HEADERS([cxxabi.h], 
-	AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
-	AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
+                 AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
+                 AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
+
+AX_COMPILER_VENDOR
 AC_CXX_HEADER_STDCXX_98
 
 AC_FUNC_ALLOCA
