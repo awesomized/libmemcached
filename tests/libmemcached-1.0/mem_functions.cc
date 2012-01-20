@@ -1537,11 +1537,9 @@ static test_return_t decrement_with_initial_by_key_test(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
-static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
+static test_return_t binary_increment_with_prefix_test(memcached_st *memc)
 {
-  memcached_st *memc= memcached_clone(NULL, orig_memc);
-
-  test_skip(TEST_SUCCESS, pre_binary(memc));
+  test_skip(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
   test_compare(MEMCACHED_SUCCESS, memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)"namespace:"));
 
@@ -1561,7 +1559,6 @@ static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
                                                       test_literal_param("number"),
                                                       1, &new_number));
   test_compare(uint64_t(2), new_number);
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -3968,7 +3965,7 @@ static test_return_t noreply_test(memcached_st *memc)
   {
     for (size_t x= 0; x < 100; ++x)
     {
-      char key[10];
+      char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
       int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
       test_false((size_t)check_length >= sizeof(key) || check_length < 0);
 
@@ -4682,6 +4679,8 @@ static test_return_t regression_bug_434843(memcached_st *original_memc)
     test_compare(MEMCACHED_SUCCESS,
                  memcached_mget(memc, (const char**)keys, key_length, max_keys));
 
+    // One the first run we should get a NOT_FOUND, but on the second some data
+    // should be returned.
     test_compare(y ?  MEMCACHED_SUCCESS : MEMCACHED_NOTFOUND, 
                  memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
 
@@ -6011,6 +6010,7 @@ collection_st collection[] ={
   {"virtual buckets", 0, 0, virtual_bucket_tests},
   {"memcached_server_get_last_disconnect", 0, 0, memcached_server_get_last_disconnect_tests},
   {"touch", 0, 0, touch_tests},
+  {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
   {0, 0, 0, 0}
 };
 

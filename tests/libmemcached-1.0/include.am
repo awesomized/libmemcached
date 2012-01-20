@@ -12,6 +12,7 @@ noinst_HEADERS+= \
 		 tests/basic.h \
 		 tests/callbacks.h \
 		 tests/debug.h \
+		 tests/deprecated.h \
 		 tests/error_conditions.h \
 		 tests/exist.h \
 		 tests/ketama.h \
@@ -20,13 +21,12 @@ noinst_HEADERS+= \
 		 tests/libmemcached-1.0/dump.h \
 		 tests/namespace.h \
 		 tests/parser.h \
-		 tests/touch.h \
-		 tests/deprecated.h \
 		 tests/pool.h \
 		 tests/print.h \
 		 tests/replication.h \
 		 tests/server_add.h \
 		 tests/string.h \
+		 tests/touch.h \
 		 tests/virtual_buckets.h
 
 # Test internals
@@ -45,6 +45,9 @@ noinst_PROGRAMS+= tests/libmemcached-1.0/internals
 tests_libmemcached_1_0_testapp_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
 tests_libmemcached_1_0_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_libmemcached_1_0_testapp_SOURCES= \
+					tests/libmemcached-1.0/pool.cc \
+					tests/libmemcached-1.0/print.cc \
+					tests/libmemcached-1.0/replication.cc \
                                         tests/libmemcached-1.0/basic.cc \
                                         tests/libmemcached-1.0/callbacks.cc \
                                         tests/libmemcached-1.0/debug.cc \
@@ -55,9 +58,6 @@ tests_libmemcached_1_0_testapp_SOURCES= \
                                         tests/libmemcached-1.0/ketama.cc \
                                         tests/libmemcached-1.0/mem_functions.cc \
                                         tests/libmemcached-1.0/namespace.cc \
-					tests/libmemcached-1.0/pool.cc \
-					tests/libmemcached-1.0/print.cc \
-					tests/libmemcached-1.0/replication.cc \
                                         tests/libmemcached-1.0/parser.cc \
                                         tests/libmemcached-1.0/server_add.cc \
                                         tests/libmemcached-1.0/touch.cc \

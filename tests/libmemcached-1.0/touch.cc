@@ -63,20 +63,20 @@ test_return_t test_memcached_touch(memcached_st *memc)
   memcached_return rc;
 
   test_null(memcached_get(memc, 
-                          test_literal_param("touchkey"),
+                          test_literal_param(__func__),
                           &len, &flags, &rc));
   test_zero(len);
   test_compare(MEMCACHED_NOTFOUND, rc);
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_set(memc,
-                             test_literal_param("touchkey"),
+                             test_literal_param(__func__),
                              test_literal_param("touchval"),
                              2, 0));
 
   {
     char *value= memcached_get(memc, 
-                               test_literal_param("touchkey"),
+                               test_literal_param(__func__),
                                &len, &flags, &rc);
     test_compare(8U, test_literal_param_size("touchval"));
     test_true(value);
@@ -86,15 +86,15 @@ test_return_t test_memcached_touch(memcached_st *memc)
   }
 
   test_compare(MEMCACHED_SUCCESS,
-               memcached_touch(memc, test_literal_param("touchkey"), 60 *60));
+               memcached_touch(memc, test_literal_param(__func__), 60 *60));
 
   test_skip(false ,memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
-  rc= memcached_touch(memc, test_literal_param("touchkey"), 60 *60 *24 *60);
+  rc= memcached_touch(memc, test_literal_param(__func__), 60 *60 *24 *60);
   test_compare_hint(MEMCACHED_SUCCESS, rc, memcached_last_error_message(memc));
 
   test_compare(MEMCACHED_NOTFOUND,
-               memcached_exist(memc, test_literal_param("touchkey")));
+               memcached_exist(memc, test_literal_param(__func__)));
 
   return TEST_SUCCESS;
 }
@@ -110,7 +110,7 @@ test_return_t test_memcached_touch_by_key(memcached_st *memc)
 
   test_null(memcached_get_by_key(memc, 
                                  test_literal_param("grouping_key"),
-                                 test_literal_param("touchkey"),
+                                 test_literal_param(__func__),
                                  &len, &flags, &rc));
   test_zero(len);
   test_compare(MEMCACHED_NOTFOUND, rc);
@@ -118,14 +118,14 @@ test_return_t test_memcached_touch_by_key(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, 
                memcached_set_by_key(memc,
                                     test_literal_param("grouping_key"),
-                                    test_literal_param("touchkey"),
+                                    test_literal_param(__func__),
                                     test_literal_param("touchval"),
                                     2, 0));
 
   {
     char *value= memcached_get_by_key(memc, 
                                       test_literal_param("grouping_key"),
-                                      test_literal_param("touchkey"),
+                                      test_literal_param(__func__),
                                       &len, &flags, &rc);
     test_compare(8U, test_literal_param_size("touchval"));
     test_true(value);
@@ -137,17 +137,17 @@ test_return_t test_memcached_touch_by_key(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS,
                memcached_touch_by_key(memc,
                                       test_literal_param("grouping_key"),
-                                      test_literal_param("touchkey"),
+                                      test_literal_param(__func__),
                                       60 *60));
 
   test_skip(false ,memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
   test_compare(MEMCACHED_SUCCESS,
                memcached_touch_by_key(memc,
                                       test_literal_param("grouping_key"),
-                                      test_literal_param("touchkey"),
+                                      test_literal_param(__func__),
                                       60 *60 *24 *60));
   test_compare(MEMCACHED_NOTFOUND,
-               memcached_exist_by_key(memc, test_literal_param("grouping_key"),test_literal_param("touchkey")));
+               memcached_exist_by_key(memc, test_literal_param("grouping_key"),test_literal_param(__func__)));
 
   return TEST_SUCCESS;
 }
