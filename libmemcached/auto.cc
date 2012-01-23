@@ -179,7 +179,7 @@ memcached_return_t memcached_increment_by_key(memcached_st *ptr,
 
   if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
-    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    return rc;
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
@@ -226,7 +226,7 @@ memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
 
   if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
-    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    return rc;
   }
 
 
@@ -291,7 +291,7 @@ memcached_return_t memcached_increment_with_initial_by_key(memcached_st *ptr,
 
   if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
-    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    return rc;
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
@@ -356,7 +356,7 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
 
   if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
-    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
+    return rc;
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);

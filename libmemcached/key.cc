@@ -44,7 +44,7 @@ memcached_return_t memcached_key_test(memcached_st &memc,
 {
   if (keys == NULL or key_length == NULL)
   {
-    return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT);
+    return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("Key was NULL or length of key was zero."));
   }
 
   // If we don't need to verify the key, or we are using the binary protoocol,
@@ -58,7 +58,7 @@ memcached_return_t memcached_key_test(memcached_st &memc,
       memcached_return_t rc= memcached_validate_key_length(*(key_length +x), false /* memc.flags.binary_protocol */);
       if (memcached_failed(rc))
       {
-        return rc;
+        return memcached_set_error(memc, rc, MEMCACHED_AT, memcached_literal_param("Key provided was too long."));
       }
     }
 
@@ -70,14 +70,14 @@ memcached_return_t memcached_key_test(memcached_st &memc,
     memcached_return_t rc= memcached_validate_key_length(*(key_length + x), false);
     if (memcached_failed(rc))
     {
-      return rc;
+      return memcached_set_error(memc, rc, MEMCACHED_AT, memcached_literal_param("Key provided was too long."));
     }
  
     for (size_t y= 0; y < *(key_length + x); y++)
     {
       if ((isgraph(keys[x][y])) == 0)
       {
-        return MEMCACHED_BAD_KEY_PROVIDED;
+        return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("Key provided had invalid character."));
       }
     }
   }

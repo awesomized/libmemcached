@@ -111,7 +111,9 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   /* This is for historical reasons */
   if (*error == MEMCACHED_END)
+  {
     *error= MEMCACHED_NOTFOUND;
+  }
 
   if (value == NULL)
   {
@@ -121,14 +123,16 @@ char *memcached_get_by_key(memcached_st *ptr,
       memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
 
       /* On all failure drop to returning NULL */
-      if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
+      if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED)
       {
         if (rc == MEMCACHED_BUFFERED)
         {
           uint64_t latch; /* We use latch to track the state of the original socket */
           latch= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS);
           if (latch == 0)
+          {
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 1);
+          }
 
           rc= memcached_set(ptr, key, key_length,
                             (memcached_result_value(&ptr->result)),
@@ -227,7 +231,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
   if (memcached_failed(memcached_key_test(*ptr, keys, key_length, number_of_keys)))
   {
-    return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad key value was provided"));
+    return memcached_last_error(ptr);
   }
 
   bool is_group_key_set= false;

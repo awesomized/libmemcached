@@ -881,7 +881,7 @@ static test_return_t bad_key_test(memcached_st *memc)
   test_compare(query_id, memcached_query_id(memc_clone)); // We should not increase the query_id for memcached_behavior_set()
 
   /* All keys are valid in the binary protocol (except for length) */
-  if (not memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+  if (memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == false)
   {
     uint64_t before_query_id= memcached_query_id(memc_clone);
     {
@@ -4089,8 +4089,8 @@ static test_return_t noreply_test(memcached_st *memc)
 
 static test_return_t analyzer_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   memcached_analysis_st *report;
+  memcached_return_t rc;
 
   memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
   test_compare(MEMCACHED_SUCCESS, rc);
@@ -4102,24 +4102,6 @@ static test_return_t analyzer_test(memcached_st *memc)
 
   free(report);
   memcached_stat_free(NULL, memc_stat);
-
-  return TEST_SUCCESS;
-}
-
-/* Count the objects */
-
-static test_return_t dump_test(memcached_st *memc)
-{
-  /* No support for Binary protocol yet */
-  test_skip(false, memc->flags.binary_protocol);
-
-  test_compare(TEST_SUCCESS, set_test3(memc));
-
-  // confirm_key_count() call dump
-  size_t counter= confirm_key_count(memc);
-
-  /* We may have more then 32 if our previous flush has not completed */
-  test_true(counter >= 32);
 
   return TEST_SUCCESS;
 }
@@ -4791,8 +4773,7 @@ static test_return_t regression_bug_442914(memcached_st *memc)
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
-  (void)snprintf(k, sizeof(k), "%037u", 251U);
-  len= strlen(k);
+  len= snprintf(k, sizeof(k), "%037u", 251U);
 
   memcached_return_t rc= memcached_delete(memc, k, len, 0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
@@ -4929,6 +4910,10 @@ static test_return_t regression_bug_447342(memcached_st *memc)
 
 static test_return_t regression_bug_463297(memcached_st *memc)
 {
+  test_compare(MEMCACHED_INVALID_ARGUMENTS, memcached_delete(memc, "foo", 3, 1));
+
+  // Since we blocked timed delete, this test is no longer valid.
+#if 0
   memcached_st *memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
   test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
@@ -4984,6 +4969,8 @@ static test_return_t regression_bug_463297(memcached_st *memc)
   }
 
   memcached_free(memc_clone);
+#endif
+
   return TEST_SUCCESS;
 }
 
@@ -5451,7 +5438,7 @@ static test_return_t regression_bug_490520(memcached_st *memc)
     test_true(keys[x]);
 
     memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
   }
 
   for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
@@ -5608,10 +5595,9 @@ test_st tests[] ={
   {"connection_test", false, (test_callback_fn*)connection_test},
   {"callback_test", false, (test_callback_fn*)callback_test},
   {"userdata_test", false, (test_callback_fn*)userdata_test},
-  {"set", false, (test_callback_fn*)set_test },
-  {"set2", false, (test_callback_fn*)set_test2 },
-  {"set3", false, (test_callback_fn*)set_test3 },
-  {"dump", true, (test_callback_fn*)dump_test},
+  {"memcached_set()", false, (test_callback_fn*)set_test },
+  {"memcached_set() 2", false, (test_callback_fn*)set_test2 },
+  {"memcached_set() 3", false, (test_callback_fn*)set_test3 },
   {"add", true, (test_callback_fn*)add_test },
   {"memcached_fetch_result(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
   {"replace", true, (test_callback_fn*)replace_test },
@@ -5664,7 +5650,8 @@ test_st tests[] ={
   {"memcached_exist_by_key(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_by_key_SUCCESS },
   {"memcached_touch", 0, (test_callback_fn*)test_memcached_touch},
   {"memcached_touch_with_prefix", 0, (test_callback_fn*)test_memcached_touch_by_key},
-  {"memcached_dump()", 0, (test_callback_fn*)memcached_dump_TEST },
+  {"memcached_dump() no data", true, (test_callback_fn*)memcached_dump_TEST },
+  {"memcached_dump() with data", true, (test_callback_fn*)memcached_dump_TEST2 },
   {0, 0, 0}
 };
 

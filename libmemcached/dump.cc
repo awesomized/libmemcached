@@ -44,23 +44,21 @@
 
 #include <libmemcached/common.h>
 
-static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
+static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
-  memcached_return_t rc= MEMCACHED_SUCCESS;
-
-  for (uint32_t server_key= 0; server_key < memcached_server_count(ptr); server_key++)
+  for (uint32_t server_key= 0; server_key < memcached_server_count(memc); server_key++)
   {
-    memcached_server_write_instance_st instance;
-    instance= memcached_server_instance_fetch(ptr, server_key);
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
 
+    bool exit_slab_loop= false;
     /* MAX_NUMBER_OF_SLAB_CLASSESdefined to 200 in Memcached 1.4.10 */
-    for (uint32_t x= 0; x < 200; x++)
+    for (uint32_t x= 0; x < 200 and (exit_slab_loop == false); x++)
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
       int buffer_length= snprintf(buffer, sizeof(buffer), "%u", x);
-      if (buffer_length >= MEMCACHED_DEFAULT_COMMAND_SIZE or buffer_length < 0)
+      if (size_t(buffer_length) >= sizeof(buffer) or buffer_length < 0)
       {
-        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+        return memcached_set_error(*memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
                                    memcached_literal_param("snprintf(MEMCACHED_DEFAULT_COMMAND_SIZE)"));
       }
 
@@ -71,72 +69,72 @@ static memcached_return_t ascii_dump(memcached_st *ptr, memcached_dump_fn *callb
         { memcached_literal_param(" 0 0\r\n") }
       };
 
-      rc= memcached_vdo(instance, vector, 3, true);
-
-      if (rc != MEMCACHED_SUCCESS)
+      memcached_return_t vdo_rc;
+      if (memcached_success((vdo_rc= memcached_vdo(instance, vector, 3, true))))
       {
-        goto error;
-      }
-
-      while (1)
-      {
-        uint32_t callback_counter;
-        rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-        if (rc == MEMCACHED_ITEM)
+        while (1)
         {
-          char *string_ptr, *end_ptr;
-
-          string_ptr= buffer;
-          string_ptr+= 5; /* Move past ITEM */
-
-          for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++) {} ;
-
-          char *key= string_ptr;
-          key[(size_t)(end_ptr-string_ptr)]= 0;
-
-          for (callback_counter= 0; callback_counter < number_of_callbacks; callback_counter++)
+          memcached_return_t response_rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+          fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, response_rc));
+          if (response_rc == MEMCACHED_ITEM)
           {
-            rc= (*callback[callback_counter])(ptr, key, (size_t)(end_ptr-string_ptr), context);
-            if (rc != MEMCACHED_SUCCESS)
+            char *string_ptr, *end_ptr;
+
+            string_ptr= buffer;
+            string_ptr+= 5; /* Move past ITEM */
+
+            for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++) {} ;
+
+            char *key= string_ptr;
+            key[(size_t)(end_ptr-string_ptr)]= 0;
+
+            for (uint32_t callback_counter= 0; callback_counter < number_of_callbacks; callback_counter++)
             {
-              break;
+              memcached_return_t callback_rc= (*callback[callback_counter])(memc, key, (size_t)(end_ptr-string_ptr), context);
+              if (callback_rc != MEMCACHED_SUCCESS)
+              {
+                // @todo build up a message for the error from the value
+                memcached_set_error(*instance, callback_rc, MEMCACHED_AT);
+                break;
+              }
             }
           }
-        }
-        else if (rc == MEMCACHED_END)
-        {
-          break;
-        }
-        else if (rc == MEMCACHED_SERVER_ERROR or rc == MEMCACHED_CLIENT_ERROR)
-        {
-          /* If we try to request stats cachedump for a slab class that is too big
-           * the server will return an incorrect error message:
-           * "MEMCACHED_SERVER_ERROR failed to allocate memory"
-           * This isn't really a fatal error, so let's just skip it. I want to
-           * fix the return value from the memcached server to a CLIENT_ERROR,
-           * so let's add support for that as well right now.
-         */
-          rc= MEMCACHED_END;
-          break;
-        }
-        else
-        {
-          goto error;
+          else if (response_rc == MEMCACHED_END)
+          {
+            // No additional items were found
+            exit_slab_loop= true;
+            break;
+          }
+          else if (response_rc == MEMCACHED_SERVER_ERROR or response_rc == MEMCACHED_CLIENT_ERROR)
+          {
+            /* If we try to request stats cachedump for a slab class that is too big
+             * the server will return an incorrect error message:
+             * "MEMCACHED_SERVER_ERROR failed to allocate memory"
+             * This isn't really a fatal error, so let's just skip it. I want to
+             * fix the return value from the memcached server to a CLIENT_ERROR,
+             * so let's add support for that as well right now.
+           */
+            exit_slab_loop= true;
+            break;
+          }
+          else
+          {
+            memcached_set_error(*instance, response_rc, MEMCACHED_AT);
+            exit_slab_loop= true;
+            break;
+          }
         }
       }
+      else
+      {
+        exit_slab_loop= true;
+        memcached_set_error(*instance, vdo_rc, MEMCACHED_AT);
+      }
+      fprintf(stderr, "Was able to request %u slab\n", x);
     }
   }
 
-error:
-  if (rc == MEMCACHED_END)
-  {
-    return MEMCACHED_SUCCESS;
-  }
-  else
-  {
-    return rc;
-  }
+  return memcached_has_current_error(*memc) ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
 memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)

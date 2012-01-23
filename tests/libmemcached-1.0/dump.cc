@@ -45,11 +45,15 @@ using namespace libtest;
 #include "tests/libmemcached-1.0/dump.h"
 
 static memcached_return_t callback_dump_counter(const memcached_st *,
-                                                const char *,
-                                                size_t ,
+                                                const char *key,
+                                                size_t length,
                                                 void *context)
 {
   size_t *counter= (size_t *)context;
+
+  std::cerr.write(key, length);
+  std::cerr << std::endl;
+
 
   *counter= *counter +1;
 
@@ -64,7 +68,44 @@ test_return_t memcached_dump_TEST(memcached_st *memc)
   memcached_dump_fn callbacks[1];
   callbacks[0]= &callback_dump_counter;
 
-  test_compare_hint(MEMCACHED_SUCCESS, memcached_dump(memc, callbacks, &count, 1), memcached_last_error_message(memc));
+  test_compare_got(MEMCACHED_SUCCESS, memcached_dump(memc, callbacks, &count, 1), memcached_last_error_message(memc));
+
+  return TEST_SUCCESS;
+}
+
+#define memcached_dump_TEST2_COUNT 64
+test_return_t memcached_dump_TEST2(memcached_st *memc)
+{
+  test_skip(false, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+
+  /* The dump test relies on there being at least 32 items in memcached */
+  for (uint32_t x= 0; x < memcached_dump_TEST2_COUNT; x++)
+  {
+    char key[1024];
+
+    int length= snprintf(key, sizeof(key), "%s%u", __func__, x);
+
+    test_true(length > 0);
+
+    test_compare_hint(MEMCACHED_SUCCESS,
+                      memcached_set(memc, key, length,
+                                    NULL, 0, // Zero length values
+                                    time_t(0), uint32_t(0)),
+                      memcached_last_error_message(memc));
+  }
+  memcached_quit(memc);
+
+  size_t count= 0;
+  memcached_dump_fn callbacks[1];
+  callbacks[0]= &callback_dump_counter;
+
+  test_compare_got(MEMCACHED_SUCCESS,
+                   memcached_dump(memc, callbacks, &count, 1),
+                   memcached_last_error_message(memc));
+
+#if 0
+  test_compare(size_t(memcached_dump_TEST2_COUNT), count);
+#endif
 
   return TEST_SUCCESS;
 }

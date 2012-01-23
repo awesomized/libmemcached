@@ -139,7 +139,7 @@ memcached_server_st *__server_create_with(memcached_st *memc,
 
   if (memc)
   {
-    set_hostinfo(self);
+    memcached_connect_try(self);
   }
 
   return self;
