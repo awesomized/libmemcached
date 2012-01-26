@@ -319,6 +319,11 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         return MEMCACHED_PROTOCOL_ERROR;
       }
 #endif
+      // ERROR
+      else if (buffer[1] == 'R' and buffer[2] == 'R' and buffer[3] == 'O' and buffer[4] == 'R')
+      {
+        return MEMCACHED_ERROR;
+      }
       // EXISTS
       else if (buffer[1] == 'X' and buffer[2] == 'I' and buffer[3] == 'S' and buffer[4] == 'T' and buffer[5] == 'S')
       {
@@ -781,6 +786,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
           rc != MEMCACHED_DELETED and
           rc != MEMCACHED_E2BIG and
           rc != MEMCACHED_END and
+          rc != MEMCACHED_ERROR and
           rc != MEMCACHED_ITEM and
           rc != MEMCACHED_NOTFOUND and
           rc != MEMCACHED_NOTSTORED and

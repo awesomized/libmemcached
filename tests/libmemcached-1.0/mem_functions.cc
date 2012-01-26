@@ -79,6 +79,7 @@
 #include "tests/namespace.h"
 #include "tests/parser.h"
 #include "tests/libmemcached-1.0/dump.h"
+#include "tests/libmemcached-1.0/stat.h"
 #include "tests/touch.h"
 #include "tests/callbacks.h"
 #include "tests/pool.h"
@@ -486,7 +487,7 @@ static test_return_t memcached_return_t_TEST(memcached_st *memc)
 {
   uint32_t values[] = { 851992627U, 2337886783U, 4109241422U, 4001849190U,
                         982370485U, 1263635348U, 4242906218U, 3829656100U,
-                        1891735253U, 334139633U, 2257084983U, 3088286104U,
+                        1891735253U, 334139633U, 2257084983U, 3351789013U,
                         13199785U, 2542027183U, 1097051614U, 199566778U,
                         2748246961U, 2465192557U, 1664094137U, 2405439045U,
                         1842224848U, 692413798U, 3479807801U, 919913813U,
@@ -5661,6 +5662,12 @@ test_st touch_tests[] ={
   {0, 0, 0}
 };
 
+test_st memcached_stat_tests[] ={
+  {"memcached_stat() INVALID ARG", 0, (test_callback_fn*)memcached_stat_TEST},
+  {"memcached_stat()", 0, (test_callback_fn*)memcached_stat_TEST2},
+  {0, 0, 0}
+};
+
 test_st behavior_tests[] ={
   {"libmemcached_string_behavior()", false, (test_callback_fn*)libmemcached_string_behavior_test},
   {"libmemcached_string_distribution()", false, (test_callback_fn*)libmemcached_string_distribution_test},
@@ -5998,6 +6005,7 @@ collection_st collection[] ={
   {"memcached_server_get_last_disconnect", 0, 0, memcached_server_get_last_disconnect_tests},
   {"touch", 0, 0, touch_tests},
   {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
+  {"memcached_stat()", 0, 0, memcached_stat_tests},
   {0, 0, 0, 0}
 };
 
