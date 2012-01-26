@@ -1,4 +1,4 @@
-.TH "LIBMEMCACHED" "3" "October 26, 2011" "1.0.2" "libmemcached"
+.TH "LIBMEMCACHED" "3" "January 26, 2012" "1.0.3" "libmemcached"
 .SH NAME
 libmemcached \- Introducing the C Client Library for memcached
 .
@@ -48,25 +48,18 @@ libMemcached is an open source C/C++ client library and tools for the memcached 
 libMemcached was designed to provide the greatest number of options to use Memcached. Some of the features provided:
 .INDENT 0.0
 .IP 1. 3
-.
 Asynchronous and Synchronous Transport Support.
 .IP 2. 3
-.
 Consistent Hashing and Distribution.
 .IP 3. 3
-.
 Tunable Hashing algorithm to match keys.
 .IP 4. 3
-.
 Access to large object support.
 .IP 5. 3
-.
 Local replication.
 .IP 6. 3
-.
 A complete reference guide and documentation to the API.
 .IP 7. 3
-.
 Tools to Manage your Memcached networks.
 .UNINDENT
 .SH DESCRIPTION
@@ -122,44 +115,37 @@ A number of constants have been provided for in the library.
 .INDENT 0.0
 .TP
 .B MEMCACHED_DEFAULT_PORT
-.
 The default port used by memcached(3).
 .UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_MAX_KEY
-.
 Default maximum size of a key (which includes the null pointer). Master keys
 have no limit, this only applies to keys used for storage.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_MAX_KEY
-.
 Default size of key (which includes the null pointer).
 .UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_STRIDE
-.
 This is the "stride" used in the consistent hash used between replicas.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B MEMCACHED_MAX_HOST_LENGTH
-.
 Maximum allowed size of the hostname.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B LIBMEMCACHED_VERSION_STRING
-.
 String value of libmemcached version such as "1.23.4"
 .UNINDENT
 .INDENT 0.0
 .TP
 .B LIBMEMCACHED_VERSION_HEX
-.
 Hex value of the version number. "0x00048000" This can be used for comparing versions based on number.
 .UNINDENT
 .SH THREADS AND PROCESSES

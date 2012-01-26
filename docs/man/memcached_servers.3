@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SERVERS" "3" "October 26, 2011" "1.0.2" "libmemcached"
+.TH "MEMCACHED_SERVERS" "3" "January 26, 2012" "1.0.3" "libmemcached"
 .SH NAME
 memcached_servers \- libmemcached Documentation
 .
@@ -83,7 +83,6 @@ servers being used by a \fBmemcached_st\fP structure.
 .INDENT 0.0
 .TP
 .B \fI\%memcached_server_add()\fP pushes a single TCP server into the \fBmemcached_st\fP structure. This server will be placed at the end. Duplicate servers
-.sp
 are allowed, so duplication is not checked. Executing this function with the \fBMEMCACHED_BEHAVIOR_USE_UDP\fP behavior set will result in a \fBMEMCACHED_INVALID_HOST_PROTOCOL\fP.
 .UNINDENT
 .sp

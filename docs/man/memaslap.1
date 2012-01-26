@@ -1,4 +1,4 @@
-.TH "MEMASLAP" "1" "October 26, 2011" "1.0.2" "libmemcached"
+.TH "MEMASLAP" "1" "January 26, 2012" "1.0.3" "libmemcached"
 .SH NAME
 memaslap \- libmemcached Documentation
 .
@@ -265,7 +265,6 @@ of the limitation of implementation, the number of concurrencies could be
 the multiple of the number of threads.
 .INDENT 0.0
 .IP 1. 3
-.
 For 8 CPU cores system
 .UNINDENT
 .sp
@@ -280,7 +279,6 @@ For example:
 \-\-threads=12 \-\-concurrency=144
 .INDENT 0.0
 .IP 2. 3
-.
 For 16 CPU cores system
 .UNINDENT
 .sp
@@ -326,7 +324,6 @@ concurrency=128.
 win_size=10k
 .INDENT 0.0
 .IP 2. 3
-.
 cache_size=4G
 .UNINDENT
 .sp
@@ -339,7 +336,6 @@ win_size=8k
 win_size=11k
 .INDENT 0.0
 .IP 3. 3
-.
 cache_size=16G
 .UNINDENT
 .sp
@@ -621,7 +617,6 @@ get proportion: get_prop=0.90
 servers : "servers"
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The servers used by memaslap.
 .UNINDENT
 .UNINDENT
@@ -629,7 +624,6 @@ The servers used by memaslap.
 threads count
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The number of threads memaslap runs with.
 .UNINDENT
 .UNINDENT
@@ -637,7 +631,6 @@ The number of threads memaslap runs with.
 concurrency
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The number of concurrencies memaslap runs with.
 .UNINDENT
 .UNINDENT
@@ -645,7 +638,6 @@ The number of concurrencies memaslap runs with.
 run time
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How long to run memaslap.
 .UNINDENT
 .UNINDENT
@@ -653,7 +645,6 @@ How long to run memaslap.
 windows size
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The task window size of each concurrency.
 .UNINDENT
 .UNINDENT
@@ -661,7 +652,6 @@ The task window size of each concurrency.
 set proportion
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The proportion of set command.
 .UNINDENT
 .UNINDENT
@@ -669,7 +659,6 @@ The proportion of set command.
 get proportion
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The proportion of get command.
 .UNINDENT
 .UNINDENT
@@ -712,7 +701,6 @@ Global  20  1397720   69886     79.7      0        26      3791     227
 Get Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Statistics information of get command
 .UNINDENT
 .UNINDENT
@@ -720,7 +708,6 @@ Statistics information of get command
 Set Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Statistics information of set command
 .UNINDENT
 .UNINDENT
@@ -728,7 +715,6 @@ Statistics information of set command
 Total Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Statistics information of both get and set command
 .UNINDENT
 .UNINDENT
@@ -736,7 +722,6 @@ Statistics information of both get and set command
 Period
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Result within a period
 .UNINDENT
 .UNINDENT
@@ -744,7 +729,6 @@ Result within a period
 Global
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Accumulated results
 .UNINDENT
 .UNINDENT
@@ -752,7 +736,6 @@ Accumulated results
 Ops
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total operations
 .UNINDENT
 .UNINDENT
@@ -760,7 +743,6 @@ Total operations
 TPS
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Throughput, operations/second
 .UNINDENT
 .UNINDENT
@@ -768,7 +750,6 @@ Throughput, operations/second
 Net
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The rate of network
 .UNINDENT
 .UNINDENT
@@ -776,7 +757,6 @@ The rate of network
 Get_miss
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects can’t be gotten
 .UNINDENT
 .UNINDENT
@@ -784,7 +764,6 @@ How many objects can’t be gotten
 Min
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The minimum response time
 .UNINDENT
 .UNINDENT
@@ -792,7 +771,6 @@ The minimum response time
 Max
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The maximum response time
 .UNINDENT
 .UNINDENT
@@ -800,7 +778,6 @@ The maximum response time
 Avg:
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The average response time
 .UNINDENT
 .UNINDENT
@@ -808,7 +785,6 @@ The average response time
 Std_dev
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Standard deviation of response time
 .UNINDENT
 .UNINDENT
@@ -816,7 +792,6 @@ Standard deviation of response time
 Geo_dist
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Geometric distribution based on natural exponential function
 .UNINDENT
 .UNINDENT
@@ -882,7 +857,6 @@ Run time: 20.0s Ops: 1397754 TPS: 69817 Net_rate: 59.4M/s
 Get Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Get statistics of response time
 .UNINDENT
 .UNINDENT
@@ -890,7 +864,6 @@ Get statistics of response time
 Set Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Set statistics of response time
 .UNINDENT
 .UNINDENT
@@ -898,7 +871,6 @@ Set statistics of response time
 Total Statistics
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Both get and set statistics of response time
 .UNINDENT
 .UNINDENT
@@ -906,7 +878,6 @@ Both get and set statistics of response time
 Min
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The accumulated and minimum response time
 .UNINDENT
 .UNINDENT
@@ -914,7 +885,6 @@ The accumulated and minimum response time
 Max
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The accumulated and maximum response time
 .UNINDENT
 .UNINDENT
@@ -922,7 +892,6 @@ The accumulated and maximum response time
 Avg
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The accumulated and average response time
 .UNINDENT
 .UNINDENT
@@ -930,7 +899,6 @@ The accumulated and average response time
 Std
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Standard deviation of response time
 .UNINDENT
 .UNINDENT
@@ -938,7 +906,6 @@ Standard deviation of response time
 Log2 Dist
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Geometric distribution based on logarithm 2
 .UNINDENT
 .UNINDENT
@@ -946,7 +913,6 @@ Geometric distribution based on logarithm 2
 cmd_get
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total get commands done
 .UNINDENT
 .UNINDENT
@@ -954,7 +920,6 @@ Total get commands done
 cmd_set
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total set commands done
 .UNINDENT
 .UNINDENT
@@ -962,7 +927,6 @@ Total set commands done
 get_misses
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects can’t be gotten from server
 .UNINDENT
 .UNINDENT
@@ -970,7 +934,6 @@ How many objects can’t be gotten from server
 verify_misses
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects need to verify but can’t get them
 .UNINDENT
 .UNINDENT
@@ -978,7 +941,6 @@ How many objects need to verify but can’t get them
 verify_failed
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects with insistent value
 .UNINDENT
 .UNINDENT
@@ -986,7 +948,6 @@ How many objects with insistent value
 expired_get
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects are expired but we get them
 .UNINDENT
 .UNINDENT
@@ -994,7 +955,6 @@ How many objects are expired but we get them
 unexpired_unget
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many objects are unexpired but we can’t get them
 .UNINDENT
 .UNINDENT
@@ -1002,7 +962,6 @@ How many objects are unexpired but we can’t get them
 written_bytes
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total written bytes
 .UNINDENT
 .UNINDENT
@@ -1010,7 +969,6 @@ Total written bytes
 read_bytes
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total read bytes
 .UNINDENT
 .UNINDENT
@@ -1018,7 +976,6 @@ Total read bytes
 object_bytes
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total object bytes
 .UNINDENT
 .UNINDENT
@@ -1026,7 +983,6 @@ Total object bytes
 packet_disorder
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many UDP packages are disorder
 .UNINDENT
 .UNINDENT
@@ -1034,7 +990,6 @@ How many UDP packages are disorder
 packet_drop
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many UDP packages are lost
 .UNINDENT
 .UNINDENT
@@ -1042,7 +997,6 @@ How many UDP packages are lost
 udp_timeout
 .INDENT 0.0
 .INDENT 3.5
-.sp
 How many times UDP time out happen
 .UNINDENT
 .UNINDENT
@@ -1050,7 +1004,6 @@ How many times UDP time out happen
 Run time
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total run time
 .UNINDENT
 .UNINDENT
@@ -1058,7 +1011,6 @@ Total run time
 Ops
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Total operations
 .UNINDENT
 .UNINDENT
@@ -1066,7 +1018,6 @@ Total operations
 TPS
 .INDENT 0.0
 .INDENT 3.5
-.sp
 Throughput, operations/second
 .UNINDENT
 .UNINDENT
@@ -1074,7 +1025,6 @@ Throughput, operations/second
 Net_rate
 .INDENT 0.0
 .INDENT 3.5
-.sp
 The average rate of network
 .UNINDENT
 .UNINDENT
@@ -1082,109 +1032,86 @@ The average rate of network
 .INDENT 0.0
 .TP
 .B \-s, \-\-servers=
-.
 List one or more servers to connect. Servers count must be less than
 threads count. e.g.: \-\-servers=localhost:1234,localhost:11211
 .TP
 .B \-T, \-\-threads=
-.
 Number of threads to startup, better equal to CPU numbers. Default 8.
 .TP
 .B \-c, \-\-concurrency=
-.
 Number of concurrency to simulate with load. Default 128.
 .TP
 .B \-n, \-\-conn_sock=
-.
 Number of TCP socks per concurrency. Default 1.
 .TP
 .B \-x, \-\-execute_number=
-.
 Number of operations(get and set) to execute for the
 given test. Default 1000000.
 .TP
 .B \-t, \-\-time=
-.
 How long the test to run, suffix: s\-seconds, m\-minutes, h\-hours,
 d\-days e.g.: \-\-time=2h.
 .TP
 .B \-F, \-\-cfg_cmd=
-.
 Load the configure file to get command,key and value distribution list.
 .TP
 .B \-w, \-\-win_size=
-.
 Task window size of each concurrency, suffix: K, M e.g.: \-\-win_size=10k.
 Default 10k.
 .TP
 .B \-X, \-\-fixed_size=
-.
 Fixed length of value.
 .TP
 .B \-v, \-\-verify=
-.
 The proportion of date verification, e.g.: \-\-verify=0.01
 .TP
 .B \-d, \-\-division=
-.
 Number of keys to multi\-get once. Default 1, means single get.
 .TP
 .B \-S, \-\-stat_freq=
-.
 Frequency of dumping statistic information. suffix: s\-seconds,
 m\-minutes, e.g.: \-\-resp_freq=10s.
 .TP
 .B \-e, \-\-exp_verify=
-.
 The proportion of objects with expire time, e.g.: \-\-exp_verify=0.01.
 Default no object with expire time
 .TP
 .B \-o, \-\-overwrite=
-.
 The proportion of objects need overwrite, e.g.: \-\-overwrite=0.01.
 Default never overwrite object.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-R,  \-\-reconnect
-.
 Reconnect tests, when connection is closed it will be reconnected.
 .TP
 .B \-U,  \-\-udp
-.
 UDP tests, default memaslap uses TCP, TCP port and UDP port of
 server must be same.
 .TP
 .B \-a,  \-\-facebook
-.
 Whether it enables facebook test feature, set with TCP and multi\-get with UDP.
 .TP
 .B \-B,  \-\-binary
-.
 Whether it enables binary protocol. Default with ASCII protocol.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-P, \-\-tps=
-.
 Expected throughput, suffix: K, e.g.: \-\-tps=10k.
 .TP
 .B \-p, \-\-rep_write=
-.
 The first nth servers can write data, e.g.: \-\-rep_write=2.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-b,  \-\-verbose
-.
 Whether it outputs detailed information when verification fails.
 .TP
 .B \-h,  \-\-help
-.
 Display this message and then exit.
 .TP
 .B \-V,  \-\-version
-.
 Display the version of the application and then exit.
 .UNINDENT
 .SH EXAMPLES

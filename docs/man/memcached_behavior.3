@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR" "3" "October 26, 2011" "1.0.2" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR" "3" "January 26, 2012" "1.0.3" "libmemcached"
 .SH NAME
 memcached_behavior \- libmemcached Documentation
 .
@@ -148,7 +148,6 @@ Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and th
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
-.
 Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with the weighted tests.  and the hash to MEMCACHED_HASH_MD5.
 .UNINDENT
 .INDENT 0.0
@@ -298,7 +297,6 @@ If enabled any hosts which have been flagged as disabled will be removed from th
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS
-.
 If enabled any hosts which have been flagged as disabled will be removed from the list of servers in the memcached_st structure.
 .UNINDENT
 .INDENT 0.0
