@@ -36,5 +36,5 @@
 
 #pragma once
 
-test_return_t memcached_dump_TEST(memcached_st *);
-test_return_t memcached_dump_TEST2(memcached_st *);
+test_return_t memcached_stat_TEST(memcached_st *);
+test_return_t memcached_stat_TEST2(memcached_st *);

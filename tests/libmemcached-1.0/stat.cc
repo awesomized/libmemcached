@@ -46,24 +46,7 @@
 
 using namespace libtest;
 
-#include "tests/libmemcached-1.0/dump.h"
-
-static memcached_return_t callback_dump_counter(const memcached_st *,
-                                                const char*, // key,
-                                                size_t, // length,
-                                                void *context)
-{
-  size_t *counter= (size_t *)context;
-
-#if 0
-  std::cerr.write(key, length);
-  std::cerr << std::endl;
-#endif
-
-  *counter= *counter +1;
-
-  return MEMCACHED_SUCCESS;
-}
+#include "tests/libmemcached-1.0/stat.h"
 
 static memcached_return_t item_counter(memcached_server_instance_st ,
                                        const char *key, size_t key_length,
@@ -84,27 +67,18 @@ static memcached_return_t item_counter(memcached_server_instance_st ,
   return MEMCACHED_SUCCESS;
 }
 
-test_return_t memcached_dump_TEST(memcached_st *memc)
+test_return_t memcached_stat_TEST(memcached_st *memc)
 {
-  test_skip(false, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
-
-  size_t count= 0;
-  memcached_dump_fn callbacks[1];
-  callbacks[0]= &callback_dump_counter;
-
   uint64_t counter= 0;
-  test_compare_got(MEMCACHED_SUCCESS,
-                   memcached_stat_execute(memc, NULL, item_counter, &counter),
+  test_compare_got(MEMCACHED_INVALID_ARGUMENTS,
+                   memcached_stat_execute(memc, "BAD_ARG_VALUE", item_counter, &counter),
                    memcached_last_error_message(memc));
-  test_zero(counter);
-
-  test_compare_got(MEMCACHED_SUCCESS, memcached_dump(memc, callbacks, &count, 1), memcached_last_error_message(memc));
 
   return TEST_SUCCESS;
 }
 
 #define memcached_dump_TEST2_COUNT 64
-test_return_t memcached_dump_TEST2(memcached_st *memc)
+test_return_t memcached_stat_TEST2(memcached_st *memc)
 {
   test_skip(false, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
@@ -130,16 +104,6 @@ test_return_t memcached_dump_TEST2(memcached_st *memc)
                    memcached_stat_execute(memc, NULL, item_counter, &counter),
                    memcached_last_error_message(memc));
   test_true_got(counter > 0, counter);
-
-  size_t count= 0;
-  memcached_dump_fn callbacks[1];
-  callbacks[0]= &callback_dump_counter;
-
-  test_compare_got(MEMCACHED_SUCCESS,
-                   memcached_dump(memc, callbacks, &count, 1),
-                   memcached_last_error_message(memc));
-
-  test_compare(size_t(memcached_dump_TEST2_COUNT), count);
 
   return TEST_SUCCESS;
 }

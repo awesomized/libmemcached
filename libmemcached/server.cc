@@ -139,7 +139,7 @@ memcached_server_st *__server_create_with(memcached_st *memc,
 
   if (memc)
   {
-    set_hostinfo(self);
+    memcached_connect_try(self);
   }
 
   return self;
@@ -241,18 +241,28 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
                                             memcached_server_execute_fn callback,
                                             void *context)
 {
+  if (callback == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
+
+  bool some_errors= false;;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    unsigned int iferror= (*callback)(ptr, instance, context);
-
-    if (iferror)
+    memcached_return_t rc= (*callback)(ptr, instance, context);
+    if (rc == MEMCACHED_INVALID_ARGUMENTS)
     {
-      continue;
+      return rc;
+    }
+    else if (memcached_fatal(rc))
+    {
+      some_errors= true;
     }
   }
 
+  (void)some_errors;
   return MEMCACHED_SUCCESS;
 }
 

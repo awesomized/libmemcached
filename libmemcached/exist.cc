@@ -52,26 +52,23 @@ static memcached_return_t ascii_exist(memcached_st *memc, memcached_server_write
   };
 
   /* Send command header */
-  memcached_return_t rc=  memcached_vdo(instance, vector, 9, true);
-  if (rc == MEMCACHED_SUCCESS)
+  memcached_return_t rc;
+  if (memcached_fatal(rc= memcached_vdo(instance, vector, 9, true)))
   {
-    char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
-
-    if (rc == MEMCACHED_NOTSTORED)
-    {
-      rc= MEMCACHED_SUCCESS;
-    }
-
-    if (rc == MEMCACHED_STORED)
-    {
-      rc= MEMCACHED_NOTFOUND;
-    }
+    return rc;
   }
 
-  if (rc == MEMCACHED_WRITE_FAILURE)
+  char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
+  rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
+
+  if (rc == MEMCACHED_NOTSTORED)
   {
-    memcached_io_reset(instance);
+    rc= MEMCACHED_SUCCESS;
+  }
+
+  if (rc == MEMCACHED_STORED)
+  {
+    rc= MEMCACHED_NOTFOUND;
   }
 
   return rc;
@@ -104,19 +101,22 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
 
   /* write the header */
   memcached_return_t rc;
-  if ((rc= memcached_vdo(instance, vector, 4, true)) != MEMCACHED_SUCCESS)
+  if (memcached_fatal(rc= memcached_vdo(instance, vector, 4, true)))
   {
-    memcached_io_reset(instance);
-    return (rc == MEMCACHED_SUCCESS) ? MEMCACHED_WRITE_FAILURE : rc;
+    return rc;
   }
 
   rc= memcached_response(instance, NULL, 0, NULL);
 
   if (rc == MEMCACHED_SUCCESS)
+  {
     rc= MEMCACHED_NOTFOUND;
+  }
 
   if (rc == MEMCACHED_DATA_EXISTS)
+  {
     rc= MEMCACHED_SUCCESS;
+  }
 
   return rc;
 }
@@ -138,19 +138,25 @@ memcached_return_t memcached_exist_by_key(memcached_st *memc,
 
   if (memcached_is_udp(memc))
   {
-    return MEMCACHED_NOT_SUPPORTED;
+    return memcached_set_error(*memc, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
-  memcached_server_write_instance_st instance;
-  instance= memcached_server_instance_fetch(memc, server_key);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
 
-  if (memc->flags.binary_protocol)
+  if (memcached_is_binary(memc))
   {
-    return binary_exist(memc, instance, key, key_length);
+    rc= binary_exist(memc, instance, key, key_length);
   }
   else
   {
-    return ascii_exist(memc, instance, key, key_length);
+    rc= ascii_exist(memc, instance, key, key_length);
   }
+
+  if (memcached_fatal(rc))
+  {
+    memcached_io_reset(instance);
+  }
+
+  return rc;
 }

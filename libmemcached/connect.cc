@@ -129,8 +129,9 @@ static memcached_return_t connect_poll(memcached_server_st *server)
   return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
 }
 
-memcached_return_t set_hostinfo(memcached_server_st *server)
+static memcached_return_t set_hostinfo(memcached_server_st *server)
 {
+  assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
   if (server->address_info)
   {
     freeaddrinfo(server->address_info);
@@ -619,7 +620,7 @@ static memcached_return_t backoff_handling(memcached_server_write_instance_st se
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_connect(memcached_server_write_instance_st server)
+static memcached_return_t _memcached_connect(memcached_server_write_instance_st server, const bool set_last_disconnected)
 {
   if (server->fd != INVALID_SOCKET)
   {
@@ -639,6 +640,11 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
   if (LIBMEMCACHED_WITH_SASL_SUPPORT and server->root->sasl.callbacks and memcached_is_udp(server->root))
   {
     return memcached_set_error(*server, MEMCACHED_INVALID_HOST_PROTOCOL, MEMCACHED_AT, memcached_literal_param("SASL is not supported for UDP connections"));
+  }
+
+  if (server->hostname[0] == '/')
+  {
+    server->type= MEMCACHED_CONNECTION_UNIX_SOCKET;
   }
 
   /* We need to clean up the multi startup piece */
@@ -673,25 +679,39 @@ memcached_return_t memcached_connect(memcached_server_write_instance_st server)
     memcached_mark_server_as_clean(server);
     return rc;
   }
-
-  set_last_disconnected_host(server);
-  if (memcached_has_current_error(*server))
+  else if (set_last_disconnected)
   {
-    memcached_mark_server_for_timeout(server);
-    assert(memcached_failed(memcached_server_error_return(server)));
-  }
-  else
-  {
-    memcached_set_error(*server, rc, MEMCACHED_AT);
-    memcached_mark_server_for_timeout(server);
-  }
+    set_last_disconnected_host(server);
+    if (memcached_has_current_error(*server))
+    {
+      memcached_mark_server_for_timeout(server);
+      assert(memcached_failed(memcached_server_error_return(server)));
+    }
+    else
+    {
+      memcached_set_error(*server, rc, MEMCACHED_AT);
+      memcached_mark_server_for_timeout(server);
+    }
 
-  LIBMEMCACHED_MEMCACHED_CONNECT_END();
+    LIBMEMCACHED_MEMCACHED_CONNECT_END();
 
-  if (in_timeout)
-  {
-    return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT);
+    if (in_timeout)
+    {
+      char buffer[1024];
+      int snprintf_length= snprintf(buffer, sizeof(buffer), "%s:%d", server->hostname, int(server->port));
+      return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT, buffer, snprintf_length);
+    }
   }
 
   return rc;
+}
+
+memcached_return_t memcached_connect_try(memcached_server_write_instance_st server)
+{
+  return _memcached_connect(server, false);
+}
+
+memcached_return_t memcached_connect(memcached_server_write_instance_st server)
+{
+  return _memcached_connect(server, true);
 }

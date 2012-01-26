@@ -79,6 +79,7 @@
 #include "tests/namespace.h"
 #include "tests/parser.h"
 #include "tests/libmemcached-1.0/dump.h"
+#include "tests/libmemcached-1.0/stat.h"
 #include "tests/touch.h"
 #include "tests/callbacks.h"
 #include "tests/pool.h"
@@ -486,7 +487,7 @@ static test_return_t memcached_return_t_TEST(memcached_st *memc)
 {
   uint32_t values[] = { 851992627U, 2337886783U, 4109241422U, 4001849190U,
                         982370485U, 1263635348U, 4242906218U, 3829656100U,
-                        1891735253U, 334139633U, 2257084983U, 3088286104U,
+                        1891735253U, 334139633U, 2257084983U, 3351789013U,
                         13199785U, 2542027183U, 1097051614U, 199566778U,
                         2748246961U, 2465192557U, 1664094137U, 2405439045U,
                         1842224848U, 692413798U, 3479807801U, 919913813U,
@@ -881,7 +882,7 @@ static test_return_t bad_key_test(memcached_st *memc)
   test_compare(query_id, memcached_query_id(memc_clone)); // We should not increase the query_id for memcached_behavior_set()
 
   /* All keys are valid in the binary protocol (except for length) */
-  if (not memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+  if (memcached_behavior_get(memc_clone, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) == false)
   {
     uint64_t before_query_id= memcached_query_id(memc_clone);
     {
@@ -1537,11 +1538,9 @@ static test_return_t decrement_with_initial_by_key_test(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
-static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
+static test_return_t binary_increment_with_prefix_test(memcached_st *memc)
 {
-  memcached_st *memc= memcached_clone(NULL, orig_memc);
-
-  test_skip(TEST_SUCCESS, pre_binary(memc));
+  test_skip(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
   test_compare(MEMCACHED_SUCCESS, memcached_callback_set(memc, MEMCACHED_CALLBACK_PREFIX_KEY, (void *)"namespace:"));
 
@@ -1561,7 +1560,6 @@ static test_return_t binary_increment_with_prefix_test(memcached_st *orig_memc)
                                                       test_literal_param("number"),
                                                       1, &new_number));
   test_compare(uint64_t(2), new_number);
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -3968,7 +3966,7 @@ static test_return_t noreply_test(memcached_st *memc)
   {
     for (size_t x= 0; x < 100; ++x)
     {
-      char key[10];
+      char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
       int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
       test_false((size_t)check_length >= sizeof(key) || check_length < 0);
 
@@ -4092,8 +4090,8 @@ static test_return_t noreply_test(memcached_st *memc)
 
 static test_return_t analyzer_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   memcached_analysis_st *report;
+  memcached_return_t rc;
 
   memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
   test_compare(MEMCACHED_SUCCESS, rc);
@@ -4105,24 +4103,6 @@ static test_return_t analyzer_test(memcached_st *memc)
 
   free(report);
   memcached_stat_free(NULL, memc_stat);
-
-  return TEST_SUCCESS;
-}
-
-/* Count the objects */
-
-static test_return_t dump_test(memcached_st *memc)
-{
-  /* No support for Binary protocol yet */
-  test_skip(false, memc->flags.binary_protocol);
-
-  test_compare(TEST_SUCCESS, set_test3(memc));
-
-  // confirm_key_count() call dump
-  size_t counter= confirm_key_count(memc);
-
-  /* We may have more then 32 if our previous flush has not completed */
-  test_true(counter >= 32);
 
   return TEST_SUCCESS;
 }
@@ -4682,6 +4662,8 @@ static test_return_t regression_bug_434843(memcached_st *original_memc)
     test_compare(MEMCACHED_SUCCESS,
                  memcached_mget(memc, (const char**)keys, key_length, max_keys));
 
+    // One the first run we should get a NOT_FOUND, but on the second some data
+    // should be returned.
     test_compare(y ?  MEMCACHED_SUCCESS : MEMCACHED_NOTFOUND, 
                  memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
 
@@ -4792,8 +4774,7 @@ static test_return_t regression_bug_442914(memcached_st *memc)
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
   }
 
-  (void)snprintf(k, sizeof(k), "%037u", 251U);
-  len= strlen(k);
+  len= snprintf(k, sizeof(k), "%037u", 251U);
 
   memcached_return_t rc= memcached_delete(memc, k, len, 0);
   test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
@@ -4930,6 +4911,10 @@ static test_return_t regression_bug_447342(memcached_st *memc)
 
 static test_return_t regression_bug_463297(memcached_st *memc)
 {
+  test_compare(MEMCACHED_INVALID_ARGUMENTS, memcached_delete(memc, "foo", 3, 1));
+
+  // Since we blocked timed delete, this test is no longer valid.
+#if 0
   memcached_st *memc_clone= memcached_clone(NULL, memc);
   test_true(memc_clone);
   test_true(memcached_version(memc_clone) == MEMCACHED_SUCCESS);
@@ -4985,6 +4970,8 @@ static test_return_t regression_bug_463297(memcached_st *memc)
   }
 
   memcached_free(memc_clone);
+#endif
+
   return TEST_SUCCESS;
 }
 
@@ -5452,7 +5439,7 @@ static test_return_t regression_bug_490520(memcached_st *memc)
     test_true(keys[x]);
 
     memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
   }
 
   for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
@@ -5609,10 +5596,9 @@ test_st tests[] ={
   {"connection_test", false, (test_callback_fn*)connection_test},
   {"callback_test", false, (test_callback_fn*)callback_test},
   {"userdata_test", false, (test_callback_fn*)userdata_test},
-  {"set", false, (test_callback_fn*)set_test },
-  {"set2", false, (test_callback_fn*)set_test2 },
-  {"set3", false, (test_callback_fn*)set_test3 },
-  {"dump", true, (test_callback_fn*)dump_test},
+  {"memcached_set()", false, (test_callback_fn*)set_test },
+  {"memcached_set() 2", false, (test_callback_fn*)set_test2 },
+  {"memcached_set() 3", false, (test_callback_fn*)set_test3 },
   {"add", true, (test_callback_fn*)add_test },
   {"memcached_fetch_result(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
   {"replace", true, (test_callback_fn*)replace_test },
@@ -5665,13 +5651,20 @@ test_st tests[] ={
   {"memcached_exist_by_key(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_by_key_SUCCESS },
   {"memcached_touch", 0, (test_callback_fn*)test_memcached_touch},
   {"memcached_touch_with_prefix", 0, (test_callback_fn*)test_memcached_touch_by_key},
-  {"memcached_dump()", 0, (test_callback_fn*)memcached_dump_TEST },
+  {"memcached_dump() no data", true, (test_callback_fn*)memcached_dump_TEST },
+  {"memcached_dump() with data", true, (test_callback_fn*)memcached_dump_TEST2 },
   {0, 0, 0}
 };
 
 test_st touch_tests[] ={
   {"memcached_touch", 0, (test_callback_fn*)test_memcached_touch},
   {"memcached_touch_with_prefix", 0, (test_callback_fn*)test_memcached_touch_by_key},
+  {0, 0, 0}
+};
+
+test_st memcached_stat_tests[] ={
+  {"memcached_stat() INVALID ARG", 0, (test_callback_fn*)memcached_stat_TEST},
+  {"memcached_stat()", 0, (test_callback_fn*)memcached_stat_TEST2},
   {0, 0, 0}
 };
 
@@ -6011,6 +6004,8 @@ collection_st collection[] ={
   {"virtual buckets", 0, 0, virtual_bucket_tests},
   {"memcached_server_get_last_disconnect", 0, 0, memcached_server_get_last_disconnect_tests},
   {"touch", 0, 0, touch_tests},
+  {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
+  {"memcached_stat()", 0, 0, memcached_stat_tests},
   {0, 0, 0, 0}
 };
 

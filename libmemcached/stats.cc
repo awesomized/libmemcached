@@ -81,7 +81,7 @@ struct local_context
 };
 
 
-static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char *value)
+static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key, const char *value)
 {
 
   if (strlen(key) < 1)
@@ -127,7 +127,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   else if (not strcmp("rusage_user", key))
   {
     char *walk_ptr;
-    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++) {};
+    for (walk_ptr= (char*)value; (!ispunct(*walk_ptr)); walk_ptr++) {};
     *walk_ptr= 0;
     walk_ptr++;
     memc_stat->rusage_user_seconds= strtoul(value, (char **)NULL, 10);
@@ -136,7 +136,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, char *key, char
   else if (not strcmp("rusage_system", key))
   {
     char *walk_ptr;
-    for (walk_ptr= value; (!ispunct(*walk_ptr)); walk_ptr++) {};
+    for (walk_ptr= (char*)value; (!ispunct(*walk_ptr)); walk_ptr++) {};
     *walk_ptr= 0;
     walk_ptr++;
     memc_stat->rusage_system_seconds= strtoul(value, (char **)NULL, 10);
@@ -402,15 +402,6 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
       return rc;
     }
 
-    if (memc_stat)
-    {
-      if ((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
-      {
-        WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
-        WATCHPOINT_ASSERT(0);
-      }
-    }
-
     if (check && check->func)
     {
       size_t key_length= strlen(buffer);
@@ -419,6 +410,15 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
                   buffer, key_length,
                   buffer+key_length+1, strlen(buffer+key_length+1),
                   check->context);
+    }
+
+    if (memc_stat)
+    {
+      if ((set_data(memc_stat, buffer, buffer + strlen(buffer) + 1)) == MEMCACHED_UNKNOWN_STAT_KEY)
+      {
+        WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+        WATCHPOINT_ASSERT(0);
+      }
     }
   } while (1);
 
@@ -448,38 +448,48 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
   if (memcached_success(rc))
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    while ((rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL)) == MEMCACHED_STAT)
+    while ((rc= memcached_response(instance, buffer, sizeof(buffer), NULL)) == MEMCACHED_STAT)
     {
-      char *string_ptr, *end_ptr;
-      char *key, *value;
-
-      string_ptr= buffer;
+      char *string_ptr= buffer;
       string_ptr+= 5; /* Move past STAT */
+
+      char *end_ptr;
       for (end_ptr= string_ptr; isgraph(*end_ptr); end_ptr++) {};
-      key= string_ptr;
-      key[(size_t)(end_ptr-string_ptr)]= 0;
+      char *key= string_ptr;
+      key[size_t(end_ptr-string_ptr)]= 0;
 
       string_ptr= end_ptr + 1;
       for (end_ptr= string_ptr; !(isspace(*end_ptr)); end_ptr++) {};
-      value= string_ptr;
+      char *value= string_ptr;
       value[(size_t)(end_ptr -string_ptr)]= 0;
-      if (memc_stat)
-      {
-        unlikely((set_data(memc_stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)
-        {
-          WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
-          WATCHPOINT_ASSERT(0);
-        }
-      }
+#if 0
+      bool check_bool= bool(check);
+      bool check_func_bool= bool(check) ? bool(check->func) : false;
+      fprintf(stderr, "%s:%d %s %s %d:%d\n", __FILE__, __LINE__, key, value, check_bool, check_func_bool);
+#endif
 
-      if (check && check->func)
+      if (check and check->func)
       {
         check->func(instance,
                     key, strlen(key),
                     value, strlen(value),
                     check->context);
       }
+
+      if (memc_stat)
+      {
+        if((set_data(memc_stat, key, value)) == MEMCACHED_UNKNOWN_STAT_KEY)
+        {
+          WATCHPOINT_ERROR(MEMCACHED_UNKNOWN_STAT_KEY);
+          WATCHPOINT_ASSERT(0);
+        }
+      }
     }
+  }
+
+  if (rc == MEMCACHED_ERROR)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
   }
 
   if (rc == MEMCACHED_END)
@@ -552,6 +562,13 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
       temp_return= ascii_stats_fetch(stat_instance, args, args_length, instance, NULL);
     }
 
+    // Special case where "args" is invalid
+    if (temp_return == MEMCACHED_INVALID_ARGUMENTS)
+    {
+      rc= MEMCACHED_INVALID_ARGUMENTS;
+      break;
+    }
+
     if (memcached_failed(temp_return))
     {
       rc= MEMCACHED_SOME_ERRORS;
@@ -619,8 +636,10 @@ char ** memcached_stat_get_keys(memcached_st *ptr,
                                 memcached_stat_st *,
                                 memcached_return_t *error)
 {
-  if (not ptr)
+  if (ptr == NULL)
+  {
     return NULL;
+  }
 
   char **list= static_cast<char **>(libmemcached_malloc(ptr, sizeof(memcached_stat_keys)));
   if (not list)
@@ -658,9 +677,9 @@ static memcached_return_t call_stat_fn(memcached_st *ptr,
                                        void *context)
 {
   memcached_return_t rc;
-  struct local_context *check= (struct local_context *)context;
+  local_context *check= (struct local_context *)context;
 
-  if (ptr->flags.binary_protocol)
+  if (memcached_is_binary(ptr))
   {
     rc= binary_stats_fetch(NULL, check->args, check->args_length, instance, check);
   }
@@ -676,7 +695,7 @@ memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args, 
 {
   memcached_version(memc);
 
- struct local_context check(func, context, args, args ? strlen(args) : 0);
+ local_context check(func, context, args, args ? strlen(args) : 0);
 
  return memcached_server_execute(memc, call_stat_fn, (void *)&check);
 }
