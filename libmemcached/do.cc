@@ -50,9 +50,24 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
     msg.msg_iov= (struct iovec*)vector;
     msg.msg_iovlen= count;
 
-    if (::sendmsg(instance->fd, &msg, 0) < 1)
+    uint32_t retry= 5;
+    while (--retry)
     {
-      return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+      ssize_t sendmsg_length= ::sendmsg(instance->fd, &msg, 0);
+      if (sendmsg_length > 0)
+      {
+        break;
+      }
+      else if (sendmsg_length < 0)
+      {
+        if (errno == EMSGSIZE)
+        {
+          return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+        }
+
+        perror(__func__);
+        return memcached_set_errno(*instance, errno, MEMCACHED_AT);
+      }
     }
 
     return MEMCACHED_SUCCESS;

@@ -74,8 +74,8 @@ const char *memcached_strerror(memcached_st *, memcached_return_t rc)
   case MEMCACHED_WRITE_FAILURE:
     return "WRITE FAILURE";
 
-  case MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE: // DEPRECATED
-    return "CONNECTION SOCKET CREATE FAILURE";
+  case MEMCACHED_ERROR:
+    return "ERROR was returned by server";
 
   case MEMCACHED_DATA_EXISTS:
     return "CONNECTION DATA EXISTS";

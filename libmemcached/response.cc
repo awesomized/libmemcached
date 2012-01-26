@@ -242,10 +242,16 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
           return MEMCACHED_SERVER_ERROR;
         }
 
-        if (total_read > memcached_literal_param_size("SERVER_ERROR object too large for cache") and
+        if (total_read >= memcached_literal_param_size("SERVER_ERROR object too large for cache") and
             (memcmp(buffer, memcached_literal_param("SERVER_ERROR object too large for cache")) == 0))
         {
           return MEMCACHED_E2BIG;
+        }
+
+        if (total_read >= memcached_literal_param_size("SERVER_ERROR out of memory storing object") and
+            (memcmp(buffer, memcached_literal_param("SERVER_ERROR out of memory storing object")) == 0))
+        {
+          return MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE;
         }
 
         // Move past the basic error message and whitespace
@@ -313,6 +319,11 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         return MEMCACHED_PROTOCOL_ERROR;
       }
 #endif
+      // ERROR
+      else if (buffer[1] == 'R' and buffer[2] == 'R' and buffer[3] == 'O' and buffer[4] == 'R')
+      {
+        return MEMCACHED_ERROR;
+      }
       // EXISTS
       else if (buffer[1] == 'X' and buffer[2] == 'I' and buffer[3] == 'S' and buffer[4] == 'T' and buffer[5] == 'S')
       {
@@ -705,11 +716,7 @@ static memcached_return_t _read_one_response(memcached_server_write_instance_st 
     assert(rc != MEMCACHED_PROTOCOL_ERROR);
   }
 
-  if (rc == MEMCACHED_UNKNOWN_READ_FAILURE or
-      rc == MEMCACHED_READ_FAILURE or
-      rc == MEMCACHED_PROTOCOL_ERROR or
-      rc == MEMCACHED_CLIENT_ERROR or
-      rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+  if (memcached_fatal(rc))
   {
     memcached_io_reset(ptr);
   }
@@ -774,14 +781,22 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
       memcached_return_t rc= _read_one_response(ptr, buffer, buffer_length, junked_result_ptr, numeric_value);
 
       // @TODO should we return an error on another but a bad read case?
-      if (rc != MEMCACHED_END and
-          rc != MEMCACHED_STORED and
-          rc != MEMCACHED_SUCCESS and
-          rc != MEMCACHED_STAT and
+      if (
+          rc != MEMCACHED_DATA_EXISTS and
           rc != MEMCACHED_DELETED and
+          rc != MEMCACHED_E2BIG and
+          rc != MEMCACHED_END and
+          rc != MEMCACHED_ERROR and
+          rc != MEMCACHED_ITEM and
           rc != MEMCACHED_NOTFOUND and
           rc != MEMCACHED_NOTSTORED and
-          rc != MEMCACHED_DATA_EXISTS)
+          rc != MEMCACHED_SERVER_ERROR and
+          rc != MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE and
+          rc != MEMCACHED_STAT and
+          rc != MEMCACHED_STORED and
+          rc != MEMCACHED_SUCCESS and
+          rc != MEMCACHED_VALUE
+          )
       {
         memcached_result_free(junked_result_ptr);
         return rc;

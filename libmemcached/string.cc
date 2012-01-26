@@ -43,17 +43,19 @@ inline static memcached_return_t _string_check(memcached_string_st *string, size
   if (need && need > (size_t)(string->current_size - (size_t)(string->end - string->string)))
   {
     size_t current_offset= (size_t) (string->end - string->string);
-    size_t adjust;
-    size_t new_size;
 
     /* This is the block multiplier. To keep it larger and surive division errors we must round it up */
-    adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / MEMCACHED_BLOCK_SIZE;
+    size_t adjust= (need - (size_t)(string->current_size - (size_t)(string->end - string->string))) / MEMCACHED_BLOCK_SIZE;
     adjust++;
 
-    new_size= sizeof(char) * (size_t)((adjust * MEMCACHED_BLOCK_SIZE) + string->current_size);
+    size_t new_size= sizeof(char) * (size_t)((adjust * MEMCACHED_BLOCK_SIZE) + string->current_size);
     /* Test for overflow */
     if (new_size < need)
-      return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    {
+      char error_message[1024];
+      int error_message_length= snprintf(error_message, sizeof(error_message),"Needed %ld, got %ld", (long)need, (long)new_size);
+      return memcached_set_error(*string->root, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, error_message, error_message_length);
+    }
 
     char *new_value= libmemcached_xrealloc(string->root, string->string, new_size, char);
 
