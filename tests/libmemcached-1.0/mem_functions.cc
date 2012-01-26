@@ -5651,7 +5651,9 @@ test_st tests[] ={
   {"memcached_exist_by_key(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_exist_by_key_SUCCESS },
   {"memcached_touch", 0, (test_callback_fn*)test_memcached_touch},
   {"memcached_touch_with_prefix", 0, (test_callback_fn*)test_memcached_touch_by_key},
+#if 0
   {"memcached_dump() no data", true, (test_callback_fn*)memcached_dump_TEST },
+#endif
   {"memcached_dump() with data", true, (test_callback_fn*)memcached_dump_TEST2 },
   {0, 0, 0}
 };
