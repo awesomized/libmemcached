@@ -141,7 +141,7 @@ test_return_t memcached_dump_TEST2(memcached_st *memc)
                    memcached_dump(memc, callbacks, &count, 1),
                    memcached_last_error_message(memc));
 
-  test_true_got(size_t(memcached_dump_TEST2_COUNT) >= count, count);
+  test_true(count);
 
   return TEST_SUCCESS;
 }
