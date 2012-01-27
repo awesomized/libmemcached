@@ -1,3 +1,7 @@
+1.0.4 Thu Jan 26 22:33:54 PST 2012
+* Fix for memcached_dump().
+* Additional testing for memcached_stat_execute().
+
 1.0.3 Sun Jan  8 18:11:36 PST 2012
 * Increased size of sort buffer used during Ketama.
 * Added support for new behavior to handle dead servers.
