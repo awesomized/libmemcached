@@ -285,9 +285,9 @@ memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
     return NULL;
   }
 
-  if (memcached_failed(rc= (memcached_key_test(*ptr, (const char **)&key, &key_length, 1))))
+  if (memcached_failed((memcached_key_test(*ptr, (const char **)&key, &key_length, 1))))
   {
-    *error= rc;
+    *error= memcached_last_error(ptr);
     return NULL;
   }
 
