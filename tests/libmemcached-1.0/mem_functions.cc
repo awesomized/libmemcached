@@ -5778,6 +5778,7 @@ test_st replication_tests[]= {
   {"mget", false, (test_callback_fn*)replication_mget_test },
   {"delete", true, (test_callback_fn*)replication_delete_test },
   {"rand_mget", false, (test_callback_fn*)replication_randomize_mget_test },
+  {"miss", false, (test_callback_fn*)replication_miss_test },
   {"fail", false, (test_callback_fn*)replication_randomize_mget_fail_test },
   {0, 0, (test_callback_fn*)0}
 };

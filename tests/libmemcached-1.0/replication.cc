@@ -327,3 +327,92 @@ test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
   memcached_free(memc_clone);
   return TEST_SUCCESS;
 }
+
+/* Test that single miss does not cause replica reads to fail */
+test_return_t replication_miss_test(memcached_st *memc)
+{
+  test_skip(true, false);
+
+  memcached_st *memc_repl= memcached_clone(NULL, memc);
+  test_true(memc_repl);
+  memcached_st *memc_single= memcached_clone(NULL, memc);
+  test_true(memc_single);
+
+  const char *value = "my_value";
+  size_t vlen;
+  uint32_t flags;
+
+  /* this test makes sense only with 2 or more servers */
+  test_true(memcached_server_count(memc_repl) > 1);
+
+  /* Consistent hash */
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set_distribution(memc_repl, MEMCACHED_DISTRIBUTION_CONSISTENT));
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set_distribution(memc_single, MEMCACHED_DISTRIBUTION_CONSISTENT));
+
+  /* The first clone writes to all servers */
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc_repl, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(memc_repl, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 
+                                      memcached_server_count(memc_repl)));
+
+  /* Write to servers */
+  {
+    memcached_return_t rc= memcached_set(memc_repl,
+                                         test_literal_param(__func__),
+                                         value, strlen(value), 
+                                         time_t(1200), uint32_t(0));
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+  }
+
+  /* Use the second clone to remove the key from primary server.
+    This should remove the key from only one server */
+  {
+    memcached_return_t rc= memcached_delete(memc_single, 
+                                            test_literal_param(__func__),
+                                            0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+  }
+
+  /* Remove the server where the key was deleted */
+  {
+#if 0
+    memcached_return_t rc;
+    const memcached_server_st *instance= memcached_server_by_key(memc_single,
+                                                                 test_literal_param(__func__),
+                                                                 &rc);
+    test_compare(MEMCACHED_SUCCESS, rc);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_server_remove(instance));
+#endif
+  }
+
+  /* Test that others still have it */
+  {
+    memcached_return_t rc;
+    char *get_value= memcached_get(memc_single,
+                                   test_literal_param(__func__),
+                                   &vlen, &flags, &rc);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    test_true(get_value and strcmp(get_value, value) == 0);
+    free(get_value);
+  }
+
+  /* This read should still return the value as we have it on other servers */
+  {
+    memcached_return_t rc;
+    char *get_value= memcached_get(memc_repl,
+                                   test_literal_param(__func__),
+                                   &vlen, &flags, &rc);
+    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true(get_value and strcmp(get_value, value) == 0);
+    free(get_value);
+  }
+
+  memcached_free(memc_repl);
+  memcached_free(memc_single);
+
+  return TEST_SUCCESS;
+}
