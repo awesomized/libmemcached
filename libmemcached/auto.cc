@@ -37,12 +37,36 @@
 
 #include <libmemcached/common.h>
 
+static void auto_response(memcached_server_write_instance_st instance, const bool reply,  memcached_return_t& rc, uint64_t* value)
+{
+  // If the message was successfully sent, then get the response, otherwise
+  // fail.
+  if (memcached_success(rc))
+  {
+    if (reply == false)
+    {
+      *value= UINT64_MAX;
+      return;
+    }
+
+    rc= memcached_response(instance, &instance->root->result);
+  }
+
+  if (memcached_success(rc))
+  {
+    *value= instance->root->result.numeric_value;
+  }
+  else
+  {
+    *value= UINT64_MAX;
+  }
+}
+
 static memcached_return_t text_incr_decr(memcached_server_write_instance_st instance,
                                          const bool is_incr,
                                          const char *key, size_t key_length,
                                          const uint64_t offset,
-                                         const bool reply,
-                                         uint64_t& numeric_value)
+                                         const bool reply)
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
@@ -69,22 +93,7 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
     vector[1].buffer= "decr ";
   }
 
-  memcached_return_t rc= memcached_vdo(instance, vector, 7, true);
-
-  if (reply == false)
-  {
-    return MEMCACHED_SUCCESS;
-  }
-
-  if (memcached_failed(rc))
-  {
-    numeric_value= UINT64_MAX;
-    return rc;
-  }
-
-  rc= memcached_response(instance, buffer, sizeof(buffer), NULL, numeric_value);
-
-  return memcached_set_error(*instance, rc, MEMCACHED_AT);
+  return memcached_vdo(instance, vector, 7, true);
 }
 
 static memcached_return_t binary_incr_decr(memcached_server_write_instance_st instance,
@@ -93,8 +102,7 @@ static memcached_return_t binary_incr_decr(memcached_server_write_instance_st in
                                            const uint64_t offset,
                                            const uint64_t initial,
                                            const uint32_t expiration,
-                                           const bool reply,
-                                           uint64_t *value)
+                                           const bool reply)
 {
   if (reply == false)
   {
@@ -128,133 +136,163 @@ static memcached_return_t binary_incr_decr(memcached_server_write_instance_st in
     { key, key_length }
   };
 
-  memcached_return_t rc;
-  if (memcached_failed(rc= memcached_vdo(instance, vector, 4, true)))
-  {
-    memcached_io_reset(instance);
-    return MEMCACHED_WRITE_FAILURE;
-  }
-
-  if (reply == false)
-  {
-    return MEMCACHED_SUCCESS;
-  }
-
-  return memcached_response(instance, (char*)value, sizeof(*value), NULL);
+  return memcached_vdo(instance, vector, 4, true);
 }
 
-memcached_return_t memcached_increment(memcached_st *ptr,
+memcached_return_t memcached_increment(memcached_st *memc,
                                        const char *key, size_t key_length,
                                        uint32_t offset,
                                        uint64_t *value)
 {
-  return memcached_increment_by_key(ptr, key, key_length, key, key_length, offset, value);
+  return memcached_increment_by_key(memc, key, key_length, key, key_length, offset, value);
 }
 
-memcached_return_t memcached_decrement(memcached_st *ptr,
-                                       const char *key, size_t key_length,
-                                       uint32_t offset,
-                                       uint64_t *value)
+static memcached_return_t increment_decrement_by_key(const protocol_binary_command command,
+                                                     memcached_st *memc,
+                                                     const char *group_key, size_t group_key_length,
+                                                     const char *key, size_t key_length,
+                                                     uint64_t offset,
+                                                     uint64_t *value)
 {
-  return memcached_decrement_by_key(ptr, key, key_length, key, key_length, offset, value);
-}
-
-memcached_return_t memcached_increment_by_key(memcached_st *ptr,
-                                              const char *group_key, size_t group_key_length,
-                                              const char *key, size_t key_length,
-                                              uint64_t offset,
-                                              uint64_t *value)
-{
-  memcached_return_t rc;
   uint64_t local_value;
   if (value == NULL)
   {
     value= &local_value;
   }
 
-  if (memcached_failed(rc= initialize_query(ptr, true)))
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(memc, true)))
   {
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
+  if (memcached_failed(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
   {
-    return rc;
+    return memcached_last_error(memc);
   }
 
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+  uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
 
   bool reply= memcached_is_replying(instance->root);
 
-  LIBMEMCACHED_MEMCACHED_INCREMENT_START();
-  if (memcached_is_binary(ptr))
+  if (memcached_is_binary(memc))
   {
-    rc= binary_incr_decr(instance, PROTOCOL_BINARY_CMD_INCREMENT,
+    rc= binary_incr_decr(instance, command,
                          key, key_length,
                          uint64_t(offset), 0, MEMCACHED_EXPIRATION_NOT_ADD,
-                         reply,
-                         value);
+                         reply);
   }
   else
   {
-    rc= text_incr_decr(instance, true, key, key_length, offset, reply, *value);
+    rc= text_incr_decr(instance,
+                       command == PROTOCOL_BINARY_CMD_INCREMENT ? true : false,
+                       key, key_length,
+                       offset, reply);
   }
+
+  auto_response(instance, reply, rc, value);
+
+  return rc;
+}
+
+static memcached_return_t increment_decrement_with_initial_by_key(const protocol_binary_command command,
+                                                                  memcached_st *memc,
+                                                                  const char *group_key,
+                                                                  size_t group_key_length,
+                                                                  const char *key,
+                                                                  size_t key_length,
+                                                                  uint64_t offset,
+                                                                  uint64_t initial,
+                                                                  time_t expiration,
+                                                                  uint64_t *value)
+{
+  uint64_t local_value;
+  if (value == NULL)
+  {
+    value= &local_value;
+  }
+
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(memc, true)))
+  {
+    return rc;
+  }
+
+  if (memcached_failed(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
+  {
+    return memcached_last_error(memc);
+  }
+
+  uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
+
+  bool reply= memcached_is_replying(instance->root);
+
+  if (memcached_is_binary(memc))
+  {
+    rc= binary_incr_decr(instance, command,
+                         key, key_length,
+                         offset, initial, uint32_t(expiration),
+                         reply);
+        
+  }
+  else
+  {
+    rc=  memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                             memcached_literal_param("memcached_increment_with_initial_by_key() is not supported via the ASCII protocol"));
+  }
+
+  auto_response(instance, reply, rc, value);
+
+  return rc;
+}
+
+memcached_return_t memcached_decrement(memcached_st *memc,
+                                       const char *key, size_t key_length,
+                                       uint32_t offset,
+                                       uint64_t *value)
+{
+  return memcached_decrement_by_key(memc, key, key_length, key, key_length, offset, value);
+}
+
+
+memcached_return_t memcached_increment_by_key(memcached_st *memc,
+                                              const char *group_key, size_t group_key_length,
+                                              const char *key, size_t key_length,
+                                              uint64_t offset,
+                                              uint64_t *value)
+{
+  LIBMEMCACHED_MEMCACHED_INCREMENT_START();
+  memcached_return_t rc= increment_decrement_by_key(PROTOCOL_BINARY_CMD_INCREMENT,
+                                                    memc,
+                                                    group_key, group_key_length,
+                                                    key, key_length,
+                                                    offset, value);
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_END();
 
   return rc;
 }
 
-memcached_return_t memcached_decrement_by_key(memcached_st *ptr,
+memcached_return_t memcached_decrement_by_key(memcached_st *memc,
                                               const char *group_key, size_t group_key_length,
                                               const char *key, size_t key_length,
                                               uint64_t offset,
                                               uint64_t *value)
 {
-  uint64_t local_value;
-  if (value == NULL)
-  {
-    value= &local_value;
-  }
-
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
-  {
-    return rc;
-  }
-
-  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
-  {
-    return rc;
-  }
-
-
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
-
-  bool reply= memcached_is_replying(instance->root);
-
   LIBMEMCACHED_MEMCACHED_DECREMENT_START();
-  if (memcached_is_binary(ptr))
-  {
-    rc= binary_incr_decr(instance, PROTOCOL_BINARY_CMD_DECREMENT,
-                         key, key_length,
-                         offset, 0, MEMCACHED_EXPIRATION_NOT_ADD,
-                         reply,
-                         value);
-  }
-  else
-  {
-    rc= text_incr_decr(instance, false, key, key_length, offset, reply, *value);
-  }
-
+  memcached_return_t rc= increment_decrement_by_key(PROTOCOL_BINARY_CMD_DECREMENT,
+                                                    memc,
+                                                    group_key, group_key_length,
+                                                    key, key_length,
+                                                    offset, value);
   LIBMEMCACHED_MEMCACHED_DECREMENT_END();
 
   return rc;
 }
 
-memcached_return_t memcached_increment_with_initial(memcached_st *ptr,
+memcached_return_t memcached_increment_with_initial(memcached_st *memc,
                                                     const char *key,
                                                     size_t key_length,
                                                     uint64_t offset,
@@ -262,77 +300,12 @@ memcached_return_t memcached_increment_with_initial(memcached_st *ptr,
                                                     time_t expiration,
                                                     uint64_t *value)
 {
-  return memcached_increment_with_initial_by_key(ptr, key, key_length,
+  return memcached_increment_with_initial_by_key(memc, key, key_length,
                                                  key, key_length,
                                                  offset, initial, expiration, value);
 }
 
-memcached_return_t memcached_increment_with_initial_by_key(memcached_st *ptr,
-                                                         const char *group_key,
-                                                         size_t group_key_length,
-                                                         const char *key,
-                                                         size_t key_length,
-                                                         uint64_t offset,
-                                                         uint64_t initial,
-                                                         time_t expiration,
-                                                         uint64_t *value)
-{
-  uint64_t local_value;
-  if (value == NULL)
-  {
-    value= &local_value;
-  }
-
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
-  {
-    return rc;
-  }
-
-  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
-  {
-    return rc;
-  }
-
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
-
-  bool reply= memcached_is_replying(instance->root);
-
-  LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
-  if (memcached_is_binary(ptr))
-  {
-    rc= binary_incr_decr(instance, PROTOCOL_BINARY_CMD_INCREMENT,
-                         key, key_length,
-                         offset, initial, uint32_t(expiration),
-                         reply,
-                         value);
-  }
-  else
-  {
-    rc=  memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                             memcached_literal_param("memcached_increment_with_initial_by_key() is not supported via the ASCII protocol"));
-  }
-
-  LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_END();
-
-  return rc;
-}
-
-memcached_return_t memcached_decrement_with_initial(memcached_st *ptr,
-                                                    const char *key,
-                                                    size_t key_length,
-                                                    uint64_t offset,
-                                                    uint64_t initial,
-                                                    time_t expiration,
-                                                    uint64_t *value)
-{
-  return memcached_decrement_with_initial_by_key(ptr, key, key_length,
-                                                 key, key_length,
-                                                 offset, initial, expiration, value);
-}
-
-memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
+memcached_return_t memcached_increment_with_initial_by_key(memcached_st *memc,
                                                            const char *group_key,
                                                            size_t group_key_length,
                                                            const char *key,
@@ -342,43 +315,46 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *ptr,
                                                            time_t expiration,
                                                            uint64_t *value)
 {
-  uint64_t local_value;
-  if (value == NULL)
-  {
-    value= &local_value;
-  }
-
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
-  {
-    return rc;
-  }
-
-  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
-  {
-    return rc;
-  }
-
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
-
-  bool reply= memcached_is_replying(instance->root);
-
-
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
-  if (memcached_is_binary(ptr))
-  {
-    rc= binary_incr_decr(instance, PROTOCOL_BINARY_CMD_DECREMENT,
-                         key, key_length,
-                         offset, initial, uint32_t(expiration),
-                         reply,
-                         value);
-  }
-  else
-  {
-    rc=  memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                             memcached_literal_param("memcached_decrement_with_initial_by_key() is not supported via the ASCII protocol"));
-  }
+  memcached_return_t rc= increment_decrement_with_initial_by_key(PROTOCOL_BINARY_CMD_INCREMENT, 
+                                                                 memc,
+                                                                 group_key, group_key_length,
+                                                                 key, key_length,
+                                                                 offset, initial, expiration, value);
+  LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_END();
+
+  return rc;
+}
+
+memcached_return_t memcached_decrement_with_initial(memcached_st *memc,
+                                                    const char *key,
+                                                    size_t key_length,
+                                                    uint64_t offset,
+                                                    uint64_t initial,
+                                                    time_t expiration,
+                                                    uint64_t *value)
+{
+  return memcached_decrement_with_initial_by_key(memc, key, key_length,
+                                                 key, key_length,
+                                                 offset, initial, expiration, value);
+}
+
+memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *memc,
+                                                           const char *group_key,
+                                                           size_t group_key_length,
+                                                           const char *key,
+                                                           size_t key_length,
+                                                           uint64_t offset,
+                                                           uint64_t initial,
+                                                           time_t expiration,
+                                                           uint64_t *value)
+{
+  LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
+  memcached_return_t rc= increment_decrement_with_initial_by_key(PROTOCOL_BINARY_CMD_DECREMENT, 
+                                                                 memc,
+                                                                 group_key, group_key_length,
+                                                                 key, key_length,
+                                                                 offset, initial, expiration, value);
 
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_END();
 

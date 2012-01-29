@@ -922,7 +922,8 @@ static test_return_t bad_key_test(memcached_st *memc)
     test_compare(query_id +1, memcached_query_id(memc_clone));
 
     query_id= memcached_query_id(memc_clone);
-    test_compare(MEMCACHED_BAD_KEY_PROVIDED,
+    // Grouping keys are not required to follow normal key behaviors
+    test_compare(MEMCACHED_SUCCESS,
                  memcached_mget_by_key(memc_clone, "foo daddy", 9, keys, key_lengths, 1));
     test_compare(query_id +1, memcached_query_id(memc_clone));
 
@@ -5778,6 +5779,7 @@ test_st replication_tests[]= {
   {"mget", false, (test_callback_fn*)replication_mget_test },
   {"delete", true, (test_callback_fn*)replication_delete_test },
   {"rand_mget", false, (test_callback_fn*)replication_randomize_mget_test },
+  {"miss", false, (test_callback_fn*)replication_miss_test },
   {"fail", false, (test_callback_fn*)replication_randomize_mget_fail_test },
   {0, 0, (test_callback_fn*)0}
 };

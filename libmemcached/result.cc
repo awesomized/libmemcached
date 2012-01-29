@@ -52,6 +52,7 @@ static inline void _result_init(memcached_result_st *self,
   self->key_length= 0;
   self->item_cas= 0;
   self->root= memc;
+  self->numeric_value= UINT64_MAX;
   self->count= 0;
   self->item_key[0]= 0;
 }
@@ -97,6 +98,7 @@ void memcached_result_reset(memcached_result_st *ptr)
   ptr->item_flags= 0;
   ptr->item_cas= 0;
   ptr->item_expiration= 0;
+  ptr->numeric_value= UINT64_MAX;
 }
 
 void memcached_result_free(memcached_result_st *ptr)
@@ -107,6 +109,7 @@ void memcached_result_free(memcached_result_st *ptr)
   }
 
   memcached_string_free(&ptr->value);
+  ptr->numeric_value= UINT64_MAX;
 
   if (memcached_is_allocated(ptr))
   {
