@@ -85,6 +85,7 @@ case "$target_os" in
 
 dnl Specialty checks
 AX_PTHREAD
+AX_CXX_CSTDINT
 CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB
