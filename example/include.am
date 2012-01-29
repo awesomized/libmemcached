@@ -18,10 +18,6 @@ example_memcached_light_SOURCES= \
 				 example/memcached_light.c
 
 example_memcached_light_LDADD= libmemcached/libmemcachedprotocol.la \
-                               $(LIBINNODB) $(LTLIBEVENT)
+                               $(LIBEVENT_LDFLAGS)
 
-if HAVE_LIBINNODB
-example_memcached_light_SOURCES+= example/storage_innodb.c
-else
 example_memcached_light_SOURCES+= example/storage.c
-endif

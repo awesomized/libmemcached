@@ -77,8 +77,6 @@ AM_CONDITIONAL(BUILDING_GEARMAN, false)
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-PANDORA_HAVE_LIBEVENT
-
 case "$target_os" in
   *linux*)
        AS_IF([test "x$GCC" = "xyes"],
@@ -209,6 +207,15 @@ AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
        AM_CXXFLAGS="$AM_CXXFLAGS $NO_WERROR"
       ])
 SOCKET_SEND_FLAGS
+
+AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event], 
+                 [
+                  LIBEVENT_LDFLAGS="-levent"
+                  ],
+                 [
+                  AC_MSG_WARN([Unable to find libevent])
+                  ])
+AM_CONDITIONAL(HAVE_LIBEVENT, test "x${ax_cv_have_LIBEVENT}" = "xyes")
 
 AC_CONFIG_FILES([
   Makefile
