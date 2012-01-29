@@ -58,6 +58,11 @@ LT_LANG([C++])
 LT_LANG([C])
 gl_VISIBILITY
 
+AX_CXX_HEADER_STDCXX_98
+  if test "$ax_cv_cxx_stdcxx_98" = no; then
+    AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
+  fi
+
 m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
@@ -85,7 +90,7 @@ case "$target_os" in
 
 dnl Specialty checks
 AX_PTHREAD
-AX_CXX_CSTDINT
+AX_CXX_CINTTYPES
 CONFIG_EXTRA
 DETECT_BYTEORDER
 ENABLE_UTILLIB
