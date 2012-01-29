@@ -1,22 +1,18 @@
 # ===========================================================================
-#          http://www.gnu.org/software/autoconf-archive/ax_tls.html
+#     http://tangent.org/
 # ===========================================================================
 #
 # SYNOPSIS
 #
-#   AX_TLS([action-if-found], [action-if-not-found])
+#   AX_CXX_CSTDINT
 #
 # DESCRIPTION
 #
-#   Provides a test for the compiler support of thread local storage (TLS)
-#   extensions. Defines TLS if it is found. Currently knows about GCC/ICC
-#   and MSVC. I think SunPro uses the same as GCC, and Borland apparently
-#   supports either.
+#  Example:
 #
 # LICENSE
 #
-#   Copyright (c) 2008 Alan Woodland <ajw05@aber.ac.uk>
-#   Copyright (c) 2010 Diego Elio Petteno` <flameeyes@gmail.com>
+#   Copyright (c) 2012 Brian Aker` <brian@tangent.org>
 #
 #   This program is free software: you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by the
@@ -44,33 +40,50 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 10
+#serial 1
 
-AC_DEFUN([AX_TLS], [
-  AC_MSG_CHECKING(for thread local storage (TLS) class)
-  AC_CACHE_VAL(ac_cv_tls, [
-    ax_tls_keywords="__thread __declspec(thread) none"
-    for ax_tls_keyword in $ax_tls_keywords; do
-       AS_CASE([$ax_tls_keyword],
-          [none], [ac_cv_tls=none ; break],
-          [AC_TRY_COMPILE(
-              [#include <stdlib.h>
-               static void
-               foo(void) {
-               static ] $ax_tls_keyword [ int bar;
-               exit(1);
-               }],
-               [],
-               [ac_cv_tls=$ax_tls_keyword ; break],
-               ac_cv_tls=none
-           )])
-    done
+
+AC_DEFUN([AX_CXX_CSTDINT],
+    [
+    AC_REQUIRE([AC_PROG_CXX])
+    AC_REQUIRE([AC_PROG_CXXCPP])
+
+    AC_MSG_CHECKING(the location of cstdint)
+    AC_LANG_PUSH([C++])
+    save_CXXFLAGS="${CXXFLAGS}"
+    CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
+    ac_cv_cxx_cstdint=""
+
+    AC_LANG_PUSH([C++])
+#    AC_CACHE_CHECK([for location of cstdint], [ac_cv_cxx_cstdint],
+#      [
+# Look for cstdint
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <cstdint>], [ uint32_t t ])],
+        [ac_cv_cxx_cstdint="<cstdint>"],
+        [
+# Look for tr1/cstdint
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <tr1/cstdint>], [ uint32_t t ])],
+          [ac_cv_cxx_cstdint="<tr1/cstdint>"],
+          [
+# Look for boost/cstdint.hpp
+          AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <boost/cstdint.hpp>], [ uint32_t t ])],
+            [ac_cv_cxx_cstdint="<boost/cstdint.hpp>"])
+
+          ])
+        ])
+#      ])
+
+  AC_LANG_POP()
+
+  CXXFLAGS="${save_CXXFLAGS}"
+  if test -n "$ac_cv_cxx_cstdint"; then
+    AC_MSG_RESULT([$ac_cv_cxx_cstdint])
+  else
+    ac_cv_cxx_cstdint="<stdint.h>"
+    AC_MSG_WARN([Could not find a cstdint header.])
+    AC_MSG_RESULT([$ac_cv_cxx_cstdint])
+  fi
+
+  AC_DEFINE_UNQUOTED(CSTDINT_H,$ac_cv_cxx_cstdint, [the location of <cstdint>])
+
   ])
-  AC_MSG_RESULT($ac_cv_tls)
-
-  AS_IF([test "$ac_cv_tls" != "none"],
-    AC_DEFINE_UNQUOTED([TLS], $ac_cv_tls, [If the compiler supports a TLS storage class define it to that here])
-      m4_ifnblank([$1], [$1]),
-    m4_ifnblank([$2], [$2])
-  )
-])

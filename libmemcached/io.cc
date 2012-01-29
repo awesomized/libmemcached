@@ -81,10 +81,10 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
           case EINTR:
             continue;
 
+#if EWOULDBLOCK != EAGAIN
           case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-          case EAGAIN:
 #endif
+          case EAGAIN:
 #ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
@@ -327,10 +327,11 @@ static bool io_flush(memcached_server_write_instance_st ptr,
       {
       case ENOBUFS:
         continue;
+
+#if EWOULDBLOCK != EAGAIN
       case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-      case EAGAIN:
 #endif
+      case EAGAIN:
         {
           /*
            * We may be blocked on write because the input buffer
@@ -416,10 +417,10 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             continue;
 
           case ETIMEDOUT: // OSX
+#if EWOULDBLOCK != EAGAIN
           case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-          case EAGAIN:
 #endif
+          case EAGAIN:
 #ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
@@ -524,10 +525,10 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
         continue;
 
       case ETIMEDOUT: // OSX
+#if EWOULDBLOCK != EAGAIN
       case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-      case EAGAIN:
 #endif
+      case EAGAIN:
 #ifdef TARGET_OS_LINUX
       case ERESTART:
 #endif

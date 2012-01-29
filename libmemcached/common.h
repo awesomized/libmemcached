@@ -107,7 +107,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/io.hpp>
 #include <libmemcached/udp.hpp>
 #include <libmemcached/do.hpp>
-#include <libmemcached/close_socket.hpp>
+#include <libmemcached/socket.hpp>
 #include <libmemcached/connect.hpp>
 #include <libmemcached/allocators.hpp>
 #include <libmemcached/hash.hpp>

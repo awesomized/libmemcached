@@ -38,7 +38,15 @@
 #pragma once
 
 #include <inttypes.h>
+
+#ifdef __cplusplus
+#include <cstddef>
+#include <cstdlib>
+#else
+#include <stddef.h>
 #include <stdlib.h>
+#endif
+
 #include <sys/types.h>
 
 
