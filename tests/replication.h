@@ -37,28 +37,16 @@
 
 #pragma once
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-LIBTEST_LOCAL
 test_return_t replication_set_test(memcached_st *memc);
 
-LIBTEST_LOCAL
 test_return_t replication_get_test(memcached_st *memc);
 
-LIBTEST_LOCAL
 test_return_t replication_mget_test(memcached_st *memc);
 
-LIBTEST_LOCAL
 test_return_t replication_delete_test(memcached_st *memc);
 
-LIBTEST_LOCAL
 test_return_t replication_randomize_mget_test(memcached_st *memc);
 
-LIBTEST_LOCAL
 test_return_t replication_randomize_mget_fail_test(memcached_st *memc);
 
-#ifdef	__cplusplus
-}
-#endif
+test_return_t replication_miss_test(memcached_st *memc);

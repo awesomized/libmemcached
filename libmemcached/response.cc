@@ -182,10 +182,8 @@ read_error:
 
 static memcached_return_t textual_read_one_response(memcached_server_write_instance_st ptr,
                                                     char *buffer, const size_t buffer_length,
-                                                    memcached_result_st *result,
-                                                    uint64_t& numeric_value)
+                                                    memcached_result_st *result)
 {
-  numeric_value= UINT64_MAX;
   size_t total_read;
   memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length, total_read);
 
@@ -381,16 +379,18 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
 
       if (auto_return_value == ULLONG_MAX and errno == ERANGE)
       {
+        result->numeric_value= UINT64_MAX;
         return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                    memcached_literal_param("Numeric response was out of range"));
       }
       else if (errno == EINVAL)
       {
+        result->numeric_value= UINT64_MAX;
         return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                    memcached_literal_param("Numeric response was out of range"));
       }
 
-      numeric_value= uint64_t(auto_return_value);
+      result->numeric_value= uint64_t(auto_return_value);
 
       WATCHPOINT_STRING(buffer);
       return MEMCACHED_SUCCESS;
@@ -509,21 +509,20 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
     case PROTOCOL_BINARY_CMD_INCREMENT:
     case PROTOCOL_BINARY_CMD_DECREMENT:
       {
-        if (bodylen != sizeof(uint64_t) or buffer_length != sizeof(uint64_t))
+        if (bodylen != sizeof(uint64_t))
         {
+          result->numeric_value= UINT64_MAX;
           return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT);
         }
 
-        WATCHPOINT_ASSERT(bodylen == buffer_length);
         uint64_t val;
         if ((rc= memcached_safe_read(ptr, &val, sizeof(val))) != MEMCACHED_SUCCESS)
         {
-          WATCHPOINT_ERROR(rc);
+          result->numeric_value= UINT64_MAX;
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
 
-        val= memcached_ntohll(val);
-        memcpy(buffer, &val, sizeof(val));
+        result->numeric_value= memcached_ntohll(val);
       }
       break;
 
@@ -694,8 +693,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
 
 static memcached_return_t _read_one_response(memcached_server_write_instance_st ptr,
                                              char *buffer, const size_t buffer_length,
-                                             memcached_result_st *result,
-                                             uint64_t& numeric_value)
+                                             memcached_result_st *result)
 {
   memcached_server_response_decrement(ptr);
 
@@ -712,7 +710,7 @@ static memcached_return_t _read_one_response(memcached_server_write_instance_st 
   }
   else
   {
-    rc= textual_read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+    rc= textual_read_one_response(ptr, buffer, buffer_length, result);
     assert(rc != MEMCACHED_PROTOCOL_ERROR);
   }
 
@@ -727,7 +725,6 @@ static memcached_return_t _read_one_response(memcached_server_write_instance_st 
 memcached_return_t memcached_read_one_response(memcached_server_write_instance_st ptr,
                                                memcached_result_st *result)
 {
-  uint64_t numeric_value;
   char buffer[SMALL_STRING_LEN];
 
   if (memcached_is_udp(ptr->root))
@@ -736,22 +733,20 @@ memcached_return_t memcached_read_one_response(memcached_server_write_instance_s
   }
 
 
-  return _read_one_response(ptr, buffer, sizeof(buffer), result, numeric_value);
+  return _read_one_response(ptr, buffer, sizeof(buffer), result);
+}
+
+memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
+                                      memcached_result_st *result)
+{
+  char buffer[1024];
+
+  return memcached_response(ptr, buffer, sizeof(buffer), result);
 }
 
 memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result)
-{
-  uint64_t numeric_value;
-
-  return memcached_response(ptr, buffer, buffer_length, result, numeric_value);
-}
-
-memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
-                                      char *buffer, size_t buffer_length,
-                                      memcached_result_st *result,
-                                      uint64_t& numeric_value)
 {
   if (memcached_is_udp(ptr->root))
   {
@@ -778,7 +773,7 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
 
     while (memcached_server_response_count(ptr) > 1)
     {
-      memcached_return_t rc= _read_one_response(ptr, buffer, buffer_length, junked_result_ptr, numeric_value);
+      memcached_return_t rc= _read_one_response(ptr, buffer, buffer_length, junked_result_ptr);
 
       // @TODO should we return an error on another but a bad read case?
       if (
@@ -805,5 +800,5 @@ memcached_return_t memcached_response(memcached_server_write_instance_st ptr,
     memcached_result_free(junked_result_ptr);
   }
 
-  return _read_one_response(ptr, buffer, buffer_length, result, numeric_value);
+  return _read_one_response(ptr, buffer, buffer_length, result);
 }

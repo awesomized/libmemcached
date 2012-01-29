@@ -237,11 +237,6 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   bool is_group_key_set= false;
   if (group_key and group_key_length)
   {
-    if (memcached_failed(memcached_key_test(*ptr, (const char * const *)&group_key, &group_key_length, 1)))
-    {
-      return memcached_set_error(*ptr, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("A bad group key was provided."));
-    }
-
     master_server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
     is_group_key_set= true;
   }
@@ -254,8 +249,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   */
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance=
-      memcached_server_instance_fetch(ptr, x);
+    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
     if (memcached_server_response_count(instance))
     {
@@ -273,7 +267,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     }
   }
 
-  if (ptr->flags.binary_protocol)
+  if (memcached_is_binary(ptr))
   {
     return binary_mget_by_key(ptr, master_server_key, is_group_key_set, keys,
                               key_length, number_of_keys, mget_mode);
