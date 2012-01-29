@@ -922,7 +922,8 @@ static test_return_t bad_key_test(memcached_st *memc)
     test_compare(query_id +1, memcached_query_id(memc_clone));
 
     query_id= memcached_query_id(memc_clone);
-    test_compare(MEMCACHED_BAD_KEY_PROVIDED,
+    // Grouping keys are not required to follow normal key behaviors
+    test_compare(MEMCACHED_SUCCESS,
                  memcached_mget_by_key(memc_clone, "foo daddy", 9, keys, key_lengths, 1));
     test_compare(query_id +1, memcached_query_id(memc_clone));
 
