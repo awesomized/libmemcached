@@ -35,7 +35,7 @@
 #include <event.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
-#include <libmemcached/close_socket.hpp>
+#include <libmemcached/socket.hpp>
 #include <example/byteorder.h>
 #include "example/storage.h"
 #include "example/memcached_light.h"

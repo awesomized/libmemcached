@@ -20,7 +20,6 @@ noinst_HEADERS+= \
 		 libmemcached/assert.hpp \
 		 libmemcached/backtrace.hpp \
 		 libmemcached/byteorder.h \
-		 libmemcached/close_socket.hpp \
 		 libmemcached/common.h \
 		 libmemcached/connect.hpp \
 		 libmemcached/continuum.hpp \
@@ -41,6 +40,7 @@ noinst_HEADERS+= \
 		 libmemcached/response.h \
 		 libmemcached/server.hpp \
 		 libmemcached/server_instance.h \
+		 libmemcached/socket.hpp \
 		 libmemcached/string.hpp \
 		 libmemcached/udp.hpp \
 		 libmemcached/virtual_bucket.h \
