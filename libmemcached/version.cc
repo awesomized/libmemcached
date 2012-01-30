@@ -89,6 +89,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
     { request.bytes, sizeof(request.bytes) }
   };
 
+  uint32_t success= 0;
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++) 
   {
@@ -106,59 +107,23 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
       errors_happened= true;
       continue;
     }
+
+    success++;
   }
 
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++) 
+  if (success)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
-
-    if (instance->major_version != UINT8_MAX)
-    {
-      continue;
-    }
-
-    if (memcached_server_response_count(instance) > 0) 
+    // Collect the returned items
+    memcached_server_write_instance_st instance;
+    while ((instance= memcached_io_get_readable_server(ptr)))
     {
       char buffer[32];
-      char *p;
-
       memcached_return_t rrc= memcached_response(instance, buffer, sizeof(buffer), NULL);
       if (memcached_failed(rrc))
       {
         memcached_io_reset(instance);
         errors_happened= true;
-        continue;
       }
-
-      long int version= strtol(buffer, &p, 10);
-      if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
-      {
-        memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
-        instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-        errors_happened= true;
-        continue;
-      }
-      instance->major_version= uint8_t(version);
-
-      version= strtol(p +1, &p, 10);
-      if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
-      {
-        memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
-        instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-        errors_happened= true;
-        continue;
-      }
-      instance->minor_version= uint8_t(version);
-
-      version= strtol(p + 1, NULL, 10);
-      if (errno == ERANGE)
-      {
-        memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
-        instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-        errors_happened= true;
-        continue;
-      }
-      instance->micro_version= uint8_t(version);
     }
   }
 

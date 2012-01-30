@@ -39,9 +39,10 @@ static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat);
 static void print_analysis_report(memcached_st *memc,
                                   memcached_analysis_st *report);
 
-static int opt_verbose= 0;
-static int opt_displayflag= 0;
-static int opt_analyze= 0;
+static bool opt_binary= false;
+static bool opt_verbose= false;
+static bool opt_server_version= false;
+static bool opt_analyze= false;
 static char *opt_servers= NULL;
 static char *stat_args= NULL;
 static char *analyze_mode= NULL;
@@ -52,10 +53,11 @@ static struct option long_options[]=
   {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
   {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
   {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
-  {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-  {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
+  {(OPTIONSTRING)"verbose", no_argument, NULL, OPT_VERBOSE},
+  {(OPTIONSTRING)"binary", no_argument, NULL, OPT_BINARY},
+  {(OPTIONSTRING)"debug", no_argument, NULL, OPT_DEBUG},
+  {(OPTIONSTRING)"server-version", no_argument, NULL, OPT_SERVER_VERSION},
   {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
-  {(OPTIONSTRING)"flag", no_argument, &opt_displayflag, OPT_FLAG},
   {(OPTIONSTRING)"analyze", optional_argument, NULL, OPT_ANALYZE},
   {0, 0, 0, 0},
 };
@@ -81,6 +83,18 @@ static memcached_return_t stat_printer(memcached_server_instance_st instance,
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return_t server_print_callback(const memcached_st *,
+                                                const memcached_server_st *instance,
+                                                void *)
+{
+  std::cerr << memcached_server_name(instance) << ":" << memcached_server_port(instance) <<
+    " " << int(instance->major_version) << 
+    "." << int(instance->minor_version) << 
+    "." << int(instance->micro_version) << std::endl;
+
+  return MEMCACHED_SUCCESS;
+}
+
 int main(int argc, char *argv[])
 {
   options_parse(argc, argv);
@@ -101,6 +115,7 @@ int main(int argc, char *argv[])
   }
 
   memcached_st *memc= memcached_create(NULL);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
 
   memcached_server_st *servers= memcached_servers_parse(opt_servers);
   free(opt_servers);
@@ -108,21 +123,33 @@ int main(int argc, char *argv[])
   memcached_return_t rc= memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
 
-  if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_SOME_ERRORS)
+  if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_SOME_ERRORS)
   {
     printf("Failure to communicate with servers (%s)\n",
            memcached_strerror(memc, rc));
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
-  if (opt_analyze)
+  if (opt_server_version)
   {
-    memcached_stat_st *memc_stat;
+    if (memcached_failed(memcached_version(memc)))
+    {
+      std::cerr << "Unable to obtain server version";
+      exit(EXIT_FAILURE);
+    }
 
-    memc_stat= memcached_stat(memc, NULL, &rc);
+    memcached_server_fn callbacks[1];
+    callbacks[0]= server_print_callback;
+    memcached_server_cursor(memc, callbacks, NULL,  1);
+  }
+  else if (opt_analyze)
+  {
+    memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
 
-    if (! memc_stat)
-      exit(-1);
+    if (memc_stat == NULL)
+    {
+      exit(EXIT_FAILURE);
+    }
 
     run_analyzer(memc, memc_stat);
 
@@ -326,11 +353,19 @@ static void options_parse(int argc, char *argv[])
       break;
 
     case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = OPT_VERBOSE;
+      opt_verbose= true;
       break;
 
     case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = OPT_DEBUG;
+      opt_verbose= true;
+      break;
+
+    case OPT_BINARY:
+      opt_binary= true;
+      break;
+
+    case OPT_SERVER_VERSION:
+      opt_server_version= true;
       break;
 
     case OPT_VERSION: /* --version or -V */
