@@ -180,12 +180,12 @@ read_error:
   return MEMCACHED_PARTIAL_READ;
 }
 
-static memcached_return_t textual_read_one_response(memcached_server_write_instance_st ptr,
+static memcached_return_t textual_read_one_response(memcached_server_write_instance_st instance,
                                                     char *buffer, const size_t buffer_length,
                                                     memcached_result_st *result)
 {
   size_t total_read;
-  memcached_return_t rc= memcached_io_readline(ptr, buffer, buffer_length, total_read);
+  memcached_return_t rc= memcached_io_readline(instance, buffer, buffer_length, total_read);
 
   if (memcached_failed(rc))
   {
@@ -201,12 +201,46 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       if (buffer[1] == 'A' and buffer[2] == 'L' and buffer[3] == 'U' and buffer[4] == 'E') /* VALUE */
       {
         /* We add back in one because we will need to search for END */
-        memcached_server_response_increment(ptr);
-        return textual_value_fetch(ptr, buffer, result);
+        memcached_server_response_increment(instance);
+        return textual_value_fetch(instance, buffer, result);
       }
       // VERSION
       else if (buffer[1] == 'E' and buffer[2] == 'R' and buffer[3] == 'S' and buffer[4] == 'I' and buffer[5] == 'O' and buffer[6] == 'N') /* VERSION */
       {
+        /* Find the space, and then move one past it to copy version */
+        char *response_ptr= index(buffer, ' ');
+        response_ptr++;
+
+        long int version= strtol(response_ptr, (char **)NULL, 10);
+        if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
+        {
+          instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
+          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
+        }
+        instance->major_version= uint8_t(version);
+
+        response_ptr= index(response_ptr, '.');
+        response_ptr++;
+
+        version= strtol(response_ptr, (char **)NULL, 10);
+        if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
+        {
+          instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
+          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse minor version"));
+        }
+        instance->minor_version= uint8_t(version);
+
+        response_ptr= index(response_ptr, '.');
+        response_ptr++;
+
+        version= strtol(response_ptr, (char **)NULL, 10);
+        if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
+        {
+          instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
+          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
+        }
+        instance->micro_version= uint8_t(version);
+
         return MEMCACHED_SUCCESS;
       }
     }
@@ -227,7 +261,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       // STAT
       if (buffer[1] == 'T' and buffer[2] == 'A' and buffer[3] == 'T') /* STORED STATS */
       {
-        memcached_server_response_increment(ptr);
+        memcached_server_response_increment(instance);
         return MEMCACHED_STAT;
       }
       // SERVER_ERROR
@@ -262,7 +296,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         char *endptr= startptr;
         while (*endptr != '\r' && *endptr != '\n') endptr++;
 
-        return memcached_set_error(*ptr, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
+        return memcached_set_error(*instance, MEMCACHED_SERVER_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
       }
       // STORED
       else if (buffer[1] == 'T' and buffer[2] == 'O' and buffer[3] == 'R') //  and buffer[4] == 'E' and buffer[5] == 'D')
@@ -346,7 +380,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       if (buffer[1] == 'T' and buffer[2] == 'E' and buffer[3] == 'M')
       {
         /* We add back in one because we will need to search for END */
-        memcached_server_response_increment(ptr);
+        memcached_server_response_increment(instance);
         return MEMCACHED_ITEM;
       }
     }
@@ -380,13 +414,13 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       if (auto_return_value == ULLONG_MAX and errno == ERANGE)
       {
         result->numeric_value= UINT64_MAX;
-        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+        return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                    memcached_literal_param("Numeric response was out of range"));
       }
       else if (errno == EINVAL)
       {
         result->numeric_value= UINT64_MAX;
-        return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+        return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                    memcached_literal_param("Numeric response was out of range"));
       }
 
@@ -405,11 +439,11 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
   if (total_read >= sizeof("STORSTORED") -1)
   {
     fprintf(stderr, "%s:%d '%s', %.*s\n", __FILE__, __LINE__,
-            buffer, MEMCACHED_MAX_BUFFER, ptr->read_buffer);
+            buffer, MEMCACHED_MAX_BUFFER, instance->read_buffer);
     assert(memcmp(buffer,"STORSTORED", sizeof("STORSTORED") -1));
   }
 #endif
-  return memcached_set_error(*ptr, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
+  return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                              buffer, total_read);
 }
 
