@@ -48,6 +48,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     { memcached_literal_param("version\r\n") },
   };
 
+  uint32_t success= 0;
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
@@ -64,13 +65,23 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     {
       errors_happened= true;
       (void)memcached_set_error(*instance, rrc, MEMCACHED_AT);
-      instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
+      continue;
     }
-    else if (memcached_failed(rrc= memcached_response(instance, NULL)))
+    success++;
+  }
+
+  if (success)
+  {
+    // Collect the returned items
+    memcached_server_write_instance_st instance;
+    while ((instance= memcached_io_get_readable_server(ptr)))
     {
-      errors_happened= true;
-      memcached_set_error(*instance, rrc, MEMCACHED_AT);
-      instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
+      memcached_return_t rrc= memcached_response(instance, NULL);
+      if (memcached_failed(rrc))
+      {
+        memcached_io_reset(instance);
+        errors_happened= true;
+      }
     }
   }
 
