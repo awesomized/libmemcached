@@ -70,21 +70,31 @@ static test_return_t help_test(void *)
   return TEST_SUCCESS;
 }
 
-static test_return_t ascii_test(void *)
+static test_return_t binary_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, " -a ", 0 };
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  const char *args[]= { "--quiet", buffer, " --binary ", 0 };
 
   test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
 }
 
-static test_return_t binary_test(void *)
+static test_return_t server_version_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, " -b ", 0 };
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  const char *args[]= { "--quiet", buffer, " --server-version", 0 };
+
+  test_true(exec_cmdline(executable, args));
+  return TEST_SUCCESS;
+}
+
+static test_return_t binary_server_version_TEST(void *)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  const char *args[]= { "--quiet", buffer, " --binary --server-version", 0 };
 
   test_true(exec_cmdline(executable, args));
   return TEST_SUCCESS;
@@ -93,8 +103,9 @@ static test_return_t binary_test(void *)
 test_st memstat_tests[] ={
   {"--quiet", 0, quiet_test},
   {"--help", 0, help_test},
-  {"-a, ascii", 0, ascii_test},
-  {"-b, binary", 0, binary_test},
+  {"--binary", 0, binary_TEST},
+  {"--server-version", 0, server_version_TEST},
+  {"--binary --server-version", 0, binary_server_version_TEST},
   {0, 0, 0}
 };
 

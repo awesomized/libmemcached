@@ -1,3 +1,5 @@
+# vim:ft=automake
+
 ACLOCAL_AMFLAGS = -I m4
 
 # includes append to these:

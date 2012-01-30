@@ -61,7 +61,7 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AS_IF([test "x${ac_cv_env_CXXFLAGS_set}" = "x"],
         [CXXFLAGS=""])
   
-  AM_INIT_AUTOMAKE(-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar)
+  AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
 
   m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
@@ -120,8 +120,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       AC_MSG_ERROR([No working C++ Compiler has been found. ${PACKAGE} requires a C++ compiler that can handle C++98])
     ])
   ])
-  PANDORA_CXX_CSTDINT
-  PANDORA_CXX_CINTTYPES
   
   m4_if(m4_substr(m4_esyscmd(test -d gnulib && echo 0),0,1),0,[
     gl_INIT

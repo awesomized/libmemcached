@@ -25,34 +25,35 @@
 
 #serial 9
 
-AC_DEFUN([AX_CXX_GCC_ABI_DEMANGLE],
-[AC_CACHE_CHECK(whether the compiler supports GCC C++ ABI name demangling,
-ax_cv_cxx_gcc_abi_demangle,
-[AC_LANG_SAVE
- AC_LANG_CPLUSPLUS
- AC_TRY_COMPILE([#include <typeinfo>
+  AC_DEFUN([AX_CXX_GCC_ABI_DEMANGLE], 
+      [AC_CACHE_CHECK([whether the compiler supports GCC C++ ABI name demangling],
+        [ax_cv_cxx_gcc_abi_demangle],
+        [AC_LANG_PUSH([C++])
+        AC_COMPILE_IFELSE(
+          [AC_LANG_PROGRAM(
+            [
+#include <typeinfo>
 #include <cxxabi.h>
 #include <cstdlib>
 #include <string>
 
-template<typename TYPE>
-class A {};
-],[A<int> instance;
+template<typename TYPE> class A {};
+            ],[
+A<int> instance;
 int status = 0;
 char* c_name = 0;
 
 c_name = abi::__cxa_demangle(typeid(instance).name(), 0, 0, &status);
-
 std::string name(c_name);
 ::free(c_name);
-
 return name == "A<int>";
-],
- ax_cv_cxx_gcc_abi_demangle=yes, ax_cv_cxx_gcc_abi_demangle=no)
- AC_LANG_RESTORE
-])
-if test "$ax_cv_cxx_gcc_abi_demangle" = yes; then
-  AC_DEFINE(HAVE_GCC_ABI_DEMANGLE,1,
-            [define if the compiler supports GCC C++ ABI name demangling])
-fi
-])
+            ])],
+          [ax_cv_cxx_gcc_abi_demangle=yes],
+          [ax_cv_cxx_gcc_abi_demangle=no])
+        AC_LANG_POP()
+        ])
+
+        if test "$ax_cv_cxx_gcc_abi_demangle" = yes; then
+          AC_DEFINE(HAVE_GCC_ABI_DEMANGLE, [1], [define if the compiler supports GCC C++ ABI name demangling])
+        fi
+      ])

@@ -479,7 +479,10 @@ static memcached_return_t network_connect(memcached_server_st *server)
       timeout_error_occured= true;
       break;
 
+    case EAGAIN:
+#if EWOULDBLOCK != EAGAIN
     case EWOULDBLOCK:
+#endif
     case EINPROGRESS: // nonblocking mode - first return
     case EALREADY: // nonblocking mode - subsequent returns
       {

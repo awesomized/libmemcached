@@ -98,7 +98,12 @@ public:
     memcached_return_t rc= MEMCACHED_SUCCESS;
     if (has_socket())
     {
-      local_pid= libmemcached_util_getpid(socket().c_str(), 0, &rc);
+      if (socket().empty())
+      {
+        return -1;
+      }
+
+      local_pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
     }
     else
     {

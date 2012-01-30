@@ -39,6 +39,7 @@ enum memcached_options {
   OPT_USERNAME,
   OPT_PASSWD,
   OPT_STAT_ARGS,
+  OPT_SERVER_VERSION,
   OPT_QUIET,
   OPT_FILE= 'f'
 };

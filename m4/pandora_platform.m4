@@ -88,8 +88,9 @@ AC_DEFUN([PANDORA_PLATFORM],[
       AM_CFLAGS="${AM_CFLAGS} -I\${top_srcdir}/win32/mingw -I\${top_builddir}/win32/mingw -I\${top_srcdir}/win32 -I\${top_builddir}/win32"
       ;;
   esac
-  AM_CONDITIONAL(TARGET_LINUX, [test "x${TARGET_LINUX}" = "xtrue"])
   AM_CONDITIONAL(BUILD_WIN32, [test "x${TARGET_WINDOWS}" = "xtrue"])
+  AM_CONDITIONAL(TARGET_OSX, [test "x${TARGET_OSX}" = "xtrue"])
+  AM_CONDITIONAL(TARGET_LINUX, [test "x${TARGET_LINUX}" = "xtrue"])
 
   AC_SUBST(PANDORA_OPTIMIZE_BITFIELD)
 

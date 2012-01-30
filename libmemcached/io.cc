@@ -81,10 +81,10 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
           case EINTR:
             continue;
 
+#if EWOULDBLOCK != EAGAIN
           case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-          case EAGAIN:
 #endif
+          case EAGAIN:
 #ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
@@ -327,10 +327,11 @@ static bool io_flush(memcached_server_write_instance_st ptr,
       {
       case ENOBUFS:
         continue;
+
+#if EWOULDBLOCK != EAGAIN
       case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-      case EAGAIN:
 #endif
+      case EAGAIN:
         {
           /*
            * We may be blocked on write because the input buffer
@@ -416,10 +417,10 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             continue;
 
           case ETIMEDOUT: // OSX
+#if EWOULDBLOCK != EAGAIN
           case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-          case EAGAIN:
 #endif
+          case EAGAIN:
 #ifdef TARGET_OS_LINUX
           case ERESTART:
 #endif
@@ -524,10 +525,10 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
         continue;
 
       case ETIMEDOUT: // OSX
+#if EWOULDBLOCK != EAGAIN
       case EWOULDBLOCK:
-#ifdef USE_EAGAIN
-      case EAGAIN:
 #endif
+      case EAGAIN:
 #ifdef TARGET_OS_LINUX
       case ERESTART:
 #endif
@@ -676,7 +677,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
   struct pollfd fds[MAX_SERVERS_TO_POLL];
   unsigned int host_index= 0;
 
-  for (uint32_t x= 0; x < memcached_server_count(memc) && host_index < MAX_SERVERS_TO_POLL; ++x)
+  for (uint32_t x= 0; x < memcached_server_count(memc) and host_index < MAX_SERVERS_TO_POLL; ++x)
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, x);
 
@@ -727,11 +728,12 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
       {
         for (uint32_t y= 0; y < memcached_server_count(memc); ++y)
         {
-          memcached_server_write_instance_st instance=
-            memcached_server_instance_fetch(memc, y);
+          memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, y);
 
           if (instance->fd == fds[x].fd)
+          {
             return instance;
+          }
         }
       }
     }
