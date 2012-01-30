@@ -14,7 +14,7 @@ AC_DEFUN([SOCKET_SEND_FLAGS],
     save_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS -I${srcdir}"
 
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/socket.h>], [ int flags= MSG_NOSIGNAL ])], [ac_cv_msg_nosignal="yes"])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <netdb.h>], [ int flags= MSG_NOSIGNAL ])], [ac_cv_msg_nosignal="yes"])
     AC_LANG_POP
   ])
 
@@ -23,7 +23,7 @@ AC_DEFUN([SOCKET_SEND_FLAGS],
     save_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS -I${srcdir}"
 
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/socket.h>], [ int flags= MSG_DONTWAIT ])], [ac_cv_msg_dontwait="yes"])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <netdb.h>], [ int flags= MSG_DONTWAIT ])], [ac_cv_msg_dontwait="yes"])
     AC_LANG_POP
   ])
 
