@@ -103,6 +103,98 @@ using namespace libtest;
 #define SERVERS_TO_CREATE 5
 static uint32_t global_count= GLOBAL2_COUNT;
 
+struct keys_st {
+public:
+  keys_st(size_t arg)
+  {
+    _lengths.resize(arg);
+    _keys.resize(arg);
+
+    for (size_t x= 0; x < _keys.size(); x++)
+    {
+      char uuid_string[37];
+
+      if (HAVE_LIBUUID)
+      {
+        uuid_t out;
+        uuid_generate(out);
+
+        uuid_unparse(out, uuid_string);
+        uuid_string[36]= 0;
+        _keys[x]= strdup(uuid_string);
+        _lengths[x]= 36;
+      }
+      else // We just use a number and pad the string if UUID is not available
+      {
+        memset(uuid_string, 'x', sizeof(uuid_string));
+        int key_length= snprintf(uuid_string, sizeof(uuid_string), "%u", uint32_t(x));
+        (void)key_length;
+        _keys[x]= strdup(uuid_string);
+        _lengths[x]= 36;
+      }
+    }
+  }
+
+  ~keys_st()
+  {
+    for (libtest::vchar_t::iterator iter= _keys.begin();
+         iter != _keys.end();
+         iter++)
+    {
+      ::free(*iter);
+    }
+  }
+
+  libtest::vchar_t::iterator begin()
+  {
+    return _keys.begin();
+  }
+
+  libtest::vchar_t::iterator end()
+  {
+    return _keys.end();
+  }
+
+  size_t size() const
+  {
+    return _keys.size();
+  }
+
+  std::vector<size_t>& lengths()
+  {
+    return _lengths;
+  }
+
+  libtest::vchar_t& keys()
+  {
+    return _keys;
+  }
+
+  size_t* lengths_ptr()
+  {
+    return &_lengths[0];
+  }
+
+  char** keys_ptr()
+  {
+    return &_keys[0];
+  }
+
+  char* key_at(size_t arg)
+  {
+    return _keys[arg];
+  }
+
+  size_t length_at(size_t arg)
+  {
+    return _lengths[arg];
+  }
+
+private:
+    libtest::vchar_t _keys;
+    std::vector<size_t> _lengths;
+};
+
 static pairs_st *global_pairs;
 static const char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
@@ -617,27 +709,7 @@ static test_return_t append_binary_test(memcached_st *memc)
 
 static test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
 {
-  test_skip(true, HAVE_LIBUUID);
-
-  std::vector<size_t> key_lengths;
-  key_lengths.resize(200);
-  std::vector<char *> keys;
-  keys.resize(key_lengths.size());
-
-  for (size_t x= 0; x < keys.size(); x++)
-  {
-    if (HAVE_LIBUUID)
-    {
-      uuid_t out;
-      uuid_generate(out);
-      char uuid_string[37];
-
-      uuid_unparse(out, uuid_string);
-      uuid_string[36]= 0;
-      keys[x]= strdup(uuid_string);
-      key_lengths[x]= 36;
-    }
-  }
+  keys_st keys(200);
 
   for (libtest::vchar_t::iterator iter= keys.begin();
        iter != keys.end(); 
@@ -655,7 +727,7 @@ static test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
     if (random() %2)
     {
       test_compare(MEMCACHED_SUCCESS, 
-                   memcached_mget(memc, &keys[0], &key_lengths[0], keys.size()));
+                   memcached_mget(memc, keys.keys_ptr(), keys.lengths_ptr(), keys.size()));
 
       memcached_result_st *results= memcached_result_create(memc, NULL);
       test_true(results);
@@ -674,20 +746,13 @@ static test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
       size_t value_length;
       uint32_t flags;
       memcached_return_t rc;
-      char *out_value= memcached_get(memc, keys[which_key], 36,
+      char *out_value= memcached_get(memc, keys.key_at(which_key), keys.length_at(which_key),
                                      &value_length, &flags, &rc);
       test_compare(MEMCACHED_SUCCESS, rc);
       test_null(out_value);
       test_zero(value_length);
       test_zero(flags);
     }
-  }
-
-  for (libtest::vchar_t::iterator iter= keys.begin();
-       iter != keys.end();
-       iter++)
-  {
-    free(*iter);
   }
 
   return TEST_SUCCESS;
