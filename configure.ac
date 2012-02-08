@@ -166,6 +166,14 @@ AC_C_RESTRICT
 
 AX_CXX_GCC_ABI_DEMANGLE
 
+AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
+                 [
+                  LIBUUID_LDFLAGS="-luuid"
+                  ],
+                 [
+                  AC_DEFINE([HAVE_LIBUUID], [ 0 ], [Have libuuid])
+                  ])
+
 AC_CHECK_LIB([rt], [clock_gettime], 
              [
               RT_LIB="-lrt"

@@ -73,6 +73,7 @@ tests_libmemcached_1_0_testapp_DEPENDENCIES= \
                                              libmemcached/libmemcachedutil.la
 
 tests_libmemcached_1_0_testapp_LDADD= \
+				      $(LIBUUID_LDFLAGS) \
                                       ${PTHREAD_LIBS} \
                                       libmemcached/libmemcached.la \
                                       libmemcached/libmemcachedutil.la \

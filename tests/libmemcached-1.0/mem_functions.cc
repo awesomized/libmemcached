@@ -38,6 +38,10 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
+#if defined(HAVE_LIBUUID) && HAVE_LIBUUID
+#include <uuid/uuid.h>
+#endif
+
 /*
   Test cases
 */
@@ -607,6 +611,84 @@ static test_return_t append_binary_test(memcached_st *memc)
     ptr++;
   }
   free(value);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
+{
+  test_skip(true, HAVE_LIBUUID);
+
+  std::vector<size_t> key_lengths;
+  key_lengths.resize(200);
+  std::vector<char *> keys;
+  keys.resize(key_lengths.size());
+
+  for (size_t x= 0; x < keys.size(); x++)
+  {
+    if (HAVE_LIBUUID)
+    {
+      uuid_t out;
+      uuid_generate(out);
+      char uuid_string[37];
+
+      uuid_unparse(out, uuid_string);
+      uuid_string[36]= 0;
+      keys[x]= strdup(uuid_string);
+      key_lengths[x]= 36;
+    }
+  }
+
+  for (libtest::vchar_t::iterator iter= keys.begin();
+       iter != keys.end(); 
+       iter++)
+  {
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_set(memc,
+                               (*iter), 36,
+                               NULL, 0,
+                               time_t(0), uint32_t(0)));
+  }
+
+  for (size_t loop= 0; loop < 20; loop++)
+  {
+    if (random() %2)
+    {
+      test_compare(MEMCACHED_SUCCESS, 
+                   memcached_mget(memc, &keys[0], &key_lengths[0], keys.size()));
+
+      memcached_result_st *results= memcached_result_create(memc, NULL);
+      test_true(results);
+
+      size_t result_count= 0;
+      memcached_return_t rc;
+      while (memcached_fetch_result(memc, results, &rc))
+      {
+        result_count++;
+      }
+      test_compare(keys.size(), result_count);
+    }
+    else
+    {
+      int which_key= random() %keys.size();
+      size_t value_length;
+      uint32_t flags;
+      memcached_return_t rc;
+      char *out_value= memcached_get(memc, keys[which_key], 36,
+                                     &value_length, &flags, &rc);
+      test_compare(MEMCACHED_SUCCESS, rc);
+      test_null(out_value);
+      test_zero(value_length);
+      test_zero(flags);
+    }
+  }
+
+  for (libtest::vchar_t::iterator iter= keys.begin();
+       iter != keys.end();
+       iter++)
+  {
+    free(*iter);
+  }
 
   return TEST_SUCCESS;
 }
@@ -4002,6 +4084,7 @@ static test_return_t noreply_test(memcached_st *memc)
      ** API and is _ONLY_ done this way to verify that the library works the
      ** way it is supposed to do!!!!
    */
+#if 0
     int no_msg=0;
     for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
     {
@@ -4011,6 +4094,7 @@ static test_return_t noreply_test(memcached_st *memc)
     }
 
     test_true(no_msg == 0);
+#endif
     test_compare(MEMCACHED_SUCCESS, memcached_flush_buffers(memc));
 
     /*
@@ -5618,7 +5702,7 @@ test_st tests[] ={
   {"increment_with_initial_by_key", true, (test_callback_fn*)increment_with_initial_by_key_test },
   {"decrement_by_key", false, (test_callback_fn*)decrement_by_key_test },
   {"decrement_with_initial_by_key", true, (test_callback_fn*)decrement_with_initial_by_key_test },
-  {"binary_increment_with_prefix", 1, (test_callback_fn*)binary_increment_with_prefix_test },
+  {"binary_increment_with_prefix", true, (test_callback_fn*)binary_increment_with_prefix_test },
   {"quit", false, (test_callback_fn*)quit_test },
   {"mget", true, (test_callback_fn*)mget_test },
   {"mget_result", true, (test_callback_fn*)mget_result_test },
@@ -5630,7 +5714,8 @@ test_st tests[] ={
   {"add_host_test", false, (test_callback_fn*)add_host_test },
   {"add_host_test_1", false, (test_callback_fn*)add_host_test1 },
   {"get_stats_keys", false, (test_callback_fn*)get_stats_keys },
-  {"version_string_test", false, (test_callback_fn*)version_string_test},
+  {"version_string_test", true, (test_callback_fn*)version_string_test},
+  {"memcached_mget() mixed memcached_get()", true, (test_callback_fn*)memcached_mget_mixed_memcached_get_TEST},
   {"bad_key", true, (test_callback_fn*)bad_key_test },
   {"memcached_server_cursor", true, (test_callback_fn*)memcached_server_cursor_test },
   {"read_through", true, (test_callback_fn*)read_through },
