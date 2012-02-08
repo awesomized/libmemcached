@@ -3076,24 +3076,14 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   /* empty the cache to ensure misses (hence non-responses) */
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc_clone, 0));
 
-  std::vector<size_t> key_lengths;
-  key_lengths.resize(key_count);
-  std::vector<char *> keys;
-  keys.resize(key_lengths.size());
-  for (unsigned int x= 0; x < key_lengths.size(); x++)
-  {
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    int key_length= snprintf(key, sizeof(key), "%u", x);
-    test_true(key_length > 0 and key_length < MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1);
-    keys[x]= strdup(key);
-    key_lengths[x]= key_length;
-  }
+  keys_st keys(key_count);
 
   oldalarm= signal(SIGALRM, fail);
   alarm(5);
 
   test_compare_got(MEMCACHED_SUCCESS,
-                   memcached_mget(memc_clone, &keys[0], &key_lengths[0], key_count), memcached_last_error_message(memc_clone));
+                   memcached_mget(memc_clone, keys.keys_ptr(), keys.lengths_ptr(), keys.size()),
+                   memcached_last_error_message(memc_clone));
 
   alarm(0);
   signal(SIGALRM, oldalarm);
@@ -3114,13 +3104,6 @@ static test_return_t _user_supplied_bug21(memcached_st* memc, size_t key_count)
   test_zero(return_key_length);
   test_false(return_key[0]);
   test_false(return_value);
-
-  for (std::vector<char *>::iterator iter= keys.begin();
-       iter != keys.end();
-       iter++)
-  {
-    free(*iter);
-  }
 
   memcached_free(memc_clone);
 
