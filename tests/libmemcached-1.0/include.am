@@ -19,6 +19,8 @@ noinst_HEADERS+= \
 		 tests/ketama_test_cases.h \
 		 tests/ketama_test_cases_spy.h \
 		 tests/libmemcached-1.0/dump.h \
+		 tests/libmemcached-1.0/fetch_all_results.h \
+		 tests/libmemcached-1.0/haldenbrand.h \
 		 tests/libmemcached-1.0/stat.h \
 		 tests/namespace.h \
 		 tests/parser.h \
@@ -52,6 +54,8 @@ tests_libmemcached_1_0_testapp_SOURCES= \
                                         tests/libmemcached-1.0/basic.cc \
                                         tests/libmemcached-1.0/callbacks.cc \
                                         tests/libmemcached-1.0/debug.cc \
+					tests/libmemcached-1.0/fetch_all_results.cc \
+					tests/libmemcached-1.0/haldenbrand.cc \
                                         tests/libmemcached-1.0/deprecated.cc \
                                         tests/libmemcached-1.0/dump.cc \
                                         tests/libmemcached-1.0/error_conditions.cc \

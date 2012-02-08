@@ -83,6 +83,8 @@
 #include "tests/namespace.h"
 #include "tests/parser.h"
 #include "tests/libmemcached-1.0/dump.h"
+#include "tests/libmemcached-1.0/fetch_all_results.h"
+#include "tests/libmemcached-1.0/haldenbrand.h"
 #include "tests/libmemcached-1.0/stat.h"
 #include "tests/touch.h"
 #include "tests/callbacks.h"
@@ -103,41 +105,53 @@ using namespace libtest;
 #define SERVERS_TO_CREATE 5
 static uint32_t global_count= GLOBAL2_COUNT;
 
+#define UUID_STRING_MAXLENGTH 36
+
 struct keys_st {
 public:
   keys_st(size_t arg)
+  {
+    init(arg, UUID_STRING_MAXLENGTH);
+  }
+
+  keys_st(size_t arg, size_t padding)
+  {
+    init(arg, padding);
+  }
+
+  void init(size_t arg, size_t padding)
   {
     _lengths.resize(arg);
     _keys.resize(arg);
 
     for (size_t x= 0; x < _keys.size(); x++)
     {
-      char uuid_string[37];
+      libtest::vchar_t key_buffer;
+      key_buffer.resize(padding +1);
+      memset(&key_buffer[0], 'x', padding);
 
       if (HAVE_LIBUUID)
       {
         uuid_t out;
         uuid_generate(out);
 
-        uuid_unparse(out, uuid_string);
-        uuid_string[36]= 0;
-        _keys[x]= strdup(uuid_string);
-        _lengths[x]= 36;
+        uuid_unparse(out, &key_buffer[0]);
+        _keys[x]= strdup(&key_buffer[0]);
       }
       else // We just use a number and pad the string if UUID is not available
       {
-        memset(uuid_string, 'x', sizeof(uuid_string));
-        int key_length= snprintf(uuid_string, sizeof(uuid_string), "%u", uint32_t(x));
-        (void)key_length;
-        _keys[x]= strdup(uuid_string);
-        _lengths[x]= 36;
+        char int_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
+        int key_length= snprintf(int_buffer, sizeof(int_buffer), "%u", uint32_t(x));
+        memcpy(&key_buffer[0], int_buffer, key_length);
+        _keys[x]= strdup(&key_buffer[0]);
       }
+      _lengths[x]= padding;
     }
   }
 
   ~keys_st()
   {
-    for (libtest::vchar_t::iterator iter= _keys.begin();
+    for (libtest::vchar_ptr_t::iterator iter= _keys.begin();
          iter != _keys.end();
          iter++)
     {
@@ -145,12 +159,12 @@ public:
     }
   }
 
-  libtest::vchar_t::iterator begin()
+  libtest::vchar_ptr_t::iterator begin()
   {
     return _keys.begin();
   }
 
-  libtest::vchar_t::iterator end()
+  libtest::vchar_ptr_t::iterator end()
   {
     return _keys.end();
   }
@@ -165,7 +179,7 @@ public:
     return _lengths;
   }
 
-  libtest::vchar_t& keys()
+  libtest::vchar_ptr_t& keys()
   {
     return _keys;
   }
@@ -191,7 +205,7 @@ public:
   }
 
 private:
-    libtest::vchar_t _keys;
+    libtest::vchar_ptr_t _keys;
     std::vector<size_t> _lengths;
 };
 
@@ -711,7 +725,7 @@ static test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
 {
   keys_st keys(200);
 
-  for (libtest::vchar_t::iterator iter= keys.begin();
+  for (libtest::vchar_ptr_t::iterator iter= keys.begin();
        iter != keys.end(); 
        iter++)
   {
@@ -1081,9 +1095,9 @@ static test_return_t bad_key_test(memcached_st *memc)
     test_compare(MEMCACHED_SUCCESS, 
                  memcached_callback_set(memc_clone, MEMCACHED_CALLBACK_NAMESPACE, NULL));
 
-    std::vector <char> longkey;
+    libtest::vchar_t longkey;
     {
-      std::vector<char>::iterator it= longkey.begin();
+      libtest::vchar_t::iterator it= longkey.begin();
       longkey.insert(it, MEMCACHED_MAX_KEY, 'a');
     }
 
@@ -1251,7 +1265,7 @@ static test_return_t set_test3(memcached_st *memc)
 {
   size_t value_length= 8191;
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
@@ -1281,7 +1295,7 @@ static test_return_t get_test3(memcached_st *memc)
 {
   size_t value_length= 8191;
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
@@ -1316,7 +1330,7 @@ static test_return_t get_test4(memcached_st *memc)
 {
   size_t value_length= 8191;
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
@@ -2262,164 +2276,6 @@ static test_return_t MEMCACHED_BEHAVIOR_TCP_KEEPIDLE_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned, memcached_return_t& rc)
-{
-  keys_returned= 0;
-
-  memcached_result_st* result= NULL;
-  while ((result= memcached_fetch_result(memc, result, &rc)))
-  {
-    test_compare(MEMCACHED_SUCCESS, rc);
-    keys_returned+= 1;
-  }
-  memcached_result_free(result);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned)
-{
-  memcached_return_t rc;
-  return fetch_all_results(memc, keys_returned, rc);
-}
-
-/* Test case provided by Cal Haldenbrand */
-#define HALDENBRAND_KEY_COUNT 3000U // * 1024576
-#define HALDENBRAND_FLAG_KEY 99 // * 1024576
-static test_return_t user_supplied_bug1(memcached_st *memc)
-{
-  /* We just keep looking at the same values over and over */
-  srandom(10);
-
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, true));
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true));
-
-
-  /* add key */
-  unsigned long long total= 0;
-  for (uint32_t x= 0 ; total < 20 * 1024576 ; x++ )
-  {
-    uint32_t size= (uint32_t)(rand() % ( 5 * 1024 ) ) + 400;
-    char randomstuff[6 * 1024];
-    memset(randomstuff, 0, 6 * 1024);
-    test_true(size < 6 * 1024); /* Being safe here */
-
-    for (uint32_t j= 0 ; j < size ;j++)
-    {
-      randomstuff[j] = (signed char) ((rand() % 26) + 97);
-    }
-
-    total+= size;
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    int key_length= snprintf(key, sizeof(key), "%u", x);
-    test_compare(MEMCACHED_SUCCESS,
-                 memcached_set(memc, key, key_length,
-                               randomstuff, strlen(randomstuff),
-                               time_t(0), HALDENBRAND_FLAG_KEY));
-  }
-  test_true(total > HALDENBRAND_KEY_COUNT);
-
-  return TEST_SUCCESS;
-}
-
-/* Test case provided by Cal Haldenbrand */
-static test_return_t user_supplied_bug2(memcached_st *memc)
-{
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, true));
-
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true));
-
-#ifdef NOT_YET
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, 20 * 1024576));
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, 20 * 1024576));
-  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
-  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
-
-  for (x= 0, errors= 0; total < 20 * 1024576 ; x++)
-#endif
-
-  size_t total_value_length= 0;
-  for (uint32_t x= 0, errors= 0; total_value_length < 24576 ; x++)
-  {
-    uint32_t flags= 0;
-    size_t val_len= 0;
-
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    int key_length= snprintf(key, sizeof(key), "%u", x);
-
-    memcached_return_t rc;
-    char *getval= memcached_get(memc, key, key_length, &val_len, &flags, &rc);
-    if (memcached_failed(rc))
-    {
-      if (rc == MEMCACHED_NOTFOUND)
-      {
-        errors++;
-      }
-      else
-      {
-        test_true(rc);
-      }
-
-      continue;
-    }
-    test_compare(uint32_t(HALDENBRAND_FLAG_KEY), flags);
-    test_true(getval);
-
-    total_value_length+= val_len;
-    errors= 0;
-    ::free(getval);
-  }
-
-  return TEST_SUCCESS;
-}
-
-/* Do a large mget() over all the keys we think exist */
-static test_return_t user_supplied_bug3(memcached_st *memc)
-{
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, true));
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true));
-
-#ifdef NOT_YET
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, 20 * 1024576);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, 20 * 1024576);
-  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
-  getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
-#endif
-
-  std::vector<size_t> key_lengths;
-  key_lengths.resize(HALDENBRAND_KEY_COUNT);
-  std::vector<char *> keys;
-  keys.resize(key_lengths.size());
-  for (uint32_t x= 0; x < key_lengths.size(); x++)
-  {
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    int key_length= snprintf(key, sizeof(key), "%u", x);
-    test_true(key_length > 0 and key_length < MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1);
-    keys[x]= strdup(key);
-    key_lengths[x]= key_length;
-  }
-
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(memc, &keys[0], &key_lengths[0], key_lengths.size()));
-
-  unsigned int keys_returned;
-  test_compare(TEST_SUCCESS, fetch_all_results(memc, keys_returned));
-  test_compare(HALDENBRAND_KEY_COUNT, keys_returned);
-
-  for (std::vector<char *>::iterator iter= keys.begin();
-       iter != keys.end();
-       iter++)
-  {
-    ::free(*iter);
-  }
-
-  return TEST_SUCCESS;
-}
-
 /* Make sure we behave properly if server list has no values */
 static test_return_t user_supplied_bug4(memcached_st *memc)
 {
@@ -2731,7 +2587,7 @@ static test_return_t user_supplied_bug10(memcached_st *memc)
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, set);
   memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, uint64_t(0));
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(value_length);
   for (uint32_t x= 0; x < value_length; x++)
   {
@@ -2774,7 +2630,7 @@ static test_return_t user_supplied_bug11(memcached_st *memc)
   test_compare(-1, int32_t(memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT)));
 
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(512);
   for (unsigned int x= 0; x < 512; x++)
   {
@@ -2842,27 +2698,24 @@ static test_return_t user_supplied_bug12(memcached_st *memc)
 static test_return_t user_supplied_bug13(memcached_st *memc)
 {
   char key[] = "key34567890";
-  memcached_return_t rc;
-  size_t overflowSize;
 
   char commandFirst[]= "set key34567890 0 0 ";
   char commandLast[] = " \r\n"; /* first line of command sent to server */
   size_t commandLength;
-  size_t testSize;
 
   commandLength = strlen(commandFirst) + strlen(commandLast) + 4; /* 4 is number of characters in size, probably 8196 */
 
-  overflowSize = MEMCACHED_MAX_BUFFER - commandLength;
+  size_t overflowSize = MEMCACHED_MAX_BUFFER - commandLength;
 
-  for (testSize= overflowSize - 1; testSize < overflowSize + 1; testSize++)
+  for (size_t testSize= overflowSize - 1; testSize < overflowSize + 1; testSize++)
   {
     char *overflow= new (std::nothrow) char[testSize];
     test_true(overflow);
 
     memset(overflow, 'x', testSize);
-    rc= memcached_set(memc, key, strlen(key),
-                      overflow, testSize, 0, 0);
-    test_compare(MEMCACHED_SUCCESS, rc);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_set(memc, key, strlen(key),
+                               overflow, testSize, 0, 0));
     delete [] overflow;
   }
 
@@ -2880,7 +2733,7 @@ static test_return_t user_supplied_bug14(memcached_st *memc)
 {
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
 
-  std::vector<char> value;
+  libtest::vchar_t value;
   value.reserve(18000);
   for (size_t x= 0; x < 18000; x++)
   {
@@ -2936,7 +2789,7 @@ static test_return_t user_supplied_bug15(memcached_st *memc)
                          &length, &flags, &rc);
 
     test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(value == NULL);
+    test_null(value);
     test_zero(length);
     test_zero(flags);
   }
@@ -4124,7 +3977,8 @@ static test_return_t noreply_test(memcached_st *memc)
         test_true(count);
         break;
       }
-      test_true_got(ret == MEMCACHED_SUCCESS or ret == MEMCACHED_BUFFERED, memcached_strerror(NULL, ret));
+      test_true_got(ret == MEMCACHED_SUCCESS or ret == MEMCACHED_BUFFERED,
+                    memcached_strerror(NULL, ret));
     }
 
     /*
@@ -5866,10 +5720,10 @@ test_st version_1_2_3[] ={
   {0, 0, (test_callback_fn*)0}
 };
 
-test_st haldenbrand_tests[] ={
-  {"memcached_set", false, (test_callback_fn*)user_supplied_bug1 },
-  {"memcached_get()", false, (test_callback_fn*)user_supplied_bug2 },
-  {"memcached_mget()", false, (test_callback_fn*)user_supplied_bug3 },
+test_st haldenbrand_TESTS[] ={
+  {"memcached_set", false, (test_callback_fn*)haldenbrand_TEST1 },
+  {"memcached_get()", false, (test_callback_fn*)haldenbrand_TEST2 },
+  {"memcached_mget()", false, (test_callback_fn*)haldenbrand_TEST3 },
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -6113,7 +5967,7 @@ collection_st collection[] ={
   {"result", 0, 0, result_tests},
   {"async", (test_callback_fn*)pre_nonblock, 0, async_tests},
   {"async(BINARY)", (test_callback_fn*)pre_nonblock_binary, 0, async_tests},
-  {"Cal Haldenbrand's tests", 0, 0, haldenbrand_tests},
+  {"Cal Haldenbrand's tests", 0, 0, haldenbrand_TESTS},
   {"user written tests", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
   {"generate_hsieh", (test_callback_fn*)pre_hsieh, 0, generate_tests},

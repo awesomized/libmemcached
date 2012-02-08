@@ -31,5 +31,6 @@
 #define test_array_length util_array_length
 
 namespace libtest {
-typedef std::vector<char*> vchar_t;
+typedef std::vector<char> vchar_t;
+typedef std::vector<char*> vchar_ptr_t;
 }
