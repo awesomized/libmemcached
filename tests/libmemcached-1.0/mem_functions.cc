@@ -81,9 +81,10 @@
 #include "tests/ketama.h"
 #include "tests/namespace.h"
 #include "tests/parser.h"
+#include "tests/libmemcached-1.0/callback_counter.h"
 #include "tests/libmemcached-1.0/dump.h"
-#include "tests/libmemcached-1.0/generate.h"
 #include "tests/libmemcached-1.0/fetch_all_results.h"
+#include "tests/libmemcached-1.0/generate.h"
 #include "tests/libmemcached-1.0/haldenbrand.h"
 #include "tests/libmemcached-1.0/stat.h"
 #include "tests/touch.h"
@@ -134,6 +135,7 @@ public:
 
         uuid_unparse(out, &key_buffer[0]);
         _keys[x]= strdup(&key_buffer[0]);
+        (_keys[x])[UUID_STRING_MAXLENGTH]= 'x';
       }
       else // We just use a number and pad the string if UUID is not available
       {
@@ -1844,16 +1846,6 @@ static test_return_t mget_result_alloc_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-/* Count the results */
-static memcached_return_t callback_counter(const memcached_st*, memcached_result_st*, void *context)
-{
-  size_t *counter= (size_t *)context;
-
-  *counter= *counter + 1;
-
-  return MEMCACHED_SUCCESS;
-}
-
 static test_return_t mget_result_function(memcached_st *memc)
 {
   const char *keys[]= {"fudge", "son", "food"};
@@ -1944,25 +1936,20 @@ static test_return_t mget_execute(memcached_st *original_memc)
   memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
   test_true(memc);
 
-  size_t max_keys= 20480;
-
-
-  char **keys= static_cast<char **>(calloc(max_keys, sizeof(char*)));
-  size_t *key_length=static_cast<size_t *>(calloc(max_keys, sizeof(size_t)));
+  keys_st keys(20480);
 
   /* First add all of the items.. */
   char blob[1024] = {0};
 
-  for (size_t x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < keys.size(); ++x)
   {
-    char k[251];
-
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
-    keys[x]= strdup(k);
-    test_true(keys[x] != NULL);
     uint64_t query_id= memcached_query_id(memc);
-    memcached_return_t rc= memcached_add(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
-    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
+    memcached_return_t rc= memcached_add(memc,
+                                         keys.key_at(x), keys.length_at(x),
+                                         blob, sizeof(blob),
+                                         0, 0);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED,
+                  memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
 
@@ -1970,8 +1957,9 @@ static test_return_t mget_execute(memcached_st *original_memc)
   size_t counter= 0;
   memcached_execute_fn callbacks[]= { &callback_counter };
   test_compare(MEMCACHED_SUCCESS, 
-               memcached_mget_execute(memc, (const char**)keys, key_length,
-                                      max_keys, callbacks, &counter, 1));
+               memcached_mget_execute(memc,
+                                      keys.keys_ptr(), keys.lengths_ptr(),
+                                      keys.size(), callbacks, &counter, 1));
 
   {
     uint64_t query_id= memcached_query_id(memc);
@@ -1980,16 +1968,8 @@ static test_return_t mget_execute(memcached_st *original_memc)
     test_compare(query_id, memcached_query_id(memc));
 
     /* Verify that we got all of the items */
-    test_true(counter == max_keys);
+    test_compare(keys.size(), counter);
   }
-
-  /* Release all allocated resources */
-  for (size_t x= 0; x < max_keys; ++x)
-  {
-    free(keys[x]);
-  }
-  free(keys);
-  free(key_length);
 
   memcached_free(memc);
 
@@ -2008,9 +1988,8 @@ static test_return_t key_setup(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-static test_return_t key_teardown(memcached_st *memc)
+static test_return_t key_teardown(memcached_st *)
 {
-  (void)memc;
   pairs_free(global_pairs);
 
   return TEST_SUCCESS;
@@ -3439,8 +3418,7 @@ static test_return_t deprecated_set_memory_alloc(memcached_st *memc)
   void *test_ptr= NULL;
   void *cb_ptr= NULL;
   {
-    memcached_malloc_fn malloc_cb=
-      (memcached_malloc_fn)my_malloc;
+    memcached_malloc_fn malloc_cb= (memcached_malloc_fn)my_malloc;
     cb_ptr= *(void **)&malloc_cb;
     memcached_return_t rc;
 
