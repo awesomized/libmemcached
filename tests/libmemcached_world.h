@@ -1,13 +1,41 @@
-/* libMemcached Functions Test
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached Client and Server 
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
+ *  All rights reserved.
  *
- * Description: This is the startup bits for any libmemcached test.
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 
 #pragma once
 
@@ -16,18 +44,18 @@
 /* The structure we use for the test system */
 struct libmemcached_test_container_st
 {
-  server_startup_st& construct;
+  libtest::server_startup_st& construct;
   memcached_st *parent;
   memcached_st *memc;
 
-  libmemcached_test_container_st(server_startup_st &construct_arg) :
+  libmemcached_test_container_st(libtest::server_startup_st &construct_arg) :
     construct(construct_arg),
     parent(NULL),
     memc(NULL)
   { }
 };
 
-static void *world_create(server_startup_st& servers, test_return_t& error)
+static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
 {
   if (HAVE_MEMCACHED_BINARY == 0)
   {
@@ -254,7 +282,7 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
     }
     catch (std::exception& e)
     {
-      Error << e.what();
+      libtest::Error << e.what();
       return TEST_FAILURE;
     }
 
@@ -284,7 +312,7 @@ static test_return_t _post_runner_default(libmemcached_test_callback_fn func, li
   return TEST_SUCCESS;
 }
 
-class LibmemcachedRunner : public Runner {
+class LibmemcachedRunner : public libtest::Runner {
 public:
   test_return_t run(test_callback_fn* func, void *object)
   {

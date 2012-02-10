@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  Libmemcached Client and Server 
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,24 @@
 
 #pragma once
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context);
+test_return_t pre_behavior_ketama(memcached_st*);
+test_return_t pre_behavior_ketama_weighted(memcached_st*);
+test_return_t pre_binary(memcached_st*);
+test_return_t pre_cork(memcached_st*);
+test_return_t pre_cork_and_nonblock(memcached_st*);
+test_return_t pre_crc(memcached_st*);
+test_return_t pre_hash_fnv1_32(memcached_st*);
+test_return_t pre_hash_fnv1_64(memcached_st*);
+test_return_t pre_hash_fnv1a_32(memcached_st*);
+test_return_t pre_hash_fnv1a_64(memcached_st*);
+test_return_t pre_hsieh(memcached_st*);
+test_return_t pre_jenkins(memcached_st*);
+test_return_t pre_md5(memcached_st*);
+test_return_t pre_murmur(memcached_st*);
+test_return_t pre_nodelay(memcached_st*);
+test_return_t pre_nonblock(memcached_st*);
+test_return_t pre_nonblock_binary(memcached_st*);
+test_return_t pre_replication(memcached_st*);
+test_return_t pre_replication_noblock(memcached_st*);
+test_return_t pre_settimer(memcached_st*);
+test_return_t pre_unix_socket(memcached_st*);
