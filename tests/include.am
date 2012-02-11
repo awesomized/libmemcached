@@ -24,7 +24,8 @@ EXTRA_DIST+= \
 noinst_HEADERS+= \
 		 tests/exist.h \
 		 tests/hash_results.h \
-		 tests/libmemcached_world.h
+		 tests/libmemcached_world.h \
+		 tests/libmemcached_world_socket.h
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)

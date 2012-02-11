@@ -213,16 +213,32 @@ static memcached_st * create_single_instance_memcached(const memcached_st *origi
 
   char server_string[1024];
   int server_string_length;
-  if (options)
+  if (instance->type == MEMCACHED_CONNECTION_UNIX_SOCKET)
   {
-    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d %s", 
-                                   memcached_server_name(instance), int(memcached_server_port(instance)),
-                                   options);
+    if (options)
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--SOCKET=\"%s\" %s",
+                                     memcached_server_name(instance), options);
+    }
+    else
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--SOCKET=\"%s\"",
+                                     memcached_server_name(instance));
+    }
   }
   else
   {
-    server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d",
-                                   memcached_server_name(instance), int(memcached_server_port(instance)));
+    if (options)
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d %s",
+                                     memcached_server_name(instance), int(memcached_server_port(instance)),
+                                     options);
+    }
+    else
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d",
+                                     memcached_server_name(instance), int(memcached_server_port(instance)));
+    }
   }
 
   if (server_string_length <= 0)
@@ -233,7 +249,7 @@ static memcached_st * create_single_instance_memcached(const memcached_st *origi
   char buffer[1024];
   if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, buffer, sizeof(buffer))))
   {
-    Error << "Failed to parse " << server_string_length;
+    Error << "Failed to parse (" << server_string << ") " << buffer;
     return NULL;
   }
 
@@ -2527,6 +2543,8 @@ test_return_t user_supplied_bug9(memcached_st *memc)
 /* We are testing with aggressive timeout to get failures */
 test_return_t user_supplied_bug10(memcached_st *memc)
 {
+  test_skip(memc->servers[0].type, MEMCACHED_CONNECTION_TCP);
+
   size_t value_length= 512;
   unsigned int set= 1;
   memcached_st *mclone= memcached_clone(NULL, memc);
@@ -3598,6 +3616,7 @@ test_return_t util_version_test(memcached_st *memc)
 
 test_return_t getpid_connection_failure_test(memcached_st *memc)
 {
+  test_skip(memc->servers[0].type, MEMCACHED_CONNECTION_TCP);
   memcached_return_t rc;
   memcached_server_instance_st instance=
     memcached_server_instance_by_position(memc, 0);

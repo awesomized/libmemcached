@@ -2,7 +2,7 @@
  * 
  *  Libmemcached Client and Server 
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker
  *  All rights reserved.
  *
@@ -63,54 +63,17 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
-  if (servers.sasl() and (LIBMEMCACHED_WITH_SASL_SUPPORT == 0 or MEMCACHED_SASL_BINARY == 0))
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
-  // Assume we are running under valgrind, and bail
-  if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
+  in_port_t max_port= TEST_PORT_BASE;
   for (uint32_t x= 0; x < servers.count(); x++)
   {
-    in_port_t port;
-
-    char variable_buffer[1024];
-    snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
-
-    char *var;
-    if ((var= getenv(variable_buffer)))
-    {
-      port= in_port_t(atoi(var));
-    }
-    else
-    {
-      port= in_port_t(TEST_PORT_BASE +x);
-    }
-
     const char *argv[1]= { "memcached" };
-    if (servers.sasl())
+    if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
     {
-      if (not server_startup(servers, "memcached-sasl", port, 1, argv))
-      {
-        error= TEST_FATAL;
-        return NULL;
-      }
-    }
-    else
-    {
-      if (not server_startup(servers, "memcached", port, 1, argv))
-      {
-        error= TEST_FATAL;
-        return NULL;
-      }
+      error= TEST_FATAL;
+      return NULL;
     }
   }
+
 
   libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
   if (global_container == NULL)

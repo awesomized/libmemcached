@@ -61,6 +61,7 @@ test_return_t pre_unix_socket(memcached_st *memc)
 
   memcached_servers_reset(memc);
   const char *socket_file= libtest::default_socket();
+  test_skip(true, bool(socket_file));
 
   test_skip(0, stat(socket_file, &buf));
 
