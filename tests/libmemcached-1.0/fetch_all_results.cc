@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  Libmemcached Client and Server 
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,28 @@
  *
  */
 
-#pragma once
+#include <config.h>
+#include <libtest/test.hpp>
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context);
+#include <tests/libmemcached-1.0/fetch_all_results.h>
+
+test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned, memcached_return_t& rc)
+{
+  keys_returned= 0;
+
+  memcached_result_st* result= NULL;
+  while ((result= memcached_fetch_result(memc, result, &rc)))
+  {
+    test_compare(MEMCACHED_SUCCESS, rc);
+    keys_returned+= 1;
+  }
+  memcached_result_free(result);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned)
+{
+  memcached_return_t rc;
+  return fetch_all_results(memc, keys_returned, rc);
+}

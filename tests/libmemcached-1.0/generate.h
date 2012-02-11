@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  Libmemcached Client and Server 
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,18 @@
 
 #pragma once
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context);
+test_return_t cleanup_pairs(memcached_st*);
+test_return_t delete_buffer_generate(memcached_st*);
+test_return_t delete_generate(memcached_st*);
+test_return_t generate_buffer_data(memcached_st*);
+test_return_t generate_data(memcached_st*);
+test_return_t generate_data_with_stats(memcached_st*);
+test_return_t generate_large_pairs(memcached_st *);
+test_return_t generate_pairs(memcached_st*);
+test_return_t get_read(memcached_st*);
+test_return_t get_read_count(memcached_st*);
+test_return_t mget_read(memcached_st*);
+test_return_t mget_read_function(memcached_st*);
+test_return_t mget_read_partial_result(memcached_st*);
+test_return_t mget_read_result(memcached_st*);
+test_return_t mget_read_internal_result(memcached_st*);

@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached client and server library.
+ *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,8 +34,29 @@
  *
  */
 
-#pragma once
+#include <config.h>
+#include <libtest/test.hpp>
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
-                                         const memcached_server_st *server,
-                                         void *context);
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcached/util.h>
+
+using namespace libtest;
+
+static test_return_t memcached_fetch_execute_MEMCACHED_SUCCESS_TEST(memcached_st *memc)
+{
+  (void)memc;
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_fetch_execute_MEMCACHED_NOTFOUND_TEST(memcached_st *memc)
+{
+  (void)memc;
+  return TEST_SUCCESS;
+}
+
+test_st memcached_fetch_execute_TESTS[] ={
+  {"memcached_fetch_execute(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_fetch_execute_MEMCACHED_SUCCESS_TEST },
+  {"memcached_fetch_execute(MEMCACHED_SUCCESS)", true, (test_callback_fn*)memcached_fetch_execute_MEMCACHED_NOTFOUND_TEST },
+  { 0, 0, (test_callback_fn*)0 }
+};
+

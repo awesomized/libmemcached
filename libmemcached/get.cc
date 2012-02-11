@@ -168,17 +168,6 @@ char *memcached_get_by_key(memcached_st *ptr,
     return NULL;
   }
 
-  size_t dummy_length;
-  uint32_t dummy_flags;
-  memcached_return_t dummy_error;
-
-  char *dummy_value= memcached_fetch(ptr, NULL, NULL,
-                                     &dummy_length, &dummy_flags,
-                                     &dummy_error);
-  assert_msg(dummy_value == 0, "memcached_fetch() returned additional values beyond the single get it expected");
-  assert_msg(dummy_length == 0, "memcached_fetch() returned additional values beyond the single get it expected");
-  assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
-
   return value;
 }
 
