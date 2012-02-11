@@ -79,6 +79,10 @@ int main(int argc, char *argv[])
   {
     close(STDOUT_FILENO);
   }
+  else if (getenv("JENKINS_URL"))
+  {
+    close(STDOUT_FILENO);
+  }
 
   char buffer[1024];
   if (getenv("LIBTEST_TMP"))
