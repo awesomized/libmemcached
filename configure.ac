@@ -168,6 +168,7 @@ AX_CXX_GCC_ABI_DEMANGLE
 AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
                  [
                   LIBUUID_LDFLAGS="-luuid"
+                  AC_DEFINE([HAVE_LIBUUID], [ 1 ], [Have libuuid])
                   ],
                  [
                   AC_DEFINE([HAVE_LIBUUID], [ 0 ], [Have libuuid])
