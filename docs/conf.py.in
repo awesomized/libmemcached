@@ -353,4 +353,8 @@ man_pages = [
   ('bin/memaslap', 'memaslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memslap', 'memslap', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ('bin/memstat', 'memstat', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('bin/memexist', 'memexist', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('bin/memparse', 'memparse', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('bin/memping', 'memping', u'libmemcached Documentation', [u'Brian Aker'], 1),
+  ('bin/memtouch', 'memtouch', u'libmemcached Documentation', [u'Brian Aker'], 1),
   ]

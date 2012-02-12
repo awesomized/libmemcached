@@ -60,10 +60,7 @@ copy is made of structure so the list provided (and any operations on
 the list) are not saved.
 
 :c:func:`memcached_server_by_key()` allows you to provide a key and retrieve the
-server which would be used for assignment. This structure is cloned
-from its original structure and must be freed. If NULL is returned you
-should consult \*error. The returning structure should be freed with
-:c:func:`memcached_server_free()`.
+server which would be used for assignment.
 
 :c:func:`memcached_server_get_last_disconnect()` returns a pointer to the last 
 server for which there was a connection problem. It does not mean this 

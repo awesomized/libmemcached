@@ -28,7 +28,7 @@ static char *opt_username;
 static char *opt_passwd;
 
 #define PROGRAM_NAME "memexist"
-#define PROGRAM_DESCRIPTION "Erase a key or set of keys from a memcached cluster."
+#define PROGRAM_DESCRIPTION "Check for the existance of a key within a cluster."
 
 /* Prototypes */
 static void options_parse(int argc, char *argv[]);

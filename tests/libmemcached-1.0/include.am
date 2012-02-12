@@ -25,7 +25,6 @@ noinst_HEADERS+= \
 		 tests/libmemcached-1.0/generate.h \
 		 tests/libmemcached-1.0/haldenbrand.h \
 		 tests/libmemcached-1.0/mem_functions.h \
-		 tests/libmemcached-1.0/servers_to_create.h \
 		 tests/libmemcached-1.0/setup_and_teardowns.h \
 		 tests/libmemcached-1.0/stat.h \
 		 tests/namespace.h \
