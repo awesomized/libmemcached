@@ -4215,7 +4215,7 @@ test_return_t regression_bug_442914(memcached_st *memc)
   {
     len= (size_t)snprintf(k, sizeof(k), "%0250u", x);
     memcached_return_t rc= memcached_delete(memc, k, len, 0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
   }
 
   len= snprintf(k, sizeof(k), "%037u", 251U);
@@ -4237,7 +4237,9 @@ test_return_t regression_bug_447342(memcached_st *memc)
   memcached_server_instance_st instance_two;
 
   if (memcached_server_count(memc) < 3 or pre_replication(memc) != TEST_SUCCESS)
+  {
     return TEST_SKIPPED;
+  }
 
   test_compare(MEMCACHED_SUCCESS,
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2));
