@@ -722,7 +722,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     break;
 
   default:
-    for (size_t x= 0; x < host_index; ++x)
+    for (ptrdiff_t x= 0; x < host_index; ++x)
     {
       if (fds[x].revents & POLLIN)
       {

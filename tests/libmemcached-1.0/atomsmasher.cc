@@ -59,7 +59,7 @@ static test_return_t generate_pairs(memcached_st *)
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
 
-  for (size_t x= 0; x < global_count; x++)
+  for (ptrdiff_t x= 0; x < global_count; x++)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
@@ -71,7 +71,7 @@ static test_return_t generate_pairs(memcached_st *)
 static test_return_t drizzle(memcached_st *memc)
 {
 infinite:
-  for (size_t x= 0; x < TEST_COUNTER; x++)
+  for (ptrdiff_t x= 0; x < TEST_COUNTER; x++)
   {
     memcached_return_t rc;
     char *return_value;
@@ -174,7 +174,7 @@ static test_return_t add_test(memcached_st *memc)
 static test_return_t many_adds(memcached_st *memc)
 {
   test_true(memc);
-  for (size_t x= 0; x < TEST_COUNTER; x++)
+  for (ptrdiff_t x= 0; x < TEST_COUNTER; x++)
   {
     test_compare_got(TEST_SUCCESS, add_test(memc), x);
   }
@@ -203,7 +203,7 @@ static test_return_t memcached_create_benchmark(memcached_st *)
 {
   benchmark_state.create_init= true;
 
-  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  for (ptrdiff_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
     memcached_st *ptr;
     ptr= memcached_create(&benchmark_state.create[x]);
@@ -218,10 +218,9 @@ static test_return_t memcached_clone_benchmark(memcached_st *memc)
 {
   benchmark_state.clone_init= true;
 
-  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  for (ptrdiff_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
-    memcached_st *ptr;
-    ptr= memcached_clone(&benchmark_state.clone[x], memc);
+    memcached_st *ptr= memcached_clone(&benchmark_state.clone[x], memc);
 
     test_true(ptr);
   }
@@ -243,7 +242,7 @@ static test_return_t pre_allocate(memcached_st *)
 
 static test_return_t post_allocate(memcached_st *)
 {
-  for (size_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
+  for (ptrdiff_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
     if (benchmark_state.create_init)
     {
