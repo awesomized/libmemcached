@@ -99,7 +99,6 @@ ENABLE_FNV64_HASH
 ENABLE_MEMASLAP
 PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
-PANDORA_HAVE_SASL
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([dup2])
@@ -136,7 +135,6 @@ AC_CHECK_HEADERS([cxxabi.h],
                  AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
 
 AX_COMPILER_VENDOR
-AC_CXX_HEADER_STDCXX_98
 
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
@@ -165,6 +163,18 @@ AC_C_RESTRICT
 
 AX_CXX_GCC_ABI_DEMANGLE
 
+AX_SASL_OPTION
+
+dnl
+dnl The sasl functions should only be visible if we build with sasl support
+dnl
+AS_IF([test "x$ac_enable_sasl" = "xyes"], [
+       [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
+       ], [
+           [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
+           ])
+AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
+
 AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
                  [
                   LIBUUID_LDFLAGS="-luuid"
@@ -185,17 +195,6 @@ AC_CHECK_LIB([rt], [clock_gettime],
               ])
 
 AC_CHECK_LIB([m], [floor])
-
-dnl The sasl functions should only be visible if we build with sasl support
-AS_IF([test "x$ac_cv_sasl" = "xyes"],
-      [
-        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
-      ],
-      [
-        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
-       ]
-      )
-AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
@@ -249,6 +248,7 @@ echo "   * C Compiler:                $CC_VERSION"
 echo "   * Assertions enabled:        $ac_cv_assert"
 echo "   * Debug enabled:             $with_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
+echo "   * SASL support:              $ac_enable_sasl"
 echo ""
 echo "---"
 

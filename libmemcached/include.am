@@ -38,6 +38,7 @@ noinst_HEADERS+= \
 		 libmemcached/namespace.h \
 		 libmemcached/options.hpp \
 		 libmemcached/response.h \
+		 libmemcached/sasl.hpp \
 		 libmemcached/server.hpp \
 		 libmemcached/server_instance.h \
 		 libmemcached/socket.hpp \
@@ -88,7 +89,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/quit.hpp \
 				       libmemcached/response.cc \
 				       libmemcached/result.cc \
-				       libmemcached/sasl.hpp \
+				       libmemcached/sasl.cc \
 				       libmemcached/server.cc \
 				       libmemcached/server_list.cc \
 				       libmemcached/server_list.hpp \
@@ -110,11 +111,11 @@ libmemcached_libmemcached_la_LIBADD=
 libmemcached_libmemcached_la_LDFLAGS=
 libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION}
 
-libmemcached_libmemcached_la_LIBADD+= $(LTLIBSASL) $(LTLIBSASL2)
-libmemcached_libmemcached_la_SOURCES += libmemcached/sasl.cc
 if HAVE_SASL
-libmemcached_libmemcached_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
-libmemcached_libmemcached_la_LIBADD+= ${PTHREAD_LIBS}
+libmemcached_libmemcached_la_CXXFLAGS+= $(LIBSASL_CPPFLAGS)
+libmemcached_libmemcached_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
+libmemcached_libmemcached_la_LIBADD+= $(PTHREAD_LIBS)
+libmemcached_libmemcached_la_LIBADD+= $(LIBSASL_LDFLAGS)
 endif
 
 if HAVE_DTRACE
