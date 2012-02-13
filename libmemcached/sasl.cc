@@ -40,7 +40,10 @@
 
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 
+#if defined(HAVE_LIBSASL) && HAVE_LIBSASL
 #include <sasl/sasl.h>
+#endif
+
 #include <pthread.h>
 
 void memcached_set_sasl_callbacks(memcached_st *ptr,
