@@ -113,12 +113,14 @@ public:
 
       if (HAVE_LIBUUID)
       {
+#if defined(HAVE_LIBUUID) && HAVE_LIBUUID
         uuid_t out;
         uuid_generate(out);
 
         uuid_unparse(out, &key_buffer[0]);
         _keys[x]= strdup(&key_buffer[0]);
         (_keys[x])[UUID_STRING_MAXLENGTH]= 'x';
+#endif
       }
       else // We just use a number and pad the string if UUID is not available
       {
