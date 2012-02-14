@@ -4771,22 +4771,24 @@ test_return_t regression_bug_655423(memcached_st *memc)
 
   memset(payload, int('x'), sizeof(payload));
 
-  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
-  {
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    snprintf(key, sizeof(key), "%u", x);
+  keys_st keys(regression_bug_655423_COUNT);
 
-    test_compare(MEMCACHED_SUCCESS, memcached_set(clone, key, strlen(key), payload, sizeof(payload), 0, 0));
+  for (size_t x= 0; x < keys.size(); x++)
+  {
+    test_compare(MEMCACHED_SUCCESS, memcached_set(clone, 
+                                                  keys.key_at(x),
+                                                  keys.length_at(x),
+                                                  payload, sizeof(payload), 0, 0));
   }
 
-  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
+  for (size_t x= 0; x < keys.size(); x++)
   {
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    snprintf(key, sizeof(key), "%u", x);
-
     size_t value_length;
     memcached_return_t rc;
-    char *value= memcached_get(clone, key, strlen(key), &value_length, NULL, &rc);
+    char *value= memcached_get(clone,
+                               keys.key_at(x),
+                               keys.length_at(x),
+                               &value_length, NULL, &rc);
 
     if (rc == MEMCACHED_NOTFOUND)
     {
@@ -4801,21 +4803,10 @@ test_return_t regression_bug_655423(memcached_st *memc)
     free(value);
   }
 
-  char **keys= (char**)calloc(regression_bug_655423_COUNT, sizeof(char*));
-  size_t *key_length= (size_t *)calloc(regression_bug_655423_COUNT, sizeof(size_t));
-  for (uint32_t x= 0; x < regression_bug_655423_COUNT; x++)
-  {
-    char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-    snprintf(key, sizeof(key), "%u", x);
-
-    keys[x]= strdup(key);
-    test_true(keys[x]);
-    key_length[x]= strlen(key);
-    test_true(key_length[x]);
-  }
-
   test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(clone, (const char* const *)keys, key_length, regression_bug_655423_COUNT));
+               memcached_mget(clone,
+                              keys.keys_ptr(), keys.lengths_ptr(),
+                              keys.size()));
 
   uint32_t count= 0;
   memcached_result_st *result= NULL;
@@ -4826,15 +4817,6 @@ test_return_t regression_bug_655423(memcached_st *memc)
   }
 
   test_true(count > 100); // If we don't get back atleast this, something is up
-
-  /* Release all allocated resources */
-  for (size_t x= 0; x < regression_bug_655423_COUNT; ++x)
-  {
-    free(keys[x]);
-  }
-  free(keys);
-  free(key_length);
-
 
   memcached_free(clone);
 
@@ -4855,28 +4837,16 @@ test_return_t regression_bug_490520(memcached_st *memc)
 
   memc->number_of_hosts= 1;
 
-  char **keys= (char **)calloc(regression_bug_490520_COUNT, sizeof(char*));
-  size_t *key_length= (size_t *)calloc(regression_bug_490520_COUNT, sizeof(size_t));
-
   /* First add all of the items.. */
   char blob[3333] = {0};
   for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
   {
-    char k[251];
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%u", x);
-    keys[x]= strdup(k);
-    test_true(keys[x]);
+    char key[251];
+    int key_length= snprintf(key, sizeof(key), "0200%u", x);
 
-    memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    memcached_return rc= memcached_set(memc, key, key_length, blob, sizeof(blob), 0, 0);
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
   }
-
-  for (uint32_t x= 0; x < regression_bug_490520_COUNT; ++x)
-  {
-    free(keys[x]);
-  }
-  free(keys);
-  free(key_length);
 
   return TEST_SUCCESS;
 }
