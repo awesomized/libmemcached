@@ -675,7 +675,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
-  unsigned int host_index= 0;
+  nfds_t host_index= 0;
 
   for (uint32_t x= 0; x < memcached_server_count(memc) and host_index < MAX_SERVERS_TO_POLL; ++x)
   {
@@ -722,7 +722,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     break;
 
   default:
-    for (ptrdiff_t x= 0; x < host_index; ++x)
+    for (nfds_t x= 0; x < host_index; ++x)
     {
       if (fds[x].revents & POLLIN)
       {
