@@ -4216,9 +4216,6 @@ test_return_t regression_bug_442914(memcached_st *memc)
 
 test_return_t regression_bug_447342(memcached_st *memc)
 {
-  memcached_server_instance_st instance_one;
-  memcached_server_instance_st instance_two;
-
   if (memcached_server_count(memc) < 3 or pre_replication(memc) != TEST_SUCCESS)
   {
     return TEST_SKIPPED;
@@ -4227,19 +4224,15 @@ test_return_t regression_bug_447342(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS,
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2));
 
-  const unsigned int max_keys= 100;
-  char **keys= (char**)calloc(max_keys, sizeof(char*));
-  size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
+  keys_st keys(100);
 
-  for (unsigned int x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < keys.size(); ++x)
   {
-    char k[251];
-
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
-    keys[x]= strdup(k);
-    test_true(keys[x]);
     test_compare(MEMCACHED_SUCCESS,
-                 memcached_set(memc, k, key_length[x], k, key_length[x], 0, 0));
+                 memcached_set(memc, 
+                               keys.key_at(x), keys.length_at(x), // Keys
+                               keys.key_at(x), keys.length_at(x), // Values
+                               0, 0));
   }
 
   /*
@@ -4261,7 +4254,8 @@ test_return_t regression_bug_447342(memcached_st *memc)
    * into the servers
  */
   test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(memc, (const char* const *)keys, key_length, max_keys));
+               memcached_mget(memc, 
+                              keys.keys_ptr(), keys.lengths_ptr(), keys.size()));
 
   unsigned int counter= 0;
   memcached_execute_fn callbacks[]= { &callback_counter };
@@ -4269,7 +4263,7 @@ test_return_t regression_bug_447342(memcached_st *memc)
                memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
 
   /* Verify that we received all of the key/value pairs */
-  test_compare(counter, max_keys);
+  test_compare(counter, keys.size());
 
   memcached_quit(memc);
   /*
@@ -4278,8 +4272,8 @@ test_return_t regression_bug_447342(memcached_st *memc)
    * This is to verify correct behavior in the library. Fake that two servers
    * are dead..
  */
-  instance_one= memcached_server_instance_by_position(memc, 0);
-  instance_two= memcached_server_instance_by_position(memc, 2);
+  memcached_server_instance_st instance_one= memcached_server_instance_by_position(memc, 0);
+  memcached_server_instance_st instance_two= memcached_server_instance_by_position(memc, 2);
   in_port_t port0= instance_one->port;
   in_port_t port2= instance_two->port;
 
@@ -4287,12 +4281,13 @@ test_return_t regression_bug_447342(memcached_st *memc)
   ((memcached_server_write_instance_st)instance_two)->port= 0;
 
   test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(memc, (const char* const *)keys, key_length, max_keys));
+               memcached_mget(memc, 
+                              keys.keys_ptr(), keys.lengths_ptr(), keys.size()));
 
   counter= 0;
   test_compare(MEMCACHED_SUCCESS, 
                memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
-  test_compare(counter, (unsigned int)max_keys);
+  test_compare(counter, keys.size());
 
   /* restore the memc handle */
   ((memcached_server_write_instance_st)instance_one)->port= port0;
@@ -4301,12 +4296,12 @@ test_return_t regression_bug_447342(memcached_st *memc)
   memcached_quit(memc);
 
   /* Remove half of the objects */
-  for (size_t x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < keys.size(); ++x)
   {
     if (x & 1)
     {
       test_compare(MEMCACHED_SUCCESS,
-                   memcached_delete(memc, keys[x], key_length[x], 0));
+                   memcached_delete(memc, keys.key_at(x), keys.length_at(x), 0));
     }
   }
 
@@ -4316,20 +4311,13 @@ test_return_t regression_bug_447342(memcached_st *memc)
 
   /* now retry the command, this time we should have cache misses */
   test_compare(MEMCACHED_SUCCESS,
-               memcached_mget(memc, (const char* const *)keys, key_length, max_keys));
+               memcached_mget(memc,
+                              keys.keys_ptr(), keys.lengths_ptr(), keys.size()));
 
   counter= 0;
   test_compare(MEMCACHED_SUCCESS, 
                memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
-  test_compare(counter, (unsigned int)(max_keys >> 1));
-
-  /* Release allocated resources */
-  for (size_t x= 0; x < max_keys; ++x)
-  {
-    free(keys[x]);
-  }
-  free(keys);
-  free(key_length);
+  test_compare(counter, (unsigned int)(keys.size() >> 1));
 
   /* restore the memc handle */
   ((memcached_server_write_instance_st)instance_one)->port= port0;
@@ -4649,20 +4637,15 @@ test_return_t regression_bug_490486(memcached_st *original_memc)
   memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL --POLL-TIMEOUT=1000 --REMOVE-FAILED-SERVERS=1 --RETRY-TIMEOUT=3600");
   test_true(memc);
 
-  size_t max_keys= 20480;
-
-  char **keys= (char **)calloc(max_keys, sizeof(char*));
-  size_t *key_length= (size_t *)calloc(max_keys, sizeof(size_t));
+  keys_st keys(20480);
 
   /* First add all of the items.. */
   char blob[1024]= { 0 };
-  for (size_t x= 0; x < max_keys; ++x)
+  for (size_t x= 0; x < keys.size(); ++x)
   {
-    char k[251];
-    key_length[x]= (size_t)snprintf(k, sizeof(k), "0200%lu", (unsigned long)x);
-    keys[x]= strdup(k);
-    test_true(keys[x]);
-    memcached_return rc= memcached_set(memc, keys[x], key_length[x], blob, sizeof(blob), 0, 0);
+    memcached_return rc= memcached_set(memc,
+                                       keys.key_at(x), keys.length_at(x),
+                                       blob, sizeof(blob), 0, 0);
     test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED); // MEMCACHED_TIMEOUT <-- hash been observed on OSX
   }
 
@@ -4671,8 +4654,9 @@ test_return_t regression_bug_490486(memcached_st *original_memc)
     /* Try to get all of them with a large multiget */
     size_t counter= 0;
     memcached_execute_function callbacks[]= { &callback_counter };
-    memcached_return_t rc= memcached_mget_execute(memc, (const char**)keys, key_length,
-                                                  (size_t)max_keys, callbacks, &counter, 1);
+    memcached_return_t rc= memcached_mget_execute(memc,
+                                                  keys.keys_ptr(), keys.lengths_ptr(), keys.size(),
+                                                  callbacks, &counter, 1);
     test_compare(MEMCACHED_SUCCESS, rc);
 
     char* the_value= NULL;
@@ -4696,16 +4680,8 @@ test_return_t regression_bug_490486(memcached_st *original_memc)
     test_compare(MEMCACHED_END, rc);
 
     /* Verify that we got all of the items */
-    test_compare(counter, max_keys);
+    test_compare(counter, keys.size());
   }
-
-  /* Release all allocated resources */
-  for (size_t x= 0; x < max_keys; ++x)
-  {
-    free(keys[x]);
-  }
-  free(keys);
-  free(key_length);
 
   memcached_free(memc);
 
