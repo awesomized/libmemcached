@@ -4955,3 +4955,31 @@ test_return_t regression_bug_(memcached_st *memc)
 
   return TEST_SUCCESS;
 }
+
+test_return_t kill_HUP_TEST(memcached_st *original_memc)
+{
+  memcached_st *memc= create_single_instance_memcached(original_memc, 0);
+  test_true(memc);
+
+  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
+
+  pid_t pid;
+  test_true((pid= libmemcached_util_getpid(memcached_server_name(instance),
+                                           memcached_server_port(instance), NULL)) > -1);
+
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_set(memc, 
+                             test_literal_param(__func__), // Keys
+                             test_literal_param(__func__), // Values
+                             0, 0));
+  test_true_got(kill(pid, SIGHUP) == 0, strerror(errno));
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_set(memc, 
+                             test_literal_param(__func__), // Keys
+                             test_literal_param(__func__), // Values
+                             0, 0));
+
+  return TEST_SUCCESS;
+}

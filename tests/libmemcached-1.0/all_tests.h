@@ -122,6 +122,11 @@ test_st touch_tests[] ={
   {0, 0, 0}
 };
 
+test_st kill_TESTS[] ={
+  {"kill(HUP)", 0, (test_callback_fn*)kill_HUP_TEST},
+  {0, 0, 0}
+};
+
 test_st memcached_stat_tests[] ={
   {"memcached_stat() INVALID ARG", 0, (test_callback_fn*)memcached_stat_TEST},
   {"memcached_stat()", 0, (test_callback_fn*)memcached_stat_TEST2},
@@ -467,5 +472,6 @@ collection_st collection[] ={
   {"touch", 0, 0, touch_tests},
   {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
   {"memcached_stat()", 0, 0, memcached_stat_tests},
+  {"kill()", 0, 0, kill_TESTS},
   {0, 0, 0, 0}
 };
