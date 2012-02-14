@@ -721,7 +721,7 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
                                time_t(0), uint32_t(0)));
   }
 
-  for (size_t loop= 0; loop < 20; loop++)
+  for (ptrdiff_t loop= 0; loop < 20; loop++)
   {
     if (random() %2)
     {
@@ -1989,7 +1989,7 @@ test_return_t key_teardown(memcached_st *)
 test_return_t block_add_regression(memcached_st *memc)
 {
   /* First add all of the items.. */
-  for (size_t x= 0; x < REGRESSION_BINARY_VS_BLOCK_COUNT; ++x)
+  for (ptrdiff_t x= 0; x < REGRESSION_BINARY_VS_BLOCK_COUNT; ++x)
   {
     char blob[1024] = {0};
 
@@ -2701,7 +2701,7 @@ test_return_t user_supplied_bug14(memcached_st *memc)
 
   libtest::vchar_t value;
   value.reserve(18000);
-  for (size_t x= 0; x < 18000; x++)
+  for (ptrdiff_t x= 0; x < 18000; x++)
   {
     value.push_back((char) (x % 127));
   }

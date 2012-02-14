@@ -60,7 +60,7 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     char *key= result->item_key;
     result->key_length= 0;
 
-    for (size_t prefix_length= memcached_array_size(instance->root->_namespace); !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
+    for (ptrdiff_t prefix_length= memcached_array_size(instance->root->_namespace); !(iscntrl(*string_ptr) || isspace(*string_ptr)) ; string_ptr++)
     {
       if (prefix_length == 0)
       {
