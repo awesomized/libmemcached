@@ -41,7 +41,6 @@ using namespace libtest;
 
 /* Number of times to run the test loop */
 #define TEST_COUNTER 500000
-static uint32_t global_count;
 
 static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
@@ -57,9 +56,8 @@ static test_return_t cleanup_pairs(memcached_st *)
 static test_return_t generate_pairs(memcached_st *)
 {
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
-  global_count= GLOBAL_COUNT;
 
-  for (ptrdiff_t x= 0; x < global_count; x++)
+  for (ptrdiff_t x= 0; x < GLOBAL_COUNT; x++)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
