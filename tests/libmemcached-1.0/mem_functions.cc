@@ -206,6 +206,18 @@ static memcached_return_t return_value_based_on_buffering(memcached_st *memc)
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {
   /*
+    If no options are given, copy over at least the binary flag.
+  */
+  char options_buffer[1024]= { 0 };
+  if (options == NULL)
+  {
+    if (memcached_is_binary(original_memc))
+    {
+      snprintf(options_buffer, sizeof(options_buffer), "--BINARY");
+    }
+  }
+
+  /*
    * I only want to hit _one_ server so I know the number of requests I'm
    * sending in the pipeline.
    */
@@ -246,10 +258,10 @@ static memcached_st * create_single_instance_memcached(const memcached_st *origi
     return NULL;
   }
 
-  char buffer[1024];
-  if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, buffer, sizeof(buffer))))
+  char errror_buffer[1024];
+  if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, errror_buffer, sizeof(errror_buffer))))
   {
-    Error << "Failed to parse (" << server_string << ") " << buffer;
+    Error << "Failed to parse (" << server_string << ") " << errror_buffer;
     return NULL;
   }
 
@@ -4184,13 +4196,9 @@ test_return_t regression_bug_421108(memcached_st *memc)
  * delete command or the watermarks, we need to update this
  * test....
  */
-test_return_t regression_bug_442914(memcached_st *memc)
+test_return_t regression_bug_442914(memcached_st *original_memc)
 {
-  test_skip(MEMCACHED_SUCCESS,  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 1));
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1);
-
-  uint32_t number_of_hosts= memcached_server_count(memc);
-  memc->number_of_hosts= 1;
+  memcached_st* memc= create_single_instance_memcached(original_memc, "--NOREPLY --TCP-NODELAY");
 
   for (uint32_t x= 0; x < 250; ++x)
   {
@@ -4207,11 +4215,11 @@ test_return_t regression_bug_442914(memcached_st *memc)
     memcached_return_t rc= memcached_delete(memc, key, len, 0);
     test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
 
-    test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, 0));
+    test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, false));
     test_compare(MEMCACHED_NOTFOUND, memcached_delete(memc, key, len, 0));
   }
 
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -4530,31 +4538,20 @@ test_return_t memcached_stat_execute_test(memcached_st *memc)
  * This test ensures that the failure counter isn't incremented during
  * normal termination of the memcached instance.
  */
-test_return_t wrong_failure_counter_test(memcached_st *memc)
+test_return_t wrong_failure_counter_test(memcached_st *original_memc)
 {
-  memcached_return_t rc;
-  memcached_server_instance_st instance;
-
-  /* Set value to force connection to the server */
-  const char *key= "marmotte";
-  const char *value= "milka";
-
-  /*
-   * Please note that I'm abusing the internal structures in libmemcached
-   * in a non-portable way and you shouldn't be doing this. I'm only
-   * doing this in order to verify that the library works the way it should
- */
-  uint32_t number_of_hosts= memcached_server_count(memc);
-  memc->number_of_hosts= 1;
+  memcached_st* memc= create_single_instance_memcached(original_memc, NULL);
 
   /* Ensure that we are connected to the server by setting a value */
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
+  memcached_return_t rc= memcached_set(memc,
+                                       test_literal_param(__func__), // Key
+                                       test_literal_param(__func__), // Value
+                                       time_t(0), uint32_t(0));
   test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
 
-  instance= memcached_server_instance_by_position(memc, 0);
+  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 0);
+
   /* The test is to see that the memcached_quit doesn't increase the
    * the server failure conter, so let's ensure that it is zero
    * before sending quit
@@ -4569,8 +4566,7 @@ test_return_t wrong_failure_counter_test(memcached_st *memc)
  */
   test_zero(instance->server_failure_counter);
 
-  /* restore the instance */
-  memc->number_of_hosts= number_of_hosts;
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
@@ -4805,15 +4801,15 @@ test_return_t regression_bug_655423(memcached_st *memc)
  * Test that ensures that buffered set to not trigger problems during io_flush
  */
 #define regression_bug_490520_COUNT 200480
-test_return_t regression_bug_490520(memcached_st *memc)
+test_return_t regression_bug_490520(memcached_st *original_memc)
 {
+  memcached_st* memc= create_single_instance_memcached(original_memc, NULL);
+
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK,1);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS,1);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT,1);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 3600);
-
-  memc->number_of_hosts= 1;
 
   /* First add all of the items.. */
   char blob[3333] = {0};
@@ -4825,6 +4821,8 @@ test_return_t regression_bug_490520(memcached_st *memc)
     memcached_return rc= memcached_set(memc, key, key_length, blob, sizeof(blob), 0, 0);
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
   }
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
