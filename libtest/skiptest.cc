@@ -30,10 +30,6 @@
 using namespace libtest;
 
 
-collection_st collection[] ={
-  {0, 0, 0, 0}
-};
-
 static void *world_create(server_startup_st&, test_return_t& rc)
 {
   rc= TEST_SKIPPED;
@@ -43,6 +39,5 @@ static void *world_create(server_startup_st&, test_return_t& rc)
 
 void get_world(Framework *world)
 {
-  world->collections= collection;
   world->_create= world_create;
 }

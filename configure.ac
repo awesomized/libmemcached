@@ -203,6 +203,12 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
 	              [1],
                       [Define to true if you want to use functions from atomic.h])])])
 
+AC_DEFINE([HAVE_LIBDRIZZLE], [0], [Support for libdrizzle])
+AC_DEFINE([HAVE_DRIZZLED_BINARY], [0], [Support for DrizzleD])
+AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker])
+AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
+AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
+
 AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")

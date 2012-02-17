@@ -19,54 +19,40 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #include <libtest/common.h>
 
 namespace libtest {
 
-bool has_gearmand_binary()
+static std::string printer(const char *str, size_t length)
 {
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  std::stringstream arg_buffer;
-
-  if (getenv("PWD"))
+  std::ostringstream buf;
+  for (size_t x= 0; x < length; x++)
   {
-    arg_buffer << getenv("PWD");
-    arg_buffer << "/";
+    if (isprint(str[x]))
+    {
+      buf << str[x];
+    }
+    else
+    {
+      buf << "(" << int(str[x]) << ")";
+    }
   }
-  arg_buffer << GEARMAND_BINARY;
 
-  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
+  return buf.str();
 }
 
-bool has_memcached_binary()
+void make_vector(libtest::vchar_t& arg, const char *str, size_t length)
 {
-#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
+  arg.resize(length);
+  memcpy(&arg[0], str, length);
 }
 
-bool has_memcached_sasl_binary()
+std::ostream& operator<<(std::ostream& output, const libtest::vchar_t& arg)
 {
-#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
-  if (access(MEMCACHED_SASL_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
+  std::string tmp= libtest::printer(&arg[0], arg.size());
+  output << tmp <<  "[" << arg.size() << "]";
 
-  return false;
+  return output;
 }
 
-}
+} // namespace libtest

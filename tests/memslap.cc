@@ -56,15 +56,17 @@ static test_return_t quiet_test(void *)
 {
   const char *args[]= { "--quiet", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "--quiet", "--help", 0 };
+  const char *args[]= { "--help", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -72,9 +74,10 @@ static test_return_t server_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, 0 };
+  const char *args[]= { buffer, 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -82,9 +85,10 @@ static test_return_t server_concurrency_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", 0 };
+  const char *args[]= { buffer, "--concurrency=10", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -92,9 +96,10 @@ static test_return_t server_concurrency_initial_load_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", 0 };
+  const char *args[]= { buffer, "--concurrency=10", "--initial-load=1000", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -102,9 +107,10 @@ static test_return_t server_concurrency_initial_load_execute_number_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", 0 };
+  const char *args[]= { buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -112,9 +118,10 @@ static test_return_t server_concurrency_initial_load_execute_number_test_get_tes
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=get", 0 };
+  const char *args[]= { buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=get", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -122,9 +129,10 @@ static test_return_t server_concurrency_initial_load_execute_number_test_set_tes
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", 0 };
+  const char *args[]= { buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -132,9 +140,10 @@ static test_return_t server_concurrency_initial_load_execute_number_test_set_non
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", "--non-blocking", 0 };
+  const char *args[]= { buffer, "--concurrency=10", "--initial-load=1000", "--execute-number=10", "--test=set", "--non-blocking", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 

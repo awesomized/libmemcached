@@ -77,7 +77,6 @@ Server* server_startup_st::pop_server()
 
 bool server_startup_st::shutdown(uint32_t number_of_host)
 {
-  assert(servers.size() > number_of_host);
   if (servers.size() > number_of_host)
   {
     Server* tmp= servers[number_of_host];

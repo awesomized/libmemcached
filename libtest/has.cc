@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  libtest
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -19,54 +19,41 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <config.h>
+#include <libtest/has.hpp>
 
-#include <libtest/common.h>
+#include <cstdlib>
 
-namespace libtest {
-
-bool has_gearmand_binary()
+bool has_memcached_support(void)
 {
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  std::stringstream arg_buffer;
-
-  if (getenv("PWD"))
-  {
-    arg_buffer << getenv("PWD");
-    arg_buffer << "/";
-  }
-  arg_buffer << GEARMAND_BINARY;
-
-  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
+  if (HAVE_LIBMEMCACHED and HAVE_MEMCACHED_BINARY)
   {
     return true;
   }
-#endif
 
   return false;
 }
 
-bool has_memcached_binary()
+bool has_drizzle_support(void)
 {
-#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY,R_OK|X_OK) == 0)
+  if (HAVE_LIBDRIZZLE and HAVE_DRIZZLED_BINARY)
   {
     return true;
   }
-#endif
 
   return false;
 }
 
-bool has_memcached_sasl_binary()
+bool has_postgres_support(void)
 {
-#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
-  if (access(MEMCACHED_SASL_BINARY, R_OK|X_OK) == 0)
+  if (getenv("POSTGES_IS_RUNNING_AND_SETUP"))
   {
-    return true;
+
+    if (HAVE_LIBPQ)
+    {
+      return true;
+    }
   }
-#endif
 
   return false;
-}
-
 }

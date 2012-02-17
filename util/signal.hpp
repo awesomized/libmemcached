@@ -26,6 +26,10 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+
 namespace datadifferential {
 namespace util {
 

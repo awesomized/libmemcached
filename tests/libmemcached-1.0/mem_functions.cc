@@ -2706,7 +2706,7 @@ test_return_t user_supplied_bug14(memcached_st *memc)
     value.push_back((char) (x % 127));
   }
 
-  for (size_t current_length= 0; current_length < value.size(); current_length++)
+  for (size_t current_length= 1; current_length < value.size(); current_length++)
   {
     memcached_return_t rc= memcached_set(memc, test_literal_param("foo"),
                                          &value[0], current_length,
@@ -2720,7 +2720,9 @@ test_return_t user_supplied_bug14(memcached_st *memc)
 
     test_compare(MEMCACHED_SUCCESS, rc);
     test_compare(string_length, current_length);
-    test_memcmp(string, &value[0], string_length);
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "%u", uint32_t(string_length));
+    test_memcmp_hint(string, &value[0], string_length, buffer);
 
     free(string);
   }
@@ -4980,6 +4982,8 @@ test_return_t kill_HUP_TEST(memcached_st *original_memc)
                              test_literal_param(__func__), // Keys
                              test_literal_param(__func__), // Values
                              0, 0));
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }

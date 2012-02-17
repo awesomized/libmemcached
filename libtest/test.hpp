@@ -32,6 +32,9 @@
 #include <libtest/visibility.h>
 #include <libtest/version.h>
 
+#include <libtest/vchar.hpp>
+
+#include <libtest/has.hpp>
 #include <libtest/error.h>
 #include <libtest/strerror.h>
 #include <libtest/stream.h>
@@ -41,6 +44,7 @@
 #include <libtest/wait.h>
 #include <libtest/callbacks.h>
 #include <libtest/test.h>
+#include <libtest/dream.h>
 #include <libtest/core.h>
 #include <libtest/runner.h>
 #include <libtest/port.h>
@@ -54,3 +58,4 @@
 #include <libtest/cmdline.h>
 #include <libtest/string.hpp>
 #include <libtest/binaries.h>
+#include <libtest/http.hpp>

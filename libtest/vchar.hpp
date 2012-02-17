@@ -20,53 +20,22 @@
  */
 
 
-#include <libtest/common.h>
+#pragma once
+
+#include <cstring>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+#include <vector>
 
 namespace libtest {
 
-bool has_gearmand_binary()
-{
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  std::stringstream arg_buffer;
+typedef std::vector<char*> vchar_ptr_t;
+typedef std::vector<char> vchar_t;
 
-  if (getenv("PWD"))
-  {
-    arg_buffer << getenv("PWD");
-    arg_buffer << "/";
-  }
-  arg_buffer << GEARMAND_BINARY;
+void make_vector(libtest::vchar_t& arg, const char *str, size_t length);
 
-  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
+std::ostream& operator<<(std::ostream& output, const libtest::vchar_t& arg);
 
-  return false;
-}
+} // namespace libtest
 
-bool has_memcached_binary()
-{
-#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-bool has_memcached_sasl_binary()
-{
-#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
-  if (access(MEMCACHED_SASL_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-}
