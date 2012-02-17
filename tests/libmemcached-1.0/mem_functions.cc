@@ -4205,7 +4205,9 @@ test_return_t regression_bug_442914(memcached_st *original_memc)
     char key[250];
     size_t len= (size_t)snprintf(key, sizeof(key), "%0250u", x);
     memcached_return_t rc= memcached_delete(memc, key, len, 0);
-    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_last_error_message(memc));
+    char error_buffer[2048]= { 0 };
+    snprintf(error_buffer, sizeof(error_buffer), "%s key: %s", memcached_last_error_message(memc), key);
+    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, error_buffer);
   }
 
   // Delete, and then delete again to look for not found
@@ -4213,7 +4215,7 @@ test_return_t regression_bug_442914(memcached_st *original_memc)
     char key[250];
     size_t len= snprintf(key, sizeof(key), "%037u", 251U);
     memcached_return_t rc= memcached_delete(memc, key, len, 0);
-    test_true(rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
 
     test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NOREPLY, false));
     test_compare(MEMCACHED_NOTFOUND, memcached_delete(memc, key, len, 0));
