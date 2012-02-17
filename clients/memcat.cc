@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   memcached_return_t rc;
   memcached_server_st *servers;
 
-  int return_code= 0;
+  int return_code= EXIT_SUCCESS;
 
   options_parse(argc, argv);
   initialize_sockets();
@@ -55,11 +55,13 @@ int main(int argc, char *argv[])
     char *temp;
 
     if ((temp= getenv("MEMCACHED_SERVERS")))
+    {
       opt_servers= strdup(temp);
+    }
     else
     {
-      fprintf(stderr, "No Servers provided\n");
-      exit(1);
+      std::cerr << "No servers provied" << std::endl;
+      exit(EXIT_FAILURE);
     }
   }
 
@@ -100,69 +102,66 @@ int main(int argc, char *argv[])
       if (opt_displayflag)
       {
         if (opt_verbose)
-          printf("key: %s\nflags: ", argv[optind]);
-        printf("%x\n", flags);
+        {
+          std::cout << "key: " << argv[optind] << std::endl << "flags: " << flags << std::endl;
+        }
       }
       else
       {
         if (opt_verbose)
         {
-          printf("key: %s\nflags: %x\nlength: %lu\nvalue: ",
-                 argv[optind], flags, (unsigned long)string_length);
+          std::cout << "key: " << argv[optind] << std::endl << "flags: " << flags << "length: " << string_length << std::endl << "value: ";
         }
 
         if (opt_file)
         {
-          FILE *fp;
-          size_t written;
-
-          fp= fopen(opt_file, "w");
-          if (!fp)
+          FILE *fp= fopen(opt_file, "w");
+          if (fp == NULL)
           {
             perror("fopen");
-            return_code= -1;
+            return_code= EXIT_FAILURE;
             break;
           }
 
-          written= fwrite(string, 1, string_length, fp);
+          size_t written= fwrite(string, 1, string_length, fp);
           if (written != string_length) 
           {
-            fprintf(stderr, "error writing file (written %lu, should be %lu)\n", (unsigned long)written, (unsigned long)string_length);
-            return_code= -1;
+            std::cerr << "error writing file to file " << opt_file << " wrote " << written << ", should have written" << string_length << std::endl;
+            return_code= EXIT_FAILURE;
             break;
           }
 
           if (fclose(fp))
           {
-            fprintf(stderr, "error closing file\n");
-            return_code= -1;
+            std::cerr << "error closing " << opt_file << std::endl;
+            return_code= EXIT_FAILURE;
             break;
           }
         }
         else
         {
-            printf("%.*s\n", (int)string_length, string);
+          std::cout.write(string, string_length);
+          std::cout << std::endl;
         }
         free(string);
       }
     }
     else if (rc != MEMCACHED_NOTFOUND)
     {
-      fprintf(stderr, "memcat: %s: memcache error %s",
-              argv[optind], memcached_strerror(memc, rc));
+      std::cerr << "error on " << argv[optind] << "(" <<  memcached_strerror(memc, rc) << ")";
       if (memcached_last_error_errno(memc))
       {
-	fprintf(stderr, " system error %s", strerror(memcached_last_error_errno(memc)));
+        std::cerr << " system error (" << strerror(memcached_last_error_errno(memc)) << ")" << std::endl;
       }
-      fprintf(stderr, "\n");
+      std::cerr << std::endl;
 
-      return_code= -1;
+      return_code= EXIT_FAILURE;
       break;
     }
     else // Unknown Issue
     {
-      fprintf(stderr, "memcat: %s not found\n", argv[optind]);
-      return_code= -1;
+      std::cerr << "error on " << argv[optind] << "("<< memcached_strerror(NULL, rc) << ")" << std::endl;
+      return_code= EXIT_FAILURE;
     }
     optind++;
   }
@@ -170,9 +169,13 @@ int main(int argc, char *argv[])
   memcached_free(memc);
 
   if (opt_servers)
+  {
     free(opt_servers);
+  }
   if (opt_hash)
+  {
     free(opt_hash);
+  }
 
   return return_code;
 }

@@ -56,15 +56,17 @@ static test_return_t quiet_test(void *)
 {
   const char *args[]= { "--quiet", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "--quiet", "--help", 0 };
+  const char *args[]= { "--help", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -72,9 +74,10 @@ static test_return_t server_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, 0 };
+  const char *args[]= { buffer, 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 

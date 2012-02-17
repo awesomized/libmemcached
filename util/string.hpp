@@ -51,5 +51,7 @@
 
 #define util_string_make_from_cstr(X) (X), ((X) ? strlen(X) : 0)
 
+#define util_string_make_from_array(__array) (__array), (strlen(__array))
+
 #define util_array_length(__array) sizeof(__array)/sizeof(&__array)
 

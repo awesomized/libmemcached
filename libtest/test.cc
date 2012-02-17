@@ -35,6 +35,10 @@
 
 #include <signal.h>
 
+#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+#include <curl/curl.h>
+#endif
+
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
@@ -70,12 +74,86 @@ static long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
-static Framework *world= NULL;
+static void cleanup_curl(void)
+{
+#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+  curl_global_cleanup();
+#endif
+}
+
+#include <getopt.h>
+#include <unistd.h>
+
 int main(int argc, char *argv[])
 {
+#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+  if (curl_global_init(CURL_GLOBAL_ALL))
+  {
+    Error << "curl_global_init(CURL_GLOBAL_ALL) failed";
+    return EXIT_FAILURE;
+  }
+#endif
+
+  if (atexit(cleanup_curl))
+  {
+    Error << "atexit() failed";
+    return EXIT_FAILURE;
+  }
+
+  bool opt_repeat= false;
+  std::string collection_to_run;
+
+  // Options parsing
+  {
+    enum long_option_t {
+      OPT_LIBYATL_VERSION,
+      OPT_LIBYATL_MATCH_COLLECTION,
+      OPT_LIBYATL_REPEAT
+    };
+
+    static struct option long_options[]=
+    {
+      {"repeat", no_argument, NULL, OPT_LIBYATL_REPEAT},
+      {"collection", required_argument, NULL, OPT_LIBYATL_MATCH_COLLECTION},
+      {0, 0, 0, 0}
+    };
+
+    int option_index= 0;
+    while (1)
+    {
+      int option_rv= getopt_long(argc, argv, "", long_options, &option_index);
+      if (option_rv == -1)
+      {
+        break;
+      }
+
+      switch (option_rv)
+      {
+      case OPT_LIBYATL_VERSION:
+        break;
+
+      case OPT_LIBYATL_REPEAT:
+        opt_repeat= true;
+        break;
+
+      case OPT_LIBYATL_MATCH_COLLECTION:
+        collection_to_run= optarg;
+        break;
+
+      case '?':
+        /* getopt_long already printed an error message. */
+        Error << "unknown option to getopt_long()";
+        exit(EXIT_FAILURE);
+
+      default:
+        break;
+      }
+    }
+  }
+
   srandom((unsigned int)time(NULL));
 
-  if (getenv("LIBTEST_QUIET"))
+  if (getenv("LIBTEST_QUIET") and strcmp(getenv("LIBTEST_QUIET"), "0") == 0)
   {
     close(STDOUT_FILENO);
   }
@@ -109,243 +187,258 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  world= new Framework();
+  int exit_code;
+  do {
+    exit_code= EXIT_SUCCESS;
+    Framework *world= new Framework();
 
-  if (world == NULL)
-  {
-    Error << "Failed to create Framework()";
-    return EXIT_FAILURE;
-  }
-
-  libtest::SignalThread signal;
-  if (not signal.setup())
-  {
-    return EXIT_FAILURE;
-  }
-
-  Stats stats;
-
-  get_world(world);
-
-  test_return_t error;
-  void *creators_ptr= world->create(error);
-
-  switch (error)
-  {
-  case TEST_SUCCESS:
-    break;
-
-  case TEST_SKIPPED:
-    Out << "SKIP " << argv[0];
-    delete world;
-    return EXIT_SUCCESS;
-
-  case TEST_FATAL:
-  case TEST_FAILURE:
-  case TEST_MEMORY_ALLOCATION_FAILURE:
-    delete world;
-    return EXIT_FAILURE;
-  }
-
-  char *collection_to_run= NULL;
-  if (argc > 1)
-  {
-    collection_to_run= argv[1];
-  }
-  else if (getenv("TEST_COLLECTION"))
-  {
-    if (strlen(getenv("TEST_COLLECTION")))
+    if (world == NULL)
     {
-      collection_to_run= getenv("TEST_COLLECTION");
-    }
-  }
-
-  if (collection_to_run)
-  {
-    Out << "Only testing " <<  collection_to_run;
-  }
-
-  char *wildcard= NULL;
-  if (argc == 3)
-  {
-    wildcard= argv[2];
-  }
-
-  for (collection_st *next= world->collections; next->name and (not signal.is_shutdown()); next++)
-  {
-    test_return_t collection_rc= TEST_SUCCESS;
-    bool failed= false;
-    bool skipped= false;
-
-    if (collection_to_run && fnmatch(collection_to_run, next->name, 0))
-      continue;
-
-    stats.collection_total++;
-
-    collection_rc= world->startup(creators_ptr);
-
-    if (collection_rc == TEST_SUCCESS and next->pre)
-    {
-      collection_rc= world->runner()->pre(next->pre, creators_ptr);
+      Error << "Failed to create Framework()";
+      return EXIT_FAILURE;
     }
 
-    switch (collection_rc)
+    assert(sigignore(SIGPIPE) == 0);
+
+    libtest::SignalThread signal;
+    if (not signal.setup())
+    {
+      Error << "Failed to setup signals";
+      return EXIT_FAILURE;
+    }
+
+    Stats stats;
+
+    get_world(world);
+
+    test_return_t error;
+    void *creators_ptr= world->create(error);
+
+    switch (error)
     {
     case TEST_SUCCESS:
       break;
 
+    case TEST_SKIPPED:
+      Out << "SKIP " << argv[0];
+      delete world;
+      return EXIT_SUCCESS;
+
     case TEST_FATAL:
     case TEST_FAILURE:
-      Out << next->name << " [ failed ]";
-      failed= true;
-      signal.set_shutdown(SHUTDOWN_GRACEFUL);
-      goto cleanup;
-
-    case TEST_SKIPPED:
-      Out << next->name << " [ skipping ]";
-      skipped= true;
-      goto cleanup;
-
     case TEST_MEMORY_ALLOCATION_FAILURE:
-      test_assert(0, "Allocation failure, or unknown return");
+      delete world;
+      return EXIT_FAILURE;
     }
 
-    Out << "Collection: " << next->name;
-
-    for (test_st *run= next->tests; run->name; run++)
+    if (getenv("TEST_COLLECTION"))
     {
-      struct timeval start_time, end_time;
-      long int load_time= 0;
+      if (strlen(getenv("TEST_COLLECTION")))
+      {
+        collection_to_run= getenv("TEST_COLLECTION");
+      }
+    }
 
-      if (wildcard && fnmatch(wildcard, run->name, 0))
+    if (collection_to_run.empty() == false)
+    {
+      Out << "Only testing " <<  collection_to_run;
+    }
+
+    char *wildcard= NULL;
+    if (argc == 3)
+    {
+      wildcard= argv[2];
+    }
+
+    for (collection_st *next= world->collections; next and next->name and (not signal.is_shutdown()); next++)
+    {
+      bool failed= false;
+      bool skipped= false;
+
+      if (collection_to_run.empty() == false and fnmatch(collection_to_run.c_str(), next->name, 0))
       {
         continue;
       }
 
-      test_return_t return_code;
-      if (test_success(return_code= world->item.startup(creators_ptr)))
-      {
-        if (test_success(return_code= world->item.flush(creators_ptr, run)))
-        {
-          // @note pre will fail is SKIPPED is returned
-          if (test_success(return_code= world->item.pre(creators_ptr)))
-          {
-            { // Runner Code
-              gettimeofday(&start_time, NULL);
-              assert(world->runner());
-              assert(run->test_fn);
-              return_code= world->runner()->run(run->test_fn, creators_ptr);
-              gettimeofday(&end_time, NULL);
-              load_time= timedif(end_time, start_time);
-            }
-          }
+      stats.collection_total++;
 
-          // @todo do something if post fails
-          (void)world->item.post(creators_ptr);
-        }
-        else if (return_code == TEST_SKIPPED)
-        { }
-        else if (return_code == TEST_FAILURE)
-        {
-          Error << " item.flush(failure)";
-          signal.set_shutdown(SHUTDOWN_GRACEFUL);
-        }
-      }
-      else if (return_code == TEST_SKIPPED)
-      { }
-      else if (return_code == TEST_FAILURE)
+      test_return_t collection_rc= world->startup(creators_ptr);
+
+      if (collection_rc == TEST_SUCCESS and next->pre)
       {
-        Error << " item.startup(failure)";
-        signal.set_shutdown(SHUTDOWN_GRACEFUL);
+        collection_rc= world->runner()->pre(next->pre, creators_ptr);
       }
 
-      stats.total++;
-
-      switch (return_code)
+      switch (collection_rc)
       {
       case TEST_SUCCESS:
-        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
-        stats.success++;
         break;
 
       case TEST_FATAL:
       case TEST_FAILURE:
-        stats.failed++;
+        Out << next->name << " [ failed ]";
         failed= true;
-        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-        break;
+        signal.set_shutdown(SHUTDOWN_GRACEFUL);
+        goto cleanup;
 
       case TEST_SKIPPED:
-        stats.skipped++;
+        Out << next->name << " [ skipping ]";
         skipped= true;
-        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-        break;
+        goto cleanup;
 
       case TEST_MEMORY_ALLOCATION_FAILURE:
-        test_assert(0, "Memory Allocation Error");
+        test_assert(0, "Allocation failure, or unknown return");
       }
 
-      if (test_failed(world->on_error(return_code, creators_ptr)))
+      Out << "Collection: " << next->name;
+
+      for (test_st *run= next->tests; run->name; run++)
       {
-        Error << "Failed while running on_error()";
-        signal.set_shutdown(SHUTDOWN_GRACEFUL);
-        break;
-      }
-    }
+        struct timeval start_time, end_time;
+        long int load_time= 0;
 
-    (void) world->runner()->post(next->post, creators_ptr);
+        if (wildcard && fnmatch(wildcard, run->name, 0))
+        {
+          continue;
+        }
+
+        test_return_t return_code;
+        try {
+          if (test_success(return_code= world->item.startup(creators_ptr)))
+          {
+            if (test_success(return_code= world->item.flush(creators_ptr, run)))
+            {
+              // @note pre will fail is SKIPPED is returned
+              if (test_success(return_code= world->item.pre(creators_ptr)))
+              {
+                { // Runner Code
+                  gettimeofday(&start_time, NULL);
+                  assert(world->runner());
+                  assert(run->test_fn);
+                  return_code= world->runner()->run(run->test_fn, creators_ptr);
+                  gettimeofday(&end_time, NULL);
+                  load_time= timedif(end_time, start_time);
+                }
+              }
+
+              // @todo do something if post fails
+              (void)world->item.post(creators_ptr);
+            }
+            else if (return_code == TEST_SKIPPED)
+            { }
+            else if (return_code == TEST_FAILURE)
+            {
+              Error << " item.flush(failure)";
+              signal.set_shutdown(SHUTDOWN_GRACEFUL);
+            }
+          }
+          else if (return_code == TEST_SKIPPED)
+          { }
+          else if (return_code == TEST_FAILURE)
+          {
+            Error << " item.startup(failure)";
+            signal.set_shutdown(SHUTDOWN_GRACEFUL);
+          }
+        }
+
+        catch (std::exception &e)
+        {
+          Error << "Exception was thrown: " << e.what();
+          return_code= TEST_FAILURE;
+        }
+        catch (...)
+        {
+          Error << "Unknown exception occurred";
+          return_code= TEST_FAILURE;
+        }
+
+        stats.total++;
+
+        switch (return_code)
+        {
+        case TEST_SUCCESS:
+          Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
+          stats.success++;
+          break;
+
+        case TEST_FATAL:
+        case TEST_FAILURE:
+          stats.failed++;
+          failed= true;
+          Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+          break;
+
+        case TEST_SKIPPED:
+          stats.skipped++;
+          skipped= true;
+          Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+          break;
+
+        case TEST_MEMORY_ALLOCATION_FAILURE:
+          test_assert(0, "Memory Allocation Error");
+        }
+
+        if (test_failed(world->on_error(return_code, creators_ptr)))
+        {
+          Error << "Failed while running on_error()";
+          signal.set_shutdown(SHUTDOWN_GRACEFUL);
+          break;
+        }
+      }
+
+      (void) world->runner()->post(next->post, creators_ptr);
 
 cleanup:
-    if (failed == false and skipped == false)
-    {
-      stats.collection_success++;
+      if (failed == false and skipped == false)
+      {
+        stats.collection_success++;
+      }
+
+      if (failed)
+      {
+        stats.collection_failed++;
+      }
+
+      if (skipped)
+      {
+        stats.collection_skipped++;
+      }
+
+      world->shutdown(creators_ptr);
+      Outn();
     }
 
-    if (failed)
+    if (not signal.is_shutdown())
     {
-      stats.collection_failed++;
+      signal.set_shutdown(SHUTDOWN_GRACEFUL);
     }
 
-    if (skipped)
+    shutdown_t status= signal.get_shutdown();
+    if (status == SHUTDOWN_FORCED)
     {
-      stats.collection_skipped++;
+      Out << "Tests were aborted.";
+      exit_code= EXIT_FAILURE;
+    }
+    else if (stats.collection_failed)
+    {
+      Out << "Some test failed.";
+      exit_code= EXIT_FAILURE;
+    }
+    else if (stats.collection_skipped and stats.collection_failed and stats.collection_success)
+    {
+      Out << "Some tests were skipped.";
+    }
+    else if (stats.collection_success and stats.collection_failed == 0)
+    {
+      Out << "All tests completed successfully.";
     }
 
-    world->shutdown(creators_ptr);
-    Outn();
-  }
+    stats_print(&stats);
 
-  if (not signal.is_shutdown())
-  {
-    signal.set_shutdown(SHUTDOWN_GRACEFUL);
-  }
+    delete world;
 
-  int exit_code= EXIT_SUCCESS;
-  shutdown_t status= signal.get_shutdown();
-  if (status == SHUTDOWN_FORCED)
-  {
-    Out << "Tests were aborted.";
-    exit_code= EXIT_FAILURE;
-  }
-  else if (stats.collection_failed)
-  {
-    Out << "Some test failed.";
-    exit_code= EXIT_FAILURE;
-  }
-  else if (stats.collection_skipped and stats.collection_failed and stats.collection_success)
-  {
-    Out << "Some tests were skipped.";
-  }
-  else if (stats.collection_success and stats.collection_failed == 0)
-  {
-    Out << "All tests completed successfully.";
-  }
-
-  stats_print(&stats);
-
-  delete world;
-
-  Outn(); // Generate a blank to break up the messages if make check/test has been run
+    Outn(); // Generate a blank to break up the messages if make check/test has been run
+  } while (exit_code == EXIT_SUCCESS and opt_repeat);
 
   return exit_code;
 }

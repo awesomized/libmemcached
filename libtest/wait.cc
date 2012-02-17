@@ -34,7 +34,6 @@
 static void version_command(const char *command_name, int major_version, int minor_version)
 {
   std::cout << command_name << " " << major_version << "." << minor_version << std::endl;
-  exit(EXIT_SUCCESS);
 }
 
 static void help_command(const char *command_name,
@@ -50,7 +49,6 @@ static void help_command(const char *command_name,
   }
 
   std::cout << std::endl;
-  exit(EXIT_SUCCESS);
 }
 
 static void close_stdio(void)
@@ -102,11 +100,12 @@ static void options_parse(int argc, char *argv[])
 
   bool opt_version= false;
   bool opt_help= false;
+  bool opt_quiet= false;
   int option_index= 0;
 
   while (1)
   {
-    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "", long_options, &option_index);
     if (option_rv == -1) 
     {
       break;
@@ -118,17 +117,27 @@ static void options_parse(int argc, char *argv[])
       opt_help= true;
       break;
 
+    case OPT_VERSION: /* --version or -v */
+      opt_version= true;
+      break;
+
     case OPT_QUIET:
-      close_stdio();
+      opt_quiet= true;
       break;
 
     case '?':
       /* getopt_long already printed an error message. */
-      exit(EXIT_SUCCESS);
+      exit(EXIT_FAILURE);
 
     default:
-      abort();
+      help_command(argv[0], 1, 0, long_options);
+      exit(EXIT_FAILURE);
     }
+  }
+
+  if (opt_quiet)
+  {
+    close_stdio();
   }
 
   if (opt_version)
@@ -146,15 +155,25 @@ static void options_parse(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  options_parse(argc, argv);
-
-  if (argc == 2)
+  if (argc == 1)
   {
-    libtest::Wait wait(argv[1]);
-
-    if (wait.successful())
-      return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
-  return EXIT_FAILURE;
+  options_parse(argc, argv);
+
+  int ret= EXIT_FAILURE;
+  while (optind < argc)
+  {
+    libtest::Wait wait(argv[optind++]);
+
+    if (wait.successful() == false)
+    {
+      return EXIT_FAILURE;
+    }
+
+    ret= EXIT_SUCCESS;
+  }
+
+  return ret;
 }

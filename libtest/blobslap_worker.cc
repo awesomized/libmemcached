@@ -119,7 +119,7 @@ public:
 
   const char *executable()
   {
-    return GEARMAND_BLOBSLAP_WORKER;
+    return "benchmark/blobslap_worker";
   }
 
   const char *pid_file_option()

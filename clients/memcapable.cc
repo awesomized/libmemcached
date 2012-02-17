@@ -244,10 +244,14 @@ static enum test_return ensure(bool val, const char *expression, const char *fil
   if (!val)
   {
     if (verbose)
+    {
       fprintf(stderr, "\n%s:%d: %s", file, line, expression);
+    }
 
     if (do_core)
+    {
       abort();
+    }
 
     return TEST_FAIL;
   }
@@ -271,9 +275,14 @@ static enum test_return retry_write(const void* buf, size_t len)
     size_t num_bytes= len - offset;
     ssize_t nw= timeout_io_op(sock, POLLOUT, (void*)(ptr + offset), num_bytes);
     if (nw == -1)
+    {
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
+    }
     else
+    {
       offset+= (size_t)nw;
+    }
+
   } while (offset < len);
 
   return TEST_PASS;
@@ -286,7 +295,7 @@ static enum test_return retry_write(const void* buf, size_t len)
 static enum test_return resend_packet(command *cmd)
 {
   size_t length= sizeof (protocol_binary_request_no_extras) +
-          ntohl(cmd->plain.message.header.request.bodylen);
+    ntohl(cmd->plain.message.header.request.bodylen);
 
   execute(retry_write(cmd, length));
   return TEST_PASS;
@@ -324,8 +333,10 @@ static enum test_return retry_read(void *buf, size_t len)
        fprintf(stderr, "Errno: %d %s\n", get_socket_errno(), strerror(errno));
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
+
     case 0:
       return TEST_FAIL;
+
     default:
       offset+= (size_t)nr;
     }
@@ -669,9 +680,13 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
   for (int ii= 0; ii < 10; ii++)
   {
     if (ii == 0)
+    {
       execute(send_packet(&cmd));
+    }
     else
+    {
       execute(resend_packet(&cmd));
+    }
 
     if (cc == PROTOCOL_BINARY_CMD_SET)
     {
@@ -799,17 +814,25 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
   for (int ii= 0; ii < 10; ii++)
   {
     if (ii == 0)
+    {
       execute(send_packet(&cmd));
+    }
     else
+    {
       execute(resend_packet(&cmd));
+    }
 
     if (cc == PROTOCOL_BINARY_CMD_REPLACE || ii == 0)
     {
       uint16_t expected_result;
       if (ii == 0)
+      {
         expected_result=PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
+      }
       else
+      {
         expected_result=PROTOCOL_BINARY_RESPONSE_SUCCESS;
+      }
 
       execute(send_binary_noop());
       execute(recv_packet(&rsp));
@@ -820,7 +843,9 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
         execute(binary_set_item(key, key));
     }
     else
+    {
       execute(test_binary_noop());
+    }
   }
 
   /* verify that replace with CAS value works! */
@@ -1094,16 +1119,24 @@ static enum test_return test_binary_concat_impl(const char *key, uint8_t cc)
   const char *value;
 
   if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ)
+  {
     value="hello";
+  }
   else
+  {
     value=" world";
+  }
 
   execute(binary_set_item(key, value));
 
   if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ)
+  {
     value=" world";
+  }
   else
+  {
     value="hello";
+  }
 
   raw_command(&cmd, cc, key, strlen(key), value, strlen(value));
   execute(send_packet(&cmd));
@@ -1113,7 +1146,9 @@ static enum test_return test_binary_concat_impl(const char *key, uint8_t cc)
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   }
   else
+  {
     execute(test_binary_noop());
+  }
 
   raw_command(&cmd, PROTOCOL_BINARY_CMD_GET, key, strlen(key), NULL, 0);
   execute(send_packet(&cmd));
@@ -1285,7 +1320,9 @@ static enum test_return test_ascii_set_impl(const char* key, bool noreply)
   execute(send_string(buffer));
 
   if (!noreply)
+  {
     execute(receive_response("STORED\r\n"));
+  }
 
   return test_ascii_version();
 }
@@ -1308,12 +1345,16 @@ static enum test_return test_ascii_add_impl(const char* key, bool noreply)
   execute(send_string(buffer));
 
   if (!noreply)
+  {
     execute(receive_response("STORED\r\n"));
+  }
 
   execute(send_string(buffer));
 
   if (!noreply)
+  {
     execute(receive_response("NOT_STORED\r\n"));
+  }
 
   return test_ascii_version();
 }
@@ -1408,14 +1449,18 @@ static enum test_return ascii_get_item(const char *key, const char *value,
   char buffer[1024];
   size_t datasize= 0;
   if (value != NULL)
+  {
     datasize= strlen(value);
+  }
 
   verify(datasize < sizeof(buffer));
   snprintf(buffer, sizeof(buffer), "get %s\r\n", key);
   execute(send_string(buffer));
 
   if (exist)
+  {
     execute(ascii_get_value(key, value));
+  }
 
   execute(retry_read(buffer, 5));
   verify(memcmp(buffer, "END\r\n", 5) == 0);
@@ -1471,7 +1516,9 @@ static enum test_return ascii_gets_item(const char *key, const char *value,
   char buffer[1024];
   size_t datasize= 0;
   if (value != NULL)
+  {
     datasize= strlen(value);
+  }
 
   verify(datasize < sizeof(buffer));
   snprintf(buffer, sizeof(buffer), "gets %s\r\n", key);
@@ -1505,9 +1552,13 @@ static enum test_return test_ascii_replace_impl(const char* key, bool noreply)
   execute(send_string(buffer));
 
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
+  {
     execute(receive_response("NOT_STORED\r\n"));
+  }
 
   execute(ascii_set_item(key, "value"));
   execute(ascii_get_item(key, "value", true));
@@ -1545,17 +1596,25 @@ static enum test_return test_ascii_cas_impl(const char* key, bool noreply)
   execute(send_string(buffer));
 
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
+  {
     execute(receive_response("STORED\r\n"));
+  }
 
   /* reexecute the same command should fail due to illegal cas */
   execute(send_string(buffer));
 
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
+  {
     execute(receive_response("EXISTS\r\n"));
+  }
 
   return test_ascii_version();
 }
@@ -1647,7 +1706,9 @@ static enum test_return test_ascii_mget(void)
   };
 
   for (uint32_t x= 0; x < nkeys; ++x)
+  {
     execute(ascii_set_item(keys[x], "value"));
+  }
 
   /* Ask for a key that doesn't exist as well */
   execute(send_string("get test_ascii_mget1 test_ascii_mget2 test_ascii_mget3 "
@@ -1686,7 +1747,9 @@ static enum test_return test_ascii_mget(void)
   }
 
   for (uint32_t x= 0; x < nkeys; ++x)
+  {
     free(returned[x]);
+  }
 
   return TEST_PASS;
 }
@@ -1738,7 +1801,9 @@ static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
     execute(send_string(cmd));
 
     if (noreply)
+    {
       execute(test_ascii_version());
+    }
     else
     {
       char buffer[80];
@@ -1753,7 +1818,9 @@ static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
   /* verify that it doesn't wrap */
   execute(send_string(cmd));
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
   {
     char buffer[80];
@@ -1827,9 +1894,13 @@ static enum test_return test_ascii_concat_impl(const char *key,
   execute(ascii_set_item(key, value));
 
   if (append)
+  {
     value=" world";
+  }
   else
+  {
     value="hello";
+  }
 
   char cmd[400];
   snprintf(cmd, sizeof(cmd), "%s %s 0 0 %u%s\r\n%s\r\n",
@@ -1839,9 +1910,13 @@ static enum test_return test_ascii_concat_impl(const char *key,
   execute(send_string(cmd));
 
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
+  {
     execute(receive_response("STORED\r\n"));
+  }
 
   execute(ascii_get_item(key, "hello world", true));
 
@@ -1852,9 +1927,13 @@ static enum test_return test_ascii_concat_impl(const char *key,
   execute(send_string(cmd));
 
   if (noreply)
+  {
     execute(test_ascii_version());
+  }
   else
+  {
     execute(receive_response("NOT_STORED\r\n"));
+  }
 
   return TEST_PASS;
 }
@@ -2038,7 +2117,7 @@ int main(int argc, char **argv)
               "\t-a\tOnly test the ascii protocol\n"
               "\t-b\tOnly test the binary protocol\n",
               argv[0]);
-      return EXIT_FAILURE;
+      return EXIT_SUCCESS;
     }
   }
 
@@ -2054,7 +2133,9 @@ int main(int argc, char **argv)
   for (int ii= 0; testcases[ii].description != NULL; ++ii)
   {
     if (testname != NULL && strcmp(testcases[ii].description, testname) != 0)
-       continue;
+    {
+      continue;
+    }
 
     if ((testcases[ii].description[0] == 'a' && (tests.ascii) == 0) ||
         (testcases[ii].description[0] == 'b' && (tests.binary) == 0))
@@ -2078,7 +2159,9 @@ int main(int argc, char **argv)
           continue;
         }
         if (strncmp(buffer, "quit", 4) == 0)
-          exit(0);
+        {
+          exit(EXIT_SUCCESS);
+        }
       }
 
       fprintf(stdout, "%-40s", testcases[ii].description);
@@ -2103,8 +2186,7 @@ int main(int argc, char **argv)
       closesocket(sock);
       if ((sock= connect_server(hostname, port)) == INVALID_SOCKET)
       {
-        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
-                hostname, port, strerror(get_socket_errno()));
+        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname, port, strerror(get_socket_errno()));
         fprintf(stderr, "%d of %d tests failed\n", failed, total);
         return EXIT_FAILURE;
       }
@@ -2113,9 +2195,13 @@ int main(int argc, char **argv)
 
   closesocket(sock);
   if (failed == 0)
+  {
     fprintf(stdout, "All tests passed\n");
+  }
   else
+  {
     fprintf(stderr, "%d of %d tests failed\n", failed, total);
+  }
 
-  return (failed == 0) ? 0 : 1;
+  return (failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

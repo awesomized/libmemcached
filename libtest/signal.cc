@@ -98,6 +98,12 @@ SignalThread::~SignalThread()
   }
 #endif
   sem_destroy(&lock);
+
+  int error;
+  if ((error= pthread_sigmask(SIG_UNBLOCK, &set, NULL)) != 0)
+  {
+    Error << "While trying to reset signal mask to original set, pthread_sigmask() died during pthread_sigmask(" << strerror(error) << ")";
+  }
 }
 
 extern "C" {
@@ -130,6 +136,11 @@ static void *sig_thread(void *arg)
         context->set_shutdown(SHUTDOWN_FORCED);
       }
       break;
+    case SIGPIPE:
+      {
+        Error << "Ignoring SIGPIPE";
+      }
+      break;
 
     default:
       Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
@@ -154,10 +165,14 @@ SignalThread::SignalThread() :
     sigaddset(&set, SIGQUIT);
     sigaddset(&set, SIGINT);
   }
+  sigaddset(&set, SIGPIPE);
 
   sigaddset(&set, SIGUSR2);
 
   sem_init(&lock, 0, 0);
+
+  sigemptyset(&original_set);
+  pthread_sigmask(SIG_BLOCK, NULL, &original_set);
 }
 
 
@@ -165,19 +180,15 @@ bool SignalThread::setup()
 {
   set_shutdown(SHUTDOWN_RUNNING);
 
-  sigset_t old_set;
-  sigemptyset(&old_set);
-  pthread_sigmask(SIG_BLOCK, NULL, &old_set);
-
-  if (sigismember(&old_set, SIGQUIT))
+  if (sigismember(&original_set, SIGQUIT))
   {
     Error << strsignal(SIGQUIT) << " has been previously set.";
   }
-  if (sigismember(&old_set, SIGINT))
+  if (sigismember(&original_set, SIGINT))
   {
     Error << strsignal(SIGINT) << " has been previously set.";
   }
-  if (sigismember(&old_set, SIGUSR2))
+  if (sigismember(&original_set, SIGUSR2))
   {
     Error << strsignal(SIGUSR2) << " has been previously set.";
   }

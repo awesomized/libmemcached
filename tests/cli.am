@@ -86,6 +86,12 @@ tests_memdump_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memdump
 noinst_PROGRAMS+= tests/memdump
 
+test-memerror: clients/memerror
+	tests/memerror
+
+valgrind-memerror: clients/memerror
+	 @$(VALGRIND_COMMAND) tests/memerror
+
 test-memcp: clients/memcp
 	@echo "Testing memcp"
 	@@MEMC_BINARY@ -d -u root -P `pwd`/tests/Xumemc.pid -p 12555

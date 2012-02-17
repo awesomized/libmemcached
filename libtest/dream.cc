@@ -24,49 +24,20 @@
 
 namespace libtest {
 
-bool has_gearmand_binary()
+void dream(time_t tv_sec, long tv_nsec)
 {
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  std::stringstream arg_buffer;
-
-  if (getenv("PWD"))
+#ifdef WIN32
+  if (tv_sec == 0 and tv_nsec)
   {
-    arg_buffer << getenv("PWD");
-    arg_buffer << "/";
+    tv_sec++;
   }
-  arg_buffer << GEARMAND_BINARY;
-
-  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
+  sleep(tv_sec);
+#else
+  struct timespec requested;
+  requested.tv_sec= tv_sec;
+  requested.tv_nsec= tv_nsec;
+  nanosleep(&requested, NULL);
 #endif
-
-  return false;
-}
-
-bool has_memcached_binary()
-{
-#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-bool has_memcached_sasl_binary()
-{
-#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
-  if (access(MEMCACHED_SASL_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
 }
 
 }

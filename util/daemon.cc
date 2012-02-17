@@ -77,7 +77,7 @@ bool daemon_is_ready(bool close_io)
     return false;
   }
 
-  if (not close_io)
+  if (close_io == false)
   {
     return true;;
   }

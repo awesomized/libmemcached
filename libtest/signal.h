@@ -42,10 +42,12 @@ class SignalThread {
   volatile shutdown_t __shutdown;
   pthread_mutex_t shutdown_mutex;
   pthread_t thread;
+  sigset_t original_set;
 
 public:
 
   SignalThread();
+  ~SignalThread();
 
   void test();
   void post();
@@ -55,8 +57,6 @@ public:
   {
     return sigwait(&set, &sig);
   }
-
-  ~SignalThread();
 
   void set_shutdown(shutdown_t arg);
   bool is_shutdown();

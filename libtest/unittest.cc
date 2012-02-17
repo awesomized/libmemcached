@@ -25,7 +25,7 @@
 #include <libtest/test.hpp>
 
 #if defined(LIBTEST_WITH_LIBMEMCACHED_SUPPORT) && LIBTEST_WITH_LIBMEMCACHED_SUPPORT
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 #endif
 
 #if defined(LIBTEST_WITH_LIBGEARMAN_SUPPORT) && LIBTEST_WITH_LIBGEARMAN_SUPPORT
@@ -230,19 +230,16 @@ static test_return_t gearmand_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (GEARMAND_BINARY)
-  {
-    if (HAVE_LIBGEARMAN)
-    {
-      test_true(has_gearmand_binary());
-      const char *argv[1]= { "cycle_gearmand" };
-      test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
+#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
+  test_true(has_gearmand_binary());
+#else
+  test_skip(true, has_gearmand_binary());
+#endif
 
-      return TEST_SUCCESS;
-    }
-  }
+  const char *argv[1]= { "cycle_gearmand" };
+  test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
 
-  return TEST_SKIPPED;
+  return TEST_SUCCESS;
 }
 
 static test_return_t memcached_cycle_test(void *object)
@@ -307,11 +304,152 @@ static test_return_t memcached_sasl_test(void *object)
   return TEST_SKIPPED;
 }
 
+static test_return_t application_true_BINARY(void *)
+{
+  Application true_app("true");
+
+  test_compare(Application::SUCCESS, true_app.run());
+  test_compare(Application::SUCCESS, true_app.wait());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_true_fubar_BINARY(void *)
+{
+  Application true_app("true");
+
+  const char *args[]= { "--fubar", 0 };
+  test_compare(Application::SUCCESS, true_app.run(args));
+  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(0, true_app.stdout_result().size());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_true_fubar_eq_doh_BINARY(void *)
+{
+  Application true_app("true");
+
+  const char *args[]= { "--fubar=doh", 0 };
+  test_compare(Application::SUCCESS, true_app.run(args));
+  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(0, true_app.stdout_result().size());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_true_fubar_eq_doh_option_BINARY(void *)
+{
+  Application true_app("true");
+
+  true_app.add_option("--fubar=", "doh");
+
+  test_compare(Application::SUCCESS, true_app.run());
+  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(0, true_app.stdout_result().size());
+
+  return TEST_SUCCESS;
+}
+
+
+static test_return_t GET_TEST(void *)
+{
+  libtest::http::GET get("http://foo.example.com/");
+
+  test_compare(false, get.execute());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t POST_TEST(void *)
+{
+  libtest::vchar_t body;
+  libtest::http::POST post("http://foo.example.com/", body);
+
+  test_compare(false, post.execute());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t TRACE_TEST(void *)
+{
+  libtest::vchar_t body;
+  libtest::http::TRACE trace("http://foo.example.com/", body);
+
+  test_compare(false, trace.execute());
+
+  return TEST_SUCCESS;
+}
+
+
+static test_return_t vchar_t_TEST(void *)
+{
+  libtest::vchar_t response;
+  libtest::make_vector(response, test_literal_param("fubar\n"));
+  test_compare(response, response);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_echo_fubar_BINARY(void *)
+{
+  Application true_app("echo");
+
+  const char *args[]= { "fubar", 0 };
+  test_compare(Application::SUCCESS, true_app.run(args));
+  test_compare(Application::SUCCESS, true_app.wait());
+
+  libtest::vchar_t response;
+  make_vector(response, test_literal_param("fubar\n"));
+  test_compare(response, true_app.stdout_result());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_echo_fubar_BINARY2(void *)
+{
+  Application true_app("echo");
+
+  true_app.add_option("fubar");
+
+  test_compare(Application::SUCCESS, true_app.run());
+  test_compare(Application::SUCCESS, true_app.wait());
+  libtest::vchar_t response;
+  make_vector(response, test_literal_param("fubar\n"));
+  test_compare(response, true_app.stdout_result());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t true_BINARY(void *)
+{
+  const char *args[]= { 0 };
+  test_compare(EXIT_SUCCESS, exec_cmdline("true", args));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t true_fubar_BINARY(void *)
+{
+  const char *args[]= { "--fubar", 0 };
+  test_compare(EXIT_SUCCESS, exec_cmdline("true", args));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t echo_fubar_BINARY(void *)
+{
+  const char *args[]= { "fubar", 0 };
+  test_compare(EXIT_SUCCESS, exec_cmdline("echo", args));
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t wait_BINARY(void *)
 {
   const char *args[]= { "--quiet", 0 };
 
-  test_true(exec_cmdline("libtest/wait", args));
+  test_compare(EXIT_FAILURE, exec_cmdline("libtest/wait", args, true));
 
   return TEST_SUCCESS;
 }
@@ -320,7 +458,7 @@ static test_return_t wait_help_BINARY(void *)
 {
   const char *args[]= { "--quiet", "--help", 0 };
 
-  test_true(exec_cmdline("libtest/wait", args));
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
 
   return TEST_SUCCESS;
 }
@@ -329,23 +467,74 @@ static test_return_t wait_version_BINARY(void *)
 {
   const char *args[]= { "--quiet", "--version", 0 };
 
-  test_true(exec_cmdline("libtest/wait", args));
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
 
   return TEST_SUCCESS;
 }
+
+static test_return_t wait_services_BINARY(void *)
+{
+  test_skip(0, access("/etc/services", R_OK ));
+
+  const char *args[]= { "--quiet", "/etc/services", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t wait_services_BINARY2(void *)
+{
+  test_skip(0, access("/etc/services", R_OK ));
+
+  const char *args[]= { "/etc/services", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_wait_services_BINARY2(void *)
+{
+  test_skip(0, access("/etc/services", R_OK ));
+
+  libtest::Application("libtest/wait", true);
+  const char *args[]= { "/etc/services", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t check_for_gearman(void *)
+{
+  test_skip(true, HAVE_LIBGEARMAN);
+  test_skip(true, has_gearmand_binary());
+  return TEST_SUCCESS;
+}
+
 
 test_st gearmand_tests[] ={
 #if 0
   {"pause", 0, pause_test },
 #endif
   {"gearmand startup-shutdown", 0, gearmand_cycle_test },
+  {"_compare(gearman_return_t)", 0, _compare_gearman_return_t_test },
   {0, 0, 0}
 };
+
+static test_return_t check_for_libmemcached(void *)
+{
+  test_skip(true, HAVE_LIBMEMCACHED);
+  test_skip(true, has_memcached_binary());
+  return TEST_SUCCESS;
+}
 
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
   {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
+  {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
   {0, 0, 0}
 };
 
@@ -386,15 +575,42 @@ test_st directories_tests[] ={
 
 test_st comparison_tests[] ={
   {"_compare(test_return_t)", 0, _compare_test_return_t_test },
-  {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
-  {"_compare(gearman_return_t)", 0, _compare_gearman_return_t_test },
   {0, 0, 0}
 };
 
 test_st cmdline_tests[] ={
+  {"true", 0, true_BINARY },
+  {"true --fubar", 0, true_fubar_BINARY },
+  {"echo fubar", 0, echo_fubar_BINARY },
   {"wait --quiet", 0, wait_BINARY },
   {"wait --quiet --help", 0, wait_help_BINARY },
   {"wait --quiet --version", 0, wait_version_BINARY },
+  {"wait --quiet /etc/services", 0, wait_services_BINARY },
+  {"wait /etc/services", 0, wait_services_BINARY2 },
+  {0, 0, 0}
+};
+
+test_st application_tests[] ={
+  {"vchar_t", 0, vchar_t_TEST },
+  {"true", 0, application_true_BINARY },
+  {"true --fubar", 0, application_true_fubar_BINARY },
+  {"true --fubar=doh", 0, application_true_fubar_eq_doh_BINARY },
+  {"true --fubar=doh add_option()", 0, application_true_fubar_eq_doh_option_BINARY },
+  {"echo fubar", 0, application_echo_fubar_BINARY },
+  {"echo fubar (as option)", 0, application_echo_fubar_BINARY2 },
+  {0, 0, 0}
+};
+
+static test_return_t check_for_curl(void *)
+{
+  test_skip(true, HAVE_LIBCURL);
+  return TEST_SUCCESS;
+}
+
+test_st http_tests[] ={
+  {"GET", 0, GET_TEST },
+  {"POST", 0, POST_TEST },
+  {"TRACE", 0, TRACE_TEST },
   {0, 0, 0}
 };
 
@@ -404,9 +620,11 @@ collection_st collection[] ={
   {"local", 0, 0, local_log},
   {"directories", 0, 0, directories_tests},
   {"comparison", 0, 0, comparison_tests},
-  {"gearmand", 0, 0, gearmand_tests},
-  {"memcached", 0, 0, memcached_tests},
+  {"gearmand", check_for_gearman, 0, gearmand_tests},
+  {"memcached", check_for_libmemcached, 0, memcached_tests},
   {"cmdline", 0, 0, cmdline_tests},
+  {"application", 0, 0, application_tests},
+  {"http", check_for_curl, 0, http_tests},
   {0, 0, 0, 0}
 };
 

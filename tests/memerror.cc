@@ -52,42 +52,56 @@ using namespace libtest;
 
 static std::string executable;
 
-static test_return_t quiet_test(void *)
+static test_return_t help_TEST(void *)
 {
-  const char *args[]= { "--quiet", 0 };
+  const char *args[]= { "--help", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
-static test_return_t help_test(void *)
+static test_return_t version_TEST(void *)
 {
-  const char *args[]= { "--quiet", "--help", 0 };
+  const char *args[]= { "--version", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t error_test(void *)
 {
-  const char *args[]= { "--quiet", "MEMCACHED_SUCCESS", 0 };
+  const char *args[]= { "memcached_success", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t SUCCESS_TEST(void *)
+{
+  const char *args[]= { "0", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t bad_input_test(void *)
 {
-  const char *args[]= { "--quiet", "bad input", 0 };
+  const char *args[]= { "bad input", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 test_st memerror_tests[] ={
-  {"--quiet", 0, quiet_test},
-  {"--help", 0, help_test},
+  {"--help", 0, help_TEST},
+  {"--version", 0, version_TEST},
   {"<error>", 0, error_test},
+  {"0", 0, SUCCESS_TEST},
   {"<bad input>", 0, bad_input_test},
   {0, 0, 0}
 };
