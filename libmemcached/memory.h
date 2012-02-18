@@ -41,7 +41,6 @@
 #ifdef __cplusplus
 #include <cstddef>
 #include <cstdlib>
-#include <memory>
 #else
 #include <stddef.h>
 #include <stdlib.h>
