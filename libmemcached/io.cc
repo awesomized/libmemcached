@@ -192,8 +192,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
  */
   if (read_or_write == MEM_WRITE)
   {
-    memcached_return_t rc= memcached_purge(ptr);
-    if (memcached_fatal(rc))
+    if (memcached_fatal(memcached_purge(ptr)))
     {
       return MEMCACHED_FAILURE;
     }
