@@ -1188,23 +1188,20 @@ test_return_t read_through(memcached_st *memc)
 
 test_return_t get_test(memcached_st *memc)
 {
-  memcached_return_t rc;
-  char *string;
-  size_t string_length;
-  uint32_t flags;
-
   uint64_t query_id= memcached_query_id(memc);
-  rc= memcached_delete(memc,
-                       test_literal_param(__func__),
-                       time_t(0));
-  test_true_got(rc == MEMCACHED_BUFFERED or rc == MEMCACHED_NOTFOUND, memcached_last_error_message(memc));
+  memcached_return_t rc= memcached_delete(memc,
+                                          test_literal_param(__func__),
+                                          time_t(0));
+  test_true_hint(rc == MEMCACHED_BUFFERED or rc == MEMCACHED_NOTFOUND, memcached_last_error_message(memc));
   test_compare(query_id +1, memcached_query_id(memc));
 
-  string= memcached_get(memc,
+  size_t string_length;
+  uint32_t flags;
+  char *string= memcached_get(memc,
                         test_literal_param(__func__),
                         &string_length, &flags, &rc);
 
-  test_compare_got(MEMCACHED_NOTFOUND, rc, memcached_strerror(NULL, rc));
+  test_compare_got(MEMCACHED_NOTFOUND, rc, memcached_last_error_message(memc));
   test_false(string_length);
   test_false(string);
 

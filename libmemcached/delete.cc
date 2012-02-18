@@ -213,5 +213,5 @@ memcached_return_t memcached_delete_by_key(memcached_st *memc,
   }
 
   LIBMEMCACHED_MEMCACHED_DELETE_END();
-  return memcached_last_error(memc);
+  return rc;
 }
