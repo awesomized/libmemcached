@@ -60,7 +60,7 @@ test_st tests[] ={
   {"memcached_fetch_result(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
   {"replace", true, (test_callback_fn*)replace_test },
   {"delete", true, (test_callback_fn*)delete_test },
-  {"get", true, (test_callback_fn*)get_test },
+  {"memcached_get()", true, (test_callback_fn*)get_test },
   {"get2", false, (test_callback_fn*)get_test2 },
   {"get3", false, (test_callback_fn*)get_test3 },
   {"get4", false, (test_callback_fn*)get_test4 },
