@@ -54,11 +54,7 @@ static inline void libmemcached_free(const memcached_st *self, void *mem)
   }
   else if (mem)
   {
-#ifdef __cplusplus
-    std::free(mem);
-#else
     free(mem);
-#endif
   }
 }
 
@@ -69,11 +65,7 @@ static inline void *libmemcached_malloc(const memcached_st *self, const size_t s
     return self->allocators.malloc(self, size, self->allocators.context);
   }
 
-#ifdef __cplusplus
-  return std::malloc(size);
-#else
   return malloc(size);
-#endif
 }
 #define libmemcached_xmalloc(__memcachd_st, __type) ((__type *)libmemcached_malloc((__memcachd_st), sizeof(__type)))
 
@@ -84,11 +76,7 @@ static inline void *libmemcached_realloc(const memcached_st *self, void *mem, si
     return self->allocators.realloc(self, mem, nmemb * size, self->allocators.context);
   }
 
-#ifdef __cplusplus
-  return std::realloc(mem, size);
-#else
   return realloc(mem, size);
-#endif
 }
 #define libmemcached_xrealloc(__memcachd_st, __mem, __nelem, __type) ((__type *)libmemcached_realloc((__memcachd_st), (__mem), (__nelem), sizeof(__type)))
 #define libmemcached_xvalloc(__memcachd_st, __nelem, __type) ((__type *)libmemcached_realloc((__memcachd_st), NULL, (__nelem), sizeof(__type)))
@@ -100,10 +88,6 @@ static inline void *libmemcached_calloc(const memcached_st *self, size_t nelem, 
     return self->allocators.calloc(self, nelem, size, self->allocators.context);
   }
 
-#ifdef __cplusplus
-  return std::calloc(nelem, size);
-#else
   return calloc(nelem, size);
-#endif
 }
 #define libmemcached_xcalloc(__memcachd_st, __nelem, __type) ((__type *)libmemcached_calloc((__memcachd_st), (__nelem), sizeof(__type)))
