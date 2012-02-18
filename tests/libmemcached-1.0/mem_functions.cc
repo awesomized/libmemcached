@@ -4195,6 +4195,8 @@ test_return_t regression_bug_421108(memcached_st *memc)
  */
 test_return_t regression_bug_442914(memcached_st *original_memc)
 {
+  test_skip(original_memc->servers[0].type, MEMCACHED_CONNECTION_TCP);
+
   memcached_st* memc= create_single_instance_memcached(original_memc, "--NOREPLY --TCP-NODELAY");
 
   for (uint32_t x= 0; x < 250; ++x)
