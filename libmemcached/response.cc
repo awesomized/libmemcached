@@ -212,7 +212,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
         }
         instance->major_version= uint8_t(version);
 
@@ -223,7 +223,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse minor version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse minor version"));
         }
         instance->minor_version= uint8_t(version);
 
@@ -234,7 +234,7 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
         }
         instance->micro_version= uint8_t(version);
 
@@ -573,7 +573,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse major version"));
         }
         instance->major_version= uint8_t(version);
 
@@ -581,7 +581,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
         }
         instance->minor_version= uint8_t(version);
 
@@ -589,7 +589,7 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         if (errno == ERANGE)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_PROTOCOL_ERROR, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
         }
         instance->micro_version= uint8_t(version);
       }
@@ -764,7 +764,6 @@ static memcached_return_t _read_one_response(memcached_server_write_instance_st 
   else
   {
     rc= textual_read_one_response(instance, buffer, buffer_length, result);
-    assert(rc != MEMCACHED_PROTOCOL_ERROR);
   }
 
   if (memcached_fatal(rc))
