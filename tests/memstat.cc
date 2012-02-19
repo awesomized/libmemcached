@@ -73,7 +73,7 @@ static test_return_t help_test(void *)
 static test_return_t binary_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
   const char *args[]= { "--quiet", buffer, " --binary ", 0 };
 
   test_true(exec_cmdline(executable, args));
@@ -83,7 +83,7 @@ static test_return_t binary_TEST(void *)
 static test_return_t server_version_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
   const char *args[]= { "--quiet", buffer, " --server-version", 0 };
 
   test_true(exec_cmdline(executable, args));
@@ -93,7 +93,7 @@ static test_return_t server_version_TEST(void *)
 static test_return_t binary_server_version_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
   const char *args[]= { "--quiet", buffer, " --binary --server-version", 0 };
 
   test_true(exec_cmdline(executable, args));
@@ -123,7 +123,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   }
 
   const char *argv[1]= { "memstat" };
-  if (not server_startup(servers, "memcached", libtest::get_free_port(), 1, argv))
+  if (server_startup(servers, "memcached", libtest::default_port(), 1, argv) == false)
   {
     error= TEST_FAILURE;
   }

@@ -510,6 +510,18 @@ static test_return_t get_free_port_TEST(void *)
 {
   in_port_t ret_port;
   test_true_hint((ret_port= get_free_port()), ret_port);
+  test_true(get_free_port() != default_port());
+  test_true(get_free_port() != get_free_port());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t default_port_TEST(void *)
+{
+  in_port_t ret_port= default_port();
+  test_compare(ret_port, libtest::default_port());
+  test_compare(ret_port, libtest::default_port());
+
   return TEST_SUCCESS;
 }
 
@@ -599,6 +611,7 @@ test_st cmdline_tests[] ={
 
 test_st get_free_port_TESTS[] ={
   {"get_free_port()", 0, get_free_port_TEST },
+  {"default_port()", 0, default_port_TEST },
   {0, 0, 0}
 };
 

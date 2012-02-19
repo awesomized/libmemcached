@@ -45,66 +45,79 @@
 
 using namespace libtest;
 
+struct socket_st {
+  std::vector<int> fd;
+
+  ~socket_st()
+  {
+    for(std::vector<int>::iterator iter= fd.begin(); iter != fd.end(); iter++)
+    {
+      close(*iter);
+    }
+  }
+};
+
+static socket_st all_socket_fd;
+
 static in_port_t global_port= 0;
-static in_port_t global_max_port= 0;
 
 namespace libtest {
 
 in_port_t default_port()
 {
-  return global_port;
-}
- 
-void set_default_port(in_port_t port)
-{
-  global_port= port;
-}
-
-in_port_t max_port()
-{
-  return global_max_port;
-}
- 
-void set_max_port(in_port_t port)
-{
-  if (port > global_max_port)
+  if (global_port == 0)
   {
-    global_max_port= port;
+    global_port= get_free_port();
   }
 
-  global_max_port= port;
+  return global_port;
 }
 
 in_port_t get_free_port()
 {
   in_port_t ret_port= in_port_t(0);
-  int sd;
-  if ((sd= socket(AF_INET, SOCK_STREAM, 0)) != -1)
+
+  int retries= 1024;
+
+  while (retries--)
   {
-    int optval= 1;
-    if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) != -1)
+    int sd;
+    if ((sd= socket(AF_INET, SOCK_STREAM, 0)) != -1)
     {
-      struct sockaddr_in sin;
-      sin.sin_port= 0;
-      sin.sin_addr.s_addr= 0;
-      sin.sin_addr.s_addr= INADDR_ANY;
-      sin.sin_family= AF_INET;
-
-      if (bind(sd, (struct sockaddr *)&sin,sizeof(struct sockaddr_in) ) != -1)
+      int optval= 1;
+      if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) != -1)
       {
-        socklen_t addrlen= sizeof(sin);
+        struct sockaddr_in sin;
+        sin.sin_port= 0;
+        sin.sin_addr.s_addr= 0;
+        sin.sin_addr.s_addr= INADDR_ANY;
+        sin.sin_family= AF_INET;
 
-        if (listen(sd, 100) != -1)
+        if (bind(sd, (struct sockaddr *)&sin,sizeof(struct sockaddr_in) ) != -1)
         {
+          socklen_t addrlen= sizeof(sin);
+
           if (getsockname(sd, (struct sockaddr *)&sin, &addrlen) != -1)
           {
             ret_port= sin.sin_port;
+            Error << ret_port;
           }
         }
       }
+
+      all_socket_fd.fd.push_back(sd);
     }
 
-    close(sd);
+    if (ret_port > 1024)
+    {
+      break;
+    }
+  }
+
+  // We handle the case where if we max out retries, we still abort.
+  if (ret_port <= 1024)
+  {
+    abort();
   }
 
   return ret_port;
