@@ -237,7 +237,7 @@ static test_return_t gearmand_cycle_test(void *object)
 #endif
 
   const char *argv[1]= { "cycle_gearmand" };
-  test_true(server_startup(*servers, "gearmand", 9999, 1, argv));
+  test_true(server_startup(*servers, "gearmand", get_free_port(), 1, argv));
 
   return TEST_SUCCESS;
 }
@@ -251,7 +251,7 @@ static test_return_t memcached_cycle_test(void *object)
   {
     test_true(has_memcached_binary());
     const char *argv[1]= { "cycle_memcached" };
-    test_true(server_startup(*servers, "memcached", 9998, 1, argv));
+    test_true(server_startup(*servers, "memcached", get_free_port(), 1, argv));
 
     return TEST_SUCCESS;
   }
@@ -270,7 +270,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
     {
       test_true(has_memcached_binary());
       const char *argv[1]= { "cycle_memcached" };
-      test_true(servers->start_socket_server("memcached", 9997, 1, argv));
+      test_true(servers->start_socket_server("memcached", get_free_port(), 1, argv));
 
       return TEST_SUCCESS;
     }
@@ -295,7 +295,7 @@ static test_return_t memcached_sasl_test(void *object)
     {
       test_true(has_memcached_sasl_binary());
       const char *argv[1]= { "cycle_memcached_sasl" };
-      test_true(server_startup(*servers, "memcached-sasl", 9996, 1, argv));
+      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 1, argv));
 
       return TEST_SUCCESS;
     }
@@ -506,6 +506,13 @@ static test_return_t application_wait_services_BINARY2(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t get_free_port_TEST(void *)
+{
+  in_port_t ret_port;
+  test_true_hint((ret_port= get_free_port()), ret_port);
+  return TEST_SUCCESS;
+}
+
 static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
@@ -590,6 +597,11 @@ test_st cmdline_tests[] ={
   {0, 0, 0}
 };
 
+test_st get_free_port_TESTS[] ={
+  {"get_free_port()", 0, get_free_port_TEST },
+  {0, 0, 0}
+};
+
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
   {"true", 0, application_true_BINARY },
@@ -625,6 +637,7 @@ collection_st collection[] ={
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},
   {"http", check_for_curl, 0, http_tests},
+  {"get_free_port()", 0, 0, get_free_port_TESTS},
   {0, 0, 0, 0}
 };
 

@@ -63,11 +63,10 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
-  in_port_t max_port= TEST_PORT_BASE;
   for (uint32_t x= 0; x < servers.count(); x++)
   {
     const char *argv[1]= { "memcached" };
-    if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
+    if (not servers.start_socket_server("memcached", libtest::get_free_port(), 1, argv))
     {
       error= TEST_FATAL;
       return NULL;
@@ -113,17 +112,6 @@ static test_return_t world_container_startup(libmemcached_test_container_st *con
     {
       memcached_free(container->parent);
       return TEST_FAILURE;
-    }
-  }
-
-  for (uint32_t host= 0; host < memcached_server_count(container->parent); ++host)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->parent, host);
-
-    if (instance->type == MEMCACHED_CONNECTION_TCP)
-    {
-      test_true_got(memcached_server_port(instance) >= TEST_PORT_BASE, memcached_server_port(instance));
     }
   }
 

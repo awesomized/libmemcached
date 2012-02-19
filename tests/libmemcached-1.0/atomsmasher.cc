@@ -275,8 +275,6 @@ collection_st collection[] ={
 };
 
 
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
-
 #include "tests/libmemcached_world.h"
 
 void get_world(Framework *world)

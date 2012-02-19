@@ -35,8 +35,6 @@
  *
  */
 
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +10
-
 #include <config.h>
 #include <libtest/test.hpp>
 
