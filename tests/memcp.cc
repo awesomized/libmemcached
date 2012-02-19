@@ -102,7 +102,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   }
 
   const char *argv[1]= { "memcp" };
-  if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
+  if (not server_startup(servers, "memcached", libtest::get_free_port(), 1, argv))
   {
     error= TEST_FAILURE;
   }

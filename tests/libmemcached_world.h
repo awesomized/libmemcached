@@ -78,11 +78,10 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
 
   for (uint32_t x= 0; x < servers.count(); x++)
   {
-    in_port_t port;
-
     char variable_buffer[1024];
     snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
 
+    in_port_t port;
     char *var;
     if ((var= getenv(variable_buffer)))
     {
@@ -90,7 +89,7 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     }
     else
     {
-      port= in_port_t(TEST_PORT_BASE +x);
+      port= in_port_t(libtest::get_free_port());
     }
 
     const char *argv[1]= { "memcached" };
@@ -153,17 +152,6 @@ static test_return_t world_container_startup(libmemcached_test_container_st *con
     }
   }
 
-  for (uint32_t host= 0; host < memcached_server_count(container->parent); ++host)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->parent, host);
-
-    if (instance->type == MEMCACHED_CONNECTION_TCP)
-    {
-      test_true_got(memcached_server_port(instance) >= TEST_PORT_BASE, memcached_server_port(instance));
-    }
-  }
-
   return TEST_SUCCESS;
 }
 
@@ -201,8 +189,7 @@ static test_return_t world_pre_run(libmemcached_test_container_st *container)
   test_true(container->memc);
   for (uint32_t loop= 0; loop < memcached_server_list_count(container->memc->servers); loop++)
   {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->memc, loop);
+    memcached_server_instance_st instance= memcached_server_instance_by_position(container->memc, loop);
 
     test_compare(-1, instance->fd);
     test_compare(0U, instance->cursor_active);

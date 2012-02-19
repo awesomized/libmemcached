@@ -43,7 +43,6 @@ using namespace libtest;
   Test cases
 */
 
-#define TEST_PORT_BASE MEMCACHED_DEFAULT_PORT +20
 #include <libmemcached/memcached.h>
 
 static test_return_t pre_sasl(memcached_st *)

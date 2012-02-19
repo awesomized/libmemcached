@@ -27,7 +27,7 @@ unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int numbe
     memcached_return_t rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
                                          pairs[x].value, pairs[x].value_length,
                                          0, 0);
-    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_BUFFERED)
+    if (memcached_failed(rc))
     {
       fprintf(stderr, "%s:%d Failure on insert (%s) of %.*s\n",
               __FILE__, __LINE__,
@@ -52,7 +52,6 @@ unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 */
 unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
-  memcached_return_t rc;
   unsigned int x;
   unsigned int retrieved;
 
@@ -64,10 +63,11 @@ unsigned int execute_get(memcached_st *memc, pairs_st *pairs, unsigned int numbe
 
     unsigned int fetch_key= (unsigned int)((unsigned int)random() % number_of);
 
+    memcached_return_t rc;
     char *value= memcached_get(memc, pairs[fetch_key].key, pairs[fetch_key].key_length,
                                &value_length, &flags, &rc);
 
-    if (rc != MEMCACHED_SUCCESS)
+    if (memcached_failed(rc))
     {
       fprintf(stderr, "%s:%d Failure on read(%s) of %.*s\n",
               __FILE__, __LINE__,
