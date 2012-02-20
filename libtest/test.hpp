@@ -33,6 +33,7 @@
 #include <libtest/version.h>
 
 #include <libtest/vchar.hpp>
+#include <libtest/fatal.hpp>
 
 #include <libtest/has.hpp>
 #include <libtest/error.h>
