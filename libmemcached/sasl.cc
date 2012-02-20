@@ -40,7 +40,10 @@
 
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 
+#if defined(HAVE_LIBSASL) && HAVE_LIBSASL
 #include <sasl/sasl.h>
+#endif
+
 #include <pthread.h>
 
 void memcached_set_sasl_callbacks(memcached_st *ptr,
@@ -424,7 +427,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
    * into the list, but if we don't know the ID we don't know how to handle
    * the context...
  */
-  size_t total= 0;
+  ptrdiff_t total= 0;
 
   while (source->sasl.callbacks[total].id != SASL_CB_LIST_END)
   {
@@ -450,7 +453,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
   memcpy(callbacks, source->sasl.callbacks, (total + 1) * sizeof(sasl_callback_t));
 
   /* Now update the context... */
-  for (size_t x= 0; x < total; ++x)
+  for (ptrdiff_t x= 0; x < total; ++x)
   {
     if (callbacks[x].id == SASL_CB_USER || callbacks[x].id == SASL_CB_AUTHNAME)
     {
@@ -459,7 +462,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
       if (callbacks[x].context == NULL)
       {
         /* Failed to allocate memory, clean up previously allocated memory */
-        for (size_t y= 0; y < x; ++y)
+        for (ptrdiff_t y= 0; y < x; ++y)
         {
           libmemcached_free(clone, clone->sasl.callbacks[y].context);
         }
@@ -476,7 +479,7 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
       if (n == NULL)
       {
         /* Failed to allocate memory, clean up previously allocated memory */
-        for (size_t y= 0; y < x; ++y)
+        for (ptrdiff_t y= 0; y < x; ++y)
         {
           libmemcached_free(clone, clone->sasl.callbacks[y].context);
         }

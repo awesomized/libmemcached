@@ -114,7 +114,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   dnl autoconf doesn't automatically provide a fail-if-no-C++ macro
   dnl so we check c++98 features and fail if we don't have them, mainly
   dnl for that reason
-  PANDORA_CHECK_CXX_STANDARD
   m4_if(PCT_REQUIRE_CXX, [yes], [
     AS_IF([test "$ac_cv_cxx_stdcxx_98" = "no"],[
       AC_MSG_ERROR([No working C++ Compiler has been found. ${PACKAGE} requires a C++ compiler that can handle C++98])

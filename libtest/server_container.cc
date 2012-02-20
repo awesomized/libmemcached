@@ -77,7 +77,6 @@ Server* server_startup_st::pop_server()
 
 bool server_startup_st::shutdown(uint32_t number_of_host)
 {
-  assert(servers.size() > number_of_host);
   if (servers.size() > number_of_host)
   {
     Server* tmp= servers[number_of_host];
@@ -146,23 +145,6 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
 {
   Outn();
   (void)try_port;
-
-  set_max_port(try_port);
-
-  // Look to see if we are being provided ports to use
-  {
-    char variable_buffer[1024];
-    snprintf(variable_buffer, sizeof(variable_buffer), "LIBTEST_PORT_%lu", (unsigned long)construct.count());
-
-    char *var;
-    if ((var= getenv(variable_buffer)))
-    {
-      in_port_t tmp= in_port_t(atoi(var));
-
-      if (tmp > 0)
-        try_port= tmp;
-    }
-  }
 
   libtest::Server *server= NULL;
   if (0)
@@ -249,12 +231,6 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
 
   construct.push_server(server);
-
-  if (default_port() == 0)
-  {
-    assert(server->has_port());
-    set_default_port(server->port());
-  }
 
   Outn();
 

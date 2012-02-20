@@ -129,6 +129,10 @@ Client Applications
    bin/memslap
    bin/memaslap
    bin/memstat
+   bin/memexist.rst
+   bin/memparse.rst
+   bin/memping.rst
+   bin/memtouch.rst
 
 ----------
 Libhashkit

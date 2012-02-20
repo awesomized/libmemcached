@@ -27,7 +27,16 @@ namespace libtest {
 bool has_gearmand_binary()
 {
 #if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  if (access(GEARMAND_BINARY,R_OK|X_OK) == 0)
+  std::stringstream arg_buffer;
+
+  if (getenv("PWD"))
+  {
+    arg_buffer << getenv("PWD");
+    arg_buffer << "/";
+  }
+  arg_buffer << GEARMAND_BINARY;
+
+  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
   {
     return true;
   }

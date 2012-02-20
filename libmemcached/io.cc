@@ -192,8 +192,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
  */
   if (read_or_write == MEM_WRITE)
   {
-    memcached_return_t rc= memcached_purge(ptr);
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+    if (memcached_fatal(memcached_purge(ptr)))
     {
       return MEMCACHED_FAILURE;
     }
@@ -278,11 +277,10 @@ static bool io_flush(memcached_server_write_instance_st ptr,
    ** in the purge function to avoid duplicating the logic..
  */
   {
-    memcached_return_t rc;
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    rc= memcached_purge(ptr);
+    memcached_return_t rc= memcached_purge(ptr);
 
-    if (rc != MEMCACHED_SUCCESS && rc != MEMCACHED_STORED)
+    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_STORED)
     {
       return false;
     }
@@ -675,7 +673,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
-  unsigned int host_index= 0;
+  nfds_t host_index= 0;
 
   for (uint32_t x= 0; x < memcached_server_count(memc) and host_index < MAX_SERVERS_TO_POLL; ++x)
   {
@@ -722,7 +720,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     break;
 
   default:
-    for (size_t x= 0; x < host_index; ++x)
+    for (nfds_t x= 0; x < host_index; ++x)
     {
       if (fds[x].revents & POLLIN)
       {

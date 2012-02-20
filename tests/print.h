@@ -37,15 +37,6 @@
 
 #pragma once
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-LIBTEST_LOCAL
 memcached_return_t server_print_callback(const memcached_st *ptr,
                                          const memcached_server_st *server,
                                          void *context);
-
-#ifdef	__cplusplus
-}
-#endif

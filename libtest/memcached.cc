@@ -22,8 +22,8 @@
 
 #include <libtest/common.h>
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/util.h>
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcachedutil-1.0/util.h>
 
 using namespace libtest;
 

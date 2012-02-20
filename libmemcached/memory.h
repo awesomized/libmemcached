@@ -38,6 +38,14 @@
 
 #include <libmemcached-1.0/struct/memcached.h>
 
+#ifdef __cplusplus
+#include <cstddef>
+#include <cstdlib>
+#else
+#include <stddef.h>
+#include <stdlib.h>
+#endif
+
 static inline void libmemcached_free(const memcached_st *self, void *mem)
 {
   if (self)

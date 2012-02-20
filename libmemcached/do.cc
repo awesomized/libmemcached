@@ -65,7 +65,6 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
           return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
         }
 
-        perror(__func__);
         return memcached_set_errno(*instance, errno, MEMCACHED_AT);
       }
     }
@@ -82,9 +81,14 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
 
   if (sent_length == -1 or size_t(sent_length) != command_length)
   {
-    rc= MEMCACHED_WRITE_FAILURE;
-    WATCHPOINT_ERROR(rc);
-    WATCHPOINT_ERRNO(errno);
+    if (memcached_last_error(instance->root) == MEMCACHED_SUCCESS)
+    {
+      return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+    }
+    else
+    {
+      rc= MEMCACHED_WRITE_FAILURE;
+    }
   }
   else if (memcached_is_replying(instance->root))
   {

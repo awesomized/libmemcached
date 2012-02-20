@@ -32,12 +32,6 @@ LIBTEST_API
 in_port_t default_port();
 
 LIBTEST_API
-void set_default_port(in_port_t port);
-
-LIBTEST_API
-in_port_t max_port();
-
-LIBTEST_API
-void set_max_port(in_port_t port);
+in_port_t get_free_port();
 
 } // namespace libtest

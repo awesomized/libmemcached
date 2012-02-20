@@ -91,7 +91,6 @@ AX_PTHREAD
 AX_CXX_CINTTYPES
 CONFIG_EXTRA
 DETECT_BYTEORDER
-ENABLE_UTILLIB
 SETSOCKOPT_SANITY
 ENABLE_HSIEH_HASH
 ENABLE_MURMUR_HASH
@@ -99,8 +98,6 @@ ENABLE_FNV64_HASH
 ENABLE_MEMASLAP
 PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
-PANDORA_HAVE_LIBINNODB
-PANDORA_HAVE_SASL
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([dup2])
@@ -130,14 +127,12 @@ AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([sys/time.h])
-AC_CHECK_HEADERS([sasl/sasl.h])
 AC_CHECK_HEADERS([execinfo.h])
 AC_CHECK_HEADERS([cxxabi.h], 
                  AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
                  AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
 
 AX_COMPILER_VENDOR
-AC_CXX_HEADER_STDCXX_98
 
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
@@ -166,6 +161,27 @@ AC_C_RESTRICT
 
 AX_CXX_GCC_ABI_DEMANGLE
 
+AX_SASL_OPTION
+
+dnl
+dnl The sasl functions should only be visible if we build with sasl support
+dnl
+AS_IF([test "x$ac_enable_sasl" = "xyes"], [
+       [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
+       ], [
+           [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
+           ])
+AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
+
+AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
+                 [
+                  LIBUUID_LDFLAGS="-luuid"
+                  AC_DEFINE([HAVE_LIBUUID], [ 1 ], [Have libuuid])
+                  ],
+                 [
+                  AC_DEFINE([HAVE_LIBUUID], [ 0 ], [Have libuuid])
+                  ])
+
 AC_CHECK_LIB([rt], [clock_gettime], 
              [
               RT_LIB="-lrt"
@@ -178,17 +194,6 @@ AC_CHECK_LIB([rt], [clock_gettime],
 
 AC_CHECK_LIB([m], [floor])
 
-dnl The sasl functions should only be visible if we build with sasl support
-AS_IF([test "x$ac_cv_sasl" = "xyes"],
-      [
-        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
-      ],
-      [
-        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
-       ]
-      )
-AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
-
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
       AC_CHECK_FUNCS(atomic_add_64)
@@ -197,6 +202,12 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
             AC_DEFINE([USE_ATOMIC_H],
 	              [1],
                       [Define to true if you want to use functions from atomic.h])])])
+
+AC_DEFINE([HAVE_LIBDRIZZLE], [0], [Support for libdrizzle])
+AC_DEFINE([HAVE_DRIZZLED_BINARY], [0], [Support for DrizzleD])
+AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker])
+AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
+AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
 
 AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
@@ -241,6 +252,7 @@ echo "   * C Compiler:                $CC_VERSION"
 echo "   * Assertions enabled:        $ac_cv_assert"
 echo "   * Debug enabled:             $with_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
+echo "   * SASL support:              $ac_enable_sasl"
 echo ""
 echo "---"
 

@@ -27,7 +27,6 @@ AC_DEFUN([PANDORA_WARNINGS],[
     ]) 
   ])
 
-  AC_REQUIRE([PANDORA_BUILDING_FROM_VC])
   m4_if(PW_WARN_ALWAYS_ON, [yes],
     [ac_cv_warnings_as_errors=yes],
     AS_IF([test "$pandora_building_from_vc" = "yes"],
@@ -156,7 +155,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
         [ac_cv_safe_to_use_Wextra_=no])
       CFLAGS="$save_CFLAGS"])
 
-      BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wundef -Wshadow ${NO_UNUSED} ${F_DIAGNOSTICS_SHOW_OPTION} ${F_LOOP_PARALLELIZE_ALL} ${BASE_WARNINGS_FULL}"
+      BASE_WARNINGS="${W_FAIL} -pedantic -Wall -Wundef -Wshadow -Wparentheses ${NO_UNUSED} ${F_DIAGNOSTICS_SHOW_OPTION} ${F_LOOP_PARALLELIZE_ALL} ${BASE_WARNINGS_FULL}"
       AS_IF([test "$ac_cv_safe_to_use_Wextra_" = "yes"],
             [BASE_WARNINGS="${BASE_WARNINGS} -Wextra"],
             [BASE_WARNINGS="${BASE_WARNINGS} -W"])
@@ -185,8 +184,8 @@ foo();
            [ac_cv_safe_to_use_wformat_=no])
          CFLAGS="$save_CFLAGS"])
       AS_IF([test "$ac_cv_safe_to_use_wformat_" = "yes"],[
-        BASE_WARNINGS="${BASE_WARNINGS} -Wformat -Wno-format-nonliteral -Wno-format-security"
-        BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wformat=2 -Wno-format-nonliteral -Wno-format-security"
+        BASE_WARNINGS="${BASE_WARNINGS} -Wformat -Wno-format-nonliteral -Wformat-security"
+        BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wformat=2 -Wno-format-nonliteral -Wformat-security"
         ],[
         BASE_WARNINGS="${BASE_WARNINGS} -Wno-format"
         BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wno-format"
@@ -237,8 +236,8 @@ uint16_t x= htons(80);
               [NO_CONVERSION="-Wno-conversion"])
       ])
 
-      CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
-      CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long ${CXX_WARNINGS_FULL}"
+      CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align -Wsign-compare ${CC_WARNINGS_FULL}"
+      CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long -Wsign-compare ${CXX_WARNINGS_FULL}"
 
       AC_CACHE_CHECK([whether it is safe to use -Wmissing-declarations from C++],
         [ac_cv_safe_to_use_Wmissing_declarations_],

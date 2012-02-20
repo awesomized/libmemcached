@@ -1,13 +1,41 @@
-/* libMemcached Functions Test
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached Client and Server 
  *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2006-2009 Brian Aker
+ *  All rights reserved.
  *
- * Description: This is the startup bits for any libmemcached test.
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 
 #pragma once
 
@@ -16,18 +44,18 @@
 /* The structure we use for the test system */
 struct libmemcached_test_container_st
 {
-  server_startup_st& construct;
+  libtest::server_startup_st& construct;
   memcached_st *parent;
   memcached_st *memc;
 
-  libmemcached_test_container_st(server_startup_st &construct_arg) :
+  libmemcached_test_container_st(libtest::server_startup_st &construct_arg) :
     construct(construct_arg),
     parent(NULL),
     memc(NULL)
   { }
 };
 
-static void *world_create(server_startup_st& servers, test_return_t& error)
+static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
 {
   if (HAVE_MEMCACHED_BINARY == 0)
   {
@@ -48,14 +76,12 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  in_port_t max_port= TEST_PORT_BASE;
   for (uint32_t x= 0; x < servers.count(); x++)
   {
-    in_port_t port;
-
     char variable_buffer[1024];
     snprintf(variable_buffer, sizeof(variable_buffer), "LIBMEMCACHED_PORT_%u", x);
 
+    in_port_t port;
     char *var;
     if ((var= getenv(variable_buffer)))
     {
@@ -63,10 +89,9 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     }
     else
     {
-      port= in_port_t(TEST_PORT_BASE +x);
+      port= in_port_t(libtest::get_free_port());
     }
 
-    max_port= port;
     const char *argv[1]= { "memcached" };
     if (servers.sasl())
     {
@@ -85,29 +110,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
       }
     }
   }
-
-  if (servers.socket())
-  {
-    if (servers.sasl())
-    {
-      const char *argv[1]= { "memcached" };
-      if (not servers.start_socket_server("memcached-sasl", max_port +1, 1, argv))
-      {
-        error= TEST_FATAL;
-        return NULL;
-      }
-    }
-    else
-    {
-      const char *argv[1]= { "memcached" };
-      if (not servers.start_socket_server("memcached", max_port +1, 1, argv))
-      {
-        error= TEST_FATAL;
-        return NULL;
-      }
-    }
-  }
-
 
   libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
   if (global_container == NULL)
@@ -150,17 +152,6 @@ static test_return_t world_container_startup(libmemcached_test_container_st *con
     }
   }
 
-  for (uint32_t host= 0; host < memcached_server_count(container->parent); ++host)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->parent, host);
-
-    if (instance->type == MEMCACHED_CONNECTION_TCP)
-    {
-      test_true_got(memcached_server_port(instance) >= TEST_PORT_BASE, memcached_server_port(instance));
-    }
-  }
-
   return TEST_SUCCESS;
 }
 
@@ -198,8 +189,7 @@ static test_return_t world_pre_run(libmemcached_test_container_st *container)
   test_true(container->memc);
   for (uint32_t loop= 0; loop < memcached_server_list_count(container->memc->servers); loop++)
   {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->memc, loop);
+    memcached_server_instance_st instance= memcached_server_instance_by_position(container->memc, loop);
 
     test_compare(-1, instance->fd);
     test_compare(0U, instance->cursor_active);
@@ -254,7 +244,7 @@ static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemc
     }
     catch (std::exception& e)
     {
-      Error << e.what();
+      libtest::Error << e.what();
       return TEST_FAILURE;
     }
 
@@ -284,7 +274,7 @@ static test_return_t _post_runner_default(libmemcached_test_callback_fn func, li
   return TEST_SUCCESS;
 }
 
-class LibmemcachedRunner : public Runner {
+class LibmemcachedRunner : public libtest::Runner {
 public:
   test_return_t run(test_callback_fn* func, void *object)
   {

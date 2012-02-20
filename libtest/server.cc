@@ -43,14 +43,37 @@ static inline std::string &rtrim(std::string &s)
 #include <libtest/killpid.h>
 
 extern "C" {
-  static bool exited_successfully(int status)
+  static bool exited_successfully(int status, const std::string &command)
   {
-    if (WEXITSTATUS(status) == 0)
+    if (status == 0)
     {
       return true;
     }
 
-    return true;
+    if (WIFEXITED(status) == true)
+    {
+      int ret= WEXITSTATUS(status);
+
+      if (ret == 0)
+      {
+        return true;
+      }
+      else if (ret == EXIT_FAILURE)
+      {
+        libtest::Error << "Command executed, but returned EXIT_FAILURE: " << command;
+      }
+      else
+      {
+        libtest::Error << "Command executed, but returned " << ret;
+      }
+    }
+    else if (WIFSIGNALED(status) == true)
+    {
+      int ret_signal= WTERMSIG(status);
+      libtest::Error << "Died from signal " << strsignal(ret_signal);
+    }
+
+    return false;
   }
 }
 
@@ -87,16 +110,6 @@ std::ostream& operator<<(std::ostream& output, const Server &arg)
   return output;  // for multiple << operators
 }
 
-void Server::nap(void)
-{
-#ifdef WIN32
-  sleep(1);
-#else
-  struct timespec global_sleep_value= { 0, 50000 };
-  nanosleep(&global_sleep_value, NULL);
-#endif
-}
-
 Server::Server(const std::string& host_arg, const in_port_t port_arg, bool is_socket_arg) :
   _is_socket(is_socket_arg),
   _pid(-1),
@@ -125,7 +138,7 @@ bool Server::cycle()
     if (kill(current_pid))
     {
       Log << "Killed existing server," << *this << " with pid:" << current_pid;
-      nap();
+      dream(0, 50000);
       continue;
     }
   }
@@ -165,7 +178,7 @@ bool Server::wait_for_pidfile() const
 bool Server::start()
 {
   // If we find that we already have a pid then kill it.
-  if (has_pid() and not kill(_pid))
+  if (has_pid() and kill(_pid) == false)
   {
     Error << "Could not kill() existing server during start() pid:" << _pid;
     return false;
@@ -173,7 +186,7 @@ bool Server::start()
   assert(not has_pid());
 
   _running.clear();
-  if (not command(_running))
+  if (command(_running) == false)
   {
     Error << "Could not build command()";
     return false;
@@ -185,19 +198,19 @@ bool Server::start()
   }
 
   int ret= system(_running.c_str());
-  if (not exited_successfully(ret))
+  if (exited_successfully(ret, _running) == false)
   {
-    Error << "system() failed:" << strerror(errno);
+    Error << "system(" << _running << ") failed: " << strerror(errno);
     _running.clear();
     return false;
   }
 
   if (is_helgrind() or is_valgrind())
   {
-    sleep(4);
+    dream(5, 50000);
   }
 
-  if (pid_file_option() and not pid_file().empty())
+  if (pid_file_option() and pid_file().empty() == false)
   {
     Wait wait(pid_file(), 8);
 
@@ -207,17 +220,20 @@ bool Server::start()
     }
   }
 
-  int count= is_helgrind() or is_valgrind() ? 20 : 5;
-  while (not ping() and --count)
+  int counter= 0;
+  bool pinged= false;
+  while ((pinged= ping()) == false and
+         counter < (is_helgrind() or is_valgrind() ? 20 : 5))
   {
-    nap();
+    dream(counter++, 50000);
   }
 
-  if (count == 0)
+  if (pinged == false)
   {
     // If we happen to have a pid file, lets try to kill it
-    if (pid_file_option() and not pid_file().empty())
+    if (pid_file_option() and pid_file().empty() == false)
     {
+      Error << "We are going to kill it off";
       kill_file(pid_file());
     }
     Error << "Failed to ping() server started with:" << _running;
@@ -324,6 +340,7 @@ void Server::rebuild_base_command()
   if (is_libtool())
   {
     _base_command+= libtool();
+    _base_command+= " --mode=execute ";
   }
 
   if (is_debug() and getenv("GDB_COMMAND"))
@@ -340,6 +357,15 @@ void Server::rebuild_base_command()
   {
     _base_command+= getenv("HELGRIND_COMMAND");
     _base_command+= " ";
+  }
+
+  if (is_libtool())
+  {
+    if (getenv("PWD"))
+    {
+      _base_command+= getenv("PWD");
+      _base_command+= "/";
+    }
   }
 
   _base_command+= executable();
@@ -365,10 +391,15 @@ bool Server::args(std::string& options)
     arg_buffer << " " << log_file_option() << _log_file;
   }
 
+  if (getenv("LIBTEST_SYSLOG") and has_syslog())
+  {
+    arg_buffer << " --syslog";
+  }
+
   // Update pid_file
   if (pid_file_option())
   {
-    if (_pid_file.empty() and not set_pid_file())
+    if (_pid_file.empty() and set_pid_file() == false)
     {
       return false;
     }
@@ -427,7 +458,7 @@ bool Server::kill(pid_t pid_arg)
 {
   if (check_pid(pid_arg) and kill_pid(pid_arg)) // If we kill it, reset
   {
-    if (broken_pid_file() and not pid_file().empty())
+    if (broken_pid_file() and pid_file().empty() == false)
     {
       unlink(pid_file().c_str());
     }

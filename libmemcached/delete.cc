@@ -38,10 +38,10 @@
 #include <libmemcached/common.h>
 #include <libmemcached/memcached/protocol_binary.h>
 
-memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t key_length,
+memcached_return_t memcached_delete(memcached_st *memc, const char *key, size_t key_length,
                                     time_t expiration)
 {
-  return memcached_delete_by_key(ptr, key, key_length, key, key_length, expiration);
+  return memcached_delete_by_key(memc, key, key_length, key, key_length, expiration);
 }
 
 static inline memcached_return_t ascii_delete(memcached_server_write_instance_st instance,
@@ -49,7 +49,7 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
                                               const char *key,
                                               const size_t key_length,
                                               const bool reply,
-                                              const bool flush)
+                                              const bool is_buffering)
 {
   libmemcached_io_vector_st vector[]=
   {
@@ -61,8 +61,8 @@ static inline memcached_return_t ascii_delete(memcached_server_write_instance_st
     { memcached_literal_param("\r\n") }
   };
 
-  /* Send command header */
-  return memcached_vdo(instance, vector, 6, flush);
+  /* Send command header, only flush if we are NOT buffering */
+  return memcached_vdo(instance, vector, 6, is_buffering ? false : true);
 }
 
 static inline memcached_return_t binary_delete(memcached_server_write_instance_st instance,
@@ -70,9 +70,11 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
                                                const char *key,
                                                const size_t key_length,
                                                const bool reply,
-                                               const bool flush)
+                                               const bool is_buffering)
 {
   protocol_binary_request_delete request= {};
+
+  bool should_flush= is_buffering ? false : true;
 
   request.message.header.request.magic= PROTOCOL_BINARY_REQ;
   if (reply)
@@ -83,9 +85,9 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
   }
-  request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(instance->root->_namespace)));
+  request.message.header.request.keylen= htons(uint16_t(key_length + memcached_array_size(instance->root->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
-  request.message.header.request.bodylen= htonl((uint32_t)(key_length + memcached_array_size(instance->root->_namespace)));
+  request.message.header.request.bodylen= htonl(uint32_t(key_length + memcached_array_size(instance->root->_namespace)));
 
   libmemcached_io_vector_st vector[]=
   {
@@ -95,21 +97,20 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
     { key, key_length }
   };
 
-  memcached_return_t rc= MEMCACHED_SUCCESS;
-
-  if ((rc= memcached_vdo(instance, vector,  4, flush)) != MEMCACHED_SUCCESS)
+  memcached_return_t rc;
+  if (memcached_fatal(rc= memcached_vdo(instance, vector,  4, should_flush)))
   {
     memcached_io_reset(instance);
   }
 
-  if (instance->root->number_of_replicas > 0)
+  if (memcached_has_replicas(instance))
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETEQ;
 
-    for (uint32_t x= 0; x < instance->root->number_of_replicas; ++x)
+    for (uint32_t x= 0; x < memcached_has_replicas(instance); ++x)
     {
-
       ++server_key;
+
       if (server_key == memcached_server_count(instance->root))
       {
         server_key= 0;
@@ -117,7 +118,7 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
 
       memcached_server_write_instance_st replica= memcached_server_instance_fetch(instance->root, server_key);
 
-      if (memcached_vdo(replica, vector, 4, flush) != MEMCACHED_SUCCESS)
+      if (memcached_fatal(memcached_vdo(replica, vector, 4, should_flush)))
       {
         memcached_io_reset(replica);
       }
@@ -131,7 +132,7 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
   return rc;
 }
 
-memcached_return_t memcached_delete_by_key(memcached_st *ptr,
+memcached_return_t memcached_delete_by_key(memcached_st *memc,
                                            const char *group_key, size_t group_key_length,
                                            const char *key, size_t key_length,
                                            time_t expiration)
@@ -139,60 +140,60 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
   LIBMEMCACHED_MEMCACHED_DELETE_START();
 
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
+  if (memcached_fatal(rc= initialize_query(memc, true)))
   {
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
+  if (memcached_fatal(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
   {
-    return memcached_last_error(ptr);
+    return memcached_last_error(memc);
   }
 
   if (expiration)
   {
-    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+    return memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
                                memcached_literal_param("Memcached server version does not allow expiration of deleted items"));
   }
 
-  uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+  uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
+  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
   
-  bool buffering= memcached_is_buffering(instance->root);
-  bool reply= memcached_is_replying(instance->root);
+  bool is_buffering= memcached_is_buffering(instance->root);
+  bool is_replying= memcached_is_replying(instance->root);
 
   // If a delete trigger exists, we need a response, so no buffering/noreply
-  if (ptr->delete_trigger)
+  if (memc->delete_trigger)
   {
-    if (buffering)
+    if (is_buffering)
     {
-      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+      return memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
                                  memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
     }
 
-    if (reply == false)
+    if (is_replying == false)
     {
-      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
+      return memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, 
                                  memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
     }
   }
 
-  if (memcached_is_binary(ptr))
+  if (memcached_is_binary(memc))
   {
-    rc= binary_delete(instance, server_key, key, key_length, reply, buffering ? false : true);
+    rc= binary_delete(instance, server_key, key, key_length, is_replying, is_buffering);
   }
   else
   {
-    rc= ascii_delete(instance, server_key, key, key_length, reply, buffering ? false : true);
+    rc= ascii_delete(instance, server_key, key, key_length, is_replying, is_buffering);
   }
 
   if (rc == MEMCACHED_SUCCESS)
   {
-    if (buffering == true)
+    if (is_buffering == true)
     {
       rc= MEMCACHED_BUFFERED;
     }
-    else if (reply == false)
+    else if (is_replying == false)
     {
       rc= MEMCACHED_SUCCESS;
     }
@@ -203,14 +204,14 @@ memcached_return_t memcached_delete_by_key(memcached_st *ptr,
       if (rc == MEMCACHED_DELETED)
       {
         rc= MEMCACHED_SUCCESS;
-        if (ptr->delete_trigger)
+        if (memc->delete_trigger)
         {
-          ptr->delete_trigger(ptr, key, key_length);
+          memc->delete_trigger(memc, key, key_length);
         }
       }
     }
   }
 
   LIBMEMCACHED_MEMCACHED_DELETE_END();
-  return memcached_set_error(*ptr, rc, MEMCACHED_AT );
+  return rc;
 }

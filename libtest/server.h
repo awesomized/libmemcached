@@ -124,6 +124,11 @@ public:
     return (_port != 0);
   }
 
+  virtual bool has_syslog() const
+  {
+    return false;
+  }
+
   // Reset a server if another process has killed the server
   void reset()
   {
@@ -172,7 +177,6 @@ public:
   bool command(std::string& command_arg);
 
 protected:
-  void nap();
   bool set_pid_file();
 
 private:

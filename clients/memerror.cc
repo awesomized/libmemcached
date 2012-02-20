@@ -10,10 +10,12 @@
  */
 #include "config.h"
 
-#include <inttypes.h>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <climits>
+
 #include <getopt.h>
 #include <iostream>
 #include <unistd.h>
@@ -29,27 +31,40 @@
 /* Prototypes */
 void options_parse(int argc, char *argv[]);
 
-static int opt_verbose= 0;
-
 int main(int argc, char *argv[])
 {
   options_parse(argc, argv);
 
-  if (argc != 2)
+  if (argc < 2)
   {
     return EXIT_FAILURE;
   }
 
-  unsigned long value= strtoul(argv[1], (char **) NULL, 10);
+  while (optind < argc)
+  {
+    errno= 0;
+    char *nptr;
+    unsigned long value= strtoul(argv[optind], &nptr, 10);
 
-  if (value < MEMCACHED_MAXIMUM_RETURN)
-  {
-    std::cout << memcached_strerror(NULL, (memcached_return_t)value) << std::endl;
-  }
-  else
-  {
-    std::cerr << memcached_strerror(NULL, MEMCACHED_MAXIMUM_RETURN) << std::endl;
-    return EXIT_FAILURE;
+    if ((nptr == argv[optind] and value == 0) or
+        (value == ULONG_MAX and errno == ERANGE) or
+        (value == 0 and errno == EINVAL))
+    {
+      std::cerr << "strtoul() was unable to parse given value" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    if (value < MEMCACHED_MAXIMUM_RETURN)
+    {
+      std::cout << memcached_strerror(NULL, (memcached_return_t)value) << std::endl;
+    }
+    else
+    {
+      std::cerr << memcached_strerror(NULL, MEMCACHED_MAXIMUM_RETURN) << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    optind++;
   }
 
   return EXIT_SUCCESS;
@@ -62,9 +77,6 @@ void options_parse(int argc, char *argv[])
     {
       {(OPTIONSTRING)"version", no_argument, NULL, OPT_VERSION},
       {(OPTIONSTRING)"help", no_argument, NULL, OPT_HELP},
-      {(OPTIONSTRING)"quiet", no_argument, NULL, OPT_QUIET},
-      {(OPTIONSTRING)"verbose", no_argument, &opt_verbose, OPT_VERBOSE},
-      {(OPTIONSTRING)"debug", no_argument, &opt_verbose, OPT_DEBUG},
       {0, 0, 0, 0},
     };
 
@@ -84,14 +96,6 @@ void options_parse(int argc, char *argv[])
     case 0:
       break;
 
-    case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = OPT_VERBOSE;
-      break;
-
-    case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = OPT_DEBUG;
-      break;
-
     case OPT_VERSION: /* --version or -V */
       opt_version= true;
       break;
@@ -100,16 +104,12 @@ void options_parse(int argc, char *argv[])
       opt_help= true;
       break;
 
-    case OPT_QUIET:
-      close_stdio();
-      break;
-
     case '?':
       /* getopt_long already printed an error message. */
       exit(EXIT_FAILURE);
 
     default:
-      abort();
+      exit(EXIT_FAILURE);
     }
   }
 

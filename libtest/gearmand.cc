@@ -96,7 +96,7 @@ public:
 
   pid_t get_pid(bool error_is_ok)
   {
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
       Wait wait(pid_file(), 0);
 
@@ -124,12 +124,12 @@ public:
   bool ping()
   {
     gearman_client_st *client= gearman_client_create(NULL);
-    if (not client)
+    if (client == NULL)
     {
       Error << "Could not allocate memory for gearman_client_create()";
       return false;
     }
-    gearman_client_set_timeout(client, 1000);
+    gearman_client_set_timeout(client, 3000);
 
     if (gearman_success(gearman_client_add_server(client, hostname().c_str(), port())))
     {
@@ -140,6 +140,13 @@ public:
         gearman_client_free(client);
         return true;
       }
+#if 0
+      Error << hostname().c_str() << ":" << port() << " was " << gearman_strerror(rc) << " extended: " << gearman_client_error(client);
+#endif
+    }
+    else
+    {
+      Error << "gearman_client_add_server() " << gearman_client_error(client);
     }
 
     gearman_client_free(client);
@@ -169,7 +176,7 @@ public:
 
   const char *log_file_option()
   {
-    return "-vvvvv --log-file=";
+    return "--verbose=DEBUG --log-file=";
   }
 
   const char *port_option()
@@ -178,6 +185,11 @@ public:
   }
 
   bool is_libtool()
+  {
+    return true;
+  }
+
+  bool has_syslog() const
   {
     return true;
   }
@@ -194,7 +206,7 @@ bool Gearmand::build(int argc, const char *argv[])
     arg_buffer << " -u root ";
   }
 
-  arg_buffer << " --listen=127.0.0.1 ";
+  arg_buffer << " --listen=localhost ";
 
   for (int x= 1 ; x < argc ; x++)
   {

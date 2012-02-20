@@ -29,7 +29,7 @@
 #endif
 
 #if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN
-#include <libgearman/gearman.h>
+#include <libgearman-1.0/ostream.hpp>
 #endif
 
 namespace libtest {

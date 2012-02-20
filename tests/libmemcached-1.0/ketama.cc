@@ -207,7 +207,7 @@ test_return_t auto_eject_hosts(memcached_st *trash)
   /*
     This would not work if there were only two hosts.
   */
-  for (size_t x= 0; x < 99; x++)
+  for (ptrdiff_t x= 0; x < 99; x++)
   {
     memcached_autoeject(memc);
     uint32_t server_idx= memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
@@ -219,7 +219,7 @@ test_return_t auto_eject_hosts(memcached_st *trash)
   memc->ketama.next_distribution_rebuild= time(NULL) - 1;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
                          memc->distribution);
-  for (size_t x= 0; x < 99; x++)
+  for (ptrdiff_t x= 0; x < 99; x++)
   {
     uint32_t server_idx = memcached_generate_hash(memc, ketama_test_cases[x].key, strlen(ketama_test_cases[x].key));
     // We re-use instance from above.

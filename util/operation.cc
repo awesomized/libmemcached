@@ -47,7 +47,9 @@ namespace util {
 bool Operation::response(std::string &arg)
 {
   if (_response.empty())
+  {
     return false;
+  }
 
   if (not memcmp("OK\r\n", &_response[0], 3))
   { }

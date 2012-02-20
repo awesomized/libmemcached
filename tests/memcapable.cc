@@ -56,41 +56,45 @@ static test_return_t quiet_test(void *)
 {
   const char *args[]= { "-q", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "-q", "--help", 0 };
+  const char *args[]= { "-h", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 static test_return_t ascii_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "-q", buffer, " -a ", 0 };
+  snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
+  const char *args[]= { "-p", buffer, " -a ", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
+
   return TEST_SUCCESS;
 }
 
 static test_return_t binary_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "-p %d", int(default_port()));
-  const char *args[]= { "-q", buffer, " -b ", 0 };
+  snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
+  const char *args[]= { "-p", buffer, " -b ", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
+
   return TEST_SUCCESS;
 }
 
 test_st memcapable_tests[] ={
   {"--quiet", 0, quiet_test},
-  {"--help", 0, help_test},
+  {"-h", 0, help_test},
   {"-a, ascii", 0, ascii_test},
   {"-b, binary", 0, binary_test},
   {0, 0, 0}
@@ -110,7 +114,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   }
 
   const char *argv[1]= { "memcapable" };
-  if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
+  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
   {
     error= TEST_FAILURE;
   }

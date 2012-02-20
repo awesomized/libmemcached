@@ -56,15 +56,16 @@ static test_return_t quiet_test(void *)
 {
   const char *args[]= { "--quiet", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
   return TEST_SUCCESS;
 }
 
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "--quiet", "--help", 0 };
+  const char *args[]= { "--help", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
@@ -72,7 +73,6 @@ static test_return_t rm_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "foo", 0 };
 
   memcached_st *memc= memcached(buffer, strlen(buffer));
   test_true(memc);
@@ -84,7 +84,8 @@ static test_return_t rm_test(void *)
   test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
   test_compare(MEMCACHED_SUCCESS, rc);
 
-  test_true(exec_cmdline(executable, args));
+  const char *args[]= { buffer, "foo", 0 };
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
   test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
   test_compare(MEMCACHED_NOTFOUND, rc);
@@ -98,7 +99,7 @@ static test_return_t NOT_FOUND_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
-  const char *args[]= { "--quiet", buffer, "foo", 0 };
+  const char *args[]= { buffer, "foo", 0 };
 
   memcached_st *memc= memcached(buffer, strlen(buffer));
   test_true(memc);
@@ -107,7 +108,7 @@ static test_return_t NOT_FOUND_test(void *)
   test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
   test_compare(MEMCACHED_NOTFOUND, rc);
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
   test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
   test_compare(MEMCACHED_NOTFOUND, rc);
@@ -139,7 +140,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   }
 
   const char *argv[1]= { "memrm" };
-  if (not server_startup(servers, "memcached", MEMCACHED_DEFAULT_PORT +10, 1, argv))
+  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
   {
     error= TEST_FAILURE;
   }

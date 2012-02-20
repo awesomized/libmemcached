@@ -51,7 +51,7 @@ memcached_return_t memcached_key_test(memcached_st &memc,
   // we just check the size of the key
   if (memc.flags.verify_key == false or memc.flags.binary_protocol == true)
   {
-    for (uint32_t x= 0; x < number_of_keys; x++)
+    for (size_t x= 0; x < number_of_keys; x++)
     {
       // We should set binary key, but the memcached server is broken for
       // longer keys at the moment.
@@ -65,7 +65,7 @@ memcached_return_t memcached_key_test(memcached_st &memc,
     return MEMCACHED_SUCCESS;
   }
 
-  for (uint32_t x= 0; x < number_of_keys; x++)
+  for (size_t x= 0; x < number_of_keys; x++)
   {
     memcached_return_t rc= memcached_validate_key_length(*(key_length + x), false);
     if (memcached_failed(rc))
