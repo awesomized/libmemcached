@@ -76,9 +76,8 @@ static test_return_t add_shutdown_servers(memcached_st *memc)
   while (memcached_server_count(memc) < 2)
   {
     const char *argv[1]= { "add_shutdown_server" };
-    in_port_t port= libtest::get_free_port();
-    test_true(global_framework->servers().start_socket_server("memcached", port, 1, argv));
-    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", port));
+    test_true(global_framework->servers().start_socket_server("memcached", libtest::default_port(), 1, argv));
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", libtest::default_port()));
   }
 
   // Disable a single server, just the first

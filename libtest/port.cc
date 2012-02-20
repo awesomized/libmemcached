@@ -100,7 +100,6 @@ in_port_t get_free_port()
           if (getsockname(sd, (struct sockaddr *)&sin, &addrlen) != -1)
           {
             ret_port= sin.sin_port;
-            Error << ret_port;
           }
         }
       }
@@ -117,7 +116,7 @@ in_port_t get_free_port()
   // We handle the case where if we max out retries, we still abort.
   if (ret_port <= 1024)
   {
-    abort();
+    throw fatal_message("No port could be found");
   }
 
   return ret_port;

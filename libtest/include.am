@@ -67,6 +67,7 @@ noinst_HEADERS+= \
 		 libtest/dream.h \
 		 libtest/error.h \
 		 libtest/failed.h \
+		 libtest/fatal.hpp \
 		 libtest/framework.h \
 		 libtest/gearmand.h \
 		 libtest/get.h \
@@ -99,6 +100,7 @@ libtest_libtest_la_SOURCES= \
 			    libtest/cmdline.cc \
 			    libtest/core.cc \
 			    libtest/dream.cc \
+			    libtest/fatal.cc \
 			    libtest/framework.cc \
 			    libtest/has.cc \
 			    libtest/http.cc \

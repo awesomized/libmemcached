@@ -516,6 +516,24 @@ static test_return_t get_free_port_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static uint32_t fatal_calls= 0;
+
+static test_return_t fatal_TEST(void *)
+{
+  test_compare(fatal_calls++, fatal::disabled_counter());
+  throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Testing va_args based fatal(): %d", 10); 
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t fatal_message_TEST(void *)
+{
+  test_compare(fatal_calls++, fatal::disabled_counter());
+  throw fatal_message("Fatal test");
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t default_port_TEST(void *)
 {
   in_port_t ret_port= default_port();
@@ -615,6 +633,12 @@ test_st get_free_port_TESTS[] ={
   {0, 0, 0}
 };
 
+test_st fatal_message_TESTS[] ={
+  {"libtest::fatal", 0, fatal_TEST },
+  {"fatal_message()", 0, fatal_message_TEST },
+  {0, 0, 0}
+};
+
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
   {"true", 0, application_true_BINARY },
@@ -629,6 +653,18 @@ test_st application_tests[] ={
 static test_return_t check_for_curl(void *)
 {
   test_skip(true, HAVE_LIBCURL);
+  return TEST_SUCCESS;
+}
+
+static test_return_t disable_fatal_exception(void *)
+{
+  fatal::disable();
+  return TEST_SUCCESS;
+}
+
+static test_return_t enable_fatal_exception(void *)
+{
+  fatal::disable();
   return TEST_SUCCESS;
 }
 
@@ -650,7 +686,8 @@ collection_st collection[] ={
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},
   {"http", check_for_curl, 0, http_tests},
-  {"get_free_port()", 0, 0, get_free_port_TESTS},
+  {"get_free_port()", 0, 0, get_free_port_TESTS },
+  {"fatal", disable_fatal_exception, enable_fatal_exception, fatal_message_TESTS },
   {0, 0, 0, 0}
 };
 
