@@ -214,7 +214,10 @@ Application::error_t Application::wait()
     }
     else
     {
-      assert(waited_pid == _pid);
+      if (waited_pid != _pid)
+      {
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Pid mismatch, %d != %d", int(waited_pid), int(_pid));
+      }
       exit_code= error_t(exited_successfully(status));
     }
   }

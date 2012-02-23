@@ -124,6 +124,7 @@ enum ascii_cmd {
 };
 
 struct memcached_protocol_client_st {
+  bool is_verbose;
   memcached_protocol_st *root;
   memcached_socket_t sock;
   int error;

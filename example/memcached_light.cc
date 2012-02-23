@@ -24,21 +24,25 @@
  */
 
 #include "config.h"
-#include <assert.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <event.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <libmemcached/socket.hpp>
 #include <example/byteorder.h>
 #include "example/storage.h"
 #include "example/memcached_light.h"
+
+#include <event.h>
+
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
+#include <getopt.h>
+#include <iostream>
+#include <sys/types.h>
+#include <unistd.h>
 
 extern memcached_binary_protocol_callback_st interface_v0_impl;
 extern memcached_binary_protocol_callback_st interface_v1_impl;
@@ -53,19 +57,23 @@ struct connection
 };
 
 /* The default maximum number of connections... (change with -c) */
-static int maxconns = 1024;
+static int maxconns= 1024;
 
 static struct connection *socket_userdata_map;
-static bool verbose= false;
 static struct event_base *event_base;
 
 struct options_st {
   char *pid_file;
-  bool has_port;
-  in_port_t port;
-} global_options;
+  bool is_verbose;
 
-typedef struct options_st options_st;
+  options_st() :
+    pid_file(NULL),
+    is_verbose(false)
+  {
+  }
+};
+
+static options_st global_options;
 
 /**
  * Callback for driving a client connection
@@ -73,19 +81,39 @@ typedef struct options_st options_st;
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the client
  */
-static void drive_client(memcached_socket_t fd, short which, void *arg)
+static void drive_client(memcached_socket_t fd, short, void *arg)
 {
-  (void)which;
-  struct connection *client= arg;
-  struct memcached_protocol_client_st* c= client->userdata;
+  struct connection *client= (struct connection*)arg;
+  struct memcached_protocol_client_st* c= (struct memcached_protocol_client_st*)client->userdata;
   assert(c != NULL);
 
   memcached_protocol_event_t events= memcached_protocol_client_work(c);
   if (events & MEMCACHED_PROTOCOL_ERROR_EVENT)
   {
+    if (global_options.is_verbose)
+    {
+      struct sockaddr_in sin;
+      socklen_t addrlen= sizeof(sin);
+
+      if (getsockname(fd, (struct sockaddr *)&sin, &addrlen) != -1)
+      {
+        std::cout << __FILE__ << ":" << __LINE__
+          << " close(MEMCACHED_PROTOCOL_ERROR_EVENT)"
+          << " " << inet_ntoa(sin.sin_addr) << ":" << sin.sin_port
+          << " fd:" << fd
+          << std::endl;
+      }
+      else
+      {
+        std::cout << __FILE__ << ":" << __LINE__ << "close() MEMCACHED_PROTOCOL_ERROR_EVENT" << std::endl;
+      }
+    }
+
     memcached_protocol_client_destroy(c);
     closesocket(fd);
-  } else {
+  }
+  else
+  {
     short flags = 0;
     if (events & MEMCACHED_PROTOCOL_WRITE_EVENT)
     {
@@ -102,7 +130,6 @@ static void drive_client(memcached_socket_t fd, short which, void *arg)
 
     if (event_add(&client->event, 0) == -1)
     {
-      (void)fprintf(stderr, "Failed to add event for %d\n", fd);
       memcached_protocol_client_destroy(c);
       closesocket(fd);
     }
@@ -115,10 +142,9 @@ static void drive_client(memcached_socket_t fd, short which, void *arg)
  * @param which identifying the event that occurred (not used)
  * @param arg the connection structure for the server
  */
-static void accept_handler(memcached_socket_t fd, short which, void *arg)
+static void accept_handler(memcached_socket_t fd, short, void *arg)
 {
-  (void)which;
-  struct connection *server= arg;
+  struct connection *server= (struct connection *)arg;
   /* accept new client */
   struct sockaddr_storage addr;
   socklen_t addrlen= sizeof(addr);
@@ -127,27 +153,24 @@ static void accept_handler(memcached_socket_t fd, short which, void *arg)
   if (sock == INVALID_SOCKET)
   {
     perror("Failed to accept client");
-    return ;
   }
 
 #ifndef WIN32
   if (sock >= maxconns)
   {
-    (void)fprintf(stderr, "Client outside socket range (specified with -c)\n");
     closesocket(sock);
     return ;
   }
 #endif
 
-  struct memcached_protocol_client_st* c;
-  c= memcached_protocol_create_client(server->userdata, sock);
+  struct memcached_protocol_client_st* c= memcached_protocol_create_client((memcached_protocol_st*)server->userdata, sock);
   if (c == NULL)
   {
-    (void)fprintf(stderr, "Failed to create client\n");
     closesocket(sock);
   }
   else
   {
+    memcached_protocol_client_set_verbose(c, global_options.is_verbose);
     struct connection *client = &socket_userdata_map[sock];
     client->userdata= c;
 
@@ -155,7 +178,7 @@ static void accept_handler(memcached_socket_t fd, short which, void *arg)
     event_base_set(event_base, &client->event);
     if (event_add(&client->event, 0) == -1)
     {
-      (void)fprintf(stderr, "Failed to add event for %d\n", sock);
+      std::cerr << "Failed to add event for " << sock << std::endl;
       memcached_protocol_client_destroy(c);
       closesocket(sock);
     }
@@ -169,17 +192,24 @@ static void accept_handler(memcached_socket_t fd, short which, void *arg)
 static int server_socket(const char *port)
 {
   struct addrinfo *ai;
-  struct addrinfo hints= { .ai_flags= AI_PASSIVE,
-                           .ai_family= AF_UNSPEC,
-                           .ai_socktype= SOCK_STREAM };
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof(struct addrinfo));
+
+  hints.ai_flags= AI_PASSIVE;
+  hints.ai_family= AF_UNSPEC;
+  hints.ai_socktype= SOCK_STREAM;
 
   int error= getaddrinfo("127.0.0.1", port, &hints, &ai);
   if (error != 0)
   {
     if (error != EAI_SYSTEM)
-      fprintf(stderr, "getaddrinfo(): %s\n", gai_strerror(error));
+    {
+      std::cerr << "getaddrinfo(): " << gai_strerror(error) << std::endl;
+    }
     else
-      perror("getaddrinfo()");
+    {
+      std::cerr << "getaddrinfo(): " << strerror(errno) << std::endl;
+    }
 
     return 0;
   }
@@ -191,7 +221,7 @@ static int server_socket(const char *port)
     memcached_socket_t sock= socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
     if (sock == INVALID_SOCKET)
     {
-      perror("Failed to create socket");
+      std::cerr << "Failed to create socket: " << strerror(errno) << std::endl;
       continue;
     }
 
@@ -200,7 +230,7 @@ static int server_socket(const char *port)
     u_long arg = 1;
     if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR)
     {
-      perror("Failed to set nonblocking io");
+      std::cerr << "Failed to set nonblocking io: " << strerror(errno) << std::endl;
       closesocket(sock);
       continue;
     }
@@ -208,7 +238,7 @@ static int server_socket(const char *port)
     flags= fcntl(sock, F_GETFL, 0);
     if (flags == -1)
     {
-      perror("Failed to get socket flags");
+      std::cerr << "Failed to get socket flags: " << strerror(errno) << std::endl;
       closesocket(sock);
       continue;
     }
@@ -217,7 +247,7 @@ static int server_socket(const char *port)
     {
       if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
       {
-        perror("Failed to set socket to nonblocking mode");
+        std::cerr << "Failed to set socket to nonblocking mode: " << strerror(errno) << std::endl;
         closesocket(sock);
         continue;
       }
@@ -226,22 +256,30 @@ static int server_socket(const char *port)
 
     flags= 1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, sizeof(flags)) != 0)
-      perror("Failed to set SO_REUSEADDR");
+    {
+      std::cerr << "Failed to set SO_REUSEADDR: " << strerror(errno) << std::endl;
+    }
 
     if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags)) != 0)
-      perror("Failed to set SO_KEEPALIVE");
+    {
+      std::cerr << "Failed to set SO_KEEPALIVE: " << strerror(errno) << std::endl;
+    }
 
     if (setsockopt(sock, SOL_SOCKET, SO_LINGER, (void *)&ling, sizeof(ling)) != 0)
-      perror("Failed to set SO_LINGER");
+    {
+      std::cerr << "Failed to set SO_LINGER: " << strerror(errno) << std::endl;
+    }
 
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (void *)&flags, sizeof(flags)) != 0)
-      perror("Failed to set TCP_NODELAY");
+    {
+      std::cerr << "Failed to set TCP_NODELAY: " << strerror(errno) << std::endl;
+    }
 
     if (bind(sock, next->ai_addr, next->ai_addrlen) == SOCKET_ERROR)
     {
       if (get_socket_errno() != EADDRINUSE)
       {
-        perror("bind()");
+        std::cerr << "bind(): " << strerror(errno) << std::endl;
         freeaddrinfo(ai);
       }
       closesocket(sock);
@@ -250,9 +288,14 @@ static int server_socket(const char *port)
 
     if (listen(sock, 1024) == SOCKET_ERROR)
     {
-      perror("listen()");
+      std::cerr << "listen(): " << strerror(errno) << std::endl;
       closesocket(sock);
       continue;
+    }
+
+    if (global_options.is_verbose)
+    {
+      std::cout << "Listening to " << port << std::endl;
     }
 
     server_sockets[num_server_sockets++]= sock;
@@ -280,7 +323,9 @@ static const char* comcode2str(uint8_t cmd)
   };
 
   if (cmd <= PROTOCOL_BINARY_CMD_PREPENDQ)
+  {
     return text[cmd];
+  }
 
   return NULL;
 }
@@ -291,13 +336,24 @@ static const char* comcode2str(uint8_t cmd)
 static void pre_execute(const void *cookie,
                         protocol_binary_request_header *header)
 {
-  if (verbose)
+  if (global_options.is_verbose)
   {
-    const char *cmd= comcode2str(header->request.opcode);
-    if (cmd != NULL)
-      fprintf(stderr, "pre_execute from %p: %s\n", cookie, cmd);
+    if (header)
+    {
+      const char *cmd= comcode2str(header->request.opcode);
+      if (cmd != NULL)
+      {
+        std::cout << "pre_execute from " << cookie << ": " << cmd << std::endl;
+      }
+      else
+      {
+        std::cout << "pre_execute from " << cookie << ": " << header->request.opcode << std::endl;
+      }
+    }
     else
-      fprintf(stderr, "pre_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+    {
+      std::cout << "pre_execute from " << cookie << std::endl;
+    }
   }
 }
 
@@ -307,13 +363,24 @@ static void pre_execute(const void *cookie,
 static void post_execute(const void *cookie,
                          protocol_binary_request_header *header)
 {
-  if (verbose)
+  if (global_options.is_verbose)
   {
-    const char *cmd= comcode2str(header->request.opcode);
-    if (cmd != NULL)
-      fprintf(stderr, "post_execute from %p: %s\n", cookie, cmd);
+    if (header)
+    {
+      const char *cmd= comcode2str(header->request.opcode);
+      if (cmd != NULL)
+      {
+        std::cout << "post_execute from " << cookie << ": " << cmd << std::endl;
+      }
+      else
+      {
+        std::cout << "post_execute from " << cookie << ": " << header->request.opcode << std::endl;
+      }
+    }
     else
-      fprintf(stderr, "post_execute from %p: 0x%02x\n", cookie, header->request.opcode);
+    {
+      std::cout << "post_execute from " << cookie << std::endl;
+    }
   }
 }
 
@@ -325,18 +392,15 @@ static protocol_binary_response_status unknown(const void *cookie,
                                                protocol_binary_request_header *header,
                                                memcached_binary_protocol_raw_response_handler response_handler)
 {
-  protocol_binary_response_no_extras response= {
-    .message= {
-      .header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= header->request.opcode,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND),
-        .opaque= header->request.opaque
-      }
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
 
-  return response_handler(cookie, header, (void*)&response);
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND);
+  response.message.header.response.opaque= header->request.opaque;
+
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 /**
@@ -348,15 +412,12 @@ static protocol_binary_response_status unknown(const void *cookie,
  */
 int main(int argc, char **argv)
 {
-  int cmd;
   memcached_binary_protocol_callback_st *interface= &interface_v0_impl;
-
-  memset(&global_options, 0, sizeof(global_options));
 
   event_base= event_init();
   if (event_base == NULL)
   {
-    fprintf(stderr, "Failed to create an instance of libevent\n");
+    std::cerr << "Failed to create an instance of libevent" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -365,32 +426,82 @@ int main(int argc, char **argv)
    * warnings generated by struct initialization in gcc (all the way up to 4.4)
    */
   initialize_interface_v0_handler();
+  initialize_interface_v1_handler();
 
-  while ((cmd= getopt(argc, argv, "v1p:P:?hc:")) != EOF)
   {
-    switch (cmd) {
-    case '1':
-      interface= &interface_v1_impl;
-      break;
-    case 'P':
-      global_options.pid_file= strdup(optarg);
-      break;
-    case 'p':
-      global_options.has_port= true;
-      (void)server_socket(optarg);
-      break;
-    case 'v':
-      verbose= true;
-      break;
-    case 'c':
-      maxconns= atoi(optarg);
-      break;
-    case 'h':  /* FALLTHROUGH */
-    case '?':  /* FALLTHROUGH */
-    default:
-      (void)fprintf(stderr, "Usage: %s [-p port] [-v] [-1] [-c #clients] [-P pidfile]\n",
-                    argv[0]);
-      return EXIT_FAILURE;
+    enum long_option_t {
+      OPT_HELP,
+      OPT_VERBOSE,
+      OPT_PROTOCOL_VERSION,
+      OPT_VERSION,
+      OPT_PORT,
+      OPT_MAX_CONNECTIONS,
+      OPT_PIDFILE
+    };
+
+    static struct option long_options[]=
+    {
+      {"help", no_argument, NULL, OPT_HELP},
+      {"port", required_argument, NULL, OPT_PORT},
+      {"verbose", no_argument, NULL, OPT_VERBOSE},
+      {"protocol", required_argument, NULL, OPT_PROTOCOL_VERSION},
+      {"version", no_argument, NULL, OPT_VERSION},
+      {"max-connections", required_argument, NULL, OPT_MAX_CONNECTIONS},
+      {"pid-file", required_argument, NULL, OPT_PIDFILE},
+      {0, 0, 0, 0}
+    };
+
+    int option_index;
+    bool has_port= false;
+    bool done= false;
+    while (done == false)
+    {
+      switch (getopt_long(argc, argv, "", long_options, &option_index))
+      {
+      case -1:
+        done= true;
+        break;
+
+      case OPT_PROTOCOL_VERSION:
+        interface= &interface_v1_impl;
+        break;
+
+      case OPT_PIDFILE:
+        global_options.pid_file= strdup(optarg);
+        break;
+
+      case OPT_VERBOSE:
+        global_options.is_verbose= true;
+        break;
+
+      case OPT_PORT:
+        has_port= true;
+        (void)server_socket(optarg);
+        break;
+
+      case OPT_MAX_CONNECTIONS:
+        maxconns= atoi(optarg);
+        break;
+
+      case OPT_HELP:  /* FALLTHROUGH */
+        std::cout << "Usage: " << argv[0] << std::endl;
+        for (struct option *ptr_option= long_options; ptr_option->name; ptr_option++)
+        {
+          std::cout << "\t" << ptr_option->name << std::endl;
+        }
+        return EXIT_SUCCESS;
+
+      default:
+        {
+          std::cerr << "Unknown option: " << optarg << std::endl;
+          return EXIT_FAILURE;
+        }
+      }
+    }
+
+    if (has_port == false)
+    {
+      (void)server_socket("9999");
     }
   }
 
@@ -399,9 +510,6 @@ int main(int argc, char **argv)
     /* Error message already printed */
     return EXIT_FAILURE;
   }
-
-  if (! global_options.has_port)
-    (void)server_socket("9999");
 
   if (global_options.pid_file)
   {
@@ -417,13 +525,16 @@ int main(int argc, char **argv)
     }
 
     pid= (uint32_t)getpid();
-    fprintf(pid_file, "%u\n", pid);
+    if (global_options.is_verbose)
+    {
+      std::cout << "pid:" << pid << std::endl;
+    }
     fclose(pid_file);
   }
 
   if (num_server_sockets == 0)
   {
-    fprintf(stderr, "I don't have any server sockets\n");
+    std::cerr << "No server sockets are available" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -439,14 +550,14 @@ int main(int argc, char **argv)
   struct memcached_protocol_st *protocol_handle;
   if ((protocol_handle= memcached_protocol_create_instance()) == NULL)
   {
-    fprintf(stderr, "Failed to allocate protocol handle\n");
+    std::cerr << "Failed to allocate protocol handle" << std::endl;
     return EXIT_FAILURE;
   }
 
-  socket_userdata_map= calloc((size_t)(maxconns), sizeof(struct connection));
+  socket_userdata_map= (struct connection*)calloc((size_t)(maxconns), sizeof(struct connection));
   if (socket_userdata_map == NULL)
   {
-    fprintf(stderr, "Failed to allocate room for connections\n");
+    std::cerr << "Failed to allocate room for connections" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -457,12 +568,13 @@ int main(int argc, char **argv)
   {
     struct connection *conn= &socket_userdata_map[server_sockets[xx]];
     conn->userdata= protocol_handle;
-    event_set(&conn->event, (intptr_t)server_sockets[xx], EV_READ | EV_PERSIST,
-              accept_handler, conn);
+
+    event_set(&conn->event, (intptr_t)server_sockets[xx], EV_READ | EV_PERSIST, accept_handler, conn);
+
     event_base_set(event_base, &conn->event);
     if (event_add(&conn->event, 0) == -1)
     {
-      fprintf(stderr, "Failed to add event for %d\n", server_sockets[xx]);
+      std::cerr << "Failed to add event for " << server_sockets[xx] << std::endl;
       closesocket(server_sockets[xx]);
     }
   }

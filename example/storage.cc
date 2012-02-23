@@ -28,7 +28,7 @@ void shutdown_storage(void)
 
 void put_item(struct item* item)
 {
-  struct list_entry* entry= (void*)item;
+  struct list_entry* entry= (struct list_entry*)item;
 
   update_cas(item);
 
@@ -72,7 +72,7 @@ struct item* get_item(const void* key, size_t nkey)
 struct item* create_item(const void* key, size_t nkey, const void* data,
                          size_t size, uint32_t flags, time_t exp)
 {
-  struct item* ret= calloc(1, sizeof(struct list_entry));
+  struct item* ret= (struct item*)calloc(1, sizeof(struct list_entry));
 
   if (ret != NULL)
   {
@@ -113,7 +113,7 @@ bool delete_item(const void* key, size_t nkey)
   if (item)
   {
     /* remove from linked list */
-    struct list_entry *entry= (void*)item;
+    struct list_entry *entry= (struct list_entry*)item;
 
     if (entry->next == entry)
     {
@@ -138,10 +138,8 @@ bool delete_item(const void* key, size_t nkey)
   return ret;
 }
 
-void flush(uint32_t when)
+void flush(uint32_t /* when */)
 {
-  /* FIXME */
-  (void)when;
   /* remove the complete linked list */
   if (root == NULL)
   {
@@ -151,7 +149,7 @@ void flush(uint32_t when)
   root->prev->next= NULL;
   while (root != NULL)
   {
-    struct item* tmp= (void*)root;
+    struct item* tmp= (struct item*)root;
     root= root->next;
 
     free(tmp->key);
@@ -165,8 +163,6 @@ void update_cas(struct item* item)
   item->cas= ++cas;
 }
 
-void release_item(struct item* item)
+void release_item(struct item* /* item */)
 {
-  (void)item;
-  /* EMPTY */
 }

@@ -59,10 +59,9 @@
  * @param response the packet to send
  * @return The status of the operation
  */
-static protocol_binary_response_status
-raw_response_handler(const void *cookie,
-                     protocol_binary_request_header *request,
-                     protocol_binary_response_header *response)
+static protocol_binary_response_status raw_response_handler(const void *cookie,
+                                                            protocol_binary_request_header *request,
+                                                            protocol_binary_response_header *response)
 {
   memcached_protocol_client_st *client= (void*)cookie;
 
@@ -72,12 +71,12 @@ raw_response_handler(const void *cookie,
     return PROTOCOL_BINARY_RESPONSE_EINVAL;
   }
 
-  if (!client->root->drain(client))
+  if (client->root->drain(client) == false)
   {
     return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
   }
 
-  size_t len= sizeof(*response) + htonl(response->response.bodylen);
+  size_t len= sizeof(protocol_binary_response_header) + htonl(response->response.bodylen);
   size_t offset= 0;
   char *ptr= (void*)response;
 
@@ -113,6 +112,75 @@ raw_response_handler(const void *cookie,
   return client->root->spool(client, ptr, len - offset);
 }
 
+static void print_cmd(protocol_binary_command cmd)
+{
+  switch (cmd)
+  {
+  case PROTOCOL_BINARY_CMD_GET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_ADD: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_ADD\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_REPLACE: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_REPLACE\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_DELETE: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_DELETE\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_INCREMENT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_INCREMENT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_DECREMENT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_DECREMENT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_QUIT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_QUIT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_FLUSH: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_FLUSH\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GETQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GETQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_NOOP: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_NOOP\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_VERSION: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_VERSION\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GETK: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GETK\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GETKQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GETKQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_APPEND: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_APPEND\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_PREPEND: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_PREPEND\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_STAT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_STAT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SETQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SETQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_ADDQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_ADDQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_REPLACEQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_REPLACEQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_DELETEQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_DELETEQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_INCREMENTQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_INCREMENTQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_DECREMENTQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_DECREMENTQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_QUITQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_QUITQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_FLUSHQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_FLUSHQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_APPENDQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_APPENDQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_PREPENDQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_PREPENDQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_VERBOSITY: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_VERBOSITY\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TOUCH: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TOUCH\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GAT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GAT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GATQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GATQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SASL_LIST_MECHS: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SASL_LIST_MECHS\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SASL_AUTH: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SASL_AUTH\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SASL_STEP: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SASL_STEP\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RGET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RGET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RSET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RSET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RSETQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RSETQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RAPPEND: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RAPPEND\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RAPPENDQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RAPPENDQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RPREPEND: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RPREPEND\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RPREPENDQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RPREPENDQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RDELETE: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RDELETE\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RDELETEQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RDELETEQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RINCR: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RINCR\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RINCRQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RINCRQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RDECR: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RDECR\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_RDECRQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_RDECRQ\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SET_VBUCKET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SET_VBUCKET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GET_VBUCKET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GET_VBUCKET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_DEL_VBUCKET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_DEL_VBUCKET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_CONNECT: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_CONNECT\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_MUTATION: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_MUTATION\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_DELETE: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_DELETE\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_FLUSH: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_FLUSH\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_OPAQUE: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_OPAQUE\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_VBUCKET_SET: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_VBUCKET_SET\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_START: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_START\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_END: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_END\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_LAST_RESERVED: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_LAST_RESERVED\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_SCRUB: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SCRUB\n", __FILE__, __LINE__); return;
+  default:
+                                  abort();
+  }
+}
+
 /*
  * Version 0 of the interface is really low level and protocol specific,
  * while the version 1 of the interface is more API focused. We need a
@@ -131,15 +199,14 @@ raw_response_handler(const void *cookie,
  * @param flags the flags for the item
  * @param cas the CAS id for the item
  */
-static protocol_binary_response_status
-get_response_handler(const void *cookie,
-                     const void *key,
-                     uint16_t keylen,
-                     const void *body,
-                     uint32_t bodylen,
-                     uint32_t flags,
-                     uint64_t cas) {
-
+static protocol_binary_response_status get_response_handler(const void *cookie,
+                                                            const void *key,
+                                                            uint16_t keylen,
+                                                            const void *body,
+                                                            uint32_t bodylen,
+                                                            uint32_t flags,
+                                                            uint64_t cas)
+{
   memcached_protocol_client_st *client= (void*)cookie;
   uint8_t opcode= client->current_command->request.opcode;
 
@@ -222,10 +289,10 @@ static protocol_binary_response_status stat_response_handler(const void *cookie,
  * @param text the length of the body
  * @param textlen the length of the body
  */
-static protocol_binary_response_status
-version_response_handler(const void *cookie,
-                         const void *text,
-                         uint32_t textlen) {
+static protocol_binary_response_status version_response_handler(const void *cookie,
+                                                                const void *text,
+                                                                uint32_t textlen)
+{
 
   memcached_protocol_client_st *client= (void*)cookie;
 
@@ -372,21 +439,20 @@ decrement_command_handler(const void *cookie,
  * @param response_handler not used
  * @return the result of the operation
  */
-static protocol_binary_response_status
-delete_command_handler(const void *cookie,
-                       protocol_binary_request_header *header,
-                       memcached_binary_protocol_raw_response_handler response_handler)
+static protocol_binary_response_status delete_command_handler(const void *cookie,
+                                                              protocol_binary_request_header *header,
+                                                              memcached_binary_protocol_raw_response_handler response_handler)
 {
   (void)response_handler;
   protocol_binary_response_status rval;
 
   memcached_protocol_client_st *client= (void*)cookie;
-  if (client->root->callback->interface.v1.delete != NULL)
+  if (client->root->callback->interface.v1.delete_object != NULL)
   {
     uint16_t keylen= ntohs(header->request.keylen);
     void *key= (header +1);
     uint64_t cas= memcached_ntohll(header->request.cas);
-    rval= client->root->callback->interface.v1.delete(cookie, key, keylen, cas);
+    rval= client->root->callback->interface.v1.delete_object(cookie, key, keylen, cas);
     if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS &&
         header->request.opcode == PROTOCOL_BINARY_CMD_DELETE)
     {
@@ -428,16 +494,16 @@ flush_command_handler(const void *cookie,
   protocol_binary_response_status rval;
 
   memcached_protocol_client_st *client= (void*)cookie;
-  if (client->root->callback->interface.v1.flush != NULL)
+  if (client->root->callback->interface.v1.flush_object != NULL)
   {
-    protocol_binary_request_flush *flush= (void*)header;
+    protocol_binary_request_flush *flush_object= (void*)header;
     uint32_t timeout= 0;
     if (htonl(header->request.bodylen) == 4)
     {
-      timeout= ntohl(flush->message.body.expiration);
+      timeout= ntohl(flush_object->message.body.expiration);
     }
 
-    rval= client->root->callback->interface.v1.flush(cookie, timeout);
+    rval= client->root->callback->interface.v1.flush_object(cookie, timeout);
     if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS &&
         header->request.opcode == PROTOCOL_BINARY_CMD_FLUSH)
     {
@@ -805,10 +871,9 @@ replace_command_handler(const void *cookie,
  * @param response_handler not used
  * @return the result of the operation
  */
-static protocol_binary_response_status
-set_command_handler(const void *cookie,
-                    protocol_binary_request_header *header,
-                    memcached_binary_protocol_raw_response_handler response_handler)
+static protocol_binary_response_status set_command_handler(const void *cookie,
+                                                           protocol_binary_request_header *header,
+                                                           memcached_binary_protocol_raw_response_handler response_handler)
 {
   (void)response_handler;
   protocol_binary_response_status rval;
@@ -975,22 +1040,30 @@ static protocol_binary_response_status execute_command(memcached_protocol_client
     client->root->callback->pre_execute(client, header);
   }
 
-  protocol_binary_response_status rval;
-  rval= PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND;
+  protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND;
   uint8_t cc= header->request.opcode;
+
+  if (client->is_verbose)
+  {
+    print_cmd(cc);
+  }
 
   switch (client->root->callback->interface_version)
   {
   case 0:
-    if (client->root->callback->interface.v0.comcode[cc] != NULL) {
+    if (client->root->callback->interface.v0.comcode[cc] != NULL)
+    {
       rval= client->root->callback->interface.v0.comcode[cc](client, header, raw_response_handler);
     }
     break;
+
   case 1:
-    if (comcode_v0_v1_remap[cc] != NULL) {
+    if (comcode_v0_v1_remap[cc] != NULL)
+    {
       rval= comcode_v0_v1_remap[cc](client, header, raw_response_handler);
     }
     break;
+
   default:
     /* Unknown interface.
      * It should be impossible to get here so I'll just call abort
@@ -1060,8 +1133,11 @@ memcached_protocol_event_t memcached_binary_protocol_process_data(memcached_prot
       *length= len;
       *endptr= (void*)header;
       return MEMCACHED_PROTOCOL_ERROR_EVENT;
-    } else if (rv == PROTOCOL_BINARY_RESPONSE_NOT_SUPPORTED)
+    }
+    else if (rv == PROTOCOL_BINARY_RESPONSE_NOT_SUPPORTED)
+    {
       return MEMCACHED_PROTOCOL_PAUSE_EVENT;
+    }
 
     ssize_t total= (ssize_t)(sizeof(*header) + ntohl(header->request.bodylen));
     len -= total;
