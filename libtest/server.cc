@@ -42,42 +42,6 @@ static inline std::string &rtrim(std::string &s)
 #include <libtest/stream.h>
 #include <libtest/killpid.h>
 
-extern "C" {
-  static bool exited_successfully(int status, const std::string &command)
-  {
-    if (status == 0)
-    {
-      return true;
-    }
-
-    if (WIFEXITED(status) == true)
-    {
-      int ret= WEXITSTATUS(status);
-
-      if (ret == 0)
-      {
-        return true;
-      }
-      else if (ret == EXIT_FAILURE)
-      {
-        libtest::Error << "Command executed, but returned EXIT_FAILURE: " << command;
-      }
-      else
-      {
-        libtest::Error << "Command executed, but returned " << ret;
-      }
-    }
-    else if (WIFSIGNALED(status) == true)
-    {
-      int ret_signal= WTERMSIG(status);
-      libtest::Error << "Died from signal " << strsignal(ret_signal);
-    }
-
-    return false;
-  }
-}
-
-
 namespace libtest {
 
 std::ostream& operator<<(std::ostream& output, const Server &arg)
@@ -153,21 +117,6 @@ bool Server::cycle()
   return true;
 }
 
-// Grab a one off command
-bool Server::command(std::string& command_arg)
-{
-  rebuild_base_command();
-
-  command_arg+= _base_command;
-
-  if (args(command_arg))
-  {
-    return true;
-  }
-
-  return false;
-}
-
 bool Server::wait_for_pidfile() const
 {
   Wait wait(pid_file(), 4);
@@ -185,23 +134,22 @@ bool Server::start()
   }
   assert(not has_pid());
 
-  _running.clear();
-  if (command(_running) == false)
+  Application app(name(), is_libtool());
+  if (args(app) == false)
   {
     Error << "Could not build command()";
     return false;
   }
 
-  if (is_valgrind() or is_helgrind())
+  if (Application::SUCCESS !=  app.run())
   {
-    _running+= " &";
+    Error << "Application::run()";
+    return false;
   }
 
-  int ret= system(_running.c_str());
-  if (exited_successfully(ret, _running) == false)
+  if (Application::SUCCESS !=  app.wait())
   {
-    Error << "system(" << _running << ") failed: " << strerror(errno);
-    _running.clear();
+    Error << "Application::wait()";
     return false;
   }
 
@@ -210,7 +158,7 @@ bool Server::start()
     dream(5, 50000);
   }
 
-  if (pid_file_option() and pid_file().empty() == false)
+  if (pid_file().empty() == false)
   {
     Wait wait(pid_file(), 8);
 
@@ -231,7 +179,7 @@ bool Server::start()
   if (pinged == false)
   {
     // If we happen to have a pid file, lets try to kill it
-    if (pid_file_option() and pid_file().empty() == false)
+    if (pid_file().empty() == false)
     {
       Error << "We are going to kill it off";
       kill_file(pid_file());
@@ -257,6 +205,16 @@ void Server::reset_pid()
 pid_t Server::pid()
 {
   return _pid;
+}
+
+void Server::add_option(const std::string& arg)
+{
+  _options.push_back(std::make_pair(arg, std::string()));
+}
+
+void Server::add_option(const std::string& name, const std::string& value)
+{
+  _options.push_back(std::make_pair(name, value));
 }
 
 bool Server::set_socket_file()
@@ -334,106 +292,66 @@ bool Server::set_log_file()
   return true;
 }
 
-void Server::rebuild_base_command()
+bool Server::args(Application& app)
 {
-  _base_command.clear();
-  if (is_libtool())
-  {
-    _base_command+= libtool();
-    _base_command+= " --mode=execute ";
-  }
-
-  if (is_debug() and getenv("GDB_COMMAND"))
-  {
-    _base_command+= getenv("GDB_COMMAND");
-    _base_command+= " ";
-  }
-  else if (is_valgrind() and getenv("VALGRIND_COMMAND"))
-  {
-    _base_command+= getenv("VALGRIND_COMMAND");
-    _base_command+= " ";
-  }
-  else if (is_helgrind() and getenv("HELGRIND_COMMAND"))
-  {
-    _base_command+= getenv("HELGRIND_COMMAND");
-    _base_command+= " ";
-  }
-
-  if (is_libtool())
-  {
-    if (getenv("PWD"))
-    {
-      _base_command+= getenv("PWD");
-      _base_command+= "/";
-    }
-  }
-
-  _base_command+= executable();
-}
-
-void Server::set_extra_args(const std::string &arg)
-{
-  _extra_args= arg;
-}
-
-bool Server::args(std::string& options)
-{
-  std::stringstream arg_buffer;
 
   // Set a log file if it was requested (and we can)
-  if (getenv("LIBTEST_LOG") and log_file_option())
+  if (getenv("LIBTEST_LOG") and has_log_file_option())
   {
     if (not set_log_file())
     {
       return false;
     }
 
-    arg_buffer << " " << log_file_option() << _log_file;
+    log_file_option(app, _log_file);
   }
 
   if (getenv("LIBTEST_SYSLOG") and has_syslog())
   {
-    arg_buffer << " --syslog";
+    app.add_option("--syslog");
   }
 
   // Update pid_file
-  if (pid_file_option())
   {
     if (_pid_file.empty() and set_pid_file() == false)
     {
       return false;
     }
 
-    arg_buffer << " " << pid_file_option() << pid_file(); 
+    pid_file_option(app, pid_file());
   }
 
   assert(daemon_file_option());
   if (daemon_file_option() and not is_valgrind() and not is_helgrind())
   {
-    arg_buffer << " " << daemon_file_option();
+    app.add_option(daemon_file_option());
   }
 
-  if (_is_socket and socket_file_option())
+  if (_is_socket and has_socket_file_option())
   {
     if (not set_socket_file())
     {
       return false;
     }
 
-    arg_buffer << " " << socket_file_option() << "\"" <<  _socket << "\"";
+    socket_file_option(app, _socket);
   }
 
-  assert(port_option());
-  if (port_option() and _port > 0)
+  if (has_port_option())
   {
-    arg_buffer << " " << port_option() << _port;
+    port_option(app, _port);
   }
 
-  options+= arg_buffer.str();
-
-  if (not _extra_args.empty())
+  for (Options::const_iterator iter= _options.begin(); iter != _options.end(); iter++)
   {
-    options+= _extra_args;
+    if ((*iter).second.empty() == false)
+    {
+      app.add_option((*iter).first, (*iter).second);
+    }
+    else
+    {
+      app.add_option((*iter).first);
+    }
   }
 
   return true;

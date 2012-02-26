@@ -68,6 +68,21 @@ namespace {
     return arg_buffer.str();
   }
 
+  static Application::error_t int_to_error_t(int arg)
+  {
+    switch (arg)
+    {
+    case 127:
+      return Application::INVALID;
+
+    case 0:
+      return Application::SUCCESS;
+
+    default:
+    case 1:
+      return Application::FAILURE;
+    }
+  }
 }
 
 namespace libtest {
@@ -218,16 +233,15 @@ Application::error_t Application::wait()
       {
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Pid mismatch, %d != %d", int(waited_pid), int(_pid));
       }
-      exit_code= error_t(exited_successfully(status));
+      exit_code= int_to_error_t(exited_successfully(status));
     }
   }
 
   if (exit_code == Application::INVALID)
   {
-#if 0
     Error << print_argv(built_argv, _argc, _pid);
-#endif
   }
+  
 
   return exit_code;
 }

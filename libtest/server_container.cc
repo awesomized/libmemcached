@@ -216,7 +216,9 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
+#if 0
     Out << "run " << server->args(options);
+#endif
     getchar();
   }
   else if (server->start() == false)
@@ -313,7 +315,9 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
+#if 0
     Out << "run " << server->args(options);
+#endif
     getchar();
   }
   else if (not server->start())

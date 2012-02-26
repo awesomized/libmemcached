@@ -65,6 +65,8 @@ static test_return_t help_TEST(void *)
 
 static test_return_t basic_TEST(void *)
 {
+  test_skip(false, true);
+
   char port_buffer[1024];
   snprintf(port_buffer, sizeof(port_buffer), "--port=%d", int(libtest::default_port()));
   const char *memcached_light_args[]= { port_buffer, 0 };

@@ -160,9 +160,12 @@ public:
     return MEMCACHED_BINARY;
   }
 
-  const char *pid_file_option()
+  virtual void pid_file_option(Application& app, const std::string& arg)
   {
-    return "-P ";
+    if (arg.empty() == false)
+    {
+      app.add_option("-P", arg);
+    }
   }
 
   const char *socket_file_option() const
@@ -175,14 +178,29 @@ public:
     return "-d";
   }
 
-  const char *log_file_option()
+  virtual void port_option(Application& app, in_port_t arg)
   {
-    return NULL;
+    char buffer[30];
+    snprintf(buffer, sizeof(buffer), "%d", int(arg));
+    app.add_option("-p", buffer); 
   }
 
-  const char *port_option()
+  bool has_port_option() const
   {
-    return "-p ";
+    return true;
+  }
+
+  bool has_socket_file_option() const
+  {
+    return true;
+  }
+
+  void socket_file_option(Application& app, const std::string& socket_arg)
+  {
+    if (socket_arg.empty() == false)
+    {
+      app.add_option("-s", socket_arg);
+    }
   }
 
   bool is_libtool()
@@ -300,24 +318,22 @@ bool Memcached::build(int argc, const char *argv[])
 
   if (getuid() == 0 or geteuid() == 0)
   {
-    arg_buffer << " -u root ";
+    add_option("-u", "root");
   }
 
-  arg_buffer << " -l localhost ";
-  arg_buffer << " -m 128 ";
-  arg_buffer << " -M ";
+  add_option("-l", "localhost");
+  add_option("-m", "128");
+  add_option("-M");
 
   if (sasl())
   {
-    arg_buffer << sasl();
+    add_option(sasl());
   }
 
   for (int x= 1 ; x < argc ; x++)
   {
-    arg_buffer << " " << argv[x] << " ";
+    add_option(argv[x]);
   }
-
-  set_extra_args(arg_buffer.str());
 
   return true;
 }
