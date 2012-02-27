@@ -43,7 +43,6 @@ using namespace libtest;
 #include <vector>
 #include <string>
 #include <cerrno>
-#include <cassert>
 
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
@@ -621,19 +620,19 @@ static memcached_return_t dump_server_information(const memcached_st *,
 {
   if (strcmp(memcached_server_name(instance), "localhost")) 
   {
-    assert(not memcached_server_name(instance));
+    fatal_assert(not memcached_server_name(instance));
     return MEMCACHED_FAILURE;
   }
 
   if (memcached_server_port(instance) < 8888 or memcached_server_port(instance) > 8892)
   {
-    assert(not memcached_server_port(instance));
+    fatal_assert(not memcached_server_port(instance));
     return MEMCACHED_FAILURE;
   }
 
   if (instance->weight > 5 or instance->weight < 2)
   {
-    assert(not instance->weight);
+    fatal_assert(not instance->weight);
     return MEMCACHED_FAILURE;
   }
 

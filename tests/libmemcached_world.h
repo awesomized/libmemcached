@@ -39,8 +39,6 @@
 
 #pragma once
 
-#include <cassert>
-
 /* The structure we use for the test system */
 struct libmemcached_test_container_st
 {

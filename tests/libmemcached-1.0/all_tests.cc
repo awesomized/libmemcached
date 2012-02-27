@@ -73,7 +73,7 @@ void get_world(Framework *world)
   if (getenv("LIBMEMCACHED_SERVER_NUMBER"))
   {
     int set_count= atoi(getenv("LIBMEMCACHED_SERVER_NUMBER"));
-    assert(set_count >= 0);
+    fatal_assert(set_count >= 0);
     world->servers().set_count(set_count);
   }
   else
