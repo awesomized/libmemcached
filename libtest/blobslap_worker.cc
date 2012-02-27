@@ -127,7 +127,7 @@ public:
     return "--daemon";
   }
 
-  void has_port_option() const
+  bool has_port_option() const
   {
     return true;
   }

@@ -241,7 +241,6 @@ Application::error_t Application::wait()
   {
     Error << print_argv(built_argv, _argc, _pid);
   }
-  
 
   return exit_code;
 }

@@ -132,7 +132,11 @@ bool Server::start()
     Error << "Could not kill() existing server during start() pid:" << _pid;
     return false;
   }
-  assert(not has_pid());
+
+  if (has_pid() == false)
+  {
+    fatal_message("has_pid() failed, programer error");
+  }
 
   Application app(name(), is_libtool());
   if (args(app) == false)
@@ -141,15 +145,16 @@ bool Server::start()
     return false;
   }
 
-  if (Application::SUCCESS !=  app.run())
+  Application::error_t ret;
+  if (Application::SUCCESS !=  (ret= app.run()))
   {
-    Error << "Application::run()";
+    Error << "Application::run() " << ret;
     return false;
   }
 
-  if (Application::SUCCESS !=  app.wait())
+  if (Application::SUCCESS !=  (ret= app.wait()))
   {
-    Error << "Application::wait()";
+    Error << "Application::wait() " << ret;
     return false;
   }
 
