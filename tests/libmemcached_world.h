@@ -78,17 +78,16 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
   {
     in_port_t port= libtest::get_free_port();
 
-    const char *argv[1]= { "memcached" };
     if (servers.sasl())
     {
-      if (server_startup(servers, "memcached-sasl", port, 1, argv) == false)
+      if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
       {
         fatal_message("Could not start memcached-sasl");
       }
     }
     else
     {
-      if (server_startup(servers, "memcached", port, 1, argv) == false)
+      if (server_startup(servers, "memcached", port, 0, NULL) == false)
       {
         fatal_message("Could not start memcached");
       }

@@ -200,10 +200,10 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool build(size_t argc, const char *argv[]);
 };
 
-bool Gearmand::build(int argc, const char *argv[])
+bool Gearmand::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
@@ -214,7 +214,7 @@ bool Gearmand::build(int argc, const char *argv[])
 
   add_option("--listen=localhost");
 
-  for (int x= 1 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
     add_option(argv[x]);
   }

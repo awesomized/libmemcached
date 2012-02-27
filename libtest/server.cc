@@ -70,7 +70,6 @@ std::ostream& operator<<(std::ostream& output, const Server &arg)
     output << " Exec:" <<  arg.running();
   }
 
-
   return output;  // for multiple << operators
 }
 
@@ -138,7 +137,7 @@ bool Server::start()
     fatal_message("has_pid() failed, programer error");
   }
 
-  Application app(name(), is_libtool());
+  Application app(executable(), is_libtool());
   if (args(app) == false)
   {
     Error << "Could not build command()";
@@ -151,10 +150,11 @@ bool Server::start()
     Error << "Application::run() " << ret;
     return false;
   }
+  _running= app.print();
 
   if (Application::SUCCESS !=  (ret= app.wait()))
   {
-    Error << "Application::wait() " << ret;
+    Error << "Application::wait() " << app.print() << " " << ret;
     return false;
   }
 
@@ -332,9 +332,10 @@ bool Server::args(Application& app)
     app.add_option(daemon_file_option());
   }
 
-  if (_is_socket and has_socket_file_option())
+  if (has_socket_file_option())
   {
-    if (not set_socket_file())
+    Error << "adding socket option ";
+    if (set_socket_file() == false)
     {
       return false;
     }

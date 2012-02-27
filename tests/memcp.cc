@@ -50,16 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable;
-
-static test_return_t quiet_test(void *)
-{
-  const char *args[]= { "--quiet", 0 };
-
-  test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
-
-  return TEST_SUCCESS;
-}
+static std::string executable("./clients/memcp");
 
 static test_return_t help_test(void *)
 {
@@ -82,7 +73,6 @@ static test_return_t server_test(void *)
 }
 
 test_st memcp_tests[] ={
-  {"--quiet", true, quiet_test },
   {"--help", true, help_test },
   {"--server_test", true, server_test },
   {0, 0, 0}
@@ -101,8 +91,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memcp" };
-  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
+  if (server_startup(servers, "memcached", libtest::default_port(), 0, NULL) == false)
   {
     error= TEST_FAILURE;
   }
@@ -113,7 +102,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memcp";
   world->collections= collection;
   world->_create= world_create;
 }

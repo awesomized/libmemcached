@@ -97,7 +97,7 @@ public:
   {
     if (arg.empty() == false)
     {
-      std::string buffer("--socket=");
+      std::string buffer("--pid-file=");
       buffer+= arg;
       app.add_option(buffer);
     }
@@ -164,7 +164,7 @@ public:
 
   virtual pid_t get_pid(bool error_is_ok= false)= 0;
 
-  virtual bool build(int argc, const char *argv[])= 0;
+  virtual bool build(size_t argc, const char *argv[])= 0;
 
   void add_option(const std::string&);
   void add_option(const std::string&, const std::string&);

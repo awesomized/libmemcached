@@ -192,7 +192,7 @@ public:
 
   bool has_socket_file_option() const
   {
-    return true;
+    return has_socket();
   }
 
   void socket_file_option(Application& app, const std::string& socket_arg)
@@ -219,7 +219,7 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool build(size_t argc, const char *argv[]);
 };
 
 class MemcachedSaSL : public Memcached
@@ -312,7 +312,7 @@ public:
 
 #include <sstream>
 
-bool Memcached::build(int argc, const char *argv[])
+bool Memcached::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 

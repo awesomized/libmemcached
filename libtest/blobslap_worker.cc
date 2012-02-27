@@ -142,17 +142,17 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool build(size_t argc, const char *argv[]);
 };
 
 
 #include <sstream>
 
-bool BlobslapWorker::build(int argc, const char *argv[])
+bool BlobslapWorker::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
-  for (int x= 1 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
     add_option(argv[x]);
   }
