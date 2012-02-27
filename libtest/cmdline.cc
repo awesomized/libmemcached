@@ -425,9 +425,8 @@ int exec_cmdline(const std::string& command, const char *args[], bool use_libtoo
   {
     return int(ret);
   }
-  ret= app.wait();
 
-  return int(ret);
+  return int(app.wait());
 }
 
 const char *gearmand_binary() 

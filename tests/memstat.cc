@@ -50,22 +50,13 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable;
-
-static test_return_t quiet_test(void *)
-{
-  const char *args[]= { "--quiet", 0 };
-
-  test_true(exec_cmdline(executable, args));
-  return TEST_SUCCESS;
-}
-
+static std::string executable("./clients/memstat");
 
 static test_return_t help_test(void *)
 {
-  const char *args[]= { "--help", "--quiet", 0 };
+  const char *args[]= { "--help", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
   return TEST_SUCCESS;
 }
@@ -74,9 +65,9 @@ static test_return_t binary_TEST(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
-  const char *args[]= { "--quiet", buffer, " --binary ", 0 };
+  const char *args[]= { buffer, " --binary ", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
   return TEST_SUCCESS;
 }
 
@@ -84,9 +75,9 @@ static test_return_t server_version_TEST(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
-  const char *args[]= { "--quiet", buffer, " --server-version", 0 };
+  const char *args[]= { buffer, " --server-version", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
   return TEST_SUCCESS;
 }
 
@@ -94,14 +85,14 @@ static test_return_t binary_server_version_TEST(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(libtest::default_port()));
-  const char *args[]= { "--quiet", buffer, " --binary --server-version", 0 };
+  const char *args[]= { buffer, " --binary --server-version", 0 };
 
-  test_true(exec_cmdline(executable, args));
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
   return TEST_SUCCESS;
 }
 
 test_st memstat_tests[] ={
-  {"--quiet", 0, quiet_test},
   {"--help", 0, help_test},
   {"--binary", 0, binary_TEST},
   {"--server-version", 0, server_version_TEST},
@@ -134,7 +125,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memstat";
   world->collections= collection;
   world->_create= world_create;
 }
