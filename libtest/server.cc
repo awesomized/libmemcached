@@ -334,7 +334,6 @@ bool Server::args(Application& app)
 
   if (has_socket_file_option())
   {
-    Error << "adding socket option ";
     if (set_socket_file() == false)
     {
       return false;
