@@ -43,6 +43,7 @@
 
 #include <libtest/test.hpp>
 #include <libmemcached/memcached.h>
+#include <libmemcached/util.h>
 
 using namespace libtest;
 
@@ -111,6 +112,23 @@ static test_return_t NOT_FOUND_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t check_version(void*)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  memcached_st *memc= memcached(buffer, strlen(buffer));
+  test_true(memc);
+  
+  test_return_t result= TEST_SUCCESS;
+  if (libmemcached_util_version_check(memc, 1, 4, 8) == false)
+  {
+    result= TEST_SKIPPED;
+  }
+  memcached_free(memc);
+
+  return result;
+}
+
 test_st memexist_tests[] ={
   {"--help", true, help_test },
   {"exist(FOUND)", true, exist_test },
@@ -119,7 +137,7 @@ test_st memexist_tests[] ={
 };
 
 collection_st collection[] ={
-  {"memexist", 0, 0, memexist_tests },
+  {"memexist", check_version, 0, memexist_tests },
   {0, 0, 0, 0}
 };
 

@@ -43,6 +43,7 @@
 
 #include <libtest/test.hpp>
 #include <libmemcached/memcached.h>
+#include <libmemcached/util.h>
 
 using namespace libtest;
 
@@ -88,7 +89,6 @@ static test_return_t touch_test(void *)
 static test_return_t NOT_FOUND_test(void *)
 {
   char buffer[1024];
-
   snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
   memcached_st *memc= memcached(buffer, strlen(buffer));
   test_true(memc);
@@ -108,6 +108,23 @@ static test_return_t NOT_FOUND_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t check_version(void*)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  memcached_st *memc= memcached(buffer, strlen(buffer));
+  test_true(memc);
+  
+  test_return_t result= TEST_SUCCESS;
+  if (libmemcached_util_version_check(memc, 1, 4, 8) == false)
+  {
+    result= TEST_SKIPPED;
+  }
+  memcached_free(memc);
+
+  return result;
+}
+
 test_st memtouch_tests[] ={
   {"--help", true, help_test },
   {"touch(FOUND)", true, touch_test },
@@ -116,7 +133,7 @@ test_st memtouch_tests[] ={
 };
 
 collection_st collection[] ={
-  {"memtouch", 0, 0, memtouch_tests },
+  {"memtouch", check_version, 0, memtouch_tests },
   {0, 0, 0, 0}
 };
 

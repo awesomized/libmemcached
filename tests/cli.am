@@ -92,8 +92,11 @@ test-memstat: tests/memstat
 test-memerror: tests/memerror
 	tests/memerror
 
+test-memtouch: tests/memtouch
+	tests/memtouch
+
 valgrind-memerror: tests/memerror
 	 @$(VALGRIND_COMMAND) tests/memerror
 
 valgrind-memtouch: tests/memtouch
-	 @$(VALGRIND_COMMAND) tests/memerror
+	 @$(VALGRIND_COMMAND) tests/memtouch
