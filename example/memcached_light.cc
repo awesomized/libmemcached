@@ -624,7 +624,7 @@ int main(int argc, char **argv)
 
 
   /* Serve all of the clients */
-  switch (event_base_loop(event_base, 0) == -1)
+  switch (event_base_loop(event_base, 0))
   {
   case -1:
     log_file.write(util::VERBOSE_ERROR, "event_base_loop() failed");

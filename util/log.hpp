@@ -96,7 +96,7 @@ struct log_info_st
           if (opt_syslog)
           {
             char buffer[1024];
-            getcwd(buffer, sizeof(buffer));
+            (void)getcwd(buffer, sizeof(buffer));
             syslog(LOG_ERR, "Could not open log file \"%.*s\", from \"%s\", open failed with (%s)", 
                    int(filename.size()), filename.c_str(), 
                    buffer,
