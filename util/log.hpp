@@ -96,10 +96,10 @@ struct log_info_st
           if (opt_syslog)
           {
             char buffer[1024];
-            (void)getcwd(buffer, sizeof(buffer));
+            char *getcwd_ret= getcwd(buffer, sizeof(buffer));
             syslog(LOG_ERR, "Could not open log file \"%.*s\", from \"%s\", open failed with (%s)", 
                    int(filename.size()), filename.c_str(), 
-                   buffer,
+                   getcwd_ret,
                    strerror(errno));
           }
           std::cerr << "Could not open log file for writing, switching to stderr." << std::endl;
