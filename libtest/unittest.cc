@@ -241,6 +241,18 @@ static test_return_t gearmand_cycle_test(void *object)
   return TEST_SUCCESS;
 }
 
+static test_return_t memcached_light_cycle_TEST(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  test_skip(true, bool(HAVE_MEMCACHED_LIGHT_BINARY));
+
+  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL));
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t memcached_cycle_test(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
@@ -565,6 +577,7 @@ static test_return_t check_for_libmemcached(void *)
 
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
+  {"memcached-light startup-shutdown", 0, memcached_light_cycle_TEST },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
   {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
   {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },

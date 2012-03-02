@@ -186,10 +186,16 @@ bool Server::start()
     // If we happen to have a pid file, lets try to kill it
     if (pid_file().empty() == false)
     {
-      Error << "We are going to kill it off";
-      kill_file(pid_file());
+      if (kill_file(pid_file()) == false)
+      {
+        fatal_message("Failed to kill off server after startup occurred, when pinging failed");
+      }
+      Error << "Failed to ping() server started, having pid_file. exec:" << _running;
     }
-    Error << "Failed to ping() server started with:" << _running;
+    else
+    {
+      Error << "Failed to ping() server started. exec:" << _running;
+    }
     _running.clear();
     return false;
   }

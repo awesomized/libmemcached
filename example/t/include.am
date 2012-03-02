@@ -14,8 +14,8 @@ MEMCACHED_LIGHT_TESTS_LDADDS= \
                               libtest/libtest.la
 example_t_memcached_light_SOURCES= example/t/memcached_light.cc
 example_t_memcached_light_CXXFLAGS = $(AM_CXXFLAGS)
-example_t_memcached_light_DEPENDENCIES= $(MEMCACHED_LIGHT_TESTS_LDADDS)
-example_t_memcached_light_LDADD= $(example_t_memcached_light_DEPENDENCIES)
+example_t_memcached_light_DEPENDENCIES= $(MEMCACHED_LIGHT_TESTS_LDADDS) example/memcached_light
+example_t_memcached_light_LDADD= $(MEMCACHED_LIGHT_TESTS_LDADDS)
 check_PROGRAMS+= example/t/memcached_light
 noinst_PROGRAMS+= example/t/memcached_light
 

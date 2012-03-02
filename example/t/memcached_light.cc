@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Test memslap
+ *  Test memcat
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -50,74 +50,118 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable;
+static std::string executable("example/memcached_light");
 
 static test_return_t help_TEST(void *)
 {
-  const char *memcached_light_args[]= { "--help", 0 };
-  Application memcached_light_app(executable, true);
+  const char *args[]= { "--help", 0 };
 
-  test_compare(Application::SUCCESS, memcached_light_app.run(memcached_light_args));
-  test_compare(Application::SUCCESS, memcached_light_app.wait());
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
   return TEST_SUCCESS;
 }
 
-static test_return_t basic_TEST(void *)
+static test_return_t verbose_TEST(void *)
 {
-  test_skip(false, true);
+  const char *args[]= { "--help", "--verbose", 0 };
 
-  char port_buffer[1024];
-  snprintf(port_buffer, sizeof(port_buffer), "--port=%d", int(libtest::default_port()));
-  const char *memcached_light_args[]= { port_buffer, 0 };
-  Application memcached_light_app(executable, true);
-
-  test_compare(Application::SUCCESS, memcached_light_app.run(memcached_light_args));
-
-  char instance_buffer[1024];
-  int instance_buffer_length= snprintf(instance_buffer, sizeof(instance_buffer), "--BINARY --server=localhost:%d", int(libtest::default_port()));
-  memcached_st *memc= memcached(instance_buffer, instance_buffer_length);
-
-#if 0
-  for (size_t x= 0; x < 24; x++)
-  {
-    char id_buffer[1024];
-    int length= snprintf(id_buffer, sizeof(id_buffer), "%u", uint32_t(x));
-    test_compare_hint(MEMCACHED_NOTFOUND, memcached_delete(memc, id_buffer, length, 0),
-                      id_buffer);
-  }
-#endif
-
-  // We fail since we are just outright killing it.
-  test_compare(Application::FAILURE, memcached_light_app.wait());
-
-  memcached_free(memc);
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
   return TEST_SUCCESS;
 }
 
-test_st help_TESTS[] ={
-  {"--help", true, help_TEST },
-  {0, 0, 0}
-};
+static test_return_t daemon_TEST(void *)
+{
+  const char *args[]= { "--help", "--daemon", 0 };
 
-test_st basic_TESTS[] ={
-  {"--port", true, basic_TEST },
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t protocol_TEST(void *)
+{
+  const char *args[]= { "--help", "--protocol", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t version_TEST(void *)
+{
+  const char *args[]= { "--help", "--version", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t port_TEST(void *)
+{
+  const char *args[]= { "--help", "--port=9090", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t pid_file_TEST(void *)
+{
+  const char *args[]= { "--help", "--pid-file=/tmp/foo.pid", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t log_file_TEST(void *)
+{
+  const char *args[]= { "--help", "--log-file=/tmp/foo.log", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t max_connections_file_TEST(void *)
+{
+  const char *args[]= { "--help", "--max-connections=/tmp/foo.max_connections", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
+test_st cmdline_option_TESTS[] ={
+  {"--help", true, help_TEST },
+  {"--verbose", true, verbose_TEST },
+  {"--daemon", true, daemon_TEST },
+  {"--protocol", true, protocol_TEST },
+  {"--version", true, version_TEST },
+  {"--port", true, port_TEST },
+  {"--pid-file", true, pid_file_TEST },
+  {"--log-file", true, log_file_TEST },
+  {"--max-connections", true, max_connections_file_TEST },
   {0, 0, 0}
 };
 
 collection_st collection[] ={
-  {"--help", 0, 0, help_TESTS },
-  {"basics", 0, 0, basic_TESTS },
+  {"command line options", 0, 0, cmdline_option_TESTS },
   {0, 0, 0, 0}
 };
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
-  if (HAVE_MEMCACHED_BINARY == 0)
+  if (HAVE_MEMCACHED_LIGHT_BINARY == 0)
   {
     error= TEST_SKIPPED;
     return NULL;
+  }
+
+  if (server_startup(servers, "memcached-light", libtest::default_port(), 0, NULL) == 0)
+  {
+    error= TEST_FAILURE;
   }
 
   return &servers;
@@ -126,9 +170,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./example/memcached_light";
   world->collections= collection;
   world->_create= world_create;
 }
-
 

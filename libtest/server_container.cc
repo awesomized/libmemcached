@@ -195,11 +195,20 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
       }
     }
   }
+  else if (server_type.compare("memcached-light") == 0)
+  {
+    if (MEMCACHED_LIGHT_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached_light("localhost", try_port);
+      }
+    }
+  }
 
   if (server == NULL)
   {
-    Error << "Failure occured while creating server: " <<  server_type;
-    return false;
+    fatal_message("Launching of an unknown server was attempted");
   }
 
   /*
