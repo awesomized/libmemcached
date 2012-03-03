@@ -209,6 +209,9 @@ AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker]
 AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
 AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
 
+AC_DEFINE([HAVE_MEMCACHED_LIGHT_BINARY], [1], [Support for memcached_light])
+AC_DEFINE([MEMCACHED_LIGHT_BINARY], ["example/memcached_light"], [Support for memcached_light])
+
 AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")

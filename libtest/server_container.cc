@@ -144,7 +144,10 @@ bool server_startup_st::is_helgrind() const
 bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[])
 {
   Outn();
-  (void)try_port;
+  if (try_port <= 0)
+  {
+    libtest::fatal(LIBYATL_DEFAULT_PARAM, "was passed the invalid port number %d", int(try_port));
+  }
 
   libtest::Server *server= NULL;
   if (0)
@@ -192,11 +195,20 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
       }
     }
   }
+  else if (server_type.compare("memcached-light") == 0)
+  {
+    if (MEMCACHED_LIGHT_BINARY)
+    {
+      if (HAVE_LIBMEMCACHED)
+      {
+        server= build_memcached_light("localhost", try_port);
+      }
+    }
+  }
 
   if (server == NULL)
   {
-    Error << "Failure occured while creating server: " <<  server_type;
-    return false;
+    fatal_message("Launching of an unknown server was attempted");
   }
 
   /*
@@ -216,7 +228,9 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
+#if 0
     Out << "run " << server->args(options);
+#endif
     getchar();
   }
   else if (server->start() == false)
@@ -313,7 +327,9 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
     std::string options;
+#if 0
     Out << "run " << server->args(options);
+#endif
     getchar();
   }
   else if (not server->start())

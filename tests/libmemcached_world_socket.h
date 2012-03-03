@@ -68,18 +68,12 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     const char *argv[1]= { "memcached" };
     if (not servers.start_socket_server("memcached", libtest::get_free_port(), 1, argv))
     {
-      error= TEST_FATAL;
-      return NULL;
+      fatal_message("Could not launch memcached");
     }
   }
 
 
   libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
-  if (global_container == NULL)
-  {
-    error= TEST_MEMORY_ALLOCATION_FAILURE;
-    return NULL;
-  }
 
   error= TEST_SUCCESS;
 

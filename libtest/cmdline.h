@@ -129,6 +129,9 @@ static inline std::ostream& operator<<(std::ostream& output, const enum Applicat
     case Application::INVALID:
       output << "127";
       break;
+
+    default:
+      output << "EXIT_UNKNOWN";
   }
 
   return output;

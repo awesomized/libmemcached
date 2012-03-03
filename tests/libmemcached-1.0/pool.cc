@@ -238,10 +238,9 @@ struct test_pool_context_st {
 static void* connection_release(void *arg)
 {
   test_pool_context_st *resource= static_cast<test_pool_context_st *>(arg);
-  assert(resource);
   if (resource == NULL)
   {
-    abort();
+    fatal_message("resource == NULL");
   }
 
   // Release all of the memc we are holding 

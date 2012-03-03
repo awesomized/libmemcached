@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <libtest/cmdline.h>
+
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -33,6 +35,9 @@
 namespace libtest {
 
 struct Server {
+private:
+  typedef std::vector< std::pair<std::string, std::string> > Options;
+
 private:
   bool _is_socket;
   std::string _socket;
@@ -55,20 +60,67 @@ public:
 
   virtual const char *name()= 0;
   virtual const char *executable()= 0;
-  virtual const char *port_option()= 0;
-  virtual const char *pid_file_option()= 0;
   virtual const char *daemon_file_option()= 0;
-  virtual const char *log_file_option()= 0;
   virtual bool is_libtool()= 0;
 
-  virtual bool broken_socket_cleanup()
+  virtual bool has_socket_file_option() const
   {
     return false;
   }
 
-  virtual const char *socket_file_option() const
+  virtual void socket_file_option(Application& app, const std::string& socket_arg)
   {
-    return NULL;
+    if (socket_arg.empty() == false)
+    {
+      std::string buffer("--socket=");
+      buffer+= socket_arg;
+      app.add_option(buffer);
+    }
+  }
+
+  bool has_log_file_option() const
+  {
+    return false;
+  }
+
+  virtual void log_file_option(Application& app, const std::string& arg)
+  {
+    if (arg.empty() == false)
+    {
+      std::string buffer("--log-file=");
+      buffer+= arg;
+      app.add_option(buffer);
+    }
+  }
+
+  virtual void pid_file_option(Application& app, const std::string& arg)
+  {
+    if (arg.empty() == false)
+    {
+      std::string buffer("--pid-file=");
+      buffer+= arg;
+      app.add_option(buffer);
+    }
+  }
+
+  virtual bool has_port_option() const
+  {
+    return false;
+  }
+
+  virtual void port_option(Application& app, in_port_t arg)
+  {
+    if (arg > 0)
+    {
+      char buffer[1024];
+      snprintf(buffer, sizeof(buffer), "--port=%d", int(arg));
+      app.add_option(buffer);
+    }
+  }
+
+  virtual bool broken_socket_cleanup()
+  {
+    return false;
   }
 
   virtual bool broken_pid_file()
@@ -112,7 +164,10 @@ public:
 
   virtual pid_t get_pid(bool error_is_ok= false)= 0;
 
-  virtual bool build(int argc, const char *argv[])= 0;
+  virtual bool build(size_t argc, const char *argv[])= 0;
+
+  void add_option(const std::string&);
+  void add_option(const std::string&, const std::string&);
 
   in_port_t port() const
   {
@@ -137,9 +192,7 @@ public:
     _log_file.clear();
   }
 
-  void set_extra_args(const std::string &arg);
-
-  bool args(std::string& options);
+  bool args(Application&);
 
   pid_t pid();
 
@@ -174,10 +227,11 @@ public:
 
   bool kill(pid_t pid_arg);
   bool start();
-  bool command(std::string& command_arg);
+  bool command(libtest::Application& app);
 
 protected:
   bool set_pid_file();
+  Options _options;
 
 private:
   bool is_helgrind() const;
@@ -185,7 +239,6 @@ private:
   bool is_debug() const;
   bool set_log_file();
   bool set_socket_file();
-  void rebuild_base_command();
   void reset_pid();
 };
 

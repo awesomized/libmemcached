@@ -51,7 +51,6 @@ using namespace libtest;
 #include <libmemcached/udp.hpp>
 #include <libmemcachedutil-1.0/util.h>
 
-#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

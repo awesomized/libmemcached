@@ -13,11 +13,15 @@ noinst_HEADERS+= \
 
 example_memcached_light_SOURCES= \
 				 example/byteorder.cc \
-				 example/interface_v0.c \
-				 example/interface_v1.c \
-				 example/memcached_light.c
+				 example/interface_v0.cc \
+				 example/interface_v1.cc \
+				 example/memcached_light.cc \
+				 util/daemon.cc \
+				 util/pidfile.cc
 
 example_memcached_light_LDADD= libmemcached/libmemcachedprotocol.la \
                                $(LIBEVENT_LDFLAGS)
 
-example_memcached_light_SOURCES+= example/storage.c
+example_memcached_light_SOURCES+= example/storage.cc
+
+include example/t/include.am
