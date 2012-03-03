@@ -25,4 +25,42 @@
 #  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-autoreconf --install --force --verbose -Wall
+die() { echo "$@"; exit 1; }
+
+run() {
+	echo "$ARGV0: running \`$@' $ARGS"
+	$@ $ARGS
+}
+
+# Try to locate a program by using which, and verify that the file is an
+# executable
+locate_binary() {
+  for f in $@
+  do
+    file=`which $f 2>/dev/null | grep -v '^no '`
+    if test -n "$file" -a -x "$file"; then
+      echo $file
+      return 0
+    fi
+  done
+
+  echo "" 
+  return 1
+}
+
+
+AUTORECONF_FLAGS=" --install --force --verbose -Wall"
+
+if test -f config/pre_hook.sh
+then
+  . config/pre_hook.sh
+fi
+
+if test x$AUTORECONF = x; then
+  AUTORECONF=`locate_binary autoreconf`
+  if test x$AUTORECONF = x; then
+    die "Did not find a supported autoconf"
+  fi
+fi
+
+run $AUTORECONF $AUTORECONF_FLAGS || die "Can't execute autoreconf"
