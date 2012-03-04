@@ -57,6 +57,7 @@ distclean-libtest-check:
 
 noinst_HEADERS+= \
 		 libtest/binaries.h \
+		 libtest/cpu.hpp \
 		 libtest/blobslap_worker.h \
 		 libtest/callbacks.h \
 		 libtest/cmdline.h \
@@ -99,6 +100,7 @@ libtest_libtest_la_SOURCES= \
 			    libtest/binaries.cc \
 			    libtest/cmdline.cc \
 			    libtest/core.cc \
+			    libtest/cpu.cc \
 			    libtest/dream.cc \
 			    libtest/fatal.cc \
 			    libtest/framework.cc \
