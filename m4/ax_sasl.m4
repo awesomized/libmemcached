@@ -30,7 +30,6 @@ AC_DEFUN([AX_SASL_OPTION],[
 
     AS_IF([test "x$ac_enable_sasl" = "xyes"], [
       ac_enable_sasl="no"
-      ], [
       ])
 
     AS_IF([test "x$ac_enable_sasl" = "xyes"], [
