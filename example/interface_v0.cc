@@ -20,6 +20,12 @@
 #include <example/byteorder.h>
 #include "example/memcached_light.h"
 #include "example/storage.h"
+#include "util/log.hpp"
+
+
+using namespace datadifferential;
+
+static util::log_info_st *log_file= NULL;
 
 static protocol_binary_response_status noop_command_handler(const void *cookie,
                                                             protocol_binary_request_header *header,
@@ -121,17 +127,21 @@ static protocol_binary_response_status delete_command_handler(const void *cookie
   response.message.header.response.opcode= header->request.opcode;
   response.message.header.response.opaque= header->request.opaque;
 
-  if (!delete_item(key, keylen))
+  if (delete_item(key, keylen) == false)
   {
+    log_file->write(util::VERBOSE_NOTICE, "%s not found: %.*s", __func__, keylen, key);
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_ENOENT);
     return response_handler(cookie, header, (protocol_binary_response_header*)&response);
   }
   else if (header->request.opcode == PROTOCOL_BINARY_CMD_DELETE)
   {
+    log_file->write(util::VERBOSE_NOTICE, "%s not found: %.*s", __func__, keylen, key);
     /* DELETEQ doesn't want success response */
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
     return response_handler(cookie, header, (protocol_binary_response_header*)&response);
   }
+
+  log_file->write(util::VERBOSE_NOTICE, "%s deleted: %.*s", __func__, keylen, key);
 
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
 }
@@ -516,8 +526,10 @@ static protocol_binary_response_status stat_command_handler(const void *cookie,
 
 memcached_binary_protocol_callback_st interface_v0_impl;
 
-void initialize_interface_v0_handler(void)
+void initialize_interface_v0_handler(util::log_info_st& arg)
 {
+  log_file= &arg;
+
   interface_v0_impl.interface_version= MEMCACHED_PROTOCOL_HANDLER_V0;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_GET]= get_command_handler;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_SET]= set_command_handler;

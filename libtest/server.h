@@ -78,7 +78,7 @@ public:
     }
   }
 
-  bool has_log_file_option() const
+  virtual bool has_log_file_option() const
   {
     return false;
   }

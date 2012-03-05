@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <tests/libmemcached-1.0/memcached_get.h>
+
 
 /* Clean the server before beginning testing */
 test_st tests[] ={

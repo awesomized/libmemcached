@@ -44,6 +44,17 @@
 
 #include <sys/stat.h>
 
+
+memcached_return_t return_value_based_on_buffering(memcached_st *memc)
+{
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS))
+  {
+    return MEMCACHED_BUFFERED;
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 /**
   @note This should be testing to see if the server really supports the binary protocol.
 */
