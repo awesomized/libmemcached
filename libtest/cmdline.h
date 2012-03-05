@@ -95,15 +95,36 @@ public:
 
   std::string print();
 
+  void use_valgrind(bool arg= true)
+  {
+    _use_valgrind= arg;
+  }
+
+  void use_gdb(bool arg= true)
+  {
+    _use_gdb= arg;
+  }
+
+  std::string arguments();
+
+  std::string gdb_filename()
+  {
+    return  _gdb_filename;
+  }
+
 private:
   void create_argv(const char *args[]);
   void delete_argv();
 
 private:
   const bool _use_libtool;
+  bool _use_valgrind;
+  bool _use_gdb;
   size_t _argc;
+  std::string _exectuble_name;
   std::string _exectuble;
   std::string _exectuble_with_path;
+  std::string _gdb_filename;
   Options _options;
   Pipe stdin_fd;
   Pipe stdout_fd;

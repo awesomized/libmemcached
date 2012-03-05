@@ -25,6 +25,7 @@ noinst_HEADERS+= \
 		 tests/libmemcached-1.0/generate.h \
 		 tests/libmemcached-1.0/haldenbrand.h \
 		 tests/libmemcached-1.0/mem_functions.h \
+		 tests/libmemcached-1.0/memcached_get.h \
 		 tests/libmemcached-1.0/setup_and_teardowns.h \
 		 tests/libmemcached-1.0/stat.h \
 		 tests/namespace.h \
@@ -67,6 +68,7 @@ tests_libmemcached_1_0_testapp_SOURCES= \
 					tests/libmemcached-1.0/haldenbrand.cc \
 					tests/libmemcached-1.0/ketama.cc \
 					tests/libmemcached-1.0/mem_functions.cc \
+					tests/libmemcached-1.0/memcached_get.cc \
 					tests/libmemcached-1.0/namespace.cc \
 					tests/libmemcached-1.0/parser.cc \
 					tests/libmemcached-1.0/pool.cc \
@@ -113,6 +115,7 @@ tests_libmemcached_1_0_testsocket_SOURCES= \
 					   tests/libmemcached-1.0/haldenbrand.cc \
 					   tests/libmemcached-1.0/ketama.cc \
 					   tests/libmemcached-1.0/mem_functions.cc \
+					   tests/libmemcached-1.0/memcached_get.cc \
 					   tests/libmemcached-1.0/namespace.cc \
 					   tests/libmemcached-1.0/parser.cc \
 					   tests/libmemcached-1.0/pool.cc \

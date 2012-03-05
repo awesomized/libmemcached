@@ -123,7 +123,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      if (not wait_for_pidfile())
+      if (wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -316,6 +316,22 @@ public:
   }
 
   bool is_libtool()
+  {
+    return true;
+  }
+
+  void log_file_option(Application& app, const std::string& arg)
+  {
+    if (arg.empty() == false)
+    {
+      std::string buffer("--log-file=");
+      buffer+= arg;
+      app.add_option("--verbose");
+      app.add_option(buffer);
+    }
+  }
+
+  bool has_log_file_option() const
   {
     return true;
   }

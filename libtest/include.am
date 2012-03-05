@@ -79,8 +79,8 @@ noinst_HEADERS+= \
 		 libtest/killpid.h \
 		 libtest/libtool.hpp \
 		 libtest/memcached.h \
-		 libtest/runner.h \
 		 libtest/port.h \
+		 libtest/runner.h \
 		 libtest/server.h \
 		 libtest/server_container.h \
 		 libtest/signal.h \
@@ -91,6 +91,7 @@ noinst_HEADERS+= \
 		 libtest/string.hpp \
 		 libtest/test.h \
 		 libtest/test.hpp \
+		 libtest/tmpfile.hpp \
 		 libtest/vchar.hpp \
 		 libtest/visibility.h \
 		 libtest/wait.h
@@ -117,6 +118,7 @@ libtest_libtest_la_SOURCES= \
 			    libtest/socket.cc \
 			    libtest/strerror.cc \
 			    libtest/test.cc \
+			    libtest/tmpfile.cc \
 			    libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS=
@@ -199,7 +201,7 @@ tmp_chroot/var/run: tmp_chroot/var
 	@$(mkdir_p) tmp_chroot/var/run
 
 
-libtest_unittest_DEPENDENCIES+= libtest/libtest.la libtest_tmp_dir
+libtest_unittest_DEPENDENCIES+= libtest/libtest.la libtest_tmp_dir libtest/abort libtest/wait
 libtest_unittest_LDADD+= libtest/libtest.la
 libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest
@@ -226,3 +228,6 @@ noinst_PROGRAMS+= libtest/skiptest
 
 libtest_wait_SOURCES= libtest/wait.cc
 noinst_PROGRAMS+= libtest/wait
+
+libtest_abort_SOURCES= libtest/abort.cc
+noinst_PROGRAMS+= libtest/abort

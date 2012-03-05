@@ -22,6 +22,7 @@
 #pragma once
 
 #include <cerrno>
+#include <cstdarg>
 #include <cstdio>
 #include <fcntl.h>
 #include <iostream>
@@ -124,23 +125,32 @@ struct log_info_st
     return fd;
   }
 
-  void write(verbose_t verbose, const char *mesg)
+  void write(verbose_t verbose, const char *format, ...)
   {
-    if (opt_file)
+    if (opt_file or opt_syslog)
     {
-      char buffer[UTIL_MAX_ERROR_SIZE];
-      int buffer_length= snprintf(buffer, sizeof(buffer), "%7s %s\n", verbose_name(verbose), mesg);
-      if (::write(file(), buffer, buffer_length) == -1)
+      va_list args;
+      va_start(args, format);
+      char mesg[BUFSIZ];
+      int mesg_length= vsnprintf(mesg, sizeof(mesg), format, args);
+      va_end(args);
+
+      if (opt_file)
       {
-        std::cerr << "Could not write to log file." << std::endl;
-        syslog(LOG_EMERG, "gearmand could not open log file %s, got error %s", filename.c_str(), strerror(errno));
+        char buffer[UTIL_MAX_ERROR_SIZE];
+        int buffer_length= snprintf(buffer, sizeof(buffer), "%7s %.*s\n", verbose_name(verbose), mesg_length, mesg);
+        if (::write(file(), buffer, buffer_length) == -1)
+        {
+          std::cerr << "Could not write to log file." << std::endl;
+          syslog(LOG_EMERG, "gearmand could not open log file %s, got error %s", filename.c_str(), strerror(errno));
+        }
+
       }
 
-    }
-
-    if (opt_syslog)
-    {
-      syslog(int(verbose), "%7s %s", verbose_name(verbose), mesg);
+      if (opt_syslog)
+      {
+        syslog(int(verbose), "%7s %.*s", verbose_name(verbose), mesg_length, mesg);
+      }
     }
   }
 

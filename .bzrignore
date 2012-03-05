@@ -144,3 +144,4 @@ tmp_chroot
 unittests/unittests
 tests/libmemcached-1.0/testsocket
 example/t/memcached_light
+libtest/abort

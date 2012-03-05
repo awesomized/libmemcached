@@ -37,6 +37,8 @@
 
 #pragma once
 
+memcached_return_t return_value_based_on_buffering(memcached_st*);
+
 test_return_t pre_behavior_ketama(memcached_st*);
 test_return_t pre_behavior_ketama_weighted(memcached_st*);
 test_return_t pre_binary(memcached_st*);
