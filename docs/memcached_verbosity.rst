@@ -12,7 +12,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
 
-.. c:function:: memcached_return_t memcached_verbosity (memcached_st *ptr, unsigned int verbosity);
+.. c:function:: memcached_return_t memcached_verbosity (memcached_st *ptr, uint32_t verbosity)
 
 Compile and link with -lmemcached
 
@@ -22,7 +22,7 @@ DESCRIPTION
 -----------
 
 
-:c:func:`memcached_verbosity()` modifies the "verbosity" of the
+:c:func:`memcached_verbosity` modifies the "verbosity" of the
 memcached(1) servers referenced in the :c:type:`memcached_st`  parameter.
 
 
@@ -35,7 +35,7 @@ A value of type :c:type:`memcached_return_t` is returned.
 
 On success that value will be :c:type:`MEMCACHED_SUCCESS`.
 
-Use :c:func:`memcached_strerror()` to translate this value to a printable string.
+Use :c:func:`memcached_strerror` to translate this value to a printable string.
 
 
 ----

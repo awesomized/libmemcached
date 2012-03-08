@@ -41,17 +41,17 @@ matched based on server order as supplied by the user). It implements
 a modular and consistent method of object distribution.
 
 There are multiple implemented routing and hashing methods. See the
-:c:func:`memcached_behavior_set()` manpage for more information.
+:c:func:`memcached_behavior_set` manpage for more information.
 
 All operations are performed against a :c:type:`memcached_st` structure.
 These structures can either be dynamically allocated or statically
-allocated and then initialized by :c:func:`memcached_create()`. Functions have 
+allocated and then initialized by :c:func:`memcached_create`. Functions have 
 been written in order to encapsulate the :c:type:`memcached_st`. It is not
 recommended that you operate directly against the structure.
 
 Nearly all functions return a :c:type:`memcached_return_t` value.
 This value can be translated to a printable string with 
-:c:type:`memcached_strerror()`.
+:c:type:`memcached_strerror`.
 
 Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
 
@@ -71,7 +71,7 @@ PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 
-Some features of the library must be enabled through :c:func:`memcached_behavior_set()`.
+Some features of the library must be enabled through :c:func:`memcached_behavior_set`.
 
 Hope you enjoy it!
 
@@ -84,45 +84,45 @@ CONSTANTS
 A number of constants have been provided for in the library.
 
 
-.. c:var:: MEMCACHED_DEFAULT_PORT
+.. c:macro:: MEMCACHED_DEFAULT_PORT
  
  The default port used by memcached(3).
  
 
-
-.. c:var:: MEMCACHED_MAX_KEY
+.. c:macro:: MEMCACHED_MAX_KEY
  
  Default maximum size of a key (which includes the null pointer). Master keys
  have no limit, this only applies to keys used for storage.
  
 
-
-.. c:var:: MEMCACHED_MAX_KEY
+.. c:macro:: MEMCACHED_MAX_KEY
  
  Default size of key (which includes the null pointer).
  
 
-
-.. c:var:: MEMCACHED_STRIDE
+.. c:macro:: MEMCACHED_STRIDE
  
  This is the "stride" used in the consistent hash used between replicas.
  
 
-
-.. c:var:: MEMCACHED_MAX_HOST_LENGTH
+.. c:macro:: MEMCACHED_MAX_HOST_LENGTH
  
  Maximum allowed size of the hostname.
  
 
-.. c:var:: LIBMEMCACHED_VERSION_STRING
+.. c:macro:: LIBMEMCACHED_VERSION_STRING
  
  String value of libmemcached version such as "1.23.4"
 
 
-.. c:var:: LIBMEMCACHED_VERSION_HEX
+.. c:macro:: LIBMEMCACHED_VERSION_HEX
  
  Hex value of the version number. "0x00048000" This can be used for comparing versions based on number.
  
+
+.. c:macro:: MEMCACHED_PREFIX_KEY_MAX_SIZE
+
+ Maximum length allowed for namespacing of a key.
 
 
 
@@ -134,7 +134,7 @@ THREADS AND PROCESSES
 When using threads or forked processes it is important to keep one instance
 of :c:type:`memcached_st` per process or thread. Without creating your own 
 locking structures you can not share a single :c:type:`memcached_st`. However, 
-you can call :c:func:`memcached_quit()` on a :c:type:`memcached_st` and then use the resulting cloned structure.
+you can call :c:func:`memcached_quit` on a :c:type:`memcached_st` and then use the resulting cloned structure.
 
 
 ----

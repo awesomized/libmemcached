@@ -9,11 +9,11 @@
  * With that in mind, let me give you some pointers into the source:
  *   storage.c/h       - Implements the item store for this server and not really
  *                       interesting for this example.
- *   interface_v0.c    - Shows an implementation of the memcached server by using
+ *   interface_v0.cc   - Shows an implementation of the memcached server by using
  *                       the "raw" access to the packets as they arrive
- *   interface_v1.c    - Shows an implementation of the memcached server by using
+ *   interface_v1.cc   - Shows an implementation of the memcached server by using
  *                       the more "logical" interface.
- *   memcached_light.c - This file sets up all of the sockets and run the main
+ *   memcached_light.cc- This file sets up all of the sockets and run the main
  *                       message loop.
  *
  *
@@ -23,7 +23,7 @@
  * the library)
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <libmemcached/socket.hpp>

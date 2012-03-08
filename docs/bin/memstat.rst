@@ -42,6 +42,7 @@ For a full list of operations run the tool with:
 
 .. option:: --help
 
+.. option:: --analyze  
 
 ----
 HOME
