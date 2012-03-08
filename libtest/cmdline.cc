@@ -231,7 +231,6 @@ Application::error_t Application::run(const char *args[])
 
   if (spawn_ret)
   {
-    Error << print();
     return Application::INVALID;
   }
 
