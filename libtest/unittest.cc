@@ -324,6 +324,7 @@ static test_return_t application_true_BINARY(void *)
 
 static test_return_t application_gdb_true_BINARY2(void *)
 {
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
   Application true_app("true");
   true_app.use_gdb();
 
@@ -335,6 +336,7 @@ static test_return_t application_gdb_true_BINARY2(void *)
 
 static test_return_t application_gdb_true_BINARY(void *)
 {
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
   Application true_app("true");
   true_app.use_gdb();
 
@@ -555,6 +557,7 @@ static test_return_t wait_services_BINARY2(void *)
 
 static test_return_t wait_services_appliction_TEST(void *)
 {
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
   test_skip(0, access("/etc/services", R_OK ));
 
   libtest::Application wait_app("libtest/wait", true);
@@ -573,6 +576,7 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
   test_skip(0, TARGET_OS_OSX);
 #endif
 
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
   test_skip(0, access("/etc/services", R_OK ));
 
   libtest::Application wait_app("libtest/wait", true);
@@ -587,6 +591,8 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
 
 static test_return_t gdb_abort_services_appliction_TEST(void *)
 {
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
+
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
   test_skip(0, TARGET_OS_OSX);
 #endif
