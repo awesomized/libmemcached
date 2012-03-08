@@ -23,14 +23,18 @@
 
 #include <unistd.h>
 
+#if defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
+#include <sys/sysctl.h>
+#endif
+
 namespace libtest {
 
 size_t number_of_cpus()
 {
   size_t number_of_cpu= 1;
-#ifdef TARGET_OS_LINUX
+#if TARGET_OS_LINUX
   number_of_cpu= sysconf(_SC_NPROCESSORS_ONLN);
-#elif TARGET_OS_OSX || TARGET_OS_FREEBSD
+#elif defined(HAVE_SYS_SYSCTL_H) && defined(CTL_HW) && defined(HW_NCPU) && defined(HW_AVAILCPU) && defined(HW_NCPU)
   int mib[4];
   size_t len= sizeof(number_of_cpu); 
 
@@ -51,6 +55,8 @@ size_t number_of_cpus()
       number_of_cpu = 1;
     }
   }
+#else
+  fprintf(stderr, "Going with guessing\n");
 #endif
 
   return number_of_cpu;

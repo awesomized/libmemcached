@@ -362,7 +362,11 @@ static test_return_t application_doesnotexist_BINARY(void *)
   Application true_app("doesnotexist");
 
   const char *args[]= { "--fubar", 0 };
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_compare(Application::INVALID, true_app.run(args));
+#else
   test_compare(Application::SUCCESS, true_app.run(args));
+#endif
   // Behavior is different if we are running under valgrind
   if (getenv("TESTS_ENVIRONMENT") and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
   {
@@ -370,7 +374,11 @@ static test_return_t application_doesnotexist_BINARY(void *)
   }
   else
   {
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+    test_compare(Application::FAILURE, true_app.wait());
+#else
     test_compare(Application::INVALID, true_app.wait());
+#endif
   }
   test_compare(0, true_app.stdout_result().size());
 
@@ -561,6 +569,10 @@ static test_return_t wait_services_appliction_TEST(void *)
 
 static test_return_t gdb_wait_services_appliction_TEST(void *)
 {
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_skip(0, TARGET_OS_OSX);
+#endif
+
   test_skip(0, access("/etc/services", R_OK ));
 
   libtest::Application wait_app("libtest/wait", true);
@@ -575,6 +587,10 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
 
 static test_return_t gdb_abort_services_appliction_TEST(void *)
 {
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_skip(0, TARGET_OS_OSX);
+#endif
+
   libtest::Application abort_app("libtest/abort", true);
   abort_app.use_gdb();
 
