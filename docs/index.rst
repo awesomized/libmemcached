@@ -61,8 +61,9 @@ Advanced Topics
    memcached_strerror
    error_messages
    memcached_user_data
-   memcached_verbosity
-   memcached_version
+   memcached_verbosity 
+   memcached_version 
+   libmemcached/defaults
 
 ##################
 Interface Versions
@@ -91,6 +92,7 @@ Platform Specific
    :maxdepth: 1
 
    tap
+   types
 
 #################################
 Deriving statistics from a server

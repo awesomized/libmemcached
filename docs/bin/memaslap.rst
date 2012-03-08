@@ -13,6 +13,8 @@ memaslap [options]
 
 .. option:: --help
 
+.. envvar:: MEMCACHED_SERVERS
+
 -----------
 DESCRIPTION
 -----------
@@ -31,7 +33,7 @@ the threads don't communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.
 
-You can specify servers via the :option:`--servers` option or via the
+You can specify servers via the :option:`memslap --servers` option or via the
 environment variable :envvar:`MEMCACHED_SERVERS`.
 
 

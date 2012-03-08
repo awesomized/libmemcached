@@ -30,7 +30,7 @@ Connecting to servers
 
 
 In the above code you create a :c:type:`memcached_st` object with three server 
-by making use of :c:func:`memcached_create_with_options()`.
+by making use of :c:func:`memcached_create`.
 
 
 --------------------------

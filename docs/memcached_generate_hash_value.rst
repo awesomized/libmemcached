@@ -13,10 +13,33 @@ SYNOPSIS
 
 
 #include <libmemcached/memcached.h>
- 
-.. c:function:: uint32_t memcached_generate_hash_value (const char *key, size_t key_length, memcached_hash_t hash_algorithm);
 
-.. c:function:: uint32_t memcached_generate_hash (memcached_st *ptr, const char *key, size_t key_length);
+.. c:type:: memcached_hash_t
+ 
+.. c:function:: uint32_t memcached_generate_hash_value (const char *key, size_t key_length, memcached_hash_t hash_algorithm)
+
+.. c:function:: uint32_t memcached_generate_hash (memcached_st *ptr, const char *key, size_t key_length)
+
+.. c:type:: MEMCACHED_HASH_DEFAULT
+
+.. c:type:: MEMCACHED_HASH_MD5
+
+.. c:type:: MEMCACHED_HASH_CRC
+
+.. c:type:: MEMCACHED_HASH_FNV1_64
+
+.. c:type:: MEMCACHED_HASH_FNV1A_64
+
+.. c:type:: MEMCACHED_HASH_FNV1_32
+
+.. c:type:: MEMCACHED_HASH_FNV1A_32
+
+.. c:type:: MEMCACHED_HASH_JENKINS
+
+.. c:type:: MEMCACHED_HASH_MURMUR
+
+.. c:type:: MEMCACHED_HASH_HSIEH
+
 
 Compile and link with -lmemcachedutil -lmemcached
 
@@ -26,17 +49,17 @@ DESCRIPTION
 -----------
 
 
-:c:func:`memcached_generate_hash_value()` allows you to hash a key using one of
+:c:func:`memcached_generate_hash_value` allows you to hash a key using one of
 the hash functions defined in the library. This method is provided for
 the convenience of higher-level language bindings and is not necessary
 for normal memcache operations.
 
 The allowed hash algorithm constants are listed in the manpage for
-:c:func:`memcached_behavior_set()`.
+:c:func:`memcached_behavior_set`.
 
-:c:func:`memcached_generate_hash()` takes a :c:type:`memcached_st` struture 
+:c:func:`memcached_generate_hash` takes a :c:type:`memcached_st` struture 
 and produces the hash value that would have been generated based on the 
-defaults of the :c:type:`memcached_st structure`.
+defaults of :c:type:`memcached_st`.
 
 As of version 0.36 all hash methods have been placed into the library
 libhashkit(3) which is linked with libmemcached(3). For more information please see its documentation.
