@@ -25,9 +25,7 @@
 enum test_return_t {
   TEST_SUCCESS,
   TEST_FAILURE,
-  TEST_MEMORY_ALLOCATION_FAILURE,
-  TEST_SKIPPED,
-  TEST_FATAL // Collection should not be continued
+  TEST_SKIPPED
 };
 
 

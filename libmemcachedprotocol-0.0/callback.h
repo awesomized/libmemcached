@@ -168,14 +168,14 @@ typedef struct {
     * Delete an existing key
     *
     * @param cookie id of the client receiving the command
-    * @param key the key to delete
+    * @param key the key to delete_object
     * @param len the length of the key
     * @param cas the CAS in the request
     */
-   protocol_binary_response_status (*delete)(const void *cookie,
-                                             const void *key,
-                                             uint16_t keylen,
-                                             uint64_t cas);
+   protocol_binary_response_status (*delete_object)(const void *cookie,
+                                                    const void *key,
+                                                    uint16_t keylen,
+                                                    uint64_t cas);
 
 
    /**
@@ -184,8 +184,8 @@ typedef struct {
     * @param cookie id of the client receiving the command
     * @param when when the cache should be flushed (0 == immediately)
     */
-   protocol_binary_response_status (*flush)(const void *cookie,
-                                            uint32_t when);
+   protocol_binary_response_status (*flush_object)(const void *cookie,
+                                                   uint32_t when);
 
 
 
@@ -349,7 +349,7 @@ typedef enum {
     * Version 1 abstracts more of the protocol details, and let you work at
     * a logical level
     */
-   MEMCACHED_PROTOCOL_HANDLER_V1= 1,
+   MEMCACHED_PROTOCOL_HANDLER_V1= 1
 } memcached_protocol_interface_version_t;
 
 /**

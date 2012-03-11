@@ -226,9 +226,7 @@ int main(int argc, char *argv[])
         delete world;
         return EXIT_SUCCESS;
 
-      case TEST_FATAL:
       case TEST_FAILURE:
-      case TEST_MEMORY_ALLOCATION_FAILURE:
         delete world;
         return EXIT_FAILURE;
       }
@@ -276,7 +274,6 @@ int main(int argc, char *argv[])
         case TEST_SUCCESS:
           break;
 
-        case TEST_FATAL:
         case TEST_FAILURE:
           Out << next->name << " [ failed ]";
           failed= true;
@@ -288,8 +285,8 @@ int main(int argc, char *argv[])
           skipped= true;
           goto cleanup;
 
-        case TEST_MEMORY_ALLOCATION_FAILURE:
-          test_assert(0, "Allocation failure, or unknown return");
+        default:
+          throw fatal_message("invalid return code");
         }
 
         Out << "Collection: " << next->name;
@@ -381,7 +378,6 @@ int main(int argc, char *argv[])
             stats.success++;
             break;
 
-          case TEST_FATAL:
           case TEST_FAILURE:
             stats.failed++;
             failed= true;
@@ -394,8 +390,8 @@ int main(int argc, char *argv[])
             Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
             break;
 
-          case TEST_MEMORY_ALLOCATION_FAILURE:
-            test_assert(0, "Memory Allocation Error");
+          default:
+            throw fatal_message("invalid return code");
           }
 
           if (test_failed(world->on_error(return_code, creators_ptr)))
@@ -461,6 +457,10 @@ cleanup:
     } while (exit_code == EXIT_SUCCESS and opt_repeat);
   }
   catch (libtest::fatal& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+  catch (std::bad_alloc& e)
   {
     std::cerr << e.what() << std::endl;
   }

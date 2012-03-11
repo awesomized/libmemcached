@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable;
+static std::string executable("./clients/memrm");
 
 static test_return_t quiet_test(void *)
 {
@@ -95,7 +95,7 @@ static test_return_t rm_test(void *)
   return TEST_SUCCESS;
 }
 
-static test_return_t NOT_FOUND_test(void *)
+static test_return_t NOT_FOUND_TEST(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
@@ -118,11 +118,24 @@ static test_return_t NOT_FOUND_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t multiple_NOT_FOUND_TEST(void *)
+{
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  const char *args[]= { buffer, "protocols", "foo", "mine", "bar", "dog", "cat", "foo", "mine",
+    "eye", "for", "the", "to", "not", "know", "what", "I", "should", "be", "doing", 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+
+  return TEST_SUCCESS;
+}
+
 test_st memrm_tests[] ={
   {"--quiet", true, quiet_test },
   {"--help", true, help_test },
   {"rm(FOUND)", true, rm_test },
-  {"rm(NOT_FOUND)", true, NOT_FOUND_test },
+  {"rm(NOT_FOUND)", true, NOT_FOUND_TEST },
+  {"multiple rm(NOT_FOUND)", true, multiple_NOT_FOUND_TEST },
   {0, 0, 0}
 };
 
@@ -139,8 +152,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memrm" };
-  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
+  if (server_startup(servers, "memcached", libtest::default_port(), 0, NULL) == false)
   {
     error= TEST_FAILURE;
   }
@@ -151,7 +163,6 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memrm";
   world->collections= collection;
   world->_create= world_create;
 }

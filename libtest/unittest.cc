@@ -236,8 +236,19 @@ static test_return_t gearmand_cycle_test(void *object)
   test_skip(true, has_gearmand_binary());
 #endif
 
-  const char *argv[1]= { "cycle_gearmand" };
-  test_true(server_startup(*servers, "gearmand", get_free_port(), 1, argv));
+  test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_light_cycle_TEST(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  test_skip(true, bool(HAVE_MEMCACHED_LIGHT_BINARY));
+
+  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
 }
@@ -250,8 +261,7 @@ static test_return_t memcached_cycle_test(void *object)
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
   {
     test_true(has_memcached_binary());
-    const char *argv[1]= { "cycle_memcached" };
-    test_true(server_startup(*servers, "memcached", get_free_port(), 1, argv));
+    test_true(server_startup(*servers, "memcached", get_free_port(), 0, NULL));
 
     return TEST_SUCCESS;
   }
@@ -269,8 +279,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
     if (HAVE_LIBMEMCACHED)
     {
       test_true(has_memcached_binary());
-      const char *argv[1]= { "cycle_memcached" };
-      test_true(servers->start_socket_server("memcached", get_free_port(), 1, argv));
+      test_true(servers->start_socket_server("memcached", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
     }
@@ -294,8 +303,7 @@ static test_return_t memcached_sasl_test(void *object)
     if (HAVE_LIBMEMCACHED)
     {
       test_true(has_memcached_sasl_binary());
-      const char *argv[1]= { "cycle_memcached_sasl" };
-      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 1, argv));
+      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
     }
@@ -569,6 +577,7 @@ static test_return_t check_for_libmemcached(void *)
 
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
+  {"memcached-light startup-shutdown", 0, memcached_light_cycle_TEST },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
   {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
   {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },

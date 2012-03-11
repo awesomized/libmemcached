@@ -52,7 +52,6 @@
 
 #include <libhashkit-1.0/hashkit.h>
 
-#include <cassert>
 #include <cerrno>
 #include <memory>
 #include <pthread.h>
@@ -290,7 +289,7 @@ static memcached_return_t server_display_function(const memcached_st *ptr,
   /* Do Nothing */
   size_t bigger= *((size_t *)(context));
   (void)ptr;
-  assert(bigger <= memcached_server_port(server));
+  fatal_assert(bigger <= memcached_server_port(server));
   *((size_t *)(context))= memcached_server_port(server);
 
   return MEMCACHED_SUCCESS;
@@ -2884,7 +2883,7 @@ test_return_t user_supplied_bug20(memcached_st *memc)
 /* sighandler_t function that always asserts false */
 static void fail(int)
 {
-  assert(0);
+  fatal_assert(0);
 }
 
 

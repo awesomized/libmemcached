@@ -18,40 +18,40 @@
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <example/byteorder.h>
-#include "example/storage.h"
 #include "example/memcached_light.h"
+#include "example/storage.h"
 
 static protocol_binary_response_status noop_command_handler(const void *cookie,
                                                             protocol_binary_request_header *header,
                                                             memcached_binary_protocol_raw_response_handler response_handler)
 {
-  protocol_binary_response_no_extras response= {
-    .message.header.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= PROTOCOL_BINARY_CMD_NOOP,
-      .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-      .opaque= header->request.opaque
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
 
-  return response_handler(cookie, header, (void*)&response);
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= PROTOCOL_BINARY_CMD_NOOP;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
+
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status quit_command_handler(const void *cookie,
                                                             protocol_binary_request_header *header,
                                                             memcached_binary_protocol_raw_response_handler response_handler)
 {
-  protocol_binary_response_no_extras response= {
-    .message.header.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= PROTOCOL_BINARY_CMD_QUIT,
-      .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-      .opaque= header->request.opaque
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= PROTOCOL_BINARY_CMD_QUIT;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
 
   if (header->request.opcode == PROTOCOL_BINARY_CMD_QUIT)
-    response_handler(cookie, header, (void*)&response);
+  {
+    response_handler(cookie, header, (protocol_binary_response_header*)&response);
+  }
 
   /* I need a better way to signal to close the connection */
   return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
@@ -62,17 +62,18 @@ static protocol_binary_response_status get_command_handler(const void *cookie,
                                                            memcached_binary_protocol_raw_response_handler response_handler)
 {
   uint8_t opcode= header->request.opcode;
-  union {
+  union protocol_binary_response_get_un {
     protocol_binary_response_get response;
     char buffer[4096];
-  } msg= {
-    .response.message.header.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= opcode,
-      .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-      .opaque= header->request.opaque
-    }
   };
+  
+  protocol_binary_response_get_un msg;
+  memset(&msg, 0, sizeof(protocol_binary_response_get_un));
+
+  msg.response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  msg.response.message.header.response.opcode= opcode;
+  msg.response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  msg.response.message.header.response.opaque= header->request.opaque;
 
   struct item *item= get_item(header + 1, ntohs(header->request.keylen));
   if (item)
@@ -94,12 +95,12 @@ static protocol_binary_response_status get_command_handler(const void *cookie,
     msg.response.message.header.response.extlen= 4;
 
     release_item(item);
-    return response_handler(cookie, header, (void*)&msg);
+    return response_handler(cookie, header, (protocol_binary_response_header*)&msg);
   }
   else if (opcode == PROTOCOL_BINARY_CMD_GET || opcode == PROTOCOL_BINARY_CMD_GETK)
   {
     msg.response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_ENOENT);
-    return response_handler(cookie, header, (void*)&msg);
+    return response_handler(cookie, header, (protocol_binary_response_header*)&msg);
   }
 
   /* Q shouldn't report a miss ;-) */
@@ -111,25 +112,25 @@ static protocol_binary_response_status delete_command_handler(const void *cookie
                                                               memcached_binary_protocol_raw_response_handler response_handler)
 {
   size_t keylen= ntohs(header->request.keylen);
+
   char *key= ((char*)header) + sizeof(*header);
-  protocol_binary_response_no_extras response= {
-    .message.header.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= header->request.opcode,
-      .opaque= header->request.opaque
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.opaque= header->request.opaque;
 
   if (!delete_item(key, keylen))
   {
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_ENOENT);
-    return response_handler(cookie, header, (void*)&response);
+    return response_handler(cookie, header, (protocol_binary_response_header*)&response);
   }
   else if (header->request.opcode == PROTOCOL_BINARY_CMD_DELETE)
   {
     /* DELETEQ doesn't want success response */
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
-    return response_handler(cookie, header, (void*)&response);
+    return response_handler(cookie, header, (protocol_binary_response_header*)&response);
   }
 
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -146,15 +147,15 @@ static protocol_binary_response_status flush_command_handler(const void *cookie,
 
   if (opcode == PROTOCOL_BINARY_CMD_FLUSH)
   {
-    protocol_binary_response_no_extras response= {
-      .message.header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= opcode,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-        .opaque= header->request.opaque
-      }
-    };
-    return response_handler(cookie, header, (void*)&response);
+    protocol_binary_response_no_extras response;
+    memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+    response.message.header.response.magic= PROTOCOL_BINARY_RES;
+    response.message.header.response.opcode= opcode;
+    response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+    response.message.header.response.opaque= header->request.opaque;
+
+    return response_handler(cookie, header, (protocol_binary_response_header*)&response);
   }
 
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -164,14 +165,13 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
                                                                   protocol_binary_request_header *header,
                                                                   memcached_binary_protocol_raw_response_handler response_handler)
 {
-  protocol_binary_request_incr *req= (void*)header;
-  protocol_binary_response_incr response= {
-    .message.header.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= header->request.opcode,
-      .opaque= header->request.opaque,
-    },
-  };
+  protocol_binary_request_incr *req= (protocol_binary_request_incr*)header;
+  protocol_binary_response_incr response;
+  memset(&response, 0, sizeof(protocol_binary_response_incr));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.opaque= header->request.opaque;
 
   uint16_t keylen= ntohs(header->request.keylen);
   uint64_t initial= example_ntohll(req->message.body.initial);
@@ -235,7 +235,7 @@ static protocol_binary_response_status arithmetic_command_handler(const void *co
     }
   }
 
-  return response_handler(cookie, header, (void*)&response);
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status version_command_handler(const void *cookie,
@@ -243,23 +243,26 @@ static protocol_binary_response_status version_command_handler(const void *cooki
                                                                memcached_binary_protocol_raw_response_handler response_handler)
 {
   const char *versionstring= "1.0.0";
-  union {
+  union protocol_binary_response_header_un
+  {
     protocol_binary_response_header packet;
     char buffer[256];
-  } response= {
-    .packet.response= {
-      .magic= PROTOCOL_BINARY_RES,
-      .opcode= PROTOCOL_BINARY_CMD_VERSION,
-      .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-      .opaque= header->request.opaque,
-      .cas= 0,
-      .bodylen= htonl((uint32_t)strlen(versionstring))
-    }
   };
+  
+  protocol_binary_response_header_un response;
+  memset(&response, 0, sizeof(protocol_binary_response_header_un));
 
-  memcpy(response.buffer + sizeof(response.packet), versionstring, strlen(versionstring));
+  response.packet.response.magic= PROTOCOL_BINARY_RES;
+  response.packet.response.opcode= PROTOCOL_BINARY_CMD_VERSION;
+  response.packet.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.packet.response.opaque= header->request.opaque;
+  response.packet.response.cas= 0;
+  response.packet.response.bodylen= htonl((uint32_t)strlen(versionstring));
 
-  return response_handler(cookie, header, (void*)&response);
+  assert(sizeof(protocol_binary_response_header) +strlen(versionstring) <= 256);
+  memcpy(response.buffer + sizeof(protocol_binary_response_header), versionstring, strlen(versionstring));
+
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status concat_command_handler(const void *cookie,
@@ -312,18 +315,16 @@ static protocol_binary_response_status concat_command_handler(const void *cookie
     if (header->request.opcode == PROTOCOL_BINARY_CMD_APPEND ||
         header->request.opcode == PROTOCOL_BINARY_CMD_PREPEND)
     {
-      protocol_binary_response_no_extras response= {
-        .message= {
-          .header.response= {
-            .magic= PROTOCOL_BINARY_RES,
-            .opcode= header->request.opcode,
-            .status= htons(rval),
-            .opaque= header->request.opaque,
-            .cas= example_htonll(cas),
-          }
-        }
-      };
-      return response_handler(cookie, header, (void*)&response);
+      protocol_binary_response_no_extras response;
+      memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+      response.message.header.response.magic= PROTOCOL_BINARY_RES;
+      response.message.header.response.opcode= header->request.opcode;
+      response.message.header.response.status= htons(rval);
+      response.message.header.response.opaque= header->request.opaque;
+      response.message.header.response.cas= example_htonll(cas);
+
+      return response_handler(cookie, header, (protocol_binary_response_header*)&response);
     }
   }
 
@@ -336,22 +337,19 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
 {
   size_t keylen= ntohs(header->request.keylen);
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
-  protocol_binary_request_replace *request= (void*)header;
+  protocol_binary_request_replace *request= (protocol_binary_request_replace*)header;
   uint32_t flags= ntohl(request->message.body.flags);
   time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 
-  protocol_binary_response_no_extras response= {
-    .message= {
-      .header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= header->request.opcode,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-        .opaque= header->request.opaque
-      }
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
 
   if (header->request.cas != 0)
   {
@@ -363,7 +361,7 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
       {
         release_item(item);
         response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
-        return response_handler(cookie, header, (void*)&response);
+        return response_handler(cookie, header, (protocol_binary_response_header*)&response);
       }
       release_item(item);
     }
@@ -383,14 +381,14 @@ static protocol_binary_response_status set_command_handler(const void *cookie,
     {
       response.message.header.response.cas= example_htonll(item->cas);
       release_item(item);
-      return response_handler(cookie, header, (void*)&response);
+      return response_handler(cookie, header, (protocol_binary_response_header*)&response);
     }
     release_item(item);
 
     return PROTOCOL_BINARY_RESPONSE_SUCCESS;
   }
 
-  return response_handler(cookie, header, (void*)&response);
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status add_command_handler(const void *cookie,
@@ -399,22 +397,19 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
 {
   size_t keylen= ntohs(header->request.keylen);
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
-  protocol_binary_request_add *request= (void*)header;
+  protocol_binary_request_add *request= (protocol_binary_request_add*)header;
   uint32_t flags= ntohl(request->message.body.flags);
   time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 
-  protocol_binary_response_no_extras response= {
-    .message= {
-      .header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= header->request.opcode,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-        .opaque= header->request.opaque
-      }
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
 
   struct item* item= get_item(key, keylen);
   if (item == NULL)
@@ -430,7 +425,7 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
       {
         response.message.header.response.cas= example_htonll(item->cas);
         release_item(item);
-        return response_handler(cookie, header, (void*)&response);
+        return response_handler(cookie, header, (protocol_binary_response_header*)&response);
       }
       release_item(item);
       return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -442,7 +437,7 @@ static protocol_binary_response_status add_command_handler(const void *cookie,
     response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS);
   }
 
-  return response_handler(cookie, header, (void*)&response);
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status replace_command_handler(const void *cookie,
@@ -451,22 +446,19 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
 {
   size_t keylen= ntohs(header->request.keylen);
   size_t datalen= ntohl(header->request.bodylen) - keylen - 8;
-  protocol_binary_request_replace *request= (void*)header;
+  protocol_binary_request_replace *request= (protocol_binary_request_replace*)header;
   uint32_t flags= ntohl(request->message.body.flags);
   time_t timeout= (time_t)ntohl(request->message.body.expiration);
   char *key= ((char*)header) + sizeof(*header) + 8;
   char *data= key + keylen;
 
-  protocol_binary_response_no_extras response= {
-    .message= {
-      .header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= header->request.opcode,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-        .opaque= header->request.opaque
-      }
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
+
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= header->request.opcode;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
 
   struct item* item= get_item(key, keylen);
   if (item == NULL)
@@ -491,7 +483,7 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
       {
         response.message.header.response.cas= example_htonll(item->cas);
         release_item(item);
-        return response_handler(cookie, header, (void*)&response);
+        return response_handler(cookie, header, (protocol_binary_response_header*)&response);
       }
       release_item(item);
       return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -503,7 +495,7 @@ static protocol_binary_response_status replace_command_handler(const void *cooki
     release_item(item);
   }
 
-  return response_handler(cookie, header, (void*)&response);
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
 static protocol_binary_response_status stat_command_handler(const void *cookie,
@@ -511,61 +503,22 @@ static protocol_binary_response_status stat_command_handler(const void *cookie,
                                                             memcached_binary_protocol_raw_response_handler response_handler)
 {
   /* Just send the terminating packet*/
-  protocol_binary_response_no_extras response= {
-    .message= {
-      .header.response= {
-        .magic= PROTOCOL_BINARY_RES,
-        .opcode= PROTOCOL_BINARY_CMD_STAT,
-        .status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
-        .opaque= header->request.opaque
-      }
-    }
-  };
+  protocol_binary_response_no_extras response;
+  memset(&response, 0, sizeof(protocol_binary_response_no_extras));
 
-  return response_handler(cookie, header, (void*)&response);
+  response.message.header.response.magic= PROTOCOL_BINARY_RES;
+  response.message.header.response.opcode= PROTOCOL_BINARY_CMD_STAT;
+  response.message.header.response.status= htons(PROTOCOL_BINARY_RESPONSE_SUCCESS);
+  response.message.header.response.opaque= header->request.opaque;
+
+  return response_handler(cookie, header, (protocol_binary_response_header*)&response);
 }
 
-memcached_binary_protocol_callback_st interface_v0_impl= {
-  .interface_version= MEMCACHED_PROTOCOL_HANDLER_V0,
-#ifdef FUTURE
-  /*
-  ** There is a number of bugs in the extra options for gcc causing
-  ** warning on these struct initializers. It hurts my heart to remove
-  ** it so I'll just leave it in here so that we can enable it when
-  ** we can drop support for the broken compilers
-  */
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_GET]= get_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_SET]= set_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_ADD]= add_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_REPLACE]= replace_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_DELETE]= delete_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_INCREMENT]= arithmetic_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_DECREMENT]= arithmetic_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_QUIT]= quit_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_FLUSH]= flush_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_GETQ]= get_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_NOOP]= noop_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_VERSION]= version_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_GETK]= get_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_GETKQ]= get_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_APPEND]= concat_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_PREPEND]= concat_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_STAT]= stat_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_SETQ]= set_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_ADDQ]= add_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_REPLACEQ]= replace_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_DELETEQ]= delete_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_INCREMENTQ]= arithmetic_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_DECREMENTQ]= arithmetic_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_QUITQ]= quit_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_FLUSHQ]= flush_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_APPENDQ]= concat_command_handler,
-  .interface.v0.comcode[PROTOCOL_BINARY_CMD_PREPENDQ]= concat_command_handler,
-#endif
-};
+memcached_binary_protocol_callback_st interface_v0_impl;
 
 void initialize_interface_v0_handler(void)
 {
+  interface_v0_impl.interface_version= MEMCACHED_PROTOCOL_HANDLER_V0;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_GET]= get_command_handler;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_SET]= set_command_handler;
   interface_v0_impl.interface.v0.comcode[PROTOCOL_BINARY_CMD_ADD]= add_command_handler;

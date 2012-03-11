@@ -50,6 +50,7 @@
 #include "win32/wrappers.h"
 #define get_socket_errno() WSAGetLastError()
 #else
+#include <unistd.h>
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define closesocket(a) close(a)

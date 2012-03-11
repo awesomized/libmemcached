@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         std::cerr << "Could not find key \"" << argv[optind] << "\"" << std::endl;
       }
     }
-    else if (memcached_failed(rc))
+    else if (memcached_fatal(rc))
     {
       if (opt_verbose)
       {

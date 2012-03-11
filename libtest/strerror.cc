@@ -32,17 +32,11 @@ const char *test_strerror(test_return_t code)
   case TEST_FAILURE:
     return "failed";
 
-  case TEST_MEMORY_ALLOCATION_FAILURE:
-    return "memory allocation";
-
   case TEST_SKIPPED:
     return "skipped";
-
-  case TEST_FATAL:
-    break;
   }
 
-  return "failed";
+  throw fatal_message("No port could be found");
 }
 
 } // namespace libtest

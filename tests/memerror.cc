@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable;
+static std::string executable("./clients/memerror");
 
 static test_return_t help_TEST(void *)
 {
@@ -119,7 +119,6 @@ static void *world_create(server_startup_st&, test_return_t&)
 
 void get_world(Framework *world)
 {
-  executable= "./clients/memerror";
   world->collections= collection;
   world->_create= world_create;
 }
