@@ -138,6 +138,19 @@ bool Server::start()
   }
 
   Application app(executable(), is_libtool());
+
+  if (is_debug())
+  {
+    app.use_gdb();
+  }
+  else if (getenv("TESTS_ENVIRONMENT"))
+  {
+    if (strstr(getenv("TESTS_ENVIRONMENT"), "gdb"))
+    {
+      app.use_gdb();
+    }
+  }
+
   if (args(app) == false)
   {
     Error << "Could not build command()";
@@ -293,8 +306,7 @@ bool Server::set_log_file()
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
-    perror(file_buffer);
-    return false;
+    libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
   }
   close(fd);
 
@@ -307,13 +319,9 @@ bool Server::args(Application& app)
 {
 
   // Set a log file if it was requested (and we can)
-  if (getenv("LIBTEST_LOG") and has_log_file_option())
+  if (has_log_file_option())
   {
-    if (not set_log_file())
-    {
-      return false;
-    }
-
+    set_log_file();
     log_file_option(app, _log_file);
   }
 

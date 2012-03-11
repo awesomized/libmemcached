@@ -15,9 +15,9 @@ SYNOPSIS
 
 .. c:function:: const sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
 
-.. c:function:: memcached_return memcached_set_sasl_auth_data(memcached_st *ptr, const char *username, const char *password)
+.. c:function:: memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr, const char *username, const char *password)
 
-.. c:function:: memcached_return memcached_destroy_sasl_auth_data(memcached_st *ptr)
+.. c:function:: memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr)
 
 Compile and link with -lmemcached
 
@@ -34,16 +34,13 @@ libsasl to perform SASL authentication.
 Please note that SASL requires the memcached binary protocol, and you have
 to specify the callbacks before you connect to the server.
 
-:c:func:`memcached_set_sasl_auth_data()` is a helper function defining
+:c:func:`memcached_set_sasl_auth_data` is a helper function defining
 the basic functionality for you, but it will store the username and password
 in memory. If you choose to use this method you have to call
 :c:type:`memcached_destroy_sasl_auth_data` before calling 
 :c:type:`memcached_free` to avoid a memory leak. You should NOT call 
 :c:type:`memcached_destroy_sasl_auth_data` if you specify your own callback 
-function with :c:func:`memcached_set_sasl_callbacks()`.
-
-You as a client user have to initialize libsasl by using :c:type:`sasl_client_init` before enabling it in libmemcached, and you have to shut down libsasl by
-calling :c:func:`sasl_done()` when you are done using SASL from libmemcached.
+function with :c:func:`memcached_set_sasl_callbacks`.
 
 
 ------
@@ -51,8 +48,9 @@ RETURN
 ------
 
 
-:c:func:`memcached_get_sasl_callbacks()` returns the callbacks currently used
-by this memcached handle. :c:func:`memcached_get_sasl_set_auth_data()` returns :c:type:`MEMCACHED_SUCCESS` upon success.
+:c:func:`memcached_get_sasl_callbacks` returns the callbacks currently used by
+this memcached handle. :c:func:`memcached_set_sasl_auth_data` returns
+:c:type:`MEMCACHED_SUCCESS` upon success.
 
 
 ----

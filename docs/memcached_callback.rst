@@ -13,10 +13,12 @@ SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+
+.. c:type:: memcached_callback_t
  
-.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, const void *data);
+.. c:function:: memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, const void *data)
  
-.. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
+.. c:function:: void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error)
 
 Compile and link with -lmemcached
 
@@ -30,10 +32,10 @@ libmemcached(3) can have callbacks set key execution points. These either
 provide function calls at points in the code, or return pointers to
 structures for particular usages.
 
-:c:func:`memcached_callback_get()` takes a callback flag and returns the 
-structure or function set by :c:func:`memcached_callback_set()`.
+:c:func:`memcached_callback_get` takes a callback flag and returns the 
+structure or function set by :c:func:`memcached_callback_set`.
 
-:c:func:`memcached_callback_set()` changes the function/structure assigned by a
+:c:func:`memcached_callback_set` changes the function/structure assigned by a
 callback flag. No connections are reset.
 
 You can use :c:type:`MEMCACHED_CALLBACK_USER_DATA` to provide custom context 
@@ -42,14 +44,14 @@ if required for any of the callbacks.
 
 .. c:type:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
  
-When :c:func:`memcached_delete()` is called this function will be excuted. At 
+When :c:func:`memcached_delete` is called this function will be excuted. At 
 the point of its execution all connections are closed.
  
 
 
 .. c:type:: MEMCACHED_CALLBACK_CLONE_FUNCTION
  
-When :c:func:`memcached_delete()` is called this function will be excuted. 
+When :c:func:`memcached_delete` is called this function will be excuted. 
 At the point of its execution all connections are closed.
 
 .. c:type:: MEMCACHED_CALLBACK_PREFIX_KEY
@@ -59,9 +61,9 @@ At the point of its execution all connections are closed.
 .. c:type:: MEMCACHED_CALLBACK_NAMESPACE
  
 You can set a value which will be used to create a domain for your keys.
-The value specified here will be prefixed to each of your keys. The value can 
-not be greater then :c:type:`MEMCACHED_PREFIX_KEY_MAX_SIZE - 1` and will 
-reduce :c:type:`MEMCACHED_MAX_KEY` by the value of your key. 
+The value specified here will be prefixed to each of your keys. The value can
+not be greater then :c:macro:`MEMCACHED_PREFIX_KEY_MAX_SIZE` - 1 and will
+reduce :c:macro:`MEMCACHED_MAX_KEY` by the value of your key. 
 
 The prefix key is only applied to the primary key, not the master key. 
 :c:type:`MEMCACHED_FAILURE` will be returned if no key is set. In the case of 
@@ -72,7 +74,7 @@ If you set a value with the value being NULL then the prefix key is disabled.
 .. c:type:: MEMCACHED_CALLBACK_USER_DATA
  
 This allows you to store a pointer to a specifc piece of data. This can be
-retrieved from inside of :c:func:`memcached_fetch_execute()`. Cloning a 
+retrieved from inside of :c:func:`memcached_fetch_execute`. Cloning a 
 :c:type:`memcached_st` will copy the pointer to the clone.
  
 .. c:type:: MEMCACHED_CALLBACK_MALLOC_FUNCTION
@@ -122,11 +124,11 @@ RETURN
 ------
 
 
-:c:func:`memcached_callback_get()` return the function or structure that was 
+:c:func:`memcached_callback_get` return the function or structure that was 
 provided. Upon error, nothing is set, null is returned, and the 
 :c:type:`memcached_return_t` argument is set to :c:type:`MEMCACHED_FAILURE`.
 
-:c:func:`memcached_callback_set()` returns :c:type:`MEMCACHED_SUCCESS` upon 
+:c:func:`memcached_callback_set` returns :c:type:`MEMCACHED_SUCCESS` upon 
 successful setting, otherwise :c:type:`MEMCACHED_FAILURE` on error.
 
 

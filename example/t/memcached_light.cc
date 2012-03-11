@@ -44,6 +44,8 @@
 #include <libtest/test.hpp>
 #include <libmemcached/memcached.h>
 
+#include "tests/libmemcached-1.0/memcached_get.h"
+
 using namespace libtest;
 
 #ifndef __INTEL_COMPILER
@@ -133,6 +135,39 @@ static test_return_t max_connections_file_TEST(void *)
   return TEST_SUCCESS;
 }
 
+typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
+
+static test_return_t _runner_default(libmemcached_test_callback_fn func, void *object)
+{
+  if (func)
+  {
+    test_true(object);
+    test_return_t ret;
+    try {
+      ret= func((memcached_st*)object);
+    }
+    catch (std::exception& e)
+    {
+      libtest::Error << e.what();
+      return TEST_FAILURE;
+    }
+
+    return ret;
+  }
+
+  return TEST_SUCCESS;
+}
+
+class MemcachedLightRunner : public libtest::Runner {
+public:
+  test_return_t run(test_callback_fn* func, void *object)
+  {
+    return _runner_default(libmemcached_test_callback_fn(func), object);
+  }
+};
+
+static MemcachedLightRunner defualt_libmemcached_runner;
+
 test_st cmdline_option_TESTS[] ={
   {"--help", true, help_TEST },
   {"--verbose", true, verbose_TEST },
@@ -146,8 +181,21 @@ test_st cmdline_option_TESTS[] ={
   {0, 0, 0}
 };
 
+/* Clean the server before beginning testing */
+test_st basic_TESTS[] ={
+#if 0
+  {"memcached_get()", true, (test_callback_fn*)get_test },
+  {"memcached_get() test 2", false, (test_callback_fn*)get_test2 },
+  {"memcached_get() test 3", false, (test_callback_fn*)get_test3 },
+  {"memcached_get() test 4", false, (test_callback_fn*)get_test4 },
+  {"memcached_get() test 5", false, (test_callback_fn*)get_test5 },
+#endif
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"command line options", 0, 0, cmdline_option_TESTS },
+  {"basic", 0, 0, basic_TESTS },
   {0, 0, 0, 0}
 };
 
@@ -164,13 +212,32 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     error= TEST_FAILURE;
   }
 
-  return &servers;
+
+  char buffer[1024];
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(libtest::default_port()));
+  fatal_assert(length > 0);
+
+  memcached_st *memc= memcached(buffer, length);
+
+  fatal_assert(memc);
+
+  return (void*)memc;
+}
+
+static bool world_destroy(void *object)
+{
+  memcached_st *memc= (memcached_st*)object;
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
 }
 
 
 void get_world(Framework *world)
 {
-  world->collections= collection;
   world->_create= world_create;
+  world->_destroy= world_destroy;
+  world->collections= collection;
+  world->set_runner(&defualt_libmemcached_runner);
 }
 

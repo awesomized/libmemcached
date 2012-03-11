@@ -13,7 +13,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function:: memcached_return_t memcached_flush_buffers (memcached_st *ptr);
+.. c:function:: memcached_return_t memcached_flush_buffers (memcached_st *ptr)
 
 Compile and link with -lmemcached
 
@@ -23,7 +23,7 @@ DESCRIPTION
 -----------
 
 
-:c:func:`memcached_flush_buffers()` is used in conjunction with 
+:c:func:`memcached_flush_buffers` is used in conjunction with 
 :c:type:`MEMCACHED_BEHAVIOR_BUFFER_REQUESTS` (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.
 
 
@@ -34,7 +34,7 @@ RETURN
 
 A value of type :c:type:`memcached_return_t` is returned
 On success that value will be :c:type:`MEMCACHED_SUCCESS`.
-Use :c:func:`memcached_strerror()` to translate this value to a printable 
+Use :c:func:`memcached_strerror` to translate this value to a printable 
 string.
 
 

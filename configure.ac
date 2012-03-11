@@ -132,6 +132,8 @@ AC_CHECK_HEADERS([cxxabi.h],
                  AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
                  AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
 
+AC_CHECK_HEADERS([sys/sysctl.h])
+
 AX_COMPILER_VENDOR
 
 AC_FUNC_ALLOCA

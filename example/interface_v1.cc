@@ -2,26 +2,30 @@
 /**
  * This file contains an implementation of the callback interface for level 1
  * in the protocol library. If you compare the implementation with the one
- * in interface_v0.c you will see that this implementation is much easier and
+ * in interface_v0.cc you will see that this implementation is much easier and
  * hides all of the protocol logic and let you focus on the application
  * logic. One "problem" with this layer is that it is synchronous, so that
  * you will not receive the next command before a answer to the previous
  * command is being sent.
  */
 #include "config.h"
-#include <assert.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
+
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <example/byteorder.h>
 #include "example/memcached_light.h"
 #include "example/storage.h"
+#include "util/log.hpp"
+
+static datadifferential::util::log_info_st *log_file= NULL;
 
 static protocol_binary_response_status add_handler(const void *cookie,
                                                    const void *key,
@@ -390,8 +394,9 @@ static protocol_binary_response_status version_handler(const void *cookie,
 
 memcached_binary_protocol_callback_st interface_v1_impl;
 
-void initialize_interface_v1_handler(void)
+void initialize_interface_v1_handler(datadifferential::util::log_info_st& arg)
 {
+  log_file= &arg;
   memset(&interface_v1_impl, 0, sizeof(memcached_binary_protocol_callback_st));
 
   interface_v1_impl.interface_version= MEMCACHED_PROTOCOL_HANDLER_V1;

@@ -11,7 +11,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
 
-.. c:function:: const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc);
+.. c:function:: const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc)
 
 Compile and link with -lmemcached
 
@@ -21,7 +21,7 @@ DESCRIPTION
 -----------
 
 
-:c:func:`memcached_strerror()` takes a :c:type:`memcached_return_t` value and returns a string describing the error.
+:c:func:`memcached_strerror` takes a :c:type:`memcached_return_t` value and returns a string describing the error.
 
 This string must not be modified by the application.
 
@@ -35,7 +35,7 @@ RETURN
 ------
 
 
-:c:func:`memcached_strerror()` returns a string describing a :c:type:`memcached_return_t` value.
+:c:func:`memcached_strerror` returns a string describing a :c:type:`memcached_return_t` value.
 
 
 ----
