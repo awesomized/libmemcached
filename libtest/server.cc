@@ -20,6 +20,7 @@
  */
 
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <cassert>
@@ -180,9 +181,11 @@ bool Server::start()
   {
     Wait wait(pid_file(), 8);
 
-    if (not wait.successful())
+    if (wait.successful() == false)
     {
-      Error << "Unable to open pidfile for: " << _running;
+      libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                     "Unable to open pidfile for: %s",
+                     _running.c_str());
     }
   }
 

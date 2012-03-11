@@ -20,6 +20,7 @@
  */
 
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <libmemcached-1.0/memcached.h>

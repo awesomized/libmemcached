@@ -19,6 +19,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <cassert>
@@ -235,7 +236,6 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
   else if (server->start() == false)
   {
-    Error << "Failed to start " << *server;
     delete server;
     return false;
   }

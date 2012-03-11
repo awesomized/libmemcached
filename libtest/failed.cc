@@ -20,6 +20,7 @@
  */
 
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <libtest/failed.h>
