@@ -379,7 +379,14 @@ static test_return_t application_doesnotexist_BINARY(void *)
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
     test_compare(Application::FAILURE, true_app.wait());
 #else
-    test_compare(Application::INVALID, true_app.wait());
+    if (getenv("TESTS_ENVIRONMENT") and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
+    {
+      test_compare(Application::FAILURE, true_app.wait());
+    }
+    else
+    {
+      test_compare(Application::INVALID, true_app.wait());
+    }
 #endif
   }
   test_compare(0, true_app.stdout_result().size());

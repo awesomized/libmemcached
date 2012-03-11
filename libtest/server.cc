@@ -168,7 +168,7 @@ bool Server::start()
 
   if (Application::SUCCESS !=  (ret= app.wait()))
   {
-    Error << "Application::wait() " << app.print() << " " << ret;
+    Error << "Application::wait() " << _running << " " << ret;
     return false;
   }
 

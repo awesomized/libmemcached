@@ -26,6 +26,7 @@ using namespace libtest;
 
 #include <cstdlib>
 #include <cstring>
+#include <cerrno>
 #include <fcntl.h>
 #include <fstream>
 #include <memory>
@@ -352,26 +353,24 @@ void Application::Pipe::reset()
   close(WRITE);
 
   int ret;
-  if ((ret= pipe(_fd)) < 0)
+  if (pipe(_fd) == -1)
   {
-    throw strerror(ret);
+    throw strerror(errno);
   }
   _open[0]= true;
   _open[1]= true;
 
   {
-    ret= fcntl(_fd[0], F_GETFL, 0);
-    if (ret == -1)
+    if ((ret= fcntl(_fd[0], F_GETFL, 0)) == -1)
     {
-      Error << "fcntl(F_GETFL) " << strerror(ret);
-      throw strerror(ret);
+      Error << "fcntl(F_GETFL) " << strerror(errno);
+      throw strerror(errno);
     }
 
-    ret= fcntl(_fd[0], F_SETFL, ret | O_NONBLOCK);
-    if (ret == -1)
+    if ((ret= fcntl(_fd[0], F_SETFL, ret | O_NONBLOCK)) == -1)
     {
-      Error << "fcntl(F_SETFL) " << strerror(ret);
-      throw strerror(ret);
+      Error << "fcntl(F_SETFL) " << strerror(errno);
+      throw strerror(errno);
     }
   }
 }
@@ -407,11 +406,12 @@ void Application::Pipe::close(const close_t& arg)
   if (_open[type])
   {
     int ret;
-    if ((ret= ::close(_fd[type])) < 0)
+    if (::close(_fd[type]) == -1)
     {
-      Error << "close(" << strerror(ret) << ")";
+      Error << "close(" << strerror(errno) << ")";
     }
     _open[type]= false;
+    _fd[type]= -1;
   }
 }
 
@@ -524,21 +524,19 @@ std::string Application::arguments()
 
 void Application::delete_argv()
 {
-  if (built_argv == NULL)
+  if (built_argv)
   {
-    return;
-  }
-
-  for (size_t x= 0; x < _argc; x++)
-  {
-    if (built_argv[x])
+    for (size_t x= 0; x < _argc; x++)
     {
-      ::free(built_argv[x]);
+      if (built_argv[x])
+      {
+        ::free(built_argv[x]);
+      }
     }
+    delete[] built_argv;
+    built_argv= NULL;
+    _argc= 0;
   }
-  delete[] built_argv;
-  built_argv= NULL;
-  _argc= 0;
 }
 
 
