@@ -39,6 +39,7 @@ private:
   typedef std::vector< std::pair<std::string, std::string> > Options;
 
 private:
+  uint64_t _magic;
   bool _is_socket;
   std::string _socket;
   std::string _sasl;
@@ -228,6 +229,8 @@ public:
   bool kill(pid_t pid_arg);
   bool start();
   bool command(libtest::Application& app);
+
+  bool validate();
 
 protected:
   bool set_pid_file();

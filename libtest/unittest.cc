@@ -63,7 +63,7 @@ static test_return_t GDB_COMMAND_test(void *)
 
 static test_return_t test_success_equals_one_test(void *)
 {
-  test_skip(HAVE_LIBMEMCACHED, true);
+  test_skip(HAVE_LIBMEMCACHED, 1);
 #if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED 
   test_zero(MEMCACHED_SUCCESS);
 #endif
@@ -110,7 +110,7 @@ static test_return_t local_not_test(void *)
   }
 
   // unsetenv() will cause issues with valgrind
-  _compare(__FILE__, __LINE__, __func__, 0, unsetenv("LIBTEST_LOCAL"));
+  _compare(__FILE__, __LINE__, __func__, 0, unsetenv("LIBTEST_LOCAL"), true);
   test_compare(0, unsetenv("LIBTEST_LOCAL"));
   test_false(test_is_local());
 
@@ -228,13 +228,15 @@ static test_return_t _compare_gearman_return_t_test(void *)
 static test_return_t gearmand_cycle_test(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
-  test_true(servers);
+  test_true(servers and servers->validate());
 
 #if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
   test_true(has_gearmand_binary());
-#else
-  test_skip(true, has_gearmand_binary());
 #endif
+
+  test_skip(true, has_gearmand_binary());
+
+  Error << " " << has_gearmand_binary();
 
   test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
 
@@ -250,6 +252,29 @@ static test_return_t memcached_light_cycle_TEST(void *object)
 
   test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL));
 
+  return TEST_SUCCESS;
+}
+
+static test_return_t skip_shim(bool a, bool b)
+{
+  test_skip(a, b);
+  return TEST_SUCCESS;
+}
+
+static test_return_t test_skip_true_TEST(void *object)
+{
+  test_compare(true, true);
+  test_compare(false, false);
+  test_compare(TEST_SUCCESS, skip_shim(true, true));
+  test_compare(TEST_SUCCESS, skip_shim(false, false));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t test_skip_false_TEST(void *object)
+{
+  test_compare(TEST_SKIPPED, skip_shim(true, false));
+  test_compare(TEST_SKIPPED, skip_shim(false, true));
   return TEST_SUCCESS;
 }
 
@@ -293,10 +318,7 @@ static test_return_t memcached_sasl_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (getenv("TESTS_ENVIRONMENT"))
-  {
-    return TEST_SKIPPED;
-  }
+  test_skip(false, bool(getenv("TESTS_ENVIRONMENT")));
 
   if (MEMCACHED_SASL_BINARY)
   {
@@ -361,34 +383,19 @@ static test_return_t application_true_fubar_BINARY(void *)
 
 static test_return_t application_doesnotexist_BINARY(void *)
 {
+  test_skip_valgrind();
+
   Application true_app("doesnotexist");
 
   const char *args[]= { "--fubar", 0 };
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
   test_compare(Application::INVALID, true_app.run(args));
+  test_compare(Application::FAILURE, true_app.wait());
 #else
   test_compare(Application::SUCCESS, true_app.run(args));
+  test_compare(Application::INVALID, true_app.wait());
 #endif
-  // Behavior is different if we are running under valgrind
-  if (getenv("TESTS_ENVIRONMENT") and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
-  {
-    test_compare(Application::FAILURE, true_app.wait());
-  }
-  else
-  {
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-    test_compare(Application::FAILURE, true_app.wait());
-#else
-    if (getenv("TESTS_ENVIRONMENT") and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
-    {
-      test_compare(Application::FAILURE, true_app.wait());
-    }
-    else
-    {
-      test_compare(Application::INVALID, true_app.wait());
-    }
-#endif
-  }
+
   test_compare(0, true_app.stdout_result().size());
 
   return TEST_SUCCESS;
@@ -713,6 +720,12 @@ test_st memcached_tests[] ={
   {0, 0, 0}
 };
 
+test_st test_skip_TESTS[] ={
+  {"true, true", 0, test_skip_true_TEST },
+  {"true, false", 0, test_skip_false_TEST },
+  {0, 0, 0}
+};
+
 test_st environment_tests[] ={
   {"LIBTOOL_COMMAND", 0, LIBTOOL_COMMAND_test },
   {"VALGRIND_COMMAND", 0, VALGRIND_COMMAND_test },
@@ -832,6 +845,7 @@ test_st http_tests[] ={
 collection_st collection[] ={
   {"environment", 0, 0, environment_tests},
   {"return values", 0, 0, tests_log},
+  {"test_skip()", 0, 0, test_skip_TESTS },
   {"local", 0, 0, local_log},
   {"directories", 0, 0, directories_tests},
   {"comparison", 0, 0, comparison_tests},

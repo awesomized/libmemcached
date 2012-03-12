@@ -89,10 +89,19 @@ do \
 } while (0)
 #define test_true_hint test_true_got
 
-#define test_skip(A,B) \
+#define test_skip(__expected, __actual) \
 do \
 { \
-  if ((A) != (B)) \
+  if (libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)), false) == false) \
+  { \
+    return TEST_SKIPPED; \
+  } \
+} while (0)
+
+#define test_skip_valgrind() \
+do \
+{ \
+  if (libtest::_in_valgrind(__FILE__, __LINE__, __func__)) \
   { \
     return TEST_SKIPPED; \
   } \
@@ -132,7 +141,7 @@ do \
 #define test_compare(__expected, __actual) \
 do \
 { \
-  if (not libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)))) \
+  if (libtest::_compare(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)), true) == false) \
   { \
     libtest::create_core(); \
     return TEST_FAILURE; \
@@ -166,7 +175,7 @@ do \
 #define test_compare_warn(__expected, __actual) \
 do \
 { \
-  void(libtest::_compare(__FILE__, __LINE__, __func__, (__expected), (__actual))); \
+  void(libtest::_compare(__FILE__, __LINE__, __func__, (__expected), (__actual)), true); \
 } while (0)
 
 #define test_compare_warn_hint(__expected, __actual, __hint) \
