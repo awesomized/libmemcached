@@ -328,7 +328,7 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
   /*
     We will now cycle the server we have created.
   */
-  if (not server->cycle())
+  if (server->cycle() == false)
   {
     Error << "Could not start up server " << *server;
     delete server;

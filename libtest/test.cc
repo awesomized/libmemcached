@@ -36,10 +36,6 @@
 
 #include <signal.h>
 
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
-#include <curl/curl.h>
-#endif
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
@@ -75,32 +71,11 @@ static long int timedif(struct timeval a, struct timeval b)
   return s + us;
 }
 
-static void cleanup_curl(void)
-{
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
-  curl_global_cleanup();
-#endif
-}
-
 #include <getopt.h>
 #include <unistd.h>
 
 int main(int argc, char *argv[])
 {
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
-  if (curl_global_init(CURL_GLOBAL_ALL))
-  {
-    Error << "curl_global_init(CURL_GLOBAL_ALL) failed";
-    return EXIT_FAILURE;
-  }
-#endif
-
-  if (atexit(cleanup_curl))
-  {
-    Error << "atexit() failed";
-    return EXIT_FAILURE;
-  }
-
   bool opt_repeat= false;
   std::string collection_to_run;
 
@@ -451,13 +426,13 @@ cleanup:
   {
     std::cerr << e.what() << std::endl;
   }
-  catch (std::bad_alloc& e)
+  catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
   }
   catch (...)
   {
-    std::cerr << "Unknown exception halted execution" << std::endl;
+    std::cerr << "Unknown exception halted execution." << std::endl;
   }
 
   return exit_code;

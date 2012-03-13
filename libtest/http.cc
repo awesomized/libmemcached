@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+
 #include <libtest/common.h>
 
 #if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
@@ -27,6 +28,39 @@
 #else
 class CURL;
 #endif
+
+
+static void cleanup_curl(void)
+{
+#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+  curl_global_cleanup();
+#endif
+}
+
+static void initialize_curl_startup()
+{
+#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+  if (curl_global_init(CURL_GLOBAL_ALL))
+  {
+    fatal_message("curl_global_init(CURL_GLOBAL_ALL) failed");
+  }
+#endif
+
+  if (atexit(cleanup_curl))
+  {
+    fatal_message("atexit() failed");
+  }
+}
+
+static pthread_once_t start_key_once= PTHREAD_ONCE_INIT;
+void initialize_curl(void)
+{
+  int ret;
+  if (pthread_once(&start_key_once, initialize_curl_startup) != 0)
+  {
+    fatal_message(strerror(ret));
+  }
+}
 
 namespace libtest {
 namespace http {
@@ -57,6 +91,13 @@ static void init(CURL *curl, const std::string& url)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, YATL_USERAGENT);
 #endif
   }
+}
+
+HTTP::HTTP(const std::string& url_arg) :
+  _url(url_arg),
+  _response(0)
+{
+  initialize_curl();
 }
 
 bool GET::execute()
