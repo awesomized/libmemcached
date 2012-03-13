@@ -14,10 +14,12 @@ SYNOPSIS
 
 
 #include <libmemcached/memcached.h>
- 
-.. c:function:: uint64_t memcached_behavior_get (memcached_st *ptr, memcached_behavior flag);
 
-.. c:function:: memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior flag, uint64_t data);
+.. c:type:: memcached_behavior_t
+ 
+.. c:function:: uint64_t memcached_behavior_get (memcached_st *ptr, memcached_behavior_t flag)
+
+.. c:function:: memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior_t flag, uint64_t data)
 
 Compile and link with -lmemcached
 
@@ -26,17 +28,17 @@ Compile and link with -lmemcached
 DESCRIPTION
 -----------
 
-:manpage:`libmemcached(3)` behavior can be modified by using :c:func:`memcached_behavior_set()`. Default behavior is the library strives to be quick and 
+:manpage:`libmemcached(3)` behavior can be modified by using :c:func:`memcached_behavior_set`. Default behavior is the library strives to be quick and 
 accurate. Some behavior, while being faster, can also result in not entirely 
-accurate behavior (for instance, :c:func:`memcached_set()` will always respond 
+accurate behavior (for instance, :c:func:`memcached_set` will always respond 
 with :c:type:`MEMCACHED_SUCCESS`).
 
-:c:func:`memcached_behavior_get()` takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
+:c:func:`memcached_behavior_get` takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
 
-:c:func:`memcached_behavior_set()` changes the value of a particular option 
+:c:func:`memcached_behavior_set` changes the value of a particular option 
 of the client. It takes both a flag (listed below) and a value. For simple 
 on or off options you just need to pass in a value of 1. Calls to
-:c:func:`memcached_behavior_set()` will flush and reset all connections.
+:c:func:`memcached_behavior_set` will flush and reset all connections.
 
 
 .. c:type:: MEMCACHED_BEHAVIOR_USE_UDP
@@ -44,7 +46,12 @@ on or off options you just need to pass in a value of 1. Calls to
 Causes :manpage:`libmemcached(3)` to use the UDP transport when communicating
 with a memcached server. Not all I/O operations are testsed
 when this behavior is enababled. The following operations will return
-:c:type:`MEMCACHED_NOT_SUPPORTED` when executed with the :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` enabled: :c:func:`memcached_version()`, :c:func:`memcached_stat()`, :c:func:`memcached_get()`, :c:func:`memcached_get_by_key()`, :c:func:`memcached_mget()`, :c:func:`memcached_mget_by_key()`, :c:func:`memcached_fetch()`, :c:func:`memcached_fetch_result()`, :c:func:`memcached_value_fetch()`.
+:c:type:`MEMCACHED_NOT_SUPPORTED` when executed with the
+:c:type:`MEMCACHED_BEHAVIOR_USE_UDP` enabled: :c:func:`memcached_version`,
+:c:func:`memcached_stat`, :c:func:`memcached_get`,
+:c:func:`memcached_get_by_key`, :c:func:`memcached_mget`,
+:c:func:`memcached_mget_by_key`, :c:func:`memcached_fetch`,
+:c:func:`memcached_fetch_result`, :c:func:`memcached_fetch_execute`.
 
 All other operations are testsed but are executed in a 'fire-and-forget'
 mode, in which once the client has executed the operation, no attempt
@@ -114,7 +121,8 @@ Support CAS operations (this is not enabled by default at this point in the serv
 
 .. c:type:: MEMCACHED_BEHAVIOR_KETAMA
 
-Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and the hash to MEMCACHED_HASH_MD5.
+Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and
+the hash to :c:type:`MEMCACHED_HASH_MD5`.
 
 
 .. c:type:: MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
@@ -123,7 +131,11 @@ Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and th
 
 .. c:type:: MEMCACHED_BEHAVIOR_KETAMA_HASH
 
-Sets the hashing algorithm for host mapping on continuum. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, and MEMCACHED_HASH_FNV1A_32.
+Sets the hashing algorithm for host mapping on continuum. The value can be set
+to either :c:type:`MEMCACHED_HASH_DEFAULT`, :c:type:`MEMCACHED_HASH_MD5`,
+:c:type:`MEMCACHED_HASH_CRC`, :c:type:`MEMCACHED_HASH_FNV1_64`,
+:c:type:`MEMCACHED_HASH_FNV1A_64`, :c:type:`MEMCACHED_HASH_FNV1_32`, and
+:c:type:`MEMCACHED_HASH_FNV1A_32`.
 
 .. c:type:: MEMCACHED_BEHAVIOR_KETAMA_COMPAT
 
@@ -131,7 +143,7 @@ Sets the compatibility mode. The value can be set to either MEMCACHED_KETAMA_COM
 
 .. c:type:: MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 
-Modify the timeout value that is used by poll(). The default value is -1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.
+Modify the timeout value that is used by poll. The default value is -1. An signed int pointer must be passed to memcached_behavior_set to change this value. For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
 
 .. c:type:: MEMCACHED_BEHAVIOR_USER_DATA
 .. deprecated:: < 0.30
@@ -269,8 +281,8 @@ RETURN
 ------
 
 
-memcached_behavior_get() returns either the current value of the get, or 0
-or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set()
+memcached_behavior_get returns either the current value of the get, or 0
+or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set
 returns failure or success.
 
 
@@ -279,7 +291,7 @@ NOTES
 -----
 
 
-memcached_behavior_set() in version .17 was changed from taking a pointer
+memcached_behavior_set in version .17 was changed from taking a pointer
 to data value, to taking a uin64_t.
 
 

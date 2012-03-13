@@ -26,7 +26,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <stdint.h>
 #include <arpa/inet.h>
 
 #include <libtest/visibility.h>
@@ -60,3 +59,5 @@
 #include <libtest/string.hpp>
 #include <libtest/binaries.h>
 #include <libtest/http.hpp>
+#include <libtest/cpu.hpp>
+#include <libtest/tmpfile.hpp>

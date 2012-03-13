@@ -14,7 +14,7 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function:: memcached_return_t memcached_flush (memcached_st *ptr, time_t expiration);
+.. c:function:: memcached_return_t memcached_flush (memcached_st *ptr, time_t expiration)
 
 Compile and link with -lmemcached
 
@@ -24,7 +24,7 @@ DESCRIPTION
 -----------
 
 
-:c:func::`memcached_flush()` is used to wipe clean the contents of :program:`memcached` servers.
+:c:func::`memcached_flush` is used to wipe clean the contents of :program:`memcached` servers.
 It will either do this immediately or expire the content based on the
 expiration time passed to the method (a value of zero causes an immediate
 flush). The operation is not atomic to multiple servers, just atomic to a
@@ -39,7 +39,7 @@ RETURN
 
 A value of type :c:type:`memcached_return_t` is returned 
 On success that value will be :c:type:`MEMCACHED_SUCCESS`.
-Use :c:type:`memcached_strerror()` to translate this value to a printable string.
+Use :c:type:`memcached_strerror` to translate this value to a printable string.
 
 ----
 HOME

@@ -101,8 +101,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memflush" };
-  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
+  if (server_startup(servers, "memcached", libtest::default_port(), 0, NULL) == 0)
   {
     error= TEST_FAILURE;
   }

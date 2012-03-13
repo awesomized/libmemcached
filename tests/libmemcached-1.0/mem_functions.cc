@@ -52,7 +52,6 @@
 
 #include <libhashkit-1.0/hashkit.h>
 
-#include <cassert>
 #include <cerrno>
 #include <memory>
 #include <pthread.h>
@@ -193,16 +192,6 @@ private:
     std::vector<size_t> _lengths;
 };
 
-static memcached_return_t return_value_based_on_buffering(memcached_st *memc)
-{
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS))
-  {
-    return MEMCACHED_BUFFERED;
-  }
-
-  return MEMCACHED_SUCCESS;
-}
-
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {
   /*
@@ -290,7 +279,7 @@ static memcached_return_t server_display_function(const memcached_st *ptr,
   /* Do Nothing */
   size_t bigger= *((size_t *)(context));
   (void)ptr;
-  assert(bigger <= memcached_server_port(server));
+  fatal_assert(bigger <= memcached_server_port(server));
   *((size_t *)(context))= memcached_server_port(server);
 
   return MEMCACHED_SUCCESS;
@@ -1186,62 +1175,6 @@ test_return_t read_through(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t get_test(memcached_st *memc)
-{
-  uint64_t query_id= memcached_query_id(memc);
-  memcached_return_t rc= memcached_delete(memc,
-                                          test_literal_param(__func__),
-                                          time_t(0));
-  test_true_hint(rc == MEMCACHED_BUFFERED or rc == MEMCACHED_NOTFOUND, memcached_last_error_message(memc));
-  test_compare(query_id +1, memcached_query_id(memc));
-
-  size_t string_length;
-  uint32_t flags;
-  char *string= memcached_get(memc,
-                        test_literal_param(__func__),
-                        &string_length, &flags, &rc);
-
-  test_compare_got(MEMCACHED_NOTFOUND, rc, memcached_last_error_message(memc));
-  test_false(string_length);
-  test_false(string);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t get_test2(memcached_st *memc)
-{
-  const char *value= "when we sanitize";
-
-  uint64_t query_id= memcached_query_id(memc);
-  test_compare(return_value_based_on_buffering(memc),
-               memcached_set(memc,
-                             test_literal_param(__func__),
-                             value, strlen(value),
-                             time_t(0), uint32_t(0)));
-  test_compare(query_id +1, memcached_query_id(memc));
-
-  query_id= memcached_query_id(memc);
-  test_true(query_id);
-
-  uint32_t flags;
-  size_t string_length;
-  memcached_return_t rc;
-  char *string= memcached_get(memc,
-                              test_literal_param(__func__),
-                              &string_length, &flags, &rc);
-  test_compare(query_id +1, memcached_query_id(memc));
-
-  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_last_error(memc), memcached_last_error_message(memc));
-  test_true(string);
-  test_compare(strlen(value), string_length);
-  test_memcmp(string, value, string_length);
-
-  free(string);
-
-  return TEST_SUCCESS;
-}
-
 test_return_t set_test2(memcached_st *memc)
 {
   for (uint32_t x= 0; x < 10; x++)
@@ -1282,126 +1215,6 @@ test_return_t set_test3(memcached_st *memc)
                       memcached_last_error_message(memc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t get_test3(memcached_st *memc)
-{
-  size_t value_length= 8191;
-
-  libtest::vchar_t value;
-  value.reserve(value_length);
-  for (uint32_t x= 0; x < value_length; x++)
-  {
-    value.push_back(char(x % 127));
-  }
-
-  test_compare_hint(return_value_based_on_buffering(memc),
-                    memcached_set(memc,
-                                  test_literal_param(__func__),
-                                  &value[0], value.size(),
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
-
-  size_t string_length;
-  uint32_t flags;
-  memcached_return_t rc;
-  char *string= memcached_get(memc,
-                              test_literal_param(__func__),
-                              &string_length, &flags, &rc);
-
-  test_compare(MEMCACHED_SUCCESS, rc);
-  test_true(string);
-  test_compare(value.size(), string_length);
-  test_memcmp(string, &value[0], string_length);
-
-  free(string);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t get_test4(memcached_st *memc)
-{
-  size_t value_length= 8191;
-
-  libtest::vchar_t value;
-  value.reserve(value_length);
-  for (uint32_t x= 0; x < value_length; x++)
-  {
-    value.push_back(char(x % 127));
-  }
-
-  test_compare_hint(return_value_based_on_buffering(memc),
-                    memcached_set(memc,
-                                  test_literal_param(__func__),
-                                  &value[0], value.size(),
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
-
-  for (uint32_t x= 0; x < 10; x++)
-  {
-    uint32_t flags;
-    size_t string_length;
-    memcached_return_t rc;
-    char *string= memcached_get(memc,
-                                test_literal_param(__func__),
-                                &string_length, &flags, &rc);
-
-    test_compare(MEMCACHED_SUCCESS, rc);
-    test_true(string);
-    test_compare(value.size(), string_length);
-    test_memcmp(string, &value[0], string_length);
-    free(string);
-  }
-
-  return TEST_SUCCESS;
-}
-
-/*
- * This test verifies that memcached_read_one_response doesn't try to
- * dereference a NIL-pointer if you issue a multi-get and don't read out all
- * responses before you execute a storage command.
- */
-test_return_t get_test5(memcached_st *memc)
-{
-  /*
-  ** Request the same key twice, to ensure that we hash to the same server
-  ** (so that we have multiple response values queued up) ;-)
-  */
-  const char *keys[]= { "key", "key" };
-  size_t lengths[]= { 3, 3 };
-  uint32_t flags;
-  size_t rlen;
-
-  test_compare_hint(return_value_based_on_buffering(memc),
-                    memcached_set(memc, keys[0], lengths[0],
-                                  keys[0], lengths[0],
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
-  test_compare(MEMCACHED_SUCCESS, memcached_mget(memc, keys, lengths, test_array_length(keys)));
-
-  memcached_result_st results_obj;
-  memcached_result_st *results= memcached_result_create(memc, &results_obj);
-  test_true(results);
-
-  memcached_return_t rc;
-  results= memcached_fetch_result(memc, &results_obj, &rc);
-  test_true(results);
-
-  memcached_result_free(&results_obj);
-
-  /* Don't read out the second result, but issue a set instead.. */
-  test_compare(MEMCACHED_SUCCESS, memcached_set(memc, keys[0], lengths[0], keys[0], lengths[0], 0, 0));
-
-  char *val= memcached_get_by_key(memc, keys[0], lengths[0], "yek", 3,
-                                  &rlen, &flags, &rc);
-  test_false(val);
-  test_compare(MEMCACHED_NOTFOUND, rc);
-  val= memcached_get(memc, keys[0], lengths[0], &rlen, &flags, &rc);
-  test_true(val);
-  test_compare(MEMCACHED_SUCCESS, rc);
-  free(val);
 
   return TEST_SUCCESS;
 }
@@ -2884,7 +2697,7 @@ test_return_t user_supplied_bug20(memcached_st *memc)
 /* sighandler_t function that always asserts false */
 static void fail(int)
 {
-  assert(0);
+  fatal_assert(0);
 }
 
 

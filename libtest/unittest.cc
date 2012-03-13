@@ -236,8 +236,19 @@ static test_return_t gearmand_cycle_test(void *object)
   test_skip(true, has_gearmand_binary());
 #endif
 
-  const char *argv[1]= { "cycle_gearmand" };
-  test_true(server_startup(*servers, "gearmand", get_free_port(), 1, argv));
+  test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t memcached_light_cycle_TEST(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  test_skip(true, bool(HAVE_MEMCACHED_LIGHT_BINARY));
+
+  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
 }
@@ -250,8 +261,7 @@ static test_return_t memcached_cycle_test(void *object)
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
   {
     test_true(has_memcached_binary());
-    const char *argv[1]= { "cycle_memcached" };
-    test_true(server_startup(*servers, "memcached", get_free_port(), 1, argv));
+    test_true(server_startup(*servers, "memcached", get_free_port(), 0, NULL));
 
     return TEST_SUCCESS;
   }
@@ -269,8 +279,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
     if (HAVE_LIBMEMCACHED)
     {
       test_true(has_memcached_binary());
-      const char *argv[1]= { "cycle_memcached" };
-      test_true(servers->start_socket_server("memcached", get_free_port(), 1, argv));
+      test_true(servers->start_socket_server("memcached", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
     }
@@ -294,8 +303,7 @@ static test_return_t memcached_sasl_test(void *object)
     if (HAVE_LIBMEMCACHED)
     {
       test_true(has_memcached_sasl_binary());
-      const char *argv[1]= { "cycle_memcached_sasl" };
-      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 1, argv));
+      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
     }
@@ -314,6 +322,31 @@ static test_return_t application_true_BINARY(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t application_gdb_true_BINARY2(void *)
+{
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
+  Application true_app("true");
+  true_app.use_gdb();
+
+  test_compare(Application::SUCCESS, true_app.run());
+  test_compare(Application::SUCCESS, true_app.wait());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_gdb_true_BINARY(void *)
+{
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
+  Application true_app("true");
+  true_app.use_gdb();
+
+  const char *args[]= { "--fubar", 0 };
+  test_compare(Application::SUCCESS, true_app.run(args));
+  test_compare(Application::SUCCESS, true_app.wait());
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t application_true_fubar_BINARY(void *)
 {
   Application true_app("true");
@@ -321,6 +354,34 @@ static test_return_t application_true_fubar_BINARY(void *)
   const char *args[]= { "--fubar", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
   test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(0, true_app.stdout_result().size());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t application_doesnotexist_BINARY(void *)
+{
+  Application true_app("doesnotexist");
+
+  const char *args[]= { "--fubar", 0 };
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_compare(Application::INVALID, true_app.run(args));
+#else
+  test_compare(Application::SUCCESS, true_app.run(args));
+#endif
+  // Behavior is different if we are running under valgrind
+  if (getenv("TESTS_ENVIRONMENT") and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
+  {
+    test_compare(Application::FAILURE, true_app.wait());
+  }
+  else
+  {
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+    test_compare(Application::FAILURE, true_app.wait());
+#else
+    test_compare(Application::INVALID, true_app.wait());
+#endif
+  }
   test_compare(0, true_app.stdout_result().size());
 
   return TEST_SUCCESS;
@@ -494,14 +555,61 @@ static test_return_t wait_services_BINARY2(void *)
   return TEST_SUCCESS;
 }
 
-static test_return_t application_wait_services_BINARY2(void *)
+static test_return_t wait_services_appliction_TEST(void *)
 {
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
   test_skip(0, access("/etc/services", R_OK ));
 
-  libtest::Application("libtest/wait", true);
-  const char *args[]= { "/etc/services", 0 };
+  libtest::Application wait_app("libtest/wait", true);
+  wait_app.use_gdb();
 
-  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/wait", args, true));
+  const char *args[]= { "/etc/services", 0 };
+  test_compare(Application::SUCCESS, wait_app.run(args));
+  test_compare(Application::SUCCESS, wait_app.wait());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t gdb_wait_services_appliction_TEST(void *)
+{
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_skip(0, TARGET_OS_OSX);
+#endif
+
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
+  test_skip(0, access("/etc/services", R_OK ));
+
+  libtest::Application wait_app("libtest/wait", true);
+  wait_app.use_gdb();
+
+  const char *args[]= { "/etc/services", 0 };
+  test_compare(Application::SUCCESS, wait_app.run(args));
+  test_compare(Application::SUCCESS, wait_app.wait());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t gdb_abort_services_appliction_TEST(void *)
+{
+  test_skip(0, access("/usr/bin/gdb", X_OK ));
+
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  test_skip(0, TARGET_OS_OSX);
+#endif
+
+  libtest::Application abort_app("libtest/abort", true);
+  abort_app.use_gdb();
+
+  test_compare(Application::SUCCESS, abort_app.run());
+  test_compare(Application::SUCCESS, abort_app.wait());
+
+  std::string gdb_filename= abort_app.gdb_filename();
+  const char *args[]= { "SIGABRT", gdb_filename.c_str(), 0 };
+  test_compare(EXIT_SUCCESS, exec_cmdline("grep", args));
+
+  // Sanity test
+  args[0]= "THIS_WILL_NOT_BE_FOUND";
+  test_compare(EXIT_FAILURE, exec_cmdline("grep", args));
 
   return TEST_SUCCESS;
 }
@@ -522,6 +630,28 @@ static test_return_t fatal_TEST(void *)
 {
   test_compare(fatal_calls++, fatal::disabled_counter());
   throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Testing va_args based fatal(): %d", 10); 
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t number_of_cpus_TEST(void *)
+{
+  test_true(number_of_cpus() >= 1);
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t create_tmpfile_TEST(void *)
+{
+  std::string tmp= create_tmpfile(__func__);
+
+  Application touch_app("touch");
+  const char *args[]= { tmp.c_str(), 0 };
+  test_compare(Application::SUCCESS, touch_app.run(args));
+  test_compare(Application::SUCCESS, touch_app.wait());
+
+  test_compare_hint(0, access(tmp.c_str(), R_OK), strerror(errno));
+  test_compare_hint(0, unlink(tmp.c_str()), strerror(errno));
 
   return TEST_SUCCESS;
 }
@@ -569,6 +699,7 @@ static test_return_t check_for_libmemcached(void *)
 
 test_st memcached_tests[] ={
   {"memcached startup-shutdown", 0, memcached_cycle_test },
+  {"memcached-light startup-shutdown", 0, memcached_light_cycle_TEST },
   {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
   {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
   {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
@@ -624,6 +755,9 @@ test_st cmdline_tests[] ={
   {"wait --quiet --version", 0, wait_version_BINARY },
   {"wait --quiet /etc/services", 0, wait_services_BINARY },
   {"wait /etc/services", 0, wait_services_BINARY2 },
+  {"wait /etc/services", 0, wait_services_appliction_TEST },
+  {"gdb wait /etc/services", 0, gdb_wait_services_appliction_TEST },
+  {"gdb abort", 0, gdb_abort_services_appliction_TEST },
   {0, 0, 0}
 };
 
@@ -639,10 +773,23 @@ test_st fatal_message_TESTS[] ={
   {0, 0, 0}
 };
 
+test_st number_of_cpus_TESTS[] ={
+  {"libtest::number_of_cpus()", 0, number_of_cpus_TEST },
+  {0, 0, 0}
+};
+
+test_st create_tmpfile_TESTS[] ={
+  {"libtest::create_tmpfile()", 0, create_tmpfile_TEST },
+  {0, 0, 0}
+};
+
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
   {"true", 0, application_true_BINARY },
+  {"gbd true --fubar", 0, application_gdb_true_BINARY },
+  {"gbd true", 0, application_gdb_true_BINARY2 },
   {"true --fubar", 0, application_true_fubar_BINARY },
+  {"doesnotexist --fubar", 0, application_doesnotexist_BINARY },
   {"true --fubar=doh", 0, application_true_fubar_eq_doh_BINARY },
   {"true --fubar=doh add_option()", 0, application_true_fubar_eq_doh_option_BINARY },
   {"echo fubar", 0, application_echo_fubar_BINARY },
@@ -688,6 +835,8 @@ collection_st collection[] ={
   {"http", check_for_curl, 0, http_tests},
   {"get_free_port()", 0, 0, get_free_port_TESTS },
   {"fatal", disable_fatal_exception, enable_fatal_exception, fatal_message_TESTS },
+  {"number_of_cpus()", 0, 0, number_of_cpus_TESTS },
+  {"create_tmpfile()", 0, 0, create_tmpfile_TESTS },
   {0, 0, 0, 0}
 };
 

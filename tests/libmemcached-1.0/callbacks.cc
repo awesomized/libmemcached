@@ -50,8 +50,8 @@ static memcached_return_t delete_trigger(memcached_st *,
                                          const char *key,
                                          size_t key_length)
 {
-  assert(key);
-  assert(key_length);
+  fatal_assert(key);
+  fatal_assert(key_length);
 
   return MEMCACHED_SUCCESS;
 }

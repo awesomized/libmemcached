@@ -26,6 +26,7 @@ using namespace libtest;
 #include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
+#include <fstream>
 #include <memory>
 #include <spawn.h>
 #include <sstream>
@@ -56,7 +57,7 @@ extern "C" {
 
 namespace {
 
-  std::string print_argv(char * * & built_argv, const size_t& argc, const pid_t& pid)
+  std::string print_argv(char * * & built_argv, const size_t& argc)
   {
     std::stringstream arg_buffer;
 
@@ -68,12 +69,41 @@ namespace {
     return arg_buffer.str();
   }
 
+  std::string print_argv(char** argv)
+  {
+    std::stringstream arg_buffer;
+
+    for (char** ptr= argv; *ptr; ptr++)
+    {
+      arg_buffer << *ptr << " ";
+    }
+
+    return arg_buffer.str();
+  }
+
+  static Application::error_t int_to_error_t(int arg)
+  {
+    switch (arg)
+    {
+    case 127:
+      return Application::INVALID;
+
+    case 0:
+      return Application::SUCCESS;
+
+    default:
+    case 1:
+      return Application::FAILURE;
+    }
+  }
 }
 
 namespace libtest {
 
 Application::Application(const std::string& arg, const bool _use_libtool_arg) :
   _use_libtool(_use_libtool_arg),
+  _use_valgrind(false),
+  _use_gdb(false),
   _argc(0),
   _exectuble(arg),
   built_argv(NULL),
@@ -84,6 +114,19 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
       if (libtool() == NULL)
       {
         throw "libtool requested, but know libtool was found";
+      }
+    }
+
+    // Find just the name of the application with no path
+    {
+      size_t found= arg.find_last_of("/\\");
+      if (found)
+      {
+        _exectuble_name= arg.substr(found +1);
+      }
+      else
+      {
+        _exectuble_name= arg;
       }
     }
 
@@ -118,13 +161,66 @@ Application::error_t Application::run(const char *args[])
   create_argv(args);
 
   int spawn_ret;
-  if (_use_libtool)
+  if (_use_gdb)
   {
-    spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+    std::string gdb_run_file= create_tmpfile(_exectuble_name);
+    std::fstream file_stream;
+    file_stream.open(gdb_run_file.c_str(), std::fstream::out | std::fstream::trunc);
+
+    _gdb_filename= create_tmpfile(_exectuble_name);
+    file_stream 
+      << "set logging redirect on" << std::endl
+      << "set logging file " << _gdb_filename << std::endl
+      << "set logging overwrite on" << std::endl
+      << "set logging on" << std::endl
+      << "set environment LIBTEST_IN_GDB=1" << std::endl
+      << "run " << arguments() << std::endl
+      << "thread apply all bt" << std::endl
+      << "quit" << std::endl;
+
+    fatal_assert(file_stream.good());
+    file_stream.close();
+
+    if (_use_libtool)
+    {
+      // libtool --mode=execute gdb -f -x binary
+      char *argv[]= {
+        const_cast<char *>(libtool()),
+        const_cast<char *>("--mode=execute"),
+        const_cast<char *>("gdb"),
+        const_cast<char *>("-batch"),
+        const_cast<char *>("-f"),
+        const_cast<char *>("-x"),
+        const_cast<char *>(gdb_run_file.c_str()), 
+        const_cast<char *>(_exectuble_with_path.c_str()), 
+        0};
+
+      spawn_ret= posix_spawnp(&_pid, libtool(), &file_actions, NULL, argv, NULL);
+    }
+    else
+    {
+      // gdb binary
+      char *argv[]= {
+        const_cast<char *>("gdb"),
+        const_cast<char *>("-batch"),
+        const_cast<char *>("-f"),
+        const_cast<char *>("-x"),
+        const_cast<char *>(gdb_run_file.c_str()), 
+        const_cast<char *>(_exectuble_with_path.c_str()), 
+        0};
+      spawn_ret= posix_spawnp(&_pid, "gdb", &file_actions, NULL, argv, NULL);
+    }
   }
   else
   {
-    spawn_ret= posix_spawnp(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+    if (_use_libtool)
+    {
+      spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+    }
+    else
+    {
+      spawn_ret= posix_spawnp(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+    }
   }
 
   posix_spawn_file_actions_destroy(&file_actions);
@@ -135,7 +231,6 @@ Application::error_t Application::run(const char *args[])
 
   if (spawn_ret)
   {
-    Error << print();
     return Application::INVALID;
   }
 
@@ -214,17 +309,20 @@ Application::error_t Application::wait()
     }
     else
     {
-      assert(waited_pid == _pid);
-      exit_code= error_t(exited_successfully(status));
+      if (waited_pid != _pid)
+      {
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Pid mismatch, %d != %d", int(waited_pid), int(_pid));
+      }
+      exit_code= int_to_error_t(exited_successfully(status));
     }
   }
 
+#if 0
   if (exit_code == Application::INVALID)
   {
-#if 0
-    Error << print_argv(built_argv, _argc, _pid);
-#endif
+    Error << print_argv(built_argv, _argc);
   }
+#endif
 
   return exit_code;
 }
@@ -325,6 +423,18 @@ void Application::create_argv(const char *args[])
     _argc+= 2; // +2 for libtool --mode=execute
   }
 
+  /*
+    valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+  */
+  if (_use_valgrind)
+  {
+    _argc+= 7;
+  }
+  else if (_use_gdb) // gdb
+  {
+    _argc+= 1;
+  }
+
   for (Options::const_iterator iter= _options.begin(); iter != _options.end(); iter++)
   {
     _argc++;
@@ -352,6 +462,25 @@ void Application::create_argv(const char *args[])
     built_argv[x++]= strdup(libtool());
     built_argv[x++]= strdup("--mode=execute");
   }
+
+  if (_use_valgrind)
+  {
+    /*
+      valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+    */
+    built_argv[x++]= strdup("valgrind");
+    built_argv[x++]= strdup("--error-exitcode=1");
+    built_argv[x++]= strdup("--leak-check=yes");
+    built_argv[x++]= strdup("--show-reachable=yes");
+    built_argv[x++]= strdup("--track-fds=yes");
+    built_argv[x++]= strdup("--malloc-fill=A5");
+    built_argv[x++]= strdup("--free-fill=DE");
+  }
+  else if (_use_gdb)
+  {
+    built_argv[x++]= strdup("gdb");
+  }
+
   built_argv[x++]= strdup(_exectuble_with_path.c_str());
 
   for (Options::const_iterator iter= _options.begin(); iter != _options.end(); iter++)
@@ -375,7 +504,21 @@ void Application::create_argv(const char *args[])
 
 std::string Application::print()
 {
-  return print_argv(built_argv, _argc, _pid);
+  return print_argv(built_argv, _argc);
+}
+
+std::string Application::arguments()
+{
+  std::stringstream arg_buffer;
+
+  for (size_t x= 1 + _use_libtool ? 2 : 0;
+       x < _argc and built_argv[x];
+       x++)
+  {
+    arg_buffer << built_argv[x] << " ";
+  }
+
+  return arg_buffer.str();
 }
 
 void Application::delete_argv()
@@ -408,9 +551,8 @@ int exec_cmdline(const std::string& command, const char *args[], bool use_libtoo
   {
     return int(ret);
   }
-  ret= app.wait();
 
-  return int(ret);
+  return int(app.wait());
 }
 
 const char *gearmand_binary() 

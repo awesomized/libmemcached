@@ -89,7 +89,7 @@ static ssize_t default_send(const void *cookie,
                             size_t nbytes)
 {
   (void)cookie;
-  return send(fd, buf, nbytes, 0);
+  return send(fd, buf, nbytes, MSG_NOSIGNAL);
 }
 
 /**
@@ -102,12 +102,17 @@ static ssize_t default_send(const void *cookie,
  */
 static bool drain_output(struct memcached_protocol_client_st *client)
 {
-  ssize_t len;
+  if (client->is_verbose)
+  {
+    fprintf(stderr, "%s:%d %s mute:%d output:%s length:%d\n", __FILE__, __LINE__, __func__, (int)client->mute,
+            client->output ? "yes" : "no",
+            client->output ? (int)(client->output->nbytes - client->output->offset) : 0);
+  }
 
   /* Do we have pending data to send? */
   while (client->output != NULL)
   {
-    len= client->root->send(client,
+    ssize_t len= client->root->send(client,
                             client->sock,
                             client->output->data + client->output->offset,
                             client->output->nbytes - client->output->offset);
@@ -189,6 +194,11 @@ static protocol_binary_response_status spool_output(struct memcached_protocol_cl
                                                     const void *data,
                                                     size_t length)
 {
+  if (client->is_verbose)
+  {
+    fprintf(stderr, "%s:%d %s mute:%d length:%d\n", __FILE__, __LINE__, __func__, (int)client->mute, (int)length);
+  }
+
   if (client->mute)
   {
     return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -233,10 +243,19 @@ static memcached_protocol_event_t determine_protocol(struct memcached_protocol_c
 {
   if (*client->root->input_buffer == (uint8_t)PROTOCOL_BINARY_REQ)
   {
+    if (client->is_verbose)
+    {
+      fprintf(stderr, "%s:%d PROTOCOL: memcached_binary_protocol_process_data\n", __FILE__, __LINE__);
+    }
     client->work= memcached_binary_protocol_process_data;
   }
   else if (client->root->callback->interface_version == 1)
   {
+    if (client->is_verbose)
+    {
+      fprintf(stderr, "%s:%d PROTOCOL: memcached_ascii_protocol_process_data\n", __FILE__, __LINE__);
+    }
+
     /*
      * The ASCII protocol can only be used if the implementors provide
      * an implementation for the version 1 of the interface..
@@ -249,12 +268,18 @@ static memcached_protocol_event_t determine_protocol(struct memcached_protocol_c
   }
   else
   {
+    if (client->is_verbose)
+    {
+      fprintf(stderr, "%s:%d PROTOCOL: Unsupported protocol\n", __FILE__, __LINE__);
+    }
+
     /* Let's just output a warning the way it is supposed to look like
      * in the ASCII protocol...
      */
     const char *err= "CLIENT_ERROR: Unsupported protocol\r\n";
     client->root->spool(client, err, strlen(err));
     client->root->drain(client);
+
     return MEMCACHED_PROTOCOL_ERROR_EVENT; /* Unsupported protocol */
   }
 
@@ -282,6 +307,7 @@ struct memcached_protocol_st *memcached_protocol_create_instance(void)
     {
       free(ret);
       ret= NULL;
+
       return NULL;
     }
 
@@ -307,7 +333,7 @@ void memcached_protocol_destroy_instance(struct memcached_protocol_st *instance)
 
 struct memcached_protocol_client_st *memcached_protocol_create_client(struct memcached_protocol_st *instance, memcached_socket_t sock)
 {
-  struct memcached_protocol_client_st *ret= calloc(1, sizeof(*ret));
+  struct memcached_protocol_client_st *ret= calloc(1, sizeof(memcached_protocol_client_st));
   if (ret != NULL)
   {
     ret->root= instance;
@@ -321,6 +347,14 @@ struct memcached_protocol_client_st *memcached_protocol_create_client(struct mem
 void memcached_protocol_client_destroy(struct memcached_protocol_client_st *client)
 {
   free(client);
+}
+
+void memcached_protocol_client_set_verbose(struct memcached_protocol_client_st *client, bool arg)
+{
+  if (client)
+  {
+    client->is_verbose= arg;
+  }
 }
 
 memcached_protocol_event_t memcached_protocol_client_work(struct memcached_protocol_client_st *client)
@@ -395,7 +429,9 @@ memcached_protocol_event_t memcached_protocol_client_work(struct memcached_proto
 
   memcached_protocol_event_t ret= MEMCACHED_PROTOCOL_READ_EVENT;
   if (client->output)
+  {
     ret|= MEMCACHED_PROTOCOL_READ_EVENT;
+  }
 
   return ret;
 }

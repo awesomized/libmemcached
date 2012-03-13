@@ -38,8 +38,6 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <cassert>
-
 #include <libmemcached/memcached.h>
 #include <tests/deprecated.h>
 
@@ -68,7 +66,7 @@ test_return_t server_list_null_test(memcached_st *ptr)
 test_return_t regression_bug_728286(memcached_st *)
 {
   memcached_server_st *servers= memcached_servers_parse("1.2.3.4:99");
-  assert(servers);
+  fatal_assert(servers);
   memcached_server_free(servers);
 
   return TEST_SUCCESS;

@@ -122,24 +122,19 @@ public:
     return "benchmark/blobslap_worker";
   }
 
-  const char *pid_file_option()
-  {
-    return "--pid-file=";
-  }
-
   const char *daemon_file_option()
   {
     return "--daemon";
   }
 
-  const char *log_file_option()
+  bool has_port_option() const
   {
-    return "--log-file=";
+    return true;
   }
 
-  const char *port_option()
+  bool has_log_file_option() const
   {
-    return "--port=";
+    return true;
   }
 
   bool is_libtool()
@@ -147,22 +142,20 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool build(size_t argc, const char *argv[]);
 };
 
 
 #include <sstream>
 
-bool BlobslapWorker::build(int argc, const char *argv[])
+bool BlobslapWorker::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
-  for (int x= 1 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
-    arg_buffer << " " << argv[x] << " ";
+    add_option(argv[x]);
   }
-
-  set_extra_args(arg_buffer.str());
 
   return true;
 }

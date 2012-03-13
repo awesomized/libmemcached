@@ -76,7 +76,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
 	 
     AS_IF([test "$ac_cv_warnings_as_errors" = "yes"],[
       W_FAIL="-Werror"
-      SPHINX_WARNINGS="-W"
+      SPHINX_WARNINGS="-W -n"
       INTLTOOL_WARNINGS="yes"
     ])
 

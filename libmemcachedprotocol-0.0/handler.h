@@ -152,6 +152,9 @@ memcached_protocol_client_st *memcached_protocol_create_client(memcached_protoco
 LIBMEMCACHED_API
 void memcached_protocol_client_destroy(memcached_protocol_client_st *client);
 
+LIBMEMCACHED_API
+void memcached_protocol_client_set_verbose(struct memcached_protocol_client_st *client, bool arg);
+
 /**
  * Error event means that the client encountered an error with the
  * connection so you should shut it down

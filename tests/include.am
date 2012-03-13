@@ -67,9 +67,6 @@ test: check
 check-local: $(TEST_DOCS)
 	@echo "Tests completed"
 
-test-x: test-plus test-memcp test-memdump test-memflush test-memstat
-	@echo "Tests completed"
-
 test-mem: tests/var tests/libmemcached-1.0/testapp
 	@tests/libmemcached-1.0/testapp
 

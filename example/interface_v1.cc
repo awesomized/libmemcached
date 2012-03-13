@@ -2,25 +2,30 @@
 /**
  * This file contains an implementation of the callback interface for level 1
  * in the protocol library. If you compare the implementation with the one
- * in interface_v0.c you will see that this implementation is much easier and
+ * in interface_v0.cc you will see that this implementation is much easier and
  * hides all of the protocol logic and let you focus on the application
  * logic. One "problem" with this layer is that it is synchronous, so that
  * you will not receive the next command before a answer to the previous
  * command is being sent.
  */
 #include "config.h"
-#include <assert.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
+
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <example/byteorder.h>
-#include "storage.h"
+#include "example/memcached_light.h"
+#include "example/storage.h"
+#include "util/log.hpp"
+
+static datadifferential::util::log_info_st *log_file= NULL;
 
 static protocol_binary_response_status add_handler(const void *cookie,
                                                    const void *key,
@@ -140,11 +145,11 @@ static protocol_binary_response_status decrement_handler(const void *cookie,
   return rval;
 }
 
-static protocol_binary_response_status delete_handler(const void *cookie,
+static protocol_binary_response_status delete_handler(const void *, // cookie
                                                       const void *key,
                                                       uint16_t keylen,
-                                                      uint64_t cas) {
-  (void)cookie;
+                                                      uint64_t cas)
+{
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
 
   if (cas != 0)
@@ -170,11 +175,8 @@ static protocol_binary_response_status delete_handler(const void *cookie,
 }
 
 
-static protocol_binary_response_status flush_handler(const void *cookie,
-                                                     uint32_t when) {
-
-  (void)cookie;
-  flush(when);
+static protocol_binary_response_status flush_handler(const void * /* cookie */, uint32_t /* when */)
+{
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
 }
 
@@ -288,12 +290,12 @@ static protocol_binary_response_status prepend_handler(const void *cookie,
   return rval;
 }
 
-static protocol_binary_response_status quit_handler(const void *cookie) {
-  (void)cookie;
+static protocol_binary_response_status quit_handler(const void *) //cookie
+{
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
 }
 
-static protocol_binary_response_status replace_handler(const void *cookie,
+static protocol_binary_response_status replace_handler(const void *, // cookie
                                                        const void *key,
                                                        uint16_t keylen,
                                                        const void* data,
@@ -301,8 +303,8 @@ static protocol_binary_response_status replace_handler(const void *cookie,
                                                        uint32_t flags,
                                                        uint32_t exptime,
                                                        uint64_t cas,
-                                                       uint64_t *result_cas) {
-  (void)cookie;
+                                                       uint64_t *result_cas)
+{
   protocol_binary_response_status rval= PROTOCOL_BINARY_RESPONSE_SUCCESS;
   struct item* item= get_item(key, keylen);
 
@@ -375,37 +377,41 @@ static protocol_binary_response_status set_handler(const void *cookie,
 }
 
 static protocol_binary_response_status stat_handler(const void *cookie,
-                                                    const void *key,
-                                                    uint16_t keylen,
-                                                    memcached_binary_protocol_stat_response_handler response_handler) {
-  (void)key;
-  (void)keylen;
+                                                    const void *, // key
+                                                    uint16_t, // keylen,
+                                                    memcached_binary_protocol_stat_response_handler response_handler)
+{
   /* Just return an empty packet */
   return response_handler(cookie, NULL, 0, NULL, 0);
 }
 
 static protocol_binary_response_status version_handler(const void *cookie,
-                                                       memcached_binary_protocol_version_response_handler response_handler) {
+                                                       memcached_binary_protocol_version_response_handler response_handler)
+{
   const char *version= "0.1.1";
   return response_handler(cookie, version, (uint32_t)strlen(version));
 }
 
-memcached_binary_protocol_callback_st interface_v1_impl= {
-  .interface_version= MEMCACHED_PROTOCOL_HANDLER_V1,
-  .interface.v1= {
-    .add= add_handler,
-    .append= append_handler,
-    .decrement= decrement_handler,
-    .delete= delete_handler,
-    .flush= flush_handler,
-    .get= get_handler,
-    .increment= increment_handler,
-    .noop= noop_handler,
-    .prepend= prepend_handler,
-    .quit= quit_handler,
-    .replace= replace_handler,
-    .set= set_handler,
-    .stat= stat_handler,
-    .version= version_handler
-  }
-};
+memcached_binary_protocol_callback_st interface_v1_impl;
+
+void initialize_interface_v1_handler(datadifferential::util::log_info_st& arg)
+{
+  log_file= &arg;
+  memset(&interface_v1_impl, 0, sizeof(memcached_binary_protocol_callback_st));
+
+  interface_v1_impl.interface_version= MEMCACHED_PROTOCOL_HANDLER_V1;
+  interface_v1_impl.interface.v1.add= add_handler;
+  interface_v1_impl.interface.v1.append= append_handler;
+  interface_v1_impl.interface.v1.decrement= decrement_handler;
+  interface_v1_impl.interface.v1.delete_object= delete_handler;
+  interface_v1_impl.interface.v1.flush_object= flush_handler;
+  interface_v1_impl.interface.v1.get= get_handler;
+  interface_v1_impl.interface.v1.increment= increment_handler;
+  interface_v1_impl.interface.v1.noop= noop_handler;
+  interface_v1_impl.interface.v1.prepend= prepend_handler;
+  interface_v1_impl.interface.v1.quit= quit_handler;
+  interface_v1_impl.interface.v1.replace= replace_handler;
+  interface_v1_impl.interface.v1.set= set_handler;
+  interface_v1_impl.interface.v1.stat= stat_handler;
+  interface_v1_impl.interface.v1.version= version_handler;
+}

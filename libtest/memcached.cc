@@ -85,7 +85,7 @@ public:
   pid_t get_pid(bool error_is_ok)
   {
     // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
       if (error_is_ok and not wait_for_pidfile())
       {
@@ -123,7 +123,7 @@ public:
     // Memcached is slow to start, so we need to do this
     if (not pid_file().empty())
     {
-      if (not wait_for_pidfile())
+      if (wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -160,9 +160,12 @@ public:
     return MEMCACHED_BINARY;
   }
 
-  const char *pid_file_option()
+  virtual void pid_file_option(Application& app, const std::string& arg)
   {
-    return "-P ";
+    if (arg.empty() == false)
+    {
+      app.add_option("-P", arg);
+    }
   }
 
   const char *socket_file_option() const
@@ -175,14 +178,29 @@ public:
     return "-d";
   }
 
-  const char *log_file_option()
+  virtual void port_option(Application& app, in_port_t arg)
   {
-    return NULL;
+    char buffer[30];
+    snprintf(buffer, sizeof(buffer), "%d", int(arg));
+    app.add_option("-p", buffer); 
   }
 
-  const char *port_option()
+  bool has_port_option() const
   {
-    return "-p ";
+    return true;
+  }
+
+  bool has_socket_file_option() const
+  {
+    return has_socket();
+  }
+
+  void socket_file_option(Application& app, const std::string& socket_arg)
+  {
+    if (socket_arg.empty() == false)
+    {
+      app.add_option("-s", socket_arg);
+    }
   }
 
   bool is_libtool()
@@ -201,7 +219,124 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool build(size_t argc, const char *argv[]);
+};
+
+class MemcachedLight : public libtest::Server
+{
+
+public:
+  MemcachedLight(const std::string& host_arg, const in_port_t port_arg):
+    libtest::Server(host_arg, port_arg)
+  {
+    set_pid_file();
+  }
+
+  pid_t get_pid(bool error_is_ok)
+  {
+    // Memcached is slow to start, so we need to do this
+    if (not pid_file().empty())
+    {
+      if (error_is_ok and not wait_for_pidfile())
+      {
+        Error << "Pidfile was not found:" << pid_file();
+        return -1;
+      }
+    }
+
+    bool success= false;
+    std::stringstream error_message;
+    pid_t local_pid= get_pid_from_file(pid_file(), error_message);
+    if (local_pid > 0)
+    {
+      if (::kill(local_pid, 0) > 0)
+      {
+        success= true;
+      }
+    }
+
+    if (error_is_ok and ((success or not is_pid_valid(local_pid))))
+    {
+      Error << "kill(" << " pid: " << local_pid << " errno:" << strerror(errno) << " for:" << *this;
+    }
+
+    return local_pid;
+  }
+
+  bool ping()
+  {
+    // Memcached is slow to start, so we need to do this
+    if (not pid_file().empty())
+    {
+      if (not wait_for_pidfile())
+      {
+        Error << "Pidfile was not found:" << pid_file();
+        return false;
+      }
+    }
+
+    std::stringstream error_message;
+    pid_t local_pid= get_pid_from_file(pid_file(), error_message);
+    if (local_pid > 0)
+    {
+      if (::kill(local_pid, 0) == 0)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  const char *name()
+  {
+    return "memcached_light";
+  };
+
+  const char *executable()
+  {
+    return MEMCACHED_LIGHT_BINARY;
+  }
+
+  const char *daemon_file_option()
+  {
+    return "--daemon";
+  }
+
+  virtual void port_option(Application& app, in_port_t arg)
+  {
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "--port=%d", int(arg));
+    app.add_option(buffer);
+  }
+
+  bool has_port_option() const
+  {
+    return true;
+  }
+
+  bool is_libtool()
+  {
+    return true;
+  }
+
+  void log_file_option(Application& app, const std::string& arg)
+  {
+    if (arg.empty() == false)
+    {
+      std::string buffer("--log-file=");
+      buffer+= arg;
+      app.add_option("--verbose");
+      app.add_option(buffer);
+    }
+  }
+
+  bool has_log_file_option() const
+  {
+    return true;
+  }
+
+  bool build(size_t argc, const char *argv[]);
 };
 
 class MemcachedSaSL : public Memcached
@@ -294,30 +429,38 @@ public:
 
 #include <sstream>
 
-bool Memcached::build(int argc, const char *argv[])
+bool Memcached::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
   if (getuid() == 0 or geteuid() == 0)
   {
-    arg_buffer << " -u root ";
+    add_option("-u", "root");
   }
 
-  arg_buffer << " -l localhost ";
-  arg_buffer << " -m 128 ";
-  arg_buffer << " -M ";
+  add_option("-l", "localhost");
+  add_option("-m", "128");
+  add_option("-M");
 
   if (sasl())
   {
-    arg_buffer << sasl();
+    add_option(sasl());
   }
 
-  for (int x= 1 ; x < argc ; x++)
+  for (int x= 0 ; x < argc ; x++)
   {
-    arg_buffer << " " << argv[x] << " ";
+    add_option(argv[x]);
   }
 
-  set_extra_args(arg_buffer.str());
+  return true;
+}
+
+bool MemcachedLight::build(size_t argc, const char *argv[])
+{
+  for (int x= 0 ; x < argc ; x++)
+  {
+    add_option(argv[x]);
+  }
 
   return true;
 }
@@ -332,6 +475,11 @@ libtest::Server *build_memcached(const std::string& hostname, const in_port_t tr
 libtest::Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port)
 {
   return new Memcached(socket_file, try_port, true);
+}
+
+libtest::Server *build_memcached_light(const std::string& hostname, const in_port_t try_port)
+{
+  return new MemcachedLight(hostname, try_port);
 }
 
 

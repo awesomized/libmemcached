@@ -184,7 +184,6 @@ int main(int argc, char *argv[])
 void options_parse(int argc, char *argv[])
 {
   int option_index= 0;
-  int option_rv;
 
   memcached_programs_help_st help_options[]=
   {
@@ -210,7 +209,7 @@ void options_parse(int argc, char *argv[])
 
   while (1)
   {
-    option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
+    int option_rv= getopt_long(argc, argv, "Vhvds:", long_options, &option_index);
     if (option_rv == -1) break;
     switch (option_rv)
     {

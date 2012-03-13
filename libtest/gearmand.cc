@@ -164,24 +164,25 @@ public:
     return GEARMAND_BINARY;
   }
 
-  const char *pid_file_option()
-  {
-    return "--pid-file=";
-  }
-
   const char *daemon_file_option()
   {
     return "--daemon";
   }
 
-  const char *log_file_option()
+  void log_file_option(Application& app, const std::string& arg)
   {
-    return "--verbose=DEBUG --log-file=";
+    if (arg.empty() == false)
+    {
+      std::string buffer("--log-file=");
+      buffer+= arg;
+      app.add_option("--verbose=DEBUG");
+      app.add_option(buffer);
+    }
   }
 
-  const char *port_option()
+  bool has_log_file_option() const
   {
-    return "--port=";
+    return true;
   }
 
   bool is_libtool()
@@ -194,26 +195,29 @@ public:
     return true;
   }
 
-  bool build(int argc, const char *argv[]);
+  bool has_port_option() const
+  {
+    return true;
+  }
+
+  bool build(size_t argc, const char *argv[]);
 };
 
-bool Gearmand::build(int argc, const char *argv[])
+bool Gearmand::build(size_t argc, const char *argv[])
 {
   std::stringstream arg_buffer;
 
   if (getuid() == 0 or geteuid() == 0)
   {
-    arg_buffer << " -u root ";
+    add_option("-u", "root");
   }
 
-  arg_buffer << " --listen=localhost ";
+  add_option("--listen=localhost");
 
-  for (int x= 1 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
-    arg_buffer << " " << argv[x] << " ";
+    add_option(argv[x]);
   }
-
-  set_extra_args(arg_buffer.str());
 
   return true;
 }
