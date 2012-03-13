@@ -20,6 +20,7 @@
  */
 
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <libmemcached-1.0/memcached.h>
@@ -87,7 +88,8 @@ public:
     // Memcached is slow to start, so we need to do this
     if (pid_file().empty() == false)
     {
-      if (error_is_ok and not wait_for_pidfile())
+      if (error_is_ok and
+          wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -121,7 +123,7 @@ public:
   bool ping()
   {
     // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
       if (wait_for_pidfile() == false)
       {
@@ -135,7 +137,7 @@ public:
 
     if (has_socket())
     {
-        ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
+      ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
     }
     else
     {
@@ -235,9 +237,9 @@ public:
   pid_t get_pid(bool error_is_ok)
   {
     // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
-      if (error_is_ok and not wait_for_pidfile())
+      if (error_is_ok and wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -342,7 +344,11 @@ public:
 class MemcachedSaSL : public Memcached
 {
 public:
-  MemcachedSaSL(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg, const std::string& username_arg, const std::string &password_arg) :
+  MemcachedSaSL(const std::string& host_arg,
+                const in_port_t port_arg, 
+                const bool is_socket_arg, 
+                const std::string& username_arg, 
+                const std::string &password_arg) :
     Memcached(host_arg, port_arg, is_socket_arg, username_arg, password_arg)
   { }
 
@@ -364,9 +370,10 @@ public:
   pid_t get_pid(bool error_is_ok)
   {
     // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
-      if (error_is_ok and not wait_for_pidfile())
+      if (error_is_ok and 
+          wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -457,7 +464,7 @@ bool Memcached::build(size_t argc, const char *argv[])
 
 bool MemcachedLight::build(size_t argc, const char *argv[])
 {
-  for (int x= 0 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
     add_option(argv[x]);
   }

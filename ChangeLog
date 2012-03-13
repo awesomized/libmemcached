@@ -1,10 +1,8 @@
 1.0.5
-
-* Version is now parsed directly in the parser, which makes buffered
-operations now work with it..
-
-* memstat has been extended so that it can be used to find the version of the
-server.
+* Version is now parsed directly in the parser, which makes buffered operations now work with it..
+* memstat has been extended so that it can be used to find the version of the server.
+* Update documentation.
+* Fixes for compile issues on Debian and Ubuntu
 
 
 1.0.4 Thu Jan 26 22:33:54 PST 2012

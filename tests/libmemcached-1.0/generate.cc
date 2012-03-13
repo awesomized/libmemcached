@@ -51,6 +51,8 @@
 #define GLOBAL_COUNT 10000
 #define GLOBAL2_COUNT 100
 
+using namespace libtest;
+
 static pairs_st *global_pairs;
 static const char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
