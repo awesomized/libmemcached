@@ -34,6 +34,8 @@
 
 namespace libtest {
 
+bool _in_valgrind(const char *file, int line, const char *func);
+
 template <class T_comparable, class T_hint>
 bool _compare_truth_hint(const char *file, int line, const char *func, T_comparable __expected, const char *assertation_label,  T_hint __hint)
 {
@@ -47,11 +49,15 @@ bool _compare_truth_hint(const char *file, int line, const char *func, T_compara
 }
 
 template <class T1_comparable, class T2_comparable>
-bool _compare(const char *file, int line, const char *func, const T1_comparable& __expected, const T2_comparable& __actual)
+bool _compare(const char *file, int line, const char *func, const T1_comparable& __expected, const T2_comparable& __actual, bool use_io)
 {
   if (__expected != __actual)
   {
-    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
+    if (use_io)
+    {
+      libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"";
+    }
+
     return false;
   }
 
@@ -83,11 +89,14 @@ bool _truth(const char *file, int line, const char *func, T_comparable __truth)
 }
 
 template <class T1_comparable, class T2_comparable, class T_hint>
-bool _compare_hint(const char *file, int line, const char *func, T1_comparable __expected, T2_comparable __actual, T_hint __hint)
+bool _compare_hint(const char *file, int line, const char *func, T1_comparable __expected, T2_comparable __actual, T_hint __hint, bool io_error= true)
 {
   if (__expected != __actual)
   {
-    libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"" << " Additionally: \"" << __hint << "\"";
+    if (io_error)
+    {
+      libtest::stream::make_cerr(file, line, func) << "Expected \"" << __expected << "\" got \"" << __actual << "\"" << " Additionally: \"" << __hint << "\"";
+    }
 
     return false;
   }

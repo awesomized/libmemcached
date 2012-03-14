@@ -44,6 +44,7 @@
 
 #include <sys/stat.h>
 
+using namespace libtest;
 
 memcached_return_t return_value_based_on_buffering(memcached_st *memc)
 {

@@ -20,6 +20,7 @@
  */
 
 
+#include <config.h>
 #include <libtest/common.h>
 
 #include <cassert>
@@ -65,7 +66,7 @@ std::ostream& operator<<(std::ostream& output, const Server &arg)
     output << " Socket:" <<  arg.socket();
   }
 
-  if (not arg.running().empty())
+  if (arg.running().empty() == false)
   {
     output << " Exec:" <<  arg.running();
   }
@@ -73,7 +74,10 @@ std::ostream& operator<<(std::ostream& output, const Server &arg)
   return output;  // for multiple << operators
 }
 
+#define MAGIC_MEMORY 123570
+
 Server::Server(const std::string& host_arg, const in_port_t port_arg, bool is_socket_arg) :
+  _magic(MAGIC_MEMORY),
   _is_socket(is_socket_arg),
   _pid(-1),
   _port(port_arg),
@@ -89,6 +93,11 @@ Server::~Server()
   }
 }
 
+bool Server::validate()
+{
+  return _magic == MAGIC_MEMORY;
+}
+
 // If the server exists, kill it
 bool Server::cycle()
 {
@@ -96,7 +105,8 @@ bool Server::cycle()
 
   // Try to ping, and kill the server #limit number of times
   pid_t current_pid;
-  while (--limit and is_pid_valid(current_pid= get_pid()))
+  while (--limit and 
+         is_pid_valid(current_pid= get_pid()))
   {
     if (kill(current_pid))
     {
@@ -167,7 +177,7 @@ bool Server::start()
 
   if (Application::SUCCESS !=  (ret= app.wait()))
   {
-    Error << "Application::wait() " << app.print() << " " << ret;
+    Error << "Application::wait() " << _running << " " << ret;
     return false;
   }
 
@@ -180,9 +190,11 @@ bool Server::start()
   {
     Wait wait(pid_file(), 8);
 
-    if (not wait.successful())
+    if (wait.successful() == false)
     {
-      Error << "Unable to open pidfile for: " << _running;
+      libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                     "Unable to open pidfile for: %s",
+                     _running.c_str());
     }
   }
 

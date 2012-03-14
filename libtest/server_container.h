@@ -35,6 +35,7 @@ namespace libtest {
 class server_startup_st
 {
 private:
+  uint64_t _magic;
   std::string server_list;
   bool _socket;
   bool _sasl;
@@ -47,12 +48,10 @@ public:
   uint8_t udp;
   std::vector<Server *> servers;
 
-  server_startup_st() :
-    _socket(false),
-    _sasl(false),
-    _count(5),
-    udp(0)
-  { }
+  server_startup_st();
+  ~server_startup_st();
+
+  bool validate();
 
   bool start_socket_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[]);
 
@@ -114,8 +113,6 @@ public:
 
   void push_server(Server *);
   Server *pop_server();
-
-  ~server_startup_st();
 };
 
 bool server_startup(server_startup_st&, const std::string&, in_port_t try_port, int argc, const char *argv[]);
