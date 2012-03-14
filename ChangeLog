@@ -1,9 +1,9 @@
-1.0.5
+1.0.5 Tue Mar 13 22:56:47 PDT 2012
+* Fixes for OSX.
 * Version is now parsed directly in the parser, which makes buffered operations now work with it..
 * memstat has been extended so that it can be used to find the version of the server.
 * Update documentation.
 * Fixes for compile issues on Debian and Ubuntu
-
 
 1.0.4 Thu Jan 26 22:33:54 PST 2012
 * Fix for memcached_dump().
