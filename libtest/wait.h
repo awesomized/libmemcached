@@ -25,6 +25,8 @@
 #include <unistd.h>
 #include <string>
 
+#include <libtest/dream.h>
+
 namespace libtest {
 
 class Wait 
@@ -57,13 +59,7 @@ public:
       }
 
       this_wait= retry * retry / 3 + 1;
-      sleep(this_wait);
-#ifdef WIN32
-      sleep(this_wait);
-#else
-      struct timespec global_sleep_value= { this_wait, 0 };
-      nanosleep(&global_sleep_value, NULL);
-#endif
+      libtest::dream(this_wait, 0);
     }
   }
 
