@@ -21,7 +21,8 @@
 # 
 
 LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
-VALGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
@@ -33,7 +34,7 @@ export DRD_COMMAND
 export GDB_COMMAND
 
 valgrind:
-	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_COMMAND)\""
+	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_EXEC_COMMAND)\""
 
 gdb:
 	@echo make check TESTS_ENVIRONMENT="\"$(GDB_COMMAND)\""
@@ -100,6 +101,7 @@ noinst_LTLIBRARIES+= libtest/libtest.la
 libtest_libtest_la_SOURCES= \
 			    libtest/binaries.cc \
 			    libtest/cmdline.cc \
+			    libtest/comparison.cc \
 			    libtest/core.cc \
 			    libtest/cpu.cc \
 			    libtest/dream.cc \
@@ -210,7 +212,7 @@ test-unittest: libtest/unittest
 	@libtest/unittest
 
 valgrind-unittest: libtest/unittest
-	@$(VALGRIND_COMMAND) libtest/unittest
+	@$(VALGRIND_COMMAND) libtest/unittest TESTS_ENVIRONMENT="valgrind"
 
 gdb-unittest: libtest/unittest
 	@$(GDB_COMMAND) libtest/unittest

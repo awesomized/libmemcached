@@ -28,10 +28,7 @@ namespace http {
 class HTTP {
 public:
 
-  HTTP(const std::string& url_arg) :
-    _url(url_arg),
-    _response(0)
-  { }
+  HTTP(const std::string& url_arg);
 
   virtual bool execute()= 0;
 
