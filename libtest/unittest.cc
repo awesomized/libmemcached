@@ -236,8 +236,6 @@ static test_return_t gearmand_cycle_test(void *object)
 
   test_skip(true, has_gearmand_binary());
 
-  Error << " " << has_gearmand_binary();
-
   test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
