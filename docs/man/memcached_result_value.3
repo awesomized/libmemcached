@@ -1,4 +1,4 @@
-.TH "MEMCACHED_RESULT_VALUE" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_RESULT_VALUE" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_result_value \- Working with result sets
 .
@@ -39,27 +39,27 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_result_st * memcached_result_create (memcached_st *ptr, memcached_result_st *result);
+.B \fI\%memcached_result_st\fP * memcached_result_create(memcached_st\fI\ *ptr\fP, \fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_result_free (memcached_result_st *result);
+.B void memcached_result_free(\fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B const char * memcached_result_key_value (memcached_result_st *result);
+.B const char * memcached_result_key_value(\fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B size_t memcached_result_key_length (const memcached_result_st *result);
+.B size_t memcached_result_key_length(const \fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B const char *memcached_result_value (memcached_result_st *ptr);
+.B const char *memcached_result_value(\fI\%memcached_result_st\fP\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B size_t memcached_result_length (const memcached_result_st *ptr);
+.B size_t memcached_result_length(const \fI\%memcached_result_st\fP\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -67,7 +67,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint64_t memcached_result_cas (const memcached_result_st *result);
+.B uint64_t memcached_result_cas(const \fI\%memcached_result_st\fP\fI\ *result\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -96,39 +96,40 @@ objects over char * return functions.
 The structure of \fI\%memcached_result_st\fP has been encapsulated, you should
 not write code to directly access members of the structure.
 .sp
-\fBmemcached_result_create()\fP will either allocate memory for a
+\fI\%memcached_result_create()\fP will either allocate memory for a
 \fI\%memcached_result_st\fP or will initialize a structure passed to it.
 .sp
-\fBmemcached_result_free()\fP will deallocate any memory attached to the
+\fI\%memcached_result_free()\fP will deallocate any memory attached to the
 structure. If the structure was also allocated, it will deallocate it.
 .sp
-\fBmemcached_result_key_value()\fP returns the key value associated with the
+\fI\%memcached_result_key_value()\fP returns the key value associated with the
 current result object.
 .sp
-\fBmemcached_result_key_length()\fP returns the key length associated with
+\fI\%memcached_result_key_length()\fP returns the key length associated with
 the current result object.
 .sp
-\fBmemcached_result_value()\fP returns the result value associated with the
+\fI\%memcached_result_value()\fP returns the result value associated with the
 current result object.
 .sp
-\fBmemcached_result_length()\fP returns the result length associated with
+\fI\%memcached_result_length()\fP returns the result length associated with
 the current result object.
 .sp
 \fI\%memcached_result_flags()\fP returns the flags associated with the
 current result object.
 .sp
-\fBmemcached_result_cas()\fP returns the cas associated with the
+\fI\%memcached_result_cas()\fP returns the cas associated with the
 current result object. This value will only be available if the server
 tests it.
 .sp
 \fI\%memcached_result_set_value()\fP takes a byte array and a size and sets
 the result to this value. This function is used for trigger responses.
 .sp
-\fBvoid memcached_result_set_flags()\fP takes a result structure and stores
-a new value for the flags field.
+\fI\%memcached_result_set_flags()\fP takes a result structure and stores a new
+value for the flags field.
 .sp
-\fBvoid memcached_result_set_expiration(A)()\fP takes a result structure and stores a new value for the expiration field (this is only used by read
-through triggers).
+\fI\%memcached_result_set_expiration()\fP takes a result structure and stores
+a new value for the expiration field (this is only used by read through
+triggers).
 .sp
 You may wish to avoid using memcached_result_create(3) with a
 stack based allocation. The most common issues related to ABI safety involve
@@ -136,7 +137,7 @@ heap allocated structures.
 .SH RETURN
 .sp
 Varies, see particular functions. All structures must have
-\fBmemcached_result_free()\fP called on them for cleanup purposes. Failure
+\fI\%memcached_result_free()\fP called on them for cleanup purposes. Failure
 to do this will result in leaked memory.
 .SH HOME
 .sp

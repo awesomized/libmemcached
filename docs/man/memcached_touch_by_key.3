@@ -1,4 +1,4 @@
-.TH "MEMCACHED_TOUCH_BY_KEY" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_TOUCH_BY_KEY" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_touch_by_key \- libmemcached Documentation
 .
@@ -35,18 +35,18 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_touch (memcached_st *ptr, const char *key, size_t key_length, time_t expiration);
+.B memcached_return_t memcached_touch(memcached_st\fI\ *ptr\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP, time_t\fI\ expiration\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_touch_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration);
+.B memcached_return_t memcached_touch_by_key(memcached_st\fI\ *ptr\fP, const char\fI\ *group_key\fP, size_t\fI\ group_key_length\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP, time_t\fI\ expiration\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_touch()\fP is used to update the expiration time on an existing key.
-\fBmemcached_touch_by_key()\fP works the same, but it takes a master key
+\fI\%memcached_touch()\fP is used to update the expiration time on an existing key.
+\fI\%memcached_touch_by_key()\fP works the same, but it takes a master key
 to find the given value.
 .SH RETURN
 .sp

@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DUMP" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_DUMP" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_dump \- libmemcached Documentation
 .
@@ -37,17 +37,17 @@ Get a list of keys found on memcached servers
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_dump (memcached_st *ptr, memcached_dump_fn *function, void *context, uint32_t number_of_callbacks);
+.B memcached_return_t memcached_dump(memcached_st\fI\ *ptr\fP, \fI\%memcached_dump_fn\fP\fI\ *function\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B typedef memcached_return_t (*memcached_dump_fn)(memcached_st *ptr,  const char *key, size_t key_length, void *context);
+.B memcached_return_t (*memcached_dump_fn)(memcached_st\fI\ *ptr\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP, void\fI\ *context\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_dump()\fP is used to get a list of keys found in memcached(1)
+\fI\%memcached_dump()\fP is used to get a list of keys found in memcached(1)
 servers. Because memcached(1) does not guarentee to dump all keys you can not
 assume you have fetched all keys from the server. The function takes an array
 of callbacks that it will use to execute on keys as they are found.

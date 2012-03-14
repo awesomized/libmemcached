@@ -1,4 +1,4 @@
-.TH "MEMASLAP" "1" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMASLAP" "1" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memaslap \- libmemcached Documentation
 .
@@ -37,6 +37,10 @@ memaslap [options]
 .TP
 .B \-\-help
 .UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_SERVERS
+.UNINDENT
 .SH DESCRIPTION
 .sp
 \fBmemaslap\fP is a load generation and benchmark tool for memcached
@@ -52,8 +56,8 @@ the threads don\(aqt communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.
 .sp
-You can specify servers via the \fI\-\-servers\fP option or via the
-environment variable \fBMEMCACHED_SERVERS\fP.
+You can specify servers via the \fImemslap \-\-servers\fP option or via the
+environment variable \fI\%MEMCACHED_SERVERS\fP.
 .SH FEATURES
 .sp
 Memslap is developed to for the following purposes:
