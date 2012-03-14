@@ -1,4 +1,4 @@
-.TH "MEMCACHED_FETCH" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_FETCH" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_fetch \- Retrieving data from the server
 .
@@ -47,7 +47,7 @@ You must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
 object.  A \fBuint32_t\fP pointer to contain whatever flags you stored with the value, a \fBsize_t\fP pointer which will be filled with size of of the
 object, and a \fBmemcached_return_t\fP pointer to hold any error. The
-object will be returned upon success and NULL will be returned on failure. \fBMEMCACHD_END\fP is returned by the *error value when all objects that have been found are returned. The final value upon \fBMEMCACHED_END\fP is null.
+object will be returned upon success and NULL will be returned on failure. \fBMEMCACHED_END\fP is returned by the *error value when all objects that have been found are returned. The final value upon \fBMEMCACHED_END\fP is null.
 .sp
 Values returned by \fI\%memcached_fetch()\fP must be freed by the caller.
 .sp
@@ -60,7 +60,7 @@ functions with this behavior on will result in \fBMEMCACHED_NOT_SUPPORTED\fP bei
 to \fBMEMCACHED_END\fP upon successful conclusion.
 \fBMEMCACHED_NOTFOUND\fP will be return if no keys at all were found.
 .sp
-\fBMEMCACHED_KEY_TOO_BIG\fP is set to error whenever :c:\fBmemcached_fetch()\fP was used
+\fBMEMCACHED_KEY_TOO_BIG\fP is set to error whenever \fI\%memcached_fetch()\fP was used
 and the key was set larger then \fBMEMCACHED_MAX_KEY\fP, which was the largest
 key allowed for the original memcached ascii server.
 .SH HOME

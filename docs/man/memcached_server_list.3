@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SERVER_LIST" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_SERVER_LIST" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_server_list \- libmemcached Documentation
 .
@@ -100,10 +100,7 @@ copy is made of structure so the list provided (and any operations on
 the list) are not saved.
 .sp
 \fI\%memcached_server_by_key()\fP allows you to provide a key and retrieve the
-server which would be used for assignment. This structure is cloned
-from its original structure and must be freed. If NULL is returned you
-should consult *error. The returning structure should be freed with
-\fBmemcached_server_free()\fP.
+server which would be used for assignment.
 .sp
 \fI\%memcached_server_get_last_disconnect()\fP returns a pointer to the last
 server for which there was a connection problem. It does not mean this

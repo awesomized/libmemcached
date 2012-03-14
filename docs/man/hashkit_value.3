@@ -1,4 +1,4 @@
-.TH "HASHKIT_VALUE" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "HASHKIT_VALUE" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 hashkit_value \- libhashkit Documentation
 .
@@ -37,13 +37,13 @@ Generate a value for the given key
 #include <libhashkit/hashkit.h>
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_value(hashkit_st *hash, const char *key, size_t key_length);
+.B uint32_t hashkit_value(hashkit_st\fI\ *hash\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .sp
 Compile and link with \-lhashkit
 .SH DESCRIPTION
 .sp
-The \fBhashkit_value()\fP function generates a 32\-bit hash value from the
+The \fI\%hashkit_value()\fP function generates a 32\-bit hash value from the
 given key and key_length. The hash argument is an initialized hashkit
 object, and distribution type and hash function is used from this
 object while generating the value.

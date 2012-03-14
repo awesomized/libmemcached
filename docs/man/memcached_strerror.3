@@ -1,4 +1,4 @@
-.TH "MEMCACHED_STRERROR" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_STRERROR" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_strerror \- libmemcached Documentation
 .
@@ -35,13 +35,13 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc);
+.B const char * memcached_strerror(memcached_st\fI\ *ptr\fP, memcached_return_t\fI\ rc\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_strerror()\fP takes a \fBmemcached_return_t\fP value and returns a string describing the error.
+\fI\%memcached_strerror()\fP takes a \fBmemcached_return_t\fP value and returns a string describing the error.
 .sp
 This string must not be modified by the application.
 .sp
@@ -50,7 +50,7 @@ This string must not be modified by the application.
 \fBmemcached_return_t\fP values are of an enum type so that you can set up responses with switch/case and know that you are capturing all possible return values.
 .SH RETURN
 .sp
-\fBmemcached_strerror()\fP returns a string describing a \fBmemcached_return_t\fP value.
+\fI\%memcached_strerror()\fP returns a string describing a \fBmemcached_return_t\fP value.
 .SH HOME
 .sp
 To find out more information please check:

@@ -1,4 +1,4 @@
-.TH "MEMCACHED_FLUSH" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_FLUSH" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_flush \- libmemcached Documentation
 .
@@ -37,13 +37,13 @@ Wipe contents of memcached servers
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_flush (memcached_st *ptr, time_t expiration);
+.B memcached_return_t memcached_flush(memcached_st\fI\ *ptr\fP, time_t\fI\ expiration\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-:c:func::\fImemcached_flush()\fP is used to wipe clean the contents of \fBmemcached\fP servers.
+:c:func::\fImemcached_flush\fP is used to wipe clean the contents of \fBmemcached\fP servers.
 It will either do this immediately or expire the content based on the
 expiration time passed to the method (a value of zero causes an immediate
 flush). The operation is not atomic to multiple servers, just atomic to a
@@ -53,7 +53,7 @@ added.
 .sp
 A value of type \fBmemcached_return_t\fP is returned
 On success that value will be \fBMEMCACHED_SUCCESS\fP.
-Use \fBmemcached_strerror()\fP to translate this value to a printable string.
+Use \fBmemcached_strerror\fP to translate this value to a printable string.
 .SH HOME
 .sp
 To find out more information please check:

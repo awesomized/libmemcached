@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR_GET" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR_GET" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_behavior_get \- libmemcached Documentation
 .
@@ -37,27 +37,31 @@ Manipulate the behavior of a memcached_st structure.
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B uint64_t memcached_behavior_get (memcached_st *ptr, memcached_behavior flag);
+.B memcached_behavior_t
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior flag, uint64_t data);
+.B uint64_t memcached_behavior_get(memcached_st\fI\ *ptr\fP, \fI\%memcached_behavior_t\fP\fI\ flag\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t memcached_behavior_set(memcached_st\fI\ *ptr\fP, \fI\%memcached_behavior_t\fP\fI\ flag\fP, uint64_t\fI\ data\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fIlibmemcached(3)\fP behavior can be modified by using \fBmemcached_behavior_set()\fP. Default behavior is the library strives to be quick and
+\fIlibmemcached(3)\fP behavior can be modified by using \fI\%memcached_behavior_set()\fP. Default behavior is the library strives to be quick and
 accurate. Some behavior, while being faster, can also result in not entirely
 accurate behavior (for instance, \fBmemcached_set()\fP will always respond
 with \fBMEMCACHED_SUCCESS\fP).
 .sp
-\fBmemcached_behavior_get()\fP takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
+\fI\%memcached_behavior_get()\fP takes a behavior flag and returns whether or not that behavior is currently enabled in the client.
 .sp
-\fBmemcached_behavior_set()\fP changes the value of a particular option
+\fI\%memcached_behavior_set()\fP changes the value of a particular option
 of the client. It takes both a flag (listed below) and a value. For simple
 on or off options you just need to pass in a value of 1. Calls to
-\fBmemcached_behavior_set()\fP will flush and reset all connections.
+\fI\%memcached_behavior_set()\fP will flush and reset all connections.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_USE_UDP
@@ -66,7 +70,12 @@ on or off options you just need to pass in a value of 1. Calls to
 Causes \fIlibmemcached(3)\fP to use the UDP transport when communicating
 with a memcached server. Not all I/O operations are testsed
 when this behavior is enababled. The following operations will return
-\fBMEMCACHED_NOT_SUPPORTED\fP when executed with the \fI\%MEMCACHED_BEHAVIOR_USE_UDP\fP enabled: \fBmemcached_version()\fP, \fBmemcached_stat()\fP, \fBmemcached_get()\fP, \fBmemcached_get_by_key()\fP, \fBmemcached_mget()\fP, \fBmemcached_mget_by_key()\fP, \fBmemcached_fetch()\fP, \fBmemcached_fetch_result()\fP, \fBmemcached_value_fetch()\fP.
+\fBMEMCACHED_NOT_SUPPORTED\fP when executed with the
+\fI\%MEMCACHED_BEHAVIOR_USE_UDP\fP enabled: \fBmemcached_version()\fP,
+\fBmemcached_stat()\fP, \fBmemcached_get()\fP,
+\fBmemcached_get_by_key()\fP, \fBmemcached_mget()\fP,
+\fBmemcached_mget_by_key()\fP, \fBmemcached_fetch()\fP,
+\fBmemcached_fetch_result()\fP, \fBmemcached_fetch_execute()\fP.
 .sp
 All other operations are testsed but are executed in a \(aqfire\-and\-forget\(aq
 mode, in which once the client has executed the operation, no attempt
@@ -144,7 +153,8 @@ Support CAS operations (this is not enabled by default at this point in the serv
 .B MEMCACHED_BEHAVIOR_KETAMA
 .UNINDENT
 .sp
-Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and the hash to MEMCACHED_HASH_MD5.
+Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA and
+the hash to \fBMEMCACHED_HASH_MD5\fP.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED
@@ -155,7 +165,11 @@ Sets the default distribution to MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA with t
 .B MEMCACHED_BEHAVIOR_KETAMA_HASH
 .UNINDENT
 .sp
-Sets the hashing algorithm for host mapping on continuum. The value can be set to either MEMCACHED_HASH_DEFAULT, MEMCACHED_HASH_MD5, MEMCACHED_HASH_CRC, MEMCACHED_HASH_FNV1_64, MEMCACHED_HASH_FNV1A_64, MEMCACHED_HASH_FNV1_32, and MEMCACHED_HASH_FNV1A_32.
+Sets the hashing algorithm for host mapping on continuum. The value can be set
+to either \fBMEMCACHED_HASH_DEFAULT\fP, \fBMEMCACHED_HASH_MD5\fP,
+\fBMEMCACHED_HASH_CRC\fP, \fBMEMCACHED_HASH_FNV1_64\fP,
+\fBMEMCACHED_HASH_FNV1A_64\fP, \fBMEMCACHED_HASH_FNV1_32\fP, and
+\fBMEMCACHED_HASH_FNV1A_32\fP.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_KETAMA_COMPAT
@@ -167,7 +181,7 @@ Sets the compatibility mode. The value can be set to either MEMCACHED_KETAMA_COM
 .B MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 .UNINDENT
 .sp
-Modify the timeout value that is used by poll(). The default value is \-1. An signed int pointer must be passed to memcached_behavior_set() to change this value. For memcached_behavior_get() a signed int value will be cast and returned as the unsigned long long.
+Modify the timeout value that is used by poll. The default value is \-1. An signed int pointer must be passed to memcached_behavior_set to change this value. For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_USER_DATA
@@ -315,12 +329,12 @@ by hash. See \fBMEMCACHED_CALLBACK_NAMESPACE\fP for additional
 information.
 .SH RETURN
 .sp
-memcached_behavior_get() returns either the current value of the get, or 0
-or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set()
+memcached_behavior_get returns either the current value of the get, or 0
+or 1 on simple flag behaviors (1 being enabled). memcached_behavior_set
 returns failure or success.
 .SH NOTES
 .sp
-memcached_behavior_set() in version .17 was changed from taking a pointer
+memcached_behavior_set in version .17 was changed from taking a pointer
 to data value, to taking a uin64_t.
 .SH HOME
 .sp

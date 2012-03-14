@@ -1,4 +1,4 @@
-.TH "MEMCACHED_FREE" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_FREE" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_free \- libmemcached Documentation
 .
@@ -35,49 +35,49 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcachd_st
+.B memcached_st
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_st* memcached_create(memcached_st\fI\ *ptr\fP)
+.B \fI\%memcached_st\fP* memcached_create(\fI\%memcached_st\fP\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_free(memcached_st\fI\ *ptr\fP)
+.B void memcached_free(\fI\%memcached_st\fP\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_st* memcached_clone(memcached_st\fI\ *destination\fP, memcached_st\fI\ *source\fP)
+.B \fI\%memcached_st\fP* memcached_clone(\fI\%memcached_st\fP\fI\ *destination\fP, \fI\%memcached_st\fP\fI\ *source\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_servers_reset(memcached_st)
+.B void memcached_servers_reset(\fI\%memcached_st\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fI\%memcached_create()\fP is used to create a \fBmemcached_st\fP
+\fI\%memcached_create()\fP is used to create a \fI\%memcached_st\fP
 structure that will then be used by other libmemcached(3) functions to
 communicate with the server. You should either pass a statically declared
-\fBmemcached_st\fP to \fI\%memcached_create()\fP or
+\fI\%memcached_st\fP to \fI\%memcached_create()\fP or
 a NULL. If a NULL passed in then a structure is allocated for you.
 .sp
 Please note, when you write new application use
-\fBmemcached_create_with_options()\fP over
+\fBmemcached()\fP over
 \fI\%memcached_create()\fP.
 .sp
 \fI\%memcached_clone()\fP is similar to \fI\%memcached_create()\fP but
 it copies the defaults and list of servers from the source
-\fBmemcached_st\fP. If you pass a null as the argument for the source
+\fI\%memcached_st\fP. If you pass a null as the argument for the source
 to clone, it is the same as a call to \fI\%memcached_create()\fP.
-If the destination argument is NULL a \fBmemcached_st\fP will be allocated
+If the destination argument is NULL a \fI\%memcached_st\fP will be allocated
 for you.
 .sp
 \fI\%memcached_servers_reset()\fP allows you to zero out the list of
-servers that the \fBmemcached_st\fP has.
+servers that the \fI\%memcached_st\fP has.
 .sp
-To clean up memory associated with a \fBmemcached_st\fP structure you
+To clean up memory associated with a \fI\%memcached_st\fP structure you
 should pass it to \fI\%memcached_free()\fP when you are finished using it.
 \fI\%memcached_free()\fP is the only way to make sure all memory is
 deallocated when you finish using the structure.
@@ -87,10 +87,10 @@ stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 .SH RETURN
 .sp
-\fI\%memcached_create()\fP returns a pointer to the \fBmemcached_st\fP
+\fI\%memcached_create()\fP returns a pointer to the \fI\%memcached_st\fP
 that was created (or initialized). On an allocation failure, it returns NULL.
 .sp
-\fI\%memcached_clone()\fP returns a pointer to the \fBmemcached_st\fP
+\fI\%memcached_clone()\fP returns a pointer to the \fI\%memcached_st\fP
 that was created (or initialized). On an allocation failure, it returns NULL.
 .SH HOME
 .sp

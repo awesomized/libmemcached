@@ -1,4 +1,4 @@
-.TH "MEMCACHED_VERBOSITY" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_VERBOSITY" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_verbosity \- libmemcached Documentation
 .
@@ -37,13 +37,13 @@ Modifiy verbosity of servers
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_verbosity (memcached_st *ptr, unsigned int verbosity);
+.B memcached_return_t memcached_verbosity(memcached_st\fI\ *ptr\fP, uint32_t\fI\ verbosity\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_verbosity()\fP modifies the "verbosity" of the
+\fI\%memcached_verbosity()\fP modifies the "verbosity" of the
 memcached(1) servers referenced in the \fBmemcached_st\fP  parameter.
 .SH RETURN
 .sp
