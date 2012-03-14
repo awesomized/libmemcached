@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SET_USER_DATA" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_SET_USER_DATA" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_set_user_data \- libmemcached Documentation
 .
@@ -39,27 +39,35 @@ C Client Library for memcached (libmemcached, \-lmemcached)
 .sp
 .nf
 .ft C
-#include <libmemcached/memcached.h>
 
-void *memcached_get_user_data (memcached_st *ptr);
-
-void *memcached_set_user_data (memcached_st *ptr, void *data);
 .ft P
 .fi
+.sp
+#include <libmemcached/memcached.h>
+.INDENT 0.0
+.TP
+.B void *memcached_get_user_data(memcached_st\fI\ *ptr\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void *memcached_set_user_data(memcached_st\fI\ *ptr\fP, void\fI\ *data\fP)
+.UNINDENT
+.sp
+Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
 libmemcached(3) allows you to store a pointer to a user specific data inside
 the memcached_st structure.
 .sp
-\fBmemcached_set_user_data()\fP is used to set the user specific data in the
+\fI\%memcached_set_user_data()\fP is used to set the user specific data in the
 \fBmemcached_st\fP structure.
 .sp
-\fBmemcached_get_user_data()\fP is used to retrieve the user specific data in the \fBmemcached_st\fP structure.
+\fI\%memcached_get_user_data()\fP is used to retrieve the user specific data in the \fBmemcached_st\fP structure.
 .SH RETURN
 .sp
-\fBmemcached_set_user_data()\fP returns the previous value of the user specific data.
+\fI\%memcached_set_user_data()\fP returns the previous value of the user specific data.
 .sp
-\fBmemcached_get_user_data()\fP returns the current value uf the user specific data.
+\fI\%memcached_get_user_data()\fP returns the current value uf the user specific data.
 .SH HOME
 .sp
 To find out more information please check:

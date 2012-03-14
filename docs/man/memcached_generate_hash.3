@@ -1,4 +1,4 @@
-.TH "MEMCACHED_GENERATE_HASH" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_GENERATE_HASH" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_generate_hash \- Generating hash values directly
 .
@@ -37,17 +37,61 @@ Hash a key value
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B uint32_t memcached_generate_hash_value (const char *key, size_t key_length, memcached_hash_t hash_algorithm);
+.B memcached_hash_t
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t memcached_generate_hash (memcached_st *ptr, const char *key, size_t key_length);
+.B uint32_t memcached_generate_hash_value(const char\fI\ *key\fP, size_t\fI\ key_length\fP, \fI\%memcached_hash_t\fP\fI\ hash_algorithm\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B uint32_t memcached_generate_hash(memcached_st\fI\ *ptr\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_DEFAULT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_MD5
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_CRC
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_FNV1_64
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_FNV1A_64
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_FNV1_32
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_FNV1A_32
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_JENKINS
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_MURMUR
+.UNINDENT
+.INDENT 0.0
+.TP
+.B MEMCACHED_HASH_HSIEH
 .UNINDENT
 .sp
 Compile and link with \-lmemcachedutil \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_generate_hash_value()\fP allows you to hash a key using one of
+\fI\%memcached_generate_hash_value()\fP allows you to hash a key using one of
 the hash functions defined in the library. This method is provided for
 the convenience of higher\-level language bindings and is not necessary
 for normal memcache operations.
@@ -55,9 +99,9 @@ for normal memcache operations.
 The allowed hash algorithm constants are listed in the manpage for
 \fBmemcached_behavior_set()\fP.
 .sp
-\fBmemcached_generate_hash()\fP takes a \fBmemcached_st\fP struture
+\fI\%memcached_generate_hash()\fP takes a \fBmemcached_st\fP struture
 and produces the hash value that would have been generated based on the
-defaults of the \fBmemcached_st structure\fP.
+defaults of \fBmemcached_st\fP.
 .sp
 As of version 0.36 all hash methods have been placed into the library
 libhashkit(3) which is linked with libmemcached(3). For more information please see its documentation.

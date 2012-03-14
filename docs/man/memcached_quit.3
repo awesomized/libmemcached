@@ -1,4 +1,4 @@
-.TH "MEMCACHED_QUIT" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_QUIT" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_quit \- libmemcached Documentation
 .
@@ -35,13 +35,13 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B void memcached_quit (memcached_st *ptr);
+.B void memcached_quit(memcached_st\fI\ *ptr\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_quit()\fP will disconnect you from all currently connected
+\fI\%memcached_quit()\fP will disconnect you from all currently connected
 servers. It will also reset the state of the connection (ie, any \fBmemcached_fetch()\fP you are in the middle of will be terminated). This function is
 called automatically when you call \fBmemcached_free()\fP on the \fBmemcached_st\fP structure.
 .sp
@@ -51,9 +51,9 @@ function is provided mainly so that you can timeout your connections or
 reset connections during the middle of a \fBmemcached_fetch()\fP.
 .SH RETURN
 .sp
-A value of type \fBmemcached_return\fP is returned
-On success that value will be \fBMEMCACHED_SUCCESS\fP.
-Use \fBmemcached_strerror()\fP to translate this value to a printable string.
+A value of type \fBmemcached_return_t\fP is returned On success that value
+will be \fBMEMCACHED_SUCCESS\fP.  Use \fBmemcached_strerror()\fP to
+translate this value to a printable string.
 .SH HOME
 .sp
 To find out more information please check:

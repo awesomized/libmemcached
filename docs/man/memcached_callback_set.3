@@ -1,4 +1,4 @@
-.TH "MEMCACHED_CALLBACK_SET" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_CALLBACK_SET" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_callback_set \- libmemcached Documentation
 .
@@ -37,11 +37,15 @@ Get and set a callback
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_callback_set (memcached_st *ptr, memcached_callback_t flag, const void *data);
+.B memcached_callback_t
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void * memcached_callback_get (memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error);
+.B memcached_return_t memcached_callback_set(memcached_st\fI\ *ptr\fP, \fI\%memcached_callback_t\fP\fI\ flag\fP, const void\fI\ *data\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B void * memcached_callback_get(memcached_st\fI\ *ptr\fP, \fI\%memcached_callback_t\fP\fI\ flag\fP, memcached_return_t\fI\ *error\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
@@ -51,10 +55,10 @@ libmemcached(3) can have callbacks set key execution points. These either
 provide function calls at points in the code, or return pointers to
 structures for particular usages.
 .sp
-\fBmemcached_callback_get()\fP takes a callback flag and returns the
-structure or function set by \fBmemcached_callback_set()\fP.
+\fI\%memcached_callback_get()\fP takes a callback flag and returns the
+structure or function set by \fI\%memcached_callback_set()\fP.
 .sp
-\fBmemcached_callback_set()\fP changes the function/structure assigned by a
+\fI\%memcached_callback_set()\fP changes the function/structure assigned by a
 callback flag. No connections are reset.
 .sp
 You can use \fI\%MEMCACHED_CALLBACK_USER_DATA\fP to provide custom context
@@ -85,7 +89,7 @@ See \fI\%MEMCACHED_CALLBACK_NAMESPACE\fP
 .sp
 You can set a value which will be used to create a domain for your keys.
 The value specified here will be prefixed to each of your keys. The value can
-not be greater then \fBMEMCACHED_PREFIX_KEY_MAX_SIZE \- 1\fP and will
+not be greater then \fBMEMCACHED_PREFIX_KEY_MAX_SIZE\fP \- 1 and will
 reduce \fBMEMCACHED_MAX_KEY\fP by the value of your key.
 .sp
 The prefix key is only applied to the primary key, not the master key.
@@ -154,11 +158,11 @@ The prototype for this is:
 .UNINDENT
 .SH RETURN
 .sp
-\fBmemcached_callback_get()\fP return the function or structure that was
+\fI\%memcached_callback_get()\fP return the function or structure that was
 provided. Upon error, nothing is set, null is returned, and the
 \fBmemcached_return_t\fP argument is set to \fBMEMCACHED_FAILURE\fP.
 .sp
-\fBmemcached_callback_set()\fP returns \fBMEMCACHED_SUCCESS\fP upon
+\fI\%memcached_callback_set()\fP returns \fBMEMCACHED_SUCCESS\fP upon
 successful setting, otherwise \fBMEMCACHED_FAILURE\fP on error.
 .SH HOME
 .sp

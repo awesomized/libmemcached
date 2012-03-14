@@ -1,4 +1,4 @@
-.TH "MEMCACHED_LAST_ERROR_MESSAGE" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_LAST_ERROR_MESSAGE" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_last_error_message \- libmemcached Documentation
 .
@@ -35,18 +35,18 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B const char *memcached_last_error_message(memcached_st *);
+.B const char *memcached_last_error_message(memcached_st\fI\ *\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_last_error_message()\fP is used to return the last error
+\fI\%memcached_last_error_message()\fP is used to return the last error
 message that the server responded too. If this error came from a specific
 server, its hostname and port will be provided in the error message.
 .SH RETURN
 .sp
-memcached_last_error_message() returns a const char* which does not need to be
+memcached_last_error_message returns a const char* which does not need to be
 de\-allocated. If no error has occurred then it will return NULL.
 .SH HOME
 .sp

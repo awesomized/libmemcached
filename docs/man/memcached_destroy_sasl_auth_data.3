@@ -1,4 +1,4 @@
-.TH "MEMCACHED_DESTROY_SASL_AUTH_DATA" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_DESTROY_SASL_AUTH_DATA" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_destroy_sasl_auth_data \- libmemcached Documentation
 .
@@ -43,11 +43,11 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return memcached_set_sasl_auth_data(memcached_st\fI\ *ptr\fP, const char\fI\ *username\fP, const char\fI\ *password\fP)
+.B memcached_return_t memcached_set_sasl_auth_data(memcached_st\fI\ *ptr\fP, const char\fI\ *username\fP, const char\fI\ *password\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return memcached_destroy_sasl_auth_data(memcached_st\fI\ *ptr\fP)
+.B memcached_return_t memcached_destroy_sasl_auth_data(memcached_st\fI\ *ptr\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
@@ -66,13 +66,11 @@ in memory. If you choose to use this method you have to call
 \fBmemcached_free\fP to avoid a memory leak. You should NOT call
 \fI\%memcached_destroy_sasl_auth_data\fP if you specify your own callback
 function with \fI\%memcached_set_sasl_callbacks()\fP.
-.sp
-You as a client user have to initialize libsasl by using \fBsasl_client_init\fP before enabling it in libmemcached, and you have to shut down libsasl by
-calling \fBsasl_done()\fP when you are done using SASL from libmemcached.
 .SH RETURN
 .sp
-\fI\%memcached_get_sasl_callbacks()\fP returns the callbacks currently used
-by this memcached handle. \fBmemcached_get_sasl_set_auth_data()\fP returns \fBMEMCACHED_SUCCESS\fP upon success.
+\fI\%memcached_get_sasl_callbacks()\fP returns the callbacks currently used by
+this memcached handle. \fI\%memcached_set_sasl_auth_data()\fP returns
+\fBMEMCACHED_SUCCESS\fP upon success.
 .SH HOME
 .sp
 To find out more information please check:

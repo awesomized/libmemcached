@@ -1,4 +1,4 @@
-.TH "MEMCACHED_CAS_BY_KEY" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_CAS_BY_KEY" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_cas_by_key \- Storing and Replacing Data
 .
@@ -35,27 +35,27 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_cas(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
+.B memcached_return_t memcached_cas(memcached_st\fI\ *ptr\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP, const char\fI\ *value\fP, size_t\fI\ value_length\fP, time_t\fI\ expiration\fP, uint32_t\fI\ flags\fP, uint64_t\fI\ cas\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_cas_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas);
+.B memcached_return_t memcached_cas_by_key(memcached_st\fI\ *ptr\fP, const char\fI\ *group_key\fP, size_t\fI\ group_key_length\fP, const char\fI\ *key\fP, size_t\fI\ key_length\fP, const char\fI\ *value\fP, size_t\fI\ value_length\fP, time_t\fI\ expiration\fP, uint32_t\fI\ flags\fP, uint64_t\fI\ cas\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
 .SH DESCRIPTION
 .sp
-\fBmemcached_cas()\fP overwrites data in the server as long as the "cas"
+\fI\%memcached_cas()\fP overwrites data in the server as long as the "cas"
 value is still the same in the server. You can get the cas value of a result
 by calling \fBmemcached_result_cas()\fP on a memcached_result_st(3)
 structure. At the point that this note was written cas is still buggy in memached. Turning on tests for it in libmemcached(3) is optional. Please see
 \fBmemcached_set()\fP for information on how to do this.
 .sp
-\fBmemcached_cas_by_key()\fP method behaves in a similar method as the non
-key methods. The difference is that it uses the \fBgroup_key\fP parameter
+\fI\%memcached_cas_by_key()\fP method behaves in a similar method as the non
+key methods. The difference is that it uses the group_key parameter
 to map objects to particular servers.
 .sp
-\fBmemcached_cas()\fP is testsed with the \fBMEMCACHED_BEHAVIOR_USE_UDP\fP behavior enabled. However, when using these operations with this behavior
+\fI\%memcached_cas()\fP is testsed with the \fBMEMCACHED_BEHAVIOR_USE_UDP\fP behavior enabled. However, when using these operations with this behavior
 on, there are limits to the size of the payload being sent to the server.  The
 reason for these limits is that the Memcached Server does not allow
 multi\-datagram requests and the current server implementation sets a datagram

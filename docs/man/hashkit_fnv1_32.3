@@ -1,4 +1,4 @@
-.TH "HASHKIT_FNV1_32" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "HASHKIT_FNV1_32" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 hashkit_fnv1_32 \- libhashkit Documentation
 .
@@ -37,43 +37,43 @@ Various hash functions to use for calculating values for keys
 #include <libhashkit/hashkit.h>
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_default(const char *key, size_t key_length);
+.B uint32_t hashkit_default(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_fnv1_64(const char *key, size_t key_length);
+.B uint32_t hashkit_fnv1_64(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_fnv1a_64(const char *key, size_t key_length);
+.B uint32_t hashkit_fnv1a_64(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_fnv1_32(const char *key, size_t key_length);
+.B uint32_t hashkit_fnv1_32(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_fnv1a_32(const char *key, size_t key_length);
+.B uint32_t hashkit_fnv1a_32(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_crc32(const char *key, size_t key_length);
+.B uint32_t hashkit_crc32(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_hsieh(const char *key, size_t key_length);
+.B uint32_t hashkit_hsieh(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_murmur(const char *key, size_t key_length);
+.B uint32_t hashkit_murmur(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_jenkins(const char *key, size_t key_length);
+.B uint32_t hashkit_jenkins(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B uint32_t hashkit_md5(const char *key, size_t key_length);
+.B uint32_t hashkit_md5(const char\fI\ *key\fP, size_t\fI\ key_length\fP)
 .UNINDENT
 .sp
 Compile and link with \-lhashkit
@@ -83,7 +83,7 @@ These functions generate hash values from a key using a variety of
 algorithms. These functions can be used standalone, or as arguments
 to hashkit_set_hash_fn(3) or hashkit_set_continuum_hash_fn(3).
 .sp
-The hashkit_hsieh() is only available if the library is built with
+The hashkit_hsieh is only available if the library is built with
 the appropriate flag enabled.
 .SH RETURN VALUE
 .sp

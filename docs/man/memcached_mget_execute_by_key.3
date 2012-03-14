@@ -1,4 +1,4 @@
-.TH "MEMCACHED_MGET_EXECUTE_BY_KEY" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_MGET_EXECUTE_BY_KEY" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_mget_execute_by_key \- Retrieving data from the server
 .
@@ -55,15 +55,19 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_fetch_execute(memcached_st\fI\ *ptr\fP, memcached_execute_fn\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
+.B memcached_return_t memcached_fetch_execute(memcached_st\fI\ *ptr\fP, \fI\%memcached_execute_fn\fP\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_mget_execute(memcached_st\fI\ *ptr\fP, const char * const\fI\ *keys\fP, const size_t\fI\ *key_length\fP, size_t\fI\ number_of_keys\fP, memcached_execute_fn\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
+.B memcached_return_t memcached_mget_execute(memcached_st\fI\ *ptr\fP, const char * const\fI\ *keys\fP, const size_t\fI\ *key_length\fP, size_t\fI\ number_of_keys\fP, \fI\%memcached_execute_fn\fP\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_mget_execute_by_key(memcached_st\fI\ *ptr\fP, const char\fI\ *group_key\fP, size_t\fI\ group_key_length\fP, const char * const\fI\ *keys\fP, const size_t\fI\ *key_length\fP, size_t\fI\ number_of_keys\fP, memcached_execute_fn\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
+.B memcached_return_t memcached_mget_execute_by_key(memcached_st\fI\ *ptr\fP, const char\fI\ *group_key\fP, size_t\fI\ group_key_length\fP, const char * const\fI\ *keys\fP, const size_t\fI\ *key_length\fP, size_t\fI\ number_of_keys\fP, \fI\%memcached_execute_fn\fP\fI\ *callback\fP, void\fI\ *context\fP, uint32_t\fI\ number_of_callbacks\fP)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B memcached_return_t (*memcached_execute_fn)(const memcached_st\fI\ *ptr\fP, memcached_result_st\fI\ *result\fP, void\fI\ *context\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
@@ -91,7 +95,7 @@ You must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
 object.  A \fBuint32_t\fP pointer to contain whatever flags you stored with the value, a \fBsize_t\fP pointer which will be filled with size of of the
 object, and a \fBmemcached_return_t\fP pointer to hold any error. The
-object will be returned upon success and NULL will be returned on failure. \fBMEMCACHD_END\fP is returned by the *error value when all objects that have been found are returned. The final value upon \fBMEMCACHED_END\fP is null.
+object will be returned upon success and NULL will be returned on failure. \fBMEMCACHED_END\fP is returned by the *error value when all objects that have been found are returned. The final value upon \fBMEMCACHED_END\fP is null.
 .sp
 \fI\%memcached_fetch_result()\fP is used to return a \fBmemcached_result_st\fP structure from a memcached server. The result object is forward compatible
 with changes to the server. For more information please refer to the

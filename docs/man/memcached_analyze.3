@@ -1,4 +1,4 @@
-.TH "MEMCACHED_ANALYZE" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_ANALYZE" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_analyze \- libmemcached Documentation
 .
@@ -37,7 +37,11 @@ Analyze server information
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_analysis_st * memcached_analyze (memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error);
+.B memcached_analysis_st
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \fI\%memcached_analysis_st\fP * memcached_analyze(memcached_st\fI\ *ptr\fP, memcached_stat_st\fI\ *stat\fP, memcached_return_t\fI\ *error\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
@@ -45,21 +49,21 @@ Compile and link with \-lmemcached
 .sp
 \fBlibmemcached\fP has the ability to query a memcached server (or
 collection of servers) for their current state. Queries to find state return a
-\fBmemcached_analysis_st\fP structure. You are responsible for freeing this structure.
+\fI\%memcached_analysis_st\fP structure. You are responsible for freeing this structure.
 .sp
-\fBmemcached_analyze()\fP analyzes useful information based on the
-provided servers and sets the result to the \fBmemcached_analysis_st\fP
+\fI\%memcached_analyze()\fP analyzes useful information based on the
+provided servers and sets the result to the \fI\%memcached_analysis_st\fP
 structure. The return value must be freed by the calling application.
 .sp
-A command line tool, \fBmemstat()\fP with the option \fI\-\-analyze\fP,
+A command line tool, \fBmemstat\fP with the option \fImemstat \-\-analyze\fP,
 is provided so that you do not have to write an application to use this method.
 .SH RETURN
 .sp
-A pointer to the allocated \fBmemcached_analysis_st\fP structure on
+A pointer to the allocated \fI\%memcached_analysis_st\fP structure on
 success and a NULL pointer on failure. You may inspect the error detail by
 checking the \fBmemcached_return_t\fP value.
 .sp
-Any method returning a \fBmemcached_analysis_st\fP expects you to free the
+Any method returning a \fI\%memcached_analysis_st\fP expects you to free the
 memory allocated for it.
 .SH HOME
 .sp

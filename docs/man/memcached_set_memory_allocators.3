@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SET_MEMORY_ALLOCATORS" "3" "January 26, 2012" "1.0.4" "libmemcached"
+.TH "MEMCACHED_SET_MEMORY_ALLOCATORS" "3" "March 14, 2012" "1.0.5" "libmemcached"
 .SH NAME
 memcached_set_memory_allocators \- libmemcached Documentation
 .
@@ -37,31 +37,31 @@ Manage memory allocator functions
 #include <libmemcached/memcached.h>
 .INDENT 0.0
 .TP
-.B memcached_return_t memcached_set_memory_allocators (memcached_st *ptr, memcached_malloc_fn mem_malloc, memcached_free_fn mem_free, memcached_realloc_fn mem_realloc, memcached_calloc_fn mem_calloc, void *context);
+.B memcached_return_t memcached_set_memory_allocators(memcached_st\fI\ *ptr\fP, \fI\%memcached_malloc_fn\fP\fI\ mem_malloc\fP, \fI\%memcached_free_fn\fP\fI\ mem_free\fP, \fI\%memcached_realloc_fn\fP\fI\ mem_realloc\fP, \fI\%memcached_calloc_fn\fP\fI\ mem_calloc\fP, void\fI\ *context\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void memcached_get_memory_allocators (memcached_st *ptr, memcached_malloc_fn *mem_malloc, memcached_free_fn *mem_free, memcached_realloc_fn *mem_realloc, memcached_calloc_fn *mem_calloc);
+.B void memcached_get_memory_allocators(memcached_st\fI\ *ptr\fP, \fI\%memcached_malloc_fn\fP\fI\ *mem_malloc\fP, \fI\%memcached_free_fn\fP\fI\ *mem_free\fP, \fI\%memcached_realloc_fn\fP\fI\ *mem_realloc\fP, \fI\%memcached_calloc_fn\fP\fI\ *mem_calloc\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void * memcached_get_memory_allocators_context(const memcached_st *ptr);
+.B void * memcached_get_memory_allocators_context(const memcached_st\fI\ *ptr\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void * (*memcached_malloc_fn) (memcached_st *ptr, const size_t size, void *context);
+.B void * (*memcached_malloc_fn)(memcached_st\fI\ *ptr\fP, const size_t\fI\ size\fP, void\fI\ *context\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void * (*memcached_realloc_fn) (memcached_st *ptr, void *mem, const size_t size, void *context);
+.B void * (*memcached_realloc_fn)(memcached_st\fI\ *ptr\fP, void\fI\ *mem\fP, const size_t\fI\ size\fP, void\fI\ *context\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void (*memcached_free_fn) (memcached_st *ptr, void *mem, void *context);
+.B void (*memcached_free_fn)(memcached_st\fI\ *ptr\fP, void\fI\ *mem\fP, void\fI\ *context\fP)
 .UNINDENT
 .INDENT 0.0
 .TP
-.B void * (*memcached_calloc_fn) (memcached_st *ptr, size_t nelem, const size_t elsize, void *context);
+.B void * (*memcached_calloc_fn)(memcached_st\fI\ *ptr\fP, size_t\fI\ nelem\fP, const size_t\fI\ elsize\fP, void\fI\ *context\fP)
 .UNINDENT
 .sp
 Compile and link with \-lmemcached
@@ -70,18 +70,18 @@ Compile and link with \-lmemcached
 libmemcached(3) allows you to specify your own memory allocators, optimized
 for your application. This enables libmemcached to be used inside of applications that have their own malloc implementation.
 .sp
-\fBmemcached_set_memory_allocators()\fP is used to set the memory
+\fI\%memcached_set_memory_allocators()\fP is used to set the memory
 allocators used by the memcached instance specified by ptr. Please note that
 you cannot override only one of the memory allocators, you have to specify a
 complete new set if you want to override one of them. All of the memory
 allocation functions should behave as specified in the C99 standard. Specify
 NULL as all functions to reset them to the default values.
 .sp
-\fBmemcached_get_memory_allocators()\fP is used to get the currently used
+\fI\%memcached_get_memory_allocators()\fP is used to get the currently used
 memory allocators by a mamcached handle.
 .sp
-\fBmemcached_get_memory_allocators_context()\fP returns the void * that
-was passed in during the call to \fBmemcached_set_memory_allocators()\fP.
+\fI\%memcached_get_memory_allocators_context()\fP returns the void * that
+was passed in during the call to \fI\%memcached_set_memory_allocators()\fP.
 .sp
 The first argument to the memory allocator functions is a pointer to a
 memcached structure, the is passed as const and you will need to clone
@@ -93,7 +93,7 @@ passed to them. This was so that customer allocators could have their
 own space for memory.
 .SH RETURN
 .sp
-\fBmemcached_set_memory_allocators()\fP return \fBMEMCACHED_SUCCESS\fP
+\fI\%memcached_set_memory_allocators()\fP return \fBMEMCACHED_SUCCESS\fP
 upon success, and \fBMEMCACHED_FAILURE\fP if you don\(aqt pass a complete set
 of function pointers.
 .SH HOME
