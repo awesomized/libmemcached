@@ -198,12 +198,27 @@ bool Server::start()
     }
   }
 
-  int counter= 0;
   bool pinged= false;
-  while ((pinged= ping()) == false and
-         counter < (is_helgrind() or is_valgrind() ? 20 : 5))
   {
-    dream(counter++, 50000);
+    uint32_t timeout= 20; // This number should be high enough for valgrind startup (which is slow)
+    uint32_t waited;
+    uint32_t this_wait;
+    uint32_t retry;
+
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
+    {
+      if ((pinged= ping()) == true)
+      {
+        break;
+      }
+      else if (waited >= timeout)
+      {
+        break;
+      }
+
+      this_wait= retry * retry / 3 + 1;
+      libtest::dream(this_wait, 0);
+    }
   }
 
   if (pinged == false)
