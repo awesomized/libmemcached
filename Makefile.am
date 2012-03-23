@@ -30,6 +30,8 @@ EXTRA_DIST= \
 
 include libtest/include.am
 
+libtest_libtest_la_DEPENDENCIES+= memcached/memcached
+
 include libhashkit-1.0/include.am
 include libmemcached-1.0/include.am
 include libmemcachedprotocol-0.0/include.am
@@ -49,6 +51,7 @@ include support/include.am
 include tests/include.am
 include util/include.am
 include win32/include.am
+include memcached/include.am
 
 docs: html man
 

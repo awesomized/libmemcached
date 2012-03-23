@@ -124,15 +124,21 @@ libtest_libtest_la_SOURCES= \
 			    libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS=
+libtest_libtest_la_DEPENDENCIES=
+libtest_libtest_la_LIBADD=
+
 libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
 libtest_libtest_la_CXXFLAGS+= -DLIBTEST_TEMP="\"tmp_chroot\""
 libtest_libtest_la_CXXFLAGS+= $(CURL_CFLAGS)
-libtest_libtest_la_LIBADD=
+
 libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
 libtest_libtest_la_LIBADD+= $(CURL_LIBS)
-libtest_libtest_la_DEPENDENCIES= libtest_tmp_dir
+
+libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
+libtest_libtest_la_DEPENDENCIES+=libtest/abort
+libtest_libtest_la_DEPENDENCIES+=libtest/wait
 
 # Declare unittest so that we can append to it
 libtest_unittest_CXXFLAGS=
@@ -203,7 +209,7 @@ tmp_chroot/var/run: tmp_chroot/var
 	@$(mkdir_p) tmp_chroot/var/run
 
 
-libtest_unittest_DEPENDENCIES+= libtest/libtest.la libtest_tmp_dir libtest/abort libtest/wait
+libtest_unittest_DEPENDENCIES+= libtest/libtest.la
 libtest_unittest_LDADD+= libtest/libtest.la
 libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest

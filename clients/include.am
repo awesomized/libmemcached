@@ -11,19 +11,19 @@ CLIENTS_LDADDS+= $(LIBSASL)
 endif
 
 bin_PROGRAMS+= \
-	clients/memcapable \
-	clients/memcat \
-	clients/memcp \
-	clients/memdump \
-	clients/memerror \
-	clients/memexist \
-	clients/memtouch \
-	clients/memflush \
-	clients/memparse \
-	clients/memping \
-	clients/memrm \
-	clients/memslap \
-	clients/memstat
+	       clients/memcapable \
+	       clients/memcat \
+	       clients/memcp \
+	       clients/memdump \
+	       clients/memerror \
+	       clients/memexist \
+	       clients/memtouch \
+	       clients/memflush \
+	       clients/memparse \
+	       clients/memping \
+	       clients/memrm \
+	       clients/memslap \
+	       clients/memstat
 
 if BUILD_MEMASLAP
 if HAVE_LIBEVENT
@@ -34,18 +34,18 @@ endif
 endif
 
 noinst_HEADERS+= \
-		clients/client_options.h \
-		clients/execute.h \
-		clients/generator.h \
-		clients/ms_atomic.h \
-		clients/ms_conn.h \
-		clients/ms_memslap.h \
-		clients/ms_setting.h \
-		clients/ms_sigsegv.h \
-		clients/ms_stats.h \
-		clients/ms_task.h \
-		clients/ms_thread.h \
-		clients/utilities.h
+		 clients/client_options.h \
+		 clients/execute.h \
+		 clients/generator.h \
+		 clients/ms_atomic.h \
+		 clients/ms_conn.h \
+		 clients/ms_memslap.h \
+		 clients/ms_setting.h \
+		 clients/ms_sigsegv.h \
+		 clients/ms_stats.h \
+		 clients/ms_task.h \
+		 clients/ms_thread.h \
+		 clients/utilities.h
 
 noinst_LTLIBRARIES+= clients/libutilities.la
 clients_libutilities_la_SOURCES= clients/utilities.cc
