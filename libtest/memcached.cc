@@ -56,7 +56,11 @@ class Memcached : public libtest::Server
   std::string _password;
 
 public:
-  Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg, const std::string& username_arg, const std::string& password_arg) :
+  Memcached(const std::string& host_arg,
+            const in_port_t port_arg,
+            const bool is_socket_arg,
+            const std::string& username_arg,
+            const std::string& password_arg) :
     libtest::Server(host_arg, port_arg, is_socket_arg),
     _username(username_arg),
     _password(password_arg)
@@ -162,6 +166,16 @@ public:
     return MEMCACHED_BINARY;
   }
 
+  bool is_libtool()
+  {
+    if (MEMCACHED_BINARY and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0) 
+    {
+      return true;
+    }
+
+    return false;
+  }
+
   virtual void pid_file_option(Application& app, const std::string& arg)
   {
     if (arg.empty() == false)
@@ -203,11 +217,6 @@ public:
     {
       app.add_option("-s", socket_arg);
     }
-  }
-
-  bool is_libtool()
-  {
-    return false;
   }
 
   bool broken_socket_cleanup()

@@ -67,6 +67,7 @@ m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
 m4_include([m4/libgearman.m4])
+m4_include([memcached/version.m4])
 
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
@@ -134,6 +135,14 @@ AC_CHECK_HEADERS([cxxabi.h],
 
 AC_CHECK_HEADERS([sys/sysctl.h])
 
+AC_CHECK_HEADER(umem.h, [
+   AC_DEFINE([HAVE_UMEM_H], 1,
+         [Define this if you have umem.h])
+   build_cache=no
+], [build_cache=yes])
+
+AM_CONDITIONAL([BUILD_CACHE], [test "x$build_cache" = "xyes"])
+
 AX_COMPILER_VENDOR
 
 AC_FUNC_ALLOCA
@@ -195,6 +204,7 @@ AC_CHECK_LIB([rt], [clock_gettime],
               ])
 
 AC_CHECK_LIB([m], [floor])
+AC_CHECK_FUNCS([sigignore])
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
@@ -214,6 +224,20 @@ AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
 AC_DEFINE([HAVE_MEMCACHED_LIGHT_BINARY], [1], [Support for memcached_light])
 AC_DEFINE([MEMCACHED_LIGHT_BINARY], ["example/memcached_light"], [Support for memcached_light])
 
+dnl Check for the requirements for running memcached with less privileges
+dnl than the default privilege set. On Solaris we need setppriv and priv.h
+dnl If you want to add support for other platforms you should check for
+dnl your requirements, define HAVE_DROP_PRIVILEGES, and make sure you add
+dnl the source file containing the implementation into memcached_SOURCE
+dnl in Makefile.am
+AC_CHECK_FUNCS(setppriv, [
+   AC_CHECK_HEADER(priv.h, [
+      AC_DEFINE([HAVE_DROP_PRIVILEGES], 1,
+         [Define this if you have an implementation of drop_privileges()])
+      build_solaris_privs=yes
+   ], [])
+],[])
+
 AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
 AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
 AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
@@ -232,6 +256,32 @@ AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event],
                   AC_MSG_WARN([Unable to find libevent])
                   ])
 AM_CONDITIONAL(HAVE_LIBEVENT, test "x${ax_cv_have_LIBEVENT}" = "xyes")
+
+dnl Check if we're a little-endian or a big-endian system, needed by hash code
+AC_DEFUN([AC_C_ENDIAN],
+[AC_CACHE_CHECK(for endianness, ac_cv_c_endian,
+[
+  AC_RUN_IFELSE(
+    [AC_LANG_PROGRAM([], [dnl
+        long val = 1;
+        char *c = (char *) &val;
+        exit(*c == 1);
+    ])
+  ],[
+    ac_cv_c_endian=big
+  ],[
+    ac_cv_c_endian=little
+  ])
+])
+if test $ac_cv_c_endian = big; then
+  AC_DEFINE(ENDIAN_BIG, 1, [machine is bigendian])
+fi
+if test $ac_cv_c_endian = little; then
+  AC_DEFINE(ENDIAN_LITTLE, 1, [machine is littleendian])
+fi
+])
+
+AC_C_ENDIAN
 
 AC_CONFIG_FILES([
   Makefile

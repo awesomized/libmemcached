@@ -7,14 +7,14 @@
 
 #include "config.h"
 
-#include <assert.h>
+#include <cassert>
 #include <sys/types.h>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <example/byteorder.h>
