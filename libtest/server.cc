@@ -181,7 +181,7 @@ bool Server::start()
     return false;
   }
 
-  if (is_helgrind() or is_valgrind())
+  if (is_valgrind())
   {
     dream(5, 50000);
   }
