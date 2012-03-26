@@ -101,17 +101,21 @@ public:
     return _username;
   }
 
+  bool wait_for_pidfile() const
+  {
+    Wait wait(pid(), 4);
+
+    return wait.successful();
+  }
+
   pid_t get_pid(bool error_is_ok)
   {
     // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
+    if (error_is_ok and
+        wait_for_pidfile() == false)
     {
-      if (error_is_ok and
-          wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
+      Error << "Pidfile was not found:" << pid_file();
+      return -1;
     }
 
     pid_t local_pid;
@@ -140,15 +144,17 @@ public:
 
   bool ping()
   {
+#if 0
     // Memcached is slow to start, so we need to do this
     if (pid_file().empty() == false)
     {
       if (wait_for_pidfile() == false)
       {
-        Error << "Pidfile was not found:" << pid_file();
+        Error << "Pidfile was not found:" << pid_file() << " :" << running();
         return -1;
       }
     }
+#endif
 
     memcached_return_t rc;
     bool ret;

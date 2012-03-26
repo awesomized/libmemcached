@@ -143,6 +143,10 @@ static void *sig_thread(void *arg)
       }
       break;
 
+    case 0:
+      Error << "Inside of gdb?";
+      break;
+
     default:
       Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
       break;

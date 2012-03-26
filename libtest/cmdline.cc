@@ -300,7 +300,7 @@ bool Application::slurp()
     return false;
   }
 
-  if (fds[0].revents == POLLIN)
+  if (fds[0].revents & POLLIN)
   {
     ssize_t read_length;
     char buffer[1024]= { 0 };
@@ -329,8 +329,10 @@ bool Application::slurp()
     }
   }
 
-  if (fds[1].revents == POLLIN)
+  if (fds[1].revents & POLLIN)
   {
+    stderr_fd.nonblock();
+
     ssize_t read_length;
     char buffer[1024]= { 0 };
     while ((read_length= ::read(stderr_fd.fd()[0], buffer, sizeof(buffer))))

@@ -5278,8 +5278,10 @@ int main (int argc, char **argv) {
     stop_assoc_maintenance_thread();
 
     /* remove the PID file if we're a daemon */
+#if 0
     if (do_daemonize)
         remove_pidfile(pid_file);
+#endif
     /* Clean up strdup() call for bind() address */
     if (settings.inter)
       free(settings.inter);

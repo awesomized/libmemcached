@@ -207,7 +207,7 @@ public:
     return (_pid > 1);
   }
 
-  bool wait_for_pidfile() const;
+  virtual bool wait_for_pidfile() const;
 
   bool check_pid(pid_t pid_arg) const
   {
