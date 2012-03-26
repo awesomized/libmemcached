@@ -208,48 +208,6 @@ static bool world_destroy(void *object)
 
 typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
 
-static test_return_t _runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
-{
-  if (func)
-  {
-    test_true(container);
-    test_true(container->memc);
-    test_return_t ret;
-    try {
-      ret= func(container->memc);
-    }
-    catch (std::exception& e)
-    {
-      libtest::Error << e.what();
-      return TEST_FAILURE;
-    }
-
-    return ret;
-  }
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
-{
-  if (func)
-  {
-    return func(container->parent);
-  }
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
-{
-  if (func)
-  {
-    return func(container->parent);
-  }
-
-  return TEST_SUCCESS;
-}
-
 class LibmemcachedRunner : public libtest::Runner {
 public:
   test_return_t run(test_callback_fn* func, void *object)
@@ -265,6 +223,51 @@ public:
   test_return_t post(test_callback_fn* func, void *object)
   {
     return _post_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
+
+private:
+  test_return_t _runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    test_compare(true, check());
+
+    if (func)
+    {
+      test_true(container);
+      test_true(container->memc);
+      test_return_t ret;
+      try {
+        ret= func(container->memc);
+      }
+      catch (std::exception& e)
+      {
+        libtest::Error << e.what();
+        return TEST_FAILURE;
+      }
+
+      return ret;
+    }
+
+    return TEST_SUCCESS;
+  }
+
+  test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    if (func)
+    {
+      return func(container->parent);
+    }
+
+    return TEST_SUCCESS;
+  }
+
+  test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    if (func)
+    {
+      return func(container->parent);
+    }
+
+    return TEST_SUCCESS;
   }
 };
 

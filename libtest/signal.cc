@@ -160,7 +160,7 @@ SignalThread::SignalThread() :
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
   sigemptyset(&set);
-  if (not getenv("LIBTEST_IN_GDB"))
+  if (bool(getenv("LIBTEST_IN_GDB")) == false)
   {
     sigaddset(&set, SIGABRT);
     sigaddset(&set, SIGQUIT);

@@ -50,6 +50,18 @@ using namespace libtest;
 
 using namespace libtest;
 
+namespace {
+  bool is_memcached_libtool()
+  {
+    if (MEMCACHED_BINARY and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0) 
+    {
+      return true;
+    }
+
+    return false;
+  }
+}
+
 class Memcached : public libtest::Server
 {
   std::string _username;
@@ -61,13 +73,15 @@ public:
             const bool is_socket_arg,
             const std::string& username_arg,
             const std::string& password_arg) :
-    libtest::Server(host_arg, port_arg, is_socket_arg),
+    libtest::Server(host_arg, port_arg, 
+                    MEMCACHED_BINARY, is_memcached_libtool(), is_socket_arg),
     _username(username_arg),
     _password(password_arg)
   { }
 
   Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg) :
-    libtest::Server(host_arg, port_arg, is_socket_arg)
+    libtest::Server(host_arg, port_arg,
+                    MEMCACHED_BINARY, is_memcached_libtool(), is_socket_arg)
   {
     set_pid_file();
   }
@@ -168,12 +182,7 @@ public:
 
   bool is_libtool()
   {
-    if (MEMCACHED_BINARY and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0) 
-    {
-      return true;
-    }
-
-    return false;
+    return is_memcached_libtool();
   }
 
   virtual void pid_file_option(Application& app, const std::string& arg)
@@ -187,11 +196,6 @@ public:
   const char *socket_file_option() const
   {
     return "-s ";
-  }
-
-  const char *daemon_file_option()
-  {
-    return "-d";
   }
 
   virtual void port_option(Application& app, in_port_t arg)
@@ -237,8 +241,8 @@ class MemcachedLight : public libtest::Server
 {
 
 public:
-  MemcachedLight(const std::string& host_arg, const in_port_t port_arg):
-    libtest::Server(host_arg, port_arg)
+  MemcachedLight(const std::string& host_arg, const in_port_t port_arg) :
+    libtest::Server(host_arg, port_arg, MEMCACHED_LIGHT_BINARY, true)
   {
     set_pid_file();
   }
@@ -307,11 +311,6 @@ public:
   const char *executable()
   {
     return MEMCACHED_LIGHT_BINARY;
-  }
-
-  const char *daemon_file_option()
-  {
-    return "--daemon";
   }
 
   virtual void port_option(Application& app, in_port_t arg)
@@ -411,9 +410,9 @@ public:
   bool ping()
   {
     // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
+    if (pid_file().empty() == false)
     {
-      if (not wait_for_pidfile())
+      if (wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -432,7 +431,7 @@ public:
       ret= libmemcached_util_ping2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
     }
 
-    if (memcached_failed(rc) or not ret)
+    if (memcached_failed(rc) or ret == false)
     {
       Error << "libmemcached_util_ping2(" << hostname() << ", " << port() << ", " << username() << ", " << password() << ") error: " << memcached_strerror(NULL, rc);
     }

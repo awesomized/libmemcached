@@ -102,6 +102,19 @@ void server_startup_st::shutdown_and_remove()
   servers.clear();
 }
 
+bool server_startup_st::check() const
+{
+  for (std::vector<Server *>::const_iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    if ((*iter)->check()  == false)
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void server_startup_st::shutdown()
 {
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)

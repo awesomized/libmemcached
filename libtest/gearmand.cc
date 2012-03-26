@@ -90,7 +90,7 @@ class Gearmand : public libtest::Server
 private:
 public:
   Gearmand(const std::string& host_arg, in_port_t port_arg) :
-    libtest::Server(host_arg, port_arg)
+    libtest::Server(host_arg, port_arg, GEARMAND_BINARY, true)
   {
     set_pid_file();
   }
@@ -159,16 +159,6 @@ public:
   {
     return "gearmand";
   };
-
-  const char *executable()
-  {
-    return GEARMAND_BINARY;
-  }
-
-  const char *daemon_file_option()
-  {
-    return "--daemon";
-  }
 
   void log_file_option(Application& app, const std::string& arg)
   {

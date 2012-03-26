@@ -111,6 +111,8 @@ public:
   void shutdown();
   bool shutdown(uint32_t number_of_host);
 
+  bool check() const;
+
   void push_server(Server *);
   Server *pop_server();
 };

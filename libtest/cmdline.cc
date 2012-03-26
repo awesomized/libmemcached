@@ -30,6 +30,7 @@ using namespace libtest;
 #include <fcntl.h>
 #include <fstream>
 #include <memory>
+#include <poll.h>
 #include <spawn.h>
 #include <sstream>
 #include <string>
@@ -239,19 +240,71 @@ Application::error_t Application::run(const char *args[])
   return Application::SUCCESS;
 }
 
-Application::error_t Application::wait()
+bool Application::check() const
 {
-  if (_pid == -1)
+  Error << "Testing " << _exectuble;
+  if (kill(_pid, 0) == 0)
   {
-    Error << "wait() got an invalid pid_t";
-    return Application::INVALID;
+    return true;
   }
 
+  return false;
+}
+
+void Application::murder()
+{
+  slurp();
+  kill(_pid, SIGTERM);
+}
+
+// false means that no data was returned
+bool Application::slurp()
+{
+  struct pollfd fds[2];
+  fds[0].fd= stdout_fd.fd()[0];
+  fds[0].events= POLLIN;
+  fds[0].revents= 0;
+  fds[1].fd= stderr_fd.fd()[0];
+  fds[1].events= POLLIN;
+  fds[1].revents= 0;
+
+  int active_fd;
+  if ((active_fd= poll(fds, 2, 400)) == -1)
+  {
+    int error;
+    switch ((error= errno))
+    {
+#ifdef TARGET_OS_LINUX
+    case ERESTART:
+#endif
+    case EINTR:
+      break;
+
+    case EFAULT:
+    case ENOMEM:
+      fatal_message(strerror(error));
+      break;
+
+    case EINVAL:
+      fatal_message("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid");
+      break;
+
+    default:
+      fatal_message(strerror(error));
+      break;
+    }
+  }
+
+  if (active_fd == 0)
+  {
+    return false;
+  }
+
+  if (fds[0].revents == POLLIN)
   {
     ssize_t read_length;
     char buffer[1024]= { 0 };
-    bool bail= false;
-    while (((read_length= ::read(stdout_fd.fd()[0], buffer, sizeof(buffer))) != 0) or bail)
+    while ((read_length= ::read(stdout_fd.fd()[0], buffer, sizeof(buffer))))
     {
       if (read_length == -1)
       {
@@ -262,8 +315,10 @@ Application::error_t Application::wait()
 
         default:
           Error << strerror(errno);
-          bail= true;
+          break;
         }
+
+        break;
       }
       _stdout_buffer.reserve(read_length +1);
       for (size_t x= 0; x < read_length; x++)
@@ -274,11 +329,11 @@ Application::error_t Application::wait()
     }
   }
 
+  if (fds[1].revents == POLLIN)
   {
     ssize_t read_length;
     char buffer[1024]= { 0 };
-    bool bail= false;
-    while (((read_length= ::read(stderr_fd.fd()[0], buffer, sizeof(buffer))) != 0) or bail)
+    while ((read_length= ::read(stderr_fd.fd()[0], buffer, sizeof(buffer))))
     {
       if (read_length == -1)
       {
@@ -289,8 +344,10 @@ Application::error_t Application::wait()
 
         default:
           Error << strerror(errno);
-          bail= true;
+          break;
         }
+
+        break;
       }
       _stderr_buffer.reserve(read_length +1);
       for (size_t x= 0; x < read_length; x++)
@@ -301,13 +358,30 @@ Application::error_t Application::wait()
     }
   }
 
+  return true;
+}
+
+Application::error_t Application::wait()
+{
+  fatal_assert(_pid != -1);
+
+  slurp();
+
   error_t exit_code= FAILURE;
   {
     int status= 0;
     pid_t waited_pid;
     if ((waited_pid= waitpid(_pid, &status, 0)) == -1)
     {
-      Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
+      switch (errno)
+      {
+      case ECHILD:
+        exit_code= Application::SUCCESS;
+        break;
+
+      default:
+        Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
+      }
     }
     else
     {
@@ -329,6 +403,13 @@ Application::error_t Application::wait()
   return exit_code;
 }
 
+void Application::add_long_option(const std::string& name, const std::string& option_value)
+{
+  std::string arg(name);
+  arg+= option_value;
+  _options.push_back(std::make_pair(arg, std::string()));
+}
+
 void Application::add_option(const std::string& arg)
 {
   _options.push_back(std::make_pair(arg, std::string()));
@@ -347,12 +428,27 @@ Application::Pipe::Pipe()
   _open[1]= false;
 }
 
+void Application::Pipe::nonblock()
+{
+  int ret;
+  if ((ret= fcntl(_fd[0], F_GETFL, 0)) == -1)
+  {
+    Error << "fcntl(F_GETFL) " << strerror(errno);
+    throw strerror(errno);
+  }
+
+  if ((ret= fcntl(_fd[0], F_SETFL, ret | O_NONBLOCK)) == -1)
+  {
+    Error << "fcntl(F_SETFL) " << strerror(errno);
+    throw strerror(errno);
+  }
+}
+
 void Application::Pipe::reset()
 {
   close(READ);
   close(WRITE);
 
-  int ret;
   if (pipe(_fd) == -1)
   {
     throw strerror(errno);
@@ -360,18 +456,9 @@ void Application::Pipe::reset()
   _open[0]= true;
   _open[1]= true;
 
+  if (0)
   {
-    if ((ret= fcntl(_fd[0], F_GETFL, 0)) == -1)
-    {
-      Error << "fcntl(F_GETFL) " << strerror(errno);
-      throw strerror(errno);
-    }
-
-    if ((ret= fcntl(_fd[0], F_SETFL, ret | O_NONBLOCK)) == -1)
-    {
-      Error << "fcntl(F_SETFL) " << strerror(errno);
-      throw strerror(errno);
-    }
+    nonblock();
   }
 }
 
