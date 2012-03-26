@@ -471,6 +471,8 @@ static test_return_t application_echo_fubar_BINARY(void *)
   test_compare(Application::SUCCESS, true_app.run(args));
   test_compare(Application::SUCCESS, true_app.wait());
 
+  while (true_app.slurp() == false) {} ;
+
   libtest::vchar_t response;
   make_vector(response, test_literal_param("fubar\n"));
   test_compare(response, true_app.stdout_result());
@@ -486,6 +488,7 @@ static test_return_t application_echo_fubar_BINARY2(void *)
 
   test_compare(Application::SUCCESS, true_app.run());
   test_compare(Application::SUCCESS, true_app.wait());
+
   libtest::vchar_t response;
   make_vector(response, test_literal_param("fubar\n"));
   test_compare(response, true_app.stdout_result());

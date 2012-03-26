@@ -350,6 +350,11 @@ int main(int argc, char *argv[])
             }
           }
 
+          catch (libtest::fatal &e)
+          {
+            Error << "Fatal exception was thrown: " << e.what();
+            return_code= TEST_FAILURE;
+          }
           catch (std::exception &e)
           {
             Error << "Exception was thrown: " << e.what();

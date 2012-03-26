@@ -202,10 +202,7 @@ public:
     return _pid;
   }
 
-  bool has_pid() const
-  {
-    return (_pid > 1);
-  }
+  bool has_pid() const;
 
   virtual bool wait_for_pidfile() const;
 
@@ -228,7 +225,7 @@ public:
 
   std::string log_and_pid();
 
-  bool kill(pid_t pid_arg);
+  bool kill();
   bool start();
   bool command(libtest::Application& app);
 

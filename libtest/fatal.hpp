@@ -55,5 +55,5 @@ private:
 
 } // namespace libtest
 
-#define fatal_message(__mesg) libtest::fatal(LIBYATL_DEFAULT_PARAM, __mesg)
-#define fatal_assert(__assert) if((__assert)) {} else { libtest::fatal(LIBYATL_DEFAULT_PARAM, #__assert); }
+#define fatal_message(__mesg) libtest::fatal(LIBYATL_DEFAULT_PARAM, "%s", __mesg)
+#define fatal_assert(__assert) if((__assert)) {} else { libtest::fatal(LIBYATL_DEFAULT_PARAM, "%s", #__assert); }

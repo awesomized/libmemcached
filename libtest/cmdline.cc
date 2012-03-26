@@ -116,7 +116,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
     {
       if (libtool() == NULL)
       {
-        throw "libtool requested, but know libtool was found";
+        throw fatal_message("libtool requested, but know libtool was found");
       }
     }
 
@@ -143,6 +143,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
 
 Application::~Application()
 {
+  murder();
   delete_argv();
 }
 
@@ -234,6 +235,7 @@ Application::error_t Application::run(const char *args[])
 
   if (spawn_ret)
   {
+    _pid= -1;
     return Application::INVALID;
   }
 
@@ -300,6 +302,7 @@ bool Application::slurp()
     return false;
   }
 
+  bool data_was_read= false;
   if (fds[0].revents & POLLIN)
   {
     ssize_t read_length;
@@ -320,6 +323,8 @@ bool Application::slurp()
 
         break;
       }
+
+      data_was_read= true;
       _stdout_buffer.reserve(read_length +1);
       for (size_t x= 0; x < read_length; x++)
       {
@@ -351,6 +356,8 @@ bool Application::slurp()
 
         break;
       }
+
+      data_was_read= true;
       _stderr_buffer.reserve(read_length +1);
       for (size_t x= 0; x < read_length; x++)
       {
@@ -360,12 +367,15 @@ bool Application::slurp()
     }
   }
 
-  return true;
+  return data_was_read;
 }
 
-Application::error_t Application::wait()
+Application::error_t Application::wait(bool nohang)
 {
-  fatal_assert(_pid != -1);
+  if (_pid == -1)
+  {
+    return Application::INVALID;
+  }
 
   slurp();
 
@@ -373,7 +383,7 @@ Application::error_t Application::wait()
   {
     int status= 0;
     pid_t waited_pid;
-    if ((waited_pid= waitpid(_pid, &status, 0)) == -1)
+    if ((waited_pid= waitpid(_pid, &status, nohang ? WNOHANG : 0)) == -1)
     {
       switch (errno)
       {
@@ -384,6 +394,10 @@ Application::error_t Application::wait()
       default:
         Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
       }
+    }
+    else if (waited_pid == 0)
+    {
+      exit_code= Application::SUCCESS;
     }
     else
     {
@@ -453,7 +467,7 @@ void Application::Pipe::reset()
 
   if (pipe(_fd) == -1)
   {
-    throw strerror(errno);
+    throw fatal_message(strerror(errno));
   }
   _open[0]= true;
   _open[1]= true;
@@ -478,13 +492,13 @@ void Application::Pipe::dup_for_spawn(const close_t& arg, posix_spawn_file_actio
   if ((ret= posix_spawn_file_actions_adddup2(&file_actions, _fd[type], newfildes )) < 0)
   {
     Error << "posix_spawn_file_actions_adddup2(" << strerror(ret) << ")";
-    throw strerror(ret);
+    throw fatal_message(strerror(ret));
   }
 
   if ((ret= posix_spawn_file_actions_addclose(&file_actions, _fd[type])) < 0)
   {
     Error << "posix_spawn_file_actions_adddup2(" << strerror(ret) << ")";
-    throw strerror(ret);
+    throw fatal_message(strerror(ret));
   }
 }
 
@@ -640,7 +654,7 @@ int exec_cmdline(const std::string& command, const char *args[], bool use_libtoo
     return int(ret);
   }
 
-  return int(app.wait());
+  return int(app.wait(false));
 }
 
 const char *gearmand_binary() 

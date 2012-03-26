@@ -90,16 +90,6 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
 
 Server::~Server()
 {
-  if (has_pid() and not kill(_pid))
-  {
-    Error << "Unable to kill:" << *this;
-  }
-
-  Application::error_t ret;
-  if (Application::SUCCESS !=  (ret= _app.wait()))
-  {
-    Error << "Application::wait() " << _running << " " << ret << ": " << _app.stderr_result();
-  }
 }
 
 bool Server::check()
@@ -119,13 +109,12 @@ bool Server::cycle()
   uint32_t limit= 3;
 
   // Try to ping, and kill the server #limit number of times
-  pid_t current_pid;
   while (--limit and 
-         is_pid_valid(current_pid= get_pid()))
+         is_pid_valid(_app.pid()))
   {
-    if (kill(current_pid))
+    if (kill())
     {
-      Log << "Killed existing server," << *this << " with pid:" << current_pid;
+      Log << "Killed existing server," << *this;
       dream(0, 50000);
       continue;
     }
@@ -134,7 +123,7 @@ bool Server::cycle()
   // For whatever reason we could not kill it, and we reached limit
   if (limit == 0)
   {
-    Error << "Reached limit, could not kill server pid:" << current_pid;
+    Error << "Reached limit, could not kill server";
     return false;
   }
 
@@ -148,15 +137,15 @@ bool Server::wait_for_pidfile() const
   return wait.successful();
 }
 
+bool Server::has_pid() const
+{
+  return (_pid > 1);
+}
+
+
 bool Server::start()
 {
   // If we find that we already have a pid then kill it.
-  if (has_pid() and kill(_pid) == false)
-  {
-    Error << "Could not kill() existing server during start() pid:" << _pid;
-    return false;
-  }
-
   if (has_pid() == false)
   {
     fatal_message("has_pid() failed, programer error");
@@ -402,9 +391,9 @@ bool Server::args(Application& app)
   return true;
 }
 
-bool Server::kill(pid_t pid_arg)
+bool Server::kill()
 {
-  if (check_pid(pid_arg) and kill_pid(pid_arg)) // If we kill it, reset
+  if (check_pid(_app.pid()) and kill_pid(_app.pid())) // If we kill it, reset
   {
     if (broken_pid_file() and pid_file().empty() == false)
     {

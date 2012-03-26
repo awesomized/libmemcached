@@ -82,7 +82,7 @@ bool server_startup_st::shutdown(uint32_t number_of_host)
   {
     Server* tmp= servers[number_of_host];
 
-    if (tmp and tmp->has_pid() and not tmp->kill(tmp->pid()))
+    if (tmp and tmp->has_pid() and tmp->kill() == false)
     { }
     else
     {
@@ -119,7 +119,7 @@ void server_startup_st::shutdown()
 {
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
   {
-    if ((*iter)->has_pid() and not (*iter)->kill((*iter)->pid()))
+    if ((*iter)->has_pid() and (*iter)->kill() == false)
     {
       Error << "Unable to kill:" <<  *(*iter);
     }
