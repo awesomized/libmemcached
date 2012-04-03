@@ -37,7 +37,7 @@ const char *test_strerror(test_return_t code)
     return "skipped";
   }
 
-  throw fatal_message("No port could be found");
+  fatal_message("No port could be found");
 }
 
 } // namespace libtest

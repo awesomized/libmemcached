@@ -63,6 +63,8 @@ Framework *global_framework= NULL;
 
 static test_return_t shutdown_servers(memcached_st *memc)
 {
+  test_skip_valgrind();
+
   test_compare(memcached_server_count(memc), 1U);
 
   // Disable a single server, just the first
@@ -73,6 +75,8 @@ static test_return_t shutdown_servers(memcached_st *memc)
 
 static test_return_t add_shutdown_servers(memcached_st *memc)
 {
+  test_skip_valgrind();
+
   while (memcached_server_count(memc) < 2)
   {
     const char *argv[1]= { "add_shutdown_server" };
@@ -207,7 +211,7 @@ collection_st collection[] ={
 
 void get_world(Framework *world)
 {
-  world->servers().set_count(1);
+  world->servers().set_servers_to_run(1);
 
   world->collections= collection;
 

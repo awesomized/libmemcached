@@ -55,8 +55,9 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->server_failure_counter= 0;
   self->server_failure_counter_query_id= 0;
   self->weight= weight ? weight : 1; // 1 is the default weight value
-  WATCHPOINT_SET(self->io_wait_count.read= 0);
-  WATCHPOINT_SET(self->io_wait_count.write= 0);
+  self->io_wait_count.read= 0;
+  self->io_wait_count.write= 0;
+  self->io_wait_count.timeouts= 0;
   self->major_version= UINT8_MAX;
   self->micro_version= UINT8_MAX;
   self->minor_version= UINT8_MAX;
@@ -310,8 +311,10 @@ void memcached_server_error_reset(memcached_server_st *self)
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *self)
 {
   WATCHPOINT_ASSERT(self);
-  if (not self)
+  if (self == NULL)
+  {
     return 0;
+  }
 
   return self->last_disconnected_server;
 }
@@ -319,8 +322,10 @@ memcached_server_instance_st memcached_server_get_last_disconnect(const memcache
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
 {
   WATCHPOINT_ASSERT(servers);
-  if (not servers)
+  if (servers == NULL)
+  {
     return 0;
+  }
 
   return servers->number_of_hosts= count;
 }
@@ -328,7 +333,7 @@ uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t coun
 uint32_t memcached_server_count(const memcached_st *self)
 {
   WATCHPOINT_ASSERT(self);
-  if (not self)
+  if (self == NULL)
     return 0;
 
   return self->number_of_hosts;
@@ -337,7 +342,7 @@ uint32_t memcached_server_count(const memcached_st *self)
 const char *memcached_server_name(const memcached_server_instance_st self)
 {
   WATCHPOINT_ASSERT(self);
-  if (not self)
+  if (self == NULL)
     return NULL;
 
   return self->hostname;
@@ -346,7 +351,7 @@ const char *memcached_server_name(const memcached_server_instance_st self)
 in_port_t memcached_server_port(const memcached_server_instance_st self)
 {
   WATCHPOINT_ASSERT(self);
-  if (not self)
+  if (self == NULL)
     return 0;
 
   return self->port;
@@ -355,7 +360,7 @@ in_port_t memcached_server_port(const memcached_server_instance_st self)
 uint32_t memcached_server_response_count(const memcached_server_instance_st self)
 {
   WATCHPOINT_ASSERT(self);
-  if (not self)
+  if (self == NULL)
     return 0;
 
   return self->cursor_active;

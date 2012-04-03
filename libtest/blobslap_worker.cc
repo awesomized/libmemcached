@@ -49,7 +49,7 @@ class BlobslapWorker : public Server
 private:
 public:
   BlobslapWorker(in_port_t port_arg) :
-    Server("localhost", port_arg)
+    Server("localhost", port_arg, "benchmark/blobslap_worker", true)
   { 
     set_pid_file();
   }
@@ -117,16 +117,6 @@ public:
   {
     return "blobslap_worker";
   };
-
-  const char *executable()
-  {
-    return "benchmark/blobslap_worker";
-  }
-
-  const char *daemon_file_option()
-  {
-    return "--daemon";
-  }
 
   bool has_port_option() const
   {

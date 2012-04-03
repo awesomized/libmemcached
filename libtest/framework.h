@@ -179,4 +179,5 @@ private:
   libtest::server_startup_st _servers;
   bool _socket;
   void *_creators_ptr;
+  unsigned long int _servers_to_run;
 };
