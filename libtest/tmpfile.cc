@@ -35,7 +35,7 @@ std::string create_tmpfile(const std::string& name)
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
-    libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
   }
   close(fd);
   unlink(file_buffer);

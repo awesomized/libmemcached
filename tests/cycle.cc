@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  Cycle the Gearmand server
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *
@@ -42,110 +42,88 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
-#include <libmemcached/util.h>
-
-#include <iostream>
-
-
-#include <libtest/server.h>
-
 using namespace libtest;
+#include <libmemcached/memcached.h>
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+static test_return_t server_startup_single_TEST(void *obj)
+{
+  server_startup_st *servers= (server_startup_st*)obj;
+  test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), 0, NULL, false));
+  test_compare(true, servers->shutdown());
+
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t server_startup_multiple_TEST(void *obj)
+{
+  server_startup_st *servers= (server_startup_st*)obj;
+  for (size_t x= 0; x < 10; x++)
+  {
+    test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), 0, NULL, false));
+  }
+  test_compare(true, servers->shutdown());
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t shutdown_and_remove_TEST(void *obj)
+{
+  server_startup_st *servers= (server_startup_st*)obj;
+  servers->shutdown_and_remove();
+
+  return TEST_SUCCESS;
+}
+
+test_st server_startup_TESTS[] ={
+  {"server_startup(1)", false, (test_callback_fn*)server_startup_single_TEST },
+  {"server_startup(10)", false, (test_callback_fn*)server_startup_multiple_TEST },
+  {"shutdown_and_remove()", false, (test_callback_fn*)shutdown_and_remove_TEST },
+  {"server_startup(10)", false, (test_callback_fn*)server_startup_multiple_TEST },
+  {0, 0, 0}
+};
+
+#if 0
+static test_return_t collection_INIT(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_zero(servers->count());
+  test_compare(true, server_startup(*servers, "memcached", libtest::default_port(), 0, NULL));
+
+  return TEST_SUCCESS;
+}
 #endif
 
-static test_return_t alive(memcached_st *memc)
+static test_return_t validate_sanity_INIT(void *object)
 {
-  test_true(memc);
-  test_true(memcached_is_allocated(memc));
-  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
-  {
-    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
-    test_true(instance);
+  server_startup_st *servers= (server_startup_st*)object;
 
-    test_true(libmemcached_util_ping(memcached_server_name(instance),
-                                     memcached_server_port(instance), NULL));
-  }
+  test_zero(servers->count());
 
   return TEST_SUCCESS;
 }
 
-static test_return_t valid(memcached_st *memc)
+static test_return_t collection_FINAL(void *object)
 {
-  test_true(memc);
-  test_true(memcached_is_allocated(memc));
-
-  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
-  {
-    memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
-    test_true(instance);
-
-    pid_t pid= libmemcached_util_getpid(memcached_server_name(instance),
-                                        memcached_server_port(instance), NULL);
-    test_true(pid != -1);
-  }
+  server_startup_st *servers= (server_startup_st*)object;
+  servers->shutdown_and_remove();
 
   return TEST_SUCCESS;
 }
-
-static test_return_t kill_test(memcached_st *)
-{
-  static struct timespec global_sleep_value= { 2, 0 };
-
-#ifdef WIN32
-  sleep(1);
-#else
-  nanosleep(&global_sleep_value, NULL);
-#endif
-
-  return TEST_SUCCESS;
-}
-
-test_st ping_tests[] ={
-  {"alive", true, (test_callback_fn*)alive },
-  {0, 0, 0}
-};
-
-test_st getpid_tests[] ={
-  {"valid", true, (test_callback_fn*)valid },
-  {0, 0, 0}
-};
-
-test_st kill_tests[] ={
-  {"kill", true, (test_callback_fn*)kill_test },
-  {0, 0, 0}
-};
 
 collection_st collection[] ={
-  {"libmemcached_util_ping()", 0, 0, ping_tests},
-  {"libmemcached_util_getpid()", 0, 0, getpid_tests},
-  {"kill", 0, 0, kill_tests},
+  {"server_startup()", validate_sanity_INIT, collection_FINAL, server_startup_TESTS },
   {0, 0, 0, 0}
 };
 
-
-#include "tests/libmemcached_world.h"
+static void *world_create(server_startup_st& servers, test_return_t& )
+{
+  return &servers;
+}
 
 void get_world(Framework *world)
 {
   world->collections= collection;
-
-  world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_destroy_fn*)world_destroy;
-
-  world->item.set_startup((test_callback_fn*)world_test_startup);
-  world->item.set_pre((test_callback_fn*)world_pre_run);
-  world->item.set_post((test_callback_fn*)world_post_run);
-
-  world->set_on_error((test_callback_error_fn*)world_on_error);
-
-  world->collection_startup= (test_callback_fn*)world_container_startup;
-  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
-
-  world->set_runner(&defualt_libmemcached_runner);
-  world->set_socket();
+  world->_create= world_create;
 }
 

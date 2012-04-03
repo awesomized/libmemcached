@@ -175,10 +175,12 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   {
     memcached_io_reset(server);
 
+#if 0
     if (memcached_has_error(ptr))
     {
       memcached_set_error(*server, rc, MEMCACHED_AT);
     }
+#endif
 
     return MEMCACHED_WRITE_FAILURE;
   }
@@ -319,10 +321,12 @@ static memcached_return_t memcached_send_ascii(memcached_st *ptr,
   }
 
   assert(memcached_failed(rc));
+#if 0
   if (memcached_has_error(ptr) == false)
   {
     return memcached_set_error(*ptr, rc, MEMCACHED_AT);
   }
+#endif
 
   return rc;
 }
@@ -403,10 +407,6 @@ memcached_return_t memcached_add(memcached_st *ptr,
                      key, key_length, value, value_length,
                      expiration, flags, 0, ADD_OP);
 
-  if (rc == MEMCACHED_NOTSTORED or rc == MEMCACHED_DATA_EXISTS)
-  {
-    memcached_set_error(*ptr, rc, MEMCACHED_AT);
-  }
   LIBMEMCACHED_MEMCACHED_ADD_END();
   return rc;
 }

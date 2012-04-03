@@ -37,7 +37,20 @@ public:
 
   Runner();
 
+  void set_servers(libtest::server_startup_st& arg)
+  {
+    _servers= &arg;
+  }
+
+  bool check()
+  {
+    return _servers ? _servers->check() : true;
+  }
+
   virtual ~Runner() { }
+
+private:
+  libtest::server_startup_st* _servers;
 };
 
 } // namespace Runner

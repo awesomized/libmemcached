@@ -50,6 +50,18 @@ using namespace libtest;
 
 using namespace libtest;
 
+namespace {
+  bool is_memcached_libtool()
+  {
+    if (MEMCACHED_BINARY and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0) 
+    {
+      return true;
+    }
+
+    return false;
+  }
+}
+
 class Memcached : public libtest::Server
 {
   std::string _username;
@@ -61,13 +73,15 @@ public:
             const bool is_socket_arg,
             const std::string& username_arg,
             const std::string& password_arg) :
-    libtest::Server(host_arg, port_arg, is_socket_arg),
+    libtest::Server(host_arg, port_arg, 
+                    MEMCACHED_BINARY, is_memcached_libtool(), is_socket_arg),
     _username(username_arg),
     _password(password_arg)
   { }
 
   Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg) :
-    libtest::Server(host_arg, port_arg, is_socket_arg)
+    libtest::Server(host_arg, port_arg,
+                    MEMCACHED_BINARY, is_memcached_libtool(), is_socket_arg)
   {
     set_pid_file();
   }
@@ -87,54 +101,26 @@ public:
     return _username;
   }
 
-  pid_t get_pid(bool error_is_ok)
+  bool wait_for_pidfile() const
   {
-    // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
-    {
-      if (error_is_ok and
-          wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
+    Wait wait(pid(), 4);
 
-    pid_t local_pid;
-    memcached_return_t rc= MEMCACHED_SUCCESS;
-    if (has_socket())
-    {
-      if (socket().empty())
-      {
-        return -1;
-      }
-
-      local_pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
-    }
-    else
-    {
-      local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
-    }
-
-    if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
-    {
-      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << local_pid << " for:" << *this;
-    }
-
-    return local_pid;
+    return wait.successful();
   }
 
   bool ping()
   {
+#if 0
     // Memcached is slow to start, so we need to do this
     if (pid_file().empty() == false)
     {
       if (wait_for_pidfile() == false)
       {
-        Error << "Pidfile was not found:" << pid_file();
+        Error << "Pidfile was not found:" << pid_file() << " :" << running();
         return -1;
       }
     }
+#endif
 
     memcached_return_t rc;
     bool ret;
@@ -168,12 +154,7 @@ public:
 
   bool is_libtool()
   {
-    if (MEMCACHED_BINARY and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0) 
-    {
-      return true;
-    }
-
-    return false;
+    return is_memcached_libtool();
   }
 
   virtual void pid_file_option(Application& app, const std::string& arg)
@@ -187,11 +168,6 @@ public:
   const char *socket_file_option() const
   {
     return "-s ";
-  }
-
-  const char *daemon_file_option()
-  {
-    return "-d";
   }
 
   virtual void port_option(Application& app, in_port_t arg)
@@ -237,41 +213,10 @@ class MemcachedLight : public libtest::Server
 {
 
 public:
-  MemcachedLight(const std::string& host_arg, const in_port_t port_arg):
-    libtest::Server(host_arg, port_arg)
+  MemcachedLight(const std::string& host_arg, const in_port_t port_arg) :
+    libtest::Server(host_arg, port_arg, MEMCACHED_LIGHT_BINARY, true)
   {
     set_pid_file();
-  }
-
-  pid_t get_pid(bool error_is_ok)
-  {
-    // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
-    {
-      if (error_is_ok and wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
-
-    bool success= false;
-    std::stringstream error_message;
-    pid_t local_pid= get_pid_from_file(pid_file(), error_message);
-    if (local_pid > 0)
-    {
-      if (::kill(local_pid, 0) > 0)
-      {
-        success= true;
-      }
-    }
-
-    if (error_is_ok and ((success or not is_pid_valid(local_pid))))
-    {
-      Error << "kill(" << " pid: " << local_pid << " errno:" << strerror(errno) << " for:" << *this;
-    }
-
-    return local_pid;
   }
 
   bool ping()
@@ -307,11 +252,6 @@ public:
   const char *executable()
   {
     return MEMCACHED_LIGHT_BINARY;
-  }
-
-  const char *daemon_file_option()
-  {
-    return "--daemon";
   }
 
   virtual void port_option(Application& app, in_port_t arg)
@@ -376,44 +316,12 @@ public:
     return MEMCACHED_SASL_BINARY;
   }
 
-  pid_t get_pid(bool error_is_ok)
+  bool ping()
   {
     // Memcached is slow to start, so we need to do this
     if (pid_file().empty() == false)
     {
-      if (error_is_ok and 
-          wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
-
-    pid_t local_pid;
-    memcached_return_t rc;
-    if (has_socket())
-    {
-      local_pid= libmemcached_util_getpid2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
-    }
-    else
-    {
-      local_pid= libmemcached_util_getpid2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
-    }
-
-    if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
-    {
-      Error << "libmemcached_util_getpid2(" << memcached_strerror(NULL, rc) << ") username: " << username() << " password: " << password() << " pid: " << local_pid << " for:" << *this;
-    }
-
-    return local_pid;
-  }
-
-  bool ping()
-  {
-    // Memcached is slow to start, so we need to do this
-    if (not pid_file().empty())
-    {
-      if (not wait_for_pidfile())
+      if (wait_for_pidfile() == false)
       {
         Error << "Pidfile was not found:" << pid_file();
         return -1;
@@ -432,7 +340,7 @@ public:
       ret= libmemcached_util_ping2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
     }
 
-    if (memcached_failed(rc) or not ret)
+    if (memcached_failed(rc) or ret == false)
     {
       Error << "libmemcached_util_ping2(" << hostname() << ", " << port() << ", " << username() << ", " << password() << ") error: " << memcached_strerror(NULL, rc);
     }
