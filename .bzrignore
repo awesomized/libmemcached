@@ -148,3 +148,4 @@ libtest/abort
 memcached/.git
 memcached/.gitignore
 memcached/memcached
+memcached/memcached.spec

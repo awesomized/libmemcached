@@ -79,8 +79,6 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
         rc= memcached_vdo(ptr, vector, 1, true);
       }
 
-      WATCHPOINT_ASSERT(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_FETCH_NOTFINISHED);
-
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read
        * results in server throwing away all data which is
@@ -89,11 +87,18 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
        * In .40 we began to only do this if we had been doing buffered
        * requests of had replication enabled.
        */
-      if (ptr->root->flags.buffer_requests or ptr->root->number_of_replicas)
+      if (memcached_success(rc) and (ptr->root->flags.buffer_requests or ptr->root->number_of_replicas))
       {
-        memcached_return_t rc_slurp;
-        while (memcached_continue(rc_slurp= memcached_io_slurp(ptr))) {} ;
-        WATCHPOINT_ASSERT(rc_slurp == MEMCACHED_CONNECTION_FAILURE);
+        if (0)
+        {
+          memcached_return_t rc_slurp;
+          while (memcached_continue(rc_slurp= memcached_io_slurp(ptr))) {} ;
+          WATCHPOINT_ASSERT(rc_slurp == MEMCACHED_CONNECTION_FAILURE);
+        }
+        else
+        {
+          memcached_io_slurp(ptr);
+        }
       }
 
       /*

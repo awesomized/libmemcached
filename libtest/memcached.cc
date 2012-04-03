@@ -108,40 +108,6 @@ public:
     return wait.successful();
   }
 
-  pid_t get_pid(bool error_is_ok)
-  {
-    // Memcached is slow to start, so we need to do this
-    if (error_is_ok and
-        wait_for_pidfile() == false)
-    {
-      Error << "Pidfile was not found:" << pid_file();
-      return -1;
-    }
-
-    pid_t local_pid;
-    memcached_return_t rc= MEMCACHED_SUCCESS;
-    if (has_socket())
-    {
-      if (socket().empty())
-      {
-        return -1;
-      }
-
-      local_pid= libmemcached_util_getpid(socket().c_str(), port(), &rc);
-    }
-    else
-    {
-      local_pid= libmemcached_util_getpid(hostname().c_str(), port(), &rc);
-    }
-
-    if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
-    {
-      Error << "libmemcached_util_getpid(" << memcached_strerror(NULL, rc) << ") pid: " << local_pid << " for:" << *this;
-    }
-
-    return local_pid;
-  }
-
   bool ping()
   {
 #if 0
@@ -253,37 +219,6 @@ public:
     set_pid_file();
   }
 
-  pid_t get_pid(bool error_is_ok)
-  {
-    // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
-    {
-      if (error_is_ok and wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
-
-    bool success= false;
-    std::stringstream error_message;
-    pid_t local_pid= get_pid_from_file(pid_file(), error_message);
-    if (local_pid > 0)
-    {
-      if (::kill(local_pid, 0) > 0)
-      {
-        success= true;
-      }
-    }
-
-    if (error_is_ok and ((success or not is_pid_valid(local_pid))))
-    {
-      Error << "kill(" << " pid: " << local_pid << " errno:" << strerror(errno) << " for:" << *this;
-    }
-
-    return local_pid;
-  }
-
   bool ping()
   {
     // Memcached is slow to start, so we need to do this
@@ -379,38 +314,6 @@ public:
   const char *executable()
   {
     return MEMCACHED_SASL_BINARY;
-  }
-
-  pid_t get_pid(bool error_is_ok)
-  {
-    // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
-    {
-      if (error_is_ok and 
-          wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
-
-    pid_t local_pid;
-    memcached_return_t rc;
-    if (has_socket())
-    {
-      local_pid= libmemcached_util_getpid2(socket().c_str(), 0, username().c_str(), password().c_str(), &rc);
-    }
-    else
-    {
-      local_pid= libmemcached_util_getpid2(hostname().c_str(), port(), username().c_str(), password().c_str(), &rc);
-    }
-
-    if (error_is_ok and ((memcached_failed(rc) or not is_pid_valid(local_pid))))
-    {
-      Error << "libmemcached_util_getpid2(" << memcached_strerror(NULL, rc) << ") username: " << username() << " password: " << password() << " pid: " << local_pid << " for:" << *this;
-    }
-
-    return local_pid;
   }
 
   bool ping()

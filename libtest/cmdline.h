@@ -39,29 +39,28 @@ public:
 
   class Pipe {
   public:
-    Pipe();
+    Pipe(int);
     ~Pipe();
 
-    int* fd()
-    {
-      return _fd;
-    }
+    int fd();
 
     enum close_t {
-      READ,
-      WRITE
+      READ= 0,
+      WRITE= 1
     };
 
     void reset();
     void close(const close_t& arg);
     void dup_for_spawn(const close_t& arg,
-                       posix_spawn_file_actions_t& file_actions,
-                       const int newfildes);
+                       posix_spawn_file_actions_t& file_actions);
 
     void nonblock();
+    void cloexec();
+    bool read(libtest::vchar_t&);
 
   private:
-    int _fd[2];
+    const int _std_fd;
+    int _pipe_fd[2];
     bool _open[2];
   };
 

@@ -81,7 +81,6 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
                bool is_socket_arg) :
   _magic(MAGIC_MEMORY),
   _is_socket(is_socket_arg),
-  _pid(-1),
   _port(port_arg),
   _hostname(host_arg),
   _app(executable, _is_libtool)
@@ -95,7 +94,8 @@ Server::~Server()
 bool Server::check()
 {
   _app.slurp();
-  return _app.check();
+  _app.check();
+  return true;
 }
 
 bool Server::validate()
@@ -139,14 +139,14 @@ bool Server::wait_for_pidfile() const
 
 bool Server::has_pid() const
 {
-  return (_pid > 1);
+  return (_app.pid() > 1);
 }
 
 
 bool Server::start()
 {
   // If we find that we already have a pid then kill it.
-  if (has_pid() == false)
+  if (has_pid() == true)
   {
     fatal_message("has_pid() failed, programer error");
   }
@@ -159,7 +159,11 @@ bool Server::start()
   }
 #endif
 
-  if (args(_app) == false)
+  if (getenv("YATL_VALGRIND_SERVER"))
+  {
+    _app.use_valgrind();
+  }
+  else if (args(_app) == false)
   {
     Error << "Could not build command()";
     return false;
@@ -184,9 +188,9 @@ bool Server::start()
 
     if (wait.successful() == false)
     {
-      libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                     "Unable to open pidfile for: %s",
-                     _running.c_str());
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                           "Unable to open pidfile for: %s",
+                           _running.c_str());
     }
   }
 
@@ -220,7 +224,7 @@ bool Server::start()
     {
       if (kill_file(pid_file()) == false)
       {
-        fatal_message("Failed to kill off server after startup occurred, when pinging failed");
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Failed to kill off server after startup occurred, when pinging failed: %s", pid_file().c_str());
       }
       Error << "Failed to ping(), waited:" << this_wait 
         << " server started, having pid_file. exec:" << _running 
@@ -234,9 +238,6 @@ bool Server::start()
     return false;
   }
 
-  // A failing get_pid() at this point is considered an error
-  _pid= get_pid(true);
-
   return has_pid();
 }
 
@@ -244,12 +245,11 @@ void Server::reset_pid()
 {
   _running.clear();
   _pid_file.clear();
-  _pid= -1;
 }
 
-pid_t Server::pid()
+pid_t Server::pid() const
 {
-  return _pid;
+  return _app.pid();
 }
 
 void Server::add_option(const std::string& arg)
@@ -327,7 +327,7 @@ bool Server::set_log_file()
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
-    libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
   }
   close(fd);
 
@@ -340,7 +340,7 @@ bool Server::args(Application& app)
 {
 
   // Set a log file if it was requested (and we can)
-  if (has_log_file_option())
+  if (false and has_log_file_option())
   {
     set_log_file();
     log_file_option(app, _log_file);
@@ -393,8 +393,9 @@ bool Server::args(Application& app)
 
 bool Server::kill()
 {
-  if (check_pid(_app.pid()) and kill_pid(_app.pid())) // If we kill it, reset
+  if (check_pid(_app.pid())) // If we kill it, reset
   {
+    _app.murder();
     if (broken_pid_file() and pid_file().empty() == false)
     {
       unlink(pid_file().c_str());

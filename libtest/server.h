@@ -47,7 +47,6 @@ private:
   std::string _log_file;
   std::string _base_command; // executable command which include libtool, valgrind, gdb, etc
   std::string _running; // Current string being used for system()
-  pid_t _pid;
 
 protected:
   in_port_t _port;
@@ -163,8 +162,6 @@ public:
 
   virtual bool ping()= 0;
 
-  virtual pid_t get_pid(bool error_is_ok= false)= 0;
-
   virtual bool build(size_t argc, const char *argv[])= 0;
 
   void add_option(const std::string&);
@@ -188,19 +185,13 @@ public:
   // Reset a server if another process has killed the server
   void reset()
   {
-    _pid= -1;
     _pid_file.clear();
     _log_file.clear();
   }
 
   bool args(Application&);
 
-  pid_t pid();
-
-  pid_t pid() const
-  {
-    return _pid;
-  }
+  pid_t pid() const;
 
   bool has_pid() const;
 

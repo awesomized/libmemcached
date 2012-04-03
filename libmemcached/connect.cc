@@ -78,6 +78,7 @@ static memcached_return_t connect_poll(memcached_server_st *server)
       }
     case 0:
       {
+        server->io_wait_count.timeouts++;
         return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT);
       }
 

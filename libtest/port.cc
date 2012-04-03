@@ -117,7 +117,7 @@ in_port_t get_free_port()
   // We handle the case where if we max out retries, we still abort.
   if (ret_port <= 1024)
   {
-    throw fatal_message("No port could be found");
+    fatal_message("No port could be found");
   }
 
   return ret_port;

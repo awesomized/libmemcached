@@ -74,7 +74,7 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
-  for (uint32_t x= 0; x < servers.count(); x++)
+  for (uint32_t x= 0; x < servers.servers_to_run(); x++)
   {
     in_port_t port= libtest::get_free_port();
 

@@ -95,33 +95,6 @@ public:
     set_pid_file();
   }
 
-  pid_t get_pid(bool error_is_ok)
-  {
-    if (pid_file().empty() == false)
-    {
-      Wait wait(pid_file(), 0);
-
-      if (error_is_ok and not wait.successful())
-      {
-        Error << "Pidfile was not found:" << pid_file();
-        return -1;
-      }
-    }
-
-    GetPid *get_instance_pid;
-    util::Instance instance(hostname(), port());
-    instance.set_finish(get_instance_pid= new GetPid);
-
-    instance.push(new util::Operation(test_literal_param("getpid\r\n"), true));
-
-    if (error_is_ok and instance.run() == false)
-    {
-      Error << "Failed to obtain pid of server";
-    }
-
-    return get_instance_pid->pid();
-  }
-
   bool ping()
   {
     gearman_client_st *client= gearman_client_create(NULL);

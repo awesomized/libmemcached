@@ -82,6 +82,7 @@ struct memcached_server_st {
   struct {
     uint32_t read;
     uint32_t write;
+    uint32_t timeouts;
   } io_wait_count;
   uint8_t major_version; // Default definition of UINT8_MAX means that it has not been set.
   uint8_t micro_version; // ditto

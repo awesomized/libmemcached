@@ -109,6 +109,9 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
   _use_gdb(false),
   _argc(0),
   _exectuble(arg),
+  stdin_fd(STDIN_FILENO),
+  stdout_fd(STDOUT_FILENO),
+  stderr_fd(STDERR_FILENO),
   built_argv(NULL),
   _pid(-1)
   { 
@@ -116,7 +119,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
     {
       if (libtool() == NULL)
       {
-        throw fatal_message("libtool requested, but know libtool was found");
+        fatal_message("libtool requested, but know libtool was found");
       }
     }
 
@@ -158,9 +161,16 @@ Application::error_t Application::run(const char *args[])
   posix_spawn_file_actions_t file_actions;
   posix_spawn_file_actions_init(&file_actions);
 
-  stdin_fd.dup_for_spawn(Application::Pipe::READ, file_actions, STDIN_FILENO);
-  stdout_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions, STDOUT_FILENO);
-  stderr_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions, STDERR_FILENO);
+  stdin_fd.dup_for_spawn(Application::Pipe::READ, file_actions);
+  stdout_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions);
+  stderr_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions);
+
+  posix_spawnattr_t spawnattr;
+  posix_spawnattr_init(&spawnattr);
+
+  sigset_t set;
+  sigemptyset(&set);
+  fatal_assert(posix_spawnattr_setsigmask(&spawnattr, &set) == 0);
   
   create_argv(args);
 
@@ -199,7 +209,7 @@ Application::error_t Application::run(const char *args[])
         const_cast<char *>(_exectuble_with_path.c_str()), 
         0};
 
-      spawn_ret= posix_spawnp(&_pid, libtool(), &file_actions, NULL, argv, NULL);
+      spawn_ret= posix_spawnp(&_pid, libtool(), &file_actions, &spawnattr, argv, NULL);
     }
     else
     {
@@ -212,22 +222,23 @@ Application::error_t Application::run(const char *args[])
         const_cast<char *>(gdb_run_file.c_str()), 
         const_cast<char *>(_exectuble_with_path.c_str()), 
         0};
-      spawn_ret= posix_spawnp(&_pid, "gdb", &file_actions, NULL, argv, NULL);
+      spawn_ret= posix_spawnp(&_pid, "gdb", &file_actions, &spawnattr, argv, NULL);
     }
   }
   else
   {
     if (_use_libtool)
     {
-      spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+      spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, &spawnattr, built_argv, NULL);
     }
     else
     {
-      spawn_ret= posix_spawnp(&_pid, built_argv[0], &file_actions, NULL, built_argv, NULL);
+      spawn_ret= posix_spawnp(&_pid, built_argv[0], &file_actions, &spawnattr, built_argv, NULL);
     }
   }
 
   posix_spawn_file_actions_destroy(&file_actions);
+  posix_spawnattr_destroy(&spawnattr);
 
   stdin_fd.close(Application::Pipe::READ);
   stdout_fd.close(Application::Pipe::WRITE);
@@ -244,8 +255,7 @@ Application::error_t Application::run(const char *args[])
 
 bool Application::check() const
 {
-  Error << "Testing " << _exectuble;
-  if (kill(_pid, 0) == 0)
+  if (_pid > 1 and kill(_pid, 0) == 0)
   {
     return true;
   }
@@ -255,23 +265,66 @@ bool Application::check() const
 
 void Application::murder()
 {
+  if (check())
+  {
+    int count= 5;
+    while ((count--) > 0 and check())
+    {
+      int kill_ret= kill(_pid, SIGTERM);
+      if (kill_ret == 0)
+      {
+        int status= 0;
+        pid_t waitpid_ret;
+        if ((waitpid_ret= waitpid(_pid, &status, WNOHANG)) == -1)
+        {
+          switch (errno)
+          {
+          case ECHILD:
+          case EINTR:
+            break;
+
+          default:
+            Error << "waitpid() failed after kill with error of " << strerror(errno);
+            break;
+          }
+        }
+
+        if (waitpid_ret == 0)
+        {
+          libtest::dream(1, 0);
+        }
+      }
+      else
+      {
+        Error << "kill(pid, SIGTERM) failed after kill with error of " << strerror(errno);
+        continue;
+      }
+
+      break;
+    }
+
+    // If for whatever reason it lives, kill it hard
+    if (check())
+    {
+      (void)kill(_pid, SIGKILL);
+    }
+  }
   slurp();
-  kill(_pid, SIGTERM);
 }
 
 // false means that no data was returned
 bool Application::slurp()
 {
   struct pollfd fds[2];
-  fds[0].fd= stdout_fd.fd()[0];
-  fds[0].events= POLLIN;
+  fds[0].fd= stdout_fd.fd();
+  fds[0].events= POLLRDNORM;
   fds[0].revents= 0;
-  fds[1].fd= stderr_fd.fd()[0];
-  fds[1].events= POLLIN;
+  fds[1].fd= stderr_fd.fd();
+  fds[1].events= POLLRDNORM;
   fds[1].revents= 0;
 
   int active_fd;
-  if ((active_fd= poll(fds, 2, 400)) == -1)
+  if ((active_fd= poll(fds, 2, 0)) == -1)
   {
     int error;
     switch ((error= errno))
@@ -295,6 +348,8 @@ bool Application::slurp()
       fatal_message(strerror(error));
       break;
     }
+
+    return false;
   }
 
   if (active_fd == 0)
@@ -303,67 +358,19 @@ bool Application::slurp()
   }
 
   bool data_was_read= false;
-  if (fds[0].revents & POLLIN)
+  if (fds[0].revents & POLLRDNORM)
   {
-    ssize_t read_length;
-    char buffer[1024]= { 0 };
-    while ((read_length= ::read(stdout_fd.fd()[0], buffer, sizeof(buffer))))
+    if (stdout_fd.read(_stdout_buffer) == true)
     {
-      if (read_length == -1)
-      {
-        switch(errno)
-        {
-        case EAGAIN:
-          continue;
-
-        default:
-          Error << strerror(errno);
-          break;
-        }
-
-        break;
-      }
-
       data_was_read= true;
-      _stdout_buffer.reserve(read_length +1);
-      for (size_t x= 0; x < read_length; x++)
-      {
-        _stdout_buffer.push_back(buffer[x]);
-      }
-      // @todo Suck up all output code here
     }
   }
 
-  if (fds[1].revents & POLLIN)
+  if (fds[1].revents & POLLRDNORM)
   {
-    stderr_fd.nonblock();
-
-    ssize_t read_length;
-    char buffer[1024]= { 0 };
-    while ((read_length= ::read(stderr_fd.fd()[0], buffer, sizeof(buffer))))
+    if (stderr_fd.read(_stderr_buffer) == true)
     {
-      if (read_length == -1)
-      {
-        switch(errno)
-        {
-        case EAGAIN:
-          continue;
-
-        default:
-          Error << strerror(errno);
-          break;
-        }
-
-        break;
-      }
-
       data_was_read= true;
-      _stderr_buffer.reserve(read_length +1);
-      for (size_t x= 0; x < read_length; x++)
-      {
-        _stderr_buffer.push_back(buffer[x]);
-      }
-      // @todo Suck up all errput code here
     }
   }
 
@@ -391,8 +398,12 @@ Application::error_t Application::wait(bool nohang)
         exit_code= Application::SUCCESS;
         break;
 
+      case EINTR:
+        break;
+
       default:
         Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
+        break;
       }
     }
     else if (waited_pid == 0)
@@ -408,6 +419,8 @@ Application::error_t Application::wait(bool nohang)
       exit_code= int_to_error_t(exited_successfully(status));
     }
   }
+
+  slurp();
 
 #if 0
   if (exit_code == Application::INVALID)
@@ -436,24 +449,77 @@ void Application::add_option(const std::string& name, const std::string& value)
   _options.push_back(std::make_pair(name, value));
 }
 
-Application::Pipe::Pipe()
+Application::Pipe::Pipe(int arg) :
+  _std_fd(arg)
 {
-  _fd[0]= -1;
-  _fd[1]= -1;
-  _open[0]= false;
-  _open[1]= false;
+  _pipe_fd[READ]= -1;
+  _pipe_fd[WRITE]= -1;
+  _open[READ]= false;
+  _open[WRITE]= false;
+}
+
+int Application::Pipe::Pipe::fd()
+{
+  if (_std_fd == STDOUT_FILENO)
+  {
+    return _pipe_fd[READ];
+  }
+  else if (_std_fd == STDERR_FILENO)
+  {
+    return _pipe_fd[READ];
+  }
+
+  return _pipe_fd[WRITE]; // STDIN_FILENO
+}
+
+
+bool Application::Pipe::read(libtest::vchar_t& arg)
+{
+  fatal_assert(_std_fd == STDOUT_FILENO or _std_fd == STDERR_FILENO);
+
+  bool data_was_read= false;
+
+  ssize_t read_length;
+  char buffer[1024]= { 0 };
+  while ((read_length= ::read(_pipe_fd[READ], buffer, sizeof(buffer))))
+  {
+    if (read_length == -1)
+    {
+      switch(errno)
+      {
+      case EAGAIN:
+        break;
+
+      default:
+        Error << strerror(errno);
+        break;
+      }
+
+      break;
+    }
+
+    data_was_read= true;
+    arg.reserve(read_length +1);
+    for (size_t x= 0; x < read_length; x++)
+    {
+      arg.push_back(buffer[x]);
+    }
+    // @todo Suck up all errput code here
+  }
+
+  return data_was_read;
 }
 
 void Application::Pipe::nonblock()
 {
   int ret;
-  if ((ret= fcntl(_fd[0], F_GETFL, 0)) == -1)
+  if ((ret= fcntl(_pipe_fd[READ], F_GETFL, 0)) == -1)
   {
     Error << "fcntl(F_GETFL) " << strerror(errno);
     throw strerror(errno);
   }
 
-  if ((ret= fcntl(_fd[0], F_SETFL, ret | O_NONBLOCK)) == -1)
+  if ((ret= fcntl(_pipe_fd[READ], F_SETFL, ret | O_NONBLOCK)) == -1)
   {
     Error << "fcntl(F_SETFL) " << strerror(errno);
     throw strerror(errno);
@@ -465,16 +531,37 @@ void Application::Pipe::reset()
   close(READ);
   close(WRITE);
 
-  if (pipe(_fd) == -1)
+#if _GNU_SOURCE
+  if (pipe2(_pipe_fd, O_NONBLOCK) == -1)
+#else
+  if (pipe(_pipe_fd) == -1)
+#endif
   {
-    throw fatal_message(strerror(errno));
+    fatal_message(strerror(errno));
   }
   _open[0]= true;
   _open[1]= true;
 
-  if (0)
+  if (true)
   {
     nonblock();
+    cloexec();
+  }
+}
+
+void Application::Pipe::cloexec()
+{
+  int ret;
+  if ((ret= fcntl(_pipe_fd[WRITE], F_GETFD, 0)) == -1)
+  {
+    Error << "fcntl(F_GETFD) " << strerror(errno);
+    throw strerror(errno);
+  }
+
+  if ((ret= fcntl(_pipe_fd[WRITE], F_SETFD, ret | FD_CLOEXEC)) == -1)
+  {
+    Error << "fcntl(F_SETFD) " << strerror(errno);
+    throw strerror(errno);
   }
 }
 
@@ -484,21 +571,21 @@ Application::Pipe::~Pipe()
   close(WRITE);
 }
 
-void Application::Pipe::dup_for_spawn(const close_t& arg, posix_spawn_file_actions_t& file_actions, const int newfildes)
+void Application::Pipe::dup_for_spawn(const close_t& arg, posix_spawn_file_actions_t& file_actions)
 {
   int type= int(arg);
 
   int ret;
-  if ((ret= posix_spawn_file_actions_adddup2(&file_actions, _fd[type], newfildes )) < 0)
+  if ((ret= posix_spawn_file_actions_adddup2(&file_actions, _pipe_fd[type], _std_fd )) < 0)
   {
     Error << "posix_spawn_file_actions_adddup2(" << strerror(ret) << ")";
-    throw fatal_message(strerror(ret));
+    fatal_message(strerror(ret));
   }
 
-  if ((ret= posix_spawn_file_actions_addclose(&file_actions, _fd[type])) < 0)
+  if ((ret= posix_spawn_file_actions_addclose(&file_actions, _pipe_fd[type])) < 0)
   {
     Error << "posix_spawn_file_actions_adddup2(" << strerror(ret) << ")";
-    throw fatal_message(strerror(ret));
+    fatal_message(strerror(ret));
   }
 }
 
@@ -509,23 +596,26 @@ void Application::Pipe::close(const close_t& arg)
   if (_open[type])
   {
     int ret;
-    if (::close(_fd[type]) == -1)
+    if (::close(_pipe_fd[type]) == -1)
     {
       Error << "close(" << strerror(errno) << ")";
     }
     _open[type]= false;
-    _fd[type]= -1;
+    _pipe_fd[type]= -1;
   }
 }
 
 void Application::create_argv(const char *args[])
 {
-  _argc= 2 +_use_libtool ? 2 : 0; // +1 for the command, +2 for libtool/mode=execute, +1 for the NULL
+  delete_argv();
+  fatal_assert(_argc == 0);
 
   if (_use_libtool)
   {
     _argc+= 2; // +2 for libtool --mode=execute
   }
+
+  _argc+= 1; // For the command
 
   /*
     valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
@@ -556,7 +646,8 @@ void Application::create_argv(const char *args[])
     }
   }
 
-  delete_argv();
+  _argc+= 1; // for the NULL
+
   built_argv= new char * [_argc];
 
   size_t x= 0;
@@ -603,7 +694,8 @@ void Application::create_argv(const char *args[])
       built_argv[x++]= strdup(*ptr);
     }
   }
-  built_argv[_argc -1]= NULL;
+  built_argv[x++]= NULL;
+  fatal_assert(x == _argc);
 }
 
 std::string Application::print()
