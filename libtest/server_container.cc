@@ -82,7 +82,7 @@ bool server_startup_st::shutdown(uint32_t number_of_host)
   {
     Server* tmp= servers[number_of_host];
 
-    if (tmp and tmp->has_pid() and not tmp->kill(tmp->pid()))
+    if (tmp and tmp->has_pid() and tmp->kill() == false)
     { }
     else
     {
@@ -102,15 +102,33 @@ void server_startup_st::shutdown_and_remove()
   servers.clear();
 }
 
-void server_startup_st::shutdown()
+bool server_startup_st::check() const
 {
-  for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  bool success= true;
+  for (std::vector<Server *>::const_iterator iter= servers.begin(); iter != servers.end(); iter++)
   {
-    if ((*iter)->has_pid() and not (*iter)->kill((*iter)->pid()))
+    if ((*iter)->check()  == false)
     {
-      Error << "Unable to kill:" <<  *(*iter);
+      success= false;
     }
   }
+
+  return success;
+}
+
+bool server_startup_st::shutdown()
+{
+  bool success= true;
+  for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
+  {
+    if ((*iter)->has_pid() and (*iter)->kill() == false)
+    {
+      Error << "Unable to kill:" <<  *(*iter);
+      success= false;
+    }
+  }
+
+  return success;
 }
 
 void server_startup_st::restart()
@@ -126,8 +144,9 @@ server_startup_st::server_startup_st() :
   _magic(MAGIC_MEMORY),
   _socket(false),
   _sasl(false),
-  _count(5),
-  udp(0)
+  _count(0),
+  udp(0),
+  _servers_to_run(5)
 { }
 
 server_startup_st::~server_startup_st()
@@ -140,29 +159,11 @@ bool server_startup_st::validate()
   return _magic == MAGIC_MEMORY;
 }
 
-
-bool server_startup_st::is_debug() const
+bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message)
 {
-  return bool(getenv("LIBTEST_MANUAL_GDB"));
-}
-
-bool server_startup_st::is_valgrind() const
-{
-  return bool(getenv("LIBTEST_MANUAL_VALGRIND"));
-}
-
-bool server_startup_st::is_helgrind() const
-{
-  return bool(getenv("LIBTEST_MANUAL_HELGRIND"));
-}
-
-
-bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[])
-{
-  Outn();
   if (try_port <= 0)
   {
-    libtest::fatal(LIBYATL_DEFAULT_PARAM, "was passed the invalid port number %d", int(try_port));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "was passed the invalid port number %d", int(try_port));
   }
 
   libtest::Server *server= NULL;
@@ -239,7 +240,7 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
 
   server->build(argc, argv);
 
-  if (construct.is_debug())
+  if (gdb_is_caller() and false)
   {
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
@@ -256,12 +257,15 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
   else
   {
-    Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+    if (opt_startup_message)
+    {
+      Outn();
+      Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+      Outn();
+    }
   }
 
   construct.push_server(server);
-
-  Outn();
 
   return true;
 }
@@ -337,7 +341,7 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
 
   server->build(argc, argv);
 
-  if (is_debug())
+  if (gdb_is_caller() and false)
   {
     Out << "Pausing for startup, hit return when ready.";
     std::string gdb_command= server->base_command();
@@ -347,7 +351,7 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
 #endif
     getchar();
   }
-  else if (not server->start())
+  else if (server->start() == false)
   {
     Error << "Failed to start " << *server;
     delete server;

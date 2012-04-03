@@ -120,7 +120,13 @@ test_return_t Framework::Item::startup(void* arg)
 
 libtest::Runner *Framework::runner()
 {
-  return _runner ? _runner : &defualt_runners;
+  if (_runner == NULL)
+  {
+    _runner= &defualt_runners;
+  }
+  _runner->set_servers(_servers);
+
+  return _runner;
 }
 
 void* Framework::create(test_return_t& arg)

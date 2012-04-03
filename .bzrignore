@@ -144,3 +144,7 @@ unittests/unittests
 tests/libmemcached-1.0/testsocket
 example/t/memcached_light
 libtest/abort
+memcached/.git
+memcached/.gitignore
+memcached/memcached
+memcached/memcached.spec

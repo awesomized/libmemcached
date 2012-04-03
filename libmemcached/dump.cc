@@ -77,7 +77,7 @@ static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *call
       }
       else
       {
-        return memcached_set_error(*instance, vdo_rc, MEMCACHED_AT);
+        return vdo_rc;
       }
     }
 
@@ -128,7 +128,7 @@ static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *call
       else
       {
         // IO error of some sort must have occurred
-        return memcached_set_error(*instance, response_rc, MEMCACHED_AT);
+        return response_rc;
       }
     }
   }

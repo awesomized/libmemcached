@@ -24,6 +24,9 @@
 
 #include <unistd.h>
 #include <string>
+#include <signal.h>
+
+#include <libtest/dream.h>
 
 namespace libtest {
 
@@ -57,13 +60,31 @@ public:
       }
 
       this_wait= retry * retry / 3 + 1;
-      sleep(this_wait);
-#ifdef WIN32
-      sleep(this_wait);
-#else
-      struct timespec global_sleep_value= { this_wait, 0 };
-      nanosleep(&global_sleep_value, NULL);
-#endif
+      libtest::dream(this_wait, 0);
+    }
+  }
+
+  Wait(const pid_t &_pid_arg, uint32_t timeout= 6) :
+    _successful(false)
+  {
+    uint32_t waited;
+    uint32_t this_wait;
+    uint32_t retry;
+
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
+    {
+      if (kill(_pid_arg, 0) == 0)
+      {
+        _successful= true;
+        break;
+      }
+      else if (waited >= timeout)
+      {
+        break;
+      }
+
+      this_wait= retry * retry / 3 + 1;
+      libtest::dream(this_wait, 0);
     }
   }
 

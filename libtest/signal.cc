@@ -75,7 +75,7 @@ void SignalThread::post()
 void SignalThread::test()
 {
   assert(magic_memory == MAGIC_MEMORY);
-  if (not getenv("LIBTEST_IN_GDB"))
+  if (bool(getenv("LIBTEST_IN_GDB")) == false)
   {
     assert(sigismember(&set, SIGABRT));
     assert(sigismember(&set, SIGQUIT));
@@ -86,7 +86,7 @@ void SignalThread::test()
 
 SignalThread::~SignalThread()
 {
-  if (not is_shutdown())
+  if (is_shutdown() == false)
   {
     set_shutdown(SHUTDOWN_GRACEFUL);
   }
@@ -143,6 +143,10 @@ static void *sig_thread(void *arg)
       }
       break;
 
+    case 0:
+      Error << "Inside of gdb";
+      break;
+
     default:
       Error << "Signal handling thread got unexpected signal " <<  strsignal(sig);
       break;
@@ -160,7 +164,7 @@ SignalThread::SignalThread() :
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
   sigemptyset(&set);
-  if (not getenv("LIBTEST_IN_GDB"))
+  if (bool(getenv("LIBTEST_IN_GDB")) == false)
   {
     sigaddset(&set, SIGABRT);
     sigaddset(&set, SIGQUIT);

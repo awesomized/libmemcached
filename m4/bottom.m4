@@ -23,7 +23,19 @@ AH_BOTTOM([
 #if !defined(HAVE_ULONG) && !defined(__USE_MISC)
 # define HAVE_ULONG 1
 typedef unsigned long int ulong;
+#endif 
+ 
+ 
+#if defined(RMEMCACHED_PACKAGE) 
+#undef VERSION 
+#define VERSION VERSION_NUMBER
 #endif
+
+#if defined(RMEMCACHED_PACKAGE)
+#undef PACKAGE
+#define PACKAGE RMEMCACHED_PACKAGE
+#endif
+
 
 ])
 

@@ -63,10 +63,10 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
-  for (uint32_t x= 0; x < servers.count(); x++)
+  for (uint32_t x= 0; x < servers.servers_to_run(); x++)
   {
     const char *argv[1]= { "memcached" };
-    if (not servers.start_socket_server("memcached", libtest::get_free_port(), 1, argv))
+    if (servers.start_socket_server("memcached", libtest::get_free_port(), 1, argv) == false)
     {
       fatal_message("Could not launch memcached");
     }
