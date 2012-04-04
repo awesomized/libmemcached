@@ -53,6 +53,7 @@ using namespace libtest;
 #include <tests/pool.h>
 
 #include <pthread.h>
+#include <poll.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -459,27 +460,9 @@ static void *worker_thread(void *ctx)
   return NULL;
 }
 
-static void sig_handler(int sig)
-{
-  switch (sig)
-  {
-  case SIGPROF:
-    set_running(false);
-    break;
-
-    break;
-
-  default:
-    Error << __func__ << " caught unknown signal";
-    break;
-  }
-}
-
 #define NUM_THREADS 20
 test_return_t regression_bug_962815(memcached_st *memc)
 {
-  test_skip_valgrind();
-
   pthread_t pid[NUM_THREADS];
 
   test_false(running());
@@ -493,22 +476,24 @@ test_return_t regression_bug_962815(memcached_st *memc)
 
   set_running(true);
 
-  struct itimerval new_value;
-  struct itimerval old_value;
-  memset(&new_value, 0, sizeof(itimerval));
-  memset(&old_value, 0, sizeof(itimerval));
-
-  new_value.it_interval.tv_sec=0;
-  new_value.it_interval.tv_usec=10*1000;
-  new_value.it_value.tv_sec=0;
-  new_value.it_value.tv_usec=10*1000;
-
-  test_true(signal(SIGPROF, sig_handler) != SIG_ERR);
-  test_compare(0, setitimer(ITIMER_PROF, &new_value, &old_value));
-
   for (size_t x=0; x < NUM_THREADS; x++)
   {
     test_compare(0, pthread_create(&pid[x], NULL, worker_thread, (void*)pool));
+  }
+
+  {
+    pollfd fds[1];
+    memset(fds, 0, sizeof(pollfd));
+    fds[0].fd= -1; //STDIN_FILENO;
+    fds[0].events= POLLIN;
+    fds[0].revents= 0;
+
+    int active_fd;
+    if ((active_fd= poll(fds, 1, 5000)) == -1)
+    {
+      Error << "poll() failed with:" << strerror(errno);
+    }
+    set_running(false);
   }
 
   for (size_t x=0; x < NUM_THREADS; x++)
@@ -525,8 +510,6 @@ test_return_t regression_bug_962815(memcached_st *memc)
   {
     memcached_free(master);
   }
-  test_true(signal(SIGPROF, SIG_DFL) != SIG_ERR);
-  test_compare(0, setitimer(ITIMER_PROF, &old_value, NULL));
 
   return TEST_SUCCESS;
 }
