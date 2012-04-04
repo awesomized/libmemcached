@@ -121,8 +121,8 @@ gdb-failure: tests/failure
 valgrind-cycle: tests/cycle
 	$(VALGRIND_COMMAND) tests/cycle
 
-valgrind-mem: tests/testapp
-	@$(VALGRIND_COMMAND) tests/testapp
+valgrind-mem: tests/libmemcached-1.0/testapp
+	@$(VALGRIND_COMMAND) tests/libmemcached-1.0/testapp
 
 valgrind-failure: tests/failure
 	@$(VALGRIND_COMMAND) tests/failure
@@ -145,8 +145,8 @@ valgrind-hashplus: tests/hash_plus
 helgrind-cycle: tests/cycle
 	@$(HELGRIND_COMMAND) tests/cycle
 
-helgrind-mem: tests/testapp
-	@$(HELGRIND_COMMAND) tests/testapp
+helgrind-mem: tests/libmemcached-1.0/testapp
+	@$(HELGRIND_COMMAND) tests/libmemcached-1.0/testapp
 
 helgrind-atom: tests/atomsmasher
 	@$(HELGRIND_COMMAND) tests/atomsmasher

@@ -61,8 +61,8 @@ memcached_st* memcached_pool_pop(memcached_pool_st* pool,
                                  bool block,
                                  memcached_return_t* rc);
 LIBMEMCACHED_API
-memcached_return_t memcached_pool_push(memcached_pool_st* pool,
-                                       memcached_st* mmc);
+  memcached_return_t memcached_pool_push(memcached_pool_st* pool,
+                                         memcached_st* mmc);
 LIBMEMCACHED_API
   memcached_return_t memcached_pool_release(memcached_pool_st* pool, memcached_st* mmc);
 
