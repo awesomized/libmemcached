@@ -47,9 +47,12 @@ using namespace libtest;
 
 #include <semaphore.h>
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/util.h>
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcachedutil-1.0/util.h>
+#include <libmemcached/is.h>
 #include <tests/pool.h>
+
+#include <pthread.h>
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -316,6 +319,214 @@ test_return_t connection_pool3_test(memcached_st *memc)
   test_true(pool_memc == pop_memc);
 
   test_true(memcached_pool_destroy(pool) == memc);
+
+  return TEST_SUCCESS;
+}
+
+static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
+{
+  /*
+    If no options are given, copy over at least the binary flag.
+  */
+  char options_buffer[1024]= { 0 };
+  if (options == NULL)
+  {
+    if (memcached_is_binary(original_memc))
+    {
+      snprintf(options_buffer, sizeof(options_buffer), "--BINARY");
+    }
+  }
+
+  /*
+   * I only want to hit _one_ server so I know the number of requests I'm
+   * sending in the pipeline.
+   */
+  memcached_server_instance_st instance= memcached_server_instance_by_position(original_memc, 0);
+
+  char server_string[1024];
+  int server_string_length;
+  if (instance->type == MEMCACHED_CONNECTION_UNIX_SOCKET)
+  {
+    if (options)
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--SOCKET=\"%s\" %s",
+                                     memcached_server_name(instance), options);
+    }
+    else
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--SOCKET=\"%s\"",
+                                     memcached_server_name(instance));
+    }
+  }
+  else
+  {
+    if (options)
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d %s",
+                                     memcached_server_name(instance), int(memcached_server_port(instance)),
+                                     options);
+    }
+    else
+    {
+      server_string_length= snprintf(server_string, sizeof(server_string), "--server=%s:%d",
+                                     memcached_server_name(instance), int(memcached_server_port(instance)));
+    }
+  }
+
+  if (server_string_length <= 0)
+  {
+    return NULL;
+  }
+
+  char errror_buffer[1024];
+  if (memcached_failed(libmemcached_check_configuration(server_string, server_string_length, errror_buffer, sizeof(errror_buffer))))
+  {
+    Error << "Failed to parse (" << server_string << ") " << errror_buffer;
+    return NULL;
+  }
+
+  return memcached(server_string, server_string_length);
+}
+
+pthread_mutex_t mutex= PTHREAD_MUTEX_INITIALIZER;
+static bool _running= false;
+
+static void set_running(const bool arg)
+{
+  int error;
+  if ((error= pthread_mutex_lock(&mutex)) != 0)
+  {
+    fatal_message(strerror(error));
+  }
+
+  _running= arg;
+
+  if ((error= pthread_mutex_unlock(&mutex)) != 0)
+  {
+    fatal_message(strerror(error));
+  }
+}
+
+static bool running()
+{
+  int error;
+  bool ret;
+  
+  if ((error= pthread_mutex_lock(&mutex)) != 0)
+  {
+    fatal_message(strerror(error));
+  }
+
+  ret= _running;
+
+  if ((error= pthread_mutex_unlock(&mutex)) != 0)
+  {
+    fatal_message(strerror(error));
+  }
+
+  return ret;
+}
+
+static void *worker_thread(void *ctx)
+{
+  memcached_pool_st *pool= (memcached_pool_st *)ctx;
+
+  while (running())
+  {
+    memcached_return_t rc;
+    memcached_st *mc= memcached_pool_pop(pool, true, &rc);
+
+    if (mc == NULL)
+    {
+      Error << "failed to fetch a connection from the pool" << memcached_strerror(NULL, rc);
+      dream(1, 0);
+      continue;
+    }
+
+    rc= memcached_set(mc, "test:kv", 7, "value", 5, 600, 0);
+    if (memcached_failed(rc))
+    {
+      Out << "failed memcached_set()";
+    }
+
+    rc= memcached_pool_push(pool, mc);
+    if (memcached_failed(rc))
+    {
+      Error << "failed to release a connection to the pool" << memcached_strerror(NULL, rc);
+    }
+  }
+
+  return NULL;
+}
+
+static void sig_handler(int sig)
+{
+  switch (sig)
+  {
+  case SIGPROF:
+    set_running(false);
+    break;
+
+    break;
+
+  default:
+    Error << __func__ << " caught unknown signal";
+    break;
+  }
+}
+
+#define NUM_THREADS 20
+test_return_t regression_bug_962815(memcached_st *memc)
+{
+  test_skip_valgrind();
+
+  pthread_t pid[NUM_THREADS];
+
+  test_false(running());
+
+  memcached_st *master = create_single_instance_memcached(memc, 0);
+  test_true(master);
+
+  memcached_pool_st *pool= memcached_pool_create(master, 5, 10);
+
+  test_true(pool);
+
+  set_running(true);
+
+  struct itimerval new_value;
+  struct itimerval old_value;
+  memset(&new_value, 0, sizeof(itimerval));
+  memset(&old_value, 0, sizeof(itimerval));
+
+  new_value.it_interval.tv_sec=0;
+  new_value.it_interval.tv_usec=10*1000;
+  new_value.it_value.tv_sec=0;
+  new_value.it_value.tv_usec=10*1000;
+
+  test_true(signal(SIGPROF, sig_handler) != SIG_ERR);
+  test_compare(0, setitimer(ITIMER_PROF, &new_value, &old_value));
+
+  for (size_t x=0; x < NUM_THREADS; x++)
+  {
+    test_compare(0, pthread_create(&pid[x], NULL, worker_thread, (void*)pool));
+  }
+
+  for (size_t x=0; x < NUM_THREADS; x++)
+  {
+    test_compare(0, pthread_join(pid[x], NULL));
+  }
+
+  if (pool)
+  {
+    memcached_pool_destroy(pool);
+  }
+
+  if (master)
+  {
+    memcached_free(master);
+  }
+  test_true(signal(SIGPROF, SIG_DFL) != SIG_ERR);
+  test_compare(0, setitimer(ITIMER_PROF, &old_value, NULL));
 
   return TEST_SUCCESS;
 }

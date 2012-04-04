@@ -397,6 +397,11 @@ test_st memcached_server_add_tests[] ={
   {0, 0, (test_callback_fn*)0}
 };
 
+test_st pool_TESTS[] ={
+  {"lp:962815", true, (test_callback_fn*)regression_bug_962815 },
+  {0, 0, (test_callback_fn*)0}
+};
+
 test_st namespace_tests[] ={
   {"basic tests", true, (test_callback_fn*)selection_of_namespace_tests },
   {"increment", true, (test_callback_fn*)memcached_increment_namespace },
@@ -474,6 +479,7 @@ collection_st collection[] ={
   {"touch", 0, 0, touch_tests},
   {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
   {"memcached_stat()", 0, 0, memcached_stat_tests},
+  {"memcached_pool_create()", 0, 0, pool_TESTS},
   {"kill()", 0, 0, kill_TESTS},
   {0, 0, 0, 0}
 };
