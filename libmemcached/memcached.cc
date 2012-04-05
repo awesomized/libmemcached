@@ -354,6 +354,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
   new_clone->_namespace= memcached_array_clone(new_clone, source->_namespace);
   new_clone->configure.filename= memcached_array_clone(new_clone, source->_namespace);
+  new_clone->configure.version= source->configure.version;
 
   if (LIBMEMCACHED_WITH_SASL_SUPPORT and source->sasl.callbacks)
   {

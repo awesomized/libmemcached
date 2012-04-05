@@ -41,3 +41,4 @@ test_return_t memcached_pool_test(memcached_st *);
 test_return_t connection_pool_test(memcached_st *);
 test_return_t connection_pool2_test(memcached_st *);
 test_return_t connection_pool3_test(memcached_st *);
+test_return_t regression_bug_962815(memcached_st *);

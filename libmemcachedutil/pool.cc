@@ -241,7 +241,8 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
 {
   rc= MEMCACHED_SUCCESS;
 
-  if (pthread_mutex_lock(&mutex))
+  int error;
+  if ((error= pthread_mutex_lock(&mutex)) != 0)
   {
     rc= MEMCACHED_IN_PROGRESS;
     return NULL;
@@ -258,7 +259,7 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
     {
       if (relative_time.tv_sec == 0 and relative_time.tv_nsec == 0)
       {
-        pthread_mutex_unlock(&mutex);
+        error= pthread_mutex_unlock(&mutex);
         rc= MEMCACHED_NOTFOUND;
 
         return NULL;
@@ -271,7 +272,10 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
       int thread_ret;
       if ((thread_ret= pthread_cond_timedwait(&cond, &mutex, &time_to_wait)) != 0)
       {
-        pthread_mutex_unlock(&mutex);
+        int unlock_error;
+        if ((unlock_error= pthread_mutex_unlock(&mutex)) != 0)
+        {
+        }
 
         if (thread_ret == ETIMEDOUT)
         {
@@ -288,12 +292,18 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
     }
     else if (grow_pool(this) == false)
     {
-      (void)pthread_mutex_unlock(&mutex);
+      int unlock_error;
+      if ((unlock_error= pthread_mutex_unlock(&mutex)) != 0)
+      {
+      }
+
       return NULL;
     }
   } while (ret == NULL);
 
-  pthread_mutex_unlock(&mutex);
+  if ((error= pthread_mutex_unlock(&mutex)) != 0)
+  {
+  }
 
   return ret;
 }
@@ -307,7 +317,8 @@ bool memcached_pool_st::release(memcached_st *released, memcached_return_t& rc)
     return false;
   }
 
-  if (pthread_mutex_lock(&mutex))
+  int error;
+  if ((error= pthread_mutex_lock(&mutex)))
   {
     rc= MEMCACHED_IN_PROGRESS;
     return false;
@@ -331,10 +342,14 @@ bool memcached_pool_st::release(memcached_st *released, memcached_return_t& rc)
   if (firstfree == 0 and current_size == size)
   {
     /* we might have people waiting for a connection.. wake them up :-) */
-    pthread_cond_broadcast(&cond);
+    if ((error= pthread_cond_broadcast(&cond)) != 0)
+    {
+    }
   }
 
-  (void)pthread_mutex_unlock(&mutex);
+  if ((error= pthread_mutex_unlock(&mutex)) != 0)
+  {
+  }
 
   return true;
 }
@@ -417,7 +432,8 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (pthread_mutex_lock(&pool->mutex))
+  int error;
+  if ((error= pthread_mutex_lock(&pool->mutex)))
   {
     return MEMCACHED_IN_PROGRESS;
   }
@@ -426,7 +442,9 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
   memcached_return_t rc= memcached_behavior_set(pool->master, flag, data);
   if (memcached_failed(rc))
   {
-    (void)pthread_mutex_unlock(&pool->mutex);
+    if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
+    {
+    }
     return rc;
   }
 
@@ -455,7 +473,9 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
     }
   }
 
-  (void)pthread_mutex_unlock(&pool->mutex);
+  if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
+  {
+  }
 
   return rc;
 }
@@ -469,14 +489,17 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool,
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (pthread_mutex_lock(&pool->mutex))
+  int error;
+  if ((error= pthread_mutex_lock(&pool->mutex)))
   {
     return MEMCACHED_IN_PROGRESS;
   }
 
   *value= memcached_behavior_get(pool->master, flag);
 
-  (void)pthread_mutex_unlock(&pool->mutex);
+  if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
+  {
+  }
 
   return MEMCACHED_SUCCESS;
 }
