@@ -1,3 +1,8 @@
+1.0.6
+* Fixes for gcc 4.7.
+* Fix for restart issue that happens under testing.
+* Fix for lp:962815.
+
 1.0.5 Tue Mar 13 22:56:47 PDT 2012
 * Fixes for OSX.
 * Version is now parsed directly in the parser, which makes buffered operations now work with it..
