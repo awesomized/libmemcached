@@ -7,7 +7,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.5],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.0.6],[http://libmemcached.org/])
 
 AC_CONFIG_AUX_DIR(config)
 
@@ -33,7 +33,7 @@ AC_CHECK_PROGS([LEX], ['flex'], [:])
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=9:0:0
+MEMCACHED_LIBRARY_VERSION=10:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
