@@ -172,7 +172,7 @@ AC_C_RESTRICT
 
 AX_CXX_GCC_ABI_DEMANGLE
 
-AX_SASL_OPTION
+AX_SASL_CHECK
 
 dnl
 dnl The sasl functions should only be visible if we build with sasl support
