@@ -190,6 +190,7 @@ bool Server::start()
   }
 
   size_t repeat= 5;
+  _app.slurp();
   while (--repeat)
   {
     if (pid_file().empty() == false)
@@ -203,15 +204,13 @@ bool Server::start()
           continue;
         }
 
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                             "Unable to open pidfile for: %s",
-                             _running.c_str());
         char buf[PATH_MAX];
         getcwd(buf, sizeof(buf));
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                             "Unable to open pidfile in %s for: %s",
+                             "Unable to open pidfile in %s for: %s stderr:%s",
                              buf,
-                             _running.c_str());
+                             _running.c_str(),
+                             _app.stderr_c_str());
       }
     }
   }
@@ -244,20 +243,26 @@ bool Server::start()
     // If we happen to have a pid file, lets try to kill it
     if ((pid_file().empty() == false) and (access(pid_file().c_str(), R_OK) == 0))
     {
+      _app.slurp();
       if (kill_file(pid_file()) == false)
       {
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Failed to kill off server after startup occurred, when pinging failed: %s", pid_file().c_str());
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                             "Failed to kill off server after startup occurred, when pinging failed: %s stderr:%s",
+                             pid_file().c_str(),
+                             _app.stderr_c_str());
       }
 
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM, 
-                           "Failed to ping(), waited: %u server started, having pid_file. exec: %s error:%s",
-                           this_wait, _running.c_str(), _app.stderr_c_str()); 
+                           "Failed to ping(), waited: %u server started, having pid_file. exec: %s stderr:%s",
+                           this_wait, _running.c_str(), 
+                           _app.stderr_c_str());
     }
     else
     {
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Failed to ping() server started. exec: %s",
-                           _running.c_str());
+                           "Failed to ping() server started. exec: %s stderr:%s",
+                           _running.c_str(),
+                           _app.stderr_c_str());
     }
     _running.clear();
     return false;
