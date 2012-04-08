@@ -244,8 +244,9 @@ Application::error_t Application::run(const char *args[])
   stdout_fd.close(Application::Pipe::WRITE);
   stderr_fd.close(Application::Pipe::WRITE);
 
-  if (spawn_ret)
+  if (spawn_ret != 0)
   {
+    Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
     _pid= -1;
     return Application::INVALID;
   }

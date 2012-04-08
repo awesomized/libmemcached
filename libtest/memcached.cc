@@ -134,9 +134,10 @@ public:
       ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
     }
 
-    if (memcached_failed(rc) or not ret)
+    if (memcached_failed(rc) or ret == false)
     {
       Error << "libmemcached_util_ping(" << hostname() << ", " << port() << ") error: " << memcached_strerror(NULL, rc);
+      abort();
     }
 
     return ret;

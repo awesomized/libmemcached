@@ -182,15 +182,24 @@ bool Server::start()
     dream(5, 50000);
   }
 
-  if (pid_file().empty() == false)
+  size_t repeat= 5;
+  while (--repeat)
   {
-    Wait wait(pid_file(), 8);
-
-    if (wait.successful() == false)
+    if (pid_file().empty() == false)
     {
-      throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Unable to open pidfile for: %s",
-                           _running.c_str());
+      Wait wait(pid_file(), 8);
+
+      if (wait.successful() == false)
+      {
+        if (_app.check())
+        {
+          continue;
+        }
+
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                             "Unable to open pidfile for: %s",
+                             _running.c_str());
+      }
     }
   }
 
@@ -220,19 +229,22 @@ bool Server::start()
   if (pinged == false)
   {
     // If we happen to have a pid file, lets try to kill it
-    if (pid_file().empty() == false)
+    if ((pid_file().empty() == false) and (access(pid_file().c_str(), R_OK) == 0))
     {
       if (kill_file(pid_file()) == false)
       {
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Failed to kill off server after startup occurred, when pinging failed: %s", pid_file().c_str());
       }
-      Error << "Failed to ping(), waited:" << this_wait 
-        << " server started, having pid_file. exec:" << _running 
-        << " error:" << _app.stderr_result();
+
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, 
+                           "Failed to ping(), waited: %u server started, having pid_file. exec: %s error:%s",
+                           this_wait, _running.c_str(), _app.stderr_c_str()); 
     }
     else
     {
-      Error << "Failed to ping() server started. exec:" << _running;
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                           "Failed to ping() server started. exec: %s",
+                           _running.c_str());
     }
     _running.clear();
     return false;

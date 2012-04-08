@@ -90,6 +90,11 @@ public:
     return _stderr_buffer;
   }
 
+  const char* stderr_c_str() const
+  {
+    return &_stderr_buffer[0];
+  }
+
   size_t stderr_result_length() const
   {
     return _stderr_buffer.size();
