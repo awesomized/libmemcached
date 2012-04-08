@@ -90,6 +90,11 @@ public:
     return _stderr_buffer;
   }
 
+  const char* stderr_c_str() const
+  {
+    return &_stderr_buffer[0];
+  }
+
   size_t stderr_result_length() const
   {
     return _stderr_buffer.size();
@@ -112,6 +117,11 @@ public:
     _use_gdb= arg;
   }
 
+  void use_ptrcheck(bool arg= true)
+  {
+    _use_ptrcheck= arg;
+  }
+
   std::string arguments();
 
   std::string gdb_filename()
@@ -132,6 +142,7 @@ private:
   const bool _use_libtool;
   bool _use_valgrind;
   bool _use_gdb;
+  bool _use_ptrcheck;
   size_t _argc;
   std::string _exectuble_name;
   std::string _exectuble;

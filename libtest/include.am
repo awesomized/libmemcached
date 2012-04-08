@@ -26,6 +26,7 @@ VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
+PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
 
 export LIBTOOL_COMMAND
 export VALGRIND_COMMAND

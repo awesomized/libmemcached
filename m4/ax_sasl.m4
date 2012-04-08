@@ -28,9 +28,9 @@ AC_DEFUN([AX_SASL_OPTION],[
       [ac_enable_sasl="$enableval"],
       [ac_enable_sasl="yes"])
 
-    AS_IF([test "x$ac_enable_sasl" = "xyes"], [
-      ac_enable_sasl="no"
-      ])
+    AS_IF([test "x$ac_enable_sasl" = "xyes"],
+      [ac_enable_sasl="yes"],
+      [ac_enable_sasl="no"])
 
     AS_IF([test "x$ac_enable_sasl" = "xyes"], [
       AC_DEFINE([HAVE_LIBSASL], [ 1 ], [Have libsasl2])
@@ -50,4 +50,6 @@ AC_DEFUN([AX_SASL_CHECK],[
       ], [
       ax_cv_sasl=no 
       ])
+
+    AM_CONDITIONAL(HAVE_SASL, test "x${ac_enable_sasl}" = "xyes")
     ])

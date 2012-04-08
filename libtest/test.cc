@@ -237,6 +237,11 @@ int main(int argc, char *argv[])
         }
       }
 
+      if (collection_to_run.compare("none") == 0)
+      {
+        return EXIT_SUCCESS;
+      }
+
       if (collection_to_run.empty() == false)
       {
         Out << "Only testing " <<  collection_to_run;
