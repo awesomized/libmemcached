@@ -107,6 +107,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
   _use_libtool(_use_libtool_arg),
   _use_valgrind(false),
   _use_gdb(false),
+  _use_ptrcheck(false),
   _argc(0),
   _exectuble(arg),
   stdin_fd(STDIN_FILENO),
@@ -209,7 +210,7 @@ Application::error_t Application::run(const char *args[])
         const_cast<char *>(_exectuble_with_path.c_str()), 
         0};
 
-      spawn_ret= posix_spawnp(&_pid, libtool(), &file_actions, &spawnattr, argv, NULL);
+      spawn_ret= posix_spawnp(&_pid, libtool(), &file_actions, &spawnattr, argv, environ);
     }
     else
     {
@@ -222,7 +223,7 @@ Application::error_t Application::run(const char *args[])
         const_cast<char *>(gdb_run_file.c_str()), 
         const_cast<char *>(_exectuble_with_path.c_str()), 
         0};
-      spawn_ret= posix_spawnp(&_pid, "gdb", &file_actions, &spawnattr, argv, NULL);
+      spawn_ret= posix_spawnp(&_pid, "gdb", &file_actions, &spawnattr, argv, environ);
     }
   }
   else
@@ -244,8 +245,9 @@ Application::error_t Application::run(const char *args[])
   stdout_fd.close(Application::Pipe::WRITE);
   stderr_fd.close(Application::Pipe::WRITE);
 
-  if (spawn_ret)
+  if (spawn_ret != 0)
   {
+    Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
     _pid= -1;
     return Application::INVALID;
   }
@@ -618,11 +620,18 @@ void Application::create_argv(const char *args[])
   _argc+= 1; // For the command
 
   /*
-    valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+    valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --track-origin=yes --malloc-fill=A5 --free-fill=DE --log-file=
   */
   if (_use_valgrind)
   {
-    _argc+= 7;
+    _argc+= 8;
+  }
+  else if (_use_ptrcheck)
+  {
+    /*
+      valgrind --error-exitcode=1 --tool=exp-ptrcheck --log-file= 
+    */
+    _argc+= 4;
   }
   else if (_use_gdb) // gdb
   {
@@ -668,8 +677,32 @@ void Application::create_argv(const char *args[])
     built_argv[x++]= strdup("--leak-check=yes");
     built_argv[x++]= strdup("--show-reachable=yes");
     built_argv[x++]= strdup("--track-fds=yes");
+#if 0
+    built_argv[x++]= strdup("--track-origin=yes");
+#endif
     built_argv[x++]= strdup("--malloc-fill=A5");
     built_argv[x++]= strdup("--free-fill=DE");
+
+    std::string log_file= create_tmpfile("valgrind");
+    char buffer[1024];
+    int length= snprintf(buffer, sizeof(buffer), "--log-file=%s", log_file.c_str());
+    fatal_assert(length > 0 and length < sizeof(buffer));
+    built_argv[x++]= strdup(buffer);
+  }
+  else if (_use_ptrcheck)
+  {
+    /*
+      valgrind --error-exitcode=1 --tool=exp-ptrcheck --log-file= 
+    */
+    built_argv[x++]= strdup("valgrind");
+    built_argv[x++]= strdup("--error-exitcode=1");
+    built_argv[x++]= strdup("--tool=exp-ptrcheck");
+    _argc+= 4;
+    std::string log_file= create_tmpfile("ptrcheck");
+    char buffer[1024];
+    int length= snprintf(buffer, sizeof(buffer), "--log-file=%s", log_file.c_str());
+    fatal_assert(length > 0 and length < sizeof(buffer));
+    built_argv[x++]= strdup(buffer);
   }
   else if (_use_gdb)
   {

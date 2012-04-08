@@ -586,6 +586,7 @@ static test_return_t wait_services_appliction_TEST(void *)
 
 static test_return_t gdb_wait_services_appliction_TEST(void *)
 {
+  test_skip(true, false);
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
   test_skip(0, TARGET_OS_OSX);
 #endif
@@ -605,6 +606,7 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
 
 static test_return_t gdb_abort_services_appliction_TEST(void *)
 {
+  test_skip(true, false);
   test_skip(0, access("/usr/bin/gdb", X_OK ));
 
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
