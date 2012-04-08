@@ -25,12 +25,14 @@
 
 #include <cassert>
 #include <cerrno>
+#include <climits>
 #include <cstdlib>
 #include <iostream>
 
 #include <algorithm> 
 #include <functional> 
 #include <locale>
+#include <unistd.h>
 
 // trim from end 
 static inline std::string &rtrim(std::string &s)
@@ -159,11 +161,16 @@ bool Server::start()
   }
 #endif
 
-  if (getenv("YATL_VALGRIND_SERVER"))
+  if (getenv("YATL_PTRCHECK_SERVER"))
+  {
+    _app.use_ptrcheck();
+  }
+  else if (getenv("YATL_VALGRIND_SERVER"))
   {
     _app.use_valgrind();
   }
-  else if (args(_app) == false)
+
+  if (args(_app) == false)
   {
     Error << "Could not build command()";
     return false;
@@ -182,15 +189,29 @@ bool Server::start()
     dream(5, 50000);
   }
 
-  if (pid_file().empty() == false)
+  size_t repeat= 5;
+  _app.slurp();
+  while (--repeat)
   {
-    Wait wait(pid_file(), 8);
-
-    if (wait.successful() == false)
+    if (pid_file().empty() == false)
     {
-      throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Unable to open pidfile for: %s",
-                           _running.c_str());
+      Wait wait(pid_file(), 8);
+
+      if (wait.successful() == false)
+      {
+        if (_app.check())
+        {
+          continue;
+        }
+
+        char buf[PATH_MAX];
+        getcwd(buf, sizeof(buf));
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                             "Unable to open pidfile in %s for: %s stderr:%s",
+                             buf,
+                             _running.c_str(),
+                             _app.stderr_c_str());
+      }
     }
   }
 
@@ -220,19 +241,28 @@ bool Server::start()
   if (pinged == false)
   {
     // If we happen to have a pid file, lets try to kill it
-    if (pid_file().empty() == false)
+    if ((pid_file().empty() == false) and (access(pid_file().c_str(), R_OK) == 0))
     {
+      _app.slurp();
       if (kill_file(pid_file()) == false)
       {
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Failed to kill off server after startup occurred, when pinging failed: %s", pid_file().c_str());
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                             "Failed to kill off server after startup occurred, when pinging failed: %s stderr:%s",
+                             pid_file().c_str(),
+                             _app.stderr_c_str());
       }
-      Error << "Failed to ping(), waited:" << this_wait 
-        << " server started, having pid_file. exec:" << _running 
-        << " error:" << _app.stderr_result();
+
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, 
+                           "Failed to ping(), waited: %u server started, having pid_file. exec: %s stderr:%s",
+                           this_wait, _running.c_str(), 
+                           _app.stderr_c_str());
     }
     else
     {
-      Error << "Failed to ping() server started. exec:" << _running;
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                           "Failed to ping() server started. exec: %s stderr:%s",
+                           _running.c_str(),
+                           _app.stderr_c_str());
     }
     _running.clear();
     return false;
@@ -307,8 +337,7 @@ bool Server::set_pid_file()
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
-    perror(file_buffer);
-    return false;
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
   }
   close(fd);
   unlink(file_buffer);
