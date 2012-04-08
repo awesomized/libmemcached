@@ -25,12 +25,14 @@
 
 #include <cassert>
 #include <cerrno>
+#include <climits>
 #include <cstdlib>
 #include <iostream>
 
 #include <algorithm> 
 #include <functional> 
 #include <locale>
+#include <unistd.h>
 
 // trim from end 
 static inline std::string &rtrim(std::string &s)
@@ -159,11 +161,16 @@ bool Server::start()
   }
 #endif
 
-  if (getenv("YATL_VALGRIND_SERVER"))
+  if (getenv("YATL_PTRCHECK_SERVER"))
+  {
+    _app.use_ptrcheck();
+  }
+  else if (getenv("YATL_VALGRIND_SERVER"))
   {
     _app.use_valgrind();
   }
-  else if (args(_app) == false)
+
+  if (args(_app) == false)
   {
     Error << "Could not build command()";
     return false;
@@ -198,6 +205,12 @@ bool Server::start()
 
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
                              "Unable to open pidfile for: %s",
+                             _running.c_str());
+        char buf[PATH_MAX];
+        getcwd(buf, sizeof(buf));
+        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                             "Unable to open pidfile in %s for: %s",
+                             buf,
                              _running.c_str());
       }
     }
@@ -319,8 +332,7 @@ bool Server::set_pid_file()
   int fd;
   if ((fd= mkstemp(file_buffer)) == -1)
   {
-    perror(file_buffer);
-    return false;
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
   }
   close(fd);
   unlink(file_buffer);
