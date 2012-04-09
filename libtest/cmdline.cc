@@ -36,6 +36,11 @@ using namespace libtest;
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+
+#ifndef __USE_GNU
+static char **environ= NULL;
+#endif
 
 extern "C" {
   static int exited_successfully(int status)
@@ -533,7 +538,7 @@ void Application::Pipe::reset()
   close(READ);
   close(WRITE);
 
-#if _GNU_SOURCE
+#if HAVE_PIPE2
   if (pipe2(_pipe_fd, O_NONBLOCK) == -1)
 #else
   if (pipe(_pipe_fd) == -1)
