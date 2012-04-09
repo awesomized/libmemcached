@@ -35,6 +35,16 @@ typedef std::vector<char> vchar_t;
 
 void make_vector(libtest::vchar_t& arg, const char *str, size_t length);
 
+namespace vchar {
+
+int compare(libtest::vchar_t& arg, const char *str, size_t length);
+void make(libtest::vchar_t& arg);
+void make(libtest::vchar_t& arg, size_t length);
+
+} // namespace vchar
+
+#define vchar_param(__arg) (&__arg[0]), (__arg.size())
+
 std::ostream& operator<<(std::ostream& output, const libtest::vchar_t& arg);
 
 } // namespace libtest

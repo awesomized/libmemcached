@@ -298,6 +298,7 @@ man_pages = [
   ('memcached_pool', 'memcached_pool_release', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_pool', 'memcached_pool_st', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_quit', 'memcached_quit', u'libmemcached Documentation', [u'Brian Aker'], 3),
+  ('libmemcached-1.0/memcached_set_encoding_key', 'memcached_set_encoding_key', u'libmemcached Documentation', [u'Brian Aker'], 3),
   ('memcached_result_st', 'memcached_result_cas', u'Working with result sets', [u'Brian Aker'], 3),
   ('memcached_result_st', 'memcached_result_create', u'Working with result sets', [u'Brian Aker'], 3),
   ('memcached_result_st', 'memcached_result_flags', u'Working with result sets', [u'Brian Aker'], 3),

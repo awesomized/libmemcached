@@ -42,6 +42,38 @@ static std::string printer(const char *str, size_t length)
   return buf.str();
 }
 
+namespace vchar {
+
+int compare(libtest::vchar_t& arg, const char *str, size_t length)
+{
+  if (arg.size() == length and (memcmp(&arg[0], str, length) == 0))
+  {
+    return 0;
+  }
+  else if (arg.size() > length)
+  {
+    return 1;
+  }
+
+  return -1;
+}
+
+void make(libtest::vchar_t& arg)
+{
+  size_t length= rand() % 1024;
+  make(arg, length);
+}
+
+void make(libtest::vchar_t& arg, size_t length)
+{
+  for (uint32_t x= 0; x < length; x++)
+  {
+    arg.push_back(char(x % 127));
+  }
+}
+
+} // namespace vchar
+
 void make_vector(libtest::vchar_t& arg, const char *str, size_t length)
 {
   arg.resize(length);

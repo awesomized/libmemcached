@@ -168,13 +168,17 @@ memcached_return_t memcached_string_append(memcached_string_st *string,
 
 char *memcached_string_c_copy(memcached_string_st *string)
 {
-  if (not memcached_string_length(string))
+  if (memcached_string_length(string) == 0)
+  {
     return NULL;
+  }
 
   char *c_ptr= static_cast<char *>(libmemcached_malloc(string->root, (memcached_string_length(string)+1) * sizeof(char)));
 
-  if (not c_ptr)
+  if (c_ptr == NULL)
+  {
     return NULL;
+  }
 
   memcpy(c_ptr, memcached_string_value(string), memcached_string_length(string));
   c_ptr[memcached_string_length(string)]= 0;
@@ -182,16 +186,19 @@ char *memcached_string_c_copy(memcached_string_st *string)
   return c_ptr;
 }
 
-memcached_return_t memcached_string_reset(memcached_string_st *string)
+void memcached_string_reset(memcached_string_st *string)
 {
   string->end= string->string;
+}
 
-  return MEMCACHED_SUCCESS;
+void memcached_string_free(memcached_string_st& ptr)
+{
+  memcached_string_free(&ptr);
 }
 
 void memcached_string_free(memcached_string_st *ptr)
 {
-  if (not ptr)
+  if (ptr == NULL)
   {
     return;
   }
@@ -216,9 +223,19 @@ memcached_return_t memcached_string_check(memcached_string_st *string, size_t ne
   return _string_check(string, need);
 }
 
+bool memcached_string_resize(memcached_string_st& string, const size_t need)
+{
+  return memcached_success(_string_check(&string, need));
+}
+
 size_t memcached_string_length(const memcached_string_st *self)
 {
   return size_t(self->end -self->string);
+}
+
+size_t memcached_string_length(const memcached_string_st& self)
+{
+  return size_t(self.end -self.string);
 }
 
 size_t memcached_string_size(const memcached_string_st *self)
@@ -229,6 +246,11 @@ size_t memcached_string_size(const memcached_string_st *self)
 const char *memcached_string_value(const memcached_string_st *self)
 {
   return self->string;
+}
+
+const char *memcached_string_value(const memcached_string_st& self)
+{
+  return self.string;
 }
 
 char *memcached_string_take_value(memcached_string_st *self)
@@ -252,7 +274,26 @@ char *memcached_string_value_mutable(const memcached_string_st *self)
   return self->string;
 }
 
+char *memcached_string_c_str(memcached_string_st& self)
+{
+  return self.string;
+}
+
 void memcached_string_set_length(memcached_string_st *self, size_t length)
 {
-  self->end= self->string + length;
+  self->end= self->string +length;
+}
+
+void memcached_string_set_length(memcached_string_st& self, const size_t length)
+{
+  assert(self.current_size >= length);
+  size_t set_length= length;
+  if (self.current_size > length)
+  {
+    if (memcached_failed(_string_check(&self, length)))
+    {
+      set_length= self.current_size;
+    }
+  }
+  self.end= self.string +set_length;
 }

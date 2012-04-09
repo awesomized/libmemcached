@@ -87,110 +87,7 @@ using namespace libtest;
 
 #define UUID_STRING_MAXLENGTH 36
 
-struct keys_st {
-public:
-  keys_st(size_t arg)
-  {
-    init(arg, UUID_STRING_MAXLENGTH);
-  }
-
-  keys_st(size_t arg, size_t padding)
-  {
-    init(arg, padding);
-  }
-
-  void init(size_t arg, size_t padding)
-  {
-    _lengths.resize(arg);
-    _keys.resize(arg);
-
-    for (size_t x= 0; x < _keys.size(); x++)
-    {
-      libtest::vchar_t key_buffer;
-      key_buffer.resize(padding +1);
-      memset(&key_buffer[0], 'x', padding);
-
-      if (HAVE_LIBUUID)
-      {
-#if defined(HAVE_LIBUUID) && HAVE_LIBUUID
-        uuid_t out;
-        uuid_generate(out);
-
-        uuid_unparse(out, &key_buffer[0]);
-        _keys[x]= strdup(&key_buffer[0]);
-        (_keys[x])[UUID_STRING_MAXLENGTH]= 'x';
-#endif
-      }
-      else // We just use a number and pad the string if UUID is not available
-      {
-        char int_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-        int key_length= snprintf(int_buffer, sizeof(int_buffer), "%u", uint32_t(x));
-        memcpy(&key_buffer[0], int_buffer, key_length);
-        _keys[x]= strdup(&key_buffer[0]);
-      }
-      _lengths[x]= padding;
-    }
-  }
-
-  ~keys_st()
-  {
-    for (libtest::vchar_ptr_t::iterator iter= _keys.begin();
-         iter != _keys.end();
-         iter++)
-    {
-      ::free(*iter);
-    }
-  }
-
-  libtest::vchar_ptr_t::iterator begin()
-  {
-    return _keys.begin();
-  }
-
-  libtest::vchar_ptr_t::iterator end()
-  {
-    return _keys.end();
-  }
-
-  size_t size() const
-  {
-    return _keys.size();
-  }
-
-  std::vector<size_t>& lengths()
-  {
-    return _lengths;
-  }
-
-  libtest::vchar_ptr_t& keys()
-  {
-    return _keys;
-  }
-
-  size_t* lengths_ptr()
-  {
-    return &_lengths[0];
-  }
-
-  char** keys_ptr()
-  {
-    return &_keys[0];
-  }
-
-  char* key_at(size_t arg)
-  {
-    return _keys[arg];
-  }
-
-  size_t length_at(size_t arg)
-  {
-    return _lengths[arg];
-  }
-
-private:
-    libtest::vchar_ptr_t _keys;
-    std::vector<size_t> _lengths;
-};
+#include "tests/keys.hpp"
 
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {
@@ -1129,7 +1026,7 @@ static memcached_return_t read_through_trigger(memcached_st *memc,
                                                size_t key_length,
                                                memcached_result_st *result)
 {
-   (void)memc;(void)key;(void)key_length;
+  (void)memc;(void)key;(void)key_length;
   return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
 }
 

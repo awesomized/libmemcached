@@ -68,18 +68,25 @@ memcached_return_t memcached_string_append_character(memcached_string_st *string
 memcached_return_t memcached_string_append(memcached_string_st *string,
                                            const char *value, size_t length);
 
-memcached_return_t memcached_string_reset(memcached_string_st *string);
+void memcached_string_reset(memcached_string_st *string);
 
 void memcached_string_free(memcached_string_st *string);
+void memcached_string_free(memcached_string_st&);
 
 size_t memcached_string_length(const memcached_string_st *self);
+size_t memcached_string_length(const memcached_string_st&);
 
 size_t memcached_string_size(const memcached_string_st *self);
 
 const char *memcached_string_value(const memcached_string_st *self);
+const char *memcached_string_value(const memcached_string_st&);
 
 char *memcached_string_take_value(memcached_string_st *self);
 
 char *memcached_string_value_mutable(const memcached_string_st *self);
 
 void memcached_string_set_length(memcached_string_st *self, size_t length);
+void memcached_string_set_length(memcached_string_st&, const size_t length);
+
+bool memcached_string_resize(memcached_string_st&, const size_t);
+char *memcached_string_c_str(memcached_string_st&);
