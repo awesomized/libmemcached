@@ -199,6 +199,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached-1.0/verbosity.h
 %{_includedir}/libmemcached-1.0/version.h
 %{_includedir}/libmemcached-1.0/visibility.h
+%{_includedir}/libhashkit-1.0/string.h
+%{_includedir}/libmemcached-1.0/encoding_key.h
 
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
