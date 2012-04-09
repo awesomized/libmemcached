@@ -8,24 +8,23 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-TESTS_LDADDS= \
-	      libmemcached/libmemcached.la \
-	      libmemcached/libmemcachedutil.la \
-	      libtest/libtest.la
+TESTS_LDADDS=
+TESTS_LDADDS+= libmemcached/libmemcached.la
+TESTS_LDADDS+= libmemcached/libmemcachedutil.la
+TESTS_LDADDS+= libtest/libtest.la
 
 DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
 
-EXTRA_DIST+= \
-	     tests/cpp_example.cc \
-	     tests/output_plus.res
+EXTRA_DIST+= tests/cpp_example.cc
+EXTRA_DIST+= tests/output_plus.res
 
-noinst_HEADERS+= \
-		 tests/exist.h \
-		 tests/hash_results.h \
-		 tests/libmemcached_world.h \
-		 tests/libmemcached_world_socket.h
+noinst_HEADERS+= tests/exist.h
+noinst_HEADERS+= tests/keys.hpp
+noinst_HEADERS+= tests/hash_results.h
+noinst_HEADERS+= tests/libmemcached_world.h
+noinst_HEADERS+= tests/libmemcached_world_socket.h
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)

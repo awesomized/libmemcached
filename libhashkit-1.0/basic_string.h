@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  Libhashkit library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,24 +36,15 @@
 
 #pragma once
 
-/* These are private */ 
-#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
-#define memcached_is_encrypted(__object) ((__object)->hashkit._key)
-#define memcached_is_udp(__object) ((__object)->flags.use_udp)
-#define memcached_is_verify_key(__object) ((__object)->flags.verify_key)
-#define memcached_is_binary(__object) ((__object)->flags.binary_protocol)
-#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
-#define memcached_is_purging(__object) ((__object)->state.is_purging)
-#define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
+// No assumptions of NULL should be made
 
-#define memcached_is_buffering(__object) ((__object)->flags.buffer_requests)
-#define memcached_is_replying(__object) ((__object)->flags.reply)
+#define hashkit_size(X) (X).size;
+#define hashkit_c_str(X) (X).c_str;
+#define hashkit_string_param(X) (X).c_str, (X).size
 
-#define memcached_has_error(__object) ((__object)->error_messages)
+#ifdef __cplusplus
+#define hashkit_string_printf(X) int((X).size), (X).c_str
+#else
+#define hashkit_string_printf(X) (int)((X).size), (X).c_str
+#endif
 
-#define memcached_has_replicas(__object) ((__object)->root->number_of_replicas)
-
-#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
-#define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
-#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))

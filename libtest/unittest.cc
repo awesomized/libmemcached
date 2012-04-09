@@ -463,6 +463,17 @@ static test_return_t vchar_t_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t vchar_t_compare_neg_TEST(void *)
+{
+  libtest::vchar_t response;
+  libtest::vchar_t response2;
+  libtest::make_vector(response, test_literal_param("fubar\n"));
+  libtest::make_vector(response2, test_literal_param(__func__));
+  test_true(response != response2);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t application_echo_fubar_BINARY(void *)
 {
   Application true_app("echo");
@@ -810,6 +821,7 @@ test_st create_tmpfile_TESTS[] ={
 
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
+  {"vchar_t compare()", 0, vchar_t_compare_neg_TEST },
   {"true", 0, application_true_BINARY },
   {"gbd true --fubar", 0, application_gdb_true_BINARY },
   {"gbd true", 0, application_gdb_true_BINARY2 },

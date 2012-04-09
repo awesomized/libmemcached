@@ -158,7 +158,9 @@ static void _free(memcached_st *ptr, bool release_st)
     ptr->configure.filename= NULL;
   }
 
-  if (memcached_is_allocated(ptr) && release_st)
+  hashkit_free(&ptr->hashkit);
+
+  if (memcached_is_allocated(ptr) and release_st)
   {
     libmemcached_free(ptr, ptr);
   }
