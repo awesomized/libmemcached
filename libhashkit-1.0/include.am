@@ -16,6 +16,7 @@ nobase_include_HEADERS+= \
 			 libhashkit-1.0/hashkit.h \
 			 libhashkit-1.0/hashkit.hpp \
 			 libhashkit-1.0/strerror.h \
+			 libhashkit-1.0/string.h \
 			 libhashkit-1.0/str_algorithm.h \
 			 libhashkit-1.0/types.h \
 			 libhashkit-1.0/visibility.h
