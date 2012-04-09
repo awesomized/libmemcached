@@ -66,28 +66,28 @@ test: check
 check-local: $(TEST_DOCS)
 	@echo "Tests completed"
 
-test-mem: tests/var tests/libmemcached-1.0/testapp
+test-mem: tests/libmemcached-1.0/testapp
 	@tests/libmemcached-1.0/testapp
 
 test-sasl: tests/sasl
 	@tests/sasl
 
-test-atom: tests/var tests/atomsmasher
+test-atom: tests/atomsmasher
 	@tests/atomsmasher
 
-test-plus: tests/var tests/testplus
+test-plus: tests/testplus
 	@tests/testplus
 
-test-hash: tests/var tests/testhashkit
+test-hash: tests/testhashkit
 	@tests/testhashkit
 
-test-hashplus: tests/var tests/hash_plus
+test-hashplus: tests/hash_plus
 	@tests/hash_plus
 
-test-cycle: tests/var tests/cycle
+test-cycle: tests/cycle
 	@tests/cycle
 
-test-memcapable: tests/var tests/memcapable
+test-memcapable: tests/memcapable
 	@tests/memcapable
 
 pahole-mem: tests/testapp
