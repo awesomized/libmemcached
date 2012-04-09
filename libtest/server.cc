@@ -205,17 +205,17 @@ bool Server::start()
         }
 
         char buf[PATH_MAX];
-        getcwd(buf, sizeof(buf));
+        char *getcwd_buf= getcwd(buf, sizeof(buf));
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
                              "Unable to open pidfile in %s for: %s stderr:%s",
-                             buf,
+                             getcwd_buf ? getcwd_buf : "",
                              _running.c_str(),
                              _app.stderr_c_str());
       }
     }
   }
 
-  uint32_t this_wait;
+  uint32_t this_wait= 0;
   bool pinged= false;
   {
     uint32_t timeout= 20; // This number should be high enough for valgrind startup (which is slow)
@@ -247,7 +247,8 @@ bool Server::start()
       if (kill_file(pid_file()) == false)
       {
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                             "Failed to kill off server after startup occurred, when pinging failed: %s stderr:%s",
+                             "Failed to kill off server, waited: %u after startup occurred, when pinging failed: %s stderr:%s",
+                             this_wait,
                              pid_file().c_str(),
                              _app.stderr_c_str());
       }
@@ -260,7 +261,8 @@ bool Server::start()
     else
     {
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Failed to ping() server started. exec: %s stderr:%s",
+                           "Failed to ping(), waited: %u server started. exec: %s stderr:%s",
+                           this_wait,
                            _running.c_str(),
                            _app.stderr_c_str());
     }

@@ -45,12 +45,12 @@ bool fatal::is_disabled()
   return _disabled;
 }
 
-bool fatal::disable()
+void fatal::disable()
 {
   _disabled= true;
 }
 
-bool fatal::enable()
+void fatal::enable()
 {
   _disabled= false;
 }

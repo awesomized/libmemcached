@@ -88,12 +88,12 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libhashkit.a
 %exclude %{_libdir}/libmemcachedutil.a
 %exclude %{_libdir}/libmemcachedprotocol.a
-%{_libdir}/libhashkit.so.1.0.0
-%{_libdir}/libmemcached.so.9.0.0
+%{_libdir}/libhashkit.so.2.0.0
+%{_libdir}/libmemcached.so.10.0.0
 %{_libdir}/libmemcachedutil.so.2.0.0
 %{_libdir}/libmemcachedprotocol.so.0.0.0
-%{_libdir}/libhashkit.so.1
-%{_libdir}/libmemcached.so.9
+%{_libdir}/libhashkit.so.2
+%{_libdir}/libmemcached.so.10
 %{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.2
 %{_mandir}/man1/memcapable.1.gz
@@ -199,6 +199,8 @@ you will need to install %{name}-devel.
 %{_includedir}/libmemcached-1.0/verbosity.h
 %{_includedir}/libmemcached-1.0/version.h
 %{_includedir}/libmemcached-1.0/visibility.h
+%{_includedir}/libhashkit-1.0/string.h
+%{_includedir}/libmemcached-1.0/encoding_key.h
 
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
