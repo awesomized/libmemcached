@@ -74,6 +74,24 @@ static inline const char *storage_op_string(memcached_storage_action_t verb)
   return "set ";
 }
 
+static inline uint8_t can_by_encrypted(const memcached_storage_action_t verb)
+{
+  switch (verb)
+  {
+  case SET_OP:
+  case ADD_OP:
+  case CAS_OP:
+  case REPLACE_OP:
+    return true;
+    
+  case APPEND_OP:
+  case PREPEND_OP:
+    break;
+  }
+
+  return false;
+}
+
 static inline uint8_t get_com_code(const memcached_storage_action_t verb, const bool reply)
 {
   if (reply == false)
@@ -366,18 +384,42 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
 
   bool reply= memcached_is_replying(ptr);
 
-  if (memcached_is_binary(ptr))
+  hashkit_string_st* destination= NULL;
+
+  if (memcached_is_encrypted(ptr))
   {
-    return memcached_send_binary(ptr, instance, server_key,
-                                 key, key_length,
-                                 value, value_length, expiration,
-                                 flags, cas, flush, reply, verb);
+    if (can_by_encrypted(verb) == false)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
+                                 memcached_literal_param("Operation not allowed while encyrption is enabled"));
+    }
+
+    if ((destination= hashkit_encrypt(&ptr->hashkit, value, value_length)) == NULL)
+    {
+      return rc;
+    }
+    value= hashkit_string_c_str(destination);
+    value_length= hashkit_string_length(destination);
   }
 
-  return memcached_send_ascii(ptr, instance,
+  if (memcached_is_binary(ptr))
+  {
+    rc= memcached_send_binary(ptr, instance, server_key,
                               key, key_length,
                               value, value_length, expiration,
                               flags, cas, flush, reply, verb);
+  }
+  else
+  {
+    rc= memcached_send_ascii(ptr, instance,
+                             key, key_length,
+                             value, value_length, expiration,
+                             flags, cas, flush, reply, verb);
+  }
+
+  hashkit_string_free(destination);
+
+  return rc;
 }
 
 

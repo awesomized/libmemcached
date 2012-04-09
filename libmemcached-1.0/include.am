@@ -25,6 +25,7 @@ nobase_include_HEADERS+= \
 			 libmemcached-1.0/delete.h \
 			 libmemcached-1.0/deprecated_types.h \
 			 libmemcached-1.0/dump.h \
+			 libmemcached-1.0/encoding_key.h \
 			 libmemcached-1.0/error.h \
 			 libmemcached-1.0/exception.hpp \
 			 libmemcached-1.0/exist.h \

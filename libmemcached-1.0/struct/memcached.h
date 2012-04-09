@@ -62,6 +62,7 @@ struct memcached_st {
     bool use_udp:1;
     bool verify_key:1;
     bool tcp_keepalive:1;
+    bool is_aes:1;
   } flags;
 
   memcached_server_distribution_t distribution;

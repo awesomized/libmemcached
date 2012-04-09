@@ -62,6 +62,7 @@
 
 
 #include "tests/libmemcached-1.0/mem_functions.h"
+#include "tests/libmemcached-1.0/encoding_key.h"
 
 /* Collections we are running */
 #include "tests/libmemcached-1.0/all_tests.h"

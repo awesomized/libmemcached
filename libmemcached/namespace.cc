@@ -36,10 +36,11 @@
  */
 
 #include <libmemcached/common.h>
+#include <libmemcached/assert.hpp>
 
 memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, size_t key_length)
 {
-  WATCHPOINT_ASSERT(self);
+  assert_msg(self, "A NULL memcached_st was used");
 
   if (key and key_length == 0)
   { 
@@ -86,8 +87,10 @@ memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, 
 
 const char * memcached_get_namespace(memcached_st *self)
 {
-  if (not self->_namespace)
+  if (self->_namespace == NULL)
+  {
     return NULL;
+  }
 
   return memcached_array_string(self->_namespace);
 }

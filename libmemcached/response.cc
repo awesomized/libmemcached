@@ -55,6 +55,9 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
   string_ptr+= 6; /* "VALUE " */
 
 
+  // Just used for cases of AES decrypt currently
+  memcached_return_t rc= MEMCACHED_SUCCESS;
+
   /* We load the key */
   {
     char *key= result->item_key;
@@ -169,7 +172,34 @@ static memcached_return_t textual_value_fetch(memcached_server_write_instance_st
     memcached_string_set_length(&result->value, value_length);
   }
 
-  return MEMCACHED_SUCCESS;
+  if (memcached_is_encrypted(instance->root) and memcached_result_length(result))
+  {
+    hashkit_string_st *destination;
+
+    if ((destination= hashkit_decrypt(&instance->root->hashkit,
+                                      memcached_result_value(result), memcached_result_length(result))) == NULL)
+    {
+      rc= memcached_set_error(*instance->root, MEMCACHED_FAILURE, 
+                              MEMCACHED_AT, memcached_literal_param("hashkit_decrypt() failed"));
+    }
+    else
+    {
+      memcached_result_reset_value(result);
+      if (memcached_failed(memcached_result_set_value(result, hashkit_string_c_str(destination), hashkit_string_length(destination))))
+      {
+        rc= memcached_set_error(*instance->root, MEMCACHED_FAILURE, 
+                                MEMCACHED_AT, memcached_literal_param("hashkit_decrypt() failed"));
+      }
+    }
+
+    if (memcached_failed(rc))
+    {
+      memcached_result_reset(result);
+    }
+    hashkit_string_free(destination);
+  }
+
+  return rc;
 
 read_error:
   memcached_io_reset(instance);

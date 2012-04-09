@@ -123,6 +123,11 @@ void memcached_result_free(memcached_result_st *ptr)
   }
 }
 
+void memcached_result_reset_value(memcached_result_st *ptr)
+{
+  memcached_string_reset(&ptr->value);
+}
+
 memcached_return_t memcached_result_set_value(memcached_result_st *ptr,
                                               const char *value,
                                               size_t length)

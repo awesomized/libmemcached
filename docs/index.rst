@@ -48,6 +48,7 @@ Advanced Topics
 .. toctree::
    :maxdepth: 1
 
+   libmemcached-1.0/memcached_set_encoding_key
    memcached_behavior
    memcached_callback
    memcached_dump

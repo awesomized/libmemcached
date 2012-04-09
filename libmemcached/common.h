@@ -134,6 +134,8 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/assert.hpp>
 #include <libmemcached/server.hpp>
 #include <libmemcached/key.hpp>
+#include <libmemcached/encoding_key.h>
+#include <libmemcached/result.h>
 #endif
 
 #include <libmemcached/continuum.hpp>

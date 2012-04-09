@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
@@ -35,26 +35,21 @@
  *
  */
 
-#pragma once
+#include <libmemcached/common.h>
+#include <libmemcached/assert.hpp>
 
-/* These are private */ 
-#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
-#define memcached_is_encrypted(__object) ((__object)->hashkit._key)
-#define memcached_is_udp(__object) ((__object)->flags.use_udp)
-#define memcached_is_verify_key(__object) ((__object)->flags.verify_key)
-#define memcached_is_binary(__object) ((__object)->flags.binary_protocol)
-#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
-#define memcached_is_purging(__object) ((__object)->state.is_purging)
-#define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
+static void _set_encoding_key(memcached_st& self, const char *key, size_t key_length)
+{
+  hashkit_key(&self.hashkit, key, key_length);
+}
 
-#define memcached_is_buffering(__object) ((__object)->flags.buffer_requests)
-#define memcached_is_replying(__object) ((__object)->flags.reply)
+memcached_return_t memcached_set_encoding_key(memcached_st* self, const char *key, size_t key_length)
+{
+  if (self == NULL)
+  {
+    return MEMCACHED_INVALID_ARGUMENTS;
+  }
 
-#define memcached_has_error(__object) ((__object)->error_messages)
-
-#define memcached_has_replicas(__object) ((__object)->root->number_of_replicas)
-
-#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
-#define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
-#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))
+  _set_encoding_key(*self, key, key_length);
+  return MEMCACHED_SUCCESS;
+}

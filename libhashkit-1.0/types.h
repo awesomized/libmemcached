@@ -88,6 +88,7 @@ extern "C" {
 #endif
 
 typedef struct hashkit_st hashkit_st;
+typedef struct hashkit_string_st hashkit_string_st;
 
 typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length, void *context);
 

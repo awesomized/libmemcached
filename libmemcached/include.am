@@ -10,6 +10,7 @@ EXTRA_DIST+= \
 	     libmemcached/libmemcached_probes.d \
 	     libmemcached/memcached/README.txt
 
+nobase_include_HEADERS+= libmemcached/result.h
 nobase_include_HEADERS+= \
 			 libmemcached/memcached.h \
 			 libmemcached/memcached.hpp \
@@ -24,6 +25,7 @@ noinst_HEADERS+= \
 		 libmemcached/connect.hpp \
 		 libmemcached/continuum.hpp \
 		 libmemcached/do.hpp \
+		 libmemcached/encoding_key.h \
 		 libmemcached/error.hpp \
 		 libmemcached/initialize_query.h \
 		 libmemcached/internal.h \
@@ -81,6 +83,7 @@ libmemcached_libmemcached_la_SOURCES+= \
 				       libmemcached/io.cc \
 				       libmemcached/key.cc \
 				       libmemcached/memcached.cc \
+				       libmemcached/encoding_key.cc \
 				       libmemcached/namespace.cc \
 				       libmemcached/options.cc \
 				       libmemcached/parse.cc \
