@@ -138,6 +138,16 @@ do \
   } \
 } while (0)
 
+#define test_ne_compare(__expected, __actual) \
+do \
+{ \
+  if (libtest::_ne_compare_hint(__FILE__, __LINE__, __func__, ((__expected)), ((__actual)), true) == false) \
+  { \
+    libtest::create_core(); \
+    return TEST_FAILURE; \
+  } \
+} while (0)
+
 #define test_compare(__expected, __actual) \
 do \
 { \

@@ -98,6 +98,7 @@
 #include <libmemcached-1.0/callback.h>
 #include <libmemcached-1.0/delete.h>
 #include <libmemcached-1.0/dump.h>
+#include <libmemcached-1.0/encoding_key.h>
 #include <libmemcached-1.0/exist.h>
 #include <libmemcached-1.0/fetch.h>
 #include <libmemcached-1.0/flush.h>

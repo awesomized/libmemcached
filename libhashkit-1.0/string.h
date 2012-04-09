@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  Libhashkit library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,24 +36,26 @@
 
 #pragma once
 
-/* These are private */ 
-#define memcached_is_allocated(__object) ((__object)->options.is_allocated)
-#define memcached_is_encrypted(__object) ((__object)->hashkit._key)
-#define memcached_is_udp(__object) ((__object)->flags.use_udp)
-#define memcached_is_verify_key(__object) ((__object)->flags.verify_key)
-#define memcached_is_binary(__object) ((__object)->flags.binary_protocol)
-#define memcached_is_initialized(__object) ((__object)->options.is_initialized)
-#define memcached_is_purging(__object) ((__object)->state.is_purging)
-#define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)
+#ifdef __cplusplus
+struct hashkit_string_st;
+#endif
 
-#define memcached_is_buffering(__object) ((__object)->flags.buffer_requests)
-#define memcached_is_replying(__object) ((__object)->flags.reply)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define memcached_has_error(__object) ((__object)->error_messages)
+HASHKIT_API
+void hashkit_string_free(hashkit_string_st *ptr);
 
-#define memcached_has_replicas(__object) ((__object)->root->number_of_replicas)
 
-#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
-#define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
-#define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))
+HASHKIT_API
+size_t hashkit_string_length(const hashkit_string_st *self);
+
+HASHKIT_API
+const char *hashkit_string_c_str(const hashkit_string_st* self);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+

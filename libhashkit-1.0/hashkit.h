@@ -55,6 +55,7 @@
 #include <libhashkit-1.0/function.h>
 #include <libhashkit-1.0/str_algorithm.h>
 #include <libhashkit-1.0/strerror.h>
+#include <libhashkit-1.0/string.h>
 
 struct hashkit_st
 {
@@ -70,6 +71,8 @@ struct hashkit_st
   struct {
     bool is_allocated:1;
   } options;
+
+  void *_key;
 };
 
 #ifdef __cplusplus
@@ -77,16 +80,27 @@ extern "C" {
 #endif
 
 HASHKIT_API
-hashkit_st *hashkit_create(hashkit_st *hash);
+  hashkit_st *hashkit_create(hashkit_st *hash);
 
 HASHKIT_API
-hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
+  hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr);
 
 HASHKIT_API
-bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
+  bool hashkit_compare(const hashkit_st *first, const hashkit_st *second);
 
 HASHKIT_API
-void hashkit_free(hashkit_st *hash);
+  void hashkit_free(hashkit_st *hash);
+
+HASHKIT_API
+  hashkit_string_st *hashkit_encrypt(hashkit_st *,
+                                     const char* source, size_t source_length);
+
+HASHKIT_API
+  hashkit_string_st *hashkit_decrypt(hashkit_st *,
+                                     const char* source, size_t source_length);
+
+HASHKIT_API
+  bool hashkit_key(hashkit_st *, const char *key, const size_t key_length);
 
 #ifdef __cplusplus
 } // extern "C"

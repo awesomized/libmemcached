@@ -17,23 +17,24 @@ static inline void _hashkit_init(hashkit_st *self)
   self->distribution_hash.context= NULL;
 
   self->flags.is_base_same_distributed= true;
+  self->_key= NULL;
 }
 
 static inline hashkit_st *_hashkit_create(hashkit_st *self)
 {
-  if (not self)
+  if (self)
+  {
+    self->options.is_allocated= false;
+  }
+  else
   {
     self= (hashkit_st*)calloc(1, sizeof(hashkit_st));
-    if (not self)
+    if (self == NULL)
     {
       return NULL;
     }
 
     self->options.is_allocated= true;
-  }
-  else
-  {
-    self->options.is_allocated= false;
   }
 
   return self;
@@ -42,8 +43,10 @@ static inline hashkit_st *_hashkit_create(hashkit_st *self)
 hashkit_st *hashkit_create(hashkit_st *self)
 {
   self= _hashkit_create(self);
-  if (not self)
-    return self;
+  if (self == NULL)
+  {
+    return NULL;
+  }
 
   _hashkit_init(self);
 
@@ -53,6 +56,12 @@ hashkit_st *hashkit_create(hashkit_st *self)
 
 void hashkit_free(hashkit_st *self)
 {
+  if (self and self->_key)
+  {
+    free(self->_key);
+    self->_key= NULL;
+  }
+
   if (hashkit_is_allocated(self))
   {
     free(self);
@@ -78,6 +87,7 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source)
   destination->base_hash= source->base_hash;
   destination->distribution_hash= source->distribution_hash;
   destination->flags= source->flags;
+  destination->_key= aes_clone_key(static_cast<aes_key_t*>(source->_key));
 
   return destination;
 }

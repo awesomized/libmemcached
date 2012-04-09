@@ -402,6 +402,21 @@ test_st pool_TESTS[] ={
   {0, 0, (test_callback_fn*)0}
 };
 
+test_st memcached_set_encoding_key_TESTS[] ={
+  {"memcached_set_encoding_key()", true, (test_callback_fn*)memcached_set_encoding_key_TEST },
+  {"memcached_set_encoding_key() +set() + get()", true, (test_callback_fn*)memcached_set_encoding_key_set_get_TEST },
+  {"memcached_set_encoding_key() +add() + get()", true, (test_callback_fn*)memcached_set_encoding_key_add_get_TEST },
+  {"memcached_set_encoding_key() +replace() + get()", true, (test_callback_fn*)memcached_set_encoding_key_replace_get_TEST },
+  {"memcached_set_encoding_key() +prepend()", true, (test_callback_fn*)memcached_set_encoding_key_prepend_TEST },
+  {"memcached_set_encoding_key() +append()", true, (test_callback_fn*)memcached_set_encoding_key_append_TEST },
+  {"memcached_set_encoding_key() +increment()", true, (test_callback_fn*)memcached_set_encoding_key_increment_TEST },
+  {"memcached_set_encoding_key() +decrement()", true, (test_callback_fn*)memcached_set_encoding_key_increment_TEST },
+  {"memcached_set_encoding_key() +increment_with_initial()", true, (test_callback_fn*)memcached_set_encoding_key_increment_with_initial_TEST },
+  {"memcached_set_encoding_key() +decrement_with_initial()", true, (test_callback_fn*)memcached_set_encoding_key_decrement_with_initial_TEST },
+  {"memcached_set_encoding_key() +set() +get() +cloen()", true, (test_callback_fn*)memcached_set_encoding_key_set_get_clone_TEST },
+  {0, 0, (test_callback_fn*)0}
+};
+
 test_st namespace_tests[] ={
   {"basic tests", true, (test_callback_fn*)selection_of_namespace_tests },
   {"increment", true, (test_callback_fn*)memcached_increment_namespace },
@@ -480,6 +495,7 @@ collection_st collection[] ={
   {"touch", (test_callback_fn*)pre_binary, 0, touch_tests},
   {"memcached_stat()", 0, 0, memcached_stat_tests},
   {"memcached_pool_create()", 0, 0, pool_TESTS},
+  {"memcached_set_encoding_key()", 0, 0, memcached_set_encoding_key_TESTS},
   {"kill()", 0, 0, kill_TESTS},
   {0, 0, 0, 0}
 };

@@ -166,6 +166,12 @@ static memcached_return_t increment_decrement_by_key(const protocol_binary_comma
     return rc;
   }
 
+  if (memcached_is_encrypted(memc))
+  {
+    return memcached_set_error(*memc, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
+                               memcached_literal_param("Operation not allowed while encyrption is enabled"));
+  }
+
   if (memcached_failed(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
   {
     return memcached_last_error(memc);
@@ -217,6 +223,12 @@ static memcached_return_t increment_decrement_with_initial_by_key(const protocol
   if (memcached_failed(rc= initialize_query(memc, true)))
   {
     return rc;
+  }
+
+  if (memcached_is_encrypted(memc))
+  {
+    return memcached_set_error(*memc, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
+                               memcached_literal_param("Operation not allowed while encyrption is enabled"));
   }
 
   if (memcached_failed(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
