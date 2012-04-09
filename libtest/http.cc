@@ -56,7 +56,7 @@ static pthread_once_t start_key_once= PTHREAD_ONCE_INIT;
 void initialize_curl(void)
 {
   int ret;
-  if (pthread_once(&start_key_once, initialize_curl_startup) != 0)
+  if ((ret= pthread_once(&start_key_once, initialize_curl_startup)) != 0)
   {
     fatal_message(strerror(ret));
   }
@@ -70,8 +70,6 @@ namespace http {
 extern "C" size_t
   http_get_result_callback(void *ptr, size_t size, size_t nmemb, void *data)
   {
-    size_t body_size= size * nmemb;
-
     vchar_t *_body= (vchar_t*)data;
 
     _body->resize(size * nmemb);
@@ -102,6 +100,8 @@ HTTP::HTTP(const std::string& url_arg) :
 
 bool GET::execute()
 {
+  (void)init;
+
   if (HAVE_LIBCURL)
   {
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL
