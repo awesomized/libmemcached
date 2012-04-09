@@ -48,3 +48,4 @@ test_return_t memcached_set_encoding_key_decrement_with_initial_TEST(memcached_s
 test_return_t memcached_set_encoding_key_prepend_TEST(memcached_st*);
 test_return_t memcached_set_encoding_key_append_TEST(memcached_st*);
 test_return_t memcached_set_encoding_key_set_get_clone_TEST(memcached_st*);
+test_return_t memcached_set_encoding_key_set_grow_key_TEST(memcached_st*);

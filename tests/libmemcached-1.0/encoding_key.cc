@@ -317,3 +317,64 @@ test_return_t memcached_set_encoding_key_set_get_clone_TEST(memcached_st* memc)
 
   return TEST_SUCCESS;
 }
+
+test_return_t memcached_set_encoding_key_set_grow_key_TEST(memcached_st* memc)
+{
+  memcached_st *memc_no_crypt= memcached_clone(NULL, memc);
+  test_true(memc_no_crypt);
+  test_compare(MEMCACHED_SUCCESS, memcached_set_encoding_key(memc, test_literal_param(__func__)));
+
+  size_t payload_size[] = { 100, 1000, 10000, 1000000, 1000000, 0 };
+  libtest::vchar_t payload;
+  for (size_t *ptr= payload_size; *ptr; ptr++)
+  {
+    payload.reserve(*ptr);
+    for (size_t x= payload.size(); x < *ptr; x++)
+    { 
+      payload.push_back(rand());
+    }
+
+    {
+      memcached_return_t rc= memcached_set(memc,
+                                           test_literal_param(__func__), // Key
+                                           &payload[0], payload.size(), // Value
+                                           time_t(0),
+                                           uint32_t(0));
+
+      // If we run out of space on the server, we just end the test early.
+      if (rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE)
+      {
+        break;
+      }
+      test_compare_hint(MEMCACHED_SUCCESS, rc, memcached_last_error_message(memc));
+    }
+
+    {
+      memcached_return_t rc;
+      size_t value_length;
+      char *value;
+      test_true((value= memcached_get(memc,
+                                      test_literal_param(__func__), // Key
+                                      &value_length, NULL, &rc)));
+      test_compare(MEMCACHED_SUCCESS, rc);
+      test_compare(payload.size(), value_length);
+      test_memcmp(&payload[0], value, value_length);
+
+      size_t raw_value_length;
+      char *raw_value;
+      test_true((raw_value= memcached_get(memc_no_crypt,
+                                          test_literal_param(__func__), // Key
+                                          &raw_value_length, NULL, &rc)));
+      test_compare(MEMCACHED_SUCCESS, rc);
+      test_ne_compare(payload.size(), raw_value_length);
+      test_ne_compare(0, memcmp(&payload[0], raw_value, raw_value_length));
+
+      free(value);
+      free(raw_value);
+    }
+  }
+
+  memcached_free(memc_no_crypt);
+
+  return TEST_SUCCESS;
+}
