@@ -43,8 +43,8 @@ public:
 
   // The following are just for unittesting the exception class
   static bool is_disabled();
-  static bool disable();
-  static bool enable();
+  static void disable();
+  static void enable();
   static uint32_t disabled_counter();
   static void increment_disabled_counter();
 
