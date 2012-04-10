@@ -414,6 +414,7 @@ test_st memcached_set_encoding_key_TESTS[] ={
   {"memcached_set_encoding_key() +increment_with_initial()", true, (test_callback_fn*)memcached_set_encoding_key_increment_with_initial_TEST },
   {"memcached_set_encoding_key() +decrement_with_initial()", true, (test_callback_fn*)memcached_set_encoding_key_decrement_with_initial_TEST },
   {"memcached_set_encoding_key() +set() +get() +cloen()", true, (test_callback_fn*)memcached_set_encoding_key_set_get_clone_TEST },
+  {"memcached_set_encoding_key() +set() +get() increase value size", true, (test_callback_fn*)memcached_set_encoding_key_set_grow_key_TEST },
   {0, 0, (test_callback_fn*)0}
 };
 
