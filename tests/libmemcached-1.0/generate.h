@@ -44,7 +44,6 @@ test_return_t generate_buffer_data(memcached_st*);
 test_return_t generate_data(memcached_st*);
 test_return_t generate_data_with_stats(memcached_st*);
 test_return_t generate_large_pairs(memcached_st *);
-test_return_t generate_pairs(memcached_st*);
 test_return_t get_read(memcached_st*);
 test_return_t get_read_count(memcached_st*);
 test_return_t mget_read(memcached_st*);

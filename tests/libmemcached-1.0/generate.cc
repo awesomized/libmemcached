@@ -66,7 +66,7 @@ test_return_t cleanup_pairs(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t generate_pairs(memcached_st *)
+static test_return_t generate_pairs(memcached_st *)
 {
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
@@ -96,6 +96,8 @@ test_return_t generate_large_pairs(memcached_st *)
 
 test_return_t generate_data(memcached_st *memc)
 {
+  test_compare(TEST_SUCCESS, generate_pairs(memc));
+
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
   test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
@@ -105,6 +107,8 @@ test_return_t generate_data(memcached_st *memc)
 
 test_return_t generate_data_with_stats(memcached_st *memc)
 {
+  test_compare(TEST_SUCCESS, generate_pairs(memc));
+
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
   test_compare(check_execute, global_count);

@@ -282,7 +282,6 @@ test_st ketama_compatibility[]= {
 };
 
 test_st generate_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"get_read", false, (test_callback_fn*)get_read },
   {"delete_generate", false, (test_callback_fn*)delete_generate },
@@ -303,7 +302,6 @@ test_st generate_tests[] ={
 };
 
 test_st consistent_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"get_read", 0, (test_callback_fn*)get_read_count },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
@@ -311,7 +309,6 @@ test_st consistent_tests[] ={
 };
 
 test_st consistent_weighted_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data_with_stats },
   {"get_read", false, (test_callback_fn*)get_read_count },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
