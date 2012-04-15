@@ -475,9 +475,6 @@ collection_st collection[] ={
   {"generate_murmur", (test_callback_fn*)pre_murmur, 0, generate_tests},
   {"generate_jenkins", (test_callback_fn*)pre_jenkins, 0, generate_tests},
   {"generate_nonblock", (test_callback_fn*)pre_nonblock, 0, generate_tests},
-  // Too slow
-  {"generate_corked", (test_callback_fn*)pre_cork, 0, generate_tests},
-  {"generate_corked_and_nonblock", (test_callback_fn*)pre_cork_and_nonblock, 0, generate_tests},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", (test_callback_fn*)pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", (test_callback_fn*)pre_behavior_ketama_weighted, 0, consistent_weighted_tests},

@@ -218,30 +218,6 @@ test_return_t pre_nonblock(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t pre_cork(memcached_st *memc)
-{
-#ifdef __APPLE__
-  return TEST_SKIPPED;
-#endif
-  bool set= true;
-  if (memcached_success(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CORK, set)))
-    return TEST_SUCCESS;
-
-  return TEST_SKIPPED;
-}
-
-test_return_t pre_cork_and_nonblock(memcached_st *memc)
-{
-#ifdef __APPLE__
-  return TEST_SKIPPED;
-#endif
-  test_return_t test_rc;
-  if ((test_rc= pre_cork(memc)) != TEST_SUCCESS)
-    return test_rc;
-
-  return pre_nonblock(memc);
-}
-
 test_return_t pre_nonblock_binary(memcached_st *memc)
 {
   memcached_st *memc_clone= memcached_clone(NULL, memc);
