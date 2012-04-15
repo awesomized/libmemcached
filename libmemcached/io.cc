@@ -206,14 +206,15 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
   }
 
+  int local_errno;
   size_t loop_max= 5;
   while (--loop_max) // While loop is for ERESTART or EINTR
   {
     int active_fd= poll(&fds, 1, ptr->root->poll_timeout);
-    assert_msg(active_fd <= 1 , "poll() returned an unexpected value");
 
-    if (active_fd == 1)
+    if (active_fd >= 1)
     {
+      assert_msg(active_fd == 1 , "poll() returned an unexpected value");
       return MEMCACHED_SUCCESS;
     }
     else if (active_fd == 0)
@@ -221,48 +222,48 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
       ptr->io_wait_count.timeouts++;
       return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
     }
-    else // -1
+
+    // Only an error should result in this code being called.
+    local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
+    assert_msg(active_fd == -1 , "poll() returned an unexpected value");
+    switch (local_errno)
     {
-      switch (get_socket_errno())
-      {
 #ifdef TARGET_OS_LINUX
-      case ERESTART:
+    case ERESTART:
 #endif
-      case EINTR:
-        break;
+    case EINTR:
+      continue;
 
-      case EFAULT:
-      case ENOMEM:
-        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    case EFAULT:
+    case ENOMEM:
+      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
-      case EINVAL:
-        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+    case EINVAL:
+      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
 
-      default:
-        int local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
-        if (fds.revents & POLLERR)
+    default:
+      if (fds.revents & POLLERR)
+      {
+        int err;
+        socklen_t len= sizeof (err);
+        if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
         {
-          int err;
-          socklen_t len= sizeof (err);
-          if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+          if (err == 0) // treat this as EINTR
           {
-            if (err == 0) // treat this as EINTR
-            {
-              continue;
-            }
-            local_errno= err;
+            continue;
           }
+          local_errno= err;
         }
-        memcached_quit_server(ptr, true);
-
-        return memcached_set_errno(*ptr, local_errno, MEMCACHED_AT);
       }
+      break;
     }
+
+    break; // should only occur from poll error
   }
 
   memcached_quit_server(ptr, true);
 
-  return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+  return memcached_set_errno(*ptr, local_errno, MEMCACHED_AT);
 }
 
 static bool io_flush(memcached_server_write_instance_st ptr,
@@ -302,16 +303,8 @@ static bool io_flush(memcached_server_write_instance_st ptr,
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
 
-    ssize_t sent_length= 0;
-    WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    if (with_flush)
-    {
-      sent_length= ::send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT);
-    }
-    else
-    {
-      sent_length= ::send(ptr->fd, local_write_ptr, write_length, MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE);
-    }
+    int flags= with_flush ? MSG_NOSIGNAL|MSG_DONTWAIT : MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE;
+    ssize_t sent_length= ::send(ptr->fd, local_write_ptr, write_length, flags);
 
     if (sent_length == SOCKET_ERROR)
     {
