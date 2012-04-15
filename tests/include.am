@@ -25,6 +25,7 @@ noinst_HEADERS+= tests/keys.hpp
 noinst_HEADERS+= tests/hash_results.h
 noinst_HEADERS+= tests/libmemcached_world.h
 noinst_HEADERS+= tests/libmemcached_world_socket.h
+noinst_HEADERS+= tests/runner.h
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
