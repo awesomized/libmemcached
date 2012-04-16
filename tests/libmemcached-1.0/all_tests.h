@@ -287,10 +287,6 @@ test_st generate_tests[] ={
   {"delete_generate", false, (test_callback_fn*)delete_generate },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
   // New start
-  {"generate_buffer_data", true, (test_callback_fn*)generate_buffer_data },
-  {"delete_buffer", false, (test_callback_fn*)delete_buffer_generate},
-  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
-  // New start
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"mget_read", false, (test_callback_fn*)mget_read },
   {"mget_read_result", false, (test_callback_fn*)mget_read_result },
@@ -471,6 +467,7 @@ collection_st collection[] ={
   {"Cal Haldenbrand's tests", 0, 0, haldenbrand_TESTS},
   {"user written tests", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
+  {"generate MEMCACHED_BEHAVIOR_BUFFER_REQUESTS", (test_callback_fn*)pre_buffer, 0, generate_tests},
   {"generate large", 0, 0, generate_large_TESTS},
   {"generate_hsieh", (test_callback_fn*)pre_hsieh, 0, generate_tests},
   {"generate_ketama", (test_callback_fn*)pre_behavior_ketama, 0, generate_tests},

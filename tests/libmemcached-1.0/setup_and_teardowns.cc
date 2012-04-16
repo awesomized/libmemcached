@@ -67,6 +67,13 @@ test_return_t pre_binary(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t pre_buffer(memcached_st *memc)
+{
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true));
+
+  return TEST_SUCCESS;
+}
+
 test_return_t pre_unix_socket(memcached_st *memc)
 {
   struct stat buf;
