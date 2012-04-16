@@ -53,15 +53,15 @@
 
 using namespace libtest;
 
-static pairs_st *global_pairs;
+static pairs_st *global_pairs= NULL;
 static const char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 static size_t global_count= 0;
 
-test_return_t cleanup_pairs(memcached_st *memc)
+test_return_t cleanup_pairs(memcached_st*)
 {
-  (void)memc;
   pairs_free(global_pairs);
+  global_pairs= NULL;
 
   return TEST_SUCCESS;
 }

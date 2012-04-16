@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include "tests/libmemcached-1.0/generate.h"
+
 class LibmemcachedRunner : public libtest::Runner {
 public:
   test_return_t run(test_callback_fn* func, void *object)
@@ -92,6 +94,7 @@ private:
 
   test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
   {
+    cleanup_pairs(NULL);
     if (func)
     {
       return func(container->parent);
