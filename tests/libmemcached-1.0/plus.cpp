@@ -300,5 +300,5 @@ void get_world(Framework *world)
   world->collection_startup= reinterpret_cast<test_callback_fn*>(world_container_startup);
   world->collection_shutdown= reinterpret_cast<test_callback_fn*>(world_container_shutdown);
 
-  world->set_runner(&defualt_libmemcached_runner);
+  world->set_runner(new LibmemcachedRunner);
 }

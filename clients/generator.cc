@@ -44,7 +44,9 @@ static void get_random_string(char *buffer, size_t size)
 void pairs_free(pairs_st *pairs)
 {
   if (pairs == NULL)
+  {
     return;
+  }
 
   /* We free until we hit the null pair we stores during creation */
   for (uint32_t x= 0; pairs[x].key; x++)

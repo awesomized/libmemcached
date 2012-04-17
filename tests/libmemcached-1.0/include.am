@@ -56,9 +56,11 @@ tests_libmemcached_1_0_testapp_CXXFLAGS =  $(AM_CXXFLAGS) ${PTHREAD_CFLAGS}
 tests_libmemcached_1_0_testapp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_libmemcached_1_0_testapp_SOURCES=
 tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/all_tests.cc
+tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
+tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/generate.cc
 tests_libmemcached_1_0_testapp_SOURCES+= \
 					 tests/libmemcached-1.0/basic.cc \
-					 tests/libmemcached-1.0/callback_counter.cc \
 					 tests/libmemcached-1.0/callbacks.cc \
 					 tests/libmemcached-1.0/debug.cc \
 					 tests/libmemcached-1.0/deprecated.cc \
@@ -66,8 +68,6 @@ tests_libmemcached_1_0_testapp_SOURCES+= \
 					 tests/libmemcached-1.0/encoding_key.cc \
 					 tests/libmemcached-1.0/error_conditions.cc \
 					 tests/libmemcached-1.0/exist.cc \
-					 tests/libmemcached-1.0/fetch_all_results.cc \
-					 tests/libmemcached-1.0/generate.cc \
 					 tests/libmemcached-1.0/haldenbrand.cc \
 					 tests/libmemcached-1.0/ketama.cc \
 					 tests/libmemcached-1.0/mem_functions.cc \
@@ -106,7 +106,6 @@ tests_libmemcached_1_0_testsocket_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STR
 tests_libmemcached_1_0_testsocket_SOURCES= \
 					   tests/libmemcached-1.0/all_tests_socket.cc \
 					   tests/libmemcached-1.0/basic.cc \
-					   tests/libmemcached-1.0/callback_counter.cc \
 					   tests/libmemcached-1.0/callbacks.cc \
 					   tests/libmemcached-1.0/debug.cc \
 					   tests/libmemcached-1.0/deprecated.cc \
@@ -114,8 +113,6 @@ tests_libmemcached_1_0_testsocket_SOURCES= \
 					   tests/libmemcached-1.0/encoding_key.cc \
 					   tests/libmemcached-1.0/error_conditions.cc \
 					   tests/libmemcached-1.0/exist.cc \
-					   tests/libmemcached-1.0/fetch_all_results.cc \
-					   tests/libmemcached-1.0/generate.cc \
 					   tests/libmemcached-1.0/haldenbrand.cc \
 					   tests/libmemcached-1.0/ketama.cc \
 					   tests/libmemcached-1.0/mem_functions.cc \
@@ -131,7 +128,11 @@ tests_libmemcached_1_0_testsocket_SOURCES= \
 					   tests/libmemcached-1.0/touch.cc \
 					   tests/libmemcached-1.0/virtual_buckets.cc
 
-tests_libmemcached_1_0_testsocket_SOURCES+= clients/generator.cc clients/execute.cc
+tests_libmemcached_1_0_testsocket_SOURCES+= clients/generator.cc
+tests_libmemcached_1_0_testsocket_SOURCES+= clients/execute.cc
+tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/generate.cc
+tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_libmemcached_1_0_testsocket_DEPENDENCIES= \
 						libmemcached/libmemcached.la \
 						libtest/libtest.la \
@@ -164,7 +165,12 @@ tests_libmemcached_1_0_sasl_SOURCES= \
 				     tests/libmemcached-1.0/replication.cc \
 				     tests/libmemcached-1.0/sasl.cc \
 				     tests/libmemcached-1.0/virtual_buckets.cc
-tests_libmemcached_1_0_sasl_SOURCES+= clients/generator.cc clients/execute.cc
+tests_libmemcached_1_0_sasl_SOURCES+= clients/execute.cc
+tests_libmemcached_1_0_sasl_SOURCES+= clients/generator.cc
+tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
+tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/generate.cc
+
 tests_libmemcached_1_0_sasl_DEPENDENCIES= \
 					  libmemcached/libmemcached.la \
 					  libtest/libtest.la
@@ -188,7 +194,15 @@ tests_atomsmasher_LDADD= $(tests_atomsmasher_DEPENDENCIES)
 noinst_PROGRAMS+= tests/atomsmasher
 
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
-tests_testudp_SOURCES= tests/mem_udp.cc
+tests_testudp_SOURCES=
+
+tests_testudp_SOURCES+= tests/mem_udp.cc
+tests_testudp_SOURCES+= clients/execute.cc
+tests_testudp_SOURCES+= clients/generator.cc
+tests_testudp_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_testudp_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
+tests_testudp_SOURCES+= tests/libmemcached-1.0/generate.cc
+
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES)
 check_PROGRAMS+= tests/testudp
@@ -197,7 +211,15 @@ noinst_PROGRAMS+= tests/testudp
 test-udp: tests/testudp
 	@tests/testudp
 
-tests_testplus_SOURCES= tests/libmemcached-1.0/plus.cpp
+tests_testplus_SOURCES=
+
+tests_testplus_SOURCES+= tests/libmemcached-1.0/plus.cpp
+tests_testplus_SOURCES+= clients/execute.cc
+tests_testplus_SOURCES+= clients/generator.cc
+tests_testplus_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_testplus_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
+tests_testplus_SOURCES+= tests/libmemcached-1.0/generate.cc
+
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testplus_LDADD= $(tests_testplus_DEPENDENCIES)

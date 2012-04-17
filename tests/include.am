@@ -25,6 +25,7 @@ noinst_HEADERS+= tests/keys.hpp
 noinst_HEADERS+= tests/hash_results.h
 noinst_HEADERS+= tests/libmemcached_world.h
 noinst_HEADERS+= tests/libmemcached_world_socket.h
+noinst_HEADERS+= tests/runner.h
 
 # Cycle should always run first
 tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
@@ -39,7 +40,14 @@ noinst_PROGRAMS+= tests/cycle
 
 include tests/libmemcached-1.0/include.am
 
-tests_failure_SOURCES= tests/failure.cc
+tests_failure_SOURCES=
+tests_failure_SOURCES+= tests/failure.cc
+tests_failure_SOURCES+= clients/execute.cc
+tests_failure_SOURCES+= clients/generator.cc
+tests_failure_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
+tests_failure_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
+tests_failure_SOURCES+= tests/libmemcached-1.0/generate.cc
+
 tests_failure_CXXFLAGS = $(AM_CXXFLAGS)
 tests_failure_DEPENDENCIES= $(TESTS_LDADDS)
 tests_failure_LDADD= $(tests_failure_DEPENDENCIES)

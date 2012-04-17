@@ -35,55 +35,76 @@
  *
  */
 
-#include <config.h>
-#include <libtest/test.hpp>
 
-#include "tests/basic.h"
-#include "tests/debug.h"
-#include "tests/deprecated.h"
-#include "tests/error_conditions.h"
-#include "tests/exist.h"
-#include "tests/ketama.h"
-#include "tests/namespace.h"
-#include "tests/parser.h"
-#include "tests/libmemcached-1.0/dump.h"
+#pragma once
+
 #include "tests/libmemcached-1.0/generate.h"
-#include "tests/libmemcached-1.0/haldenbrand.h"
-#include "tests/libmemcached-1.0/stat.h"
-#include "tests/touch.h"
-#include "tests/callbacks.h"
-#include "tests/pool.h"
-#include "tests/print.h"
-#include "tests/replication.h"
-#include "tests/server_add.h"
-#include "tests/virtual_buckets.h"
 
-#include "tests/libmemcached-1.0/setup_and_teardowns.h"
+class LibmemcachedRunner : public libtest::Runner {
+public:
+  test_return_t run(test_callback_fn* func, void *object)
+  {
+    return _runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
 
+  test_return_t pre(test_callback_fn* func, void *object)
+  {
+    return _pre_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
 
-#include "tests/libmemcached-1.0/mem_functions.h"
-#include "tests/libmemcached-1.0/encoding_key.h"
+  test_return_t post(test_callback_fn* func, void *object)
+  {
+    return _post_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
+  }
 
-/* Collections we are running */
-#include "tests/libmemcached-1.0/all_tests.h"
+private:
+  test_return_t _runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    test_compare(true, check());
 
-#include "tests/libmemcached_world_socket.h"
+    if (func)
+    {
+      test_true(container);
+      test_true(container->memc);
+      test_return_t ret;
+      try {
+        ret= func(container->memc);
+      }
+      catch (std::exception& e)
+      {
+        libtest::Error << e.what();
+        return TEST_FAILURE;
+      }
 
-void get_world(Framework *world)
-{
-  world->collections= collection;
+      return ret;
+    }
 
-  world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_destroy_fn*)world_destroy;
+    return TEST_SUCCESS;
+  }
 
-  world->item._startup= (test_callback_fn*)world_test_startup;
-  world->item.set_pre((test_callback_fn*)world_pre_run);
-  world->item.set_flush((test_callback_fn*)world_flush);
-  world->item.set_post((test_callback_fn*)world_post_run);
-  world->_on_error= (test_callback_error_fn*)world_on_error;
+  test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    test_compare(true, check());
 
-  world->collection_startup= (test_callback_fn*)world_container_startup;
-  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
+    if (func)
+    {
+      return func(container->parent);
+    }
 
-  world->set_runner(new LibmemcachedRunner);
-}
+    return TEST_SUCCESS;
+  }
+
+  test_return_t _post_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
+  {
+    test_compare(true, check());
+    cleanup_pairs(NULL);
+
+    if (func)
+    {
+      return func(container->parent);
+    }
+
+    return TEST_SUCCESS;
+  }
+};
+

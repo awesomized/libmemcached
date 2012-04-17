@@ -96,7 +96,7 @@ void get_world(Framework *world)
   world->collection_startup= (test_callback_fn*)world_container_startup;
   world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
 
-  world->set_runner(&defualt_libmemcached_runner);
+  world->set_runner(new LibmemcachedRunner);
 
   world->set_socket();
 }

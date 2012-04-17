@@ -282,12 +282,14 @@ test_st ketama_compatibility[]= {
 };
 
 test_st generate_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"get_read", false, (test_callback_fn*)get_read },
   {"delete_generate", false, (test_callback_fn*)delete_generate },
-  {"generate_buffer_data", true, (test_callback_fn*)generate_buffer_data },
-  {"delete_buffer", false, (test_callback_fn*)delete_buffer_generate},
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
+  {0, 0, (test_callback_fn*)0}
+};
+  // New start
+test_st generate_mget_TESTS[] ={
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"mget_read", false, (test_callback_fn*)mget_read },
   {"mget_read_result", false, (test_callback_fn*)mget_read_result },
@@ -295,15 +297,16 @@ test_st generate_tests[] ={
   {"memcached_fetch_result() partial read", false, (test_callback_fn*)mget_read_partial_result },
   {"mget_read_function", false, (test_callback_fn*)mget_read_function },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
+  {0, 0, (test_callback_fn*)0}
+};
+
+test_st generate_large_TESTS[] ={
   {"generate_large_pairs", true, (test_callback_fn*)generate_large_pairs },
-  {"generate_data", true, (test_callback_fn*)generate_data },
-  {"generate_buffer_data", true, (test_callback_fn*)generate_buffer_data },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
   {0, 0, (test_callback_fn*)0}
 };
 
 test_st consistent_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data },
   {"get_read", 0, (test_callback_fn*)get_read_count },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
@@ -311,7 +314,6 @@ test_st consistent_tests[] ={
 };
 
 test_st consistent_weighted_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
   {"generate_data", true, (test_callback_fn*)generate_data_with_stats },
   {"get_read", false, (test_callback_fn*)get_read_count },
   {"cleanup", true, (test_callback_fn*)cleanup_pairs },
@@ -468,6 +470,9 @@ collection_st collection[] ={
   {"Cal Haldenbrand's tests", 0, 0, haldenbrand_TESTS},
   {"user written tests", 0, 0, user_tests},
   {"generate", 0, 0, generate_tests},
+  {"generate MEMCACHED_BEHAVIOR_BUFFER_REQUESTS", (test_callback_fn*)pre_buffer, 0, generate_tests},
+  {"mget generate MEMCACHED_BEHAVIOR_BUFFER_REQUESTS", (test_callback_fn*)pre_buffer, 0, generate_mget_TESTS},
+  {"generate large", 0, 0, generate_large_TESTS},
   {"generate_hsieh", (test_callback_fn*)pre_hsieh, 0, generate_tests},
   {"generate_ketama", (test_callback_fn*)pre_behavior_ketama, 0, generate_tests},
   {"generate_hsieh_consistent", (test_callback_fn*)enable_consistent_hsieh, 0, generate_tests},
@@ -475,9 +480,7 @@ collection_st collection[] ={
   {"generate_murmur", (test_callback_fn*)pre_murmur, 0, generate_tests},
   {"generate_jenkins", (test_callback_fn*)pre_jenkins, 0, generate_tests},
   {"generate_nonblock", (test_callback_fn*)pre_nonblock, 0, generate_tests},
-  // Too slow
-  {"generate_corked", (test_callback_fn*)pre_cork, 0, generate_tests},
-  {"generate_corked_and_nonblock", (test_callback_fn*)pre_cork_and_nonblock, 0, generate_tests},
+  {"mget generate_nonblock", (test_callback_fn*)pre_nonblock, 0, generate_mget_TESTS},
   {"consistent_not", 0, 0, consistent_tests},
   {"consistent_ketama", (test_callback_fn*)pre_behavior_ketama, 0, consistent_tests},
   {"consistent_ketama_weighted", (test_callback_fn*)pre_behavior_ketama_weighted, 0, consistent_weighted_tests},
