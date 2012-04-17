@@ -122,7 +122,7 @@ public:
 
   bool has_syslog() const
   {
-    return true;
+    return false; //  --syslog.errmsg-enable
   }
 
   bool has_port_option() const

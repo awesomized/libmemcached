@@ -49,6 +49,7 @@ drd:
 EXTRA_DIST+= libtest/run.gdb
 
 CLEANFILES+= \
+	     tmp_chroot/var/drizzle/* \
 	     tmp_chroot/var/log/* \
 	     tmp_chroot/var/run/* \
 	     tmp_chroot/var/tmp/*
@@ -73,6 +74,7 @@ noinst_HEADERS+= \
 		 libtest/fatal.hpp \
 		 libtest/framework.h \
 		 libtest/gearmand.h \
+		 libtest/drizzled.h \
 		 libtest/get.h \
 		 libtest/has.hpp \
 		 libtest/http.hpp \
@@ -99,34 +101,36 @@ noinst_HEADERS+= \
 		 libtest/wait.h
 
 noinst_LTLIBRARIES+= libtest/libtest.la
-libtest_libtest_la_SOURCES= \
-			    libtest/binaries.cc \
-			    libtest/cmdline.cc \
-			    libtest/comparison.cc \
-			    libtest/core.cc \
-			    libtest/cpu.cc \
-			    libtest/dream.cc \
-			    libtest/fatal.cc \
-			    libtest/framework.cc \
-			    libtest/has.cc \
-			    libtest/http.cc \
-			    libtest/is_local.cc \
-			    libtest/killpid.cc \
-			    libtest/libtool.cc \
-			    libtest/port.cc \
-			    libtest/runner.cc \
-			    libtest/server.cc \
-			    libtest/server_container.cc \
-			    libtest/signal.cc \
-			    libtest/socket.cc \
-			    libtest/strerror.cc \
-			    libtest/test.cc \
-			    libtest/tmpfile.cc \
-			    libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS=
 libtest_libtest_la_DEPENDENCIES=
 libtest_libtest_la_LIBADD=
+libtest_libtest_la_SOURCES=
+
+libtest_libtest_la_SOURCES+= libtest/binaries.cc 
+libtest_libtest_la_SOURCES+= libtest/cmdline.cc 
+libtest_libtest_la_SOURCES+= libtest/comparison.cc 
+libtest_libtest_la_SOURCES+= libtest/core.cc 
+libtest_libtest_la_SOURCES+= libtest/cpu.cc 
+libtest_libtest_la_SOURCES+= libtest/dream.cc 
+libtest_libtest_la_SOURCES+= libtest/fatal.cc 
+libtest_libtest_la_SOURCES+= libtest/framework.cc 
+libtest_libtest_la_SOURCES+= libtest/has.cc 
+libtest_libtest_la_SOURCES+= libtest/drizzled.cc 
+libtest_libtest_la_SOURCES+= libtest/http.cc 
+libtest_libtest_la_SOURCES+= libtest/is_local.cc 
+libtest_libtest_la_SOURCES+= libtest/killpid.cc 
+libtest_libtest_la_SOURCES+= libtest/libtool.cc 
+libtest_libtest_la_SOURCES+= libtest/main.cc 
+libtest_libtest_la_SOURCES+= libtest/port.cc 
+libtest_libtest_la_SOURCES+= libtest/runner.cc 
+libtest_libtest_la_SOURCES+= libtest/server.cc 
+libtest_libtest_la_SOURCES+= libtest/server_container.cc 
+libtest_libtest_la_SOURCES+= libtest/signal.cc 
+libtest_libtest_la_SOURCES+= libtest/socket.cc 
+libtest_libtest_la_SOURCES+= libtest/strerror.cc 
+libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
+libtest_libtest_la_SOURCES+= libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
@@ -170,6 +174,13 @@ libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
 endif
 endif
 
+if HAVE_LIBDRIZZLE
+
+libtest_libtest_la_LIBADD+= $(libdrizzle_LIBS)
+libtest_libtest_la_CXXFLAGS+= $(libdrizzle_CFLAGS)
+
+endif
+
 if BUILDING_GEARMAN
 libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
 libtest_libtest_la_LIBADD+= libgearman/libgearman.la
@@ -192,7 +203,7 @@ libtest_libtest_la_SOURCES+= util/operation.cc
 endif
 endif
 
-libtest_tmp_dir: tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run
+libtest_tmp_dir: tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run tmp_chroot/var/drizzle
 
 tmp_chroot:
 	@$(mkdir_p) tmp_chroot
@@ -205,6 +216,9 @@ tmp_chroot/var/log: tmp_chroot/var
 
 tmp_chroot/var/tmp: tmp_chroot/var
 	@$(mkdir_p) tmp_chroot/var/tmp
+
+tmp_chroot/var/drizzle: tmp_chroot/var
+	@$(mkdir_p) tmp_chroot/var/drizzle
 
 tmp_chroot/var/run: tmp_chroot/var
 	@$(mkdir_p) tmp_chroot/var/run

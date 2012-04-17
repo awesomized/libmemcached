@@ -46,10 +46,22 @@ bool has_gearmand_binary()
   return false;
 }
 
+bool has_drizzled_binary()
+{
+#if defined(HAVE_DRIZZLED_BINARY) && HAVE_DRIZZLED_BINARY
+  if (access(DRIZZLED_BINARY, R_OK|X_OK) == 0)
+  {
+    return true;
+  }
+#endif
+
+  return false;
+}
+
 bool has_memcached_binary()
 {
 #if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY,R_OK|X_OK) == 0)
+  if (access(MEMCACHED_BINARY, R_OK|X_OK) == 0)
   {
     return true;
   }

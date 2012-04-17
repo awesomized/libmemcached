@@ -71,6 +71,7 @@ m4_include([memcached/version.m4])
 
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
+AM_CONDITIONAL(HAVE_LIBDRIZZLE, false)
 AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enables libmemcached Support])
 
 AM_CONDITIONAL(BUILDING_GEARMAN, false)
@@ -218,6 +219,7 @@ AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
 
 AC_DEFINE([HAVE_LIBDRIZZLE], [0], [Support for libdrizzle])
 AC_DEFINE([HAVE_DRIZZLED_BINARY], [0], [Support for DrizzleD])
+AC_DEFINE([DRIZZLED_BINARY], [0], [Support for DrizzleD])
 AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker])
 AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
 AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])

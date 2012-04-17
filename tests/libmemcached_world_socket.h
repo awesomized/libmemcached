@@ -191,5 +191,3 @@ static bool world_destroy(void *object)
 typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
 
 #include "tests/runner.h"
-
-static LibmemcachedRunner defualt_libmemcached_runner;
