@@ -203,6 +203,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
   if (ptr->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
   {
+    ptr->io_wait_count.timeouts++;
     return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
   }
 
@@ -340,8 +341,6 @@ static bool io_flush(memcached_server_write_instance_st ptr,
           }
           else if (rc == MEMCACHED_TIMEOUT)
           {
-            ptr->io_wait_count.timeouts++;
-            error= memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
             return false;
           }
 
