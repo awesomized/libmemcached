@@ -134,6 +134,11 @@ public:
     return _pid;
   }
 
+  void will_fail()
+  {
+    _will_fail= true;
+  }
+
 private:
   void create_argv(const char *args[]);
   void delete_argv();
@@ -143,6 +148,7 @@ private:
   bool _use_valgrind;
   bool _use_gdb;
   bool _use_ptrcheck;
+  bool _will_fail;
   size_t _argc;
   std::string _exectuble_name;
   std::string _exectuble;
@@ -184,5 +190,6 @@ static inline std::ostream& operator<<(std::ostream& output, const enum Applicat
 int exec_cmdline(const std::string& executable, const char *args[], bool use_libtool= false);
 
 const char *gearmand_binary(); 
+const char *drizzled_binary();
 
 }
