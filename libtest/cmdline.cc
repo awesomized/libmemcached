@@ -113,6 +113,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
   _use_valgrind(false),
   _use_gdb(false),
   _use_ptrcheck(false),
+  _will_fail(false),
   _argc(0),
   _exectuble(arg),
   stdin_fd(STDIN_FILENO),
@@ -252,7 +253,10 @@ Application::error_t Application::run(const char *args[])
 
   if (spawn_ret != 0)
   {
-    Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
+    if (_will_fail == false)
+    {
+      Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
+    }
     _pid= -1;
     return Application::INVALID;
   }
@@ -790,6 +794,11 @@ int exec_cmdline(const std::string& command, const char *args[], bool use_libtoo
 const char *gearmand_binary() 
 {
   return GEARMAND_BINARY;
+}
+
+const char *drizzled_binary() 
+{
+  return DRIZZLED_BINARY;
 }
 
 } // namespace exec_cmdline

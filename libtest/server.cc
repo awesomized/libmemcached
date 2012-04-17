@@ -201,6 +201,7 @@ bool Server::start()
       {
         if (_app.check())
         {
+          _app.slurp();
           continue;
         }
 
@@ -254,14 +255,18 @@ bool Server::start()
       }
 
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM, 
-                           "Failed to ping(), waited: %u server started, having pid_file. exec: %s stderr:%s",
+                           "Failed native ping(), pid: %d is alive: %s waited: %u server started, having pid_file. exec: %s stderr:%s",
+                           int(_app.pid()),
+                           _app.check() ? "true" : "false",
                            this_wait, _running.c_str(), 
                            _app.stderr_c_str());
     }
     else
     {
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Failed to ping(), waited: %u server started. exec: %s stderr:%s",
+                           "Failed native ping(), pid: %d is alive: %s waited: %u server started. exec: %s stderr:%s",
+                           int(_app.pid()),
+                           _app.check() ? "true" : "false",
                            this_wait,
                            _running.c_str(),
                            _app.stderr_c_str());
@@ -371,7 +376,7 @@ bool Server::args(Application& app)
 {
 
   // Set a log file if it was requested (and we can)
-  if (false and has_log_file_option())
+  if (has_log_file_option())
   {
     set_log_file();
     log_file_option(app, _log_file);

@@ -53,20 +53,20 @@
 
 using namespace libtest;
 
-static pairs_st *global_pairs;
+static pairs_st *global_pairs= NULL;
 static const char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 static size_t global_count= 0;
 
-test_return_t cleanup_pairs(memcached_st *memc)
+test_return_t cleanup_pairs(memcached_st*)
 {
-  (void)memc;
   pairs_free(global_pairs);
+  global_pairs= NULL;
 
   return TEST_SUCCESS;
 }
 
-test_return_t generate_pairs(memcached_st *)
+static test_return_t generate_pairs(memcached_st *)
 {
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
   global_count= GLOBAL_COUNT;
@@ -80,7 +80,7 @@ test_return_t generate_pairs(memcached_st *)
   return TEST_SUCCESS;
 }
 
-test_return_t generate_large_pairs(memcached_st *)
+test_return_t generate_large_pairs(memcached_st *memc)
 {
   global_pairs= pairs_generate(GLOBAL2_COUNT, MEMCACHED_MAX_BUFFER+10);
   global_count= GLOBAL2_COUNT;
@@ -91,11 +91,18 @@ test_return_t generate_large_pairs(memcached_st *)
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true);
+  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+
+  test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+
   return TEST_SUCCESS;
 }
 
 test_return_t generate_data(memcached_st *memc)
 {
+  test_compare(TEST_SUCCESS, generate_pairs(memc));
+
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
   test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
@@ -105,6 +112,8 @@ test_return_t generate_data(memcached_st *memc)
 
 test_return_t generate_data_with_stats(memcached_st *memc)
 {
+  test_compare(TEST_SUCCESS, generate_pairs(memc));
+
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
   test_compare(check_execute, global_count);

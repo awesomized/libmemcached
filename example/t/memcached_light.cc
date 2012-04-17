@@ -166,8 +166,6 @@ public:
   }
 };
 
-static MemcachedLightRunner defualt_libmemcached_runner;
-
 test_st cmdline_option_TESTS[] ={
   {"--help", true, help_TEST },
   {"--verbose", true, verbose_TEST },
@@ -238,6 +236,6 @@ void get_world(Framework *world)
   world->_create= world_create;
   world->_destroy= world_destroy;
   world->collections= collection;
-  world->set_runner(&defualt_libmemcached_runner);
+  world->set_runner(new MemcachedLightRunner);
 }
 

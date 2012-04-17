@@ -60,3 +60,4 @@ test_return_t pre_replication(memcached_st*);
 test_return_t pre_replication_noblock(memcached_st*);
 test_return_t pre_settimer(memcached_st*);
 test_return_t pre_unix_socket(memcached_st*);
+test_return_t pre_buffer(memcached_st*);

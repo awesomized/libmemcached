@@ -154,6 +154,12 @@ static test_return_t var_log_exists_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t var_drizzle_exists_test(void *)
+{
+  test_compare(0, access("var/drizzle", R_OK | W_OK | X_OK));
+  return TEST_SUCCESS;
+}
+
 static test_return_t var_tmp_test(void *)
 {
   FILE *file= fopen("var/tmp/junk", "w+");
@@ -180,6 +186,14 @@ static test_return_t var_log_test(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t var_drizzle_test(void *)
+{
+  FILE *file= fopen("var/drizzle/junk", "w+");
+  test_true(file);
+  fclose(file);
+  return TEST_SUCCESS;
+}
+
 static test_return_t var_tmp_rm_test(void *)
 {
   test_true(unlink("var/tmp/junk") == 0);
@@ -195,6 +209,12 @@ static test_return_t var_run_rm_test(void *)
 static test_return_t var_log_rm_test(void *)
 {
   test_true(unlink("var/log/junk") == 0);
+  return TEST_SUCCESS;
+}
+
+static test_return_t var_drizzle_rm_test(void *)
+{
+  test_true(unlink("var/drizzle/junk") == 0);
   return TEST_SUCCESS;
 }
 
@@ -221,6 +241,22 @@ static test_return_t _compare_gearman_return_t_test(void *)
 #if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN
   test_compare(GEARMAN_SUCCESS, GEARMAN_SUCCESS);
 #endif
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t drizzled_cycle_test(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers and servers->validate());
+
+#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
+  test_true(has_drizzled_binary());
+#endif
+
+  test_skip(true, has_drizzled_binary());
+
+  test_true(server_startup(*servers, "drizzled", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
 }
@@ -384,6 +420,7 @@ static test_return_t application_doesnotexist_BINARY(void *)
 
   test_skip_valgrind();
   Application true_app("doesnotexist");
+  true_app.will_fail();
 
   const char *args[]= { "--fubar", 0 };
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
@@ -710,6 +747,18 @@ static test_return_t check_for_gearman(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t check_for_drizzle(void *)
+{
+  test_skip(true, HAVE_LIBDRIZZLE);
+  test_skip(true, has_drizzled_binary());
+  return TEST_SUCCESS;
+}
+
+
+test_st drizzled_tests[] ={
+  {"drizzled startup-shutdown", 0, drizzled_cycle_test },
+  {0, 0, 0}
+};
 
 test_st gearmand_tests[] ={
 #if 0
@@ -768,12 +817,15 @@ test_st directories_tests[] ={
   {"var/tmp exists", 0, var_tmp_exists_test },
   {"var/run exists", 0, var_run_exists_test },
   {"var/log exists", 0, var_log_exists_test },
+  {"var/drizzle exists", 0, var_drizzle_exists_test },
   {"var/tmp", 0, var_tmp_test },
   {"var/run", 0, var_run_test },
   {"var/log", 0, var_log_test },
+  {"var/drizzle", 0, var_drizzle_test },
   {"var/tmp rm", 0, var_tmp_rm_test },
   {"var/run rm", 0, var_run_rm_test },
   {"var/log rm", 0, var_log_rm_test },
+  {"var/drizzle rm", 0, var_drizzle_rm_test },
   {0, 0, 0}
 };
 
@@ -868,6 +920,7 @@ collection_st collection[] ={
   {"comparison", 0, 0, comparison_tests},
   {"gearmand", check_for_gearman, 0, gearmand_tests},
   {"memcached", check_for_libmemcached, 0, memcached_tests},
+  {"drizzled", check_for_drizzle, 0, drizzled_tests},
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},
   {"http", check_for_curl, 0, http_tests},

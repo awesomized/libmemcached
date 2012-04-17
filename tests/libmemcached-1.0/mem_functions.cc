@@ -646,7 +646,12 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
       memcached_return_t rc;
       char *out_value= memcached_get(memc, keys.key_at(which_key), keys.length_at(which_key),
                                      &value_length, &flags, &rc);
-      test_compare(MEMCACHED_SUCCESS, rc);
+      if (rc == MEMCACHED_NOTFOUND)
+      { } // It is possible that the value has been purged.
+      else
+      {
+        test_compare_hint(MEMCACHED_SUCCESS, rc, memcached_last_error_message(memc));
+      }
       test_null(out_value);
       test_zero(value_length);
       test_zero(flags);

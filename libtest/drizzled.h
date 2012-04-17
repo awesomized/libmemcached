@@ -2,7 +2,7 @@
  * 
  *  libtest
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,21 +19,18 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+
 #pragma once
+
+#include <arpa/inet.h>
+
+namespace libtest { struct Server; }
 
 namespace libtest {
 
-LIBTEST_API
-bool has_memcached_binary();
+libtest::Server *build_drizzled(const char *hostname, in_port_t try_port);
 
-LIBTEST_API
-bool has_memcached_sasl_binary();
+bool ping_drizzled(const in_port_t);
 
-LIBTEST_API
-bool has_gearmand_binary();
-
-LIBTEST_API
-bool has_drizzled_binary();
-
-} // namespace libtest
+}
 
