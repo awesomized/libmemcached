@@ -466,6 +466,10 @@ cleanup:
   {
     std::cerr << e.what() << std::endl;
   }
+  catch (libtest::disconnected& e)
+  {
+    std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
+  }
   catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
