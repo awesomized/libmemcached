@@ -310,39 +310,32 @@ int main(int argc, char *argv[])
             {
               if (test_success(return_code= world.item.flush(creators_ptr, run)))
               {
-                // @note pre will fail is SKIPPED is returned
-                if (test_success(return_code= world.item.pre(creators_ptr)))
-                {
-                  { // Runner Code
-                    gettimeofday(&start_time, NULL);
-                    assert(world.runner());
-                    assert(run->test_fn);
-                    try 
-                    {
-                      return_code= world.runner()->run(run->test_fn, creators_ptr);
-                    }
-                    // Special case where check for the testing of the exception
-                    // system.
-                    catch (libtest::fatal &e)
-                    {
-                      if (fatal::is_disabled())
-                      {
-                        fatal::increment_disabled_counter();
-                        return_code= TEST_SUCCESS;
-                      }
-                      else
-                      {
-                        throw;
-                      }
-                    }
-
-                    gettimeofday(&end_time, NULL);
-                    load_time= timedif(end_time, start_time);
+                { // Runner Code
+                  gettimeofday(&start_time, NULL);
+                  assert(world.runner());
+                  assert(run->test_fn);
+                  try 
+                  {
+                    return_code= world.runner()->run(run->test_fn, creators_ptr);
                   }
-                }
+                  // Special case where check for the testing of the exception
+                  // system.
+                  catch (libtest::fatal &e)
+                  {
+                    if (fatal::is_disabled())
+                    {
+                      fatal::increment_disabled_counter();
+                      return_code= TEST_SUCCESS;
+                    }
+                    else
+                    {
+                      throw;
+                    }
+                  }
 
-                // @todo do something if post fails
-                (void)world.item.post(creators_ptr);
+                  gettimeofday(&end_time, NULL);
+                  load_time= timedif(end_time, start_time);
+                }
               }
               else if (return_code == TEST_SKIPPED)
               { }
