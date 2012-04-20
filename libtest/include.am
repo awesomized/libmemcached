@@ -132,7 +132,6 @@ libtest_libtest_la_SOURCES+= libtest/strerror.cc
 libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
 libtest_libtest_la_SOURCES+= libtest/vchar.cc
 
-libtest_libtest_la_CXXFLAGS+= ${NO_CONVERSION}
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
 libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
 libtest_libtest_la_CXXFLAGS+= -DLIBTEST_TEMP="\"tmp_chroot\""
