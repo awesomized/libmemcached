@@ -80,20 +80,11 @@ public:
     */
     test_callback_fn *_flush;
 
-  private:
-    /*
-       Run before and after the runnner is executed.
-    */
-    test_callback_fn *pre_run;
-    test_callback_fn *post_run;
-
   public:
 
     Item() :
       _startup(NULL),
-      _flush(NULL),
-      pre_run(NULL),
-      post_run(NULL)
+      _flush(NULL)
     { }
 
     void set_startup(test_callback_fn *arg)
@@ -111,19 +102,7 @@ public:
       _flush= arg;
     }
 
-    void set_pre(test_callback_fn *arg)
-    {
-      pre_run= arg;
-    }
-
-    void set_post(test_callback_fn *arg)
-    {
-      pre_run= arg;
-    }
-
-    test_return_t pre(void *arg);
     test_return_t flush(void* arg, test_st* run);
-    test_return_t post(void *arg);
 
   } item;
 

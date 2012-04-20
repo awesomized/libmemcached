@@ -573,8 +573,6 @@ void get_world(Framework *world)
 
   world->item._startup= (test_callback_fn*)world_test_startup;
   world->item._flush= (test_callback_fn*)world_flush;
-  world->item.set_pre((test_callback_fn*)world_pre_run);
-  world->item.set_post((test_callback_fn*)world_post_run);
   world->_on_error= (test_callback_error_fn*)world_on_error;
 
   world->collection_startup= (test_callback_fn*)world_container_startup;

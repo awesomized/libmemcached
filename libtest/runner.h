@@ -31,6 +31,7 @@ namespace libtest {
 */
 class Runner {
 public:
+  virtual test_return_t flush(void*);
   virtual test_return_t run(test_callback_fn* func, void *object);
   virtual test_return_t pre(test_callback_fn* func, void *object);
   virtual test_return_t post(test_callback_fn* func, void *object);
