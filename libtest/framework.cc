@@ -26,10 +26,8 @@
 
 using namespace libtest;
 
-static test_return_t _default_callback(void *p)
+static test_return_t _default_callback(void*)
 {
-  (void)p;
-
   return TEST_SUCCESS;
 }
 

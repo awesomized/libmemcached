@@ -292,7 +292,6 @@ void get_world(Framework *world)
   world->_destroy= world_destroy;
 
   world->item._startup= reinterpret_cast<test_callback_fn*>(world_test_startup);
-  world->item._flush= reinterpret_cast<test_callback_fn*>(world_flush);
   world->_on_error= reinterpret_cast<test_callback_error_fn*>(world_on_error);
 
   world->collection_startup= reinterpret_cast<test_callback_fn*>(world_container_startup);

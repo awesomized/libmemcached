@@ -18,7 +18,6 @@ DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
 PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
 
 EXTRA_DIST+= tests/cpp_example.cc
-EXTRA_DIST+= tests/output_plus.res
 
 noinst_HEADERS+= tests/exist.h
 noinst_HEADERS+= tests/keys.hpp

@@ -150,16 +150,6 @@ static test_return_t world_test_startup(libmemcached_test_container_st *containe
   return TEST_SUCCESS;
 }
 
-test_return_t world_flush(libmemcached_test_container_st *container);
-test_return_t world_flush(libmemcached_test_container_st *container)
-{
-  test_true(container->memc);
-  memcached_flush(container->memc, 0);
-  memcached_quit(container->memc);
-
-  return TEST_SUCCESS;
-}
-
 static test_return_t world_on_error(test_return_t , libmemcached_test_container_st *container)
 {
   test_true(container->memc);
