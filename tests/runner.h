@@ -47,6 +47,20 @@ public:
     return _runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);
   }
 
+  test_return_t flush(void* arg)
+  {
+    return flush((libmemcached_test_container_st*)arg);
+  }
+
+  test_return_t flush(libmemcached_test_container_st *container)
+  {
+    test_true(container->memc);
+    memcached_flush(container->memc, 0);
+    memcached_quit(container->memc);
+
+    return TEST_SUCCESS;
+  }
+
   test_return_t pre(test_callback_fn* func, void *object)
   {
     return _pre_runner_default(libmemcached_test_callback_fn(func), (libmemcached_test_container_st*)object);

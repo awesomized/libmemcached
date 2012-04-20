@@ -29,6 +29,11 @@ Runner::Runner()
 {
 }
 
+test_return_t Runner::flush(void*)
+{
+  return TEST_SUCCESS;
+}
+
 test_return_t Runner::run(test_callback_fn* func, void *object)
 {
   if (func)

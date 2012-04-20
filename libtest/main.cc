@@ -308,7 +308,12 @@ int main(int argc, char *argv[])
           try {
             if (test_success(return_code= world.item.startup(creators_ptr)))
             {
-              if (test_success(return_code= world.item.flush(creators_ptr, run)))
+              if (run->requires_flush)
+              {
+                return_code= world.runner()->flush(creators_ptr);
+              }
+
+              if (test_success(return_code))
               {
                 { // Runner Code
                   gettimeofday(&start_time, NULL);
