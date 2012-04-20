@@ -58,26 +58,6 @@ Framework::~Framework()
   delete _runner;
 }
 
-test_return_t Framework::Item::pre(void *arg)
-{
-  if (pre_run)
-  {
-    return pre_run(arg);
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t Framework::Item::post(void *arg)
-{
-  if (post_run)
-  {
-    return post_run(arg);
-  }
-
-  return TEST_SUCCESS;
-}
-
 test_return_t Framework::Item::flush(void* arg, test_st* run)
 {
   if (run->requires_flush and _flush)

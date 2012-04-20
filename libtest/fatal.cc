@@ -65,5 +65,19 @@ void fatal::increment_disabled_counter()
   _counter++;
 }
 
+disconnected::disconnected(const char *file, int line, const char *func, const char *instance, const in_port_t port, const char *format, ...) :
+  _port(port),
+  std::runtime_error(func)
+{
+  strncpy(_instance, instance, sizeof(_instance));
+  va_list args;
+  va_start(args, format);
+  char last_error[BUFSIZ];
+  (void)vsnprintf(last_error, sizeof(last_error), format, args);
+  va_end(args);
+
+  snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", file, int(line), last_error, func);
+}
+
 } // namespace libtest
 

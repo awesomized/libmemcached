@@ -141,29 +141,6 @@ test_return_t world_flush(libmemcached_test_container_st *container)
   return TEST_SUCCESS;
 }
 
-static test_return_t world_pre_run(libmemcached_test_container_st *container)
-{
-  test_true(container->memc);
-  for (uint32_t loop= 0; loop < memcached_server_list_count(container->memc->servers); loop++)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(container->memc, loop);
-
-    test_compare(-1, instance->fd);
-    test_compare(0U, instance->cursor_active);
-  }
-
-  return TEST_SUCCESS;
-}
-
-
-static test_return_t world_post_run(libmemcached_test_container_st *container)
-{
-  test_true(container->memc);
-
-  return TEST_SUCCESS;
-}
-
 static test_return_t world_on_error(test_return_t , libmemcached_test_container_st *container)
 {
   test_true(container->memc);
