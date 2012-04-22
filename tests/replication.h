@@ -50,3 +50,5 @@ test_return_t replication_randomize_mget_test(memcached_st *memc);
 test_return_t replication_randomize_mget_fail_test(memcached_st *memc);
 
 test_return_t replication_miss_test(memcached_st *memc);
+
+test_return_t check_replication_sanity_TEST(memcached_st*);

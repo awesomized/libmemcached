@@ -39,6 +39,7 @@
 #pragma once
 
 #include "tests/libmemcached-1.0/generate.h"
+#include "tests/memc.h"
 
 class LibmemcachedRunner : public libtest::Runner {
 public:
@@ -54,9 +55,9 @@ public:
 
   test_return_t flush(libmemcached_test_container_st *container)
   {
-    test_true(container->memc);
-    memcached_flush(container->memc, 0);
-    memcached_quit(container->memc);
+    Memc memc(container->parent());
+    memcached_flush(&memc, 0);
+    memcached_quit(&memc);
 
     return TEST_SUCCESS;
   }
@@ -74,35 +75,66 @@ public:
 private:
   test_return_t _runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
   {
+    test_true(container);
+    test_true(container->parent());
+    Memc memc(container->parent());
+
     test_compare(true, check());
 
+    test_return_t ret= TEST_SUCCESS;
     if (func)
     {
       test_true(container);
-      test_true(container->memc);
-      test_return_t ret;
       try {
-        ret= func(container->memc);
+        ret= func(&memc);
       }
       catch (std::exception& e)
       {
         libtest::Error << e.what();
-        return TEST_FAILURE;
+        ret= TEST_FAILURE;
       }
-
-      return ret;
     }
 
-    return TEST_SUCCESS;
+    return ret;
   }
 
   test_return_t _pre_runner_default(libmemcached_test_callback_fn func, libmemcached_test_container_st *container)
   {
+    container->reset();
+    {
+      char buffer[BUFSIZ];
+
+      test_compare_got(MEMCACHED_SUCCESS,
+                       libmemcached_check_configuration(container->construct.option_string().c_str(), container->construct.option_string().size(),
+                                                        buffer, sizeof(buffer)),
+                       container->construct.option_string().c_str());
+
+      test_null(container->parent());
+      container->parent(memcached(container->construct.option_string().c_str(), container->construct.option_string().size()));
+      test_true(container->parent());
+      test_compare(MEMCACHED_SUCCESS, memcached_version(container->parent()));
+
+      if (container->construct.sasl())
+      {
+        if (memcached_failed(memcached_behavior_set(container->parent(), MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
+        {
+          container->reset();
+          return TEST_FAILURE;
+        }
+
+        if (memcached_failed(memcached_set_sasl_auth_data(container->parent(), container->construct.username().c_str(), container->construct.password().c_str())))
+        {
+          container->reset();
+          return TEST_FAILURE;
+        }
+      }
+    }
+
     test_compare(true, check());
 
     if (func)
     {
-      return func(container->parent);
+      return func(container->parent());
     }
 
     return TEST_SUCCESS;
@@ -113,12 +145,14 @@ private:
     test_compare(true, check());
     cleanup_pairs(NULL);
 
+    test_return_t rc= TEST_SUCCESS;
     if (func)
     {
-      return func(container->parent);
+      rc= func(container->parent());
     }
+    container->reset();
 
-    return TEST_SUCCESS;
+    return rc;
   }
 };
 

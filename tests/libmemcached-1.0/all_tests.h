@@ -238,6 +238,7 @@ test_st user_tests[] ={
 };
 
 test_st replication_tests[]= {
+  {"validate replication setup", true, (test_callback_fn*)check_replication_sanity_TEST },
   {"set", true, (test_callback_fn*)replication_set_test },
   {"get", false, (test_callback_fn*)replication_get_test },
   {"mget", false, (test_callback_fn*)replication_mget_test },
