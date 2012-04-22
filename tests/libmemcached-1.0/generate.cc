@@ -94,7 +94,7 @@ test_return_t generate_large_pairs(memcached_st *memc)
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true);
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+  test_true(check_execute > (global_count / 2));
 
   return TEST_SUCCESS;
 }
@@ -105,7 +105,8 @@ test_return_t generate_data(memcached_st *memc)
 
   unsigned int check_execute= execute_set(memc, global_pairs, global_count);
 
-  test_compare_warn_hint(global_count, check_execute, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+  test_true_hint(check_execute > (global_count / 2),
+                 "Possible false, positive, memcached may have ejected key/value based on memory needs");
 
   return TEST_SUCCESS;
 }
@@ -203,7 +204,8 @@ test_return_t get_read(memcached_st *memc)
       free(return_value);
     }
   }
-  test_compare_warn_hint(global_count, keys_returned, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+  test_true_hint(keys_returned > (global_count / 2),
+                 "Possible false, positive, memcached may have ejected key/value based on memory needs");
 
   return TEST_SUCCESS;
 }
@@ -220,8 +222,7 @@ test_return_t mget_read(memcached_st *memc)
   {
     unsigned int keys_returned;
     test_compare(TEST_SUCCESS, fetch_all_results(memc, keys_returned));
-    test_true(keys_returned > 0);
-    test_compare_warn_hint(global_count, keys_returned, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+    test_true(keys_returned > (global_count / 2));
   }
 
   return TEST_SUCCESS;
@@ -329,7 +330,8 @@ test_return_t delete_generate(memcached_st *memc)
       total++;
     }
   }
-  test_compare_warn_hint(global_count, total, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+  test_true_hint(total > (global_count / 2),
+                 "Possible false, positive, memcached may have ejected key/value based on memory needs");
 
   return TEST_SUCCESS;
 }
@@ -346,7 +348,9 @@ test_return_t delete_buffer_generate(memcached_st *memc)
       total++;
     }
   }
-  test_compare_warn_hint(global_count, total, "Possible false, positive, memcached may have ejected key/value based on memory needs");
+
+  test_true_hint(total > (global_count / 2),
+                 "Possible false, positive, memcached may have ejected key/value based on memory needs");
 
   return TEST_SUCCESS;
 }

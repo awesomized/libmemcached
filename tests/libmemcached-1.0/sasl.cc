@@ -106,13 +106,6 @@ void get_world(Framework *world)
   world->_create= (test_callback_create_fn*)world_create;
   world->_destroy= (test_callback_destroy_fn*)world_destroy;
 
-  world->item._startup= (test_callback_fn*)world_test_startup;
-  world->item.set_flush((test_callback_fn*)world_flush);
-  world->_on_error= (test_callback_error_fn*)world_on_error;
-
-  world->collection_startup= (test_callback_fn*)world_container_startup;
-  world->collection_shutdown= (test_callback_fn*)world_container_shutdown;
-
   world->set_runner(new LibmemcachedRunner);
 
   world->set_sasl("memcached", "memcached");

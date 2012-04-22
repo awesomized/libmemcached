@@ -53,7 +53,9 @@ void pairs_free(pairs_st *pairs)
   {
     free(pairs[x].key);
     if (pairs[x].value)
+    {
       free(pairs[x].value);
+    }
   }
 
   free(pairs);

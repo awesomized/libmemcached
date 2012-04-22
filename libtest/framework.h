@@ -37,74 +37,8 @@ public:
   test_callback_create_fn *_create;
   test_callback_destroy_fn *_destroy;
 
-  /* This is called a the beginning of any collection run. */
-  test_callback_fn *collection_startup;
-
-  /* This is called a the end of any collection run. */
-  test_callback_fn *collection_shutdown;
-
-  void set_collection_shutdown(test_callback_error_fn *arg)
-  {
-    _on_error= arg;
-  }
-
 public:
   void* create(test_return_t& arg);
-
-  test_return_t startup(void*);
-
-  test_return_t shutdown(void* arg)
-  {
-    if (collection_shutdown)
-    {
-      return collection_shutdown(arg);
-    }
-
-    return TEST_SUCCESS;
-  }
-
-  /**
-    These are run before/after the test. If implemented. Their execution is not controlled
-    by the test.
-  */
-  class Item {
-  public:
-    /* This is called a the beginning of any run. */
-    test_callback_fn *_startup;
-
-    test_return_t startup(void*);
-
-    /* 
-      This called on a test if the test requires a flush call (the bool is
-      from test_st) 
-    */
-    test_callback_fn *_flush;
-
-  public:
-
-    Item() :
-      _startup(NULL),
-      _flush(NULL)
-    { }
-
-    void set_startup(test_callback_fn *arg)
-    {
-      _startup= arg;
-    }
-
-    void set_collection(test_callback_fn *arg)
-    {
-      _flush= arg;
-    }
-
-    void set_flush(test_callback_fn *arg)
-    {
-      _flush= arg;
-    }
-
-    test_return_t flush(void* arg, test_st* run);
-
-  } item;
 
   /**
     If an error occurs during the test, this is called.
