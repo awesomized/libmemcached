@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached Client and Server 
+ *  Gearmand client and server library.
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,72 +35,46 @@
  *
  */
 
-
 #pragma once
 
-#include "tests/libmemcached_test_container.h"
-
-static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
-{
-  if (HAVE_MEMCACHED_BINARY == 0)
+class Memc {
+public:
+  Memc()
   {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
+    _memc= memcached_create(NULL);
 
-  if (servers.sasl() and (LIBMEMCACHED_WITH_SASL_SUPPORT == 0 or MEMCACHED_SASL_BINARY == 0))
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
-  // Assume we are running under valgrind, and bail
-  if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
-  for (uint32_t x= 0; x < servers.servers_to_run(); x++)
-  {
-    in_port_t port= libtest::get_free_port();
-
-    if (servers.sasl())
+    if (_memc == NULL)
     {
-      if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
-      {
-        fatal_message("Could not start memcached-sasl");
-      }
-    }
-    else
-    {
-      if (server_startup(servers, "memcached", port, 0, NULL) == false)
-      {
-        fatal_message("Could not start memcached");
-      }
+      throw "memcached_create() failed";
     }
   }
 
-  libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
-
-  return global_container;
-}
-
-static bool world_destroy(void *object)
-{
-  libmemcached_test_container_st *container= (libmemcached_test_container_st *)object;
-#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (LIBMEMCACHED_WITH_SASL_SUPPORT)
+  Memc(memcached_st* arg)
   {
-    sasl_done();
+    _memc= memcached_clone(NULL, arg);
+
+    if (_memc == NULL)
+    {
+      throw "memcached_clone() failed";
+    }
   }
-#endif
 
-  delete container;
+  memcached_st* operator&() const
+  { 
+    return _memc;
+  }
 
-  return TEST_SUCCESS;
-}
+  memcached_st* operator->() const
+  { 
+    return _memc;
+  }
 
-typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
+  ~Memc()
+  {
+    memcached_free(_memc);
+  }
 
-#include "tests/runner.h"
+private:
+  memcached_st *_memc;
+
+};
