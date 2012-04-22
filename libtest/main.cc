@@ -25,14 +25,15 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
 #include <ctime>
 #include <fnmatch.h>
 #include <iostream>
+#include <memory>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <signal.h>
 
@@ -69,6 +70,44 @@ static long int timedif(struct timeval a, struct timeval b)
   s = (long)(a.tv_sec - b.tv_sec);
   s *= 1000;
   return s + us;
+}
+
+static test_return_t runner_code(Framework* frame,
+                                 test_st* run, 
+                                 void* creators_ptr, 
+                                 long int& load_time)
+{ // Runner Code
+
+  struct timeval start_time, end_time;
+
+  gettimeofday(&start_time, NULL);
+  assert(frame->runner());
+  assert(run->test_fn);
+
+  test_return_t return_code;
+  try 
+  {
+    return_code= frame->runner()->run(run->test_fn, creators_ptr);
+  }
+  // Special case where check for the testing of the exception
+  // system.
+  catch (libtest::fatal &e)
+  {
+    if (fatal::is_disabled())
+    {
+      fatal::increment_disabled_counter();
+      return_code= TEST_SUCCESS;
+    }
+    else
+    {
+      throw;
+    }
+  }
+
+  gettimeofday(&end_time, NULL);
+  load_time= timedif(end_time, start_time);
+
+  return return_code;
 }
 
 #include <getopt.h>
@@ -195,10 +234,12 @@ int main(int argc, char *argv[])
 
   int exit_code;
 
-  try {
-    do {
+  try 
+  {
+    do
+    {
       exit_code= EXIT_SUCCESS;
-      Framework world;
+      std::auto_ptr<Framework> frame(new Framework);
 
       fatal_assert(sigignore(SIGPIPE) == 0);
 
@@ -211,10 +252,10 @@ int main(int argc, char *argv[])
 
       Stats stats;
 
-      get_world(&world);
+      get_world(frame.get());
 
       test_return_t error;
-      void *creators_ptr= world.create(error);
+      void *creators_ptr= frame->create(error);
 
       switch (error)
       {
@@ -253,11 +294,8 @@ int main(int argc, char *argv[])
         wildcard= argv[2];
       }
 
-      for (collection_st *next= world.collections; next and next->name and (not signal.is_shutdown()); next++)
+      for (collection_st *next= frame->collections; next and next->name and (not signal.is_shutdown()); next++)
       {
-        bool failed= false;
-        bool skipped= false;
-
         if (collection_to_run.empty() == false and fnmatch(collection_to_run.c_str(), next->name, 0))
         {
           continue;
@@ -265,152 +303,111 @@ int main(int argc, char *argv[])
 
         stats.collection_total++;
 
-        test_return_t collection_rc= world.startup(creators_ptr);
-
-        if (collection_rc == TEST_SUCCESS and next->pre)
+        bool failed= false;
+        bool skipped= false;
+        test_return_t collection_rc;
+        if (test_success(collection_rc= frame->runner()->pre(next->pre, creators_ptr)))
         {
-          collection_rc= world.runner()->pre(next->pre, creators_ptr);
-        }
+          Out << "Collection: " << next->name;
 
-        switch (collection_rc)
-        {
-        case TEST_SUCCESS:
-          break;
-
-        case TEST_FAILURE:
-          Out << next->name << " [ failed ]";
-          failed= true;
-          signal.set_shutdown(SHUTDOWN_GRACEFUL);
-          goto cleanup;
-
-        case TEST_SKIPPED:
-          Out << next->name << " [ skipping ]";
-          skipped= true;
-          goto cleanup;
-
-        default:
-          fatal_message("invalid return code");
-        }
-
-        Out << "Collection: " << next->name;
-
-        for (test_st *run= next->tests; run->name; run++)
-        {
-          struct timeval start_time, end_time;
-          long int load_time= 0;
-
-          if (wildcard && fnmatch(wildcard, run->name, 0))
+          for (test_st *run= next->tests; run->name; run++)
           {
-            continue;
-          }
+            long int load_time= 0;
 
-          test_return_t return_code;
-          try {
-            if (test_success(return_code= world.item.startup(creators_ptr)))
+            if (wildcard && fnmatch(wildcard, run->name, 0))
+            {
+              continue;
+            }
+
+            test_return_t return_code;
+            try 
             {
               if (run->requires_flush)
               {
-                return_code= world.runner()->flush(creators_ptr);
-              }
-
-              if (test_success(return_code))
-              {
-                { // Runner Code
-                  gettimeofday(&start_time, NULL);
-                  assert(world.runner());
-                  assert(run->test_fn);
-                  try 
-                  {
-                    return_code= world.runner()->run(run->test_fn, creators_ptr);
-                  }
-                  // Special case where check for the testing of the exception
-                  // system.
-                  catch (libtest::fatal &e)
-                  {
-                    if (fatal::is_disabled())
-                    {
-                      fatal::increment_disabled_counter();
-                      return_code= TEST_SUCCESS;
-                    }
-                    else
-                    {
-                      throw;
-                    }
-                  }
-
-                  gettimeofday(&end_time, NULL);
-                  load_time= timedif(end_time, start_time);
+                if (test_failed(frame->runner()->flush(creators_ptr)))
+                {
+                  Error << "frame->runner()->flush(creators_ptr)";
+                  continue;
                 }
               }
-              else if (return_code == TEST_SKIPPED)
+
+              return_code= runner_code(frame.get(), run, creators_ptr, load_time);
+
+              if (return_code == TEST_SKIPPED)
               { }
               else if (return_code == TEST_FAILURE)
               {
-                Error << " item.flush(failure)";
+#if 0
+                Error << " frame->runner()->run(failure)";
                 signal.set_shutdown(SHUTDOWN_GRACEFUL);
+#endif
               }
+
             }
-            else if (return_code == TEST_SKIPPED)
-            { }
-            else if (return_code == TEST_FAILURE)
+            catch (libtest::fatal &e)
             {
-              Error << " item.startup(failure)";
-              signal.set_shutdown(SHUTDOWN_GRACEFUL);
+              Error << "Fatal exception was thrown: " << e.what();
+              return_code= TEST_FAILURE;
+              throw;
             }
+            catch (std::exception &e)
+            {
+              Error << "Exception was thrown: " << e.what();
+              return_code= TEST_FAILURE;
+              throw;
+            }
+            catch (...)
+            {
+              Error << "Unknown exception occurred";
+              return_code= TEST_FAILURE;
+              throw;
+            }
+
+            stats.total++;
+
+            switch (return_code)
+            {
+            case TEST_SUCCESS:
+              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
+              stats.success++;
+              break;
+
+            case TEST_FAILURE:
+              stats.failed++;
+              failed= true;
+              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+              break;
+
+            case TEST_SKIPPED:
+              stats.skipped++;
+              skipped= true;
+              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+              break;
+
+            default:
+              fatal_message("invalid return code");
+            }
+#if 0
+            @TODO add code here to allow for a collection to define a method to reset to allow tests to continue.
+#endif
           }
 
-          catch (libtest::fatal &e)
-          {
-            Error << "Fatal exception was thrown: " << e.what();
-            return_code= TEST_FAILURE;
-          }
-          catch (std::exception &e)
-          {
-            Error << "Exception was thrown: " << e.what();
-            return_code= TEST_FAILURE;
-          }
-          catch (...)
-          {
-            Error << "Unknown exception occurred";
-            return_code= TEST_FAILURE;
-          }
-
-          stats.total++;
-
-          switch (return_code)
-          {
-          case TEST_SUCCESS:
-            Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
-            stats.success++;
-            break;
-
-          case TEST_FAILURE:
-            stats.failed++;
-            failed= true;
-            Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-            break;
-
-          case TEST_SKIPPED:
-            stats.skipped++;
-            skipped= true;
-            Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-            break;
-
-          default:
-            fatal_message("invalid return code");
-          }
-
-          if (test_failed(world.on_error(return_code, creators_ptr)))
-          {
-            Error << "Failed while running on_error()";
-            signal.set_shutdown(SHUTDOWN_GRACEFUL);
-            break;
-          }
+          (void) frame->runner()->post(next->post, creators_ptr);
+        }
+        else if (collection_rc == TEST_FAILURE)
+        {
+          Out << next->name << " [ failed ]";
+          failed= true;
+#if 0
+          signal.set_shutdown(SHUTDOWN_GRACEFUL);
+#endif
+        }
+        else if (collection_rc == TEST_SKIPPED)
+        {
+          Out << next->name << " [ skipping ]";
+          skipped= true;
         }
 
-        (void) world.runner()->post(next->post, creators_ptr);
-
-cleanup:
         if (failed == false and skipped == false)
         {
           stats.collection_success++;
@@ -426,11 +423,10 @@ cleanup:
           stats.collection_skipped++;
         }
 
-        world.shutdown(creators_ptr);
         Outn();
       }
 
-      if (not signal.is_shutdown())
+      if (signal.is_shutdown() == false)
       {
         signal.set_shutdown(SHUTDOWN_GRACEFUL);
       }
@@ -450,7 +446,7 @@ cleanup:
       {
         Out << "Some tests were skipped.";
       }
-      else if (stats.collection_success and stats.collection_failed == 0)
+      else if (stats.collection_success and (stats.collection_failed == 0))
       {
         Out << "All tests completed successfully.";
       }

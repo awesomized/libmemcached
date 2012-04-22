@@ -1699,7 +1699,7 @@ test_return_t mget_execute(memcached_st *original_memc)
 }
 
 #define REGRESSION_BINARY_VS_BLOCK_COUNT  20480
-static pairs_st *global_pairs;
+static pairs_st *global_pairs= NULL;
 
 test_return_t key_setup(memcached_st *memc)
 {
@@ -1713,6 +1713,7 @@ test_return_t key_setup(memcached_st *memc)
 test_return_t key_teardown(memcached_st *)
 {
   pairs_free(global_pairs);
+  global_pairs= NULL;
 
   return TEST_SUCCESS;
 }
@@ -1722,9 +1723,14 @@ test_return_t block_add_regression(memcached_st *memc)
   /* First add all of the items.. */
   for (ptrdiff_t x= 0; x < REGRESSION_BINARY_VS_BLOCK_COUNT; ++x)
   {
-    char blob[1024] = {0};
+    libtest::vchar_t blob;
+    libtest::vchar::make(blob, 1024);
 
-    memcached_return_t rc= memcached_add_by_key(memc, "bob", 3, global_pairs[x].key, global_pairs[x].key_length, blob, sizeof(blob), 0, 0);
+    memcached_return_t rc= memcached_add_by_key(memc,
+                                                test_literal_param("bob"),
+                                                global_pairs[x].key, global_pairs[x].key_length,
+                                                &blob[0], blob.size(),
+                                                time_t(0), uint32_t(0));
     test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE, memcached_strerror(NULL, rc));
   }
 

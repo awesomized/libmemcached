@@ -3,7 +3,6 @@
  *  Libmemcached Client and Server 
  *
  *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,69 +38,44 @@
 
 #pragma once
 
-#include "tests/libmemcached_test_container.h"
-
-static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
+/* The structure we use for the test system */
+struct libmemcached_test_container_st
 {
-  if (HAVE_MEMCACHED_BINARY == 0)
+private:
+  memcached_st *_parent;
+
+public:
+  libtest::server_startup_st& construct;
+
+  libmemcached_test_container_st(libtest::server_startup_st &construct_arg) :
+    _parent(NULL),
+    construct(construct_arg)
+  { }
+
+  memcached_st* parent()
   {
-    error= TEST_SKIPPED;
-    return NULL;
+    return _parent;
   }
 
-  if (servers.sasl() and (LIBMEMCACHED_WITH_SASL_SUPPORT == 0 or MEMCACHED_SASL_BINARY == 0))
+  void parent(memcached_st* arg)
   {
-    error= TEST_SKIPPED;
-    return NULL;
+    reset();
+    _parent= arg;
   }
 
-  // Assume we are running under valgrind, and bail
-  if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
+  void reset()
   {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
-  for (uint32_t x= 0; x < servers.servers_to_run(); x++)
-  {
-    in_port_t port= libtest::get_free_port();
-
-    if (servers.sasl())
+    if (_parent)
     {
-      if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
-      {
-        fatal_message("Could not start memcached-sasl");
-      }
-    }
-    else
-    {
-      if (server_startup(servers, "memcached", port, 0, NULL) == false)
-      {
-        fatal_message("Could not start memcached");
-      }
+      memcached_free(_parent);
+      _parent= NULL;
     }
   }
 
-  libmemcached_test_container_st *global_container= new libmemcached_test_container_st(servers);
-
-  return global_container;
-}
-
-static bool world_destroy(void *object)
-{
-  libmemcached_test_container_st *container= (libmemcached_test_container_st *)object;
-#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
-  if (LIBMEMCACHED_WITH_SASL_SUPPORT)
+  ~libmemcached_test_container_st()
   {
-    sasl_done();
+    reset();
   }
-#endif
+};
 
-  delete container;
 
-  return TEST_SUCCESS;
-}
-
-typedef test_return_t (*libmemcached_test_callback_fn)(memcached_st *);
-
-#include "tests/runner.h"

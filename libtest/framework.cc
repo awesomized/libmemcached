@@ -26,18 +26,10 @@
 
 using namespace libtest;
 
-static test_return_t _default_callback(void*)
-{
-  return TEST_SUCCESS;
-}
-
 Framework::Framework() :
   collections(NULL),
   _create(NULL),
   _destroy(NULL),
-  collection_startup(_default_callback),
-  collection_shutdown(_default_callback),
-  _on_error(NULL),
   _runner(NULL),
   _socket(false),
   _creators_ptr(NULL)
@@ -54,46 +46,6 @@ Framework::~Framework()
   _servers.shutdown();
 
   delete _runner;
-}
-
-test_return_t Framework::Item::flush(void* arg, test_st* run)
-{
-  if (run->requires_flush and _flush)
-  {
-    return _flush(arg);
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t Framework::on_error(const test_return_t rc, void* arg)
-{
-  if (_on_error and test_failed(_on_error(rc, arg)))
-  {
-    return TEST_FAILURE;
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t Framework::startup(void* arg)
-{
-  if (collection_startup)
-  {
-    return collection_startup(arg);
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t Framework::Item::startup(void* arg)
-{
-  if (_startup)
-  {
-    return _startup(arg);
-  }
-
-  return TEST_SUCCESS;
 }
 
 libtest::Runner *Framework::runner()

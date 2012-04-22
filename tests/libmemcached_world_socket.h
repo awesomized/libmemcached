@@ -41,19 +41,7 @@
 
 #include <cassert>
 
-/* The structure we use for the test system */
-struct libmemcached_test_container_st
-{
-  libtest::server_startup_st& construct;
-  memcached_st *parent;
-  memcached_st *memc;
-
-  libmemcached_test_container_st(libtest::server_startup_st &construct_arg) :
-    construct(construct_arg),
-    parent(NULL),
-    memc(NULL)
-  { }
-};
+#include "tests/libmemcached_test_container.h"
 
 static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
 {
@@ -78,66 +66,6 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
   error= TEST_SUCCESS;
 
   return global_container;
-}
-
-static test_return_t world_container_startup(libmemcached_test_container_st *container)
-{
-  char buffer[BUFSIZ];
-
-  test_compare_got(MEMCACHED_SUCCESS,
-                   libmemcached_check_configuration(container->construct.option_string().c_str(), container->construct.option_string().size(),
-                                                    buffer, sizeof(buffer)),
-                   container->construct.option_string().c_str());
-
-  test_null(container->parent);
-  container->parent= memcached(container->construct.option_string().c_str(), container->construct.option_string().size());
-  test_true(container->parent);
-  test_compare(MEMCACHED_SUCCESS, memcached_version(container->parent));
-
-  if (container->construct.sasl())
-  {
-    if (memcached_failed(memcached_behavior_set(container->parent, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1)))
-    {
-      memcached_free(container->parent);
-      return TEST_FAILURE;
-    }
-
-    if (memcached_failed(memcached_set_sasl_auth_data(container->parent, container->construct.username().c_str(), container->construct.password().c_str())))
-    {
-      memcached_free(container->parent);
-      return TEST_FAILURE;
-    }
-  }
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t world_container_shutdown(libmemcached_test_container_st *container)
-{
-  memcached_free(container->parent);
-  container->parent= NULL;
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t world_test_startup(libmemcached_test_container_st *container)
-{
-  test_true(container);
-  test_null(container->memc);
-  test_true(container->parent);
-  container->memc= memcached_clone(NULL, container->parent);
-  test_true(container->memc);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t world_on_error(test_return_t , libmemcached_test_container_st *container)
-{
-  test_true(container->memc);
-  memcached_free(container->memc);
-  container->memc= NULL;
-
-  return TEST_SUCCESS;
 }
 
 static bool world_destroy(void *object)

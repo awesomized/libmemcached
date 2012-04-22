@@ -45,6 +45,22 @@ using namespace libtest;
 #include <tests/replication.h>
 #include <tests/debug.h>
 
+#include "tests/libmemcached-1.0/setup_and_teardowns.h"
+
+test_return_t check_replication_sanity_TEST(memcached_st *memc)
+{
+  test_true(memc);
+  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+
+  /*
+   * Make sure that we store the item on all servers
+   * (master + replicas == number of servers)
+ */
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS), uint64_t(memcached_server_count(memc) - 1));
+
+  return TEST_SUCCESS;
+}
+
 test_return_t replication_set_test(memcached_st *memc)
 {
   memcached_return_t rc;
@@ -116,8 +132,8 @@ test_return_t replication_get_test(memcached_st *memc)
       uint32_t flags;
       char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5,
                                       &len, &flags, &rc);
-      test_true(rc == MEMCACHED_SUCCESS);
-      test_true(val != NULL);
+      test_compare(MEMCACHED_SUCCESS, rc);
+      test_true(val);
       free(val);
     }
 
@@ -185,7 +201,7 @@ test_return_t replication_mget_test(memcached_st *memc)
       {
         hits++;
       }
-      test_true(hits == 4);
+      test_compare(4, hits);
       memcached_result_free(&result_obj);
     }
 
