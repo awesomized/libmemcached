@@ -98,6 +98,15 @@ do \
   } \
 } while (0)
 
+#define test_skip_hint(__expected, __actual, __hint) \
+do \
+{ \
+  if (libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint)) == false) \
+  { \
+    return TEST_SKIPPED; \
+  } \
+} while (0)
+
 #define test_skip_valgrind() \
 do \
 { \

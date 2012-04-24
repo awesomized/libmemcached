@@ -24,19 +24,11 @@ AH_BOTTOM([
 # define HAVE_ULONG 1
 typedef unsigned long int ulong;
 #endif 
+
+#define RPACKAGE "memcached" 
  
+#define RVERSION "1.4.13"
  
-#if defined(RMEMCACHED_PACKAGE) 
-#undef VERSION 
-#define VERSION VERSION_NUMBER
-#endif
-
-#if defined(RMEMCACHED_PACKAGE)
-#undef PACKAGE
-#define PACKAGE RMEMCACHED_PACKAGE
-#endif
-
-
 ])
 
 ])dnl CONFIG_EXTRA
