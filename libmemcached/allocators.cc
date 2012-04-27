@@ -41,18 +41,18 @@ void _libmemcached_free(const memcached_st*, void *mem, void*)
 {
   if (mem)
   {
-    free(mem);
+    std::free(mem);
   }
 }
 
 void *_libmemcached_malloc(const memcached_st *, size_t size, void *)
 {
-  return malloc(size);
+  return std::malloc(size);
 }
 
 void *_libmemcached_realloc(const memcached_st*, void *mem, size_t size, void *)
 {
-  return realloc(mem, size);
+  return std::realloc(mem, size);
 }
 
 void *_libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size, void *context)
@@ -68,7 +68,7 @@ void *_libmemcached_calloc(const memcached_st *self, size_t nelem, size_t size, 
      return ret;
   }
 
-  return calloc(nelem, size);
+  return std::calloc(nelem, size);
 }
 
 struct memcached_allocator_t memcached_allocators_return_default(void)
@@ -126,8 +126,23 @@ void memcached_get_memory_allocators(const memcached_st *self,
     return;
   }
 
-  *mem_malloc= self->allocators.malloc;
-  *mem_free= self->allocators.free;
-  *mem_realloc= self->allocators.realloc;
-  *mem_calloc= self->allocators.calloc;
+  if (mem_malloc)
+  {
+    *mem_malloc= self->allocators.malloc;
+  }
+
+  if (mem_free)
+  {
+    *mem_free= self->allocators.free;
+  }
+
+  if (mem_realloc)
+  {
+    *mem_realloc= self->allocators.realloc;
+  }
+
+  if (mem_calloc)
+  {
+    *mem_calloc= self->allocators.calloc;
+  }
 }

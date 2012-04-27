@@ -69,11 +69,11 @@ void custom_backtrace(void)
 
   fprintf(stderr, "Number of stack frames obtained: %lu\n", (unsigned long)size);
 
-  char *named_function= (char *)::realloc(NULL, 1024);
+  char *named_function= (char *)std::realloc(NULL, 1024);
   
   if (named_function == NULL)
   {
-    ::free(strings);
+    std::free(strings);
     return;
   }
 
@@ -82,7 +82,7 @@ void custom_backtrace(void)
     if (USE_DEMANGLE)
     {
       size_t sz= 200;
-      char *named_function_ptr= (char *)::realloc(named_function, sz);
+      char *named_function_ptr= (char *)std::realloc(named_function, sz);
       if (named_function_ptr == NULL)
       {
         continue;
@@ -139,7 +139,7 @@ void custom_backtrace(void)
     }
   }
 
-  ::free(named_function);
-  ::free(strings);
+  std::free(named_function);
+  std::free(strings);
 #endif // HAVE_EXECINFO_H
 }
