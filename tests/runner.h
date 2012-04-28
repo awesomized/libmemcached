@@ -40,6 +40,7 @@
 
 #include "tests/libmemcached-1.0/generate.h"
 #include "tests/memc.h"
+#include "tests/print.h"
 
 class LibmemcachedRunner : public libtest::Runner {
 public:

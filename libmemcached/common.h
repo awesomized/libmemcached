@@ -49,17 +49,19 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <ctype.h>
+#include <cctype>
+#include <cerrno>
+#include <climits>
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
+#include <limits.h>
 #endif
 
-#include <errno.h>
 #include <fcntl.h>
-#include <limits.h>
 #include <sys/types.h>
 #include <unistd.h>
 

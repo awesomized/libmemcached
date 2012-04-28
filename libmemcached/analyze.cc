@@ -42,7 +42,9 @@ static void calc_average_item_size(memcached_analysis_st *result,
                                    const uint64_t total_bytes)
 {
   if (total_items > 0 && total_bytes > 0)
+  {
     result->average_item_size= (uint32_t) (total_bytes / total_items);
+  }
 }
 
 static void calc_hit_ratio(memcached_analysis_st *result,
@@ -65,19 +67,25 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 {
   uint64_t total_items= 0, total_bytes= 0;
   uint64_t total_get_cmds= 0, total_get_hits= 0;
-  uint32_t server_count;
 
-  if (not memc or not memc_stat)
+  if (memc == NULL or memc_stat == NULL)
   {
     return NULL;
   }
 
-  *error= MEMCACHED_SUCCESS;
-  server_count= memcached_server_count(memc);
-  memcached_analysis_st *result= (memcached_analysis_st*)calloc(memcached_server_count(memc),
-                                                                sizeof(memcached_analysis_st));
+  memcached_return_t not_used;
+  if (error == NULL)
+  {
+    error= &not_used;
+  }
 
-  if (not result)
+  *error= MEMCACHED_SUCCESS;
+  uint32_t server_count= memcached_server_count(memc);
+  memcached_analysis_st *result= (memcached_analysis_st*)libmemcached_xcalloc(memc,
+                                                                              memcached_server_count(memc),
+                                                                              memcached_analysis_st);
+
+  if (result == NULL)
   {
     *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     return NULL;
@@ -107,5 +115,5 @@ memcached_analysis_st *memcached_analyze(memcached_st *memc,
 
 void memcached_analyze_free(memcached_analysis_st *ptr)
 {
-  free(ptr);
+  libmemcached_free(ptr->root, ptr);
 }

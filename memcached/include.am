@@ -12,9 +12,9 @@ noinst_HEADERS+= memcached/stats.h
 noinst_HEADERS+= memcached/trace.h
 noinst_HEADERS+= memcached/util.h
 
-memcached_memcached_SOURCES=
 memcached_memcached_CFLAGS=
 memcached_memcached_LDADD=
+memcached_memcached_SOURCES=
 
 memcached_memcached_SOURCES+=
 memcached_memcached_SOURCES+= memcached/assoc.c 
@@ -29,10 +29,8 @@ memcached_memcached_SOURCES+= memcached/thread.c
 memcached_memcached_SOURCES+= memcached/trace.h 
 memcached_memcached_SOURCES+= memcached/util.c 
 
-memcached_memcached_CFLAGS+= -DHAVE_CONFIG_H -std=c99
 memcached_memcached_CFLAGS+= ${PTHREAD_CFLAGS}
-memcached_memcached_CFLAGS+= -DRMEMCACHED_VERSION="\"1.4.13\""
-memcached_memcached_CFLAGS+= -DRMEMCACHED_PACKAGE="\"memcached\""
+memcached_memcached_CFLAGS+= -DHAVE_CONFIG_H -std=c99
 
 memcached_memcached_LDADD+= $(LIBEVENT_LDFLAGS)
 memcached_memcached_LDADD+= ${PTHREAD_LIBS}

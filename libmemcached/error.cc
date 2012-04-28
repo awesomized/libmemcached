@@ -208,6 +208,7 @@ memcached_return_t memcached_set_error(memcached_server_st& self, memcached_retu
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_server_st");
+
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
 }
@@ -458,13 +459,13 @@ static void _error_free(memcached_error_t *error)
 
   _error_free(error->next);
 
-  if (error && error->root)
+  if (error and error->root)
   {
     libmemcached_free(error->root, error);
   }
   else if (error)
   {
-    free(error);
+    libmemcached_free(error->root, error);
   }
 }
 
@@ -524,7 +525,7 @@ memcached_return_t memcached_last_error(memcached_st *memc)
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (not memc->error_messages)
+  if (memc->error_messages == NULL)
   {
     return MEMCACHED_SUCCESS;
   }
@@ -539,7 +540,7 @@ int memcached_last_error_errno(memcached_st *memc)
     return 0;
   }
 
-  if (not memc->error_messages)
+  if (memc->error_messages == NULL)
   {
     return 0;
   }
@@ -554,12 +555,12 @@ const char *memcached_server_error(memcached_server_instance_st server)
     return NULL;
   }
 
-  if (not server->error_messages)
+  if (server->error_messages == NULL)
   {
     return memcached_strerror(server->root, MEMCACHED_SUCCESS);
   }
 
-  if (not server->error_messages->size)
+  if (server->error_messages->size == 0)
   {
     return memcached_strerror(server->root, server->error_messages->rc);
   }

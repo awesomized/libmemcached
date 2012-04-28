@@ -1,4 +1,4 @@
-.TH "MEMCACHED_BEHAVIOR_SET" "3" "April 21, 2012" "1.0.6" "libmemcached"
+.TH "MEMCACHED_BEHAVIOR_SET" "3" "April 27, 2012" "1.0.6" "libmemcached"
 .SH NAME
 memcached_behavior_set \- libmemcached Documentation
 .
@@ -181,7 +181,7 @@ Sets the compatibility mode. The value can be set to either MEMCACHED_KETAMA_COM
 .B MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 .UNINDENT
 .sp
-Modify the timeout value that is used by poll. The default value is \-1. An signed int pointer must be passed to memcached_behavior_set to change this value. For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
+Modify the timeout value that is used by poll. The default value is \-1. An signed int must be passed to memcached_behavior_set to change this value (this requires casting). For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
 .INDENT 0.0
 .TP
 .B MEMCACHED_BEHAVIOR_USER_DATA

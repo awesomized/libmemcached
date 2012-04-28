@@ -48,6 +48,7 @@ tests_failure_SOURCES+= clients/generator.cc
 tests_failure_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
 tests_failure_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_failure_SOURCES+= tests/libmemcached-1.0/generate.cc
+tests_failure_SOURCES+= tests/libmemcached-1.0/print.cc
 
 tests_failure_CXXFLAGS = $(AM_CXXFLAGS)
 tests_failure_DEPENDENCIES= $(TESTS_LDADDS)

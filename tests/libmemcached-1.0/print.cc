@@ -47,16 +47,37 @@ using namespace libtest;
 
 #include "tests/print.h"
 
-memcached_return_t server_print_callback(const memcached_st *ptr,
+memcached_return_t server_print_callback(const memcached_st*,
                                          const memcached_server_st *server,
                                          void *context)
 {
-  (void)ptr;
-
   if (context)
   {
     std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
   }
+
+  return MEMCACHED_SUCCESS;
+}
+
+const char * print_version(memcached_st *memc)
+{
+  memcached_server_fn callbacks[1];
+  callbacks[0]= server_print_version_callback;
+  memcached_server_cursor(memc, callbacks, NULL,  1);
+
+  return "print_version()";
+}
+
+
+memcached_return_t server_print_version_callback(const memcached_st *,
+                                                 const memcached_server_st *server,
+                                                 void *)
+{
+  std::cerr << "Server: " << memcached_server_name(server) << ":" << memcached_server_port(server) << " " 
+    << int(server->major_version) << "."
+    << int(server->minor_version) << "."
+    << int(server->micro_version)
+    << std::endl;
 
   return MEMCACHED_SUCCESS;
 }
