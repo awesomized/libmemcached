@@ -1887,7 +1887,7 @@ static void dispatch_bin_command(conn *c) {
     switch (c->cmd) {
         case PROTOCOL_BINARY_CMD_VERSION:
             if (extlen == 0 && keylen == 0 && bodylen == 0) {
-                write_bin_response(c, VERSION, 0, 0, strlen(VERSION));
+                write_bin_response(c, RVERSION, 0, 0, strlen(RVERSION));
             } else {
                 protocol_error = 1;
             }
@@ -2568,7 +2568,7 @@ static void server_stats(ADD_STAT add_stats, conn *c) {
     APPEND_STAT("pid", "%lu", (long)pid);
     APPEND_STAT("uptime", "%u", now);
     APPEND_STAT("time", "%ld", now + (long)process_started);
-    APPEND_STAT("version", "%s", VERSION);
+    APPEND_STAT("version", "%s", RVERSION);
     APPEND_STAT("libevent", "%s", event_get_version());
     APPEND_STAT("pointer_size", "%d", (int)(8 * sizeof(void *)));
 
@@ -3363,7 +3363,7 @@ static void process_command(conn *c, char *command) {
 
     } else if (ntokens == 2 && (strcmp(tokens[COMMAND_TOKEN].value, "version") == 0)) {
 
-        out_string(c, "VERSION " VERSION);
+        out_string(c, "VERSION " RVERSION);
 
     } else if (ntokens == 2 && (strcmp(tokens[COMMAND_TOKEN].value, "quit") == 0)) {
 
@@ -4242,7 +4242,12 @@ static int server_socket(const char *interface,
         }
 #endif
 
-        setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, sizeof(flags));
+        error = setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &flags, sizeof(flags));
+        if (error != 0)
+        {
+          perror("setsockopt(SO_REUSEADDR)");
+        }
+
         if (IS_UDP(transport)) {
             maximize_sndbuf(sfd);
         } else {
@@ -4499,7 +4504,7 @@ static void clock_handler(const int fd, const short which, void *arg) {
 }
 
 static void usage(void) {
-    printf(PACKAGE " " VERSION "\n");
+    printf(RPACKAGE " " RVERSION "\n");
     printf("-p <num>      TCP port number to listen on (default: 11211)\n"
            "-U <num>      UDP port number to listen on (default: 11211, 0 is off)\n"
            "-s <file>     UNIX socket path to listen on (disables network support)\n"
@@ -4564,7 +4569,7 @@ static void usage(void) {
 }
 
 static void usage_license(void) {
-    printf(PACKAGE " " VERSION "\n\n");
+    printf(RPACKAGE " " RVERSION "\n\n");
     printf(
     "Copyright (c) 2003, Danga Interactive, Inc. <http://www.danga.com/>\n"
     "All rights reserved.\n"

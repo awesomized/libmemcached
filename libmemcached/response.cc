@@ -236,9 +236,9 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
       {
         /* Find the space, and then move one past it to copy version */
         char *response_ptr= index(buffer, ' ');
-        response_ptr++;
 
-        long int version= strtol(response_ptr, (char **)NULL, 10);
+        char *endptr;
+        long int version= strtol(response_ptr, &endptr, 10);
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
@@ -246,10 +246,8 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         }
         instance->major_version= uint8_t(version);
 
-        response_ptr= index(response_ptr, '.');
-        response_ptr++;
-
-        version= strtol(response_ptr, (char **)NULL, 10);
+        endptr++;
+        version= strtol(endptr, &endptr, 10);
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
@@ -257,10 +255,8 @@ static memcached_return_t textual_read_one_response(memcached_server_write_insta
         }
         instance->minor_version= uint8_t(version);
 
-        response_ptr= index(response_ptr, '.');
-        response_ptr++;
-
-        version= strtol(response_ptr, (char **)NULL, 10);
+        endptr++;
+        version= strtol(endptr, &endptr, 10);
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
@@ -588,6 +584,21 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
       break;
 
     case PROTOCOL_BINARY_CMD_SASL_LIST_MECHS:
+      {
+        if (header.response.keylen != 0 || bodylen + 1 > buffer_length)
+        {
+          return MEMCACHED_UNKNOWN_READ_FAILURE;
+        }
+        else
+        {
+          if ((rc= memcached_safe_read(instance, buffer, bodylen)) != MEMCACHED_SUCCESS)
+          {
+            return MEMCACHED_UNKNOWN_READ_FAILURE;
+          }
+        }
+      }
+      break;
+
     case PROTOCOL_BINARY_CMD_VERSION:
       {
         char version_buffer[32]; // @todo document this number
@@ -598,8 +609,8 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
           return MEMCACHED_UNKNOWN_READ_FAILURE;
         }
 
-        char *p;
-        long int version= strtol(version_buffer, &p, 10);
+        char *endptr;
+        long int version= strtol(version_buffer, &endptr, 10);
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX or version == 0)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
@@ -607,16 +618,18 @@ static memcached_return_t binary_read_one_response(memcached_server_write_instan
         }
         instance->major_version= uint8_t(version);
 
-        version= strtol(p +1, &p, 10);
+        endptr++;
+        version= strtol(endptr, &endptr, 10);
         if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
-          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
+          return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse minor version"));
         }
         instance->minor_version= uint8_t(version);
 
-        version= strtol(p + 1, NULL, 10);
-        if (errno == ERANGE)
+        endptr++;
+        version= strtol(endptr, &endptr, 10);
+        if (version == LONG_MIN or version == LONG_MAX or errno == EINVAL or version > UINT8_MAX)
         {
           instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
           return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT, memcached_literal_param("strtol() failed to parse micro version"));
