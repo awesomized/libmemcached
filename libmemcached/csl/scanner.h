@@ -3,7 +3,7 @@
 #define config_IN_HEADER 1
 
 #line 6 "libmemcached/csl/scanner.h"
-#line 22 "libmemcached/csl/scanner.l"
+#line 39 "libmemcached/csl/scanner.l"
 
 #include <libmemcached/csl/common.h>
 #include <libmemcached/csl/context.h>
@@ -475,7 +475,7 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 203 "libmemcached/csl/scanner.l"
+#line 220 "libmemcached/csl/scanner.l"
 
 
 #line 482 "libmemcached/csl/scanner.h"

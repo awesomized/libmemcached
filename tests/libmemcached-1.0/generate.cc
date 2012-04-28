@@ -38,7 +38,7 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <libmemcached/util.h>
+#include <libmemcachedutil-1.0/util.h>
 #include <libmemcached/is.h>
 
 #include <tests/libmemcached-1.0/generate.h>
