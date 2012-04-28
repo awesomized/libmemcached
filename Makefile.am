@@ -19,14 +19,15 @@ nobase_include_HEADERS =
 check_PROGRAMS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
-EXTRA_DIST= \
-	    ${srcdir}/m4/pandora_*.m4 \
-	    .quickly \
-	    README.FIRST \
-	    README.win32 \
-	    config/autorun.sh \
-	    config/pandora-plugin \
-	    config/uncrustify.cfg
+EXTRA_DIST=
+
+EXTRA_DIST+= ${srcdir}/m4/pandora_*.m4
+EXTRA_DIST+= .quickly
+EXTRA_DIST+= README.FIRST
+EXTRA_DIST+= README.win32
+EXTRA_DIST+= config/autorun.sh
+EXTRA_DIST+= config/pandora-plugin
+EXTRA_DIST+= config/uncrustify.cfg
 
 include libtest/include.am
 

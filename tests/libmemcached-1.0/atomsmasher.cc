@@ -34,6 +34,8 @@
 
 #include <tests/debug.h>
 
+#include "tests/libmemcached-1.0/generate.h"
+
 using namespace libtest;
 
 /* Number of items generated for tests */
@@ -46,14 +48,14 @@ static pairs_st *global_pairs;
 static char *global_keys[GLOBAL_COUNT];
 static size_t global_keys_length[GLOBAL_COUNT];
 
-static test_return_t cleanup_pairs(memcached_st *)
+static test_return_t cleanup_pairs_TEST(memcached_st *)
 {
   pairs_free(global_pairs);
 
   return TEST_SUCCESS;
 }
 
-static test_return_t generate_pairs(memcached_st *)
+static test_return_t generate_pairs_TEST(memcached_st *)
 {
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
 
@@ -66,26 +68,22 @@ static test_return_t generate_pairs(memcached_st *)
   return TEST_SUCCESS;
 }
 
-static test_return_t drizzle(memcached_st *memc)
+static test_return_t drizzle_TEST(memcached_st *memc)
 {
 infinite:
   for (ptrdiff_t x= 0; x < TEST_COUNTER; x++)
   {
     memcached_return_t rc;
-    char *return_value;
-    size_t return_value_length;
-    uint32_t flags;
 
-    uint32_t test_bit;
-    uint8_t which;
-
-    test_bit= (uint32_t)(random() % GLOBAL_COUNT);
-    which= (uint8_t)(random() % 2);
+    uint32_t test_bit= (uint32_t)(random() % GLOBAL_COUNT);
+    uint8_t which= (uint8_t)(random() % 2);
 
     if (which == 0)
     {
-      return_value= memcached_get(memc, global_keys[test_bit], global_keys_length[test_bit],
-                                  &return_value_length, &flags, &rc);
+      size_t return_value_length;
+      uint32_t flags;
+      char* return_value= memcached_get(memc, global_keys[test_bit], global_keys_length[test_bit],
+                                        &return_value_length, &flags, &rc);
       if (rc == MEMCACHED_SUCCESS && return_value)
       {
         free(return_value);
@@ -123,7 +121,7 @@ infinite:
 
 static test_return_t pre_nonblock(memcached_st *memc)
 {
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 0));
 
   return TEST_SUCCESS;
 }
@@ -137,10 +135,9 @@ static test_return_t add_test(memcached_st *memc)
   const char *key= "foo";
   const char *value= "when we sanitize";
 
-  memcached_return_t rc;
-  rc= memcached_set(memc, key, strlen(key),
-                    value, strlen(value),
-                    (time_t)0, (uint32_t)0);
+  memcached_return_t rc= memcached_set(memc, key, strlen(key),
+                                       value, strlen(value),
+                                       time_t(0), uint32_t(0));
   test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, memcached_strerror(NULL, rc));
   memcached_quit(memc);
   rc= memcached_add(memc, key, strlen(key),
@@ -180,9 +177,9 @@ static test_return_t many_adds(memcached_st *memc)
 }
 
 test_st smash_tests[] ={
-  {"generate_pairs", true, (test_callback_fn*)generate_pairs },
-  {"drizzle", true, (test_callback_fn*)drizzle },
-  {"cleanup", true, (test_callback_fn*)cleanup_pairs },
+  {"generate_pairs", true, (test_callback_fn*)generate_pairs_TEST },
+  {"drizzle", true, (test_callback_fn*)drizzle_TEST },
+  {"cleanup", true, (test_callback_fn*)cleanup_pairs_TEST },
   {"many_adds", true, (test_callback_fn*)many_adds },
   {0, 0, 0}
 };
@@ -203,8 +200,7 @@ static test_return_t memcached_create_benchmark(memcached_st *)
 
   for (ptrdiff_t x= 0; x < BENCHMARK_TEST_LOOP; x++)
   {
-    memcached_st *ptr;
-    ptr= memcached_create(&benchmark_state.create[x]);
+    memcached_st *ptr= memcached_create(&benchmark_state.create[x]);
 
     test_true(ptr);
   }
