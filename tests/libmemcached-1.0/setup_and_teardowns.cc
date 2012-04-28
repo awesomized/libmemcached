@@ -40,6 +40,7 @@
 
 #include <libmemcached/util.h>
 
+#include "tests/print.h"
 #include "tests/libmemcached-1.0/setup_and_teardowns.h"
 
 #include <sys/stat.h>
@@ -61,6 +62,7 @@ memcached_return_t return_value_based_on_buffering(memcached_st *memc)
 */
 test_return_t pre_binary(memcached_st *memc)
 {
+  test_true(memcached_server_count(memc) > 0);
   test_skip(true, libmemcached_util_version_check(memc, 1, 4, 4));
   test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
 

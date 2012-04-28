@@ -143,7 +143,7 @@ Sets the compatibility mode. The value can be set to either MEMCACHED_KETAMA_COM
 
 .. c:type:: MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 
-Modify the timeout value that is used by poll. The default value is -1. An signed int pointer must be passed to memcached_behavior_set to change this value. For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
+Modify the timeout value that is used by poll. The default value is -1. An signed int must be passed to memcached_behavior_set to change this value (this requires casting). For memcached_behavior_get a signed int value will be cast and returned as the unsigned long long.
 
 .. c:type:: MEMCACHED_BEHAVIOR_USER_DATA
 .. deprecated:: < 0.30

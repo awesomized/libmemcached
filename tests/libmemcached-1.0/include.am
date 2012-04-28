@@ -196,13 +196,14 @@ noinst_PROGRAMS+= tests/atomsmasher
 tests_testudp_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_testudp_SOURCES=
 
-tests_testudp_SOURCES+= tests/mem_udp.cc
+
 tests_testudp_SOURCES+= clients/execute.cc
 tests_testudp_SOURCES+= clients/generator.cc
 tests_testudp_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
 tests_testudp_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_testudp_SOURCES+= tests/libmemcached-1.0/generate.cc
-
+tests_testudp_SOURCES+= tests/libmemcached-1.0/print.cc
+tests_testudp_SOURCES+= tests/mem_udp.cc
 tests_testudp_DEPENDENCIES= $(TESTS_LDADDS)
 tests_testudp_LDADD= $(tests_testudp_DEPENDENCIES)
 check_PROGRAMS+= tests/testudp
@@ -219,6 +220,7 @@ tests_testplus_SOURCES+= clients/generator.cc
 tests_testplus_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
 tests_testplus_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_testplus_SOURCES+= tests/libmemcached-1.0/generate.cc
+tests_testplus_SOURCES+= tests/libmemcached-1.0/print.cc
 
 tests_testplus_CXXFLAGS = $(AM_CXXFLAGS) $(NO_EFF_CXX)
 tests_testplus_DEPENDENCIES= $(TESTS_LDADDS)

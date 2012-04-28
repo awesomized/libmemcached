@@ -175,6 +175,8 @@ static void print_cmd(protocol_binary_command cmd)
   case PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_START: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_START\n", __FILE__, __LINE__); return;
   case PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_END: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_TAP_CHECKPOINT_END\n", __FILE__, __LINE__); return;
   case PROTOCOL_BINARY_CMD_LAST_RESERVED: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_LAST_RESERVED\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GATK: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GATK\n", __FILE__, __LINE__); return;
+  case PROTOCOL_BINARY_CMD_GATKQ: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_GATKQ\n", __FILE__, __LINE__); return;
   case PROTOCOL_BINARY_CMD_SCRUB: fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SCRUB\n", __FILE__, __LINE__); return;
   default:
                                   abort();

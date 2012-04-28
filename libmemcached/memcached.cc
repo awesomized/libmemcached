@@ -124,7 +124,7 @@ static inline bool _memcached_init(memcached_st *self)
   return true;
 }
 
-static void _free(memcached_st *ptr, bool release_st)
+static void __memcached_free(memcached_st *ptr, bool release_st)
 {
   /* If we have anything open, lets close it now */
   send_quit(ptr);
@@ -174,7 +174,7 @@ memcached_st *memcached_create(memcached_st *ptr)
   }
   else
   {
-    ptr= (memcached_st *)malloc(sizeof(memcached_st));
+    ptr= (memcached_st *)libmemcached_xmalloc(NULL, memcached_st);
 
     if (ptr == NULL)
     {
@@ -244,7 +244,7 @@ memcached_return_t memcached_reset(memcached_st *ptr)
 
   bool stored_is_allocated= memcached_is_allocated(ptr);
   uint64_t query_id= ptr->query_id;
-  _free(ptr, false);
+  __memcached_free(ptr, false);
   memcached_create(ptr);
   memcached_set_allocated(ptr, stored_is_allocated);
   ptr->query_id= query_id;
@@ -283,7 +283,7 @@ void memcached_free(memcached_st *ptr)
 {
   if (ptr)
   {
-    _free(ptr, true);
+    __memcached_free(ptr, true);
   }
 }
 
@@ -384,11 +384,21 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
 
 void *memcached_get_user_data(const memcached_st *ptr)
 {
+  if (ptr == NULL)
+  {
+    return NULL;
+  }
+
   return ptr->user_data;
 }
 
 void *memcached_set_user_data(memcached_st *ptr, void *data)
 {
+  if (ptr == NULL)
+  {
+    return NULL;
+  }
+
   void *ret= ptr->user_data;
   ptr->user_data= data;
 
@@ -402,18 +412,30 @@ memcached_return_t memcached_push(memcached_st *destination, const memcached_st 
 
 memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
 {
+  if (ptr == NULL)
+  {
+    return NULL;
+  }
+
   return &ptr->servers[server_key];
 }
 
 memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key)
 {
+  if (ptr == NULL)
+  {
+    return NULL;
+  }
+
   return &ptr->servers[server_key];
 }
 
 uint64_t memcached_query_id(const memcached_st *self)
 {
-  if (not self)
+  if (self == NULL)
+  {
     return 0;
+  }
 
   return self->query_id;
 }
