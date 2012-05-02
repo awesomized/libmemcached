@@ -40,6 +40,7 @@
 #include <libtest/collection.h>
 #include <libtest/signal.h>
 
+#include <fnmatch.h>
 #include <iostream>
 
 using namespace libtest;
