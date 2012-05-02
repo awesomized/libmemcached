@@ -42,6 +42,7 @@ CLEANFILES+= \
 distclean-libtest-check:
 	-rm -rf tmp_chroot
 
+noinst_HEADERS+= libtest/timer.hpp
 noinst_HEADERS+= \
 		 libtest/binaries.h \
 		 libtest/cpu.hpp \
@@ -73,7 +74,6 @@ noinst_HEADERS+= \
 		 libtest/server_container.h \
 		 libtest/signal.h \
 		 libtest/socket.hpp \
-		 libtest/stats.h \
 		 libtest/stream.h \
 		 libtest/strerror.h \
 		 libtest/string.hpp \
@@ -94,6 +94,7 @@ libtest_libtest_la_SOURCES=
 libtest_libtest_la_SOURCES+= libtest/binaries.cc 
 libtest_libtest_la_SOURCES+= libtest/cmdline.cc 
 libtest_libtest_la_SOURCES+= libtest/comparison.cc 
+libtest_libtest_la_SOURCES+= libtest/collection.cc 
 libtest_libtest_la_SOURCES+= libtest/core.cc 
 libtest_libtest_la_SOURCES+= libtest/cpu.cc 
 libtest_libtest_la_SOURCES+= libtest/dream.cc 
@@ -112,7 +113,9 @@ libtest_libtest_la_SOURCES+= libtest/server.cc
 libtest_libtest_la_SOURCES+= libtest/server_container.cc 
 libtest_libtest_la_SOURCES+= libtest/signal.cc 
 libtest_libtest_la_SOURCES+= libtest/socket.cc 
+libtest_libtest_la_SOURCES+= libtest/stream.cc 
 libtest_libtest_la_SOURCES+= libtest/strerror.cc 
+libtest_libtest_la_SOURCES+= libtest/timer.cc 
 libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
 libtest_libtest_la_SOURCES+= libtest/vchar.cc
 

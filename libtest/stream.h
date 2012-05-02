@@ -48,58 +48,66 @@ namespace stream {
 namespace detail {
 
 template<class Ch, class Tr, class A>
-  class cerr {
+  class channel {
   private:
 
   public:
     typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
 
   public:
-    void operator()(const stream_buffer &s)
+    void operator()(const stream_buffer& s, std::ostream& _out,
+                    const char* filename, int line_number, const char* func)
     {
-      std::cerr << s.str() << std::endl;
+      if (filename)
+      {
+        _out
+          << filename 
+          << ":" 
+          << line_number 
+          << ": in " 
+          << func << "() "
+          << s.str()
+          << std::endl;
+      }
+      else
+      {
+        _out
+          << s.str()
+          << std::endl;
+      }
     }
   };
 
 template<class Ch, class Tr, class A>
-  class make_cerr {
+  class channelln {
   private:
 
   public:
     typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
 
   public:
-    void operator()(const stream_buffer &s)
+    void operator()(const stream_buffer& s, std::ostream& _out,
+                    const char* filename, int line_number, const char* func)
     {
-      std::cerr << std::endl << s.str() << std::endl;
-    }
-  };
-
-template<class Ch, class Tr, class A>
-  class cout {
-  private:
-
-  public:
-    typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
-
-  public:
-    void operator()(const stream_buffer &s)
-    {
-      std::cout << s.str() << std::endl;
-    }
-  };
-
-template<class Ch, class Tr, class A>
-  class clog {
-  private:
-
-  public:
-    typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
-
-  public:
-    void operator()(const stream_buffer &s)
-    {
-      std::cerr<< s.str() << std::endl;
+      if (filename)
+      {
+        _out
+          << std::endl
+          << filename 
+          << ":" 
+          << line_number 
+          << ": in " 
+          << func << "() "
+          << s.str()
+          << std::endl;
+      }
+      else
+      {
+        _out
+          << std::endl
+          << s.str()
+          << std::endl;
+      }
     }
   };
 
@@ -107,37 +115,30 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
   class log {
   private:
     typedef OutputPolicy<Ch, Tr, A> output_policy;
+
+  private:
+    std::ostream& _out;
     const char *_filename;
     int _line_number;
     const char *_func;
 
   public:
-    log() :
-      _filename(NULL),
-      _line_number(0)
+    log(std::ostream& out_arg, const char* filename, int line_number, const char* func) :
+      _out(out_arg),
+      _filename(filename),
+      _line_number(line_number),
+      _func(func)
     { }
-
-    void set_filename(const char *filename, int line_number, const char *func)
-    {
-      _filename= filename;
-      _line_number= line_number;
-      _func= func;
-    }
 
     ~log()
     {
-      output_policy()(arg);
+      output_policy()(arg, _out, _filename, _line_number, _func);
     }
 
   public:
     template<class T>
       log &operator<<(const T &x)
       {
-        if (_filename)
-        {
-          arg << _filename << ":" << _line_number << ": in " << _func << "() ";
-          _filename= NULL;
-        }
         arg << x;
         return *this;
       }
@@ -145,34 +146,26 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
   private:
     typename output_policy::stream_buffer arg;
   };
-}
+} // namespace detail
 
-class make_cerr : public detail::log<detail::make_cerr> {
+class make_cerr : public detail::log<detail::channelln> {
 public:
-  make_cerr(const char *filename, int line_number, const char *func)
-  {
-    set_filename(filename, line_number, func);
-  }
+  make_cerr(const char* filename, int line_number, const char* func);
 };
 
-class cerr : public detail::log<detail::cerr> {
+class cerr : public detail::log<detail::channel> {
 public:
-  cerr(const char *filename, int line_number, const char *func)
-  {
-    set_filename(filename, line_number, func);
-  }
+  cerr(const char* filename, int line_number, const char* func);
 };
 
-class clog : public detail::log<detail::clog> {
+class clog : public detail::log<detail::channel> {
 public:
-  clog(const char *, int, const char*)
-  { }
+  clog(const char* filename, int line_number, const char* func);
 };
 
-class cout : public detail::log<detail::cout> {
+class cout : public detail::log<detail::channel> {
 public:
-  cout(const char *, int, const char *)
-  { }
+  cout(const char* filename, int line_number, const char* func);
 };
 
 

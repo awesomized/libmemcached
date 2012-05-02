@@ -34,28 +34,22 @@
  *
  */
 
-#pragma once
+#include <config.h>
+#include <libtest/timer.hpp>
+#include <ctime>
 
-struct Stats {
-  int32_t collection_success;
-  int32_t collection_skipped;
-  int32_t collection_failed;
-  int32_t collection_total;
+namespace libtest {
 
-  uint32_t success;
-  uint32_t skipped;
-  uint32_t failed;
-  uint32_t total;
+std::ostream& operator<<(std::ostream& output, const libtest::Timer& arg)
+{
+  struct timespec temp;
+  arg.difference(temp);
 
-  Stats() :
-    collection_success(0),
-    collection_skipped(0),
-    collection_failed(0),
-    collection_total(0),
-    success(0),
-    skipped(0),
-    failed(0),
-    total(0)
-  { }
-};
+  output << temp.tv_sec;
+  output << ":";
+  output << temp.tv_nsec;
 
+  return output;
+}
+
+} // namespace libtest

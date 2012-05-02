@@ -152,7 +152,7 @@ static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_to_success_TEST(memca
 
   memcached_return_t ret;
   do {
-    sleep(3);
+    libtest::dream(3, 0);
     ret= memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0));
   } while (ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED);
 
@@ -175,7 +175,7 @@ static test_return_t MEMCACHED_SERVER_MARKED_DEAD_TEST(memcached_st *memc)
   test_compare(MEMCACHED_SERVER_TEMPORARILY_DISABLED, ret);
 
   do {
-    sleep(3);
+    libtest::dream(3, 0);
     ret= memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0));
   } while (ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED or ret == MEMCACHED_SUCCESS);
 
@@ -207,7 +207,7 @@ collection_st collection[] ={
   { 0, 0, 0, 0 }
 };
 
-#include "libmemcached_world.h"
+#include "tests/libmemcached_world.h"
 
 void get_world(Framework *world)
 {

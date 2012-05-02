@@ -112,7 +112,9 @@ public:
   }
 
 
-  void shutdown_and_remove();
+  // Just remove everything after shutdown
+  void clear();
+
   bool shutdown();
   bool shutdown(uint32_t number_of_host);
 

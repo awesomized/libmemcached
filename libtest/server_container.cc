@@ -91,13 +91,14 @@ Server* server_startup_st::pop_server()
   return tmp;
 }
 
-bool server_startup_st::shutdown(uint32_t number_of_host)
+// host_to_shutdown => host number to shutdown in array
+bool server_startup_st::shutdown(uint32_t host_to_shutdown)
 {
-  if (servers.size() > number_of_host)
+  if (servers.size() > host_to_shutdown)
   {
-    Server* tmp= servers[number_of_host];
+    Server* tmp= servers[host_to_shutdown];
 
-    if (tmp and tmp->has_pid() and tmp->kill() == false)
+    if (tmp and tmp->kill() == false)
     { }
     else
     {
@@ -108,7 +109,7 @@ bool server_startup_st::shutdown(uint32_t number_of_host)
   return false;
 }
 
-void server_startup_st::shutdown_and_remove()
+void server_startup_st::clear()
 {
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); iter++)
   {
@@ -166,7 +167,7 @@ server_startup_st::server_startup_st() :
 
 server_startup_st::~server_startup_st()
 {
-  shutdown_and_remove();
+  clear();
 }
 
 bool server_startup_st::validate()
