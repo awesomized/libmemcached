@@ -206,13 +206,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   AM_CONDITIONAL(HAVE_SPHINX,[test "x${SPHINXBUILD}" != "x:"])
   AM_CONDITIONAL(HAVE_RECENT_SPHINX,[test "x${ac_cv_recent_sphinx}" = "xyes"])
 
-  AS_IF([test "x${gl_LIBOBJS}" != "x"],[
-    AS_IF([test "$GCC" = "yes"],[
-      AM_CPPFLAGS="-isystem \${top_srcdir}/gnulib -isystem \${top_builddir}/gnulib ${AM_CPPFLAGS}"
-    ],[
-    AM_CPPFLAGS="-I\${top_srcdir}/gnulib -I\${top_builddir}/gnulib ${AM_CPPFLAGS}"
-    ])
-  ])
   m4_if(m4_substr(m4_esyscmd(test -d src && echo 0),0,1),0,[
     AM_CPPFLAGS="-I\$(top_srcdir)/src -I\$(top_builddir)/src ${AM_CPPFLAGS}"
   ],[
