@@ -36,11 +36,15 @@
 
 #pragma once
 
+#include <libtest/signal.h>
+
 /**
   Framework is the structure which is passed to the test implementation to be filled.
   This must be implemented in order for the test framework to load the tests. We call
   get_world() in order to fill this structure.
 */
+
+#include <vector>
 
 class Framework {
 public:
@@ -51,7 +55,7 @@ public:
   test_callback_destroy_fn *_destroy;
 
 public:
-  void* create(test_return_t& arg);
+  test_return_t create();
 
   /**
     If an error occurs during the test, this is called.
@@ -93,17 +97,74 @@ public:
 
   libtest::Runner *runner();
 
+  void exec();
 
-  Framework();
+  libtest::Collection& collection();
+
+  Framework(libtest::SignalThread&, const std::string&);
 
   virtual ~Framework();
 
-  Framework(const Framework&);
+  Framework(libtest::SignalThread&,
+            const std::string&,
+            const std::string&);
+
+  bool match(const char* arg);
+
+  void *creators_ptr()
+  {
+    return _creators_ptr;
+  }
+
+  libtest::SignalThread& signal()
+  {
+    return _signal;
+  }
+
+  uint32_t sum_total();
+  uint32_t sum_success();
+  uint32_t sum_skipped();
+  uint32_t sum_failed();
+
+  size_t size() 
+  {
+    return _collection.size();
+  }
+
+  uint32_t total() const
+  {
+    return _total;
+  }
+
+  uint32_t success() const
+  {
+    return _success;
+  }
+
+  uint32_t skipped() const
+  {
+    return _skipped;
+  }
+
+  uint32_t failed() const
+  {
+    return _failed;
+  }
 
 private:
   Framework& operator=(const Framework&);
+
+  uint32_t _total;
+  uint32_t _success;
+  uint32_t _skipped;
+  uint32_t _failed;
+
   libtest::server_startup_st _servers;
   bool _socket;
   void *_creators_ptr;
   unsigned long int _servers_to_run;
+  std::vector<libtest::Collection*> _collection;
+  libtest::SignalThread& _signal;
+  std::string _only_run;
+  std::string _wildcard;
 };

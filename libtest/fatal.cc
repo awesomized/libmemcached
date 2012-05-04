@@ -40,16 +40,21 @@
 
 namespace libtest {
 
-fatal::fatal(const char *file, int line, const char *func, const char *format, ...) :
-  std::runtime_error(func)
+fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const char *format, ...) :
+  std::runtime_error(func_arg),
+  _file(file_arg),
+  _line(line_arg),
+  _func(func_arg)
   {
     va_list args;
     va_start(args, format);
     char last_error[BUFSIZ];
-    (void)vsnprintf(last_error, sizeof(last_error), format, args);
+    int last_error_length= vsnprintf(last_error, sizeof(last_error), format, args);
     va_end(args);
 
-    snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", file, int(line), last_error, func);
+    strncpy(_mesg, last_error, sizeof(_mesg));
+
+    snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, int(_line), last_error, _func);
   }
 
 static bool _disabled= false;

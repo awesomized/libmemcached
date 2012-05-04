@@ -1,4 +1,4 @@
-.TH "MEMCACHED_SERVERS_RESET" "3" "April 28, 2012" "1.0.7" "libmemcached"
+.TH "MEMCACHED_SERVERS_RESET" "3" "May 03, 2012" "1.0.7" "libmemcached"
 .SH NAME
 memcached_servers_reset \- libmemcached Documentation
 .
@@ -64,8 +64,7 @@ communicate with the server. You should either pass a statically declared
 a NULL. If a NULL passed in then a structure is allocated for you.
 .sp
 Please note, when you write new application use
-\fBmemcached()\fP over
-\fI\%memcached_create()\fP.
+\fBmemcached()\fP over \fI\%memcached_create()\fP.
 .sp
 \fI\%memcached_clone()\fP is similar to \fI\%memcached_create()\fP but
 it copies the defaults and list of servers from the source

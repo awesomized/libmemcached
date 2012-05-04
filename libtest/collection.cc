@@ -1,0 +1,179 @@
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ *
+ *  Data Differential YATL (i.e. libtest)  library
+ *
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <config.h>
+
+#include <libtest/common.h>
+
+static test_return_t runner_code(Framework* frame,
+                                 test_st* run, 
+                                 libtest::Timer& _timer)
+{ // Runner Code
+
+  assert(frame->runner());
+  assert(run->test_fn);
+
+  test_return_t return_code;
+  try 
+  {
+    _timer.reset();
+    return_code= frame->runner()->run(run->test_fn, frame->creators_ptr());
+  }
+  // Special case where check for the testing of the exception
+  // system.
+  catch (libtest::fatal &e)
+  {
+    if (libtest::fatal::is_disabled())
+    {
+      libtest::fatal::increment_disabled_counter();
+      return_code= TEST_SUCCESS;
+    }
+    else
+    {
+      throw;
+    }
+  }
+
+  _timer.sample();
+
+  return return_code;
+}
+
+namespace libtest {
+
+Collection::Collection(Framework* frame_arg,
+                       collection_st* arg) :
+  _name(arg->name),
+  _pre(arg->pre),
+  _post(arg->post),
+  _tests(arg->tests),
+  _frame(frame_arg),
+  _success(0),
+  _skipped(0),
+  _failed(0),
+  _total(0)
+{
+  fatal_assert(arg);
+}
+
+test_return_t Collection::exec()
+{
+  Out << "Collection: " << _name;
+
+  if (test_success(_frame->runner()->pre(_pre, _frame->creators_ptr())))
+  {
+    for (test_st *run= _tests; run->name; run++)
+    {
+      long int load_time= 0;
+
+      if (_frame->match(run->name))
+      {
+        continue;
+      }
+      _total++;
+
+      test_return_t return_code;
+      try 
+      {
+        if (run->requires_flush)
+        {
+          if (test_failed(_frame->runner()->flush(_frame->creators_ptr())))
+          {
+            Error << "frame->runner()->flush(creators_ptr)";
+            _skipped++;
+            continue;
+          }
+        }
+
+        return_code= runner_code(_frame, run, _timer);
+      }
+      catch (libtest::fatal &e)
+      {
+        Error << "Fatal exception was thrown: " << e.what();
+        return_code= TEST_FAILURE;
+        _failed++;
+        throw;
+      }
+
+      switch (return_code)
+      {
+      case TEST_SUCCESS:
+        Out << "\tTesting " 
+          << run->name
+          <<  "\t\t\t\t\t" 
+          << _timer 
+          << " [ " << test_strerror(return_code) << " ]";
+        _success++;
+        break;
+
+      case TEST_FAILURE:
+        _failed++;
+        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        break;
+
+      case TEST_SKIPPED:
+        _skipped++;
+        Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
+        break;
+
+      default:
+        fatal_message("invalid return code");
+      }
+#if 0
+      @TODO add code here to allow for a collection to define a method to reset to allow tests to continue.
+#endif
+    }
+
+    (void) _frame->runner()->post(_post, _frame->creators_ptr());
+  }
+
+  if (_failed == 0 and _skipped == 0 and _success)
+  {
+    return TEST_SUCCESS;
+  }
+
+  if (_failed)
+  {
+    return TEST_FAILURE;
+  }
+
+  fatal_assert(_skipped or _success == 0);
+
+  return TEST_SKIPPED;
+}
+
+} // namespace libtest
+

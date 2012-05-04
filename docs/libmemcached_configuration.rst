@@ -8,7 +8,9 @@ Configuring Libmemcached
 SYNOPSIS 
 --------
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
+
+.. envvar:: LIBMEMCACHED
 
 .. c:function:: memcached_st *memcached(const char *string, size_t string_length)
 

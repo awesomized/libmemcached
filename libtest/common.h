@@ -76,6 +76,5 @@
 
 #include <libtest/libtool.hpp>
 #include <libtest/killpid.h>
-#include <libtest/stats.h>
 #include <libtest/signal.h>
 

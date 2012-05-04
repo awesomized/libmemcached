@@ -41,6 +41,9 @@
 extern "C" {
 #endif
 
+test_return_t memcached_NULL_string_TEST(memcached_st*);
+test_return_t memcached_zero_string_length_TEST(memcached_st*);
+
 LIBTEST_LOCAL
 test_return_t server_test(memcached_st *memc);
 

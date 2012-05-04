@@ -52,7 +52,6 @@
 
 #include <signal.h>
 
-#include <libtest/stats.h>
 #include <libtest/signal.h>
 
 #ifndef __INTEL_COMPILER

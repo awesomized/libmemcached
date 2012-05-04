@@ -70,7 +70,7 @@ static test_return_t server_startup_multiple_TEST(void *obj)
 static test_return_t shutdown_and_remove_TEST(void *obj)
 {
   server_startup_st *servers= (server_startup_st*)obj;
-  servers->shutdown_and_remove();
+  servers->clear();
 
   return TEST_SUCCESS;
 }
@@ -106,7 +106,7 @@ static test_return_t validate_sanity_INIT(void *object)
 static test_return_t collection_FINAL(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
-  servers->shutdown_and_remove();
+  servers->clear();
 
   return TEST_SUCCESS;
 }

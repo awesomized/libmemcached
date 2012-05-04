@@ -36,6 +36,10 @@
 
 #pragma once
 
+#include <libtest/timer.hpp>
+
+class Framework;
+
 /**
   A structure which describes a collection of test cases.
 */
@@ -46,4 +50,50 @@ struct collection_st {
   struct test_st *tests;
 };
 
+namespace libtest {
 
+class Collection {
+public:
+  Collection(Framework*, collection_st*);
+
+  test_return_t exec();
+
+  const char* name()
+  {
+    return _name;
+  }
+
+  uint32_t success()
+  {
+    return _success;
+  }
+
+  uint32_t skipped()
+  {
+    return _skipped;
+  }
+
+  uint32_t failed()
+  {
+    return _failed;
+  }
+
+  uint32_t total()
+  {
+    return _total;
+  }
+
+private:
+  const char *_name;
+  test_callback_fn *_pre;
+  test_callback_fn *_post;
+  struct test_st *_tests;
+  Framework* _frame;
+  uint32_t _success;
+  uint32_t _skipped;
+  uint32_t _failed;
+  uint32_t _total;
+  libtest::Timer _timer;
+};
+
+} // namespace libtest
