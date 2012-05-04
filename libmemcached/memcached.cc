@@ -208,30 +208,49 @@ memcached_st *memcached_create(memcached_st *ptr)
 
 memcached_st *memcached(const char *string, size_t length)
 {
-  memcached_st *self= memcached_create(NULL);
-  if (self == NULL)
+  if (length == 0 and string)
+  {
+    return NULL;
+  }
+
+  if (length and string == NULL)
   {
     return NULL;
   }
 
   if (length == 0)
   {
-    return self;
+    if (bool(getenv("LIBMEMCACHED")))
+    {
+      string= getenv("LIBMEMCACHED");
+      length= string ? strlen(string) : 0;
+    }
   }
 
-  memcached_return_t rc= memcached_parse_configuration(self, string, length);
-  if (memcached_success(rc) and memcached_parse_filename(self))
+  memcached_st *memc= memcached_create(NULL);
+  if (memc == NULL)
   {
-    rc= memcached_parse_configure_file(*self, memcached_parse_filename(self), memcached_parse_filename_length(self));
+    return NULL;
+  }
+
+  if (length == 0 or string == NULL)
+  {
+    return memc;
+  }
+
+  memcached_return_t rc= memcached_parse_configuration(memc, string, length);
+  if (memcached_success(rc) and memcached_parse_filename(memc))
+  {
+    rc= memcached_parse_configure_file(*memc, memcached_parse_filename(memc), memcached_parse_filename_length(memc));
   }
     
   if (memcached_failed(rc))
   {
-    memcached_free(self);
+    memcached_free(memc);
     return NULL;
   }
 
-  return self;
+  return memc;
 }
 
 memcached_return_t memcached_reset(memcached_st *ptr)

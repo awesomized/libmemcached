@@ -35,19 +35,39 @@
  */
 
 #include <config.h>
+
 #include <libtest/common.h>
+#include <libtest/collection.h>
+#include <libtest/signal.h>
+
+#include <fnmatch.h>
 #include <iostream>
 
 using namespace libtest;
 
-Framework::Framework() :
+Framework::Framework(libtest::SignalThread& signal,
+                     const std::string& only_run_arg,
+                     const std::string& wildcard_arg) :
   collections(NULL),
+  _total(0),
+  _success(0),
+  _skipped(0),
+  _failed(0),
   _create(NULL),
   _destroy(NULL),
   _runner(NULL),
   _socket(false),
-  _creators_ptr(NULL)
+  _creators_ptr(NULL),
+  _signal(signal),
+  _only_run(only_run_arg),
+  _wildcard(wildcard_arg)
 {
+  get_world(this);
+
+  for (collection_st *next= collections; next and next->name; next++)
+  {
+    _collection.push_back(new Collection(this, next));
+  }
 }
 
 Framework::~Framework()
@@ -60,6 +80,122 @@ Framework::~Framework()
   _servers.shutdown();
 
   delete _runner;
+
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end();
+       iter++)
+  {
+    delete *iter;
+  }
+  _collection.clear();
+}
+
+bool Framework::match(const char* arg)
+{
+  if (_wildcard.empty() == false and fnmatch(_wildcard.c_str(), arg, 0))
+  {
+    return true;
+  }
+
+  return false;
+}
+
+void Framework::exec()
+{
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end() and (_signal.is_shutdown() == false);
+       iter++)
+  {
+    if (_only_run.empty() == false and
+        fnmatch(_only_run.c_str(), (*iter)->name(), 0))
+    {
+      continue;
+    }
+
+    _total++;
+
+    try {
+      switch ((*iter)->exec())
+      {
+      case TEST_FAILURE:
+        _failed++;
+        break;
+
+      case TEST_SKIPPED:
+        _skipped++;
+        break;
+
+        // exec() can return SUCCESS, but that doesn't mean that some tests did
+        // not fail or get skipped.
+      case TEST_SUCCESS:
+        _success++;
+        break;
+      }
+    }
+    catch (libtest::fatal& e)
+    {
+      stream::cerr(e.file(), e.line(), e.func()) << e.mesg();
+    }
+    catch (libtest::disconnected& e)
+    {
+      Error << "Unhandled disconnection occurred:" << e.what();
+      throw;
+    }
+
+    Outn();
+  }
+}
+
+uint32_t Framework::sum_total()
+{
+  uint32_t count= 0;
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end();
+       iter++)
+  {
+    count+= (*iter)->total();
+  }
+
+  return count;
+}
+
+uint32_t Framework::sum_success()
+{
+  uint32_t count= 0;
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end();
+       iter++)
+  {
+    count+= (*iter)->success();
+  }
+
+  return count;
+}
+
+uint32_t Framework::sum_skipped()
+{
+  uint32_t count= 0;
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end();
+       iter++)
+  {
+    count+= (*iter)->skipped();
+  }
+
+  return count;
+}
+
+uint32_t Framework::sum_failed()
+{
+  uint32_t count= 0;
+  for (std::vector<Collection*>::iterator iter= _collection.begin();
+       iter != _collection.end();
+       iter++)
+  {
+    count+= (*iter)->failed();
+  }
+
+  return count;
 }
 
 libtest::Runner *Framework::runner()
@@ -73,13 +209,13 @@ libtest::Runner *Framework::runner()
   return _runner;
 }
 
-void* Framework::create(test_return_t& arg)
+test_return_t Framework::create()
 {
-  arg= TEST_SUCCESS;
+  test_return_t rc= TEST_SUCCESS;
   if (_create)
   {
-    return _creators_ptr= _create(_servers, arg);
+    _creators_ptr= _create(_servers, rc);
   }
 
-  return NULL;
+  return rc;
 }

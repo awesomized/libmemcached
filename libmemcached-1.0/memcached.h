@@ -37,22 +37,21 @@
 
 #pragma once
 
-#include <inttypes.h>
+/* This seems to be required for older compilers @note http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
+#define __STDC_FORMAT_MACROS
 
 #ifdef __cplusplus
-#include <cstddef>
-#include <cstdlib>
+#  include <tr1/cinttypes>
+#  include <cstddef>
+#  include <cstdlib>
 #else
-#include <stddef.h>
-#include <stdlib.h>
+#  include <inttypes.h>
+#  include <stddef.h>
+#  include <stdlib.h>
+#  include <stdbool.h>
 #endif
 
 #include <sys/types.h>
-
-
-#if !defined(__cplusplus)
-# include <stdbool.h>
-#endif
 
 #include <libmemcached-1.0/visibility.h>
 #include <libmemcached-1.0/configure.h>

@@ -58,71 +58,23 @@
 
 using namespace libtest;
 
-static void stats_print(Stats *stats)
+static void stats_print(Framework *frame)
 {
-  if (stats->collection_failed == 0 and stats->collection_success == 0)
+  if (frame->failed() == 0 and frame->success() == 0)
   {
     return;
   }
 
-  Out << "\tTotal Collections\t\t\t\t" << stats->collection_total;
-  Out << "\tFailed Collections\t\t\t\t" << stats->collection_failed;
-  Out << "\tSkipped Collections\t\t\t\t" << stats->collection_skipped;
-  Out << "\tSucceeded Collections\t\t\t\t" << stats->collection_success;
   Outn();
-  Out << "Total\t\t\t\t" << stats->total;
-  Out << "\tFailed\t\t\t" << stats->failed;
-  Out << "\tSkipped\t\t\t" << stats->skipped;
-  Out << "\tSucceeded\t\t" << stats->success;
-}
-
-static long int timedif(struct timeval a, struct timeval b)
-{
-  long us, s;
-
-  us = (long)(a.tv_usec - b.tv_usec);
-  us /= 1000;
-  s = (long)(a.tv_sec - b.tv_sec);
-  s *= 1000;
-  return s + us;
-}
-
-static test_return_t runner_code(Framework* frame,
-                                 test_st* run, 
-                                 void* creators_ptr, 
-                                 long int& load_time)
-{ // Runner Code
-
-  struct timeval start_time, end_time;
-
-  gettimeofday(&start_time, NULL);
-  assert(frame->runner());
-  assert(run->test_fn);
-
-  test_return_t return_code;
-  try 
-  {
-    return_code= frame->runner()->run(run->test_fn, creators_ptr);
-  }
-  // Special case where check for the testing of the exception
-  // system.
-  catch (libtest::fatal &e)
-  {
-    if (fatal::is_disabled())
-    {
-      fatal::increment_disabled_counter();
-      return_code= TEST_SUCCESS;
-    }
-    else
-    {
-      throw;
-    }
-  }
-
-  gettimeofday(&end_time, NULL);
-  load_time= timedif(end_time, start_time);
-
-  return return_code;
+  Out << "Collections\t\t\t\t\t" << frame->total();
+  Out << "\tFailed\t\t\t\t\t" << frame->failed();
+  Out << "\tSkipped\t\t\t\t\t" << frame->skipped();
+  Out << "\tSucceeded\t\t\t\t" << frame->success();
+  Outn();
+  Out << "Tests\t\t\t\t\t" << frame->sum_total();
+  Out << "\tFailed\t\t\t\t" << frame->sum_failed();
+  Out << "\tSkipped\t\t\t\t" << frame->sum_skipped();
+  Out << "\tSucceeded\t\t\t" << frame->sum_success();
 }
 
 #include <getopt.h>
@@ -134,6 +86,7 @@ int main(int argc, char *argv[])
   unsigned long int opt_repeat= 1; // Run all tests once
   bool opt_quiet= false;
   std::string collection_to_run;
+  std::string wildcard;
 
   // Options parsing
   {
@@ -142,6 +95,7 @@ int main(int argc, char *argv[])
       OPT_LIBYATL_MATCH_COLLECTION,
       OPT_LIBYATL_MASSIVE,
       OPT_LIBYATL_QUIET,
+      OPT_LIBYATL_MATCH_WILDCARD,
       OPT_LIBYATL_REPEAT
     };
 
@@ -151,6 +105,7 @@ int main(int argc, char *argv[])
       { "quiet", no_argument, NULL, OPT_LIBYATL_QUIET },
       { "repeat", no_argument, NULL, OPT_LIBYATL_REPEAT },
       { "collection", required_argument, NULL, OPT_LIBYATL_MATCH_COLLECTION },
+      { "wildcard", required_argument, NULL, OPT_LIBYATL_MATCH_WILDCARD },
       { "massive", no_argument, NULL, OPT_LIBYATL_MASSIVE },
       { 0, 0, 0, 0 }
     };
@@ -179,6 +134,10 @@ int main(int argc, char *argv[])
 
       case OPT_LIBYATL_MATCH_COLLECTION:
         collection_to_run= optarg;
+        break;
+
+      case OPT_LIBYATL_MATCH_WILDCARD:
+        wildcard= optarg;
         break;
 
       case OPT_LIBYATL_MASSIVE:
@@ -247,6 +206,24 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
+  if (getenv("YATL_COLLECTION_TO_RUN"))
+  {
+    if (strlen(getenv("YATL_COLLECTION_TO_RUN")))
+    {
+      collection_to_run= getenv("YATL_COLLECTION_TO_RUN");
+    }
+  }
+
+  if (collection_to_run.compare("none") == 0)
+  {
+    return EXIT_SUCCESS;
+  }
+
+  if (collection_to_run.empty() == false)
+  {
+    Out << "Only testing " <<  collection_to_run;
+  }
+
   int exit_code;
 
   try 
@@ -254,8 +231,6 @@ int main(int argc, char *argv[])
     do
     {
       exit_code= EXIT_SUCCESS;
-      std::auto_ptr<Framework> frame(new Framework);
-
       fatal_assert(sigignore(SIGPIPE) == 0);
 
       libtest::SignalThread signal;
@@ -265,181 +240,25 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
       }
 
-      Stats stats;
+      std::auto_ptr<Framework> frame(new Framework(signal, collection_to_run, wildcard));
 
-      get_world(frame.get());
-
-      test_return_t error;
-      void *creators_ptr= frame->create(error);
-
-      switch (error)
+      // Run create(), bail on error.
       {
-      case TEST_SUCCESS:
-        break;
-
-      case TEST_SKIPPED:
-        Out << "SKIP " << argv[0];
-        return EXIT_SUCCESS;
-
-      case TEST_FAILURE:
-        return EXIT_FAILURE;
-      }
-
-      if (getenv("YATL_COLLECTION_TO_RUN"))
-      {
-        if (strlen(getenv("YATL_COLLECTION_TO_RUN")))
+        switch (frame->create())
         {
-          collection_to_run= getenv("YATL_COLLECTION_TO_RUN");
+        case TEST_SUCCESS:
+          break;
+
+        case TEST_SKIPPED:
+          Out << "SKIP " << argv[0];
+          return EXIT_SUCCESS;
+
+        case TEST_FAILURE:
+          return EXIT_FAILURE;
         }
       }
 
-      if (collection_to_run.compare("none") == 0)
-      {
-        return EXIT_SUCCESS;
-      }
-
-      if (collection_to_run.empty() == false)
-      {
-        Out << "Only testing " <<  collection_to_run;
-      }
-
-      char *wildcard= NULL;
-      if (argc == 3)
-      {
-        wildcard= argv[2];
-      }
-
-      for (collection_st *next= frame->collections; next and next->name and (not signal.is_shutdown()); next++)
-      {
-        if (collection_to_run.empty() == false and fnmatch(collection_to_run.c_str(), next->name, 0))
-        {
-          continue;
-        }
-
-        stats.collection_total++;
-
-        bool failed= false;
-        bool skipped= false;
-        test_return_t collection_rc;
-        if (test_success(collection_rc= frame->runner()->pre(next->pre, creators_ptr)))
-        {
-          Out << "Collection: " << next->name;
-
-          for (test_st *run= next->tests; run->name; run++)
-          {
-            long int load_time= 0;
-
-            if (wildcard && fnmatch(wildcard, run->name, 0))
-            {
-              continue;
-            }
-
-            test_return_t return_code;
-            try 
-            {
-              if (run->requires_flush)
-              {
-                if (test_failed(frame->runner()->flush(creators_ptr)))
-                {
-                  Error << "frame->runner()->flush(creators_ptr)";
-                  continue;
-                }
-              }
-
-              return_code= runner_code(frame.get(), run, creators_ptr, load_time);
-
-              if (return_code == TEST_SKIPPED)
-              { }
-              else if (return_code == TEST_FAILURE)
-              {
-#if 0
-                Error << " frame->runner()->run(failure)";
-                signal.set_shutdown(SHUTDOWN_GRACEFUL);
-#endif
-              }
-
-            }
-            catch (libtest::fatal &e)
-            {
-              Error << "Fatal exception was thrown: " << e.what();
-              return_code= TEST_FAILURE;
-              throw;
-            }
-            catch (std::exception &e)
-            {
-              Error << "Exception was thrown: " << e.what();
-              return_code= TEST_FAILURE;
-              throw;
-            }
-            catch (...)
-            {
-              Error << "Unknown exception occurred";
-              return_code= TEST_FAILURE;
-              throw;
-            }
-
-            stats.total++;
-
-            switch (return_code)
-            {
-            case TEST_SUCCESS:
-              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << load_time / 1000 << "." << load_time % 1000 << "[ " << test_strerror(return_code) << " ]";
-              stats.success++;
-              break;
-
-            case TEST_FAILURE:
-              stats.failed++;
-              failed= true;
-              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-              break;
-
-            case TEST_SKIPPED:
-              stats.skipped++;
-              skipped= true;
-              Out << "\tTesting " << run->name <<  "\t\t\t\t\t" << "[ " << test_strerror(return_code) << " ]";
-              break;
-
-            default:
-              fatal_message("invalid return code");
-            }
-#if 0
-            @TODO add code here to allow for a collection to define a method to reset to allow tests to continue.
-#endif
-          }
-
-          (void) frame->runner()->post(next->post, creators_ptr);
-        }
-        else if (collection_rc == TEST_FAILURE)
-        {
-          Out << next->name << " [ failed ]";
-          failed= true;
-#if 0
-          signal.set_shutdown(SHUTDOWN_GRACEFUL);
-#endif
-        }
-        else if (collection_rc == TEST_SKIPPED)
-        {
-          Out << next->name << " [ skipping ]";
-          skipped= true;
-        }
-
-        if (failed == false and skipped == false)
-        {
-          stats.collection_success++;
-        }
-
-        if (failed)
-        {
-          stats.collection_failed++;
-        }
-
-        if (skipped)
-        {
-          stats.collection_skipped++;
-        }
-
-        Outn();
-      }
+      frame->exec();
 
       if (signal.is_shutdown() == false)
       {
@@ -452,21 +271,21 @@ int main(int argc, char *argv[])
         Out << "Tests were aborted.";
         exit_code= EXIT_FAILURE;
       }
-      else if (stats.collection_failed)
+      else if (frame->failed())
       {
         Out << "Some test failed.";
         exit_code= EXIT_FAILURE;
       }
-      else if (stats.collection_skipped and stats.collection_failed and stats.collection_success)
+      else if (frame->skipped() and frame->failed() and frame->success())
       {
         Out << "Some tests were skipped.";
       }
-      else if (stats.collection_success and (stats.collection_failed == 0))
+      else if (frame->success() and (frame->failed() == 0))
       {
         Out << "All tests completed successfully.";
       }
 
-      stats_print(&stats);
+      stats_print(frame.get());
 
       Outn(); // Generate a blank to break up the messages if make check/test has been run
     } while (exit_code == EXIT_SUCCESS and --opt_repeat);
@@ -474,18 +293,22 @@ int main(int argc, char *argv[])
   catch (libtest::fatal& e)
   {
     std::cerr << e.what() << std::endl;
+    exit_code= EXIT_FAILURE;
   }
   catch (libtest::disconnected& e)
   {
     std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
+    exit_code= EXIT_FAILURE;
   }
   catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
+    exit_code= EXIT_FAILURE;
   }
   catch (...)
   {
     std::cerr << "Unknown exception halted execution." << std::endl;
+    exit_code= EXIT_FAILURE;
   }
 
   return exit_code;
