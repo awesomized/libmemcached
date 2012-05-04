@@ -164,7 +164,9 @@ bool Server::start()
   // If we find that we already have a pid then kill it.
   if (has_pid() == true)
   {
+#if 0
     fatal_message("has_pid() failed, programer error");
+#endif
   }
 
   // This needs more work.
@@ -262,28 +264,29 @@ bool Server::start()
       if (kill_file(pid_file()) == false)
       {
         throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                             "Failed to kill off server, waited: %u after startup occurred, when pinging failed: %s stderr:%s",
+                             "Failed to kill off server, waited: %u after startup occurred, when pinging failed: %.*s stderr:%.*s",
                              this_wait,
-                             pid_file().c_str(),
-                             _app.stderr_c_str());
+                             int(_running.size()), _running.c_str(),
+                             int(_app.stderr_result_length()), _app.stderr_c_str());
       }
 
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM, 
-                           "Failed native ping(), pid: %d is alive: %s waited: %u server started, having pid_file. exec: %s stderr:%s",
+                           "Failed native ping(), pid: %d is alive: %s waited: %u server started, having pid_file. exec: %.*s stderr:%.*s",
                            int(_app.pid()),
                            _app.check() ? "true" : "false",
-                           this_wait, _running.c_str(), 
-                           _app.stderr_c_str());
+                           this_wait,
+                           int(_running.size()), _running.c_str(),
+                           int(_app.stderr_result_length()), _app.stderr_c_str());
     }
     else
     {
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                           "Failed native ping(), pid: %d is alive: %s waited: %u server started. exec: %s stderr:%s",
+                           "Failed native ping(), pid: %d is alive: %s waited: %u server started. exec: %.*s stderr:%.*s",
                            int(_app.pid()),
                            _app.check() ? "true" : "false",
                            this_wait,
-                           _running.c_str(),
-                           _app.stderr_c_str());
+                           int(_running.size()), _running.c_str(),
+                           int(_app.stderr_result_length()), _app.stderr_c_str());
     }
     _running.clear();
     return false;

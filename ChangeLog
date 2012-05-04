@@ -1,3 +1,6 @@
+1.0.8
+* Added support for setting options via ENV variable LIBMEMCACHED
+
 1.0.7 Sat Apr 28 00:48:29 PDT 2012
 * Add API call for exist calls.
 * Update all license files to be BSD.

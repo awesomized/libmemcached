@@ -34,43 +34,31 @@
  *
  */
 
-/*
-  Structures for generic tests.
-*/
-
-#include <cstdio>
-#include <cstdlib>
-#include <arpa/inet.h>
-
-#include <libtest/visibility.h>
-#include <libtest/version.h>
-
-#include <libtest/vchar.hpp>
-#include <libtest/fatal.hpp>
-
-#include <libtest/has.hpp>
-#include <libtest/error.h>
-#include <libtest/strerror.h>
-#include <libtest/timer.hpp>
+#include <config.h>
 #include <libtest/stream.h>
-#include <libtest/comparison.hpp>
-#include <libtest/server.h>
-#include <libtest/server_container.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/dream.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/port.h>
-#include <libtest/is_local.hpp>
-#include <libtest/socket.hpp>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
-#include <libtest/binaries.h>
-#include <libtest/http.hpp>
-#include <libtest/cpu.hpp>
-#include <libtest/tmpfile.hpp>
+
+namespace libtest {
+namespace stream {
+
+namespace detail {
+
+} // namespace detail
+
+make_cerr::make_cerr(const char* filename, int line_number, const char* func) :
+  log(std::cerr, filename, line_number, func)
+{ }
+
+cerr::cerr(const char* filename, int line_number, const char* func) :
+  log(std::cout, filename, line_number, func)
+  { }
+
+clog::clog(const char* filename, int line_number, const char* func) :
+  log(std::clog, filename, line_number, func)
+  { }
+
+cout::cout(const char* filename, int line_number, const char* func) :
+  log(std::cout, filename, line_number, func)
+  { }
+
+} // namespace stream
+} // namespace libtest

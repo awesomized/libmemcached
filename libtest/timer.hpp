@@ -34,43 +34,80 @@
  *
  */
 
-/*
-  Structures for generic tests.
-*/
+#pragma once
 
-#include <cstdio>
-#include <cstdlib>
-#include <arpa/inet.h>
+#include <ctime>
+#include <ostream>
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+#ifdef __MACH__
+#  include <mach/clock.h>
+#  include <mach/mach.h>
+#else
+#  include <sys/time.h>
+#endif
 
-#include <libtest/vchar.hpp>
-#include <libtest/fatal.hpp>
 
-#include <libtest/has.hpp>
-#include <libtest/error.h>
-#include <libtest/strerror.h>
-#include <libtest/timer.hpp>
-#include <libtest/stream.h>
-#include <libtest/comparison.hpp>
-#include <libtest/server.h>
-#include <libtest/server_container.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/dream.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/port.h>
-#include <libtest/is_local.hpp>
-#include <libtest/socket.hpp>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
-#include <libtest/binaries.h>
-#include <libtest/http.hpp>
-#include <libtest/cpu.hpp>
-#include <libtest/tmpfile.hpp>
+namespace libtest {
+
+class Timer {
+public:
+
+  Timer()
+  {
+    _begin.tv_sec= 0;
+    _begin.tv_nsec= 0;
+    _end.tv_sec= 0;
+    _end.tv_nsec= 0;
+  }
+
+  void reset()
+  {
+    _end.tv_sec= 0;
+    _end.tv_nsec= 0;
+    _time(_begin);
+  }
+
+  void sample()
+  {
+    _time(_end);
+  }
+
+  void difference(struct timespec& arg) const
+  {
+    if ((_end.tv_nsec -_begin.tv_nsec) < 0)
+    {
+      arg.tv_sec= _end.tv_sec -_begin.tv_sec-1;
+      arg.tv_nsec= 1000000000 +_end.tv_nsec -_begin.tv_nsec;
+
+    }
+    else
+    {
+      arg.tv_sec= _end.tv_sec -_begin.tv_sec;
+      arg.tv_nsec= _end.tv_nsec -_begin.tv_nsec;
+    }
+  }
+
+private:
+  void _time(struct timespec& ts)
+  {
+#ifdef __MACH__ // OSX lacks clock_gettime()
+    clock_serv_t _clock_serv;
+    mach_timespec_t _mach_timespec;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &_clock_serv);
+    clock_get_time(_clock_serv, &_mach_timespec);
+    mach_port_deallocate(mach_task_self(), _clock_serv);
+    ts.tv_sec= _mach_timespec.tv_sec;
+    ts.tv_nsec= _mach_timespec.tv_nsec;
+#else
+    clock_gettime(CLOCK_REALTIME, &ts);
+#endif
+  }
+
+private:
+  struct timespec _begin;
+  struct timespec _end;
+};
+
+std::ostream& operator<<(std::ostream& output, const libtest::Timer& arg);
+
+} // namespace libtest

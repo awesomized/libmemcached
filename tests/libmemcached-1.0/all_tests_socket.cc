@@ -45,7 +45,7 @@
 #include "tests/exist.h"
 #include "tests/ketama.h"
 #include "tests/namespace.h"
-#include "tests/parser.h"
+#include "tests/libmemcached-1.0/parser.h"
 #include "tests/libmemcached-1.0/dump.h"
 #include "tests/libmemcached-1.0/generate.h"
 #include "tests/libmemcached-1.0/haldenbrand.h"

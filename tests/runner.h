@@ -113,7 +113,9 @@ private:
       test_null(container->parent());
       container->parent(memcached(container->construct.option_string().c_str(), container->construct.option_string().size()));
       test_true(container->parent());
+#if 0
       test_compare(MEMCACHED_SUCCESS, memcached_version(container->parent()));
+#endif
 
       if (container->construct.sasl())
       {

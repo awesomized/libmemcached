@@ -32,8 +32,7 @@ communicate with the server. You should either pass a statically declared
 a NULL. If a NULL passed in then a structure is allocated for you.
 
 Please note, when you write new application use 
-:c:func:`memcached` over 
-:c:func:`memcached_create`.
+:c:func:`memcached` over :c:func:`memcached_create`.
 
 :c:func:`memcached_clone` is similar to :c:func:`memcached_create` but 
 it copies the defaults and list of servers from the source 

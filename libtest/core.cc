@@ -45,7 +45,7 @@ void create_core(void)
 #ifdef TARGET_OS_OSX 
   return;
 #endif
-  if (getenv("LIBMEMCACHED_NO_COREDUMP") == NULL)
+  if (getenv("YATL_COREDUMP"))
   {
     pid_t pid= fork();
 

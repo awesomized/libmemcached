@@ -47,7 +47,7 @@ using namespace libtest;
 #include <libmemcached/memcached.h>
 #include <libmemcached/util.h>
 
-#include <tests/parser.h>
+#include <tests/libmemcached-1.0/parser.h>
 #include <tests/print.h>
 
 enum scanner_type_t
@@ -638,7 +638,6 @@ static memcached_return_t dump_server_information(const memcached_st *,
 
   return MEMCACHED_SUCCESS;
 }
-
 
 test_return_t test_hostname_port_weight(memcached_st *)
 {
