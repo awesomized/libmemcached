@@ -148,3 +148,4 @@ memcached/.git
 memcached/.gitignore
 memcached/memcached
 memcached/memcached.spec
+tests/parser

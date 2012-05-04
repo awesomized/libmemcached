@@ -87,6 +87,7 @@ Framework::~Framework()
   {
     delete *iter;
   }
+  _collection.clear();
 }
 
 bool Framework::match(const char* arg)

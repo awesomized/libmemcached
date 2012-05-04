@@ -41,6 +41,8 @@ noinst_PROGRAMS+= tests/cycle
 
 include tests/libmemcached-1.0/include.am
 
+include tests/parser.am
+
 tests_failure_SOURCES=
 tests_failure_SOURCES+= tests/failure.cc
 tests_failure_SOURCES+= clients/execute.cc
