@@ -287,7 +287,7 @@ bool _is_auto_eject_host(const memcached_st *ptr)
 uint64_t memcached_behavior_get(memcached_st *ptr,
                                 const memcached_behavior_t flag)
 {
-  if (not ptr)
+  if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }

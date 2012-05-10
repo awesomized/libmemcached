@@ -50,7 +50,8 @@ using namespace libtest;
 test_return_t check_replication_sanity_TEST(memcached_st *memc)
 {
   test_true(memc);
-  test_true(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+  test_compare(uint64_t(1), 
+               memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
   /*
    * Make sure that we store the item on all servers
@@ -63,9 +64,10 @@ test_return_t check_replication_sanity_TEST(memcached_st *memc)
 
 test_return_t replication_set_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   memcached_st *memc_clone= memcached_clone(NULL, memc);
-  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+  test_true(memc_clone);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0));
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_set(memc, "bubba", 5, "0", 1, 0, 0));
@@ -96,6 +98,7 @@ test_return_t replication_set_test(memcached_st *memc)
     const char key[2]= { (char)x, 0 };
     size_t len;
     uint32_t flags;
+    memcached_return_t rc;
     char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5,
                                     &len, &flags, &rc);
     test_compare(MEMCACHED_SUCCESS, rc);
@@ -110,7 +113,6 @@ test_return_t replication_set_test(memcached_st *memc)
 
 test_return_t replication_get_test(memcached_st *memc)
 {
-  memcached_return_t rc;
 
   /*
    * Don't do the following in your code. I am abusing the internal details
@@ -130,6 +132,7 @@ test_return_t replication_get_test(memcached_st *memc)
       const char key[2]= { (char)x, 0 };
       size_t len;
       uint32_t flags;
+      memcached_return_t rc;
       char *val= memcached_get_by_key(memc_clone, key, 1, "bubba", 5,
                                       &len, &flags, &rc);
       test_compare(MEMCACHED_SUCCESS, rc);
@@ -145,17 +148,17 @@ test_return_t replication_get_test(memcached_st *memc)
 
 test_return_t replication_mget_test(memcached_st *memc)
 {
-  memcached_return_t rc;
   memcached_st *memc_clone= memcached_clone(NULL, memc);
-  memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0);
+  test_true(memc_clone);
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 0));
 
   const char *keys[]= { "bubba", "key1", "key2", "key3" };
   size_t len[]= { 5, 4, 4, 4 };
 
   for (size_t x= 0; x< 4; ++x)
   {
-    rc= memcached_set(memc, keys[x], len[x], "0", 1, 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS, memcached_set(memc, keys[x], len[x], "0", 1, 0, 0));
   }
 
   /*
@@ -190,13 +193,14 @@ test_return_t replication_mget_test(memcached_st *memc)
     {
       char key[2]= { (char)x, 0 };
 
-      rc= memcached_mget_by_key(new_clone, key, 1, keys, len, 4);
-      test_true(rc == MEMCACHED_SUCCESS);
+      test_compare(MEMCACHED_SUCCESS,
+                   memcached_mget_by_key(new_clone, key, 1, keys, len, 4));
 
       memcached_result_st *results= memcached_result_create(new_clone, &result_obj);
       test_true(results);
 
       int hits= 0;
+      memcached_return_t rc;
       while ((results= memcached_fetch_result(new_clone, &result_obj, &rc)) != NULL)
       {
         hits++;
@@ -216,7 +220,6 @@ test_return_t replication_mget_test(memcached_st *memc)
 test_return_t replication_randomize_mget_test(memcached_st *memc)
 {
   memcached_result_st result_obj;
-  memcached_return_t rc;
   memcached_st *memc_clone= memcached_clone(NULL, memc);
   memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 3);
   memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, 1);
@@ -226,8 +229,8 @@ test_return_t replication_randomize_mget_test(memcached_st *memc)
 
   for (size_t x= 0; x< 7; ++x)
   {
-    rc= memcached_set(memc, keys[x], len[x], "1", 1, 0, 0);
-    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_set(memc, keys[x], len[x], "1", 1, 0, 0));
   }
 
   memcached_quit(memc);
@@ -243,6 +246,7 @@ test_return_t replication_randomize_mget_test(memcached_st *memc)
     test_true(results);
 
     int hits= 0;
+    memcached_return_t rc;
     while ((results= memcached_fetch_result(memc_clone, &result_obj, &rc)) != NULL)
     {
       ++hits;
@@ -251,6 +255,7 @@ test_return_t replication_randomize_mget_test(memcached_st *memc)
     memcached_result_free(&result_obj);
   }
   memcached_free(memc_clone);
+
   return TEST_SUCCESS;
 }
 
@@ -261,7 +266,7 @@ test_return_t replication_delete_test(memcached_st *memc_just_cloned)
   memcached_st *memc_replicated= memcached_clone(NULL, memc_just_cloned);
   const char *keys[]= { "bubba", "key1", "key2", "key3", "key4" };
 
-  test_true(memcached_behavior_get(memc_replicated, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+  test_compare(uint64_t(1), memcached_behavior_get(memc_replicated, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc_replicated, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, false));
 
   // Make one copy
@@ -331,11 +336,11 @@ test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
   for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
   {
     const char *key= memcached_strerror(NULL, memcached_return_t(x));
-    memcached_return_t rc;
     uint32_t flags;
     size_t value_length;
+    memcached_return_t rc;
     char *value= memcached_get(memc_clone, key, strlen(key), &value_length, &flags, &rc);
-    test_true(rc == MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS, rc);
     test_compare(strlen(key), value_length);
     test_strcmp(key, value);
     free(value);
