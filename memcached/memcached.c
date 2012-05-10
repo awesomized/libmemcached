@@ -1000,10 +1000,6 @@ static void write_bin_error(conn *c, protocol_binary_response_status err, int sw
     case PROTOCOL_BINARY_RESPONSE_AUTH_ERROR:
         errstr = "Auth failure.";
         break;
-    case PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE:
-        assert(false);
-    case PROTOCOL_BINARY_RESPONSE_SUCCESS:
-        assert(false);
     default:
         assert(false);
         errstr = "UNHANDLED ERROR";
@@ -1133,10 +1129,6 @@ static void complete_incr_bin(conn *c) {
     case DELTA_ITEM_CAS_MISMATCH:
         write_bin_error(c, PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS, 0);
         break;
-
-    default:
-        assert(0);
-        abort();
     }
 }
 
@@ -1204,9 +1196,6 @@ static void complete_update_bin(conn *c) {
             eno = PROTOCOL_BINARY_RESPONSE_NOT_STORED;
         }
         write_bin_error(c, eno, 0);
-    default:
-        assert(false);
-        abort();
     }
 
     item_remove(c->item);       /* release the c->item reference */
@@ -2246,10 +2235,6 @@ static void complete_nread_binary(conn *c) {
     case bin_reading_sasl_auth_data:
         process_bin_complete_sasl_auth(c);
         break;
-    case bin_reading_cas_header:
-        assert(0);
-    case bin_no_state:
-        assert(0);
     default:
         fprintf(stderr, "Not handling substate %d\n", c->substate);
         assert(0);
@@ -3072,9 +3057,6 @@ static void process_arithmetic_command(conn *c, token_t *tokens, const size_t nt
         break;
     case DELTA_ITEM_CAS_MISMATCH:
         break; /* Should never get here */
-    default:
-        assert(false);
-        abort();
     }
 }
 
@@ -3409,9 +3391,6 @@ static void process_command(conn *c, char *command) {
             case REASSIGN_SRC_DST_SAME:
                 out_string(c, "SAME src and dst class are identical");
                 break;
-            default:
-                assert(false);
-                abort();
             }
             return;
         } else if (ntokens == 4 &&
@@ -3866,9 +3845,6 @@ static void drive_machine(conn *c) {
             case READ_MEMORY_ERROR: /* Failed to allocate more memory */
                 /* State already set by try_read_network */
                 break;
-            default:
-                assert(false);
-                abort();
             }
             break;
 
@@ -4078,9 +4054,6 @@ static void drive_machine(conn *c) {
             case TRANSMIT_SOFT_ERROR:
                 stop = true;
                 break;
-            default:
-                assert(false);
-                abort();
             }
             break;
 
@@ -4095,9 +4068,6 @@ static void drive_machine(conn *c) {
         case conn_max_state:
             assert(false);
             break;
-        default:
-            assert(false);
-            abort();
         }
     }
 

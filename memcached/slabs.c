@@ -597,9 +597,6 @@ static int slab_rebalance_move(void) {
                 break;
             case MOVE_PASS:
                 break;
-            default:
-                assert(false);
-                abort();
         }
 
         slab_rebal.slab_pos = (char *)slab_rebal.slab_pos + s_cls->size;

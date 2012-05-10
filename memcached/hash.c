@@ -178,8 +178,6 @@ uint32_t hash(
     case 2 : a+=k[0]&0xffff; break;
     case 1 : a+=k[0]&0xff; break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
 
 #else /* make valgrind happy */
@@ -249,8 +247,6 @@ uint32_t hash(
     case 1 : a+=k8[0];
              break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
 
   } else {                        /* need to read the key one byte at a time */
@@ -293,8 +289,6 @@ uint32_t hash(
     case 1 : a+=k[0];
              break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
   }
 
