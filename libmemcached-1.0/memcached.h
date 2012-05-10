@@ -38,7 +38,9 @@
 #pragma once
 
 /* This seems to be required for older compilers @note http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
-#define __STDC_FORMAT_MACROS
+#ifndef __STDC_FORMAT_MACROS
+#  define __STDC_FORMAT_MACROS
+#endif
 
 #ifdef __cplusplus
 #  include <tr1/cinttypes>

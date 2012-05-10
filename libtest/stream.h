@@ -150,22 +150,30 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
 
 class make_cerr : public detail::log<detail::channelln> {
 public:
-  make_cerr(const char* filename, int line_number, const char* func);
+  make_cerr(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channelln>(std::cerr, filename, line_number, func)
+  { }
 };
 
 class cerr : public detail::log<detail::channel> {
 public:
-  cerr(const char* filename, int line_number, const char* func);
+  cerr(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channel>(std::cout, filename, line_number, func)
+  { }
 };
 
 class clog : public detail::log<detail::channel> {
 public:
-  clog(const char* filename, int line_number, const char* func);
+  clog(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channel>(std::clog, filename, line_number, func)
+  { }
 };
 
 class cout : public detail::log<detail::channel> {
 public:
-  cout(const char* filename, int line_number, const char* func);
+  cout(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channel>(std::cout, filename, line_number, func)
+  { }
 };
 
 

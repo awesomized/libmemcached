@@ -12,7 +12,9 @@ AH_TOP([
 
 AH_BOTTOM([
 
-#define __STDC_FORMAT_MACROS
+#ifndef __STDC_FORMAT_MACROS
+#  define __STDC_FORMAT_MACROS
+#endif
  
 #if defined(__cplusplus) 
 #  include CINTTYPES_H 

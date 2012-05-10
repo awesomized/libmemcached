@@ -551,14 +551,16 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
   return MEMCACHED_CONNECTION_FAILURE;
 }
 
-static ssize_t _io_write(memcached_server_write_instance_st ptr,
-                         const void *buffer, size_t length, bool with_flush)
+static bool _io_write(memcached_server_write_instance_st ptr,
+                      const void *buffer, size_t length, bool with_flush,
+                      size_t& written)
 {
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
   assert(memcached_is_udp(ptr->root) == false);
 
-  size_t original_length= length;
   const char *buffer_ptr= static_cast<const char *>(buffer);
+
+  const size_t original_length= length;
 
   while (length)
   {
@@ -580,7 +582,8 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
       memcached_return_t rc;
       if (io_flush(ptr, with_flush, rc) == false)
       {
-        return -1;
+        written= original_length -length;
+        return false;
       }
     }
   }
@@ -591,22 +594,33 @@ static ssize_t _io_write(memcached_server_write_instance_st ptr,
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     if (io_flush(ptr, with_flush, rc) == false)
     {
-      return -1;
+      written= original_length -length;
+      return false;
     }
   }
 
-  return ssize_t(original_length);
+  written= original_length -length;
+
+  return true;
 }
 
 bool memcached_io_write(memcached_server_write_instance_st ptr)
 {
-  return (_io_write(ptr, NULL, 0, true) >= 0);
+  size_t written;
+  return _io_write(ptr, NULL, 0, true, written);
 }
 
 ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
                            const void *buffer, const size_t length, const bool with_flush)
 {
-  return _io_write(ptr, buffer, length, with_flush);
+  size_t written;
+
+  if (_io_write(ptr, buffer, length, with_flush, written) == false)
+  {
+    return -1;
+  }
+
+  return ssize_t(written);
 }
 
 ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
@@ -617,15 +631,14 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
 
   for (size_t x= 0; x < number_of; x++, vector++)
   {
-    ssize_t returnable;
-
     if (vector->length)
     {
-      if ((returnable= _io_write(ptr, vector->buffer, vector->length, false)) == -1)
+      size_t written;
+      if ((_io_write(ptr, vector->buffer, vector->length, false, written)) == false)
       {
         return -1;
       }
-      total+= returnable;
+      total+= written;
     }
   }
 
