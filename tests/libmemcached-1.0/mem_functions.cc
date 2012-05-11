@@ -4590,6 +4590,46 @@ test_return_t regression_bug_490520(memcached_st *original_memc)
 }
 
 
+test_return_t regression_994772_TEST(memcached_st* memc)
+{
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_set(memc,
+                             test_literal_param(__func__), // Key
+                             test_literal_param(__func__), // Value
+                             time_t(0), uint32_t(0)));
+
+  const char *keys[] = { __func__ };
+  size_t key_length[]= { strlen(__func__) };
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_mget(memc, keys, key_length, 1));
+
+  memcached_return_t rc;
+  memcached_result_st *results = memcached_fetch_result(memc, NULL, &rc);
+  test_true(results);
+  test_compare(MEMCACHED_SUCCESS, rc);
+
+  test_strcmp(__func__, memcached_result_value(results));
+  uint64_t cas_value= memcached_result_cas(results);
+  test_true(cas_value);
+
+  // Bad cas value, sanity check 
+  test_true(cas_value != 9999);
+  test_compare(MEMCACHED_END,
+               memcached_cas(memc,
+                             test_literal_param(__func__), // Key
+                             test_literal_param(__FILE__), // Value
+                             time_t(0), uint32_t(0), 9999));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc,
+                                                "different", strlen("different"), // Key
+                                                test_literal_param(__FILE__), // Value
+                                                time_t(0), uint32_t(0)));
+
+  return TEST_SUCCESS;
+}
+
 test_return_t regression_bug_854604(memcached_st *)
 {
   char buffer[1024];
