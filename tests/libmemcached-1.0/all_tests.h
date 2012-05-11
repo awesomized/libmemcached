@@ -273,6 +273,7 @@ test_st regression_tests[]= {
   {"lp:655423", true, (test_callback_fn*)regression_bug_655423 },
   {"lp:490520", true, (test_callback_fn*)regression_bug_490520 },
   {"lp:854604", true, (test_callback_fn*)regression_bug_854604 },
+  {"lp:996813", true, (test_callback_fn*)regression_996813_TEST },
   {0, false, (test_callback_fn*)0}
 };
 

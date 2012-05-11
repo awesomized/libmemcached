@@ -4349,6 +4349,34 @@ test_return_t wrong_failure_counter_two_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t regression_996813_TEST(memcached_st *)
+{
+  memcached_st* memc= memcached_create(NULL);
+
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NO_BLOCK, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 300));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 30));
+
+  // We will never connect to these servers
+  in_port_t base_port= 11211;
+  for (size_t x= 0; x < 17; x++)
+  {
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.3.4", base_port +x));
+  }
+  test_compare(16U, memcached_generate_hash(memc, test_literal_param("SZ6hu0SHweFmpwpc0w2R")));
+  test_compare(1U, memcached_generate_hash(memc, test_literal_param("SQCK9eiCf53YxHWnYA.o")));
+  test_compare(10U, memcached_generate_hash(memc, test_literal_param("SUSDkGXuuZC9t9VhMwa.")));
+  test_compare(8U, memcached_generate_hash(memc, test_literal_param("SnnqnJARfaCNT679iAF_")));
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 
 /*
  * Test that ensures mget_execute does not end into recursive calls that finally fails
