@@ -174,3 +174,4 @@ test_return_t version_string_test(memcached_st *);
 test_return_t wrong_failure_counter_test(memcached_st *memc);
 test_return_t wrong_failure_counter_two_test(memcached_st *memc);
 test_return_t kill_HUP_TEST(memcached_st *memc);
+test_return_t regression_996813_TEST(memcached_st*);
