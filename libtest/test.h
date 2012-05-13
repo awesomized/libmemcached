@@ -230,16 +230,10 @@ do \
 } while (0)
 
 
-#define test_strcmp(A,B) \
+#define test_strcmp(__expected, __actual) \
 do \
 { \
-  if ((A) == NULL or (B) == NULL or strcmp((A), (B))) \
-  { \
-    if ((B) == NULL) fprintf(stderr, "\n%s:%d: Expected %s, got <null>\n", __FILE__, __LINE__, (A)); \
-    else fprintf(stderr, "\n%s:%d: Expected %s, got \"%s\"\n", __FILE__, __LINE__, (A), (B)); \
-    libtest::create_core(); \
-    return TEST_FAILURE; \
-  } \
+  void(libtest::_compare_strcmp(__FILE__, __LINE__, __func__, (__expected), (__actual))); \
 } while (0)
 
 #define test_memcmp(A,B,C) \

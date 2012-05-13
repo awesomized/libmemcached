@@ -183,9 +183,9 @@ Application::error_t Application::run(const char *args[])
   posix_spawn_file_actions_t file_actions;
   posix_spawn_file_actions_init(&file_actions);
 
-  stdin_fd.dup_for_spawn(Application::Pipe::READ, file_actions);
-  stdout_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions);
-  stderr_fd.dup_for_spawn(Application::Pipe::WRITE, file_actions);
+  stdin_fd.dup_for_spawn(file_actions);
+  stdout_fd.dup_for_spawn(file_actions);
+  stderr_fd.dup_for_spawn(file_actions);
 
   posix_spawnattr_t spawnattr;
   posix_spawnattr_init(&spawnattr);
@@ -593,13 +593,20 @@ void Application::Pipe::cloexec()
 
 Application::Pipe::~Pipe()
 {
-  close(READ);
-  close(WRITE);
+  if (_pipe_fd[0] != -1)
+  {
+    ::close(_pipe_fd[0]);
+  }
+
+  if (_pipe_fd[1] != -1)
+  {
+    ::close(_pipe_fd[1]);
+  }
 }
 
-void Application::Pipe::dup_for_spawn(const close_t& arg, posix_spawn_file_actions_t& file_actions)
+void Application::Pipe::dup_for_spawn(posix_spawn_file_actions_t& file_actions)
 {
-  int type= int(arg);
+  int type= STDIN_FILENO == _std_fd ? 0 : 1;
 
   int ret;
   if ((ret= posix_spawn_file_actions_adddup2(&file_actions, _pipe_fd[type], _std_fd )) < 0)

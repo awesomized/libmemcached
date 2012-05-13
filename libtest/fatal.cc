@@ -42,8 +42,8 @@ namespace libtest {
 
 fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const char *format, ...) :
   std::runtime_error(func_arg),
-  _file(file_arg),
   _line(line_arg),
+  _file(file_arg),
   _func(func_arg)
   {
     va_list args;

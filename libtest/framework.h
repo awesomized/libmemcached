@@ -48,19 +48,24 @@
 
 class Framework {
 public:
-  collection_st *collections;
-
-  /* These methods are called outside of any collection call. */
-  test_callback_create_fn *_create;
-  test_callback_destroy_fn *_destroy;
 
 public:
   test_return_t create();
 
-  /**
-    If an error occurs during the test, this is called.
-  */
-  test_callback_error_fn *_on_error;
+  void create(test_callback_create_fn* arg)
+  {
+    _create= arg;
+  }
+
+  void destroy(test_callback_destroy_fn* arg)
+  {
+    _destroy= arg;
+  }
+
+  void collections(collection_st* arg)
+  {
+    _collections= arg;
+  }
 
   void set_on_error(test_callback_error_fn *arg)
   {
@@ -83,12 +88,6 @@ public:
   {
     return _servers;
   }
-  
-  /**
-    Runner represents the callers for the tests. If not implemented we will use
-    a set of default implementations.
-  */
-  libtest::Runner *_runner;
 
   void set_runner(libtest::Runner *arg)
   {
@@ -154,10 +153,27 @@ public:
 private:
   Framework& operator=(const Framework&);
 
+  collection_st *_collections;
+
   uint32_t _total;
   uint32_t _success;
   uint32_t _skipped;
   uint32_t _failed;
+  
+  /* These methods are called outside of any collection call. */
+  test_callback_create_fn *_create;
+  test_callback_destroy_fn *_destroy;
+
+  /**
+    If an error occurs during the test, this is called.
+  */
+  test_callback_error_fn *_on_error;
+
+  /**
+    Runner represents the callers for the tests. If not implemented we will use
+    a set of default implementations.
+  */
+  libtest::Runner *_runner;
 
   libtest::server_startup_st _servers;
   bool _socket;

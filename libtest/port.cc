@@ -50,6 +50,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <utility>
+#include <vector>
+
 #include <signal.h>
 
 #include <libtest/signal.h>
@@ -61,13 +64,29 @@
 using namespace libtest;
 
 struct socket_st {
-  std::vector<int> fd;
+  typedef std::vector< std::pair< int, in_port_t> > socket_port_t;
+  socket_port_t _pair;
+
+  void release(in_port_t _arg)
+  {
+    for(socket_port_t::iterator iter= _pair.begin();
+        iter != _pair.end();
+        iter++)
+    {
+      if ((*iter).second == _arg)
+      {
+        close((*iter).first);
+      }
+    }
+  }
 
   ~socket_st()
   {
-    for(std::vector<int>::iterator iter= fd.begin(); iter != fd.end(); iter++)
+    for(socket_port_t::iterator iter= _pair.begin();
+        iter != _pair.end();
+        iter++)
     {
-      close(*iter);
+      close((*iter).first);
     }
   }
 };
@@ -86,6 +105,11 @@ in_port_t default_port()
   }
 
   return global_port;
+}
+
+void release_port(in_port_t arg)
+{
+  all_socket_fd.release(arg);
 }
 
 in_port_t get_free_port()
@@ -119,7 +143,7 @@ in_port_t get_free_port()
         }
       }
 
-      all_socket_fd.fd.push_back(sd);
+      all_socket_fd._pair.push_back(std::make_pair(sd, ret_port));
     }
 
     if (ret_port > 1024)

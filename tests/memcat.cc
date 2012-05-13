@@ -143,7 +143,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(Framework *world)
 {
-  world->collections= collection;
-  world->_create= world_create;
+  world->collections(collection);
+  world->create(world_create);
 }
 

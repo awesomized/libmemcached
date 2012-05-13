@@ -213,10 +213,10 @@ void get_world(Framework *world)
 {
   world->servers().set_servers_to_run(1);
 
-  world->collections= collection;
+  world->collections(collection);
 
-  world->_create= (test_callback_create_fn*)world_create;
-  world->_destroy= (test_callback_destroy_fn*)world_destroy;
+  world->create((test_callback_create_fn*)world_create);
+  world->destroy((test_callback_destroy_fn*)world_destroy);
 
   world->set_runner(new LibmemcachedRunner);
 
