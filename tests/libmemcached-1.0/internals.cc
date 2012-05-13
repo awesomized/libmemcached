@@ -63,5 +63,5 @@ collection_st collection[] ={
 
 void get_world(Framework *frame)
 {
-  frame->collections= collection;
+  frame->collections(collection);
 }

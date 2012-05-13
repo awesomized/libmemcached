@@ -32,57 +32,56 @@ drd:
 
 EXTRA_DIST+= libtest/run.gdb
 
-CLEANFILES+= \
-	     tmp_chroot/var/drizzle/* \
-	     tmp_chroot/var/log/* \
-	     tmp_chroot/var/run/* \
-	     tmp_chroot/var/tmp/*
+CLEANFILES+= tmp_chroot/etc/*
+CLEANFILES+= tmp_chroot/var/drizzle/*
+CLEANFILES+= tmp_chroot/var/log/*
+CLEANFILES+= tmp_chroot/var/run/*
+CLEANFILES+= tmp_chroot/var/tmp/*
 
 .PHONY: distclean-libtest-check
 distclean-libtest-check:
 	-rm -rf tmp_chroot
 
 noinst_HEADERS+= libtest/timer.hpp
-noinst_HEADERS+= \
-		 libtest/binaries.h \
-		 libtest/cpu.hpp \
-		 libtest/blobslap_worker.h \
-		 libtest/callbacks.h \
-		 libtest/cmdline.h \
-		 libtest/collection.h \
-		 libtest/common.h \
-		 libtest/comparison.hpp \
-		 libtest/core.h \
-		 libtest/dream.h \
-		 libtest/error.h \
-		 libtest/failed.h \
-		 libtest/fatal.hpp \
-		 libtest/framework.h \
-		 libtest/gearmand.h \
-		 libtest/drizzled.h \
-		 libtest/get.h \
-		 libtest/has.hpp \
-		 libtest/http.hpp \
-		 libtest/is_pid.hpp \
-		 libtest/is_local.hpp \
-		 libtest/killpid.h \
-		 libtest/libtool.hpp \
-		 libtest/memcached.h \
-		 libtest/port.h \
-		 libtest/runner.h \
-		 libtest/server.h \
-		 libtest/server_container.h \
-		 libtest/signal.h \
-		 libtest/socket.hpp \
-		 libtest/stream.h \
-		 libtest/strerror.h \
-		 libtest/string.hpp \
-		 libtest/test.h \
-		 libtest/test.hpp \
-		 libtest/tmpfile.hpp \
-		 libtest/vchar.hpp \
-		 libtest/visibility.h \
-		 libtest/wait.h
+noinst_HEADERS+=libtest/binaries.h 
+noinst_HEADERS+=libtest/cpu.hpp 
+noinst_HEADERS+=libtest/blobslap_worker.h 
+noinst_HEADERS+=libtest/callbacks.h 
+noinst_HEADERS+=libtest/cmdline.h 
+noinst_HEADERS+=libtest/collection.h 
+noinst_HEADERS+=libtest/common.h 
+noinst_HEADERS+=libtest/comparison.hpp 
+noinst_HEADERS+=libtest/core.h 
+noinst_HEADERS+=libtest/dream.h 
+noinst_HEADERS+=libtest/error.h 
+noinst_HEADERS+=libtest/failed.h 
+noinst_HEADERS+=libtest/fatal.hpp 
+noinst_HEADERS+=libtest/framework.h 
+noinst_HEADERS+=libtest/gearmand.h 
+noinst_HEADERS+=libtest/drizzled.h 
+noinst_HEADERS+=libtest/get.h 
+noinst_HEADERS+=libtest/has.hpp 
+noinst_HEADERS+=libtest/http.hpp 
+noinst_HEADERS+=libtest/is_pid.hpp 
+noinst_HEADERS+=libtest/is_local.hpp 
+noinst_HEADERS+=libtest/killpid.h 
+noinst_HEADERS+=libtest/libtool.hpp 
+noinst_HEADERS+=libtest/memcached.h 
+noinst_HEADERS+=libtest/port.h 
+noinst_HEADERS+=libtest/runner.h 
+noinst_HEADERS+=libtest/server.h 
+noinst_HEADERS+=libtest/server_container.h 
+noinst_HEADERS+=libtest/signal.h 
+noinst_HEADERS+=libtest/socket.hpp 
+noinst_HEADERS+=libtest/stream.h 
+noinst_HEADERS+=libtest/strerror.h 
+noinst_HEADERS+=libtest/string.hpp 
+noinst_HEADERS+=libtest/test.h 
+noinst_HEADERS+=libtest/test.hpp 
+noinst_HEADERS+=libtest/tmpfile.hpp 
+noinst_HEADERS+=libtest/vchar.hpp 
+noinst_HEADERS+=libtest/visibility.h 
+noinst_HEADERS+=libtest/wait.h
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 
@@ -113,6 +112,7 @@ libtest_libtest_la_SOURCES+= libtest/server.cc
 libtest_libtest_la_SOURCES+= libtest/server_container.cc 
 libtest_libtest_la_SOURCES+= libtest/signal.cc 
 libtest_libtest_la_SOURCES+= libtest/socket.cc 
+libtest_libtest_la_SOURCES+= libtest/stream.cc 
 libtest_libtest_la_SOURCES+= libtest/strerror.cc 
 libtest_libtest_la_SOURCES+= libtest/timer.cc 
 libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
@@ -190,8 +190,11 @@ endif
 
 libtest_tmp_dir: tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run tmp_chroot/var/drizzle
 
-tmp_chroot:
+tmp_chroot: tmp_chroot/etc
 	@$(mkdir_p) tmp_chroot
+
+tmp_chroot/etc:
+	@$(mkdir_p) tmp_chroot/etc
 
 tmp_chroot/var: tmp_chroot
 	@$(mkdir_p) tmp_chroot/var

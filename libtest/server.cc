@@ -192,6 +192,7 @@ bool Server::start()
     return false;
   }
 
+  libtest::release_port(_port);
   Application::error_t ret;
   if (Application::SUCCESS !=  (ret= _app.run()))
   {

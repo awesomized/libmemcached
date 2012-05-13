@@ -48,13 +48,14 @@ using namespace libtest;
 Framework::Framework(libtest::SignalThread& signal,
                      const std::string& only_run_arg,
                      const std::string& wildcard_arg) :
-  collections(NULL),
+  _collections(NULL),
   _total(0),
   _success(0),
   _skipped(0),
   _failed(0),
   _create(NULL),
   _destroy(NULL),
+  _on_error(NULL),
   _runner(NULL),
   _socket(false),
   _creators_ptr(NULL),
@@ -64,7 +65,7 @@ Framework::Framework(libtest::SignalThread& signal,
 {
   get_world(this);
 
-  for (collection_st *next= collections; next and next->name; next++)
+  for (collection_st *next= _collections; next and next->name; next++)
   {
     _collection.push_back(new Collection(this, next));
   }
@@ -87,7 +88,6 @@ Framework::~Framework()
   {
     delete *iter;
   }
-  _collection.clear();
 }
 
 bool Framework::match(const char* arg)

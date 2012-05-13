@@ -53,5 +53,5 @@ static void *world_create(server_startup_st&, test_return_t& rc)
 
 void get_world(Framework *world)
 {
-  world->_create= world_create;
+  world->create(world_create);
 }

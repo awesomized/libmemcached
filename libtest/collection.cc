@@ -97,8 +97,6 @@ test_return_t Collection::exec()
   {
     for (test_st *run= _tests; run->name; run++)
     {
-      long int load_time= 0;
-
       if (_frame->match(run->name))
       {
         continue;
@@ -123,7 +121,6 @@ test_return_t Collection::exec()
       catch (libtest::fatal &e)
       {
         Error << "Fatal exception was thrown: " << e.what();
-        return_code= TEST_FAILURE;
         _failed++;
         throw;
       }

@@ -126,6 +126,6 @@ collection_st collection[] ={
 
 void get_world(Framework *world)
 {
-  world->collections= collection;
+  world->collections(collection);
 }
 

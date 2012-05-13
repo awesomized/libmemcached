@@ -153,6 +153,7 @@ public:
   make_cerr(const char* filename, int line_number, const char* func) :
     detail::log<detail::channelln>(std::cerr, filename, line_number, func)
   { }
+
 };
 
 class cerr : public detail::log<detail::channel> {
@@ -160,6 +161,7 @@ public:
   cerr(const char* filename, int line_number, const char* func) :
     detail::log<detail::channel>(std::cout, filename, line_number, func)
   { }
+
 };
 
 class clog : public detail::log<detail::channel> {
