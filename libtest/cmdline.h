@@ -66,8 +66,7 @@ public:
 
     void reset();
     void close(const close_t& arg);
-    void dup_for_spawn(const close_t& arg,
-                       posix_spawn_file_actions_t& file_actions);
+    void dup_for_spawn(posix_spawn_file_actions_t& file_actions);
 
     void nonblock();
     void cloexec();

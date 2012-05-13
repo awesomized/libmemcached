@@ -4606,13 +4606,15 @@ test_return_t regression_994772_TEST(memcached_st* memc)
                memcached_mget(memc, keys, key_length, 1));
 
   memcached_return_t rc;
-  memcached_result_st *results = memcached_fetch_result(memc, NULL, &rc);
+  memcached_result_st *results= memcached_fetch_result(memc, NULL, &rc);
   test_true(results);
   test_compare(MEMCACHED_SUCCESS, rc);
 
   test_strcmp(__func__, memcached_result_value(results));
   uint64_t cas_value= memcached_result_cas(results);
   test_true(cas_value);
+
+  memcached_result_free(results);
 
   // Bad cas value, sanity check 
   test_true(cas_value != 9999);
