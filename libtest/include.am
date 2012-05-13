@@ -112,7 +112,6 @@ libtest_libtest_la_SOURCES+= libtest/server.cc
 libtest_libtest_la_SOURCES+= libtest/server_container.cc 
 libtest_libtest_la_SOURCES+= libtest/signal.cc 
 libtest_libtest_la_SOURCES+= libtest/socket.cc 
-libtest_libtest_la_SOURCES+= libtest/stream.cc 
 libtest_libtest_la_SOURCES+= libtest/strerror.cc 
 libtest_libtest_la_SOURCES+= libtest/timer.cc 
 libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
