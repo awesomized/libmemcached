@@ -183,112 +183,119 @@ bool server_startup(server_startup_st& construct, const std::string& server_type
   }
 
   libtest::Server *server= NULL;
-  if (0)
-  { }
-  else if (server_type.compare("gearmand") == 0)
-  {
-    if (GEARMAND_BINARY)
+  try {
+    if (0)
+    { }
+    else if (server_type.compare("gearmand") == 0)
     {
-      if (HAVE_LIBGEARMAN)
-      {
-        server= build_gearmand("localhost", try_port);
-      }
-    }
-  }
-  else if (server_type.compare("drizzled") == 0)
-  {
-    if (DRIZZLED_BINARY)
-    {
-      if (HAVE_LIBDRIZZLE)
-      {
-        server= build_drizzled("localhost", try_port);
-      }
-    }
-  }
-  else if (server_type.compare("blobslap_worker") == 0)
-  {
-    if (GEARMAND_BINARY)
-    {
-      if (GEARMAND_BLOBSLAP_WORKER)
+      if (GEARMAND_BINARY)
       {
         if (HAVE_LIBGEARMAN)
         {
-          server= build_blobslap_worker(try_port);
+          server= build_gearmand("localhost", try_port);
         }
       }
     }
-  }
-  else if (server_type.compare("memcached-sasl") == 0)
-  {
-    if (MEMCACHED_SASL_BINARY)
+    else if (server_type.compare("drizzled") == 0)
     {
-      if (HAVE_LIBMEMCACHED)
+      if (DRIZZLED_BINARY)
       {
-        server= build_memcached_sasl("localhost", try_port, construct.username(), construct.password());
+        if (HAVE_LIBDRIZZLE)
+        {
+          server= build_drizzled("localhost", try_port);
+        }
       }
     }
-  }
-  else if (server_type.compare("memcached") == 0)
-  {
-    if (MEMCACHED_BINARY)
+    else if (server_type.compare("blobslap_worker") == 0)
     {
-      if (HAVE_LIBMEMCACHED)
+      if (GEARMAND_BINARY)
       {
-        server= build_memcached("localhost", try_port);
+        if (GEARMAND_BLOBSLAP_WORKER)
+        {
+          if (HAVE_LIBGEARMAN)
+          {
+            server= build_blobslap_worker(try_port);
+          }
+        }
       }
     }
-  }
-  else if (server_type.compare("memcached-light") == 0)
-  {
-    if (MEMCACHED_LIGHT_BINARY)
+    else if (server_type.compare("memcached-sasl") == 0)
     {
-      if (HAVE_LIBMEMCACHED)
+      if (MEMCACHED_SASL_BINARY)
       {
-        server= build_memcached_light("localhost", try_port);
+        if (HAVE_LIBMEMCACHED)
+        {
+          server= build_memcached_sasl("localhost", try_port, construct.username(), construct.password());
+        }
       }
     }
-  }
+    else if (server_type.compare("memcached") == 0)
+    {
+      if (MEMCACHED_BINARY)
+      {
+        if (HAVE_LIBMEMCACHED)
+        {
+          server= build_memcached("localhost", try_port);
+        }
+      }
+    }
+    else if (server_type.compare("memcached-light") == 0)
+    {
+      if (MEMCACHED_LIGHT_BINARY)
+      {
+        if (HAVE_LIBMEMCACHED)
+        {
+          server= build_memcached_light("localhost", try_port);
+        }
+      }
+    }
 
-  if (server == NULL)
-  {
-    fatal_message("Launching of an unknown server was attempted");
-  }
+    if (server == NULL)
+    {
+      fatal_message("Launching of an unknown server was attempted");
+    }
 
-  /*
-    We will now cycle the server we have created.
-  */
-  if (server->cycle() == false)
-  {
-    Error << "Could not start up server " << *server;
-    delete server;
-    return false;
-  }
+    /*
+      We will now cycle the server we have created.
+    */
+    if (server->cycle() == false)
+    {
+      Error << "Could not start up server " << *server;
+      delete server;
+      return false;
+    }
 
-  server->build(argc, argv);
+    server->build(argc, argv);
 
-  if (false)
-  {
-    Out << "Pausing for startup, hit return when ready.";
-    std::string gdb_command= server->base_command();
-    std::string options;
+    if (false)
+    {
+      Out << "Pausing for startup, hit return when ready.";
+      std::string gdb_command= server->base_command();
+      std::string options;
 #if 0
-    Out << "run " << server->args(options);
+      Out << "run " << server->args(options);
 #endif
-    getchar();
+      getchar();
+    }
+    else if (server->start() == false)
+    {
+      delete server;
+      return false;
+    }
+    else
+    {
+      if (opt_startup_message)
+      {
+        Outn();
+        Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+        Outn();
+      }
+    }
   }
-  else if (server->start() == false)
+  catch (...)
   {
     delete server;
-    return false;
-  }
-  else
-  {
-    if (opt_startup_message)
-    {
-      Outn();
-      Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
-      Outn();
-    }
+    throw;
   }
 
   construct.push_server(server);
@@ -302,90 +309,97 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
   Outn();
 
   Server *server= NULL;
-  if (0)
-  { }
-  else if (server_type.compare("gearmand") == 0)
-  {
-    Error << "Socket files are not supported for gearmand yet";
-  }
-  else if (server_type.compare("memcached-sasl") == 0)
-  {
-    if (MEMCACHED_SASL_BINARY)
+  try {
+    if (0)
+    { }
+    else if (server_type.compare("gearmand") == 0)
     {
-      if (HAVE_LIBMEMCACHED)
+      Error << "Socket files are not supported for gearmand yet";
+    }
+    else if (server_type.compare("memcached-sasl") == 0)
+    {
+      if (MEMCACHED_SASL_BINARY)
       {
-        server= build_memcached_sasl_socket("localhost", try_port, username(), password());
+        if (HAVE_LIBMEMCACHED)
+        {
+          server= build_memcached_sasl_socket("localhost", try_port, username(), password());
+        }
+        else
+        {
+          Error << "Libmemcached was not found";
+        }
       }
       else
       {
-        Error << "Libmemcached was not found";
+        Error << "No memcached binary is available";
+      }
+    }
+    else if (server_type.compare("memcached") == 0)
+    {
+      if (MEMCACHED_BINARY)
+      {
+        if (HAVE_LIBMEMCACHED)
+        {
+          server= build_memcached_socket("localhost", try_port);
+        }
+        else
+        {
+          Error << "Libmemcached was not found";
+        }
+      }
+      else
+      {
+        Error << "No memcached binary is available";
       }
     }
     else
     {
-      Error << "No memcached binary is available";
+      Error << "Failed to start " << server_type << ", no support was found to be compiled in for it.";
     }
-  }
-  else if (server_type.compare("memcached") == 0)
-  {
-    if (MEMCACHED_BINARY)
+
+    if (server == NULL)
     {
-      if (HAVE_LIBMEMCACHED)
-      {
-        server= build_memcached_socket("localhost", try_port);
-      }
-      else
-      {
-        Error << "Libmemcached was not found";
-      }
+      Error << "Failure occured while creating server: " <<  server_type;
+      return false;
     }
-    else
+
+    /*
+      We will now cycle the server we have created.
+    */
+    if (server->cycle() == false)
     {
-      Error << "No memcached binary is available";
+      Error << "Could not start up server " << *server;
+      delete server;
+      return false;
     }
-  }
-  else
-  {
-    Error << "Failed to start " << server_type << ", no support was found to be compiled in for it.";
-  }
 
-  if (server == NULL)
-  {
-    Error << "Failure occured while creating server: " <<  server_type;
-    return false;
-  }
+    server->build(argc, argv);
 
-  /*
-    We will now cycle the server we have created.
-  */
-  if (server->cycle() == false)
-  {
-    Error << "Could not start up server " << *server;
-    delete server;
-    return false;
-  }
-
-  server->build(argc, argv);
-
-  if (false)
-  {
-    Out << "Pausing for startup, hit return when ready.";
-    std::string gdb_command= server->base_command();
-    std::string options;
+    if (false)
+    {
+      Out << "Pausing for startup, hit return when ready.";
+      std::string gdb_command= server->base_command();
+      std::string options;
 #if 0
-    Out << "run " << server->args(options);
+      Out << "run " << server->args(options);
 #endif
-    getchar();
+      getchar();
+    }
+    else if (server->start() == false)
+    {
+      Error << "Failed to start " << *server;
+      delete server;
+      return false;
+    }
+    else
+    {
+      Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+    }
   }
-  else if (server->start() == false)
+  catch (...)
   {
-    Error << "Failed to start " << *server;
     delete server;
-    return false;
-  }
-  else
-  {
-    Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+    throw;
   }
 
   push_server(server);

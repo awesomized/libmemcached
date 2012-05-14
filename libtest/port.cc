@@ -75,6 +75,7 @@ struct socket_st {
     {
       if ((*iter).second == _arg)
       {
+        shutdown((*iter).first, SHUT_RDWR);
         close((*iter).first);
       }
     }
@@ -86,6 +87,7 @@ struct socket_st {
         iter != _pair.end();
         iter++)
     {
+      shutdown((*iter).first, SHUT_RDWR);
       close((*iter).first);
     }
   }
