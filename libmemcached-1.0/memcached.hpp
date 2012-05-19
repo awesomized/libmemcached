@@ -1,3 +1,39 @@
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Libmemcached library
+ *
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *
+ *      * The names of its contributors may not be used to endorse or
+ *  promote products derived from this software without specific prior
+ *  written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 /*
  * Summary: C++ interface for memcached server
  *
@@ -51,7 +87,9 @@ public:
   {
     memc= memcached("", 0);
     if (memc)
+    {
       memcached_server_add(memc, hostname.c_str(), port);
+    }
   }
 
   Memcache(memcached_st *clone)
@@ -304,7 +342,7 @@ public:
    * @param[in] keys vector of keys to select
    * @return true if all keys are found
    */
-  bool mget(std::vector<std::string> &keys)
+  bool mget(const std::vector<std::string>& keys)
   {
     std::vector<const char *> real_keys;
     std::vector<size_t> key_len;
@@ -317,7 +355,7 @@ public:
     real_keys.reserve(keys.size());
     key_len.reserve(keys.size());
 
-    std::vector<std::string>::iterator it= keys.begin();
+    std::vector<std::string>::const_iterator it= keys.begin();
 
     while (it != keys.end())
     {
@@ -372,8 +410,8 @@ public:
    * @param[in] flags flags to store with the object
    * @return true on succcess; false otherwise
    */
-  bool setByKey(const std::string &master_key,
-                const std::string &key,
+  bool setByKey(const std::string& master_key,
+                const std::string& key,
                 const std::vector<char> &value,
                 time_t expiration,
                 uint32_t flags)
@@ -396,14 +434,14 @@ public:
    * @param[in] flags flags to store with the objects
    * @return true on success; false otherwise
    */
-  bool setAll(std::vector<std::string> &keys,
-              std::vector< std::vector<char> *> &values,
+  bool setAll(const std::vector<std::string>& keys,
+              const std::vector< std::vector<char> *>& values,
               time_t expiration,
               uint32_t flags)
   {
     bool retval= true;
-    std::vector<std::string>::iterator key_it= keys.begin();
-    std::vector< std::vector<char> *>::iterator val_it= values.begin();
+    std::vector<std::string>::const_iterator key_it= keys.begin();
+    std::vector< std::vector<char> *>::const_iterator val_it= values.begin();
     while (key_it != keys.end())
     {
       retval= set((*key_it), *(*val_it), expiration, flags);
@@ -426,12 +464,12 @@ public:
    * @param[in] flags flags to store with the objects
    * @return true on success; false otherwise
    */
-  bool setAll(std::map<const std::string, std::vector<char> > &key_value_map,
+  bool setAll(const std::map<const std::string, std::vector<char> >& key_value_map,
               time_t expiration,
               uint32_t flags)
   {
     bool retval= true;
-    std::map<const std::string, std::vector<char> >::iterator it= key_value_map.begin();
+    std::map<const std::string, std::vector<char> >::const_iterator it= key_value_map.begin();
 
     while (it != key_value_map.end())
     {
@@ -443,6 +481,7 @@ public:
       }
       ++it;
     }
+
     return true;
   }
 
@@ -456,7 +495,7 @@ public:
    * @param[out] value store the result of the increment here
    * @return true on success; false otherwise
    */
-  bool increment(const std::string &key, uint32_t offset, uint64_t *value)
+  bool increment(const std::string& key, uint32_t offset, uint64_t *value)
   {
     return memcached_success(memcached_increment(memc, key.c_str(), key.length(), offset, value));
   }
@@ -471,7 +510,7 @@ public:
    * @param[out] value store the result of the decrement here
    * @return true on success; false otherwise
    */
-  bool decrement(const std::string &key, uint32_t offset, uint64_t *value)
+  bool decrement(const std::string& key, uint32_t offset, uint64_t *value)
   {
     return memcached_success(memcached_decrement(memc, key.c_str(),
                                                  key.length(),
@@ -487,7 +526,7 @@ public:
    * @param[in] value of object to add
    * @return true on success; false otherwise
    */
-  bool add(const std::string &key, const std::vector<char> &value)
+  bool add(const std::string& key, const std::vector<char>& value)
   {
     return memcached_success(memcached_add(memc, key.c_str(), key.length(),
                                            &value[0], value.size(), 0, 0));
@@ -503,9 +542,9 @@ public:
    * @param[in] value of object to add
    * @return true on success; false otherwise
    */
-  bool addByKey(const std::string &master_key,
-                const std::string &key,
-                const std::vector<char> &value)
+  bool addByKey(const std::string& master_key,
+                const std::string& key,
+                const std::vector<char>& value)
   {
     return memcached_success(memcached_add_by_key(memc,
                                                   master_key.c_str(),
@@ -525,7 +564,7 @@ public:
    * @param[in[ value value to replace object with
    * @return true on success; false otherwise
    */
-  bool replace(const std::string &key, const std::vector<char> &value)
+  bool replace(const std::string& key, const std::vector<char>& value)
   {
     return memcached_success(memcached_replace(memc, key.c_str(), key.length(),
                                                &value[0], value.size(),
@@ -542,9 +581,9 @@ public:
    * @param[in[ value value to replace object with
    * @return true on success; false otherwise
    */
-  bool replaceByKey(const std::string &master_key,
-                    const std::string &key,
-                    const std::vector<char> &value)
+  bool replaceByKey(const std::string& master_key,
+                    const std::string& key,
+                    const std::vector<char>& value)
   {
     return memcached_success(memcached_replace_by_key(memc,
                                                       master_key.c_str(),
@@ -563,7 +602,7 @@ public:
    * @param[in] value data to prepend to object's value
    * @return true on success; false otherwise
    */
-  bool prepend(const std::string &key, const std::vector<char> &value)
+  bool prepend(const std::string& key, const std::vector<char>& value)
   {
     return memcached_success(memcached_prepend(memc, key.c_str(), key.length(),
                                                &value[0], value.size(), 0, 0));
@@ -579,9 +618,9 @@ public:
    * @param[in] value data to prepend to object's value
    * @return true on success; false otherwise
    */
-  bool prependByKey(const std::string &master_key,
-                    const std::string &key,
-                    const std::vector<char> &value)
+  bool prependByKey(const std::string& master_key,
+                    const std::string& key,
+                    const std::vector<char>& value)
   {
     return memcached_success(memcached_prepend_by_key(memc,
                                                       master_key.c_str(),
@@ -601,7 +640,7 @@ public:
    * @param[in] value data to append to object's value
    * @return true on success; false otherwise
    */
-  bool append(const std::string &key, const std::vector<char> &value)
+  bool append(const std::string& key, const std::vector<char>& value)
   {
     return memcached_success(memcached_append(memc,
                                               key.c_str(),
@@ -621,8 +660,8 @@ public:
    * @param[in] value data to append to object's value
    * @return true on success; false otherwise
    */
-  bool appendByKey(const std::string &master_key,
-                   const std::string &key,
+  bool appendByKey(const std::string& master_key,
+                   const std::string& key,
                    const std::vector<char> &value)
   {
     return memcached_success(memcached_append_by_key(memc,
@@ -643,8 +682,8 @@ public:
    * @param[in] value value to store for object in server
    * @param[in] cas_arg "cas" value
    */
-  bool cas(const std::string &key,
-           const std::vector<char> &value,
+  bool cas(const std::string& key,
+           const std::vector<char>& value,
            uint64_t cas_arg)
   {
     return memcached_success(memcached_cas(memc, key.c_str(), key.length(),
@@ -662,8 +701,8 @@ public:
    * @param[in] value value to store for object in server
    * @param[in] cas_arg "cas" value
    */
-  bool casByKey(const std::string &master_key,
-                const std::string &key,
+  bool casByKey(const std::string& master_key,
+                const std::string& key,
                 const std::vector<char> &value,
                 uint64_t cas_arg)
   {
@@ -683,7 +722,7 @@ public:
    * @param[in] key key of object to delete
    * @return true on success; false otherwise
    */
-  bool remove(const std::string &key)
+  bool remove(const std::string& key)
   {
     return memcached_success(memcached_delete(memc, key.c_str(), key.length(), 0));
   }
@@ -695,7 +734,7 @@ public:
    * @param[in] expiration time to delete the object after
    * @return true on success; false otherwise
    */
-  bool remove(const std::string &key, time_t expiration)
+  bool remove(const std::string& key, time_t expiration)
   {
     return memcached_success(memcached_delete(memc,
                                               key.c_str(),
@@ -710,8 +749,8 @@ public:
    * @param[in] key key of object to delete
    * @return true on success; false otherwise
    */
-  bool removeByKey(const std::string &master_key,
-                   const std::string &key)
+  bool removeByKey(const std::string& master_key,
+                   const std::string& key)
   {
     return memcached_success(memcached_delete_by_key(memc,
                                                      master_key.c_str(),
@@ -729,8 +768,8 @@ public:
    * @param[in] expiration time to delete the object after
    * @return true on success; false otherwise
    */
-  bool removeByKey(const std::string &master_key,
-                   const std::string &key,
+  bool removeByKey(const std::string& master_key,
+                   const std::string& key,
                    time_t expiration)
   {
     return memcached_success(memcached_delete_by_key(memc,
@@ -772,8 +811,7 @@ public:
    *                       stats
    * @return true on success; false otherwise
    */
-  bool getStats(std::map< std::string, std::map<std::string, std::string> >
-                &stats_map)
+  bool getStats(std::map< std::string, std::map<std::string, std::string> >& stats_map)
   {
     memcached_return_t rc;
     memcached_stat_st *stats= memcached_stat(memc, NULL, &rc);
@@ -792,8 +830,7 @@ public:
      */
     for (uint32_t x= 0; x < server_count; x++)
     {
-      memcached_server_instance_st instance=
-        memcached_server_instance_by_position(memc, x);
+      memcached_server_instance_st instance= memcached_server_instance_by_position(memc, x);
       std::ostringstream strstm;
       std::string server_name(memcached_server_name(instance));
       server_name.append(":");
@@ -801,11 +838,8 @@ public:
       server_name.append(strstm.str());
 
       std::map<std::string, std::string> server_stats;
-      char **list= NULL;
-      char **ptr= NULL;
-
-      list= memcached_stat_get_keys(memc, &stats[x], &rc);
-      for (ptr= list; *ptr; ptr++)
+      char **list= memcached_stat_get_keys(memc, &stats[x], &rc);
+      for (char** ptr= list; *ptr; ptr++)
       {
         char *value= memcached_stat_get_value(memc, &stats[x], *ptr, &rc);
         server_stats[*ptr]= value;
