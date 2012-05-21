@@ -552,7 +552,7 @@ static bool _io_write(memcached_server_write_instance_st ptr,
                       const void *buffer, size_t length, bool with_flush,
                       size_t& written)
 {
-  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+  assert(ptr->fd != INVALID_SOCKET);
   assert(memcached_is_udp(ptr->root) == false);
 
   const char *buffer_ptr= static_cast<const char *>(buffer);
