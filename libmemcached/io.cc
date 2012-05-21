@@ -531,9 +531,9 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
         /* fall through */
 
       case ENOTCONN: // Programmer Error
-        WATCHPOINT_ASSERT(0);
+        assert(0);
       case ENOTSOCK:
-        WATCHPOINT_ASSERT(0);
+        assert(0);
       case EBADF:
         assert_msg(ptr->fd != INVALID_SOCKET, "Invalid socket state");
       case EINVAL:
@@ -620,20 +620,22 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
   return ssize_t(written);
 }
 
-ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
+bool memcached_io_writev(memcached_server_write_instance_st ptr,
                             libmemcached_io_vector_st vector[],
                             const size_t number_of, const bool with_flush)
 {
+  ssize_t complete_total= 0;
   ssize_t total= 0;
 
   for (size_t x= 0; x < number_of; x++, vector++)
   {
+    complete_total+= vector->length;
     if (vector->length)
     {
       size_t written;
       if ((_io_write(ptr, vector->buffer, vector->length, false, written)) == false)
       {
-        return -1;
+        return false;
       }
       total+= written;
     }
@@ -643,11 +645,11 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
   {
     if (memcached_io_write(ptr) == false)
     {
-      return -1;
+      return false;
     }
   }
 
-  return total;
+  return (complete_total == total);
 }
 
 

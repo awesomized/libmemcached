@@ -310,7 +310,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       }
       hosts_connected++;
 
-      if ((memcached_io_writev(instance, vector, 4, false)) == -1)
+      if ((memcached_io_writev(instance, vector, 4, false)) == false)
       {
         failures_occured_in_sending= true;
         continue;
@@ -321,7 +321,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     }
     else
     {
-      if ((memcached_io_writev(instance, (vector + 1), 3, false)) == -1)
+      if ((memcached_io_writev(instance, (vector + 1), 3, false)) == false)
       {
         memcached_server_response_reset(instance);
         failures_occured_in_sending= true;
@@ -518,7 +518,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       { keys[x], key_length[x] }
     };
 
-    if (memcached_io_writev(instance, vector, 3, flush) == -1)
+    if (memcached_io_writev(instance, vector, 3, flush) == false)
     {
       memcached_server_response_reset(instance);
       rc= MEMCACHED_SOME_ERRORS;
@@ -651,7 +651,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
         { keys[x], key_length[x] }
       };
 
-      if (memcached_io_writev(instance, vector, 3, true) == -1)
+      if (memcached_io_writev(instance, vector, 3, true) == false)
       {
         memcached_io_reset(instance);
         dead_servers[server]= true;
