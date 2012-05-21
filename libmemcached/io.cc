@@ -67,14 +67,17 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
   {
     do {
       /* Just try a single read to grab what's available */
-      ssize_t nr= recv(ptr->fd,
-                       ptr->read_ptr + ptr->read_data_length,
-                       MEMCACHED_MAX_BUFFER - ptr->read_data_length,
-                       MSG_DONTWAIT);
-
-      switch (nr)
+      ssize_t nr;
+      if ((nr= recv(ptr->fd,
+                    ptr->read_ptr + ptr->read_data_length,
+                    MEMCACHED_MAX_BUFFER - ptr->read_data_length,
+                    MSG_DONTWAIT)) <= 0)
       {
-      case SOCKET_ERROR:
+        if (nr == 0)
+        {
+          memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
+        }
+        else
         {
           switch (get_socket_errno())
           {
@@ -94,24 +97,19 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
             memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           }
         }
-        break;
 
-      case 0: // Shutdown on the socket has occurred
-        {
-          memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
-        }
-        break;
-
-      default:
-        {
-          ptr->read_data_length+= size_t(nr);
-          ptr->read_buffer_length+= size_t(nr);
-          return true;
-        }
         break;
       }
-    } while (0);
+      else // We read data, append to our read buffer
+      {
+        ptr->read_data_length+= size_t(nr);
+        ptr->read_buffer_length+= size_t(nr);
+
+        return true;
+      }
+    } while (false);
   }
+
   return false;
 }
 
@@ -187,9 +185,9 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
   }
 
   struct pollfd fds;
-  memset(&fds, 0, sizeof(pollfd));
   fds.fd= ptr->fd;
   fds.events= POLLIN;
+  fds.revents= 0;
 
   if (read_or_write == MEM_WRITE) /* write */
   {
@@ -824,7 +822,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
     }
 
     /* Now let's look in the buffer and copy as we go! */
-    while (ptr->read_buffer_length && total_nr < size && !line_complete)
+    while (ptr->read_buffer_length and total_nr < size and line_complete == false)
     {
       *buffer_ptr = *ptr->read_ptr;
       if (*buffer_ptr == '\n')
