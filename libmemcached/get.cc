@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ char *memcached_get_by_key(memcached_st *ptr,
 
   if (value == NULL)
   {
-    if (ptr->get_key_failure && *error == MEMCACHED_NOTFOUND)
+    if (ptr->get_key_failure and *error == MEMCACHED_NOTFOUND)
     {
       memcached_result_reset(&ptr->result);
       memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
@@ -140,7 +140,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                             0,
                             (memcached_result_flags(&ptr->result)));
 
-          if (rc == MEMCACHED_BUFFERED && latch == 0)
+          if (rc == MEMCACHED_BUFFERED and latch == 0)
           {
             memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, 0);
           }
@@ -154,7 +154,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                             (memcached_result_flags(&ptr->result)));
         }
 
-        if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_BUFFERED)
+        if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED)
         {
           *error= rc;
           *value_length= memcached_result_length(&ptr->result);
@@ -368,13 +368,15 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
   LIBMEMCACHED_MEMCACHED_MGET_END();
 
-  if (failures_occured_in_sending && success_happened)
+  if (failures_occured_in_sending and success_happened)
   {
     return MEMCACHED_SOME_ERRORS;
   }
 
   if (success_happened)
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   return MEMCACHED_FAILURE; // Complete failure occurred
 }
@@ -528,7 +530,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     /* We just want one pending response per server */
     memcached_server_response_reset(instance);
     memcached_server_response_increment(instance);
-    if ((x > 0 && x == ptr->io_key_prefetch) && memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
+    if ((x > 0 and x == ptr->io_key_prefetch) and memcached_flush_buffers(ptr) != MEMCACHED_SUCCESS)
     {
       rc= MEMCACHED_SOME_ERRORS;
     }
@@ -584,7 +586,9 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
   uint64_t randomize_read= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ);
 
   if (randomize_read)
+  {
     start= (uint32_t)random() % (uint32_t)(ptr->number_of_replicas + 1);
+  }
 
   /* Loop for each replica */
   for (uint32_t replica= 0; replica <= ptr->number_of_replicas; ++replica)
@@ -599,8 +603,10 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       uint32_t server= hash[x] + replica;
 
       /* In case of randomized reads */
-      if (randomize_read && ((server + start) <= (hash[x] + ptr->number_of_replicas)))
-        server += start;
+      if (randomize_read and ((server + start) <= (hash[x] + ptr->number_of_replicas)))
+      {
+        server+= start;
+      }
 
       while (server >= memcached_server_count(ptr))
       {
@@ -689,7 +695,7 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr,
   uint32_t* hash= libmemcached_xvalloc(ptr, number_of_keys, uint32_t);
   bool* dead_servers= libmemcached_xcalloc(ptr, memcached_server_count(ptr), bool);
 
-  if (hash == NULL || dead_servers == NULL)
+  if (hash == NULL or dead_servers == NULL)
   {
     libmemcached_free(ptr, hash);
     libmemcached_free(ptr, dead_servers);
