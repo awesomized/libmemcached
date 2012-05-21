@@ -169,8 +169,7 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
-LIBMEMCACHED_LOCAL
-memcached_return_t memcached_purge(memcached_server_write_instance_st ptr);
+bool memcached_purge(memcached_server_write_instance_st ptr);
 
 #ifdef __cplusplus
 }

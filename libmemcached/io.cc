@@ -178,7 +178,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
  */
   if (read_or_write == MEM_WRITE)
   {
-    if (memcached_fatal(memcached_purge(ptr)))
+    if (memcached_purge(ptr) == false)
     {
       return MEMCACHED_FAILURE;
     }
@@ -276,9 +276,8 @@ static bool io_flush(memcached_server_write_instance_st ptr,
  */
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    memcached_return_t rc= memcached_purge(ptr);
 
-    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_STORED)
+    if (memcached_purge(ptr) == false)
     {
       return false;
     }
