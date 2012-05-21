@@ -39,6 +39,45 @@
 
 #include <libmemcached/common.h>
 
+#define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
+
+class Purge
+{
+public:
+  Purge(memcached_st* arg) :
+    _memc(arg)
+  {
+    memcached_set_purging(_memc, true);
+  }
+
+  ~Purge()
+  {
+    memcached_set_purging(_memc, false);
+  }
+
+private:
+  memcached_st* _memc;
+};
+
+class PollTimeout
+{
+public:
+  PollTimeout(memcached_st* arg) :
+    _timeout(arg->poll_timeout),
+    _origin(arg->poll_timeout)
+  {
+    _origin = 2000;
+  }
+
+  ~PollTimeout()
+  {
+    _origin= _timeout;
+  }
+
+private:
+  int32_t _timeout;
+  int32_t& _origin;
+};
 
 bool memcached_purge(memcached_server_write_instance_st ptr)
 {
@@ -57,7 +96,7 @@ bool memcached_purge(memcached_server_write_instance_st ptr)
     memcached_io_write and memcached_response may call memcached_purge
     so we need to be able stop any recursion.. 
   */
-  memcached_set_purging(root, true);
+  Purge set_purge(root);
 
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
   /* 
@@ -66,8 +105,6 @@ bool memcached_purge(memcached_server_write_instance_st ptr)
   */
   if (memcached_io_write(ptr) == false)
   {
-    memcached_set_purging(root, true);
-
     memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
     return false;
   }
@@ -78,18 +115,16 @@ bool memcached_purge(memcached_server_write_instance_st ptr)
   if (no_msg > 0)
   {
     memcached_result_st result;
-    memcached_result_st *result_ptr;
 
     /*
      * We need to increase the timeout, because we might be waiting for
      * data to be sent from the server (the commands was in the output buffer
      * and just flushed
    */
-    const int32_t timeo= ptr->root->poll_timeout;
-    root->poll_timeout= 2000;
+    PollTimeout poll_timeout(ptr->root);
 
-    result_ptr= memcached_result_create(root, &result);
-    WATCHPOINT_ASSERT(result_ptr);
+    memcached_result_st* result_ptr= memcached_result_create(root, &result);
+    assert(result_ptr);
 
     for (uint32_t x= 0; x < no_msg; x++)
     {
@@ -124,9 +159,7 @@ bool memcached_purge(memcached_server_write_instance_st ptr)
     }
 
     memcached_result_free(result_ptr);
-    root->poll_timeout= timeo;
   }
-  memcached_set_purging(root, false);
 
   return is_successful;
 }
