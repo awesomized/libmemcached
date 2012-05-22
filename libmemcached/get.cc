@@ -119,8 +119,9 @@ char *memcached_get_by_key(memcached_st *ptr,
   {
     if (ptr->get_key_failure and *error == MEMCACHED_NOTFOUND)
     {
-      memcached_result_reset(&ptr->result);
-      memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, &ptr->result);
+      memcached_result_st key_failure_result;
+      memcached_result_st* result_ptr= memcached_result_create(ptr, &key_failure_result);
+      memcached_return_t rc= ptr->get_key_failure(ptr, key, key_length, result_ptr);
 
       /* On all failure drop to returning NULL */
       if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED)
@@ -135,10 +136,10 @@ char *memcached_get_by_key(memcached_st *ptr,
           }
 
           rc= memcached_set(ptr, key, key_length,
-                            (memcached_result_value(&ptr->result)),
-                            (memcached_result_length(&ptr->result)),
+                            (memcached_result_value(result_ptr)),
+                            (memcached_result_length(result_ptr)),
                             0,
-                            (memcached_result_flags(&ptr->result)));
+                            (memcached_result_flags(result_ptr)));
 
           if (rc == MEMCACHED_BUFFERED and latch == 0)
           {
@@ -148,20 +149,25 @@ char *memcached_get_by_key(memcached_st *ptr,
         else
         {
           rc= memcached_set(ptr, key, key_length,
-                            (memcached_result_value(&ptr->result)),
-                            (memcached_result_length(&ptr->result)),
+                            (memcached_result_value(result_ptr)),
+                            (memcached_result_length(result_ptr)),
                             0,
-                            (memcached_result_flags(&ptr->result)));
+                            (memcached_result_flags(result_ptr)));
         }
 
         if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED)
         {
           *error= rc;
-          *value_length= memcached_result_length(&ptr->result);
-          *flags= memcached_result_flags(&ptr->result);
-          return memcached_string_take_value(&ptr->result.value);
+          *value_length= memcached_result_length(result_ptr);
+          *flags= memcached_result_flags(result_ptr);
+          char *result_value=  memcached_string_take_value(&result_ptr->value);
+          memcached_result_free(result_ptr);
+
+          return result_value;
         }
       }
+
+      memcached_result_free(result_ptr);
     }
     assert_msg(ptr->query_id == query_id +1, "Programmer error, the query_id was not incremented.");
 

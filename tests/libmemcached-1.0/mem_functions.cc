@@ -1026,12 +1026,11 @@ test_return_t bad_key_test(memcached_st *memc)
 }
 
 #define READ_THROUGH_VALUE "set for me"
-static memcached_return_t read_through_trigger(memcached_st *memc,
-                                               char *key,
-                                               size_t key_length,
+static memcached_return_t read_through_trigger(memcached_st *, // memc
+                                               char *, // key
+                                               size_t, //  key_length,
                                                memcached_result_st *result)
 {
-  (void)memc;(void)key;(void)key_length;
   return memcached_result_set_value(result, READ_THROUGH_VALUE, strlen(READ_THROUGH_VALUE));
 }
 
@@ -1062,8 +1061,8 @@ test_return_t read_through(memcached_st *memc)
                         &string_length, &flags, &rc);
 
   test_compare(MEMCACHED_SUCCESS, rc);
-  test_compare(string_length, sizeof(READ_THROUGH_VALUE) -1);
-  test_true(string[sizeof(READ_THROUGH_VALUE) -1] == 0);
+  test_compare(sizeof(READ_THROUGH_VALUE) -1, string_length);
+  test_compare(0, string[sizeof(READ_THROUGH_VALUE) -1]);
   test_strcmp(READ_THROUGH_VALUE, string);
   free(string);
 
