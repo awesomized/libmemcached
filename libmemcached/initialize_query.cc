@@ -59,6 +59,7 @@ memcached_return_t initialize_query(memcached_st *self, bool increment_query_id)
   }
 
   memcached_error_free(*self);
+  memcached_result_reset(&self->result);
 
   return MEMCACHED_SUCCESS;
 }

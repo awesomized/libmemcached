@@ -184,11 +184,6 @@ memcached_st *memcached_create(memcached_st *ptr)
     ptr->options.is_allocated= true;
   }
 
-#if 0
-  memcached_set_purging(ptr, false);
-  memcached_set_processing_input(ptr, false);
-#endif
-
   if (_memcached_init(ptr) == false)
   {
     memcached_free(ptr);

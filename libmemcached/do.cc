@@ -72,14 +72,8 @@ memcached_return_t memcached_vdo(memcached_server_write_instance_st instance,
     return MEMCACHED_SUCCESS;
   }
 
-  ssize_t sent_length= memcached_io_writev(instance, vector, count, with_flush);
-  size_t command_length= 0;
-  for (uint32_t x= 0; x < count; ++x, vector++)
-  {
-    command_length+= vector->length;
-  }
-
-  if (sent_length == -1 or size_t(sent_length) != command_length)
+  bool sent_success= memcached_io_writev(instance, vector, count, with_flush);
+  if (sent_success == false)
   {
     if (memcached_last_error(instance->root) == MEMCACHED_SUCCESS)
     {

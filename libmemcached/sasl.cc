@@ -240,7 +240,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
       { data, len }
     };
 
-    if (memcached_io_writev(server, vector, 3, true) == -1)
+    if (memcached_io_writev(server, vector, 3, true) == false)
     {
       rc= MEMCACHED_WRITE_FAILURE;
       break;

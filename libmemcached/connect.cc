@@ -57,73 +57,78 @@ static memcached_return_t connect_poll(memcached_server_st *server)
 
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
-    int error= poll(fds, 1, server->root->connect_timeout);
-    switch (error)
+    int number_of;
+    if ((number_of= poll(fds, 1, server->root->connect_timeout)) <= 0)
     {
-    case 1:
+      if (number_of == -1)
       {
-        int err;
-        socklen_t len= sizeof (err);
-        if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
-        {
-          // We check the value to see what happened wth the socket.
-          if (err == 0)
-          {
-            return MEMCACHED_SUCCESS;
-          }
-          errno= err;
-        }
-
-        return memcached_set_errno(*server, err, MEMCACHED_AT);
-      }
-    case 0:
-      {
-        server->io_wait_count.timeouts++;
-        return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT);
-      }
-
-    default: // A real error occurred and we need to completely bail
-      switch (get_socket_errno())
-      {
-#ifdef TARGET_OS_LINUX
-      case ERESTART:
-#endif
-      case EINTR:
-        continue;
-
-      case EFAULT:
-      case ENOMEM:
-        return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
-
-      case EINVAL:
-        return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
-
-      default: // This should not happen
-        if (fds[0].revents & POLLERR)
-        {
-          int err;
-          socklen_t len= sizeof(err);
-          if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
-          {
-            if (err == 0)
-            {
-              // This should never happen, if it does? Punt.  
-              continue;
-            }
-            errno= err;
-          }
-        }
-
         int local_errno= get_socket_errno(); // We cache in case closesocket() modifies errno
+        switch (local_errno)
+        {
+#ifdef TARGET_OS_LINUX
+        case ERESTART:
+#endif
+        case EINTR:
+          continue;
 
-        assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
-        (void)closesocket(server->fd);
-        server->fd= INVALID_SOCKET;
-        server->state= MEMCACHED_SERVER_STATE_NEW;
+        case EFAULT:
+        case ENOMEM:
+          return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
-        return memcached_set_errno(*server, local_errno, MEMCACHED_AT);
+        case EINVAL:
+          return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+
+        default: // This should not happen
+          if (fds[0].revents & POLLERR)
+          {
+            int err;
+            socklen_t len= sizeof(err);
+            if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+            {
+              if (err == 0)
+              {
+                // This should never happen, if it does? Punt.  
+                continue;
+              }
+              local_errno= err;
+            }
+          }
+
+          assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
+          (void)closesocket(server->fd);
+          server->fd= INVALID_SOCKET;
+          server->state= MEMCACHED_SERVER_STATE_NEW;
+
+          return memcached_set_errno(*server, local_errno, MEMCACHED_AT);
+        }
       }
+      assert(number_of == 0);
+
+      server->io_wait_count.timeouts++;
+      return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT);
     }
+
+    if (fds[0].revents & POLLERR or
+        fds[0].revents & POLLHUP or 
+        fds[0].revents & POLLNVAL)
+    {
+      int err;
+      socklen_t len= sizeof (err);
+      if (getsockopt(fds[0].fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+      {
+        // We check the value to see what happened wth the socket.
+        if (err == 0)
+        {
+          return MEMCACHED_SUCCESS;
+        }
+        errno= err;
+      }
+
+      return memcached_set_errno(*server, err, MEMCACHED_AT);
+    }
+    assert(fds[0].revents & POLLIN or fds[0].revents & POLLOUT);
+
+    return MEMCACHED_SUCCESS;
   }
 
   // This should only be possible from ERESTART or EINTR;
@@ -243,30 +248,28 @@ static void set_socket_options(memcached_server_st *server)
 #ifdef HAVE_SNDTIMEO
   if (server->root->snd_timeout)
   {
-    int error;
     struct timeval waittime;
 
     waittime.tv_sec= 0;
     waittime.tv_usec= server->root->snd_timeout;
 
-    error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
-    WATCHPOINT_ASSERT(error == 0);
+    assert(error == 0);
   }
 #endif
 
 #ifdef HAVE_RCVTIMEO
   if (server->root->rcv_timeout)
   {
-    int error;
     struct timeval waittime;
 
     waittime.tv_sec= 0;
     waittime.tv_usec= server->root->rcv_timeout;
 
-    error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
-                      &waittime, (socklen_t)sizeof(struct timeval));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
+                          &waittime, (socklen_t)sizeof(struct timeval));
+    assert(error == 0);
   }
 #endif
 
@@ -287,63 +290,54 @@ static void set_socket_options(memcached_server_st *server)
 
   if (server->root->flags.no_block)
   {
-    int error;
     struct linger linger;
 
     linger.l_onoff= 1;
     linger.l_linger= 0; /* By default on close() just drop the socket */
-    error= setsockopt(server->fd, SOL_SOCKET, SO_LINGER,
-                      &linger, (socklen_t)sizeof(struct linger));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_LINGER,
+                          &linger, (socklen_t)sizeof(struct linger));
+    assert(error == 0);
   }
 
   if (server->root->flags.tcp_nodelay)
   {
     int flag= 1;
-    int error;
 
-    error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
-                      &flag, (socklen_t)sizeof(int));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
+                          &flag, (socklen_t)sizeof(int));
+    assert(error == 0);
   }
 
   if (server->root->flags.tcp_keepalive)
   {
     int flag= 1;
-    int error;
 
-    error= setsockopt(server->fd, SOL_SOCKET, SO_KEEPALIVE,
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_KEEPALIVE,
                       &flag, (socklen_t)sizeof(int));
-    WATCHPOINT_ASSERT(error == 0);
+    assert(error == 0);
   }
 
 #ifdef TCP_KEEPIDLE
   if (server->root->tcp_keepidle > 0)
   {
-    int error;
-
-    error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
-                      &server->root->tcp_keepidle, (socklen_t)sizeof(int));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
+                          &server->root->tcp_keepidle, (socklen_t)sizeof(int));
+    assert(error == 0);
   }
 #endif
 
   if (server->root->send_size > 0)
   {
-    int error;
-
-    error= setsockopt(server->fd, SOL_SOCKET, SO_SNDBUF,
-                      &server->root->send_size, (socklen_t)sizeof(int));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDBUF,
+                          &server->root->send_size, (socklen_t)sizeof(int));
+    assert(error == 0);
   }
 
   if (server->root->recv_size > 0)
   {
-    int error;
-
-    error= setsockopt(server->fd, SOL_SOCKET, SO_RCVBUF,
-                      &server->root->recv_size, (socklen_t)sizeof(int));
-    WATCHPOINT_ASSERT(error == 0);
+    int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVBUF,
+                          &server->root->recv_size, (socklen_t)sizeof(int));
+    assert(error == 0);
   }
 
 
@@ -380,7 +374,7 @@ static memcached_return_t unix_socket_connect(memcached_server_st *server)
 
       case EISCONN: /* We were spinning waiting on connect */
         {
-          WATCHPOINT_ASSERT(0); // Programmer error
+          assert(0); // Programmer error
           break;
         }
 

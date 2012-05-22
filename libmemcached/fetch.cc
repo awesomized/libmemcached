@@ -155,10 +155,12 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
                                             memcached_return_t *error)
 {
   memcached_return_t unused;
-  if (not error)
+  if (error == NULL)
+  {
     error= &unused;
+  }
 
-  if (not ptr)
+  if (ptr == NULL)
   {
     *error= MEMCACHED_INVALID_ARGUMENTS;
     return NULL;
@@ -176,7 +178,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
     // create one.
     if (memcached_is_initialized(&ptr->result))
     {
-      if (not (result= memcached_result_create(ptr, NULL)))
+      if ((result= memcached_result_create(ptr, NULL)) == NULL)
       {
         *error= MEMCACHED_MEMORY_ALLOCATION_FAILURE;
         return NULL;

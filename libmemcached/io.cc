@@ -67,14 +67,17 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
   {
     do {
       /* Just try a single read to grab what's available */
-      ssize_t nr= recv(ptr->fd,
-                       ptr->read_ptr + ptr->read_data_length,
-                       MEMCACHED_MAX_BUFFER - ptr->read_data_length,
-                       MSG_DONTWAIT);
-
-      switch (nr)
+      ssize_t nr;
+      if ((nr= recv(ptr->fd,
+                    ptr->read_ptr + ptr->read_data_length,
+                    MEMCACHED_MAX_BUFFER - ptr->read_data_length,
+                    MSG_DONTWAIT)) <= 0)
       {
-      case SOCKET_ERROR:
+        if (nr == 0)
+        {
+          memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
+        }
+        else
         {
           switch (get_socket_errno())
           {
@@ -94,24 +97,19 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
             memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
           }
         }
-        break;
 
-      case 0: // Shutdown on the socket has occurred
-        {
-          memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
-        }
-        break;
-
-      default:
-        {
-          ptr->read_data_length+= size_t(nr);
-          ptr->read_buffer_length+= size_t(nr);
-          return true;
-        }
         break;
       }
-    } while (0);
+      else // We read data, append to our read buffer
+      {
+        ptr->read_data_length+= size_t(nr);
+        ptr->read_buffer_length+= size_t(nr);
+
+        return true;
+      }
+    } while (false);
   }
+
   return false;
 }
 
@@ -180,16 +178,16 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
  */
   if (read_or_write == MEM_WRITE)
   {
-    if (memcached_fatal(memcached_purge(ptr)))
+    if (memcached_purge(ptr) == false)
     {
       return MEMCACHED_FAILURE;
     }
   }
 
   struct pollfd fds;
-  memset(&fds, 0, sizeof(pollfd));
   fds.fd= ptr->fd;
   fds.events= POLLIN;
+  fds.revents= 0;
 
   if (read_or_write == MEM_WRITE) /* write */
   {
@@ -278,9 +276,8 @@ static bool io_flush(memcached_server_write_instance_st ptr,
  */
   {
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
-    memcached_return_t rc= memcached_purge(ptr);
 
-    if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_STORED)
+    if (memcached_purge(ptr) == false)
     {
       return false;
     }
@@ -534,9 +531,9 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
         /* fall through */
 
       case ENOTCONN: // Programmer Error
-        WATCHPOINT_ASSERT(0);
+        assert(0);
       case ENOTSOCK:
-        WATCHPOINT_ASSERT(0);
+        assert(0);
       case EBADF:
         assert_msg(ptr->fd != INVALID_SOCKET, "Invalid socket state");
       case EINVAL:
@@ -555,7 +552,7 @@ static bool _io_write(memcached_server_write_instance_st ptr,
                       const void *buffer, size_t length, bool with_flush,
                       size_t& written)
 {
-  WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
+  assert(ptr->fd != INVALID_SOCKET);
   assert(memcached_is_udp(ptr->root) == false);
 
   const char *buffer_ptr= static_cast<const char *>(buffer);
@@ -623,20 +620,22 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
   return ssize_t(written);
 }
 
-ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
+bool memcached_io_writev(memcached_server_write_instance_st ptr,
                             libmemcached_io_vector_st vector[],
                             const size_t number_of, const bool with_flush)
 {
+  ssize_t complete_total= 0;
   ssize_t total= 0;
 
   for (size_t x= 0; x < number_of; x++, vector++)
   {
+    complete_total+= vector->length;
     if (vector->length)
     {
       size_t written;
       if ((_io_write(ptr, vector->buffer, vector->length, false, written)) == false)
       {
-        return -1;
+        return false;
       }
       total+= written;
     }
@@ -646,11 +645,11 @@ ssize_t memcached_io_writev(memcached_server_write_instance_st ptr,
   {
     if (memcached_io_write(ptr) == false)
     {
-      return -1;
+      return false;
     }
   }
 
-  return total;
+  return (complete_total == total);
 }
 
 
@@ -824,7 +823,7 @@ memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
     }
 
     /* Now let's look in the buffer and copy as we go! */
-    while (ptr->read_buffer_length && total_nr < size && !line_complete)
+    while (ptr->read_buffer_length and total_nr < size and line_complete == false)
     {
       *buffer_ptr = *ptr->read_ptr;
       if (*buffer_ptr == '\n')
