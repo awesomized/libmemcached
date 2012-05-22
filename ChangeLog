@@ -1,5 +1,6 @@
-1.0.8
+1.0.8 Tue May 22 15:06:04 EDT 2012
 * Added support for setting options via ENV variable LIBMEMCACHED
+* Fix corner case on last used result.
 
 1.0.7 Sat Apr 28 00:48:29 PDT 2012
 * Add API call for exist calls.
