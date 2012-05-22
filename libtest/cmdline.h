@@ -38,6 +38,10 @@
 
 #include <spawn.h>
 
+// http://www.gnu.org/software/automake/manual/automake.html#Using-the-TAP-test-protocol
+#define EXIT_SKIP 77
+#define EXIT_FATAL 77
+
 namespace libtest {
 
 class Application {

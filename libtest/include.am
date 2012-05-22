@@ -236,6 +236,9 @@ libtest_skiptest_SOURCES= libtest/skiptest.cc
 check_PROGRAMS+= libtest/skiptest
 noinst_PROGRAMS+= libtest/skiptest
 
+test-skip: libtest/skiptest
+	@libtest/skiptest
+
 libtest_wait_SOURCES=
 libtest_wait_SOURCES+= libtest/wait.cc
 libtest_wait_SOURCES+= libtest/dream.cc
