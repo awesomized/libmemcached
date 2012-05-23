@@ -78,7 +78,12 @@ generic: support/libmemcached.spec
 	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-debuginfo-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
-rpm: man distcheck generic
+clean_rpm:
+	@rm -f *.tar.gz
+	@rm -f *.src.rpm
+	@rm -f *.rpm
+
+rpm: clean_rpm man distcheck generic
 
 release: rpm
 	@rpm --addsign libmemcached-$(VERSION)*.rpm .

@@ -47,8 +47,6 @@ you will need to install %{name}-devel.
 %setup -q
 
 %{__mkdir} examples
-#%{__cp} tests/*.{cc,h} examples/
-
 
 %build
 %configure
@@ -63,7 +61,7 @@ you will need to install %{name}-devel.
 %check
 # test suite cannot run in mock (same port use for memcache server on all arch)
 # 1 test seems to fail.. 
-#%{__make} test
+# %{__make} check
 
 
 %clean
@@ -96,16 +94,20 @@ you will need to install %{name}-devel.
 %{_libdir}/libmemcached.so.10
 %{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.2
+%{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memcapable.1.gz
 %{_mandir}/man1/memcat.1.gz
 %{_mandir}/man1/memcp.1.gz
 %{_mandir}/man1/memdump.1.gz
 %{_mandir}/man1/memerror.1.gz
+%{_mandir}/man1/memexist.1.gz
 %{_mandir}/man1/memflush.1.gz
+%{_mandir}/man1/memparse.1.gz
+%{_mandir}/man1/memping.1.gz
 %{_mandir}/man1/memrm.1.gz
-%{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memslap.1.gz
 %{_mandir}/man1/memstat.1.gz
+%{_mandir}/man1/memtouch.1.gz
 
 
 %files devel
@@ -314,10 +316,12 @@ you will need to install %{name}-devel.
 
 
 %changelog
-* Fri Jan  8 2010 Brian Aker <brian@tangent.org> - 0.37-1
+* Tue May  22 2012 Brian Aker <brian@tangent.org> - 1.0.8
+
+* Fri Jan  8 2010 Brian Aker <brian@tangent.org> - 0.37
 - Modified to be explicit in install include files. 
 
-* Sat Apr 25 2009 Remi Collet <rpms@famillecollet.com> - 0.28-1
+* Sat Apr 25 2009 Remi Collet <rpms@famillecollet.com> - 0.28
 - Initial RPM from Brian Aker spec
 - create -devel subpackage
 - add %%post %%postun %%check section
