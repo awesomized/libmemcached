@@ -4651,7 +4651,7 @@ test_return_t regression_bug_854604(memcached_st *)
   return TEST_SUCCESS;
 }
 
-static void memcached_die(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
+static void die_message(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
 {
   fprintf(stderr, "Iteration #%u: ", it);
 
@@ -4687,19 +4687,19 @@ test_return_t regression_bug_(memcached_st *memc)
     rc= memcached_behavior_set(mc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
     if (rc != MEMCACHED_SUCCESS)
     {
-      memcached_die(mc, rc, "memcached_behavior_set", x);
+      die_message(mc, rc, "memcached_behavior_set", x);
     }
 
     rc= memcached_behavior_set(mc, MEMCACHED_BEHAVIOR_CACHE_LOOKUPS, 1);
     if (rc != MEMCACHED_SUCCESS)
     {
-      memcached_die(mc, rc, "memcached_behavior_set", x);
+      die_message(mc, rc, "memcached_behavior_set", x);
     }
 
     rc= memcached_server_add(mc, remote_server, 0);
     if (rc != MEMCACHED_SUCCESS)
     {
-      memcached_die(mc, rc, "memcached_server_add", x);
+      die_message(mc, rc, "memcached_server_add", x);
     }
 
     const char *set_key= "akey";
@@ -4719,7 +4719,7 @@ test_return_t regression_bug_(memcached_st *memc)
                                  &get_value_flags, &rc);
         if (rc != MEMCACHED_SUCCESS)
         {
-          memcached_die(mc, rc, "memcached_get", x);
+          die_message(mc, rc, "memcached_get", x);
         }
         else
         {
@@ -4743,7 +4743,7 @@ test_return_t regression_bug_(memcached_st *memc)
                        );
       if (rc != MEMCACHED_SUCCESS)
       {
-        memcached_die(mc, rc, "memcached_set", x);
+        die_message(mc, rc, "memcached_set", x);
       }
     }
 
