@@ -42,7 +42,7 @@
 
 namespace libtest {
 
-bool has_memcached_support(void)
+bool has_libmemcached(void)
 {
   if (HAVE_LIBMEMCACHED)
   {
@@ -115,7 +115,16 @@ bool has_memcached()
 {
   if (HAVE_MEMCACHED_BINARY)
   {
-    if (access(MEMCACHED_BINARY, X_OK) == 0)
+    std::stringstream arg_buffer;
+
+    if (getenv("PWD"))
+    {
+      arg_buffer << getenv("PWD");
+      arg_buffer << "/";
+    }
+    arg_buffer << MEMCACHED_BINARY;
+
+    if (access(arg_buffer.str().c_str(), X_OK) == 0)
     {
       return true;
     }
