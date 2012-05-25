@@ -265,10 +265,10 @@ static test_return_t drizzled_cycle_test(void *object)
   test_true(servers and servers->validate());
 
 #if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  test_true(has_drizzled_binary());
+  test_true(has_drizzled());
 #endif
 
-  test_skip(true, has_drizzled_binary());
+  test_skip(true, has_drizzled());
 
   test_true(server_startup(*servers, "drizzled", get_free_port(), 0, NULL));
 
@@ -281,10 +281,10 @@ static test_return_t gearmand_cycle_test(void *object)
   test_true(servers and servers->validate());
 
 #if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  test_true(has_gearmand_binary());
+  test_true(has_gearmand());
 #endif
 
-  test_skip(true, has_gearmand_binary());
+  test_skip(true, has_gearmand());
 
   test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
 
@@ -333,7 +333,7 @@ static test_return_t memcached_cycle_test(void *object)
 
   if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
   {
-    test_true(has_memcached_binary());
+    test_true(has_memcached());
     test_true(server_startup(*servers, "memcached", get_free_port(), 0, NULL));
 
     return TEST_SUCCESS;
@@ -351,7 +351,7 @@ static test_return_t memcached_socket_cycle_test(void *object)
   {
     if (HAVE_LIBMEMCACHED)
     {
-      test_true(has_memcached_binary());
+      test_true(has_memcached());
       test_true(servers->start_socket_server("memcached", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
@@ -372,7 +372,7 @@ static test_return_t memcached_sasl_test(void *object)
   {
     if (HAVE_LIBMEMCACHED)
     {
-      test_true(has_memcached_sasl_binary());
+      test_true(has_memcached_sasl());
       test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 0, NULL));
 
       return TEST_SUCCESS;
@@ -757,14 +757,14 @@ static test_return_t default_port_TEST(void *)
 static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
-  test_skip(true, has_gearmand_binary());
+  test_skip(true, has_gearmand());
   return TEST_SUCCESS;
 }
 
 static test_return_t check_for_drizzle(void *)
 {
   test_skip(true, HAVE_LIBDRIZZLE);
-  test_skip(true, has_drizzled_binary());
+  test_skip(true, has_drizzled());
   return TEST_SUCCESS;
 }
 
@@ -786,7 +786,7 @@ test_st gearmand_tests[] ={
 static test_return_t check_for_libmemcached(void *)
 {
   test_skip(true, HAVE_LIBMEMCACHED);
-  test_skip(true, has_memcached_binary());
+  test_skip(true, has_memcached());
   return TEST_SUCCESS;
 }
 

@@ -36,8 +36,27 @@
 
 #pragma once
 
-bool has_memcached_support(void);
+namespace libtest {
 
-bool has_drizzle_support(void);
+LIBTEST_API
+bool has_libmemcached();
 
-bool has_postgres_support(void);
+LIBTEST_API
+bool has_libdrizzle();
+
+LIBTEST_API
+bool has_postgres_support();
+
+LIBTEST_API
+bool has_memcached();
+
+LIBTEST_API
+bool has_memcached_sasl();
+
+LIBTEST_API
+bool has_gearmand();
+
+LIBTEST_API
+bool has_drizzled();
+
+} // namespace libtest

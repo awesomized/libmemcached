@@ -35,13 +35,16 @@
  */
 
 #include <config.h>
-#include <libtest/has.hpp>
+#include <libtest/common.h>
 
 #include <cstdlib>
+#include <unistd.h>
+
+namespace libtest {
 
 bool has_memcached_support(void)
 {
-  if (HAVE_LIBMEMCACHED and HAVE_MEMCACHED_BINARY)
+  if (HAVE_LIBMEMCACHED)
   {
     return true;
   }
@@ -49,9 +52,9 @@ bool has_memcached_support(void)
   return false;
 }
 
-bool has_drizzle_support(void)
+bool has_libdrizzle(void)
 {
-  if (HAVE_LIBDRIZZLE and HAVE_DRIZZLED_BINARY)
+  if (HAVE_LIBDRIZZLE)
   {
     return true;
   }
@@ -63,7 +66,6 @@ bool has_postgres_support(void)
 {
   if (getenv("POSTGES_IS_RUNNING_AND_SETUP"))
   {
-
     if (HAVE_LIBPQ)
     {
       return true;
@@ -72,3 +74,67 @@ bool has_postgres_support(void)
 
   return false;
 }
+
+
+bool has_gearmand()
+{
+  if (HAVE_GEARMAND_BINARY)
+  {
+    std::stringstream arg_buffer;
+
+    if (getenv("PWD"))
+    {
+      arg_buffer << getenv("PWD");
+      arg_buffer << "/";
+    }
+    arg_buffer << GEARMAND_BINARY;
+
+    if (access(arg_buffer.str().c_str(), X_OK) == 0)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool has_drizzled()
+{
+  if (HAVE_DRIZZLED_BINARY)
+  {
+    if (access(DRIZZLED_BINARY, X_OK) == 0)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool has_memcached()
+{
+  if (HAVE_MEMCACHED_BINARY)
+  {
+    if (access(MEMCACHED_BINARY, X_OK) == 0)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool has_memcached_sasl()
+{
+  if (HAVE_MEMCACHED_SASL_BINARY)
+  {
+    if (access(MEMCACHED_SASL_BINARY, X_OK) == 0)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+} // namespace libtest
