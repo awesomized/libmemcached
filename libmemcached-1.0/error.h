@@ -42,22 +42,22 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-  const char *memcached_last_error_message(memcached_st *);
+  const char *memcached_last_error_message(const memcached_st *);
 
 LIBMEMCACHED_API
   void memcached_error_print(const memcached_st *);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_last_error(memcached_st *);
+  memcached_return_t memcached_last_error(const memcached_st *);
 
 LIBMEMCACHED_API
-  int memcached_last_error_errno(memcached_st *);
+  int memcached_last_error_errno(const memcached_st *);
 
 LIBMEMCACHED_API
-  const char *memcached_server_error(memcached_server_instance_st ptr);
+  const char *memcached_server_error(const memcached_server_instance_st ptr);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_server_error_return(memcached_server_instance_st ptr);
+  memcached_return_t memcached_server_error_return(const memcached_server_instance_st ptr);
 
 #ifdef __cplusplus
 } // extern "C"

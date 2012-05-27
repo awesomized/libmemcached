@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc);
+const char *memcached_strerror(const memcached_st *ptr, memcached_return_t rc);
 
 #ifdef __cplusplus
 }

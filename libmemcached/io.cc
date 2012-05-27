@@ -450,15 +450,15 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
             for blocking I/O we do not return 0 and for non-blocking case
             it will return EGAIN if data is not immediatly available.
           */
-          WATCHPOINT_STRING("We had a zero length recv()");
           memcached_quit_server(ptr, true);
           nread= -1;
           return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
                                      memcached_literal_param("::rec() returned zero, server has disconnected"));
         }
+        ptr->io_wait_count._bytes_read+= data_read;
       } while (data_read <= 0);
 
-      ptr->io_bytes_sent = 0;
+      ptr->io_bytes_sent= 0;
       ptr->read_data_length= (size_t) data_read;
       ptr->read_buffer_length= (size_t) data_read;
       ptr->read_ptr= ptr->read_buffer;

@@ -41,3 +41,10 @@ static inline std::ostream& operator<<(std::ostream& output, const enum memcache
   output << memcached_strerror(NULL, arg);
   return output;
 }
+
+static inline std::ostream& operator<<(std::ostream& output, const memcached_st &arg)
+{
+  output << " query_id: " <<  memcached_query_id(&arg);
+  output << " error: " <<  memcached_last_error_message(&arg);
+  return output;
+}

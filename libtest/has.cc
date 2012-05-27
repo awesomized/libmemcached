@@ -117,17 +117,19 @@ bool has_memcached()
   {
     std::stringstream arg_buffer;
 
-    if (getenv("PWD"))
+    if (getenv("PWD") and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0)
     {
       arg_buffer << getenv("PWD");
       arg_buffer << "/";
     }
     arg_buffer << MEMCACHED_BINARY;
 
+    std::cout << "Value: " << arg_buffer.str() << std::endl;
     if (access(arg_buffer.str().c_str(), X_OK) == 0)
     {
       return true;
     }
+    std::cout << "Access was not 0 : " << strerror(errno) << std::endl;
   }
 
   return false;

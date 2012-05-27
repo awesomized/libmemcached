@@ -54,7 +54,7 @@ fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const cha
 
     strncpy(_mesg, last_error, sizeof(_mesg));
 
-    snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, int(_line), last_error, _func);
+    snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, _line, last_error, _func);
   }
 
 static bool _disabled= false;
@@ -85,9 +85,14 @@ void fatal::increment_disabled_counter()
   _counter++;
 }
 
-disconnected::disconnected(const char *file, int line, const char *func, const char *instance, const in_port_t port, const char *format, ...) :
+disconnected::disconnected(const char *file_arg, int line_arg, const char *func_arg,
+                           const char *instance, const in_port_t port,
+                           const char *format, ...) :
+  std::runtime_error(func_arg),
   _port(port),
-  std::runtime_error(func)
+  _line(line_arg),
+  _file(file_arg),
+  _func(func_arg)
 {
   strncpy(_instance, instance, sizeof(_instance));
   va_list args;
@@ -96,7 +101,7 @@ disconnected::disconnected(const char *file, int line, const char *func, const c
   (void)vsnprintf(last_error, sizeof(last_error), format, args);
   va_end(args);
 
-  snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", file, int(line), last_error, func);
+  snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, _line, last_error, _func);
 }
 
 } // namespace libtest

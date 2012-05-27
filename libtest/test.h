@@ -196,7 +196,7 @@ do \
 #define test_compare_got(__expected, __actual, __hint) \
 do \
 { \
-  if (not libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint))) \
+  if (libtest::_compare_hint(__FILE__, __LINE__, __func__, (__expected), (__actual), (__hint)) == false) \
   { \
     libtest::create_core(); \
     return TEST_FAILURE; \

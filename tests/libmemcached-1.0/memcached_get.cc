@@ -189,11 +189,10 @@ test_return_t get_test5(memcached_st *memc)
   uint32_t flags;
   size_t rlen;
 
-  test_compare_hint(return_value_based_on_buffering(memc),
+  test_compare(return_value_based_on_buffering(memc),
                     memcached_set(memc, keys[0], lengths[0],
                                   keys[0], lengths[0],
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
+                                  time_t(0), uint32_t(0)));
   test_compare(MEMCACHED_SUCCESS, memcached_mget(memc, keys, lengths, test_array_length(keys)));
 
   memcached_result_st results_obj;
