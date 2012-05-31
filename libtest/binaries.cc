@@ -35,65 +35,7 @@
  */
 
 #include <config.h>
-#include <libtest/common.h>
 
 namespace libtest {
-
-bool has_gearmand_binary()
-{
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  std::stringstream arg_buffer;
-
-  if (getenv("PWD"))
-  {
-    arg_buffer << getenv("PWD");
-    arg_buffer << "/";
-  }
-  arg_buffer << GEARMAND_BINARY;
-
-  if (access(arg_buffer.str().c_str() ,R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-bool has_drizzled_binary()
-{
-#if defined(HAVE_DRIZZLED_BINARY) && HAVE_DRIZZLED_BINARY
-  if (access(DRIZZLED_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-bool has_memcached_binary()
-{
-#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
-  if (access(MEMCACHED_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
-bool has_memcached_sasl_binary()
-{
-#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
-  if (access(MEMCACHED_SASL_BINARY, R_OK|X_OK) == 0)
-  {
-    return true;
-  }
-#endif
-
-  return false;
-}
 
 }

@@ -37,7 +37,7 @@
 
 #include <libmemcached/common.h>
 
-const char *memcached_strerror(memcached_st *, memcached_return_t rc)
+const char *memcached_strerror(const memcached_st *, memcached_return_t rc)
 {
   switch (rc)
   {

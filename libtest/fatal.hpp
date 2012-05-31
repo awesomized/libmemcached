@@ -108,10 +108,28 @@ public:
   static uint32_t disabled_counter();
   static void increment_disabled_counter();
 
+  int line()
+  {
+    return _line;
+  }
+
+  const char* file()
+  {
+    return _file;
+  }
+
+  const char* func()
+  {
+    return _func;
+  }
+
 private:
   char _error_message[BUFSIZ];
   in_port_t _port;
   char _instance[1024];
+  int _line;
+  const char*  _file;
+  const char* _func;
 };
 
 

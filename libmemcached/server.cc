@@ -58,6 +58,7 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->io_wait_count.read= 0;
   self->io_wait_count.write= 0;
   self->io_wait_count.timeouts= 0;
+  self->io_wait_count._bytes_read= 0;
   self->major_version= UINT8_MAX;
   self->micro_version= UINT8_MAX;
   self->minor_version= UINT8_MAX;
@@ -352,7 +353,9 @@ in_port_t memcached_server_port(const memcached_server_instance_st self)
 {
   WATCHPOINT_ASSERT(self);
   if (self == NULL)
+  {
     return 0;
+  }
 
   return self->port;
 }
@@ -361,7 +364,9 @@ uint32_t memcached_server_response_count(const memcached_server_instance_st self
 {
   WATCHPOINT_ASSERT(self);
   if (self == NULL)
+  {
     return 0;
+  }
 
   return self->cursor_active;
 }

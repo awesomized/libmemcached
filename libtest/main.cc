@@ -250,7 +250,6 @@ int main(int argc, char *argv[])
           break;
 
         case TEST_SKIPPED:
-          Out << "SKIP " << argv[0];
           return EXIT_SKIP;
 
         case TEST_FAILURE:

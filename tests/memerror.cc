@@ -111,8 +111,14 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-static void *world_create(server_startup_st&, test_return_t&)
+static void *world_create(server_startup_st&, test_return_t& error)
 {
+  if (libtest::has_memcached() == false)
+  {
+    error= TEST_SKIPPED;
+    return NULL;
+  }
+
   return NULL;
 }
 

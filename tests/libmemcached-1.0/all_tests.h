@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <tests/libmemcached-1.0/memcached_get.h>
+#include "tests/libmemcached-1.0/memcached_get.h"
 
 
 /* Clean the server before beginning testing */
@@ -58,6 +58,7 @@ test_st tests[] ={
   {"memcached_set()", false, (test_callback_fn*)set_test },
   {"memcached_set() 2", false, (test_callback_fn*)set_test2 },
   {"memcached_set() 3", false, (test_callback_fn*)set_test3 },
+  {"memcached_add(SUCCESS)", true, (test_callback_fn*)memcached_add_SUCCESS_TEST },
   {"add", true, (test_callback_fn*)add_test },
   {"memcached_fetch_result(MEMCACHED_NOTFOUND)", true, (test_callback_fn*)memcached_fetch_result_NOT_FOUND },
   {"replace", true, (test_callback_fn*)replace_test },
@@ -148,7 +149,7 @@ test_st behavior_tests[] ={
 };
 
 test_st libmemcachedutil_tests[] ={
-  {"libmemcached_util_ping()", true, (test_callback_fn*)ping_test },
+  {"libmemcached_util_ping()", true, (test_callback_fn*)libmemcached_util_ping_TEST },
   {"libmemcached_util_getpid()", true, (test_callback_fn*)getpid_test },
   {"libmemcached_util_getpid(MEMCACHED_CONNECTION_FAILURE)", true, (test_callback_fn*)getpid_connection_failure_test },
   {0, 0, 0}

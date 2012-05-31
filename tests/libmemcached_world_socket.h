@@ -45,7 +45,7 @@
 
 static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
 {
-  if (HAVE_MEMCACHED_BINARY == 0)
+  if (libtest::has_memcached() == false)
   {
     error= TEST_SKIPPED;
     return NULL;
