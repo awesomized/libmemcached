@@ -63,12 +63,18 @@ EXTRA_DIST+= ${man_MANS}
 fedora:
 	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
+	@mkdir -p ~/rpmbuild/SOURCES/
+	@mkdir -p ~/rpmbuild/RPMS/x86_64/
+	@mkdir -p ~/rpmbuild/SRPMS/
 	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
 	@rpmbuild -ba support/libmemcached.spec
 	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
 
 generic: support/libmemcached.spec
+	@mkdir -p ~/rpmbuild/SOURCES/
+	@mkdir -p ~/rpmbuild/RPMS/x86_64/
+	@mkdir -p ~/rpmbuild/SRPMS/
 	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
 	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
 	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
