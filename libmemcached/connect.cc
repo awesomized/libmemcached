@@ -42,6 +42,10 @@
 #include <ctime>
 #include <sys/time.h>
 
+#ifndef SOCK_CLOEXEC 
+#define SOCK_CLOEXEC 0
+#endif
+
 static memcached_return_t connect_poll(memcached_server_st *server)
 {
   struct pollfd fds[1];
@@ -451,11 +455,28 @@ static memcached_return_t network_connect(memcached_server_st *server)
       continue;
     }
 
+    int type= server->address_info_next->ai_socktype;
+    if (HAVE_SOCK_CLOEXEC)
+    {
+      type|= SOCK_CLOEXEC;
+    }
+
     if ((server->fd= socket(server->address_info_next->ai_family,
-                            server->address_info_next->ai_socktype,
+                            type,
                             server->address_info_next->ai_protocol)) < 0)
     {
       return memcached_set_errno(*server, get_socket_errno(), NULL);
+    }
+
+    if (HAVE_SOCK_CLOEXEC == 0)
+    {
+#ifdef FD_CLOEXEC
+      int rval;
+      do
+      {
+        rval= fcntl (server->fd, F_SETFD, FD_CLOEXEC);
+      } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+#endif
     }
 
     set_socket_options(server);

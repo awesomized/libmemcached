@@ -293,6 +293,9 @@ fi
 
 AC_C_ENDIAN
 
+AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
+                       [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
+
 AC_CONFIG_FILES([
   Makefile
   docs/conf.py
