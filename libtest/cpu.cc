@@ -72,7 +72,7 @@ size_t number_of_cpus()
     }
   }
 #else
-  fprintf(stderr, "Going with guessing\n");
+ // Guessing number of CPU
 #endif
 
   return number_of_cpu;

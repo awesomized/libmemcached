@@ -375,8 +375,10 @@ bool Memcached::build(size_t argc, const char *argv[])
   }
 
   add_option("-l", "localhost");
+#ifndef TARGET_OS_OSX
   add_option("-m", "128");
   add_option("-M");
+#endif
 
   if (sasl())
   {

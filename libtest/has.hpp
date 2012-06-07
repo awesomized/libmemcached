@@ -59,4 +59,7 @@ bool has_gearmand();
 LIBTEST_API
 bool has_drizzled();
 
+LIBTEST_API
+bool has_mysqld();
+
 } // namespace libtest

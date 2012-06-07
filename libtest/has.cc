@@ -111,6 +111,21 @@ bool has_drizzled()
   return false;
 }
 
+bool has_mysqld()
+{
+#if defined(HAVE_MYSQL_BUILD) && HAVE_MYSQL_BUILD
+  if (HAVE_MYSQL_BUILD)
+  {
+    if (access(HAVE_MYSQL, X_OK) == 0)
+    {
+      return true;
+    }
+  }
+#endif
+
+  return false;
+}
+
 bool has_memcached()
 {
   if (HAVE_MEMCACHED_BINARY)
@@ -135,6 +150,7 @@ bool has_memcached()
 
 bool has_memcached_sasl()
 {
+#if defined(HAVE_MEMCACHED_SASL_BINARY) && HAVE_MEMCACHED_SASL_BINARY
   if (HAVE_MEMCACHED_SASL_BINARY)
   {
     if (access(MEMCACHED_SASL_BINARY, X_OK) == 0)
@@ -142,6 +158,7 @@ bool has_memcached_sasl()
       return true;
     }
   }
+#endif
 
   return false;
 }
