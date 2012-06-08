@@ -489,7 +489,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
 {
   if (type < MEMCACHED_DISTRIBUTION_CONSISTENT_MAX)
   {
-    if (MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED)
+    if (type == MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED)
     {
       ptr->ketama.weighted= true;
     }

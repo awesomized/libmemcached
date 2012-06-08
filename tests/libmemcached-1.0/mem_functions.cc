@@ -4620,6 +4620,23 @@ test_return_t regression_bug_490520(memcached_st *original_memc)
   return TEST_SUCCESS;
 }
 
+test_return_t regression_1009493_TEST(memcached_st*)
+{
+  memcached_st* memc= memcached_create(NULL);
+  test_true(memc);
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA, true));
+
+  memcached_st* clone= memcached_clone(NULL, memc);
+  test_true(clone);
+
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED),
+               memcached_behavior_get(clone, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED));
+
+  memcached_free(memc);
+  memcached_free(clone);
+
+  return TEST_SUCCESS;
+}
 
 test_return_t regression_994772_TEST(memcached_st* memc)
 {
