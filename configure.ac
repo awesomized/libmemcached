@@ -63,6 +63,9 @@ AX_CXX_HEADER_STDCXX_98
     AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
   fi
 
+# Adding support for libtest
+m4_include([libtest/yatl.m4])
+
 m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
@@ -306,7 +309,6 @@ AC_CONFIG_FILES([
   support/libmemcached.pc
   support/libmemcached.spec
   support/libmemcached-fc.spec
-  libtest/version.h
   ])
 AC_OUTPUT
 

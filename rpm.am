@@ -1,0 +1,39 @@
+# vim:ft=automake
+
+rpm-build: support/$(PACKAGE).spec
+	@rm -f *.rpm
+	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm
+	@rm -f ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm
+	@mkdir -p ~/rpmbuild/BUILD/
+	@mkdir -p ~/rpmbuild/RPMS/i386/
+	@mkdir -p ~/rpmbuild/RPMS/i686/
+	@mkdir -p ~/rpmbuild/RPMS/noarch/
+	@mkdir -p ~/rpmbuild/RPMS/x86_64/
+	@mkdir -p ~/rpmbuild/SOURCES/
+	@mkdir -p ~/rpmbuild/SPECS/
+	@mkdir -p ~/rpmbuild/SRPMS/
+	@cp $(PACKAGE)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
+	@cp support/$(PACKAGE).init ~/rpmbuild/SOURCES/
+	@rpmbuild -ba support/$(PACKAGE).spec
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-debuginfo-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-server-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
+
+rpm-sign: rpm-build
+	@rpm --addsign *.rpm
+	@rpm --checksig *.rpm
+
+rpm: support/$(PACKAGE).spec man distcheck rpm-build
+
+release: rpm rpm-sign
+
+merge-clean:
+	@find ./ | $(GREP) \.moved | xargs rm -r -f
+	@find ./ | $(GREP) \.orig | xargs rm -f
+	@find ./ | $(GREP) \.rej | xargs rm -f
+	@find ./ | $(GREP) \~$$ | xargs rm -f
+	@echo "The follow files need to be removed or checked in:"
+	@bzr unknowns
+

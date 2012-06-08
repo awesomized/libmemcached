@@ -60,45 +60,6 @@ TESTS += ${check_PROGRAMS}
 
 EXTRA_DIST+= ${man_MANS}
 
-fedora:
-	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
-	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
-	@mkdir -p ~/rpmbuild/SOURCES/
-	@mkdir -p ~/rpmbuild/RPMS/x86_64/
-	@mkdir -p ~/rpmbuild/SRPMS/
-	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
-	@rpmbuild -ba support/libmemcached.spec
-	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
-
-generic: support/libmemcached.spec
-	@mkdir -p ~/rpmbuild/SOURCES/
-	@mkdir -p ~/rpmbuild/RPMS/x86_64/
-	@mkdir -p ~/rpmbuild/SRPMS/
-	@rm -f ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm
-	@rm -f ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm
-	@cp libmemcached-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
-	@rpmbuild -ba support/libmemcached.spec
-	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-devel-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/libmemcached-debuginfo-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/SRPMS/libmemcached-$(VERSION)*.rpm .
-
-clean_rpm:
-	@rm -f *.tar.gz
-	@rm -f *.src.rpm
-	@rm -f *.rpm
-
-rpm: clean_rpm man distcheck generic
-
-release: rpm
-	@rpm --addsign libmemcached-$(VERSION)*.rpm .
-	@rpm --checksig libmemcached-$(VERSION)*.rpm .
-	@rpm --addsign libmemcached-devel-$(VERSION)*.rpm .
-	@rpm --checksig libmemcached-devel-$(VERSION)*.rpm .
-	@rpm --addsign libmemcached-debuginfo-$(VERSION)*.rpm .
-	@rpm --checksig libmemcached-debuginfo-$(VERSION)*.rpm .
-
 merge-clean:
 	@find ./ | $(GREP) \.gcda | xargs rm -f
 	@find ./ | $(GREP) \.gcno | xargs rm -f

@@ -3,8 +3,8 @@
 # All paths should be given relative to the root
 #
 
-EXTRA_DIST+= \
-	     libhashkit-1.0/configure.h.in
+EXTRA_DIST+= libhashkit-1.0/configure.h.in
+BUILT_SOURCES+= libhashkit-1.0/configure.h
 
 nobase_include_HEADERS+= \
 			 libhashkit-1.0/algorithm.h \

@@ -31,12 +31,15 @@ drd:
 	@echo make check TESTS_ENVIRONMENT="\"$(DRD_COMMAND)\""
 
 EXTRA_DIST+= libtest/run.gdb
+EXTRA_DIST+= libtest/version.h
 
 CLEANFILES+= tmp_chroot/etc/*
 CLEANFILES+= tmp_chroot/var/drizzle/*
 CLEANFILES+= tmp_chroot/var/log/*
 CLEANFILES+= tmp_chroot/var/run/*
 CLEANFILES+= tmp_chroot/var/tmp/*
+
+BUILT_SOURCES+= libtest/version.h
 
 .PHONY: distclean-libtest-check
 distclean-libtest-check:
@@ -80,6 +83,7 @@ noinst_HEADERS+= libtest/test.h
 noinst_HEADERS+= libtest/test.hpp 
 noinst_HEADERS+= libtest/tmpfile.hpp 
 noinst_HEADERS+= libtest/vchar.hpp 
+noinst_HEADERS+= libtest/version.h 
 noinst_HEADERS+= libtest/visibility.h 
 noinst_HEADERS+= libtest/wait.h
 

@@ -2,8 +2,8 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-EXTRA_DIST+= \
-	     libmemcached-1.0/configure.h.in
+EXTRA_DIST+= libmemcached-1.0/configure.h.in
+BUILT_SOURCES+= libmemcached-1.0/configure.h
 
 include libmemcached-1.0/struct/include.am
 include libmemcached-1.0/types/include.am

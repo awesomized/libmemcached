@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ * 
+ *  Data Differential YATL (i.e. libtest) library
  *
- *  Data Differential YATL (i.e. libtest)  library
- *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -34,7 +35,8 @@
  *
  */
 
+
 #pragma once
 
-#define LIBTEST_VERSION_STRING "@VERSION@"
-#define LIBTEST_VERSION_HEX @HEX_VERSION@
+#define LIBTEST_VERSION @LIBTEST_VERSION@
+#define LIBTEST_VERSION_STRING "@LIBTEST_VERSION@"

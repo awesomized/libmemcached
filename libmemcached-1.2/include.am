@@ -5,8 +5,8 @@
 
 include libmemcached-1.2/t/include.am
 
-EXTRA_DIST+= \
-	     libmemcached-1.2/configure.h.in
+BUILT_SOURCES+= libmemcached-1.2/configure.h
+EXTRA_DIST+= libmemcached-1.2/configure.h.in
 
 nobase_include_HEADERS+= \
 			 libmemcached-1.2/allocators.h \

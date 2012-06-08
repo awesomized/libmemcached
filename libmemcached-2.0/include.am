@@ -4,9 +4,9 @@
 
 # This is not a public interface yet.
 
-EXTRA_DIST+= \
-	     libmemcached-1.2/configure.h.in
+BUILT_SOURCES+= libmemcached-2.0/configure.h
 
-noinst_HEADERS+= \
-		 libmemcached-1.2/memcached.h
+EXTRA_DIST+= libmemcached-1.2/configure.h.in
+
+noinst_HEADERS+= libmemcached-1.2/memcached.h
 
