@@ -183,17 +183,13 @@ test_return_t pre_behavior_ketama(memcached_st *memc)
 
 test_return_t pre_behavior_ketama_weighted(memcached_st *memc)
 {
-  memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, true), MEMCACHED_SUCCESS);
 
-  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  test_compare(value, uint64_t(1));
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED), uint64_t(1));
 
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5));
+  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5), MEMCACHED_SUCCESS);
 
-  value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH);
-  test_compare(MEMCACHED_HASH_MD5, memcached_hash_t(value));
+  test_compare(memcached_hash_t(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA_HASH)), MEMCACHED_HASH_MD5);
 
   return TEST_SUCCESS;
 }

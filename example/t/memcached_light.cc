@@ -199,6 +199,12 @@ collection_st collection[] ={
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
+  if (access(executable.c_str(), X_OK) != 0)
+  {
+    error= TEST_SKIPPED;
+    return NULL;
+  }
+
   if (HAVE_MEMCACHED_LIGHT_BINARY == 0)
   {
     error= TEST_SKIPPED;
@@ -208,6 +214,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
   if (server_startup(servers, "memcached-light", libtest::default_port(), 0, NULL) == 0)
   {
     error= TEST_FAILURE;
+    return NULL;
   }
 
 

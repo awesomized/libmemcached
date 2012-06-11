@@ -162,13 +162,17 @@ memcached_return_t memcached_behavior_set(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
     {
+      if (bool(data) == false)
+      {
+        return memcached_behavior_set(ptr, MEMCACHED_BEHAVIOR_KETAMA, true);
+      }
+
       (void)memcached_behavior_set_key_hash(ptr, MEMCACHED_HASH_MD5);
       (void)memcached_behavior_set_distribution_hash(ptr, MEMCACHED_HASH_MD5);
-      ptr->ketama.weighted= bool(data);
       /**
         @note We try to keep the same distribution going. This should be deprecated and rewritten.
       */
-      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA);
+      return memcached_behavior_set_distribution(ptr, MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED);
     }
 
   case MEMCACHED_BEHAVIOR_HASH:
@@ -487,23 +491,36 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
 memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcached_server_distribution_t type)
 {
-  if (type < MEMCACHED_DISTRIBUTION_CONSISTENT_MAX)
+  switch (type)
   {
-    if (type == MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED)
-    {
-      ptr->ketama.weighted= true;
-    }
-    else
-    {
-      ptr->ketama.weighted= false;
-    }
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    break;
 
-    ptr->distribution= type;
-    return run_distribution(ptr);
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    ptr->ketama.weighted= false;
+    break;
+
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+    break;
+
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+    break;
+
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
+    ptr->ketama.weighted= true;
+    break;
+
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+    break;
+
+  default:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                               memcached_literal_param("Invalid memcached_server_distribution_t"));
   }
 
-  return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                             memcached_literal_param("Invalid memcached_server_distribution_t"));
+  return run_distribution(ptr);
 }
 
 
@@ -531,7 +548,9 @@ memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
 memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type)
 {
   if (hashkit_success(hashkit_set_distribution_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+  {
     return MEMCACHED_SUCCESS;
+  }
 
   return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                              memcached_literal_param("Invalid memcached_hash_t()"));
