@@ -172,11 +172,9 @@ test_return_t pre_hash_fnv1a_32(memcached_st *memc)
 
 test_return_t pre_behavior_ketama(memcached_st *memc)
 {
-  memcached_return_t rc= memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA, 1);
-  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA, 1));
 
-  uint64_t value= memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA);
-  test_compare(value, uint64_t(1));
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_KETAMA), uint64_t(1));
 
   return TEST_SUCCESS;
 }

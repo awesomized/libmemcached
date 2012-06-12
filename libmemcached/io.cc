@@ -372,7 +372,7 @@ memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_s
   return io_wait(ptr, MEM_WRITE);
 }
 
-static memcached_return_t _io_fill(memcached_server_write_instance_st ptr, ssize_t& nread)
+static memcached_return_t _io_fill(memcached_server_write_instance_st ptr)
 {
   ssize_t data_read;
   do
@@ -415,12 +415,12 @@ static memcached_return_t _io_fill(memcached_server_write_instance_st ptr, ssize
       case EFAULT:
       case ECONNREFUSED:
       default:
-        {
-          memcached_quit_server(ptr, true);
-          nread= -1;
-          return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-        }
+        memcached_quit_server(ptr, true);
+        memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        break;
       }
+
+      return memcached_server_error_return(ptr);
     }
     else if (data_read == 0)
     {
@@ -434,7 +434,6 @@ static memcached_return_t _io_fill(memcached_server_write_instance_st ptr, ssize
         it will return EGAIN if data is not immediatly available.
       */
       memcached_quit_server(ptr, true);
-      nread= -1;
       return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
                                  memcached_literal_param("::rec() returned zero, server has disconnected"));
     }
@@ -469,8 +468,9 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
     if (ptr->read_buffer_length == 0)
     {
       memcached_return_t io_fill_ret;
-      if (memcached_fatal(io_fill_ret= _io_fill(ptr, nread)))
+      if (memcached_fatal(io_fill_ret= _io_fill(ptr)))
       {
+        nread= -1;
         return io_fill_ret;
       }
     }

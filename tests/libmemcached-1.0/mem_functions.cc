@@ -650,7 +650,7 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
       { } // It is possible that the value has been purged.
       else
       {
-        test_compare_hint(MEMCACHED_SUCCESS, rc, memcached_last_error_message(memc));
+        test_compare(MEMCACHED_SUCCESS, rc);
       }
       test_null(out_value);
       test_zero(value_length);
@@ -1690,8 +1690,7 @@ test_return_t mget_execute(memcached_st *original_memc)
                                          keys.key_at(x), keys.length_at(x),
                                          blob, sizeof(blob),
                                          0, 0);
-    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED,
-                  memcached_last_error_message(memc));
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
     test_compare(query_id +1, memcached_query_id(memc));
   }
 
@@ -3067,20 +3066,21 @@ test_return_t set_memory_alloc(memcached_st *memc)
 
 test_return_t enable_consistent_crc(memcached_st *memc)
 {
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT));
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION),  uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
+
   test_return_t rc;
-  memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
-  memcached_hash_t hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
   if ((rc= pre_crc(memc)) != TEST_SUCCESS)
+  {
     return rc;
+  }
 
-  value= (memcached_server_distribution_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
-  test_true(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION),  uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
 
-  hash= (memcached_hash_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
-
-  if (hash != MEMCACHED_HASH_CRC)
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH) != MEMCACHED_HASH_CRC)
+  {
     return TEST_SKIPPED;
+  }
 
   return TEST_SUCCESS;
 }
@@ -3088,22 +3088,18 @@ test_return_t enable_consistent_crc(memcached_st *memc)
 test_return_t enable_consistent_hsieh(memcached_st *memc)
 {
   test_return_t rc;
-  memcached_server_distribution_t value= MEMCACHED_DISTRIBUTION_CONSISTENT;
-  memcached_hash_t hash;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, value);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT);
   if ((rc= pre_hsieh(memc)) != TEST_SUCCESS)
   {
     return rc;
   }
 
-  value= (memcached_server_distribution_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION);
-  test_true(value == MEMCACHED_DISTRIBUTION_CONSISTENT);
+  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION), uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
 
-  hash= (memcached_hash_t)memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH);
-
-  if (hash != MEMCACHED_HASH_HSIEH)
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH) != MEMCACHED_HASH_HSIEH)
+  {
     return TEST_SKIPPED;
-
+  }
 
   return TEST_SUCCESS;
 }
@@ -3236,7 +3232,7 @@ test_return_t noreply_test(memcached_st *memc)
       {
         continue;
       }
-      test_true_hint(ret == MEMCACHED_SUCCESS and value != NULL, memcached_last_error_message(memc));
+      test_true(ret == MEMCACHED_SUCCESS and value != NULL);
       switch (count)
       {
       case 0: /* FALLTHROUGH */

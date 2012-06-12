@@ -42,6 +42,26 @@
 #include <ctime>
 #include <sys/types.h>
 
+static bool __is_ketama(memcached_st *ptr)
+{
+  switch (ptr->distribution)
+  {
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
+    return true;
+
+  case MEMCACHED_DISTRIBUTION_MODULA:
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+    break;
+  }
+
+  return false;
+}
+
 /*
   This function is used to modify the behavior of running client.
 
@@ -335,13 +355,17 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.verify_key;
 
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
-    return ptr->ketama.weighted;
+    if (__is_ketama(ptr))
+    {
+      return ptr->ketama.weighted;
+    }
+    return false;
 
   case MEMCACHED_BEHAVIOR_DISTRIBUTION:
     return ptr->distribution;
 
   case MEMCACHED_BEHAVIOR_KETAMA:
-    return (ptr->distribution == MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA) ? (uint64_t) 1 : 0;
+    return __is_ketama(ptr);
 
   case MEMCACHED_BEHAVIOR_HASH:
     return hashkit_get_function(&ptr->hashkit);
@@ -519,6 +543,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
     return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                                memcached_literal_param("Invalid memcached_server_distribution_t"));
   }
+  ptr->distribution= type;
 
   return run_distribution(ptr);
 }
