@@ -70,6 +70,7 @@ noinst_HEADERS+= libtest/is_local.hpp
 noinst_HEADERS+= libtest/killpid.h 
 noinst_HEADERS+= libtest/libtool.hpp 
 noinst_HEADERS+= libtest/memcached.h 
+noinst_HEADERS+= libtest/poll_error.hpp
 noinst_HEADERS+= libtest/port.h 
 noinst_HEADERS+= libtest/runner.h 
 noinst_HEADERS+= libtest/server.h 
