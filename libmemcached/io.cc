@@ -213,6 +213,10 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
     if (active_fd >= 1)
     {
+      if (fds.revents & POLLHUP)
+      {
+        break;
+      }
       assert_msg(active_fd == 1 , "poll() returned an unexpected value");
       return MEMCACHED_SUCCESS;
     }
