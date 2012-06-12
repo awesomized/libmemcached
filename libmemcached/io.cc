@@ -372,6 +372,83 @@ memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_s
   return io_wait(ptr, MEM_WRITE);
 }
 
+static memcached_return_t _io_fill(memcached_server_write_instance_st ptr, ssize_t& nread)
+{
+  ssize_t data_read;
+  do
+  {
+    data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
+    if (data_read == SOCKET_ERROR)
+    {
+      switch (get_socket_errno())
+      {
+      case EINTR: // We just retry
+        continue;
+
+      case ETIMEDOUT: // OSX
+#if EWOULDBLOCK != EAGAIN
+      case EWOULDBLOCK:
+#endif
+      case EAGAIN:
+#ifdef TARGET_OS_LINUX
+      case ERESTART:
+#endif
+        {
+          memcached_return_t io_wait_ret;
+          if (memcached_success(io_wait_ret= io_wait(ptr, MEM_READ)))
+          {
+            continue;
+          }
+
+          return io_wait_ret;
+        }
+
+        /* fall through */
+
+      case ENOTCONN: // Programmer Error
+        WATCHPOINT_ASSERT(0);
+      case ENOTSOCK:
+        WATCHPOINT_ASSERT(0);
+      case EBADF:
+        assert_msg(ptr->fd != INVALID_SOCKET, "Programmer error, invalid socket");
+      case EINVAL:
+      case EFAULT:
+      case ECONNREFUSED:
+      default:
+        {
+          memcached_quit_server(ptr, true);
+          nread= -1;
+          return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
+        }
+      }
+    }
+    else if (data_read == 0)
+    {
+      /*
+        EOF. Any data received so far is incomplete
+        so discard it. This always reads by byte in case of TCP
+        and protocol enforcement happens at memcached_response()
+        looking for '\n'. We do not care for UDB which requests 8 bytes
+        at once. Generally, this means that connection went away. Since
+        for blocking I/O we do not return 0 and for non-blocking case
+        it will return EGAIN if data is not immediatly available.
+      */
+      memcached_quit_server(ptr, true);
+      nread= -1;
+      return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
+                                 memcached_literal_param("::rec() returned zero, server has disconnected"));
+    }
+    ptr->io_wait_count._bytes_read+= data_read;
+  } while (data_read <= 0);
+
+  ptr->io_bytes_sent= 0;
+  ptr->read_data_length= (size_t) data_read;
+  ptr->read_buffer_length= (size_t) data_read;
+  ptr->read_ptr= ptr->read_buffer;
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
                                      void *buffer, size_t length, ssize_t& nread)
 {
@@ -391,77 +468,11 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
   {
     if (ptr->read_buffer_length == 0)
     {
-      ssize_t data_read;
-      do
+      memcached_return_t io_fill_ret;
+      if (memcached_fatal(io_fill_ret= _io_fill(ptr, nread)))
       {
-        data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
-        if (data_read == SOCKET_ERROR)
-        {
-          switch (get_socket_errno())
-          {
-          case EINTR: // We just retry
-            continue;
-
-          case ETIMEDOUT: // OSX
-#if EWOULDBLOCK != EAGAIN
-          case EWOULDBLOCK:
-#endif
-          case EAGAIN:
-#ifdef TARGET_OS_LINUX
-          case ERESTART:
-#endif
-            {
-              memcached_return_t io_wait_ret;
-              if (memcached_success(io_wait_ret= io_wait(ptr, MEM_READ)))
-              {
-                continue;
-              }
-
-              return io_wait_ret;
-            }
-
-            /* fall through */
-
-          case ENOTCONN: // Programmer Error
-            WATCHPOINT_ASSERT(0);
-          case ENOTSOCK:
-            WATCHPOINT_ASSERT(0);
-          case EBADF:
-            assert_msg(ptr->fd != INVALID_SOCKET, "Programmer error, invalid socket");
-          case EINVAL:
-          case EFAULT:
-          case ECONNREFUSED:
-          default:
-            {
-              memcached_quit_server(ptr, true);
-              nread= -1;
-              return memcached_set_errno(*ptr, get_socket_errno(), MEMCACHED_AT);
-            }
-          }
-        }
-        else if (data_read == 0)
-        {
-          /*
-            EOF. Any data received so far is incomplete
-            so discard it. This always reads by byte in case of TCP
-            and protocol enforcement happens at memcached_response()
-            looking for '\n'. We do not care for UDB which requests 8 bytes
-            at once. Generally, this means that connection went away. Since
-            for blocking I/O we do not return 0 and for non-blocking case
-            it will return EGAIN if data is not immediatly available.
-          */
-          memcached_quit_server(ptr, true);
-          nread= -1;
-          return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
-                                     memcached_literal_param("::rec() returned zero, server has disconnected"));
-        }
-        ptr->io_wait_count._bytes_read+= data_read;
-      } while (data_read <= 0);
-
-      ptr->io_bytes_sent= 0;
-      ptr->read_data_length= (size_t) data_read;
-      ptr->read_buffer_length= (size_t) data_read;
-      ptr->read_ptr= ptr->read_buffer;
+        return io_fill_ret;
+      }
     }
 
     if (length > 1)
