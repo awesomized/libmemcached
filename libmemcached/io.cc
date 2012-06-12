@@ -477,9 +477,7 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
 
     if (length > 1)
     {
-      size_t difference;
-
-      difference= (length > ptr->read_buffer_length) ? ptr->read_buffer_length : length;
+      size_t difference= (length > ptr->read_buffer_length) ? ptr->read_buffer_length : length;
 
       memcpy(buffer_ptr, ptr->read_ptr, difference);
       length -= difference;
