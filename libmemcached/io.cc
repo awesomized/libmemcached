@@ -218,7 +218,13 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
         break;
       }
       assert_msg(active_fd == 1 , "poll() returned an unexpected value");
-      return MEMCACHED_SUCCESS;
+      
+      if (fds.revents & POLLIN or fds.revents & POLLOUT)
+      {
+        return MEMCACHED_SUCCESS;
+      }
+
+      return memcached_set_error(*ptr, MEMCACHED_FAILURE, MEMCACHED_AT, memcached_literal_param("poll() returned a value that was not dealt with"));
     }
     else if (active_fd == 0)
     {

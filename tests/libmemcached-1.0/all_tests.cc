@@ -79,7 +79,8 @@ void get_world(Framework *world)
   }
   else
   {
-    world->servers().set_servers_to_run(8);
+    world->servers().set_servers_to_run(libtest::number_of_cpus() > 3 ? 
+                                        libtest::number_of_cpus() : 3);
   }
 
   world->collections(collection);
