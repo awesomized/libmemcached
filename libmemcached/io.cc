@@ -205,7 +205,6 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
     return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
   }
 
-  int local_errno;
   size_t loop_max= 5;
   while (--loop_max) // While loop is for ERESTART or EINTR
   {
@@ -213,27 +212,47 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
     if (active_fd >= 1)
     {
-      if (fds.revents & POLLHUP)
-      {
-        break;
-      }
-      assert_msg(active_fd == 1 , "poll() returned an unexpected value");
-      
+      assert_msg(active_fd == 1 , "poll() returned an unexpected number of active file descriptors");
       if (fds.revents & POLLIN or fds.revents & POLLOUT)
       {
         return MEMCACHED_SUCCESS;
       }
 
+      if (fds.revents & POLLHUP)
+      {
+        return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
+                                   memcached_literal_param("poll() detected hang up"));
+      }
+
+      if (fds.revents & POLLERR)
+      {
+        int local_errno= EINVAL;
+        int err;
+        socklen_t len= sizeof (err);
+        if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+        {
+          if (err == 0) // treat this as EINTR
+          {
+            continue;
+          }
+          local_errno= err;
+        }
+        memcached_quit_server(ptr, true);
+        return memcached_set_errno(*ptr, local_errno, MEMCACHED_AT,
+                                   memcached_literal_param("poll() returned POLLHUP"));
+      }
+      
       return memcached_set_error(*ptr, MEMCACHED_FAILURE, MEMCACHED_AT, memcached_literal_param("poll() returned a value that was not dealt with"));
     }
-    else if (active_fd == 0)
+
+    if (active_fd == 0)
     {
       ptr->io_wait_count.timeouts++;
       return memcached_set_error(*ptr, MEMCACHED_TIMEOUT, MEMCACHED_AT);
     }
 
     // Only an error should result in this code being called.
-    local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
+    int local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
     assert_msg(active_fd == -1 , "poll() returned an unexpected value");
     switch (local_errno)
     {
@@ -245,34 +264,27 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
     case EFAULT:
     case ENOMEM:
-      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 
     case EINVAL:
-      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+      memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
 
     default:
-      if (fds.revents & POLLERR)
-      {
-        int err;
-        socklen_t len= sizeof (err);
-        if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
-        {
-          if (err == 0) // treat this as EINTR
-          {
-            continue;
-          }
-          local_errno= err;
-        }
-      }
-      break;
+      memcached_set_errno(*ptr, local_errno, MEMCACHED_AT, memcached_literal_param("poll"));
     }
 
-    break; // should only occur from poll error
+    break;
   }
 
   memcached_quit_server(ptr, true);
 
-  return memcached_set_errno(*ptr, local_errno, MEMCACHED_AT);
+  if (memcached_has_error(ptr))
+  {
+    return memcached_server_error_return(ptr);
+  }
+
+  return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
+                             memcached_literal_param("number of attempts to call io_wait() failed"));
 }
 
 static bool io_flush(memcached_server_write_instance_st ptr,

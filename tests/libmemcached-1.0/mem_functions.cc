@@ -4394,10 +4394,10 @@ test_return_t regression_996813_TEST(memcached_st *)
   {
     test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.3.4", base_port +x));
   }
-  test_compare(16U, memcached_generate_hash(memc, test_literal_param("SZ6hu0SHweFmpwpc0w2R")));
+  test_compare(6U, memcached_generate_hash(memc, test_literal_param("SZ6hu0SHweFmpwpc0w2R")));
   test_compare(1U, memcached_generate_hash(memc, test_literal_param("SQCK9eiCf53YxHWnYA.o")));
-  test_compare(10U, memcached_generate_hash(memc, test_literal_param("SUSDkGXuuZC9t9VhMwa.")));
-  test_compare(8U, memcached_generate_hash(memc, test_literal_param("SnnqnJARfaCNT679iAF_")));
+  test_compare(9U, memcached_generate_hash(memc, test_literal_param("SUSDkGXuuZC9t9VhMwa.")));
+  test_compare(0U, memcached_generate_hash(memc, test_literal_param("SnnqnJARfaCNT679iAF_")));
 
   memcached_free(memc);
 
