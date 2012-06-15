@@ -1750,7 +1750,9 @@ test_return_t block_add_regression(memcached_st *memc)
                                                 global_pairs[x].key, global_pairs[x].key_length,
                                                 &blob[0], blob.size(),
                                                 time_t(0), uint32_t(0));
-    test_true_got(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE, memcached_strerror(NULL, rc));
+    test_true_got(rc == MEMCACHED_SUCCESS 
+                  or rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE
+                  or rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE, memcached_strerror(NULL, rc));
   }
 
   return TEST_SUCCESS;

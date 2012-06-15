@@ -50,3 +50,24 @@ libtest::Server *build_memcached_sasl_socket(const std::string& socket_file, con
 
 }
 
+#if defined(LIBMEMCACHED) && LIBMEMCACHED
+bool operator== (const memcached_st&c memc, const memcached_return_t rc)
+{
+  if (memcached_last_error(&memc) == rc)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool operator!= (const memcached_st&c memc, const memcached_return_t rc)
+{
+  if (memcached_last_error(&memc) != rc)
+  {
+    return true;
+  }
+
+  return false;
+}
+#endif
