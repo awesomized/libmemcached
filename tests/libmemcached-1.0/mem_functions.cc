@@ -52,6 +52,8 @@
 
 #include <libhashkit-1.0/hashkit.h>
 
+#include <libtest/memcached.hpp>
+
 #include <cerrno>
 #include <memory>
 #include <pthread.h>
@@ -1750,9 +1752,8 @@ test_return_t block_add_regression(memcached_st *memc)
                                                 global_pairs[x].key, global_pairs[x].key_length,
                                                 &blob[0], blob.size(),
                                                 time_t(0), uint32_t(0));
-    test_true_got(rc == MEMCACHED_SUCCESS 
-                  or rc == MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE
-                  or rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE, memcached_strerror(NULL, rc));
+    test_compare(*memc, MEMCACHED_SUCCESS);
+    test_compare(rc, MEMCACHED_SUCCESS);
   }
 
   return TEST_SUCCESS;
@@ -1761,9 +1762,7 @@ test_return_t block_add_regression(memcached_st *memc)
 test_return_t binary_add_regression(memcached_st *memc)
 {
   test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, true));
-  test_return_t rc= block_add_regression(memc);
-
-  return rc;
+  return block_add_regression(memc);
 }
 
 test_return_t get_stats_keys(memcached_st *memc)

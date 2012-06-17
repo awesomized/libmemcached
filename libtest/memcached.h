@@ -49,25 +49,3 @@ libtest::Server *build_memcached_sasl(const std::string& hostname, const in_port
 libtest::Server *build_memcached_sasl_socket(const std::string& socket_file, const in_port_t try_port, const std::string& username, const std::string& password);
 
 }
-
-#if defined(LIBMEMCACHED) && LIBMEMCACHED
-bool operator== (const memcached_st&c memc, const memcached_return_t rc)
-{
-  if (memcached_last_error(&memc) == rc)
-  {
-    return true;
-  }
-
-  return false;
-}
-
-bool operator!= (const memcached_st&c memc, const memcached_return_t rc)
-{
-  if (memcached_last_error(&memc) != rc)
-  {
-    return true;
-  }
-
-  return false;
-}
-#endif
