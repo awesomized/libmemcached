@@ -61,7 +61,7 @@ static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *call
     libmemcached_io_vector_st vector[]=
     {
       { memcached_literal_param("stats cachedump ") },
-      { buffer, buffer_length },
+      { buffer, size_t(buffer_length) },
       { memcached_literal_param(" 0\r\n") }
     };
 

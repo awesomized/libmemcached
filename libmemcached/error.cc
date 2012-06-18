@@ -281,7 +281,7 @@ memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_re
 
   size+= append_host_to_string(self, hostname_port_message_ptr, sizeof(hostname_port_message) -size);
 
-  memcached_string_t error_host= { hostname_port_message, size };
+  memcached_string_t error_host= { hostname_port_message, size_t(size) };
 
   assert(self.root);
   if (self.root == NULL)

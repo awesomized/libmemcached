@@ -83,7 +83,7 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
     { memcached_literal_param("incr ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length },
-    { buffer, send_length },
+    { buffer, size_t(send_length) },
     { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
     { memcached_literal_param("\r\n") }
   };

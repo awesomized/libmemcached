@@ -96,7 +96,7 @@ memcached_return_t memcached_verbosity(memcached_st *ptr, uint32_t verbosity)
   {
     { NULL, 0 },
     { memcached_literal_param("verbosity ") },
-    { buffer, send_length },
+    { buffer, size_t(send_length) },
     { memcached_literal_param("\r\n") }
   };
 
