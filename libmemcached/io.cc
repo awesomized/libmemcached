@@ -39,6 +39,13 @@
 
 #include <libmemcached/common.h>
 
+void initialize_binary_request(memcached_server_write_instance_st server, protocol_binary_request_header& header)
+{
+  server->request_id++;
+  header.request.magic= PROTOCOL_BINARY_REQ;
+  header.request.opaque= htons(server->request_id);
+}
+
 enum memc_read_or_write {
   MEM_READ,
   MEM_WRITE

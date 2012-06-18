@@ -155,7 +155,8 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
   protocol_binary_request_set request= {};
   size_t send_length= sizeof(request.bytes);
 
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  initialize_binary_request(server, request.message.header);
+
   request.message.header.request.opcode= get_com_code(verb, reply);
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(ptr->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;

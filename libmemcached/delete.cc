@@ -76,7 +76,8 @@ static inline memcached_return_t binary_delete(memcached_server_write_instance_s
 
   bool should_flush= is_buffering ? false : true;
 
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  initialize_binary_request(instance, request.message.header);
+
   if (reply)
   {
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_DELETE;

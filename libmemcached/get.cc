@@ -492,7 +492,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
     }
 
     protocol_binary_request_getk request= { }; //= {.bytes= {0}};
-    request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+    initialize_binary_request(instance, request.message.header);
     if (mget_mode)
     {
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETKQ;
@@ -548,13 +548,13 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       Send a noop command to flush the buffers
     */
     protocol_binary_request_noop request= {}; //= {.bytes= {0}};
-    request.message.header.request.magic= PROTOCOL_BINARY_REQ;
     request.message.header.request.opcode= PROTOCOL_BINARY_CMD_NOOP;
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
     for (uint32_t x= 0; x < memcached_server_count(ptr); ++x)
     {
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+      initialize_binary_request(instance, request.message.header);
 
       if (memcached_server_response_count(instance))
       {
@@ -640,7 +640,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
       }
 
       protocol_binary_request_getk request= {};
-      request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+      initialize_binary_request(instance, request.message.header);
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
       request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
       request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;

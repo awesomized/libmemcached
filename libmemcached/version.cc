@@ -91,7 +91,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
 static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
 {
   protocol_binary_request_version request= {};
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_VERSION;
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
 
@@ -105,6 +105,8 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++) 
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+
+    initialize_binary_request(instance, request.message.header);
 
     if (instance->major_version != UINT8_MAX)
     {

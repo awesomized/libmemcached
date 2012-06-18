@@ -118,7 +118,8 @@ static memcached_return_t binary_incr_decr(memcached_server_write_instance_st in
   }
   protocol_binary_request_incr request= {}; // = {.bytes= {0}};
 
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  initialize_binary_request(instance, request.message.header);
+
   request.message.header.request.opcode= cmd;
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(instance->root->_namespace)));
   request.message.header.request.extlen= 20;

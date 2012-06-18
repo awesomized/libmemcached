@@ -79,7 +79,8 @@ static memcached_return_t binary_exist(memcached_st *memc, memcached_server_writ
   protocol_binary_request_set request= {};
   size_t send_length= sizeof(request.bytes);
 
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+  initialize_binary_request(instance, request.message.header);
+
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_ADD;
   request.message.header.request.keylen= htons((uint16_t)(key_length + memcached_array_size(memc->_namespace)));
   request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;

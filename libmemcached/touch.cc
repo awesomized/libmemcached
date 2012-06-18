@@ -75,7 +75,9 @@ static memcached_return_t binary_touch(memcached_server_write_instance_st instan
                                        time_t expiration)
 {
   protocol_binary_request_touch request= {}; //{.bytes= {0}};
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+
+  initialize_binary_request(instance, request.message.header);
+
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_TOUCH;
   request.message.header.request.extlen= 4;
   request.message.header.request.keylen= htons((uint16_t)(key_length +memcached_array_size(instance->root->_namespace)));

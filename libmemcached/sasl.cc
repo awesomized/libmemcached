@@ -147,7 +147,9 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *s
    * as authenticated
  */
   protocol_binary_request_no_extras request= { };
-  request.message.header.request.magic= PROTOCOL_BINARY_REQ;
+
+  initialize_binary_request(ptr, request.message.header);
+
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SASL_LIST_MECHS;
 
   if (memcached_io_write(server, request.bytes,

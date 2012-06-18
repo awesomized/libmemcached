@@ -58,7 +58,9 @@ void memcached_quit_server(memcached_server_st *ptr, bool io_death)
       if (ptr->root->flags.binary_protocol)
       {
         protocol_binary_request_quit request= {}; // = {.bytes= {0}};
-        request.message.header.request.magic = PROTOCOL_BINARY_REQ;
+
+        initialize_binary_request(ptr, request.message.header);
+
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
 

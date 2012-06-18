@@ -106,6 +106,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/io.h>
 #ifdef __cplusplus
 #include <libmemcached/string.hpp>
+#include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/io.hpp>
 #include <libmemcached/udp.hpp>
 #include <libmemcached/do.hpp>
@@ -122,7 +123,6 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/internal.h>
 #include <libmemcached/array.h>
 #include <libmemcached/libmemcached_probes.h>
-#include <libmemcached/memcached/protocol_binary.h>
 #include <libmemcached/byteorder.h>
 #include <libmemcached/initialize_query.h>
 #ifdef __cplusplus

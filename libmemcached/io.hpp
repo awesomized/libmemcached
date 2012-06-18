@@ -38,6 +38,8 @@
 
 #pragma once
 
+void initialize_binary_request(memcached_server_write_instance_st server, protocol_binary_request_header&);
+
 bool memcached_io_write(memcached_server_write_instance_st ptr);
 
 ssize_t memcached_io_write(memcached_server_write_instance_st ptr,

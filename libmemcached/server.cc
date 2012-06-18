@@ -52,6 +52,7 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->port= port;
   self->fd= INVALID_SOCKET;
   self->io_bytes_sent= 0;
+  self->request_id= 0;
   self->server_failure_counter= 0;
   self->server_failure_counter_query_id= 0;
   self->weight= weight ? weight : 1; // 1 is the default weight value
