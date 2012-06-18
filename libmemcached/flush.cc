@@ -121,7 +121,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
     {
       { NULL, 0 },
       { memcached_literal_param("flush_all ") },
-      { buffer, send_length },
+      { buffer, size_t(send_length) },
       { " noreply", reply ? 0 : memcached_literal_param_size(" noreply") },
       { memcached_literal_param("\r\n") }
     };

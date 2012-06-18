@@ -56,7 +56,7 @@ static memcached_return_t ascii_touch(memcached_server_write_instance_st instanc
     { memcached_literal_param("touch ") },
     { memcached_array_string(instance->root->_namespace), memcached_array_size(instance->root->_namespace) },
     { key, key_length },
-    { expiration_buffer, expiration_buffer_length },
+    { expiration_buffer, size_t(expiration_buffer_length) },
     { memcached_literal_param("\r\n") }
   };
 
