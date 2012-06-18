@@ -128,12 +128,12 @@ static void __memcached_free(memcached_st *ptr, bool release_st)
 {
   /* If we have anything open, lets close it now */
   send_quit(ptr);
-  memcached_server_list_free(memcached_server_list(ptr));
+  memcached_instance_list_free(memcached_instance_list(ptr), memcached_instance_list_count(ptr));
   memcached_result_free(&ptr->result);
 
   memcached_virtual_bucket_free(ptr);
 
-  memcached_server_free(ptr->last_disconnected_server);
+  memcached_instance_free(ptr->last_disconnected_server);
 
   if (ptr->on_cleanup)
   {
@@ -275,11 +275,11 @@ void memcached_servers_reset(memcached_st *self)
 {
   if (self)
   {
-    memcached_server_list_free(memcached_server_list(self));
+    memcached_instance_list_free(memcached_instance_list(self), self->number_of_hosts);
 
-    memcached_server_list_set(self, NULL);
+    memcached_instance_set(self, NULL);
     self->number_of_hosts= 0;
-    memcached_server_free(self->last_disconnected_server);
+    memcached_instance_free(self->last_disconnected_server);
     self->last_disconnected_server= NULL;
   }
 }
@@ -288,7 +288,7 @@ void memcached_reset_last_disconnected_server(memcached_st *self)
 {
   if (self)
   {
-    memcached_server_free(self->last_disconnected_server);
+    memcached_instance_free(self->last_disconnected_server);
     self->last_disconnected_server= NULL;
   }
 }
@@ -421,7 +421,7 @@ void *memcached_set_user_data(memcached_st *ptr, void *data)
 
 memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source)
 {
-  return memcached_server_push(destination, source->servers);
+  return memcached_instance_push(destination, source->servers, source->number_of_hosts);
 }
 
 memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)

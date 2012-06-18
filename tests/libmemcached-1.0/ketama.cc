@@ -40,6 +40,7 @@
 #include <libmemcached/memcached.h>
 #include <libmemcached/server_instance.h>
 #include <libmemcached/continuum.hpp>
+#include <libmemcached/instance.h>
 
 #include <tests/ketama.h>
 #include <tests/ketama_test_cases.h>

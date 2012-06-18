@@ -46,7 +46,7 @@
 #define SOCK_CLOEXEC 0
 #endif
 
-static memcached_return_t connect_poll(memcached_server_st *server)
+static memcached_return_t connect_poll(memcached_instance_st *server)
 {
   struct pollfd fds[1];
   fds[0].fd= server->fd;
@@ -139,7 +139,7 @@ static memcached_return_t connect_poll(memcached_server_st *server)
   return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
 }
 
-static memcached_return_t set_hostinfo(memcached_server_st *server)
+static memcached_return_t set_hostinfo(memcached_instance_st *server)
 {
   assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
   if (server->address_info)
@@ -203,7 +203,7 @@ static memcached_return_t set_hostinfo(memcached_server_st *server)
   return MEMCACHED_SUCCESS;
 }
 
-static inline void set_socket_nonblocking(memcached_server_st *server)
+static inline void set_socket_nonblocking(memcached_instance_st *server)
 {
 #ifdef WIN32
   u_long arg= 1;
@@ -240,7 +240,7 @@ static inline void set_socket_nonblocking(memcached_server_st *server)
 #endif
 }
 
-static void set_socket_options(memcached_server_st *server)
+static void set_socket_options(memcached_instance_st *server)
 {
   assert_msg(server->fd != INVALID_SOCKET, "invalid socket was passed to set_socket_options()");
 
@@ -349,7 +349,7 @@ static void set_socket_options(memcached_server_st *server)
   set_socket_nonblocking(server);
 }
 
-static memcached_return_t unix_socket_connect(memcached_server_st *server)
+static memcached_return_t unix_socket_connect(memcached_instance_st *server)
 {
 #ifndef WIN32
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
@@ -400,7 +400,7 @@ static memcached_return_t unix_socket_connect(memcached_server_st *server)
 #endif
 }
 
-static memcached_return_t network_connect(memcached_server_st *server)
+static memcached_return_t network_connect(memcached_instance_st *server)
 {
   bool timeout_error_occured= false;
 
@@ -554,7 +554,7 @@ static memcached_return_t network_connect(memcached_server_st *server)
 
   if (memcached_has_current_error(*server))
   {
-    return memcached_server_error_return(server);
+    return memcached_instance_error_return(server);
   }
 
   if (timeout_error_occured and server->state < MEMCACHED_SERVER_STATE_IN_PROGRESS)
@@ -704,7 +704,7 @@ static memcached_return_t _memcached_connect(memcached_server_write_instance_st 
     if (memcached_has_current_error(*server))
     {
       memcached_mark_server_for_timeout(server);
-      assert(memcached_failed(memcached_server_error_return(server)));
+      assert(memcached_failed(memcached_instance_error_return(server)));
     }
     else
     {

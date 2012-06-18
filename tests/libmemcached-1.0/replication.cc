@@ -111,6 +111,8 @@ test_return_t replication_set_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+#include "libmemcached/instance.h"
+
 test_return_t replication_get_test(memcached_st *memc)
 {
 

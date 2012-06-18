@@ -51,6 +51,7 @@ libmemcached_libmemcached_la_CFLAGS= -DBUILDING_LIBMEMCACHED
 
 libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 
+libmemcached_libmemcached_la_SOURCES+= libmemcached/instance.cc
 libmemcached_libmemcached_la_SOURCES+= \
 				       ${libhashkit_libhashkit_la_SOURCES} \
 				       libmemcached/allocators.cc \

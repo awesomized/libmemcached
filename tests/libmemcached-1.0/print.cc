@@ -48,7 +48,7 @@ using namespace libtest;
 #include "tests/print.h"
 
 memcached_return_t server_print_callback(const memcached_st*,
-                                         const memcached_server_st *server,
+                                         memcached_server_instance_st server,
                                          void *context)
 {
   if (context)
@@ -70,13 +70,13 @@ const char * print_version(memcached_st *memc)
 
 
 memcached_return_t server_print_version_callback(const memcached_st *,
-                                                 const memcached_server_st *server,
+                                                 memcached_server_instance_st server,
                                                  void *)
 {
   std::cerr << "Server: " << memcached_server_name(server) << ":" << memcached_server_port(server) << " " 
-    << int(server->major_version) << "."
-    << int(server->minor_version) << "."
-    << int(server->micro_version)
+    << int(memcached_server_major_version(server)) << "."
+    << int(memcached_server_minor_version(server)) << "."
+    << int(memcached_server_micro_version(server))
     << std::endl;
 
   return MEMCACHED_SUCCESS;

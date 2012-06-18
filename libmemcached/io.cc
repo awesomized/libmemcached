@@ -287,7 +287,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
 
   if (memcached_has_error(ptr))
   {
-    return memcached_server_error_return(ptr);
+    return memcached_instance_error_return(ptr);
   }
 
   return memcached_set_error(*ptr, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT, 
@@ -449,7 +449,7 @@ static memcached_return_t _io_fill(memcached_server_write_instance_st ptr)
         break;
       }
 
-      return memcached_server_error_return(ptr);
+      return memcached_instance_error_return(ptr);
     }
     else if (data_read == 0)
     {
@@ -729,11 +729,11 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
       return instance;
     }
 
-    if (memcached_server_response_count(instance) > 0)
+    if (memcached_instance_response_count(instance) > 0)
     {
-      fds[host_index].events = POLLIN;
-      fds[host_index].revents = 0;
-      fds[host_index].fd = instance->fd;
+      fds[host_index].events= POLLIN;
+      fds[host_index].revents= 0;
+      fds[host_index].fd= instance->fd;
       ++host_index;
     }
   }
@@ -743,10 +743,9 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     /* We have 0 or 1 server with pending events.. */
     for (uint32_t x= 0; x< memcached_server_count(memc); ++x)
     {
-      memcached_server_write_instance_st instance=
-        memcached_server_instance_fetch(memc, x);
+      memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, x);
 
-      if (memcached_server_response_count(instance) > 0)
+      if (memcached_instance_response_count(instance) > 0)
       {
         return instance;
       }

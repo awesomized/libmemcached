@@ -46,6 +46,8 @@ using namespace libtest;
 #include <tests/debug.h>
 #include <tests/print.h>
 
+#include "libmemcached/instance.h"
+
 /* Dump each server's keys */
 static memcached_return_t print_keys_callback(const memcached_st *,
                                               const char *key,

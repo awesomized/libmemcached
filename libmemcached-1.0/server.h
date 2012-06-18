@@ -106,6 +106,15 @@ in_port_t memcached_server_port(const memcached_server_instance_st self);
 LIBMEMCACHED_API
 const char *memcached_server_type(const memcached_server_instance_st ptr);
 
+LIBMEMCACHED_API
+uint8_t memcached_server_major_version(const memcached_server_instance_st ptr);
+
+LIBMEMCACHED_API
+uint8_t memcached_server_minor_version(const memcached_server_instance_st ptr);
+
+LIBMEMCACHED_API
+uint8_t memcached_server_micro_version(const memcached_server_instance_st ptr);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

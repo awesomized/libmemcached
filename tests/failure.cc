@@ -98,6 +98,7 @@ static test_return_t restart_servers(memcached_st *)
   return TEST_SUCCESS;
 }
 
+#include "libmemcached/instance.h"
 static test_return_t cull_TEST(memcached_st *memc)
 {
   uint32_t count= memcached_server_count(memc);

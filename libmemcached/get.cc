@@ -246,7 +246,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    if (memcached_server_response_count(instance))
+    if (memcached_instance_response_count(instance))
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
@@ -255,7 +255,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
         memcached_io_write(instance);
       }
 
-      while(memcached_server_response_count(instance))
+      while(memcached_instance_response_count(instance))
       {
         (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
       }
@@ -305,7 +305,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     };
 
 
-    if (memcached_server_response_count(instance) == 0)
+    if (memcached_instance_response_count(instance) == 0)
     {
       rc= memcached_connect(instance);
 
@@ -322,14 +322,14 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
         continue;
       }
       WATCHPOINT_ASSERT(instance->cursor_active == 0);
-      memcached_server_response_increment(instance);
+      memcached_instance_response_increment(instance);
       WATCHPOINT_ASSERT(instance->cursor_active == 1);
     }
     else
     {
       if ((memcached_io_writev(instance, (vector + 1), 3, false)) == false)
       {
-        memcached_server_response_reset(instance);
+        memcached_instance_response_reset(instance);
         failures_occured_in_sending= true;
         continue;
       }
@@ -358,7 +358,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     memcached_server_write_instance_st instance=
       memcached_server_instance_fetch(ptr, x);
 
-    if (memcached_server_response_count(instance))
+    if (memcached_instance_response_count(instance))
     {
       /* We need to do something about non-connnected hosts in the future */
       if ((memcached_io_write(instance, "\r\n", 2, true)) == -1)
@@ -482,7 +482,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
 
-    if (memcached_server_response_count(instance) == 0)
+    if (memcached_instance_response_count(instance) == 0)
     {
       rc= memcached_connect(instance);
       if (memcached_failed(rc))
@@ -556,11 +556,11 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
       initialize_binary_request(instance, request.message.header);
 
-      if (memcached_server_response_count(instance))
+      if (memcached_instance_response_count(instance))
       {
         if (memcached_io_write(instance) == false)
         {
-          memcached_server_response_reset(instance);
+          memcached_instance_response_reset(instance);
           memcached_io_reset(instance);
           rc= MEMCACHED_SOME_ERRORS;
         }
@@ -568,7 +568,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
         if (memcached_io_write(instance, request.bytes,
                                sizeof(request.bytes), true) == -1)
         {
-          memcached_server_response_reset(instance);
+          memcached_instance_response_reset(instance);
           memcached_io_reset(instance);
           rc= MEMCACHED_SOME_ERRORS;
         }
@@ -626,7 +626,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
       memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server);
 
-      if (memcached_server_response_count(instance) == 0)
+      if (memcached_instance_response_count(instance) == 0)
       {
         rc= memcached_connect(instance);
 

@@ -113,7 +113,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
 }
 
 memcached_server_st *__server_create_with(memcached_st *memc,
-                                          memcached_server_write_instance_st self,
+                                          memcached_server_st* self,
                                           const memcached_string_t& hostname,
                                           const in_port_t port,
                                           uint32_t weight, 
@@ -134,31 +134,11 @@ memcached_server_st *__server_create_with(memcached_st *memc,
 
   _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
-  if (memc and memcached_is_udp(memc))
-  { 
-    self->write_buffer_offset= UDP_DATAGRAM_HEADER_LENGTH;
-    memcached_io_init_udp_header(self, 0);
-  }
-
-  if (memc)
-  {
-    memcached_connect_try(self);
-  }
-
   return self;
 }
 
 void __server_free(memcached_server_st *self)
 {
-  memcached_quit_server(self, false);
-
-  if (self->address_info)
-  {
-    freeaddrinfo(self->address_info);
-    self->address_info= NULL;
-    self->address_info_next= NULL;
-  }
-
   memcached_error_free(*self);
 
   if (memcached_is_allocated(self))
@@ -187,118 +167,6 @@ void memcached_server_free(memcached_server_st *self)
   __server_free(self);
 }
 
-/*
-  If we do not have a valid object to clone from, we toss an error.
-*/
-memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            memcached_server_st *source)
-{
-  /* We just do a normal create if source is missing */
-  if (source == NULL)
-  {
-    return NULL;
-  }
-
-  memcached_string_t hostname= { memcached_string_make_from_cstr(source->hostname) };
-  destination= __server_create_with(source->root, destination,
-                                    hostname,
-                                    source->port, source->weight,
-                                    source->type);
-  return destination;
-
-}
-
-memcached_return_t memcached_server_cursor(const memcached_st *ptr,
-                                           const memcached_server_fn *callback,
-                                           void *context,
-                                           uint32_t number_of_callbacks)
-{
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_const_query(ptr)))
-  {
-    return rc;
-  }
-
-  size_t errors= 0;
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
-  {
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(ptr, x);
-
-    for (uint32_t y= 0; y < number_of_callbacks; y++)
-    {
-      memcached_return_t ret= (*callback[y])(ptr, instance, context);
-
-      if (memcached_failed(ret))
-      {
-        errors++;
-        continue;
-      }
-    }
-  }
-
-  return errors ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
-}
-
-memcached_return_t memcached_server_execute(memcached_st *ptr,
-                                            memcached_server_execute_fn callback,
-                                            void *context)
-{
-  if (callback == NULL)
-  {
-    return MEMCACHED_INVALID_ARGUMENTS;
-  }
-
-  bool some_errors= false;;
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
-  {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
-
-    memcached_return_t rc= (*callback)(ptr, instance, context);
-    if (rc == MEMCACHED_INVALID_ARGUMENTS)
-    {
-      return rc;
-    }
-    else if (memcached_fatal(rc))
-    {
-      some_errors= true;
-    }
-  }
-
-  (void)some_errors;
-  return MEMCACHED_SUCCESS;
-}
-
-memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
-                                                     const char *key,
-                                                     size_t key_length,
-                                                     memcached_return_t *error)
-{
-  memcached_return_t unused;
-  if (not error)
-  {
-    error= &unused;
-  }
-
-
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_const_query(ptr)))
-  {
-    *error= rc;
-    return NULL;
-  }
-
-  if (memcached_failed((memcached_key_test(*ptr, (const char **)&key, &key_length, 1))))
-  {
-    *error= memcached_last_error(ptr);
-    return NULL;
-  }
-
-  uint32_t server_key= memcached_generate_hash(ptr, key, key_length);
-  return memcached_server_instance_by_position(ptr, server_key);
-
-}
-
 void memcached_server_error_reset(memcached_server_st *self)
 {
   WATCHPOINT_ASSERT(self);
@@ -308,17 +176,6 @@ void memcached_server_error_reset(memcached_server_st *self)
   }
 
   memcached_error_free(*self);
-}
-
-memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *self)
-{
-  WATCHPOINT_ASSERT(self);
-  if (self == NULL)
-  {
-    return 0;
-  }
-
-  return self->last_disconnected_server;
 }
 
 uint32_t memcached_servers_set_count(memcached_server_st *servers, uint32_t count)
@@ -390,4 +247,34 @@ const char *memcached_server_type(const memcached_server_instance_st ptr)
   }
 
   return "UNKNOWN";
+}
+
+uint8_t memcached_server_major_version(const memcached_server_instance_st instance)
+{
+  if (instance)
+  {
+    return instance->major_version;
+  }
+
+  return UINT8_MAX;
+}
+
+uint8_t memcached_server_minor_version(const memcached_server_instance_st instance)
+{
+  if (instance)
+  {
+    return instance->minor_version;
+  }
+
+  return UINT8_MAX;
+}
+
+uint8_t memcached_server_micro_version(const memcached_server_instance_st instance)
+{
+  if (instance)
+  {
+    return instance->micro_version;
+  }
+
+  return UINT8_MAX;
 }

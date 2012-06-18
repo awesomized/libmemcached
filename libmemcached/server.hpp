@@ -44,14 +44,11 @@
 #include <cassert>
 
 memcached_server_st *__server_create_with(memcached_st *memc,
-                                          memcached_server_write_instance_st host,
+                                          memcached_server_st* self,
                                           const memcached_string_t& hostname,
                                           const in_port_t port,
-                                          uint32_t weight,
+                                          uint32_t weight, 
                                           const memcached_connection_t type);
-
-memcached_server_st *memcached_server_clone(memcached_server_st *destination,
-                                            memcached_server_st *source);
 
 memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
                                                const char *hostname,
@@ -72,27 +69,9 @@ static inline void memcached_mark_server_as_clean(memcached_server_write_instanc
   server->next_retry= 0;
 }
 
+void memcached_instance_free(memcached_instance_st *);
 
-static inline void set_last_disconnected_host(memcached_server_write_instance_st self)
-{
-  assert(self->root);
-  if (self->root == NULL)
-  {
-    return;
-  }
-
-  if (self->root->last_disconnected_server and self->root->last_disconnected_server->version == self->version)
-  {
-    return;
-  }
-
-  // const_cast
-  memcached_st *root= (memcached_st *)self->root;
-
-  memcached_server_free(root->last_disconnected_server);
-  root->last_disconnected_server= memcached_server_clone(NULL, self);
-  root->last_disconnected_server->version= self->version;
-}
+void set_last_disconnected_host(memcached_server_write_instance_st self);
 
 static inline void memcached_mark_server_for_timeout(memcached_server_write_instance_st server)
 {

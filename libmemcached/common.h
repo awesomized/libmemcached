@@ -73,6 +73,7 @@
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
 
+#include <libmemcached/instance.h>
 #include <libmemcached/server_instance.h>
 
 #ifdef HAVE_POLL_H
@@ -115,6 +116,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/allocators.hpp>
 #include <libmemcached/hash.hpp>
 #include <libmemcached/quit.hpp>
+#include <libmemcached/instance.hpp>
 #include <libmemcached/server.hpp>
 #include <libmemcached/behavior.hpp>
 #include <libmemcached/sasl.hpp>
@@ -169,7 +171,13 @@ memcached_return_t run_distribution(memcached_st *ptr);
 #define memcached_server_response_decrement(A) (A)->cursor_active--
 #define memcached_server_response_reset(A) (A)->cursor_active=0
 
+#define memcached_instance_response_increment(A) (A)->cursor_active++
+#define memcached_instance_response_decrement(A) (A)->cursor_active--
+#define memcached_instance_response_reset(A) (A)->cursor_active=0
+
 bool memcached_purge(memcached_server_write_instance_st ptr);
+
+struct memcached_instance_st* memcached_instance_by_position(const memcached_st *ptr, uint32_t server_key);
 
 #ifdef __cplusplus
 }

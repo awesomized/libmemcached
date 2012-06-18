@@ -39,4 +39,4 @@
 
 memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st *source);
 
-memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server);
+memcached_return_t memcached_sasl_authenticate_connection(memcached_instance_st *server);

@@ -91,6 +91,8 @@ using namespace libtest;
 
 #include "tests/keys.hpp"
 
+#include "libmemcached/instance.h"
+
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {
   /*
@@ -172,7 +174,7 @@ test_return_t init_test(memcached_st *not_used)
 in_port_t test_ports[TEST_PORT_COUNT];
 
 static memcached_return_t server_display_function(const memcached_st *ptr,
-                                                  const memcached_server_st *server,
+                                                  memcached_server_instance_st server,
                                                   void *context)
 {
   /* Do Nothing */
@@ -185,7 +187,7 @@ static memcached_return_t server_display_function(const memcached_st *ptr,
 }
 
 static memcached_return_t dump_server_information(const memcached_st *ptr,
-                                                  const memcached_server_st *instance,
+                                                  memcached_server_instance_st instance,
                                                   void *context)
 {
   /* Do Nothing */
@@ -291,7 +293,7 @@ test_return_t memcached_server_remove_test(memcached_st*)
 }
 
 static memcached_return_t server_display_unsort_function(const memcached_st*,
-                                                         const memcached_server_st *server,
+                                                         memcached_server_instance_st server,
                                                          void *context)
 {
   /* Do Nothing */
@@ -924,7 +926,7 @@ test_return_t flush_test(memcached_st *memc)
 }
 
 static memcached_return_t  server_function(const memcached_st *,
-                                           const memcached_server_st *,
+                                           memcached_server_instance_st,
                                            void *)
 {
   /* Do Nothing */
@@ -2580,7 +2582,7 @@ test_return_t user_supplied_bug19(memcached_st *)
 
   memcached_st *memc= memcached(test_literal_param("--server=localhost:11311/?100 --server=localhost:11312/?100"));
 
-  const memcached_server_st *server= memcached_server_by_key(memc, "a", 1, &res);
+  memcached_server_instance_st server= memcached_server_by_key(memc, "a", 1, &res);
   test_true(server);
 
   memcached_free(memc);
@@ -3411,7 +3413,7 @@ test_return_t getpid_test(memcached_st *memc)
 }
 
 static memcached_return_t ping_each_server(const memcached_st*,
-                                           const memcached_server_st *instance,
+                                           memcached_server_instance_st instance,
                                            void*)
 {
   // Test both the version that returns a code, and the one that does not.

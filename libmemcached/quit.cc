@@ -46,7 +46,7 @@
   will force data to be completed.
 */
 
-void memcached_quit_server(memcached_server_st *ptr, bool io_death)
+void memcached_quit_server(memcached_instance_st *ptr, bool io_death)
 {
   if (ptr->fd != INVALID_SOCKET)
   {

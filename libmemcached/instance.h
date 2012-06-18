@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  LibMemcached
+ *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,14 +35,64 @@
  *
  */
 
+
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef WIN32
+#include <netdb.h>
 #endif
 
-typedef struct memcached_instance_st * memcached_server_write_instance_st;
-
-#ifdef __cplusplus
-}
+#ifdef NI_MAXHOST
+#define MEMCACHED_NI_MAXHOST NI_MAXHOST
+#else
+#define MEMCACHED_NI_MAXHOST 1025
 #endif
+
+#ifdef NI_MAXSERV
+#define MEMCACHED_NI_MAXSERV NI_MAXSERV
+#else
+#define MEMCACHED_NI_MAXSERV 32
+#endif
+
+struct memcached_instance_st {
+  struct {
+    bool is_allocated:1;
+    bool is_initialized:1;
+    bool is_shutting_down:1;
+    bool is_dead:1;
+  } options;
+  uint32_t number_of_hosts;
+  uint32_t cursor_active;
+  in_port_t port;
+  memcached_socket_t fd;
+  uint32_t io_bytes_sent; /* # bytes sent since last read */
+  uint32_t request_id;
+  uint32_t server_failure_counter;
+  uint64_t server_failure_counter_query_id;
+  uint32_t weight;
+  uint32_t version;
+  enum memcached_server_state_t state;
+  struct {
+    uint32_t read;
+    uint32_t write;
+    uint32_t timeouts;
+    size_t _bytes_read;
+  } io_wait_count;
+  uint8_t major_version; // Default definition of UINT8_MAX means that it has not been set.
+  uint8_t micro_version; // ditto, and note that this is the third, not second version bit
+  uint8_t minor_version; // ditto
+  memcached_connection_t type;
+  char *read_ptr;
+  size_t read_buffer_length;
+  size_t read_data_length;
+  size_t write_buffer_offset;
+  struct addrinfo *address_info;
+  struct addrinfo *address_info_next;
+  time_t next_retry;
+  struct memcached_st *root;
+  uint64_t limit_maxbytes;
+  struct memcached_error_t *error_messages;
+  char read_buffer[MEMCACHED_MAX_BUFFER];
+  char write_buffer[MEMCACHED_MAX_BUFFER];
+  char hostname[MEMCACHED_NI_MAXHOST];
+};

@@ -132,7 +132,11 @@ test_return_t generate_data_with_stats(memcached_st *memc)
       memcached_server_instance_st instance=
         memcached_server_instance_by_position(memc, host_index);
 
-      printf("\nserver %u|%s|%u bytes: %llu\n", host_index, instance->hostname, instance->port, (unsigned long long)(stat_p + host_index)->bytes);
+      printf("\nserver %u|%s|%u bytes: %llu\n",
+             host_index,
+             memcached_server_name(instance),
+             memcached_server_port(instance),
+             (unsigned long long)(stat_p + host_index)->bytes);
     }
     test_true((unsigned long long)(stat_p + host_index)->bytes);
   }

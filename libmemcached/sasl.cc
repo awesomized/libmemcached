@@ -65,7 +65,7 @@ sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
  * @param raddr remote address (out)
  * @return true on success false otherwise (errno contains more info)
  */
-static memcached_return_t resolve_names(memcached_server_st& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
+static memcached_return_t resolve_names(memcached_instance_st& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
 {
   char host[NI_MAXHOST];
   char port[NI_MAXSERV];
@@ -123,7 +123,7 @@ static void sasl_startup_function(void)
 
 } // extern "C"
 
-memcached_return_t memcached_sasl_authenticate_connection(memcached_server_st *server)
+memcached_return_t memcached_sasl_authenticate_connection(memcached_instance_st *server)
 {
   if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {

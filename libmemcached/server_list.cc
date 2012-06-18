@@ -46,7 +46,6 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
                                          memcached_return_t *error)
 {
   uint32_t count;
-  memcached_server_list_st new_host_list;
 
   memcached_return_t unused;
   if (error == NULL)
@@ -74,10 +73,12 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
     count+= memcached_server_list_count(ptr);
   }
 
-  new_host_list= (memcached_server_write_instance_st)realloc(ptr, sizeof(memcached_server_st) * count);
-  if (not new_host_list)
+  memcached_server_list_st new_host_list= (memcached_server_st*)realloc(ptr, sizeof(memcached_server_st) * count);
+  if (new_host_list == NULL)
   {
+#if 0
     *error= memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+#endif
     return NULL;
   }
 
@@ -85,7 +86,9 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   /* @todo Check return type */
   if (__server_create_with(NULL, &new_host_list[count-1], _hostname, port, weight, port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET) == NULL)
   {
+#if 0
     *error= memcached_set_errno(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+#endif
     return NULL;
   }
 
@@ -116,7 +119,21 @@ uint32_t memcached_server_list_count(const memcached_server_list_st self)
     : self->number_of_hosts;
 }
 
-memcached_server_st *memcached_server_list(const memcached_st *self)
+uint32_t memcached_instance_list_count(const memcached_st* self)
+{
+  return (self == NULL)
+    ? 0
+    : self->number_of_hosts;
+}
+
+uint32_t memcached_instance_count(const memcached_instance_st* self)
+{
+  return (self == NULL)
+    ? 0
+    : self->number_of_hosts;
+}
+
+memcached_instance_st *memcached_instance_list(const memcached_st *self)
 {
   if (self)
   {
@@ -126,20 +143,38 @@ memcached_server_st *memcached_server_list(const memcached_st *self)
   return NULL;
 }
 
-void memcached_server_list_set(memcached_st *self, memcached_server_st *list)
+void memcached_instance_set(memcached_st *self, memcached_instance_st *list)
 {
   self->servers= list;
 }
 
 void memcached_server_list_free(memcached_server_list_st self)
 {
-  if (not self)
+  if (self == NULL)
+  {
     return;
+  }
 
   for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
   {
     assert_msg(not memcached_is_allocated(&self[x]), "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
     __server_free(&self[x]);
+  }
+
+  libmemcached_free(self->root, self);
+}
+
+void memcached_instance_list_free(memcached_instance_st* self, uint32_t instance_count)
+{
+  if (self == NULL)
+  {
+    return;
+  }
+
+  for (uint32_t x= 0; x < instance_count; x++)
+  {
+    assert_msg(not memcached_is_allocated(&self[x]), "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
+    __instance_free(&self[x]);
   }
 
   libmemcached_free(self->root, self);

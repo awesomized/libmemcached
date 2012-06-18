@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Data Differential YATL (i.e. libtest)  library
+ *
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -36,16 +36,35 @@
 
 #pragma once
 
+#if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED
+inline bool operator== (const memcached_st& memc, const memcached_return_t rc)
+{
+  if (memcached_last_error(&memc) == rc)
+  {
+    return true;
+  }
 
-uint32_t memcached_servers_set_count(memcached_server_list_st servers, uint32_t count);
-uint32_t memcached_instance_set_count(memcached_instance_st* servers, uint32_t count);
+  return false;
+}
 
-memcached_instance_st *memcached_instance_list(const memcached_st *);
+inline bool operator!= (const memcached_st& memc, const memcached_return_t rc)
+{
+  if (memcached_last_error(&memc) != rc)
+  {
+    return true;
+  }
 
-void memcached_instance_set(memcached_st *self, memcached_instance_st* list);
+  return false;
+}
 
-void memcached_instance_list_free(memcached_instance_st* self, uint32_t);
+inline bool operator!= (const memcached_return_t rc, const memcached_st& memc)
+{
+  if (memcached_last_error(&memc) != rc)
+  {
+    return true;
+  }
 
-uint32_t memcached_server_list_count(const memcached_server_list_st self);
-uint32_t memcached_instance_list_count(const memcached_st*);
-uint32_t memcached_instance_count(const memcached_instance_st*);
+  return false;
+}
+#endif
+

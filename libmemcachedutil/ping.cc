@@ -65,8 +65,8 @@ bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_retu
     memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc_ptr, 0);
 
-    assert_msg(instance and instance->error_messages, " ");
-    if (instance and instance->error_messages)
+    assert_msg(instance and memcached_server_error(instance), " ");
+    if (instance and memcached_server_error(instance))
     {
       rc= memcached_server_error_return(instance);
     }
@@ -119,8 +119,8 @@ bool libmemcached_util_ping2(const char *hostname, in_port_t port, const char *u
     memcached_server_instance_st instance=
       memcached_server_instance_by_position(memc_ptr, 0);
 
-    assert_msg(instance and instance->error_messages, " ");
-    if (instance and instance->error_messages)
+    assert_msg(instance and memcached_server_error(instance), " ");
+    if (instance and memcached_server_error(instance))
     {
       rc= memcached_server_error_return(instance);
     }

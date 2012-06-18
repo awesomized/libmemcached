@@ -49,6 +49,7 @@ using namespace libtest;
 
 #include <tests/libmemcached-1.0/parser.h>
 #include <tests/print.h>
+#include "libmemcached/instance.h"
 
 enum scanner_type_t
 {
@@ -615,7 +616,7 @@ test_return_t random_statement_build_test(memcached_st*)
 }
 
 static memcached_return_t dump_server_information(const memcached_st *,
-                                                  const memcached_server_st *instance,
+                                                  memcached_server_instance_st instance,
                                                   void *)
 {
   if (strcmp(memcached_server_name(instance), "localhost")) 
@@ -664,7 +665,7 @@ struct socket_weight_t {
 };
 
 static memcached_return_t dump_socket_information(const memcached_st *,
-                                                  const memcached_server_st *instance,
+                                                  memcached_server_instance_st instance,
                                                   void *context)
 {
   socket_weight_t *check= (socket_weight_t *)context;

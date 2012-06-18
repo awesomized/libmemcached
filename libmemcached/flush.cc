@@ -86,7 +86,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   {
     memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
 
-    if (memcached_server_response_count(instance) > 0)
+    if (memcached_instance_response_count(instance) > 0)
     {
       (void)memcached_response(instance, NULL, 0, NULL);
     }

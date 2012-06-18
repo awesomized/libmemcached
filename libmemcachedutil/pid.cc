@@ -76,8 +76,8 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
     {
       memcached_server_instance_st instance= memcached_server_instance_by_position(memc_ptr, 0);
 
-      assert_msg(instance and instance->error_messages, " ");
-      if (instance and instance->error_messages)
+      assert_msg(instance and memcached_server_error(instance), " ");
+      if (instance and memcached_server_error(instance))
       {
         rc= memcached_server_error_return(instance);
       }
@@ -145,7 +145,7 @@ pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char
 #if 0
       assert_msg(instance and instance->error_messages, " ");
 #endif
-      if (instance and instance->error_messages)
+      if (instance and memcached_server_error(instance))
       {
         rc= memcached_server_error_return(instance);
       }

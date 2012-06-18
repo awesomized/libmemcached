@@ -84,13 +84,13 @@ static memcached_return_t stat_printer(memcached_server_instance_st instance,
 }
 
 static memcached_return_t server_print_callback(const memcached_st *,
-                                                const memcached_server_st *instance,
+                                                memcached_server_instance_st instance,
                                                 void *)
 {
   std::cerr << memcached_server_name(instance) << ":" << memcached_server_port(instance) <<
-    " " << int(instance->major_version) << 
-    "." << int(instance->minor_version) << 
-    "." << int(instance->micro_version) << std::endl;
+    " " << int(memcached_server_major_version(instance)) << 
+    "." << int(memcached_server_minor_version(instance)) << 
+    "." << int(memcached_server_micro_version(instance)) << std::endl;
 
   return MEMCACHED_SUCCESS;
 }
