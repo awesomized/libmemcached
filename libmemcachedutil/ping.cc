@@ -54,6 +54,8 @@ bool libmemcached_util_ping(const char *hostname, in_port_t port, memcached_retu
     return false;
   }
 
+  (void)memcached_behavior_set(memc_ptr, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 400000);
+
   memcached_return_t rc= memcached_server_add(memc_ptr, hostname, port);
   if (memcached_success(rc))
   {

@@ -748,7 +748,9 @@ test_return_t regression_bug_71231153_connect(memcached_st *)
 test_return_t regression_bug_71231153_poll(memcached_st *)
 {
   if (libmemcached_util_ping("10.0.2.252", 0, NULL)) // If for whatever reason someone has a host at this address, skip
+  {
     return TEST_SKIPPED;
+  }
 
   { // Test the poll timeout, on a bad host we should get MEMCACHED_CONNECTION_FAILURE
     memcached_st *memc= memcached(test_literal_param("--SERVER=10.0.2.252 --POLL-TIMEOUT=0"));

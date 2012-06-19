@@ -148,9 +148,14 @@ bool Server::cycle()
 
 bool Server::wait_for_pidfile() const
 {
-  Wait wait(pid_file(), 4);
+  if (has_pid_file())
+  {
+    Wait wait(pid_file(), 4);
 
-  return wait.successful();
+    return wait.successful();
+  }
+
+  return true;
 }
 
 bool Server::has_pid() const
@@ -206,29 +211,33 @@ bool Server::start()
     dream(5, 50000);
   }
 
-  size_t repeat= 5;
   _app.slurp();
-  while (--repeat)
+  if (has_pid_file())
   {
-    if (pid_file().empty() == false)
+    size_t repeat= 5;
+    while (--repeat)
     {
-      Wait wait(pid_file(), 8);
-
-      if (wait.successful() == false)
+      if (pid_file().empty() == false)
       {
-        if (_app.check())
-        {
-          _app.slurp();
-          continue;
-        }
+        Error << " here?";
+        Wait wait(pid_file(), 8);
 
-        char buf[PATH_MAX];
-        char *getcwd_buf= getcwd(buf, sizeof(buf));
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
-                             "Unable to open pidfile in %s for: %s stderr:%s",
-                             getcwd_buf ? getcwd_buf : "",
-                             _running.c_str(),
-                             _app.stderr_c_str());
+        if (wait.successful() == false)
+        {
+          if (_app.check())
+          {
+            _app.slurp();
+            continue;
+          }
+
+          char buf[PATH_MAX];
+          char *getcwd_buf= getcwd(buf, sizeof(buf));
+          throw libtest::fatal(LIBYATL_DEFAULT_PARAM,
+                               "Unable to open pidfile in %s for: %s stderr:%s",
+                               getcwd_buf ? getcwd_buf : "",
+                               _running.c_str(),
+                               _app.stderr_c_str());
+        }
       }
     }
   }
@@ -406,6 +415,7 @@ bool Server::args(Application& app)
   }
 
   // Update pid_file
+  if (has_pid_file())
   {
     if (_pid_file.empty() and set_pid_file() == false)
     {

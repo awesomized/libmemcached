@@ -210,6 +210,21 @@ public:
 
   bool has_pid() const;
 
+  virtual bool has_pid_file() const
+  {
+    return true;
+  }
+
+  const std::string& error()
+  {
+    return _error;
+  }
+
+  void error(std::string arg)
+  {
+    _error= arg;
+  }
+
   virtual bool wait_for_pidfile() const;
 
   bool check_pid(pid_t pid_arg) const
@@ -249,6 +264,7 @@ private:
   bool set_log_file();
   bool set_socket_file();
   void reset_pid();
+  std::string _error;
 };
 
 std::ostream& operator<<(std::ostream& output, const libtest::Server &arg);
