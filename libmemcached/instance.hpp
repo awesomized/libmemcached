@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/ 
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/ 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,15 +44,18 @@ struct memcached_instance_st *__instance_create_with(memcached_st *memc,
                                                      const in_port_t port,
                                                      uint32_t weight, 
                                                      const memcached_connection_t type);
-void __instance_free(struct memcached_instance_st *);
+const char *memcached_instance_name(const memcached_server_instance_st self);
 
-memcached_server_st *memcached_instance_2_server(struct memcached_instance_st*);
+in_port_t memcached_instance_port(const memcached_server_instance_st self);
 
 memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memcached_instance_st*, uint32_t);
 
-uint32_t memcached_instance_set_count(memcached_instance_st *servers, uint32_t count);
-const char *memcached_instance_name(const memcached_server_instance_st self);
-in_port_t memcached_instance_port(const memcached_server_instance_st self);
-uint32_t memcached_instance_response_count(const memcached_instance_st* self);
+memcached_server_st *memcached_instance_2_server(struct memcached_instance_st*);
+
 uint32_t memcached_instance_count(const memcached_st* self);
 
+uint32_t memcached_instance_response_count(const memcached_instance_st* self);
+
+uint32_t memcached_instance_set_count(memcached_instance_st *servers, uint32_t count);
+
+void __instance_free(struct memcached_instance_st *);

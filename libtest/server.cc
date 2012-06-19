@@ -219,7 +219,6 @@ bool Server::start()
     {
       if (pid_file().empty() == false)
       {
-        Error << " here?";
         Wait wait(pid_file(), 8);
 
         if (wait.successful() == false)

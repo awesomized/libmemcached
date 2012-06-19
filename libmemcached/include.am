@@ -24,6 +24,8 @@ noinst_HEADERS+= libmemcached/do.hpp
 noinst_HEADERS+= libmemcached/encoding_key.h 
 noinst_HEADERS+= libmemcached/error.hpp 
 noinst_HEADERS+= libmemcached/initialize_query.h 
+noinst_HEADERS+= libmemcached/instance.h 
+noinst_HEADERS+= libmemcached/instance.hpp
 noinst_HEADERS+= libmemcached/internal.h 
 noinst_HEADERS+= libmemcached/io.h 
 noinst_HEADERS+= libmemcached/io.hpp 
@@ -52,57 +54,56 @@ libmemcached_libmemcached_la_CFLAGS= -DBUILDING_LIBMEMCACHED
 libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 
 libmemcached_libmemcached_la_SOURCES+= libmemcached/instance.cc
-libmemcached_libmemcached_la_SOURCES+= \
-				       ${libhashkit_libhashkit_la_SOURCES} \
-				       libmemcached/allocators.cc \
-				       libmemcached/allocators.hpp \
-				       libmemcached/analyze.cc \
-				       libmemcached/array.c \
-				       libmemcached/auto.cc \
-				       libmemcached/backtrace.cc \
-				       libmemcached/behavior.cc \
-				       libmemcached/behavior.hpp \
-				       libmemcached/byteorder.cc \
-				       libmemcached/callback.cc \
-				       libmemcached/connect.cc \
-				       libmemcached/delete.cc \
-				       libmemcached/do.cc \
-				       libmemcached/dump.cc \
-				       libmemcached/error.cc \
-				       libmemcached/exist.cc \
-				       libmemcached/fetch.cc \
-				       libmemcached/flush.cc \
-				       libmemcached/flush_buffers.cc \
-				       libmemcached/get.cc \
-				       libmemcached/hash.cc \
-				       libmemcached/hash.hpp \
-				       libmemcached/hosts.cc \
-				       libmemcached/initialize_query.cc \
-				       libmemcached/io.cc \
-				       libmemcached/key.cc \
-				       libmemcached/memcached.cc \
-				       libmemcached/encoding_key.cc \
-				       libmemcached/namespace.cc \
-				       libmemcached/options.cc \
-				       libmemcached/parse.cc \
-				       libmemcached/purge.cc \
-				       libmemcached/quit.cc \
-				       libmemcached/quit.hpp \
-				       libmemcached/response.cc \
-				       libmemcached/result.cc \
-				       libmemcached/sasl.cc \
-				       libmemcached/server.cc \
-				       libmemcached/server_list.cc \
-				       libmemcached/server_list.hpp \
-				       libmemcached/stats.cc \
-				       libmemcached/storage.cc \
-				       libmemcached/strerror.cc \
-				       libmemcached/string.cc \
-				       libmemcached/touch.cc \
-				       libmemcached/verbosity.cc \
-				       libmemcached/version.cc \
-				       libmemcached/udp.cc \
-				       libmemcached/virtual_bucket.c
+libmemcached_libmemcached_la_SOURCES+= ${libhashkit_libhashkit_la_SOURCES}
+libmemcached_libmemcached_la_SOURCES+= libmemcached/allocators.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/allocators.hpp
+libmemcached_libmemcached_la_SOURCES+= libmemcached/analyze.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/array.c
+libmemcached_libmemcached_la_SOURCES+= libmemcached/auto.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/backtrace.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/behavior.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/behavior.hpp
+libmemcached_libmemcached_la_SOURCES+= libmemcached/byteorder.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/callback.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/connect.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/delete.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/do.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/dump.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/error.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/exist.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/fetch.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/flush.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/flush_buffers.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/get.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/hash.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/hash.hpp
+libmemcached_libmemcached_la_SOURCES+= libmemcached/hosts.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/initialize_query.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/io.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/key.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/memcached.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/encoding_key.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/namespace.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/options.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/parse.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/purge.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/quit.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/quit.hpp
+libmemcached_libmemcached_la_SOURCES+= libmemcached/response.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/result.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/sasl.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/server.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/server_list.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/server_list.hpp
+libmemcached_libmemcached_la_SOURCES+= libmemcached/stats.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/storage.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/strerror.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/string.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/touch.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/verbosity.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/version.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/udp.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/virtual_bucket.c
 
 libmemcached/options.cc: libmemcached/csl/parser.h
 
