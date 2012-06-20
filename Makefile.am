@@ -48,6 +48,7 @@ include libmemcachedprotocol/include.am
 include libmemcachedinternal/include.am
 include libmemcachedinternal/util/include.am
 include poll/include.am
+include rpm.am
 include support/include.am
 include tests/include.am
 include util/include.am
