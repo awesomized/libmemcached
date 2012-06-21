@@ -36,6 +36,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIBMEMCACHED_API
 memcached_return_t memcached_exist(memcached_st *memc, const char *key, size_t key_length);
 
@@ -43,3 +47,6 @@ LIBMEMCACHED_API
 memcached_return_t memcached_exist_by_key(memcached_st *memc,
                                           const char *group_key, size_t group_key_length,
                                           const char *key, size_t key_length);
+#ifdef __cplusplus
+}
+#endif
