@@ -50,7 +50,6 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->number_of_hosts= 0;
   self->cursor_active= 0;
   self->port= port;
-  self->fd= INVALID_SOCKET;
   self->io_bytes_sent= 0;
   self->request_id= 0;
   self->server_failure_counter= 0;
@@ -65,12 +64,6 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->minor_version= UINT8_MAX;
   self->type= type;
   self->error_messages= NULL;
-  self->read_ptr= self->read_buffer;
-  self->read_buffer_length= 0;
-  self->read_data_length= 0;
-  self->write_buffer_offset= 0;
-  self->address_info= NULL;
-  self->address_info_next= NULL;
 
   self->state= MEMCACHED_SERVER_STATE_NEW;
   self->next_retry= 0;
