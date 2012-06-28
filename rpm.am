@@ -17,7 +17,6 @@ rpm-build: support/$(PACKAGE).spec
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-debuginfo-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-server-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
 
 rpm-sign: rpm-build
