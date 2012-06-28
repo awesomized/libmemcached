@@ -13,7 +13,6 @@ rpm-build: support/$(PACKAGE).spec
 	@mkdir -p ~/rpmbuild/SPECS/
 	@mkdir -p ~/rpmbuild/SRPMS/
 	@cp $(PACKAGE)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
-	@cp support/$(PACKAGE).init ~/rpmbuild/SOURCES/
 	@rpmbuild -ba support/$(PACKAGE).spec
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
