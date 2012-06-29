@@ -202,8 +202,8 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      bool mget_mode)
 {
   bool failures_occured_in_sending= false;
-  const char *get_command= "get ";
-  uint8_t get_command_length= 4;
+  const char *get_command= "get";
+  uint8_t get_command_length= 3;
   unsigned int master_server_key= (unsigned int)-1; /* 0 is a valid server id! */
 
   memcached_return_t rc;
@@ -270,8 +270,8 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
 
   if (ptr->flags.support_cas)
   {
-    get_command= "gets ";
-    get_command_length= 5;
+    get_command= "gets";
+    get_command_length= 4;
   }
 
   /*
@@ -299,9 +299,9 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     libmemcached_io_vector_st vector[]=
     {
       { get_command, get_command_length },
+      { memcached_literal_param(" ") },
       { memcached_array_string(ptr->_namespace), memcached_array_size(ptr->_namespace) },
-      { keys[x], key_length[x] },
-      { memcached_literal_param(" ") }
+      { keys[x], key_length[x] }
     };
 
 
