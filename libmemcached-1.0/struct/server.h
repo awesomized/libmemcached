@@ -72,7 +72,6 @@ struct memcached_server_st {
   uint32_t number_of_hosts;
   uint32_t cursor_active;
   in_port_t port;
-  memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t request_id;
   uint32_t server_failure_counter;
@@ -90,17 +89,9 @@ struct memcached_server_st {
   uint8_t micro_version; // ditto, and note that this is the third, not second version bit
   uint8_t minor_version; // ditto
   memcached_connection_t type;
-  char *read_ptr;
-  size_t read_buffer_length;
-  size_t read_data_length;
-  size_t write_buffer_offset;
-  struct addrinfo *address_info;
-  struct addrinfo *address_info_next;
   time_t next_retry;
   struct memcached_st *root;
   uint64_t limit_maxbytes;
   struct memcached_error_t *error_messages;
-  char read_buffer[MEMCACHED_MAX_BUFFER];
-  char write_buffer[MEMCACHED_MAX_BUFFER];
   char hostname[MEMCACHED_NI_MAXHOST];
 };
