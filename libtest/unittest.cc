@@ -178,8 +178,7 @@ static test_return_t var_tmp_test(void *)
 {
   FILE *file= fopen("var/tmp/junk", "w+");
   char buffer[1024];
-  const char *dir= getcwd(buffer, sizeof(buffer));
-  test_true_got(file, dir);
+  test_true(file);
   fclose(file);
   return TEST_SUCCESS;
 }
@@ -696,7 +695,7 @@ static test_return_t gdb_abort_services_appliction_TEST(void *)
 static test_return_t get_free_port_TEST(void *)
 {
   in_port_t ret_port;
-  test_true_hint((ret_port= get_free_port()), ret_port);
+  test_true((ret_port= get_free_port()));
   test_true(get_free_port() != default_port());
   test_true(get_free_port() != get_free_port());
 
@@ -720,6 +719,30 @@ static test_return_t number_of_cpus_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t check_dns_TEST(void *)
+{
+  test_warn(libtest::check_dns(), "Broken DNS server/no DNS server found");
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t lookup_true_TEST(void *)
+{
+  test_warn(libtest::lookup("exist.gearman.info"), "dns is not currently working");
+  return TEST_SUCCESS;
+}
+
+static test_return_t lookup_false_TEST(void *)
+{
+  if (libtest::lookup("does_not_exist.gearman.info"))
+  {
+    Error << "Broken DNS server detected";
+    return TEST_SKIPPED;
+  }
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t create_tmpfile_TEST(void *)
 {
   std::string tmp= create_tmpfile(__func__);
@@ -731,8 +754,8 @@ static test_return_t create_tmpfile_TEST(void *)
   test_compare(Application::SUCCESS, touch_app.run(args));
   test_compare(Application::SUCCESS, touch_app.wait(false));
 
-  test_compare_hint(0, access(tmp.c_str(), R_OK), strerror(errno));
-  test_compare_hint(0, unlink(tmp.c_str()), strerror(errno));
+  test_compare(0, access(tmp.c_str(), R_OK));
+  test_compare(0, unlink(tmp.c_str()));
 
   return TEST_SUCCESS;
 }
@@ -885,6 +908,13 @@ test_st create_tmpfile_TESTS[] ={
   {0, 0, 0}
 };
 
+test_st dns_TESTS[] ={
+  {"libtest::lookup(true)", 0, lookup_true_TEST },
+  {"libtest::lookup(false)", 0, lookup_false_TEST },
+  {"libtest::check_dns()", 0, check_dns_TEST },
+  {0, 0, 0}
+};
+
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
   {"vchar_t compare()", 0, vchar_t_compare_neg_TEST },
@@ -943,6 +973,7 @@ collection_st collection[] ={
   {"fatal", disable_fatal_exception, enable_fatal_exception, fatal_message_TESTS },
   {"number_of_cpus()", 0, 0, number_of_cpus_TESTS },
   {"create_tmpfile()", 0, 0, create_tmpfile_TESTS },
+  {"dns", 0, 0, dns_TESTS },
   {0, 0, 0, 0}
 };
 
