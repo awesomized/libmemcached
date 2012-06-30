@@ -50,6 +50,7 @@ noinst_HEADERS+= libtest/binaries.h
 noinst_HEADERS+= libtest/cpu.hpp 
 noinst_HEADERS+= libtest/blobslap_worker.h 
 noinst_HEADERS+= libtest/callbacks.h 
+noinst_HEADERS+= libtest/dns.hpp 
 noinst_HEADERS+= libtest/cmdline.h 
 noinst_HEADERS+= libtest/collection.h 
 noinst_HEADERS+= libtest/common.h 
@@ -97,6 +98,7 @@ libtest_libtest_la_LIBADD=
 libtest_libtest_la_SOURCES=
 
 libtest_libtest_la_SOURCES+= libtest/binaries.cc 
+libtest_libtest_la_SOURCES+= libtest/dns.cc 
 libtest_libtest_la_SOURCES+= libtest/cmdline.cc 
 libtest_libtest_la_SOURCES+= libtest/comparison.cc 
 libtest_libtest_la_SOURCES+= libtest/collection.cc 
