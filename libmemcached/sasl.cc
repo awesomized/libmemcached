@@ -74,12 +74,12 @@ static memcached_return_t resolve_names(memcached_instance_st& server, char *lad
 
   if (getsockname(server.fd, (struct sockaddr *)&saddr, &salen) < 0)
   {
-    return memcached_set_errno(server, MEMCACHED_ERRNO, MEMCACHED_AT);
+    return memcached_set_error(server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT);
   }
 
   if (getnameinfo((struct sockaddr *)&saddr, salen, host, sizeof(host), port, sizeof(port), NI_NUMERICHOST | NI_NUMERICSERV) < 0)
   {
-    return MEMCACHED_HOST_LOOKUP_FAILURE;
+    return memcached_set_error(server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT);
   }
 
   (void)snprintf(laddr, laddr_length, "%s;%s", host, port);
@@ -87,7 +87,7 @@ static memcached_return_t resolve_names(memcached_instance_st& server, char *lad
 
   if (getpeername(server.fd, (struct sockaddr *)&saddr, &salen) < 0)
   {
-    return memcached_set_errno(server, MEMCACHED_ERRNO, MEMCACHED_AT);
+    return memcached_set_error(server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT);
   }
 
   if (getnameinfo((struct sockaddr *)&saddr, salen, host, sizeof(host),
