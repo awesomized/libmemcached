@@ -84,7 +84,7 @@ namespace {
   {
     std::stringstream arg_buffer;
 
-    for (size_t x= 0; x < argc; x++)
+    for (size_t x= 0; x < argc; ++x)
     {
       arg_buffer << built_argv[x] << " ";
     }
@@ -96,7 +96,7 @@ namespace {
   {
     std::stringstream arg_buffer;
 
-    for (char** ptr= argv; *ptr; ptr++)
+    for (char** ptr= argv; *ptr; ++ptr)
     {
       arg_buffer << *ptr << " ";
     }
@@ -526,7 +526,7 @@ bool Application::Pipe::read(libtest::vchar_t& arg)
 
     data_was_read= true;
     arg.reserve(read_length +1);
-    for (size_t x= 0; x < read_length; x++)
+    for (size_t x= 0; x < read_length; ++x)
     {
       arg.push_back(buffer[x]);
     }
@@ -628,7 +628,6 @@ void Application::Pipe::close(const close_t& arg)
 
   if (_open[type])
   {
-    int ret;
     if (::close(_pipe_fd[type]) == -1)
     {
       Error << "close(" << strerror(errno) << ")";
@@ -669,7 +668,7 @@ void Application::create_argv(const char *args[])
     _argc+= 1;
   }
 
-  for (Options::const_iterator iter= _options.begin(); iter != _options.end(); iter++)
+  for (Options::const_iterator iter= _options.begin(); iter != _options.end(); ++iter)
   {
     _argc++;
     if ((*iter).second.empty() == false)
@@ -771,9 +770,9 @@ std::string Application::arguments()
 {
   std::stringstream arg_buffer;
 
-  for (size_t x= 1 + _use_libtool ? 2 : 0;
+  for (size_t x= (1 +_use_libtool) ? 2 : 0;
        x < _argc and built_argv[x];
-       x++)
+       ++x)
   {
     arg_buffer << built_argv[x] << " ";
   }
@@ -785,7 +784,7 @@ void Application::delete_argv()
 {
   if (built_argv)
   {
-    for (size_t x= 0; x < _argc; x++)
+    for (size_t x= 0; x < _argc; ++x)
     {
       if (built_argv[x])
       {

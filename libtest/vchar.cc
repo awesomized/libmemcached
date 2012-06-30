@@ -81,6 +81,7 @@ void make(libtest::vchar_t& arg)
 
 void make(libtest::vchar_t& arg, size_t length)
 {
+  arg.reserve(length);
   for (uint32_t x= 0; x < length; x++)
   {
     arg.push_back(char(x % 127));
