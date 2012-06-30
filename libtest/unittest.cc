@@ -721,14 +721,14 @@ static test_return_t number_of_cpus_TEST(void *)
 
 static test_return_t check_dns_TEST(void *)
 {
-  test_warn(libtest::check_dns(), "Broken DNS server/no DNS server found");
+  test_warn_hint(libtest::check_dns(), "Broken DNS server/no DNS server found");
 
   return TEST_SUCCESS;
 }
 
 static test_return_t lookup_true_TEST(void *)
 {
-  test_warn(libtest::lookup("exist.gearman.info"), "dns is not currently working");
+  test_warn_hint(libtest::lookup("exist.gearman.info"), "dns is not currently working");
   return TEST_SUCCESS;
 }
 

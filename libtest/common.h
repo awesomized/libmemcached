@@ -77,4 +77,5 @@
 #include <libtest/libtool.hpp>
 #include <libtest/killpid.h>
 #include <libtest/signal.h>
+#include <libtest/dns.hpp>
 
