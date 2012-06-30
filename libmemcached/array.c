@@ -49,10 +49,12 @@ struct memcached_array_st
 
 memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original)
 {
-  if (not original)
-    return NULL;
+  if (original)
+  {
+    return memcached_strcpy(memc, original->c_str, original->size);
+  }
 
-  return memcached_strcpy(memc, original->c_str, original->size);
+  return NULL;
 }
 
 memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length)
@@ -63,29 +65,23 @@ memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str,
 
   memcached_array_st *array= (struct memcached_array_st *)libmemcached_malloc(memc, sizeof(struct memcached_array_st) +str_length +1);
 
-  if (not array)
-    return NULL;
-
-  array->root= memc;
-  array->size= str_length; // We don't count the NULL ending
-  memcpy(array->c_str, str, str_length);
-  array->c_str[str_length]= 0;
+  if (array)
+  {
+    array->root= memc;
+    array->size= str_length; // We don't count the NULL ending
+    memcpy(array->c_str, str, str_length);
+    array->c_str[str_length]= 0;
+  }
 
   return array;
 }
 
 bool memcached_array_is_null(memcached_array_st *array)
 {
-  assert(array);
-  assert(array->root);
-
-  if (not array)
+  if (array)
+  {
     return false;
-
-  if (array->size and array->c_str)
-    return false;
-
-  assert(not array->size and not array->c_str);
+  }
 
   return true;
 }
@@ -104,25 +100,29 @@ memcached_string_t memcached_array_to_string(memcached_array_st *array)
 
 void memcached_array_free(memcached_array_st *array)
 {
-  if (not array)
-    return;
-
-  WATCHPOINT_ASSERT(array->root);
-  libmemcached_free(array->root, array);
+  if (array)
+  {
+    WATCHPOINT_ASSERT(array->root);
+    libmemcached_free(array->root, array);
+  }
 }
 
 size_t memcached_array_size(memcached_array_st *array)
 {
-  if (not array)
-    return 0;
+  if (array)
+  {
+    return array->size;
+  }
 
-  return array->size;
+  return 0;
 }
 
 const char *memcached_array_string(memcached_array_st *array)
 {
-  if (not array)
-    return NULL;
+  if (array)
+  {
+    return array->c_str;
+  }
 
-  return array->c_str;
+  return NULL;
 }

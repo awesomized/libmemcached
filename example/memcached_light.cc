@@ -77,7 +77,8 @@ struct options_st {
 
   options_st() :
     service("9999"),
-    is_verbose(false)
+    is_verbose(false),
+    opt_daemon(false)
   {
   }
 };

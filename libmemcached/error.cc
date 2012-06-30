@@ -464,19 +464,10 @@ void memcached_error_print(const memcached_st *self)
 
 static void _error_free(memcached_error_t *error)
 {
-  if (not error)
+  if (error)
   {
-    return;
-  }
+    _error_free(error->next);
 
-  _error_free(error->next);
-
-  if (error and error->root)
-  {
-    libmemcached_free(error->root, error);
-  }
-  else if (error)
-  {
     libmemcached_free(error->root, error);
   }
 }
