@@ -21,6 +21,7 @@
 */Makefile
 */Makefile.in
 *TAGS
+*patch
 .deps
 .hg/
 .hgignore
@@ -73,6 +74,7 @@ docs/html/
 docs/linkcheck/
 docs/text
 example/memcached_light
+example/t/memcached_light
 libhashkit-1.0/configure.h
 libmemcached-1.0/configure.h
 libmemcached-1.0/t/c_sasl_test
@@ -87,6 +89,7 @@ libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
 libtest/.hg/
 libtest/.hgignore
+libtest/abort
 libtest/skiptest
 libtest/unittest
 libtest/version.h
@@ -98,6 +101,10 @@ m4/ltoptions.m4
 m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
+memcached/.git
+memcached/.gitignore
+memcached/memcached
+memcached/memcached.spec
 out
 patch
 patch2
@@ -119,6 +126,7 @@ tests/internals
 tests/libmemcached-1.0/internals
 tests/libmemcached-1.0/sasl
 tests/libmemcached-1.0/testapp
+tests/libmemcached-1.0/testsocket
 tests/memcapable
 tests/memcat
 tests/memcp
@@ -132,6 +140,7 @@ tests/memslap
 tests/memstat
 tests/memtouch
 tests/output.cmp
+tests/parser
 tests/sasl
 tests/startservers
 tests/testapp
@@ -141,11 +150,3 @@ tests/testudp
 tests/var/
 tmp_chroot
 unittests/unittests
-tests/libmemcached-1.0/testsocket
-example/t/memcached_light
-libtest/abort
-memcached/.git
-memcached/.gitignore
-memcached/memcached
-memcached/memcached.spec
-tests/parser
