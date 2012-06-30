@@ -101,6 +101,19 @@ void SignalThread::test()
   assert(sigismember(&set, SIGUSR2));
 }
 
+void SignalThread::sighup(signal_callback_fn* arg)
+{
+  _sighup= arg;
+}
+
+void SignalThread::sighup()
+{
+  if (_sighup)
+  {
+    _sighup();
+  }
+}
+
 SignalThread::~SignalThread()
 {
   if (not is_shutdown())
@@ -142,6 +155,10 @@ static void *sig_thread(void *arg)
     case SIGUSR2:
       break;
 
+    case SIGHUP:
+      context->sighup();
+      break;
+
     case SIGABRT:
     case SIGINT:
     case SIGQUIT:
@@ -172,7 +189,9 @@ static void *sig_thread(void *arg)
 SignalThread::SignalThread(bool exit_on_signal_arg) :
   _exit_on_signal(exit_on_signal_arg),
   magic_memory(MAGIC_MEMORY),
-  thread(pthread_self())
+  __shutdown(SHUTDOWN_RUNNING),
+  thread(pthread_self()),
+  _sighup(NULL)
 {
   pthread_mutex_init(&shutdown_mutex, NULL);
   sigemptyset(&set);

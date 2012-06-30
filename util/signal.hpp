@@ -43,6 +43,16 @@
 #include <signal.h>
 #endif
 
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+typedef void (signal_callback_fn)();
+
+#ifdef	__cplusplus
+}
+#endif
+
 namespace datadifferential {
 namespace util {
 
@@ -59,7 +69,6 @@ class SignalThread {
   uint64_t magic_memory;
   volatile shutdown_t __shutdown;
   pthread_mutex_t shutdown_mutex;
-  pthread_t thread;
 
 public:
 
@@ -84,6 +93,13 @@ public:
   void set_shutdown(shutdown_t arg);
   bool is_shutdown();
   shutdown_t get_shutdown();
+
+  void sighup();
+  void sighup(signal_callback_fn* arg);
+
+private:
+  pthread_t thread;
+  signal_callback_fn* _sighup;
 };
 
 } /* namespace util */

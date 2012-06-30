@@ -3109,11 +3109,9 @@ test_return_t enable_consistent_hsieh(memcached_st *memc)
 
 test_return_t enable_cas(memcached_st *memc)
 {
-  unsigned int set= 1;
-
   if (libmemcached_util_version_check(memc, 1, 2, 4))
   {
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, set);
+    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true);
 
     return TEST_SUCCESS;
   }

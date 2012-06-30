@@ -495,6 +495,8 @@ test_return_t regression_bug_962815(memcached_st *memc)
     {
       Error << "poll() failed with:" << strerror(errno);
     }
+    test_zero(active_fd);
+
     set_running(false);
   }
 

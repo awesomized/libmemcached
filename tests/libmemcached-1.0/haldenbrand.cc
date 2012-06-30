@@ -92,13 +92,13 @@ test_return_t haldenbrand_TEST2(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, 
                memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, true));
 
-#ifdef NOT_YET
+#if 0
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE, 20 * 1024576));
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE, 20 * 1024576));
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE);
   getter = memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE);
 
-  for (x= 0, errors= 0; total < 20 * 1024576 ; x++)
+  for (x= 0, errors= 0; total < 20 * 1024576 ; x++);
 #endif
 
   size_t total_value_length= 0;

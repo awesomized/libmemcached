@@ -211,7 +211,6 @@ bool Instance::run()
     case READING:
       if (operation->has_response())
       {
-        size_t total_read;
         ssize_t read_length;
 
         do
@@ -240,7 +239,6 @@ bool Instance::run()
           }
 
           operation->push(buffer, static_cast<size_t>(read_length));
-          total_read+= static_cast<size_t>(read_length);
 
         } while (more_to_read());
       } // end has_response
