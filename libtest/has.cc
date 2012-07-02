@@ -113,15 +113,13 @@ bool has_drizzled()
 
 bool has_mysqld()
 {
-#if defined(HAVE_MYSQL_BUILD) && HAVE_MYSQL_BUILD
-  if (HAVE_MYSQL_BUILD)
+  if (HAVE_MYSQLD_BUILD)
   {
-    if (access(HAVE_MYSQL, X_OK) == 0)
+    if (access(MYSQLD_BINARY, X_OK) == 0)
     {
       return true;
     }
   }
-#endif
 
   return false;
 }

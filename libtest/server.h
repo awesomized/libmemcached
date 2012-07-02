@@ -204,8 +204,6 @@ public:
     _log_file.clear();
   }
 
-  bool args(Application&);
-
   pid_t pid() const;
 
   bool has_pid() const;
@@ -264,6 +262,8 @@ private:
   bool set_log_file();
   bool set_socket_file();
   void reset_pid();
+  bool args(Application&);
+
   std::string _error;
 };
 

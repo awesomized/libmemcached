@@ -54,7 +54,7 @@ fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const cha
 
     strncpy(_mesg, last_error, sizeof(_mesg));
 
-    snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, _line, last_error, _func);
+    snprintf(_error_message, sizeof(_error_message), "%s", last_error);
   }
 
 static bool _disabled= false;
@@ -101,7 +101,7 @@ disconnected::disconnected(const char *file_arg, int line_arg, const char *func_
   (void)vsnprintf(last_error, sizeof(last_error), format, args);
   va_end(args);
 
-  snprintf(_error_message, sizeof(_error_message), "%s:%d FATAL:%s (%s)", _file, _line, last_error, _func);
+  snprintf(_error_message, sizeof(_error_message), "%s", last_error);
 }
 
 } // namespace libtest

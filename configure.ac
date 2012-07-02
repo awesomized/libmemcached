@@ -66,7 +66,6 @@ AX_CXX_HEADER_STDCXX_98
 # Adding support for libtest
 m4_include([libtest/yatl.m4])
 
-m4_include([m4/memcached.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
 m4_include([m4/libgearman.m4])

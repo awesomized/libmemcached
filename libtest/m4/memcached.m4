@@ -1,3 +1,4 @@
+AX_PROG_MYSQLD
 AX_WITH_PROG(MEMCACHED_BINARY, [memcached])
 AS_IF([test -f "$ac_cv_path_MEMCACHED_BINARY"],
       [

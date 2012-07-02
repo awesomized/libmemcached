@@ -69,9 +69,9 @@ struct socket_st {
 
   void release(in_port_t _arg)
   {
-    for(socket_port_t::iterator iter= _pair.begin();
-        iter != _pair.end();
-        iter++)
+    for (socket_port_t::iterator iter= _pair.begin();
+         iter != _pair.end();
+         ++iter)
     {
       if ((*iter).second == _arg)
       {
@@ -83,9 +83,9 @@ struct socket_st {
 
   ~socket_st()
   {
-    for(socket_port_t::iterator iter= _pair.begin();
-        iter != _pair.end();
-        iter++)
+    for (socket_port_t::iterator iter= _pair.begin();
+         iter != _pair.end();
+         ++iter)
     {
       shutdown((*iter).first, SHUT_RDWR);
       close((*iter).first);

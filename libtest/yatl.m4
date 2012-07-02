@@ -5,3 +5,6 @@ dnl with or without modifications, as long as this notice is preserved.
 
 AC_SUBST([LIBTEST_VERSION], [1.0])
 AC_CONFIG_FILES([libtest/version.h])
+
+m4_include([libtest/m4/mysql.m4])
+m4_include([libtest/m4/memcached.m4])

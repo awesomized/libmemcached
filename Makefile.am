@@ -1,6 +1,6 @@
 # vim:ft=automake
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I libtest/m4
 
 # includes append to these:
 SUFFIXES =

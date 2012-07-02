@@ -51,6 +51,8 @@
 
 using namespace libtest;
 
+static std::string testing_service;
+
 static test_return_t LIBTOOL_COMMAND_test(void *)
 {
   test_true(getenv("LIBTOOL_COMMAND"));
@@ -325,39 +327,37 @@ static test_return_t test_skip_false_TEST(void *object)
   return TEST_SUCCESS;
 }
 
-static test_return_t memcached_cycle_test(void *object)
+static test_return_t server_startup_TEST(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (MEMCACHED_BINARY and HAVE_LIBMEMCACHED) 
-  {
-    test_true(has_memcached());
-    test_true(server_startup(*servers, "memcached", get_free_port(), 0, NULL));
+  test_true(servers->start_server(testing_service, get_free_port(), 0, NULL, true));
 
-    return TEST_SUCCESS;
-  }
+  test_true(servers->last());
+  pid_t last_pid= servers->last()->pid();
 
-  return TEST_SKIPPED;
+  test_compare(servers->last()->pid(), last_pid);
+  test_true(last_pid > 1);
+  test_compare(kill(last_pid, 0), 0);
+
+  test_true(servers->shutdown());
+#if 0
+  test_compare(servers->last()->pid(), -1);
+  test_compare(kill(last_pid, 0), -1);
+#endif
+
+  return TEST_SUCCESS;
 }
 
-static test_return_t memcached_socket_cycle_test(void *object)
+static test_return_t socket_server_startup_TEST(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  if (MEMCACHED_BINARY)
-  {
-    if (HAVE_LIBMEMCACHED)
-    {
-      test_true(has_memcached());
-      test_true(servers->start_socket_server("memcached", get_free_port(), 0, NULL));
+  test_true(servers->start_socket_server(testing_service, get_free_port(), 0, NULL, true));
 
-      return TEST_SUCCESS;
-    }
-  }
-
-  return TEST_SKIPPED;
+  return TEST_SUCCESS;
 }
 
 static test_return_t memcached_sasl_test(void *object)
@@ -721,14 +721,14 @@ static test_return_t number_of_cpus_TEST(void *)
 
 static test_return_t check_dns_TEST(void *)
 {
-  test_warn_hint(libtest::check_dns(), "Broken DNS server/no DNS server found");
+  test_warn(libtest::check_dns(), "Broken DNS server/no DNS server found");
 
   return TEST_SUCCESS;
 }
 
 static test_return_t lookup_true_TEST(void *)
 {
-  test_warn_hint(libtest::lookup("exist.gearman.info"), "dns is not currently working");
+  test_warn(libtest::lookup("exist.gearman.info"), "dns is not currently working");
   return TEST_SUCCESS;
 }
 
@@ -806,18 +806,23 @@ test_st gearmand_tests[] ={
   {0, 0, 0}
 };
 
-static test_return_t check_for_libmemcached(void *)
+static test_return_t check_for_libmemcached(void* object)
 {
   test_skip(true, HAVE_LIBMEMCACHED);
   test_skip(true, has_memcached());
+
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+  servers->clear();
+
+  testing_service= "memcached";
+
   return TEST_SUCCESS;
 }
 
-test_st memcached_tests[] ={
-  {"memcached startup-shutdown", 0, memcached_cycle_test },
-  {"memcached-light startup-shutdown", 0, memcached_light_cycle_TEST },
-  {"memcached(socket file) startup-shutdown", 0, memcached_socket_cycle_test },
-  {"memcached_sasl() startup-shutdown", 0, memcached_sasl_test },
+test_st memcached_TESTS[] ={
+  {"memcached startup-shutdown", 0, server_startup_TEST },
+  {"memcached(socket file) startup-shutdown", 0, socket_server_startup_TEST },
   {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
   {0, 0, 0}
 };
@@ -963,7 +968,7 @@ collection_st collection[] ={
   {"directories", 0, 0, directories_tests},
   {"comparison", 0, 0, comparison_tests},
   {"gearmand", check_for_gearman, 0, gearmand_tests},
-  {"memcached", check_for_libmemcached, 0, memcached_tests},
+  {"memcached", check_for_libmemcached, 0, memcached_TESTS },
   {"drizzled", check_for_drizzle, 0, drizzled_tests},
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},

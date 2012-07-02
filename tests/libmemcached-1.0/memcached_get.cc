@@ -51,7 +51,7 @@ test_return_t get_test(memcached_st *memc)
   memcached_return_t rc= memcached_delete(memc,
                                           test_literal_param(__func__),
                                           time_t(0));
-  test_true_hint(rc == MEMCACHED_BUFFERED or rc == MEMCACHED_NOTFOUND, memcached_last_error_message(memc));
+  test_true(rc == MEMCACHED_BUFFERED or rc == MEMCACHED_NOTFOUND);
   test_compare(query_id +1, memcached_query_id(memc));
 
   size_t string_length;
@@ -60,7 +60,7 @@ test_return_t get_test(memcached_st *memc)
                         test_literal_param(__func__),
                         &string_length, &flags, &rc);
 
-  test_compare_got(MEMCACHED_NOTFOUND, rc, memcached_last_error_message(memc));
+  test_compare(MEMCACHED_NOTFOUND, rc);
   test_false(string_length);
   test_false(string);
 
@@ -90,8 +90,8 @@ test_return_t get_test2(memcached_st *memc)
                               &string_length, &flags, &rc);
   test_compare(query_id +1, memcached_query_id(memc));
 
-  test_compare_got(MEMCACHED_SUCCESS, rc, memcached_strerror(NULL, rc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_last_error(memc), memcached_last_error_message(memc));
+  test_compare(MEMCACHED_SUCCESS, rc);
+  test_compare(MEMCACHED_SUCCESS, memcached_last_error(memc));
   test_true(string);
   test_compare(strlen(value), string_length);
   test_memcmp(string, value, string_length);
@@ -112,12 +112,11 @@ test_return_t get_test3(memcached_st *memc)
     value.push_back(char(x % 127));
   }
 
-  test_compare_hint(return_value_based_on_buffering(memc),
-                    memcached_set(memc,
-                                  test_literal_param(__func__),
-                                  &value[0], value.size(),
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
+  test_compare(return_value_based_on_buffering(memc),
+               memcached_set(memc,
+                             test_literal_param(__func__),
+                             &value[0], value.size(),
+                             time_t(0), uint32_t(0)));
 
   size_t string_length;
   uint32_t flags;
@@ -147,12 +146,11 @@ test_return_t get_test4(memcached_st *memc)
     value.push_back(char(x % 127));
   }
 
-  test_compare_hint(return_value_based_on_buffering(memc),
-                    memcached_set(memc,
-                                  test_literal_param(__func__),
-                                  &value[0], value.size(),
-                                  time_t(0), uint32_t(0)),
-                    memcached_last_error_message(memc));
+  test_compare(return_value_based_on_buffering(memc),
+               memcached_set(memc,
+                             test_literal_param(__func__),
+                             &value[0], value.size(),
+                             time_t(0), uint32_t(0)));
 
   for (uint32_t x= 0; x < 10; x++)
   {

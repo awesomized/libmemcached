@@ -49,10 +49,10 @@ test_return_t memcached_exist_NOTFOUND(memcached_st *memc)
 
 test_return_t memcached_exist_SUCCESS(memcached_st *memc)
 {
-  test_compare_got(MEMCACHED_SUCCESS, memcached_set(memc, test_literal_param("frog"), 0, 0, 0, 0), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_exist(memc, test_literal_param("frog")), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_delete(memc, test_literal_param("frog"), 0), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_NOTFOUND, memcached_exist(memc, test_literal_param("frog")), memcached_last_error_message(memc));
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc, test_literal_param("frog"), 0, 0, 0, 0));
+  test_compare(MEMCACHED_SUCCESS, memcached_exist(memc, test_literal_param("frog")));
+  test_compare(MEMCACHED_SUCCESS, memcached_delete(memc, test_literal_param("frog"), 0));
+  test_compare(MEMCACHED_NOTFOUND, memcached_exist(memc, test_literal_param("frog")));
 
   return TEST_SUCCESS;
 }
@@ -65,10 +65,10 @@ test_return_t memcached_exist_by_key_NOTFOUND(memcached_st *memc)
 
 test_return_t memcached_exist_by_key_SUCCESS(memcached_st *memc)
 {
-  test_compare_got(MEMCACHED_SUCCESS, memcached_set_by_key(memc, test_literal_param("master"), test_literal_param("frog"), 0, 0, 0, 0), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_exist_by_key(memc, test_literal_param("master"), test_literal_param("frog")), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_SUCCESS, memcached_delete_by_key(memc, test_literal_param("master"), test_literal_param("frog"), 0), memcached_last_error_message(memc));
-  test_compare_got(MEMCACHED_NOTFOUND, memcached_exist_by_key(memc, test_literal_param("master"), test_literal_param("frog")), memcached_last_error_message(memc));
+  test_compare(MEMCACHED_SUCCESS, memcached_set_by_key(memc, test_literal_param("master"), test_literal_param("frog"), 0, 0, 0, 0));
+  test_compare(MEMCACHED_SUCCESS, memcached_exist_by_key(memc, test_literal_param("master"), test_literal_param("frog")));
+  test_compare(MEMCACHED_SUCCESS, memcached_delete_by_key(memc, test_literal_param("master"), test_literal_param("frog"), 0));
+  test_compare(MEMCACHED_NOTFOUND, memcached_exist_by_key(memc, test_literal_param("master"), test_literal_param("frog")));
 
   return TEST_SUCCESS;
 }

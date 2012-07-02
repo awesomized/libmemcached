@@ -105,10 +105,9 @@ private:
     {
       char buffer[BUFSIZ];
 
-      test_compare_got(MEMCACHED_SUCCESS,
-                       libmemcached_check_configuration(container->construct.option_string().c_str(), container->construct.option_string().size(),
-                                                        buffer, sizeof(buffer)),
-                       container->construct.option_string().c_str());
+      test_compare(MEMCACHED_SUCCESS,
+                   libmemcached_check_configuration(container->construct.option_string().c_str(), container->construct.option_string().size(),
+                                                    buffer, sizeof(buffer)));
 
       test_null(container->parent());
       container->parent(memcached(container->construct.option_string().c_str(), container->construct.option_string().size()));

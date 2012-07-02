@@ -68,7 +68,8 @@ public:
 
   bool validate();
 
-  bool start_socket_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[]);
+  bool start_socket_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message= true);
+  bool start_server(const std::string& server_type, const in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message= true);
 
   uint32_t count() const
   {
@@ -121,6 +122,7 @@ public:
   bool check() const;
 
   void push_server(Server *);
+  Server* last();
   Server *pop_server();
 
   unsigned long int servers_to_run() const

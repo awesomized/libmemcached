@@ -58,12 +58,11 @@ test_return_t memcached_set_encoding_key_set_get_TEST(memcached_st* memc)
   test_true(memc_no_crypt);
   test_compare(MEMCACHED_SUCCESS, memcached_set_encoding_key(memc, test_literal_param(__func__)));
 
-  test_compare_hint(MEMCACHED_SUCCESS, memcached_set(memc,
-                                                     test_literal_param(__func__), // Key
-                                                     test_literal_param(__func__), // Value
-                                                     time_t(0),
-                                                     uint32_t(0)),
-                    memcached_last_error_message(memc));
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc,
+                                                test_literal_param(__func__), // Key
+                                                test_literal_param(__func__), // Value
+                                                time_t(0),
+                                                uint32_t(0)));
 
   {
     memcached_return_t rc;
@@ -98,12 +97,11 @@ test_return_t memcached_set_encoding_key_add_get_TEST(memcached_st* memc)
 {
   test_compare(MEMCACHED_SUCCESS, memcached_set_encoding_key(memc, test_literal_param(__func__)));
 
-  test_compare_hint(MEMCACHED_SUCCESS, memcached_add(memc,
+  test_compare(MEMCACHED_SUCCESS, memcached_add(memc,
                                                      test_literal_param(__func__), // Key
                                                      test_literal_param(__func__), // Value
                                                      time_t(0),
-                                                     uint32_t(0)),
-                    memcached_last_error_message(memc));
+                                                     uint32_t(0)));
 
   {
     memcached_return_t rc;
@@ -127,12 +125,11 @@ test_return_t memcached_set_encoding_key_replace_get_TEST(memcached_st* memc)
 
   // First we add the key
   {
-    test_compare_hint(MEMCACHED_SUCCESS, memcached_add(memc,
-                                                       test_literal_param(__func__), // Key
-                                                       test_literal_param(__func__), // Value
-                                                       time_t(0),
-                                                       uint32_t(0)),
-                      memcached_last_error_message(memc));
+    test_compare(MEMCACHED_SUCCESS, memcached_add(memc,
+                                                  test_literal_param(__func__), // Key
+                                                  test_literal_param(__func__), // Value
+                                                  time_t(0),
+                                                  uint32_t(0)));
 
     memcached_return_t rc;
     size_t value_length;
@@ -151,12 +148,11 @@ test_return_t memcached_set_encoding_key_replace_get_TEST(memcached_st* memc)
     libtest::vchar_t new_value;
     vchar::make(new_value);
 
-    test_compare_hint(MEMCACHED_SUCCESS, memcached_replace(memc,
-                                                           test_literal_param(__func__), // Key
-                                                           vchar_param(new_value), // Value
-                                                           time_t(0),
-                                                           uint32_t(0)),
-                      memcached_last_error_message(memc));
+    test_compare(MEMCACHED_SUCCESS, memcached_replace(memc,
+                                                      test_literal_param(__func__), // Key
+                                                      vchar_param(new_value), // Value
+                                                      time_t(0),
+                                                      uint32_t(0)));
 
     memcached_return_t rc;
     size_t value_length;
@@ -261,12 +257,11 @@ test_return_t memcached_set_encoding_key_set_get_clone_TEST(memcached_st* memc)
   memcached_st *memc_crypt= memcached_clone(NULL, memc);
   test_true(memc_crypt);
 
-  test_compare_hint(MEMCACHED_SUCCESS, memcached_set(memc,
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc,
                                                      test_literal_param(__func__), // Key
                                                      test_literal_param(__func__), // Value
                                                      time_t(0),
-                                                     uint32_t(0)),
-                    memcached_last_error_message(memc));
+                                                     uint32_t(0)));
 
   {
     memcached_return_t rc;
@@ -346,7 +341,7 @@ test_return_t memcached_set_encoding_key_set_grow_key_TEST(memcached_st* memc)
       {
         break;
       }
-      test_compare_hint(MEMCACHED_SUCCESS, rc, memcached_last_error_message(memc));
+      test_compare(MEMCACHED_SUCCESS, rc);
     }
 
     {

@@ -39,7 +39,8 @@
 
 namespace libtest {
 
-Runner::Runner()
+Runner::Runner() :
+  _servers(NULL)
 {
 }
 

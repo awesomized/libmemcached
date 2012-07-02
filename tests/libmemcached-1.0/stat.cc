@@ -70,9 +70,8 @@ static memcached_return_t item_counter(memcached_server_instance_st ,
 test_return_t memcached_stat_TEST(memcached_st *memc)
 {
   uint64_t counter= 0;
-  test_compare_got(MEMCACHED_INVALID_ARGUMENTS,
-                   memcached_stat_execute(memc, "BAD_ARG_VALUE", item_counter, &counter),
-                   memcached_last_error_message(memc));
+  test_compare(MEMCACHED_INVALID_ARGUMENTS,
+               memcached_stat_execute(memc, "BAD_ARG_VALUE", item_counter, &counter));
 
   return TEST_SUCCESS;
 }
@@ -91,19 +90,17 @@ test_return_t memcached_stat_TEST2(memcached_st *memc)
 
     test_true(length > 0);
 
-    test_compare_hint(MEMCACHED_SUCCESS,
-                      memcached_set(memc, key, length,
-                                    NULL, 0, // Zero length values
-                                    time_t(0), uint32_t(0)),
-                      memcached_last_error_message(memc));
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_set(memc, key, length,
+                               NULL, 0, // Zero length values
+                               time_t(0), uint32_t(0)));
   }
   memcached_quit(memc);
 
   uint64_t counter= 0;
-  test_compare_got(MEMCACHED_SUCCESS,
-                   memcached_stat_execute(memc, NULL, item_counter, &counter),
-                   memcached_last_error_message(memc));
-  test_true_got(counter > 0, counter);
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_stat_execute(memc, NULL, item_counter, &counter));
+  test_true(counter);
 
   return TEST_SUCCESS;
 }
