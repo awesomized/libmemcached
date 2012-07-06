@@ -75,7 +75,7 @@ public:
 
   Memcache()
   {
-    memc= memcached("", 0);
+    memc= memcached(NULL, 0);
   }
 
   Memcache(const std::string &config)
@@ -85,7 +85,7 @@ public:
 
   Memcache(const std::string &hostname, in_port_t port)
   {
-    memc= memcached("", 0);
+    memc= memcached(NULL, 0);
     if (memc)
     {
       memcached_server_add(memc, hostname.c_str(), port);
@@ -254,7 +254,8 @@ public:
       // Actual value, null terminated
       ret_val.reserve(memcached_result_length(result) +1);
       ret_val.assign(memcached_result_value(result),
-                     memcached_result_value(result) +memcached_result_length(result));
+                     memcached_result_value(result) +memcached_result_length(result) +1);
+      ret_val.resize(memcached_result_length(result));
 
       // Misc
       flags= memcached_result_flags(result);
@@ -292,9 +293,11 @@ public:
                                &value_length, &flags, &rc);
     if (value != NULL && ret_val.empty())
     {
-      ret_val.reserve(value_length);
-      ret_val.assign(value, value +value_length);
+      ret_val.reserve(value_length +1); // Always provide null
+      ret_val.assign(value, value +value_length +1);
+      ret_val.resize(value_length);
       free(value);
+
       return true;
     }
 
@@ -327,9 +330,11 @@ public:
                                       &value_length, &flags, &rc);
     if (value)
     {
-      ret_val.reserve(value_length);
-      ret_val.assign(value, value +value_length);
+      ret_val.reserve(value_length +1); // Always provide null
+      ret_val.assign(value, value +value_length +1);
+      ret_val.resize(value_length);
       free(value);
+
       return true;
     }
     return false;
@@ -395,6 +400,18 @@ public:
     memcached_return_t rc= memcached_set(memc,
                                          key.c_str(), key.length(),
                                          &value[0], value.size(),
+                                         expiration, flags);
+    return memcached_success(rc);
+  }
+
+  bool set(const std::string &key,
+           const char* value, const size_t value_length,
+           time_t expiration,
+           uint32_t flags)
+  {
+    memcached_return_t rc= memcached_set(memc,
+                                         key.c_str(), key.length(),
+                                         value, value_length,
                                          expiration, flags);
     return memcached_success(rc);
   }

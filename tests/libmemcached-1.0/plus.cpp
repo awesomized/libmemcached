@@ -203,6 +203,36 @@ static test_return_t mget_test(memcached_st *original)
   return TEST_SUCCESS;
 }
 
+static test_return_t lp_1010899_TEST(void*)
+{
+  // Check to see everything is setup internally even when no initial hosts are
+  // given.
+  Memcache memc;
+
+  test_false(memc.increment(__func__, 0, NULL));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t lp_1010899_with_args_TEST(memcached_st *original)
+{
+  // Check to see everything is setup internally even when a host is specified
+  // on creation.
+  memcached_server_instance_st instance= memcached_server_instance_by_position(original, 0);
+  Memcache memc(memcached_server_name(instance), memcached_server_port(instance));
+
+  test_false(memc.increment(__func__, 0, NULL));
+  test_true(memc.set(__func__, test_literal_param("12"), 0, 0)); 
+  test_true(memc.increment(__func__, 3, NULL));
+
+  std::vector<char> ret_val;
+  test_true(memc.get(__func__, ret_val));
+
+  test_strcmp(&ret_val[0], "15");
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t basic_behavior(memcached_st *original)
 {
   Memcache memc(original);
@@ -273,9 +303,17 @@ test_st tests[] ={
   {0, 0, 0}
 };
 
+test_st regression_TESTS[] ={
+  { "lp:1010899 Memcache()", false, lp_1010899_TEST },
+  { "lp:1010899 Memcache(localhost, port)", false,
+    reinterpret_cast<test_callback_fn*>(lp_1010899_with_args_TEST) },
+  {0, 0, 0}
+};
+
 collection_st collection[] ={
   {"block", 0, 0, tests},
   {"error()", 0, 0, error_tests},
+  {"regression", 0, 0, regression_TESTS},
   {0, 0, 0, 0}
 };
 

@@ -98,9 +98,6 @@ test-sasl: tests/sasl
 test-atom: tests/atomsmasher
 	@tests/atomsmasher
 
-test-plus: tests/testplus
-	@tests/testplus
-
 test-hashplus: tests/hash_plus
 	@tests/hash_plus
 
@@ -121,9 +118,6 @@ gdb-sasl: tests/sasl
 
 gdb-atom: tests/atomsmasher
 	@$(DEBUG_COMMAND) tests/atomsmasher
-
-gdb-plus: tests/testplus
-	$(DEBUG_COMMAND) tests/testplus
 
 gdb-hash: tests/testhashkit
 	@$(DEBUG_COMMAND) tests/testhashkit
@@ -146,9 +140,6 @@ valgrind-failure: tests/failure
 valgrind-atom: tests/atomsmasher
 	$(VALGRIND_COMMAND) tests/atomsmasher
 
-valgrind-plus: tests/testplus
-	@$(VALGRIND_COMMAND) tests/testplus
-
 valgrind-sasl: tests/sasl
 	@$(VALGRIND_COMMAND) tests/sasl
 
@@ -166,9 +157,6 @@ helgrind-mem: tests/libmemcached-1.0/testapp
 
 helgrind-atom: tests/atomsmasher
 	@$(HELGRIND_COMMAND) tests/atomsmasher
-
-helgrind-plus: tests/testplus
-	@$(HELGRIND_COMMAND) tests/testplus
 
 helgrind-hash: tests/testhashkit
 	@$(HELGRIND_COMMAND) tests/testhashkit
