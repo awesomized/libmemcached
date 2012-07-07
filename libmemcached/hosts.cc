@@ -62,10 +62,7 @@ static void sort_hosts(memcached_st *ptr)
 {
   if (memcached_server_count(ptr))
   {
-
     qsort(memcached_instance_list(ptr), memcached_server_count(ptr), sizeof(org::libmemcached::Instance), compare_servers);
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
-    instance->number_of_hosts= memcached_server_count(ptr);
   }
 }
 
@@ -374,10 +371,6 @@ static memcached_return_t server_add(memcached_st *ptr,
 
   ptr->number_of_hosts++;
 
-  // @note we place the count in the bottom of the server list
-  instance= memcached_instance_fetch(ptr, 0);
-  memcached_instance_set_count(instance, memcached_server_count(ptr));
-
   return run_distribution(ptr);
 }
 
@@ -424,12 +417,6 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     ptr->number_of_hosts++;
   }
 
-  // Provides backwards compatibility with server list.
-  {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
-    instance->number_of_hosts= memcached_server_count(ptr);
-  }
-
   return run_distribution(ptr);
 }
 
@@ -472,12 +459,6 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
     }
 
     ptr->number_of_hosts++;
-  }
-
-  // Provides backwards compatibility with server list.
-  {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
-    instance->number_of_hosts= memcached_server_count(ptr);
   }
 
   return run_distribution(ptr);

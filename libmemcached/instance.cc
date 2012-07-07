@@ -44,7 +44,6 @@ static inline void _server_init(org::libmemcached::Instance* self, memcached_st 
 {
   self->options.is_shutting_down= false;
   self->options.is_dead= false;
-  self->number_of_hosts= 0;
   self->cursor_active_= 0;
   self->port_= port;
   self->fd= INVALID_SOCKET;
@@ -336,17 +335,6 @@ memcached_server_instance_st memcached_server_get_last_disconnect(const memcache
   }
 
   return (memcached_server_instance_st)self->last_disconnected_server;
-}
-
-uint32_t memcached_instance_set_count(org::libmemcached::Instance* servers, uint32_t count)
-{
-  WATCHPOINT_ASSERT(servers);
-  if (servers == NULL)
-  {
-    return 0;
-  }
-
-  return servers->number_of_hosts= count;
 }
 
 const char *memcached_instance_name(const memcached_server_instance_st self)

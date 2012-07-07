@@ -95,7 +95,6 @@ struct Instance {
     bool is_shutting_down:1;
     bool is_dead:1;
   } options;
-  uint32_t number_of_hosts;
   uint32_t cursor_active_;
   in_port_t port_;
   memcached_socket_t fd;

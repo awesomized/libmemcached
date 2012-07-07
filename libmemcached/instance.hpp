@@ -57,6 +57,4 @@ uint32_t memcached_instance_count(const memcached_st* self);
 
 uint32_t memcached_instance_response_count(const org::libmemcached::Instance* self);
 
-uint32_t memcached_instance_set_count(org::libmemcached::Instance *servers, uint32_t count);
-
 void __instance_free(org::libmemcached::Instance *);
