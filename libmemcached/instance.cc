@@ -45,7 +45,7 @@ static inline void _server_init(org::libmemcached::Instance* self, memcached_st 
   self->options.is_shutting_down= false;
   self->options.is_dead= false;
   self->number_of_hosts= 0;
-  self->cursor_active= 0;
+  self->cursor_active_= 0;
   self->port_= port;
   self->fd= INVALID_SOCKET;
   self->io_bytes_sent= 0;
@@ -386,5 +386,5 @@ uint32_t memcached_instance_response_count(const org::libmemcached::Instance* se
     return 0;
   }
 
-  return self->cursor_active;
+  return self->cursor_active_;
 }

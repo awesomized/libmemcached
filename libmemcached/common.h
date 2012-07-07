@@ -165,13 +165,13 @@ extern "C" {
 
 memcached_return_t run_distribution(memcached_st *ptr);
 
-#define memcached_server_response_increment(A) (A)->cursor_active++
-#define memcached_server_response_decrement(A) (A)->cursor_active--
-#define memcached_server_response_reset(A) (A)->cursor_active=0
+#define memcached_server_response_increment(A) (A)->cursor_active_++
+#define memcached_server_response_decrement(A) (A)->cursor_active_--
+#define memcached_server_response_reset(A) (A)->cursor_active_=0
 
-#define memcached_instance_response_increment(A) (A)->cursor_active++
-#define memcached_instance_response_decrement(A) (A)->cursor_active--
-#define memcached_instance_response_reset(A) (A)->cursor_active=0
+#define memcached_instance_response_increment(A) (A)->cursor_active_++
+#define memcached_instance_response_decrement(A) (A)->cursor_active_--
+#define memcached_instance_response_reset(A) (A)->cursor_active_=0
 
 #ifdef __cplusplus
 }

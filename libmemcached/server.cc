@@ -219,7 +219,7 @@ uint32_t memcached_server_response_count(const memcached_server_instance_st self
     return 0;
   }
 
-  return self->cursor_active;
+  return self->cursor_active_;
 }
 
 const char *memcached_server_type(const memcached_server_instance_st ptr)

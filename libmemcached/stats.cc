@@ -428,7 +428,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
    * memcached_response will decrement the counter, so I need to reset it..
    * todo: look at this and try to find a better solution.  
    * */
-  instance->cursor_active= 0;
+  instance->cursor_active_= 0;
 
   return MEMCACHED_SUCCESS;
 }

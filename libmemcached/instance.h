@@ -70,10 +70,23 @@ struct Instance {
     port_= arg;
   }
 
-  inline void mark_server_as_clean()
+  void mark_server_as_clean()
   {
     server_failure_counter= 0;
     next_retry= 0;
+  }
+
+  void disable()
+  {
+  }
+
+  void enable()
+  {
+  }
+
+  uint32_t response_count() const
+  {
+    return cursor_active_;
   }
 
   struct {
@@ -83,7 +96,7 @@ struct Instance {
     bool is_dead:1;
   } options;
   uint32_t number_of_hosts;
-  uint32_t cursor_active;
+  uint32_t cursor_active_;
   in_port_t port_;
   memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */

@@ -405,7 +405,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
   bool timeout_error_occured= false;
 
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
-  WATCHPOINT_ASSERT(server->cursor_active == 0);
+  WATCHPOINT_ASSERT(server->cursor_active_ == 0);
 
   /*
     We want to check both of these because if address_info_next has been fully tried, we want to do a new lookup to make sure we have picked up on any new DNS information.

@@ -320,9 +320,9 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
         failures_occured_in_sending= true;
         continue;
       }
-      WATCHPOINT_ASSERT(instance->cursor_active == 0);
+      WATCHPOINT_ASSERT(instance->cursor_active_ == 0);
       memcached_instance_response_increment(instance);
-      WATCHPOINT_ASSERT(instance->cursor_active == 1);
+      WATCHPOINT_ASSERT(instance->cursor_active_ == 1);
     }
     else
     {
