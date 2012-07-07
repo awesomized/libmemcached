@@ -63,17 +63,11 @@ static inline bool memcached_is_valid_servername(const memcached_string_t& arg)
   return arg.size > 0 or arg.size < NI_MAXHOST;
 }
 
-static inline void memcached_mark_server_as_clean(memcached_server_write_instance_st server)
-{
-  server->server_failure_counter= 0;
-  server->next_retry= 0;
-}
+void memcached_instance_free(org::libmemcached::Instance *);
 
-void memcached_instance_free(memcached_instance_st *);
+void set_last_disconnected_host(org::libmemcached::Instance* self);
 
-void set_last_disconnected_host(memcached_server_write_instance_st self);
-
-static inline void memcached_mark_server_for_timeout(memcached_server_write_instance_st server)
+static inline void memcached_mark_server_for_timeout(org::libmemcached::Instance* server)
 {
   if (server->state != MEMCACHED_SERVER_STATE_IN_TIMEOUT)
   {

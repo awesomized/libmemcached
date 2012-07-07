@@ -52,7 +52,7 @@ static int compare_servers(const void *p1, const void *p2)
 
   if (return_value == 0)
   {
-    return_value= (int) (a->port - b->port);
+    return_value= int(a->port() - b->port());
   }
 
   return return_value;
@@ -62,10 +62,9 @@ static void sort_hosts(memcached_st *ptr)
 {
   if (memcached_server_count(ptr))
   {
-    memcached_server_write_instance_st instance;
 
-    qsort(memcached_instance_list(ptr), memcached_server_count(ptr), sizeof(memcached_instance_st), compare_servers);
-    instance= memcached_server_instance_fetch(ptr, 0);
+    qsort(memcached_instance_list(ptr), memcached_server_count(ptr), sizeof(org::libmemcached::Instance), compare_servers);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
     instance->number_of_hosts= memcached_server_count(ptr);
   }
 }
@@ -143,7 +142,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     return memcached_set_errno(*ptr, errno, MEMCACHED_AT);
   }
 
-  memcached_instance_st *list= memcached_instance_list(ptr);
+  org::libmemcached::Instance* list= memcached_instance_list(ptr);
 
   /* count live servers (those without a retry delay set) */
   bool is_auto_ejecting= _is_auto_eject_host(ptr);
@@ -174,7 +173,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   uint64_t is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
   uint32_t points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
-  if (not live_servers)
+  if (live_servers == 0)
   {
     return MEMCACHED_SUCCESS;
   }
@@ -222,7 +221,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         {
           printf("ketama_weighted:%s|%d|%llu|%u\n",
                  list[host_index].hostname,
-                 list[host_index].port,
+                 list[host_index].port(),
                  (unsigned long long)list[host_index].weight,
                  pointer_per_server);
         }
@@ -243,7 +242,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                    "/%s:%u-%u",
                                    list[host_index].hostname,
-                                   (uint32_t)list[host_index].port,
+                                   (uint32_t)list[host_index].port(),
                                    pointer_index);
 
         if (size_t(sort_host_length) >= sizeof(sort_host) or sort_host_length < 0)
@@ -283,7 +282,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
         char sort_host[MEMCACHED_NI_MAXHOST +1 +MEMCACHED_NI_MAXSERV +1 +MEMCACHED_NI_MAXSERV]= "";
         int sort_host_length;
 
-        if (list[host_index].port == MEMCACHED_DEFAULT_PORT)
+        if (list[host_index].port() == MEMCACHED_DEFAULT_PORT)
         {
           sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s-%u",
@@ -295,7 +294,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s:%u-%u",
                                      list[host_index].hostname,
-                                     (uint32_t)list[host_index].port,
+                                     (uint32_t)list[host_index].port(),
                                      pointer_index - 1);
         }
 
@@ -351,7 +350,7 @@ static memcached_return_t server_add(memcached_st *ptr,
 {
   assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
 
-  memcached_instance_st *new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (ptr->number_of_hosts + 1), memcached_instance_st);
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (ptr->number_of_hosts + 1), org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
@@ -361,7 +360,7 @@ static memcached_return_t server_add(memcached_st *ptr,
   memcached_instance_set(ptr, new_host_list);
 
   /* TODO: Check return type */
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
 
   if (__instance_create_with(ptr, instance, hostname, port, weight, type) == NULL)
   {
@@ -376,7 +375,7 @@ static memcached_return_t server_add(memcached_st *ptr,
   ptr->number_of_hosts++;
 
   // @note we place the count in the bottom of the server list
-  instance= memcached_server_instance_fetch(ptr, 0);
+  instance= memcached_instance_fetch(ptr, 0);
   memcached_instance_set_count(instance, memcached_server_count(ptr));
 
   return run_distribution(ptr);
@@ -392,7 +391,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
   uint32_t count= memcached_server_list_count(list);
 
-  memcached_instance_st *new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (count + memcached_server_count(ptr)), memcached_instance_st);
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (count + memcached_server_count(ptr)), org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
@@ -403,12 +402,10 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
   for (uint32_t x= 0; x < count; x++)
   {
-    memcached_server_write_instance_st instance;
-
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
-    instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
@@ -429,22 +426,21 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
   // Provides backwards compatibility with server list.
   {
-    memcached_server_write_instance_st instance;
-    instance= memcached_server_instance_fetch(ptr, 0);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
     instance->number_of_hosts= memcached_server_count(ptr);
   }
 
   return run_distribution(ptr);
 }
 
-memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memcached_instance_st* list, uint32_t number_of_hosts)
+memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::libmemcached::Instance* list, uint32_t number_of_hosts)
 {
   if (list == NULL)
   {
     return MEMCACHED_SUCCESS;
   }
 
-  memcached_instance_st* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (number_of_hosts +memcached_server_count(ptr)), memcached_instance_st);
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (number_of_hosts +memcached_server_count(ptr)), org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
@@ -455,18 +451,17 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memca
 
   for (uint32_t x= 0; x < number_of_hosts; x++)
   {
-    memcached_server_write_instance_st instance;
 
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
-    instance= memcached_server_instance_fetch(ptr, memcached_server_count(ptr));
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
     if (__instance_create_with(ptr, instance, 
                                hostname,
-                               list[x].port, list[x].weight, list[x].type) == NULL)
+                               list[x].port(), list[x].weight, list[x].type) == NULL)
     {
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
@@ -481,8 +476,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memca
 
   // Provides backwards compatibility with server list.
   {
-    memcached_server_write_instance_st instance;
-    instance= memcached_server_instance_fetch(ptr, 0);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
     instance->number_of_hosts= memcached_server_count(ptr);
   }
 

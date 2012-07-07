@@ -56,7 +56,7 @@ static memcached_return_t _set_verbosity(const memcached_st *,
 
   if (rc == MEMCACHED_SUCCESS)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc_ptr, 0);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(memc_ptr, 0);
 
 
     rc= memcached_vdo(instance, vector, 4, true);

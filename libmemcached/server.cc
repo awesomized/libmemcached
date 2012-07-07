@@ -106,7 +106,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
 }
 
 memcached_server_st *__server_create_with(memcached_st *memc,
-                                          memcached_server_st* self,
+                                          memcached_server_st* allocated_instance,
                                           const memcached_string_t& hostname,
                                           const in_port_t port,
                                           uint32_t weight, 
@@ -118,16 +118,16 @@ memcached_server_st *__server_create_with(memcached_st *memc,
     return NULL;
   }
 
-  self= _server_create(self, memc);
+  allocated_instance= _server_create(allocated_instance, memc);
 
-  if (self == NULL)
+  if (allocated_instance == NULL)
   {
     return NULL;
   }
 
-  _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
+  _server_init(allocated_instance, const_cast<memcached_st *>(memc), hostname, port, weight, type);
 
-  return self;
+  return allocated_instance;
 }
 
 void __server_free(memcached_server_st *self)
@@ -208,7 +208,7 @@ in_port_t memcached_server_port(const memcached_server_instance_st self)
     return 0;
   }
 
-  return self->port;
+  return self->port();
 }
 
 uint32_t memcached_server_response_count(const memcached_server_instance_st self)

@@ -139,7 +139,7 @@ static inline uint8_t get_com_code(const memcached_storage_action_t verb, const 
 }
 
 static memcached_return_t memcached_send_binary(memcached_st *ptr,
-                                                memcached_server_write_instance_st server,
+                                                org::libmemcached::Instance* server,
                                                 uint32_t server_key,
                                                 const char *key,
                                                 const size_t key_length,
@@ -217,7 +217,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
         server_key= 0;
       }
 
-      memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
 
       if (memcached_vdo(instance, vector, 5, false) != MEMCACHED_SUCCESS)
       {
@@ -245,7 +245,7 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
 }
 
 static memcached_return_t memcached_send_ascii(memcached_st *ptr,
-                                               memcached_server_write_instance_st instance,
+                                               org::libmemcached::Instance* instance,
                                                const char *key,
                                                const size_t key_length,
                                                const char *value,
@@ -371,7 +371,7 @@ static inline memcached_return_t memcached_send(memcached_st *ptr,
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
 
   WATCHPOINT_SET(instance->io_wait_count.read= 0);
   WATCHPOINT_SET(instance->io_wait_count.write= 0);

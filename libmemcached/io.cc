@@ -39,7 +39,7 @@
 
 #include <libmemcached/common.h>
 
-void initialize_binary_request(memcached_server_write_instance_st server, protocol_binary_request_header& header)
+void initialize_binary_request(org::libmemcached::Instance* server, protocol_binary_request_header& header)
 {
   server->request_id++;
   header.request.magic= PROTOCOL_BINARY_REQ;
@@ -57,7 +57,7 @@ enum memc_read_or_write {
  *
  * @param ptr the server to pack
  */
-static bool repack_input_buffer(memcached_server_write_instance_st ptr)
+static bool repack_input_buffer(org::libmemcached::Instance* ptr)
 {
   if (ptr->read_ptr != ptr->read_buffer)
   {
@@ -130,7 +130,7 @@ static bool repack_input_buffer(memcached_server_write_instance_st ptr)
  * @param ptr the server to star processing iput messages for
  * @return true if we processed anything, false otherwise
  */
-static bool process_input_buffer(memcached_server_write_instance_st ptr)
+static bool process_input_buffer(org::libmemcached::Instance* ptr)
 {
   /*
    ** We might be able to process some of the response messages if we
@@ -172,7 +172,7 @@ static bool process_input_buffer(memcached_server_write_instance_st ptr)
   return false;
 }
 
-static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
+static memcached_return_t io_wait(org::libmemcached::Instance* ptr,
                                   const memc_read_or_write read_or_write)
 {
   /*
@@ -294,7 +294,7 @@ static memcached_return_t io_wait(memcached_server_write_instance_st ptr,
                              memcached_literal_param("number of attempts to call io_wait() failed"));
 }
 
-static bool io_flush(memcached_server_write_instance_st ptr,
+static bool io_flush(org::libmemcached::Instance* ptr,
                      const bool with_flush,
                      memcached_return_t& error)
 {
@@ -396,12 +396,12 @@ static bool io_flush(memcached_server_write_instance_st ptr,
   return true;
 }
 
-memcached_return_t memcached_io_wait_for_write(memcached_server_write_instance_st ptr)
+memcached_return_t memcached_io_wait_for_write(org::libmemcached::Instance* ptr)
 {
   return io_wait(ptr, MEM_WRITE);
 }
 
-static memcached_return_t _io_fill(memcached_server_write_instance_st ptr)
+static memcached_return_t _io_fill(org::libmemcached::Instance* ptr)
 {
   ssize_t data_read;
   do
@@ -477,11 +477,11 @@ static memcached_return_t _io_fill(memcached_server_write_instance_st ptr)
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
+memcached_return_t memcached_io_read(org::libmemcached::Instance* ptr,
                                      void *buffer, size_t length, ssize_t& nread)
 {
   assert(memcached_is_udp(ptr->root) == false);
-  assert_msg(ptr, "Programmer error, memcached_io_read() recieved an invalid memcached_server_write_instance_st"); // Programmer error
+  assert_msg(ptr, "Programmer error, memcached_io_read() recieved an invalid Instance"); // Programmer error
   char *buffer_ptr= static_cast<char *>(buffer);
 
   if (ptr->fd == INVALID_SOCKET)
@@ -529,9 +529,9 @@ memcached_return_t memcached_io_read(memcached_server_write_instance_st ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
+memcached_return_t memcached_io_slurp(org::libmemcached::Instance* ptr)
 {
-  assert_msg(ptr, "Programmer error, invalid memcached_server_write_instance_st");
+  assert_msg(ptr, "Programmer error, invalid Instance");
   assert(memcached_is_udp(ptr->root) == false);
 
   if (ptr->fd == INVALID_SOCKET)
@@ -586,7 +586,7 @@ memcached_return_t memcached_io_slurp(memcached_server_write_instance_st ptr)
   return MEMCACHED_CONNECTION_FAILURE;
 }
 
-static bool _io_write(memcached_server_write_instance_st ptr,
+static bool _io_write(org::libmemcached::Instance* ptr,
                       const void *buffer, size_t length, bool with_flush,
                       size_t& written)
 {
@@ -639,13 +639,13 @@ static bool _io_write(memcached_server_write_instance_st ptr,
   return true;
 }
 
-bool memcached_io_write(memcached_server_write_instance_st ptr)
+bool memcached_io_write(org::libmemcached::Instance* ptr)
 {
   size_t written;
   return _io_write(ptr, NULL, 0, true, written);
 }
 
-ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
+ssize_t memcached_io_write(org::libmemcached::Instance* ptr,
                            const void *buffer, const size_t length, const bool with_flush)
 {
   size_t written;
@@ -658,9 +658,9 @@ ssize_t memcached_io_write(memcached_server_write_instance_st ptr,
   return ssize_t(written);
 }
 
-bool memcached_io_writev(memcached_server_write_instance_st ptr,
-                            libmemcached_io_vector_st vector[],
-                            const size_t number_of, const bool with_flush)
+bool memcached_io_writev(org::libmemcached::Instance* ptr,
+                         libmemcached_io_vector_st vector[],
+                         const size_t number_of, const bool with_flush)
 {
   ssize_t complete_total= 0;
   ssize_t total= 0;
@@ -691,7 +691,7 @@ bool memcached_io_writev(memcached_server_write_instance_st ptr,
 }
 
 
-void memcached_io_close(memcached_server_write_instance_st ptr)
+void memcached_io_close(org::libmemcached::Instance* ptr)
 {
   if (ptr->fd == INVALID_SOCKET)
   {
@@ -714,7 +714,7 @@ void memcached_io_close(memcached_server_write_instance_st ptr)
   ptr->fd= INVALID_SOCKET;
 }
 
-memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st *memc)
+org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];
@@ -722,7 +722,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 
   for (uint32_t x= 0; x < memcached_server_count(memc) and host_index < MAX_SERVERS_TO_POLL; ++x)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
     if (instance->read_buffer_length > 0) /* I have data in the buffer */
     {
@@ -743,7 +743,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
     /* We have 0 or 1 server with pending events.. */
     for (uint32_t x= 0; x< memcached_server_count(memc); ++x)
     {
-      memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, x);
+      org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
       if (memcached_instance_response_count(instance) > 0)
       {
@@ -770,7 +770,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
       {
         for (uint32_t y= 0; y < memcached_server_count(memc); ++y)
         {
-          memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, y);
+          org::libmemcached::Instance* instance= memcached_instance_fetch(memc, y);
 
           if (instance->fd == fds[x].fd)
           {
@@ -787,7 +787,7 @@ memcached_server_write_instance_st memcached_io_get_readable_server(memcached_st
 /*
   Eventually we will just kill off the server with the problem.
 */
-void memcached_io_reset(memcached_server_write_instance_st ptr)
+void memcached_io_reset(org::libmemcached::Instance* ptr)
 {
   memcached_quit_server(ptr, true);
 }
@@ -796,7 +796,7 @@ void memcached_io_reset(memcached_server_write_instance_st ptr)
  * Read a given number of bytes from the server and place it into a specific
  * buffer. Reset the IO channel on this server if an error occurs.
  */
-memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
+memcached_return_t memcached_safe_read(org::libmemcached::Instance* ptr,
                                        void *dta,
                                        const size_t size)
 {
@@ -821,7 +821,7 @@ memcached_return_t memcached_safe_read(memcached_server_write_instance_st ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_io_readline(memcached_server_write_instance_st ptr,
+memcached_return_t memcached_io_readline(org::libmemcached::Instance* ptr,
                                          char *buffer_ptr,
                                          size_t size,
                                          size_t& total_nr)

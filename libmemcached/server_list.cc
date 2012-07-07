@@ -126,26 +126,16 @@ uint32_t memcached_instance_list_count(const memcached_st* self)
     : self->number_of_hosts;
 }
 
-uint32_t memcached_instance_count(const memcached_instance_st* self)
+uint32_t memcached_instance_count(const memcached_st* self)
 {
   return (self == NULL)
     ? 0
     : self->number_of_hosts;
 }
 
-memcached_instance_st *memcached_instance_list(const memcached_st *self)
+void memcached_instance_set(memcached_st* memc, org::libmemcached::Instance* list)
 {
-  if (self)
-  {
-    return self->servers;
-  }
-
-  return NULL;
-}
-
-void memcached_instance_set(memcached_st *self, memcached_instance_st *list)
-{
-  self->servers= list;
+  memc->servers= list;
 }
 
 void memcached_server_list_free(memcached_server_list_st self)
@@ -164,7 +154,7 @@ void memcached_server_list_free(memcached_server_list_st self)
   libmemcached_free(self->root, self);
 }
 
-void memcached_instance_list_free(memcached_instance_st* self, uint32_t instance_count)
+void memcached_instance_list_free(org::libmemcached::Instance* self, uint32_t instance_count)
 {
   if (self == NULL)
   {

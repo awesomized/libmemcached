@@ -50,7 +50,7 @@ struct memcached_error_t
   char message[MAX_ERROR_LENGTH];
 };
 
-static void _set(memcached_instance_st& server, memcached_st& memc)
+static void _set(org::libmemcached::Instance& server, memcached_st& memc)
 {
   if (server.error_messages and server.error_messages->query_id != server.root->query_id)
   {
@@ -204,10 +204,10 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
   return memcached_set_error(memc, rc, at, tmp);
 }
 
-memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_return_t rc, const char *at, const char *str, size_t length)
+memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
-  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_instance_st");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a Instance");
 
   memcached_string_t tmp= { str, length };
   return memcached_set_error(self, rc, at, tmp);
@@ -240,7 +240,7 @@ memcached_return_t memcached_set_parser_error(memcached_st& memc,
   return memcached_set_error(memc, MEMCACHED_PARSE_ERROR, at, buffer, length);
 }
 
-static inline size_t append_host_to_string(memcached_instance_st& self, char* buffer, const size_t buffer_length)
+static inline size_t append_host_to_string(org::libmemcached::Instance& self, char* buffer, const size_t buffer_length)
 {
   size_t size= 0;
   switch (self.type)
@@ -248,7 +248,7 @@ static inline size_t append_host_to_string(memcached_instance_st& self, char* bu
   case MEMCACHED_CONNECTION_TCP:
   case MEMCACHED_CONNECTION_UDP:
     size+= snprintf(buffer, buffer_length, " host: %s:%d",
-                    self.hostname, int(self.port));
+                    self.hostname, int(self.port()));
     break;
 
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
@@ -260,10 +260,10 @@ static inline size_t append_host_to_string(memcached_instance_st& self, char* bu
   return size;
 }
 
-memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_return_t rc, const char *at, memcached_string_t& str)
+memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
-  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_instance_st");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a org::libmemcached::Instance");
   if (memcached_fatal(rc) == false)
   {
     return rc;
@@ -297,9 +297,9 @@ memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_re
   return rc;
 }
 
-memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_return_t rc, const char *at)
+memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcached_return_t rc, const char *at)
 {
-  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a memcached_instance_st");
+  assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a org::libmemcached::Instance");
   if (memcached_fatal(rc) == false)
   {
     return rc;
@@ -340,7 +340,7 @@ memcached_return_t memcached_set_errno(memcached_st& self, int local_errno, cons
   return memcached_set_errno(self, local_errno, at, tmp);
 }
 
-memcached_return_t memcached_set_errno(memcached_instance_st& self, int local_errno, const char *at, const char *str, size_t length)
+memcached_return_t memcached_set_errno(org::libmemcached::Instance& self, int local_errno, const char *at, const char *str, size_t length)
 {
   memcached_string_t tmp= { str, length };
   return memcached_set_errno(self, local_errno, at, tmp);
@@ -372,7 +372,7 @@ memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, cons
   return rc;
 }
 
-memcached_return_t memcached_set_errno(memcached_instance_st& self, int local_errno, const char *at, memcached_string_t& str)
+memcached_return_t memcached_set_errno(org::libmemcached::Instance& self, int local_errno, const char *at, memcached_string_t& str)
 {
   if (local_errno == 0)
   {
@@ -402,7 +402,7 @@ memcached_return_t memcached_set_errno(memcached_instance_st& self, int local_er
   return rc;
 }
 
-memcached_return_t memcached_set_errno(memcached_instance_st& self, int local_errno, const char *at)
+memcached_return_t memcached_set_errno(org::libmemcached::Instance& self, int local_errno, const char *at)
 {
   if (local_errno == 0)
   {
@@ -456,7 +456,7 @@ void memcached_error_print(const memcached_st *self)
 
   for (uint32_t x= 0; x < memcached_server_count(self); x++)
   {
-    memcached_server_instance_st instance= memcached_server_instance_by_position(self, x);
+    org::libmemcached::Instance* instance= memcached_instance_by_position(self, x);
 
     _error_print(instance->error_messages);
   }
@@ -478,7 +478,7 @@ void memcached_error_free(memcached_st& self)
   self.error_messages= NULL;
 }
 
-void memcached_error_free(memcached_instance_st& self)
+void memcached_error_free(org::libmemcached::Instance& self)
 {
   _error_free(self.error_messages);
   self.error_messages= NULL;
@@ -522,7 +522,7 @@ bool memcached_has_current_error(memcached_st &memc)
   return false;
 }
 
-bool memcached_has_current_error(memcached_instance_st& server)
+bool memcached_has_current_error(org::libmemcached::Instance& server)
 {
   return memcached_has_current_error(*(server.root));
 }
@@ -578,7 +578,7 @@ const char *memcached_server_error(const memcached_server_instance_st server)
 }
 
 
-memcached_error_t *memcached_error_copy(const memcached_instance_st& server)
+memcached_error_t *memcached_error_copy(const org::libmemcached::Instance& server)
 {
   if (server.error_messages == NULL)
   {
@@ -607,7 +607,7 @@ memcached_return_t memcached_server_error_return(memcached_server_instance_st pt
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_instance_error_return(memcached_instance_st* instance)
+memcached_return_t memcached_instance_error_return(org::libmemcached::Instance* instance)
 {
   if (instance == NULL)
   {

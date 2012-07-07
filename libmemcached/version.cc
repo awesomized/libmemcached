@@ -52,7 +52,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
     // Optimization, we only fetch version once.
     if (instance->major_version != UINT8_MAX)
@@ -73,7 +73,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   if (success)
   {
     // Collect the returned items
-    memcached_server_write_instance_st instance;
+    org::libmemcached::Instance* instance;
     while ((instance= memcached_io_get_readable_server(ptr)))
     {
       memcached_return_t rrc= memcached_response(instance, NULL);
@@ -104,7 +104,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++) 
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
     initialize_binary_request(instance, request.message.header);
 
@@ -127,7 +127,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   if (success)
   {
     // Collect the returned items
-    memcached_server_write_instance_st instance;
+    org::libmemcached::Instance* instance;
     while ((instance= memcached_io_get_readable_server(ptr)))
     {
       char buffer[32];

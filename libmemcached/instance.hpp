@@ -38,24 +38,25 @@
 
 #pragma once
 
-struct memcached_instance_st *__instance_create_with(memcached_st *memc,
-                                                     struct memcached_instance_st* self,
-                                                     const memcached_string_t& hostname,
-                                                     const in_port_t port,
-                                                     uint32_t weight, 
-                                                     const memcached_connection_t type);
-const char *memcached_instance_name(const memcached_server_instance_st self);
+org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
+                                                    org::libmemcached::Instance* self,
+                                                    const memcached_string_t& hostname,
+                                                    const in_port_t port,
+                                                    uint32_t weight, 
+                                                    const memcached_connection_t type);
 
-in_port_t memcached_instance_port(const memcached_server_instance_st self);
+const char *memcached_instance_name(const org::libmemcached::Instance* self);
 
-memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memcached_instance_st*, uint32_t);
+in_port_t memcached_instance_port(const org::libmemcached::Instance* self);
 
-memcached_server_st *memcached_instance_2_server(struct memcached_instance_st*);
+memcached_return_t memcached_instance_push(memcached_st *ptr, const org::libmemcached::Instance*, uint32_t);
+
+memcached_server_st *memcached_instance_2_server(org::libmemcached::Instance* source);
 
 uint32_t memcached_instance_count(const memcached_st* self);
 
-uint32_t memcached_instance_response_count(const memcached_instance_st* self);
+uint32_t memcached_instance_response_count(const org::libmemcached::Instance* self);
 
-uint32_t memcached_instance_set_count(memcached_instance_st *servers, uint32_t count);
+uint32_t memcached_instance_set_count(org::libmemcached::Instance *servers, uint32_t count);
 
-void __instance_free(struct memcached_instance_st *);
+void __instance_free(org::libmemcached::Instance *);

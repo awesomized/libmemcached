@@ -37,7 +37,7 @@
 
 #include <libmemcached/common.h>
 
-static void auto_response(memcached_server_write_instance_st instance, const bool reply,  memcached_return_t& rc, uint64_t* value)
+static void auto_response(org::libmemcached::Instance* instance, const bool reply,  memcached_return_t& rc, uint64_t* value)
 {
   // If the message was successfully sent, then get the response, otherwise
   // fail.
@@ -62,7 +62,7 @@ static void auto_response(memcached_server_write_instance_st instance, const boo
   }
 }
 
-static memcached_return_t text_incr_decr(memcached_server_write_instance_st instance,
+static memcached_return_t text_incr_decr(org::libmemcached::Instance* instance,
                                          const bool is_incr,
                                          const char *key, size_t key_length,
                                          const uint64_t offset,
@@ -96,7 +96,7 @@ static memcached_return_t text_incr_decr(memcached_server_write_instance_st inst
   return memcached_vdo(instance, vector, 7, true);
 }
 
-static memcached_return_t binary_incr_decr(memcached_server_write_instance_st instance,
+static memcached_return_t binary_incr_decr(org::libmemcached::Instance* instance,
                                            protocol_binary_command cmd,
                                            const char *key, const size_t key_length,
                                            const uint64_t offset,
@@ -179,7 +179,7 @@ static memcached_return_t increment_decrement_by_key(const protocol_binary_comma
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
+  org::libmemcached::Instance* instance= memcached_instance_fetch(memc, server_key);
 
   bool reply= memcached_is_replying(instance->root);
 
@@ -238,7 +238,7 @@ static memcached_return_t increment_decrement_with_initial_by_key(const protocol
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc, server_key);
+  org::libmemcached::Instance* instance= memcached_instance_fetch(memc, server_key);
 
   bool reply= memcached_is_replying(instance->root);
 

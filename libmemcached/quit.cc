@@ -46,7 +46,7 @@
   will force data to be completed.
 */
 
-void memcached_quit_server(memcached_instance_st *ptr, bool io_death)
+void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
 {
   if (ptr->fd != INVALID_SOCKET)
   {
@@ -138,8 +138,7 @@ void send_quit(memcached_st *ptr)
 {
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance=
-      memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
     memcached_quit_server(instance, false);
   }

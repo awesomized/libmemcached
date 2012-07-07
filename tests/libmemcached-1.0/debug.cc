@@ -67,7 +67,7 @@ static memcached_return_t server_wrapper_for_dump_callback(const memcached_st *,
 {
   memcached_st *memc= memcached_create(NULL);
 
-  if (server->type == MEMCACHED_CONNECTION_UNIX_SOCKET)
+  if (strcmp(memcached_server_type(server), "SOCKET") == 0)
   {
     if (memcached_failed(memcached_server_add_unix_socket(memc, memcached_server_name(server))))
     {

@@ -133,7 +133,7 @@ static void __memcached_free(memcached_st *ptr, bool release_st)
 
   memcached_virtual_bucket_free(ptr);
 
-  memcached_instance_free(ptr->last_disconnected_server);
+  memcached_instance_free((org::libmemcached::Instance*)ptr->last_disconnected_server);
 
   if (ptr->on_cleanup)
   {
@@ -279,7 +279,7 @@ void memcached_servers_reset(memcached_st *self)
 
     memcached_instance_set(self, NULL);
     self->number_of_hosts= 0;
-    memcached_instance_free(self->last_disconnected_server);
+    memcached_instance_free((org::libmemcached::Instance*)self->last_disconnected_server);
     self->last_disconnected_server= NULL;
   }
 }
@@ -288,7 +288,7 @@ void memcached_reset_last_disconnected_server(memcached_st *self)
 {
   if (self)
   {
-    memcached_instance_free(self->last_disconnected_server);
+    memcached_instance_free((org::libmemcached::Instance*)self->last_disconnected_server);
     self->last_disconnected_server= NULL;
   }
 }
@@ -421,10 +421,10 @@ void *memcached_set_user_data(memcached_st *ptr, void *data)
 
 memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source)
 {
-  return memcached_instance_push(destination, source->servers, source->number_of_hosts);
+  return memcached_instance_push(destination, (org::libmemcached::Instance*)source->servers, source->number_of_hosts);
 }
 
-memcached_server_write_instance_st memcached_server_instance_fetch(memcached_st *ptr, uint32_t server_key)
+org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_t server_key)
 {
   if (ptr == NULL)
   {
@@ -444,6 +444,16 @@ memcached_server_instance_st memcached_server_instance_by_position(const memcach
   return &ptr->servers[server_key];
 }
 
+org::libmemcached::Instance* memcached_instance_by_position(const memcached_st *ptr, uint32_t server_key)
+{
+  if (ptr == NULL)
+  {
+    return NULL;
+  }
+
+  return &ptr->servers[server_key];
+}
+
 uint64_t memcached_query_id(const memcached_st *self)
 {
   if (self == NULL)
@@ -453,3 +463,14 @@ uint64_t memcached_query_id(const memcached_st *self)
 
   return self->query_id;
 }
+
+org::libmemcached::Instance* memcached_instance_list(const memcached_st *self)
+{
+  if (self)
+  {
+    return (org::libmemcached::Instance*)self->servers;
+  }
+
+  return NULL;
+}
+

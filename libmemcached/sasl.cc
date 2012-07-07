@@ -123,7 +123,7 @@ static void sasl_startup_function(void)
 
 } // extern "C"
 
-memcached_return_t memcached_sasl_authenticate_connection(memcached_instance_st *server)
+memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Instance* server)
 {
   if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {

@@ -37,7 +37,7 @@
 
 #pragma once
 
-memcached_return_t memcached_vdo(memcached_server_write_instance_st ptr,
+memcached_return_t memcached_vdo(org::libmemcached::Instance* ptr,
                                  libmemcached_io_vector_st vector[],
                                  const size_t count,
                                  const bool with_flush);

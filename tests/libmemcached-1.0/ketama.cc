@@ -160,7 +160,6 @@ test_return_t user_supplied_bug18(memcached_st *trash)
 test_return_t auto_eject_hosts(memcached_st *trash)
 {
   (void) trash;
-  memcached_server_instance_st instance;
 
   memcached_return_t rc;
   memcached_st *memc= memcached_create(NULL);
@@ -201,8 +200,8 @@ test_return_t auto_eject_hosts(memcached_st *trash)
   test_true(server_pool[7].port == 11211);
   test_true(server_pool[7].weight == 100);
 
-  instance= memcached_server_instance_by_position(memc, 2);
-  ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) + 15;
+  memcached_server_instance_st instance= memcached_server_instance_by_position(memc, 2);
+  memcached_instance_next_retry(instance, time(NULL) +15);
   memc->ketama.next_distribution_rebuild= time(NULL) - 1;
 
   /*
@@ -216,8 +215,9 @@ test_return_t auto_eject_hosts(memcached_st *trash)
   }
 
   /* and re-added when it's back. */
-  ((memcached_server_write_instance_st)instance)->next_retry = time(NULL) - 1;
-  memc->ketama.next_distribution_rebuild= time(NULL) - 1;
+  time_t absolute_time= time(NULL) -1;
+  memcached_instance_next_retry(instance, absolute_time);
+  memc->ketama.next_distribution_rebuild= absolute_time;
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
                          memc->distribution);
   for (ptrdiff_t x= 0; x < 99; x++)

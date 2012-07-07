@@ -46,7 +46,7 @@
 #define SOCK_CLOEXEC 0
 #endif
 
-static memcached_return_t connect_poll(memcached_instance_st *server)
+static memcached_return_t connect_poll(org::libmemcached::Instance* server)
 {
   struct pollfd fds[1];
   fds[0].fd= server->fd;
@@ -139,7 +139,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server)
   return memcached_set_errno(*server, get_socket_errno(), MEMCACHED_AT);
 }
 
-static memcached_return_t set_hostinfo(memcached_instance_st *server)
+static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
 {
   assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
   if (server->address_info)
@@ -150,8 +150,8 @@ static memcached_return_t set_hostinfo(memcached_instance_st *server)
   }
 
   char str_port[NI_MAXSERV];
-  int length= snprintf(str_port, NI_MAXSERV, "%u", (uint32_t)server->port);
-  if (length >= NI_MAXSERV or length < 0)
+  int length= snprintf(str_port, NI_MAXSERV, "%u", uint32_t(server->port()));
+  if (length >= NI_MAXSERV or length <= 0)
   {
     return MEMCACHED_FAILURE;
   }
@@ -203,7 +203,7 @@ static memcached_return_t set_hostinfo(memcached_instance_st *server)
   return MEMCACHED_SUCCESS;
 }
 
-static inline void set_socket_nonblocking(memcached_instance_st *server)
+static inline void set_socket_nonblocking(org::libmemcached::Instance* server)
 {
 #ifdef WIN32
   u_long arg= 1;
@@ -240,7 +240,7 @@ static inline void set_socket_nonblocking(memcached_instance_st *server)
 #endif
 }
 
-static void set_socket_options(memcached_instance_st *server)
+static void set_socket_options(org::libmemcached::Instance* server)
 {
   assert_msg(server->fd != INVALID_SOCKET, "invalid socket was passed to set_socket_options()");
 
@@ -349,7 +349,7 @@ static void set_socket_options(memcached_instance_st *server)
   set_socket_nonblocking(server);
 }
 
-static memcached_return_t unix_socket_connect(memcached_instance_st *server)
+static memcached_return_t unix_socket_connect(org::libmemcached::Instance* server)
 {
 #ifndef WIN32
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
@@ -400,7 +400,7 @@ static memcached_return_t unix_socket_connect(memcached_instance_st *server)
 #endif
 }
 
-static memcached_return_t network_connect(memcached_instance_st *server)
+static memcached_return_t network_connect(org::libmemcached::Instance* server)
 {
   bool timeout_error_occured= false;
 
@@ -572,7 +572,7 @@ static memcached_return_t network_connect(memcached_instance_st *server)
   Based on time/failure count fail the connect without trying. This prevents waiting in a state where
   we get caught spending cycles just waiting.
 */
-static memcached_return_t backoff_handling(memcached_server_write_instance_st server, bool& in_timeout)
+static memcached_return_t backoff_handling(org::libmemcached::Instance* server, bool& in_timeout)
 {
   struct timeval curr_time;
   bool _gettime_success= (gettimeofday(&curr_time, NULL) == 0);
@@ -639,7 +639,7 @@ static memcached_return_t backoff_handling(memcached_server_write_instance_st se
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t _memcached_connect(memcached_server_write_instance_st server, const bool set_last_disconnected)
+static memcached_return_t _memcached_connect(org::libmemcached::Instance* server, const bool set_last_disconnected)
 {
   if (server->fd != INVALID_SOCKET)
   {
@@ -695,7 +695,7 @@ static memcached_return_t _memcached_connect(memcached_server_write_instance_st 
 
   if (memcached_success(rc))
   {
-    memcached_mark_server_as_clean(server);
+    server->mark_server_as_clean();
     return rc;
   }
   else if (set_last_disconnected)
@@ -717,7 +717,7 @@ static memcached_return_t _memcached_connect(memcached_server_write_instance_st 
     if (in_timeout)
     {
       char buffer[1024];
-      int snprintf_length= snprintf(buffer, sizeof(buffer), "%s:%d", server->hostname, int(server->port));
+      int snprintf_length= snprintf(buffer, sizeof(buffer), "%s:%d", server->hostname, int(server->port()));
       return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT, buffer, snprintf_length);
     }
   }
@@ -725,12 +725,12 @@ static memcached_return_t _memcached_connect(memcached_server_write_instance_st 
   return rc;
 }
 
-memcached_return_t memcached_connect_try(memcached_server_write_instance_st server)
+memcached_return_t memcached_connect_try(org::libmemcached::Instance* server)
 {
   return _memcached_connect(server, false);
 }
 
-memcached_return_t memcached_connect(memcached_server_write_instance_st server)
+memcached_return_t memcached_connect(org::libmemcached::Instance* server)
 {
   return _memcached_connect(server, true);
 }

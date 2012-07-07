@@ -124,10 +124,9 @@ test_return_t replication_get_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc); ++host)
   {
     memcached_st *memc_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_clone, host);
+    org::libmemcached::Instance* instance= (org::libmemcached::Instance*)memcached_server_instance_by_position(memc_clone, host);
 
-    ((memcached_server_write_instance_st)instance)->port= 0;
+    instance->port(0);
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -187,9 +186,8 @@ test_return_t replication_mget_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc_clone); host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(new_clone, host);
-    ((memcached_server_write_instance_st)instance)->port= 0;
+    memcached_server_instance_st instance= memcached_server_instance_by_position(new_clone, host);
+    ((memcached_server_write_instance_st)instance)->port(0);
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -332,7 +330,7 @@ test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
   // We need to now cause a failure in one server, never do this in your own
   // code.
   close(memc_clone->servers[1].fd);
-  memc_clone->servers[1].port= 1;
+  memc_clone->servers[1].port(1);
   memc_clone->servers[1].address_info_next= NULL;
 
   for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)

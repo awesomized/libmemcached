@@ -38,7 +38,7 @@
 #include <libmemcached/common.h>
 #include <libmemcached/memcached/protocol_binary.h>
 
-static memcached_return_t ascii_touch(memcached_server_write_instance_st instance,
+static memcached_return_t ascii_touch(org::libmemcached::Instance* instance,
                                       const char *key, size_t key_length,
                                       time_t expiration)
 {
@@ -70,7 +70,7 @@ static memcached_return_t ascii_touch(memcached_server_write_instance_st instanc
   return rc;
 }
 
-static memcached_return_t binary_touch(memcached_server_write_instance_st instance,
+static memcached_return_t binary_touch(org::libmemcached::Instance* instance,
                                        const char *key, size_t key_length,
                                        time_t expiration)
 {
@@ -129,7 +129,7 @@ memcached_return_t memcached_touch_by_key(memcached_st *ptr,
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);
-  memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, server_key);
+  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
 
   if (ptr->flags.binary_protocol)
   {
