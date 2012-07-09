@@ -99,7 +99,6 @@ Server* server_startup_st::pop_server()
 // host_to_shutdown => host number to shutdown in array
 bool server_startup_st::shutdown(uint32_t host_to_shutdown)
 {
-  Error << servers.size() << " > " << host_to_shutdown;
   if (servers.size() > host_to_shutdown)
   {
     Server* tmp= servers[host_to_shutdown];

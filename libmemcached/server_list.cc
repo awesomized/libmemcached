@@ -126,13 +126,6 @@ uint32_t memcached_instance_list_count(const memcached_st* self)
     : self->number_of_hosts;
 }
 
-uint32_t memcached_instance_count(const memcached_st* self)
-{
-  return (self == NULL)
-    ? 0
-    : self->number_of_hosts;
-}
-
 void memcached_instance_set(memcached_st* memc, org::libmemcached::Instance* list)
 {
   memc->servers= list;

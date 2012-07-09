@@ -38,8 +38,6 @@
 
 org::libmemcached::Instance* memcached_instance_list(const memcached_st *);
 
-uint32_t memcached_instance_count(const memcached_st*);
-
 uint32_t memcached_instance_list_count(const memcached_st*);
 
 uint32_t memcached_servers_set_count(memcached_server_list_st servers, uint32_t count);

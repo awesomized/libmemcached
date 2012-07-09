@@ -53,8 +53,6 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const org::libmemc
 
 memcached_server_st *memcached_instance_2_server(org::libmemcached::Instance* source);
 
-uint32_t memcached_instance_count(const memcached_st* self);
-
 uint32_t memcached_instance_response_count(const org::libmemcached::Instance* self);
 
 void __instance_free(org::libmemcached::Instance *);
