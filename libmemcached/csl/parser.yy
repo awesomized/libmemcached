@@ -133,6 +133,7 @@ inline void __config_error(Context *context, yyscan_t *scanner, const char *erro
 %token _TCP_KEEPALIVE
 %token _TCP_KEEPIDLE
 %token _TCP_NODELAY
+%token FETCH_VERSION
 
 /* Callbacks */
 %token NAMESPACE
@@ -281,6 +282,10 @@ behaviors:
             {
               parser_abort(context, memcached_last_error_message(context->memc));
             }
+          }
+        | FETCH_VERSION
+          {
+            memcached_flag(*context->memc, MEMCACHED_FLAG_IS_FETCHING_VERSION, true);
           }
         | DISTRIBUTION distribution
           {

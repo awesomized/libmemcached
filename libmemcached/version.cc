@@ -143,23 +143,85 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   return errors_happened ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
+static inline void version_ascii_instance(org::libmemcached::Instance* instance)
+{
+  if (instance->major_version != UINT8_MAX)
+  {
+    libmemcached_io_vector_st vector[]=
+    {
+      { memcached_literal_param("version\r\n") },
+    };
+
+    (void)memcached_vdo(instance, vector, 1, false);
+  }
+}
+
+static inline void version_binary_instance(org::libmemcached::Instance* instance)
+{
+  if (instance->major_version != UINT8_MAX)
+  {
+    protocol_binary_request_version request= {};
+
+    request.message.header.request.opcode= PROTOCOL_BINARY_CMD_VERSION;
+    request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
+
+    libmemcached_io_vector_st vector[]=
+    {
+      { request.bytes, sizeof(request.bytes) }
+    };
+
+    initialize_binary_request(instance, request.message.header);
+
+    (void)memcached_vdo(instance, vector, 1, false);
+  }
+}
+
+void memcached_version_instance(org::libmemcached::Instance* instance)
+{
+  if (instance)
+  {
+    if (memcached_has_root(instance))
+    {
+      if (memcached_is_fetching_version(instance->root))
+      {
+        if (memcached_is_udp(instance->root) == false)
+        {
+
+          if (memcached_is_binary(instance->root))
+          {
+            version_binary_instance(instance);
+            return;
+          }
+
+          version_ascii_instance(instance);      
+        }
+      }
+    }
+  }
+}
+
 memcached_return_t memcached_version(memcached_st *ptr)
 {
-  memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
+  if (ptr)
   {
-    return rc;
+    memcached_return_t rc;
+    if (memcached_failed(rc= initialize_query(ptr, true)))
+    {
+      return rc;
+    }
+
+    if (memcached_is_udp(ptr))
+    {
+      return MEMCACHED_NOT_SUPPORTED;
+    }
+
+    if (memcached_is_binary(ptr))
+    {
+      return memcached_version_binary(ptr);
+    }
+
+    return memcached_version_textual(ptr);      
   }
 
-  if (memcached_is_udp(ptr))
-  {
-    return MEMCACHED_NOT_SUPPORTED;
-  }
-
-  if (memcached_is_binary(ptr))
-  {
-    return memcached_version_binary(ptr);
-  }
-
-  return memcached_version_textual(ptr);      
+  return MEMCACHED_INVALID_ARGUMENTS;
 }

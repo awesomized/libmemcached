@@ -46,6 +46,7 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
 #endif
 
 #define YY_NO_INPUT
@@ -147,6 +148,8 @@
 "--POOL-MAX="	       		        { yyextra->begin= yytext; return yyextra->previous_token= POOL_MAX; }
 
 "--NAMESPACE="	       		        { yyextra->begin= yytext; return yyextra->previous_token= NAMESPACE; }
+
+"--FETCH-VERSION"	       		        { yyextra->begin= yytext; return yyextra->previous_token= FETCH_VERSION; }
 
 INCLUDE           { yyextra->begin= yytext; return yyextra->previous_token= INCLUDE; }
 RESET           { yyextra->begin= yytext; return yyextra->previous_token= RESET; }

@@ -293,10 +293,15 @@ test_return_t replication_delete_test(memcached_st *memc_just_cloned)
   /* Delete the items from all of the servers except 1, we use the non replicated memc so that we know we deleted the keys */
   for (size_t x= 0; x < test_array_length(keys); ++x)
   {
-    test_compare(MEMCACHED_SUCCESS,
-                 memcached_delete(memc_replicated,
-                                  test_string_make_from_cstr(keys[x]), // Keys
-                                  0));
+    memcached_return_t del_rc= memcached_delete(memc_replicated,
+                                                test_string_make_from_cstr(keys[x]), // Keys
+                                                0);
+    if (del_rc == MEMCACHED_SUCCESS or del_rc == MEMCACHED_NOTFOUND)
+    { }
+    else 
+    {
+      test_compare(MEMCACHED_SUCCESS, del_rc);
+    }
   }
 
   test_compare(TEST_SUCCESS, confirm_keys_dont_exist(memc_replicated, keys, test_array_length(keys)));

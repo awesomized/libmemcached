@@ -45,6 +45,7 @@ struct memcached_st {
     bool is_purging:1;
     bool is_processing_input:1;
     bool is_time_for_rebuild:1;
+    bool not_used:1;
   } state;
 
   struct {
@@ -63,6 +64,8 @@ struct memcached_st {
     bool verify_key:1;
     bool tcp_keepalive:1;
     bool is_aes:1;
+    bool is_fetching_version:1;
+    bool not_used:1;
   } flags;
 
   memcached_server_distribution_t distribution;

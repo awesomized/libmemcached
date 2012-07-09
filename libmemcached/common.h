@@ -117,6 +117,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/quit.hpp>
 #include <libmemcached/instance.hpp>
 #include <libmemcached/server.hpp>
+#include <libmemcached/flag.hpp>
 #include <libmemcached/behavior.hpp>
 #include <libmemcached/sasl.hpp>
 #include <libmemcached/server_list.hpp>
@@ -139,6 +140,7 @@ memcached_return_t memcached_server_execute(memcached_st *ptr,
 #include <libmemcached/key.hpp>
 #include <libmemcached/encoding_key.h>
 #include <libmemcached/result.h>
+#include <libmemcached/version.hpp>
 #endif
 
 #include <libmemcached/continuum.hpp>

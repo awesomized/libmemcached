@@ -59,6 +59,8 @@ static inline bool _memcached_init(memcached_st *self)
   self->flags.use_udp= false;
   self->flags.verify_key= false;
   self->flags.tcp_keepalive= false;
+  self->flags.is_aes= false;
+  self->flags.is_fetching_version= false;
 
   self->virtual_bucket= NULL;
 

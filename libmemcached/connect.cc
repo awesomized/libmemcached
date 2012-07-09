@@ -641,6 +641,7 @@ static memcached_return_t backoff_handling(org::libmemcached::Instance* server, 
 
 static memcached_return_t _memcached_connect(org::libmemcached::Instance* server, const bool set_last_disconnected)
 {
+  assert(server);
   if (server->fd != INVALID_SOCKET)
   {
     return MEMCACHED_SUCCESS;
@@ -696,6 +697,7 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
   if (memcached_success(rc))
   {
     server->mark_server_as_clean();
+    memcached_version_instance(server);
     return rc;
   }
   else if (set_last_disconnected)
