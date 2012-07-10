@@ -207,6 +207,7 @@ int main(int argc, char *argv[])
     if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
     {
       std::cerr << "Error allocating file buffer(" << strerror(errno) << ")" << std::endl;
+      close(fd);
       exit(EXIT_FAILURE);
     }
 
@@ -214,12 +215,14 @@ int main(int argc, char *argv[])
     if ((read_length= ::read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
     {
       std::cerr << "Error while reading file " << file_buffer_ptr << " (" << strerror(errno) << ")" << std::endl;
+      close(fd);
       exit(EXIT_FAILURE);
     }
 
     if (read_length != sbuf.st_size)
     {
       std::cerr << "Failure while reading file. Read length was not equal to stat() length" << std::endl;
+      close(fd);
       exit(EXIT_FAILURE);
     }
 

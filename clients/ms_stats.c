@@ -219,10 +219,6 @@ void ms_dump_format_stats(ms_stat_t *stat,
   double global_std= 0;
   double global_log= 0;
 
-  uint64_t diff_time= 0;
-  uint64_t diff_events= 0;
-  double diff_squares= 0;
-  double diff_log_product= 0;
   double period_average= 0;
   uint64_t period_tps= 0;
   double period_rate= 0;
@@ -241,17 +237,17 @@ void ms_dump_format_stats(ms_stat_t *stat,
                     * global_average) / (double)(events - 1));
   global_log= exp(stat->log_product / (double)events);
 
-  diff_time= stat->total_time - stat->pre_total_time;
-  diff_events= events - stat->pre_events;
+  uint64_t diff_time= stat->total_time - stat->pre_total_time;
+  uint64_t diff_events= events - stat->pre_events;
   if (diff_events >= 1)
   {
     period_average= (double)(diff_time / diff_events);
     period_tps= diff_events / (uint64_t)freq;
     period_rate= (double)diff_events * obj_size / 1024 / 1024 / freq;
-    diff_squares= (double)stat->squares - (double)stat->pre_squares;
+    double diff_squares= (double)stat->squares - (double)stat->pre_squares;
     period_std= sqrt((diff_squares - (double)diff_events * period_average
                       * period_average) / (double)(diff_events - 1));
-    diff_log_product= stat->log_product - stat->pre_log_product;
+    double diff_log_product= stat->log_product - stat->pre_log_product;
     period_log= exp(diff_log_product / (double)diff_events);
   }
 

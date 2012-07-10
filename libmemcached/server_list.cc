@@ -89,6 +89,7 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
 #if 0
     *error= memcached_set_errno(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
 #endif
+    free(new_host_list);
     return NULL;
   }
 

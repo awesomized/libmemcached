@@ -330,7 +330,16 @@ static bool io_flush(org::libmemcached::Instance* ptr,
     WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
     WATCHPOINT_ASSERT(write_length > 0);
 
-    int flags= with_flush ? MSG_NOSIGNAL|MSG_DONTWAIT : MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE;
+    int flags;
+    if (with_flush)
+    {
+      flags= MSG_NOSIGNAL|MSG_DONTWAIT;
+    }
+    else
+    {
+      flags= MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE;
+    }
+
     ssize_t sent_length= ::send(ptr->fd, local_write_ptr, write_length, flags);
 
     if (sent_length == SOCKET_ERROR)

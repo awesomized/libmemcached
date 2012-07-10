@@ -614,7 +614,7 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
 
   for (libtest::vchar_ptr_t::iterator iter= keys.begin();
        iter != keys.end(); 
-       iter++)
+       ++iter)
   {
     test_compare_hint(MEMCACHED_SUCCESS,
                       memcached_set(memc,
