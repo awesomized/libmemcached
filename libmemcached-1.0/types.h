@@ -81,6 +81,5 @@ typedef struct memcached_callback_st memcached_callback_st;
 // The following two structures are internal, and never exposed to users.
 typedef struct memcached_string_st memcached_string_st;
 typedef struct memcached_string_t memcached_string_t;
-typedef struct memcached_continuum_item_st memcached_continuum_item_st;
 
 #endif

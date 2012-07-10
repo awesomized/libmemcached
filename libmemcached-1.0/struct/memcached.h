@@ -100,11 +100,11 @@ struct memcached_st {
   memcached_result_st result;
 
   struct {
-    bool weighted;
+    bool weighted_;
     uint32_t continuum_count; // Ketama
     uint32_t continuum_points_counter; // Ketama
     time_t next_distribution_rebuild; // Ketama
-    memcached_continuum_item_st *continuum; // Ketama
+    struct memcached_continuum_item_st *continuum; // Ketama
   } ketama;
 
   struct memcached_virtual_bucket_t *virtual_bucket;

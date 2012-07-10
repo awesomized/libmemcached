@@ -77,7 +77,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->ketama.continuum_count= 0;
   self->ketama.continuum_points_counter= 0;
   self->ketama.next_distribution_rebuild= 0;
-  self->ketama.weighted= false;
+  self->ketama.weighted_= false;
 
   self->number_of_hosts= 0;
   self->servers= NULL;

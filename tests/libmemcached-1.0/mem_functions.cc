@@ -390,7 +390,7 @@ test_return_t clone_test(memcached_st *memc)
       test_true(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
       test_true(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);
       test_true(memc_clone->flags.verify_key == memc->flags.verify_key);
-      test_true(memc_clone->ketama.weighted == memc->ketama.weighted);
+      test_true(memc_clone->ketama.weighted_ == memc->ketama.weighted_);
       test_true(memc_clone->flags.binary_protocol == memc->flags.binary_protocol);
       test_true(memc_clone->flags.hash_with_namespace == memc->flags.hash_with_namespace);
       test_true(memc_clone->flags.reply == memc->flags.reply);

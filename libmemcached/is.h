@@ -59,6 +59,8 @@
 #define memcached_is_auto_eject_hosts(__object) ((__object)->flags.auto_eject_hosts)
 #define memcached_is_use_sort_hosts(__object) ((__object)->flags.use_sort_hosts)
 
+#define memcached_is_weighted_ketama(__object) ((__object)->ketama.weighted_)
+
 #define memcached_set_aes(__object, __flag) ((__object).flags.is_aes= __flag)
 #define memcached_set_udp(__object, __flag) ((__object).flags.use_udp= __flag)
 #define memcached_set_verify_key(__object, __flag) ((__object).flags.verify_key= __flag)
@@ -83,3 +85,5 @@
 #define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
 #define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
 #define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))
+
+#define memcached_set_weighted_ketama(__object, __value) ((__object)->ketama.weighted_= (__value))

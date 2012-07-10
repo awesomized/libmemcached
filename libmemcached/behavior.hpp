@@ -36,4 +36,5 @@
 
 #pragma once
 
+bool memcached_is_consistent_distribution(const memcached_st*);
 bool _is_auto_eject_host(const memcached_st *ptr);

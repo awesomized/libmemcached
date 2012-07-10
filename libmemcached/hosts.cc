@@ -118,11 +118,17 @@ static int continuum_item_cmp(const void *t1, const void *t2)
   /* Why 153? Hmmm... */
   WATCHPOINT_ASSERT(ct1->value != 153);
   if (ct1->value == ct2->value)
+  {
     return 0;
+  }
   else if (ct1->value > ct2->value)
+  {
     return 1;
+  }
   else
+  {
     return -1;
+  }
 }
 
 static memcached_return_t update_continuum(memcached_st *ptr)
@@ -167,8 +173,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
     live_servers= memcached_server_count(ptr);
   }
 
-  uint64_t is_ketama_weighted= memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
-  uint32_t points_per_server= (uint32_t) (is_ketama_weighted ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
+  uint32_t points_per_server= (uint32_t) (memcached_is_weighted_ketama(ptr) ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
 
   if (live_servers == 0)
   {
@@ -191,7 +196,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   }
 
   uint64_t total_weight= 0;
-  if (is_ketama_weighted)
+  if (memcached_is_weighted_ketama(ptr))
   {
     for (uint32_t host_index = 0; host_index < memcached_server_count(ptr); ++host_index)
     {
@@ -209,7 +214,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
       continue;
     }
 
-    if (is_ketama_weighted)
+    if (memcached_is_weighted_ketama(ptr))
     {
         float pct= (float)list[host_index].weight / (float)total_weight;
         pointer_per_server= (uint32_t) ((::floor((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
@@ -253,7 +258,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
           fprintf(stdout, "update_continuum: key is %s\n", sort_host);
         }
 
-        if (is_ketama_weighted)
+        if (memcached_is_weighted_ketama(ptr))
         {
           for (uint32_t x= 0; x < pointer_per_hash; x++)
           {
@@ -301,7 +306,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
                                      memcached_literal_param("snprintf(sizeof(sort_host)))"));
         }
 
-        if (is_ketama_weighted)
+        if (memcached_is_weighted_ketama(ptr))
         {
           for (uint32_t x = 0; x < pointer_per_hash; x++)
           {
@@ -366,7 +371,10 @@ static memcached_return_t server_add(memcached_st *ptr,
 
   if (weight > 1)
   {
-    ptr->ketama.weighted= true;
+    if (memcached_is_consistent_distribution(ptr))
+    {
+      memcached_set_weighted_ketama(ptr, true);
+    }
   }
 
   ptr->number_of_hosts++;
@@ -411,7 +419,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
 
     if (list[x].weight > 1)
     {
-      ptr->ketama.weighted= true;
+      memcached_set_weighted_ketama(ptr, true);
     }
 
     ptr->number_of_hosts++;
@@ -455,7 +463,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
 
     if (list[x].weight > 1)
     {
-      ptr->ketama.weighted= true;
+      memcached_set_weighted_ketama(ptr, true);
     }
 
     ptr->number_of_hosts++;
