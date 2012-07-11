@@ -41,7 +41,7 @@ Verify that keys that are being used fit within the design of the protocol being
 
 .. describe:: --REMOVE_FAILED_SERVERS
 
-Enable the behavior MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS.
+Enable the behavior :c:type:`MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS`.
 
 .. describe:: --BINARY-PROTOCOL
 
@@ -49,7 +49,7 @@ Force all connections to use the binary protocol.
 
 .. describe:: --BUFFER-REQUESTS
 
-Enable MEMCACHED_BEHAVIOR_BUFFER_REQUESTS.
+Please see :c:type:`MEMCACHED_BEHAVIOR_BUFFER_REQUESTS`.
 
 .. describe:: --CONFIGURE-FILE=
 
@@ -57,7 +57,7 @@ Provide a configuration file to be used to load requests. Beware that by using a
 
 .. describe:: --CONNECT-TIMEOUT=
 
-Enable MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT. 
+Please see :c:type:`MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT`. 
 
 .. describe:: --DISTRIBUTION=
 
@@ -91,11 +91,11 @@ When adding new servers always calculate their distribution based on sorted nami
 
 .. describe:: --SUPPORT-CAS
 
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_SUPPORT_CAS
+See :manpage:`memcached_behavior_set(3)` for :c:type:`MEMCACHED_BEHAVIOR_SUPPORT_CAS`
 
 .. describe:: --USE-UDP
 
-See :manpage:`memcached_behavior_set(3)` for MEMCACHED_BEHAVIOR_USE_UDP
+See :manpage:`memcached_behavior_set(3)` for :c:type:`MEMCACHED_BEHAVIOR_USE_UDP`
 
 .. describe:: --NAMESPACE=
 
