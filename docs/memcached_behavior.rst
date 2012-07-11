@@ -164,11 +164,9 @@ Enabling this will cause :manpage:`libmemcached(3)` to test all keys to verify t
 Enabling this will cause hosts that are added to be placed in the host list in sorted order. This will defeat consisten hashing.
 
 
-
 .. c:type:: MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
 
-In non-blocking mode this changes the value of the timeout during socket connection.
-
+In non-blocking mode this changes the value of the timeout during socket connection in milliseconds. Specifying -1 means an infinite time‐out.
 
 
 .. c:type:: MEMCACHED_BEHAVIOR_BINARY_PROTOCOL

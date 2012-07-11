@@ -1,4 +1,4 @@
-.TH "MEMCACHED" "3" "July 05, 2012" "1.0.9" "libmemcached"
+.TH "MEMCACHED" "3" "July 11, 2012" "1.0.9" "libmemcached"
 .SH NAME
 memcached \- libmemcached Documentation
 .
@@ -75,7 +75,7 @@ Verify that keys that are being used fit within the design of the protocol being
 .B \-\-REMOVE_FAILED_SERVERS
 .UNINDENT
 .sp
-Enable the behavior MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS.
+Enable the behavior \fBMEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS\fP.
 .INDENT 0.0
 .TP
 .B \-\-BINARY\-PROTOCOL
@@ -87,7 +87,7 @@ Force all connections to use the binary protocol.
 .B \-\-BUFFER\-REQUESTS
 .UNINDENT
 .sp
-Enable MEMCACHED_BEHAVIOR_BUFFER_REQUESTS.
+Please see \fBMEMCACHED_BEHAVIOR_BUFFER_REQUESTS\fP.
 .INDENT 0.0
 .TP
 .B \-\-CONFIGURE\-FILE=
@@ -99,7 +99,7 @@ Provide a configuration file to be used to load requests. Beware that by using a
 .B \-\-CONNECT\-TIMEOUT=
 .UNINDENT
 .sp
-Enable MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT.
+Please see \fBMEMCACHED_BEHAVIOR_CONNECT_TIMEOUT\fP.
 .INDENT 0.0
 .TP
 .B \-\-DISTRIBUTION=
@@ -149,13 +149,13 @@ When adding new servers always calculate their distribution based on sorted nami
 .B \-\-SUPPORT\-CAS
 .UNINDENT
 .sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_SUPPORT_CAS
+See \fImemcached_behavior_set(3)\fP for \fBMEMCACHED_BEHAVIOR_SUPPORT_CAS\fP
 .INDENT 0.0
 .TP
 .B \-\-USE\-UDP
 .UNINDENT
 .sp
-See \fImemcached_behavior_set(3)\fP for MEMCACHED_BEHAVIOR_USE_UDP
+See \fImemcached_behavior_set(3)\fP for \fBMEMCACHED_BEHAVIOR_USE_UDP\fP
 .INDENT 0.0
 .TP
 .B \-\-NAMESPACE=
