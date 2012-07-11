@@ -52,7 +52,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
 
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
     initialize_binary_request(instance, request.message.header);
 
     if (reply)
@@ -84,7 +84,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
 
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
     if (memcached_instance_response_count(instance) > 0)
     {
@@ -115,7 +115,7 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
   memcached_return_t rc= MEMCACHED_SUCCESS;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
     libmemcached_io_vector_st vector[]=
     {

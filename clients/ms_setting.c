@@ -683,7 +683,7 @@ static void ms_build_distr()
         exit(1);
       }
 
-      if (! ms_setting.binary_prot
+      if (! ms_setting.binary_prot_
           && ((start_len > MAX_KEY_SIZE) || (end_len > MAX_KEY_SIZE)))
       {
         fprintf(stderr, "key length must be less than 250 bytes.\n");
@@ -880,7 +880,7 @@ static void ms_setting_slapmode_init_pre()
   ms_setting.reconnect= false;
   ms_setting.verbose= false;
   ms_setting.facebook_test= false;
-  ms_setting.binary_prot= false;
+  ms_setting.binary_prot_= false;
   ms_setting.stat_freq= 0;
   ms_setting.srv_str= NULL;
   ms_setting.cfg_file= NULL;

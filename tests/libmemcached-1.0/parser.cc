@@ -188,6 +188,7 @@ scanner_variable_t test_number_options[]= {
 };
 
 scanner_variable_t test_boolean_options[]= {
+  { ARRAY,  make_scanner_string("--FETCH-VERSION"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BINARY-PROTOCOL"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--BUFFER-REQUESTS"), scanner_string_null, NULL },
   { ARRAY,  make_scanner_string("--HASH-WITH-NAMESPACE"), scanner_string_null, NULL },

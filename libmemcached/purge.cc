@@ -79,7 +79,7 @@ private:
   int32_t& _origin;
 };
 
-bool memcached_purge(memcached_server_write_instance_st ptr)
+bool memcached_purge(org::libmemcached::Instance* ptr)
 {
   memcached_st *root= (memcached_st *)ptr->root;
 

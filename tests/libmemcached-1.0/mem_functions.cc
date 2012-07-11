@@ -299,9 +299,9 @@ static memcached_return_t server_display_unsort_function(const memcached_st*,
   /* Do Nothing */
   uint32_t x= *((uint32_t *)(context));
 
-  if (! (test_ports[x] == server->port))
+  if (! (test_ports[x] == memcached_server_port(server)))
   {
-    fprintf(stderr, "%lu -> %lu\n", (unsigned long)test_ports[x], (unsigned long)server->port);
+    fprintf(stderr, "%lu -> %lu\n", (unsigned long)test_ports[x], (unsigned long)memcached_server_port(server));
     return MEMCACHED_FAILURE;
   }
 
@@ -390,7 +390,7 @@ test_return_t clone_test(memcached_st *memc)
       test_true(memc_clone->flags.buffer_requests == memc->flags.buffer_requests);
       test_true(memc_clone->flags.use_sort_hosts == memc->flags.use_sort_hosts);
       test_true(memc_clone->flags.verify_key == memc->flags.verify_key);
-      test_true(memc_clone->ketama.weighted == memc->ketama.weighted);
+      test_true(memc_clone->ketama.weighted_ == memc->ketama.weighted_);
       test_true(memc_clone->flags.binary_protocol == memc->flags.binary_protocol);
       test_true(memc_clone->flags.hash_with_namespace == memc->flags.hash_with_namespace);
       test_true(memc_clone->flags.reply == memc->flags.reply);
@@ -614,7 +614,7 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
 
   for (libtest::vchar_ptr_t::iterator iter= keys.begin();
        iter != keys.end(); 
-       iter++)
+       ++iter)
   {
     test_compare_hint(MEMCACHED_SUCCESS,
                       memcached_set(memc,
@@ -4044,11 +4044,11 @@ test_return_t regression_bug_447342(memcached_st *memc)
  */
   memcached_server_instance_st instance_one= memcached_server_instance_by_position(memc, 0);
   memcached_server_instance_st instance_two= memcached_server_instance_by_position(memc, 2);
-  in_port_t port0= instance_one->port;
-  in_port_t port2= instance_two->port;
+  in_port_t port0= instance_one->port();
+  in_port_t port2= instance_two->port();
 
-  ((memcached_server_write_instance_st)instance_one)->port= 0;
-  ((memcached_server_write_instance_st)instance_two)->port= 0;
+  ((memcached_server_write_instance_st)instance_one)->port(0);
+  ((memcached_server_write_instance_st)instance_two)->port(0);
 
   test_compare(MEMCACHED_SUCCESS,
                memcached_mget(memc, 
@@ -4060,8 +4060,8 @@ test_return_t regression_bug_447342(memcached_st *memc)
   test_compare(counter, keys.size());
 
   /* restore the memc handle */
-  ((memcached_server_write_instance_st)instance_one)->port= port0;
-  ((memcached_server_write_instance_st)instance_two)->port= port2;
+  ((memcached_server_write_instance_st)instance_one)->port(port0);
+  ((memcached_server_write_instance_st)instance_two)->port(port2);
 
   memcached_quit(memc);
 
@@ -4076,8 +4076,8 @@ test_return_t regression_bug_447342(memcached_st *memc)
   }
 
   memcached_quit(memc);
-  ((memcached_server_write_instance_st)instance_one)->port= 0;
-  ((memcached_server_write_instance_st)instance_two)->port= 0;
+  ((memcached_server_write_instance_st)instance_one)->port(0);
+  ((memcached_server_write_instance_st)instance_two)->port(0);
 
   /* now retry the command, this time we should have cache misses */
   test_compare(MEMCACHED_SUCCESS,
@@ -4090,8 +4090,8 @@ test_return_t regression_bug_447342(memcached_st *memc)
   test_compare(counter, (unsigned int)(keys.size() >> 1));
 
   /* restore the memc handle */
-  ((memcached_server_write_instance_st)instance_one)->port= port0;
-  ((memcached_server_write_instance_st)instance_two)->port= port2;
+  ((memcached_server_write_instance_st)instance_one)->port(port0);
+  ((memcached_server_write_instance_st)instance_two)->port(port2);
 
   return TEST_SUCCESS;
 }

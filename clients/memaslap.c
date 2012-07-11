@@ -594,7 +594,7 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_BINARY_PROTOCOL:       /* --binary or -B */
-      ms_setting.binary_prot= true;
+      ms_setting.binary_prot_= true;
       break;
 
     case OPT_TPS:       /* --tps or -P */
@@ -800,7 +800,6 @@ static void ms_print_memslap_stats(struct timeval *start_time,
 /* the loop of the main thread, wait the work threads to complete */
 static void ms_monitor_slap_mode()
 {
-  int second= 0;
   struct timeval start_time, end_time;
 
   /* Wait all the threads complete initialization. */
@@ -828,6 +827,7 @@ static void ms_monitor_slap_mode()
   /* running in "run time" mode, user specify run time */
   if (ms_setting.run_time > 0)
   {
+    int second= 0;
     gettimeofday(&start_time, NULL);
     while (1)
     {

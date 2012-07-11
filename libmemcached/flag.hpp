@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -36,5 +36,24 @@
 
 #pragma once
 
-bool memcached_is_consistent_distribution(const memcached_st*);
-bool _is_auto_eject_host(const memcached_st *ptr);
+enum memcached_flag_t
+{
+  MEMCACHED_FLAG_AUTO_EJECT_HOSTS,
+  MEMCACHED_FLAG_BINARY_PROTOCOL,
+  MEMCACHED_FLAG_BUFFER_REQUESTS,
+  MEMCACHED_FLAG_HASH_WITH_NAMESPACE,
+  MEMCACHED_FLAG_NO_BLOCK,
+  MEMCACHED_FLAG_REPLY,
+  MEMCACHED_FLAG_RANDOMIZE_REPLICA_READ,
+  MEMCACHED_FLAG_SUPPORT_CAS,
+  MEMCACHED_FLAG_TCP_NODELAY,
+  MEMCACHED_FLAG_USE_SORT_HOSTS,
+  MEMCACHED_FLAG_USE_UDP,
+  MEMCACHED_FLAG_VERIFY_KEY,
+  MEMCACHED_FLAG_TCP_KEEPALIVE,
+  MEMCACHED_FLAG_IS_AES,
+  MEMCACHED_FLAG_IS_FETCHING_VERSION
+};
+
+bool memcached_flag(const memcached_st&, const memcached_flag_t);
+void memcached_flag(memcached_st&, const memcached_flag_t, const bool);

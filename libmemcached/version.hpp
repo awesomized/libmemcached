@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libmemcached library
+ *  LibMemcached
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/ All
+ *  rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -34,7 +35,10 @@
  *
  */
 
+/*
+  Common include file for libmemached
+*/
+
 #pragma once
 
-bool memcached_is_consistent_distribution(const memcached_st*);
-bool _is_auto_eject_host(const memcached_st *ptr);
+void memcached_version_instance(org::libmemcached::Instance*);

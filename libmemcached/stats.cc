@@ -346,7 +346,7 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
                                              const char *args,
                                              const size_t args_length,
-                                             memcached_server_write_instance_st instance,
+                                             org::libmemcached::Instance* instance,
                                              struct local_context *check)
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
@@ -428,7 +428,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
    * memcached_response will decrement the counter, so I need to reset it..
    * todo: look at this and try to find a better solution.  
    * */
-  instance->cursor_active= 0;
+  instance->cursor_active_= 0;
 
   return MEMCACHED_SUCCESS;
 }
@@ -436,7 +436,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
                                             const char *args,
                                             const size_t args_length,
-                                            memcached_server_write_instance_st instance,
+                                            org::libmemcached::Instance* instance,
                                             struct local_context *check)
 {
   libmemcached_io_vector_st vector[]=
@@ -552,7 +552,7 @@ memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_retu
     stat_instance->pid= -1;
     stat_instance->root= self;
 
-    memcached_server_write_instance_st instance= memcached_server_instance_fetch(self, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(self, x);
 
     memcached_return_t temp_return;
     if (memcached_is_binary(self))
@@ -613,7 +613,7 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
 
     if (memcached_success(rc))
     {
-      memcached_server_write_instance_st instance= memcached_server_instance_fetch(memc_ptr, 0);
+      org::libmemcached::Instance* instance= memcached_instance_fetch(memc_ptr, 0);
       if (memc.flags.binary_protocol)
       {
         rc= binary_stats_fetch(memc_stat, args, args_length, instance, NULL);
@@ -675,7 +675,7 @@ void memcached_stat_free(const memcached_st *, memcached_stat_st *memc_stat)
 }
 
 static memcached_return_t call_stat_fn(memcached_st *ptr,
-                                       memcached_server_write_instance_st instance,
+                                       org::libmemcached::Instance* instance,
                                        void *context)
 {
   memcached_return_t rc;

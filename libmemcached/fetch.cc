@@ -191,7 +191,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   }
 
   *error= MEMCACHED_MAXIMUM_RETURN; // We use this to see if we ever go into the loop
-  memcached_instance_st *server;
+  org::libmemcached::Instance *server;
   while ((server= memcached_io_get_readable_server(ptr)))
   {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];

@@ -120,7 +120,7 @@ in_port_t get_free_port()
 
   int retries= 1024;
 
-  while (retries--)
+  while (--retries)
   {
     int sd;
     if ((sd= socket(AF_INET, SOCK_STREAM, 0)) != -1)
@@ -155,9 +155,19 @@ in_port_t get_free_port()
   }
 
   // We handle the case where if we max out retries, we still abort.
-  if (ret_port <= 1024)
+  if (retries == 0)
+  {
+    fatal_message("No port could be found, exhausted retry");
+  }
+
+  if (ret_port == 0)
   {
     fatal_message("No port could be found");
+  }
+
+  if (ret_port <= 1024)
+  {
+    fatal_message("No port could be found, though some where available below or at 1024");
   }
 
   return ret_port;

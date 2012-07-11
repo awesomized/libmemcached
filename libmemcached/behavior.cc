@@ -42,9 +42,9 @@
 #include <ctime>
 #include <sys/types.h>
 
-static bool __is_ketama(memcached_st *ptr)
+bool memcached_is_consistent_distribution(const memcached_st* memc)
 {
-  switch (ptr->distribution)
+  switch (memc->distribution)
   {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
@@ -355,9 +355,9 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->flags.verify_key;
 
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
-    if (__is_ketama(ptr))
+    if (memcached_is_consistent_distribution(ptr))
     {
-      return ptr->ketama.weighted;
+      return memcached_is_weighted_ketama(ptr);
     }
     return false;
 
@@ -365,7 +365,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
     return ptr->distribution;
 
   case MEMCACHED_BEHAVIOR_KETAMA:
-    return __is_ketama(ptr);
+    return memcached_is_consistent_distribution(ptr);
 
   case MEMCACHED_BEHAVIOR_HASH:
     return hashkit_get_function(&ptr->hashkit);
@@ -411,7 +411,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
         return (uint64_t) ptr->send_size;
       }
 
-      memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, 0);
+      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
 
       if (instance) // If we have an instance we test, otherwise we just set and pray
       {
@@ -445,7 +445,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
       if (ptr->recv_size != -1) // If value is -1 then we are using the default
         return (uint64_t) ptr->recv_size;
 
-      memcached_server_write_instance_st instance= memcached_server_instance_fetch(ptr, 0);
+      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, 0);
 
       /**
         @note REFACTOR
@@ -522,7 +522,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
 
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
-    ptr->ketama.weighted= false;
+    memcached_set_weighted_ketama(ptr, false);
     break;
 
   case MEMCACHED_DISTRIBUTION_RANDOM:
@@ -532,7 +532,7 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcac
     break;
 
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
-    ptr->ketama.weighted= true;
+    memcached_set_weighted_ketama(ptr, true);
     break;
 
   case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:

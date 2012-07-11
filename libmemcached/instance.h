@@ -54,16 +54,49 @@
 #define MEMCACHED_NI_MAXSERV 32
 #endif
 
-struct memcached_instance_st {
+#ifdef __cplusplus
+
+namespace org {
+namespace libmemcached {
+
+struct Instance {
+  in_port_t port() const
+  {
+    return port_;
+  }
+
+  void port(in_port_t arg)
+  {
+    port_= arg;
+  }
+
+  void mark_server_as_clean()
+  {
+    server_failure_counter= 0;
+    next_retry= 0;
+  }
+
+  void disable()
+  {
+  }
+
+  void enable()
+  {
+  }
+
+  uint32_t response_count() const
+  {
+    return cursor_active_;
+  }
+
   struct {
     bool is_allocated:1;
     bool is_initialized:1;
     bool is_shutting_down:1;
     bool is_dead:1;
   } options;
-  uint32_t number_of_hosts;
-  uint32_t cursor_active;
-  in_port_t port;
+  uint32_t cursor_active_;
+  in_port_t port_;
   memcached_socket_t fd;
   uint32_t io_bytes_sent; /* # bytes sent since last read */
   uint32_t request_id;
@@ -96,3 +129,8 @@ struct memcached_instance_st {
   char write_buffer[MEMCACHED_MAX_BUFFER];
   char hostname[MEMCACHED_NI_MAXHOST];
 };
+
+} // namespace libmemcached
+} // namespace org
+
+#endif

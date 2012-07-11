@@ -264,3 +264,15 @@ tests_testplus_DEPENDENCIES+= $(TESTS_LDADDS)
 tests_testplus_LDADD+= $(tests_testplus_DEPENDENCIES)
 check_PROGRAMS+= tests/testplus
 noinst_PROGRAMS+= tests/testplus
+
+test-plus: tests/testplus
+	@tests/testplus
+
+gdb-plus: tests/testplus
+	$(DEBUG_COMMAND) tests/testplus
+
+valgrind-plus: tests/testplus
+	@$(VALGRIND_COMMAND) tests/testplus
+
+helgrind-plus: tests/testplus
+	@$(HELGRIND_COMMAND) tests/testplus

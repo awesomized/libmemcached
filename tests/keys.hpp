@@ -85,7 +85,7 @@ public:
   {
     for (libtest::vchar_ptr_t::iterator iter= _keys.begin();
          iter != _keys.end();
-         iter++)
+         ++iter)
     {
       ::free(*iter);
     }

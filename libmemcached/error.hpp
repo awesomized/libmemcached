@@ -45,64 +45,46 @@
 #define TOSTRING(x) STRINGIFY(x)
 #define MEMCACHED_AT __FILE__ ":" TOSTRING(__LINE__)
 
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_set_parser_error(memcached_st& memc,
                                               const char *at,
                                               const char *format, ...);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at);
+memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_instance_st&, memcached_return_t rc, const char *at);
+memcached_return_t memcached_set_error(org::libmemcached::Instance&, memcached_return_t rc, const char *at);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at, const char *str, size_t length);
+memcached_return_t memcached_set_error(memcached_st&, memcached_return_t rc, const char *at, const char *str, size_t length);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_instance_st&, memcached_return_t rc, const char *at, const char *str, size_t length);
+memcached_return_t memcached_set_error(org::libmemcached::Instance&, memcached_return_t rc, const char *at, const char *str, size_t length);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str);
+memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_error(memcached_instance_st&, memcached_return_t rc, const char *at, memcached_string_t& str);
+memcached_return_t memcached_set_error(org::libmemcached::Instance&, memcached_return_t rc, const char *at, memcached_string_t& str);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, memcached_string_t& str);
+memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, memcached_string_t& str);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_instance_st&, int local_errno, const char *at, memcached_string_t& str);
+memcached_return_t memcached_set_errno(org::libmemcached::Instance&, int local_errno, const char *at, memcached_string_t& str);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, const char *str, size_t length);
+memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, const char *str, size_t length);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_instance_st&, int local_errno, const char *at, const char *str, size_t length);
+memcached_return_t memcached_set_errno(org::libmemcached::Instance&, int local_errno, const char *at, const char *str, size_t length);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at);
+memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at);
 
-LIBMEMCACHED_LOCAL
-  memcached_return_t memcached_set_errno(memcached_instance_st&, int local_errno, const char *at);
+memcached_return_t memcached_set_errno(org::libmemcached::Instance&, int local_errno, const char *at);
 
-LIBMEMCACHED_LOCAL
 bool memcached_has_current_error(memcached_st&);
 
-LIBMEMCACHED_LOCAL
-bool memcached_has_current_error(memcached_instance_st&);
+bool memcached_has_current_error(org::libmemcached::Instance&);
 
-LIBMEMCACHED_LOCAL
 void memcached_error_free(memcached_st&);
 
-void memcached_error_free(memcached_server_st& self);
+void memcached_error_free(memcached_server_st&);
 
-LIBMEMCACHED_LOCAL
-void memcached_error_free(memcached_instance_st&);
+void memcached_error_free(org::libmemcached::Instance& self);
 
-LIBMEMCACHED_LOCAL
-memcached_error_t *memcached_error_copy(const memcached_instance_st&);
+memcached_error_t *memcached_error_copy(const org::libmemcached::Instance&);
 
-memcached_return_t memcached_instance_error_return(memcached_instance_st*);
+memcached_return_t memcached_instance_error_return(org::libmemcached::Instance*);
 
 #endif

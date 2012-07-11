@@ -358,7 +358,7 @@ static int ms_conn_init(ms_conn_t *c,
   c->mlget_task.mlget_num= 0;
   c->mlget_task.value_index= -1;         /* default invalid value */
 
-  if (ms_setting.binary_prot)
+  if (ms_setting.binary_prot_)
   {
     c->protocol= binary_prot;
   }

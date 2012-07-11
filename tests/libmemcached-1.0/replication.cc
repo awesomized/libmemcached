@@ -124,10 +124,9 @@ test_return_t replication_get_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc); ++host)
   {
     memcached_st *memc_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(memc_clone, host);
+    org::libmemcached::Instance* instance= (org::libmemcached::Instance*)memcached_server_instance_by_position(memc_clone, host);
 
-    ((memcached_server_write_instance_st)instance)->port= 0;
+    instance->port(0);
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -187,9 +186,8 @@ test_return_t replication_mget_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc_clone); host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st instance=
-      memcached_server_instance_by_position(new_clone, host);
-    ((memcached_server_write_instance_st)instance)->port= 0;
+    memcached_server_instance_st instance= memcached_server_instance_by_position(new_clone, host);
+    ((memcached_server_write_instance_st)instance)->port(0);
 
     for (int x= 'a'; x <= 'z'; ++x)
     {
@@ -295,10 +293,15 @@ test_return_t replication_delete_test(memcached_st *memc_just_cloned)
   /* Delete the items from all of the servers except 1, we use the non replicated memc so that we know we deleted the keys */
   for (size_t x= 0; x < test_array_length(keys); ++x)
   {
-    test_compare(MEMCACHED_SUCCESS,
-                 memcached_delete(memc_replicated,
-                                  test_string_make_from_cstr(keys[x]), // Keys
-                                  0));
+    memcached_return_t del_rc= memcached_delete(memc_replicated,
+                                                test_string_make_from_cstr(keys[x]), // Keys
+                                                0);
+    if (del_rc == MEMCACHED_SUCCESS or del_rc == MEMCACHED_NOTFOUND)
+    { }
+    else 
+    {
+      test_compare(MEMCACHED_SUCCESS, del_rc);
+    }
   }
 
   test_compare(TEST_SUCCESS, confirm_keys_dont_exist(memc_replicated, keys, test_array_length(keys)));
@@ -332,7 +335,7 @@ test_return_t replication_randomize_mget_fail_test(memcached_st *memc)
   // We need to now cause a failure in one server, never do this in your own
   // code.
   close(memc_clone->servers[1].fd);
-  memc_clone->servers[1].port= 1;
+  memc_clone->servers[1].port(1);
   memc_clone->servers[1].address_info_next= NULL;
 
   for (int x= int(MEMCACHED_SUCCESS); x < int(MEMCACHED_MAXIMUM_RETURN); ++x)
