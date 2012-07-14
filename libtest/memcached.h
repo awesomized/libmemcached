@@ -49,3 +49,4 @@ libtest::Server *build_memcached_sasl(const std::string& hostname, const in_port
 libtest::Server *build_memcached_sasl_socket(const std::string& socket_file, const in_port_t try_port, const std::string& username, const std::string& password);
 
 }
+

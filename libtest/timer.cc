@@ -35,8 +35,11 @@
  */
 
 #include <config.h>
+
 #include <libtest/timer.hpp>
+
 #include <ctime>
+#include <iomanip>
 
 namespace libtest {
 
@@ -45,9 +48,18 @@ std::ostream& operator<<(std::ostream& output, const libtest::Timer& arg)
   struct timespec temp;
   arg.difference(temp);
 
-  output << temp.tv_sec;
+  if (temp.tv_sec > 60)
+  {
+    output << temp.tv_sec / 60;
+    output << "." << temp.tv_sec % 60;
+  }
+  else
+  {
+    output << temp.tv_sec;
+  }
+
   output << ":";
-  output << temp.tv_nsec;
+  output << std::setfill('0') << std::setw(9) << temp.tv_nsec;
 
   return output;
 }

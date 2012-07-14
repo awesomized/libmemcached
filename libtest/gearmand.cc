@@ -69,11 +69,7 @@ class Gearmand : public libtest::Server
 {
 private:
 public:
-  Gearmand(const std::string& host_arg, in_port_t port_arg) :
-    libtest::Server(host_arg, port_arg, GEARMAND_BINARY, true)
-  {
-    set_pid_file();
-  }
+  Gearmand(const std::string& host_arg, in_port_t port_arg, const char* binary= GEARMAND_BINARY);
 
   bool ping()
   {
@@ -94,7 +90,11 @@ public:
         gearman_client_free(client);
         return true;
       }
-      Error << hostname().c_str() << ":" << port() << " was " << gearman_strerror(rc) << " extended: " << gearman_client_error(client);
+      
+      if (out_of_ban_killed() == false)
+      {
+        Error << hostname().c_str() << ":" << port() << " was " << gearman_strerror(rc) << " extended: " << gearman_client_error(client);
+      }
     }
     else
     {
@@ -145,6 +145,12 @@ public:
   bool build(size_t argc, const char *argv[]);
 };
 
+Gearmand::Gearmand(const std::string& host_arg, in_port_t port_arg, const char* binary_arg) :
+  libtest::Server(host_arg, port_arg, binary_arg, true)
+{
+  set_pid_file();
+}
+
 bool Gearmand::build(size_t argc, const char *argv[])
 {
   if (getuid() == 0 or geteuid() == 0)
@@ -167,6 +173,11 @@ namespace libtest {
 libtest::Server *build_gearmand(const char *hostname, in_port_t try_port)
 {
   return new Gearmand(hostname, try_port);
+}
+
+libtest::Server *build_gearmand(const char *hostname, in_port_t try_port, const char* binary)
+{
+  return new Gearmand(hostname, try_port, binary);
 }
 
 }

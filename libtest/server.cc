@@ -99,7 +99,8 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
   _is_socket(is_socket_arg),
   _port(port_arg),
   _hostname(host_arg),
-  _app(executable, _is_libtool)
+  _app(executable, _is_libtool),
+  out_of_ban_killed_(false)
 {
 }
 
@@ -111,7 +112,6 @@ bool Server::check()
 {
   _app.slurp();
   _app.check();
-
   return true;
 }
 
@@ -401,6 +401,7 @@ bool Server::set_log_file()
 
 bool Server::args(Application& app)
 {
+
   // Set a log file if it was requested (and we can)
   if (has_log_file_option())
   {
