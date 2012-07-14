@@ -42,6 +42,13 @@
 #define __PRETTY_FUNCTION__ __func__
 #endif
 
+#define YATL_STRINGIFY(x) #x
+#define YATL_TOSTRING(x) YATL_STRINGIFY(x)
+#define YATL_AT __FILE__ ":" YATL_TOSTRING(__LINE__)
+#define YATL_AT_PARAM __func__, AT
+#define YATL_UNIQUE __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique"
+#define YATL_UNIQUE_FUNC_NAME __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique_func"
+
 #define LIBYATL_DEFAULT_PARAM __FILE__, __LINE__, __PRETTY_FUNCTION__
 
 namespace libtest {

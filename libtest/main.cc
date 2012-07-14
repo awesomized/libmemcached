@@ -316,6 +316,11 @@ int main(int argc, char *argv[])
     std::cerr << "std::exception:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
+  catch (char const*)
+  {
+    std::cerr << "Exception:" << std::endl;
+    exit_code= EXIT_FAILURE;
+  }
   catch (...)
   {
     std::cerr << "Unknown exception halted execution." << std::endl;

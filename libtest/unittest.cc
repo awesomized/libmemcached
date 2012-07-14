@@ -726,6 +726,21 @@ static test_return_t check_dns_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t Timer_TEST(void *)
+{
+  int64_t minutes= random() % 50;
+  minutes++;
+
+  Timer check;
+
+  check.reset();
+  check.offset(minutes, 2, 200);
+
+  test_compare(check.minutes(), minutes);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t lookup_true_TEST(void *)
 {
   test_warn(libtest::lookup("exist.gearman.info"), "dns is not currently working");
@@ -913,6 +928,11 @@ test_st create_tmpfile_TESTS[] ={
   {0, 0, 0}
 };
 
+test_st timer_TESTS[] ={
+  {"libtest::Timer", 0, Timer_TEST },
+  {0, 0, 0}
+};
+
 test_st dns_TESTS[] ={
   {"libtest::lookup(true)", 0, lookup_true_TEST },
   {"libtest::lookup(false)", 0, lookup_false_TEST },
@@ -979,6 +999,7 @@ collection_st collection[] ={
   {"number_of_cpus()", 0, 0, number_of_cpus_TESTS },
   {"create_tmpfile()", 0, 0, create_tmpfile_TESTS },
   {"dns", 0, 0, dns_TESTS },
+  {"libtest::Timer", 0, 0, timer_TESTS },
   {0, 0, 0, 0}
 };
 

@@ -97,6 +97,7 @@ public:
     libtest::Server(host_arg, port_arg,
                     MEMCACHED_BINARY, is_memcached_libtool(), is_socket_arg)
   {
+    set_pid_file();
   }
 
   virtual const char *sasl() const
@@ -114,13 +115,27 @@ public:
     return _username;
   }
 
-  virtual bool has_pid_file() const
+  bool wait_for_pidfile() const
   {
-    return false;
+    Wait wait(pid(), 4);
+
+    return wait.successful();
   }
 
   bool ping()
   {
+#if 0
+    // Memcached is slow to start, so we need to do this
+    if (pid_file().empty() == false)
+    {
+      if (wait_for_pidfile() == false)
+      {
+        Error << "Pidfile was not found:" << pid_file() << " :" << running();
+        return -1;
+      }
+    }
+#endif
+
     memcached_return_t rc;
     bool ret;
 
