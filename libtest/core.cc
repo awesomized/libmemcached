@@ -42,8 +42,11 @@ namespace libtest {
 
 void create_core(void)
 {
-#ifdef TARGET_OS_OSX 
-  return;
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  if (TARGET_OS_OSX)
+  {
+    return;
+  }
 #endif
   if (getenv("YATL_COREDUMP"))
   {

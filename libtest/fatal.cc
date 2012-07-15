@@ -54,7 +54,7 @@ fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const cha
 
     strncpy(_mesg, last_error, sizeof(_mesg));
 
-    snprintf(_error_message, sizeof(_error_message), "%s", last_error);
+    snprintf(_error_message, sizeof(_error_message), "%.*s", last_error_length, last_error);
   }
 
 static bool _disabled= false;

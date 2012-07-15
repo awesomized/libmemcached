@@ -1,3 +1,6 @@
+m4_include([libtest/m4/ax_lib_mysql.m4])
+m4_include([libtest/m4/ax_prog_mysqld.m4])
+
 AX_LIB_MYSQL([5.0])
 AM_CONDITIONAL(HAVE_LIBMYSQL, test "x${found_mysql}" = "xyes")
 AS_IF([test "x${found_mysql}" = "xyes"],

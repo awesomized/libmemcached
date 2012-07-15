@@ -287,17 +287,16 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
 
     server->build(argc, argv);
 
+#if 0
     if (false)
     {
       Out << "Pausing for startup, hit return when ready.";
       std::string gdb_command= server->base_command();
-      std::string options;
-#if 0
-      Out << "run " << server->args(options);
-#endif
       getchar();
     }
-    else if (server->start() == false)
+    else
+#endif
+      if (server->start() == false)
     {
       delete server;
       return false;
@@ -397,17 +396,18 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
 
     server->build(argc, argv);
 
+#if 0
     if (false)
     {
       Out << "Pausing for startup, hit return when ready.";
       std::string gdb_command= server->base_command();
       std::string options;
-#if 0
       Out << "run " << server->args(options);
-#endif
       getchar();
     }
-    else if (server->start() == false)
+    else
+#endif
+      if (server->start() == false)
     {
       Error << "Failed to start " << *server;
       delete server;

@@ -41,4 +41,10 @@ namespace libtest {
 LIBTEST_API
 bool test_is_local();
 
+LIBTEST_API
+void is_massive(bool);
+
+LIBTEST_API
+bool is_massive();
+
 } // namespace libtest

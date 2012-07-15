@@ -741,7 +741,7 @@ void Application::create_argv(const char *args[])
 
   built_argv[x++]= strdup(_exectuble_with_path.c_str());
 
-  for (Options::const_iterator iter= _options.begin(); iter != _options.end(); iter++)
+  for (Options::const_iterator iter= _options.begin(); iter != _options.end(); ++iter)
   {
     built_argv[x++]= strdup((*iter).first.c_str());
     if ((*iter).second.empty() == false)

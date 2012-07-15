@@ -179,7 +179,6 @@ static test_return_t var_drizzle_exists_test(void *)
 static test_return_t var_tmp_test(void *)
 {
   FILE *file= fopen("var/tmp/junk", "w+");
-  char buffer[1024];
   test_true(file);
   fclose(file);
   return TEST_SUCCESS;

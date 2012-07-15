@@ -45,5 +45,16 @@ bool test_is_local()
   return (getenv("LIBTEST_LOCAL"));
 }
 
+static bool _is_massive= false;
+void is_massive(bool arg)
+{
+  _is_massive= arg;
+}
+
+bool is_massive()
+{
+  return _is_massive;
+}
+
 } // namespace libtest
 

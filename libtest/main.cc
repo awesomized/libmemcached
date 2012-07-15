@@ -187,9 +187,19 @@ int main(int argc, char *argv[])
     }
   }
 
+  if ((bool(getenv("YATL_RUN_MASSIVE_TESTS"))) or opt_massive)
+  {
+    opt_massive= true;
+  }
+
   if (opt_quiet)
   {
     close(STDOUT_FILENO);
+  }
+
+  if (opt_massive)
+  {
+    is_massive(opt_massive);
   }
 
   char buffer[1024];
