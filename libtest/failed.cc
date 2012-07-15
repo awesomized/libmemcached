@@ -46,7 +46,7 @@
 namespace libtest {
 
 struct failed_st {
-  failed_st(const std::string collection_arg, const std::string test_arg) :
+  failed_st(const std::string& collection_arg, const std::string& test_arg) :
     collection(collection_arg),
     test(test_arg)
   { }
@@ -70,7 +70,7 @@ public:
 
   void print_failed_test(void)
   {
-    for (Failures::iterator iter= failures.begin(); iter != failures.end(); iter++)
+    for (Failures::iterator iter= failures.begin(); iter != failures.end(); ++iter)
     {
       Error << "\t" << (*iter).collection << " " << (*iter).test;
     }
