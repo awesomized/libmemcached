@@ -40,7 +40,7 @@
 
 #ifdef __cplusplus
 
-namespace org { namespace libmemcached { class Instance; } }
+namespace org { namespace libmemcached { struct Instance; } }
 
 struct memcached_st;
 struct memcached_stat_st;

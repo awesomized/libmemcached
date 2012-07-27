@@ -59,6 +59,7 @@
 namespace org {
 namespace libmemcached {
 
+// @todo Complete class transformation
 struct Instance {
   in_port_t port() const
   {

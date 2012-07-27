@@ -98,7 +98,7 @@ AC_DEFUN([PANDORA_WARNINGS],[
     AC_CACHE_CHECK([whether it is safe to use -floop-parallelize-all],
       [ac_cv_safe_to_use_floop_parallelize_all_],
       [save_CFLAGS="$CFLAGS"
-       CFLAGS="-floop-parallelize-all ${AM_CFLAGS} ${CFLAGS}"
+       CFLAGS="-Werror -floop-parallelize-all ${AM_CFLAGS} ${CFLAGS}"
        AC_COMPILE_IFELSE(
          [AC_LANG_PROGRAM([],[])],
          [ac_cv_safe_to_use_floop_parallelize_all_=yes],

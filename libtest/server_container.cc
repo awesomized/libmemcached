@@ -182,7 +182,7 @@ bool server_startup_st::validate()
 
 bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message)
 {
-  construct.start_server(server_type, try_port, argc, argv, opt_startup_message);
+  return construct.start_server(server_type, try_port, argc, argv, opt_startup_message);
 }
 
 bool server_startup_st::start_server(const std::string& server_type, in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message)
