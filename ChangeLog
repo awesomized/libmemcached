@@ -1,7 +1,6 @@
-1.0.10
+1.0.10 Sat Jul 28 22:32:14 PDT 2012
 * --disable-assert has been removed from configure, and --enable-assert has been added in its place.
 * Compiling fixes for Clang on OSX Mountain Lion.
-
 
 1.0.9 Wed Jul  4 22:46:19 EDT 2012
 * Faster close on socket.
