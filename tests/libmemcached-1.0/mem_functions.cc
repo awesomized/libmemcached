@@ -4474,6 +4474,26 @@ test_return_t regression_bug_490486(memcached_st *original_memc)
   return TEST_SUCCESS;
 }
 
+test_return_t regression_1021819_TEST(memcached_st *original)
+{
+  memcached_st *memc= memcached_clone(NULL, original);
+  test_true(memc);
+
+  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 2000000), MEMCACHED_SUCCESS);
+
+  memcached_return_t rc;
+
+  memcached_get(memc,
+                test_literal_param(__func__),
+                NULL, NULL, &rc);
+
+  test_compare(rc, MEMCACHED_NOTFOUND);
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 test_return_t regression_bug_583031(memcached_st *)
 {
   memcached_st *memc= memcached_create(NULL);
