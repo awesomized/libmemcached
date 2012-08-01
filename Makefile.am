@@ -69,7 +69,7 @@ merge-clean:
 	@find ./ | $(GREP) \.gz | xargs rm -f
 	@find ./ | $(GREP) \.orig | xargs rm -f
 	@find ./ | $(GREP) \.rej | xargs rm -f
-	@find ./ | $(GREP) \.rpm | xargs rm -f
+	@rm *\.rpm
 	@find ./ | $(GREP) \.THIS | xargs rm -f
 	@find ./ | $(GREP) \.OTHER | xargs rm -f
 	@find ./ | $(GREP) \.BASE | xargs rm -f
