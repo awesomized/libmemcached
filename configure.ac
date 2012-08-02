@@ -298,13 +298,13 @@ AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEX
 
 AX_APPEND_COMPILE_FLAGS([-Werror -Wall])
 AX_APPEND_COMPILE_FLAGS([-Werror -Wextra])
+AX_APPEND_COMPILE_FLAGS([-Werror -Wmaybe-uninitialized])
+AX_APPEND_COMPILE_FLAGS([-Werror -Wsign-compare])
+AX_APPEND_COMPILE_FLAGS([-Werror -Wunused-result])
+AX_APPEND_COMPILE_FLAGS([-Werror -Wunused-variable])
+AX_APPEND_COMPILE_FLAGS([-Werror -floop-parallelize-all])
 AX_APPEND_COMPILE_FLAGS([-Werror -fstack-protector-all])
 AX_APPEND_COMPILE_FLAGS([-Werror -ggdb])
-AX_APPEND_COMPILE_FLAGS([-Werror -floop-parallelize-all])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wsign-compare])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wmaybe-uninitialized])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wunused-variable])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wsign-compare])
 
 AC_CONFIG_FILES([
   Makefile

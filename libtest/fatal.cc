@@ -86,7 +86,7 @@ void fatal::increment_disabled_counter()
 }
 
 disconnected::disconnected(const char *file_arg, int line_arg, const char *func_arg,
-                           const char *instance, const in_port_t port,
+                           const std::string& instance, const in_port_t port,
                            const char *format, ...) :
   std::runtime_error(func_arg),
   _port(port),
@@ -94,14 +94,13 @@ disconnected::disconnected(const char *file_arg, int line_arg, const char *func_
   _file(file_arg),
   _func(func_arg)
 {
-  strncpy(_instance, instance, sizeof(_instance));
   va_list args;
   va_start(args, format);
   char last_error[BUFSIZ];
   (void)vsnprintf(last_error, sizeof(last_error), format, args);
   va_end(args);
 
-  snprintf(_error_message, sizeof(_error_message), "%s", last_error);
+  snprintf(_error_message, sizeof(_error_message), "%s:%u %s", instance.c_str(), uint32_t(port), last_error);
 }
 
 } // namespace libtest

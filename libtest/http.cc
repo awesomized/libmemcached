@@ -96,6 +96,8 @@ extern "C" size_t
 
 static void init(CURL *curl, const std::string& url)
 {
+  (void)curl;
+  (void)url;
   if (HAVE_LIBCURL)
   {
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL

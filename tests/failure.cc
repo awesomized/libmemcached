@@ -59,7 +59,7 @@ using namespace std;
 using namespace memcache;
 using namespace libtest;
 
-Framework *global_framework= NULL;
+libtest::Framework *global_framework= NULL;
 
 static test_return_t shutdown_servers(memcached_st *memc)
 {
@@ -220,7 +220,7 @@ collection_st collection[] ={
 
 #include "tests/libmemcached_world.h"
 
-void get_world(Framework *world)
+void get_world(libtest::Framework* world)
 {
   world->servers().set_servers_to_run(1);
 

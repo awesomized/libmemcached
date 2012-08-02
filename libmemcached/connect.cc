@@ -259,6 +259,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
                       &waittime, (socklen_t)sizeof(struct timeval));
+    (void)(error);
     assert(error == 0);
   }
 #endif
@@ -273,6 +274,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
                           &waittime, (socklen_t)sizeof(struct timeval));
+    (void)(error);
     assert(error == 0);
   }
 #endif
@@ -300,6 +302,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     linger.l_linger= 0; /* By default on close() just drop the socket */
     int error= setsockopt(server->fd, SOL_SOCKET, SO_LINGER,
                           &linger, (socklen_t)sizeof(struct linger));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -309,6 +312,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
                           &flag, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -318,6 +322,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_KEEPALIVE,
                       &flag, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -326,6 +331,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
                           &server->root->tcp_keepidle, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 #endif
@@ -334,6 +340,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDBUF,
                           &server->root->send_size, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -341,6 +348,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVBUF,
                           &server->root->recv_size, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 

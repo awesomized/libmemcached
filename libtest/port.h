@@ -40,6 +40,8 @@
 
 #pragma once
 
+#define LIBTEST_FAIL_PORT 23
+
 namespace libtest {
 
 LIBTEST_API

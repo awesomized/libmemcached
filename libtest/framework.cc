@@ -43,12 +43,12 @@
 #include <fnmatch.h>
 #include <iostream>
 
-using namespace libtest;
+namespace libtest {
 
 Framework::Framework(libtest::SignalThread& signal,
+                     const std::string& name_,
                      const std::string& only_run_arg,
                      const std::string& wildcard_arg) :
-  _collections(NULL),
   _total(0),
   _success(0),
   _skipped(0),
@@ -61,11 +61,15 @@ Framework::Framework(libtest::SignalThread& signal,
   _creators_ptr(NULL),
   _signal(signal),
   _only_run(only_run_arg),
-  _wildcard(wildcard_arg)
+  _wildcard(wildcard_arg),
+  _name(name_)
 {
   get_world(this);
+}
 
-  for (collection_st *next= _collections; next and next->name; next++)
+void Framework::collections(collection_st* collections_)
+{
+  for (collection_st *next= collections_; next and next->name; next++)
   {
     _collection.push_back(new Collection(this, next));
   }
@@ -148,9 +152,9 @@ void Framework::exec()
       _failed++;
       throw;
     }
-
-    Outn();
   }
+
+  void xml(const std::string& testsuites_name, std::ostream& output);
 }
 
 uint32_t Framework::sum_total()
@@ -226,3 +230,5 @@ test_return_t Framework::create()
 
   return rc;
 }
+
+} // namespace libtest

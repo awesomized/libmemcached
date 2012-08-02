@@ -101,7 +101,7 @@ private:
 class disconnected : std::runtime_error
 {
 public:
-  disconnected(const char *file, int line, const char *func, const char *instance, const in_port_t port, const char *format, ...);
+  disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, const char *format, ...);
 
   const char* what() const throw()
   {
