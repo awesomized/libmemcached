@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
-#include "memcached.h"
+#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -68,6 +68,7 @@ void cache_destroy(cache_t *cache) {
     free(cache->name);
     free(cache->ptr);
     pthread_mutex_destroy(&cache->mutex);
+    free(cache);
 }
 
 void* cache_alloc(cache_t *cache) {

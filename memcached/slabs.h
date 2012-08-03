@@ -16,9 +16,6 @@ void slabs_init(const size_t limit, const double factor, const bool prealloc);
  * 0 means error: can't store such a large object
  */
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
 unsigned int slabs_clsid(const size_t size);
 
 /** Allocate object of given length. 0 on error */ /*@null@*/
@@ -41,7 +38,7 @@ void stop_slab_maintenance_thread(void);
 
 enum reassign_result_type {
     REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,
-    REASSIGN_DEST_NOT_FULL, REASSIGN_SRC_NOT_SAFE, REASSIGN_SRC_DST_SAME
+    REASSIGN_SRC_DST_SAME
 };
 
 enum reassign_result_type slabs_reassign(int src, int dst);

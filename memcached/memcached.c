@@ -125,9 +125,6 @@ static enum transmit_result transmit(conn *c);
  */
 static volatile bool allow_new_conns = true;
 static struct event maxconnsevent;
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
 static void maxconns_handler(const int fd, const short which, void *arg) {
     struct timeval t = {.tv_sec = 0, .tv_usec = 10000};
 
@@ -227,7 +224,7 @@ static void settings_init(void) {
     settings.maxconns_fast = false;
     settings.hashpower_init = 0;
     settings.slab_reassign = false;
-    settings.slab_automove = false;
+    settings.slab_automove = 0;
 }
 
 /*
@@ -336,7 +333,7 @@ bool conn_add_to_freelist(conn *c) {
 }
 
 static const char *prot_text(enum protocol prot) {
-    const char *rv = "unknown";
+    char *rv = "unknown";
     switch(prot) {
         case ascii_prot:
             rv = "ascii";
@@ -347,8 +344,6 @@ static const char *prot_text(enum protocol prot) {
         case negotiating_prot:
             rv = "auto-negotiate";
             break;
-        default:
-            abort();
     }
     return rv;
 }
@@ -639,9 +634,6 @@ static const char *state_text(enum conn_states state) {
     return statenames[state];
 }
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wtype-limits"
-#endif
 /*
  * Sets a connection's current state in the state machine. Any special
  * processing that needs to happen on certain state transitions can
@@ -791,9 +783,6 @@ static int build_udp_headers(conn *c) {
 }
 
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#endif
 static void out_string(conn *c, const char *str) {
     size_t len;
 
@@ -1000,10 +989,6 @@ static void write_bin_error(conn *c, protocol_binary_response_status err, int sw
     case PROTOCOL_BINARY_RESPONSE_AUTH_ERROR:
         errstr = "Auth failure.";
         break;
-    case PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE:
-        assert(false);
-    case PROTOCOL_BINARY_RESPONSE_SUCCESS:
-        assert(false);
     default:
         assert(false);
         errstr = "UNHANDLED ERROR";
@@ -1029,7 +1014,7 @@ static void write_bin_error(conn *c, protocol_binary_response_status err, int sw
 }
 
 /* Form and send a response to a command over the binary protocol */
-static void write_bin_response(conn *c, const void *d, int hlen, int keylen, int dlen) {
+static void write_bin_response(conn *c, void *d, int hlen, int keylen, int dlen) {
     if (!c->noreply || c->cmd == PROTOCOL_BINARY_CMD_GET ||
         c->cmd == PROTOCOL_BINARY_CMD_GETK) {
         add_bin_header(c, 0, hlen, keylen, dlen);
@@ -1133,10 +1118,6 @@ static void complete_incr_bin(conn *c) {
     case DELTA_ITEM_CAS_MISMATCH:
         write_bin_error(c, PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS, 0);
         break;
-
-    default:
-        assert(0);
-        abort();
     }
 }
 
@@ -1204,9 +1185,6 @@ static void complete_update_bin(conn *c) {
             eno = PROTOCOL_BINARY_RESPONSE_NOT_STORED;
         }
         write_bin_error(c, eno, 0);
-    default:
-        assert(false);
-        abort();
     }
 
     item_remove(c->item);       /* release the c->item reference */
@@ -1219,8 +1197,8 @@ static void process_bin_touch(conn *c) {
     protocol_binary_response_get* rsp = (protocol_binary_response_get*)c->wbuf;
     char* key = binary_get_key(c);
     size_t nkey = c->binary_header.request.keylen;
-    protocol_binary_request_touch *t = (void *)&c->binary_header;
-    uint32_t exptime = ntohl(t->message.body.expiration);
+    protocol_binary_request_touch *t = binary_get_request(c);
+    time_t exptime = ntohl(t->message.body.expiration);
 
     if (settings.verbose > 1) {
         int ii;
@@ -1387,9 +1365,6 @@ static void process_bin_get(conn *c) {
     }
 }
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#endif
 static void append_bin_stats(const char *key, const uint16_t klen,
                              const char *val, const uint32_t vlen,
                              conn *c) {
@@ -1397,14 +1372,11 @@ static void append_bin_stats(const char *key, const uint16_t klen,
     uint32_t bodylen = klen + vlen;
     protocol_binary_response_header header = {
         .response.magic = (uint8_t)PROTOCOL_BINARY_RES,
-        .response.opcode = (uint8_t)PROTOCOL_BINARY_CMD_STAT,
+        .response.opcode = PROTOCOL_BINARY_CMD_STAT,
         .response.keylen = (uint16_t)htons(klen),
-        .response.extlen = (uint8_t)0,
         .response.datatype = (uint8_t)PROTOCOL_BINARY_RAW_BYTES,
-        .response.status = (uint16_t)0,
         .response.bodylen = htonl(bodylen),
-        .response.opaque = c->opaque,
-        .response.cas = (uint64_t)0
+        .response.opaque = c->opaque
     };
 
     memcpy(buf, header.bytes, sizeof(header.response));
@@ -1887,7 +1859,7 @@ static void dispatch_bin_command(conn *c) {
     switch (c->cmd) {
         case PROTOCOL_BINARY_CMD_VERSION:
             if (extlen == 0 && keylen == 0 && bodylen == 0) {
-                write_bin_response(c, RVERSION, 0, 0, strlen(RVERSION));
+                write_bin_response(c, VERSION, 0, 0, strlen(VERSION));
             } else {
                 protocol_error = 1;
             }
@@ -2246,10 +2218,6 @@ static void complete_nread_binary(conn *c) {
     case bin_reading_sasl_auth_data:
         process_bin_complete_sasl_auth(c);
         break;
-    case bin_reading_cas_header:
-        assert(0);
-    case bin_no_state:
-        assert(0);
     default:
         fprintf(stderr, "Not handling substate %d\n", c->substate);
         assert(0);
@@ -2568,7 +2536,7 @@ static void server_stats(ADD_STAT add_stats, conn *c) {
     APPEND_STAT("pid", "%lu", (long)pid);
     APPEND_STAT("uptime", "%u", now);
     APPEND_STAT("time", "%ld", now + (long)process_started);
-    APPEND_STAT("version", "%s", RVERSION);
+    APPEND_STAT("version", "%s", VERSION);
     APPEND_STAT("libevent", "%s", event_get_version());
     APPEND_STAT("pointer_size", "%d", (int)(8 * sizeof(void *)));
 
@@ -2656,7 +2624,7 @@ static void process_stat_settings(ADD_STAT add_stats, void *c) {
     APPEND_STAT("maxconns_fast", "%s", settings.maxconns_fast ? "yes" : "no");
     APPEND_STAT("hashpower_init", "%d", settings.hashpower_init);
     APPEND_STAT("slab_reassign", "%s", settings.slab_reassign ? "yes" : "no");
-    APPEND_STAT("slab_automove", "%s", settings.slab_automove ? "yes" : "no");
+    APPEND_STAT("slab_automove", "%d", settings.slab_automove);
 }
 
 static void process_stat(conn *c, token_t *tokens, const size_t ntokens) {
@@ -2735,9 +2703,6 @@ static void process_stat(conn *c, token_t *tokens, const size_t ntokens) {
     }
 }
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
-#endif
 /* ntokens is overwritten here... shrug.. */
 static inline void process_get_command(conn *c, token_t *tokens, size_t ntokens, bool return_cas) {
     char *key;
@@ -3072,9 +3037,6 @@ static void process_arithmetic_command(conn *c, token_t *tokens, const size_t nt
         break;
     case DELTA_ITEM_CAS_MISMATCH:
         break; /* Should never get here */
-    default:
-        assert(false);
-        abort();
     }
 }
 
@@ -3156,7 +3118,7 @@ enum delta_result_type do_add_delta(conn *c, const char *key, const size_t nkey,
            need to update the CAS on the existing item. */
         mutex_lock(&cache_lock); /* FIXME */
         ITEM_set_cas(it, (settings.use_cas) ? get_cas_id() : 0);
-        pthread_mutex_unlock(&cache_lock);
+        mutex_unlock(&cache_lock);
 
         memcpy(ITEM_data(it), buf, res);
         memset(ITEM_data(it) + res, ' ', it->nbytes - res - 2);
@@ -3244,9 +3206,9 @@ static void process_slabs_automove_command(conn *c, token_t *tokens, const size_
 
     level = strtoul(tokens[2].value, NULL, 10);
     if (level == 0) {
-        settings.slab_automove = false;
-    } else if (level == 1) {
-        settings.slab_automove = true;
+        settings.slab_automove = 0;
+    } else if (level == 1 || level == 2) {
+        settings.slab_automove = level;
     } else {
         out_string(c, "ERROR");
         return;
@@ -3363,7 +3325,7 @@ static void process_command(conn *c, char *command) {
 
     } else if (ntokens == 2 && (strcmp(tokens[COMMAND_TOKEN].value, "version") == 0)) {
 
-        out_string(c, "VERSION " RVERSION);
+        out_string(c, "VERSION " VERSION);
 
     } else if (ntokens == 2 && (strcmp(tokens[COMMAND_TOKEN].value, "quit") == 0)) {
 
@@ -3400,18 +3362,9 @@ static void process_command(conn *c, char *command) {
             case REASSIGN_NOSPARE:
                 out_string(c, "NOSPARE source class has no spare pages");
                 break;
-            case REASSIGN_DEST_NOT_FULL:
-                out_string(c, "NOTFULL dest class has spare memory");
-                break;
-            case REASSIGN_SRC_NOT_SAFE:
-                out_string(c, "UNSAFE src class is in an unsafe state");
-                break;
             case REASSIGN_SRC_DST_SAME:
                 out_string(c, "SAME src and dst class are identical");
                 break;
-            default:
-                assert(false);
-                abort();
             }
             return;
         } else if (ntokens == 4 &&
@@ -3866,9 +3819,6 @@ static void drive_machine(conn *c) {
             case READ_MEMORY_ERROR: /* Failed to allocate more memory */
                 /* State already set by try_read_network */
                 break;
-            default:
-                assert(false);
-                abort();
             }
             break;
 
@@ -4078,9 +4028,6 @@ static void drive_machine(conn *c) {
             case TRANSMIT_SOFT_ERROR:
                 stop = true;
                 break;
-            default:
-                assert(false);
-                abort();
             }
             break;
 
@@ -4095,9 +4042,6 @@ static void drive_machine(conn *c) {
         case conn_max_state:
             assert(false);
             break;
-        default:
-            assert(false);
-            abort();
         }
     }
 
@@ -4242,12 +4186,7 @@ static int server_socket(const char *interface,
         }
 #endif
 
-        error = setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &flags, sizeof(flags));
-        if (error != 0)
-        {
-          perror("setsockopt(SO_REUSEADDR)");
-        }
-
+        setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void *)&flags, sizeof(flags));
         if (IS_UDP(transport)) {
             maximize_sndbuf(sfd);
         } else {
@@ -4504,7 +4443,7 @@ static void clock_handler(const int fd, const short which, void *arg) {
 }
 
 static void usage(void) {
-    printf(RPACKAGE " " RVERSION "\n");
+    printf(PACKAGE " " VERSION "\n");
     printf("-p <num>      TCP port number to listen on (default: 11211)\n"
            "-U <num>      UDP port number to listen on (default: 11211, 0 is off)\n"
            "-s <file>     UNIX socket path to listen on (disables network support)\n"
@@ -4569,7 +4508,7 @@ static void usage(void) {
 }
 
 static void usage_license(void) {
-    printf(RPACKAGE " " RVERSION "\n\n");
+    printf(PACKAGE " " VERSION "\n\n");
     printf(
     "Copyright (c) 2003, Danga Interactive, Inc. <http://www.danga.com/>\n"
     "All rights reserved.\n"
@@ -4731,7 +4670,7 @@ static int enable_large_pages(void) {
 
     return ret;
 #else
-    return 0;
+    return -1;
 #endif
 }
 
@@ -4788,10 +4727,10 @@ int main (int argc, char **argv) {
         SLAB_AUTOMOVE
     };
     char *const subopts_tokens[] = {
-        [MAXCONNS_FAST] = (char*)"maxconns_fast",
-        [HASHPOWER_INIT] = (char*)"hashpower",
-        [SLAB_REASSIGN] = (char*)"slab_reassign",
-        [SLAB_AUTOMOVE] = (char*)"slab_automove",
+        [MAXCONNS_FAST] = "maxconns_fast",
+        [HASHPOWER_INIT] = "hashpower",
+        [SLAB_REASSIGN] = "slab_reassign",
+        [SLAB_AUTOMOVE] = "slab_automove",
         NULL
     };
 
@@ -4952,6 +4891,10 @@ int main (int argc, char **argv) {
         case 'L' :
             if (enable_large_pages() == 0) {
                 preallocate = true;
+            } else {
+                fprintf(stderr, "Cannot enable large pages on this system\n"
+                    "(There is no Linux support as of this version)\n");
+                return 1;
             }
             break;
         case 'C' :
@@ -5041,7 +4984,15 @@ int main (int argc, char **argv) {
                 settings.slab_reassign = true;
                 break;
             case SLAB_AUTOMOVE:
-                settings.slab_automove = true;
+                if (subopts_value == NULL) {
+                    settings.slab_automove = 1;
+                    break;
+                }
+                settings.slab_automove = atoi(subopts_value);
+                if (settings.slab_automove < 0 || settings.slab_automove > 2) {
+                    fprintf(stderr, "slab_automove must be between 0 and 2\n");
+                    return 1;
+                }
                 break;
             default:
                 printf("Illegal suboption \"%s\"\n", subopts_value);
@@ -5283,10 +5234,8 @@ int main (int argc, char **argv) {
     stop_assoc_maintenance_thread();
 
     /* remove the PID file if we're a daemon */
-#if 0
     if (do_daemonize)
         remove_pidfile(pid_file);
-#endif
     /* Clean up strdup() call for bind() address */
     if (settings.inter)
       free(settings.inter);

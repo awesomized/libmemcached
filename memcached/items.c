@@ -44,7 +44,7 @@ static unsigned int sizes[LARGEST_ID];
 void item_stats_reset(void) {
     mutex_lock(&cache_lock);
     memset(itemstats, 0, sizeof(itemstats));
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
 }
 
 
@@ -125,7 +125,7 @@ item *do_item_alloc(char *key, const size_t nkey, const int flags, const rel_tim
         } else if ((it = slabs_alloc(ntotal, id)) == NULL) {
             if (settings.evict_to_free == 0) {
                 itemstats[id].outofmemory++;
-                pthread_mutex_unlock(&cache_lock);
+                mutex_unlock(&cache_lock);
                 return NULL;
             }
             itemstats[id].evicted++;
@@ -146,6 +146,16 @@ item *do_item_alloc(char *key, const size_t nkey, const int flags, const rel_tim
             do_item_unlink_nolock(it, hash(ITEM_key(it), it->nkey, 0));
             /* Initialize the item block: */
             it->slabs_clsid = 0;
+
+            /* If we've just evicted an item, and the automover is set to
+             * angry bird mode, attempt to rip memory into this slab class.
+             * TODO: Move valid object detection into a function, and on a
+             * "successful" memory pull, look behind and see if the next alloc
+             * would be an eviction. Then kick off the slab mover before the
+             * eviction happens.
+             */
+            if (settings.slab_automove == 2)
+                slabs_reassign(-1, id);
         } else {
             refcount_decr(&search->refcount);
         }
@@ -171,7 +181,7 @@ item *do_item_alloc(char *key, const size_t nkey, const int flags, const rel_tim
             search->refcount = 1;
             do_item_unlink_nolock(search, hash(ITEM_key(search), search->nkey, 0));
         }
-        pthread_mutex_unlock(&cache_lock);
+        mutex_unlock(&cache_lock);
         return NULL;
     }
 
@@ -182,7 +192,7 @@ item *do_item_alloc(char *key, const size_t nkey, const int flags, const rel_tim
      * been removed from the slab LRU.
      */
     it->refcount = 1;     /* the caller will have a reference */
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
     it->next = it->prev = it->h_next = 0;
     it->slabs_clsid = id;
 
@@ -288,7 +298,7 @@ int do_item_link(item *it, const uint32_t hv) {
     assoc_insert(it, hv);
     item_link_q(it);
     refcount_incr(&it->refcount);
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
 
     return 1;
 }
@@ -306,7 +316,7 @@ void do_item_unlink(item *it, const uint32_t hv) {
         item_unlink_q(it);
         do_item_remove(it);
     }
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
 }
 
 /* FIXME: Is it necessary to keep this copy/pasted code? */
@@ -344,7 +354,7 @@ void do_item_update(item *it) {
             it->time = current_time;
             item_link_q(it);
         }
-        pthread_mutex_unlock(&cache_lock);
+        mutex_unlock(&cache_lock);
     }
 }
 
@@ -356,10 +366,6 @@ int do_item_replace(item *it, item *new_it, const uint32_t hv) {
     do_item_unlink(it, hv);
     return do_item_link(new_it, hv);
 }
-
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
 
 /*@null@*/
 char *do_item_cachedump(const unsigned int slabs_clsid, const unsigned int limit, unsigned int *bytes) {
@@ -407,7 +413,7 @@ void item_stats_evictions(uint64_t *evicted) {
     for (i = 0; i < LARGEST_ID; i++) {
         evicted[i] = itemstats[i].evicted;
     }
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
 }
 
 void do_item_stats(ADD_STAT add_stats, void *c) {
@@ -499,7 +505,7 @@ item *do_item_get(const char *key, const size_t nkey, const uint32_t hv) {
             it = NULL;
         }
     }
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
     int was_found = 0;
 
     if (settings.verbose > 2) {

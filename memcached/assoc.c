@@ -12,7 +12,6 @@
  */
 
 #include "memcached.h"
-
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/signal.h>
@@ -28,13 +27,6 @@
 
 static pthread_cond_t maintenance_cond = PTHREAD_COND_INITIALIZER;
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
-
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
 
 typedef  unsigned long  int  ub4;   /* unsigned 4-byte quantities */
 typedef  unsigned       char ub1;   /* unsigned 1-byte quantities */
@@ -243,7 +235,7 @@ static void *assoc_maintenance_thread(void *arg) {
             pthread_cond_wait(&maintenance_cond, &cache_lock);
         }
 
-        pthread_mutex_unlock(&cache_lock);
+        mutex_unlock(&cache_lock);
     }
     return NULL;
 }
@@ -271,7 +263,7 @@ void stop_assoc_maintenance_thread() {
     mutex_lock(&cache_lock);
     do_run_maintenance_thread = 0;
     pthread_cond_signal(&maintenance_cond);
-    pthread_mutex_unlock(&cache_lock);
+    mutex_unlock(&cache_lock);
 
     /* Wait for the maintenance thread to stop */
     pthread_join(maintenance_tid, NULL);

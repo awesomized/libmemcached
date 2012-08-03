@@ -82,7 +82,6 @@ extern "C" {
 
 namespace {
 
-#if 0
   std::string print_argv(libtest::vchar_ptr_t& built_argv)
   {
     std::stringstream arg_buffer;
@@ -96,8 +95,8 @@ namespace {
 
     return arg_buffer.str();
   }
-#endif
 
+#if 0
   std::string print_argv(char** argv)
   {
     std::stringstream arg_buffer;
@@ -109,6 +108,8 @@ namespace {
 
     return arg_buffer.str();
   }
+#endif
+
 
   static Application::error_t int_to_error_t(int arg)
   {
@@ -458,6 +459,7 @@ Application::error_t Application::wait(bool nohang)
   if (exit_code == Application::INVALID)
   {
     Error << print_argv(built_argv, _argc);
+    /
   }
 #endif
 
@@ -514,13 +516,11 @@ Application::error_t Application::join()
 
   slurp();
 
-#if 0
   if (exit_code == Application::INVALID)
   {
-    Error << print_argv(built_argv, _argc);
+    Error << print_argv(built_argv);
   }
-#endif
-
+;
   return exit_code;
 }
 
