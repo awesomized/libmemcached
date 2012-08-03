@@ -82,6 +82,7 @@ extern "C" {
 
 namespace {
 
+#if 0
   std::string print_argv(libtest::vchar_ptr_t& built_argv)
   {
     std::stringstream arg_buffer;
@@ -95,6 +96,7 @@ namespace {
 
     return arg_buffer.str();
   }
+#endif
 
   std::string print_argv(char** argv)
   {
