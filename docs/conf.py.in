@@ -27,11 +27,11 @@ import sys, os
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
 
-extensions = ['sphinxcontrib.googleanalytics']
+#extensions = ['sphinxcontrib.googleanalytics']
 
 # Google 
-googleanalytics_id = 'UA-15307604-2'
-googleanalytics_enabled = 'True'
+#googleanalytics_id = 'UA-15307604-2'
+#googleanalytics_enabled = 'True'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'libmemcached'
-copyright = u'2011, Brian Aker DataDifferential, http://datadifferential.com/'
+copyright = u'2011-2012, Brian Aker DataDifferential, http://datadifferential.com/'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
