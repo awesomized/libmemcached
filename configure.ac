@@ -80,17 +80,7 @@ AM_CONDITIONAL(BUILDING_GEARMAN, false)
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-case "$target_os" in
-  *linux*)
-       AS_IF([test "x$GCC" = "xyes"],
-             [
-              LDFLAGS="$LDFLAGS -z relro -z now"
-              ])
-   ;;
-   esac
-
 dnl Specialty checks
-AX_PTHREAD
 AX_CXX_CINTTYPES
 CONFIG_EXTRA
 DETECT_BYTEORDER
@@ -103,6 +93,7 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 AC_CHECK_FUNCS([alarm])
+AC_CHECK_FUNCS([clock_gettime])
 AC_CHECK_FUNCS([dup2])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
@@ -295,15 +286,8 @@ fi
 AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
                        [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
 
-AX_APPEND_COMPILE_FLAGS([-Werror -Wall])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wextra])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wmaybe-uninitialized])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wsign-compare])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wunused-result])
-AX_APPEND_COMPILE_FLAGS([-Werror -Wunused-variable])
-AX_APPEND_COMPILE_FLAGS([-Werror -floop-parallelize-all])
-AX_APPEND_COMPILE_FLAGS([-Werror -fstack-protector-all])
-AX_APPEND_COMPILE_FLAGS([-Werror -ggdb])
+AX_HARDEN_COMPILER_FLAGS
+AX_PTHREAD
 
 AC_CONFIG_FILES([
   Makefile
