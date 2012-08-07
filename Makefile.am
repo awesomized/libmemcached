@@ -70,7 +70,7 @@ merge-clean:
 	@find ./ | $(GREP) \.gcno | xargs rm -f
 	@find ./ | $(GREP) \.gz | xargs rm -f
 	@find ./ | $(GREP) \.moved | xargs rm -r -f
-	@find ./ | $(GREP) \.orig | xargs rm -f
+	@find ./ | $(GREP) \\.orig | xargs rm -f
 	@find ./ | $(GREP) \.rej | xargs rm -f
 	@rm -f *\.rpm
 	@find ./ | $(GREP) \.THIS | xargs rm -f
