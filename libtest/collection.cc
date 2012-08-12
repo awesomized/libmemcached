@@ -118,9 +118,19 @@ test_return_t Collection::exec()
           }
         }
 
-        return_code= runner_code(_frame, run, _timer);
+        alarm(60);
+        try 
+        {
+          return_code= runner_code(_frame, run, _timer);
+        }
+        catch (...)
+        {
+          alarm(0);
+          throw;
+        }
+        alarm(0);
       }
-      catch (libtest::fatal &e)
+      catch (libtest::exception &e)
       {
         stream::cerr(e.file(), e.line(), e.func()) << e.what();
         _failed++;

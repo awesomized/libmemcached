@@ -118,7 +118,8 @@ void Framework::exec()
 
     _total++;
 
-    try {
+    try
+    {
       switch ((*iter)->exec())
       {
       case TEST_FAILURE:
@@ -144,7 +145,7 @@ void Framework::exec()
     catch (libtest::disconnected& e)
     {
       _failed++;
-      Error << "Unhandled disconnection occurred:" << e.what();
+      stream::cerr(e.file(), e.line(), e.func()) << "Unhandled disconnection occurred: " << e.mesg();
       throw;
     }
     catch (...)

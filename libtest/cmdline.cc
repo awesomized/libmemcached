@@ -110,7 +110,6 @@ namespace {
   }
 #endif
 
-
   static Application::error_t int_to_error_t(int arg)
   {
     switch (arg)
@@ -459,7 +458,6 @@ Application::error_t Application::wait(bool nohang)
   if (exit_code == Application::INVALID)
   {
     Error << print_argv(built_argv, _argc);
-    /
   }
 #endif
 
@@ -516,11 +514,13 @@ Application::error_t Application::join()
 
   slurp();
 
+#if 0
   if (exit_code == Application::INVALID)
   {
-    Error << print_argv(built_argv);
+    Error << print_argv(built_argv, _argc);
   }
-;
+#endif
+
   return exit_code;
 }
 

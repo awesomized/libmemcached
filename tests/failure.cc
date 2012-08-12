@@ -63,6 +63,8 @@ libtest::Framework *global_framework= NULL;
 
 static test_return_t shutdown_servers(memcached_st *memc)
 {
+  return TEST_SKIPPED;
+
   test_skip_valgrind();
 
   test_compare(memcached_server_count(memc), 1U);
@@ -75,6 +77,8 @@ static test_return_t shutdown_servers(memcached_st *memc)
 
 static test_return_t add_shutdown_servers(memcached_st *memc)
 {
+  return TEST_SKIPPED;
+
   test_skip_valgrind();
 
   while (memcached_server_count(memc) < 2)

@@ -346,6 +346,11 @@ int main(int argc, char *argv[])
     std::cerr << "FATAL:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
+  catch (libtest::start& e)
+  {
+    std::cerr << "Failure to start:" << e.what() << std::endl;
+    exit_code= EXIT_FAILURE;
+  }
   catch (libtest::disconnected& e)
   {
     std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
