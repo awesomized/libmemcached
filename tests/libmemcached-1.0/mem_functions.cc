@@ -4480,6 +4480,7 @@ test_return_t regression_1021819_TEST(memcached_st *original)
   test_true(memc);
 
   test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 2000000), MEMCACHED_SUCCESS);
+  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 3000000), MEMCACHED_SUCCESS);
 
   memcached_return_t rc;
 

@@ -250,27 +250,26 @@ static void set_socket_options(org::libmemcached::Instance* server)
   }
 
 #ifdef HAVE_SNDTIMEO
-  if (server->root->snd_timeout)
+  if (server->root->snd_timeout > 0)
   {
     struct timeval waittime;
 
-    waittime.tv_sec= 0;
-    waittime.tv_usec= server->root->snd_timeout;
+    waittime.tv_sec= server->root->snd_timeout / 1000000;
+    waittime.tv_usec= server->root->snd_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
-                      &waittime, (socklen_t)sizeof(struct timeval));
-    (void)(error);
+                          &waittime, (socklen_t)sizeof(struct timeval));
     assert(error == 0);
   }
 #endif
 
 #ifdef HAVE_RCVTIMEO
-  if (server->root->rcv_timeout)
+  if (server->root->rcv_timeout > 0)
   {
     struct timeval waittime;
 
-    waittime.tv_sec= 0;
-    waittime.tv_usec= server->root->rcv_timeout;
+    waittime.tv_sec= server->root->rcv_timeout / 1000000;
+    waittime.tv_usec= server->root->rcv_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
                           &waittime, (socklen_t)sizeof(struct timeval));
@@ -737,6 +736,11 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
 
 memcached_return_t memcached_connect_try(org::libmemcached::Instance* server)
 {
+  if (server and server->root and server->root->state.is_parsing)
+  {
+    return MEMCACHED_SUCCESS;
+  }
+
   return _memcached_connect(server, false);
 }
 

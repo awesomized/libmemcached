@@ -61,6 +61,8 @@ public:
     memc= memc_arg;
     init_scanner();
     rc= MEMCACHED_SUCCESS;
+
+    memc->state.is_parsing= true;
   }
 
   bool end()
@@ -106,6 +108,7 @@ public:
   ~Context()
   {
     destroy_scanner();
+    memc->state.is_parsing= false;
   }
 
   yytokentype previous_token;
