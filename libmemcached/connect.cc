@@ -259,6 +259,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
                           &waittime, (socklen_t)sizeof(struct timeval));
+    (void)error;
     assert(error == 0);
   }
 #endif
@@ -284,11 +285,14 @@ static void set_socket_options(org::libmemcached::Instance* server)
     int set= 1;
     int error= setsockopt(server->fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
 
+    assert(error == 0);
+
     // This is not considered a fatal error
     if (error == -1)
     {
-      WATCHPOINT_ERRNO(get_socket_errno());
+#if 0
       perror("setsockopt(SO_NOSIGPIPE)");
+#endif
     }
   }
 #endif
