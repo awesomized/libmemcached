@@ -70,6 +70,7 @@ using namespace libtest;
 namespace libtest {
 bool ping_drizzled(const in_port_t _port)
 {
+  (void)(_port);
 #if defined(HAVE_LIBDRIZZLE) && HAVE_LIBDRIZZLE
   {
     drizzle_st *drizzle= drizzle_create(NULL);
@@ -148,7 +149,7 @@ public:
     return "drizzled";
   };
 
-  void log_file_option(Application& app, const std::string& arg)
+  void log_file_option(Application&, const std::string&)
   {
   }
 

@@ -375,7 +375,7 @@ bool Memcached::build(size_t argc, const char *argv[])
     add_option(sasl());
   }
 
-  for (int x= 0 ; x < argc ; x++)
+  for (size_t x= 0 ; x < argc ; x++)
   {
     add_option(argv[x]);
   }

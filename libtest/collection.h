@@ -36,9 +36,12 @@
 
 #pragma once
 
+#include <libtest/formatter.hpp>
+
 #include <libtest/timer.hpp>
 
-class Framework;
+namespace { class Framework; }
+
 
 /**
   A structure which describes a collection of test cases.
@@ -54,13 +57,13 @@ namespace libtest {
 
 class Collection {
 public:
-  Collection(Framework*, collection_st*);
+  Collection(libtest::Framework*, collection_st*);
 
   test_return_t exec();
 
   const char* name()
   {
-    return _name;
+    return _name.c_str();
   }
 
   uint32_t success()
@@ -83,17 +86,23 @@ public:
     return _total;
   }
 
+  libtest::Formatter* formatter()
+  {
+    return &_formatter;
+  }
+
 private:
-  const char *_name;
+  std::string _name;
   test_callback_fn *_pre;
   test_callback_fn *_post;
   struct test_st *_tests;
-  Framework* _frame;
+  libtest::Framework* _frame;
   uint32_t _success;
   uint32_t _skipped;
   uint32_t _failed;
   uint32_t _total;
   libtest::Timer _timer;
+  libtest::Formatter _formatter;
 };
 
 } // namespace libtest

@@ -52,6 +52,8 @@ include tests/include.am
 include util/include.am
 include win32/include.am
 
+include m4/include.am
+
 if HAVE_LIBEVENT
 include memcached/include.am
 libtest_libtest_la_DEPENDENCIES+= memcached/memcached
@@ -67,9 +69,10 @@ merge-clean:
 	@find ./ | $(GREP) \.gcda | xargs rm -f
 	@find ./ | $(GREP) \.gcno | xargs rm -f
 	@find ./ | $(GREP) \.gz | xargs rm -f
-	@find ./ | $(GREP) \.orig | xargs rm -f
+	@find ./ | $(GREP) \.moved | xargs rm -r -f
+	@find ./ | $(GREP) \\.orig | xargs rm -f
 	@find ./ | $(GREP) \.rej | xargs rm -f
-	@find ./ | $(GREP) \.rpm | xargs rm -f
+	@rm -f *\.rpm
 	@find ./ | $(GREP) \.THIS | xargs rm -f
 	@find ./ | $(GREP) \.OTHER | xargs rm -f
 	@find ./ | $(GREP) \.BASE | xargs rm -f

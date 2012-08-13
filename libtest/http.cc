@@ -96,6 +96,8 @@ extern "C" size_t
 
 static void init(CURL *curl, const std::string& url)
 {
+  (void)curl;
+  (void)url;
   if (HAVE_LIBCURL)
   {
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL
@@ -132,7 +134,7 @@ bool GET::execute()
 
     curl_easy_cleanup(curl);
 
-    return retref == CURLE_OK;
+    return bool(retref == CURLE_OK);
 #endif
   }
 
@@ -155,6 +157,8 @@ bool POST::execute()
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, _response);
 
     curl_easy_cleanup(curl);
+
+    return bool(retref == CURLE_OK);
 #endif
   }
 

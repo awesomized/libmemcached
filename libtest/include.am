@@ -9,6 +9,7 @@ VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-che
 VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
+MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
 PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
 
@@ -38,6 +39,7 @@ CLEANFILES+= tmp_chroot/var/drizzle/*
 CLEANFILES+= tmp_chroot/var/log/*
 CLEANFILES+= tmp_chroot/var/run/*
 CLEANFILES+= tmp_chroot/var/tmp/*
+CLEANFILES+= tmp_chroot/*.xml
 
 BUILT_SOURCES+= libtest/version.h
 
@@ -45,6 +47,7 @@ BUILT_SOURCES+= libtest/version.h
 distclean-libtest-check:
 	-rm -rf tmp_chroot
 
+noinst_HEADERS+= libtest/formatter.hpp
 noinst_HEADERS+= libtest/timer.hpp
 noinst_HEADERS+= libtest/binaries.h 
 noinst_HEADERS+= libtest/cpu.hpp 
@@ -106,6 +109,7 @@ libtest_libtest_la_SOURCES+= libtest/core.cc
 libtest_libtest_la_SOURCES+= libtest/cpu.cc 
 libtest_libtest_la_SOURCES+= libtest/dream.cc 
 libtest_libtest_la_SOURCES+= libtest/fatal.cc 
+libtest_libtest_la_SOURCES+= libtest/formatter.cc 
 libtest_libtest_la_SOURCES+= libtest/framework.cc 
 libtest_libtest_la_SOURCES+= libtest/has.cc 
 libtest_libtest_la_SOURCES+= libtest/drizzled.cc 
@@ -228,7 +232,7 @@ test-unittest: libtest/unittest
 	@libtest/unittest
 
 valgrind-unittest: libtest/unittest
-	@$(VALGRIND_COMMAND) libtest/unittest TESTS_ENVIRONMENT="valgrind"
+	@$(VALGRIND_COMMAND) libtest/unittest
 
 gdb-unittest: libtest/unittest
 	@$(GDB_COMMAND) libtest/unittest

@@ -1,0 +1,7 @@
+update_m4:
+	@rm -r -f m4.moved
+	@mv m4 m4.moved
+	@git clone git@github.com:BrianAker/m4.git
+	@bzr revert m4
+	(cd m4; git checkout .)
+	@bzr diff m4

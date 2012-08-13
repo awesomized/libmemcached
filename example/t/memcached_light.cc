@@ -238,7 +238,7 @@ static bool world_destroy(void *object)
 }
 
 
-void get_world(Framework *world)
+void get_world(libtest::Framework* world)
 {
   world->create(world_create);
   world->destroy(world_destroy);

@@ -51,7 +51,7 @@ static void *world_create(server_startup_st&, test_return_t& rc)
   return NULL;
 }
 
-void get_world(Framework *world)
+void get_world(libtest::Framework *world)
 {
   world->create(world_create);
 }

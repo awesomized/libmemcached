@@ -99,7 +99,7 @@ collection_st collection[] ={
 
 #include "tests/libmemcached_world.h"
 
-void get_world(Framework *world)
+void get_world(libtest::Framework* world)
 {
   world->collections(collection);
 

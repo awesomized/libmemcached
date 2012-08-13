@@ -16,11 +16,11 @@
  * whether it's big or little-endian. ENDIAN_LITTLE and ENDIAN_BIG
  * are set in the configure script.
  */
-#if defined(ENDIAN_BIG) && ENDIAN_BIG == 1
+#if ENDIAN_BIG == 1
 # define HASH_LITTLE_ENDIAN 0
 # define HASH_BIG_ENDIAN 1
 #else
-# if defined(ENDIAN_LITTLE) && ENDIAN_LITTLE == 1
+# if ENDIAN_LITTLE == 1
 #  define HASH_LITTLE_ENDIAN 1
 #  define HASH_BIG_ENDIAN 0
 # else
@@ -178,8 +178,6 @@ uint32_t hash(
     case 2 : a+=k[0]&0xffff; break;
     case 1 : a+=k[0]&0xff; break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
 
 #else /* make valgrind happy */
@@ -249,8 +247,6 @@ uint32_t hash(
     case 1 : a+=k8[0];
              break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
 
   } else {                        /* need to read the key one byte at a time */
@@ -293,8 +289,6 @@ uint32_t hash(
     case 1 : a+=k[0];
              break;
     case 0 : return c;  /* zero length strings require no mixing */
-    default:
-             abort();
     }
   }
 

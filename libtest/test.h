@@ -170,7 +170,7 @@ do \
 #define test_zero(__actual) \
 do \
 { \
-  if (not libtest::_compare_zero(__FILE__, __LINE__, __func__, ((__actual)))) \
+  if (libtest::_compare_zero(__FILE__, __LINE__, __func__, ((__actual))) == false) \
   { \
     libtest::create_core(); \
     return TEST_FAILURE; \

@@ -124,7 +124,7 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-void get_world(Framework *world)
+void get_world(libtest::Framework* world)
 {
   world->collections(collection);
 }

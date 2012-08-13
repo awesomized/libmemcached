@@ -10,7 +10,6 @@
 #endif
 
 #include <stdbool.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -74,7 +73,6 @@
 #define POWER_SMALLEST 1
 #define POWER_LARGEST  200
 #define CHUNK_ALIGN_BYTES 8
-#define DONT_PREALLOC_SLABS
 #define MAX_NUMBER_OF_SLAB_CLASSES (POWER_LARGEST + 1)
 
 /** How long an object can reasonably be assumed to be locked before
@@ -303,13 +301,10 @@ struct settings {
     bool sasl;              /* SASL on/off */
     bool maxconns_fast;     /* Whether or not to early close connections */
     bool slab_reassign;     /* Whether or not slab reassignment is allowed */
-    bool slab_automove;     /* Whether or not to automatically move slabs */
+    int slab_automove;     /* Whether or not to automatically move slabs */
     int hashpower_init;     /* Starting hash power level */
 };
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
 extern struct stats stats;
 extern time_t process_started;
 extern struct settings settings;
@@ -322,9 +317,6 @@ extern struct settings settings;
 
 #define ITEM_FETCHED 8
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
 /**
  * Structure for storing items within memcached.
  */
@@ -556,7 +548,7 @@ void append_stat(const char *name, ADD_STAT add_stats, conn *c,
 
 enum store_item_type store_item(item *item, int comm, conn *c);
 
-#if defined(HAVE_DROP_PRIVILEGES) && HAVE_DROP_PRIVILEGES
+#if HAVE_DROP_PRIVILEGES
 extern void drop_privileges(void);
 #else
 #define drop_privileges()

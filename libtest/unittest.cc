@@ -270,7 +270,7 @@ static test_return_t drizzled_cycle_test(void *object)
 
   test_skip(true, has_drizzled());
 
-  test_true(server_startup(*servers, "drizzled", get_free_port(), 0, NULL));
+  test_skip(true, server_startup(*servers, "drizzled", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
 }
@@ -286,11 +286,12 @@ static test_return_t gearmand_cycle_test(void *object)
 
   test_skip(true, has_gearmand());
 
-  test_true(server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
+  test_skip(true, server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
 
   return TEST_SUCCESS;
 }
 
+#if 0
 static test_return_t memcached_light_cycle_TEST(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
@@ -302,6 +303,7 @@ static test_return_t memcached_light_cycle_TEST(void *object)
 
   return TEST_SUCCESS;
 }
+#endif
 
 static test_return_t skip_shim(bool a, bool b)
 {
@@ -309,7 +311,7 @@ static test_return_t skip_shim(bool a, bool b)
   return TEST_SUCCESS;
 }
 
-static test_return_t test_skip_true_TEST(void *object)
+static test_return_t test_skip_true_TEST(void*)
 {
   test_compare(true, true);
   test_compare(false, false);
@@ -319,10 +321,20 @@ static test_return_t test_skip_true_TEST(void *object)
   return TEST_SUCCESS;
 }
 
-static test_return_t test_skip_false_TEST(void *object)
+static test_return_t test_skip_false_TEST(void*)
 {
   test_compare(TEST_SKIPPED, skip_shim(true, false));
   test_compare(TEST_SKIPPED, skip_shim(false, true));
+  return TEST_SUCCESS;
+}
+
+static test_return_t server_startup_fail_TEST(void *object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+
+  test_compare(servers->start_server(testing_service, LIBTEST_FAIL_PORT, 0, NULL, true), false);
+
   return TEST_SUCCESS;
 }
 
@@ -359,6 +371,7 @@ static test_return_t socket_server_startup_TEST(void *object)
   return TEST_SUCCESS;
 }
 
+#if 0
 static test_return_t memcached_sasl_test(void *object)
 {
   server_startup_st *servers= (server_startup_st*)object;
@@ -379,6 +392,7 @@ static test_return_t memcached_sasl_test(void *object)
 
   return TEST_SKIPPED;
 }
+#endif
 
 static test_return_t application_true_BINARY(void *)
 {
@@ -422,7 +436,7 @@ static test_return_t application_true_fubar_BINARY(void *)
   const char *args[]= { "--fubar", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
   test_compare(Application::SUCCESS, true_app.wait());
-  test_compare(0, true_app.stdout_result().size());
+  test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
 }
@@ -442,7 +456,7 @@ static test_return_t application_doesnotexist_BINARY(void *)
   test_compare(Application::INVALID, true_app.wait(false));
 #endif
 
-  test_compare(0, true_app.stdout_result().size());
+  test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
 }
@@ -454,7 +468,7 @@ static test_return_t application_true_fubar_eq_doh_BINARY(void *)
   const char *args[]= { "--fubar=doh", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
   test_compare(Application::SUCCESS, true_app.wait());
-  test_compare(0, true_app.stdout_result().size());
+  test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
 }
@@ -467,7 +481,7 @@ static test_return_t application_true_fubar_eq_doh_option_BINARY(void *)
 
   test_compare(Application::SUCCESS, true_app.run());
   test_compare(Application::SUCCESS, true_app.wait());
-  test_compare(0, true_app.stdout_result().size());
+  test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
 }
@@ -547,7 +561,7 @@ static test_return_t application_echo_fubar_BINARY2(void *)
   true_app.add_option("fubar");
 
   test_compare(Application::SUCCESS, true_app.run());
-  test_compare(Application::SUCCESS, true_app.wait(false));
+  test_compare(Application::SUCCESS, true_app.join());
 
   libtest::vchar_t response;
   make_vector(response, test_literal_param("fubar\n"));
@@ -766,7 +780,7 @@ static test_return_t create_tmpfile_TEST(void *)
   Application touch_app("touch");
   const char *args[]= { tmp.c_str(), 0 };
   test_compare(Application::SUCCESS, touch_app.run(args));
-  test_compare(Application::SUCCESS, touch_app.wait(false));
+  test_compare(Application::SUCCESS, touch_app.join());
 
   test_compare(0, access(tmp.c_str(), R_OK));
   test_compare(0, unlink(tmp.c_str()));
@@ -795,6 +809,9 @@ static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
   test_skip(true, has_gearmand());
+
+  testing_service= "gearmand";
+
   return TEST_SUCCESS;
 }
 
@@ -802,6 +819,9 @@ static test_return_t check_for_drizzle(void *)
 {
   test_skip(true, HAVE_LIBDRIZZLE);
   test_skip(true, has_drizzled());
+
+  testing_service= "drizzled";
+
   return TEST_SUCCESS;
 }
 
@@ -817,6 +837,7 @@ test_st gearmand_tests[] ={
 #endif
   {"gearmand startup-shutdown", 0, gearmand_cycle_test },
   {"_compare(gearman_return_t)", 0, _compare_gearman_return_t_test },
+  {"server_startup(fail)", 0, server_startup_fail_TEST },
   {0, 0, 0}
 };
 
@@ -838,6 +859,7 @@ test_st memcached_TESTS[] ={
   {"memcached startup-shutdown", 0, server_startup_TEST },
   {"memcached(socket file) startup-shutdown", 0, socket_server_startup_TEST },
   {"_compare(memcached_return_t)", 0, _compare_memcached_return_t_test },
+  {"server_startup(fail)", 0, server_startup_fail_TEST },
   {0, 0, 0}
 };
 
@@ -1007,7 +1029,7 @@ static void *world_create(server_startup_st& servers, test_return_t&)
   return &servers;
 }
 
-void get_world(Framework *world)
+void get_world(libtest::Framework *world)
 {
   world->collections(collection);
   world->create(world_create);

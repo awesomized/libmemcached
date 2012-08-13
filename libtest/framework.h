@@ -46,11 +46,21 @@
 
 #include <vector>
 
+namespace { class Collection; }
+typedef std::vector<libtest::Collection*> Suites;
+
+namespace libtest {
+
 class Framework {
 public:
 
 public:
   test_return_t create();
+
+  const std::string& name() const
+  {
+    return _name;
+  }
 
   void create(test_callback_create_fn* arg)
   {
@@ -62,10 +72,7 @@ public:
     _destroy= arg;
   }
 
-  void collections(collection_st* arg)
-  {
-    _collections= arg;
-  }
+  void collections(collection_st* arg);
 
   void set_on_error(test_callback_error_fn *arg)
   {
@@ -100,11 +107,10 @@ public:
 
   libtest::Collection& collection();
 
-  Framework(libtest::SignalThread&, const std::string&);
-
   virtual ~Framework();
 
   Framework(libtest::SignalThread&,
+            const std::string&,
             const std::string&,
             const std::string&);
 
@@ -150,10 +156,13 @@ public:
     return _failed;
   }
 
+  Suites& suites()
+  {
+    return _collection;
+  }
+
 private:
   Framework& operator=(const Framework&);
-
-  collection_st *_collections;
 
   uint32_t _total;
   uint32_t _success;
@@ -179,8 +188,11 @@ private:
   bool _socket;
   void *_creators_ptr;
   unsigned long int _servers_to_run;
-  std::vector<libtest::Collection*> _collection;
+  Suites _collection;
   libtest::SignalThread& _signal;
   std::string _only_run;
   std::string _wildcard;
+  std::string _name;
 };
+
+} // namespace libtest

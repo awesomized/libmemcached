@@ -562,7 +562,7 @@ static bool world_destroy(void *object)
   return TEST_SUCCESS;
 }
 
-void get_world(Framework *world)
+void get_world(libtest::Framework* world)
 {
   world->collections(collection);
   world->create(world_create);

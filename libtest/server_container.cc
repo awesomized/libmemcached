@@ -311,6 +311,18 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
       }
     }
   }
+  catch (libtest::start err)
+  {
+    stream::cerr(err.file(), err.line(), err.func()) << err.what();
+    delete server;
+    return false;
+  }
+  catch (libtest::disconnected err)
+  {
+    stream::cerr(err.file(), err.line(), err.func()) << err.what();
+    delete server;
+    return false;
+  }
   catch (...)
   {
     delete server;

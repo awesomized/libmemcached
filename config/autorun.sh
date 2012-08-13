@@ -1,5 +1,5 @@
 #!/bin/sh
-#  Copyright (C) 2011 Brian Aker
+#  Copyright (C) 2011 Brian Aker, brian@tangent.org
 #  All rights reserved.
 # 
 #  Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ locate_binary() {
 }
 
 
-AUTORECONF_FLAGS=" --install --force --verbose -Wall"
+AUTORECONF_FLAGS=" --install --verbose -Wall"
 
 if test -f config/pre_hook.sh
 then

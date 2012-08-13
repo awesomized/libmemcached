@@ -42,7 +42,7 @@ extern "C" {
 
   /* How we make all of this work :) */
   LIBTEST_API
-    void get_world(Framework *world);
+    void get_world(libtest::Framework *world);
 
 #ifdef	__cplusplus
 }

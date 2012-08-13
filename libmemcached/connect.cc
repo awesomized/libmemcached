@@ -250,29 +250,31 @@ static void set_socket_options(org::libmemcached::Instance* server)
   }
 
 #ifdef HAVE_SNDTIMEO
-  if (server->root->snd_timeout)
+  if (server->root->snd_timeout > 0)
   {
     struct timeval waittime;
 
-    waittime.tv_sec= 0;
-    waittime.tv_usec= server->root->snd_timeout;
+    waittime.tv_sec= server->root->snd_timeout / 1000000;
+    waittime.tv_usec= server->root->snd_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
-                      &waittime, (socklen_t)sizeof(struct timeval));
+                          &waittime, (socklen_t)sizeof(struct timeval));
+    (void)error;
     assert(error == 0);
   }
 #endif
 
 #ifdef HAVE_RCVTIMEO
-  if (server->root->rcv_timeout)
+  if (server->root->rcv_timeout > 0)
   {
     struct timeval waittime;
 
-    waittime.tv_sec= 0;
-    waittime.tv_usec= server->root->rcv_timeout;
+    waittime.tv_sec= server->root->rcv_timeout / 1000000;
+    waittime.tv_usec= server->root->rcv_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
                           &waittime, (socklen_t)sizeof(struct timeval));
+    (void)(error);
     assert(error == 0);
   }
 #endif
@@ -283,11 +285,14 @@ static void set_socket_options(org::libmemcached::Instance* server)
     int set= 1;
     int error= setsockopt(server->fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
 
+    assert(error == 0);
+
     // This is not considered a fatal error
     if (error == -1)
     {
-      WATCHPOINT_ERRNO(get_socket_errno());
+#if 0
       perror("setsockopt(SO_NOSIGPIPE)");
+#endif
     }
   }
 #endif
@@ -300,6 +305,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     linger.l_linger= 0; /* By default on close() just drop the socket */
     int error= setsockopt(server->fd, SOL_SOCKET, SO_LINGER,
                           &linger, (socklen_t)sizeof(struct linger));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -309,6 +315,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
                           &flag, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -318,6 +325,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_KEEPALIVE,
                       &flag, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -326,6 +334,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
                           &server->root->tcp_keepidle, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 #endif
@@ -334,6 +343,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDBUF,
                           &server->root->send_size, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -341,6 +351,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVBUF,
                           &server->root->recv_size, (socklen_t)sizeof(int));
+    (void)(error);
     assert(error == 0);
   }
 
@@ -729,6 +740,11 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
 
 memcached_return_t memcached_connect_try(org::libmemcached::Instance* server)
 {
+  if (server and server->root and server->root->state.is_parsing)
+  {
+    return MEMCACHED_SUCCESS;
+  }
+
   return _memcached_connect(server, false);
 }
 

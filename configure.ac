@@ -69,7 +69,6 @@ m4_include([libtest/yatl.m4])
 m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
 m4_include([m4/libgearman.m4])
-m4_include([memcached/version.m4])
 
 AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
 AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
@@ -81,17 +80,7 @@ AM_CONDITIONAL(BUILDING_GEARMAN, false)
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
 
-case "$target_os" in
-  *linux*)
-       AS_IF([test "x$GCC" = "xyes"],
-             [
-              LDFLAGS="$LDFLAGS -z relro -z now"
-              ])
-   ;;
-   esac
-
 dnl Specialty checks
-AX_PTHREAD
 AX_CXX_CINTTYPES
 CONFIG_EXTRA
 DETECT_BYTEORDER
@@ -104,6 +93,7 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 AC_CHECK_FUNCS([alarm])
+AC_CHECK_FUNCS([clock_gettime])
 AC_CHECK_FUNCS([dup2])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
@@ -295,6 +285,9 @@ fi
 
 AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
                        [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
+
+AX_HARDEN_COMPILER_FLAGS
+AX_PTHREAD
 
 AC_CONFIG_FILES([
   Makefile
