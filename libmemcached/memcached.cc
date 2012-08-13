@@ -45,6 +45,7 @@ static inline bool _memcached_init(memcached_st *self)
   self->state.is_purging= false;
   self->state.is_processing_input= false;
   self->state.is_time_for_rebuild= false;
+  self->state.is_parsing= false;
 
   self->flags.auto_eject_hosts= false;
   self->flags.binary_protocol= false;

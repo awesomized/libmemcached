@@ -118,7 +118,7 @@ test_return_t Collection::exec()
           }
         }
 
-        alarm(60);
+        alarm(600);
         try 
         {
           return_code= runner_code(_frame, run, _timer);
