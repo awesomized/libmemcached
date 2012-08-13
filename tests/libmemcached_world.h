@@ -70,14 +70,22 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     {
       if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
       {
+        error= TEST_SKIPPED;
+#if 0
         fatal_message("Could not start memcached-sasl");
+#endif
+        return NULL;
       }
     }
     else
     {
       if (server_startup(servers, "memcached", port, 0, NULL) == false)
       {
+        error= TEST_SKIPPED;
+#if 0
         fatal_message("Could not start memcached");
+#endif
+        return NULL;
       }
     }
   }
