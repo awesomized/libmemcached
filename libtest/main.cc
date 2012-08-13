@@ -220,22 +220,22 @@ int main(int argc, char *argv[])
     is_massive(opt_massive);
   }
 
-  char buffer[1024];
+  char tmp_directory[1024];
   if (getenv("LIBTEST_TMP"))
   {
-    snprintf(buffer, sizeof(buffer), "%s", getenv("LIBTEST_TMP"));
+    snprintf(tmp_directory, sizeof(tmp_directory), "%s", getenv("LIBTEST_TMP"));
   }
   else
   {
-    snprintf(buffer, sizeof(buffer), "%s", LIBTEST_TEMP);
+    snprintf(tmp_directory, sizeof(tmp_directory), "%s", LIBTEST_TEMP);
   }
 
-  if (chdir(buffer) == -1)
+  if (chdir(tmp_directory) == -1)
   {
     char getcwd_buffer[1024];
     char *dir= getcwd(getcwd_buffer, sizeof(getcwd_buffer));
 
-    Error << "Unable to chdir() from " << dir << " to " << buffer << " errno:" << strerror(errno);
+    Error << "Unable to chdir() from " << dir << " to " << tmp_directory << " errno:" << strerror(errno);
     return EXIT_FAILURE;
   }
 
@@ -329,10 +329,7 @@ int main(int argc, char *argv[])
 
       std::ofstream xml_file;
       std::string file_name;
-      if (getenv("LIBTEST_TEMP"))
-      {
-        file_name.append(getenv("LIBTEST_TEMP"));
-      }
+      file_name.append(tmp_directory);
       file_name.append(frame->name());
       file_name.append(".xml");
       xml_file.open(file_name.c_str(), std::ios::trunc);
