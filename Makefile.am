@@ -54,11 +54,6 @@ include win32/include.am
 
 include m4/include.am
 
-if HAVE_LIBEVENT
-include memcached/include.am
-libtest_libtest_la_DEPENDENCIES+= memcached/memcached
-endif
-
 docs: html man
 
 TESTS += ${check_PROGRAMS}

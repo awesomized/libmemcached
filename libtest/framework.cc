@@ -45,7 +45,7 @@
 
 namespace libtest {
 
-Framework::Framework(libtest::SignalThread& signal,
+Framework::Framework(libtest::SignalThread& signal_,
                      const std::string& name_,
                      const std::string& only_run_arg,
                      const std::string& wildcard_arg) :
@@ -59,7 +59,7 @@ Framework::Framework(libtest::SignalThread& signal,
   _runner(NULL),
   _socket(false),
   _creators_ptr(NULL),
-  _signal(signal),
+  _signal(signal_),
   _only_run(only_run_arg),
   _wildcard(wildcard_arg),
   _name(name_)
