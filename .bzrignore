@@ -150,3 +150,4 @@ tests/testudp
 tests/var/
 tmp_chroot
 unittests/unittests
+m4/.git

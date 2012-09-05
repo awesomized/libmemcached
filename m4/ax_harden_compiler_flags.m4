@@ -8,7 +8,7 @@
 #
 # DESCRIPTION
 #
-#   Any compiler flag that "hardens" or tests code.
+#   Any compiler flag that "hardens" or tests code. C99 is assumed.
 #
 #   NOTE: Implementation based on AX_APPEND_FLAG.
 #
@@ -45,11 +45,28 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# The Following flags are not checked for
+# -Wdeclaration-after-statement is counter to C99
+
 #serial 1
 
 AC_DEFUN([AX_HARDEN_COMPILER_FLAGS],
 [AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
 AC_REQUIRE([AX_CHECK_LINK_FLAG])
+AC_LANG_PUSH([C])
+AX_APPEND_COMPILE_FLAGS([-O2])
+AX_APPEND_COMPILE_FLAGS([-Werror])
+AX_APPEND_COMPILE_FLAGS([-Wall])
+AX_APPEND_COMPILE_FLAGS([-Wextra])
+AX_APPEND_COMPILE_FLAGS([-std=c99])
+AX_APPEND_COMPILE_FLAGS([-Wbad-function-cast])
+AX_APPEND_COMPILE_FLAGS([-Wmissing-prototypes])
+AX_APPEND_COMPILE_FLAGS([-Wnested-externs])
+AX_APPEND_COMPILE_FLAGS([-Wold-style-definition])
+AX_APPEND_COMPILE_FLAGS([-Woverride-init])
+AX_APPEND_COMPILE_FLAGS([-Wstrict-prototypes])
+AC_LANG_POP
+AC_LANG_PUSH([C++])
 AX_APPEND_COMPILE_FLAGS([-O2])
 AX_APPEND_COMPILE_FLAGS([-Werror])
 AX_APPEND_COMPILE_FLAGS([-Wall])
@@ -61,20 +78,18 @@ AX_APPEND_COMPILE_FLAGS([--paramssp-buffer-size=1])
 AX_APPEND_COMPILE_FLAGS([-D_FORTIFY_SOURCE=2])
 AX_APPEND_COMPILE_FLAGS([-Waddress])
 AX_APPEND_COMPILE_FLAGS([-Warray-bounds])
-AX_APPEND_COMPILE_FLAGS([-Wbad-function-cast])
 AX_APPEND_COMPILE_FLAGS([-Wchar-subscripts])
 AX_APPEND_COMPILE_FLAGS([-Wcomment])
-AX_APPEND_COMPILE_FLAGS([-Wdeclaration-after-statement])
+AX_APPEND_COMPILE_FLAGS([-Wctor-dtor-privacy])
 AX_APPEND_COMPILE_FLAGS([-Wfloat-equal])
 AX_APPEND_COMPILE_FLAGS([-Wformat=2])
+AX_APPEND_COMPILE_FLAGS([-Wlong-long])
 AX_APPEND_COMPILE_FLAGS([-Wmaybe-uninitialized])
 AX_APPEND_COMPILE_FLAGS([-Wmissing-field-initializers])
 AX_APPEND_COMPILE_FLAGS([-Wmissing-noreturn])
-AX_APPEND_COMPILE_FLAGS([-Wmissing-prototypes])
-AX_APPEND_COMPILE_FLAGS([-Wnested-externs])
+AX_APPEND_COMPILE_FLAGS([-Wnon-virtual-dtor])
 AX_APPEND_COMPILE_FLAGS([-Wnormalized=id])
-AX_APPEND_COMPILE_FLAGS([-Wold-style-definition])
-AX_APPEND_COMPILE_FLAGS([-Woverride-init])
+AX_APPEND_COMPILE_FLAGS([-Woverloaded-virtual])
 AX_APPEND_COMPILE_FLAGS([-Wpointer-arith])
 AX_APPEND_COMPILE_FLAGS([-Wredundant-decls])
 AX_APPEND_COMPILE_FLAGS([-Wshadow])
@@ -82,7 +97,6 @@ AX_APPEND_COMPILE_FLAGS([-Wshorten-64-to-32])
 AX_APPEND_COMPILE_FLAGS([-Wsign-compare])
 AX_APPEND_COMPILE_FLAGS([-Wstack-protector])
 AX_APPEND_COMPILE_FLAGS([-Wstrict-overflow=1])
-AX_APPEND_COMPILE_FLAGS([-Wstrict-prototypes])
 AX_APPEND_COMPILE_FLAGS([-Wswitch-enum])
 AX_APPEND_COMPILE_FLAGS([-Wundef])
 AX_APPEND_COMPILE_FLAGS([-Wunused-result])
@@ -94,4 +108,5 @@ AX_APPEND_COMPILE_FLAGS([-fwrapv])
 AX_APPEND_COMPILE_FLAGS([-ggdb])
 AX_CHECK_LINK_FLAG([-Werror])
 AX_CHECK_LINK_FLAG([-z relro -z now])
+AC_LANG_POP
 ])dnl AX_HARDEN_COMPILER_FLAGS
