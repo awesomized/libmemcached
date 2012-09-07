@@ -154,6 +154,10 @@ sphinx-help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
+install-html: html-local
+	@rm -r -f /var/www/libmemcaced
+	@cp -r docs/html /var/www/libmemcaced
+
 html-local: docs/conf.py changes
 	PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/html
 	@echo
