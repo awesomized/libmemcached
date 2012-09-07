@@ -158,7 +158,7 @@ install-html: html-local
 	@rm -r -f /var/www/libmemcaced
 	@cp -r docs/html /var/www/libmemcaced
 
-html-local: docs/conf.py changes
+html-local: docs/conf.py changes docs
 	PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(SPHINX_BUILDDIR)/html."
