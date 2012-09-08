@@ -155,7 +155,7 @@ sphinx-help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 install-html: html-local
-	@rm -r -f /var/www/libmemcaced
+	@rm -r -f /var/www/libmemcaced/*
 	@cp -r docs/html /var/www/libmemcaced
 
 html-local: docs/conf.py changes docs
