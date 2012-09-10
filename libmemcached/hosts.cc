@@ -352,17 +352,29 @@ static memcached_return_t server_add(memcached_st *ptr,
 {
   assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
 
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (ptr->number_of_hosts + 1), org::libmemcached::Instance);
+  if (ptr->number_of_hosts)
+  {
+    assert(memcached_instance_list(ptr));
+  }
+
+  if (memcached_instance_list(ptr))
+  {
+    assert(ptr->number_of_hosts);
+  }
+
+  uint32_t host_list_size= ptr->number_of_hosts +1;
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
-  memcached_instance_set(ptr, new_host_list);
+  memcached_instance_set(ptr, new_host_list, host_list_size);
+  assert(ptr->number_of_hosts == host_list_size);
 
   /* TODO: Check return type */
-  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
+  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr) -1);
 
   if (__instance_create_with(ptr, instance, hostname, port, weight, type) == NULL)
   {
@@ -377,8 +389,6 @@ static memcached_return_t server_add(memcached_st *ptr,
     }
   }
 
-  ptr->number_of_hosts++;
-
   return run_distribution(ptr);
 }
 
@@ -390,23 +400,26 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     return MEMCACHED_SUCCESS;
   }
 
+  uint32_t original_host_size= memcached_server_count(ptr);
   uint32_t count= memcached_server_list_count(list);
+  uint32_t host_list_size= count +original_host_size;
 
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (count + memcached_server_count(ptr)), org::libmemcached::Instance);
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
-  memcached_instance_set(ptr, new_host_list);
+  memcached_instance_set(ptr, new_host_list, host_list_size);
 
-  for (uint32_t x= 0; x < count; x++)
+  ptr->state.is_parsing= true;
+  for (uint32_t x= 0; x < count; ++x, ++original_host_size)
   {
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
@@ -414,6 +427,7 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
                                hostname,
                                list[x].port, list[x].weight, list[x].type) == NULL)
     {
+      ptr->state.is_parsing= false;
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
 
@@ -421,9 +435,8 @@ memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_serv
     {
       memcached_set_weighted_ketama(ptr, true);
     }
-
-    ptr->number_of_hosts++;
   }
+  ptr->state.is_parsing= false;
 
   return run_distribution(ptr);
 }
@@ -435,22 +448,28 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
     return MEMCACHED_SUCCESS;
   }
 
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), (number_of_hosts +memcached_server_count(ptr)), org::libmemcached::Instance);
+  uint32_t original_host_size= memcached_server_count(ptr);
+  uint32_t host_list_size= number_of_hosts +original_host_size;
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
     return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
   }
 
-  memcached_instance_set(ptr, new_host_list);
+  memcached_instance_set(ptr, new_host_list, host_list_size);
 
-  for (uint32_t x= 0; x < number_of_hosts; x++)
+  // We don't bother with lookups for this operation
+  ptr->state.is_parsing= true;
+
+  // We use original_host_size since size will now point to the first new
+  // instance allocated.
+  for (uint32_t x= 0; x < number_of_hosts; ++x, ++original_host_size)
   {
-
     WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr));
+    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
@@ -458,6 +477,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
                                hostname,
                                list[x].port(), list[x].weight, list[x].type) == NULL)
     {
+      ptr->state.is_parsing= false;
       return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
 
@@ -465,9 +485,8 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
     {
       memcached_set_weighted_ketama(ptr, true);
     }
-
-    ptr->number_of_hosts++;
   }
+  ptr->state.is_parsing= false;
 
   return run_distribution(ptr);
 }

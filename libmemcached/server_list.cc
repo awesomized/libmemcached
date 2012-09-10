@@ -127,39 +127,36 @@ uint32_t memcached_instance_list_count(const memcached_st* self)
     : self->number_of_hosts;
 }
 
-void memcached_instance_set(memcached_st* memc, org::libmemcached::Instance* list)
+void memcached_instance_set(memcached_st* memc, org::libmemcached::Instance* list, const uint32_t host_list_size)
 {
   memc->servers= list;
+  memc->number_of_hosts= host_list_size;
 }
 
 void memcached_server_list_free(memcached_server_list_st self)
 {
-  if (self == NULL)
+  if (self)
   {
-    return;
-  }
+    for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
+    {
+      assert_msg(not memcached_is_allocated(&self[x]), "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
+      __server_free(&self[x]);
+    }
 
-  for (uint32_t x= 0; x < memcached_server_list_count(self); x++)
-  {
-    assert_msg(not memcached_is_allocated(&self[x]), "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
-    __server_free(&self[x]);
+    libmemcached_free(self->root, self);
   }
-
-  libmemcached_free(self->root, self);
 }
 
 void memcached_instance_list_free(org::libmemcached::Instance* self, uint32_t instance_count)
 {
-  if (self == NULL)
+  if (self)
   {
-    return;
-  }
+    for (uint32_t x= 0; x < instance_count; x++)
+    {
+      assert_msg(memcached_is_allocated(&self[x]) == false, "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
+      __instance_free(&self[x]);
+    }
 
-  for (uint32_t x= 0; x < instance_count; x++)
-  {
-    assert_msg(not memcached_is_allocated(&self[x]), "You have called memcached_server_list_free(), but you did not pass it a valid memcached_server_list_st");
-    __instance_free(&self[x]);
+    libmemcached_free(self->root, self);
   }
-
-  libmemcached_free(self->root, self);
 }
