@@ -122,6 +122,18 @@ memcached_string_st *memcached_string_create(memcached_st *memc, memcached_strin
   return self;
 }
 
+static memcached_return_t memcached_string_append_null(memcached_string_st& string)
+{
+  if (memcached_failed(_string_check(&string, 1)))
+  {
+    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+  }
+
+  *string.end= 0;
+
+  return MEMCACHED_SUCCESS;
+}
+
 static memcached_return_t memcached_string_append_null(memcached_string_st *string)
 {
   if (memcached_failed(_string_check(string, 1)))
@@ -184,6 +196,18 @@ char *memcached_string_c_copy(memcached_string_st *string)
   c_ptr[memcached_string_length(string)]= 0;
 
   return c_ptr;
+}
+
+bool memcached_string_set(memcached_string_st& string, const char* value, size_t length)
+{
+  memcached_string_reset(&string);
+  if (memcached_success(memcached_string_append(&string, value, length)))
+  {
+    memcached_string_append_null(string);
+    return true;
+  }
+
+  return false;
 }
 
 void memcached_string_reset(memcached_string_st *string)

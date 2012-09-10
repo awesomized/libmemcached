@@ -1664,7 +1664,7 @@ yyreduce:
             if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, (yyvsp[(2) - (3)].string).c_str, (yyvsp[(3) - (3)].number))))
             {
               char buffer[1024];
-              snprintf(buffer, sizeof(buffer), "Failed to add server: %s", (yyvsp[(2) - (3)].string).c_str);
+              snprintf(buffer, sizeof(buffer), "Failed to add socket: %s", (yyvsp[(2) - (3)].string).c_str);
               parser_abort(context, buffer);
             }
           }

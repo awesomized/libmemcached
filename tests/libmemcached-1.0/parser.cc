@@ -663,6 +663,7 @@ test_return_t test_hostname_port_weight(memcached_st *)
 struct socket_weight_t {
   const char *socket;
   size_t weight;
+  const char* type;
 };
 
 static memcached_return_t dump_socket_information(const memcached_st *,
@@ -671,15 +672,27 @@ static memcached_return_t dump_socket_information(const memcached_st *,
 {
   socket_weight_t *check= (socket_weight_t *)context;
 
-  if (strcmp(memcached_server_name(instance), check->socket))
+  if (strcmp(memcached_server_type(instance), check->type) == 0)
   {
-    Error << memcached_server_name(instance) << " != " << check->socket;
-    return MEMCACHED_FAILURE;
+    if (strcmp(memcached_server_name(instance), check->socket) == 0)
+    {
+      if (instance->weight == check->weight)
+      {
+        return MEMCACHED_SUCCESS;
+      }
+      else
+      {
+        Error << instance->weight << " != " << check->weight;
+      }
+    }
+    else
+    {
+      Error << "'" << memcached_server_name(instance) << "'" << " != " << "'" << check->socket << "'";
+    }
   }
-
-  if (instance->weight == check->weight)
+  else
   {
-    return MEMCACHED_SUCCESS;
+    Error << "'" << memcached_server_type(instance) << "'" << " != " << "'" << check->type << "'";
   }
 
   return MEMCACHED_FAILURE;
@@ -697,7 +710,7 @@ test_return_t test_parse_socket(memcached_st *)
 
     memcached_st *memc= memcached(test_literal_param("--socket=\"/tmp/foo\""));
     test_true(memc);
-    socket_weight_t check= { "/tmp/foo", 1 };
+    socket_weight_t check= { "/tmp/foo", 1, "SOCKET"};
     test_compare(MEMCACHED_SUCCESS,
                  memcached_server_cursor(memc, callbacks, &check, 1));
     memcached_free(memc);
@@ -710,7 +723,7 @@ test_return_t test_parse_socket(memcached_st *)
 
     memcached_st *memc= memcached(test_literal_param("--socket=\"/tmp/foo\"/?23"));
     test_true(memc);
-    socket_weight_t check= { "/tmp/foo", 23 };
+    socket_weight_t check= { "/tmp/foo", 23, "SOCKET"};
     test_compare(MEMCACHED_SUCCESS,
                  memcached_server_cursor(memc, callbacks, &check, 1));
     memcached_free(memc);

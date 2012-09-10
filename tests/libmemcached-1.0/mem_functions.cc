@@ -3312,7 +3312,7 @@ test_return_t analyzer_test(memcached_st *memc)
 
 test_return_t util_version_test(memcached_st *memc)
 {
-  test_compare(MEMCACHED_SUCCESS, memcached_version(memc));
+  test_compare(memcached_version(memc), MEMCACHED_SUCCESS);
   test_true(libmemcached_util_version_check(memc, 0, 0, 0));
 
   bool if_successful= libmemcached_util_version_check(memc, 9, 9, 9);

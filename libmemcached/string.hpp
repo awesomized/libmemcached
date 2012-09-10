@@ -85,6 +85,8 @@ char *memcached_string_take_value(memcached_string_st *self);
 
 char *memcached_string_value_mutable(const memcached_string_st *self);
 
+bool memcached_string_set(memcached_string_st&, const char*, size_t);
+
 void memcached_string_set_length(memcached_string_st *self, size_t length);
 void memcached_string_set_length(memcached_string_st&, const size_t length);
 

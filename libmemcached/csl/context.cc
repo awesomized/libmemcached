@@ -97,13 +97,29 @@ void Context::error(const char *error_arg, yytokentype last_token, const char *l
   }
 }
 
-const char *Context::set_hostname(const char *str, size_t size)
+void Context::hostname(const char *str, size_t size, server_t& server_)
 {
   size_t copy_length= size_t(NI_MAXHOST) > size ? size : size_t(NI_MAXHOST);
   memcpy(_hostname, str, copy_length);
   _hostname[copy_length]= 0;
 
-  return _hostname;
+  server_.port= MEMCACHED_DEFAULT_PORT;
+  server_.weight= 1;
+  server_.c_str= _hostname;
+  server_.size= size;
+}
+
+bool Context::string_buffer(const char *str, size_t size, memcached_string_t& string_)
+{
+  if (memcached_string_set(_string_buffer, str, size))
+  {
+    string_.c_str= memcached_string_value(_string_buffer);
+    string_.size= memcached_string_length(_string_buffer);
+
+    return true;
+  }
+
+  return false;
 }
 
 bool Context::set_hash(memcached_hash_t hash)

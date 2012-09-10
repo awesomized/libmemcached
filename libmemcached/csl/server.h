@@ -42,8 +42,8 @@
 
 struct server_t
 {
-  in_port_t port;
-  uint32_t weight;
   const char *c_str;
   size_t size;
+  in_port_t port;
+  uint32_t weight;
 };
