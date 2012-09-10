@@ -48,7 +48,11 @@ memcached_return_t memcached_vdo(org::libmemcached::Instance* instance,
     vector[0].length= UDP_DATAGRAM_HEADER_LENGTH;
 
     msg.msg_iov= (struct iovec*)vector;
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+    msg.msg_iovlen= int(count);
+#else
     msg.msg_iovlen= count;
+#endif
 
     uint32_t retry= 5;
     while (--retry)
