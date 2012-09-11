@@ -40,47 +40,54 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 1
+#serial 2
 
-
-AC_DEFUN([AX_CXX_CINTTYPES],
-    [
+AC_DEFUN([AX_CXX_CINTTYPES], [
     AC_REQUIRE([AC_PROG_CXX])
     AC_REQUIRE([AC_PROG_CXXCPP])
     AC_REQUIRE([AX_CXX_CSTDINT])
-    AC_MSG_CHECKING(the location of cinttypes)
-    save_CXXFLAGS="${CXXFLAGS}"
-    CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
-    ac_cv_cxx_cinttypes=""
 
-    AC_LANG_PUSH([C++])
-#    AC_CACHE_CHECK([for location of cinttypes], [ac_cv_cxx_cinttypes],
-#      [
-# Look for cinttypes
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <cinttypes>], [ uint32_t foo= UINT32_C(1) ])],
-        [ac_cv_cxx_cinttypes="<cinttypes>"],
-        [
+    AC_CACHE_CHECK([for location of cinttypes], [ac_cv_cxx_cinttypes], [
+      save_CXXFLAGS="${CXXFLAGS}"
+      CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
+      AC_LANG_PUSH([C++])
+
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <cinttypes>], [
+          uint32_t foo= UINT32_C(1); 
+          ])],
+        [ac_cxx_cinttypes_cinttypes="<cinttypes>"])
+
 # Look for tr1/cinttypes
-        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <tr1/cinttypes>], [ uint32_t foo= UINT32_C(1) ])],
-          [ac_cv_cxx_cinttypes="<tr1/cinttypes>"],
-          [
-# Look for boost/cinttypes.hpp
-          AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <boost/cinttypes.hpp>], [ uint32_t foo= UINT32_C(1) ])],
-            [ac_cv_cxx_cinttypes="<boost/cinttypes.hpp>"])
-          ])
-        ])
-#      ])
-  AC_LANG_POP()
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <tr1/cinttypes>], [
+          uint32_t foo= UINT32_C(1);
+          ])],
+        [ac_cxx_cinttypes_tr1_cinttypes="<tr1/cinttypes>"])
 
-  CXXFLAGS="${save_CXXFLAGS}"
-  if test -n "$ac_cv_cxx_cinttypes"; then
-    AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
-  else
-    ac_cv_cxx_cinttypes="<inttypes.h>"
-    AC_MSG_WARN([Could not find a cinttypes header.])
-    AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
-  fi
+# Look for boost/cinttypes.hpp
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <boost/cinttypes.hpp>], [
+          uint32_t foo= UINT32_C(1); 
+          ])],
+        [ac_cxx_cinttypes_boost_cinttypes_hpp="<boost/cinttypes.hpp>"])
+
+      AC_LANG_POP
+      CXXFLAGS="${save_CXXFLAGS}"
+
+      AS_IF([test -n "$ac_cxx_cinttypes_cinttypes"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_cinttypes],
+          [test -n "$ac_cxx_cinttypes_tr1_cinttypes"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_tr1_cinttypes],
+          [test -n "$ac_cxx_cinttypes_boost_cinttypes_hpp"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_boost_cinttypes_hpp])
+  ])
+
+  AS_IF([ test -n "$ac_cv_cxx_cinttypes"], [
+      AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
+      ],[
+      ac_cv_cxx_cinttypes="<inttypes.h>"
+      AC_MSG_WARN([Could not find a cinttypes header.])
+      AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
+      ])
 
   AC_DEFINE([__STDC_LIMIT_MACROS],[1],[Use STDC Limit Macros in C++])
-  AC_DEFINE_UNQUOTED(CINTTYPES_H,$ac_cv_cxx_cinttypes, [the location of <cinttypes>])
+  AC_DEFINE_UNQUOTED([CINTTYPES_H],[$ac_cv_cxx_cinttypes],[the location of <cinttypes>])
   ])
