@@ -154,6 +154,7 @@ void __instance_free(org::libmemcached::Instance* self)
     self->address_info= NULL;
     self->address_info_next= NULL;
   }
+  assert(self->address_info_next == NULL);
 
   memcached_error_free(*self);
 
@@ -307,23 +308,26 @@ static org::libmemcached::Instance* memcached_instance_clone(org::libmemcached::
 void set_last_disconnected_host(org::libmemcached::Instance* self)
 {
   assert(self->root);
-  if (self->root == NULL)
+  if (self->root)
   {
-    return;
+    if (memcached_server_get_last_disconnect(self->root) and
+        memcached_server_get_last_disconnect(self->root)->version == self->version)
+    {
+      return;
+    }
+
+    // const_cast
+    memcached_st *root= (memcached_st *)self->root;
+
+    memcached_instance_free((org::libmemcached::Instance*)(root->last_disconnected_server));
+
+    // We set is_parsing so that no lookup happens
+    root->state.is_parsing= true;
+    root->last_disconnected_server= memcached_instance_clone(self);
+    root->state.is_parsing= false;
+
+    ((org::libmemcached::Instance*)memcached_server_get_last_disconnect(root))->version= self->version;
   }
-
-  if (memcached_server_get_last_disconnect(self->root) and
-      memcached_server_get_last_disconnect(self->root)->version == self->version)
-  {
-    return;
-  }
-
-  // const_cast
-  memcached_st *root= (memcached_st *)self->root;
-
-  memcached_instance_free((org::libmemcached::Instance*)(root->last_disconnected_server));
-  root->last_disconnected_server= memcached_instance_clone(self);
-  ((org::libmemcached::Instance*)memcached_server_get_last_disconnect(root))->version= self->version;
 }
 
 memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *self)

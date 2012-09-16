@@ -1754,6 +1754,11 @@ test_return_t block_add_regression(memcached_st *memc)
                                                 global_pairs[x].key, global_pairs[x].key_length,
                                                 &blob[0], blob.size(),
                                                 time_t(0), uint32_t(0));
+    if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+    {
+      Error << memcached_last_error_message(memc);
+      return TEST_SKIPPED;
+    }
     test_compare(*memc, MEMCACHED_SUCCESS);
     test_compare(rc, MEMCACHED_SUCCESS);
   }
@@ -3312,7 +3317,7 @@ test_return_t analyzer_test(memcached_st *memc)
 
 test_return_t util_version_test(memcached_st *memc)
 {
-  test_compare(MEMCACHED_SUCCESS, memcached_version(memc));
+  test_compare(memcached_version(memc), MEMCACHED_SUCCESS);
   test_true(libmemcached_util_version_check(memc, 0, 0, 0));
 
   bool if_successful= libmemcached_util_version_check(memc, 9, 9, 9);

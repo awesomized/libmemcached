@@ -173,7 +173,8 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
     hints.ai_protocol= IPPROTO_TCP;
   }
 
-  server->address_info= NULL;
+  assert(server->address_info == NULL);
+  assert(server->address_info_next == NULL);
   int errcode;
   switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
   {
@@ -181,19 +182,49 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
     break;
 
   case EAI_AGAIN:
+    if (server->address_info)
+    {
+      freeaddrinfo(server->address_info);
+      server->address_info= NULL;
+      server->address_info_next= NULL;
+    }
     return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
 
   case EAI_SYSTEM:
+    if (server->address_info)
+    {
+      freeaddrinfo(server->address_info);
+      server->address_info= NULL;
+      server->address_info_next= NULL;
+    }
     return memcached_set_errno(*server, errno, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_SYSTEM)"));
 
   case EAI_BADFLAGS:
+    if (server->address_info)
+    {
+      freeaddrinfo(server->address_info);
+      server->address_info= NULL;
+      server->address_info_next= NULL;
+    }
     return memcached_set_error(*server, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
 
   case EAI_MEMORY:
+    if (server->address_info)
+    {
+      freeaddrinfo(server->address_info);
+      server->address_info= NULL;
+      server->address_info_next= NULL;
+    }
     return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
 
   default:
     {
+      if (server->address_info)
+      {
+        freeaddrinfo(server->address_info);
+        server->address_info= NULL;
+        server->address_info_next= NULL;
+      }
       return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
@@ -425,24 +456,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
   {
     WATCHPOINT_ASSERT(server->state == MEMCACHED_SERVER_STATE_NEW);
     server->address_info_next= NULL;
-    memcached_return_t rc;
-    uint32_t counter= 5;
-    while (--counter)
-    {
-      if ((rc= set_hostinfo(server)) != MEMCACHED_TIMEOUT)
-      {
-        break;
-      }
-
-#ifndef WIN32
-      struct timespec dream, rem;
-
-      dream.tv_nsec= 1000;
-      dream.tv_sec= 0;
-
-      nanosleep(&dream, &rem);
-#endif
-    }
+    memcached_return_t rc= set_hostinfo(server);
 
     if (memcached_failed(rc))
     {

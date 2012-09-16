@@ -49,8 +49,6 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #endif
 
-#define YY_NO_INPUT
-
 #define YY_EXTRA_TYPE Context*
 
 }
@@ -77,6 +75,10 @@
   } \
 }
 
+#define YY_FATAL_ERROR(msg) \
+{ \
+}
+
 
 #define YY_INPUT(buffer, result, max_size) get_lex_chars(buffer, result, max_size, PARAM)
 
@@ -84,14 +86,16 @@
 
 %option 8bit
 %option bison-bridge
+%option never-interactive
 %option case-insensitive
-%option debug
+%option noinput
 %option nounput
 %option noyywrap
 %option outfile="libmemcached/csl/scanner.cc" header-file="libmemcached/csl/scanner.h"
 %option perf-report
 %option prefix="config_"
 %option reentrant
+%option warn
 
 %%
 
@@ -182,36 +186,26 @@ MURMUR			{ return MURMUR; }
 JENKINS			{ return JENKINS; }
 
 (([[:digit:]]{1,3}"."){3}([[:digit:]]{1,3})) {
-      yylval->server.port= MEMCACHED_DEFAULT_PORT;
-      yylval->server.weight= 1;
-      yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
-      if (yylval->server.c_str)
-        yylval->server.size= yyleng;
+      yyextra->hostname(yytext, yyleng, yylval->server);
       return IPADDRESS;
     }
 
 [[:alnum:]]["."[:alnum:]_-]+[[:alnum:]] {
       if (yyextra->is_server())
       {
-        yylval->server.port= MEMCACHED_DEFAULT_PORT;
-        yylval->server.weight= 1;
-        yylval->server.c_str= yyextra->set_hostname(yytext, yyleng);
-        if (yylval->server.c_str)
-          yylval->server.size= yyleng;
+        yyextra->hostname(yytext, yyleng, yylval->server);
 
         return HOSTNAME;
       }
 
-      yylval->string.c_str = yytext;
-      yylval->string.size = yyleng;
+      yyextra->string_buffer(yytext, yyleng, yylval->string);
 
       return STRING;
     }
 
 L?\"(\\.|[^\\"])*\" {
       yyget_text(yyscanner)[yyleng -1]= 0;
-      yylval->string.c_str= yytext +1;
-      yylval->string.size= yyleng -2;
+      yyextra->string_buffer(yytext +1, yyleng -2, yylval->string);
       return QUOTED_STRING;
     }
 
@@ -230,6 +224,7 @@ void Context::init_scanner()
 
 void Context::destroy_scanner()
 {
+  (void)yy_fatal_error; // Removes warning about unused yy_fatal_error()
   yylex_destroy(scanner);
 }
 

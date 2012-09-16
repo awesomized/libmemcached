@@ -42,6 +42,9 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
+  const char *memcached_error(const memcached_st *);
+
+LIBMEMCACHED_API
   const char *memcached_last_error_message(const memcached_st *);
 
 LIBMEMCACHED_API

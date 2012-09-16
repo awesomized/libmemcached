@@ -106,6 +106,11 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
     rc= MEMCACHED_CONNECTION_FAILURE;
   }
 
+  if (rc == MEMCACHED_ERRNO and local_errno == ECONNRESET)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
   if (local_errno == EINVAL)
   {
     rc= MEMCACHED_INVALID_ARGUMENTS;
@@ -490,24 +495,29 @@ void memcached_error_free(memcached_server_st& self)
   self.error_messages= NULL;
 }
 
+const char *memcached_error(const memcached_st *memc)
+{
+  return memcached_last_error_message(memc);
+}
+
 const char *memcached_last_error_message(const memcached_st *memc)
 {
-  if (memc == NULL)
+  if (memc)
   {
-    return memcached_strerror(memc, MEMCACHED_INVALID_ARGUMENTS);
-  }
+    if (memc->error_messages)
+    {
+      if (memc->error_messages->size == 0)
+      {
+        return memc->error_messages->message;
+      }
 
-  if (memc->error_messages == NULL)
-  {
+      return memcached_strerror(memc, memc->error_messages->rc);
+    }
+
     return memcached_strerror(memc, MEMCACHED_SUCCESS);
   }
 
-  if (memc->error_messages->size == 0)
-  {
-    return memcached_strerror(memc, memc->error_messages->rc);
-  }
-
-  return memc->error_messages->message;
+  return memcached_strerror(memc, MEMCACHED_INVALID_ARGUMENTS);
 }
 
 bool memcached_has_current_error(memcached_st &memc)
@@ -529,17 +539,17 @@ bool memcached_has_current_error(org::libmemcached::Instance& server)
 
 memcached_return_t memcached_last_error(const memcached_st *memc)
 {
-  if (memc == NULL)
+  if (memc)
   {
-    return MEMCACHED_INVALID_ARGUMENTS;
-  }
+    if (memc->error_messages)
+    {
+      return memc->error_messages->rc;
+    }
 
-  if (memc->error_messages == NULL)
-  {
     return MEMCACHED_SUCCESS;
   }
 
-  return memc->error_messages->rc;
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
 int memcached_last_error_errno(const memcached_st *memc)

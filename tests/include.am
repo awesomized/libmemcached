@@ -107,6 +107,9 @@ test-cycle: tests/cycle
 test-memcapable: tests/memcapable
 	@tests/memcapable
 
+valgrind-memcapable: tests/memcapable
+	$(VALGRIND_COMMAND) tests/memcapable
+
 pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 

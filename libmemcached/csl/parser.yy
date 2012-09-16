@@ -251,7 +251,7 @@ expression:
             if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, $3)))
             {
               char buffer[1024];
-              snprintf(buffer, sizeof(buffer), "Failed to add server: %s", $2.c_str);
+              snprintf(buffer, sizeof(buffer), "Failed to add socket: %s", $2.c_str);
               parser_abort(context, buffer);
             }
           }

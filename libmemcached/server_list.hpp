@@ -44,4 +44,4 @@ uint32_t memcached_servers_set_count(memcached_server_list_st servers, uint32_t 
 
 void memcached_instance_list_free(org::libmemcached::Instance* self, uint32_t count);
 
-void memcached_instance_set(memcached_st*, org::libmemcached::Instance*);
+void memcached_instance_set(memcached_st*, org::libmemcached::Instance*, const uint32_t host_list_size);

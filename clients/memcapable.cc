@@ -39,6 +39,8 @@
 #include <libmemcached/byteorder.h>
 #include <clients/utilities.h>
 
+#include <vector>
+
 #ifdef linux
 /* /usr/include/netinet/in.h defines macros from ntohs() to _bswap_nn to
  * optimize the conversion functions, but the prototypes generate warnings
@@ -1715,7 +1717,8 @@ static enum test_return test_ascii_mget(void)
                       "test_ascii_mget4 test_ascii_mget5 "
                       "test_ascii_mget6\r\n"));
 
-  char *returned[nkeys];
+  std::vector<char *> returned;
+  returned.resize(nkeys);
 
   for (uint32_t x= 0; x < nkeys; ++x)
   {

@@ -286,8 +286,11 @@ fi
 AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
                        [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
 
+AX_PTHREAD(, [AC_MSG_ERROR(could not find libpthread)])
+
 AX_HARDEN_COMPILER_FLAGS
-AX_PTHREAD
+
+AX_DEBUG
 
 AC_CONFIG_FILES([
   Makefile

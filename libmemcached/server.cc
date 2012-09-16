@@ -194,10 +194,12 @@ uint32_t memcached_server_count(const memcached_st *self)
 const char *memcached_server_name(const memcached_server_instance_st self)
 {
   WATCHPOINT_ASSERT(self);
-  if (self == NULL)
-    return NULL;
+  if (self)
+  {
+    return self->hostname;
+  }
 
-  return self->hostname;
+  return NULL;
 }
 
 in_port_t memcached_server_port(const memcached_server_instance_st self)

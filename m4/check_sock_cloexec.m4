@@ -1,18 +1,26 @@
-dnl CHECK_SOCK_CLOEXEC([action-if-found], [action-if-not-found])
-AC_DEFUN([AX_CHECK_SOCK_CLOEXEC], [{
-    AC_MSG_CHECKING(whether SOCK_CLOEXEC is supported)
-    AC_TRY_RUN([/* SOCK_CLOEXEC test */
+# Author?
+# AX_CHECK_SOCK_CLOEXEC([action-if-found], [action-if-not-found])
+#
+
+#serial 1
+
+AC_DEFUN([AX_CHECK_SOCK_CLOEXEC], [
+    AC_CACHE_CHECK([whether SOCK_CLOEXEC is supported], [ax_cv_sock_cloexec], [
+      AC_LANG_PUSH([C])
+      AC_RUN_IFELSE([
+        AC_LANG_PROGRAM([
+
+          /* SOCK_CLOEXEC test */
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int main (int argc, char *argv [])
-{
-    int s= socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
-    return (s == -1);
-}
-    ],
-    [AC_MSG_RESULT(yes) ; ax_cv_sock_cloexec="yes" ; $1],
-    [AC_MSG_RESULT(no)  ; ax_cv_sock_cloexec="no"  ; $2],
-    [AC_MSG_RESULT(not during cross-compile) ; ax_cv_sock_cloexec="no"]
-    )
-}])
+          ], [
+          int s= socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+          return (s == -1);
+          ])],
+        [ax_cv_sock_cloexec=yes],
+        [ax_cv_sock_cloexec=no])
+      ])
+
+    AS_IF([test x"ax_cv_sock_cloexec" = xyes], [AC_MSG_RESULT([yes]) ; $1], AC_MSG_RESULT([no]) ; $2)
+    ])

@@ -40,50 +40,46 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 1
+#serial 2
 
 
-AC_DEFUN([AX_CXX_CSTDINT],
-    [
+AC_DEFUN([AX_CXX_CSTDINT], [
     AC_REQUIRE([AC_PROG_CXX])
     AC_REQUIRE([AC_PROG_CXXCPP])
 
-    AC_MSG_CHECKING(the location of cstdint)
-    AC_LANG_PUSH([C++])
-    save_CXXFLAGS="${CXXFLAGS}"
-    CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
-    ac_cv_cxx_cstdint=""
+    AC_CACHE_CHECK([for location of cstdint], [ac_cv_cxx_cstdint], [
+      AC_LANG_PUSH([C++])
+      save_CXXFLAGS="${CXXFLAGS}"
+      CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
 
-    AC_LANG_PUSH([C++])
-#    AC_CACHE_CHECK([for location of cstdint], [ac_cv_cxx_cstdint],
-#      [
-# Look for cstdint
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <cstdint>], [ uint32_t t ])],
-        [ac_cv_cxx_cstdint="<cstdint>"],
-        [
-# Look for tr1/cstdint
-        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <tr1/cstdint>], [ uint32_t t ])],
-          [ac_cv_cxx_cstdint="<tr1/cstdint>"],
-          [
-# Look for boost/cstdint.hpp
-          AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <boost/cstdint.hpp>], [ uint32_t t ])],
-            [ac_cv_cxx_cstdint="<boost/cstdint.hpp>"])
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <cstdint>], [ uint32_t t ])],
+        [ac_cxx_cstdint_cstdint="<cstdint>"])
 
-          ])
-        ])
-#      ])
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <tr1/cstdint>], [ uint32_t t ])],
+        [ac_cxx_cstdint_tr1_cstdint="<tr1/cstdint>"])
 
-  AC_LANG_POP()
+      AC_COMPILE_IFELSE([
+        AC_LANG_PROGRAM([#include <boost/cstdint.hpp>], [ uint32_t t ])],
+        [ac_cxx_cstdint_boost_cstdint_hpp="<boost/cstdint.hpp>"])
 
-  CXXFLAGS="${save_CXXFLAGS}"
-  if test -n "$ac_cv_cxx_cstdint"; then
-    AC_MSG_RESULT([$ac_cv_cxx_cstdint])
-  else
-    ac_cv_cxx_cstdint="<stdint.h>"
-    AC_MSG_WARN([Could not find a cstdint header.])
-    AC_MSG_RESULT([$ac_cv_cxx_cstdint])
-  fi
+      AC_LANG_POP
+      CXXFLAGS="${save_CXXFLAGS}"
 
-  AC_DEFINE_UNQUOTED(CSTDINT_H,$ac_cv_cxx_cstdint, [the location of <cstdint>])
+      AS_IF([test -n "$ac_cxx_cstdint_cstdint"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_cstdint],
+        [test -n "$ac_cxx_cstdint_tr1_cstdint"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_tr1_cstdint],
+        [test -n "$ac_cxx_cstdint_boost_cstdint_hpp"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_boost_cstdint_hpp])
+      ])
+
+  AS_IF([test -n "$ac_cv_cxx_cstdint"], [
+      AC_MSG_RESULT([$ac_cv_cxx_cstdint])
+      ],[
+      ac_cv_cxx_cstdint="<stdint.h>"
+      AC_MSG_WARN([Could not find a cstdint header.])
+      AC_MSG_RESULT([$ac_cv_cxx_cstdint])
+      ])
+
+AC_DEFINE_UNQUOTED([CSTDINT_H],[$ac_cv_cxx_cstdint], [the location of <cstdint>])
 
   ])
