@@ -1,3 +1,8 @@
+1.0.11
+* Removed custom version of memcached.
+* Updated hardening rules.
+* Fixed a case where the return error from a socket connection differred from that of a TCP/IP socket.
+
 1.0.10 Sun Jul 29 21:50:15 PDT 2012
 * --disable-assert has been removed from configure, and --enable-assert has been added in its place.
 * Compiling fixes for Clang on OSX Mountain Lion.
