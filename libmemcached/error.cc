@@ -106,6 +106,11 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
     rc= MEMCACHED_CONNECTION_FAILURE;
   }
 
+  if (rc == MEMCACHED_ERRNO and local_errno == ECONNRESET)
+  {
+    rc= MEMCACHED_CONNECTION_FAILURE;
+  }
+
   if (local_errno == EINVAL)
   {
     rc= MEMCACHED_INVALID_ARGUMENTS;
