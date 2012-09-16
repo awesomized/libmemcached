@@ -1754,6 +1754,11 @@ test_return_t block_add_regression(memcached_st *memc)
                                                 global_pairs[x].key, global_pairs[x].key_length,
                                                 &blob[0], blob.size(),
                                                 time_t(0), uint32_t(0));
+    if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE)
+    {
+      Error << memcached_last_error_message(memc);
+      return TEST_SKIPPED;
+    }
     test_compare(*memc, MEMCACHED_SUCCESS);
     test_compare(rc, MEMCACHED_SUCCESS);
   }
