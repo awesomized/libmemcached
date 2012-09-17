@@ -51,8 +51,9 @@
 # AX_APPEND_COMPILE_FLAGS([-pedantic]) -- ?
 # AX_APPEND_COMPILE_FLAGS([-Wstack-protector]) -- Issues on 32bit compile
 # AX_APPEND_COMPILE_FLAGS([-fstack-protector-all]) -- Issues on 32bit compile
+# AX_APPEND_COMPILE_FLAGS([-Wlong-long]) -- Don't turn on for compatibility issues memcached_stat_st
 
-#serial 1
+#serial 2
 
   AC_DEFUN([AX_HARDEN_C_COMPILER_FLAGS], [
       AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
@@ -91,7 +92,6 @@
       AX_APPEND_COMPILE_FLAGS([-Wctor-dtor-privacy])
       AX_APPEND_COMPILE_FLAGS([-Wfloat-equal])
       AX_APPEND_COMPILE_FLAGS([-Wformat=2])
-      AX_APPEND_COMPILE_FLAGS([-Wlong-long])
       AX_APPEND_COMPILE_FLAGS([-Wmaybe-uninitialized])
       AX_APPEND_COMPILE_FLAGS([-Wmissing-field-initializers])
       AX_APPEND_COMPILE_FLAGS([-Wmissing-noreturn])

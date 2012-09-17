@@ -49,7 +49,12 @@ locate_binary() {
 }
 
 
-AUTORECONF_FLAGS=" --install --verbose -Wall"
+if test -d .bzr
+then
+  AUTORECONF_FLAGS=" --install --verbose -Wall -Werror"
+else
+  AUTORECONF_FLAGS=" --install --verbose -Wall"
+fi
 
 if test -f config/pre_hook.sh
 then

@@ -288,7 +288,7 @@ AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEX
 
 AX_PTHREAD(, [AC_MSG_ERROR(could not find libpthread)])
 
-AX_HARDEN_COMPILER_FLAGS
+AX_HARDEN_CC_COMPILER_FLAGS
 
 AX_DEBUG
 
@@ -313,8 +313,8 @@ echo "   * System type:               $host_vendor-$host_os"
 echo "   * Host CPU:                  $host_cpu"
 echo "   * C Compiler:                $CC_VERSION"
 echo "   * C Flags:                   $CFLAGS"
-echo "   * C++ Compiler:              $CXX"
-echo "   * C++ Flags:                 $CXX_VERSION"
+echo "   * C++ Compiler:              $CXX_VERSION"
+echo "   * C++ Flags:                 $CXXFLAGS"
 echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * Assertions enabled:        $ac_cv_assert"
 echo "   * Debug enabled:             $with_debug"
