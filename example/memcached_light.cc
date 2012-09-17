@@ -135,7 +135,7 @@ static void drive_client(memcached_socket_t fd, short, void *arg)
       flags|= EV_READ;
     }
 
-    event_set(&client->event, (intptr_t)fd, flags, drive_client, client);
+    event_set(&client->event, int(fd), flags, drive_client, client);
     event_base_set(event_base, &client->event);
 
     if (event_add(&client->event, 0) == -1)
@@ -184,7 +184,7 @@ static void accept_handler(memcached_socket_t fd, short, void *arg)
     struct connection *client = &socket_userdata_map[sock];
     client->userdata= c;
 
-    event_set(&client->event, (intptr_t)sock, EV_READ, drive_client, client);
+    event_set(&client->event, int(sock), EV_READ, drive_client, client);
     event_base_set(event_base, &client->event);
     if (event_add(&client->event, 0) == -1)
     {
@@ -605,7 +605,7 @@ int main(int argc, char **argv)
     struct connection *conn= &socket_userdata_map[server_sockets[xx]];
     conn->userdata= protocol_handle;
 
-    event_set(&conn->event, (intptr_t)server_sockets[xx], EV_READ | EV_PERSIST, accept_handler, conn);
+    event_set(&conn->event, int(server_sockets[xx]), EV_READ | EV_PERSIST, accept_handler, conn);
 
     event_base_set(event_base, &conn->event);
     if (event_add(&conn->event, 0) == -1)

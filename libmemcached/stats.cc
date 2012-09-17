@@ -95,11 +95,11 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
 
     if (temp <= INT32_MAX and ( sizeof(pid_t) == sizeof(int32_t) ))
     {
-      memc_stat->pid= temp;
+      memc_stat->pid= pid_t(temp);
     }
     else if (temp > -1)
     {
-      memc_stat->pid= temp;
+      memc_stat->pid= pid_t(temp);
     }
     else
     {

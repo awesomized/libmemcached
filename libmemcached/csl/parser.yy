@@ -228,7 +228,7 @@ statement:
 expression:
           SERVER HOSTNAME optional_port optional_weight
           {
-            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
+            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, uint32_t($4))))
             {
               char buffer[1024];
               snprintf(buffer, sizeof(buffer), "Failed to add server: %s:%u", $2.c_str, uint32_t($3));
@@ -238,7 +238,7 @@ expression:
           }
         | SERVER IPADDRESS optional_port optional_weight
           {
-            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, $4)))
+            if (memcached_failed(context->rc= memcached_server_add_with_weight(context->memc, $2.c_str, $3, uint32_t($4))))
             {
               char buffer[1024];
               snprintf(buffer, sizeof(buffer), "Failed to add server: %s:%u", $2.c_str, uint32_t($3));
@@ -248,7 +248,7 @@ expression:
           }
         | SOCKET string optional_weight
           {
-            if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, $3)))
+            if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, uint32_t($3))))
             {
               char buffer[1024];
               snprintf(buffer, sizeof(buffer), "Failed to add socket: %s", $2.c_str);
@@ -261,11 +261,11 @@ expression:
           }
         | POOL_MIN NUMBER
           {
-            context->memc->configure.initial_pool_size= $2;
+            context->memc->configure.initial_pool_size= uint32_t($2);
           }
         | POOL_MAX NUMBER
           {
-            context->memc->configure.max_pool_size= $2;
+            context->memc->configure.max_pool_size= uint32_t($2);
           }
         | behaviors
         ;

@@ -598,7 +598,7 @@ test_return_t append_binary_test(memcached_st *memc)
   test_compare(value_length, sizeof(uint32_t) * count);
   test_compare(MEMCACHED_SUCCESS, rc);
 
-  for (uint32_t counter= count, *ptr= value; counter; counter--)
+  for (uint32_t counter= uint32_t(count), *ptr= value; counter; counter--)
   {
     test_compare(*ptr, store_list[count - counter]);
     ptr++;
@@ -644,7 +644,7 @@ test_return_t memcached_mget_mixed_memcached_get_TEST(memcached_st *memc)
     }
     else
     {
-      int which_key= random() %keys.size();
+      int which_key= random() % int(keys.size());
       size_t value_length;
       uint32_t flags;
       memcached_return_t rc;
@@ -2634,7 +2634,7 @@ test_return_t user_supplied_bug20(memcached_st *memc)
  */
 
 /* sighandler_t function that always asserts false */
-static void fail(int)
+static __attribute__((noreturn)) void fail(int)
 {
   fatal_assert(0);
 }
@@ -3167,7 +3167,7 @@ test_return_t noreply_test(memcached_st *memc)
     for (size_t x= 0; x < 100; ++x)
     {
       char key[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
-      int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
+      int check_length= snprintf(key, sizeof(key), "%lu", (unsigned long)x);
       test_false((size_t)check_length >= sizeof(key) || check_length < 0);
 
       size_t len= (size_t)check_length;
@@ -3222,7 +3222,7 @@ test_return_t noreply_test(memcached_st *memc)
     {
       char key[10];
 
-      int check_length= (size_t)snprintf(key, sizeof(key), "%lu", (unsigned long)x);
+      int check_length= snprintf(key, sizeof(key), "%lu", (unsigned long)x);
 
       test_false((size_t)check_length >= sizeof(key) || check_length < 0);
 

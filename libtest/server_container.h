@@ -73,7 +73,7 @@ public:
 
   uint32_t count() const
   {
-    return servers.size();
+    return uint32_t(servers.size());
   }
 
   void restart();

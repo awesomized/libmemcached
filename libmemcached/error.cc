@@ -218,6 +218,10 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
   return memcached_set_error(self, rc, at, tmp);
 }
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+
 memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
