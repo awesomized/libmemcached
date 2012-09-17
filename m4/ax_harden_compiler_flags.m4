@@ -72,6 +72,7 @@
       AX_APPEND_COMPILE_FLAGS([-Wold-style-definition])
       AX_APPEND_COMPILE_FLAGS([-Woverride-init])
       AX_APPEND_COMPILE_FLAGS([-Wstrict-prototypes])
+      AX_APPEND_COMPILE_FLAGS([-Wlogical-op])
       AC_LANG_POP
       ])
 
@@ -95,6 +96,7 @@
       AX_APPEND_COMPILE_FLAGS([-Wmaybe-uninitialized])
       AX_APPEND_COMPILE_FLAGS([-Wmissing-field-initializers])
       AX_APPEND_COMPILE_FLAGS([-Wmissing-noreturn])
+      AX_APPEND_COMPILE_FLAGS([-Wlogical-op])
       AX_APPEND_COMPILE_FLAGS([-Wnon-virtual-dtor])
       AX_APPEND_COMPILE_FLAGS([-Wnormalized=id])
       AX_APPEND_COMPILE_FLAGS([-Woverloaded-virtual])
