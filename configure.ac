@@ -185,14 +185,7 @@ AS_IF([test "x$ac_enable_sasl" = "xyes"], [
            ])
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
-AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
-                 [
-                  LIBUUID_LDFLAGS="-luuid"
-                  AC_DEFINE([HAVE_LIBUUID], [ 1 ], [Have libuuid])
-                  ],
-                 [
-                  AC_DEFINE([HAVE_LIBUUID], [ 0 ], [Have libuuid])
-                  ])
+AX_UUID_GENERATE_TIME_SAFE
 
 AC_CHECK_LIB([rt], [clock_gettime], 
              [

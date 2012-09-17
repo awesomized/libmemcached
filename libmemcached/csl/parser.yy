@@ -62,6 +62,10 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
+
 int conf_lex(YYSTYPE* lvalp, void* scanner);
 
 #define select_yychar(__context) yychar == UNKNOWN ? ( (__context)->previous_token == END ? UNKNOWN : (__context)->previous_token ) : yychar   

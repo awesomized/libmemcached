@@ -55,6 +55,12 @@
 #pragma GCC diagnostic ignored "-Wshorten-64-to-32"
 #endif
 
+#ifndef __INTEL_COMPILER
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
+#endif
+
 #define YY_EXTRA_TYPE Context*
 
 }

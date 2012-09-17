@@ -23,12 +23,18 @@
 #pragma GCC diagnostic ignored "-Wshorten-64-to-32"
 #endif
 
+#ifndef __INTEL_COMPILER
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
+#endif
+
 #define YY_EXTRA_TYPE Context*
 
 
 
 
-#line 32 "libmemcached/csl/scanner.h"
+#line 38 "libmemcached/csl/scanner.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -361,9 +367,9 @@ extern int config_lex \
 #undef YY_DECL
 #endif
 
-#line 223 "libmemcached/csl/scanner.l"
+#line 229 "libmemcached/csl/scanner.l"
 
 
-#line 368 "libmemcached/csl/scanner.h"
+#line 374 "libmemcached/csl/scanner.h"
 #undef config_IN_HEADER
 #endif /* config_HEADER_H */
