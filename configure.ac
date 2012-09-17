@@ -9,7 +9,7 @@
 
 AC_INIT([libmemcached],[1.0.10],[http://libmemcached.org/])
 
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_AUX_DIR([config])
 
 AC_CANONICAL_TARGET
 
@@ -20,13 +20,13 @@ AC_CANONICAL_BUILD
 
 AC_PREREQ([2.61])
 
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
-PANDORA_CANONICAL_TARGET(no-vc-changelog)
+PANDORA_CANONICAL_TARGET([no-vc-changelog])
 AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
