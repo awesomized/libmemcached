@@ -94,6 +94,7 @@ AC_DEFUN([PANDORA_PLATFORM],[
 
   AC_SUBST(PANDORA_OPTIMIZE_BITFIELD)
 
+  AC_CHECK_DECL([__clang__], [CLANG="yes"], [CLANG="no"])
   AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
   AC_CHECK_DECL([__ICC], [INTELCC="yes"], [INTELCC="no"])
 

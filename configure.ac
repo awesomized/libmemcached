@@ -7,7 +7,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.10],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.0.11],[http://libmemcached.org/])
 
 AC_CONFIG_AUX_DIR([config])
 
@@ -312,6 +312,10 @@ echo "   * Installation prefix:       $prefix"
 echo "   * System type:               $host_vendor-$host_os"
 echo "   * Host CPU:                  $host_cpu"
 echo "   * C Compiler:                $CC_VERSION"
+echo "   * C Flags:                   $CFLAGS"
+echo "   * C++ Compiler:              $CXX"
+echo "   * C++ Flags:                 $CXX_VERSION"
+echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * Assertions enabled:        $ac_cv_assert"
 echo "   * Debug enabled:             $with_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
