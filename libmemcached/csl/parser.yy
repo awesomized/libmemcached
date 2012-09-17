@@ -63,7 +63,9 @@
 #endif
 
 #ifndef __INTEL_COMPILER
+#ifndef __clang__
 #pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
 #endif
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);
