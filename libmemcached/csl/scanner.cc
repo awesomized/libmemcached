@@ -12,8 +12,11 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wunused-result"
-#pragma GCC diagnostic ignored "-Wshorten-64-to-32"
 #pragma GCC diagnostic ignored "-Wmissing-noreturn"
+#endif
+
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wshorten-64-to-32"
 #endif
 
 #define YY_EXTRA_TYPE Context*
@@ -21,7 +24,7 @@
 
 
 
-#line 25 "libmemcached/csl/scanner.cc"
+#line 28 "libmemcached/csl/scanner.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -68,7 +71,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -192,11 +194,6 @@ typedef void* yyscan_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
-
 #define EOB_ACT_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
@@ -219,6 +216,11 @@ typedef size_t yy_size_t;
 
 #define unput(c) yyunput( c, yyg->yytext_ptr , yyscanner )
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
 struct yy_buffer_state
@@ -236,7 +238,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -315,7 +317,7 @@ static void config__init_buffer (YY_BUFFER_STATE b,FILE *file ,yyscan_t yyscanne
 
 YY_BUFFER_STATE config__scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
 YY_BUFFER_STATE config__scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE config__scan_bytes (yyconst char *bytes,yy_size_t len ,yyscan_t yyscanner );
+YY_BUFFER_STATE config__scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
 
 void *config_alloc (yy_size_t ,yyscan_t yyscanner );
 void *config_realloc (void *,yy_size_t ,yyscan_t yyscanner );
@@ -366,7 +368,7 @@ static void yy_fatal_error (yyconst char msg[] ,yyscan_t yyscanner );
  */
 #define YY_DO_BEFORE_ACTION \
 	yyg->yytext_ptr = yy_bp; \
-	yyleng = (yy_size_t) (yy_cp - yy_bp); \
+	yyleng = (size_t) (yy_cp - yy_bp); \
 	yyg->yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	yyg->yy_c_buf_p = yy_cp;
@@ -1065,7 +1067,7 @@ static yyconst flex_int16_t yy_chk[1815] =
  *
  */
 
-#line 61 "libmemcached/csl/scanner.l"
+#line 64 "libmemcached/csl/scanner.l"
 #include <cstdlib>
 #include <cstring>
 
@@ -1094,7 +1096,7 @@ static yyconst flex_int16_t yy_chk[1815] =
 #define YY_INPUT(buffer, result, max_size) get_lex_chars(buffer, result, max_size, PARAM)
 
 #define YY_NO_INPUT 1
-#line 1098 "libmemcached/csl/scanner.cc"
+#line 1100 "libmemcached/csl/scanner.cc"
 
 #define INITIAL 0
 
@@ -1123,8 +1125,8 @@ struct yyguts_t
     size_t yy_buffer_stack_max; /**< capacity of stack. */
     YY_BUFFER_STATE * yy_buffer_stack; /**< Stack as an array. */
     char yy_hold_char;
-    yy_size_t yy_n_chars;
-    yy_size_t yyleng_r;
+    int yy_n_chars;
+    int yyleng_r;
     char *yy_c_buf_p;
     int yy_init;
     int yy_start;
@@ -1177,13 +1179,17 @@ FILE *config_get_out (yyscan_t yyscanner );
 
 void config_set_out  (FILE * out_str ,yyscan_t yyscanner );
 
-yy_size_t config_get_leng (yyscan_t yyscanner );
+int config_get_leng (yyscan_t yyscanner );
 
 char *config_get_text (yyscan_t yyscanner );
 
 int config_get_lineno (yyscan_t yyscanner );
 
 void config_set_lineno (int line_number ,yyscan_t yyscanner );
+
+int config_get_column  (yyscan_t yyscanner );
+
+void config_set_column (int column_no ,yyscan_t yyscanner );
 
 YYSTYPE * config_get_lval (yyscan_t yyscanner );
 
@@ -1229,7 +1235,7 @@ static int input (yyscan_t yyscanner );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( yytext, yyleng, 1, yyout )
+#define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -1240,7 +1246,7 @@ static int input (yyscan_t yyscanner );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		yy_size_t n; \
+		unsigned n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -1328,11 +1334,11 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 103 "libmemcached/csl/scanner.l"
+#line 106 "libmemcached/csl/scanner.l"
 
 
 
-#line 1336 "libmemcached/csl/scanner.cc"
+#line 1342 "libmemcached/csl/scanner.cc"
 
     yylval = yylval_param;
 
@@ -1416,28 +1422,28 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 106 "libmemcached/csl/scanner.l"
+#line 109 "libmemcached/csl/scanner.l"
 { return yytext[0];}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 108 "libmemcached/csl/scanner.l"
+#line 111 "libmemcached/csl/scanner.l"
 { yylval->number= atoi(yytext); return (NUMBER); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 110 "libmemcached/csl/scanner.l"
+#line 113 "libmemcached/csl/scanner.l"
 { yylval->number= atoi(yytext +1); return PORT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 112 "libmemcached/csl/scanner.l"
+#line 115 "libmemcached/csl/scanner.l"
 { yylval->number= atoi(yytext +2); return WEIGHT_START; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 114 "libmemcached/csl/scanner.l"
+#line 117 "libmemcached/csl/scanner.l"
 ; /* skip whitespace */
 	YY_BREAK
 case 6:
@@ -1445,224 +1451,224 @@ case 6:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 117 "libmemcached/csl/scanner.l"
+#line 120 "libmemcached/csl/scanner.l"
 {
       return COMMENT;
     }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 121 "libmemcached/csl/scanner.l"
+#line 124 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; yyextra->set_server(); return yyextra->previous_token= SERVER; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 123 "libmemcached/csl/scanner.l"
+#line 126 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SOCKET; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 125 "libmemcached/csl/scanner.l"
+#line 128 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= BINARY_PROTOCOL; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 126 "libmemcached/csl/scanner.l"
+#line 129 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= BUFFER_REQUESTS; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 127 "libmemcached/csl/scanner.l"
+#line 130 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= CONFIGURE_FILE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 128 "libmemcached/csl/scanner.l"
+#line 131 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= CONNECT_TIMEOUT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 129 "libmemcached/csl/scanner.l"
+#line 132 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= DISTRIBUTION; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 130 "libmemcached/csl/scanner.l"
+#line 133 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= HASH_WITH_NAMESPACE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 131 "libmemcached/csl/scanner.l"
+#line 134 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= HASH; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 132 "libmemcached/csl/scanner.l"
+#line 135 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= IO_BYTES_WATERMARK; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 133 "libmemcached/csl/scanner.l"
+#line 136 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= IO_KEY_PREFETCH; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 134 "libmemcached/csl/scanner.l"
+#line 137 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= IO_MSG_WATERMARK; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 135 "libmemcached/csl/scanner.l"
+#line 138 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= NOREPLY; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 136 "libmemcached/csl/scanner.l"
+#line 139 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= NUMBER_OF_REPLICAS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 137 "libmemcached/csl/scanner.l"
+#line 140 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= POLL_TIMEOUT; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 138 "libmemcached/csl/scanner.l"
+#line 141 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= RANDOMIZE_REPLICA_READ; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 139 "libmemcached/csl/scanner.l"
+#line 142 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= RCV_TIMEOUT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 140 "libmemcached/csl/scanner.l"
+#line 143 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= REMOVE_FAILED_SERVERS; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 141 "libmemcached/csl/scanner.l"
+#line 144 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= RETRY_TIMEOUT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 142 "libmemcached/csl/scanner.l"
+#line 145 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SND_TIMEOUT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 143 "libmemcached/csl/scanner.l"
+#line 146 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SOCKET_RECV_SIZE; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 144 "libmemcached/csl/scanner.l"
+#line 147 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SOCKET_SEND_SIZE; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 145 "libmemcached/csl/scanner.l"
+#line 148 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SORT_HOSTS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 146 "libmemcached/csl/scanner.l"
+#line 149 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SUPPORT_CAS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 147 "libmemcached/csl/scanner.l"
+#line 150 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPALIVE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 148 "libmemcached/csl/scanner.l"
+#line 151 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= _TCP_KEEPIDLE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 149 "libmemcached/csl/scanner.l"
+#line 152 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= _TCP_NODELAY; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 150 "libmemcached/csl/scanner.l"
+#line 153 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= USE_UDP; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 151 "libmemcached/csl/scanner.l"
+#line 154 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= USER_DATA; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 152 "libmemcached/csl/scanner.l"
+#line 155 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= VERIFY_KEY; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 154 "libmemcached/csl/scanner.l"
+#line 157 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= POOL_MIN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 155 "libmemcached/csl/scanner.l"
+#line 158 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= POOL_MAX; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 157 "libmemcached/csl/scanner.l"
+#line 160 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= NAMESPACE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 159 "libmemcached/csl/scanner.l"
+#line 162 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= FETCH_VERSION; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 161 "libmemcached/csl/scanner.l"
+#line 164 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= INCLUDE; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 162 "libmemcached/csl/scanner.l"
+#line 165 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= RESET; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 163 "libmemcached/csl/scanner.l"
+#line 166 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= PARSER_DEBUG; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 164 "libmemcached/csl/scanner.l"
+#line 167 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= SERVERS; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 165 "libmemcached/csl/scanner.l"
+#line 168 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= END; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 166 "libmemcached/csl/scanner.l"
+#line 169 "libmemcached/csl/scanner.l"
 { yyextra->begin= yytext; return yyextra->previous_token= ERROR; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 168 "libmemcached/csl/scanner.l"
+#line 171 "libmemcached/csl/scanner.l"
 { return yyextra->previous_token= TRUE; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 169 "libmemcached/csl/scanner.l"
+#line 172 "libmemcached/csl/scanner.l"
 { return yyextra->previous_token= FALSE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 172 "libmemcached/csl/scanner.l"
+#line 175 "libmemcached/csl/scanner.l"
 {
       yyextra->begin= yytext;
       return UNKNOWN_OPTION;
@@ -1670,67 +1676,67 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 177 "libmemcached/csl/scanner.l"
+#line 180 "libmemcached/csl/scanner.l"
 { return CONSISTENT; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 178 "libmemcached/csl/scanner.l"
+#line 181 "libmemcached/csl/scanner.l"
 { return MODULA; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 179 "libmemcached/csl/scanner.l"
+#line 182 "libmemcached/csl/scanner.l"
 { return RANDOM; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 181 "libmemcached/csl/scanner.l"
+#line 184 "libmemcached/csl/scanner.l"
 { return MD5; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 182 "libmemcached/csl/scanner.l"
+#line 185 "libmemcached/csl/scanner.l"
 { return CRC; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 183 "libmemcached/csl/scanner.l"
+#line 186 "libmemcached/csl/scanner.l"
 { return FNV1_64; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 184 "libmemcached/csl/scanner.l"
+#line 187 "libmemcached/csl/scanner.l"
 { return FNV1A_64; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 185 "libmemcached/csl/scanner.l"
+#line 188 "libmemcached/csl/scanner.l"
 { return FNV1_32; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 186 "libmemcached/csl/scanner.l"
+#line 189 "libmemcached/csl/scanner.l"
 { return FNV1A_32; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 187 "libmemcached/csl/scanner.l"
+#line 190 "libmemcached/csl/scanner.l"
 { return HSIEH; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 188 "libmemcached/csl/scanner.l"
+#line 191 "libmemcached/csl/scanner.l"
 { return MURMUR; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 189 "libmemcached/csl/scanner.l"
+#line 192 "libmemcached/csl/scanner.l"
 { return JENKINS; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 191 "libmemcached/csl/scanner.l"
+#line 194 "libmemcached/csl/scanner.l"
 {
       yyextra->hostname(yytext, yyleng, yylval->server);
       return IPADDRESS;
@@ -1738,7 +1744,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 196 "libmemcached/csl/scanner.l"
+#line 199 "libmemcached/csl/scanner.l"
 {
       if (yyextra->is_server())
       {
@@ -1755,7 +1761,7 @@ YY_RULE_SETUP
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
-#line 209 "libmemcached/csl/scanner.l"
+#line 212 "libmemcached/csl/scanner.l"
 {
       config_get_text(yyscanner)[yyleng -1]= 0;
       yyextra->string_buffer(yytext +1, yyleng -2, yylval->string);
@@ -1764,7 +1770,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 215 "libmemcached/csl/scanner.l"
+#line 218 "libmemcached/csl/scanner.l"
 {
       yyextra->begin= yytext;
       return UNKNOWN;
@@ -1772,10 +1778,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 220 "libmemcached/csl/scanner.l"
+#line 223 "libmemcached/csl/scanner.l"
 ECHO;
 	YY_BREAK
-#line 1779 "libmemcached/csl/scanner.cc"
+#line 1785 "libmemcached/csl/scanner.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1963,7 +1969,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1977,7 +1983,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -2008,7 +2014,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			yyg->yy_n_chars, num_to_read );
+			yyg->yy_n_chars, (size_t) num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = yyg->yy_n_chars;
 		}
@@ -2134,7 +2140,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		else
 			{ /* need more input */
-			yy_size_t offset = yyg->yy_c_buf_p - yyg->yytext_ptr;
+			int offset = yyg->yy_c_buf_p - yyg->yytext_ptr;
 			++yyg->yy_c_buf_p;
 
 			switch ( yy_get_next_buffer( yyscanner ) )
@@ -2158,7 +2164,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( config_wrap(yyscanner ) )
-						return 0;
+						return EOF;
 
 					if ( ! yyg->yy_did_buffer_switch_on_eof )
 						YY_NEW_FILE;
@@ -2416,7 +2422,7 @@ void config_pop_buffer_state (yyscan_t yyscanner)
  */
 static void config_ensure_buffer_stack (yyscan_t yyscanner)
 {
-	yy_size_t num_to_alloc;
+	int num_to_alloc;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 	if (!yyg->yy_buffer_stack) {
@@ -2514,11 +2520,12 @@ YY_BUFFER_STATE config__scan_string (yyconst char * yystr , yyscan_t yyscanner)
  * @param yyscanner The scanner object.
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE config__scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len , yyscan_t yyscanner)
+YY_BUFFER_STATE config__scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
 	char *buf;
-	yy_size_t n, i;
+	yy_size_t n;
+	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
@@ -2628,7 +2635,7 @@ FILE *config_get_out  (yyscan_t yyscanner)
 /** Get the length of the current token.
  * @param yyscanner The scanner object.
  */
-yy_size_t config_get_leng  (yyscan_t yyscanner)
+int config_get_leng  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
     return yyleng;
@@ -2903,7 +2910,7 @@ void config_free (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 220 "libmemcached/csl/scanner.l"
+#line 223 "libmemcached/csl/scanner.l"
 
 
 
