@@ -159,7 +159,7 @@ test_t opt_test= SET_TEST;
 
 extern "C" {
 
-static void *run_task(void *p)
+static __attribute__((noreturn)) void *run_task(void *p)
 {
   thread_context_st *context= (thread_context_st *)p;
 
