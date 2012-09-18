@@ -487,7 +487,7 @@ test_return_t random_statement_build_test(memcached_st*)
   {
     std::string random_options;
 
-    uint32_t number_of= random() % option_list.size();
+    uint32_t number_of= random() % uint32_t(option_list.size());
     for (uint32_t options= 0; options < number_of; options++)
     {
       size_t option_list_position= random() % option_list.size();

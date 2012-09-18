@@ -70,6 +70,9 @@ enum verbose_t
   VERBOSE_DEBUG= LOG_DEBUG // syslog:LOG_DEBUG
 };
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 
 struct log_info_st
 {

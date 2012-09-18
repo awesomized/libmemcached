@@ -240,7 +240,7 @@ struct test_pool_context_st {
   }
 };
 
-static void* connection_release(void *arg)
+static __attribute__((noreturn)) void* connection_release(void *arg)
 {
   test_pool_context_st *resource= static_cast<test_pool_context_st *>(arg);
   if (resource == NULL)

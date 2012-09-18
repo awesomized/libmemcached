@@ -7,9 +7,9 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.10],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.0.11],[http://libmemcached.org/])
 
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_AUX_DIR([config])
 
 AC_CANONICAL_TARGET
 
@@ -20,13 +20,13 @@ AC_CANONICAL_BUILD
 
 AC_PREREQ([2.61])
 
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
-PANDORA_CANONICAL_TARGET(no-vc-changelog)
+PANDORA_CANONICAL_TARGET([no-vc-changelog])
 AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
@@ -185,14 +185,7 @@ AS_IF([test "x$ac_enable_sasl" = "xyes"], [
            ])
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
-AX_CHECK_LIBRARY([LIBUUID], [uuid/uuid.h], [uuid], 
-                 [
-                  LIBUUID_LDFLAGS="-luuid"
-                  AC_DEFINE([HAVE_LIBUUID], [ 1 ], [Have libuuid])
-                  ],
-                 [
-                  AC_DEFINE([HAVE_LIBUUID], [ 0 ], [Have libuuid])
-                  ])
+AX_UUID_GENERATE_TIME_SAFE
 
 AC_CHECK_LIB([rt], [clock_gettime], 
              [
@@ -288,7 +281,7 @@ AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEX
 
 AX_PTHREAD(, [AC_MSG_ERROR(could not find libpthread)])
 
-AX_HARDEN_COMPILER_FLAGS
+AX_HARDEN_CC_COMPILER_FLAGS
 
 AX_DEBUG
 
@@ -312,6 +305,10 @@ echo "   * Installation prefix:       $prefix"
 echo "   * System type:               $host_vendor-$host_os"
 echo "   * Host CPU:                  $host_cpu"
 echo "   * C Compiler:                $CC_VERSION"
+echo "   * C Flags:                   $CFLAGS"
+echo "   * C++ Compiler:              $CXX_VERSION"
+echo "   * C++ Flags:                 $CXXFLAGS"
+echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * Assertions enabled:        $ac_cv_assert"
 echo "   * Debug enabled:             $with_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"

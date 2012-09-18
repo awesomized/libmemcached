@@ -59,7 +59,7 @@ struct memcached_pool_st
     master(master_arg),
     server_pool(NULL),
     firstfree(-1),
-    size(max_arg),
+    size(uint32_t(max_arg)),
     current_size(0),
     _owns_master(false)
   {

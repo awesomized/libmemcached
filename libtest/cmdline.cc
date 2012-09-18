@@ -623,7 +623,7 @@ void Application::Pipe::reset()
   close(READ);
   close(WRITE);
 
-#if HAVE_PIPE2
+#if defined(HAVE_PIPE2) && HAVE_PIPE2
   if (pipe2(_pipe_fd, O_NONBLOCK) == -1)
 #else
   if (pipe(_pipe_fd) == -1)

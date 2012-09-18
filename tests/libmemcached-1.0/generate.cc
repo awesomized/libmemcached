@@ -92,7 +92,7 @@ test_return_t generate_large_pairs(memcached_st *memc)
   }
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true);
-  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
 
   test_true(check_execute > (global_count / 2));
 
@@ -103,7 +103,7 @@ test_return_t generate_data(memcached_st *memc)
 {
   test_compare(TEST_SUCCESS, generate_pairs(memc));
 
-  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
 
   /* Possible false, positive, memcached may have ejected key/value based on
    * memory needs. */
@@ -117,7 +117,7 @@ test_return_t generate_data_with_stats(memcached_st *memc)
 {
   test_compare(TEST_SUCCESS, generate_pairs(memc));
 
-  unsigned int check_execute= execute_set(memc, global_pairs, global_count);
+  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
 
   test_compare(check_execute, global_count);
 

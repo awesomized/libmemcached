@@ -48,6 +48,10 @@ exception::exception(const char *file_, int line_, const char *func_) :
   {
   }
 
+#ifndef __INTEL_COMPILER
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+
 fatal::fatal(const char *file_, int line_, const char *func_, const char *format, ...) :
   exception(file_, line_, func_)
   {
