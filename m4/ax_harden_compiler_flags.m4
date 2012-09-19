@@ -54,17 +54,33 @@
 # AX_APPEND_COMPILE_FLAGS([-Wlong-long]) -- Don't turn on for compatibility issues memcached_stat_st
 
 #serial 2
+  AC_DEFUN([AX_HARDEN_LINKER_FLAGS], [
+      AC_REQUIRE([AX_CHECK_LINK_FLAG])
+      AC_REQUIRE([AX_VCS_CHECKOUT])
+      AC_REQUIRE([AX_DEBUG])
+
+      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+          AX_CHECK_LINK_FLAG([-Werror])
+          ])
+      AX_CHECK_LINK_FLAG([-z relro -z now])
+      ])
 
   AC_DEFUN([AX_HARDEN_C_COMPILER_FLAGS], [
       AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
-      AC_REQUIRE([AX_CHECK_LINK_FLAG])
-      AC_REQUIRE([AX_VCS_CHECKOUT])
+      AC_REQUIRE([AX_HARDEN_LINKER_FLAGS])
 
       AC_LANG_PUSH([C])
-      AX_APPEND_COMPILE_FLAGS([-O2])
+      AS_IF([test "$ax_with_debug" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-O0])],[
+        AX_APPEND_COMPILE_FLAGS([-O2])
+        ])
+
+      ac_cv_warnings_as_errors=no
       AS_IF([test "$ac_cv_vcs_checkout" = yes], [
         AX_APPEND_COMPILE_FLAGS([-Werror])
+        ac_cv_warnings_as_errors=yes
         ])
+
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
       AX_APPEND_COMPILE_FLAGS([-std=c99])
@@ -76,20 +92,27 @@
       AX_APPEND_COMPILE_FLAGS([-Wstrict-prototypes])
       AX_APPEND_COMPILE_FLAGS([-Wlogical-op])
       AC_LANG_POP
+
       ])
 
   AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS], [
       AC_REQUIRE([AX_HARDEN_C_COMPILER_FLAGS])
       AC_LANG_PUSH([C++])
-      AX_APPEND_COMPILE_FLAGS([-O2])
+
+      AS_IF([test "$ax_with_debug" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-O0])],[
+        AX_APPEND_COMPILE_FLAGS([-O2])
+        AX_APPEND_COMPILE_FLAGS([-D_FORTIFY_SOURCE=2])
+        ])
+
       AS_IF([test "$ac_cv_vcs_checkout" = yes], [
         AX_APPEND_COMPILE_FLAGS([-Werror])
         ])
+
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
       AX_APPEND_COMPILE_FLAGS([-Wpragmas])
       AX_APPEND_COMPILE_FLAGS([--paramssp-buffer-size=1])
-      AX_APPEND_COMPILE_FLAGS([-D_FORTIFY_SOURCE=2])
       AX_APPEND_COMPILE_FLAGS([-Waddress])
       AX_APPEND_COMPILE_FLAGS([-Warray-bounds])
       AX_APPEND_COMPILE_FLAGS([-Wchar-subscripts])
@@ -118,9 +141,5 @@
       AX_APPEND_COMPILE_FLAGS([-floop-parallelize-all])
       AX_APPEND_COMPILE_FLAGS([-fwrapv])
       AX_APPEND_COMPILE_FLAGS([-ggdb])
-      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
-          AX_CHECK_LINK_FLAG([-Werror])
-          ])
-      AX_CHECK_LINK_FLAG([-z relro -z now])
       AC_LANG_POP
   ])
