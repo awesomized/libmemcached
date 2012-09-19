@@ -62,7 +62,9 @@
 
       AC_LANG_PUSH([C])
       AX_APPEND_COMPILE_FLAGS([-O2])
-      AX_APPEND_COMPILE_FLAGS([-Werror])
+      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-Werror])
+        ])
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
       AX_APPEND_COMPILE_FLAGS([-std=c99])
@@ -80,7 +82,9 @@
       AC_REQUIRE([AX_HARDEN_C_COMPILER_FLAGS])
       AC_LANG_PUSH([C++])
       AX_APPEND_COMPILE_FLAGS([-O2])
-      AX_APPEND_COMPILE_FLAGS([-Werror])
+      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-Werror])
+        ])
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
       AX_APPEND_COMPILE_FLAGS([-Wpragmas])
@@ -114,7 +118,9 @@
       AX_APPEND_COMPILE_FLAGS([-floop-parallelize-all])
       AX_APPEND_COMPILE_FLAGS([-fwrapv])
       AX_APPEND_COMPILE_FLAGS([-ggdb])
-      AX_CHECK_LINK_FLAG([-Werror])
+      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+          AX_CHECK_LINK_FLAG([-Werror])
+          ])
       AX_CHECK_LINK_FLAG([-z relro -z now])
       AC_LANG_POP
   ])
