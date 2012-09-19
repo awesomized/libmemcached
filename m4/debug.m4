@@ -2,9 +2,9 @@ AC_DEFUN([AX_DEBUG],[
   AC_ARG_WITH([debug],
     [AS_HELP_STRING([--with-debug],
        [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],
-    [with_debug=$withval],
-    [with_debug=no])
-  AS_IF([test "$with_debug" = "yes"],[
+    [ax_with_debug=$withval],
+    [ax_with_debug=no])
+  AS_IF([test "$ax_with_debug" = "yes"],[
     # Debugging. No optimization.
     AM_CFLAGS="${AM_CFLAGS} ${DEBUG_CFLAGS} -DDEBUG"
     AM_CXXFLAGS="${AM_CXXFLAGS} ${DEBUG_CXXFLAGS} -DDEBUG"
