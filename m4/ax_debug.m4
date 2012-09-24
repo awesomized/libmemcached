@@ -1,16 +1,14 @@
 # ===========================================================================
-#      http://
+#      https://github.com/BrianAker/ddm4/
 # ===========================================================================
 #
 # SYNOPSIS
 #
-#   AX_VCS_CHECKOUT
+#   AX_DEBUG
 #
 # DESCRIPTION
 #
-#   Discover whether or not we are operating with a tree which
-#   has been checked out of a version control system.
-#
+#   --enable-debug
 #
 # LICENSE
 #
@@ -45,15 +43,25 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 2
+#serial 1
 
-AC_DEFUN([AX_VCS_CHECKOUT],[
-    AC_CACHE_CHECK([for vcs checkout], [ac_cv_vcs_checkout], [
-      AS_IF([test -d ".bzr"],[ac_cv_vcs_checkout=yes])
-      AS_IF([test -d ".svn"],[ac_cv_vcs_checkout=yes])
-      AS_IF([test -d ".hg"], [ac_cv_vcs_checkout=yes])
-      AS_IF([test -d ".git"],[ac_cv_vcs_checkout=yes])
+AC_DEFUN([AX_DEBUG],[
+    AC_ARG_ENABLE([debug],
+      [AS_HELP_STRING([--enable-debug],
+        [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],[
+      ax_enable_debug=yes
+      dnl Debugging. No optimization.
+      AM_CFLAGS="${AM_CFLAGS} ${DEBUG_CFLAGS} -DDEBUG"
+      AM_CXXFLAGS="${AM_CXXFLAGS} ${DEBUG_CXXFLAGS} -DDEBUG"
+      AC_DEFINE(DEBUG, [ 1 ], [Define to 1 to enable debugging code.])
       ],[
-      ac_cv_vcs_checkout=no
+      ax_enable_debug=no
+      dnl Optimized version. No debug
+      AM_CFLAGS="${AM_CFLAGS} ${OPTIMIZE_CFLAGS}"
+      AM_CXXFLAGS="${AM_CXXFLAGS} ${OPTIMIZE_CXXFLAGS}"
+      AC_DEFINE(DEBUG, [ 0 ], [Define to 1 to enable debugging code.])
       ])
+
+    AC_MSG_CHECKING([for debug])
+    AC_MSG_RESULT([$ax_enable_debug])
     ])

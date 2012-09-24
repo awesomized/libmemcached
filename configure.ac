@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
-PANDORA_CANONICAL_TARGET([no-vc-changelog])
+PANDORA_CANONICAL_TARGET
 AC_CHECK_PROGS([YACC], ['bison'], [:])
 AC_CHECK_PROGS([LEX], ['flex'], [:])
 
@@ -53,7 +53,7 @@ HASHKIT_LIBRARY_VERSION=2:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
 LT_PREREQ([2.2])
-LT_INIT()
+LT_INIT
 LT_LANG([C++])
 LT_LANG([C])
 gl_VISIBILITY
@@ -70,12 +70,12 @@ m4_include([m4/memcached_sasl.m4])
 m4_include([m4/gearmand.m4])
 m4_include([m4/libgearman.m4])
 
-AM_CONDITIONAL(BUILDING_LIBMEMCACHED, true)
-AM_CONDITIONAL(HAVE_LIBMEMCACHED, false)
-AM_CONDITIONAL(HAVE_LIBDRIZZLE, false)
+AM_CONDITIONAL([BUILDING_LIBMEMCACHED], [true])
+AM_CONDITIONAL([HAVE_LIBMEMCACHED], [false])
+AM_CONDITIONAL([HAVE_LIBDRIZZLE], [false])
 AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enables libmemcached Support])
 
-AM_CONDITIONAL(BUILDING_GEARMAN, false)
+AM_CONDITIONAL([BUILDING_GEARMAN], [false])
 
 AC_SEARCH_LIBS(getopt_long, gnugetopt)
 AC_SEARCH_LIBS(gethostbyname, nsl)
@@ -91,6 +91,17 @@ ENABLE_FNV64_HASH
 ENABLE_MEMASLAP
 PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
+
+# Checks for programs.
+AX_PROG_SPHINX_BUILD
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([clock_gettime])
@@ -180,12 +191,8 @@ dnl The sasl functions should only be visible if we build with sasl support
 dnl
 AS_IF([test "x$ac_enable_sasl" = "xyes"], [
        [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 1" ]
-       ], [
-           [ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ]
-           ])
+       ],[ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ])
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
-
-AX_UUID_GENERATE_TIME_SAFE
 
 AC_CHECK_LIB([rt], [clock_gettime], 
              [
@@ -244,46 +251,24 @@ AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
 SOCKET_SEND_FLAGS
 
 AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event], 
-                 [
-                  LIBEVENT_LDFLAGS="-levent"
-                  ],
-                 [
-                  AC_MSG_WARN([Unable to find libevent])
-                  ])
+                 [LIBEVENT_LDFLAGS="-levent"],
+                 [AC_MSG_WARN([Unable to find libevent])])
 AM_CONDITIONAL(HAVE_LIBEVENT, test "x${ax_cv_have_LIBEVENT}" = "xyes")
-
-dnl Check if we're a little-endian or a big-endian system, needed by hash code
-AC_DEFUN([AC_C_ENDIAN],
-[AC_CACHE_CHECK(for endianness, ac_cv_c_endian,
-[
-  AC_RUN_IFELSE(
-    [AC_LANG_PROGRAM([], [dnl
-        long val = 1;
-        char *c = (char *) &val;
-        exit(*c == 1);
-    ])
-  ],[
-    ac_cv_c_endian=big
-  ],[
-    ac_cv_c_endian=little
-  ])
-])
-if test $ac_cv_c_endian = big; then
-  AC_DEFINE(ENDIAN_BIG, 1, [machine is bigendian])
-fi
-if test $ac_cv_c_endian = little; then
-  AC_DEFINE(ENDIAN_LITTLE, 1, [machine is littleendian])
-fi
-])
 
 AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
                        [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
 
-AX_PTHREAD(, [AC_MSG_ERROR(could not find libpthread)])
+AX_UUID_GENERATE_TIME_SAFE
 
-AX_HARDEN_CC_COMPILER_FLAGS
 
-AX_DEBUG
+AX_PTHREAD(, [AC_MSG_ERROR([could not find libpthread])])
+AX_PTHREAD_TIMEDJOIN_NP
+
+AX_ENDIAN
+AX_HEX_VERSION
+AX_ASSERT
+AX_CXX_COMPILER_VERSION
+AX_HARDEN_COMPILER_FLAGS
 
 AC_CONFIG_FILES([
   Makefile
@@ -294,7 +279,6 @@ AC_CONFIG_FILES([
   libmemcached-2.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
-  support/libmemcached-fc.spec
   ])
 AC_OUTPUT
 
