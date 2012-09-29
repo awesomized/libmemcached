@@ -31,12 +31,6 @@ typedef unsigned long int ulong;
  
 #define RVERSION "1.4.13"
 
-#ifdef WORDS_BIGENDIAN 
-# define ENDIAN_BIG 1
-#else
-# define ENDIAN_LITTLE 1
-#endif
- 
 ])
 
 ])dnl CONFIG_EXTRA

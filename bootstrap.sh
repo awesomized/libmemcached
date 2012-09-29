@@ -31,25 +31,91 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if test -n $MAKE; then 
+die() { echo "$@"; exit 1; }
+
+run() {
+  echo "\`$@' $ARGS"
+  $@ $ARGS
+} 
+
+if [ -d .git ]
+then
+  AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+elif [ -d .bzr ]
+then
+  AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+elif [ -d .svn ]
+then
+  AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+elif [ -d .hg ]
+then
+  AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+else
+  AUTORECONF_FLAGS="--install --force --verbose -Wall"
+fi
+
+LIBTOOLIZE_FLAGS="--force --verbose"
+
+if [ $(uname) = "Darwin" ]
+then
+  LIBTOOLIZE=glibtoolize
+elif [ -z "$LIBTOOLIZE" ]
+then 
+  LIBTOOLIZE=libtoolize
+fi
+
+AUTORECONF=autoreconf
+
+# Set ENV DEBUG in order to enable debugging
+if [ -n "$DEBUG" ]
+then 
+  DEBUG="--enable-debug"
+fi
+
+# Set ENV ASSERT in order to enable assert
+if [ -n "$ASSERT" ]
+then 
+  ASSERT="--enable-assert"
+fi
+
+# Set ENV MAKE in order to override "make"
+if [ -z "$MAKE" ]
+then 
   MAKE="make"
 fi
 
-if test -n $MAKE_J; then 
+# Set ENV MAKE_J in order to override "-j2"
+if [ -z "$MAKE_J" ]
+then
   MAKE_J="-j2"
 fi
 
-if test -f configure; then $MAKE $MAKE_J clean; $MAKE $MAKE_J merge-clean; $MAKE $MAKE_J distclean; fi;
+# Set ENV PREFIX in order to set --prefix for ./configure
+if [ -n "$PREFIX" ]
+then 
+  PREFIX="--prefix=$PREFIX"
+fi
 
-rm -r -f autom4te.cache/ config.h config.log config.status configure
-./config/autorun.sh
-if [ $(uname) = "Darwin" ];
+if [ -f Makefile ]
 then
-  ./configure CC=clang CXX=clang++ --enable-assert
-else
-  ./configure --enable-assert
+  $MAKE $MAKE_J distclean
 fi
 
-if test -z $JENKINS_URL; then 
-$MAKE $MAKE_J
+run $LIBTOOLIZE $LIBTOOLIZE_FLAGS || die "Can't execute $LIBTOOLIZE"
+run $AUTORECONF $AUTORECONF_FLAGS || die "Can't execute $AUTORECONF"
+
+# If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
+if [ $(uname) = "Darwin" ]
+then
+  CC=clang CXX=clang++ ./configure $DEBUG $ASSERT $PREFIX || die "configure failed to run"
+else
+  ./configure $DEBUG $ASSERT $PREFIX || die "configure failed to run"
 fi
+
+# Set ENV MAKE_TARGET in order to override default of "all"
+if [ -z "$MAKE_TARGET" ]
+then 
+  MAKE_TARGET="all"
+fi
+
+run $MAKE $MAKE_J $MAKE_TARGET || die "Can't execute make"

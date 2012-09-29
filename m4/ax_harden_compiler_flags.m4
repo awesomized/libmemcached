@@ -1,10 +1,10 @@
 # ===========================================================================
-#      http://www.gnu.org/software/autoconf-archive/ax_append_flag.html
+#      https://github.com/BrianAker/ddm4/
 # ===========================================================================
 #
 # SYNOPSIS
 #
-#   AX_HARDEN_COMPILER_FLAGS
+#   AX_HARDEN_COMPILER_FLAGS, AX_HARDEN_LINKER_FLAGS, AX_HARDEN_CC_COMPILER_FLAGS, AX_HARDEN_CXX_COMPILER_FLAGS 
 #
 # DESCRIPTION
 #
@@ -54,10 +54,12 @@
 # AX_APPEND_COMPILE_FLAGS([-Wlong-long]) -- Don't turn on for compatibility issues memcached_stat_st
 
 #serial 2
+
   AC_DEFUN([AX_HARDEN_LINKER_FLAGS], [
       AC_REQUIRE([AX_CHECK_LINK_FLAG])
       AC_REQUIRE([AX_VCS_CHECKOUT])
       AC_REQUIRE([AX_DEBUG])
+      AC_REQUIRE([AX_CXX_COMPILER_VERSION])
 
       AS_IF([test "$ac_cv_vcs_checkout" = yes], [
           AX_CHECK_LINK_FLAG([-Werror])
@@ -66,32 +68,39 @@
       AX_CHECK_LINK_FLAG([-pie])
       ])
 
-  AC_DEFUN([AX_HARDEN_C_COMPILER_FLAGS], [
+  AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS], [
       AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
       AC_REQUIRE([AX_HARDEN_LINKER_FLAGS])
 
       AC_LANG_PUSH([C])
-      AS_IF([test "$ax_with_debug" = yes], [
-        AX_APPEND_COMPILE_FLAGS([-O0])],[
+      CFLAGS=
+
+      AX_APPEND_COMPILE_FLAGS([-g])
+      AS_IF([test "$ax_enable_debug" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-ggdb])
+        AX_APPEND_COMPILE_FLAGS([-O0])
+        ],[
         AX_APPEND_COMPILE_FLAGS([-O2])
         ])
 
       ac_cv_warnings_as_errors=no
       AS_IF([test "$ac_cv_vcs_checkout" = yes], [
         AX_APPEND_COMPILE_FLAGS([-Werror])
+        AX_APPEND_COMPILE_FLAGS([-Wpragmas])
         ac_cv_warnings_as_errors=yes
+        ],[
+        AX_APPEND_COMPILE_FLAGS([-Wno-pragmas])
         ])
 
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
       AX_APPEND_COMPILE_FLAGS([-std=c99])
-      AX_APPEND_COMPILE_FLAGS([-Wpragmas])
       dnl Anything below this comment please keep sorted.
       AX_APPEND_COMPILE_FLAGS([--paramssp-buffer-size=1])
       AX_APPEND_COMPILE_FLAGS([-Waddress])
       AX_APPEND_COMPILE_FLAGS([-Warray-bounds])
       AX_APPEND_COMPILE_FLAGS([-Wbad-function-cast])
-      AX_APPEND_COMPILE_FLAGS([-Wc++-compat])
+      dnl AX_APPEND_COMPILE_FLAGS([-Wc++-compat])
       AX_APPEND_COMPILE_FLAGS([-Wchar-subscripts])
       AX_APPEND_COMPILE_FLAGS([-Wcomment])
       AX_APPEND_COMPILE_FLAGS([-Wfloat-equal])
@@ -121,28 +130,33 @@
       AX_APPEND_COMPILE_FLAGS([-Wwrite-strings])
       AX_APPEND_COMPILE_FLAGS([-floop-parallelize-all])
       AX_APPEND_COMPILE_FLAGS([-fwrapv])
-      AX_APPEND_COMPILE_FLAGS([-ggdb])
       AC_LANG_POP
 
       ])
 
-  AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS], [
-      AC_REQUIRE([AX_HARDEN_C_COMPILER_FLAGS])
+  AC_DEFUN([AX_HARDEN_CXX_COMPILER_FLAGS], [
+      AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
       AC_LANG_PUSH([C++])
+      CXXFLAGS=
 
-      AS_IF([test "$ax_with_debug" = yes], [
-        AX_APPEND_COMPILE_FLAGS([-O0])],[
+      AX_APPEND_COMPILE_FLAGS([-g])
+      AS_IF([test "$ax_enable_debug" = yes], [
+        AX_APPEND_COMPILE_FLAGS([-O0])
+        AX_APPEND_COMPILE_FLAGS([-ggdb])
+        ],[
         AX_APPEND_COMPILE_FLAGS([-O2])
         AX_APPEND_COMPILE_FLAGS([-D_FORTIFY_SOURCE=2])
         ])
 
       AS_IF([test "$ac_cv_vcs_checkout" = yes], [
         AX_APPEND_COMPILE_FLAGS([-Werror])
+        AX_APPEND_COMPILE_FLAGS([-Wpragmas])
+        ],[
+        AX_APPEND_COMPILE_FLAGS([-Wno-pragmas])
         ])
 
       AX_APPEND_COMPILE_FLAGS([-Wall])
       AX_APPEND_COMPILE_FLAGS([-Wextra])
-      AX_APPEND_COMPILE_FLAGS([-Wpragmas])
       dnl Anything below this comment please keep sorted.
       AX_APPEND_COMPILE_FLAGS([--paramssp-buffer-size=1])
       AX_APPEND_COMPILE_FLAGS([-Waddress])
@@ -174,6 +188,9 @@
       AX_APPEND_COMPILE_FLAGS([-Wformat-security])
       AX_APPEND_COMPILE_FLAGS([-floop-parallelize-all])
       AX_APPEND_COMPILE_FLAGS([-fwrapv])
-      AX_APPEND_COMPILE_FLAGS([-ggdb])
       AC_LANG_POP
   ])
+
+  AC_DEFUN([AX_HARDEN_COMPILER_FLAGS], [
+      AC_REQUIRE([AX_HARDEN_CXX_COMPILER_FLAGS])
+      ])

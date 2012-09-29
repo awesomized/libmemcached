@@ -41,10 +41,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
         m4_undefine([PCT_DONT_SUPPRESS_INCLUDE])
         m4_define([PCT_DONT_SUPPRESS_INCLUDE],[yes])
       ],
-      [no-vc-changelog], [
-        m4_undefine([PCT_NO_VC_CHANGELOG])
-        m4_define([PCT_NO_VC_CHANGELOG],[yes])
-      ],
       [version-from-vc], [
         m4_undefine([PCT_VERSION_FROM_VC])
         m4_define([PCT_VERSION_FROM_VC],[yes])
@@ -176,34 +172,12 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
 
   PANDORA_HAVE_GCC_ATOMICS
 
-  PANDORA_HEADER_ASSERT
-
   PANDORA_WARNINGS(PCT_ALL_ARGS)
 
   PANDORA_ENABLE_DTRACE
 
   AC_LIB_PREFIX
   PANDORA_HAVE_BETTER_MALLOC
-
-  AC_CHECK_PROGS([PERL], [perl])
-  AC_CHECK_PROGS([DPKG_GENSYMBOLS], [dpkg-gensymbols], [:])
-  AC_CHECK_PROGS([LCOV], [lcov], [echo lcov not found])
-  AC_CHECK_PROGS([LCOV_GENHTML], [genhtml], [echo genhtml not found])
-
-  AC_CHECK_PROGS([SPHINXBUILD], [sphinx-build], [:])
-  AS_IF([test "x${SPHINXBUILD}" != "x:"],[
-    AC_CACHE_CHECK([if sphinx is new enough],[ac_cv_recent_sphinx],[
-    
-    ${SPHINXBUILD} -Q -C -b man -d conftest.d . . >/dev/null 2>&1
-    AS_IF([test $? -eq 0],[ac_cv_recent_sphinx=yes],
-          [ac_cv_recent_sphinx=no])
-    rm -rf conftest.d
-    ])
-  ])
-
-  AM_CONDITIONAL(HAVE_DPKG_GENSYMBOLS,[test "x${DPKG_GENSYMBOLS}" != "x:"])
-  AM_CONDITIONAL(HAVE_SPHINX,[test "x${SPHINXBUILD}" != "x:"])
-  AM_CONDITIONAL(HAVE_RECENT_SPHINX,[test "x${ac_cv_recent_sphinx}" = "xyes"])
 
   m4_if(m4_substr(m4_esyscmd(test -d src && echo 0),0,1),0,[
     AM_CPPFLAGS="-I\$(top_srcdir)/src -I\$(top_builddir)/src ${AM_CPPFLAGS}"

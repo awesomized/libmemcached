@@ -1,6 +1,6 @@
 Name:      libmemcached
 Summary:   memcached C library and command line tools
-Version: @VERSION@
+Version:   @VERSION@
 Release:   1
 License:   BSD
 Group:     System Environment/Libraries
