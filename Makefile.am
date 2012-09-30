@@ -29,6 +29,9 @@ EXTRA_DIST+= config/autorun.sh
 EXTRA_DIST+= config/pandora-plugin
 EXTRA_DIST+= config/uncrustify.cfg
 
+aclocaldir= $(datadir)/aclocal
+dist_aclocal_DATA=
+
 include libtest/include.am
 
 include libhashkit-1.0/include.am
@@ -38,6 +41,7 @@ include libmemcachedutil-1.0/include.am
 
 include clients/include.am
 include docs/include.am
+include man/include.am
 include example/include.am
 include libhashkit/include.am
 include libmemcached/include.am

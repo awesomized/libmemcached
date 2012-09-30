@@ -151,3 +151,6 @@ tests/var/
 tmp_chroot
 unittests/unittests
 m4/.git
+man/*.1
+man/*.3
+man/*.8
