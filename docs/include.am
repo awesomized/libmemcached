@@ -18,8 +18,6 @@ ALLSPHINXOPTS   = -d $(SPHINX_BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOP
 
 if HAVE_SPHINX
 
-docs: html man
-
 sphinx-help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
@@ -118,10 +116,17 @@ text: docs/conf.py changes
 	@echo
 	@echo "Build finished. The text files are in $(SPHINX_BUILDDIR)/text."
 
-man: docs/conf.py changes
+if HAVE_RECENT_SPHINX
+man:
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${top_srcdir}/man
 	@echo
 	@echo "Build finished. The manual pages are in ${top_srcdir}/man."
+
+else
+
+man:
+
+endif
 
 changes: docs/conf.py linkcheck
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/changes
