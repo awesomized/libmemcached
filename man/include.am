@@ -2,6 +2,8 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+if HAVE_RECENT_SPHINX
+
 man_MANS+= man/hashkit_clone.3
 man_MANS+= man/hashkit_crc32.3
 man_MANS+= man/hashkit_create.3
@@ -119,3 +121,5 @@ man_MANS+= man/memflush.1
 man_MANS+= man/memrm.1
 man_MANS+= man/memslap.1
 man_MANS+= man/memstat.1
+
+endif
