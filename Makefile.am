@@ -93,6 +93,6 @@ lcov-clean: clean
 
 DISTCLEANFILES+= config/top.h
 
-install-html: html-local
+install-website: html-local
 	@rm -r -f /var/www/libmemcached/*
 	@cp -r docs/html /var/www/libmemcached
