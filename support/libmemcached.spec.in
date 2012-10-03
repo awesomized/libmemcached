@@ -145,6 +145,7 @@ you will need to install %{name}-devel.
 %files devel
 %defattr (-,root,root,-) 
 %doc examples
+%{_datadir}/aclocal/ax_lib_libmemcached.m4
 %{_includedir}/libhashkit/hashkit.h
 %{_includedir}/libhashkit-1.0/algorithm.h
 %{_includedir}/libhashkit-1.0/behavior.h

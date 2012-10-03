@@ -86,9 +86,6 @@ include tests/cli.am
 
 test: check
 
-check-local: $(TEST_DOCS)
-	@echo "Tests completed"
-
 test-mem: tests/libmemcached-1.0/testapp
 	@tests/libmemcached-1.0/testapp
 

@@ -21,7 +21,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   m4_define([PCT_FORCE_GCC42],[no])
   m4_define([PCT_DONT_SUPPRESS_INCLUDE],[no])
   m4_define([PCT_NO_VC_CHANGELOG],[no])
-  m4_define([PCT_VERSION_FROM_VC],[no])
   m4_define([PCT_USE_VISIBILITY],[yes])
   m4_foreach([pct_arg],[$*],[
     m4_case(pct_arg,
@@ -40,10 +39,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
       [dont-suppress-include], [
         m4_undefine([PCT_DONT_SUPPRESS_INCLUDE])
         m4_define([PCT_DONT_SUPPRESS_INCLUDE],[yes])
-      ],
-      [version-from-vc], [
-        m4_undefine([PCT_VERSION_FROM_VC])
-        m4_define([PCT_VERSION_FROM_VC],[yes])
     ])
   ])
 
@@ -78,24 +73,6 @@ AC_DEFUN([PANDORA_CANONICAL_TARGET],[
   ],[
     vc_changelog=yes
   ])
-  m4_if(PCT_VERSION_FROM_VC,yes,[
-    PANDORA_VC_INFO_HEADER
-  ],[
-    PANDORA_TEST_VC_DIR
-
-    changequote(<<, >>)dnl
-    PANDORA_RELEASE_ID=`echo $VERSION | sed 's/[^0-9]//g'`
-    changequote([, ])dnl
-
-    PANDORA_RELEASE_COMMENT=""
-    AC_DEFINE_UNQUOTED([PANDORA_RELEASE_VERSION],["$VERSION"],
-                       [Version of the software])
-
-    AC_SUBST(PANDORA_RELEASE_COMMENT)
-    AC_SUBST(PANDORA_RELEASE_VERSION)
-    AC_SUBST(PANDORA_RELEASE_ID)
-  ])
-  PANDORA_VERSION
 
   dnl Once we can use a modern autoconf, we can use this
   dnl AC_PROG_CC_C99

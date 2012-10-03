@@ -25,9 +25,9 @@ EXTRA_DIST+= ${srcdir}/m4/pandora_*.m4
 EXTRA_DIST+= .quickly
 EXTRA_DIST+= README.FIRST
 EXTRA_DIST+= README.win32
-EXTRA_DIST+= config/autorun.sh
-EXTRA_DIST+= config/pandora-plugin
-EXTRA_DIST+= config/uncrustify.cfg
+
+aclocaldir= $(datadir)/aclocal
+dist_aclocal_DATA=
 
 include libtest/include.am
 
@@ -38,6 +38,7 @@ include libmemcachedutil-1.0/include.am
 
 include clients/include.am
 include docs/include.am
+include man/include.am
 include example/include.am
 include libhashkit/include.am
 include libmemcached/include.am
@@ -91,3 +92,7 @@ lcov-clean: clean
 	@find . -name '*.gcda' | xargs rm -f
 
 DISTCLEANFILES+= config/top.h
+
+install-website: html-local
+	@rm -r -f /var/www/libmemcached/*
+	@cp -r docs/html /var/www/libmemcached
