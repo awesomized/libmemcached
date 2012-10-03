@@ -92,3 +92,7 @@ lcov-clean: clean
 	@find . -name '*.gcda' | xargs rm -f
 
 DISTCLEANFILES+= config/top.h
+
+install-html: html-local
+	@rm -r -f /var/www/libmemcached/*
+	@cp -r docs/html /var/www/libmemcached
