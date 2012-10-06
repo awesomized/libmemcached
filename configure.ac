@@ -255,9 +255,6 @@ AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event],
                  [AC_MSG_WARN([Unable to find libevent])])
 AM_CONDITIONAL(HAVE_LIBEVENT, test "x${ax_cv_have_LIBEVENT}" = "xyes")
 
-AX_CHECK_SOCK_CLOEXEC([AC_DEFINE([HAVE_SOCK_CLOEXEC], [1], [Check for SOCK_CLOEXEC.])],
-                       [AC_DEFINE([HAVE_SOCK_CLOEXEC], [0], [Check for SOCK_CLOEXEC.])])
-
 AX_UUID_GENERATE_TIME_SAFE
 
 
