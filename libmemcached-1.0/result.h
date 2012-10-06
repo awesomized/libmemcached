@@ -64,6 +64,9 @@ LIBMEMCACHED_API
 const char *memcached_result_value(const memcached_result_st *self);
 
 LIBMEMCACHED_API
+char *memcached_result_take_value(memcached_result_st *self);
+
+LIBMEMCACHED_API
 size_t memcached_result_length(const memcached_result_st *self);
 
 LIBMEMCACHED_API
