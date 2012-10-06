@@ -64,4 +64,5 @@ AC_DEFUN([AX_DEBUG],[
 
     AC_MSG_CHECKING([for debug])
     AC_MSG_RESULT([$ax_enable_debug])
+    AM_CONDITIONAL([DEBUG_BUILD], [test "x$ax_enable_debug" = "xyes"])
     ])

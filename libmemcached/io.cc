@@ -39,6 +39,10 @@
 
 #include <libmemcached/common.h>
 
+#ifdef HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#endif
+
 void initialize_binary_request(org::libmemcached::Instance* server, protocol_binary_request_header& header)
 {
   server->request_id++;
@@ -708,7 +712,7 @@ void memcached_io_close(org::libmemcached::Instance* ptr)
   }
 
   /* in case of death shutdown to avoid blocking at close() */
-  if (shutdown(ptr->fd, SHUT_RDWR) == SOCKET_ERROR && get_socket_errno() != ENOTCONN)
+  if (shutdown(ptr->fd, SHUT_RDWR) == SOCKET_ERROR and get_socket_errno() != ENOTCONN)
   {
     WATCHPOINT_NUMBER(ptr->fd);
     WATCHPOINT_ERRNO(get_socket_errno());

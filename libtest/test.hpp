@@ -42,6 +42,17 @@
 #include <cstdlib>
 #include <arpa/inet.h>
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <ctime>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <ctime>
+# endif
+#endif
+
 #include <libtest/visibility.h>
 #include <libtest/version.h>
 

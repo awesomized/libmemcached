@@ -45,28 +45,48 @@
 #include <config.h>
 
 #ifdef __cplusplus
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <cctype>
-#include <cerrno>
-#include <climits>
+#  include <cstdio>
+#  include <cstdlib>
+#  include <cstring>
+#  include <ctime>
+#  include <cctype>
+#  include <cerrno>
+#  include <climits>
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <errno.h>
-#include <limits.h>
+#  ifdef HAVE_STDLIB_H
+#   include <stdio.h>
+#  endif
+#  ifdef HAVE_STDLIB_H
+#    include <stdlib.h>
+#  endif
+#  include <string.h>
+#  include <time.h>
+#  ifdef HAVE_ERRNO_H
+#    include <errno.h>
+#  endif
+#  ifdef HAVE_LIMITS_H
+#    include <limits.h>
+#  endif
 #endif
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <unistd.h>
+#ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 #ifdef HAVE_STRINGS_H
-#include <strings.h>
+#  include <strings.h>
+#endif
+
+#ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
 #endif
 
 #include <libmemcached-1.0/memcached.h>
@@ -77,9 +97,9 @@
 #include <libmemcached/server_instance.h>
 
 #ifdef HAVE_POLL_H
-#include <poll.h>
+# include <poll.h>
 #else
-#include "poll/poll.h"
+# include "poll/poll.h"
 #endif
 
 #ifdef __cplusplus
