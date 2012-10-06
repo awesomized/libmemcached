@@ -4683,6 +4683,10 @@ test_return_t regression_994772_TEST(memcached_st* memc)
   uint64_t cas_value= memcached_result_cas(results);
   test_true(cas_value);
 
+  char* take_value= memcached_result_take_value(results);
+  test_strcmp(__func__, take_value);
+  free(take_value);
+
   memcached_result_free(results);
 
   // Bad cas value, sanity check 

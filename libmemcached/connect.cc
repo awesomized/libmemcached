@@ -43,7 +43,15 @@
 #include <sys/time.h>
 
 #ifndef SOCK_CLOEXEC 
-#define SOCK_CLOEXEC 0
+#  define SOCK_CLOEXEC 0
+#endif
+
+#ifndef SOCK_NONBLOCK 
+#  define SOCK_NONBLOCK 0
+#endif
+
+#ifndef FD_CLOEXEC
+# define FD_CLOEXEC 0
 #endif
 
 static memcached_return_t connect_poll(org::libmemcached::Instance* server)
@@ -245,27 +253,30 @@ static inline void set_socket_nonblocking(org::libmemcached::Instance* server)
 #else
   int flags;
 
-  do
+  if (SOCK_NONBLOCK == 0)
   {
-    flags= fcntl(server->fd, F_GETFL, 0);
-  } while (flags == -1 && (errno == EINTR || errno == EAGAIN));
-
-  if (flags == -1)
-  {
-    memcached_set_errno(*server, errno, NULL);
-  }
-  else if ((flags & O_NONBLOCK) == 0)
-  {
-    int rval;
-
     do
     {
-      rval= fcntl(server->fd, F_SETFL, flags | O_NONBLOCK);
-    } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+      flags= fcntl(server->fd, F_GETFL, 0);
+    } while (flags == -1 && (errno == EINTR || errno == EAGAIN));
 
-    if (rval == -1)
+    if (flags == -1)
     {
       memcached_set_errno(*server, errno, NULL);
+    }
+    else if ((flags & O_NONBLOCK) == 0)
+    {
+      int rval;
+
+      do
+      {
+        rval= fcntl(server->fd, F_SETFL, flags | O_NONBLOCK);
+      } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+
+      if (rval == -1)
+      {
+        memcached_set_errno(*server, errno, NULL);
+      }
     }
   }
 #endif
@@ -386,7 +397,6 @@ static void set_socket_options(org::libmemcached::Instance* server)
     assert(error == 0);
   }
 
-
   /* libmemcached will always use nonblocking IO to avoid write deadlocks */
   set_socket_nonblocking(server);
 }
@@ -396,7 +406,18 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
 #ifndef WIN32
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
 
-  if ((server->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+  int type= SOCK_STREAM;
+  if (SOCK_CLOEXEC)
+  {
+    type|= SOCK_CLOEXEC;
+  }
+
+  if (SOCK_NONBLOCK)
+  {
+    type|= SOCK_NONBLOCK;
+  }
+
+  if ((server->fd= socket(AF_UNIX, type, 0)) < 0)
   {
     memcached_set_errno(*server, errno, NULL);
     return MEMCACHED_CONNECTION_FAILURE;
@@ -481,9 +502,14 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
     }
 
     int type= server->address_info_next->ai_socktype;
-    if (HAVE_SOCK_CLOEXEC)
+    if (SOCK_CLOEXEC)
     {
       type|= SOCK_CLOEXEC;
+    }
+
+    if (SOCK_NONBLOCK)
+    {
+      type|= SOCK_NONBLOCK;
     }
 
     if ((server->fd= socket(server->address_info_next->ai_family,
@@ -493,15 +519,17 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
       return memcached_set_errno(*server, get_socket_errno(), NULL);
     }
 
-    if (HAVE_SOCK_CLOEXEC == 0)
+    // If SOCK_CLOEXEC exists then we don't need to call the following
+    if (SOCK_CLOEXEC == 0)
     {
-#ifdef FD_CLOEXEC
-      int rval;
-      do
+      if (FD_CLOEXEC)
       {
-        rval= fcntl (server->fd, F_SETFD, FD_CLOEXEC);
-      } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
-#endif
+        int rval;
+        do
+        {
+          rval= fcntl (server->fd, F_SETFD, FD_CLOEXEC);
+        } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+      }
     }
 
     set_socket_options(server);

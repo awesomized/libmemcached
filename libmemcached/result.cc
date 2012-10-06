@@ -162,6 +162,12 @@ size_t memcached_result_length(const memcached_result_st *self)
   return memcached_string_length(sptr);
 }
 
+char *memcached_result_take_value(memcached_result_st *self)
+{
+  memcached_string_st *sptr= &self->value;
+  return memcached_string_take_value(sptr);
+}
+
 uint32_t memcached_result_flags(const memcached_result_st *self)
 {
   return self->item_flags;

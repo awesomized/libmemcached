@@ -20,6 +20,8 @@ SYNOPSIS
 
 .. c:function:: const char *memcached_result_value (memcached_result_st *ptr)
 
+.. c:function:: char *memcached_result_take_value (memcached_result_st *ptr)
+
 .. c:function:: size_t memcached_result_length (const memcached_result_st *ptr)
 
 .. c:function:: uint32_t memcached_result_flags (const memcached_result_st *result)
@@ -66,6 +68,11 @@ the current result object.
 
 :c:func:`memcached_result_value` returns the result value associated with the
 current result object.
+
+:c:func:`memcached_result_take_value` returns and hands over the result value
+associated with the current result object. You must call free() to release this
+value, unless you have made use of a custom allocator. Use of a custom
+allocator requires that you create your own custom free() to release it.
 
 :c:func:`memcached_result_length` returns the result length associated with 
 the current result object.

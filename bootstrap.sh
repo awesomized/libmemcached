@@ -281,7 +281,32 @@ run() {
   $@ $ARGS
 } 
 
+parse_command_line_options() {
+
+  if ! options=$(getopt -o c --long configure -n 'bootstrap' -- "$@"); then
+    exit 1
+  fi
+
+  eval set -- "$options"
+
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -c | --configure )
+        CONFIGURE_OPTION="yes" ; shift;;
+      -- )
+        shift; break;;
+      -* )
+        echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
+      *)
+        break;;
+    esac
+  done
+}
+
+
+
 bootstrap() {
+  parse_command_line_options $@
   determine_target_platform
 
   if [ -d .git ]; then
@@ -345,6 +370,10 @@ bootstrap() {
   run $AUTORECONF $AUTORECONF_FLAGS || die "Cannot execute $AUTORECONF $AUTORECONF_FLAGS"
 
   configure_target_platform
+  
+  if [ "$CONFIGURE_OPTION" == "yes" ]; then
+    exit
+  fi
 
   # Backwards compatibility
   if [ -n "$VALGRIND" ]; then
@@ -382,8 +411,9 @@ bootstrap() {
 export -n VCS_CHECKOUT
 export -n PLATFORM
 export -n TARGET_PLATFORM
+CONFIGURE_OPTION=no
 VCS_CHECKOUT=
 PLATFORM=unknown
 TARGET_PLATFORM=unknown
 
-bootstrap
+bootstrap $@
