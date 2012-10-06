@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # LibmemcacheD
 # Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
@@ -8,27 +7,19 @@
 # the COPYING file in this directory for full text.
 
 AC_INIT([libmemcached],[1.0.12],[http://libmemcached.org/])
-
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_CANONICAL_TARGET
+AC_ARG_PROGRAM
+AC_USE_SYSTEM_EXTENSIONS
 
-AM_INIT_AUTOMAKE
-
-AC_CANONICAL_HOST
-AC_CANONICAL_BUILD
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
 
 AC_PREREQ([2.61])
 
-AC_CONFIG_MACRO_DIR([m4])
-
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
-
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
-
-PANDORA_CANONICAL_TARGET
-AC_CHECK_PROGS([YACC], ['bison'], [:])
-AC_CHECK_PROGS([LEX], ['flex'], [:])
 
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
@@ -48,20 +39,20 @@ AC_SUBST(MEMCACHED_UTIL_LIBRARY_VERSION)
 AC_SUBST(MEMCACHED_PROTOCAL_LIBRARY_VERSION)
 AC_SUBST(MEMCACHED_LIBRARY_VERSION)
 
-
 HASHKIT_LIBRARY_VERSION=2:0:0
 AC_SUBST(HASHKIT_LIBRARY_VERSION)
 
 LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
-LT_LANG([C])
 gl_VISIBILITY
+PANDORA_PLATFORM
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_CXX_HEADER_STDCXX_98
-  if test "$ax_cv_cxx_stdcxx_98" = no; then
-    AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
-  fi
+AS_IF([ test "$ax_cv_cxx_stdcxx_98" = no ],[
+       AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
+       ])
 
 # Adding support for libtest
 m4_include([libtest/yatl.m4])
@@ -77,9 +68,6 @@ AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enables libmemcached Support])
 
 AM_CONDITIONAL([BUILDING_GEARMAN], [false])
 
-AC_SEARCH_LIBS(getopt_long, gnugetopt)
-AC_SEARCH_LIBS(gethostbyname, nsl)
-
 dnl Specialty checks
 AX_CXX_CINTTYPES
 CONFIG_EXTRA
@@ -93,18 +81,45 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 # Checks for programs.
+AC_CHECK_PROGS([LEX], ['flex'], [:])
+AC_CHECK_PROGS([YACC], ['bison'], [:])
 AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
+AC_SEARCH_LIBS(getopt_long, gnugetopt)
+AC_SEARCH_LIBS(gethostbyname, nsl)
 
 # Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h])
+AC_CHECK_HEADERS([errno.h])
+AC_CHECK_HEADERS([dlfcn.h])
+AC_CHECK_HEADERS([execinfo.h])
+AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_HEADERS([inttypes.h])
+AC_CHECK_HEADERS([libintl.h])
+AC_CHECK_HEADERS([limits.h])
+AC_CHECK_HEADERS([malloc.h])
+AC_CHECK_HEADERS([math.h])
+AC_CHECK_HEADERS([netdb.h])
+AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([netinet/tcp.h])
+AC_CHECK_HEADERS([pthread.h])
+AC_CHECK_HEADERS([stdarg.h])
+AC_CHECK_HEADERS([stddef.h])
+AC_CHECK_HEADERS([stdio.h])
+AC_CHECK_HEADERS([stdlib.h])
+AC_CHECK_HEADERS([sys/socket.h])
+AC_CHECK_HEADERS([sys/sysctl.h])
+AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_HEADERS([time.h])
+AC_CHECK_HEADERS([unistd.h])
+AC_HEADER_TIME
 
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
 
 AC_CHECK_FUNCS([alarm])
-AC_CHECK_FUNCS([clock_gettime])
 AC_CHECK_FUNCS([dup2])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
@@ -123,29 +138,12 @@ AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNCS([strtol])
 AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([strtoull])
-
-AC_CHECK_HEADERS([arpa/inet.h])
-AC_CHECK_HEADERS([errno.h])
-AC_CHECK_HEADERS([execinfo.h])
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([inttypes.h])
-AC_CHECK_HEADERS([libintl.h])
-AC_CHECK_HEADERS([limits.h])
-AC_CHECK_HEADERS([malloc.h])
-AC_CHECK_HEADERS([math.h])
-AC_CHECK_HEADERS([netdb.h])
-AC_CHECK_HEADERS([netinet/in.h])
-AC_CHECK_HEADERS([pthread.h])
-AC_CHECK_HEADERS([stdarg.h])
-AC_CHECK_HEADERS([stddef.h])
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([sys/time.h])
-AC_CHECK_HEADERS([unistd.h])
-AC_CHECK_HEADERS([cxxabi.h], 
-                 AC_DEFINE([HAVE_CXXABI_H], [1], [Have cxxabi.h]),
-                 AC_DEFINE([HAVE_CXXABI_H], [0], [Have cxxabi.h]))
-
-AC_CHECK_HEADERS([sys/sysctl.h])
+AC_FUNC_ALLOCA
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_STRERROR_R
 
 AC_CHECK_HEADER(umem.h, [
    AC_DEFINE([HAVE_UMEM_H], 1,
@@ -157,12 +155,6 @@ AM_CONDITIONAL([BUILD_CACHE], [test "x$build_cache" = "xyes"])
 
 AX_COMPILER_VENDOR
 
-AC_FUNC_ALLOCA
-AC_FUNC_ERROR_AT_LINE
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
-AC_FUNC_STRERROR_R
 AC_HEADER_STDBOOL
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -194,15 +186,22 @@ AS_IF([test "x$ac_enable_sasl" = "xyes"], [
        ],[ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ])
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
-AC_CHECK_LIB([rt], [clock_gettime], 
-             [
+AC_CHECK_LIB([rt], [clock_gettime], [
               RT_LIB="-lrt"
               AC_SUBST(RT_LIB)
-              AC_DEFINE([HAVE_LIBRT], [ 1 ], [Have clock_gettime])
-              ], 
-             [
-              AC_DEFINE([HAVE_LIBRT], [ 0 ], [Have clock_gettime])
+              AC_DEFINE([HAVE_CLOCK_GETTIME], [ 1 ], [Have clock_gettime])
+              ],[
+              AC_DEFINE([HAVE_CLOCK_GETTIME], [ 0 ], [Have clock_gettime])
               ])
+
+# Check for the ability to call dlopen
+AC_CHECK_LIB([dl], [dlopen],[
+              DL_LIB="-ldl"
+              AC_SUBST(DL_LIB)
+              AC_DEFINE([HAVE_LIBDL], [ 1 ], [Have dlopen])
+              ],[
+                 AC_DEFINE([HAVE_LIBDL], [ 0 ], [Have dlopen])
+                 ])
 
 AC_CHECK_LIB([m], [floor])
 AC_CHECK_FUNCS([sigignore])
@@ -261,6 +260,7 @@ AX_UUID_GENERATE_TIME_SAFE
 AX_PTHREAD(, [AC_MSG_ERROR([could not find libpthread])])
 AX_PTHREAD_TIMEDJOIN_NP
 
+PANDORA_ENABLE_DTRACE
 AX_ENDIAN
 AX_HEX_VERSION
 AX_ASSERT

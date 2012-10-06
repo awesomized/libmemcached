@@ -39,107 +39,64 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 
 #ifdef HAVE_EXECINFO_H
-#include <execinfo.h>
-#endif
-
-#ifdef HAVE_CXXABI_H
-#include <cxxabi.h>
+#  include <execinfo.h>
 #endif
 
 #ifdef HAVE_GCC_ABI_DEMANGLE
-#define USE_DEMANGLE 1
-#else
-#define USE_DEMANGLE 0
+#  include <cxxabi.h>
 #endif
+
+#ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+#endif
+
+#ifdef HAVE_GCC_ABI_DEMANGLE
+#  define USE_DEMANGLE 1
+#else
+#  define USE_DEMANGLE 0
+#endif
+
+const int MAX_DEPTH= 50;
 
 void custom_backtrace(void)
 {
 #ifdef HAVE_EXECINFO_H
-  void *array[50];
+  void *array[MAX_DEPTH];
 
-  int size= backtrace(array, 50);
-  char **strings= backtrace_symbols(array, size);
+  int backtrace_size= backtrace(array, MAX_DEPTH);
+  fprintf(stderr, "Number of stack frames obtained: %d\n", backtrace_size);
 
-  if (strings == NULL)
-  {
-    return;
-  }
+#ifdef HAVE_DLFCN_H
+  Dl_info dlinfo;
+#endif
 
-  fprintf(stderr, "Number of stack frames obtained: %d\n", size);
-
-  char *named_function= (char *)std::realloc(NULL, 1024);
-  
-  if (named_function == NULL)
-  {
-    std::free(strings);
-    return;
-  }
-
-  for (int x= 1; x < size; x++) 
-  {
-    if (USE_DEMANGLE)
+  for (int x= 0; x < backtrace_size; ++x)
+  {  
+#ifdef HAVE_DLFCN_H
+    if (dladdr(array[x], &dlinfo) == 0)
     {
-      size_t sz= 200;
-      char *named_function_ptr= (char *)std::realloc(named_function, sz);
-      if (named_function_ptr == NULL)
-      {
-        continue;
-      }
-      named_function= named_function_ptr;
-
-      char *begin_name= 0;
-      char *begin_offset= 0;
-      char *end_offset= 0;
-
-      for (char *j= strings[x]; *j; ++j)
-      {
-        if (*j == '(')
-        {
-          begin_name= j;
-        }
-        else if (*j == '+')
-        {
-          begin_offset= j;
-        }
-        else if (*j == ')' and begin_offset) 
-        {
-          end_offset= j;
-          break;
-        }
-      }
-
-      if (begin_name and begin_offset and end_offset and begin_name < begin_offset)
-      {
-        *begin_name++= '\0';
-        *begin_offset++= '\0';
-        *end_offset= '\0';
-
-        int status;
-        char *ret= abi::__cxa_demangle(begin_name, named_function, &sz, &status);
-        if (ret) // realloc()'ed string
-        {
-          named_function= ret;
-          fprintf(stderr, "  %s : %s()+%s\n", strings[x], begin_name, begin_offset);
-        }
-        else
-        {
-          fprintf(stderr, "  %s : %s()+%s\n", strings[x], begin_name, begin_offset);
-        }
-      }
-      else
-      {
-        fprintf(stderr, " %s\n", strings[x]);
-      }
+      continue;
     }
-    else
+#endif
+
+    const char* symname= dlinfo.dli_sname;
+
+    int status;
+    char* demangled= abi::__cxa_demangle(symname, NULL, 0, &status);
+    if (status == 0 and demangled)
     {
-      fprintf(stderr, " unmangled: %s\n", strings[x]);
+      symname= demangled;
     }
-  }
 
-  std::free(named_function);
-  std::free(strings);
+    printf("object: %s, function: %s\n", dlinfo.dli_fname, symname);
+
+    if (demangled)
+    {
+      free(demangled);
+    }
+  } 
 #endif // HAVE_EXECINFO_H
 }

@@ -136,6 +136,7 @@ libtest_libtest_la_CXXFLAGS+= $(CURL_CFLAGS)
 
 libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
 libtest_libtest_la_LIBADD+= $(CURL_LIBS)
+libtest_libtest_la_LIBADD+= $(RT_LIB)
 
 libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
 libtest_libtest_la_DEPENDENCIES+=libtest/abort

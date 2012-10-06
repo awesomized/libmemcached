@@ -10,6 +10,8 @@ dnl
 dnl From Monty Taylor
 
 AC_DEFUN([PANDORA_PLATFORM],[
+         AC_REQUIRE([AC_CANONICAL_HOST])
+         AC_REQUIRE([AC_CANONICAL_TARGET])
 
   dnl Canonicalize the configuration name.
 

@@ -115,6 +115,7 @@ libmemcached_libmemcached_la_DEPENDENCIES=
 libmemcached_libmemcached_la_LIBADD=
 libmemcached_libmemcached_la_LDFLAGS=
 libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION}
+libmemcached_libmemcached_la_LDFLAGS+= $(DL_LIB)
 
 if HAVE_SASL
 libmemcached_libmemcached_la_CXXFLAGS+= $(LIBSASL_CPPFLAGS)
