@@ -507,9 +507,9 @@ memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *pt
   }
 
   memcached_string_t _filename= { memcached_string_make_from_cstr(filename) };
-  if (memcached_is_valid_servername(_filename) == false)
+  if (memcached_is_valid_filename(_filename) == false)
   {
-    memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid filename for socket provided"));
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid filename for socket provided"));
   }
 
   return server_add(ptr, _filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);

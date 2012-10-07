@@ -309,24 +309,27 @@ bootstrap() {
   parse_command_line_options $@
   determine_target_platform
 
+  DEFAULT_DEV_AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+  DEFAULT_AUTORECONF_FLAGS="--install --force --verbose -Wall"
+
   if [ -d .git ]; then
-    AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+    AUTORECONF_FLAGS=$DEFAULT_DEV_AUTORECONF_FLAGS
     VCS_CHECKOUT=git
   elif [ -d .bzr ]; then
-    AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+    AUTORECONF_FLAGS=$DEFAULT_DEV_AUTORECONF_FLAGS
     VCS_CHECKOUT=bzr
   elif [ -d .svn ]; then
-    AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+    AUTORECONF_FLAGS=$DEFAULT_DEV_AUTORECONF_FLAGS
     VCS_CHECKOUT=svn
   elif [ -d .hg ]; then
-    AUTORECONF_FLAGS="--install --force --verbose -Wall -Werror"
+    AUTORECONF_FLAGS=$DEFAULT_DEV_AUTORECONF_FLAGS
     VCS_CHECKOUT=hg
   else
-    AUTORECONF_FLAGS="--install --force --verbose -Wall"
+    AUTORECONF_FLAGS=$DEFAULT_AUTORECONF_FLAGS
   fi
 
   if [ -z "$LIBTOOLIZE_FLAGS" ]; then
-    LIBTOOLIZE_FLAGS="--force --verbose"
+    LIBTOOLIZE_FLAGS="--force --verbose --install"
   fi
 
   if [ "$PLATFORM" = "darwin" ]; then
