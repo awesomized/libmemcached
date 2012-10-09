@@ -1,5 +1,6 @@
-1.0.12 
+1.0.12 Tue Oct  9 03:30:20 EDT 2012
 * Added memcached_result_take_value().
+* Added ax_libmemcached.m4
 
 1.0.11 Sun Sep 16 20:32:13 EDT 2012
 * Removed custom version of memcached.
