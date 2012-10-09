@@ -177,6 +177,7 @@ AC_C_RESTRICT
 AX_CXX_GCC_ABI_DEMANGLE
 
 AX_SASL_CHECK
+AX_LIBEVENT
 
 dnl
 dnl The sasl functions should only be visible if we build with sasl support
@@ -249,11 +250,6 @@ AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
       ])
 SOCKET_SEND_FLAGS
 
-AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event], 
-                 [LIBEVENT_LDFLAGS="-levent"],
-                 [AC_MSG_WARN([Unable to find libevent])])
-AM_CONDITIONAL(HAVE_LIBEVENT, test "x${ax_cv_have_LIBEVENT}" = "xyes")
-
 AX_UUID_GENERATE_TIME_SAFE
 
 
@@ -266,6 +262,8 @@ AX_HEX_VERSION
 AX_ASSERT
 AX_CXX_COMPILER_VERSION
 AX_HARDEN_COMPILER_FLAGS
+
+AX_AM_JOBSERVER([yes])
 
 AC_CONFIG_FILES([
   Makefile
@@ -290,8 +288,8 @@ echo "   * C Flags:                   $CFLAGS"
 echo "   * C++ Compiler:              $CXX_VERSION"
 echo "   * C++ Flags:                 $CXXFLAGS"
 echo "   * CPP Flags:                 $CPPFLAGS"
-echo "   * Assertions enabled:        $ac_cv_assert"
-echo "   * Debug enabled:             $with_debug"
+echo "   * Assertions enabled:        $ax_enable_assert"
+echo "   * Debug enabled:             $ax_enable_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
 echo "   * SASL support:              $ac_enable_sasl"
 echo ""
