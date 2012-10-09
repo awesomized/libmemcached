@@ -76,8 +76,8 @@ configure_target_platform () {
 
 setup_gdb_command () {
   GDB_TMPFILE=$(mktemp /tmp/gdb.XXXXXXXXXX)
-  echo "set logging on" > $GDB_TMPFILE
-  echo "set logging overwrite on" >> $GDB_TMPFILE
+  echo "set logging overwrite on" > $GDB_TMPFILE
+  echo "set logging on" >> $GDB_TMPFILE
   echo "set environment LIBTEST_IN_GDB=1" >> $GDB_TMPFILE
   echo "run" >> $GDB_TMPFILE
   echo "thread apply all bt" >> $GDB_TMPFILE
@@ -246,7 +246,7 @@ make_target () {
   fi
 
   MAKE_TARGET=$1
-  run $MAKE $MAKE_J $MAKE_TARGET || die "Cannot execute $MAKE $MAKE_TARGET"
+  run $MAKE $MAKE_TARGET || die "Cannot execute $MAKE $MAKE_TARGET"
 
   if [ -n "$MAKE_TARGET" ]; then
     MAKE_TARGET=$OLD_MAKE_TARGET
@@ -263,6 +263,10 @@ make_rpm () {
 
 make_distclean () {
   make_target distclean
+}
+
+make_maintainer_clean () {
+  make_target maintainer-clean
 }
 
 make_check () {
@@ -355,18 +359,15 @@ bootstrap() {
     MAKE="make"
   fi
 
-  # Set ENV MAKE_J in order to override "-j2"
-  if [ -z "$MAKE_J" ]; then
-    MAKE_J="-j2"
-  fi
-
   # Set ENV PREFIX in order to set --prefix for ./configure
   if [ -n "$PREFIX" ]; then 
     PREFIX_ARG="--prefix=$PREFIX"
   fi
 
   if [ -f Makefile ]; then
-    $MAKE $MAKE_J maintainer-clean
+    make_maintainer_clean
+    rm -f Makefile.in
+    rm -f aminclude.am
   fi
 
   run $LIBTOOLIZE $LIBTOOLIZE_FLAGS || die "Cannot execute $LIBTOOLIZE $LIBTOOLIZE_FLAGS"
