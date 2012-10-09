@@ -55,7 +55,7 @@ AC_DEFUN([AX_LIBMEMCACHED], [
     AC_CHECK_HEADER([libmemcached-1.0/memcached.h], [
       AC_CACHE_CHECK([check for -lmemcached], [ax_cv_libmemcached], [
         AC_LANG_PUSH([C])
-        save_LIBS="$LIBS"
+        AX_SAVE_FLAGS
         LIBS="-lmemcached $LIBS"
         AC_RUN_IFELSE([
           AC_LANG_PROGRAM([#include <libmemcached-1.0/memcached.h>], [
@@ -67,7 +67,7 @@ AC_DEFUN([AX_LIBMEMCACHED], [
           [ax_cv_libmemcached=no],
           [AC_MSG_WARN([test program execution failed])])
         AC_LANG_POP
-        LIBS="$save_LIBS"
+        AX_RESTORE_FLAGS
         ])
       ])
 
@@ -87,8 +87,8 @@ AC_DEFUN([AX_LIBMEMCACHED], [
       AS_IF([test "$ax_cv_libmemcached" = yes], [
         AC_CHECK_HEADER([libmemcachedutil-1.0/util.h], [
           AC_CACHE_CHECK([check for -lmemcachedutil], [ax_cv_libmemcached_util], [
+            AX_SAVE_FLAGS
             AC_LANG_PUSH([C])
-            save_LIBS="$LIBS"
             LIBS="-lmemcachedutil -lmemcached $LIBS"
             AC_RUN_IFELSE([
               AC_LANG_PROGRAM([#include <libmemcachedutil-1.0/util.h>], [
@@ -99,7 +99,7 @@ AC_DEFUN([AX_LIBMEMCACHED], [
               [ax_cv_libmemcached_util=no],
               [AC_MSG_WARN([test program execution failed])])
             AC_LANG_POP
-            LIBS="$save_LIBS"
+            AX_RESTORE_FLAGS
             ])
           ])
         ])
