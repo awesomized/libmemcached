@@ -24,6 +24,8 @@ EXTRA_DIST=
 #includes additional rules from aminclude.am
 @INC_AMINCLUDE@
 
+DISTCLEANFILES+= aminclude.am
+
 EXTRA_DIST+= ${srcdir}/m4/pandora_*.m4
 EXTRA_DIST+= .quickly
 EXTRA_DIST+= README.FIRST
