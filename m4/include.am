@@ -3,4 +3,4 @@
 # All paths should be given relative to the root
 
 
-dist_aclocal_DATA+= m4/ax_lib_libmemcached.m4
+dist_aclocal_DATA+= m4/ax_libmemcached.m4
