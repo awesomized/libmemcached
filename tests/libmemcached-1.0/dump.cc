@@ -42,7 +42,7 @@
 #include <libtest/test.hpp>
 
 #include <libmemcached-1.0/memcached.h>
-#include <libmemcached/util.h>
+#include <libmemcachedutil-1.0/util.h>
 
 using namespace libtest;
 

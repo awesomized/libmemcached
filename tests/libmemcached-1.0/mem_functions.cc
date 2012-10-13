@@ -76,7 +76,7 @@
 
 using namespace libtest;
 
-#include <libmemcached/util.h>
+#include <libmemcachedutil-1.0/util.h>
 
 #include "tests/hash_results.h"
 

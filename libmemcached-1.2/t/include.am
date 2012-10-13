@@ -1,8 +1,0 @@
-# vim:ft=automake
-
-# Test linking with C application
-libmemcached_1_2_c_test_SOURCES= libmemcached-1.2/t/c_test.c
-libmemcached_1_2_c_test_LDADD= libmemcached/libmemcached.la
-libmemcached_1_2_c_test_DEPENDENCIES= libmemcached/libmemcached.la
-check_PROGRAMS+= libmemcached-1.2/t/c_test
-noinst_PROGRAMS+= libmemcached-1.2/t/c_test

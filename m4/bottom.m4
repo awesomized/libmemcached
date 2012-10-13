@@ -27,10 +27,6 @@ AH_BOTTOM([
 typedef unsigned long int ulong;
 #endif 
 
-#define RPACKAGE "memcached" 
- 
-#define RVERSION "1.4.13"
-
 ])
 
 ])dnl CONFIG_EXTRA

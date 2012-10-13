@@ -40,7 +40,7 @@
 
 #include <stdlib.h>
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 
 int main(void)
 {

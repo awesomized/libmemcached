@@ -1,4 +1,5 @@
 /* LibMemcached
+ * Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
@@ -34,10 +35,11 @@
 #include <unistd.h>
 
 #include <libmemcached-1.0/memcached.h>
-#include <libmemcached/socket.hpp>
-#include <libmemcached/memcached/protocol_binary.h>
-#include <libmemcached/byteorder.h>
-#include <clients/utilities.h>
+
+#include "libmemcached/socket.hpp"
+#include "libmemcached/memcached/protocol_binary.h"
+#include "libmemcached/byteorder.h"
+#include "clients/utilities.h"
 
 #include <vector>
 

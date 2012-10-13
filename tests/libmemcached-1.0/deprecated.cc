@@ -38,7 +38,7 @@
 #include <config.h>
 #include <libtest/test.hpp>
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 #include <tests/deprecated.h>
 
 test_return_t server_list_null_test(memcached_st *ptr)

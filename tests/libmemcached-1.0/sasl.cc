@@ -43,7 +43,7 @@ using namespace libtest;
   Test cases
 */
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 
 static test_return_t pre_sasl(memcached_st *)
 {

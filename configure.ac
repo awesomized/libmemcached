@@ -35,18 +35,22 @@ MEMCACHED_LIBRARY_VERSION=11:0:0
 #                  |        +- increment if source code has changed
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
-AC_SUBST(MEMCACHED_UTIL_LIBRARY_VERSION)
-AC_SUBST(MEMCACHED_PROTOCAL_LIBRARY_VERSION)
-AC_SUBST(MEMCACHED_LIBRARY_VERSION)
+AC_SUBST([MEMCACHED_UTIL_LIBRARY_VERSION])
+AC_SUBST([MEMCACHED_PROTOCAL_LIBRARY_VERSION])
+AC_SUBST([MEMCACHED_LIBRARY_VERSION])
 
-HASHKIT_LIBRARY_VERSION=2:0:0
-AC_SUBST(HASHKIT_LIBRARY_VERSION)
+AX_HEX_VERSION([LIBMEMCACHED],[$VERSION])
+AX_HEX_VERSION([LIBHASHKIT],[1.0.0])
+
+m4_include([libhashkit/include.m4])
 
 LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
+
+AX_PLATFORM
+
 gl_VISIBILITY
-PANDORA_PLATFORM
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_CXX_HEADER_STDCXX_98
@@ -196,12 +200,12 @@ AC_CHECK_LIB([rt], [clock_gettime], [
               ])
 
 # Check for the ability to call dlopen
-AC_CHECK_LIB([dl], [dlopen],[
+AC_CHECK_LIB([dl], [dlopen], [
               DL_LIB="-ldl"
-              AC_SUBST(DL_LIB)
-              AC_DEFINE([HAVE_LIBDL], [ 1 ], [Have dlopen])
+              AC_SUBST([DL_LIB])
+              AC_DEFINE([HAVE_LIBDL],[1],[Have dlopen])
               ],[
-                 AC_DEFINE([HAVE_LIBDL], [ 0 ], [Have dlopen])
+                 AC_DEFINE([HAVE_LIBDL], [0], [Have dlopen])
                  ])
 
 AC_CHECK_LIB([m], [floor])
@@ -209,8 +213,8 @@ AC_CHECK_FUNCS([sigignore])
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],[
-      AC_CHECK_FUNCS(atomic_add_64)
-      AC_CHECK_FUNCS(atomic_add_32)
+      AC_CHECK_FUNCS([atomic_add_64])
+      AC_CHECK_FUNCS([atomic_add_32])
       AS_IF([test "x$ac_cv_func_atomic_add_64" = "xyes" -a "x$ac_cv_func_atomic_add_32" = "xyes"],[
             AC_DEFINE([USE_ATOMIC_H],
 	              [1],
@@ -232,8 +236,8 @@ dnl If you want to add support for other platforms you should check for
 dnl your requirements, define HAVE_DROP_PRIVILEGES, and make sure you add
 dnl the source file containing the implementation into memcached_SOURCE
 dnl in Makefile.am
-AC_CHECK_FUNCS(setppriv, [
-   AC_CHECK_HEADER(priv.h, [
+AC_CHECK_FUNCS([setppriv], [
+   AC_CHECK_HEADER([priv.h], [
       AC_DEFINE([HAVE_DROP_PRIVILEGES], 1,
          [Define this if you have an implementation of drop_privileges()])
       build_solaris_privs=yes
@@ -268,10 +272,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([
   Makefile
   docs/conf.py
-  libhashkit-1.0/configure.h
   libmemcached-1.0/configure.h
-  libmemcached-1.2/configure.h
-  libmemcached-2.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   ])

@@ -1,4 +1,5 @@
 /* LibMemcached
+ * Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  * Copyright (C) 2006-2009 Brian Aker
  * All rights reserved.
  *
@@ -14,8 +15,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-#include <libmemcached/memcached.h>
-#include <libmemcached/util.h>
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcachedutil-1.0/util.h>
 #include "client_options.h"
 #include "utilities.h"
 
