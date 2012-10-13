@@ -40,8 +40,8 @@
 
 #define BUILDING_LIBMEMCACHED
 
-#include <libmemcached/memcached.h>
-#include <libmemcached/is.h>
+#include <libmemcached-1.0/memcached.h>
+#include "libmemcached/is.h"
 
 #include <tests/error_conditions.h>
 

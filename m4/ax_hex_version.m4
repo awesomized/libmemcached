@@ -4,11 +4,11 @@
 #
 # SYNOPSIS
 #
-#   AX_HEX_VERSION
+#   AX_HEX_VERSION(VARIABLE_NAME, VERSION)
 #
 # DESCRIPTION
 #
-#   Generate version information in HEX format.
+#   Generate version information in HEX and STRING format.
 #
 # LICENSE
 #
@@ -19,13 +19,14 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 1
+#serial 2
  
 AC_DEFUN([AX_HEX_VERSION],[
-    AC_CACHE_CHECK([generate HEX_VERSION], [ax_cv_hex_version],[
-      ax_cv_hex_version=`echo $VERSION | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "0x%0.2d%0.3d%0.3d", $[]1, $[]2, $[]3}'`
-      ])
-    AC_SUBST([HEX_VERSION],["$ax_cv_hex_version"])
-    AC_DEFINE([HEX_VERSION],[1],[HEX representation of VERSION])
+
+    string_version_$1=`echo $2 | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "%d.%d.%d", $[]1, $[]2, $[]3}'`
+    hex_version_$1=`echo $2 | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "0x%0.2d%0.3d%0.3d", $[]1, $[]2, $[]3}'`
+
+    AC_SUBST([$1_VERSION_STRING],["$string_version_$1"])
+    AC_SUBST([$1_VERSION_HEX],["$hex_version_$1"])
     ])
 

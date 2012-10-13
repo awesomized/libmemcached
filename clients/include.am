@@ -2,28 +2,27 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-CLIENTS_LDADDS= \
-		clients/libutilities.la \
-		libmemcached/libmemcached.la
+CLIENTS_LDADDS=
+CLIENTS_LDADDS+= clients/libutilities.la
+CLIENTS_LDADDS+= libmemcached/libmemcached.la
 
 if HAVE_SASL
 CLIENTS_LDADDS+= $(LIBSASL)
 endif
 
-bin_PROGRAMS+= \
-	       clients/memcapable \
-	       clients/memcat \
-	       clients/memcp \
-	       clients/memdump \
-	       clients/memerror \
-	       clients/memexist \
-	       clients/memtouch \
-	       clients/memflush \
-	       clients/memparse \
-	       clients/memping \
-	       clients/memrm \
-	       clients/memslap \
-	       clients/memstat
+bin_PROGRAMS+= clients/memcapable 
+bin_PROGRAMS+= clients/memcat 
+bin_PROGRAMS+= clients/memcp 
+bin_PROGRAMS+= clients/memdump 
+bin_PROGRAMS+= clients/memerror 
+bin_PROGRAMS+= clients/memexist 
+bin_PROGRAMS+= clients/memtouch 
+bin_PROGRAMS+= clients/memflush 
+bin_PROGRAMS+= clients/memparse 
+bin_PROGRAMS+= clients/memping 
+bin_PROGRAMS+= clients/memrm 
+bin_PROGRAMS+= clients/memslap 
+bin_PROGRAMS+= clients/memstat
 
 if BUILD_MEMASLAP
 if HAVE_LIBEVENT
@@ -33,19 +32,18 @@ endif
 endif
 endif
 
-noinst_HEADERS+= \
-		 clients/client_options.h \
-		 clients/execute.h \
-		 clients/generator.h \
-		 clients/ms_atomic.h \
-		 clients/ms_conn.h \
-		 clients/ms_memslap.h \
-		 clients/ms_setting.h \
-		 clients/ms_sigsegv.h \
-		 clients/ms_stats.h \
-		 clients/ms_task.h \
-		 clients/ms_thread.h \
-		 clients/utilities.h
+noinst_HEADERS+= clients/client_options.h 
+noinst_HEADERS+= clients/execute.h 
+noinst_HEADERS+= clients/generator.h 
+noinst_HEADERS+= clients/ms_atomic.h 
+noinst_HEADERS+= clients/ms_conn.h 
+noinst_HEADERS+= clients/ms_memslap.h 
+noinst_HEADERS+= clients/ms_setting.h 
+noinst_HEADERS+= clients/ms_sigsegv.h 
+noinst_HEADERS+= clients/ms_stats.h 
+noinst_HEADERS+= clients/ms_task.h 
+noinst_HEADERS+= clients/ms_thread.h 
+noinst_HEADERS+= clients/utilities.h
 
 noinst_LTLIBRARIES+= clients/libutilities.la
 clients_libutilities_la_SOURCES= clients/utilities.cc
@@ -89,20 +87,21 @@ clients_memslap_CXXFLAGS = ${PTHREAD_CFLAGS}
 clients_memslap_LDADD= $(CLIENTS_LDADDS)
 clients_memslap_LDADD+= $(PTHREAD_LIBS)
 
-clients_memaslap_SOURCES= \
-			  clients/memaslap.c \
-			  clients/ms_conn.c \
-			  clients/ms_setting.c \
-			  clients/ms_sigsegv.c \
-			  clients/ms_stats.c \
-			  clients/ms_task.c \
-			  clients/ms_thread.c
+clients_memaslap_SOURCES=
+clients_memaslap_SOURCES+= clients/memaslap.c 
+clients_memaslap_SOURCES+= clients/ms_conn.c 
+clients_memaslap_SOURCES+= clients/ms_setting.c 
+clients_memaslap_SOURCES+= clients/ms_sigsegv.c 
+clients_memaslap_SOURCES+= clients/ms_stats.c 
+clients_memaslap_SOURCES+= clients/ms_task.c 
+clients_memaslap_SOURCES+= clients/ms_thread.c
+
 clients_memaslap_SOURCES+= clients/generator.cc clients/execute.cc
 clients_memaslap_LDADD= $(LTLIBEVENT) $(CLIENTS_LDADDS)
 
-clients_memcapable_SOURCES= \
-			    clients/memcapable.cc \
-			    libmemcached/byteorder.cc
+clients_memcapable_SOURCES=
+clients_memcapable_SOURCES+= clients/memcapable.cc
+clients_memcapable_SOURCES+= libmemcached/byteorder.cc
 clients_memcapable_LDADD= $(CLIENTS_LDADDS)
 
 test-start-server:

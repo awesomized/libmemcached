@@ -1,4 +1,5 @@
 /* HashKit
+ * Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  * Copyright (C) 2009-2010 Brian Aker
  * All rights reserved.
  *
@@ -7,6 +8,9 @@
  */
 
 #pragma once
+
+#define LIBHASHKIT_VERSION_STRING "@LIBHASHKIT_VERSION_STRING@"
+#define LIBHASHKIT_VERSION_HEX @LIBHASHKIT_VERSION_HEX@
 
 #ifdef __cplusplus
 extern "C" {

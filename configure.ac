@@ -35,12 +35,14 @@ MEMCACHED_LIBRARY_VERSION=11:0:0
 #                  |        +- increment if source code has changed
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
-AC_SUBST(MEMCACHED_UTIL_LIBRARY_VERSION)
-AC_SUBST(MEMCACHED_PROTOCAL_LIBRARY_VERSION)
-AC_SUBST(MEMCACHED_LIBRARY_VERSION)
+AC_SUBST([MEMCACHED_UTIL_LIBRARY_VERSION])
+AC_SUBST([MEMCACHED_PROTOCAL_LIBRARY_VERSION])
+AC_SUBST([MEMCACHED_LIBRARY_VERSION])
 
-HASHKIT_LIBRARY_VERSION=2:0:0
-AC_SUBST(HASHKIT_LIBRARY_VERSION)
+AX_HEX_VERSION([LIBMEMCACHED],[$VERSION])
+AX_HEX_VERSION([LIBHASHKIT],[1.0.0])
+
+m4_include([libhashkit/include.m4])
 
 LT_PREREQ([2.2])
 LT_INIT
@@ -270,10 +272,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([
   Makefile
   docs/conf.py
-  libhashkit-1.0/configure.h
   libmemcached-1.0/configure.h
-  libmemcached-1.2/configure.h
-  libmemcached-2.0/configure.h
   support/libmemcached.pc
   support/libmemcached.spec
   ])

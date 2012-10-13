@@ -44,7 +44,7 @@
 #include <sasl/sasl.h>
 #endif
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 
 int main(void)
 {

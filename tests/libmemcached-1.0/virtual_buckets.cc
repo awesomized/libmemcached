@@ -42,7 +42,7 @@ using namespace libtest;
 
 #include <tests/virtual_buckets.h>
 
-#include <libmemcached/memcached.h>
+#include <libmemcached-1.0/memcached.h>
 
 #include <cstring>
 
