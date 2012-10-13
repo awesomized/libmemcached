@@ -38,7 +38,7 @@
 
 #include <config.h>
 
-#include <libmemcached-1.0/struct/memcached.h>
+#include <libmemcached/common.h>
 
 #ifdef __cplusplus
 #include <cstddef>
