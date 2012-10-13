@@ -1,6 +1,6 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Libhashkit library
+ *  HashKit library
  *
  *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *
@@ -33,6 +33,8 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+
 
 #pragma once
 
