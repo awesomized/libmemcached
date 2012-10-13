@@ -2,7 +2,7 @@
  * 
  *  HashKit library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2009-2010 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,9 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+
+
 
 
 #pragma once
