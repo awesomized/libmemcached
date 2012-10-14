@@ -26,7 +26,6 @@ EXTRA_DIST=
 
 DISTCLEANFILES+= aminclude.am
 
-EXTRA_DIST+= ${srcdir}/m4/pandora_*.m4
 EXTRA_DIST+= .quickly
 EXTRA_DIST+= README.FIRST
 EXTRA_DIST+= README.win32
