@@ -604,7 +604,7 @@ make_gdb ()
 
 # $1 target to compile
 # $2 to die, or not to die, based on contents
-make_target ()
+function make_target ()
 {
   if [[ -z "$1" ]]; then
     die "Programmer error, no target provided for make"
@@ -687,13 +687,13 @@ run_autoreconf ()
   eval 'bash -n configure' || die "autoreconf generated a malformed configure"
 }
 
-run ()
+function run ()
 {
   if $VERBOSE; then
     echo "\`$@' $ARGS"
   fi
 
-  ($@ $ARGS)
+  $@ $ARGS
 } 
 
 parse_command_line_options ()
