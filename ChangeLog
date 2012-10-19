@@ -1,3 +1,6 @@
+1.0.13 Fri Oct 19 00:09:28 EDT 2012
+* Fix bug that caused version string to not be exported correctly.
+
 1.0.12 Tue Oct  9 03:30:20 EDT 2012
 * Added memcached_result_take_value().
 * Added ax_libmemcached.m4
