@@ -63,7 +63,6 @@ config/ltmain.sh
 config/missing
 config/pandora_vc_revinfo
 config/top.h
-configure
 configure.scan
 docs/*.[13]
 docs/*.html

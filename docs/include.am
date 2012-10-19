@@ -12,7 +12,11 @@ SPHINX_BUILDDIR      = ${top_builddir}/docs
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(SPHINX_BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ${top_srcdir}/docs
+ALLSPHINXOPTS   =  $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SPHINX_BUILDDIR)
+
+.PHONY: clean-docs-check
+clean-docs-check:
+	-rm -rf docs/_build docs/doctrees man/.doctrees/
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
@@ -114,9 +118,7 @@ text: docs/conf.py
 
 if HAVE_RECENT_SPHINX
 man:
-	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${top_srcdir}/man
-	@echo
-	@echo "Build finished. The manual pages are in ${top_srcdir}/man."
+	PYTHONPATH=$(SPHINX_BUILDDIR)/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${top_builddir}/man
 
 else
 

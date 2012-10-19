@@ -67,7 +67,7 @@
       ax_append_compile_flags_extra=
       AS_IF([test "$CLANG" = "yes"],[ax_append_compile_flags_extra="-Werror"])
 
-      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+      AS_IF([test "$ac_cv_vcs_checkout" = "yes"], [
           AX_CHECK_LINK_FLAG([-Werror])
           ax_append_compile_flags_extra=
           ])
@@ -83,7 +83,7 @@
       CFLAGS=
 
       AX_APPEND_COMPILE_FLAGS([-g])
-      AS_IF([test "$ax_enable_debug" = yes], [
+      AS_IF([test "$ax_enable_debug" = "yes"], [
         AX_APPEND_COMPILE_FLAGS([-ggdb],,[$ax_append_compile_flags_extra])
         AX_APPEND_COMPILE_FLAGS([-O0],,[$ax_append_compile_flags_extra])
         ],[
@@ -91,7 +91,7 @@
         ])
 
       ac_cv_warnings_as_errors=no
-      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+      AS_IF([test "$ac_cv_vcs_checkout" = "yes"], [
         AX_APPEND_COMPILE_FLAGS([-Werror],,[$ax_append_compile_flags_extra])
         AX_APPEND_COMPILE_FLAGS([-fstack-check],,[$ax_append_compile_flags_extra])
         ac_cv_warnings_as_errors=yes
@@ -149,7 +149,7 @@
       CXXFLAGS=
 
       AX_APPEND_COMPILE_FLAGS([-g],,[$ax_append_compile_flags_extra])
-      AS_IF([test "$ax_enable_debug" = yes], [
+      AS_IF([test "$ax_enable_debug" = "yes" ], [
         AX_APPEND_COMPILE_FLAGS([-O0],,[$ax_append_compile_flags_extra])
         AX_APPEND_COMPILE_FLAGS([-ggdb],,[$ax_append_compile_flags_extra])
         ],[
@@ -157,7 +157,7 @@
         AX_APPEND_COMPILE_FLAGS([-D_FORTIFY_SOURCE=2],,[$ax_append_compile_flags_extra])
         ])
 
-      AS_IF([test "$ac_cv_vcs_checkout" = yes], [
+      AS_IF([test "$ac_cv_vcs_checkout" = "yes" ], [
         AX_APPEND_COMPILE_FLAGS([-Werror],,[$ax_append_compile_flags_extra])
         AX_APPEND_COMPILE_FLAGS([-fstack-check],,[$ax_append_compile_flags_extra])
         ],[
