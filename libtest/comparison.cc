@@ -39,6 +39,16 @@
 
 namespace libtest {
 
+bool jenkins_is_caller(void)
+{
+  if (bool(getenv("JENKINS_HOME")))
+  {
+    return true;
+  }
+
+  return false;
+}
+
 bool valgrind_is_caller(void)
 {
   if (bool(getenv("TESTS_ENVIRONMENT")) and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))

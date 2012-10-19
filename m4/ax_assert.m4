@@ -4,7 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_ASSERT
+#   AX_ASSERT()
 #
 # DESCRIPTION
 #
@@ -43,18 +43,21 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 1
+#serial 2
 
 AC_DEFUN([AX_ASSERT],[
+    AC_REQUIRE([AX_DEBUG])
     AC_ARG_ENABLE([assert],
       [AS_HELP_STRING([--enable-assert],
-        [Add assert code/turns off optimizations (yes|no) @<:@default=no@:>@])],[
+        [Enable assert, this will be overridden by --enable-debug (yes|no) @<:@default=no@:>@])],[
       ax_enable_assert=yes
-      dnl enable assert()
-      AC_DEFINE(DASSERT,[1],[Define to 1 to enable assertging code.])
       ],[
       ax_enable_assert=no
-      AC_DEFINE(DASSERT,[0],[Define to 1 to enable assertging code.])
+      ])
+
+    AS_IF([ test "$ax_enable_assert" = "yes" -o "$ax_enable_debug" = "yes" ],[
+      ax_enable_assert="yes"
+      AC_DEFINE(NDEBUG,[1],[Define to 1 to enable assert'ing code.])
       ])
 
     AC_MSG_CHECKING([for assert])

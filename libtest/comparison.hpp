@@ -51,6 +51,9 @@
 namespace libtest {
 
 LIBTEST_API
+bool jenkins_is_caller(void);
+
+LIBTEST_API
 bool gdb_is_caller(void);
 
 LIBTEST_API

@@ -4,7 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_DEBUG
+#   AX_DEBUG()
 #
 # DESCRIPTION
 #
@@ -50,19 +50,12 @@ AC_DEFUN([AX_DEBUG],[
       [AS_HELP_STRING([--enable-debug],
         [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],[
       ax_enable_debug=yes
-      dnl Debugging. No optimization.
-      AM_CFLAGS="${AM_CFLAGS} ${DEBUG_CFLAGS} -DDEBUG"
-      AM_CXXFLAGS="${AM_CXXFLAGS} ${DEBUG_CXXFLAGS} -DDEBUG"
       AC_DEFINE(DEBUG, [ 1 ], [Define to 1 to enable debugging code.])
       ],[
       ax_enable_debug=no
-      dnl Optimized version. No debug
-      AM_CFLAGS="${AM_CFLAGS} ${OPTIMIZE_CFLAGS}"
-      AM_CXXFLAGS="${AM_CXXFLAGS} ${OPTIMIZE_CXXFLAGS}"
       AC_DEFINE(DEBUG, [ 0 ], [Define to 1 to enable debugging code.])
       ])
 
     AC_MSG_CHECKING([for debug])
     AC_MSG_RESULT([$ax_enable_debug])
-    AM_CONDITIONAL([DEBUG_BUILD], [test "x$ax_enable_debug" = "xyes"])
     ])

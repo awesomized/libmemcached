@@ -57,6 +57,8 @@ static test_return_t server_startup_single_TEST(void *obj)
 
 static test_return_t server_startup_multiple_TEST(void *obj)
 {
+  test_skip(true, jenkins_is_caller());
+
   server_startup_st *servers= (server_startup_st*)obj;
   for (size_t x= 0; x < 10; x++)
   {

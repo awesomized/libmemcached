@@ -1,6 +1,6 @@
 # vim:ft=automake
 
-ACLOCAL_AMFLAGS = -I m4 -I libtest/m4 --install -Wall -Werror
+ACLOCAL_AMFLAGS = -I m4 -I libtest/m4
 
 # includes append to these:
 SUFFIXES =
@@ -20,6 +20,8 @@ check_PROGRAMS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST=
+dist_man_MANS=
+MAINTAINERCLEANFILES=
 
 #includes additional rules from aminclude.am
 @INC_AMINCLUDE@
@@ -61,8 +63,6 @@ include m4/include.am
 
 TESTS += ${check_PROGRAMS}
 
-EXTRA_DIST+= ${man_MANS}
-
 merge-clean:
 	@find ./ | $(GREP) \.gcda | xargs rm -f
 	@find ./ | $(GREP) \.gcno | xargs rm -f
@@ -96,6 +96,36 @@ lcov-clean: clean
 	@find . -name '*.gcda' | xargs rm -f
 
 DISTCLEANFILES+= config/top.h
+
+clean-local: clean-libtest-check clean-docs-check
+
+maintainer-clean-local:
+	find . -type f -name '*~' -exec rm -f '{}' \;
+	-rm -f @PACKAGE@-*.rpm
+	-rm -f @PACKAGE@-*.tar.gz
+	-rm -f man/*.1
+	-rm -f man/*.3
+	-rm -f man/*.8
+	-rm -rf man/.doctrees/
+	-rm -f Makefile.in
+	-rm -f aclocal.m4
+	-rm -f build-aux/compile
+	-rm -f build-aux/config.guess
+	-rm -f build-aux/config.sub
+	-rm -f build-aux/depcomp
+	-rm -f build-aux/install-sh
+	-rm -f build-aux/ltmain.sh
+	-rm -f build-aux/missing
+	-rm -f config.in
+	-rm -f config.log
+	-rm -f config.status
+	-rm -f configure
+	-rm -f m4/libtool.m4
+	-rm -f m4/ltoptions.m4
+	-rm -f m4/ltsugar.m4
+	-rm -f m4/ltversion.m4
+	-rm -f m4/lt~obsolete.m4
+	-rmdir build-aux
 
 install-website: html-local
 	@rm -r -f /var/www/libmemcached/*

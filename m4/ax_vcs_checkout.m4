@@ -45,7 +45,7 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 2
+#serial 3
 
 AC_DEFUN([AX_VCS_CHECKOUT],[
     AC_CACHE_CHECK([for vcs checkout], [ac_cv_vcs_checkout], [
@@ -56,4 +56,6 @@ AC_DEFUN([AX_VCS_CHECKOUT],[
       ],[
       ac_cv_vcs_checkout=no
       ])
+
+    AM_CONDITIONAL([MAINTAINER_MODE], [ test "$ac_cv_vcs_checkout" = "yes" ])
     ])

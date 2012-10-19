@@ -48,6 +48,8 @@ LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
 
+AX_ASSERT
+
 AX_PLATFORM
 
 gl_VISIBILITY
@@ -262,7 +264,6 @@ AX_PTHREAD_TIMEDJOIN_NP
 
 PANDORA_ENABLE_DTRACE
 AX_ENDIAN
-AX_HEX_VERSION
 AX_ASSERT
 AX_CXX_COMPILER_VERSION
 AX_HARDEN_COMPILER_FLAGS
@@ -293,6 +294,8 @@ echo "   * Assertions enabled:        $ax_enable_assert"
 echo "   * Debug enabled:             $ax_enable_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
 echo "   * SASL support:              $ac_enable_sasl"
+echo "   * make -j:                   $enable_jobserver"
+echo "   * VCS checkout:              $ac_cv_vcs_checkout"
 echo ""
 echo "---"
 
