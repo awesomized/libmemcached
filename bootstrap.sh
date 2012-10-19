@@ -698,65 +698,45 @@ run ()
 
 parse_command_line_options ()
 {
-  local options=
+  local SHORTOPTS=':apcmt:dv'
 
-  local SHORTOPTS='p,c,a,v'
-  local LONGOPTS='target:,debug,clean,print-env,configure,autoreconf' 
-
-  if ! options=$(getopt --shell bash --longoptions $LONGOPTS --options $SHORTOPTS -n 'bootstrap' -- "$@"); then
-    die 'Bad option given'
-  fi
-
-  eval set -- "$options"
-
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -a | --autoreconf )
+  while getopts "$SHORTOPTS" opt; do
+    case $opt in
+      a) #--autoreconf
         AUTORECONF_OPTION=true
         MAKE_TARGET='autoreconf'
-        shift
         ;;
-      -p | --print-env )
+      p) #--print-env
         PRINT_SETUP_OPTION=true
-        shift
         ;;
-      -c | --configure )
+      c) # --configure
         CONFIGURE_OPTION=true
         MAKE_TARGET='configure'
-        shift
         ;;
-      --clean )
+      m) # maintainer-clean
         CLEAN_OPTION=true
         MAKE_TARGET='clean_op'
-        shift
         ;;
-      --target )
+      t) # target
         TARGET_OPTION=true
-        shift
-        TARGET_OPTION_ARG="$1"
-        MAKE_TARGET="$1"
-        shift
+        TARGET_OPTION_ARG="$OPTARG"
+        MAKE_TARGET="$OPTARG"
         ;;
-      --debug )
+      d) # debug
         DEBUG_OPTION=true
         enable_debug
-        shift
         ;;
-      -v | --verbose )
+      v) # verbose
         VERBOSE_OPTION=true
         VERBOSE=true
-        shift
         ;;
-      -- )
-        shift
-        break
-        ;;
-      -* )
-        echo "$0: error - unrecognized option $1" 1>&2
+      :)
+        echo "Option -$OPTARG requires an argument." >&2
         exit 1
         ;;
       *)
-        break
+        echo "$0: error - unrecognized option $1" 1>&2
+        exit 1
         ;;
     esac
   done
