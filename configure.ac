@@ -14,7 +14,7 @@ AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
-AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
+AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
 
 AC_PREREQ([2.61])
 
