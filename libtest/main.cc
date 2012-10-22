@@ -83,7 +83,6 @@ static void stats_print(libtest::Framework *frame)
 
 int main(int argc, char *argv[])
 {
-  Out << "BEGIN:" << argv[0];
   bool opt_massive= false;
   unsigned long int opt_repeat= 1; // Run all tests once
   bool opt_quiet= false;
@@ -364,8 +363,6 @@ int main(int argc, char *argv[])
     std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Unknown exception halted execution." << std::endl;
     exit_code= EXIT_FAILURE;
   }
-
-  Out << "END:" << argv[0];
 
   return exit_code;
 }
