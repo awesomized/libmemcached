@@ -68,7 +68,7 @@ static void initialize_curl_startup()
 }
 
 static pthread_once_t start_key_once= PTHREAD_ONCE_INIT;
-void initialize_curl(void)
+static void initialize_curl(void)
 {
   int ret;
   if ((ret= pthread_once(&start_key_once, initialize_curl_startup)) != 0)
@@ -82,20 +82,19 @@ namespace http {
 
 #define YATL_USERAGENT "YATL/1.0"
 
-extern "C" size_t
-  http_get_result_callback(void *ptr, size_t size, size_t nmemb, void *data)
-  {
-    vchar_t *_body= (vchar_t*)data;
+static size_t http_get_result_callback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+  vchar_t *_body= (vchar_t*)data;
 
-    _body->resize(size * nmemb);
-    memcpy(&_body[0], ptr, _body->size());
+  _body->resize(size * nmemb);
+  memcpy(&_body[0], ptr, _body->size());
 
-    return _body->size();
-  }
-
+  return _body->size();
+}
 
 static void init(CURL *curl, const std::string& url)
 {
+  (void)http_get_result_callback;
   (void)curl;
   (void)url;
   if (HAVE_LIBCURL)

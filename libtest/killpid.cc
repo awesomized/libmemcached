@@ -80,21 +80,34 @@ bool kill_pid(pid_t pid_arg)
     }
   }
 
-  int status= 0;
-  if (waitpid(pid_arg, &status, 0) == -1)
   {
-    switch (errno)
+    uint32_t this_wait= 0;
+    uint32_t timeout= 20; // This number should be high enough for valgrind startup (which is slow)
+    uint32_t waited;
+    uint32_t retry;
+
+    for (waited= 0, retry= 4; ; retry++, waited+= this_wait)
     {
-      // Just means that the server has already gone away
-    case ECHILD:
+      int status= 0;
+      if (waitpid(pid_arg, &status, WNOHANG) == 0)
       {
-        return true;
+        break;
       }
+      else if (errno == ECHILD)
+      {
+        // Server has already gone away
+        break;
+      }
+      else if (waited >= timeout)
+      {
+        // Timeout failed
+        kill(pid_arg, SIGKILL);
+        break;
+      }
+
+      this_wait= retry * retry / 3 + 1;
+      libtest::dream(this_wait, 0);
     }
-
-    Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(pid_arg);
-
-    return false;
   }
 
   return true;

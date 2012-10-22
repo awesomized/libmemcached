@@ -52,8 +52,6 @@ AX_ASSERT
 
 AX_PLATFORM
 
-gl_VISIBILITY
-AS_IF([ test -n "$CFLAG_VISIBILITY" ], [ CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY" ])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_CXX_HEADER_STDCXX_98
@@ -291,6 +289,7 @@ echo "   * C Flags:                   $CFLAGS"
 echo "   * C++ Compiler:              $CXX_VERSION"
 echo "   * C++ Flags:                 $CXXFLAGS"
 echo "   * CPP Flags:                 $CPPFLAGS"
+echo "   * LIB Flags:                 $LIB"
 echo "   * Assertions enabled:        $ax_enable_assert"
 echo "   * Debug enabled:             $ax_enable_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"

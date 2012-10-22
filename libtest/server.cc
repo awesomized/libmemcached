@@ -90,6 +90,22 @@ std::ostream& operator<<(std::ostream& output, const Server &arg)
   return output;  // for multiple << operators
 }
 
+#ifdef __GLIBC__
+namespace {
+
+class Buffer
+{
+public:
+  Buffer(char *b) : b_(b) {}
+   ~Buffer() { free(b_); }
+  char* buf() { return b_; }
+private:
+  char *b_;
+};
+
+}
+#endif // __GLIBC__
+
 #define MAGIC_MEMORY 123570
 
 Server::Server(const std::string& host_arg, const in_port_t port_arg,
@@ -106,6 +122,7 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
 
 Server::~Server()
 {
+  kill();
 }
 
 bool Server::check()
@@ -180,8 +197,8 @@ bool Server::start()
 
   if (port() == LIBTEST_FAIL_PORT)
   {
-    throw libtest::start(LIBYATL_DEFAULT_PARAM,
-                         hostname(), port(), "Called failure");
+    throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
+                                hostname(), port(), "Called failure");
   }
 
   if (getenv("YATL_PTRCHECK_SERVER"))
@@ -195,16 +212,17 @@ bool Server::start()
 
   if (args(_app) == false)
   {
-    throw libtest::start(LIBYATL_DEFAULT_PARAM,
-                         hostname(), port(), "Could not build command()");
+    throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
+                                hostname(), port(), "Could not build command()");
   }
 
   libtest::release_port(_port);
+
   Application::error_t ret;
   if (Application::SUCCESS !=  (ret= _app.run()))
   {
-    throw libtest::start(LIBYATL_DEFAULT_PARAM,
-                         hostname(), port(), "Application::run() %s", libtest::Application::toString(ret));
+    throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
+                                hostname(), port(), "Application::run() %s", libtest::Application::toString(ret));
     return false;
   }
   _running= _app.print();
@@ -230,9 +248,14 @@ bool Server::start()
           continue;
         }
 
+#ifdef __GLIBC__
+        Buffer buf( get_current_dir_name());
+        char *getcwd_buf= buf.buf();
+#else
         char buf[PATH_MAX];
         char *getcwd_buf= getcwd(buf, sizeof(buf));
-        throw libtest::start(LIBYATL_DEFAULT_PARAM,
+#endif // __GLIBC__
+        throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
                                     hostname(), port(),
                                     "Unable to open pidfile in %s for: %s stderr:%s",
                                     getcwd_buf ? getcwd_buf : "",
@@ -242,15 +265,20 @@ bool Server::start()
     }
   }
 
-  uint32_t this_wait= 0;
   bool pinged= false;
+  uint32_t this_wait= 0;
   {
     uint32_t timeout= 20; // This number should be high enough for valgrind startup (which is slow)
     uint32_t waited;
     uint32_t retry;
 
-    for (waited= 0, retry= 4; ; retry++, waited+= this_wait)
+    for (waited= 0, retry= 7; ; retry++, waited+= this_wait)
     {
+      if (_app.check() == false)
+      {
+        break;
+      }
+
       if ((pinged= ping()) == true)
       {
         break;
@@ -259,6 +287,8 @@ bool Server::start()
       {
         break;
       }
+
+      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " " << error();
 
       this_wait= retry * retry / 3 + 1;
       libtest::dream(this_wait, 0);
@@ -273,35 +303,35 @@ bool Server::start()
       _app.slurp();
       if (kill_file(pid_file()) == false)
       {
-        throw libtest::start(LIBYATL_DEFAULT_PARAM,
-                             hostname(), port(),
-                             "Failed to kill off server, waited: %u after startup occurred, when pinging failed: %.*s stderr:%.*s",
-                             this_wait,
-                             int(_running.size()), _running.c_str(),
-                             int(_app.stderr_result_length()), _app.stderr_c_str());
+        throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
+                                    hostname(), port(),
+                                    "Failed to kill off server, waited: %u after startup occurred, when pinging failed: %.*s stderr:%.*s",
+                                    this_wait,
+                                    int(_running.size()), _running.c_str(),
+                                    int(_app.stderr_result_length()), _app.stderr_c_str());
       }
       else
       {
-        throw libtest::start(LIBYATL_DEFAULT_PARAM, 
-                             hostname(), port(),
-                             "Failed native ping(), pid: %d was alive: %s waited: %u server started, having pid_file. exec: %.*s stderr:%.*s",
-                             int(_app.pid()),
-                             _app.check() ? "true" : "false",
-                             this_wait,
-                             int(_running.size()), _running.c_str(),
-                             int(_app.stderr_result_length()), _app.stderr_c_str());
+        throw libtest::disconnected(LIBYATL_DEFAULT_PARAM, 
+                                    hostname(), port(),
+                                    "Failed native ping(), pid: %d was alive: %s waited: %u server started, having pid_file. exec: %.*s stderr:%.*s",
+                                    int(_app.pid()),
+                                    _app.check() ? "true" : "false",
+                                    this_wait,
+                                    int(_running.size()), _running.c_str(),
+                                    int(_app.stderr_result_length()), _app.stderr_c_str());
       }
     }
     else
     {
-      throw libtest::start(LIBYATL_DEFAULT_PARAM,
-                           hostname(), port(),
-                           "Failed native ping(), pid: %d is alive: %s waited: %u server started. exec: %.*s stderr:%.*s",
-                           int(_app.pid()),
-                           _app.check() ? "true" : "false",
-                           this_wait,
-                           int(_running.size()), _running.c_str(),
-                           int(_app.stderr_result_length()), _app.stderr_c_str());
+      throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
+                                  hostname(), port(),
+                                  "Failed native ping(), pid: %d is alive: %s waited: %u server started. exec: %.*s stderr:%.*s",
+                                  int(_app.pid()),
+                                  _app.check() ? "true" : "false",
+                                  this_wait,
+                                  int(_running.size()), _running.c_str(),
+                                  int(_app.stderr_result_length()), _app.stderr_c_str());
     }
     _running.clear();
 
@@ -327,9 +357,9 @@ void Server::add_option(const std::string& arg)
   _options.push_back(std::make_pair(arg, std::string()));
 }
 
-void Server::add_option(const std::string& name_, const std::string& value)
+void Server::add_option(const std::string& name_, const std::string& value_)
 {
-  _options.push_back(std::make_pair(name_, value));
+  _options.push_back(std::make_pair(name_, value_));
 }
 
 bool Server::set_socket_file()

@@ -64,16 +64,28 @@
       AC_REQUIRE([AX_DEBUG])
       AC_REQUIRE([AX_CXX_COMPILER_VERSION])
 
+      dnl If we are inside of VCS we append -Werror, otherwise we just use it to test other flags
+      AX_HARDEN_LIB=
       ax_append_compile_link_flags_extra=
-      AS_IF([test "$ac_cv_vcs_checkout" = "yes"], [
-        AX_CHECK_LINK_FLAG([-Werror])
+      AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],[
+        AX_CHECK_LINK_FLAG([-Werror],[
+          AX_HARDEN_LIB="-Werror $AX_HARDEN_LIB"
+          ])
         ],[
         AX_CHECK_LINK_FLAG([-Werror],[
-          ax_append_compile_link_flags_extra=$ax_cv_check_ldflags___Werror
+          ax_append_compile_link_flags_extra='-Werror'
           ])
         ])
-      AX_CHECK_LINK_FLAG([-z relro -z now],,[$ax_append_compile_link_flags_extra])
-      AX_CHECK_LINK_FLAG([-pie],,[$ax_append_compile_link_flags_extra])
+
+      AX_CHECK_LINK_FLAG([-z relro -z now],[
+        AX_HARDEN_LIB="-z relro -z now $AX_HARDEN_LIB"
+      ],,[$ax_append_compile_link_flags_extra])
+
+      AX_CHECK_LINK_FLAG([-pie],[
+          AX_HARDEN_LIB="-pie $AX_HARDEN_LIB"
+          ],,[$ax_append_compile_link_flags_extra])
+
+      LIB="$LIB $AX_HARDEN_LIB"
       ])
 
   AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS], [
@@ -212,6 +224,9 @@
 
   AC_DEFUN([AX_HARDEN_COMPILER_FLAGS], [
       AC_REQUIRE([AX_HARDEN_CXX_COMPILER_FLAGS])
+      AC_REQUIRE([AX_CC_OTHER_FLAGS])
+      gl_VISIBILITY
+      AS_IF([ test -n "$CFLAG_VISIBILITY" ], [ CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY" ])
       ])
 
   AC_DEFUN([AX_CC_OTHER_FLAGS], [

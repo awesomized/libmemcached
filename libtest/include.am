@@ -5,7 +5,7 @@
 # 
 
 LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
-VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
 VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
@@ -34,12 +34,7 @@ drd:
 EXTRA_DIST+= libtest/run.gdb
 EXTRA_DIST+= libtest/version.h
 
-CLEANFILES+= tmp_chroot/etc/*
-CLEANFILES+= tmp_chroot/var/drizzle/*
-CLEANFILES+= tmp_chroot/var/log/*
-CLEANFILES+= tmp_chroot/var/run/*
-CLEANFILES+= tmp_chroot/var/tmp/*
-CLEANFILES+= tmp_chroot/*.xml
+CLEANFILES+= tmp_chroot
 
 BUILT_SOURCES+= libtest/version.h
 
@@ -47,9 +42,9 @@ BUILT_SOURCES+= libtest/version.h
 clean-libtest-check:
 	-rm -rf tmp_chroot
 
-
 noinst_HEADERS+= libtest/formatter.hpp
 noinst_HEADERS+= libtest/timer.hpp
+noinst_HEADERS+= libtest/alarm.h
 noinst_HEADERS+= libtest/binaries.h 
 noinst_HEADERS+= libtest/cpu.hpp 
 noinst_HEADERS+= libtest/blobslap_worker.h 
@@ -101,19 +96,20 @@ libtest_libtest_la_DEPENDENCIES=
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_SOURCES=
 
+libtest_libtest_la_SOURCES+= libtest/alarm.cc 
 libtest_libtest_la_SOURCES+= libtest/binaries.cc 
-libtest_libtest_la_SOURCES+= libtest/dns.cc 
 libtest_libtest_la_SOURCES+= libtest/cmdline.cc 
-libtest_libtest_la_SOURCES+= libtest/comparison.cc 
 libtest_libtest_la_SOURCES+= libtest/collection.cc 
+libtest_libtest_la_SOURCES+= libtest/comparison.cc 
 libtest_libtest_la_SOURCES+= libtest/core.cc 
 libtest_libtest_la_SOURCES+= libtest/cpu.cc 
+libtest_libtest_la_SOURCES+= libtest/dns.cc 
 libtest_libtest_la_SOURCES+= libtest/dream.cc 
+libtest_libtest_la_SOURCES+= libtest/drizzled.cc 
 libtest_libtest_la_SOURCES+= libtest/fatal.cc 
 libtest_libtest_la_SOURCES+= libtest/formatter.cc 
 libtest_libtest_la_SOURCES+= libtest/framework.cc 
 libtest_libtest_la_SOURCES+= libtest/has.cc 
-libtest_libtest_la_SOURCES+= libtest/drizzled.cc 
 libtest_libtest_la_SOURCES+= libtest/http.cc 
 libtest_libtest_la_SOURCES+= libtest/is_local.cc 
 libtest_libtest_la_SOURCES+= libtest/killpid.cc 
@@ -164,7 +160,7 @@ libtest_unittest_DEPENDENCIES+= libmemcached/libmemcached.la
 libtest_unittest_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 else
 if HAVE_LIBMEMCACHED
-libtest_libtest_la_LIBADD+= $(libmemcached_LIBS)
+libtest_libtest_la_LIBADD+= $(LIBMEMCACHED_UTIL_LDFLAGS)
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 else
 libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
@@ -254,6 +250,11 @@ libtest_wait_SOURCES=
 libtest_wait_SOURCES+= libtest/wait.cc
 libtest_wait_SOURCES+= libtest/dream.cc
 noinst_PROGRAMS+= libtest/wait
+
+libtest_core_count_SOURCES=
+libtest_core_count_SOURCES+= libtest/cpu.cc
+libtest_core_count_SOURCES+= libtest/core_count.cc
+noinst_PROGRAMS+= libtest/core-count
 
 libtest_abort_SOURCES= libtest/abort.cc
 noinst_PROGRAMS+= libtest/abort

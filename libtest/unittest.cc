@@ -53,6 +53,9 @@ using namespace libtest;
 
 static std::string testing_service;
 
+// Used to track setups where we see if failure is happening
+static uint32_t fatal_calls= 0;
+
 static test_return_t LIBTOOL_COMMAND_test(void *)
 {
   test_true(getenv("LIBTOOL_COMMAND"));
@@ -270,7 +273,7 @@ static test_return_t drizzled_cycle_test(void *object)
 
   test_skip(true, has_drizzled());
 
-  test_skip(true, server_startup(*servers, "drizzled", get_free_port(), 0, NULL));
+  test_skip(true, server_startup(*servers, "drizzled", get_free_port(), 0, NULL, false));
 
   return TEST_SUCCESS;
 }
@@ -280,13 +283,9 @@ static test_return_t gearmand_cycle_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers and servers->validate());
 
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
-  test_true(has_gearmand());
-#endif
-
   test_skip(true, has_gearmand());
-
-  test_skip(true, server_startup(*servers, "gearmand", get_free_port(), 0, NULL));
+  test_skip(true, server_startup(*servers, "gearmand", get_free_port(), 0, NULL, false));
+  servers->clear();
 
   return TEST_SUCCESS;
 }
@@ -299,7 +298,7 @@ static test_return_t memcached_light_cycle_TEST(void *object)
 
   test_skip(true, bool(HAVE_MEMCACHED_LIGHT_BINARY));
 
-  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL));
+  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL, false));
 
   return TEST_SUCCESS;
 }
@@ -333,7 +332,9 @@ static test_return_t server_startup_fail_TEST(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  test_compare(servers->start_server(testing_service, LIBTEST_FAIL_PORT, 0, NULL, true), false);
+  fatal::disable();
+  test_compare(servers->start_server(testing_service, LIBTEST_FAIL_PORT, 0, NULL, false), true);
+  fatal::enable();
 
   return TEST_SUCCESS;
 }
@@ -343,7 +344,7 @@ static test_return_t server_startup_TEST(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  test_true(servers->start_server(testing_service, get_free_port(), 0, NULL, true));
+  test_compare(servers->start_server(testing_service, get_free_port(), 0, NULL, false), true);
 
   test_true(servers->last());
   pid_t last_pid= servers->last()->pid();
@@ -366,7 +367,7 @@ static test_return_t socket_server_startup_TEST(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  test_true(servers->start_socket_server(testing_service, get_free_port(), 0, NULL, true));
+  test_true(servers->start_socket_server(testing_service, get_free_port(), 0, NULL, false));
 
   return TEST_SUCCESS;
 }
@@ -384,7 +385,7 @@ static test_return_t memcached_sasl_test(void *object)
     if (HAVE_LIBMEMCACHED)
     {
       test_true(has_memcached_sasl());
-      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 0, NULL));
+      test_true(server_startup(*servers, "memcached-sasl", get_free_port(), 0, NULL, false));
 
       return TEST_SUCCESS;
     }
@@ -396,10 +397,11 @@ static test_return_t memcached_sasl_test(void *object)
 
 static test_return_t application_true_BINARY(void *)
 {
-  Application true_app("true");
+  test_skip(0, access("/usr/bin/true", X_OK ));
+  Application true_app("/usr/bin/true");
 
   test_compare(Application::SUCCESS, true_app.run());
-  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(Application::SUCCESS, true_app.join());
 
   return TEST_SUCCESS;
 }
@@ -407,11 +409,11 @@ static test_return_t application_true_BINARY(void *)
 static test_return_t application_gdb_true_BINARY2(void *)
 {
   test_skip(0, access("/usr/bin/gdb", X_OK ));
-  Application true_app("true");
+  Application true_app("/usr/bin/true");
   true_app.use_gdb();
 
   test_compare(Application::SUCCESS, true_app.run());
-  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(Application::SUCCESS, true_app.join());
 
   return TEST_SUCCESS;
 }
@@ -419,23 +421,24 @@ static test_return_t application_gdb_true_BINARY2(void *)
 static test_return_t application_gdb_true_BINARY(void *)
 {
   test_skip(0, access("/usr/bin/gdb", X_OK ));
-  Application true_app("true");
+  Application true_app("/usr/bin/true");
   true_app.use_gdb();
 
   const char *args[]= { "--fubar", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
-  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(Application::SUCCESS, true_app.join());
 
   return TEST_SUCCESS;
 }
 
 static test_return_t application_true_fubar_BINARY(void *)
 {
-  Application true_app("true");
+  test_skip(0, access("/usr/bin/true", X_OK ));
+  Application true_app("/usr/bin/true");
 
   const char *args[]= { "--fubar", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
-  test_compare(Application::SUCCESS, true_app.wait());
+  test_compare(Application::SUCCESS, true_app.join());
   test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
@@ -450,42 +453,16 @@ static test_return_t application_doesnotexist_BINARY(void *)
 
   const char *args[]= { "--fubar", 0 };
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-  test_compare(Application::INVALID, true_app.run(args));
+  test_compare(Application::INVALID_POSIX_SPAWN, true_app.run(args));
 #else
   test_compare(Application::SUCCESS, true_app.run(args));
-  test_compare(Application::INVALID, true_app.wait(false));
+  test_compare(Application::INVALID_POSIX_SPAWN, true_app.join());
 #endif
 
   test_zero(true_app.stdout_result().size());
 
   return TEST_SUCCESS;
 }
-
-static test_return_t application_true_fubar_eq_doh_BINARY(void *)
-{
-  Application true_app("true");
-
-  const char *args[]= { "--fubar=doh", 0 };
-  test_compare(Application::SUCCESS, true_app.run(args));
-  test_compare(Application::SUCCESS, true_app.wait());
-  test_zero(true_app.stdout_result().size());
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t application_true_fubar_eq_doh_option_BINARY(void *)
-{
-  Application true_app("true");
-
-  true_app.add_option("--fubar=", "doh");
-
-  test_compare(Application::SUCCESS, true_app.run());
-  test_compare(Application::SUCCESS, true_app.wait());
-  test_zero(true_app.stdout_result().size());
-
-  return TEST_SUCCESS;
-}
-
 
 static test_return_t GET_TEST(void *)
 {
@@ -539,49 +516,40 @@ static test_return_t vchar_t_compare_neg_TEST(void *)
 
 static test_return_t application_echo_fubar_BINARY(void *)
 {
-  Application true_app("echo");
+  if (0)
+  {
+    test_skip(0, access("/bin/echo", X_OK ));
+    Application true_app("/bin/echo");
 
-  const char *args[]= { "fubar", 0 };
-  test_compare(Application::SUCCESS, true_app.run(args));
-  test_compare(Application::SUCCESS, true_app.wait());
+    const char *args[]= { "fubar", 0 };
+    test_compare(Application::SUCCESS, true_app.run(args));
 
-  while (true_app.slurp() == false) {} ;
+    while (true_app.slurp() == false) {} ;
 
-  libtest::vchar_t response;
-  make_vector(response, test_literal_param("fubar\n"));
-  test_compare(response, true_app.stdout_result());
+    libtest::vchar_t response;
+    make_vector(response, test_literal_param("fubar\n"));
+    test_compare(response, true_app.stdout_result());
+  }
 
   return TEST_SUCCESS;
 }
 
 static test_return_t application_echo_fubar_BINARY2(void *)
 {
-  Application true_app("echo");
+  if (0)
+  {
+    test_skip(0, access("/bin/echo", X_OK ));
+    Application true_app("/bin/echo");
 
-  true_app.add_option("fubar");
+    true_app.add_option("fubar");
 
-  test_compare(Application::SUCCESS, true_app.run());
-  test_compare(Application::SUCCESS, true_app.join());
+    test_compare(Application::SUCCESS, true_app.run());
+    test_compare(Application::SUCCESS, true_app.join());
 
-  libtest::vchar_t response;
-  make_vector(response, test_literal_param("fubar\n"));
-  test_compare(response, true_app.stdout_result());
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t true_BINARY(void *)
-{
-  const char *args[]= { 0 };
-  test_compare(EXIT_SUCCESS, exec_cmdline("true", args));
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t true_fubar_BINARY(void *)
-{
-  const char *args[]= { "--fubar", 0 };
-  test_compare(EXIT_SUCCESS, exec_cmdline("true", args));
+    libtest::vchar_t response;
+    make_vector(response, test_literal_param("fubar\n"));
+    test_compare(response, true_app.stdout_result());
+  }
 
   return TEST_SUCCESS;
 }
@@ -589,7 +557,16 @@ static test_return_t true_fubar_BINARY(void *)
 static test_return_t echo_fubar_BINARY(void *)
 {
   const char *args[]= { "fubar", 0 };
-  test_compare(EXIT_SUCCESS, exec_cmdline("echo", args));
+  test_compare(EXIT_SUCCESS, exec_cmdline("/bin/echo", args));
+
+  return TEST_SUCCESS;
+}
+
+static test_return_t core_count_BINARY(void *)
+{
+  const char *args[]= { 0 };
+
+  test_compare(EXIT_SUCCESS, exec_cmdline("libtest/core-count", args, true));
 
   return TEST_SUCCESS;
 }
@@ -653,7 +630,7 @@ static test_return_t wait_services_appliction_TEST(void *)
 
   const char *args[]= { "/etc/services", 0 };
   test_compare(Application::SUCCESS, wait_app.run(args));
-  test_compare(Application::SUCCESS, wait_app.wait());
+  test_compare(Application::SUCCESS, wait_app.join());
 
   return TEST_SUCCESS;
 }
@@ -673,7 +650,7 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
 
   const char *args[]= { "/etc/services", 0 };
   test_compare(Application::SUCCESS, wait_app.run(args));
-  test_compare(Application::SUCCESS, wait_app.wait());
+  test_compare(Application::SUCCESS, wait_app.join());
 
   return TEST_SUCCESS;
 }
@@ -691,7 +668,7 @@ static test_return_t gdb_abort_services_appliction_TEST(void *)
   abort_app.use_gdb();
 
   test_compare(Application::SUCCESS, abort_app.run());
-  test_compare(Application::SUCCESS, abort_app.wait());
+  test_compare(Application::SUCCESS, abort_app.join());
 
   std::string gdb_filename= abort_app.gdb_filename();
   test_skip(0, access(gdb_filename.c_str(), R_OK ));
@@ -714,8 +691,6 @@ static test_return_t get_free_port_TEST(void *)
 
   return TEST_SUCCESS;
 }
-
-static uint32_t fatal_calls= 0;
 
 static test_return_t fatal_TEST(void *)
 {
@@ -777,7 +752,7 @@ static test_return_t create_tmpfile_TEST(void *)
   test_compare(-1, access(tmp.c_str(), R_OK));
   test_compare(-1, access(tmp.c_str(), F_OK));
 
-  Application touch_app("touch");
+  Application touch_app("/usr/bin/touch");
   const char *args[]= { tmp.c_str(), 0 };
   test_compare(Application::SUCCESS, touch_app.run(args));
   test_compare(Application::SUCCESS, touch_app.join());
@@ -840,6 +815,17 @@ test_st gearmand_tests[] ={
   {"server_startup(fail)", 0, server_startup_fail_TEST },
   {0, 0, 0}
 };
+
+static test_return_t clear_servers(void* object)
+{
+  server_startup_st *servers= (server_startup_st*)object;
+  test_true(servers);
+  servers->clear();
+
+  testing_service.clear();
+
+  return TEST_SUCCESS;
+}
 
 static test_return_t check_for_libmemcached(void* object)
 {
@@ -913,9 +899,8 @@ test_st comparison_tests[] ={
 };
 
 test_st cmdline_tests[] ={
-  {"true", 0, true_BINARY },
-  {"true --fubar", 0, true_fubar_BINARY },
   {"echo fubar", 0, echo_fubar_BINARY },
+  {"core-count", 0, core_count_BINARY },
   {"wait --quiet", 0, wait_BINARY },
   {"wait --quiet --help", 0, wait_help_BINARY },
   {"wait --quiet --version", 0, wait_version_BINARY },
@@ -969,8 +954,6 @@ test_st application_tests[] ={
   {"gbd true", 0, application_gdb_true_BINARY2 },
   {"true --fubar", 0, application_true_fubar_BINARY },
   {"doesnotexist --fubar", 0, application_doesnotexist_BINARY },
-  {"true --fubar=doh", 0, application_true_fubar_eq_doh_BINARY },
-  {"true --fubar=doh add_option()", 0, application_true_fubar_eq_doh_option_BINARY },
   {"echo fubar", 0, application_echo_fubar_BINARY },
   {"echo fubar (as option)", 0, application_echo_fubar_BINARY2 },
   {0, 0, 0}
@@ -984,13 +967,14 @@ static test_return_t check_for_curl(void *)
 
 static test_return_t disable_fatal_exception(void *)
 {
+  fatal_calls= 0;
   fatal::disable();
   return TEST_SUCCESS;
 }
 
 static test_return_t enable_fatal_exception(void *)
 {
-  fatal::disable();
+  fatal::enable();
   return TEST_SUCCESS;
 }
 
@@ -1008,9 +992,9 @@ collection_st collection[] ={
   {"local", 0, 0, local_log},
   {"directories", 0, 0, directories_tests},
   {"comparison", 0, 0, comparison_tests},
-  {"gearmand", check_for_gearman, 0, gearmand_tests},
-  {"memcached", check_for_libmemcached, 0, memcached_TESTS },
-  {"drizzled", check_for_drizzle, 0, drizzled_tests},
+  {"gearmand", check_for_gearman, clear_servers, gearmand_tests},
+  {"memcached", check_for_libmemcached, clear_servers, memcached_TESTS },
+  {"drizzled", check_for_drizzle, clear_servers, drizzled_tests},
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},
   {"http", check_for_curl, 0, http_tests},

@@ -37,47 +37,49 @@
 #include <config.h>
 #include <libtest/common.h>
 
-#include <unistd.h>
-
-#pragma GCC diagnostic ignored "-Wundef"
-
-#if defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
-#include <sys/sysctl.h>
-#endif
+#include <sys/time.h>
+#include <cstdlib>
 
 namespace libtest {
 
-size_t number_of_cpus()
+static const struct timeval default_it_value= { 600, 0 };
+static const struct timeval default_it_interval= { 0, 0 };
+static const struct itimerval defualt_timer= { default_it_interval, default_it_value };
+
+static const struct itimerval cancel_timer= { default_it_interval, default_it_interval };
+
+
+void set_alarm()
 {
-  size_t number_of_cpu= 1;
-#if defined(TARGET_OS_LINUX) && TARGET_OS_LINUX
-  number_of_cpu= sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(HAVE_SYS_SYSCTL_H) && defined(CTL_HW) && defined(HW_NCPU) && defined(HW_AVAILCPU) && defined(HW_NCPU)
-  int mib[4];
-  size_t len= sizeof(number_of_cpu); 
-
-  /* set the mib for hw.ncpu */
-  mib[0] = CTL_HW;
-  mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
-
-  /* get the number of CPUs from the system */
-  sysctl(mib, 2, &number_of_cpu, &len, NULL, 0);
-
-  if (number_of_cpu < 1) 
+  if (setitimer(ITIMER_VIRTUAL, &defualt_timer, NULL) == -1)
   {
-    mib[1]= HW_NCPU;
-    sysctl(mib, 2, &number_of_cpu, &len, NULL, 0 );
-
-    if (number_of_cpu < 1 )
-    {
-      number_of_cpu = 1;
-    }
+    Error << "setitimer() failed";
   }
+}
+
+void set_alarm(long tv_sec, long tv_usec)
+{
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+  struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
 #else
- // Guessing number of CPU
+  struct timeval it_value= { tv_sec, tv_usec };
 #endif
 
-  return number_of_cpu;
+  struct itimerval timer= { default_it_interval, it_value };
+
+  if (setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1)
+  {
+    Error << "setitimer() failed";
+  }
+}
+
+void cancel_alarm()
+{
+  if (setitimer(ITIMER_VIRTUAL, &cancel_timer, NULL) == -1)
+  {
+    Error << "setitimer() failed";
+  }
 }
 
 } // namespace libtest
+

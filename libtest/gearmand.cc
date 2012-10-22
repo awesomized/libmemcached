@@ -76,10 +76,10 @@ public:
     gearman_client_st *client= gearman_client_create(NULL);
     if (client == NULL)
     {
-      Error << "Could not allocate memory for gearman_client_create()";
+      error("Could not allocate memory for gearman_client_create()");
       return false;
     }
-    gearman_client_set_timeout(client, 3000);
+    gearman_client_set_timeout(client, 4000);
 
     if (gearman_success(gearman_client_add_server(client, hostname().c_str(), port())))
     {
@@ -93,12 +93,12 @@ public:
       
       if (out_of_ban_killed() == false)
       {
-        Error << hostname().c_str() << ":" << port() << " " << gearman_client_error(client);
+        error(gearman_client_error(client));
       }
     }
     else
     {
-      Error << "gearman_client_add_server() " << gearman_client_error(client);
+      error(gearman_client_error(client));
     }
 
     gearman_client_free(client);

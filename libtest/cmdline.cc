@@ -59,26 +59,9 @@ using namespace libtest;
 static char **environ= NULL;
 #endif
 
-extern "C" {
-  static int exited_successfully(int status)
-  {
-    if (status == 0)
-    {
-      return EXIT_SUCCESS;
-    }
-
-    if (WIFEXITED(status) == true)
-    {
-      return WEXITSTATUS(status);
-    }
-    else if (WIFSIGNALED(status) == true)
-    {
-      return WTERMSIG(status);
-    }
-
-    return EXIT_FAILURE;
-  }
-}
+#ifndef FD_CLOEXEC
+# define FD_CLOEXEC 0
+#endif
 
 namespace {
 
@@ -115,14 +98,16 @@ namespace {
     switch (arg)
     {
     case 127:
-      return Application::INVALID;
+      return Application::INVALID_POSIX_SPAWN;
 
     case 0:
       return Application::SUCCESS;
 
-    default:
     case 1:
       return Application::FAILURE;
+
+    default:
+      return Application::UNKNOWN;
     }
   }
 }
@@ -140,7 +125,9 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
   stdin_fd(STDIN_FILENO),
   stdout_fd(STDOUT_FILENO),
   stderr_fd(STDERR_FILENO),
-  _pid(-1)
+  _pid(-1),
+  _status(0),
+  _app_exit_state(UNINITIALIZED)
   { 
     if (_use_libtool)
     {
@@ -195,9 +182,25 @@ Application::error_t Application::run(const char *args[])
   posix_spawnattr_t spawnattr;
   posix_spawnattr_init(&spawnattr);
 
-  sigset_t set;
-  sigemptyset(&set);
-  fatal_assert(posix_spawnattr_setsigmask(&spawnattr, &set) == 0);
+  short flags= 0;
+
+  // Child should not block signals
+  flags |= POSIX_SPAWN_SETSIGMASK;
+
+  sigset_t mask;
+  sigemptyset(&mask);
+
+  fatal_assert(posix_spawnattr_setsigmask(&spawnattr, &mask) == 0);
+
+#if defined(POSIX_SPAWN_USEVFORK) || defined(__linux__)
+  // Use USEVFORK on linux
+  flags |= POSIX_SPAWN_USEVFORK;
+#endif
+
+  flags |= POSIX_SPAWN_SETPGROUP;
+  fatal_assert(posix_spawnattr_setpgroup(&spawnattr, 0) == 0);
+
+  fatal_assert(posix_spawnattr_setflags(&spawnattr, flags) == 0);
   
   create_argv(args);
 
@@ -254,15 +257,7 @@ Application::error_t Application::run(const char *args[])
   }
   else
   {
-
-    if (_use_libtool)
-    {
-      spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, &spawnattr, &built_argv[0], NULL);
-    }
-    else
-    {
-      spawn_ret= posix_spawnp(&_pid, built_argv[0], &file_actions, &spawnattr, &built_argv[0], NULL);
-    }
+    spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, &spawnattr, &built_argv[0], NULL);
   }
 
   posix_spawn_file_actions_destroy(&file_actions);
@@ -279,8 +274,24 @@ Application::error_t Application::run(const char *args[])
       Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
     }
     _pid= -1;
-    return Application::INVALID;
+    return Application::INVALID_POSIX_SPAWN;
   }
+
+  assert(_pid != -1);
+  if (_pid == -1)
+  {
+    return Application::INVALID_POSIX_SPAWN;
+  }
+
+#if 0
+  app_thread_st* _app_thread= new app_thread_st(_pid, _status, built_argv[0], _app_exit_state);
+  int error;
+  if ((error= pthread_create(&_thread, NULL, &app_thread, _app_thread)) != 0)
+  {
+    Error << "pthread_create() died during pthread_create(" << strerror(error) << ")";
+    return Application::FAILURE;
+  }
+#endif
 
   return Application::SUCCESS;
 }
@@ -302,29 +313,9 @@ void Application::murder()
     int count= 5;
     while ((count--) > 0 and check())
     {
-      int kill_ret= kill(_pid, SIGTERM);
-      if (kill_ret == 0)
+      if (kill(_pid, SIGTERM) == 0)
       {
-        int status= 0;
-        pid_t waitpid_ret;
-        if ((waitpid_ret= waitpid(_pid, &status, WNOHANG)) == -1)
-        {
-          switch (errno)
-          {
-          case ECHILD:
-          case EINTR:
-            break;
-
-          default:
-            Error << "waitpid() failed after kill with error of " << strerror(errno);
-            break;
-          }
-        }
-
-        if (waitpid_ret == 0)
-        {
-          libtest::dream(1, 0);
-        }
+        join();
       }
       else
       {
@@ -338,6 +329,7 @@ void Application::murder()
     // If for whatever reason it lives, kill it hard
     if (check())
     {
+      Error << "using SIGKILL, things will likely go poorly from this point";
       (void)kill(_pid, SIGKILL);
     }
   }
@@ -409,119 +401,68 @@ bool Application::slurp()
   return data_was_read;
 }
 
-Application::error_t Application::wait(bool nohang)
-{
-  if (_pid == -1)
-  {
-    return Application::INVALID;
-  }
-
-  slurp();
-
-  error_t exit_code= FAILURE;
-  {
-    int status= 0;
-    pid_t waited_pid;
-    if ((waited_pid= waitpid(_pid, &status, nohang ? WNOHANG : 0)) == -1)
-    {
-      switch (errno)
-      {
-      case ECHILD:
-        exit_code= Application::SUCCESS;
-        break;
-
-      case EINTR:
-        break;
-
-      default:
-        Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
-        break;
-      }
-    }
-    else if (waited_pid == 0)
-    {
-      exit_code= Application::SUCCESS;
-    }
-    else
-    {
-      if (waited_pid != _pid)
-      {
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Pid mismatch, %d != %d", int(waited_pid), int(_pid));
-      }
-      exit_code= int_to_error_t(exited_successfully(status));
-    }
-  }
-
-  slurp();
-
-#if 0
-  if (exit_code == Application::INVALID)
-  {
-    Error << print_argv(built_argv, _argc);
-  }
-#endif
-
-  return exit_code;
-}
-
 Application::error_t Application::join()
 {
-  if (_pid == -1)
+  pid_t waited_pid= waitpid(_pid, &_status, 0);
+
+  if (waited_pid == _pid and WIFEXITED(_status) == false)
   {
-    return Application::INVALID;
-  }
-
-  slurp();
-
-  error_t exit_code= FAILURE;
-  {
-    int status= 0;
-    pid_t waited_pid;
-    do {
-      waited_pid= waitpid(_pid, &status, 0);
-    } while (waited_pid == -1 and (errno == EINTR or errno == EAGAIN));
-
-    if (waited_pid == -1)
+    /*
+      What we are looking for here is how the exit status happened.
+      - 127 means that posix_spawn() itself had an error.
+      - If WEXITSTATUS is positive we need to see if it is a signal that we sent to kill the process. If not something bad happened in the process itself. 
+      - Finally something has happened that we don't currently understand.
+    */
+    if (WEXITSTATUS(_status) == 127)
     {
-      switch (errno)
-      {
-      case ECHILD:
-        exit_code= Application::SUCCESS;
-        break;
-
-      case EINTR:
-        break;
-
-      default:
-        Error << "Error occured while waitpid(" << strerror(errno) << ") on pid " << int(_pid);
-        break;
-      }
+      _app_exit_state= Application::INVALID_POSIX_SPAWN;
+      std::string error_string("posix_spawn() failed pid:");
+      error_string+= _pid;
+      error_string+= " name:";
+      error_string+= built_argv[0];
+      throw std::logic_error(error_string);
     }
-    else if (waited_pid == 0)
+    else if WIFSIGNALED(_status)
     {
-      exit_code= Application::SUCCESS;
+      // memcached will die with SIGHUP
+      if (WTERMSIG(_status) != SIGTERM and WTERMSIG(_status) != SIGHUP)
+      {
+        _app_exit_state= Application::INVALID_POSIX_SPAWN;
+        std::string error_string(built_argv[0]);
+        error_string+= " was killed by signal ";
+        error_string+= strsignal(WTERMSIG(_status));
+        throw std::runtime_error(error_string);
+      }
+
+      _app_exit_state= Application::SIGTERM_KILLED;
+      Error << "waitpid() application terminated at request"
+        << " pid:" << _pid 
+        << " name:" << built_argv[0];
     }
     else
     {
-      if (waited_pid != _pid)
-      {
-        throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Pid mismatch, %d != %d", int(waited_pid), int(_pid));
-      }
-
-      exit_code= int_to_error_t(exited_successfully(status));
+      _app_exit_state= Application::UNKNOWN;
+      Error << "Unknown logic state at exit:" << WEXITSTATUS(_status) 
+        << " pid:" << _pid
+        << " name:" << built_argv[0];
     }
   }
-
-  slurp();
-
-#if 0
-  if (exit_code == Application::INVALID)
+  else if (waited_pid == _pid and WIFEXITED(_status))
   {
-    Error << print_argv(built_argv, _argc);
+    _app_exit_state= int_to_error_t(WEXITSTATUS(_status));
   }
-#endif
+  else if (waited_pid == -1)
+  {
+    _app_exit_state= Application::UNKNOWN;
+    Error << "waitpid() returned errno:" << strerror(errno);
+  }
+  else
+  {
+    _app_exit_state= Application::UNKNOWN;
+    throw std::logic_error("waitpid() returned an unknown value");
+  }
 
-  return exit_code;
+  return _app_exit_state;
 }
 
 void Application::add_long_option(const std::string& name, const std::string& option_value)
@@ -604,14 +545,24 @@ bool Application::Pipe::read(libtest::vchar_t& arg)
 
 void Application::Pipe::nonblock()
 {
-  int ret;
-  if ((ret= fcntl(_pipe_fd[READ], F_GETFL, 0)) == -1)
+  int flags;
+  {
+    flags= fcntl(_pipe_fd[READ], F_GETFL, 0);
+  } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
+
+  if (flags == -1)
   {
     Error << "fcntl(F_GETFL) " << strerror(errno);
     throw strerror(errno);
   }
 
-  if ((ret= fcntl(_pipe_fd[READ], F_SETFL, ret | O_NONBLOCK)) == -1)
+  int rval;
+  do
+  {
+    rval= fcntl(_pipe_fd[READ], F_SETFL, flags | O_NONBLOCK);
+  } while (rval == -1 and (errno == EINTR or errno == EAGAIN));
+
+  if (rval == -1)
   {
     Error << "fcntl(F_SETFL) " << strerror(errno);
     throw strerror(errno);
@@ -624,7 +575,7 @@ void Application::Pipe::reset()
   close(WRITE);
 
 #if defined(HAVE_PIPE2) && HAVE_PIPE2
-  if (pipe2(_pipe_fd, O_NONBLOCK) == -1)
+  if (pipe2(_pipe_fd, O_NONBLOCK|O_CLOEXEC) == -1)
 #else
   if (pipe(_pipe_fd) == -1)
 #endif
@@ -634,26 +585,44 @@ void Application::Pipe::reset()
   _open[0]= true;
   _open[1]= true;
 
-  if (true)
+#if defined(HAVE_PIPE2) && HAVE_PIPE2
   {
     nonblock();
     cloexec();
   }
+#endif
 }
 
 void Application::Pipe::cloexec()
 {
-  int ret;
-  if ((ret= fcntl(_pipe_fd[WRITE], F_GETFD, 0)) == -1)
+  //if (SOCK_CLOEXEC == 0)
   {
-    Error << "fcntl(F_GETFD) " << strerror(errno);
-    throw strerror(errno);
-  }
+    if (FD_CLOEXEC) 
+    {
+      int flags;
+      do 
+      {
+        flags= fcntl(_pipe_fd[WRITE], F_GETFD, 0);
+      } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
 
-  if ((ret= fcntl(_pipe_fd[WRITE], F_SETFD, ret | FD_CLOEXEC)) == -1)
-  {
-    Error << "fcntl(F_SETFD) " << strerror(errno);
-    throw strerror(errno);
+      if (flags == -1)
+      {
+        Error << "fcntl(F_GETFD) " << strerror(errno);
+        throw strerror(errno);
+      }
+
+      int rval;
+      do
+      { 
+        rval= fcntl(_pipe_fd[WRITE], F_SETFD, flags | FD_CLOEXEC);
+      } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+
+      if (rval == -1)
+      {
+        Error << "fcntl(F_SETFD) " << strerror(errno);
+        throw strerror(errno);
+      }
+    }
   }
 }
 
@@ -716,12 +685,14 @@ void Application::create_argv(const char *args[])
   if (_use_valgrind)
   {
     /*
-      valgrind --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+      valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
     */
     built_argv.push_back(strdup("valgrind"));
     built_argv.push_back(strdup("--error-exitcode=1"));
     built_argv.push_back(strdup("--leak-check=yes"));
+#if 0
     built_argv.push_back(strdup("--show-reachable=yes"));
+#endif
     built_argv.push_back(strdup("--track-fds=yes"));
 #if 0
     built_argv[x++]= strdup("--track-origin=yes");

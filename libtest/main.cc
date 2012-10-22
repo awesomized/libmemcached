@@ -83,6 +83,7 @@ static void stats_print(libtest::Framework *frame)
 
 int main(int argc, char *argv[])
 {
+  Out << "BEGIN:" << argv[0];
   bool opt_massive= false;
   unsigned long int opt_repeat= 1; // Run all tests once
   bool opt_quiet= false;
@@ -292,7 +293,7 @@ int main(int argc, char *argv[])
           return EXIT_SKIP;
 
         case TEST_FAILURE:
-          std::cerr << "frame->create()" << std::endl;
+          std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "frame->create()" << std::endl;
           return EXIT_FAILURE;
         }
       }
@@ -340,34 +341,31 @@ int main(int argc, char *argv[])
   }
   catch (libtest::fatal& e)
   {
-    std::cerr << "FATAL:" << e.what() << std::endl;
-    exit_code= EXIT_FAILURE;
-  }
-  catch (libtest::start& e)
-  {
-    std::cerr << "Failure to start:" << e.what() << std::endl;
+    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "FATAL:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (libtest::disconnected& e)
   {
-    std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
+    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Unhandled disconnection occurred:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (std::exception& e)
   {
-    std::cerr << "std::exception:" << e.what() << std::endl;
+    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "std::exception:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (char const*)
   {
-    std::cerr << "Exception:" << std::endl;
+    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Exception:" << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (...)
   {
-    std::cerr << "Unknown exception halted execution." << std::endl;
+    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Unknown exception halted execution." << std::endl;
     exit_code= EXIT_FAILURE;
   }
+
+  Out << "END:" << argv[0];
 
   return exit_code;
 }
