@@ -53,47 +53,17 @@
 
 namespace libtest {
 
-class exception : public std::runtime_error
-{
-public:
-  exception(const char *, int, const char *);
-
-  int line() const
-  {
-    return _line;
-  }
-
-  const char*  file() const
-  {
-    return _file;
-  }
-
-  const char* func() const
-  {
-    return _func;
-  }
-
-  const char* mesg() const throw()
-  {
-    return _error_message;
-  }
-
-
-protected:
-  char _error_message[BUFSIZ];
-
-private:
-  const char*  _file;
-  int _line;
-  const char* _func;
-};
-
-class fatal : public exception
+class fatal : std::runtime_error
 {
 public:
   fatal(const char *file, int line, const char *func, const char *format, ...);
 
   const char* what() const throw()
+  {
+    return _error_message;
+  }
+
+  const char* mesg() const throw()
   {
     return _error_message;
   }
@@ -105,10 +75,30 @@ public:
   static uint32_t disabled_counter();
   static void increment_disabled_counter();
 
+  int line()
+  {
+    return _line;
+  }
+
+  const char*  file()
+  {
+    return _file;
+  }
+
+  const char* func()
+  {
+    return _func;
+  }
+
 private:
+  char _error_message[BUFSIZ];
+  char _mesg[BUFSIZ];
+  int _line;
+  const char*  _file;
+  const char* _func;
 };
 
-class disconnected : public exception
+class disconnected : std::runtime_error
 {
 public:
   disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, const char *format, ...);
@@ -125,31 +115,28 @@ public:
   static uint32_t disabled_counter();
   static void increment_disabled_counter();
 
-private:
-  in_port_t _port;
-  char _instance[1024];
-};
-
-class start : public exception
-{
-public:
-  start(const char *file, int line, const char *func, const std::string&, const in_port_t port, const char *format, ...);
-
-  const char* what() const throw()
+  int line()
   {
-    return _error_message;
+    return _line;
   }
 
-  // The following are just for unittesting the exception class
-  static bool is_disabled();
-  static void disable();
-  static void enable();
-  static uint32_t disabled_counter();
-  static void increment_disabled_counter();
+  const char* file()
+  {
+    return _file;
+  }
+
+  const char* func()
+  {
+    return _func;
+  }
 
 private:
+  char _error_message[BUFSIZ];
   in_port_t _port;
   char _instance[1024];
+  int _line;
+  const char*  _file;
+  const char* _func;
 };
 
 

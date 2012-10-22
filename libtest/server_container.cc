@@ -274,7 +274,13 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
     {
       throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "Launching of an unknown server was attempted: %s", server_type.c_str());
     }
+  }
+  catch (...)
+  {
+    throw;
+  }
 
+  try {
     /*
       We will now cycle the server we have created.
     */
@@ -296,32 +302,30 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
     }
     else
 #endif
+
       if (server->start() == false)
+      {
+        delete server;
+        return false;
+      }
+      else
+      {
+        if (opt_startup_message)
+        {
+          Outn();
+          Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+          Outn();
+        }
+      }
+  }
+  catch (libtest::disconnected& err)
+  {
+    if (fatal::is_disabled() == false and try_port != LIBTEST_FAIL_PORT)
     {
+      stream::cerr(err.file(), err.line(), err.func()) << err.what();
       delete server;
       return false;
     }
-    else
-    {
-      if (opt_startup_message)
-      {
-        Outn();
-        Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
-        Outn();
-      }
-    }
-  }
-  catch (libtest::start err)
-  {
-    stream::cerr(err.file(), err.line(), err.func()) << err.what();
-    delete server;
-    return false;
-  }
-  catch (libtest::disconnected err)
-  {
-    stream::cerr(err.file(), err.line(), err.func()) << err.what();
-    delete server;
-    return false;
   }
   catch (...)
   {

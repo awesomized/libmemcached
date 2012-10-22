@@ -34,50 +34,13 @@
  *
  */
 
-#include <config.h>
-#include <libtest/common.h>
-
-#include <unistd.h>
-
-#pragma GCC diagnostic ignored "-Wundef"
-
-#if defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
-#include <sys/sysctl.h>
-#endif
+#pragma once
 
 namespace libtest {
 
-size_t number_of_cpus()
-{
-  size_t number_of_cpu= 1;
-#if defined(TARGET_OS_LINUX) && TARGET_OS_LINUX
-  number_of_cpu= sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(HAVE_SYS_SYSCTL_H) && defined(CTL_HW) && defined(HW_NCPU) && defined(HW_AVAILCPU) && defined(HW_NCPU)
-  int mib[4];
-  size_t len= sizeof(number_of_cpu); 
-
-  /* set the mib for hw.ncpu */
-  mib[0] = CTL_HW;
-  mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
-
-  /* get the number of CPUs from the system */
-  sysctl(mib, 2, &number_of_cpu, &len, NULL, 0);
-
-  if (number_of_cpu < 1) 
-  {
-    mib[1]= HW_NCPU;
-    sysctl(mib, 2, &number_of_cpu, &len, NULL, 0 );
-
-    if (number_of_cpu < 1 )
-    {
-      number_of_cpu = 1;
-    }
-  }
-#else
- // Guessing number of CPU
-#endif
-
-  return number_of_cpu;
-}
+void set_alarm(long tv_sec, long tv_usec);
+void set_alarm();
+void cancel_alarm();
 
 } // namespace libtest
+

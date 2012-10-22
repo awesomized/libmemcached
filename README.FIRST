@@ -11,7 +11,7 @@ bzr branch lp:libmemcached
 Once the tree is cloned you will need to build the "configure" script. You
 can do this by running the script:
 
-./config/autorun.sh
+./bootstrap.sh autoreconf
 
 It will set up all of the files you need to build libmemcached. At that
 point it is just the typical "./configure; make; make test; make install"

@@ -65,6 +65,7 @@ public:
   void test();
   void post();
   bool setup();
+  bool unblock();
 
   int wait(int& sig)
   {

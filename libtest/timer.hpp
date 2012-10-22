@@ -44,7 +44,6 @@
 #  include <mach/clock.h>
 #  include <mach/mach.h>
 #else
-#  include <time.h>
 #  include <sys/time.h>
 #endif
 
@@ -123,24 +122,8 @@ private:
     mach_port_deallocate(mach_task_self(), _clock_serv);
     ts.tv_sec= _mach_timespec.tv_sec;
     ts.tv_nsec= _mach_timespec.tv_nsec;
-#elif defined(HAVE_CLOCK_GETTIME) && HAVE_CLOCK_GETTIME
-    int ret;
-    do
-    {
-      ret= clock_gettime(CLOCK_REALTIME, &ts);
-    } while (ret == -1);
-#elif defined(HAVE_GETTIMEOFDAY) && HAVE_GETTIMEOFDAY
-    struct timeval tv;
-    int ret;
-    do 
-    {
-      ret= gettimeofday(&tv, NULL)
-    } while (ret == -1);
-    /* Convert from timeval to timespec */
-    ts.tv_sec= tv.tv_sec;
-    ts.tv_nsec= tv.tv_usec * 1000;
 #else
-    memset(&ts, 0, sizeof(struct timespec));
+    clock_gettime(CLOCK_REALTIME, &ts);
 #endif
   }
 

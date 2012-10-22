@@ -62,6 +62,9 @@ bool valgrind_is_caller(void);
 LIBTEST_API
 bool _in_valgrind(const char *file, int line, const char *func);
 
+LIBTEST_API
+bool helgrind_is_caller(void);
+
 template <class T_comparable>
 bool _compare_truth(const char *file, int line, const char *func, T_comparable __expected, const char *assertation_label)
 {

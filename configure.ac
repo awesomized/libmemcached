@@ -14,7 +14,7 @@ AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
-AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
+AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
 
 AC_PREREQ([2.61])
 
@@ -52,7 +52,6 @@ AX_ASSERT
 
 AX_PLATFORM
 
-gl_VISIBILITY
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_CXX_HEADER_STDCXX_98
@@ -151,7 +150,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
 
-AC_CHECK_HEADER(umem.h, [
+AC_CHECK_HEADER([umem.h], [
    AC_DEFINE([HAVE_UMEM_H], 1,
          [Define this if you have umem.h])
    build_cache=no
@@ -193,7 +192,7 @@ AS_IF([test "x$ac_enable_sasl" = "xyes"], [
        ],[ LIBMEMCACHED_WITH_SASL_SUPPORT="#define LIBMEMCACHED_WITH_SASL_SUPPORT 0" ])
 AC_SUBST(LIBMEMCACHED_WITH_SASL_SUPPORT)
 
-AC_CHECK_LIB([rt], [clock_gettime], [
+AC_CHECK_LIB([rt],[clock_gettime], [
               RT_LIB="-lrt"
               AC_SUBST(RT_LIB)
               AC_DEFINE([HAVE_CLOCK_GETTIME], [ 1 ], [Have clock_gettime])
@@ -202,7 +201,7 @@ AC_CHECK_LIB([rt], [clock_gettime], [
               ])
 
 # Check for the ability to call dlopen
-AC_CHECK_LIB([dl], [dlopen], [
+AC_CHECK_LIB([dl],[dlopen], [
               DL_LIB="-ldl"
               AC_SUBST([DL_LIB])
               AC_DEFINE([HAVE_LIBDL],[1],[Have dlopen])
@@ -210,7 +209,7 @@ AC_CHECK_LIB([dl], [dlopen], [
                  AC_DEFINE([HAVE_LIBDL], [0], [Have dlopen])
                  ])
 
-AC_CHECK_LIB([m], [floor])
+AC_CHECK_LIB([m],[floor])
 AC_CHECK_FUNCS([sigignore])
 
 AC_CHECK_HEADERS([atomic.h])
@@ -290,6 +289,7 @@ echo "   * C Flags:                   $CFLAGS"
 echo "   * C++ Compiler:              $CXX_VERSION"
 echo "   * C++ Flags:                 $CXXFLAGS"
 echo "   * CPP Flags:                 $CPPFLAGS"
+echo "   * LIB Flags:                 $LIB"
 echo "   * Assertions enabled:        $ax_enable_assert"
 echo "   * Debug enabled:             $ax_enable_debug"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"

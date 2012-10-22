@@ -44,20 +44,24 @@ namespace libtest {
 
 bool has_libmemcached(void)
 {
+#if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED
   if (HAVE_LIBMEMCACHED)
   {
     return true;
   }
+#endif
 
   return false;
 }
 
 bool has_libdrizzle(void)
 {
+#if defined(HAVE_LIBDRIZZLE) && HAVE_LIBDRIZZLE
   if (HAVE_LIBDRIZZLE)
   {
     return true;
   }
+#endif
 
   return false;
 }
@@ -80,9 +84,9 @@ bool has_postgres_support(void)
 
 bool has_gearmand()
 {
+#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
   if (HAVE_GEARMAND_BINARY)
   {
-#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
     std::stringstream arg_buffer;
 
     char *getenv_ptr;
@@ -98,8 +102,8 @@ bool has_gearmand()
     {
       return true;
     }
-#endif
   }
+#endif
 
   return false;
 }
@@ -136,6 +140,7 @@ bool has_mysqld()
 
 bool has_memcached()
 {
+#if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
   if (HAVE_MEMCACHED_BINARY)
   {
     std::stringstream arg_buffer;
@@ -154,6 +159,7 @@ bool has_memcached()
       return true;
     }
   }
+#endif
 
   return false;
 }
