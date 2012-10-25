@@ -113,18 +113,14 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/libmemcached.la
 %exclude %{_libdir}/libhashkit.la
 %exclude %{_libdir}/libmemcachedutil.la
-%exclude %{_libdir}/libmemcachedprotocol.la
 %exclude %{_libdir}/libmemcached.a
 %exclude %{_libdir}/libhashkit.a
 %exclude %{_libdir}/libmemcachedutil.a
-%exclude %{_libdir}/libmemcachedprotocol.a
 %{_libdir}/libhashkit.so.2.0.0
 %{_libdir}/libmemcached.so.11.0.0
 %{_libdir}/libmemcachedutil.so.2.0.0
-%{_libdir}/libmemcachedprotocol.so.0.0.0
 %{_libdir}/libhashkit.so.2
 %{_libdir}/libmemcached.so.11
-%{_libdir}/libmemcachedprotocol.so.0
 %{_libdir}/libmemcachedutil.so.2
 %{_mandir}/man1/memaslap.1.gz
 %{_mandir}/man1/memcapable.1.gz
@@ -159,11 +155,6 @@ you will need to install %{name}-devel.
 %{_includedir}/libhashkit-1.0/strerror.h
 %{_includedir}/libhashkit-1.0/types.h
 %{_includedir}/libhashkit-1.0/visibility.h
-
-%{_includedir}/libmemcachedprotocol-0.0/binary.h
-%{_includedir}/libmemcachedprotocol-0.0/callback.h
-%{_includedir}/libmemcachedprotocol-0.0/handler.h
-%{_includedir}/libmemcachedprotocol-0.0/vbucket.h
 
 %{_includedir}/libmemcachedutil-1.0/util.h
 %{_includedir}/libmemcachedutil-1.0/flush.h
@@ -239,7 +230,6 @@ you will need to install %{name}-devel.
 
 %{_libdir}/libhashkit.so
 %{_libdir}/libmemcached.so
-%{_libdir}/libmemcachedprotocol.so
 %{_libdir}/libmemcachedutil.so
 %{_libdir}/pkgconfig/libmemcached.pc
 %{_mandir}/man3/hashkit_clone.3.gz
