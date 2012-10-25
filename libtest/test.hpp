@@ -40,7 +40,14 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <arpa/inet.h>
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
 
 #include <libtest/visibility.h>
 #include <libtest/version.h>

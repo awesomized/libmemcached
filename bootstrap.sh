@@ -49,10 +49,21 @@ command_not_found_handle ()
   exit 127
 }
 
-die ()
+function die ()
 { 
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
   exit 1; 
+}
+
+function nassert ()
+{
+  local param_name=\$"$1"
+  local param_value=`eval "expr \"$param_name\" "`
+
+  if [ -n "$param_value" ]; then
+    echo "$bash_source:$bash_lineno: assert($param_name) had value of "$param_value"" >&2
+    exit 1
+  fi
 }
 
 function assert ()
@@ -61,7 +72,7 @@ function assert ()
   local param_value=`eval "expr \"$param_name\" "`
 
   if [ -z "$param_value" ]; then
-    echo "$BASH_SOURCE:$BASH_LINENO: assert($param_name)" >&2
+    echo "$bash_source:$bash_lineno: assert($param_name)" >&2
     exit 1
   fi
 }
@@ -343,7 +354,7 @@ pop_TESTS_ENVIRONMENT ()
   fi
 }
 
-safe_pushd ()
+function safe_pushd ()
 {
   pushd $1 &> /dev/null ;
 
@@ -352,7 +363,7 @@ safe_pushd ()
   fi
 }
 
-safe_popd ()
+function safe_popd ()
 {
   local directory_to_delete=`pwd`
   popd &> /dev/null ;
@@ -365,7 +376,7 @@ safe_popd ()
   fi
 }
 
-make_valgrind ()
+function make_valgrind ()
 {
   if [[ "$VENDOR_DISTRIBUTION" == 'darwin' ]]; then
     make_darwin_malloc
@@ -394,8 +405,10 @@ make_valgrind ()
 
   push_TESTS_ENVIRONMENT
 
+  # If we don't have a configure, then most likely we will be missing libtool
+  assert_file 'configure'
   if [[ -f 'libtool' ]]; then
-    TESTS_ENVIRONMENT="$LIBTOOL_COMMAND $VALGRIND_COMMAND"
+    TESTS_ENVIRONMENT="./libtool --mode=execute $VALGRIND_COMMAND"
   else
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
   fi
@@ -405,7 +418,7 @@ make_valgrind ()
   pop_TESTS_ENVIRONMENT
 }
 
-make_install_system ()
+function make_install_system ()
 {
   local INSTALL_LOCATION=$(mktemp -d /tmp/XXXXXXXXXX)
   push_PREFIX_ARG $INSTALL_LOCATION
@@ -437,7 +450,7 @@ make_install_system ()
   safe_popd
 }
 
-make_darwin_malloc ()
+function make_darwin_malloc ()
 {
   run_configure_if_required
 
@@ -455,7 +468,7 @@ make_darwin_malloc ()
   MallocScribble=$old_MallocScribble
 }
 
-snapshot_check ()
+function snapshot_check ()
 {
   if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
     assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
@@ -463,7 +476,7 @@ snapshot_check ()
 }
 
 # This will reset our environment, and make sure built files are available.
-make_for_snapshot ()
+function make_for_snapshot ()
 {
   # Make sure it is clean
   make_maintainer_clean
@@ -479,8 +492,28 @@ make_for_snapshot ()
   snapshot_check
 }
 
+function make_for_mingw32 ()
+{
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+  assert_no_file 'Makefile'
+
+  if command_exists mingw32-configure; then
+    run_autoreconf
+
+    mingw32-configure || die 'mingw32-configure failed'
+    assert_file 'Makefile'
+
+    if command_exists mingw32-make; then
+      mingw32-make || die 'mingw32-make failed'
+    fi
+  fi
+}
+
 # If we are locally testing, we should make sure the environment is setup correctly
-check_for_jenkins ()
+function check_for_jenkins ()
 {
   if ! $jenkins_build_environment; then
     echo "Not inside of jenkins"
@@ -495,7 +528,18 @@ check_for_jenkins ()
   fi
 }
 
-make_for_continuus_integration ()
+function make_universe ()
+{
+  make_for_snapshot
+  make_valgrind
+  make_gdb
+  make_rpm
+  make_for_mingw32
+  make_distcheck
+  make_install_system
+}
+
+function make_for_continuus_integration ()
 {
   # Setup the environment if we are local
   check_for_jenkins
@@ -556,8 +600,7 @@ make_for_continuus_integration ()
       make_install_system
       ;;
     *)
-      run_configure
-      make_all
+      make_jenkins_default
       ;;
   esac
 
@@ -566,7 +609,19 @@ make_for_continuus_integration ()
   safe_popd
 }
 
-make_gdb ()
+# The point to this test is to test bootstrap.sh itself
+function self_test ()
+{
+  # We start off with a clean env
+  make_maintainer_clean
+
+  eval "./bootstrap.sh jenkins" || die "failed 'jenkins'"
+  eval "./bootstrap.sh all" || die "failed 'all'"
+  eval "./bootstrap.sh gdb" || die "failed 'gdb'"
+  eval "./bootstrap.sh maintainer-clean" || die "failed 'maintainer-clean'"
+}
+
+function make_gdb ()
 {
   run_configure_if_required
 
@@ -579,8 +634,10 @@ make_gdb ()
       setup_gdb_command
     fi
 
-    if [ -f 'libtool' ]; then
-      TESTS_ENVIRONMENT="$LIBTOOL_COMMAND $GDB_COMMAND"
+    # If we don't have a configure, then most likely we will be missing libtool
+    assert_file 'configure'
+    if [[ -f 'libtool' ]]; then
+      TESTS_ENVIRONMENT="./libtool --mode=execute $GDB_COMMAND"
     else
       TESTS_ENVIRONMENT="$GDB_COMMAND"
     fi
@@ -604,7 +661,7 @@ make_gdb ()
 
 # $1 target to compile
 # $2 to die, or not to die, based on contents
-make_target ()
+function make_target ()
 {
   if [[ -z "$1" ]]; then
     die "Programmer error, no target provided for make"
@@ -630,34 +687,43 @@ make_target ()
   fi
 }
 
-make_distcheck ()
+function make_distcheck ()
 {
   make_target 'distcheck'
 }
 
-make_rpm ()
+function make_rpm ()
 {
-  run_configure_if_required
-  make_target 'rpm'
+  if [ -f 'rpm.am' -o -d 'rpm' ]; then
+    run_configure_if_required
+    make_target 'rpm'
+  fi
 }
 
-make_maintainer_clean ()
+function make_maintainer_clean ()
 {
   run_configure_if_required
   make_target 'maintainer-clean' 'no_error'
 }
 
-make_check ()
+function make_check ()
 {
   make_target 'check'
 }
 
-make_all ()
+function make_jenkins_default ()
 {
+  run_configure
   make_target 'all'
 }
 
-run_configure_if_required () 
+function make_default ()
+{
+  run_configure_if_required
+  make_target 'all'
+}
+
+function run_configure_if_required () 
 {
   run_autoreconf_if_required
 
@@ -668,7 +734,7 @@ run_configure_if_required ()
   assert_file 'Makefile' 'configure did not produce a Makefile'
 }
 
-run_autoreconf_if_required () 
+function run_autoreconf_if_required () 
 {
   if [ ! -x 'configure' ]; then
     run_autoreconf
@@ -677,7 +743,7 @@ run_autoreconf_if_required ()
   assert_exec_file 'configure'
 }
 
-run_autoreconf () 
+function run_autoreconf () 
 {
   if [[ -z "$AUTORECONF" ]]; then
     die "Programmer error, tried to call run_autoreconf () but AUTORECONF was not set"
@@ -699,7 +765,9 @@ function run ()
 
 parse_command_line_options ()
 {
-  local SHORTOPTS=':apcmt:dv'
+  local SHORTOPTS=':apcmt:dvh'
+
+  nassert MAKE_TARGET
 
   while getopts "$SHORTOPTS" opt; do
     case $opt in
@@ -727,6 +795,10 @@ parse_command_line_options ()
         DEBUG_OPTION=true
         enable_debug
         ;;
+      h) # help
+        echo "bootstrap.sh [options] optional_target ..."
+        exit
+        ;;
       v) # verbose
         VERBOSE_OPTION=true
         VERBOSE=true
@@ -742,8 +814,10 @@ parse_command_line_options ()
     esac
   done
 
+  shift $((OPTIND-1))
+
   if [ -n "$1" ]; then
-    MAKE_TARGET="$1"
+    MAKE_TARGET="$@"
   fi
 }
 
@@ -776,8 +850,14 @@ autoreconf_setup ()
       fi
     fi
     
+    if [ "$VCS_CHECKOUT" ]; then
+      if $DEBUG; then
+        MAKE="$MAKE --warn-undefined-variables"
+      fi
+    fi
+
     if $DEBUG; then
-      MAKE="$MAKE --warn-undefined-variables"
+      MAKE="$MAKE -d"
     fi
   fi
 
@@ -949,6 +1029,8 @@ make_for_autoreconf ()
 check_make_target()
 {
   case $1 in
+    'self')
+      ;;
     'gdb')
       ;;
     'clean_op')
@@ -959,9 +1041,15 @@ check_make_target()
       ;;
     'configure')
       ;;
-    'rpm')
+    'distcheck')
+      ;;
+    'check')
       ;;
     'snapshot')
+      ;;
+    'mingw')
+      ;;
+    'universe')
       ;;
     'valgrind')
       ;;
@@ -975,6 +1063,12 @@ check_make_target()
       ;;
     'all')
       ;;
+    'test-*')
+      ;;
+    'valgrind-*')
+      ;;
+    'gdb-*')
+      ;;
     'dist')
       ;;
     *)
@@ -983,7 +1077,7 @@ check_make_target()
   esac
 }
 
-bootstrap ()
+function bootstrap ()
 {
   determine_target_platform
 
@@ -991,6 +1085,10 @@ bootstrap ()
 
   # Set up whatever we need to do to use autoreconf later
   autoreconf_setup
+
+  if [ -z "$MAKE_TARGET" ]; then
+    MAKE_TARGET="make_default"
+  fi
 
   if $PRINT_SETUP_OPTION -o  $DEBUG; then
     echo 
@@ -1003,11 +1101,6 @@ bootstrap ()
     fi
   fi
 
-  # Setup LIBTOOL_COMMAND if we need it
-  if [ -f 'libtool' ]; then
-    LIBTOOL_COMMAND='./libtool --mode=execute'
-  fi
-
   # Use OLD_TESTS_ENVIRONMENT for tracking the state of the variable
   local OLD_TESTS_ENVIRONMENT=
 
@@ -1016,15 +1109,22 @@ bootstrap ()
     push_PREFIX_ARG $PREFIX
   fi
 
-  # Either we run a known target (or error), or we default to "all"
-  if [[ -n "$MAKE_TARGET" ]]; then
+  # We should always have a target by this point
+  assert MAKE_TARGET
 
+  local MAKE_TARGET_ARRAY=($MAKE_TARGET)
+
+  for target in "${MAKE_TARGET_ARRAY[@]}"
+  do
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
-      check_make_target $MAKE_TARGET
+      check_make_target $target
     fi
 
-    case $MAKE_TARGET in
+    case $target in
+      'self')
+        self_test
+        ;;
       'gdb')
         make_gdb
         ;;
@@ -1040,6 +1140,13 @@ bootstrap ()
       'configure')
         run_configure
         ;;
+      'default')
+        make
+        run_configure
+        ;;
+      'mingw')
+        make_for_mingw32
+        ;;
       'snapshot')
         make_for_snapshot
         ;;
@@ -1049,18 +1156,18 @@ bootstrap ()
       'valgrind')
         make_valgrind
         ;;
+      'universe')
+        make_universe
+        ;;
       'jenkins')
         make_for_continuus_integration
         ;;
       *)
         run_configure_if_required
-        make_target $MAKE_TARGET
+        make_target "$target"
         ;;
     esac
-  else
-    run_configure_if_required
-    make_all
-  fi
+  done
 }
 
 main ()
@@ -1108,14 +1215,14 @@ main ()
 
   rebuild_host_os no_output
 
+  parse_command_line_options $@
+
   # If we are running under Jenkins we predetermine what tests we will run against
   # This MAKE_TARGET can be overridden by parse_command_line_options based MAKE_TARGET changes.
   # We don't want Jenkins overriding other variables, so we NULL them.
-  if $jenkins_build_environment; then
+  if [ -z "$MAKE_TARGET" -a $jenkins_build_environment ]; then
     MAKE_TARGET='jenkins'
   fi
-
-  parse_command_line_options $@
 
   bootstrap
 

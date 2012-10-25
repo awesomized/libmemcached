@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.13],[http://libmemcached.org/])
+AC_INIT([libmemcached],[1.0.14],[http://libmemcached.org/])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -59,6 +59,20 @@ AS_IF([ test "$ax_cv_cxx_stdcxx_98" = no ],[
        AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
        ])
 
+AC_DEFUN([LIBMEMCACHED_PROTOCOL],
+         [AC_ARG_ENABLE([libmemcachedprotocol],
+                        [AS_HELP_STRING([--enable-libmemcachedprotocol],
+                                        [Enable libmemcachedprotocol])],
+                                        [ax_enable_libmemcachedprotocol=yes],
+                                        [ax_enable_libmemcachedprotocol=no])
+
+         AM_CONDITIONAL([BUILD_LIBMEMCACHED_PROTOCOL],[test "$ax_enable_libmemcachedprotocol" = "yes"])
+
+         AC_MSG_CHECKING([for libmemcachedprotocol])
+         AC_MSG_RESULT([$ax_enable_libmemcachedprotocol])
+         ])
+LIBMEMCACHED_PROTOCOL
+
 # Adding support for libtest
 m4_include([libtest/yatl.m4])
 
@@ -103,12 +117,12 @@ AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([inttypes.h])
 AC_CHECK_HEADERS([libintl.h])
 AC_CHECK_HEADERS([limits.h])
-AC_CHECK_HEADERS([malloc.h])
 AC_CHECK_HEADERS([math.h])
 AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([netinet/in.h])
 AC_CHECK_HEADERS([netinet/tcp.h])
 AC_CHECK_HEADERS([pthread.h])
+AC_CHECK_HEADERS([spawn.h])
 AC_CHECK_HEADERS([stdarg.h])
 AC_CHECK_HEADERS([stddef.h])
 AC_CHECK_HEADERS([stdio.h])
@@ -116,9 +130,13 @@ AC_CHECK_HEADERS([stdlib.h])
 AC_CHECK_HEADERS([sys/socket.h])
 AC_CHECK_HEADERS([sys/sysctl.h])
 AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_HEADERS([sys/un.h])
 AC_CHECK_HEADERS([time.h])
 AC_CHECK_HEADERS([unistd.h])
-AC_HEADER_TIME
+
+# Windows only
+AC_CHECK_HEADERS([winsock2.h])
+AC_CHECK_HEADERS([ws2tcpip.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
@@ -146,8 +164,6 @@ AC_CHECK_FUNCS([strtoull])
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
 
 AC_CHECK_HEADER([umem.h], [

@@ -37,9 +37,6 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <cstdio>
-
 #ifdef NDEBUG
 #define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
 #else

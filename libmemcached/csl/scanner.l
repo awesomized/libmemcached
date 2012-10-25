@@ -67,9 +67,6 @@
 
 
 %{
-#include <cstdlib>
-#include <cstring>
-
 #define PARAM yyget_extra(yyscanner)
 
 #define get_lex_chars(buffer, result, max_size, context) \
@@ -129,7 +126,7 @@
 
 "--SERVER="                          { yyextra->begin= yytext; yyextra->set_server(); return yyextra->previous_token= SERVER; }
 
-"--SOCKET="                          { yyextra->begin= yytext; return yyextra->previous_token= SOCKET; }
+"--SOCKET="                          { yyextra->begin= yytext; return yyextra->previous_token= CSL_SOCKET; }
 
 "--BINARY-PROTOCOL"			{ yyextra->begin= yytext; return yyextra->previous_token= BINARY_PROTOCOL; }
 "--BUFFER-REQUESTS"			{ yyextra->begin= yytext; return yyextra->previous_token= BUFFER_REQUESTS; }
@@ -172,10 +169,10 @@ RESET           { yyextra->begin= yytext; return yyextra->previous_token= RESET;
 DEBUG           { yyextra->begin= yytext; return yyextra->previous_token= PARSER_DEBUG; }
 SERVERS           { yyextra->begin= yytext; return yyextra->previous_token= SERVERS; }
 END           { yyextra->begin= yytext; return yyextra->previous_token= END; }
-ERROR           { yyextra->begin= yytext; return yyextra->previous_token= ERROR; }
+CSL_ERROR           { yyextra->begin= yytext; return yyextra->previous_token= CSL_ERROR; }
 
-TRUE           { return yyextra->previous_token= TRUE; }
-FALSE           { return yyextra->previous_token= FALSE; }
+TRUE           { return yyextra->previous_token= CSL_TRUE; }
+FALSE           { return yyextra->previous_token= CSL_FALSE; }
 
 
 "--"[[:alnum:]]*   {

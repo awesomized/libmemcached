@@ -45,8 +45,6 @@ using namespace libtest;
 #include <fcntl.h>
 #include <fstream>
 #include <memory>
-#include <poll.h>
-#include <spawn.h>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
@@ -435,7 +433,7 @@ Application::error_t Application::join()
       }
 
       _app_exit_state= Application::SIGTERM_KILLED;
-      Error << "waitpid() application terminated at request"
+      Out << "waitpid() application terminated at request"
         << " pid:" << _pid 
         << " name:" << built_argv[0];
     }

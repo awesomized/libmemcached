@@ -60,12 +60,12 @@ void __server_free(memcached_server_st *);
 
 static inline bool memcached_is_valid_servername(const memcached_string_t& arg)
 {
-  return (arg.c_str != NULL or arg.size == 0) and arg.size < NI_MAXHOST;
+  return (arg.c_str != NULL or arg.size == 0) and arg.size < MEMCACHED_NI_MAXHOST;
 }
 
 static inline bool memcached_is_valid_filename(const memcached_string_t& arg)
 {
-  return arg.c_str != NULL and arg.size > 0 and arg.size < NI_MAXHOST;
+  return arg.c_str != NULL and arg.size > 0 and arg.size < MEMCACHED_NI_MAXHOST;
 }
 
 void memcached_instance_free(org::libmemcached::Instance *);

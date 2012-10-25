@@ -41,10 +41,8 @@
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
 uint64_t memcached_ntohll(uint64_t);
 
-LIBMEMCACHED_LOCAL
 uint64_t memcached_htonll(uint64_t);
 
 #ifdef __cplusplus
