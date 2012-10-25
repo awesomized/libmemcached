@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <arpa/inet.h>
 #include <cstdio>
 #include <cerrno>
 #include <cassert>

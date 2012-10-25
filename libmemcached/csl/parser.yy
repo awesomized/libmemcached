@@ -96,14 +96,14 @@ inline void __config_error(Context *context, yyscan_t *scanner, const char *erro
 
 %token COMMENT
 %token END
-%token ERROR
+%token CSL_ERROR
 %token RESET
 %token PARSER_DEBUG
 %token INCLUDE
 %token CONFIGURE_FILE
 %token EMPTY_LINE
 %token SERVER
-%token SOCKET
+%token CSL_SOCKET
 %token SERVERS
 %token SERVERS_OPTION
 %token UNKNOWN_OPTION
@@ -165,13 +165,13 @@ inline void __config_error(Context *context, yyscan_t *scanner, const char *erro
 %token RANDOM
 
 /* Boolean values */
-%token <boolean> TRUE
-%token <boolean> FALSE
+%token <boolean> CSL_TRUE
+%token <boolean> CSL_FALSE
 
 %nonassoc ','
 %nonassoc '='
 
-%token <number> FLOAT
+%token <number> CSL_FLOAT
 %token <number> NUMBER
 %token <number> PORT
 %token <number> WEIGHT_START
@@ -208,7 +208,7 @@ statement:
             context->set_end();
             YYACCEPT;
           }
-        | ERROR
+        | CSL_ERROR
           {
             context->rc= MEMCACHED_PARSE_USER_ERROR;
             parser_abort(context, "ERROR called directly");
@@ -252,7 +252,7 @@ expression:
             }
             context->unset_server();
           }
-        | SOCKET string optional_weight
+        | CSL_SOCKET string optional_weight
           {
             if (memcached_failed(context->rc= memcached_server_add_unix_socket_with_weight(context->memc, $2.c_str, uint32_t($3))))
             {

@@ -45,48 +45,66 @@
 #include <config.h>
 
 #ifdef __cplusplus
-#  include <cstdio>
-#  include <cstdlib>
-#  include <cstring>
-#  include <ctime>
-#  include <cctype>
-#  include <cerrno>
-#  include <climits>
+# include <cstddef>
+# include <cstdio>
+# include <cstdlib>
+# include <cstring>
+# include <ctime>
+# include <cctype>
+# include <cerrno>
+# include <climits>
 #else
-#  ifdef HAVE_STDLIB_H
-#   include <stdio.h>
-#  endif
-#  ifdef HAVE_STDLIB_H
-#    include <stdlib.h>
-#  endif
-#  include <string.h>
+# ifdef HAVE_STDDEF_H
+#  include <stddef.h>
+# endif
+# ifdef HAVE_STDLIB_H
+#  include <stdio.h>
+# endif
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# endif
+# include <string.h>
+# ifdef HAVE_TIME_H
 #  include <time.h>
-#  ifdef HAVE_ERRNO_H
-#    include <errno.h>
-#  endif
-#  ifdef HAVE_LIMITS_H
-#    include <limits.h>
-#  endif
+# endif
+# ifdef HAVE_ERRNO_H
+#  include <errno.h>
+# endif
+# ifdef HAVE_LIMITS_H
+#  include <limits.h>
+# endif
+#endif
+
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
 #endif
 
 #ifdef HAVE_FCNTL_H
-#  include <fcntl.h>
+# include <fcntl.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
+# include <sys/types.h>
 #endif
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
 #endif
 
 #ifdef HAVE_STRINGS_H
-#  include <strings.h>
+# include <strings.h>
 #endif
 
 #ifdef HAVE_DLFCN_H
-#  include <dlfcn.h>
+# include <dlfcn.h>
 #endif
 
 #include <libmemcached-1.0/memcached.h>

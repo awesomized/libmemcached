@@ -54,10 +54,8 @@
 extern "C" {
 #endif
 
-HASHKIT_LOCAL
 void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
 
-HASHKIT_LOCAL
 int update_continuum(hashkit_st *hashkit);
 
 #ifdef __cplusplus

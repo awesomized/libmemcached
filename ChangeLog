@@ -1,3 +1,6 @@
+1.0.14 
+*
+
 1.0.13 Fri Oct 19 00:09:28 EDT 2012
 * Fix bug that caused version string to not be exported correctly.
 

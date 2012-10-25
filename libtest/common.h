@@ -65,6 +65,28 @@
 #include <fnmatch.h>
 #endif
 
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+
+#ifdef HAVE_POLL_H
+# include <poll.h>
+#else
+# include "poll/poll.h"
+#endif
+
+#ifdef HAVE_SPAWN_H
+# include <spawn.h>
+#endif
+
 #include <libtest/test.hpp>
 
 #include <libtest/is_pid.hpp>

@@ -49,7 +49,7 @@ command_not_found_handle ()
   exit 127
 }
 
-die ()
+function die ()
 { 
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
   exit 1; 
@@ -492,6 +492,26 @@ function make_for_snapshot ()
   snapshot_check
 }
 
+function make_for_mingw32 ()
+{
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+  assert_no_file 'Makefile'
+
+  if command_exists mingw32-configure; then
+    run_autoreconf
+
+    mingw32-configure || die 'mingw32-configure failed'
+    assert_file 'Makefile'
+
+    if command_exists mingw32-make; then
+      mingw32-make || die 'mingw32-make failed'
+    fi
+  fi
+}
+
 # If we are locally testing, we should make sure the environment is setup correctly
 function check_for_jenkins ()
 {
@@ -506,6 +526,17 @@ function check_for_jenkins ()
       make_for_snapshot
     fi
   fi
+}
+
+function make_universe ()
+{
+  make_for_snapshot
+  make_valgrind
+  make_gdb
+  make_rpm
+  make_for_mingw32
+  make_distcheck
+  make_install_system
 }
 
 function make_for_continuus_integration ()
@@ -663,8 +694,10 @@ function make_distcheck ()
 
 function make_rpm ()
 {
-  run_configure_if_required
-  make_target 'rpm'
+  if [ -f 'rpm.am' -o -d 'rpm' ]; then
+    run_configure_if_required
+    make_target 'rpm'
+  fi
 }
 
 function make_maintainer_clean ()
@@ -817,8 +850,14 @@ autoreconf_setup ()
       fi
     fi
     
+    if [ "$VCS_CHECKOUT" ]; then
+      if $DEBUG; then
+        MAKE="$MAKE --warn-undefined-variables"
+      fi
+    fi
+
     if $DEBUG; then
-      MAKE="$MAKE --warn-undefined-variables"
+      MAKE="$MAKE -d"
     fi
   fi
 
@@ -1008,6 +1047,10 @@ check_make_target()
       ;;
     'snapshot')
       ;;
+    'mingw')
+      ;;
+    'universe')
+      ;;
     'valgrind')
       ;;
     'jenkins')
@@ -1101,6 +1144,9 @@ function bootstrap ()
         make
         run_configure
         ;;
+      'mingw')
+        make_for_mingw32
+        ;;
       'snapshot')
         make_for_snapshot
         ;;
@@ -1109,6 +1155,9 @@ function bootstrap ()
         ;;
       'valgrind')
         make_valgrind
+        ;;
+      'universe')
+        make_universe
         ;;
       'jenkins')
         make_for_continuus_integration

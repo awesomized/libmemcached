@@ -39,15 +39,13 @@
 #include <libmemcached/common.h>
 
 #include <cassert>
-#include <ctime>
-#include <sys/time.h>
 
 #ifndef SOCK_CLOEXEC 
 #  define SOCK_CLOEXEC 0
 #endif
 
 #ifndef SOCK_NONBLOCK 
-#  define SOCK_NONBLOCK 0
+# define SOCK_NONBLOCK 0
 #endif
 
 #ifndef FD_CLOEXEC

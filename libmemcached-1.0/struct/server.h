@@ -38,20 +38,20 @@
 
 #pragma once
 
-#ifndef WIN32
-#include <netdb.h>
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
 #endif
 
 #ifdef NI_MAXHOST
-#define MEMCACHED_NI_MAXHOST NI_MAXHOST
+# define MEMCACHED_NI_MAXHOST NI_MAXHOST
 #else
-#define MEMCACHED_NI_MAXHOST 1025
+# define MEMCACHED_NI_MAXHOST 1025
 #endif
 
 #ifdef NI_MAXSERV
-#define MEMCACHED_NI_MAXSERV NI_MAXSERV
+# define MEMCACHED_NI_MAXSERV NI_MAXSERV
 #else
-#define MEMCACHED_NI_MAXSERV 32
+# define MEMCACHED_NI_MAXSERV 32
 #endif
 
 enum memcached_server_state_t {

@@ -36,8 +36,6 @@
 
 #pragma once
 
-#include <arpa/inet.h>
-
 namespace libtest { struct Server; }
 
 namespace libtest {

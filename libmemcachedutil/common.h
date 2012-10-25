@@ -38,7 +38,11 @@
 
 #pragma once
 
-#include <config.h>
+#include "config.h"
+
+#include <cstddef>
+#include <cstdlib>
+#include <cstdio>
 
 #include <libmemcachedutil-1.0/util.h>
 #include <libmemcached/assert.hpp>

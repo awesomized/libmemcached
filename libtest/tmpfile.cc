@@ -34,6 +34,7 @@
  *
  */
 
+#include "config.h"
 #include <libtest/common.h>
 
 namespace libtest {
