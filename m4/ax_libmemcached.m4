@@ -4,7 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_LIBMEMCACHED, AX_LIBMEMCACHED_UTIL, AX_WITH_LIBMEMCACHED
+#   AX_LIBMEMCACHED, AX_LIBMEMCACHED_UTIL, AX_ENABLE_LIBMEMCACHED
 #
 # DESCRIPTION
 #
@@ -73,10 +73,6 @@ AC_DEFUN([AX_LIBMEMCACHED], [
 
   AS_IF([test "x$ax_cv_libmemcached" = "xyes"], [
       AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [1], [Have libmemcached-1.0/memcached.h])
-      LIBMEMCACHED_CFLAGS=
-      AC_SUBST([LIBMEMCACHED_CFLAGS])
-      LIBMEMCACHED_LDFLAGS="-lmemcached"
-      AC_SUBST([LIBMEMCACHED_LDFLAGS], [-lmemcached])
       ],[
       AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [0], [Have libmemcached-1.0/memcached.h])
       ])
@@ -106,34 +102,37 @@ AC_DEFUN([AX_LIBMEMCACHED], [
 
       AS_IF([test "x$ax_cv_libmemcached_util" = "xyes"], [
         AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [1], [Have libmemcachedutil-1.0/util.h])
-        LIBMEMCACHED_UTIL_LDFLAGS="-lmemcached -lmemcachedutil"
-        AC_SUBST([LIBMEMCACHED_UTIL_LDFLAGS])
         ],[
         AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [0], [Have libmemcachedutil-1.0/util.h])
         ])
       ])
 
-  AC_DEFUN([_WITH_LIBMEMCACHED], [
-      AC_REQUIRE([AX_LIBMEMCACHED_UTIL])
-      AC_ARG_ENABLE([libmemcached],
-        [AS_HELP_STRING([--disable-libmemcached],
-          [Build with libmemcached support @<:@default=on@:>@])],
-        [ac_enable_libmemcached="$enableval"],
-        [ac_enable_libmemcached="yes"])
+AC_DEFUN([_ENABLE_LIBMEMCACHED], [
+         AC_REQUIRE([AX_LIBMEMCACHED_UTIL])
+         AC_ARG_ENABLE([libmemcached],
+                       [AS_HELP_STRING([--disable-libmemcached],
+                                       [Build with libmemcached support @<:@default=on@:>@])],
+                       [ax_enable_libmemcached="$enableval"],
+                       [ax_enable_libmemcached="yes"])
 
-      ac_with_libmemcached="no"
-      AS_IF([test "x$ac_enable_libmemcached" = "xyes"], [
-        AS_IF([test "x$ax_cv_libmemcached" = "xyes"], [
-          ac_with_libmemcached="yes"
-          ])
-        ])
+         AS_IF([test "x$ax_cv_libmemcached" != "xyes"], [
+               ax_enable_libmemcached="not found"
+               ])
 
-      AS_IF([test "x$ac_with_libmemcached" = "xyes"], [
-        AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enable libmemcached support])
-        ],[
-        AC_DEFINE([HAVE_LIBMEMCACHED], [0], [Enable libmemcached support])
-        ])
-      AM_CONDITIONAL(HAVE_LIBMEMCACHED, test "x${ac_with_libmemcached}" = "xyes")
-      ])
+         AS_IF([test "x$ax_enable_libmemcached" = "xyes"], [
+               AC_DEFINE([HAVE_LIBMEMCACHED], [1], [Enable libmemcached support])
+               LIBMEMCACHED_CFLAGS=
+               AC_SUBST([LIBMEMCACHED_CFLAGS])
+               LIBMEMCACHED_LDFLAGS="-lmemcached"
+               AC_SUBST([LIBMEMCACHED_LDFLAGS])
+               AS_IF([test "x$ax_cv_libmemcached_util" = "xyes"], [
+                     LIBMEMCACHED_UTIL_LDFLAGS="-lmemcached -lmemcachedutil"
+                     AC_SUBST([LIBMEMCACHED_UTIL_LDFLAGS])
+                     ])
+               ],[
+               AC_DEFINE([HAVE_LIBMEMCACHED], [0], [Enable libmemcached support])
+               ])
+         AM_CONDITIONAL(HAVE_LIBMEMCACHED, test "x${ax_enable_libmemcached}" = "xyes")
+         ])
 
-AC_DEFUN([AX_WITH_LIBMEMCACHED], [ AC_REQUIRE([_WITH_LIBMEMCACHED]) ])
+AC_DEFUN([AX_ENABLE_LIBMEMCACHED], [ AC_REQUIRE([_ENABLE_LIBMEMCACHED]) ])

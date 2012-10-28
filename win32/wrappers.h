@@ -29,17 +29,42 @@
  * WinSock use a separate range for error codes. Let's just map to the
  * WinSock ones.
  */
-#define EADDRINUSE WSAEADDRINUSE
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#define EINPROGRESS WSAEINPROGRESS
-#define EALREADY WSAEALREADY
-#define EISCONN WSAEISCONN
-#define ENOTCONN WSAENOTCONN
-#define ENOBUFS WSAENOBUFS
-#define SHUT_RDWR SD_BOTH
+#ifndef EADDRINUSE
+# define EADDRINUSE WSAEADDRINUSE
+#endif
+
+#ifndef EWOULDBLOCK
+# define EWOULDBLOCK WSAEWOULDBLOCK
+#endif
+
+#ifndef EINPROGRESS
+# define EINPROGRESS WSAEINPROGRESS
+#endif
+
+#ifndef EALREADY
+# define EALREADY WSAEALREADY
+#endif
+
+#ifndef EISCONN
+# define EISCONN WSAEISCONN
+#endif
+
+#ifndef ENOTCONN
+# define ENOTCONN WSAENOTCONN
+#endif
+
+#ifndef ENOBUFS
+# define ENOBUFS WSAENOBUFS
+#endif
+
+#ifndef SHUT_RDWR
+# define SHUT_RDWR SD_BOTH
+#endif
 
 /* EAI_SYSTEM isn't defined anywhere... just set it to... 11? */
-#define EAI_SYSTEM 11
+#ifndef EAI_SYSTEM
+# define EAI_SYSTEM 11
+#endif
 
 /* Best effort mapping of functions to alternative functions */
 #define index(a,b) strchr(a,b)

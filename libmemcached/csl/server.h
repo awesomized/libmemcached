@@ -38,7 +38,10 @@
 #pragma once
 
 #include <cstdlib>
-#include <arpa/inet.h>
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
 
 struct server_t
 {

@@ -46,15 +46,15 @@
  * a lot easier to map back to the unix way with macros than going the other
  * way without side effect ;-)
  */
-#ifdef WIN32
-#include "win32/wrappers.h"
-#define get_socket_errno() WSAGetLastError()
+#if defined(WIN32) || defined(__MINGW32__)
+# include "win32/wrappers.h"
+# define get_socket_errno() WSAGetLastError()
 #else
-#include <unistd.h>
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define closesocket(a) close(a)
-#define get_socket_errno() errno
+# include <unistd.h>
+# define INVALID_SOCKET -1
+# define SOCKET_ERROR -1
+# define closesocket(a) close(a)
+# define get_socket_errno() errno
 #endif
 
 #ifdef __cplusplus
@@ -66,15 +66,15 @@ static inline void memcached_close_socket(int& socket_fd)
 #endif
 
 #ifndef HAVE_MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
+# define MSG_NOSIGNAL 0
 #endif
 
 #ifndef HAVE_MSG_DONTWAIT
-#define MSG_DONTWAIT 0
+# define MSG_DONTWAIT 0
 #endif
 
 #ifndef HAVE_MSG_MORE
-#define MSG_MORE 0
+# define MSG_MORE 0
 #endif
 
 

@@ -144,6 +144,7 @@ AC_CHECK_HEADERS([ws2tcpip.h])
 
 AC_CHECK_FUNCS([alarm])
 AC_CHECK_FUNCS([dup2])
+AC_CHECK_FUNCS([fcntl])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
 AC_CHECK_FUNCS([memchr])

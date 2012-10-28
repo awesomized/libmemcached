@@ -93,7 +93,7 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server)
           {
             int err;
             socklen_t len= sizeof(err);
-            if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+            if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char*)&err, &len) == 0)
             {
               if (err == 0)
               {
@@ -124,7 +124,7 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server)
     {
       int err;
       socklen_t len= sizeof (err);
-      if (getsockopt(fds[0].fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+      if (getsockopt(fds[0].fd, SOL_SOCKET, SO_ERROR, (char*)&err, &len) == 0)
       {
         // We check the value to see what happened wth the socket.
         if (err == 0)
@@ -298,7 +298,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     waittime.tv_usec= server->root->snd_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDTIMEO,
-                          &waittime, (socklen_t)sizeof(struct timeval));
+                          (char*)&waittime, (socklen_t)sizeof(struct timeval));
     (void)error;
     assert(error == 0);
   }
@@ -313,7 +313,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     waittime.tv_usec= server->root->rcv_timeout % 1000000;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVTIMEO,
-                          &waittime, (socklen_t)sizeof(struct timeval));
+                          (char*)&waittime, (socklen_t)sizeof(struct timeval));
     (void)(error);
     assert(error == 0);
   }
@@ -344,7 +344,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     linger.l_onoff= 1;
     linger.l_linger= 0; /* By default on close() just drop the socket */
     int error= setsockopt(server->fd, SOL_SOCKET, SO_LINGER,
-                          &linger, (socklen_t)sizeof(struct linger));
+                          (char*)&linger, (socklen_t)sizeof(struct linger));
     (void)(error);
     assert(error == 0);
   }
@@ -354,7 +354,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     int flag= 1;
 
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
-                          &flag, (socklen_t)sizeof(int));
+                          (char*)&flag, (socklen_t)sizeof(int));
     (void)(error);
     assert(error == 0);
   }
@@ -364,7 +364,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
     int flag= 1;
 
     int error= setsockopt(server->fd, SOL_SOCKET, SO_KEEPALIVE,
-                      &flag, (socklen_t)sizeof(int));
+                          (char*)&flag, (socklen_t)sizeof(int));
     (void)(error);
     assert(error == 0);
   }
@@ -373,7 +373,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   if (server->root->tcp_keepidle > 0)
   {
     int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
-                          &server->root->tcp_keepidle, (socklen_t)sizeof(int));
+                          (char*)&server->root->tcp_keepidle, (socklen_t)sizeof(int));
     (void)(error);
     assert(error == 0);
   }
@@ -382,7 +382,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   if (server->root->send_size > 0)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_SNDBUF,
-                          &server->root->send_size, (socklen_t)sizeof(int));
+                          (char*)&server->root->send_size, (socklen_t)sizeof(int));
     (void)(error);
     assert(error == 0);
   }
@@ -390,7 +390,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
   if (server->root->recv_size > 0)
   {
     int error= setsockopt(server->fd, SOL_SOCKET, SO_RCVBUF,
-                          &server->root->recv_size, (socklen_t)sizeof(int));
+                          (char*)&server->root->recv_size, (socklen_t)sizeof(int));
     (void)(error);
     assert(error == 0);
   }
@@ -510,13 +510,16 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
       type|= SOCK_NONBLOCK;
     }
 
-    if ((server->fd= socket(server->address_info_next->ai_family,
-                            type,
-                            server->address_info_next->ai_protocol)) < 0)
+    server->fd= socket(server->address_info_next->ai_family,
+                       type,
+                       server->address_info_next->ai_protocol);
+
+    if (int(server->fd) == SOCKET_ERROR)
     {
       return memcached_set_errno(*server, get_socket_errno(), NULL);
     }
 
+#ifdef HAVE_FCNTL
     // If SOCK_CLOEXEC exists then we don't need to call the following
     if (SOCK_CLOEXEC == 0)
     {
@@ -529,6 +532,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
         } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
       }
     }
+#endif
 
     set_socket_options(server);
 
