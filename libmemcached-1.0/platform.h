@@ -38,25 +38,21 @@
 #pragma once
 
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
+# include <winsock2.h>
+# include <ws2tcpip.h>
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
 typedef short in_port_t;
 typedef SOCKET memcached_socket_t;
+
 #else
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+# include <sys/un.h>
+# include <netinet/tcp.h>
+
 typedef int memcached_socket_t;
-
-#include <sys/socket.h>
-
-#include <netinet/in.h>
-
-#include <arpa/inet.h>
-
-#include <netdb.h>
-
-#include <sys/un.h>
-
-#include <netinet/tcp.h>
 
 #endif /* WIN32 */

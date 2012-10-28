@@ -45,6 +45,12 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifndef __WORDSIZE
+# ifdef __MINGW32__
+#  define __WORDSIZE 32
+# endif
+#endif
+
 #include <libhashkit-1.0/hashkit.h>
 #include <libhashkit/is.h>
 #include <libhashkit/string.h>

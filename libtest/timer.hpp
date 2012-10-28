@@ -114,7 +114,9 @@ public:
 private:
   void _time(struct timespec& ts)
   {
-#ifdef __MACH__ // OSX lacks clock_gettime()
+#if defined(HAVE_CLOCK_GETTIME) && HAVE_CLOCK_GETTIME
+    clock_gettime(CLOCK_REALTIME, &ts);
+#elif defined(__MACH__) && __MACH__ // OSX lacks clock_gettime()
     clock_serv_t _clock_serv;
     mach_timespec_t _mach_timespec;
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &_clock_serv);
@@ -123,7 +125,6 @@ private:
     ts.tv_sec= _mach_timespec.tv_sec;
     ts.tv_nsec= _mach_timespec.tv_nsec;
 #else
-    clock_gettime(CLOCK_REALTIME, &ts);
 #endif
   }
 

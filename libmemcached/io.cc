@@ -240,7 +240,7 @@ static memcached_return_t io_wait(org::libmemcached::Instance* ptr,
         int local_errno= EINVAL;
         int err;
         socklen_t len= sizeof (err);
-        if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
+        if (getsockopt(ptr->fd, SOL_SOCKET, SO_ERROR, (char*)&err, &len) == 0)
         {
           if (err == 0) // treat this as EINTR
           {

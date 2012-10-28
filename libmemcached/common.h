@@ -120,6 +120,14 @@
 # include "poll/poll.h"
 #endif
 
+#ifndef POLLHUP
+# define POLLHUP		0x0010
+#endif
+
+#ifndef POLLNVAL
+# define POLLNVAL	0x0020
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

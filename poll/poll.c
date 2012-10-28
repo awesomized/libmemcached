@@ -9,8 +9,16 @@
  *
  */
 #include "config.h"
+
+#if defined(WIN32) || defined(__MINGW32__)
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#endif
+
 #include <sys/time.h>
 #include <strings.h>
+
+#include "poll/poll.h"
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo)
 {
