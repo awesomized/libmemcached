@@ -210,6 +210,7 @@ bool Server::start()
     _app.use_valgrind();
   }
 
+  out_of_ban_killed(false);
   if (args(_app) == false)
   {
     throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
@@ -268,7 +269,7 @@ bool Server::start()
   bool pinged= false;
   uint32_t this_wait= 0;
   {
-    uint32_t timeout= 20; // This number should be high enough for valgrind startup (which is slow)
+    uint32_t timeout= 40; // This number should be high enough for valgrind startup (which is slow)
     uint32_t waited;
     uint32_t retry;
 

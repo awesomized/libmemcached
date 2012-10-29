@@ -290,20 +290,6 @@ static test_return_t gearmand_cycle_test(void *object)
   return TEST_SUCCESS;
 }
 
-#if 0
-static test_return_t memcached_light_cycle_TEST(void *object)
-{
-  server_startup_st *servers= (server_startup_st*)object;
-  test_true(servers);
-
-  test_skip(true, bool(HAVE_MEMCACHED_LIGHT_BINARY));
-
-  test_true(server_startup(*servers, "memcached-light", get_free_port(), 0, NULL, false));
-
-  return TEST_SUCCESS;
-}
-#endif
-
 static test_return_t skip_shim(bool a, bool b)
 {
   test_skip(a, b);

@@ -259,16 +259,6 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
         }
       }
     }
-    else if (server_type.compare("memcached-light") == 0)
-    {
-      if (MEMCACHED_LIGHT_BINARY)
-      {
-        if (HAVE_LIBMEMCACHED)
-        {
-          server= build_memcached_light("localhost", try_port);
-        }
-      }
-    }
 
     if (server == NULL)
     {
@@ -352,24 +342,6 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     else if (server_type.compare("gearmand") == 0)
     {
       Error << "Socket files are not supported for gearmand yet";
-    }
-    else if (server_type.compare("memcached-sasl") == 0)
-    {
-      if (MEMCACHED_SASL_BINARY)
-      {
-        if (HAVE_LIBMEMCACHED)
-        {
-          server= build_memcached_sasl_socket("localhost", try_port, username(), password());
-        }
-        else
-        {
-          Error << "Libmemcached was not found";
-        }
-      }
-      else
-      {
-        Error << "No memcached binary is available";
-      }
     }
     else if (server_type.compare("memcached") == 0)
     {

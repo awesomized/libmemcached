@@ -35,7 +35,7 @@
  */
 
 #include "mem_config.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 using namespace libtest;
 
@@ -45,8 +45,12 @@ using namespace libtest;
 #include <fcntl.h>
 #include <fstream>
 #include <memory>
-#include <poll.h>
-#include <spawn.h>
+#ifdef HAVE_POLL_H
+# include <poll.h>
+#endif
+#ifdef HAVE_SPAWN_H
+# include <spawn.h>
+#endif
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
@@ -424,7 +428,7 @@ Application::error_t Application::join()
     }
     else if WIFSIGNALED(_status)
     {
-      if (WTERMSIG(_status) != SIGTERM)
+      if (WTERMSIG(_status) != SIGTERM and WTERMSIG(_status) != SIGHUP)
       {
         _app_exit_state= Application::INVALID_POSIX_SPAWN;
         std::string error_string(built_argv[0]);
@@ -433,8 +437,8 @@ Application::error_t Application::join()
         throw std::runtime_error(error_string);
       }
 
-      _app_exit_state= Application::SIGTERM_KILLED;
-      Error << "waitpid() application terminated at request"
+      // If we terminted it on purpose then it counts as a success.
+      Out << "waitpid() application terminated at request"
         << " pid:" << _pid 
         << " name:" << built_argv[0];
     }

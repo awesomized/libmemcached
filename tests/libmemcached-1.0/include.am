@@ -171,6 +171,9 @@ noinst_PROGRAMS+= tests/libmemcached-1.0/testsocket
 test-socket: tests/libmemcached-1.0/testsocket
 	@tests/libmemcached-1.0/testsocket
 
+gdb-socket: tests/libmemcached-1.0/testsocket
+	@$(DEBUG_COMMAND) tests/libmemcached-1.0/testsocket
+
 tests_libmemcached_1_0_sasl_SOURCES=
 tests_libmemcached_1_0_sasl_DEPENDENCIES=
 tests_libmemcached_1_0_sasl_LDADD=

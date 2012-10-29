@@ -232,7 +232,7 @@ public:
 
   bool is_socket() const
   {
-    return _hostname[0] == '/';
+    return _is_socket;
   }
 
   const std::string running() const

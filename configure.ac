@@ -245,9 +245,6 @@ AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker]
 AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
 AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
 
-AC_DEFINE([HAVE_MEMCACHED_LIGHT_BINARY], [1], [Support for memcached_light])
-AC_DEFINE([MEMCACHED_LIGHT_BINARY], ["example/memcached_light"], [Support for memcached_light])
-
 dnl Check for the requirements for running memcached with less privileges
 dnl than the default privilege set. On Solaris we need setppriv and priv.h
 dnl If you want to add support for other platforms you should check for
