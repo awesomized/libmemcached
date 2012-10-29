@@ -34,7 +34,7 @@
  *
  */
 
-#include <config.h>
+#include "mem_config.h"
 #include <libtest/common.h>
 
 using namespace libtest;
@@ -45,6 +45,8 @@ using namespace libtest;
 #include <fcntl.h>
 #include <fstream>
 #include <memory>
+#include <poll.h>
+#include <spawn.h>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
@@ -422,8 +424,7 @@ Application::error_t Application::join()
     }
     else if WIFSIGNALED(_status)
     {
-      // memcached will die with SIGHUP
-      if (WTERMSIG(_status) != SIGTERM and WTERMSIG(_status) != SIGHUP)
+      if (WTERMSIG(_status) != SIGTERM)
       {
         _app_exit_state= Application::INVALID_POSIX_SPAWN;
         std::string error_string(built_argv[0]);
@@ -433,7 +434,7 @@ Application::error_t Application::join()
       }
 
       _app_exit_state= Application::SIGTERM_KILLED;
-      Out << "waitpid() application terminated at request"
+      Error << "waitpid() application terminated at request"
         << " pid:" << _pid 
         << " name:" << built_argv[0];
     }

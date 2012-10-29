@@ -23,7 +23,7 @@
  * the library)
  */
 
-#include <config.h>
+#include <mem_config.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>
 #include <libmemcached/socket.hpp>

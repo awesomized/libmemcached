@@ -36,7 +36,7 @@
  */
 
 
-#include <config.h>
+#include <mem_config.h>
 
 #include "util/operation.hpp"
 #include <string>

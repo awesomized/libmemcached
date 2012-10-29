@@ -34,7 +34,7 @@
  *
  */
 
-#include <config.h>
+#include "mem_config.h"
 #include <libtest/common.h>
 
 #include <libmemcached-1.0/memcached.h>
@@ -124,36 +124,15 @@ public:
 
   bool ping()
   {
-#if 0
-    // Memcached is slow to start, so we need to do this
-    if (pid_file().empty() == false)
+    if (out_of_ban_killed())
     {
-      if (wait_for_pidfile() == false)
-      {
-        Error << "Pidfile was not found:" << pid_file() << " :" << running();
-        return -1;
-      }
-    }
-#endif
-
-    memcached_return_t rc;
-    bool ret;
-
-    if (has_socket())
-    {
-      ret= libmemcached_util_ping(socket().c_str(), 0, &rc);
-    }
-    else
-    {
-      ret= libmemcached_util_ping(hostname().c_str(), port(), &rc);
+      return false;
     }
 
-    if (memcached_failed(rc) or ret == false)
-    {
-      error(memcached_strerror(NULL, rc));
-    }
+    SimpleClient client(_hostname, _port);
 
-    return ret;
+    std::string response;
+    return client.send_message("version", response);
   }
 
   const char *name()

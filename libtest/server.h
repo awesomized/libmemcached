@@ -41,15 +41,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
-
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-
+#include <netdb.h>
+#include <netinet/in.h>
 #include <string>
 #include <unistd.h>
 #include <vector>

@@ -34,7 +34,7 @@
  *
  */
 
-#include <config.h>
+#include <mem_config.h>
 
 /*
   C++ interface test

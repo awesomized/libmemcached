@@ -18,7 +18,7 @@ AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-u
 
 AC_PREREQ([2.61])
 
-AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
+AC_CONFIG_HEADERS([mem_config.h:mem_config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
 #shared library versioning
@@ -254,17 +254,17 @@ dnl If you want to add support for other platforms you should check for
 dnl your requirements, define HAVE_DROP_PRIVILEGES, and make sure you add
 dnl the source file containing the implementation into memcached_SOURCE
 dnl in Makefile.am
-AC_CHECK_FUNCS([setppriv], [
-   AC_CHECK_HEADER([priv.h], [
-      AC_DEFINE([HAVE_DROP_PRIVILEGES], 1,
-         [Define this if you have an implementation of drop_privileges()])
-      build_solaris_privs=yes
-   ], [])
-],[])
+AC_CHECK_FUNCS([setppriv],
+               [AC_CHECK_HEADER([priv.h],
+                                [AC_DEFINE([HAVE_DROP_PRIVILEGES],
+                                           [1],
+                                           [Define this if you have an implementation of drop_privileges()])
+                                build_solaris_privs=yes])
+               ])
 
-AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
-AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
-AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
+AC_CHECK_HEADERS_ONCE([winsock2.h poll.h sys/wait.h fnmatch.h])
+AM_CONDITIONAL([BUILD_POLL],[test "x$ac_cv_header_poll_h" = "xno"])
+AM_CONDITIONAL([BUILD_WIN32_WRAPPERS],[test "x$ac_cv_header_winsock2_h" = "xyes"])
 AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
       [AM_LDFLAGS="$AM_LDFLAGS -lws2_32"
        AM_CFLAGS="$AM_CFLAGS $NO_WERROR"

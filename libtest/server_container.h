@@ -39,7 +39,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
-
+#include <netdb.h>
+#include <netinet/in.h>
 #include <string>
 #include <unistd.h>
 #include <vector>

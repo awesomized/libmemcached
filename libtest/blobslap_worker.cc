@@ -35,7 +35,7 @@
  */
 
 
-#include <config.h>
+#include "mem_config.h"
 #include <libtest/common.h>
 
 #include <libtest/blobslap_worker.h>

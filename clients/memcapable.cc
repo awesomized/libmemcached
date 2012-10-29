@@ -13,7 +13,7 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #undef NDEBUG
 
-#include <config.h>
+#include <mem_config.h>
 
 #ifdef HAVE_POLL_H
 #include <poll.h>

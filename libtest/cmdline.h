@@ -36,24 +36,18 @@
 
 #pragma once
 
-#ifdef HAVE_SPAWN_H
-# include <spawn.h>
-#endif
+#include <spawn.h>
 
-/*
-  http://www.gnu.org/software/automake/manual/automake.html#Tests
-  When no test protocol is in use, an exit status of 0 from a test script will denote a success, an exit status of 77 a skipped test, an exit status of 99 an hard error, and any other exit status will denote a failure.
-*/
-
+// http://www.gnu.org/software/automake/manual/automake.html#Using-the-TAP-test-protocol
 #define EXIT_SKIP 77
-#define EXIT_FATAL 99
+#define EXIT_FATAL 77
 
 #ifndef EX_NOEXEC
-# define EX_NOEXEC 126
+#  define EX_NOEXEC 126
 #endif
 
 #ifndef EX_NOTFOUND
-# define EX_NOTFOUND 127
+#  define EX_NOTFOUND 127
 #endif
 
 namespace libtest {

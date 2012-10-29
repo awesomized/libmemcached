@@ -42,7 +42,7 @@
 
 #pragma once
 
-#include <config.h>
+#include <mem_config.h>
 
 #ifdef __cplusplus
 # include <cstddef>

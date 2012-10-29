@@ -34,7 +34,7 @@
  *
  */
 
-#include <config.h>
+#include "mem_config.h"
 #include <libtest/common.h>
 
 #include <cassert>
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
           return EXIT_SKIP;
 
         case TEST_FAILURE:
-          std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "frame->create()" << std::endl;
+          std::cerr << "frame->create()" << std::endl;
           return EXIT_FAILURE;
         }
       }
@@ -340,27 +340,27 @@ int main(int argc, char *argv[])
   }
   catch (libtest::fatal& e)
   {
-    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "FATAL:" << e.what() << std::endl;
+    std::cerr << "FATAL:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (libtest::disconnected& e)
   {
-    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Unhandled disconnection occurred:" << e.what() << std::endl;
+    std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (std::exception& e)
   {
-    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "std::exception:" << e.what() << std::endl;
+    std::cerr << "std::exception:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (char const*)
   {
-    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Exception:" << std::endl;
+    std::cerr << "Exception:" << std::endl;
     exit_code= EXIT_FAILURE;
   }
   catch (...)
   {
-    std::cerr << __FILE__ << ":" <<  __LINE__ << ": " << "Unknown exception halted execution." << std::endl;
+    std::cerr << "Unknown exception halted execution." << std::endl;
     exit_code= EXIT_FAILURE;
   }
 

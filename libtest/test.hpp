@@ -40,22 +40,7 @@
 
 #include <cstdio>
 #include <cstdlib>
-
-#if defined(WIN32) || defined(__MINGW32__)
-# include <winsock2.h>
-# include <ws2tcpip.h>
-
-typedef short in_port_t;
-
-#endif
-
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
+#include <arpa/inet.h>
 
 #include <libtest/visibility.h>
 #include <libtest/version.h>
@@ -90,3 +75,4 @@ typedef short in_port_t;
 #include <libtest/http.hpp>
 #include <libtest/cpu.hpp>
 #include <libtest/tmpfile.hpp>
+#include <libtest/client.hpp>

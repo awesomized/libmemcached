@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <config.h>
+#include <mem_config.h>
 
 #include <assert.h>
 #include <errno.h>

@@ -128,7 +128,7 @@ maintainer-clean-local:
 	-rm -f build-aux/install-sh
 	-rm -f build-aux/ltmain.sh
 	-rm -f build-aux/missing
-	-rm -f config.in
+	-rm -f mem_config.in
 	-rm -f config.log
 	-rm -f config.status
 	-rm -f configure

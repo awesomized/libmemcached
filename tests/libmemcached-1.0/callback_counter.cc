@@ -35,7 +35,7 @@
  *
  */
 
-#include <config.h>
+#include <mem_config.h>
 #include <libtest/test.hpp>
 
 #include "tests/libmemcached-1.0/callback_counter.h"
