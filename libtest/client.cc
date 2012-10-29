@@ -47,6 +47,9 @@
 #include <unistd.h>
 #include <string>
 
+#ifndef HAVE_MSG_NOSIGNAL
+# define MSG_NOSIGNAL 0
+#endif
 
 namespace libtest {
 
