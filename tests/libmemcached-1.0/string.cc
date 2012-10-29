@@ -38,7 +38,7 @@
 // We let libmemcached/common.h define config since we are looking at
 // library internals.
 
-#include <config.h>
+#include <mem_config.h>
 
 #include <libmemcached-1.0/memcached.h>
 

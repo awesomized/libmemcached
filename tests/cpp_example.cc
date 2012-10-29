@@ -1,7 +1,7 @@
 /*
  * An example file showing the usage of the C++ libmemcached interface.
  */
-#include <config.h>
+#include <mem_config.h>
 
 #include <vector>
 #include <string>

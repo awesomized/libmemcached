@@ -9,7 +9,7 @@
  * Summary:
  *
  */
-#include "config.h"
+#include "mem_config.h"
 
 #include <stdio.h>
 #include <unistd.h>

@@ -49,9 +49,9 @@ clients/memrm
 clients/memslap
 clients/memstat
 clients/memtouch
-config.h
-config.h.in
-config.in
+mem_config.h
+mem_config.h.in
+mem_config.in
 config.log
 config.status
 config/compile

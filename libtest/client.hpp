@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  Libmemcached Client and Server 
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Data Differential YATL (i.e. libtest)  library
+ *
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,53 +34,44 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#pragma once
 
-#include <tests/callbacks.h>
+namespace libtest {
 
-using namespace libtest;
+class SimpleClient {
+public:
+  SimpleClient(const std::string& hostname_, in_port_t port_);
+  ~SimpleClient();
 
-#ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
+  bool send_message(const std::string& arg);
+  bool send_message(const std::string& message_, std::string& response_);
+  bool response(std::string&);
 
-static memcached_return_t delete_trigger(memcached_st *,
-                                         const char *key,
-                                         size_t key_length)
-{
-  fatal_assert(key);
-  fatal_assert(key_length);
+  bool is_valid();
 
-  return MEMCACHED_SUCCESS;
-}
+  const std::string& error() const
+  {
+    return _error;
+  }
 
+  bool is_error() const
+  {
+    return _error.size();
+  }
 
-test_return_t test_MEMCACHED_CALLBACK_DELETE_TRIGGER_and_MEMCACHED_BEHAVIOR_NOREPLY(memcached_st *)
-{
-  memcached_st *memc= memcached(test_literal_param("--NOREPLY"));
-  test_true(memc);
+private: // Methods
+  void close_socket();
+  bool instance_connect();
+  struct addrinfo* lookup();
+  bool message(const std::string&);
+  bool ready(int event_);
 
-  memcached_trigger_delete_key_fn callback;
+private:
+  std::string _hostname;
+  in_port_t _port;
+  int sock_fd;
+  std::string _error;
+  int requested_message;
+};
 
-  callback= (memcached_trigger_delete_key_fn)delete_trigger;
-
-  test_compare(MEMCACHED_INVALID_ARGUMENTS, 
-               memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback));
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t test_MEMCACHED_CALLBACK_DELETE_TRIGGER(memcached_st *memc)
-{
-  memcached_trigger_delete_key_fn callback;
-
-  callback= (memcached_trigger_delete_key_fn)delete_trigger;
-
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_callback_set(memc, MEMCACHED_CALLBACK_DELETE_TRIGGER, *(void**)&callback));
-
-  return TEST_SUCCESS;
-}
+} // namespace libtest

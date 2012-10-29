@@ -41,15 +41,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
-
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-
+#include <netdb.h>
+#include <netinet/in.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -239,7 +232,7 @@ public:
 
   bool is_socket() const
   {
-    return _hostname[0] == '/';
+    return _is_socket;
   }
 
   const std::string running() const

@@ -34,7 +34,7 @@
  *
  */
 
-#include <config.h>
+#include "mem_config.h"
 #include <libtest/common.h>
 
 #include <libtest/gearmand.h>
@@ -57,8 +57,6 @@ using namespace libtest;
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <libgearman/gearman.h>
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
@@ -73,37 +71,15 @@ public:
 
   bool ping()
   {
-    gearman_client_st *client= gearman_client_create(NULL);
-    if (client == NULL)
+    if (out_of_ban_killed())
     {
-      error("Could not allocate memory for gearman_client_create()");
       return false;
     }
-    gearman_client_set_timeout(client, 4000);
 
-    if (gearman_success(gearman_client_add_server(client, hostname().c_str(), port())))
-    {
-      gearman_return_t rc= gearman_client_echo(client, test_literal_param("This is my echo test"));
+    SimpleClient client(_hostname, _port);
 
-      if (gearman_success(rc))
-      {
-        gearman_client_free(client);
-        return true;
-      }
-      
-      if (out_of_ban_killed() == false)
-      {
-        error(gearman_client_error(client));
-      }
-    }
-    else
-    {
-      error(gearman_client_error(client));
-    }
-
-    gearman_client_free(client);
-
-    return false;;
+    std::string response;
+    return client.send_message("version", response);
   }
 
   const char *name()

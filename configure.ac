@@ -18,7 +18,7 @@ AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-u
 
 AC_PREREQ([2.61])
 
-AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
+AC_CONFIG_HEADERS([mem_config.h:mem_config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
 #shared library versioning
@@ -245,26 +245,23 @@ AC_DEFINE([GEARMAND_BLOBSLAP_WORKER], [0], [Support for Gearman Blobslap worker]
 AC_DEFINE([HAVE_LIBPQ], [0], [Support for Postgres])
 AC_DEFINE([HAVE_LIBCURL], [0], [Support for libcurl])
 
-AC_DEFINE([HAVE_MEMCACHED_LIGHT_BINARY], [1], [Support for memcached_light])
-AC_DEFINE([MEMCACHED_LIGHT_BINARY], ["example/memcached_light"], [Support for memcached_light])
-
 dnl Check for the requirements for running memcached with less privileges
 dnl than the default privilege set. On Solaris we need setppriv and priv.h
 dnl If you want to add support for other platforms you should check for
 dnl your requirements, define HAVE_DROP_PRIVILEGES, and make sure you add
 dnl the source file containing the implementation into memcached_SOURCE
 dnl in Makefile.am
-AC_CHECK_FUNCS([setppriv], [
-   AC_CHECK_HEADER([priv.h], [
-      AC_DEFINE([HAVE_DROP_PRIVILEGES], 1,
-         [Define this if you have an implementation of drop_privileges()])
-      build_solaris_privs=yes
-   ], [])
-],[])
+AC_CHECK_FUNCS([setppriv],
+               [AC_CHECK_HEADER([priv.h],
+                                [AC_DEFINE([HAVE_DROP_PRIVILEGES],
+                                           [1],
+                                           [Define this if you have an implementation of drop_privileges()])
+                                build_solaris_privs=yes])
+               ])
 
-AC_CHECK_HEADERS_ONCE(winsock2.h poll.h sys/wait.h fnmatch.h)
-AM_CONDITIONAL(BUILD_POLL, test "x$ac_cv_header_poll_h" = "xno")
-AM_CONDITIONAL(BUILD_WIN32_WRAPPERS, test "x$ac_cv_header_winsock2_h" = "xyes")
+AC_CHECK_HEADERS_ONCE([winsock2.h poll.h sys/wait.h fnmatch.h])
+AM_CONDITIONAL([BUILD_POLL],[test "x$ac_cv_header_poll_h" = "xno"])
+AM_CONDITIONAL([BUILD_WIN32_WRAPPERS],[test "x$ac_cv_header_winsock2_h" = "xyes"])
 AS_IF(test "x$ac_cv_header_winsock2_h" = "xyes",
       [AM_LDFLAGS="$AM_LDFLAGS -lws2_32"
        AM_CFLAGS="$AM_CFLAGS $NO_WERROR"

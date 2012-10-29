@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  */
 
-#include <config.h>
+#include <mem_config.h>
 
 #if defined __SUNPRO_C || defined __DECC || defined __HP_cc
 # pragma ident "@(#)$Header: /cvsroot/wikipedia/willow/src/bin/willow/daemon.c,v 1.1 2005/05/02 19:15:21 kateturner Exp $"

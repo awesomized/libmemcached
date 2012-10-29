@@ -40,7 +40,7 @@
   Sample test application.
 */
 
-#include <config.h>
+#include <mem_config.h>
 #include <libtest/test.hpp>
 
 using namespace libtest;

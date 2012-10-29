@@ -35,7 +35,7 @@
  *
  */
 
-#include <config.h>
+#include <mem_config.h>
 #include <libtest/test.hpp>
 
 #if defined(HAVE_LIBUUID) && HAVE_LIBUUID

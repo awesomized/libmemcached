@@ -46,45 +46,40 @@
 #include <string>
 
 #ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
+# include <sys/types.h>
 #endif
 
 #ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
+# include <sys/time.h>
 #endif
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H 
-#include <sys/resource.h> 
+# include <sys/resource.h> 
 #endif
  
 #ifdef HAVE_FNMATCH_H
-#include <fnmatch.h>
-#endif
-
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
+# include <fnmatch.h>
 #endif
 
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
 #endif
 
-#ifdef HAVE_POLL_H
-# include <poll.h>
+#if defined(WIN32) || defined(__MINGW32__)
+# include "win32/wrappers.h"
+# define get_socket_errno() WSAGetLastError()
 #else
-# include "poll/poll.h"
-#endif
-
-#ifdef HAVE_SPAWN_H
-# include <spawn.h>
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+# define INVALID_SOCKET -1
+# define SOCKET_ERROR -1
+# define closesocket(a) close(a)
+# define get_socket_errno() errno
 #endif
 
 #include <libtest/test.hpp>
