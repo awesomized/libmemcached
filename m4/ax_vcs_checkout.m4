@@ -45,10 +45,11 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 5
+#serial 6
 
 AC_DEFUN([AX_VCS_SYSTEM],
-    [AC_CACHE_CHECK([for vcs system], [ac_cv_vcs_system],
+    [AC_PREREQ([2.63])dnl
+    AC_CACHE_CHECK([for vcs system], [ac_cv_vcs_system],
       [ac_cv_vcs_system="none"
       AS_IF([test -d ".bzr"],[ac_cv_vcs_system="bazaar"])
       AS_IF([test -d ".svn"],[ac_cv_vcs_system="svn"])
@@ -58,7 +59,8 @@ AC_DEFUN([AX_VCS_SYSTEM],
     ])
 
 AC_DEFUN([AX_VCS_CHECKOUT],
-    [AC_REQUIRE([AX_VCS_SYSTEM])
+    [AC_PREREQ([2.63])dnl
+    AC_REQUIRE([AX_VCS_SYSTEM])
     AC_CACHE_CHECK([for vcs checkout],[ac_cv_vcs_checkout],
       [AS_IF([test "x$ac_cv_vcs_system" != "xnone"],
         [ac_cv_vcs_checkout=yes],

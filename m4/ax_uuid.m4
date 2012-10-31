@@ -1,11 +1,12 @@
+# vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
 # ===========================================================================
 # https://github.com/BrianAker/ddm4
 # ===========================================================================
 #
 # SYNOPSIS
 #
-#   AX_UUID
-#   AX_UUID_GENERATE_TIME_SAFE
+#   AX_UUID()
+#   AX_UUID_GENERATE_TIME_SAFE()
 #
 # DESCRIPTION
 #
@@ -20,30 +21,32 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 4
+#serial 5
 
-AC_DEFUN([AX_UUID], [
-    AC_CHECK_HEADER([uuid/uuid.h], [
-      AC_CACHE_CHECK([check to see if -luuid is not needed], [ax_cv_libuuid_is_required], [
-        AC_LANG_PUSH([C])
-        AC_RUN_IFELSE([
-          AC_LANG_PROGRAM([#include <uuid/uuid.h>], [
+AC_DEFUN([AX_UUID],
+    [AC_PREREQ([2.63])dnl
+    AC_CHECK_HEADER([uuid/uuid.h],[
+
+      AC_CACHE_CHECK([check to see if -luuid is needed], [ax_cv_libuuid_is_required],
+        [AC_LANG_PUSH([C])
+        AC_RUN_IFELSE(
+          [AC_LANG_PROGRAM([#include <uuid/uuid.h>], [
             uuid_t out;
             uuid_generate(out);
             ])],
           [ax_cv_libuuid_is_required=no],
-          [ax_cv_libuuid_is_required=maybe],
+          [ax_cv_libuuid_is_required=yes],
           [AC_MSG_WARN([test program execution failed])])
         AC_LANG_POP
         ])
 
-      AS_IF([test "$ax_cv_libuuid_is_required" = maybe], [
-        AC_CACHE_CHECK([check to see if -luuid is needed], [ax_cv_libuuid_works], [
-          save_LIBS="$LIBS"
+      AS_IF([test "$ax_cv_libuuid_is_required" = yes],
+        [AC_CACHE_CHECK([check to see if -luuid is needed], [ax_cv_libuuid_works],
+          [AX_SAVE_FLAGS
           LIBS="-luuid $LIBS"
           AC_LANG_PUSH([C])
-          AC_RUN_IFELSE([
-            AC_LANG_PROGRAM([#include <uuid/uuid.h>], [
+          AC_RUN_IFELSE(
+            [AC_LANG_PROGRAM([#include <uuid/uuid.h>], [
               uuid_t out;
               uuid_generate(out);
               ])],
@@ -51,31 +54,34 @@ AC_DEFUN([AX_UUID], [
             [ax_cv_libuuid_works=no],
             [AC_MSG_WARN([test program execution failed])])
           AC_LANG_POP
-          LIBS="$save_LIBS"
-          ])
-        AS_IF([test "$ax_cv_libuuid_works" = yes], [
-          AC_SUBST([LIBUUID_LDFLAGS],[-luuid])])
+          AX_RESTORE_FLAGS])
         ])
 
-      AS_IF([test "$ax_cv_libuuid_is_required" = no], [UUID_UUID_H=yes])
-      AS_IF([test "$ax_cv_libuuid_works" = yes], [UUID_UUID_H=yes])
-      ])
+      AS_IF([test "$ax_cv_libuuid_is_required" = yes],
+          [AS_IF([test "$ax_cv_libuuid_works" = yes],[ax_libuuid=yes])],
+          [ax_libuuid=yes])
+      ],[ax_libuuid=no])
 
-  AS_IF([test "$UUID_UUID_H" = yes], [
-      AC_DEFINE([HAVE_UUID_UUID_H], [1], [Have uuid/uuid.h])
-      ],[
-      AC_DEFINE([HAVE_UUID_UUID_H], [0], [Have uuid/uuid.h])
-      ])
+      AS_IF([test "$ax_libuuid" = yes],
+          [AC_DEFINE([HAVE_UUID_UUID_H],[1],[Have uuid/uuid.h])
+          AS_IF([test "$ax_cv_libuuid_is_required" = yes],[ LIBUUID_LDFLAGS='-luuid' ])],
+          [AC_DEFINE([HAVE_UUID_UUID_H],[0],[Have uuid/uuid.h])
+          ])
+
+  AC_SUBST([LIBUUID_LDFLAGS])
+  AM_CONDITIONAL([HAVE_LIBUUID],[test "$ax_libuuid" = yes])
   ])
 
-  AC_DEFUN([AX_UUID_GENERATE_TIME_SAFE], [
-      AC_REQUIRE([AX_UUID])
-      AC_CACHE_CHECK([for uuid_generate_time_safe], [ax_cv_uuid_generate_time_safe], [
-        save_LIBS="$LIBS"
+  AC_DEFUN([AX_UUID_GENERATE_TIME_SAFE],
+      [AC_PREREQ([2.68])dnl
+      AC_REQUIRE([AX_UUID])dnl
+      AC_CACHE_CHECK([for uuid_generate_time_safe],
+        [ax_cv_uuid_generate_time_safe],
+        [AX_SAVE_FLAGS
         LIBS="$LIBUUID_LDFLAGS $LIBS"
         AC_LANG_PUSH([C])
         AC_RUN_IFELSE([
-          AC_LANG_PROGRAM([#include <uuid/uuid.h>], [
+          AC_LANG_PROGRAM([#include <uuid/uuid.h>],[
             uuid_t out;
             uuid_generate_time_safe(out);
             ])],
@@ -83,11 +89,10 @@ AC_DEFUN([AX_UUID], [
           [ax_cv_uuid_generate_time_safe=no],
           [AC_MSG_WARN([test program execution failed])])
         AC_LANG_POP
-        LIBS="$save_LIBS"
+        AX_RESTORE_FLAGS
         ])
 
-      AS_IF([test "$ax_cv_uuid_generate_time_safe" = yes],[
-        AC_DEFINE([HAVE_UUID_GENERATE_TIME_SAFE],[1],[Define if uuid_generate_time_safe is present in uuid/uuid.h.])],[
-        AC_DEFINE([HAVE_UUID_GENERATE_TIME_SAFE],[0],[Define if uuid_generate_time_safe is present in uuid/uuid.h.])
-        ])
+      AS_IF([test "$ax_cv_uuid_generate_time_safe" = yes],
+        [AC_DEFINE([HAVE_UUID_GENERATE_TIME_SAFE],[1],[Define if uuid_generate_time_safe is present in uuid/uuid.h.])],
+        [AC_DEFINE([HAVE_UUID_GENERATE_TIME_SAFE],[0],[Define if uuid_generate_time_safe is present in uuid/uuid.h.])])
       ])
