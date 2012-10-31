@@ -43,9 +43,10 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 1
+#serial 3
 
-AC_DEFUN([AX_DEBUG],[
+AC_DEFUN([AX_DEBUG],
+    [AC_PREREQ([2.63])dnl
     AC_ARG_ENABLE([debug],
       [AS_HELP_STRING([--enable-debug],
         [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],[

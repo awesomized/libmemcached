@@ -672,7 +672,7 @@ function make_target ()
     run_configure
   fi
 
-  if test -n "$TESTS_ENVIRONMENT" -a $VERBOSE; then
+  if [ -n "$TESTS_ENVIRONMENT" -a $VERBOSE ]; then
     echo "TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT"
   fi
 
@@ -867,6 +867,10 @@ autoreconf_setup ()
 
   if $VERBOSE; then
     GNU_BUILD_FLAGS="$GNU_BUILD_FLAGS --verbose"
+  fi
+
+  if [ -z "$ACLOCAL_PATH" ]; then
+    ACLOCAL_PATH="/usr/local/share/aclocal $ACLOCAL_PATH"
   fi
 
   if [[ -z "$WARNINGS" ]]; then

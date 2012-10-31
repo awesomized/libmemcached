@@ -19,9 +19,10 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 2
+#serial 3
  
-AC_DEFUN([AX_HEX_VERSION],[
+AC_DEFUN([AX_HEX_VERSION],
+    [AC_PREREQ([2.63])dnl
 
     string_version_$1=`echo $2 | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "%d.%d.%d", $[]1, $[]2, $[]3}'`
     hex_version_$1=`echo $2 | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "0x%0.2d%0.3d%0.3d", $[]1, $[]2, $[]3}'`
