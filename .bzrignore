@@ -1,6 +1,3 @@
-*.BASE
-*.OTHER
-*.THIS
 *.exe
 *.gz
 *.lo
@@ -95,7 +92,6 @@ libtest/unittest
 libtest/version.h
 libtest/wait
 libtool
-m4/.git
 m4/libtool.m4
 m4/libtool.m4 
 m4/ltoptions.m4
