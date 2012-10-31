@@ -47,38 +47,26 @@
 
 #serial 5
 
-AC_DEFUN([AX_VCS_SYSTEM],[
-    AC_CACHE_CHECK([for vcs system], [ac_cv_vcs_system], [
-      AS_IF([test -d ".bzr"],[
-        ac_cv_vcs_system="bazaar"
-        ])
-      AS_IF([test -d ".svn"],[
-        ac_cv_vcs_system="svn"
-        ])
-      AS_IF([test -d ".hg"],[
-        ac_cv_vcs_system="mercurial"
-        ])
-      AS_IF([test -d ".git"],[
-        ac_cv_vcs_system="git"
-        ])
-      ],[
-      ac_cv_vcs_system="none"
+AC_DEFUN([AX_VCS_SYSTEM],
+    [AC_CACHE_CHECK([for vcs system], [ac_cv_vcs_system],
+      [ac_cv_vcs_system="none"
+      AS_IF([test -d ".bzr"],[ac_cv_vcs_system="bazaar"])
+      AS_IF([test -d ".svn"],[ac_cv_vcs_system="svn"])
+      AS_IF([test -d ".hg"],[ac_cv_vcs_system="mercurial"])
+      AS_IF([test -d ".git"],[ac_cv_vcs_system="git"])
       ])
-
     ])
 
-AC_DEFUN([AX_VCS_CHECKOUT],[
-    AC_REQUIRE([AX_VCS_SYSTEM])
-    AC_CACHE_CHECK([for vcs checkout], [ac_cv_vcs_checkout], [
-      AS_IF([test "x$ac_cv_vcs_system" != "xnone"],[
-        ac_cv_vcs_checkout=yes
-        ],[
-        ac_cv_vcs_checkout=no
-        ])
+AC_DEFUN([AX_VCS_CHECKOUT],
+    [AC_REQUIRE([AX_VCS_SYSTEM])
+    AC_CACHE_CHECK([for vcs checkout],[ac_cv_vcs_checkout],
+      [AS_IF([test "x$ac_cv_vcs_system" != "xnone"],
+        [ac_cv_vcs_checkout=yes],
+        [ac_cv_vcs_checkout=no])
       ])
 
-    AM_CONDITIONAL([VCS_CHECKOUT], [test "$ac_cv_vcs_checkout" = "yes"])
-    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],[
-      AC_DEFINE([VCS_CHECKOUT], [1], [Define if the code was built from VCS.])
+    AM_CONDITIONAL([IS_VCS_CHECKOUT], [test "x$ac_cv_vcs_checkout" = "xyes"])
+    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],
+      [AC_DEFINE([VCS_CHECKOUT], [1], [Define if the code was built from VCS.])
       ])
     ])

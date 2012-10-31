@@ -4,7 +4,7 @@
 
 if HAVE_RECENT_SPHINX
 
-if VCS_CHECKOUT
+if IS_VCS_CHECKOUT
 
 dist-hook: man
 
