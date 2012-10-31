@@ -55,9 +55,8 @@ AX_PLATFORM
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_CXX_HEADER_STDCXX_98
-AS_IF([ test "$ax_cv_cxx_stdcxx_98" = no ],[
-       AC_MSG_ERROR([Your system lacks a new enough C++ compiler])
-       ])
+AS_IF([test "x$ax_cv_cxx_stdcxx_98" = "xno"],
+      [AC_MSG_ERROR([Your system lacks a new enough C++ compiler])])
 
 AC_DEFUN([LIBMEMCACHED_PROTOCOL],
          [AC_ARG_ENABLE([libmemcachedprotocol],
@@ -100,8 +99,8 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 # Checks for programs.
-AC_CHECK_PROGS([LEX], ['flex'], [:])
-AC_CHECK_PROGS([YACC], ['bison'], [:])
+AC_CHECK_PROGS([LEX],['flex'],[:])
+AC_CHECK_PROGS([YACC],['bison'],[:])
 AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
@@ -109,30 +108,33 @@ AC_SEARCH_LIBS([getopt_long],[gnugetopt])
 AC_SEARCH_LIBS([gethostbyname],[nsl])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h])
-AC_CHECK_HEADERS([errno.h])
-AC_CHECK_HEADERS([dlfcn.h])
-AC_CHECK_HEADERS([execinfo.h])
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([inttypes.h])
-AC_CHECK_HEADERS([libintl.h])
-AC_CHECK_HEADERS([limits.h])
-AC_CHECK_HEADERS([math.h])
-AC_CHECK_HEADERS([netdb.h])
-AC_CHECK_HEADERS([netinet/in.h])
-AC_CHECK_HEADERS([netinet/tcp.h])
-AC_CHECK_HEADERS([pthread.h])
-AC_CHECK_HEADERS([spawn.h])
-AC_CHECK_HEADERS([stdarg.h])
-AC_CHECK_HEADERS([stddef.h])
-AC_CHECK_HEADERS([stdio.h])
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([sys/socket.h])
-AC_CHECK_HEADERS([sys/sysctl.h])
-AC_CHECK_HEADERS([sys/time.h])
-AC_CHECK_HEADERS([sys/un.h])
-AC_CHECK_HEADERS([time.h])
-AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_HEADERS_ONCE([arpa/inet.h])
+AC_CHECK_HEADERS_ONCE([dlfcn.h])
+AC_CHECK_HEADERS_ONCE([errno.h])
+AC_CHECK_HEADERS_ONCE([execinfo.h])
+AC_CHECK_HEADERS_ONCE([fcntl.h])
+AC_CHECK_HEADERS_ONCE([inttypes.h])
+AC_CHECK_HEADERS_ONCE([libintl.h])
+AC_CHECK_HEADERS_ONCE([limits.h])
+AC_CHECK_HEADERS_ONCE([mach/mach.h])
+AC_CHECK_HEADERS_ONCE([malloc.h])
+AC_CHECK_HEADERS_ONCE([math.h])
+AC_CHECK_HEADERS_ONCE([netdb.h])
+AC_CHECK_HEADERS_ONCE([netinet/in.h])
+AC_CHECK_HEADERS_ONCE([netinet/tcp.h])
+AC_CHECK_HEADERS_ONCE([pthread.h])
+AC_CHECK_HEADERS_ONCE([spawn.h])
+AC_CHECK_HEADERS_ONCE([stdarg.h])
+AC_CHECK_HEADERS_ONCE([stddef.h])
+AC_CHECK_HEADERS_ONCE([stdio.h])
+AC_CHECK_HEADERS_ONCE([stdlib.h])
+AC_CHECK_HEADERS_ONCE([sys/socket.h])
+AC_CHECK_HEADERS_ONCE([sys/sysctl.h])
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+AC_CHECK_HEADERS_ONCE([sys/un.h])
+AC_CHECK_HEADERS_ONCE([syslog.h])
+AC_CHECK_HEADERS_ONCE([time.h])
+AC_CHECK_HEADERS_ONCE([unistd.h])
 
 # Windows only
 AC_CHECK_HEADERS([winsock2.h])
@@ -143,14 +145,20 @@ AC_CHECK_HEADERS([ws2tcpip.h])
 # Checks for library functions.
 
 AC_CHECK_FUNCS([alarm])
+AC_CHECK_FUNCS([atexit])
+AC_CHECK_FUNCS([clock_gettime])
 AC_CHECK_FUNCS([dup2])
 AC_CHECK_FUNCS([fcntl])
+AC_CHECK_FUNCS([floor])
+AC_CHECK_FUNCS([getcwd])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([gettimeofday])
+AC_CHECK_FUNCS([inet_ntoa])
 AC_CHECK_FUNCS([memchr])
 AC_CHECK_FUNCS([memmove])
 AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([pipe2])
+AC_CHECK_FUNCS([putenv])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([setenv])
 AC_CHECK_FUNCS([socket])
@@ -159,6 +167,7 @@ AC_CHECK_FUNCS([strcasecmp])
 AC_CHECK_FUNCS([strchr])
 AC_CHECK_FUNCS([strdup])
 AC_CHECK_FUNCS([strerror])
+AC_CHECK_FUNCS([strstr])
 AC_CHECK_FUNCS([strtol])
 AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([strtoull])
@@ -176,6 +185,7 @@ AM_CONDITIONAL([BUILD_CACHE],[test "x$build_cache" = "xyes"])
 
 AX_COMPILER_VENDOR
 
+AC_CHECK_TYPES([ptrdiff_t])
 AC_HEADER_STDBOOL
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
