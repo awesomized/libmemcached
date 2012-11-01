@@ -73,7 +73,7 @@ AC_DEFUN([AX_UUID],
   ])
 
   AC_DEFUN([AX_UUID_GENERATE_TIME_SAFE],
-      [AC_PREREQ([2.68])dnl
+      [AC_PREREQ([2.63])dnl
       AC_REQUIRE([AX_UUID])dnl
       AC_CACHE_CHECK([for uuid_generate_time_safe],
         [ax_cv_uuid_generate_time_safe],
