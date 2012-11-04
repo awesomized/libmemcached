@@ -56,6 +56,7 @@ AC_DEFUN([AX_VCS_SYSTEM],
       AS_IF([test -d ".hg"],[ac_cv_vcs_system="mercurial"])
       AS_IF([test -d ".git"],[ac_cv_vcs_system="git"])
       ])
+    AC_DEFINE_UNQUOTED([VCS_SYSTEM],["$ac_cv_vcs_system"],[VCS system])
     ])
 
 AC_DEFUN([AX_VCS_CHECKOUT],
@@ -68,7 +69,6 @@ AC_DEFUN([AX_VCS_CHECKOUT],
       ])
 
     AM_CONDITIONAL([IS_VCS_CHECKOUT], [test "x$ac_cv_vcs_checkout" = "xyes"])
-    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],
-      [AC_DEFINE([VCS_CHECKOUT], [1], [Define if the code was built from VCS.])
-      ])
+    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],[AC_DEFINE([VCS_CHECKOUT],[1],[Define if the code was built from VCS.])],
+      [AC_DEFINE([VCS_CHECKOUT],[0],[Define if the code was built from VCS.])])
     ])

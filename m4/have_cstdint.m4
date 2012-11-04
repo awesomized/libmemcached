@@ -4,7 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_CXX_CSTDINT
+#   AX_CXX_CSTDINT()
 #
 # DESCRIPTION
 #
@@ -49,7 +49,7 @@ AC_DEFUN([AX_CXX_CSTDINT], [
 
     AC_CACHE_CHECK([for location of cstdint], [ac_cv_cxx_cstdint], [
       AC_LANG_PUSH([C++])
-      save_CXXFLAGS="${CXXFLAGS}"
+      AX_SAVE_FLAGS
       CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
 
       AC_COMPILE_IFELSE([
@@ -65,16 +65,14 @@ AC_DEFUN([AX_CXX_CSTDINT], [
         [ac_cxx_cstdint_boost_cstdint_hpp="<boost/cstdint.hpp>"])
 
       AC_LANG_POP
-      CXXFLAGS="${save_CXXFLAGS}"
+      AX_RESTORE_FLAGS
 
       AS_IF([test -n "$ac_cxx_cstdint_cstdint"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_cstdint],
         [test -n "$ac_cxx_cstdint_tr1_cstdint"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_tr1_cstdint],
         [test -n "$ac_cxx_cstdint_boost_cstdint_hpp"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_boost_cstdint_hpp])
       ])
 
-  AS_IF([test -n "$ac_cv_cxx_cstdint"], [
-      AC_MSG_RESULT([$ac_cv_cxx_cstdint])
-      ],[
+  AS_IF([test -n "$ac_cv_cxx_cstdint"], [AC_MSG_RESULT([$ac_cv_cxx_cstdint])], [
       ac_cv_cxx_cstdint="<stdint.h>"
       AC_MSG_WARN([Could not find a cstdint header.])
       AC_MSG_RESULT([$ac_cv_cxx_cstdint])

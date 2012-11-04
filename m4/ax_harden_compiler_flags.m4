@@ -60,40 +60,41 @@
 
 AC_DEFUN([AX_APPEND_LINK_FLAGS_ERROR],
     [AC_PREREQ([2.63])dnl
-    AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])])
+    AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])
+    ])
 
 AC_DEFUN([AX_APPEND_COMPILE_FLAGS_ERROR],
     [AC_PREREQ([2.63])dnl
-    AX_APPEND_COMPILE_FLAGS([$1])])
+    AX_APPEND_COMPILE_FLAGS([$1],,[-Werror])
+    ])
 
 AC_DEFUN([AX_HARDEN_LINKER_FLAGS],
     [AC_PREREQ([2.63])dnl
-    AC_REQUIRE([AX_CHECK_LINK_FLAG])
-    AC_REQUIRE([AX_VCS_CHECKOUT])
-    AC_REQUIRE([AX_DEBUG])
+    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
     AC_REQUIRE([AX_CXX_COMPILER_VERSION])
+    AC_REQUIRE([AX_DEBUG])
+    AC_REQUIRE([AX_VCS_CHECKOUT])
+
     AX_APPEND_LINK_FLAGS_ERROR([-z relro -z now])
     AX_APPEND_LINK_FLAGS_ERROR([-pie])
+
     AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[AX_APPEND_LINK_FLAGS_ERROR([-Werror])])
     ])
 
 AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS],
     [AC_PREREQ([2.63])dnl
+    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
+    AC_REQUIRE([AX_CXX_COMPILER_VERSION])
+    AC_REQUIRE([AX_DEBUG])
+    AC_REQUIRE([AX_VCS_CHECKOUT])
+
     AC_LANG_PUSH([C])dnl
-    AC_REQUIRE([AX_APPEND_COMPILE_FLAGS_ERROR])
-    AC_REQUIRE([AX_HARDEN_LINKER_FLAGS])
 
-    ac_cv_warnings_as_errors=no
-    AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])
-      ac_cv_warnings_as_errors=yes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
-
-    AX_APPEND_LINK_FLAGS_ERROR([-g])
+    AX_APPEND_COMPILE_FLAGS_ERROR([-g])
     AS_IF([test "x$ax_enable_debug" = xyes],
-      [AX_APPEND_LINK_FLAGS_ERROR([-ggdb])
-      AX_APPEND_LINK_FLAGS_ERROR([-O0])],
-      [AX_APPEND_LINK_FLAGS_ERROR([-O2])])
+      [AX_APPEND_COMPILE_FLAGS_ERROR([-ggdb])
+      AX_APPEND_COMPILE_FLAGS_ERROR([-O0])],
+      [AX_APPEND_COMPILE_FLAGS_ERROR([-O2])])
 
     AX_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])
     AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])
@@ -149,24 +150,27 @@ AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS],
     AX_APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
     AX_APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
     AX_APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
+    AS_IF([test "x$ac_cv_vcs_checkout" = xyes], [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
     AC_LANG_POP([C])
-])
+  ])
 
 AC_DEFUN([AX_HARDEN_CXX_COMPILER_FLAGS],
     [AC_PREREQ([2.63])dnl
-    AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
-    AC_LANG_PUSH([C++])
+    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
+    AC_REQUIRE([AX_CXX_COMPILER_VERSION])
+    AC_REQUIRE([AX_DEBUG])
+    AC_REQUIRE([AX_VCS_CHECKOUT])
 
-    AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
+    AC_LANG_PUSH([C++])
 
     AX_APPEND_COMPILE_FLAGS_ERROR([-g])
     AS_IF([test "x$ax_enable_debug" = xyes],
       [AX_APPEND_COMPILE_FLAGS_ERROR([-O0])
       AX_APPEND_COMPILE_FLAGS_ERROR([-ggdb])],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-O2])
-      AX_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])])
+      [AX_APPEND_COMPILE_FLAGS_ERROR([-O2])])
+
+    AS_IF([test "x$ac_c_gcc_recent" = xyes],
+      [AX_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])])
 
     AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
       [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])
@@ -219,21 +223,38 @@ AC_DEFUN([AX_HARDEN_CXX_COMPILER_FLAGS],
     AX_APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
     AX_APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
     AX_APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
+    AS_IF([test "x$ac_cv_vcs_checkout" = xyes], [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
     AC_LANG_POP([C++])
   ])
 
   AC_DEFUN([AX_HARDEN_COMPILER_FLAGS],
       [AC_PREREQ([2.63])dnl
+      AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
+      AC_REQUIRE([AX_APPEND_LINK_FLAGS])
+      AC_REQUIRE([AX_CXX_COMPILER_VERSION])
+      AC_REQUIRE([AX_DEBUG])
+      AC_REQUIRE([AX_VCS_CHECKOUT])
+
+      AC_CACHE_CHECK([if all warnings into errors],[ac_cv_warnings_as_errors],
+        [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[ac_cv_warnings_as_errors=yes],
+          [ac_cv_warnings_as_errors=no])
+        ])
+
+# All of the actual checks happen via these Macros
+      AC_REQUIRE([AX_HARDEN_LINKER_FLAGS])
+      AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
       AC_REQUIRE([AX_HARDEN_CXX_COMPILER_FLAGS])
       AC_REQUIRE([AX_CC_OTHER_FLAGS])
+
       AC_REQUIRE([gl_VISIBILITY])
-      AS_IF([test -n "$CFLAG_VISIBILITY"],[ CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY" ])
+      AS_IF([test -n "$CFLAG_VISIBILITY"],[CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY"])
       ])
 
   AC_DEFUN([AX_CC_OTHER_FLAGS],
       [AC_PREREQ([2.63])dnl
       AC_REQUIRE([AX_APPEND_COMPILE_FLAGS_ERROR])
       AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
+
       AC_LANG_PUSH([C])
       AX_APPEND_COMPILE_FLAGS_ERROR([-pipe])
       AC_LANG_POP([C])

@@ -3,7 +3,7 @@
 #
 # SYNOPSIS
 #
-#   AX_ENDIAN
+#   AX_ENDIAN()
 #
 # DESCRIPTION
 #
