@@ -4,8 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_C_COMPILER_VERSION()
-#   AX_CXX_COMPILER_VERSION()
+#   AX_COMPILER_VERSION()
 #
 # DESCRIPTION
 #
@@ -44,75 +43,58 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 4
+#serial 5
+AC_DEFUN([_C_COMPILER_VERSION],
+    [AC_MSG_CHECKING([C Compiler version])
 
-  AC_DEFUN([AX_C_COMPILER_VERSION],
-      [AC_REQUIRE([AX_COMPILER_VENDOR])
-      AC_MSG_CHECKING([C Compiler version])
+    AS_CASE(["$ax_cv_c_compiler_vendor"],
+      [sun],[ax_c_compiler_version=`$CC -V 2>&1 | sed 1q`],
+      [intel],[ax_c_compiler_version=`$CC --version 2>&1 | sed 1q`],
+      [clang],[ax_c_compiler_version=`$CC --version 2>&1 | sed 1q`],
+      [gnu],[ax_c_compiler_version=`$CC --version | sed 1q`],
+      [mingw],[ax_c_compiler_version=`$CC --version | sed 1q`],
+      [ax_c_compiler_version="unknown: $ax_cv_c_compiler_vendor"])
 
-      ax_c_compiler_version_vendor="$ax_c_compiler_vendor"
+    AC_MSG_RESULT(["$ax_c_compiler_version"])
+    AC_SUBST([CC_VERSION_VENDOR],["$ax_cv_c_compiler_vendor"])
+    AC_SUBST([CC_VERSION],["$ax_c_compiler_version"])
+  ])
 
-      AC_CHECK_DECL([__GNUC_PATCHLEVEL__],
-        [GNUCC=yes
-        ax_c_compiler_version_gcc="`$CC --dumpversion`"],
-        [GNUCC=no])
-      AC_MSG_CHECKING([GNUCC])
-      AC_MSG_RESULT([$GNUCC])
+AC_DEFUN([_CXX_COMPILER_VERSION],
+    [AC_MSG_CHECKING([C++ Compiler version])
 
-      AC_CHECK_DECL([__SUNPRO_C],[SUNCC=yes],[SUNCC=no])
-      AC_MSG_CHECKING([SUNCC])
-      AC_MSG_RESULT([$SUNCC])
+    AS_CASE(["$ax_cv_c_compiler_vendor"],
+      [sun],[ax_cxx_compiler_version=`$CXX -V 2>&1 | sed 1q`],
+      [intel],[ax_cxx_compiler_version=`$CXX --version 2>&1 | sed 1q`],
+      [clang],[ax_cxx_compiler_version=`$CXX --version 2>&1 | sed 1q`],
+      [gnu],[ax_cxx_compiler_version=`$CXX --version | sed 1q`],
+      [mingw],[ax_cxx_compiler_version=`$CXX --version | sed 1q`],
+      [ax_cxx_compiler_version="unknown: $ax_cv_c_compiler_vendor"])
 
-      AC_CHECK_DECL([__ICC],[INTELCC=yes],[INTELCC=no])
-      AC_MSG_CHECKING([INTELCC])
-      AC_MSG_RESULT([$INTELCC])
+    AC_MSG_RESULT(["$ax_cxx_compiler_version"])
+    AC_SUBST([CXX_VERSION_VENDOR],["$ax_cv_c_compiler_vendor"])
+    AC_SUBST([CXX_VERSION],["$ax_cxx_compiler_version"])
+    ])
 
-      AC_CHECK_DECL([__clang__],[CLANG=yes],[CLANG=no])
-      AC_MSG_CHECKING([CLANG])
-      AC_MSG_RESULT([$CLANG])
+AC_DEFUN([AX_COMPILER_VERSION],
+    [AC_REQUIRE([AX_COMPILER_VENDOR])
 
-      AC_CHECK_DECL([__MINGW32__],
-          [MINGW=yes
-          ax_c_compiler_version_vendor=mingw],
-          [MINGW=no])
-      AC_MSG_CHECKING([MINGW])
-      AC_MSG_RESULT([$MINGW])
+    AC_MSG_CHECKING([MINGW])
+    AC_CHECK_DECL([__MINGW32__],
+      [MINGW=yes
+      ax_c_compiler_version_vendor=mingw],
+      [MINGW=no])
+    AC_MSG_RESULT([$MINGW])
 
-      AS_CASE(["$ax_c_compiler_version_vendor"],
-              [sun],[ax_c_compiler_version="`$CC -V 2>&1 | sed 1q`"],
-              [intel],[ax_c_compiler_version="`$CC --version 2>&1 | sed 1q`"],
-              [clang],[ax_c_compiler_version="`$CC --version 2>&1 | sed 1q`"],
-              [gnu],[ax_c_compiler_version="`$CC --version | sed 1q`"],
-              [mingw],[ax_c_compiler_version="`$CC --version | sed 1q`"],
-              [ax_c_compiler_version=unknown])
-
-      AC_MSG_RESULT(["$ax_c_compiler_version"])
-      AC_SUBST([CC_VERSION_VENDOR],["$ax_c_compiler_version_vendor"])
-      AC_SUBST([CC_VERSION],["$ax_c_compiler_version"])
-
-      AS_IF([test "$GCC" = "yes"],
-          [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if !defined(__GNUC__) || (__GNUC__ < 4) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ < 2))
+    AC_REQUIRE([_C_COMPILER_VERSION])
+    AC_REQUIRE([_CXX_COMPILER_VERSION])
+    AS_IF([test "x$GCC" = xyes],
+      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#if !defined(__GNUC__) || (__GNUC__ < 4) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ < 7))
 # error GCC is Too Old!
 #endif
-              ]])],
-            [ac_c_gcc_recent=yes],
-            [ac_c_gcc_recent=no])])
+          ]])],
+        [ac_c_gcc_recent=yes],
+        [ac_c_gcc_recent=no])
       ])
-
-  AC_DEFUN([AX_CXX_COMPILER_VERSION],
-      [AC_REQUIRE([AX_C_COMPILER_VERSION])
-      AC_MSG_CHECKING([C++ Compiler version])
-
-      AS_CASE(["$ax_c_compiler_version_vendor"],
-        [sun],[ax_cxx_compiler_version="`$CC -V 2>&1 | sed 1q`"],
-        [intel],[ax_cxx_compiler_version="`$CC --version 2>&1 | sed 1q`"],
-        [clang],[ax_cxx_compiler_version="`$CC --version 2>&1 | sed 1q`"],
-        [gnu],[ax_cxx_compiler_version="`$CC --version | sed 1q`"],
-        [mingw],[ax_cxx_compiler_version="`$CC --version | sed 1q`"],
-        [ax_cxx_compiler_version=unknown])
-
-      AC_MSG_RESULT(["$ax_cxx_compiler_version"])
-      AC_SUBST([CXX_VERSION_VENDOR],["$ax_c_compiler_version_vendor"])
-      AC_SUBST([CXX_VERSION],["$ax_cxx_compiler_version"])
-      ])
+    ])

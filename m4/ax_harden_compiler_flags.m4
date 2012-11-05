@@ -4,10 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_HARDEN_COMPILER_FLAGS()
-#   AX_HARDEN_LINKER_FLAGS()
-#   AX_HARDEN_CC_COMPILER_FLAGS()
-#   AX_HARDEN_CXX_COMPILER_FLAGS()
+#   AX_HARDEN_COMPILER_FLAGS() AX_HARDEN_LINKER_FLAGS()
 #
 # DESCRIPTION
 #
@@ -50,212 +47,210 @@
 
 # The Following flags are not checked for
 # -Wdeclaration-after-statement is counter to C99
-# AX_APPEND_COMPILE_FLAGS_ERROR([-std=c++11]) -- Not ready yet
-# AX_APPEND_COMPILE_FLAGS_ERROR([-pedantic]) -- ?
-# AX_APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector]) -- Issues on 32bit compile
-# AX_APPEND_COMPILE_FLAGS_ERROR([-fstack-protector-all]) -- Issues on 32bit compile
-# AX_APPEND_COMPILE_FLAGS_ERROR([-Wlong-long]) -- Don't turn on for compatibility issues memcached_stat_st
+# _APPEND_COMPILE_FLAGS_ERROR([-std=c++11]) -- Not ready yet
+# _APPEND_COMPILE_FLAGS_ERROR([-pedantic]) --
+# ?  _APPEND_COMPILE_FLAGS_ERROR([-Wlong-long]) -- Don't turn on for
+# compatibility issues memcached_stat_st
 
-#serial 5
+#serial 6
 
-AC_DEFUN([AX_APPEND_LINK_FLAGS_ERROR],
-    [AC_PREREQ([2.63])dnl
-    AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])
-    ])
+AC_DEFUN([_APPEND_LINK_FLAGS_ERROR],
+         [AC_REQUIRE([AX_APPEND_LINK_FLAGS])
+         AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])
+         ])
 
-AC_DEFUN([AX_APPEND_COMPILE_FLAGS_ERROR],
-    [AC_PREREQ([2.63])dnl
-    AX_APPEND_COMPILE_FLAGS([$1],,[-Werror])
-    ])
+AC_DEFUN([_APPEND_COMPILE_FLAGS_ERROR],
+         [AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
+         AX_APPEND_COMPILE_FLAGS([$1],,[-Werror])
+         ])
 
-AC_DEFUN([AX_HARDEN_LINKER_FLAGS],
-    [AC_PREREQ([2.63])dnl
-    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
-    AC_REQUIRE([AX_CXX_COMPILER_VERSION])
-    AC_REQUIRE([AX_DEBUG])
-    AC_REQUIRE([AX_VCS_CHECKOUT])
+AC_DEFUN([_HARDEN_LINKER_FLAGS],
+         [_APPEND_LINK_FLAGS_ERROR([-z relro -z now])
+         _APPEND_LINK_FLAGS_ERROR([-pie])
+         AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
+               [_APPEND_LINK_FLAGS_ERROR([-Werror])])
+         ])
 
-    AX_APPEND_LINK_FLAGS_ERROR([-z relro -z now])
-    AX_APPEND_LINK_FLAGS_ERROR([-pie])
+AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
+         [AC_LANG_PUSH([C])dnl
 
-    AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[AX_APPEND_LINK_FLAGS_ERROR([-Werror])])
-    ])
+         _APPEND_COMPILE_FLAGS_ERROR([-g])
+         AS_IF([test "x$ax_enable_debug" = xyes],
+               [_APPEND_COMPILE_FLAGS_ERROR([-ggdb])
+               _APPEND_COMPILE_FLAGS_ERROR([-O0])],
+               [_APPEND_COMPILE_FLAGS_ERROR([-O2])])
 
-AC_DEFUN([AX_HARDEN_CC_COMPILER_FLAGS],
-    [AC_PREREQ([2.63])dnl
-    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
-    AC_REQUIRE([AX_CXX_COMPILER_VERSION])
-    AC_REQUIRE([AX_DEBUG])
-    AC_REQUIRE([AX_VCS_CHECKOUT])
-
-    AC_LANG_PUSH([C])dnl
-
-    AX_APPEND_COMPILE_FLAGS_ERROR([-g])
-    AS_IF([test "x$ax_enable_debug" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-ggdb])
-      AX_APPEND_COMPILE_FLAGS_ERROR([-O0])],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-O2])])
-
-    AX_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wall])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wextra])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunknown-pragmas])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-std=c99])
+         _APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])
+         _APPEND_COMPILE_FLAGS_ERROR([-Wall])
+         _APPEND_COMPILE_FLAGS_ERROR([-Wextra])
+         _APPEND_COMPILE_FLAGS_ERROR([-Wunknown-pragmas])
+         _APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
+         _APPEND_COMPILE_FLAGS_ERROR([-std=c99])
 # Anything below this comment please keep sorted.
-    AX_APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
-# -Wmissing-format-attribute
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Waddress])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Warray-bounds])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wbad-function-cast])
+         _APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
+# _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-format-attribute])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
+          _APPEND_COMPILE_FLAGS_ERROR([-Waddress])
+          _APPEND_COMPILE_FLAGS_ERROR([-Warray-bounds])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wbad-function-cast])
 # Not in use -Wc++-compat
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wchar-subscripts])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wcomment])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wfloat-equal])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wformat-security])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wformat=2])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wlogical-op])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wmaybe-uninitialized])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-field-initializers])
-    AS_IF([test "$MINGW" = "yes"],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-missing-noreturn])],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-noreturn])])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-prototypes])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wnested-externs])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wnormalized=id])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wold-style-definition])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Woverride-init])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wpointer-arith])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wpointer-sign])
-    AS_IF([test "x$MINGW" = xyes],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=const])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=noreturn])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=pure])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-redundant-decls])],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wredundant-decls])])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wchar-subscripts])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wcomment])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wfloat-equal])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wformat-security])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wformat=2])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wlogical-op])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wmaybe-uninitialized])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-field-initializers])
+          AS_IF([test "x$MINGW" = xyes],
+                [_APPEND_COMPILE_FLAGS_ERROR([-Wno-missing-noreturn])],
+                [_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-noreturn])])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-prototypes])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wnested-externs])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wnormalized=id])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wold-style-definition])
+          _APPEND_COMPILE_FLAGS_ERROR([-Woverride-init])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wpointer-arith])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wpointer-sign])
+          AS_IF([test "x$MINGW" = xyes],
+                [_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=const])
+                _APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=noreturn])
+                _APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=pure])
+                _APPEND_COMPILE_FLAGS_ERROR([-Wno-redundant-decls])],
+                [_APPEND_COMPILE_FLAGS_ERROR([-Wredundant-decls])])
 
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wshadow])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wshorten-64-to-32])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wsign-compare])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wstrict-overflow=1])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wstrict-prototypes])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused-result])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused-variable])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wwrite-strings])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
-    AS_IF([test "x$ac_cv_vcs_checkout" = xyes], [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
-    AC_LANG_POP([C])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wshadow])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wshorten-64-to-32])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wsign-compare])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wstrict-overflow=1])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wstrict-prototypes])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wunused])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wunused-result])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wunused-variable])
+          _APPEND_COMPILE_FLAGS_ERROR([-Wwrite-strings])
+          _APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
+          _APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
+          _APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
+
+          AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
+                [_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])
+                AS_IF([test "x$ac_c_gcc_recent" = xyes],
+                      [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
+                      _APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
+                      _APPEND_COMPILE_FLAGS_ERROR([-fstack-protector])
+                      _APPEND_COMPILE_FLAGS_ERROR([-fstack-protector-all])
+                      ])])
+
+         AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
+               [_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])],
+               [_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])])
+
+          AC_LANG_POP([C])
   ])
 
-AC_DEFUN([AX_HARDEN_CXX_COMPILER_FLAGS],
-    [AC_PREREQ([2.63])dnl
-    AC_REQUIRE([AX_APPEND_LINK_FLAGS])
-    AC_REQUIRE([AX_CXX_COMPILER_VERSION])
-    AC_REQUIRE([AX_DEBUG])
-    AC_REQUIRE([AX_VCS_CHECKOUT])
+AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
+         [AC_LANG_PUSH([C++])
+         AC_REQUIRE([_APPEND_COMPILE_FLAGS_ERROR])
 
-    AC_LANG_PUSH([C++])
+            _APPEND_COMPILE_FLAGS_ERROR([-g])
+            AS_IF([test "x$ax_enable_debug" = xyes],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-O0])
+                  _APPEND_COMPILE_FLAGS_ERROR([-ggdb])],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-O2])])
 
-    AX_APPEND_COMPILE_FLAGS_ERROR([-g])
-    AS_IF([test "x$ax_enable_debug" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-O0])
-      AX_APPEND_COMPILE_FLAGS_ERROR([-ggdb])],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-O2])])
+            AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])])
 
-    AS_IF([test "x$ac_c_gcc_recent" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])])
-
-    AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])
-      AX_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])],
-      [AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])])
-
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wall])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wextra])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunknown-pragmas])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wall])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wextra])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wunknown-pragmas])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
 # Anything below this comment please keep sorted.
-    AX_APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
-# -Wmissing-format-attribute
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Waddress])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Warray-bounds])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wchar-subscripts])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wcomment])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wctor-dtor-privacy])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wfloat-equal])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wformat=2])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wmaybe-uninitialized])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-field-initializers])
-    AS_IF([test "x$MINGW" = xyes],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-missing-noreturn])],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wmissing-noreturn])])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wlogical-op])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wnon-virtual-dtor])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wnormalized=id])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Woverloaded-virtual])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wpointer-arith])
-    AS_IF([test "x$MINGW" = xyes],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=const])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=noreturn])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-error=suggest-attribute=noreturn])
-        AX_APPEND_COMPILE_FLAGS_ERROR([-Wno-redundant-decls])],
-        [AX_APPEND_COMPILE_FLAGS_ERROR([-Wredundant-decls])])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wshadow])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wshorten-64-to-32])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wsign-compare])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wstrict-overflow=1])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wc++11-compat])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused-result])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wunused-variable])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wwrite-strings])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-Wformat-security])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
-    AX_APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
-    AS_IF([test "x$ac_cv_vcs_checkout" = xyes], [AX_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
-    AC_LANG_POP([C++])
+            _APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
+# _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-format-attribute])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
+            _APPEND_COMPILE_FLAGS_ERROR([-Waddress])
+            _APPEND_COMPILE_FLAGS_ERROR([-Warray-bounds])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wchar-subscripts])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wcomment])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wctor-dtor-privacy])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wfloat-equal])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wformat=2])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wmaybe-uninitialized])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-field-initializers])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wlogical-op])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wnon-virtual-dtor])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wnormalized=id])
+            _APPEND_COMPILE_FLAGS_ERROR([-Woverloaded-virtual])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wpointer-arith])
+            AS_IF([test "x$MINGW" = xyes],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=const])
+                  _APPEND_COMPILE_FLAGS_ERROR([-Wno-missing-noreturn])
+                  _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-noreturn])
+                  _APPEND_COMPILE_FLAGS_ERROR([-Wno-suggest-attribute=noreturn])
+                  _APPEND_COMPILE_FLAGS_ERROR([-Wno-error=suggest-attribute=noreturn])
+                  _APPEND_COMPILE_FLAGS_ERROR([-Wno-redundant-decls])],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-Wredundant-decls])])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wshadow])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wshorten-64-to-32])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wsign-compare])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wstrict-overflow=1])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wc++11-compat])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wunused])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wunused-result])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wunused-variable])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wwrite-strings])
+            _APPEND_COMPILE_FLAGS_ERROR([-Wformat-security])
+            _APPEND_COMPILE_FLAGS_ERROR([-floop-parallelize-all])
+            _APPEND_COMPILE_FLAGS_ERROR([-fwrapv])
+            _APPEND_COMPILE_FLAGS_ERROR([-fmudflapt])
+
+            AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])
+                  AS_IF([test "x$ac_c_gcc_recent" = xyes],
+                        [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
+                        _APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
+                        _APPEND_COMPILE_FLAGS_ERROR([-fstack-protector])
+                        _APPEND_COMPILE_FLAGS_ERROR([-fstack-protector-all])
+                        ])])
+
+            AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
+                  [_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
+            AC_LANG_POP([C++])
   ])
 
+  AC_DEFUN([_CC_OTHER_FLAGS],
+            [AC_REQUIRE([_APPEND_COMPILE_FLAGS_ERROR])
+
+            AC_LANG_PUSH([C])
+            _APPEND_COMPILE_FLAGS_ERROR([-pipe])
+            AC_LANG_POP([C])
+            ])
+
+# All of the heavy lifting happens in _HARDEN_LINKER_FLAGS,
+# _HARDEN_CC_COMPILER_FLAGS, _HARDEN_CXX_COMPILER_FLAGS, _CC_OTHER_FLAGS
   AC_DEFUN([AX_HARDEN_COMPILER_FLAGS],
-      [AC_PREREQ([2.63])dnl
-      AC_REQUIRE([AX_APPEND_COMPILE_FLAGS])
-      AC_REQUIRE([AX_APPEND_LINK_FLAGS])
-      AC_REQUIRE([AX_CXX_COMPILER_VERSION])
-      AC_REQUIRE([AX_DEBUG])
-      AC_REQUIRE([AX_VCS_CHECKOUT])
+           [AC_PREREQ([2.63])dnl
+           AC_REQUIRE([AX_APPEND_LINK_FLAGS])
+           AC_REQUIRE([AX_COMPILER_VERSION])
+           AC_REQUIRE([AX_DEBUG])
+           AC_REQUIRE([AX_VCS_CHECKOUT])
 
-      AC_CACHE_CHECK([if all warnings into errors],[ac_cv_warnings_as_errors],
-        [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[ac_cv_warnings_as_errors=yes],
-          [ac_cv_warnings_as_errors=no])
-        ])
+           AC_REQUIRE([gl_VISIBILITY])
+           AS_IF([test -n "$CFLAG_VISIBILITY"],[CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY"])
 
-# All of the actual checks happen via these Macros
-      AC_REQUIRE([AX_HARDEN_LINKER_FLAGS])
-      AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
-      AC_REQUIRE([AX_HARDEN_CXX_COMPILER_FLAGS])
-      AC_REQUIRE([AX_CC_OTHER_FLAGS])
+           AC_CACHE_CHECK([if all warnings into errors],[ac_cv_warnings_as_errors],
+                          [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[ac_cv_warnings_as_errors=yes],
+                                 [ac_cv_warnings_as_errors=no])
+                          ])
 
-      AC_REQUIRE([gl_VISIBILITY])
-      AS_IF([test -n "$CFLAG_VISIBILITY"],[CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY"])
-      ])
-
-  AC_DEFUN([AX_CC_OTHER_FLAGS],
-      [AC_PREREQ([2.63])dnl
-      AC_REQUIRE([AX_APPEND_COMPILE_FLAGS_ERROR])
-      AC_REQUIRE([AX_HARDEN_CC_COMPILER_FLAGS])
-
-      AC_LANG_PUSH([C])
-      AX_APPEND_COMPILE_FLAGS_ERROR([-pipe])
-      AC_LANG_POP([C])
-      ])
+           AC_REQUIRE([_HARDEN_LINKER_FLAGS])
+           AC_REQUIRE([_HARDEN_CC_COMPILER_FLAGS])
+           AC_REQUIRE([_HARDEN_CXX_COMPILER_FLAGS])
+           AC_REQUIRE([_CC_OTHER_FLAGS])
+           ])
