@@ -1845,6 +1845,34 @@ test_return_t add_host_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t regression_1048945_TEST(memcached_st*)
+{
+  memcached_return status;
+
+  memcached_server_st* list= memcached_server_list_append_with_weight(NULL, "a", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  list= memcached_server_list_append_with_weight(list, "b", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  list= memcached_server_list_append_with_weight(list, "c", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_st* memc= memcached_create(NULL);
+
+  status= memcached_server_push(memc, list);
+  memcached_server_list_free(list);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_server_instance_st server= memcached_server_by_key(memc, test_literal_param(__func__), &status);
+  test_true(server);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 test_return_t memcached_fetch_result_NOT_FOUND(memcached_st *memc)
 {
   memcached_return_t rc;
