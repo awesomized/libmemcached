@@ -4,7 +4,7 @@
 #
 # SYNOPSIS
 #
-#   AX_CXX_CINTTYPES
+#   AX_CXX_CINTTYPES()
 #
 # DESCRIPTION
 #
@@ -48,7 +48,7 @@ AC_DEFUN([AX_CXX_CINTTYPES], [
     AC_REQUIRE([AX_CXX_CSTDINT])
 
     AC_CACHE_CHECK([for location of cinttypes], [ac_cv_cxx_cinttypes], [
-      save_CXXFLAGS="${CXXFLAGS}"
+      AX_SAVE_FLAGS
       CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
       AC_LANG_PUSH([C++])
 
@@ -73,7 +73,7 @@ AC_DEFUN([AX_CXX_CINTTYPES], [
         [ac_cxx_cinttypes_boost_cinttypes_hpp="<boost/cinttypes.hpp>"])
 
       AC_LANG_POP
-      CXXFLAGS="${save_CXXFLAGS}"
+      AX_RESTORE_FLAGS
 
       AS_IF([test -n "$ac_cxx_cinttypes_cinttypes"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_cinttypes],
           [test -n "$ac_cxx_cinttypes_tr1_cinttypes"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_tr1_cinttypes],
