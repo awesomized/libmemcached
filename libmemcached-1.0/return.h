@@ -63,6 +63,7 @@ static inline bool memcached_fatal(memcached_return_t rc)
 {
   return (
           rc != MEMCACHED_BUFFERED &&
+          rc != MEMCACHED_CLIENT_ERROR &&
           rc != MEMCACHED_DATA_EXISTS &&
           rc != MEMCACHED_DELETED &&
           rc != MEMCACHED_E2BIG && 

@@ -276,7 +276,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   assert_msg(rc != MEMCACHED_SOME_ERRORS, "Programmer error, MEMCACHED_SOME_ERRORS was about to be set on a org::libmemcached::Instance");
-  if (memcached_fatal(rc) == false)
+  if (memcached_fatal(rc) == false and rc != MEMCACHED_CLIENT_ERROR)
   {
     return rc;
   }
@@ -295,7 +295,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
 
   memcached_string_t error_host= { hostname_port_message, size_t(size) };
 
-  assert(self.root);
+  assert_msg(self.root, "Programmer error, root was not set on instance");
   if (self.root == NULL)
   {
     return rc;
@@ -305,6 +305,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
   _set(self, (*self.root));
   assert(self.root->error_messages);
   assert(self.error_messages);
+  assert(self.error_messages->rc == self.root->error_messages->rc);
 
   return rc;
 }
@@ -410,6 +411,15 @@ memcached_return_t memcached_set_errno(org::libmemcached::Instance& self, int lo
 
   _set(*self.root, &error_host, rc, at, local_errno);
   _set(self, (*self.root));
+
+#if 0
+  if (self.root->error_messages->rc != self.error_messages->rc)
+  {
+    fprintf(stderr, "%s:%d %s != %s\n", __FILE__, __LINE__,
+            memcached_strerror(NULL, self.root->error_messages->rc),
+            memcached_strerror(NULL, self.error_messages->rc));
+  }
+#endif
 
   return rc;
 }

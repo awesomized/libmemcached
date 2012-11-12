@@ -416,7 +416,17 @@ static memcached_return_t textual_read_one_response(org::libmemcached::Instance*
           and buffer[6] == '_'
           and buffer[7] == 'E' and buffer[8] == 'R' and buffer[9] == 'R' and buffer[10] == 'O' and buffer[11] == 'R')
       {
-        return MEMCACHED_CLIENT_ERROR;
+        // Move past the basic error message and whitespace
+        char *startptr= buffer + memcached_literal_param_size("CLIENT_ERROR");
+        if (startptr[0] == ' ')
+        {
+          startptr++;
+        }
+
+        char *endptr= startptr;
+        while (*endptr != '\r' && *endptr != '\n') endptr++;
+
+        return memcached_set_error(*instance, MEMCACHED_CLIENT_ERROR, MEMCACHED_AT, startptr, size_t(endptr - startptr));
       }
     }
     break;
