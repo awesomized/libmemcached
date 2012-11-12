@@ -823,6 +823,34 @@ test_return_t memcached_add_SUCCESS_TEST(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t regression_1067242_TEST(memcached_st *memc)
+{
+  test_compare(MEMCACHED_SUCCESS, memcached_set(memc,
+                                                test_literal_param(__func__), 
+                                                test_literal_param("-2"),
+                                                0, 0));
+
+  memcached_return_t rc;
+  char* value;
+  test_true((value= memcached_get(memc, test_literal_param(__func__), NULL, NULL, &rc)));
+  test_compare(MEMCACHED_SUCCESS, rc);
+  free(value);
+
+  for (size_t x= 0; x < 10; x++)
+  {
+    uint64_t new_number;
+    test_compare(MEMCACHED_CLIENT_ERROR,
+                 memcached_increment(memc, 
+                                     test_literal_param(__func__), 1, &new_number));
+    test_compare(MEMCACHED_CLIENT_ERROR, memcached_last_error(memc));
+    test_true((value= memcached_get(memc, test_literal_param(__func__), NULL, NULL, &rc)));
+    test_compare(MEMCACHED_SUCCESS, rc);
+    free(value);
+  }
+
+  return TEST_SUCCESS;
+}
+
 /*
   Set the value, then quit to make sure it is flushed.
   Come back in and test that add fails.
@@ -1841,6 +1869,34 @@ test_return_t add_host_test(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS, memcached_server_push(memc, servers));
 
   memcached_server_list_free(servers);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t regression_1048945_TEST(memcached_st*)
+{
+  memcached_return status;
+
+  memcached_server_st* list= memcached_server_list_append_with_weight(NULL, "a", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  list= memcached_server_list_append_with_weight(list, "b", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  list= memcached_server_list_append_with_weight(list, "c", 11211, 0, &status);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_st* memc= memcached_create(NULL);
+
+  status= memcached_server_push(memc, list);
+  memcached_server_list_free(list);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_server_instance_st server= memcached_server_by_key(memc, test_literal_param(__func__), &status);
+  test_true(server);
+  test_compare(status, MEMCACHED_SUCCESS);
+
+  memcached_free(memc);
 
   return TEST_SUCCESS;
 }

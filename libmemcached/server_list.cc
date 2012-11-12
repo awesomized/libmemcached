@@ -45,11 +45,11 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
                                          uint32_t weight,
                                          memcached_return_t *error)
 {
-  uint32_t count;
-
   memcached_return_t unused;
   if (error == NULL)
+  {
     error= &unused;
+  }
 
   if (hostname == NULL)
   {
@@ -60,14 +60,14 @@ memcached_server_list_append_with_weight(memcached_server_list_st ptr,
   {
     port = 0;
   }
-  else if (not port)
+  else if (port == 0)
   {
     port= MEMCACHED_DEFAULT_PORT;
   }
 
 
   /* Increment count for hosts */
-  count= 1;
+  uint32_t count= 1;
   if (ptr != NULL)
   {
     count+= memcached_server_list_count(ptr);

@@ -179,3 +179,5 @@ test_return_t kill_HUP_TEST(memcached_st *memc);
 test_return_t regression_996813_TEST(memcached_st*);
 test_return_t regression_994772_TEST(memcached_st*);
 test_return_t regression_1009493_TEST(memcached_st*);
+test_return_t regression_1048945_TEST(memcached_st*);
+test_return_t regression_1067242_TEST(memcached_st*);
