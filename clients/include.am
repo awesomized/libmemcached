@@ -6,10 +6,6 @@ CLIENTS_LDADDS=
 CLIENTS_LDADDS+= clients/libutilities.la
 CLIENTS_LDADDS+= libmemcached/libmemcached.la
 
-if HAVE_SASL
-CLIENTS_LDADDS+= $(LIBSASL)
-endif
-
 bin_PROGRAMS+= clients/memcapable 
 bin_PROGRAMS+= clients/memcat 
 bin_PROGRAMS+= clients/memcp 

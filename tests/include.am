@@ -89,9 +89,6 @@ test: check
 test-mem: tests/libmemcached-1.0/testapp
 	@tests/libmemcached-1.0/testapp
 
-test-sasl: tests/sasl
-	@tests/sasl
-
 test-atom: tests/atomsmasher
 	@tests/atomsmasher
 
@@ -112,9 +109,6 @@ pahole-mem: tests/testapp
 
 gdb-mem: tests/libmemcached-1.0/testapp
 	@$(DEBUG_COMMAND)  tests/libmemcached-1.0/testapp
-
-gdb-sasl: tests/sasl
-	@$(DEBUG_COMMAND)  tests/sasl
 
 gdb-atom: tests/atomsmasher
 	@$(DEBUG_COMMAND) tests/atomsmasher

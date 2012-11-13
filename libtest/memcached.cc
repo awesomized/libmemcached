@@ -89,7 +89,7 @@ public:
 
   virtual const char *sasl() const
   {
-    return NULL;
+    return "-S";
   }
 
   const std::string& password() const
@@ -210,7 +210,7 @@ bool Memcached::build(size_t argc, const char *argv[])
   add_option("-M");
 #endif
 
-  if (sasl())
+  if (_username.size())
   {
     add_option(sasl());
   }

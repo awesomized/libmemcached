@@ -5,10 +5,11 @@
 # SYNOPSIS
 #
 #   AX_SASL
+#   AX_SASL_CHECK
 #
 # DESCRIPTION
 #
-#   Check for sasl version one or two support.
+#   Check to see if libsasl is requested and available.
 #
 # LICENSE
 #
@@ -19,37 +20,34 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 1
+#serial 2
 
-AC_DEFUN([AX_SASL_OPTION],[
-    AC_REQUIRE([AX_SASL_CHECK])
-    AC_ARG_ENABLE([sasl],
+AC_DEFUN([AX_SASL_OPTION],
+    [AC_ARG_ENABLE([sasl],
       [AS_HELP_STRING([--disable-sasl], [Build with sasl support @<:@default=on@:>@])],
       [ac_enable_sasl="$enableval"],
-      [ac_enable_sasl="yes"])
+      [ac_enable_sasl=yes])
 
-    AS_IF([test "x$ac_enable_sasl" = "xyes"],
-      [ac_enable_sasl="yes"],
-      [ac_enable_sasl="no"])
-
-    AS_IF([test "x$ac_enable_sasl" = "xyes"], [
-      AC_DEFINE([HAVE_LIBSASL], [ 1 ], [Have libsasl2])
-      ], [
-      AC_DEFINE([HAVE_LIBSASL], [ 0 ], [Have libsasl2])
+    ax_sasl_option=no
+    AS_IF([test "x${ac_enable_sasl}" = xyes],
+      [AX_SASL_CHECK
+      echo "$ax_sasl_check"
+      AS_IF([test "x${ax_sasl_check}" = xyes],
+        [ax_sasl_option=yes],
+        [AC_MSG_WARN([request to add sasl support failed, please see config.log])])
       ])
 
-    AM_CONDITIONAL(HAVE_SASL, test "x${ac_enable_sasl}" = "xyes")
-
+    AC_MSG_CHECKING([checking to see if enabling sasl])
+    AC_MSG_RESULT(["$ax_sasl_option"])
+    AM_CONDITIONAL([HAVE_SASL],[test "x${ax_sasl_option}" = xyes])
     ])
 
-AC_DEFUN([AX_SASL_CHECK],[
-
-    AX_CHECK_LIBRARY([LIBSASL], [sasl/sasl.h], [sasl2],[
-      LIBSASL_LDFLAGS="-lsasl2"
-      ax_cv_sasl=yes
-      ], [
-      ax_cv_sasl=no 
+AC_DEFUN([AX_SASL_CHECK],
+    [ax_sasl_check=no
+    AX_CHECK_LIBRARY([LIBSASL],[sasl/sasl.h],[sasl2],
+      [ax_sasl_check=yes
+      AC_SUBST([SASL_LDFLAGS],[[-lsasl2]])
       ])
-
-    AM_CONDITIONAL(HAVE_SASL, test "x${ac_enable_sasl}" = "xyes")
+    AC_MSG_CHECKING([checking to see if sasl works])
+    AC_MSG_RESULT(["$ax_sasl_check"])
     ])

@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 #include <cassert>
 
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
@@ -65,7 +65,7 @@ sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
  * @param raddr remote address (out)
  * @return true on success false otherwise (errno contains more info)
  */
-static memcached_return_t resolve_names(memcached_instance_st& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
+static memcached_return_t resolve_names(org::libmemcached::Instance& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
 {
   char host[NI_MAXHOST];
   char port[NI_MAXSERV];
@@ -148,15 +148,15 @@ memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Ins
  */
   protocol_binary_request_no_extras request= { };
 
-  initialize_binary_request(ptr, request.message.header);
+  initialize_binary_request(server, request.message.header);
 
   request.message.header.request.opcode= PROTOCOL_BINARY_CMD_SASL_LIST_MECHS;
 
-  if (memcached_io_write(server, request.bytes,
-                         sizeof(request.bytes), 1) != sizeof(request.bytes))
+  if (memcached_io_write(server, request.bytes, sizeof(request.bytes), true) != sizeof(request.bytes))
   {
     return MEMCACHED_WRITE_FAILURE;
   }
+  assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
 
   memcached_server_response_increment(server);
 
@@ -177,6 +177,7 @@ memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Ins
 
     return rc;
   }
+  assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
 
   /* set ip addresses */
   char laddr[NI_MAXHOST + NI_MAXSERV];
@@ -242,19 +243,23 @@ memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Ins
       { data, len }
     };
 
+    assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
     if (memcached_io_writev(server, vector, 3, true) == false)
     {
       rc= MEMCACHED_WRITE_FAILURE;
       break;
     }
+    assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
     memcached_server_response_increment(server);
 
     /* read the response */
+    assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
     rc= memcached_response(server, NULL, 0, NULL);
     if (rc != MEMCACHED_AUTH_CONTINUE)
     {
       break;
     }
+    assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
 
     ret= sasl_client_step(conn, memcached_result_value(&server->root->result),
                           (unsigned int)memcached_result_length(&server->root->result),
