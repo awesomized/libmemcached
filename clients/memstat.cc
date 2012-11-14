@@ -47,6 +47,8 @@ static bool opt_analyze= false;
 static char *opt_servers= NULL;
 static char *stat_args= NULL;
 static char *analyze_mode= NULL;
+static char *opt_username;
+static char *opt_passwd;
 
 static struct option long_options[]=
 {
@@ -60,6 +62,8 @@ static struct option long_options[]=
   {(OPTIONSTRING)"server-version", no_argument, NULL, OPT_SERVER_VERSION},
   {(OPTIONSTRING)"servers", required_argument, NULL, OPT_SERVERS},
   {(OPTIONSTRING)"analyze", optional_argument, NULL, OPT_ANALYZE},
+  {(OPTIONSTRING)"username", required_argument, NULL, OPT_USERNAME},
+  {(OPTIONSTRING)"password", required_argument, NULL, OPT_PASSWD},
   {0, 0, 0, 0},
 };
 
@@ -123,6 +127,24 @@ int main(int argc, char *argv[])
 
   memcached_return_t rc= memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
+
+  if (opt_username and LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+  {
+    memcached_free(memc);
+    std::cerr << "--username was supplied, but binary was not built with SASL support." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  if (opt_username)
+  {
+    memcached_return_t ret;
+    if (memcached_failed(ret= memcached_set_sasl_auth_data(memc, opt_username, opt_passwd)))
+    {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
+      memcached_free(memc);
+      return EXIT_FAILURE;
+    }
+  }
 
   if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_SOME_ERRORS)
   {
@@ -392,6 +414,15 @@ static void options_parse(int argc, char *argv[])
 
     case OPT_QUIET:
       close_stdio();
+      break;
+
+    case OPT_USERNAME:
+      opt_username= optarg;
+      opt_binary= true;
+      break;
+
+    case OPT_PASSWD:
+      opt_passwd= optarg;
       break;
 
     case '?':

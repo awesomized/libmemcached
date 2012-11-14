@@ -734,6 +734,7 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
       if (server->fd != INVALID_SOCKET and server->root->sasl.callbacks)
       {
         rc= memcached_sasl_authenticate_connection(server);
+        fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, rc));
         if (memcached_failed(rc) and server->fd != INVALID_SOCKET)
         {
           WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);

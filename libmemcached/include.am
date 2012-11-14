@@ -118,10 +118,9 @@ libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION
 libmemcached_libmemcached_la_LDFLAGS+= $(DL_LIB)
 
 if HAVE_SASL
-libmemcached_libmemcached_la_CXXFLAGS+= $(LIBSASL_CPPFLAGS)
-libmemcached_libmemcached_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
-libmemcached_libmemcached_la_LIBADD+= $(PTHREAD_LIBS)
-libmemcached_libmemcached_la_LIBADD+= $(LIBSASL_LDFLAGS)
+libmemcached_libmemcached_la_CXXFLAGS+= @PTHREAD_CFLAGS@
+libmemcached_libmemcached_la_LIBADD+= @PTHREAD_LIBS@
+libmemcached_libmemcached_la_LIBADD+= @SASL_LDFLAGS@
 endif
 
 if HAVE_DTRACE
