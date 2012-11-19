@@ -38,6 +38,8 @@ noinst_HEADERS+= tests/string.h
 noinst_HEADERS+= tests/touch.h
 noinst_HEADERS+= tests/virtual_buckets.h
 
+if HAVE_DTRACE
+else
 # Test internals
 tests_libmemcached_1_0_internals_CXXFLAGS=
 tests_libmemcached_1_0_internals_DEPENDENCIES=
@@ -60,6 +62,8 @@ noinst_PROGRAMS+= tests/libmemcached-1.0/internals
 
 test-internal: tests/libmemcached-1.0/internals
 	@tests/testplus
+
+endif
 
 tests_libmemcached_1_0_testapp_CXXFLAGS=
 tests_libmemcached_1_0_testapp_CFLAGS=

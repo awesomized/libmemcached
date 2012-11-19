@@ -9,7 +9,7 @@
  *
  */
 
-#include "config.h"
+#include "mem_config.h"
 
 #include <inttypes.h>
 #include "ms_stats.h"
