@@ -8,7 +8,7 @@
  * Summary: Implementation of poll by using select
  *
  */
-#include "config.h"
+#include "mem_config.h"
 
 #if defined(WIN32) || defined(__MINGW32__)
 # include <winsock2.h>

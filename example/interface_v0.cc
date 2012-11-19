@@ -5,7 +5,7 @@
  * specification next to your coffee ;-)
  */
 
-#include "config.h"
+#include "mem_config.h"
 
 #include <cassert>
 #include <sys/types.h>

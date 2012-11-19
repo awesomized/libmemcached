@@ -13,7 +13,7 @@
  *      Mingqiang Zhuang <mingqiangzhuang@hengtiansoft.com>
  *
  */
-#include "config.h"
+#include "mem_config.h"
 
 #include <stdlib.h>
 #include <getopt.h>

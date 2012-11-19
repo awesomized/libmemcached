@@ -8,7 +8,7 @@
  * you will not receive the next command before a answer to the previous
  * command is being sent.
  */
-#include "config.h"
+#include "mem_config.h"
 
 #include <cassert>
 #include <cerrno>

@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
-#include "config.h"
+#include "mem_config.h"
 #include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
