@@ -58,6 +58,8 @@ tests_libmemcached_1_0_internals_LDADD+= libtest/libtest.la
 check_PROGRAMS+= tests/libmemcached-1.0/internals
 noinst_PROGRAMS+= tests/libmemcached-1.0/internals
 
+test-internal: tests/libmemcached-1.0/internals
+	@tests/testplus
 
 tests_libmemcached_1_0_testapp_CXXFLAGS=
 tests_libmemcached_1_0_testapp_CFLAGS=
