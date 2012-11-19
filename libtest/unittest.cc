@@ -734,6 +734,7 @@ static test_return_t lookup_false_TEST(void *)
 
 static test_return_t create_tmpfile_TEST(void *)
 {
+  test_skip(0, access("/usr/bin/touch", X_OK ));
   std::string tmp= create_tmpfile(__func__);
   test_compare(-1, access(tmp.c_str(), R_OK));
   test_compare(-1, access(tmp.c_str(), F_OK));
