@@ -7,6 +7,8 @@
 # will not be exposed in the shipped .so
 noinst_LTLIBRARIES+= libmemcachedinternal/libmemcachedinternal.la
 
+if HAVE_DTRACE
+else
 libmemcachedinternal_libmemcachedinternal_la_SOURCES= $(libmemcached_libmemcached_la_SOURCES)
 libmemcachedinternal_libmemcachedinternal_la_CFLAGS= \
 						     ${AM_CFLAGS} \
@@ -24,3 +26,4 @@ libmemcachedinternal_libmemcachedinternal_la_LDFLAGS=
 libmemcachedinternal_libmemcachedinternal_la_LDFLAGS+= @DL_LIB@
 libmemcachedinternal_libmemcachedinternal_la_LIBADD= $(libmemcached_libmemcached_la_LIBADD)
 libmemcachedinternal_libmemcachedinternal_la_DEPENDENCIES= $(libmemcached_libmemcached_la_DEPENDENCIES)
+endif
