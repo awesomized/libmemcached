@@ -96,12 +96,14 @@ In which case, the hash table should have hashsize(10) elements.
 uint32_t hashkit_jenkins(const char *key, size_t length, void *)
 {
   uint32_t a,b,c;                                          /* internal state */
-  union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */
+#ifndef WORDS_BIGENDIAN
+  union { const void *ptr; size_t i; } u;
+  u.ptr = key;
+#endif
 
   /* Set up the internal state */
   a = b = c = 0xdeadbeef + ((uint32_t)length) + JENKINS_INITVAL;
 
-  u.ptr = key;
 #ifndef WORDS_BIGENDIAN
   if ((u.i & 0x3) == 0)
   {
