@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include "config.h"
+#include "mem_config.h"
 #include <assert.h>
 
 #include <libmemcachedprotocol-0.0/handler.h>

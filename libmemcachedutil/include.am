@@ -4,8 +4,7 @@
 
 lib_LTLIBRARIES+= libmemcached/libmemcachedutil.la
 
-noinst_HEADERS+= \
-		 libmemcachedutil/common.h
+noinst_HEADERS+= libmemcachedutil/common.h
 
 libmemcached_libmemcachedutil_la_SOURCES= \
 					  libmemcached/backtrace.cc \
@@ -18,9 +17,9 @@ libmemcached_libmemcachedutil_la_CXXFLAGS= \
 					   ${AM_CXXFLAGS} \
 					   ${NO_CONVERSION} \
 					   -DBUILDING_LIBMEMCACHED
-libmemcached_libmemcachedutil_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
+libmemcached_libmemcachedutil_la_CXXFLAGS+= @PTHREAD_CFLAGS@
 libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
-libmemcached_libmemcachedutil_la_LIBADD+= ${PTHREAD_LIBS}
+libmemcached_libmemcachedutil_la_LIBADD+= @PTHREAD_LIBS@
 libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
 libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la
 

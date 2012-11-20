@@ -79,9 +79,9 @@ clients_memerror_LDADD= $(CLIENTS_LDADDS)
 
 clients_memslap_SOURCES = clients/memslap.cc
 clients_memslap_SOURCES+= clients/generator.cc clients/execute.cc
-clients_memslap_CXXFLAGS = ${PTHREAD_CFLAGS}
+clients_memslap_CXXFLAGS= @PTHREAD_CFLAGS@
 clients_memslap_LDADD= $(CLIENTS_LDADDS)
-clients_memslap_LDADD+= $(PTHREAD_LIBS)
+clients_memslap_LDADD+= @PTHREAD_LIBS@
 
 clients_memaslap_SOURCES=
 clients_memaslap_SOURCES+= clients/memaslap.c 
@@ -93,7 +93,9 @@ clients_memaslap_SOURCES+= clients/ms_task.c
 clients_memaslap_SOURCES+= clients/ms_thread.c
 
 clients_memaslap_SOURCES+= clients/generator.cc clients/execute.cc
-clients_memaslap_LDADD= $(LTLIBEVENT) $(CLIENTS_LDADDS)
+clients_memaslap_LDADD=
+clients_memaslap_LDADD+= @LIBEVENT_LDFLAGS@
+clients_memaslap_LDADD+= $(CLIENTS_LDADDS)
 
 clients_memcapable_SOURCES=
 clients_memcapable_SOURCES+= clients/memcapable.cc

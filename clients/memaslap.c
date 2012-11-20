@@ -114,7 +114,48 @@ static void ms_print_statistics(int in_time);
 static void ms_print_memslap_stats(struct timeval *start_time,
                                    struct timeval *end_time);
 static void ms_monitor_slap_mode(void);
-void ms_help_command(const char *command_name, const char *description);
+
+/**
+ * output the help information
+ *
+ * @param command_name, the string of this process
+ * @param description, description of this process
+ * @param long_options, global options array
+ */
+static __attribute__((noreturn)) void ms_help_command(const char *command_name, const char *description)
+{
+  char *help_message= NULL;
+
+  printf("%s v%u.%u\n", command_name, 1U, 0U);
+  printf("    %s\n\n", description);
+  printf(
+    "Usage:\n"
+    "    memslap -hV | -s servers [-F config_file] [-t time | -x exe_num] [...]\n\n"
+    "Options:\n");
+
+  for (int x= 0; long_options[x].name; x++)
+  {
+    printf("    -%c, --%s%c\n", long_options[x].val, long_options[x].name,
+           long_options[x].has_arg ? '=' : ' ');
+
+    if ((help_message= (char *)ms_lookup_help(long_options[x].val)) != NULL)
+    {
+      printf("        %s\n", help_message);
+    }
+  }
+
+  printf(
+    "\nExamples:\n"
+    "    memslap -s 127.0.0.1:11211 -S 5s\n"
+    "    memslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b\n"
+    "    memslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2\n"
+    "    memslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k\n"
+    "    memslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40\n"
+    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m\n"
+    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2\n\n");
+
+  exit(0);
+} /* ms_help_command */
 
 
 /* initialize the global locks */
@@ -292,49 +333,6 @@ static const char *ms_lookup_help(ms_options_t option)
     return "Forgot to document this option :)";
   } /* switch */
 } /* ms_lookup_help */
-
-
-/**
- * output the help information
- *
- * @param command_name, the string of this process
- * @param description, description of this process
- * @param long_options, global options array
- */
-void ms_help_command(const char *command_name, const char *description)
-{
-  char *help_message= NULL;
-
-  printf("%s v%u.%u\n", command_name, 1U, 0U);
-  printf("    %s\n\n", description);
-  printf(
-    "Usage:\n"
-    "    memslap -hV | -s servers [-F config_file] [-t time | -x exe_num] [...]\n\n"
-    "Options:\n");
-
-  for (int x= 0; long_options[x].name; x++)
-  {
-    printf("    -%c, --%s%c\n", long_options[x].val, long_options[x].name,
-           long_options[x].has_arg ? '=' : ' ');
-
-    if ((help_message= (char *)ms_lookup_help(long_options[x].val)) != NULL)
-    {
-      printf("        %s\n", help_message);
-    }
-  }
-
-  printf(
-    "\nExamples:\n"
-    "    memslap -s 127.0.0.1:11211 -S 5s\n"
-    "    memslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40\n"
-    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m\n"
-    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2\n\n");
-
-  exit(0);
-} /* ms_help_command */
 
 
 /* used to parse the time string  */

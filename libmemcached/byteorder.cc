@@ -35,7 +35,8 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "mem_config.h"
+#include "libmemcached/byteorder.h"
 
 /* Byte swap a 64-bit number. */
 #ifndef swap64

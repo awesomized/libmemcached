@@ -758,6 +758,7 @@ static void ms_maximize_sndbuf(const int sfd)
       max= avg - 1;
     }
   }
+  (void)last_good;
 } /* ms_maximize_sndbuf */
 
 
@@ -1543,6 +1544,7 @@ static int ms_sort_udp_packet(ms_conn_t *c, char *buf, int rbytes)
       break;
     }
   }
+  (void)packets;
 
   return wbytes == 0 ? -1 : wbytes;
 } /* ms_sort_udp_packet */
@@ -3157,6 +3159,8 @@ int ms_mcd_mlget(ms_conn_t *c)
     item= c->mlget_task.mlget_item[i].item;
     atomic_add_size(&ms_stats.cmd_get, 1);
   }
+
+  (void)item;
 
   return EXIT_SUCCESS;
 } /* ms_mcd_mlget */
