@@ -22,13 +22,15 @@ libmemcached_libmemcachedprotocol_la_CFLAGS=
 libmemcached_libmemcachedprotocol_la_CFLAGS+= ${AM_CFLAGS}
 libmemcached_libmemcachedprotocol_la_CFLAGS+= ${NO_CONVERSION}
 libmemcached_libmemcachedprotocol_la_CFLAGS+= -DBUILDING_LIBMEMCACHED
-libmemcached_libmemcachedprotocol_la_CFLAGS+= ${PTHREAD_CFLAGS}
+libmemcached_libmemcachedprotocol_la_CFLAGS+= @PTHREAD_CFLAGS@
 
 libmemcached_libmemcachedprotocol_la_CXXFLAGS=
 libmemcached_libmemcachedprotocol_la_CXXFLAGS+= ${AM_CXXFLAGS}
 libmemcached_libmemcachedprotocol_la_CXXFLAGS+= -DBUILDING_LIBMEMCACHED
-libmemcached_libmemcachedprotocol_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
+libmemcached_libmemcachedprotocol_la_CXXFLAGS+= @PTHREAD_CFLAGS@
 
-libmemcached_libmemcachedprotocol_la_LIBADD= ${PTHREAD_LIBS}
+libmemcached_libmemcachedprotocol_la_LIBADD=
+libmemcached_libmemcachedprotocol_la_LIBADD+= @LIBEVENT_LDFLAGS@
+libmemcached_libmemcachedprotocol_la_LIBADD+= @PTHREAD_LIBS@
 libmemcached_libmemcachedprotocol_la_LDFLAGS= ${AM_LDFLAGS}
 libmemcached_libmemcachedprotocol_la_LDFLAGS+= -version-info ${MEMCACHED_PROTOCAL_LIBRARY_VERSION}

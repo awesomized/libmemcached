@@ -76,7 +76,7 @@ static protocol_binary_response_status raw_response_handler(const void *cookie,
     return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
   }
 
-  size_t len= sizeof(protocol_binary_response_header) + memcached_htonl(response->response.bodylen);
+  size_t len= sizeof(protocol_binary_response_header) + htonl(response->response.bodylen);
   size_t offset= 0;
   char *ptr= (void*)response;
 

@@ -38,7 +38,9 @@ static void ms_signal_segv(int signum, siginfo_t *info, void *ptr)
 
   pthread_mutex_lock(&ms_global.quit_mutex);
   fprintf(stderr, "Segmentation fault occurred.\nStack trace:\n");
+#if 0
   pandora_print_callstack(stderr);
+#endif
   fprintf(stderr, "End of stack trace\n");
   pthread_mutex_unlock(&ms_global.quit_mutex);
   abort();

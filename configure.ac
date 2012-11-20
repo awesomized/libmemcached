@@ -284,6 +284,7 @@ AS_IF([test "x$enable_static" = "xyes"],
       [AC_DEFINE([AX_ENABLE_BACKTRACE],[1],[Support for backtrace().])])
 
 PANDORA_ENABLE_DTRACE
+HAVE_GCC_ATOMICS
 AX_ENDIAN
 AX_ASSERT
 AX_HARDEN_COMPILER_FLAGS
