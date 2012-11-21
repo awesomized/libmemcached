@@ -3683,6 +3683,27 @@ test_return_t murmur_run (memcached_st *)
 #endif
 }
 
+test_return_t murmur3_TEST(hashkit_st *)
+{
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR3));
+
+#ifdef WORDS_BIGENDIAN
+  (void)murmur3_values;
+  return TEST_SKIPPED;
+#else
+  uint32_t x;
+  const char **ptr;
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    test_compare(murmur3_values[x],
+                 memcached_generate_hash_value(*ptr, strlen(*ptr), MEMCACHED_HASH_MURMUR3));
+  }
+
+  return TEST_SUCCESS;
+#endif
+}
+
 test_return_t jenkins_run (memcached_st *)
 {
   uint32_t x;

@@ -57,6 +57,7 @@ bool libhashkit_has_algorithm(const hashkit_hash_algorithm_t algo)
     return false;
 #endif
 
+  case HASHKIT_HASH_MURMUR3:
   case HASHKIT_HASH_MURMUR:
 #ifdef HAVE_MURMUR_HASH
     return true;

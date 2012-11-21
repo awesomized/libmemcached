@@ -66,6 +66,9 @@ uint32_t libhashkit_digest(const char *key, size_t key_length, hashkit_hash_algo
 #else
     return 1;
 #endif
+  case HASHKIT_HASH_MURMUR3:
+    return libhashkit_murmur3(key, key_length);
+
   case HASHKIT_HASH_MURMUR:
 #ifdef HAVE_MURMUR_HASH
     return libhashkit_murmur(key, key_length);

@@ -262,6 +262,27 @@ static test_return_t hsieh_run (hashkit_st *)
   return TEST_SUCCESS;
 }
 
+static test_return_t murmur3_TEST(hashkit_st *)
+{
+  test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR3));
+
+#ifdef WORDS_BIGENDIAN
+  (void)murmur3_values;
+  return TEST_SKIPPED;
+#else
+  uint32_t x;
+  const char **ptr;
+
+  for (ptr= list_to_hash, x= 0; *ptr; ptr++, x++)
+  {
+    test_compare(murmur3_values[x],
+                 libhashkit_murmur3(*ptr, strlen(*ptr)));
+  }
+
+  return TEST_SUCCESS;
+#endif
+}
+
 static test_return_t murmur_run (hashkit_st *)
 {
   test_skip(true, libhashkit_has_algorithm(HASHKIT_HASH_MURMUR));
@@ -509,6 +530,7 @@ test_st hash_tests[] ={
   {"fnv1a_32", 0, (test_callback_fn*)fnv1a_32_run },
   {"hsieh", 0, (test_callback_fn*)hsieh_run },
   {"murmur", 0, (test_callback_fn*)murmur_run },
+  {"murmur3", 0, (test_callback_fn*)murmur3_TEST },
   {"jenkis", 0, (test_callback_fn*)jenkins_run },
   {0, 0, (test_callback_fn*)0}
 };

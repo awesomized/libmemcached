@@ -130,6 +130,7 @@ static test_return_t set_function_test(void *)
       list= hsieh_values;
       break;
 
+    case HASHKIT_HASH_MURMUR3:
     case HASHKIT_HASH_MURMUR:
 #ifdef WORDS_BIGENDIAN
       continue;

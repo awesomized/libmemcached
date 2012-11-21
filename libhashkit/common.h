@@ -52,9 +52,10 @@
 #endif
 
 #include <libhashkit-1.0/hashkit.h>
-#include <libhashkit/is.h>
-#include <libhashkit/string.h>
-#include <libhashkit/aes.h>
+#include "libhashkit/algorithm.h"
+#include "libhashkit/is.h"
+#include "libhashkit/string.h"
+#include "libhashkit/aes.h"
 
 #ifdef __cplusplus
 extern "C" {
