@@ -43,10 +43,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 uint32_t hashkit_one_at_a_time(const char *key, size_t key_length, void *context);
 
 uint32_t hashkit_fnv1_64(const char *key, size_t key_length, void *context);
@@ -68,7 +64,3 @@ uint32_t hashkit_murmur3(const char *key, size_t key_length, void *context);
 uint32_t hashkit_jenkins(const char *key, size_t key_length, void *context);
 
 uint32_t hashkit_md5(const char *key, size_t key_length, void *context);
-
-#ifdef __cplusplus
-}
-#endif
