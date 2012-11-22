@@ -12,6 +12,7 @@
 lib_LTLIBRARIES+= libhashkit/libhashkit.la
 
 noinst_HEADERS+= libhashkit/aes.h
+noinst_HEADERS+= libhashkit/algorithm.h
 noinst_HEADERS+= libhashkit/murmur3.h
 noinst_HEADERS+= libhashkit/common.h
 noinst_HEADERS+= libhashkit/is.h
