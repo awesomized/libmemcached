@@ -280,8 +280,9 @@ CHECK_FOR_PTHREAD_AND_SASL
 
 
 # backtrace() does not work with static builds.
-AS_IF([test "x$enable_static" = "xyes"],
+AS_IF([test "x$enable_shared" = "xyes"],
       [AC_DEFINE([AX_ENABLE_BACKTRACE],[1],[Support for backtrace().])])
+AM_CONDITIONAL([SHARED_ENABLED],[test "x$enable_shared" = "xyes"])
 
 PANDORA_ENABLE_DTRACE
 HAVE_GCC_ATOMICS
@@ -313,6 +314,7 @@ echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * LIB Flags:                 $LIB"
 echo "   * Assertions enabled:        $ax_enable_assert"
 echo "   * Debug enabled:             $ax_enable_debug"
+echo "   * Shared:                    $enable_shared"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
 echo "   * SASL support:              $ax_sasl_option"
 echo "   * make -j:                   $enable_jobserver"

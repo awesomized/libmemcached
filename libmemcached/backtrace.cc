@@ -37,22 +37,24 @@
 
 #include <libmemcached/common.h>
 
+#ifdef AX_ENABLE_BACKTRACE
+
 #ifdef HAVE_EXECINFO_H
-#  include <execinfo.h>
+# include <execinfo.h>
 #endif
 
 #ifdef HAVE_GCC_ABI_DEMANGLE
-#  include <cxxabi.h>
+# include <cxxabi.h>
 #endif
 
 #ifdef HAVE_DLFCN_H
-#  include <dlfcn.h>
+# include <dlfcn.h>
 #endif
 
 #ifdef HAVE_GCC_ABI_DEMANGLE
-#  define USE_DEMANGLE 1
+# define USE_DEMANGLE 1
 #else
-#  define USE_DEMANGLE 0
+# define USE_DEMANGLE 0
 #endif
 
 const int MAX_DEPTH= 50;
@@ -95,4 +97,9 @@ void custom_backtrace(void)
     }
   } 
 #endif // HAVE_EXECINFO_H
+
+#else // AX_ENABLE_BACKTRACE
+void custom_backtrace(void)
+{
 }
+#endif // AX_ENABLE_BACKTRACE
