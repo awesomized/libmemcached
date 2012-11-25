@@ -40,6 +40,8 @@ SYNOPSIS
 
 .. c:type:: MEMCACHED_HASH_HSIEH
 
+.. c:type:: MEMCACHED_HASH_MURMUR3
+
 
 Compile and link with -lmemcachedutil -lmemcached
 

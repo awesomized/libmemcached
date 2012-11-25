@@ -13,13 +13,17 @@ libmemcached_libmemcachedutil_la_SOURCES= \
 					  libmemcachedutil/ping.cc \
 					  libmemcachedutil/pool.cc \
 					  libmemcachedutil/version.cc
-libmemcached_libmemcachedutil_la_CXXFLAGS= \
+libmemcached_libmemcachedutil_la_LIBADD=
+libmemcached_libmemcachedutil_la_LDFLAGS=
+libmemcached_libmemcachedutil_la_CXXFLAGS=
+libmemcached_libmemcachedutil_la_DEPENDENCIES=
+libmemcached_libmemcachedutil_la_CXXFLAGS+= \
 					   ${AM_CXXFLAGS} \
 					   ${NO_CONVERSION} \
 					   -DBUILDING_LIBMEMCACHED
 libmemcached_libmemcachedutil_la_CXXFLAGS+= @PTHREAD_CFLAGS@
-libmemcached_libmemcachedutil_la_LIBADD= libmemcached/libmemcached.la
+libmemcached_libmemcachedutil_la_LDFLAGS+= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
+libmemcached_libmemcachedutil_la_LIBADD+= libmemcached/libmemcached.la
 libmemcached_libmemcachedutil_la_LIBADD+= @PTHREAD_LIBS@
-libmemcached_libmemcachedutil_la_LDFLAGS= ${AM_LDFLAGS} -version-info ${MEMCACHED_UTIL_LIBRARY_VERSION}
-libmemcached_libmemcachedutil_la_DEPENDENCIES= libmemcached/libmemcached.la
+libmemcached_libmemcachedutil_la_DEPENDENCIES+= libmemcached/libmemcached.la
 

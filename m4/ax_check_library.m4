@@ -60,7 +60,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 4
+#serial 6
 
 AC_DEFUN([AX_CHECK_LIBRARY], [
   AC_ARG_VAR($1[_CPPFLAGS], [C preprocessor flags for ]$1[ headers])
@@ -89,7 +89,11 @@ AC_DEFUN([AX_CHECK_LIBRARY], [
     ])
 
   AS_IF([test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"],
-    AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
-      m4_ifval( m4_normalize([$4]), [$4]),
-    m4_ifval( m4_normalize([$5]), [$5]))
-])
+      [AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
+      AC_SUBST($1[_CPPFLAGS])
+      AC_SUBST($1[_LDFLAGS])
+      AC_SUBST($1[_LIB],[-l]$3)
+      m4_ifval( m4_normalize([$4]), [$4]), 
+      m4_ifval( m4_normalize([$5]), [$5])])
+  AM_CONDITIONAL([HAVE_]$1,[test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"])
+  ])

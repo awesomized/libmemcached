@@ -49,6 +49,7 @@ const char * libhashkit_string_hash(hashkit_hash_algorithm_t type)
   case HASHKIT_HASH_FNV1A_32: return "FNV1A_32";
   case HASHKIT_HASH_HSIEH: return "HSIEH";
   case HASHKIT_HASH_MURMUR: return "MURMUR";
+  case HASHKIT_HASH_MURMUR3: return "MURMUR3";
   case HASHKIT_HASH_JENKINS: return "JENKINS";
   case HASHKIT_HASH_CUSTOM: return "CUSTOM";
   default:

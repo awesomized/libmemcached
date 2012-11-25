@@ -361,6 +361,7 @@ test_st hash_tests[] ={
   {"fnv1a_32", false, (test_callback_fn*)fnv1a_32_run },
   {"hsieh", false, (test_callback_fn*)hsieh_run },
   {"murmur", false, (test_callback_fn*)murmur_run },
+  {"murmur3", false, (test_callback_fn*)murmur3_TEST },
   {"jenkis", false, (test_callback_fn*)jenkins_run },
   {"memcached_get_hashkit", false, (test_callback_fn*)memcached_get_hashkit_test },
   {0, 0, (test_callback_fn*)0}

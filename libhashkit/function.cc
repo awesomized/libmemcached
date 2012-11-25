@@ -57,6 +57,7 @@ static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *se
     }
     return HASHKIT_INVALID_ARGUMENT;
 
+  case HASHKIT_HASH_MURMUR3:
   case HASHKIT_HASH_MURMUR:
     if (libhashkit_has_algorithm(HASHKIT_HASH_MURMUR))
     {

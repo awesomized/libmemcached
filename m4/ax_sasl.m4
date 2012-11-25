@@ -46,7 +46,7 @@ AC_DEFUN([AX_SASL_CHECK],
     [ax_sasl_check=no
     AX_CHECK_LIBRARY([LIBSASL],[sasl/sasl.h],[sasl2],
       [ax_sasl_check=yes
-      AC_SUBST([SASL_LDFLAGS],[[-lsasl2]])
+      AC_SUBST([SASL_LIB],[[-lsasl2]])
       ])
     AC_MSG_CHECKING([checking to see if sasl works])
     AC_MSG_RESULT(["$ax_sasl_check"])

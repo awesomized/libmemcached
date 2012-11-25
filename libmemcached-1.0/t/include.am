@@ -10,6 +10,7 @@
 
 LIBMEMCACHED_1_0_TEST_PATH= libmemcached-1.0/t
  
+if SHARED_ENABLED
 # Test linking with C application
 libmemcached_1_0_t_c_test_SOURCES= libmemcached-1.0/t/c_test.c
 libmemcached_1_0_t_c_test_LDADD= libmemcached/libmemcached.la
@@ -17,16 +18,18 @@ libmemcached_1_0_t_c_test_DEPENDENCIES= libmemcached/libmemcached.la
 check_PROGRAMS+= libmemcached-1.0/t/c_test
 noinst_PROGRAMS+= libmemcached-1.0/t/c_test
 
-# Test linking with C++ application
-libmemcached_1_0_t_cc_test_SOURCES= libmemcached-1.0/t/cc_test.cc
-libmemcached_1_0_t_cc_test_LDADD= libmemcached/libmemcached.la
-libmemcached_1_0_t_cc_test_DEPENDENCIES= libmemcached/libmemcached.la
-check_PROGRAMS+= libmemcached-1.0/t/cc_test
-noinst_PROGRAMS+= libmemcached-1.0/t/cc_test
-
 # Test linking with C application/SASL include
 libmemcached_1_0_t_c_sasl_test_SOURCES= libmemcached-1.0/t/c_sasl_test.c
 libmemcached_1_0_t_c_sasl_test_LDADD= libmemcached/libmemcached.la
 libmemcached_1_0_t_c_sasl_test_DEPENDENCIES= libmemcached/libmemcached.la
 check_PROGRAMS+= libmemcached-1.0/t/c_sasl_test
 noinst_PROGRAMS+= libmemcached-1.0/t/c_sasl_test
+else
+endif
+
+# Test linking with C++ application
+libmemcached_1_0_t_cc_test_SOURCES= libmemcached-1.0/t/cc_test.cc
+libmemcached_1_0_t_cc_test_LDADD= libmemcached/libmemcached.la
+libmemcached_1_0_t_cc_test_DEPENDENCIES= libmemcached/libmemcached.la
+check_PROGRAMS+= libmemcached-1.0/t/cc_test
+noinst_PROGRAMS+= libmemcached-1.0/t/cc_test

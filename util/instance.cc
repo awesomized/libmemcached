@@ -36,7 +36,7 @@
  */
 
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include "util/instance.hpp"
 
@@ -50,7 +50,23 @@
 #include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+# include <unistd.h>
+#endif
+
+#ifndef INVALID_SOCKET
+# define INVALID_SOCKET -1
+#endif
+
+#ifndef SOCKET_ERROR
+# define SOCKET_ERROR -1
+#endif
+
+#ifndef get_socket_errno
+# define get_socket_errno() errno
+#endif
+
+#ifndef closesocket
+# define closesocket(a) close(a)
 #endif
 
 

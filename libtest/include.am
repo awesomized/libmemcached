@@ -129,13 +129,13 @@ libtest_libtest_la_SOURCES+= libtest/tmpfile.cc
 libtest_libtest_la_SOURCES+= libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
-libtest_libtest_la_CXXFLAGS+= $(PTHREAD_CFLAGS)
+libtest_libtest_la_CXXFLAGS+= @PTHREAD_CFLAGS@
 libtest_libtest_la_CXXFLAGS+= -DLIBTEST_TEMP="\"tmp_chroot\""
 libtest_libtest_la_CXXFLAGS+= $(CURL_CFLAGS)
 
-libtest_libtest_la_LIBADD+= $(PTHREAD_LIBS)
 libtest_libtest_la_LIBADD+= $(CURL_LIBS)
-libtest_libtest_la_LIBADD+= $(RT_LIB)
+libtest_libtest_la_LIBADD+= @PTHREAD_LIBS@
+libtest_libtest_la_LIBADD+= @RT_LIB@
 
 libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
 libtest_libtest_la_DEPENDENCIES+=libtest/abort
@@ -190,8 +190,7 @@ libtest_unittest_DEPENDENCIES+= libgearman/libgearman.la
 libtest_unittest_DEPENDENCIES+= gearmand/gearmand
 else
 if HAVE_LIBGEARMAN
-libtest_libtest_la_DEPENDENCIES+= libgearman/libgearman.la
-libtest_libtest_la_LIBADD+= $(libgearman_LIBS)
+libtest_libtest_la_LIBADD+= @LIBGEARMAN_LDFLAGS@
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
@@ -260,3 +259,15 @@ noinst_PROGRAMS+= libtest/core-count
 
 libtest_abort_SOURCES= libtest/abort.cc
 noinst_PROGRAMS+= libtest/abort
+
+libtest_backtrace_SOURCES=
+libtest_backtrace_LDADD=
+libtest_backtrace_SOURCES+= libtest/backtrace_test.cc
+libtest_backtrace_SOURCES+= libmemcached/backtrace.cc
+libtest_backtrace_LDADD+= @DL_LIB@
+noinst_PROGRAMS+= libtest/backtrace
+test-backtrace: libtest/backtrace
+	@libtest/backtrace
+
+gdb-backtrace: libtest/backtrace
+	@$(GDB_COMMAND) libtest/backtrace

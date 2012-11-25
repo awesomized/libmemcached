@@ -29,6 +29,7 @@ Makefile
 Makefile.in
 TAGS
 aclocal.m4
+aminclude.am
 autom4te.cache
 autoscan.log
 build-aux/
@@ -46,9 +47,6 @@ clients/memrm
 clients/memslap
 clients/memstat
 clients/memtouch
-mem_config.h
-mem_config.h.in
-mem_config.in
 config.log
 config.status
 config/compile
@@ -60,6 +58,7 @@ config/ltmain.sh
 config/missing
 config/pandora_vc_revinfo
 config/top.h
+configure
 configure.scan
 docs/*.[13]
 docs/*.html
@@ -81,12 +80,17 @@ libmemcached-1.2/configure.h
 libmemcached-2.0/configure.h
 libmemcached-?.??/
 libmemcached/configure.h
+libmemcached/csl/parser.cc
+libmemcached/csl/parser.h
+libmemcached/csl/scanner.cc
+libmemcached/csl/scanner.h
 libmemcached/dtrace_probes.h
 libmemcached/generated_probes.h
 libmemcached/memcached_configure.h
 libtest/.hg/
 libtest/.hgignore
 libtest/abort
+libtest/core-count
 libtest/skiptest
 libtest/unittest
 libtest/version.h
@@ -101,6 +105,10 @@ m4/lt~obsolete.m4
 man/*.1
 man/*.3
 man/*.8
+man/.doctrees/
+mem_config.h
+mem_config.h.in
+mem_config.in
 memcached/.git
 memcached/.gitignore
 memcached/memcached
@@ -150,4 +158,3 @@ tests/testudp
 tests/var/
 tmp_chroot
 unittests/unittests
-aminclude.am

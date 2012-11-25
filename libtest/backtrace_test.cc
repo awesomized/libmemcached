@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  HashKit library
  *
- *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2009-2010 Brian Aker All rights reserved.
+ *  Data Differential YATL (i.e. libtest)  library
+ *
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,64 +34,90 @@
  *
  */
 
+#include <cerrno>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
-#pragma once
+#include "libmemcached/backtrace.hpp"
 
-typedef enum {
-  HASHKIT_SUCCESS,
-  HASHKIT_FAILURE,
-  HASHKIT_MEMORY_ALLOCATION_FAILURE,
-  HASHKIT_INVALID_HASH,
-  HASHKIT_INVALID_ARGUMENT,
-  HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
-} hashkit_return_t;
+class Test {
+public:
+  Test()
+  {
+  }
 
-static inline bool hashkit_success(const hashkit_return_t rc)
+  void call_backtrace()
+  {
+    std::cerr << __func__ << std::endl;
+    custom_backtrace();
+  }
+};
+
+void SIGSEGV_handler(int sig_num, siginfo_t* info, void* ucontext)
 {
-  return (rc == HASHKIT_SUCCESS);
+  std::cerr << __func__ << std::endl;
+  (void)sig_num;
+  (void)info;
+  (void)ucontext;
+
+  custom_backtrace();
 }
 
-static inline bool hashkit_failed(const hashkit_return_t rc)
+int raise_SIGSEGV()
 {
-  return (rc != HASHKIT_SUCCESS);
+  std::cerr << std::endl << "Calling backtrace()" << std::endl;
+  custom_backtrace();
+  std::cerr << std::endl << "Calling raise()" << std::endl;
+  return raise(SIGSEGV);
 }
 
-typedef enum {
-  HASHKIT_HASH_DEFAULT= 0, // hashkit_one_at_a_time()
-  HASHKIT_HASH_MD5,
-  HASHKIT_HASH_CRC,
-  HASHKIT_HASH_FNV1_64,
-  HASHKIT_HASH_FNV1A_64,
-  HASHKIT_HASH_FNV1_32,
-  HASHKIT_HASH_FNV1A_32,
-  HASHKIT_HASH_HSIEH,
-  HASHKIT_HASH_MURMUR,
-  HASHKIT_HASH_JENKINS,
-  HASHKIT_HASH_MURMUR3,
-  HASHKIT_HASH_CUSTOM,
-  HASHKIT_HASH_MAX
-} hashkit_hash_algorithm_t;
-
-/**
- * Hash distributions that are available to use.
- */
-typedef enum
+int layer4()
 {
-  HASHKIT_DISTRIBUTION_MODULA,
-  HASHKIT_DISTRIBUTION_RANDOM,
-  HASHKIT_DISTRIBUTION_KETAMA,
-  HASHKIT_DISTRIBUTION_MAX /* Always add new values before this. */
-} hashkit_distribution_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct hashkit_st hashkit_st;
-typedef struct hashkit_string_st hashkit_string_st;
-
-typedef uint32_t (*hashkit_hash_fn)(const char *key, size_t key_length, void *context);
-
-#ifdef __cplusplus
+  return raise_SIGSEGV();
 }
-#endif
+
+int layer3()
+{
+  return layer4();
+}
+
+int layer2()
+{
+  return layer3();
+}
+
+int layer1()
+{
+  return layer2();
+}
+
+int main(int, char **)
+{
+  Test t;
+
+  t.call_backtrace();
+
+  struct sigaction sigact;
+
+  sigact.sa_sigaction= SIGSEGV_handler;
+  sigact.sa_flags= SA_RESTART | SA_SIGINFO;
+
+  if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0)
+  {
+    std::cerr << "error setting signal handler for " << strsignal(SIGSEGV) << "(" <<  SIGSEGV << ")" << std::endl;
+
+    exit(EXIT_FAILURE);
+  }
+
+  int ret= layer1();
+  if (ret)
+  {
+    std::cerr << "raise() " << strerror(errno) << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  exit(EXIT_SUCCESS);
+}

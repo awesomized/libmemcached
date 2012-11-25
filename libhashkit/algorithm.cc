@@ -34,7 +34,7 @@
  *
  */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 uint32_t libhashkit_one_at_a_time(const char *key, size_t key_length)
 {
@@ -69,6 +69,11 @@ uint32_t libhashkit_crc32(const char *key, size_t key_length)
 uint32_t libhashkit_hsieh(const char *key, size_t key_length)
 {
   return hashkit_hsieh(key, key_length, NULL);
+}
+
+uint32_t libhashkit_murmur3(const char *key, size_t key_length)
+{
+  return hashkit_murmur3(key, key_length, NULL);
 }
 
 uint32_t libhashkit_murmur(const char *key, size_t key_length)

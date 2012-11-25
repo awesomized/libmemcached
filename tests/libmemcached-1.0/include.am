@@ -108,7 +108,7 @@ tests_libmemcached_1_0_testapp_DEPENDENCIES+= libtest/libtest.la
 tests_libmemcached_1_0_testapp_DEPENDENCIES+= libhashkit/libhashkit.la
 tests_libmemcached_1_0_testapp_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 
-tests_libmemcached_1_0_testapp_LDADD+= @LIBUUID_LDFLAGS@
+tests_libmemcached_1_0_testapp_LDADD+= @LIBUUID_LIB@
 tests_libmemcached_1_0_testapp_LDADD+= @PTHREAD_LIBS@
 tests_libmemcached_1_0_testapp_LDADD+= libmemcached/libmemcached.la
 tests_libmemcached_1_0_testapp_LDADD+= libmemcached/libmemcachedutil.la
@@ -164,7 +164,7 @@ tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libtest/libtest.la
 tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libhashkit/libhashkit.la
 tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 
-tests_libmemcached_1_0_testsocket_LDADD+= @LIBUUID_LDFLAGS@
+tests_libmemcached_1_0_testsocket_LDADD+= @LIBUUID_LIB@
 tests_libmemcached_1_0_testsocket_LDADD+= @PTHREAD_LIBS@
 tests_libmemcached_1_0_testsocket_LDADD+= libmemcached/libmemcached.la
 tests_libmemcached_1_0_testsocket_LDADD+= libmemcached/libmemcachedutil.la

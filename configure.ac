@@ -47,6 +47,7 @@ m4_include([libhashkit/include.m4])
 LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
+LT_LIB_M
 
 AX_ASSERT
 
@@ -112,6 +113,7 @@ AC_CHECK_HEADERS_ONCE([dlfcn.h])
 AC_CHECK_HEADERS_ONCE([errno.h])
 AC_CHECK_HEADERS_ONCE([execinfo.h])
 AC_CHECK_HEADERS_ONCE([fcntl.h])
+AC_CHECK_HEADERS_ONCE([fnmatch.h])
 AC_CHECK_HEADERS_ONCE([inttypes.h])
 AC_CHECK_HEADERS_ONCE([libintl.h])
 AC_CHECK_HEADERS_ONCE([limits.h])
@@ -121,6 +123,7 @@ AC_CHECK_HEADERS_ONCE([math.h])
 AC_CHECK_HEADERS_ONCE([netdb.h])
 AC_CHECK_HEADERS_ONCE([netinet/in.h])
 AC_CHECK_HEADERS_ONCE([netinet/tcp.h])
+AC_CHECK_HEADERS_ONCE([poll.h])
 AC_CHECK_HEADERS_ONCE([pthread.h])
 AC_CHECK_HEADERS_ONCE([spawn.h])
 AC_CHECK_HEADERS_ONCE([stdarg.h])
@@ -131,13 +134,14 @@ AC_CHECK_HEADERS_ONCE([sys/socket.h])
 AC_CHECK_HEADERS_ONCE([sys/sysctl.h])
 AC_CHECK_HEADERS_ONCE([sys/time.h])
 AC_CHECK_HEADERS_ONCE([sys/un.h])
+AC_CHECK_HEADERS_ONCE([sys/wait.h])
 AC_CHECK_HEADERS_ONCE([syslog.h])
 AC_CHECK_HEADERS_ONCE([time.h])
 AC_CHECK_HEADERS_ONCE([unistd.h])
 
 # Windows only
-AC_CHECK_HEADERS([winsock2.h])
-AC_CHECK_HEADERS([ws2tcpip.h])
+AC_CHECK_HEADERS_ONCE([winsock2.h])
+AC_CHECK_HEADERS_ONCE([ws2tcpip.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
@@ -160,6 +164,7 @@ AC_CHECK_FUNCS([pipe2])
 AC_CHECK_FUNCS([putenv])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([setenv])
+AC_CHECK_FUNCS([sigignore])
 AC_CHECK_FUNCS([socket])
 AC_CHECK_FUNCS([sqrt])
 AC_CHECK_FUNCS([strcasecmp])
@@ -214,14 +219,11 @@ AC_CHECK_LIB([rt],[clock_gettime],
              [AC_DEFINE([HAVE_CLOCK_GETTIME],[0],[Have clock_gettime])])
 
 # Check for the ability to call dlopen
-AS_IF([test "x$enable_static" = "xyes"],
+AS_IF([test "x$enable_shared" = xyes],
       [AC_CHECK_LIB([dl],[dlopen],
                     [AC_SUBST([DL_LIB],[-ldl])
                     AC_DEFINE([HAVE_LIBDL],[1],[Have dlopen])])],
-                    [AC_DEFINE([HAVE_LIBDL], [0], [Have dlopen])])
-
-AC_CHECK_LIB([m],[floor])
-AC_CHECK_FUNCS([sigignore])
+                    [AC_DEFINE([HAVE_LIBDL],[0],[Have dlopen])])
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],
@@ -251,7 +253,6 @@ AC_CHECK_FUNCS([setppriv],
                                 build_solaris_privs=yes])
                ])
 
-AC_CHECK_HEADERS_ONCE([winsock2.h poll.h sys/wait.h fnmatch.h])
 AM_CONDITIONAL([BUILD_POLL],[test "x$ac_cv_header_poll_h" = "xno"])
 AM_CONDITIONAL([BUILD_WIN32_WRAPPERS],[test "x$ac_cv_header_winsock2_h" = "xyes"])
 AS_IF([test "x$ac_cv_header_winsock2_h" = "xyes"],
@@ -262,7 +263,6 @@ AS_IF([test "x$ac_cv_header_winsock2_h" = "xyes"],
 SOCKET_SEND_FLAGS
 
 AX_UUID_GENERATE_TIME_SAFE
-
 
 AC_DEFUN([CHECK_FOR_PTHREAD_AND_SASL],
          [AX_PTHREAD(, [AC_MSG_ERROR([could not find libpthread])])
@@ -279,9 +279,10 @@ AC_DEFUN([CHECK_FOR_PTHREAD_AND_SASL],
 CHECK_FOR_PTHREAD_AND_SASL
 
 
-# backtrace() does not work with static builds.
-AS_IF([test "x$enable_static" = "xyes"],
-      [AC_DEFINE([AX_ENABLE_BACKTRACE],[1],[Support for backtrace().])])
+# backtrace(), others require shared builds
+AS_IF([test "x$enable_shared" = "xyes"],
+      [AC_DEFINE([HAVE_SHARED_ENABLED],[1],[Enable code which requires shared library support. Like backtrace().])])
+AM_CONDITIONAL([SHARED_ENABLED],[test "x$enable_shared" = "xyes"])
 
 PANDORA_ENABLE_DTRACE
 HAVE_GCC_ATOMICS
@@ -313,6 +314,7 @@ echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * LIB Flags:                 $LIB"
 echo "   * Assertions enabled:        $ax_enable_assert"
 echo "   * Debug enabled:             $ax_enable_debug"
+echo "   * Shared:                    $enable_shared"
 echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
 echo "   * SASL support:              $ax_sasl_option"
 echo "   * make -j:                   $enable_jobserver"
