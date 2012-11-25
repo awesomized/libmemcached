@@ -94,7 +94,7 @@ clients_memaslap_SOURCES+= clients/ms_thread.c
 
 clients_memaslap_SOURCES+= clients/generator.cc clients/execute.cc
 clients_memaslap_LDADD=
-clients_memaslap_LDADD+= @LIBEVENT_LDFLAGS@
+clients_memaslap_LDADD+= @LIBEVENT_LIB@
 clients_memaslap_LDADD+= $(CLIENTS_LDADDS)
 
 clients_memcapable_SOURCES=

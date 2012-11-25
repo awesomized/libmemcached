@@ -63,7 +63,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <libhashkit/rijndael.hpp>
+#include "libhashkit/rijndael.hpp"
 
 /*
 Te0[x] = S [x].[02, 01, 01, 03];

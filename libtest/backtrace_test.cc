@@ -1,9 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  DataDifferential Utility Library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  All rights reserved.
+ *  Data Differential YATL (i.e. libtest)  library
+ *
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -35,83 +34,90 @@
  *
  */
 
-#pragma once
-
-#include <cassert>
 #include <cerrno>
-#include <cstddef>
+#include <csignal>
 #include <cstdio>
-#include <netinet/in.h>
-#include <string>
-#include <sys/socket.h>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
-#include "util/operation.hpp"
+#include "libmemcached/backtrace.hpp"
 
-struct addrinfo;
-
-namespace datadifferential {
-namespace util {
-
-class Instance
-{
-private:
-  enum connection_state_t {
-    NOT_WRITING,
-    NEXT_CONNECT_ADDRINFO,
-    CONNECT,
-    CONNECTING,
-    CONNECTED,
-    WRITING,
-    READING,
-    FINISHED
-  };
-  std::string _last_error;
-
-public: // Callbacks
-  class Finish {
-
-  public:
-    virtual ~Finish() { }
-
-    virtual bool call(const bool, const std::string &)= 0;
-  };
-
-
+class Test {
 public:
-  Instance(const std::string& hostname_arg, const std::string& service_arg);
-
-  Instance(const std::string& hostname_arg, const in_port_t port_arg);
-
-  ~Instance();
-
-  bool run();
-
-  void set_finish(Finish *arg)
+  Test()
   {
-    _finish_fn= arg;
   }
 
-  void push(util::Operation *next)
+  void call_backtrace()
   {
-    _operations.push_back(next);
+    std::cerr << __func__ << std::endl;
+    custom_backtrace();
   }
-
-private:
-  void close_socket();
-
-  void free_addrinfo();
-
-  bool more_to_read() const;
-
-  std::string _host;
-  std::string _service;
-  int _sockfd;
-  connection_state_t state;
-  struct addrinfo *_addrinfo;
-  struct addrinfo *_addrinfo_next;
-  Finish *_finish_fn;
-  Operation::vector _operations;
 };
 
-} /* namespace util */
-} /* namespace datadifferential */
+void SIGSEGV_handler(int sig_num, siginfo_t* info, void* ucontext)
+{
+  std::cerr << __func__ << std::endl;
+  (void)sig_num;
+  (void)info;
+  (void)ucontext;
+
+  custom_backtrace();
+}
+
+int raise_SIGSEGV()
+{
+  std::cerr << std::endl << "Calling backtrace()" << std::endl;
+  custom_backtrace();
+  std::cerr << std::endl << "Calling raise()" << std::endl;
+  return raise(SIGSEGV);
+}
+
+int layer4()
+{
+  return raise_SIGSEGV();
+}
+
+int layer3()
+{
+  return layer4();
+}
+
+int layer2()
+{
+  return layer3();
+}
+
+int layer1()
+{
+  return layer2();
+}
+
+int main(int, char **)
+{
+  Test t;
+
+  t.call_backtrace();
+
+  struct sigaction sigact;
+
+  sigact.sa_sigaction= SIGSEGV_handler;
+  sigact.sa_flags= SA_RESTART | SA_SIGINFO;
+
+  if (sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL) != 0)
+  {
+    std::cerr << "error setting signal handler for " << strsignal(SIGSEGV) << "(" <<  SIGSEGV << ")" << std::endl;
+
+    exit(EXIT_FAILURE);
+  }
+
+  int ret= layer1();
+  if (ret)
+  {
+    std::cerr << "raise() " << strerror(errno) << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  exit(EXIT_SUCCESS);
+}

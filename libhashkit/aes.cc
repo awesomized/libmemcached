@@ -35,9 +35,9 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
-#include <libhashkit/rijndael.hpp>
+#include "libhashkit/rijndael.hpp"
 
 #include <cstring>
 

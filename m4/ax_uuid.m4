@@ -21,7 +21,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 5
+#serial 6
 
 AC_DEFUN([AX_UUID],
     [AC_PREREQ([2.63])dnl
@@ -62,14 +62,14 @@ AC_DEFUN([AX_UUID],
           [ax_libuuid=yes])
       ],[ax_libuuid=no])
 
-      AS_IF([test "$ax_libuuid" = yes],
+      AS_IF([test "x$ax_libuuid" = xyes],
           [AC_DEFINE([HAVE_UUID_UUID_H],[1],[Have uuid/uuid.h])
-          AS_IF([test "$ax_cv_libuuid_is_required" = yes],[ LIBUUID_LDFLAGS='-luuid' ])],
+          AS_IF([test "x$ax_cv_libuuid_is_required" = xyes],[ LIBUUID_LIB='-luuid' ])],
           [AC_DEFINE([HAVE_UUID_UUID_H],[0],[Have uuid/uuid.h])
           ])
 
-  AC_SUBST([LIBUUID_LDFLAGS])
-  AM_CONDITIONAL([HAVE_LIBUUID],[test "$ax_libuuid" = yes])
+  AC_SUBST([LIBUUID_LIB])
+  AM_CONDITIONAL([HAVE_LIBUUID],[test "x$ax_libuuid" = xyes])
   ])
 
   AC_DEFUN([AX_UUID_GENERATE_TIME_SAFE],
@@ -78,7 +78,7 @@ AC_DEFUN([AX_UUID],
       AC_CACHE_CHECK([for uuid_generate_time_safe],
         [ax_cv_uuid_generate_time_safe],
         [AX_SAVE_FLAGS
-        LIBS="$LIBUUID_LDFLAGS $LIBS"
+        LIBS="$LIBUUID_LIB $LIBS"
         AC_LANG_PUSH([C])
         AC_RUN_IFELSE([
           AC_LANG_PROGRAM([#include <uuid/uuid.h>],[
