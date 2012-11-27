@@ -101,7 +101,7 @@ void custom_backtrace(void)
               }
 
               was_demangled= true;
-              fprintf(stderr, "#%d  %lp in %s at %s\n",
+              fprintf(stderr, "#%d  %p in %s at %s\n",
                       x, backtrace_buffer[x],
                       called_in,
                       dlinfo.dli_fname);
@@ -112,7 +112,7 @@ void custom_backtrace(void)
 
         if (was_demangled == false)
         {
-          fprintf(stderr, "?%d  %lp in %s\n", x, backtrace_buffer[x], symbollist[x]);
+          fprintf(stderr, "?%d  %p in %s\n", x, backtrace_buffer[x], symbollist[x]);
         }
       }
 
