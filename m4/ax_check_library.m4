@@ -32,6 +32,7 @@
 #
 # LICENSE
 #
+#   Copyright (c) 2012 Brian Aker <brian@tangent.org>
 #   Copyright (c) 2010 Diego Elio Petteno` <flameeyes@gmail.com>
 #
 #   This program is free software: you can redistribute it and/or modify it
@@ -62,38 +63,34 @@
 
 #serial 6
 
-AC_DEFUN([AX_CHECK_LIBRARY], [
-  AC_ARG_VAR($1[_CPPFLAGS], [C preprocessor flags for ]$1[ headers])
-  AC_ARG_VAR($1[_LDFLAGS], [linker flags for ]$1[ libraries])
+AC_DEFUN([AX_CHECK_LIBRARY],
+    [AC_ARG_VAR($1[_CPPFLAGS],[C preprocessor flags for ]$1[ headers])
+    AC_ARG_VAR($1[_LDFLAGS],[linker flags for ]$1[ libraries])
 
-  AC_CACHE_VAL(AS_TR_SH([ax_cv_have_]$1),
-    [save_CPPFLAGS="$CPPFLAGS"
-     save_LDFLAGS="$LDFLAGS"
-     save_LIBS="$LIBS"
+    AC_CACHE_VAL(AS_TR_SH([ax_cv_have_]$1),
+      [AX_SAVE_FLAGS
 
-     AS_IF([test "x$]$1[_CPPFLAGS" != "x"],
-       [CPPFLAGS="$CPPFLAGS $]$1[_CPPFLAGS"])
+      AS_IF([test "x$]$1[_CPPFLAGS" != "x"],
+        [CPPFLAGS="$CPPFLAGS $]$1[_CPPFLAGS"])
 
-     AS_IF([test "x$]$1[_LDFLAGS" != "x"],
-       [LDFLAGS="$LDFLAGS $]$1[_LDFLAGS"])
+      AS_IF([test "x$]$1[_LDFLAGS" != "x"],
+        [LDFLAGS="$LDFLAGS $]$1[_LDFLAGS"])
 
-     AC_CHECK_HEADER($2, [
-       AC_CHECK_LIB($3, [main],
-         [AS_TR_SH([ax_cv_have_]$1)=yes],
-         [AS_TR_SH([ax_cv_have_]$1)=no])
-     ], [AS_TR_SH([ax_cv_have_]$1)=no])
+      AC_CHECK_HEADER($2, [
+        AC_CHECK_LIB($3, [main],
+          [AS_TR_SH([ax_cv_have_]$1)=yes],
+          [AS_TR_SH([ax_cv_have_]$1)=no])
+        ], [AS_TR_SH([ax_cv_have_]$1)=no])
 
-     CPPFLAGS="$save_CPPFLAGS"
-     LDFLAGS="$save_LDFLAGS"
-     LIBS="$save_LIBS"
+      AX_RESTORE_FLAGS
+      ])
+
+    AS_IF([test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"],
+        [AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
+        AC_SUBST($1[_CPPFLAGS])
+        AC_SUBST($1[_LDFLAGS])
+        AC_SUBST($1[_LIB],[-l]$3)
+        ifelse([$4], , :, [$4])],
+        [ifelse([$5], , :, [$5])])
+    AM_CONDITIONAL([HAVE_]$1,[test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"])
     ])
-
-  AS_IF([test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"],
-      [AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
-      AC_SUBST($1[_CPPFLAGS])
-      AC_SUBST($1[_LDFLAGS])
-      AC_SUBST($1[_LIB],[-l]$3)
-      m4_ifval( m4_normalize([$4]), [$4]), 
-      m4_ifval( m4_normalize([$5]), [$5])])
-  AM_CONDITIONAL([HAVE_]$1,[test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"])
-  ])
