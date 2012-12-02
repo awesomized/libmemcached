@@ -11,6 +11,8 @@ noinst_HEADERS+= libmemcached/csl/scanner.h
 noinst_HEADERS+= libmemcached/csl/server.h
 noinst_HEADERS+= libmemcached/csl/symbol.h
 
+libmemcached_libmemcached_la_SOURCES+= libmemcached/csl/parser.h
+libmemcached_libmemcached_la_SOURCES+= libmemcached/csl/scanner.h
 libmemcached_libmemcached_la_SOURCES+= libmemcached/csl/context.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/csl/parser.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/csl/scanner.cc
