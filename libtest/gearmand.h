@@ -40,8 +40,6 @@ namespace libtest { struct Server; }
 
 namespace libtest {
 
-libtest::Server *build_gearmand(const char *hostname, in_port_t try_port);
-
-libtest::Server *build_gearmand(const char *hostname, in_port_t try_port, const char* binary);
+libtest::Server *build_gearmand(const char *hostname, in_port_t try_port, const char* binary= NULL);
 
 }

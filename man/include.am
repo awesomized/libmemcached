@@ -3,7 +3,6 @@
 # All paths should be given relative to the root
 
 if HAVE_RECENT_SPHINX
-
 if IS_VCS_CHECKOUT
 
 dist-hook: man
@@ -11,9 +10,10 @@ dist-hook: man
 # Build rule for documentation
 $(dist_man_MANS): man
 
-endif
-
 BUILT_SOURCES+= $(dist_man_MANS)
+
+endif
+endif
 
 dist_man_MANS+= man/memaslap.1
 dist_man_MANS+= man/memcapable.1
@@ -133,5 +133,3 @@ dist_man_MANS+= man/memcached_touch.3
 dist_man_MANS+= man/memcached_touch_by_key.3
 dist_man_MANS+= man/memcached_verbosity.3
 dist_man_MANS+= man/memcached_version.3
-
-endif

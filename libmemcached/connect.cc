@@ -155,11 +155,12 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
     server->address_info_next= NULL;
   }
 
-  char str_port[NI_MAXSERV];
-  int length= snprintf(str_port, NI_MAXSERV, "%u", uint32_t(server->port()));
-  if (length >= NI_MAXSERV or length <= 0)
+  char str_port[MEMCACHED_NI_MAXSERV];
+  int length= snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
+  if (length >= MEMCACHED_NI_MAXSERV or length <= 0)
   {
-    return MEMCACHED_FAILURE;
+    return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+                               memcached_literal_param("snprintf(NI_MAXSERV)"));
   }
 
   struct addrinfo hints;

@@ -318,7 +318,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
     return rc;
   }
 
-  char hostname_port[NI_MAXHOST +NI_MAXSERV + sizeof("host : ")];
+  char hostname_port[MEMCACHED_NI_MAXHOST +MEMCACHED_NI_MAXSERV + sizeof("host : ")];
   size_t size= append_host_to_string(self, hostname_port, sizeof(hostname_port));
 
   memcached_string_t error_host= { hostname_port, size};

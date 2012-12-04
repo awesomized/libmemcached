@@ -67,8 +67,8 @@ sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
  */
 static memcached_return_t resolve_names(org::libmemcached::Instance& server, char *laddr, size_t laddr_length, char *raddr, size_t raddr_length)
 {
-  char host[NI_MAXHOST];
-  char port[NI_MAXSERV];
+  char host[MEMCACHED_NI_MAXHOST];
+  char port[MEMCACHED_NI_MAXSERV];
   struct sockaddr_storage saddr;
   socklen_t salen= sizeof(saddr);
 
@@ -180,8 +180,8 @@ memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Ins
   assert_msg(server->fd != INVALID_SOCKET, "Programmer error, invalid socket");
 
   /* set ip addresses */
-  char laddr[NI_MAXHOST + NI_MAXSERV];
-  char raddr[NI_MAXHOST + NI_MAXSERV];
+  char laddr[MEMCACHED_NI_MAXHOST + MEMCACHED_NI_MAXSERV];
+  char raddr[MEMCACHED_NI_MAXHOST + MEMCACHED_NI_MAXSERV];
 
   if (memcached_failed(rc= resolve_names(*server, laddr, sizeof(laddr), raddr, sizeof(raddr))))
   {
