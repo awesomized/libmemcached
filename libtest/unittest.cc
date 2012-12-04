@@ -771,10 +771,10 @@ static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
   test_skip(true, has_gearmand());
-#if defined(GEARMAND_BINARY)
+#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
   if (GEARMAND_BINARY)
   {
-    test_skip(0, access(GEARMAND_BINARY, X_OK ));
+    test_zero(access(GEARMAND_BINARY, X_OK ));
   }
   else
   {
