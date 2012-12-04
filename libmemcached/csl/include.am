@@ -23,7 +23,10 @@ MAINTAINERCLEANFILES+= libmemcached/csl/parser.cc
 MAINTAINERCLEANFILES+= libmemcached/csl/scanner.h
 MAINTAINERCLEANFILES+= libmemcached/csl/scanner.cc
 
-BUILT_SOURCES+= libmemcached/csl/parser.h libmemcached/csl/scanner.h
+BUILT_SOURCES+= libmemcached/csl/parser.cc
+BUILT_SOURCES+= libmemcached/csl/parser.h
+BUILT_SOURCES+= libmemcached/csl/scanner.cc
+BUILT_SOURCES+= libmemcached/csl/scanner.h
 
 libmemcached/csl/parser.h: libmemcached/csl/parser.cc
 

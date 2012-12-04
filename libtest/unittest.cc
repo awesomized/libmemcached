@@ -42,7 +42,7 @@
 #include <libmemcached-1.0/memcached.h>
 #endif
 
-#if defined(LIBTEST_WITH_LIBGEARMAN_SUPPORT) && LIBTEST_WITH_LIBGEARMAN_SUPPORT
+#if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN
 #include <libgearman/gearman.h>
 #endif
 
@@ -771,6 +771,16 @@ static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
   test_skip(true, has_gearmand());
+#if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
+  if (GEARMAND_BINARY)
+  {
+    test_zero(access(GEARMAND_BINARY, X_OK ));
+  }
+  else
+  {
+    return TEST_SKIPPED;
+  }
+#endif
 
   testing_service= "gearmand";
 

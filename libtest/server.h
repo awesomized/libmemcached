@@ -281,5 +281,3 @@ private:
 std::ostream& operator<<(std::ostream& output, const libtest::Server &arg);
 
 } // namespace libtest
-
-

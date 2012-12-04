@@ -171,10 +171,8 @@ endif
 endif
 
 if HAVE_LIBDRIZZLE
-
 libtest_libtest_la_LIBADD+= $(libdrizzle_LIBS)
 libtest_libtest_la_CXXFLAGS+= $(libdrizzle_CFLAGS)
-
 endif
 
 if BUILDING_GEARMAN
@@ -190,7 +188,7 @@ libtest_unittest_DEPENDENCIES+= libgearman/libgearman.la
 libtest_unittest_DEPENDENCIES+= gearmand/gearmand
 else
 if HAVE_LIBGEARMAN
-libtest_libtest_la_LIBADD+= @LIBGEARMAN_LDFLAGS@
+libtest_libtest_la_LIBADD+= @LIBGEARMAN_LIB@
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
