@@ -13,10 +13,6 @@ TESTS_LDADDS+= libmemcached/libmemcached.la
 TESTS_LDADDS+= libmemcached/libmemcachedutil.la
 TESTS_LDADDS+= libtest/libtest.la
 
-DEBUG_COMMAND= $(LIBTOOL) --mode=execute gdb
-
-PAHOLE_COMMAND= $(LIBTOOL) --mode=execute pahole
-
 EXTRA_DIST+= tests/cpp_example.cc
 
 noinst_HEADERS+= tests/exist.h
@@ -62,7 +58,7 @@ test-failure: tests/failure
 	@tests/failure
 
 gdb-failure: tests/failure
-	@$(DEBUG_COMMAND) tests/failure
+	@$(GDB_COMMAND) tests/failure
 
 
 tests_testhashkit_SOURCES= tests/hashkit_functions.cc
@@ -108,19 +104,19 @@ pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 
 gdb-mem: tests/libmemcached-1.0/testapp
-	@$(DEBUG_COMMAND)  tests/libmemcached-1.0/testapp
+	@$(GDB_COMMAND)  tests/libmemcached-1.0/testapp
 
 gdb-atom: tests/atomsmasher
-	@$(DEBUG_COMMAND) tests/atomsmasher
+	@$(GDB_COMMAND) tests/atomsmasher
 
 gdb-hash: tests/testhashkit
-	@$(DEBUG_COMMAND) tests/testhashkit
+	@$(GDB_COMMAND) tests/testhashkit
 
 gdb-hashplus: tests/hash_plus
-	@$(DEBUG_COMMAND) tests/hash_plus
+	@$(GDB_COMMAND) tests/hash_plus
 
 gdb-cycle: tests/cycle
-	@$(DEBUG_COMMAND) tests/cycle
+	@$(GDB_COMMAND) tests/cycle
 
 valgrind-cycle: tests/cycle
 	$(VALGRIND_COMMAND) tests/cycle

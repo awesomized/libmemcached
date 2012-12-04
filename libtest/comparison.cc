@@ -66,6 +66,11 @@ bool gdb_is_caller(void)
     return true;
   }
 
+  if (bool(getenv("LIBTEST_IN_GDB")))
+  {
+    return true;
+  }
+
   return false;
 }
 

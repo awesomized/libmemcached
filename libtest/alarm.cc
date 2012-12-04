@@ -51,33 +51,42 @@ static const struct itimerval cancel_timer= { default_it_interval, default_it_in
 
 void set_alarm()
 {
-  if (setitimer(ITIMER_VIRTUAL, &defualt_timer, NULL) == -1)
+  if (gdb_is_caller() == false)
   {
-    Error << "setitimer() failed";
+    if (setitimer(ITIMER_VIRTUAL, &defualt_timer, NULL) == -1)
+    {
+      Error << "setitimer() failed";
+    }
   }
 }
 
 void set_alarm(long tv_sec, long tv_usec)
 {
+  if (gdb_is_caller() == false)
+  {
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-  struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
+    struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
 #else
-  struct timeval it_value= { tv_sec, tv_usec };
+    struct timeval it_value= { tv_sec, tv_usec };
 #endif
 
-  struct itimerval timer= { default_it_interval, it_value };
+    struct itimerval timer= { default_it_interval, it_value };
 
-  if (setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1)
-  {
-    Error << "setitimer() failed";
+    if (setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1)
+    {
+      Error << "setitimer() failed";
+    }
   }
 }
 
 void cancel_alarm()
 {
-  if (setitimer(ITIMER_VIRTUAL, &cancel_timer, NULL) == -1)
+  if (gdb_is_caller() == false)
   {
-    Error << "setitimer() failed";
+    if (setitimer(ITIMER_VIRTUAL, &cancel_timer, NULL) == -1)
+    {
+      Error << "setitimer() failed";
+    }
   }
 }
 
