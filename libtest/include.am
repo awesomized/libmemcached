@@ -12,6 +12,7 @@ DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
 MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
 PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
+PAHOLE_COMMAND= $(LIBTOOL_COMMAND) --mode=execute pahole
 
 export LIBTOOL_COMMAND
 export VALGRIND_COMMAND

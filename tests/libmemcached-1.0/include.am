@@ -178,7 +178,7 @@ test-socket: tests/libmemcached-1.0/testsocket
 	@tests/libmemcached-1.0/testsocket
 
 gdb-socket: tests/libmemcached-1.0/testsocket
-	@$(DEBUG_COMMAND) tests/libmemcached-1.0/testsocket
+	@$(GDB_COMMAND) tests/libmemcached-1.0/testsocket
 
 tests_libmemcached_1_0_sasl_SOURCES=
 tests_libmemcached_1_0_sasl_DEPENDENCIES=
@@ -225,7 +225,7 @@ test-sasl: tests/libmemcached-1.0/sasl
 	@tests/libmemcached-1.0/sasl
 
 gdb-sasl: tests/libmemcached-1.0/sasl
-	@$(DEBUG_COMMAND)  tests/libmemcached-1.0/sasl
+	@$(GDB_COMMAND)  tests/libmemcached-1.0/sasl
 
 tests_atomsmasher_SOURCES=
 tests_atomsmasher_DEPENDENCIES=
@@ -287,7 +287,7 @@ test-plus: tests/testplus
 	@tests/testplus
 
 gdb-plus: tests/testplus
-	$(DEBUG_COMMAND) tests/testplus
+	$(GDB_COMMAND) tests/testplus
 
 valgrind-plus: tests/testplus
 	@$(VALGRIND_COMMAND) tests/testplus

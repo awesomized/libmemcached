@@ -58,10 +58,7 @@ static test_return_t memcached_zero_string_length_TEST(void*)
 
 static test_return_t putenv_localhost_quoted_TEST(void*)
 {
-  char set_env[1024];
-
-  snprintf(set_env, sizeof(set_env), "LIBMEMCACHED=\"--server=localhost\"");
-  test_zero(putenv(set_env));
+  test_zero(setenv("LIBMEMCACHED", "\"--server=localhost\"", 1));
   test_null(memcached(NULL, 0));
 
   return TEST_SUCCESS;
@@ -69,24 +66,7 @@ static test_return_t putenv_localhost_quoted_TEST(void*)
 
 static test_return_t putenv_NULL_TEST(void*)
 {
-  char set_env[1024];
-
-  snprintf(set_env, sizeof(set_env), "LIBMEMCACHED");
-  test_zero(putenv(set_env));
-  memcached_st *memc= memcached(NULL, 0);
-  test_true(memc);
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-static test_return_t putenv_NULL_TEST2(void*)
-{
-  char set_env[1024];
-
-  snprintf(set_env, sizeof(set_env), "LIBMEMCACHED=");
-  test_zero(putenv(set_env));
+  test_zero(setenv("LIBMEMCACHED", "", 1));
   memcached_st *memc= memcached(NULL, 0);
   test_true(memc);
 
@@ -97,10 +77,7 @@ static test_return_t putenv_NULL_TEST2(void*)
 
 static test_return_t putenv_localhost_TEST(void*)
 {
-  char set_env[1024];
-
-  snprintf(set_env, sizeof(set_env), "LIBMEMCACHED=--server=localhost");
-  test_zero(putenv(set_env));
+  test_zero(setenv("LIBMEMCACHED", "--server=localhost", 1));
   memcached_st *memc= memcached(NULL, 0);
   test_true(memc);
 
@@ -114,7 +91,6 @@ test_st memcached_TESTS[] ={
   {"memcached(\"value\", 0)", false, (test_callback_fn*)memcached_zero_string_length_TEST },
   {"putenv(LIBMEMCACHED=--server=localhost)", false, (test_callback_fn*)putenv_localhost_TEST },
   {"putenv(LIBMEMCACHED)", false, (test_callback_fn*)putenv_NULL_TEST },
-  {"putenv(LIBMEMCACHED=)", false, (test_callback_fn*)putenv_NULL_TEST2 },
   {"putenv(LIBMEMCACHED=--server=\"localhost\")", false, (test_callback_fn*)putenv_localhost_quoted_TEST },
   {0, 0, 0}
 };

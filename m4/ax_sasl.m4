@@ -34,7 +34,8 @@ AC_DEFUN([AX_SASL_OPTION],
       echo "$ax_sasl_check"
       AS_IF([test "x${ax_sasl_check}" = xyes],
         [ax_sasl_option=yes],
-        [AC_MSG_WARN([request to add sasl support failed, please see config.log])])
+        [AC_MSG_WARN([request to add sasl support failed, please see config.log])
+        ac_enable_sasl=no])
       ])
 
     AC_MSG_CHECKING([checking to see if enabling sasl])
