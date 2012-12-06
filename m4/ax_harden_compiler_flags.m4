@@ -52,7 +52,7 @@
 # ?  _APPEND_COMPILE_FLAGS_ERROR([-Wlong-long]) -- Don't turn on for
 # compatibility issues memcached_stat_st
 
-#serial 6
+#serial 7
 
 AC_DEFUN([_APPEND_LINK_FLAGS_ERROR],
          [AC_REQUIRE([AX_APPEND_LINK_FLAGS])

@@ -48,7 +48,7 @@ typedef std::vector<libtest::TestCase*> TestCases;
 
 class Formatter {
 public:
-  Formatter(const std::string& arg);
+  Formatter(const std::string& frame_name, const std::string& arg);
 
   ~Formatter();
 

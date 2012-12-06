@@ -88,9 +88,11 @@ private:
   libtest::Timer _timer;
 };
 
-Formatter::Formatter(const std::string& arg) :
-  _suite_name(arg)
+Formatter::Formatter(const std::string& frame_name, const std::string& arg)
 {
+  _suite_name= frame_name;
+  _suite_name+= ".";
+  _suite_name+= arg;
 }
 
 Formatter::~Formatter()
