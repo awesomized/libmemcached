@@ -85,7 +85,7 @@ Collection::Collection(Framework* frame_arg,
   _skipped(0),
   _failed(0),
   _total(0),
-  _formatter(_name)
+  _formatter(frame_arg->name(), _name)
 {
   fatal_assert(arg);
 }

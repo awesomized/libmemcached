@@ -144,6 +144,7 @@ static void __memcached_free(memcached_st *ptr, bool release_st)
   }
 
   libmemcached_free(ptr, ptr->ketama.continuum);
+  ptr->ketama.continuum= NULL;
 
   memcached_array_free(ptr->_namespace);
   ptr->_namespace= NULL;

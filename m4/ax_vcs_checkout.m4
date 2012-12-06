@@ -68,7 +68,8 @@ AC_DEFUN([AX_VCS_CHECKOUT],
         [ac_cv_vcs_checkout=no])
       ])
 
-    AM_CONDITIONAL([IS_VCS_CHECKOUT], [test "x$ac_cv_vcs_checkout" = "xyes"])
-    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],[AC_DEFINE([VCS_CHECKOUT],[1],[Define if the code was built from VCS.])],
+    AM_CONDITIONAL([IS_VCS_CHECKOUT],[test "x$ac_cv_vcs_checkout" = "xyes"])
+    AS_IF([test "x$ac_cv_vcs_checkout" = "xyes"],
+      [AC_DEFINE([VCS_CHECKOUT],[1],[Define if the code was built from VCS.])],
       [AC_DEFINE([VCS_CHECKOUT],[0],[Define if the code was built from VCS.])])
     ])

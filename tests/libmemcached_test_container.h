@@ -59,6 +59,7 @@ public:
 
   void parent(memcached_st* arg)
   {
+    assert(_parent != arg);
     reset();
     _parent= arg;
   }
