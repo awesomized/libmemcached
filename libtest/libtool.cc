@@ -34,7 +34,7 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
 #include <string>
 

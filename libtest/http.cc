@@ -34,11 +34,11 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 
 #include <libtest/common.h>
 
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
 #include <curl/curl.h>
 #else
 class CURL;
@@ -47,14 +47,14 @@ class CURL;
 
 static void cleanup_curl(void)
 {
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   curl_global_cleanup();
 #endif
 }
 
 static void initialize_curl_startup()
 {
-#if defined(HAVE_CURL_CURL_H) && HAVE_CURL_CURL_H
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (curl_global_init(CURL_GLOBAL_ALL))
   {
     fatal_message("curl_global_init(CURL_GLOBAL_ALL) failed");

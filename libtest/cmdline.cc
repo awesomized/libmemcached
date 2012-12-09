@@ -34,7 +34,8 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
+
 #include "libtest/common.h"
 
 using namespace libtest;
@@ -426,7 +427,7 @@ Application::error_t Application::join()
       error_string+= built_argv[0];
       throw std::logic_error(error_string);
     }
-    else if WIFSIGNALED(_status)
+    else if (WIFSIGNALED(_status))
     {
       if (WTERMSIG(_status) != SIGTERM and WTERMSIG(_status) != SIGHUP)
       {
@@ -437,12 +438,10 @@ Application::error_t Application::join()
         throw std::runtime_error(error_string);
       }
 
-#if 0
       // If we terminted it on purpose then it counts as a success.
       Out << "waitpid() application terminated at request"
         << " pid:" << _pid 
         << " name:" << built_argv[0];
-#endif
     }
     else
     {
@@ -517,9 +516,10 @@ bool Application::Pipe::read(libtest::vchar_t& arg)
 
   bool data_was_read= false;
 
+  libtest::vchar_t buffer;
+  buffer.resize(1024);
   ssize_t read_length;
-  char buffer[1024]= { 0 };
-  while ((read_length= ::read(_pipe_fd[READ], buffer, sizeof(buffer))))
+  while ((read_length= ::read(_pipe_fd[READ], &buffer[0], buffer.size())))
   {
     if (read_length == -1)
     {
@@ -706,10 +706,11 @@ void Application::create_argv(const char *args[])
     built_argv.push_back(strdup("--free-fill=DE"));
 
     std::string log_file= create_tmpfile("valgrind");
-    char buffer[1024];
-    int length= snprintf(buffer, sizeof(buffer), "--log-file=%s", log_file.c_str());
-    fatal_assert(length > 0 and size_t(length) < sizeof(buffer));
-    built_argv.push_back(strdup(buffer));
+    libtest::vchar_t buffer;
+    buffer.resize(1024);
+    int length= snprintf(&buffer[0], buffer.size(), "--log-file=%s", log_file.c_str());
+    fatal_assert(length > 0 and size_t(length) < buffer.size());
+    built_argv.push_back(strdup(&buffer[0]));
   }
   else if (_use_ptrcheck)
   {
@@ -720,10 +721,11 @@ void Application::create_argv(const char *args[])
     built_argv.push_back(strdup("--error-exitcode=1"));
     built_argv.push_back(strdup("--tool=exp-ptrcheck"));
     std::string log_file= create_tmpfile("ptrcheck");
-    char buffer[1024];
-    int length= snprintf(buffer, sizeof(buffer), "--log-file=%s", log_file.c_str());
-    fatal_assert(length > 0 and size_t(length) < sizeof(buffer));
-    built_argv.push_back(strdup(buffer));
+    libtest::vchar_t buffer;
+    buffer.resize(1024);
+    int length= snprintf(&buffer[0], buffer.size(), "--log-file=%s", log_file.c_str());
+    fatal_assert(length > 0 and size_t(length) < buffer.size());
+    built_argv.push_back(&buffer[0]);
   }
   else if (_use_gdb)
   {
