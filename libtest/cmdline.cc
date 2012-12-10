@@ -75,8 +75,8 @@ namespace {
     std::stringstream arg_buffer;
 
     for (vchar_ptr_t::iterator iter= built_argv.begin();
-         iter == built_argv.end();
-         iter++)
+         iter != built_argv.end();
+         ++iter)
     {
       arg_buffer << *iter << " ";
     }
