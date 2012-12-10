@@ -47,6 +47,7 @@
 
 #include <libtest/vchar.hpp>
 #include <libtest/fatal.hpp>
+#include <libtest/result.hpp>
 
 #include <libtest/has.hpp>
 #include <libtest/error.h>
@@ -76,3 +77,4 @@
 #include <libtest/cpu.hpp>
 #include <libtest/tmpfile.hpp>
 #include <libtest/client.hpp>
+#include <libtest/thread.hpp>

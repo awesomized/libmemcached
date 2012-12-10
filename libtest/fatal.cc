@@ -34,7 +34,7 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
 #include <cstdarg>
 
@@ -108,4 +108,3 @@ disconnected::disconnected(const char *file_arg, int line_arg, const char *func_
 }
 
 } // namespace libtest
-

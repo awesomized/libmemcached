@@ -34,7 +34,8 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
+
 #include <libtest/common.h>
 
 #include <cassert>
@@ -116,7 +117,8 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
   _port(port_arg),
   _hostname(host_arg),
   _app(executable, _is_libtool),
-  out_of_ban_killed_(false)
+  out_of_ban_killed_(false),
+  _timeout(40)
 {
 }
 
@@ -253,8 +255,9 @@ bool Server::start()
         Buffer buf( get_current_dir_name());
         char *getcwd_buf= buf.buf();
 #else
-        char buf[PATH_MAX];
-        char *getcwd_buf= getcwd(buf, sizeof(buf));
+        libtest::vchar_t buf;
+        buf.resize(PATH_MAX);
+        char *getcwd_buf= getcwd(&buf[0], buf.size());
 #endif // __GLIBC__
         throw libtest::disconnected(LIBYATL_DEFAULT_PARAM,
                                     hostname(), port(),
@@ -269,7 +272,6 @@ bool Server::start()
   bool pinged= false;
   uint32_t this_wait= 0;
   {
-    uint32_t timeout= 40; // This number should be high enough for valgrind startup (which is slow)
     uint32_t waited;
     uint32_t retry;
 
@@ -284,12 +286,12 @@ bool Server::start()
       {
         break;
       }
-      else if (waited >= timeout)
+      else if (waited >= _timeout)
       {
         break;
       }
 
-      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " " << error();
+      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
 
       this_wait= retry * retry / 3 + 1;
       libtest::dream(this_wait, 0);
@@ -365,73 +367,76 @@ void Server::add_option(const std::string& name_, const std::string& value_)
 
 bool Server::set_socket_file()
 {
-  char file_buffer[FILENAME_MAX];
+  libtest::vchar_t file_buffer;
+  file_buffer.resize(FILENAME_MAX);
   file_buffer[0]= 0;
 
   if (broken_pid_file())
   {
-    snprintf(file_buffer, sizeof(file_buffer), "/tmp/%s.socketXXXXXX", name());
+    snprintf(&file_buffer[0], file_buffer.size(), "/tmp/%s.socketXXXXXX", name());
   }
   else
   {
-    snprintf(file_buffer, sizeof(file_buffer), "var/run/%s.socketXXXXXX", name());
+    snprintf(&file_buffer[0], file_buffer.size(), "var/run/%s.socketXXXXXX", name());
   }
 
   int fd;
-  if ((fd= mkstemp(file_buffer)) == -1)
+  if ((fd= mkstemp(&file_buffer[0])) == -1)
   {
-    perror(file_buffer);
+    perror(&file_buffer[0]);
     return false;
   }
   close(fd);
-  unlink(file_buffer);
+  unlink(&file_buffer[0]);
 
-  _socket= file_buffer;
+  _socket= &file_buffer[0];
 
   return true;
 }
 
 bool Server::set_pid_file()
 {
-  char file_buffer[FILENAME_MAX];
+  libtest::vchar_t file_buffer;
+  file_buffer.resize(FILENAME_MAX);
   file_buffer[0]= 0;
 
   if (broken_pid_file())
   {
-    snprintf(file_buffer, sizeof(file_buffer), "/tmp/%s.pidXXXXXX", name());
+    snprintf(&file_buffer[0], file_buffer.size(), "/tmp/%s.pidXXXXXX", name());
   }
   else
   {
-    snprintf(file_buffer, sizeof(file_buffer), "var/run/%s.pidXXXXXX", name());
+    snprintf(&file_buffer[0], file_buffer.size(), "var/run/%s.pidXXXXXX", name());
   }
 
   int fd;
-  if ((fd= mkstemp(file_buffer)) == -1)
+  if ((fd= mkstemp(&file_buffer[0])) == -1)
   {
-    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", &file_buffer[0], strerror(errno));
   }
   close(fd);
-  unlink(file_buffer);
+  unlink(&file_buffer[0]);
 
-  _pid_file= file_buffer;
+  _pid_file= &file_buffer[0];
 
   return true;
 }
 
 bool Server::set_log_file()
 {
-  char file_buffer[FILENAME_MAX];
+  libtest::vchar_t file_buffer;
+  file_buffer.resize(FILENAME_MAX);
   file_buffer[0]= 0;
 
-  snprintf(file_buffer, sizeof(file_buffer), "var/log/%s.logXXXXXX", name());
+  snprintf(&file_buffer[0], file_buffer.size(), "var/log/%s.logXXXXXX", name());
   int fd;
-  if ((fd= mkstemp(file_buffer)) == -1)
+  if ((fd= mkstemp(&file_buffer[0])) == -1)
   {
-    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", &file_buffer[0], strerror(errno));
   }
   close(fd);
 
-  _log_file= file_buffer;
+  _log_file= &file_buffer[0];
 
   return true;
 }

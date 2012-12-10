@@ -34,7 +34,7 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
 
 #include <cassert>
@@ -220,22 +220,24 @@ int main(int argc, char *argv[])
     is_massive(opt_massive);
   }
 
-  char tmp_directory[1024];
+  libtest::vchar_t tmp_directory;
+  tmp_directory.resize(1024);
   if (getenv("LIBTEST_TMP"))
   {
-    snprintf(tmp_directory, sizeof(tmp_directory), "%s", getenv("LIBTEST_TMP"));
+    snprintf(&tmp_directory[0], tmp_directory.size(), "%s", getenv("LIBTEST_TMP"));
   }
   else
   {
-    snprintf(tmp_directory, sizeof(tmp_directory), "%s", LIBTEST_TEMP);
+    snprintf(&tmp_directory[0], tmp_directory.size(), "%s", LIBTEST_TEMP);
   }
 
-  if (chdir(tmp_directory) == -1)
+  if (chdir(&tmp_directory[0]) == -1)
   {
-    char getcwd_buffer[1024];
-    char *dir= getcwd(getcwd_buffer, sizeof(getcwd_buffer));
+    libtest::vchar_t getcwd_buffer;
+    getcwd_buffer.resize(1024);
+    char *dir= getcwd(&getcwd_buffer[0], getcwd_buffer.size());
 
-    Error << "Unable to chdir() from " << dir << " to " << tmp_directory << " errno:" << strerror(errno);
+    Error << "Unable to chdir() from " << dir << " to " << &tmp_directory[0] << " errno:" << strerror(errno);
     return EXIT_FAILURE;
   }
 
@@ -329,7 +331,7 @@ int main(int argc, char *argv[])
 
       std::ofstream xml_file;
       std::string file_name;
-      file_name.append(tmp_directory);
+      file_name.append(&tmp_directory[0]);
       file_name.append(frame->name());
       file_name.append(".xml");
       xml_file.open(file_name.c_str(), std::ios::trunc);

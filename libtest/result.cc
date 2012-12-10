@@ -35,23 +35,32 @@
  */
 
 #include "libtest/yatlcon.h"
+#include <libtest/common.h>
+#include <cstdarg>
 
-#include <libtest/test.hpp>
+namespace libtest {
 
-#include <cstdlib>
-#include <unistd.h>
-
-using namespace libtest;
-
-
-static void *world_create(server_startup_st&, test_return_t& rc)
+__test_result::__test_result(const char *file_arg, int line_arg, const char *func_arg):
+  _line(line_arg),
+  _file(file_arg),
+  _func(func_arg)
 {
-  rc= TEST_SKIPPED;
-
-  return NULL;
 }
 
-void get_world(libtest::Framework *world)
+__success::__success(const char *file_arg, int line_arg, const char *func_arg):
+  __test_result(file_arg, line_arg, func_arg)
 {
-  world->create(world_create);
 }
+
+__skipped::__skipped(const char *file_arg, int line_arg, const char *func_arg):
+  __test_result(file_arg, line_arg, func_arg)
+{
+}
+
+__failure::__failure(const char *file_arg, int line_arg, const char *func_arg, const std::string& mesg):
+  __test_result(file_arg, line_arg, func_arg)
+{
+  snprintf(_error_message, sizeof(_error_message), "%.*s", int(mesg.size()), mesg.c_str());
+}
+
+} // namespace libtest

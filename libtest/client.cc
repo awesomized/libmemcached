@@ -34,18 +34,17 @@
  *
  */
 
-#include "mem_config.h"
-
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
-
-#ifdef HAVE_POLL_H
-# include <poll.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <string>
+
+#ifdef HAVE_POLL_H
+# include <poll.h>
+#endif
 
 #ifndef HAVE_MSG_NOSIGNAL
 # define MSG_NOSIGNAL 0
@@ -54,6 +53,7 @@
 namespace libtest {
 
 SimpleClient::SimpleClient(const std::string& hostname_, in_port_t port_) :
+  _is_connected(false),
   _hostname(hostname_),
   _port(port_),
   sock_fd(INVALID_SOCKET),
@@ -68,7 +68,13 @@ bool SimpleClient::ready(int event_)
   fds[0].events= event_;
   fds[0].revents= 0;
 
-  int ready_fds= poll(fds, 1, 5000);
+  int timeout= 5000;
+  if (_is_connected == false)
+  {
+    timeout= timeout * 30;
+  }
+
+  int ready_fds= poll(fds, 1, timeout);
 
   if (ready_fds == -1)
   {
@@ -98,6 +104,7 @@ bool SimpleClient::ready(int event_)
       return false;
     }
 
+    _is_connected= true;
     if (fds[0].revents & event_)
     {
       return true;
@@ -118,11 +125,12 @@ struct addrinfo* SimpleClient::lookup()
   hints.ai_socktype= SOCK_STREAM;
   hints.ai_protocol= IPPROTO_TCP;
 
-  char service[NI_MAXSERV];
-  (void)snprintf(service, NI_MAXSERV, "%d", _port);
+  libtest::vchar_t service;
+  service.resize(NI_MAXSERV);
+  (void)snprintf(&service[0], service.size(), "%d", _port);
 
   int getaddrinfo_error;
-  if ((getaddrinfo_error= getaddrinfo(_hostname.c_str(), service, &hints, &ai)) != 0)
+  if ((getaddrinfo_error= getaddrinfo(_hostname.c_str(), &service[0], &hints, &ai)) != 0)
   {
     if (getaddrinfo_error != EAI_SYSTEM)
     {
@@ -146,12 +154,16 @@ SimpleClient::~SimpleClient()
 
 void SimpleClient::close_socket()
 {
-  close(sock_fd);
-  sock_fd= INVALID_SOCKET;
+  if (sock_fd != INVALID_SOCKET)
+  {
+    close(sock_fd);
+    sock_fd= INVALID_SOCKET;
+  }
 }
 
 bool SimpleClient::instance_connect()
 {
+  _is_connected= false;
   struct addrinfo *ai;
   if ((ai= lookup()))
   {
@@ -200,16 +212,13 @@ bool SimpleClient::is_valid()
   return true;
 }
 
-bool SimpleClient::message(const std::string& arg)
+bool SimpleClient::message(const char* ptr, const size_t len)
 {
   if (is_valid())
   {
     if (ready(POLLOUT))
     {
       off_t offset= 0;
-      const char* ptr= arg.c_str();
-      size_t len= arg.size();
-
       do
       {
         ssize_t nw= send(sock_fd, ptr + offset, len - offset, MSG_NOSIGNAL);
@@ -238,9 +247,20 @@ bool SimpleClient::message(const std::string& arg)
 
 bool SimpleClient::send_message(const std::string& arg)
 {
-  if (message(arg) == true)
+  if (message(arg.c_str(), arg.size()) == true)
   {
-    return message("\r\n");
+    return message("\r\n", 2);
+  }
+
+  return false;
+}
+
+bool SimpleClient::send_data(const libtest::vchar_t& message_, libtest::vchar_t& response_)
+{
+  requested_message++;
+  if (message(&message_[0], message_.size()))
+  {
+    return response(response_);
   }
 
   return false;
@@ -254,6 +274,53 @@ bool SimpleClient::send_message(const std::string& message_, std::string& respon
     return response(response_);
   }
 
+  return false;
+}
+
+bool SimpleClient::response(libtest::vchar_t& response_)
+{
+  response_.clear();
+
+  if (is_valid())
+  {
+    if (ready(POLLIN))
+    {
+      bool more= true;
+      char buffer[2];
+      buffer[1]= 0;
+      do
+      {
+        ssize_t nr= recv(sock_fd, buffer, 1, MSG_NOSIGNAL);
+        if (nr == -1)
+        {
+          if (errno != EINTR)
+          {
+            _error= strerror(errno);
+            return false;
+          }
+        }
+        else if (nr == 0)
+        {
+          close_socket();
+          more= false;
+        }
+        else
+        {
+          response_.reserve(response_.size() + nr +1);
+          fatal_assert(nr == 1);
+          if (buffer[0] == '\n')
+          {
+            more= false;
+          }
+          response_.insert(response_.end(), buffer, buffer +nr);
+        }
+      } while (more);
+
+      return response_.size();
+    }
+  }
+
+  fatal_assert(_error.size());
   return false;
 }
 
@@ -278,6 +345,11 @@ bool SimpleClient::response(std::string& response_)
             _error= strerror(errno);
             return false;
           }
+        }
+        else if (nr == 0)
+        {
+          close_socket();
+          more= false;
         }
         else
         {

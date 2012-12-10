@@ -34,7 +34,8 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
+
 #include <libtest/common.h>
 
 #include <sys/time.h>
@@ -51,42 +52,49 @@ static const struct itimerval cancel_timer= { default_it_interval, default_it_in
 
 void set_alarm()
 {
-  if (gdb_is_caller() == false)
+  if (setitimer(ITIMER_VIRTUAL, &defualt_timer, NULL) == -1)
   {
-    if (setitimer(ITIMER_VIRTUAL, &defualt_timer, NULL) == -1)
-    {
-      Error << "setitimer() failed";
-    }
+    Error << "setitimer() failed";
   }
 }
 
 void set_alarm(long tv_sec, long tv_usec)
 {
-  if (gdb_is_caller() == false)
+  // For the moment use any value to YATL_ALARM to cancel alarming.
+  if (getenv("YATL_ALARM"))
   {
+    errno= 0;
+    tv_sec= strtol(getenv("YATL_ALARM"), (char **) NULL, 10);
+
+    if (errno != 0)
+    {
+      fatal_message("Bad value for YATL_ALARM");
+    }
+    else if (tv_sec == 0)
+    {
+      cancel_alarm();
+    }
+  }
+
 #if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-    struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
+  struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
 #else
-    struct timeval it_value= { tv_sec, tv_usec };
+  struct timeval it_value= { tv_sec, tv_usec };
 #endif
 
-    struct itimerval timer= { default_it_interval, it_value };
+  struct itimerval timer= { default_it_interval, it_value };
 
-    if (setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1)
-    {
-      Error << "setitimer() failed";
-    }
+  if (setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1)
+  {
+    Error << "setitimer() failed";
   }
 }
 
 void cancel_alarm()
 {
-  if (gdb_is_caller() == false)
+  if (setitimer(ITIMER_VIRTUAL, &cancel_timer, NULL) == -1)
   {
-    if (setitimer(ITIMER_VIRTUAL, &cancel_timer, NULL) == -1)
-    {
-      Error << "setitimer() failed";
-    }
+    Error << "setitimer() failed";
   }
 }
 

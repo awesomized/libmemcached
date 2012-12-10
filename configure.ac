@@ -19,6 +19,7 @@ AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-u
 AC_PREREQ([2.61])
 
 AC_CONFIG_HEADERS([mem_config.h:mem_config.in])dnl Keep filename to 8.3 for MS-DOS.
+AC_SUBST([AUTOHEADER_FILE],[mem_config.h])
 AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 
 #shared library versioning
@@ -109,7 +110,6 @@ AC_SEARCH_LIBS([gethostbyname],[nsl])
 
 # Checks for header files.
 AC_CHECK_HEADERS_ONCE([arpa/inet.h])
-AC_CHECK_HEADERS_ONCE([dlfcn.h])
 AC_CHECK_HEADERS_ONCE([errno.h])
 AC_CHECK_HEADERS_ONCE([execinfo.h])
 AC_CHECK_HEADERS_ONCE([fcntl.h])
@@ -219,12 +219,7 @@ AC_CHECK_LIB([rt],[clock_gettime],
              [AC_DEFINE([HAVE_CLOCK_GETTIME],[0],[Have clock_gettime])])
 
 # Check for the ability to call dlopen (used in libhostile)
-AS_IF([test "x$enable_shared" = xyes],
-      [AX_CHECK_LIBRARY([DL],[dlfcn.h],[dl],
-                        [AC_DEFINE([HAVE_LIBDL],[1],[Have dlopen])
-                        AC_CHECK_LIB([dl],[dlopen],[AC_DEFINE([HAVE_DLOPEN],[1],[Have dlopen])])
-                        AC_CHECK_LIB([dl],[dladdr],[AC_DEFINE([HAVE_DLADDR],[1],[Have dladdr])])])
-      ])
+AX_DLOPEN
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],

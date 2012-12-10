@@ -147,7 +147,7 @@ void *memcached_callback_get(memcached_st *ptr,
     break;
   }
 
-  assert_msg(0, "Invalid behavior passed to memcached_behavior_set()");
+  assert_msg(0, "Invalid callback passed to memcached_callback_get()");
   *error= MEMCACHED_FAILURE;
   return NULL;
 }

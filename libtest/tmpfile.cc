@@ -34,27 +34,30 @@
  *
  */
 
+#include "libtest/yatlcon.h"
+
 #include <libtest/common.h>
 
 namespace libtest {
 
 std::string create_tmpfile(const std::string& name)
 {
-  char file_buffer[FILENAME_MAX];
+  libtest::vchar_t file_buffer;
+  file_buffer.resize(FILENAME_MAX);
   file_buffer[0]= 0;
 
-  int length= snprintf(file_buffer, sizeof(file_buffer), "var/tmp/%s.XXXXXX", name.c_str());
+  int length= snprintf(&file_buffer[0], file_buffer.size(), "var/tmp/%s.XXXXXX", name.c_str());
   fatal_assert(length > 0);
 
   int fd;
-  if ((fd= mkstemp(file_buffer)) == -1)
+  if ((fd= mkstemp(&file_buffer[0])) == -1)
   {
-    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", file_buffer, strerror(errno));
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", &file_buffer[0], strerror(errno));
   }
   close(fd);
-  unlink(file_buffer);
+  unlink(&file_buffer[0]);
 
-  return file_buffer;
+  return &file_buffer[0];
 }
 
 } // namespace libtest

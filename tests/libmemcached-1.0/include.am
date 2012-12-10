@@ -181,7 +181,6 @@ gdb-socket: tests/libmemcached-1.0/testsocket
 	@$(GDB_COMMAND) tests/libmemcached-1.0/testsocket
 
 tests_libmemcached_1_0_sasl_SOURCES=
-tests_libmemcached_1_0_sasl_DEPENDENCIES=
 tests_libmemcached_1_0_sasl_LDADD=
 tests_libmemcached_1_0_sasl_CXXFLAGS=
 tests_libmemcached_1_0_sasl_CFLAGS=
@@ -208,9 +207,6 @@ tests_libmemcached_1_0_sasl_SOURCES+= clients/generator.cc
 tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/callback_counter.cc
 tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_libmemcached_1_0_sasl_SOURCES+= tests/libmemcached-1.0/generate.cc
-
-tests_libmemcached_1_0_sasl_DEPENDENCIES+= libmemcached/libmemcached.la
-tests_libmemcached_1_0_sasl_DEPENDENCIES+= libtest/libtest.la
 
 tests_libmemcached_1_0_sasl_LDADD+= @PTHREAD_LIBS@
 tests_libmemcached_1_0_sasl_LDADD+= libmemcached/libmemcached.la

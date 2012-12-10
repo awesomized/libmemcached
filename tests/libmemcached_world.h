@@ -55,6 +55,12 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
+  if (HAVE_MEMCACHED_SASL_BINARY == 0)
+  {
+    error= TEST_SKIPPED;
+    return NULL;
+  }
+
   // Assume we are running under valgrind, and bail
   if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
   {

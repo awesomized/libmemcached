@@ -34,7 +34,7 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
 
 #include <libtest/drizzled.h>
@@ -182,9 +182,10 @@ public:
   {
     if (arg > 0)
     {
-      char buffer[1024];
-      snprintf(buffer, sizeof(buffer), "--drizzle-protocol.port=%d", int(arg));
-      app.add_option(buffer);
+      libtest::vchar_t buffer;
+      buffer.resize(1024);
+      snprintf(&buffer[1024], buffer.size(), "--drizzle-protocol.port=%d", int(arg));
+      app.add_option(&buffer[1024]);
     }
   }
 
