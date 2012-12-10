@@ -291,7 +291,7 @@ bool Server::start()
         break;
       }
 
-      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " " << error();
+      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
 
       this_wait= retry * retry / 3 + 1;
       libtest::dream(this_wait, 0);
