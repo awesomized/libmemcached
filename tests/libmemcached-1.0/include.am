@@ -181,7 +181,6 @@ gdb-socket: tests/libmemcached-1.0/testsocket
 	@$(GDB_COMMAND) tests/libmemcached-1.0/testsocket
 
 tests_libmemcached_1_0_sasl_SOURCES=
-tests_libmemcached_1_0_sasl_DEPENDENCIES=
 tests_libmemcached_1_0_sasl_LDADD=
 tests_libmemcached_1_0_sasl_CXXFLAGS=
 tests_libmemcached_1_0_sasl_CFLAGS=
