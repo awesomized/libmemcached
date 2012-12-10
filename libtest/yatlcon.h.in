@@ -1,8 +1,9 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- *
- *  Data Differential YATL (i.e. libtest)  library
+ * 
+ *  Data Differential YATL (i.e. libtest) library
  *
  *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -34,24 +35,7 @@
  *
  */
 
-#include "libtest/yatlcon.h"
 
-#include <libtest/test.hpp>
+#pragma once
 
-#include <cstdlib>
-#include <unistd.h>
-
-using namespace libtest;
-
-
-static void *world_create(server_startup_st&, test_return_t& rc)
-{
-  rc= TEST_SKIPPED;
-
-  return NULL;
-}
-
-void get_world(libtest::Framework *world)
-{
-  world->create(world_create);
-}
+#include "@AUTOHEADER_FILE@"

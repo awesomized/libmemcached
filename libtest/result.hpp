@@ -34,24 +34,81 @@
  *
  */
 
-#include "libtest/yatlcon.h"
+#pragma once
 
-#include <libtest/test.hpp>
+#include <libtest/fatal.hpp>
 
-#include <cstdlib>
-#include <unistd.h>
+namespace libtest {
 
-using namespace libtest;
-
-
-static void *world_create(server_startup_st&, test_return_t& rc)
+class __test_result : public std::exception
 {
-  rc= TEST_SKIPPED;
+public:
+  __test_result(const char *file, int line, const char *func);
 
-  return NULL;
-}
+  int line()
+  {
+    return _line;
+  }
 
-void get_world(libtest::Framework *world)
+  const char*  file()
+  {
+    return _file;
+  }
+
+  const char* func()
+  {
+    return _func;
+  }
+
+private:
+  int _line;
+  const char*  _file;
+  const char* _func;
+};
+
+class __success : public __test_result
 {
-  world->create(world_create);
-}
+public:
+  __success(const char *file, int line, const char *func);
+
+  const char* what() const throw()
+  {
+    return "SUCCESS";
+  }
+
+private:
+};
+
+class __skipped : public __test_result
+{
+public:
+  __skipped(const char *file, int line, const char *func);
+
+  const char* what() const throw()
+  {
+    return "SKIPPED";
+  }
+
+private:
+};
+
+class __failure : public __test_result
+{
+public:
+  __failure(const char *file, int line, const char *func, const std::string&);
+
+  const char* what() const throw()
+  {
+    return _error_message;
+  }
+
+private:
+  char _error_message[BUFSIZ];
+};
+
+
+} // namespace libtest
+
+#define _SUCCESS throw libtest::__success(LIBYATL_DEFAULT_PARAM)
+#define SKIP throw libtest::__skipped(LIBYATL_DEFAULT_PARAM)
+#define FAIL(__mesg) throw libtest::__failure(LIBYATL_DEFAULT_PARAM, __mesg)

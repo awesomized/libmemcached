@@ -26,6 +26,7 @@
 #
 #   This macro calls:
 #
+#     AC_SUBST(MYSQL_INCLUDE)
 #     AC_SUBST(MYSQL_CFLAGS)
 #     AC_SUBST(MYSQL_LDFLAGS)
 #     AC_SUBST(MYSQL_VERSION)
@@ -43,7 +44,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 12
+#serial 13
 
 AC_DEFUN([AX_LIB_MYSQL],
 [
@@ -65,6 +66,7 @@ AC_DEFUN([AX_LIB_MYSQL],
     )
     AC_ARG_VAR([MYSQL_CONFIG], [Full path to mysql_config program])
 
+    MYSQL_INCLUDE=""
     MYSQL_CFLAGS=""
     MYSQL_LDFLAGS=""
     MYSQL_VERSION=""
@@ -80,6 +82,7 @@ AC_DEFUN([AX_LIB_MYSQL],
         fi
 
         if test "$MYSQL_CONFIG" != "no"; then
+            MYSQL_INCLUDE="`$MYSQL_CONFIG --include`"
             MYSQL_CFLAGS="`$MYSQL_CONFIG --cflags`"
             MYSQL_LDFLAGS="`$MYSQL_CONFIG --libs`"
 
@@ -142,6 +145,7 @@ AC_DEFUN([AX_LIB_MYSQL],
     fi
 
     AC_SUBST([MYSQL_VERSION])
+    AC_SUBST([MYSQL_INCLUDE])
     AC_SUBST([MYSQL_CFLAGS])
     AC_SUBST([MYSQL_LDFLAGS])
 ])

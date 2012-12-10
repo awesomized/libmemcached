@@ -505,7 +505,7 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 
   case MEMCACHED_BEHAVIOR_MAX:
   default:
-    assert_msg(0, "Invalid behavior passed to memcached_behavior_set()");
+    assert_msg(0, "Invalid behavior passed to memcached_behavior_get()");
     return 0;
   }
 

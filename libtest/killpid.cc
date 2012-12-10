@@ -34,7 +34,7 @@
  *
  */
 
-#include "mem_config.h"
+#include "libtest/yatlcon.h"
 #include <libtest/common.h>
 
 #include <cstdlib>
@@ -123,14 +123,15 @@ bool check_pid(const std::string &filename)
   FILE *fp;
   if ((fp= fopen(filename.c_str(), "r")))
   {
-    char pid_buffer[1024];
+    libtest::vchar_t pid_buffer;
+    pid_buffer.resize(1024);
 
-    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
+    char *ptr= fgets(&pid_buffer[0], int(pid_buffer.size()), fp);
     fclose(fp);
 
     if (ptr)
     {
-      pid_t pid= (pid_t)atoi(pid_buffer);
+      pid_t pid= (pid_t)atoi(&pid_buffer[0]);
       if (pid > 0)
       {
         return (::kill(pid, 0) == 0);
@@ -152,14 +153,15 @@ bool kill_file(const std::string &filename)
   FILE *fp;
   if ((fp= fopen(filename.c_str(), "r")))
   {
-    char pid_buffer[1024];
+    libtest::vchar_t pid_buffer;
+    pid_buffer.resize(1024);
 
-    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
+    char *ptr= fgets(&pid_buffer[0], int(pid_buffer.size()), fp);
     fclose(fp);
 
     if (ptr)
     {
-      pid_t pid= (pid_t)atoi(pid_buffer);
+      pid_t pid= (pid_t)atoi(&pid_buffer[0]);
       if (pid != 0)
       {
         bool ret= kill_pid(pid);
@@ -180,7 +182,6 @@ bool kill_file(const std::string &filename)
 pid_t get_pid_from_file(const std::string &filename, std::stringstream& error_message)
 {
   pid_t ret= -1;
-  FILE *fp;
 
   if (filename.empty())
   {
@@ -188,16 +189,16 @@ pid_t get_pid_from_file(const std::string &filename, std::stringstream& error_me
     return ret;
   }
 
+  FILE *fp;
   if ((fp= fopen(filename.c_str(), "r")))
   {
-    char pid_buffer[1024];
+    libtest::vchar_t pid_buffer;
+    pid_buffer.resize(1024);
 
-    char *ptr= fgets(pid_buffer, sizeof(pid_buffer), fp);
-    fclose(fp);
-
+    char *ptr= fgets(&pid_buffer[0], int(pid_buffer.size()), fp);
     if (ptr)
     {
-      ret= (pid_t)atoi(pid_buffer);
+      ret= (pid_t)atoi(&pid_buffer[0]);
       if (ret < 1)
       {
         error_message << LIBTEST_AT << " Invalid pid was read from file " << filename;
@@ -208,12 +209,15 @@ pid_t get_pid_from_file(const std::string &filename, std::stringstream& error_me
       error_message << LIBTEST_AT << " File " << filename << " was empty ";
     }
 
+    fclose(fp);
+
     return ret;
   }
   else
   {
-    char buffer[1024];
-    char *current_directory= getcwd(buffer, sizeof(buffer));
+    libtest::vchar_t buffer;
+    buffer.resize(1024);
+    char *current_directory= getcwd(&buffer[0], buffer.size());
     error_message << "Error while opening " << current_directory << "/" << filename << " " << strerror(errno);
   }
   
