@@ -54,6 +54,13 @@
 
 #serial 7
 
+AC_DEFUN([_WARNINGS_AS_ERRORS],
+    [AC_CACHE_CHECK([if all warnings into errors],[ac_cv_warnings_as_errors],
+      [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[ac_cv_warnings_as_errors=yes],
+        [ac_cv_warnings_as_errors=no])
+      ])
+    ])
+
 AC_DEFUN([_APPEND_LINK_FLAGS_ERROR],
          [AC_REQUIRE([AX_APPEND_LINK_FLAGS])
          AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])
@@ -64,11 +71,13 @@ AC_DEFUN([_APPEND_COMPILE_FLAGS_ERROR],
          AX_APPEND_COMPILE_FLAGS([$1],,[-Werror])
          ])
 
+# Everything above this does the heavy lifting, while what follows does the specifics.
+
 AC_DEFUN([_HARDEN_LINKER_FLAGS],
          [_APPEND_LINK_FLAGS_ERROR([-z relro -z now])
          _APPEND_LINK_FLAGS_ERROR([-pie])
          AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
-               [_APPEND_LINK_FLAGS_ERROR([-Werror])])
+               [AX_APPEND_LINK_FLAGS([-Werror])])
          ])
 
 AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
@@ -148,6 +157,9 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
                [_APPEND_COMPILE_FLAGS_ERROR([-fstack-check])],
                [_APPEND_COMPILE_FLAGS_ERROR([-Wno-pragmas])])
 
+         AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
+             [AX_APPEND_FLAG([-Werror])])
+
           AC_LANG_POP([C])
   ])
 
@@ -222,7 +234,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
                         ])])])
 
             AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
-                  [_APPEND_COMPILE_FLAGS_ERROR([-Werror])])
+                  [AX_APPEND_FLAG([-Werror])])
             AC_LANG_POP([C++])
   ])
 
@@ -238,6 +250,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
 # _HARDEN_CC_COMPILER_FLAGS, _HARDEN_CXX_COMPILER_FLAGS, _CC_OTHER_FLAGS
   AC_DEFUN([AX_HARDEN_COMPILER_FLAGS],
            [AC_PREREQ([2.63])dnl
+           AC_REQUIRE([_WARNINGS_AS_ERRORS])
            AC_REQUIRE([AX_APPEND_LINK_FLAGS])
            AC_REQUIRE([AX_COMPILER_VERSION])
            AC_REQUIRE([AX_DEBUG])
@@ -245,11 +258,6 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
 
            AC_REQUIRE([gl_VISIBILITY])
            AS_IF([test -n "$CFLAG_VISIBILITY"],[CPPFLAGS="$CPPFLAGS $CFLAG_VISIBILITY"])
-
-           AC_CACHE_CHECK([if all warnings into errors],[ac_cv_warnings_as_errors],
-                          [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[ac_cv_warnings_as_errors=yes],
-                                 [ac_cv_warnings_as_errors=no])
-                          ])
 
            AC_REQUIRE([_HARDEN_LINKER_FLAGS])
            AC_REQUIRE([_HARDEN_CC_COMPILER_FLAGS])
