@@ -7,7 +7,7 @@
 // compile and run any of them on any platform, but your performance with the
 // non-native version will be less than optimal.
 
-#include "mem_config.h"
+#include "libhashkit/hashkitcon.h"
 
 #include "libhashkit/murmur3.h"
 
