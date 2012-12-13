@@ -294,9 +294,14 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
       {
         if (opt_startup_message)
         {
-          Outn();
-          Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
-          Outn();
+#if defined(DEBUG)
+          if (DEBUG)
+          {
+            Outn();
+            Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+            Outn();
+          }
+#endif
         }
       }
   }
@@ -397,9 +402,14 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     {
       if (opt_startup_message)
       {
-        Outn();
-        Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
-        Outn();
+#if defined(DEBUG)
+        if (DEBUG)
+        {
+          Outn();
+          Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
+          Outn();
+        }
+#endif
       }
     }
   }
