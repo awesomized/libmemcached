@@ -23,23 +23,21 @@
 #serial 2
 
 AC_DEFUN([AX_SASL_OPTION],
-    [AC_ARG_ENABLE([sasl],
+    [AC_REQUIRE([AX_SASL_CHECK])
+    AC_ARG_ENABLE([sasl],
       [AS_HELP_STRING([--disable-sasl], [Build with sasl support @<:@default=on@:>@])],
       [ac_enable_sasl="$enableval"],
       [ac_enable_sasl=yes])
 
-    ax_sasl_option=no
     AS_IF([test "x${ac_enable_sasl}" = xyes],
-      [AX_SASL_CHECK
-      echo "$ax_sasl_check"
+      [AC_MSG_CHECKING([checking to see if enabling sasl])
       AS_IF([test "x${ax_sasl_check}" = xyes],
         [ax_sasl_option=yes],
         [AC_MSG_WARN([request to add sasl support failed, please see config.log])
-        ac_enable_sasl=no])
+        ac_enable_sasl=no
+        ax_sasl_option=no])
+      AC_MSG_RESULT(["$ax_sasl_option"])
       ])
-
-    AC_MSG_CHECKING([checking to see if enabling sasl])
-    AC_MSG_RESULT(["$ax_sasl_option"])
     AM_CONDITIONAL([HAVE_SASL],[test "x${ax_sasl_option}" = xyes])
     ])
 
