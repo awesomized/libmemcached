@@ -439,9 +439,14 @@ Application::error_t Application::join()
       }
 
       // If we terminted it on purpose then it counts as a success.
-      Out << "waitpid() application terminated at request"
-        << " pid:" << _pid 
-        << " name:" << built_argv[0];
+#if defined(DEBUG)
+      if (DEBUG)
+      {
+        Out << "waitpid() application terminated at request"
+          << " pid:" << _pid 
+          << " name:" << built_argv[0];
+      }
+#endif
     }
     else
     {
