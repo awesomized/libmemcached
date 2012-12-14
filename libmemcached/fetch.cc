@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
                       uint32_t *flags,
                       memcached_return_t *error)
 {
-  memcached_result_st *result_buffer= &ptr->result;
   memcached_return_t unused;
   if (error == NULL)
   {
@@ -75,6 +74,7 @@ char *memcached_fetch(memcached_st *ptr, char *key, size_t *key_length,
     return NULL;
   }
 
+  memcached_result_st *result_buffer= &ptr->result;
   result_buffer= memcached_fetch_result(ptr, result_buffer, error);
   if (result_buffer == NULL or memcached_failed(*error))
   {
