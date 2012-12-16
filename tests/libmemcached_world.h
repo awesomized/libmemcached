@@ -49,23 +49,26 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     return NULL;
   }
 
-  if ((servers.sasl()) and ((LIBMEMCACHED_WITH_SASL_SUPPORT == 0)))
+  if (servers.sasl())
   {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
+    if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
+    {
+      error= TEST_SKIPPED;
+      return NULL;
+    }
 
-  if (HAVE_MEMCACHED_SASL_BINARY == 0)
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
-
-  // Assume we are running under valgrind, and bail
-  if (servers.sasl() and getenv("TESTS_ENVIRONMENT"))
-  {
-    error= TEST_SKIPPED;
-    return NULL;
+    if (HAVE_MEMCACHED_SASL_BINARY == 0)
+    {
+      error= TEST_SKIPPED;
+      return NULL;
+    }
+    
+    // Assume we are running under valgrind, and bail
+    if (getenv("TESTS_ENVIRONMENT"))
+    {
+      error= TEST_SKIPPED;
+      return NULL;
+    }
   }
 
   for (uint32_t x= 0; x < servers.servers_to_run(); x++)
@@ -77,9 +80,6 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
       if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
       {
         error= TEST_SKIPPED;
-#if 0
-        fatal_message("Could not start memcached-sasl");
-#endif
         return NULL;
       }
     }
@@ -88,9 +88,6 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
       if (server_startup(servers, "memcached", port, 0, NULL) == false)
       {
         error= TEST_SKIPPED;
-#if 0
-        fatal_message("Could not start memcached");
-#endif
         return NULL;
       }
     }

@@ -52,6 +52,18 @@
 # define FD_CLOEXEC 0
 #endif
 
+#ifndef SO_NOSIGPIPE
+# define SO_NOSIGPIPE 0
+#endif
+
+#ifndef TCP_NODELAY
+# define TCP_NODELAY 0
+#endif
+
+#ifndef TCP_KEEPIDLE
+# define TCP_KEEPIDLE 0
+#endif
+
 static memcached_return_t connect_poll(org::libmemcached::Instance* server)
 {
   struct pollfd fds[1];
@@ -281,13 +293,38 @@ static inline void set_socket_nonblocking(org::libmemcached::Instance* server)
 #endif
 }
 
-static void set_socket_options(org::libmemcached::Instance* server)
+static bool set_socket_options(org::libmemcached::Instance* server)
 {
   assert_msg(server->fd != INVALID_SOCKET, "invalid socket was passed to set_socket_options()");
 
+#ifdef HAVE_FCNTL
+  // If SOCK_CLOEXEC exists then we don't need to call the following
+  if (SOCK_CLOEXEC == 0)
+  {
+    if (FD_CLOEXEC)
+    {
+      int flags;
+      do
+      { 
+        flags= fcntl(server->fd, F_GETFD, 0);
+      } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
+
+      if (flags != -1)
+      { 
+        int rval;
+        do
+        { 
+          rval= fcntl (server->fd, F_SETFD, flags | FD_CLOEXEC);
+        } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+        // we currently ignore the case where rval is -1
+      }
+    }
+  }
+#endif
+
   if (memcached_is_udp(server->root))
   {
-    return;
+    return true;
   }
 
 #ifdef HAVE_SNDTIMEO
@@ -322,6 +359,7 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
 
 #if defined(__MACH__) && defined(__APPLE__) || defined(__FreeBSD__)
+  if (SO_NOSIGPIPE)
   {
     int set= 1;
     int error= setsockopt(server->fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
@@ -350,14 +388,17 @@ static void set_socket_options(org::libmemcached::Instance* server)
     assert(error == 0);
   }
 
-  if (server->root->flags.tcp_nodelay)
+  if (TCP_NODELAY)
   {
-    int flag= 1;
+    if (server->root->flags.tcp_nodelay)
+    {
+      int flag= 1;
 
-    int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
-                          (char*)&flag, (socklen_t)sizeof(int));
-    (void)(error);
-    assert(error == 0);
+      int error= setsockopt(server->fd, IPPROTO_TCP, TCP_NODELAY,
+                            (char*)&flag, (socklen_t)sizeof(int));
+      (void)(error);
+      assert(error == 0);
+    }
   }
 
   if (server->root->flags.tcp_keepalive)
@@ -370,15 +411,16 @@ static void set_socket_options(org::libmemcached::Instance* server)
     assert(error == 0);
   }
 
-#ifdef TCP_KEEPIDLE
-  if (server->root->tcp_keepidle > 0)
+  if (TCP_KEEPIDLE)
   {
-    int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
-                          (char*)&server->root->tcp_keepidle, (socklen_t)sizeof(int));
-    (void)(error);
-    assert(error == 0);
+    if (server->root->tcp_keepidle > 0)
+    {
+      int error= setsockopt(server->fd, IPPROTO_TCP, TCP_KEEPIDLE,
+                            (char*)&server->root->tcp_keepidle, (socklen_t)sizeof(int));
+      (void)(error);
+      assert(error == 0);
+    }
   }
-#endif
 
   if (server->root->send_size > 0)
   {
@@ -398,6 +440,8 @@ static void set_socket_options(org::libmemcached::Instance* server)
 
   /* libmemcached will always use nonblocking IO to avoid write deadlocks */
   set_socket_nonblocking(server);
+
+  return true;
 }
 
 static memcached_return_t unix_socket_connect(org::libmemcached::Instance* server)
@@ -520,22 +564,11 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
       return memcached_set_errno(*server, get_socket_errno(), NULL);
     }
 
-#ifdef HAVE_FCNTL
-    // If SOCK_CLOEXEC exists then we don't need to call the following
-    if (SOCK_CLOEXEC == 0)
+    if (set_socket_options(server) == false)
     {
-      if (FD_CLOEXEC)
-      {
-        int rval;
-        do
-        {
-          rval= fcntl (server->fd, F_SETFD, FD_CLOEXEC);
-        } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
-      }
+      (void)closesocket(server->fd);
+      return MEMCACHED_CONNECTION_FAILURE;
     }
-#endif
-
-    set_socket_options(server);
 
     /* connect to server */
     if ((connect(server->fd, server->address_info_next->ai_addr, server->address_info_next->ai_addrlen) != SOCKET_ERROR))
