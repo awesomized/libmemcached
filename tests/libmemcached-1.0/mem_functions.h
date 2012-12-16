@@ -117,6 +117,7 @@ test_return_t murmur_run (memcached_st *);
 test_return_t murmur3_TEST(hashkit_st *);
 test_return_t noreply_test(memcached_st *memc);
 test_return_t one_at_a_time_run (memcached_st *);
+test_return_t ketama_TEST(memcached_st *);
 test_return_t output_ketama_weighted_keys(memcached_st *);
 test_return_t libmemcached_util_ping_TEST(memcached_st*);
 test_return_t prepend_test(memcached_st *memc);
