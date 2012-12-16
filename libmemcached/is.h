@@ -83,7 +83,7 @@
 #define memcached_has_replicas(__object) ((__object)->root->number_of_replicas)
 
 #define memcached_set_processing_input(__object, __value) ((__object)->state.is_processing_input= (__value))
-#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized(= (__value))
+#define memcached_set_initialized(__object, __value) ((__object)->options.is_initialized= (__value))
 #define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))
 
 #define memcached_set_weighted_ketama(__object, __value) ((__object)->ketama.weighted_= (__value))

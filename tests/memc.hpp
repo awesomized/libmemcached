@@ -1,8 +1,8 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  * 
- *  Gearmand client and server library.
+ *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 
 #pragma once
 
+namespace test {
+
 class Memc {
 public:
   Memc()
@@ -49,7 +51,7 @@ public:
     }
   }
 
-  Memc(memcached_st* arg)
+  Memc(const memcached_st* arg)
   {
     _memc= memcached_clone(NULL, arg);
 
@@ -57,6 +59,26 @@ public:
     {
       throw "memcached_clone() failed";
     }
+  }
+
+  Memc(const std::string& arg)
+  {
+    _memc= memcached(arg.c_str(), arg.size());
+    if (_memc == NULL)
+    {
+      throw "memcached() failed";
+    }
+  }
+
+  Memc(in_port_t arg)
+  {
+    _memc= memcached_create(NULL);
+
+    if (_memc == NULL)
+    {
+      throw "memcached_create() failed";
+    }
+    memcached_server_add(_memc, "localhost", arg);
   }
 
   memcached_st* operator&() const
@@ -78,3 +100,5 @@ private:
   memcached_st *_memc;
 
 };
+
+} // namespace test

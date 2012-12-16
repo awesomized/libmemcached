@@ -86,6 +86,7 @@ using namespace libtest;
 #include "tests/libmemcached-1.0/setup_and_teardowns.h"
 #include "tests/print.h"
 #include "tests/debug.h"
+#include "tests/memc.hpp"
 
 #define UUID_STRING_MAXLENGTH 36
 
@@ -2760,6 +2761,25 @@ test_return_t user_supplied_bug21(memcached_st *memc)
   /* should fail as of r580 */
   test_compare(TEST_SUCCESS,
                _user_supplied_bug21(memc, 1000));
+
+  return TEST_SUCCESS;
+}
+
+test_return_t ketama_TEST(memcached_st *)
+{
+  test::Memc memc("--server=10.0.1.1:11211 --server=10.0.1.2:11211");
+
+  test_compare(MEMCACHED_SUCCESS,
+               memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED, true));
+
+  test_compare(memcached_behavior_get(&memc, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED), uint64_t(1));
+
+  test_compare(memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5), MEMCACHED_SUCCESS);
+
+  test_compare(memcached_behavior_get(&memc, MEMCACHED_BEHAVIOR_KETAMA_HASH), MEMCACHED_HASH_MD5);
+
+  test_compare(memcached_behavior_set_distribution(&memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY), MEMCACHED_SUCCESS);
+
 
   return TEST_SUCCESS;
 }

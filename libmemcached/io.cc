@@ -79,10 +79,10 @@ static bool repack_input_buffer(org::libmemcached::Instance* ptr)
     do {
       /* Just try a single read to grab what's available */
       ssize_t nr;
-      if ((nr= recv(ptr->fd,
+      if ((nr= ::recv(ptr->fd,
                     ptr->read_ptr + ptr->read_data_length,
                     MEMCACHED_MAX_BUFFER - ptr->read_data_length,
-                    MSG_DONTWAIT)) <= 0)
+                    MSG_DONTWAIT|MSG_NOSIGNAL)) <= 0)
       {
         if (nr == 0)
         {
@@ -419,7 +419,7 @@ static memcached_return_t _io_fill(org::libmemcached::Instance* ptr)
   ssize_t data_read;
   do
   {
-    data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT);
+    data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT|MSG_NOSIGNAL);
     if (data_read == SOCKET_ERROR)
     {
       switch (get_socket_errno())
@@ -557,7 +557,7 @@ memcached_return_t memcached_io_slurp(org::libmemcached::Instance* ptr)
   char buffer[MEMCACHED_MAX_BUFFER];
   do
   {
-    data_read= recv(ptr->fd, ptr->read_buffer, sizeof(buffer), MSG_DONTWAIT);
+    data_read= ::recv(ptr->fd, ptr->read_buffer, sizeof(buffer), MSG_DONTWAIT|MSG_NOSIGNAL);
     if (data_read == SOCKET_ERROR)
     {
       switch (get_socket_errno())
