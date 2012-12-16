@@ -26,7 +26,6 @@ noinst_HEADERS+= libmemcached/encoding_key.h
 noinst_HEADERS+= libmemcached/error.hpp 
 noinst_HEADERS+= libmemcached/flag.hpp 
 noinst_HEADERS+= libmemcached/initialize_query.h 
-noinst_HEADERS+= libmemcached/instance.h 
 noinst_HEADERS+= libmemcached/instance.hpp
 noinst_HEADERS+= libmemcached/internal.h 
 noinst_HEADERS+= libmemcached/io.h 

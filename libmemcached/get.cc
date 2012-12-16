@@ -246,7 +246,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   {
     org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
-    if (memcached_instance_response_count(instance))
+    if (instance->response_count())
     {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
@@ -255,7 +255,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
         memcached_io_write(instance);
       }
 
-      while(memcached_instance_response_count(instance))
+      while(instance->response_count())
       {
         (void)memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, &ptr->result);
       }
@@ -304,7 +304,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
     };
 
 
-    if (memcached_instance_response_count(instance) == 0)
+    if (instance->response_count() == 0)
     {
       rc= memcached_connect(instance);
 
@@ -356,7 +356,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   {
     org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
 
-    if (memcached_instance_response_count(instance))
+    if (instance->response_count())
     {
       /* We need to do something about non-connnected hosts in the future */
       if ((memcached_io_write(instance, "\r\n", 2, true)) == -1)
@@ -480,7 +480,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
 
-    if (memcached_instance_response_count(instance) == 0)
+    if (instance->response_count() == 0)
     {
       rc= memcached_connect(instance);
       if (memcached_failed(rc))
@@ -554,7 +554,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
       initialize_binary_request(instance, request.message.header);
 
-      if (memcached_instance_response_count(instance))
+      if (instance->response_count())
       {
         if (memcached_io_write(instance) == false)
         {
@@ -624,7 +624,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
 
       org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server);
 
-      if (memcached_instance_response_count(instance) == 0)
+      if (instance->response_count() == 0)
       {
         rc= memcached_connect(instance);
 

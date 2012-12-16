@@ -38,6 +38,102 @@
 
 #pragma once
 
+#ifndef WIN32
+# ifdef HAVE_NETDB_H
+#  include <netdb.h>
+# endif
+#endif
+
+#ifdef NI_MAXHOST
+# define MEMCACHED_NI_MAXHOST NI_MAXHOST
+#else
+# define MEMCACHED_NI_MAXHOST 1025
+#endif
+
+#ifdef NI_MAXSERV
+# define MEMCACHED_NI_MAXSERV NI_MAXSERV
+#else
+# define MEMCACHED_NI_MAXSERV 32
+#endif
+
+namespace org {
+namespace libmemcached {
+
+// @todo Complete class transformation
+struct Instance {
+  in_port_t port() const
+  {
+    return port_;
+  }
+
+  void port(in_port_t arg)
+  {
+    port_= arg;
+  }
+
+  void mark_server_as_clean()
+  {
+    server_failure_counter= 0;
+    next_retry= 0;
+  }
+
+  void disable()
+  {
+  }
+
+  void enable()
+  {
+  }
+
+  uint32_t response_count() const
+  {
+    return cursor_active_;
+  }
+
+  struct {
+    bool is_allocated:1;
+    bool is_initialized:1;
+    bool is_shutting_down:1;
+    bool is_dead:1;
+  } options;
+  uint32_t cursor_active_;
+  in_port_t port_;
+  memcached_socket_t fd;
+  uint32_t io_bytes_sent; /* # bytes sent since last read */
+  uint32_t request_id;
+  uint32_t server_failure_counter;
+  uint64_t server_failure_counter_query_id;
+  uint32_t weight;
+  uint32_t version;
+  enum memcached_server_state_t state;
+  struct {
+    uint32_t read;
+    uint32_t write;
+    uint32_t timeouts;
+    size_t _bytes_read;
+  } io_wait_count;
+  uint8_t major_version; // Default definition of UINT8_MAX means that it has not been set.
+  uint8_t micro_version; // ditto, and note that this is the third, not second version bit
+  uint8_t minor_version; // ditto
+  memcached_connection_t type;
+  char *read_ptr;
+  size_t read_buffer_length;
+  size_t read_data_length;
+  size_t write_buffer_offset;
+  struct addrinfo *address_info;
+  struct addrinfo *address_info_next;
+  time_t next_retry;
+  struct memcached_st *root;
+  uint64_t limit_maxbytes;
+  struct memcached_error_t *error_messages;
+  char read_buffer[MEMCACHED_MAX_BUFFER];
+  char write_buffer[MEMCACHED_MAX_BUFFER];
+  char hostname[MEMCACHED_NI_MAXHOST];
+};
+
+} // namespace libmemcached
+} // namespace org
+
 org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
                                                     org::libmemcached::Instance* self,
                                                     const memcached_string_t& hostname,
@@ -45,14 +141,6 @@ org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
                                                     uint32_t weight, 
                                                     const memcached_connection_t type);
 
-const char *memcached_instance_name(const org::libmemcached::Instance* self);
-
-in_port_t memcached_instance_port(const org::libmemcached::Instance* self);
-
 memcached_return_t memcached_instance_push(memcached_st *ptr, const org::libmemcached::Instance*, uint32_t);
-
-memcached_server_st *memcached_instance_2_server(org::libmemcached::Instance* source);
-
-uint32_t memcached_instance_response_count(const org::libmemcached::Instance* self);
 
 void __instance_free(org::libmemcached::Instance *);

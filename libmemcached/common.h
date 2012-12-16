@@ -111,7 +111,9 @@
 #include <libmemcached/watchpoint.h>
 #include <libmemcached/is.h>
 
-#include <libmemcached/instance.h>
+#ifdef __cplusplus
+# include "libmemcached/instance.hpp"
+#endif
 #include <libmemcached/server_instance.h>
 
 #ifdef HAVE_POLL_H

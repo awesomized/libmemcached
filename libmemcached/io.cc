@@ -742,7 +742,7 @@ org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc
       return instance;
     }
 
-    if (memcached_instance_response_count(instance) > 0)
+    if (instance->response_count() > 0)
     {
       fds[host_index].events= POLLIN;
       fds[host_index].revents= 0;
@@ -758,7 +758,7 @@ org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc
     {
       org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
-      if (memcached_instance_response_count(instance) > 0)
+      if (instance->response_count() > 0)
       {
         return instance;
       }

@@ -63,7 +63,7 @@ using namespace libtest;
 
 #include <libtest/server.h>
 
-#include "libmemcached/instance.h"
+#include "libmemcached/instance.hpp"
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
