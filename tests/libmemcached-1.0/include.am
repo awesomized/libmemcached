@@ -42,7 +42,6 @@ if HAVE_DTRACE
 else
 # Test internals
 tests_libmemcached_1_0_internals_CXXFLAGS=
-tests_libmemcached_1_0_internals_DEPENDENCIES=
 tests_libmemcached_1_0_internals_LDADD=
 tests_libmemcached_1_0_internals_SOURCES=
 
@@ -50,9 +49,6 @@ tests_libmemcached_1_0_internals_SOURCES+= tests/libmemcached-1.0/internals.cc
 tests_libmemcached_1_0_internals_SOURCES+= tests/libmemcached-1.0/string.cc
 tests_libmemcached_1_0_internals_CXXFLAGS+= $(AM_CXXFLAGS)
 tests_libmemcached_1_0_internals_CXXFLAGS+= @PTHREAD_CFLAGS@
-tests_libmemcached_1_0_internals_DEPENDENCIES+= libmemcachedinternal/libmemcachedinternal.la
-tests_libmemcached_1_0_internals_DEPENDENCIES+= libtest/libtest.la
-tests_libmemcached_1_0_internals_DEPENDENCIES+= libmemcachedinternal/libmemcachedutilinternal.la
 tests_libmemcached_1_0_internals_LDADD+= libmemcachedinternal/libmemcachedinternal.la
 tests_libmemcached_1_0_internals_LDADD+= @PTHREAD_LIBS@
 tests_libmemcached_1_0_internals_LDADD+= libmemcachedinternal/libmemcachedutilinternal.la
@@ -68,7 +64,6 @@ endif
 tests_libmemcached_1_0_testapp_CXXFLAGS=
 tests_libmemcached_1_0_testapp_CFLAGS=
 tests_libmemcached_1_0_testapp_SOURCES=
-tests_libmemcached_1_0_testapp_DEPENDENCIES=
 tests_libmemcached_1_0_testapp_LDADD=
 
 tests_libmemcached_1_0_testapp_CXXFLAGS+= $(AM_CXXFLAGS)
@@ -103,10 +98,6 @@ tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/setup_and_teardo
 tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/stat.cc
 tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/touch.cc
 tests_libmemcached_1_0_testapp_SOURCES+= tests/libmemcached-1.0/virtual_buckets.cc
-tests_libmemcached_1_0_testapp_DEPENDENCIES+= libmemcached/libmemcached.la
-tests_libmemcached_1_0_testapp_DEPENDENCIES+= libtest/libtest.la
-tests_libmemcached_1_0_testapp_DEPENDENCIES+= libhashkit/libhashkit.la
-tests_libmemcached_1_0_testapp_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 
 tests_libmemcached_1_0_testapp_LDADD+= @LIBUUID_LIB@
 tests_libmemcached_1_0_testapp_LDADD+= @PTHREAD_LIBS@
@@ -121,7 +112,6 @@ noinst_PROGRAMS+= tests/libmemcached-1.0/testapp
 tests_libmemcached_1_0_testsocket_CXXFLAGS=
 tests_libmemcached_1_0_testsocket_CFLAGS=
 tests_libmemcached_1_0_testsocket_SOURCES=
-tests_libmemcached_1_0_testsocket_DEPENDENCIES=
 tests_libmemcached_1_0_testsocket_LDADD=
 
 tests_libmemcached_1_0_testsocket_CXXFLAGS+= @PTHREAD_CFLAGS@
@@ -158,11 +148,6 @@ tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/setup_and_tea
 tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/stat.cc
 tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/touch.cc
 tests_libmemcached_1_0_testsocket_SOURCES+= tests/libmemcached-1.0/virtual_buckets.cc
-
-tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libmemcached/libmemcached.la
-tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libtest/libtest.la
-tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libhashkit/libhashkit.la
-tests_libmemcached_1_0_testsocket_DEPENDENCIES+= libmemcached/libmemcachedutil.la
 
 tests_libmemcached_1_0_testsocket_LDADD+= @LIBUUID_LIB@
 tests_libmemcached_1_0_testsocket_LDADD+= @PTHREAD_LIBS@
@@ -224,11 +209,9 @@ gdb-sasl: tests/libmemcached-1.0/sasl
 	@$(GDB_COMMAND)  tests/libmemcached-1.0/sasl
 
 tests_atomsmasher_SOURCES=
-tests_atomsmasher_DEPENDENCIES=
 tests_atomsmasher_LDADD=
 
-tests_atomsmasher_DEPENDENCIES+= $(TESTS_LDADDS)
-tests_atomsmasher_LDADD+= $(tests_atomsmasher_DEPENDENCIES)
+tests_atomsmasher_LDADD+= $(TESTS_LDADDS)
 tests_atomsmasher_SOURCES+= clients/execute.cc
 tests_atomsmasher_SOURCES+= clients/generator.cc
 tests_atomsmasher_SOURCES+= tests/libmemcached-1.0/atomsmasher.cc
@@ -241,7 +224,6 @@ noinst_PROGRAMS+= tests/atomsmasher
 
 tests_testudp_CFLAGS=
 tests_testudp_SOURCES=
-tests_testudp_DEPENDENCIES=
 tests_testudp_LDADD=
 
 tests_testudp_CFLAGS+= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
@@ -252,8 +234,7 @@ tests_testudp_SOURCES+= tests/libmemcached-1.0/fetch_all_results.cc
 tests_testudp_SOURCES+= tests/libmemcached-1.0/generate.cc
 tests_testudp_SOURCES+= tests/libmemcached-1.0/print.cc
 tests_testudp_SOURCES+= tests/mem_udp.cc
-tests_testudp_DEPENDENCIES+= $(TESTS_LDADDS)
-tests_testudp_LDADD+= $(tests_testudp_DEPENDENCIES)
+tests_testudp_LDADD+= $(TESTS_LDADDS)
 check_PROGRAMS+= tests/testudp
 noinst_PROGRAMS+= tests/testudp
 
@@ -262,7 +243,6 @@ test-udp: tests/testudp
 
 tests_testplus_SOURCES=
 tests_testplus_CXXFLAGS=
-tests_testplus_DEPENDENCIES=
 tests_testplus_LDADD=
 
 tests_testplus_SOURCES+= clients/execute.cc
@@ -274,8 +254,7 @@ tests_testplus_SOURCES+= tests/libmemcached-1.0/plus.cpp
 tests_testplus_SOURCES+= tests/libmemcached-1.0/print.cc
 
 tests_testplus_CXXFLAGS+= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_testplus_DEPENDENCIES+= $(TESTS_LDADDS)
-tests_testplus_LDADD+= $(tests_testplus_DEPENDENCIES)
+tests_testplus_LDADD+= $(TESTS_LDADDS)
 check_PROGRAMS+= tests/testplus
 noinst_PROGRAMS+= tests/testplus
 

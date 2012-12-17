@@ -12,14 +12,12 @@ noinst_HEADERS+= tests/libmemcached-1.0/parser.h
 
 tests_parser_SOURCES=
 tests_parser_CXXFLAGS=
-tests_parser_DEPENDENCIES=
 tests_parser_LDADD=
 
 tests_parser_SOURCES+= tests/parser.cc
 
 tests_parser_CXXFLAGS+= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_parser_DEPENDENCIES+= $(TESTS_LDADDS)
-tests_parser_LDADD+= $(tests_parser_DEPENDENCIES)
+tests_parser_LDADD+= $(TESTS_LDADDS)
 check_PROGRAMS+= tests/parser
 noinst_PROGRAMS+= tests/parser
 
@@ -27,4 +25,4 @@ test-parser: tests/parser
 	@tests/parser
 
 valgrind-parser: tests/parser
-	$(VALGRIND_COMMAND) tests/parser
+	@$(VALGRIND_COMMAND) tests/parser

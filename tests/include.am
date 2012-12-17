@@ -29,8 +29,7 @@ tests_cycle_CFLAGS= $(AM_CFLAGS) $(NO_CONVERSION) $(NO_STRICT_ALIASING)
 tests_cycle_CXXFLAGS= $(AM_CXXFLAGS)
 tests_cycle_CXXFLAGS+= ${PTHREAD_CFLAGS}
 tests_cycle_SOURCES= tests/cycle.cc
-tests_cycle_DEPENDENCIES= $(TESTS_LDADDS)
-tests_cycle_LDADD= $(tests_cycle_DEPENDENCIES)
+tests_cycle_LDADD= $(TESTS_LDADDS)
 tests_cycle_LDADD+= ${PTHREAD_LIBS}
 check_PROGRAMS+= tests/cycle
 noinst_PROGRAMS+= tests/cycle
@@ -49,8 +48,7 @@ tests_failure_SOURCES+= tests/libmemcached-1.0/generate.cc
 tests_failure_SOURCES+= tests/libmemcached-1.0/print.cc
 
 tests_failure_CXXFLAGS = $(AM_CXXFLAGS)
-tests_failure_DEPENDENCIES= $(TESTS_LDADDS)
-tests_failure_LDADD= $(tests_failure_DEPENDENCIES)
+tests_failure_LDADD= $(TESTS_LDADDS)
 check_PROGRAMS+= tests/failure
 noinst_PROGRAMS+= tests/failure
 
@@ -62,8 +60,7 @@ gdb-failure: tests/failure
 
 
 tests_testhashkit_SOURCES= tests/hashkit_functions.cc
-tests_testhashkit_DEPENDENCIES= libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)
-tests_testhashkit_LDADD= $(tests_testhashkit_DEPENDENCIES)
+tests_testhashkit_LDADD= libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/testhashkit
 noinst_PROGRAMS+= tests/testhashkit
 
@@ -73,8 +70,7 @@ test-hash: tests/testhashkit
 
 tests_hash_plus_SOURCES= tests/hash_plus.cc
 tests_hash_plus_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_hash_plus_DEPENDENCIES= $(tests_testhashkit_DEPENDENCIES)
-tests_hash_plus_LDADD= $(tests_testhashkit_DEPENDENCIES)
+tests_hash_plus_LDADD= $(tests_testhashkit_LDADD)
 check_PROGRAMS+= tests/hash_plus
 noinst_PROGRAMS+= tests/hash_plus
 

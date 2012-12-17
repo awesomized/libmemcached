@@ -23,5 +23,5 @@ libmemcachedinternal_libmemcachedinternal_la_CXXFLAGS= \
 						       ${NO_CONVERSION} \
 						       -DBUILDING_LIBMEMCACHEDINTERNAL
 libmemcachedinternal_libmemcachedinternal_la_LIBADD= $(libmemcached_libmemcached_la_LIBADD)
-libmemcachedinternal_libmemcachedinternal_la_DEPENDENCIES= $(libmemcached_libmemcached_la_DEPENDENCIES)
+EXTRA_libmemcachedinternal_libmemcachedinternal_la_DEPENDENCIES= $(EXTRA_libmemcached_libmemcached_la_DEPENDENCIES)
 endif

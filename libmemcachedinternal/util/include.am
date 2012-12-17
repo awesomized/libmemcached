@@ -12,8 +12,6 @@ libmemcachedinternal_libmemcachedutilinternal_la_CXXFLAGS= \
 							   ${AM_CXXFLAGS} \
 							   ${NO_CONVERSION} \
 							   -DBUILDING_LIBMEMCACHEDINTERNAL
-libmemcachedinternal_libmemcachedutilinternal_la_CXXFLAGS+= ${PTHREAD_CFLAGS}
-libmemcachedinternal_libmemcachedutilinternal_la_LIBADD= libmemcachedinternal/libmemcachedinternal.la ${PTHREAD_LIBS}
-libmemcachedinternal_libmemcachedutilinternal_la_DEPENDENCIES= libmemcachedinternal/libmemcachedinternal.la
-
-
+libmemcachedinternal_libmemcachedutilinternal_la_CXXFLAGS+= @PTHREAD_CFLAGS@
+libmemcachedinternal_libmemcachedutilinternal_la_LIBADD= libmemcachedinternal/libmemcachedinternal.la
+libmemcachedinternal_libmemcachedutilinternal_la_LIBADD+= @PTHREAD_LIBS@
