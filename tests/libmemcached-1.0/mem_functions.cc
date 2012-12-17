@@ -92,7 +92,7 @@ using namespace libtest;
 
 #include "tests/keys.hpp"
 
-#include "libmemcached/instance.h"
+#include "libmemcached/instance.hpp"
 
 static memcached_st * create_single_instance_memcached(const memcached_st *original_memc, const char *options)
 {

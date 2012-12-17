@@ -170,31 +170,10 @@ void __instance_free(org::libmemcached::Instance* self)
 
 void memcached_instance_free(org::libmemcached::Instance* self)
 {
-  if (self == NULL)
+  if (self)
   {
-    return;
+    __instance_free(self);
   }
-
-  __instance_free(self);
-}
-
-/*
-  If we do not have a valid object to clone from, we toss an error.
-*/
-memcached_server_st *memcached_instance_2_server(org::libmemcached::Instance* source)
-{
-  /* We just do a normal create if source is missing */
-  if (source == NULL)
-  {
-    return NULL;
-  }
-
-  memcached_string_t hostname= { memcached_string_make_from_cstr(source->hostname) };
-  return __server_create_with(source->root, NULL,
-                              hostname,
-                              source->port(), source->weight,
-                              source->type);
-
 }
 
 memcached_return_t memcached_server_cursor(const memcached_st *ptr,
@@ -341,26 +320,6 @@ memcached_server_instance_st memcached_server_get_last_disconnect(const memcache
   return (memcached_server_instance_st)self->last_disconnected_server;
 }
 
-const char *memcached_instance_name(const memcached_server_instance_st self)
-{
-  WATCHPOINT_ASSERT(self);
-  if (self == NULL)
-    return NULL;
-
-  return self->hostname;
-}
-
-in_port_t memcached_instance_port(const memcached_server_instance_st self)
-{
-  WATCHPOINT_ASSERT(self);
-  if (self == NULL)
-  {
-    return 0;
-  }
-
-  return self->port();
-}
-
 void memcached_instance_next_retry(memcached_server_instance_st self, const time_t absolute_time)
 {
   WATCHPOINT_ASSERT(self);
@@ -368,15 +327,4 @@ void memcached_instance_next_retry(memcached_server_instance_st self, const time
   {
     ((org::libmemcached::Instance*)self)->next_retry= absolute_time;
   }
-}
-
-uint32_t memcached_instance_response_count(const org::libmemcached::Instance* self)
-{
-  WATCHPOINT_ASSERT(self);
-  if (self == NULL)
-  {
-    return 0;
-  }
-
-  return self->cursor_active_;
 }

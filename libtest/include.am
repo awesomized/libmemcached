@@ -94,7 +94,7 @@ noinst_HEADERS+= libtest/wait.h
 noinst_LTLIBRARIES+= libtest/libtest.la
 
 libtest_libtest_la_CXXFLAGS=
-libtest_libtest_la_DEPENDENCIES=
+EXTRA_libtest_libtest_la_DEPENDENCIES=
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_SOURCES=
 
@@ -139,23 +139,25 @@ libtest_libtest_la_LIBADD+= @PTHREAD_LIBS@
 libtest_libtest_la_LIBADD+= $(CURL_LIBS)
 libtest_libtest_la_LIBADD+= @RT_LIB@
 
-libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
-libtest_libtest_la_DEPENDENCIES+=libtest/abort
-libtest_libtest_la_DEPENDENCIES+=libtest/wait
+EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
+EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/abort
+EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/wait
 
 # Declare unittest so that we can append to it
 libtest_unittest_CXXFLAGS=
 libtest_unittest_LDADD=
-libtest_unittest_DEPENDENCIES=
 
 # We are either building in tree, or with
 if BUILDING_LIBMEMCACHED
+libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED
 
 libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED
+libtest_unittest_LDADD+= libmemcached/libmemcached.la
 else
 if HAVE_LIBMEMCACHED
+libtest_libtest_la_LIBADD+= $(LIBMEMCACHED_UTIL_LDFLAGS)
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 else
 libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
@@ -175,7 +177,8 @@ libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 libtest_libtest_la_SOURCES+= util/instance.cc
 libtest_libtest_la_SOURCES+= util/operation.cc
-libtest_unittest_DEPENDENCIES+= gearmand/gearmand
+
+libtest_unittest_LDADD+= libgearman/libgearman.la
 else
 if HAVE_LIBGEARMAN
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
@@ -193,7 +196,6 @@ libtest_tmp_dir: | $(TMP_DIR)
 $(TMP_DIR):
 	@$(mkdir_p) $(TMP_DIR)
 
-libtest_unittest_DEPENDENCIES+= libtest/libtest.la
 libtest_unittest_LDADD+= libtest/libtest.la
 libtest_unittest_SOURCES= libtest/unittest.cc
 check_PROGRAMS+= libtest/unittest

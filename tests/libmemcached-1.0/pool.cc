@@ -55,7 +55,7 @@ using namespace libtest;
 #include <pthread.h>
 #include <poll.h>
 
-#include "libmemcached/instance.h"
+#include "libmemcached/instance.hpp"
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"

@@ -11,77 +11,77 @@
 
 tests_memcapable_SOURCES= tests/memcapable.cc
 tests_memcapable_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memcapable_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memcapable
+EXTRA_tests_memcapable_DEPENDENCIES= clients/memcapable
 tests_memcapable_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memcapable
 noinst_PROGRAMS+= tests/memcapable
 
 tests_memstat_SOURCES= tests/memstat.cc
 tests_memstat_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memstat_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memstat
+EXTRA_tests_memstat_DEPENDENCIES= clients/memstat
 tests_memstat_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memstat
 noinst_PROGRAMS+= tests/memstat
 
 tests_memcp_SOURCES= tests/memcp.cc
 tests_memcp_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memcp_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memcp
+EXTRA_tests_memcp_DEPENDENCIES= clients/memcp
 tests_memcp_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memcp
 noinst_PROGRAMS+= tests/memcp
 
 tests_memflush_SOURCES= tests/memflush.cc
 tests_memflush_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memflush_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memflush
+EXTRA_tests_memflush_DEPENDENCIES= clients/memflush
 tests_memflush_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memflush
 noinst_PROGRAMS+= tests/memflush
 
 tests_memrm_SOURCES= tests/memrm.cc
 tests_memrm_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memrm_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memrm
+EXTRA_tests_memrm_DEPENDENCIES= clients/memrm
 tests_memrm_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memrm
 noinst_PROGRAMS+= tests/memrm
 
 tests_memexist_SOURCES= tests/memexist.cc
 tests_memexist_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memexist_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memexist
+EXTRA_tests_memexist_DEPENDENCIES= clients/memexist
 tests_memexist_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memexist
 noinst_PROGRAMS+= tests/memexist
 
 tests_memtouch_SOURCES= tests/memtouch.cc
 tests_memtouch_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memtouch_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memtouch
+EXTRA_tests_memtouch_DEPENDENCIES= clients/memtouch
 tests_memtouch_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memtouch
 noinst_PROGRAMS+= tests/memtouch
 
 tests_memcat_SOURCES= tests/memcat.cc
 tests_memcat_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memcat_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memcat
+EXTRA_tests_memcat_DEPENDENCIES= clients/memcat
 tests_memcat_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memcat
 noinst_PROGRAMS+= tests/memcat
 
 tests_memerror_SOURCES= tests/memerror.cc
 tests_memerror_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memerror_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memerror
+EXTRA_tests_memerror_DEPENDENCIES= clients/memerror
 tests_memerror_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memerror
 noinst_PROGRAMS+= tests/memerror
 
 tests_memslap_SOURCES= tests/memslap.cc
 tests_memslap_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memslap_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memslap
+EXTRA_tests_memslap_DEPENDENCIES= clients/memslap
 tests_memslap_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memslap
 noinst_PROGRAMS+= tests/memslap
 
 tests_memdump_SOURCES= tests/memdump.cc
 tests_memdump_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
-tests_memdump_DEPENDENCIES= libtest/libtest.la $(TESTS_LDADDS) clients/memdump
+EXTRA_tests_memdump_DEPENDENCIES= clients/memdump
 tests_memdump_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memdump
 noinst_PROGRAMS+= tests/memdump

@@ -49,7 +49,7 @@ using namespace libtest;
 
 #include <tests/libmemcached-1.0/parser.h>
 #include <tests/print.h>
-#include "libmemcached/instance.h"
+#include "libmemcached/instance.hpp"
 
 enum scanner_type_t
 {
