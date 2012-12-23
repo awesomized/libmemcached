@@ -201,7 +201,8 @@ static memcached_return_t memcached_send_binary(memcached_st *ptr,
     }
 #endif
 
-    return MEMCACHED_WRITE_FAILURE;
+    assert(memcached_last_error(server->root) != MEMCACHED_SUCCESS);
+    return memcached_last_error(server->root);
   }
 
   if (verb == SET_OP and ptr->number_of_replicas > 0)

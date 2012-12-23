@@ -4949,11 +4949,12 @@ test_return_t kill_HUP_TEST(memcached_st *original_memc)
                              0, 0));
   test_true_got(kill(pid, SIGHUP) == 0, strerror(errno));
 
-  test_compare(MEMCACHED_CONNECTION_FAILURE,
-               memcached_set(memc, 
-                             test_literal_param(__func__), // Keys
-                             test_literal_param(__func__), // Values
-                             0, 0));
+  memcached_return_t ret= memcached_set(memc, 
+                                        test_literal_param(__func__), // Keys
+                                        test_literal_param(__func__), // Values
+                                        0, 0);
+  Error << memcached_last_error_message(memc);
+  test_compare(MEMCACHED_CONNECTION_FAILURE, ret);
 
   memcached_free(memc);
 
