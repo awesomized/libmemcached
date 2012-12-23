@@ -462,8 +462,7 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
 
   if ((server->fd= socket(AF_UNIX, type, 0)) < 0)
   {
-    memcached_set_errno(*server, errno, NULL);
-    return MEMCACHED_CONNECTION_FAILURE;
+    return memcached_set_errno(*server, errno, NULL);
   }
 
   struct sockaddr_un servAddr;
@@ -490,8 +489,7 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
 
       default:
         WATCHPOINT_ERRNO(errno);
-        memcached_set_errno(*server, errno, MEMCACHED_AT);
-        return MEMCACHED_CONNECTION_FAILURE;
+        return memcached_set_errno(*server, errno, MEMCACHED_AT);
       }
     }
   } while (0);

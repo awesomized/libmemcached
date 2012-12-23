@@ -52,13 +52,15 @@ static void auto_response(org::libmemcached::Instance* instance, const bool repl
     rc= memcached_response(instance, &instance->root->result);
   }
 
-  if (memcached_success(rc))
+  if (memcached_fatal(rc))
   {
-    *value= instance->root->result.numeric_value;
+    fprintf(stderr, "%s\n", memcached_strerror(NULL, rc));
+    assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
+    *value= UINT64_MAX;
   }
   else
   {
-    *value= UINT64_MAX;
+    *value= instance->root->result.numeric_value;
   }
 }
 

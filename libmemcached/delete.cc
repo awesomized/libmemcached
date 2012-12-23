@@ -101,6 +101,7 @@ static inline memcached_return_t binary_delete(org::libmemcached::Instance* inst
   memcached_return_t rc;
   if (memcached_fatal(rc= memcached_vdo(instance, vector,  4, should_flush)))
   {
+    assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
     memcached_io_reset(instance);
   }
 
@@ -121,6 +122,7 @@ static inline memcached_return_t binary_delete(org::libmemcached::Instance* inst
 
       if (memcached_fatal(memcached_vdo(replica, vector, 4, should_flush)))
       {
+        assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
         memcached_io_reset(replica);
       }
       else
