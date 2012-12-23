@@ -82,7 +82,7 @@ static bool repack_input_buffer(org::libmemcached::Instance* ptr)
       if ((nr= ::recv(ptr->fd,
                     ptr->read_ptr + ptr->read_data_length,
                     MEMCACHED_MAX_BUFFER - ptr->read_data_length,
-                    MSG_DONTWAIT|MSG_NOSIGNAL)) <= 0)
+                    MSG_NOSIGNAL)) <= 0)
       {
         if (nr == 0)
         {
@@ -337,11 +337,11 @@ static bool io_flush(org::libmemcached::Instance* ptr,
     int flags;
     if (with_flush)
     {
-      flags= MSG_NOSIGNAL|MSG_DONTWAIT;
+      flags= MSG_NOSIGNAL;
     }
     else
     {
-      flags= MSG_NOSIGNAL|MSG_DONTWAIT|MSG_MORE;
+      flags= MSG_NOSIGNAL|MSG_MORE;
     }
 
     ssize_t sent_length= ::send(ptr->fd, local_write_ptr, write_length, flags);
@@ -419,7 +419,7 @@ static memcached_return_t _io_fill(org::libmemcached::Instance* ptr)
   ssize_t data_read;
   do
   {
-    data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_DONTWAIT|MSG_NOSIGNAL);
+    data_read= ::recv(ptr->fd, ptr->read_buffer, MEMCACHED_MAX_BUFFER, MSG_NOSIGNAL);
     if (data_read == SOCKET_ERROR)
     {
       switch (get_socket_errno())
@@ -557,7 +557,7 @@ memcached_return_t memcached_io_slurp(org::libmemcached::Instance* ptr)
   char buffer[MEMCACHED_MAX_BUFFER];
   do
   {
-    data_read= ::recv(ptr->fd, ptr->read_buffer, sizeof(buffer), MSG_DONTWAIT|MSG_NOSIGNAL);
+    data_read= ::recv(ptr->fd, ptr->read_buffer, sizeof(buffer), MSG_NOSIGNAL);
     if (data_read == SOCKET_ERROR)
     {
       switch (get_socket_errno())

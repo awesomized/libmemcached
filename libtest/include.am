@@ -149,15 +149,12 @@ libtest_unittest_LDADD=
 
 # We are either building in tree, or with
 if BUILDING_LIBMEMCACHED
-libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED
 
 libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED
-libtest_unittest_LDADD+= libmemcached/libmemcached.la
 else
 if HAVE_LIBMEMCACHED
-libtest_libtest_la_LIBADD+= $(LIBMEMCACHED_UTIL_LDFLAGS)
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 else
 libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0

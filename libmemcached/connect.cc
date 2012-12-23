@@ -358,7 +358,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 #endif
 
 
-#if defined(__MACH__) && defined(__APPLE__) || defined(__FreeBSD__)
+#if defined(SO_NOSIGPIPE)
   if (SO_NOSIGPIPE)
   {
     int set= 1;
