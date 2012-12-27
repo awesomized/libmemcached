@@ -83,7 +83,8 @@ static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *call
 
     // Collect the returned items
     org::libmemcached::Instance* instance;
-    while ((instance= memcached_io_get_readable_server(memc)))
+    memcached_return_t read_ret= MEMCACHED_SUCCESS;
+    while ((instance= memcached_io_get_readable_server(memc, read_ret)))
     {
       memcached_return_t response_rc= memcached_response(instance, buffer, MEMCACHED_DEFAULT_COMMAND_SIZE, NULL);
       if (response_rc == MEMCACHED_ITEM)

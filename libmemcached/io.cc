@@ -727,7 +727,7 @@ void memcached_io_close(org::libmemcached::Instance* ptr)
   ptr->fd= INVALID_SOCKET;
 }
 
-org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc)
+org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];

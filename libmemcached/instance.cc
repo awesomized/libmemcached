@@ -44,6 +44,9 @@ static inline void _server_init(org::libmemcached::Instance* self, memcached_st 
 {
   self->options.is_shutting_down= false;
   self->options.is_dead= false;
+  self->options.ready= false;
+  self->_events= 0;
+  self->_revents= 0;
   self->cursor_active_= 0;
   self->port_= port;
   self->fd= INVALID_SOCKET;
@@ -106,6 +109,27 @@ static org::libmemcached::Instance* _server_create(org::libmemcached::Instance* 
   self->options.is_initialized= true;
 
   return self;
+}
+
+void org::libmemcached::Instance::events(short arg)
+{
+  if ((_events | arg) == _events)
+  {
+    return;
+  }
+
+  _events|= arg;
+}
+
+void org::libmemcached::Instance::revents(short arg)
+{
+  if (arg)
+  {
+    options.ready= true;
+  }
+
+  _revents= arg;
+  _events&= short(~arg);
 }
 
 org::libmemcached::Instance* __instance_create_with(memcached_st *memc,

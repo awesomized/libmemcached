@@ -91,11 +91,29 @@ struct Instance {
   }
 
   struct {
-    bool is_allocated:1;
-    bool is_initialized:1;
-    bool is_shutting_down:1;
-    bool is_dead:1;
+    bool is_allocated;
+    bool is_initialized;
+    bool is_shutting_down;
+    bool is_dead;
+    bool ready;
   } options;
+
+  short _events;
+  short _revents;
+
+  short events(void)
+  {
+    return _events;
+  }
+
+  short revents(void)
+  {
+    return _revents;
+  }
+
+  void events(short);
+  void revents(short);
+
   uint32_t cursor_active_;
   in_port_t port_;
   memcached_socket_t fd;

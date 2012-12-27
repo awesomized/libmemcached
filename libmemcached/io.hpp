@@ -69,6 +69,6 @@ memcached_return_t memcached_safe_read(org::libmemcached::Instance* ptr,
                                        void *dta,
                                        const size_t size);
 
-org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc);
+org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&);
 
 memcached_return_t memcached_io_slurp(org::libmemcached::Instance* ptr);
