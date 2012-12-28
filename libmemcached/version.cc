@@ -41,7 +41,7 @@ const char * memcached_lib_version(void)
   return LIBMEMCACHED_VERSION_STRING;
 }
 
-static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
+static inline memcached_return_t memcached_version_textual(memcached_st *memc)
 {
   libmemcached_io_vector_st vector[]=
   {
@@ -50,9 +50,9 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
 
   uint32_t success= 0;
   bool errors_happened= false;
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
     // Optimization, we only fetch version once.
     if (instance->major_version != UINT8_MAX)
@@ -75,7 +75,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
     // Collect the returned items
     org::libmemcached::Instance* instance;
     memcached_return_t readable_error;
-    while ((instance= memcached_io_get_readable_server(ptr, readable_error)))
+    while ((instance= memcached_io_get_readable_server(memc, readable_error)))
     {
       memcached_return_t rrc= memcached_response(instance, NULL);
       if (memcached_failed(rrc))
@@ -89,7 +89,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   return errors_happened ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
-static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
+static inline memcached_return_t memcached_version_binary(memcached_st *memc)
 {
   protocol_binary_request_version request= {};
 
@@ -103,9 +103,9 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
 
   uint32_t success= 0;
   bool errors_happened= false;
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++) 
+  for (uint32_t x= 0; x < memcached_server_count(memc); x++) 
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
     initialize_binary_request(instance, request.message.header);
 
@@ -130,7 +130,7 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
     // Collect the returned items
     org::libmemcached::Instance* instance;
     memcached_return_t readable_error;
-    while ((instance= memcached_io_get_readable_server(ptr, readable_error)))
+    while ((instance= memcached_io_get_readable_server(memc, readable_error)))
     {
       char buffer[32];
       memcached_return_t rrc= memcached_response(instance, buffer, sizeof(buffer), NULL);
@@ -202,27 +202,27 @@ void memcached_version_instance(org::libmemcached::Instance* instance)
   }
 }
 
-memcached_return_t memcached_version(memcached_st *ptr)
+memcached_return_t memcached_version(memcached_st *memc)
 {
-  if (ptr)
+  if (memc)
   {
     memcached_return_t rc;
-    if (memcached_failed(rc= initialize_query(ptr, true)))
+    if (memcached_failed(rc= initialize_query(memc, true)))
     {
       return rc;
     }
 
-    if (memcached_is_udp(ptr))
+    if (memcached_is_udp(memc))
     {
       return MEMCACHED_NOT_SUPPORTED;
     }
 
-    if (memcached_is_binary(ptr))
+    if (memcached_is_binary(memc))
     {
-      return memcached_version_binary(ptr);
+      return memcached_version_binary(memc);
     }
 
-    return memcached_version_textual(ptr);      
+    return memcached_version_textual(memc);      
   }
 
   return MEMCACHED_INVALID_ARGUMENTS;
