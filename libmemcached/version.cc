@@ -74,7 +74,8 @@ static inline memcached_return_t memcached_version_textual(memcached_st *ptr)
   {
     // Collect the returned items
     org::libmemcached::Instance* instance;
-    while ((instance= memcached_io_get_readable_server(ptr)))
+    memcached_return_t readable_error;
+    while ((instance= memcached_io_get_readable_server(ptr, readable_error)))
     {
       memcached_return_t rrc= memcached_response(instance, NULL);
       if (memcached_failed(rrc))
@@ -128,7 +129,8 @@ static inline memcached_return_t memcached_version_binary(memcached_st *ptr)
   {
     // Collect the returned items
     org::libmemcached::Instance* instance;
-    while ((instance= memcached_io_get_readable_server(ptr)))
+    memcached_return_t readable_error;
+    while ((instance= memcached_io_get_readable_server(ptr, readable_error)))
     {
       char buffer[32];
       memcached_return_t rrc= memcached_response(instance, buffer, sizeof(buffer), NULL);
