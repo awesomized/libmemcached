@@ -23,4 +23,4 @@ example_memcached_light_SOURCES+= util/daemon.cc
 example_memcached_light_SOURCES+= util/pidfile.cc
 
 example_memcached_light_LDADD+= libmemcached/libmemcachedprotocol.la
-example_memcached_light_LDFLAGS+= @LIBEVENT_LDFLAGS@
+example_memcached_light_LDADD+= @LIBEVENT_LIB@
