@@ -160,11 +160,6 @@ org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
     memcached_io_init_udp_header(self, 0);
   }
 
-  if (memc)
-  {
-    memcached_connect_try(self);
-  }
-
   return self;
 }
 

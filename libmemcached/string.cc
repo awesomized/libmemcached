@@ -279,16 +279,21 @@ const char *memcached_string_value(const memcached_string_st& self)
 
 char *memcached_string_take_value(memcached_string_st *self)
 {
-  assert_msg(self, "Invalid memcached_string_st");
-  // If we fail at adding the null, we copy and move on
-  if (memcached_success(memcached_string_append_null(self)))
+  char* value= NULL;
+
+  if (memcached_string_length(self))
   {
-    return memcached_string_c_copy(self);
+    assert_msg(self, "Invalid memcached_string_st");
+    // If we fail at adding the null, we copy and move on
+    if (memcached_success(memcached_string_append_null(self)))
+    {
+      return memcached_string_c_copy(self);
+    }
+
+    value= self->string;
+
+    _init_string(self);
   }
-
-  char *value= self->string;
-
-  _init_string(self);
 
   return value;
 }

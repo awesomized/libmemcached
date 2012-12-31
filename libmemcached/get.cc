@@ -315,7 +315,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       }
       hosts_connected++;
 
-      if ((memcached_io_writev(instance, vector, 4, false)) == false)
+      if ((memcached_io_writev(instance, vector, 1, false)) == false)
       {
         failures_occured_in_sending= true;
         continue;
@@ -324,7 +324,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
       memcached_instance_response_increment(instance);
       WATCHPOINT_ASSERT(instance->cursor_active_ == 1);
     }
-    else
+
     {
       if ((memcached_io_writev(instance, (vector + 1), 3, false)) == false)
       {

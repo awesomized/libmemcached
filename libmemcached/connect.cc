@@ -631,6 +631,9 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
       server->fd= INVALID_SOCKET;
       continue;
 
+    case ECONNREFUSED:
+      // Probably not running service
+
     default:
       break;
     }
@@ -828,16 +831,6 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
   }
 
   return rc;
-}
-
-memcached_return_t memcached_connect_try(org::libmemcached::Instance* server)
-{
-  if (server and server->root and server->root->state.is_parsing)
-  {
-    return MEMCACHED_SUCCESS;
-  }
-
-  return _memcached_connect(server, false);
 }
 
 memcached_return_t memcached_connect(org::libmemcached::Instance* server)

@@ -215,7 +215,14 @@ extern "C" {
 
 memcached_return_t run_distribution(memcached_st *ptr);
 
-#define memcached_server_response_increment(A) (A)->cursor_active_++
+#ifdef __cplusplus
+static inline void memcached_server_response_increment(org::libmemcached::Instance* instance)
+{
+  instance->events(POLLIN);
+  instance->cursor_active_++;
+}
+#endif
+
 #define memcached_server_response_decrement(A) (A)->cursor_active_--
 #define memcached_server_response_reset(A) (A)->cursor_active_=0
 
