@@ -232,7 +232,6 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
 {
   char buffer[SMALL_STRING_LEN];
   int length;
-  char *ret;
 
   *error= MEMCACHED_SUCCESS;
 
@@ -336,7 +335,8 @@ char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_
     return NULL;
   }
 
-  ret= static_cast<char *>(libmemcached_malloc(ptr, (size_t) (length + 1)));
+  // User is responsible for free() memory, so use malloc()
+  char *ret= static_cast<char *>(malloc(size_t(length +1)));
   memcpy(ret, buffer, (size_t) length);
   ret[length]= '\0';
 
