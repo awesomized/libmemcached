@@ -37,78 +37,25 @@
 #pragma once
 
 #include <libtest/fatal.hpp>
-
-namespace libtest {
-
-class __test_result : public std::exception
-{
-public:
-  __test_result(const char *file, int line, const char *func);
-
-  int line()
-  {
-    return _line;
-  }
-
-  const char*  file()
-  {
-    return _file;
-  }
-
-  const char* func()
-  {
-    return _func;
-  }
-
-private:
-  int _line;
-  const char*  _file;
-  const char* _func;
-};
-
-class __success : public __test_result
-{
-public:
-  __success(const char *file, int line, const char *func);
-
-  const char* what() const throw()
-  {
-    return "SUCCESS";
-  }
-
-private:
-};
-
-class __skipped : public __test_result
-{
-public:
-  __skipped(const char *file, int line, const char *func);
-
-  const char* what() const throw()
-  {
-    return "SKIPPED";
-  }
-
-private:
-};
-
-class __failure : public __test_result
-{
-public:
-  __failure(const char *file, int line, const char *func, const std::string&);
-
-  const char* what() const throw()
-  {
-    return _error_message;
-  }
-
-private:
-  char _error_message[BUFSIZ];
-};
-
-
-} // namespace libtest
+#include <libtest/result/base.hpp>
+#include <libtest/result/fail.hpp>
+#include <libtest/result/fatal.hpp>
+#include <libtest/result/skip.hpp>
+#include <libtest/result/success.hpp>
 
 #define _SUCCESS throw libtest::__success(LIBYATL_DEFAULT_PARAM)
 #define SKIP throw libtest::__skipped(LIBYATL_DEFAULT_PARAM)
-#define FAIL(__mesg) throw libtest::__failure(LIBYATL_DEFAULT_PARAM, __mesg)
+
+#define FAIL(...) \
+do \
+{ \
+  throw libtest::__failure(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+} while (0)
+
+#define fatal_message(...) \
+do \
+{ \
+  throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+} while (0)
+
+#define fatal_assert(__assert) if((__assert)) {} else { throw libtest::fatal(LIBYATL_DEFAULT_PARAM, #__assert); }

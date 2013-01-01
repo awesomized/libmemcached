@@ -38,74 +38,16 @@
 
 #include <stdexcept>
 
-#ifndef __PRETTY_FUNCTION__
-#define __PRETTY_FUNCTION__ __func__
-#endif
-
-#define YATL_STRINGIFY(x) #x
-#define YATL_TOSTRING(x) YATL_STRINGIFY(x)
-#define YATL_AT __FILE__ ":" YATL_TOSTRING(__LINE__)
-#define YATL_AT_PARAM __func__, AT
-#define YATL_UNIQUE __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique"
-#define YATL_UNIQUE_FUNC_NAME __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique_func"
-
-#define LIBYATL_DEFAULT_PARAM __FILE__, __LINE__, __PRETTY_FUNCTION__
-
 namespace libtest {
-
-class fatal : std::runtime_error
-{
-public:
-  fatal(const char *file, int line, const char *func, const char *format, ...);
-
-  const char* what() const throw()
-  {
-    return _error_message;
-  }
-
-  const char* mesg() const throw()
-  {
-    return _error_message;
-  }
-
-  // The following are just for unittesting the exception class
-  static bool is_disabled();
-  static void disable();
-  static void enable();
-  static uint32_t disabled_counter();
-  static void increment_disabled_counter();
-
-  int line()
-  {
-    return _line;
-  }
-
-  const char*  file()
-  {
-    return _file;
-  }
-
-  const char* func()
-  {
-    return _func;
-  }
-
-private:
-  char _error_message[BUFSIZ];
-  char _mesg[BUFSIZ];
-  int _line;
-  const char*  _file;
-  const char* _func;
-};
 
 class disconnected : std::runtime_error
 {
 public:
-  disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, const char *format, ...);
+  disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, ...);
 
   const char* what() const throw()
   {
-    return _error_message;
+    return &_error_message[0];
   }
 
   // The following are just for unittesting the exception class
@@ -139,8 +81,4 @@ private:
   const char* _func;
 };
 
-
 } // namespace libtest
-
-#define fatal_message(__mesg) throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "%s", __mesg)
-#define fatal_assert(__assert) if((__assert)) {} else { throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "%s", #__assert); }

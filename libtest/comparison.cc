@@ -49,16 +49,6 @@ bool jenkins_is_caller(void)
   return false;
 }
 
-bool valgrind_is_caller(void)
-{
-  if (bool(getenv("TESTS_ENVIRONMENT")) and strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
-  {
-    return true;
-  }
-
-  return false;
-}
-
 bool gdb_is_caller(void)
 {
   if (bool(getenv("TESTS_ENVIRONMENT")) and strstr(getenv("TESTS_ENVIRONMENT"), "gdb"))

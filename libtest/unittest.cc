@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/test.hpp>
+#include <libtest/yatl.h>
 
 #if defined(HAVE_LIBMEMCACHED_1_0_TYPES_RETURN_H) && HAVE_LIBMEMCACHED_1_0_TYPES_RETURN_H
 # include <libmemcached-1.0/types/return.h>
@@ -142,14 +142,50 @@ static test_return_t test_throw_skip_TEST(void *)
 
 static test_return_t test_throw_fail_TEST(void *)
 {
-  std::string error_messsage("test message!");
   try {
-    FAIL(error_messsage);
+    FAIL("test message!");
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
     std::string compare_message("test message!");
     test_zero(compare_message.compare(e.what()));
+    return TEST_SUCCESS;
+  }
+  catch (...)
+  {
+    return TEST_FAILURE;
+  }
+
+  return TEST_FAILURE;
+}
+#pragma GCC diagnostic ignored "-Wstack-protector"
+
+static test_return_t ASSERT_FALSE__TEST(void *)
+{
+  try {
+    ASSERT_FALSE_(true, __func__);
+  }
+  catch (const libtest::__failure& e)
+  {
+    ASSERT_STREQ(e.what(), "Assertion '!true' [ ASSERT_FALSE__TEST ]");
+    return TEST_SUCCESS;
+  }
+  catch (...)
+  {
+    return TEST_FAILURE;
+  }
+
+  return TEST_FAILURE;
+}
+
+static test_return_t ASSERT_FALSE_TEST(void *)
+{
+  try {
+    FAIL(__func__);
+  }
+  catch (const libtest::__failure& e)
+  {
+    ASSERT_STREQ(e.what(), __func__);
     return TEST_SUCCESS;
   }
   catch (...)
@@ -464,7 +500,7 @@ static test_return_t application_gdb_true_BINARY2(void *)
   test_skip(0, access("/usr/bin/true", X_OK ));
 
   Application true_app("/usr/bin/true");
-  true_app.use_gdb();
+  true_app.use_gdb(true);
 
   test_compare(Application::SUCCESS, true_app.run());
   test_compare(Application::SUCCESS, true_app.join());
@@ -478,7 +514,7 @@ static test_return_t application_gdb_true_BINARY(void *)
   test_skip(0, access("/usr/bin/true", X_OK ));
 
   Application true_app("/usr/bin/true");
-  true_app.use_gdb();
+  true_app.use_gdb(true);
 
   const char *args[]= { "--fubar", 0 };
   test_compare(Application::SUCCESS, true_app.run(args));
@@ -685,7 +721,7 @@ static test_return_t wait_services_appliction_TEST(void *)
   test_skip(0, access("libtest/wait", X_OK ));
 
   libtest::Application wait_app("libtest/wait", true);
-  wait_app.use_gdb();
+  wait_app.use_gdb(true);
 
   const char *args[]= { "/etc/services", 0 };
   test_compare(Application::SUCCESS, wait_app.run(args));
@@ -706,7 +742,7 @@ static test_return_t gdb_wait_services_appliction_TEST(void *)
   test_skip(0, access("libtest/wait", X_OK ));
 
   libtest::Application wait_app("libtest/wait", true);
-  wait_app.use_gdb();
+  wait_app.use_gdb(true);
 
   const char *args[]= { "/etc/services", 0 };
   test_compare(Application::SUCCESS, wait_app.run(args));
@@ -726,7 +762,7 @@ static test_return_t gdb_abort_services_appliction_TEST(void *)
 #endif
 
   libtest::Application abort_app("libtest/abort", true);
-  abort_app.use_gdb();
+  abort_app.use_gdb(true);
 
   test_compare(Application::SUCCESS, abort_app.run());
   test_compare(Application::SUCCESS, abort_app.join());
@@ -849,7 +885,10 @@ static test_return_t check_for_gearman(void *)
 #if defined(HAVE_GEARMAND_BINARY) && HAVE_GEARMAND_BINARY
   if (GEARMAND_BINARY)
   {
-    test_zero(access(GEARMAND_BINARY, X_OK ));
+    if (strcmp(GEARMAND_BINARY, "./gearmand/gearmand"))
+    {
+      test_zero(access(GEARMAND_BINARY, X_OK ));
+    }
   }
   else
   {
@@ -899,9 +938,8 @@ static test_return_t clear_servers(void* object)
   return TEST_SUCCESS;
 }
 
-static test_return_t check_for_libmemcached(void* object)
+static test_return_t check_for_memcached(void* object)
 {
-  test_skip(true, HAVE_LIBMEMCACHED);
   test_skip(true, has_memcached());
 
   server_startup_st *servers= (server_startup_st*)object;
@@ -943,6 +981,8 @@ test_st tests_log[] ={
   {"SUCCESS", false, test_throw_success_TEST },
   {"SKIP", false, test_throw_skip_TEST },
   {"FAIL", false, test_throw_fail_TEST },
+  {"ASSERT_FALSE_", false, ASSERT_FALSE__TEST },
+  {"ASSERT_FALSE", false, ASSERT_FALSE_TEST },
   {0, 0, 0}
 };
 
@@ -1069,7 +1109,7 @@ collection_st collection[] ={
   {"directories", 0, 0, directories_tests},
   {"comparison", 0, 0, comparison_tests},
   {"gearmand", check_for_gearman, clear_servers, gearmand_tests},
-  {"memcached", check_for_libmemcached, clear_servers, memcached_TESTS },
+  {"memcached", check_for_memcached, clear_servers, memcached_TESTS },
   {"drizzled", check_for_drizzle, clear_servers, drizzled_tests},
   {"cmdline", 0, 0, cmdline_tests},
   {"application", 0, 0, application_tests},

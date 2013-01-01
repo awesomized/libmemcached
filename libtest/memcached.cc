@@ -222,23 +222,22 @@ bool Memcached::build(size_t argc, const char *argv[])
 
 libtest::Server *build_memcached(const std::string& hostname, const in_port_t try_port)
 {
-  return new Memcached(hostname, try_port, false);
+  if (HAVE_MEMCACHED_BINARY)
+  {
+    return new Memcached(hostname, try_port, false);
+  }
+
+  return NULL;
 }
 
 libtest::Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port)
 {
-  return new Memcached(socket_file, try_port, true);
-}
-
-libtest::Server *build_memcached_sasl(const std::string& hostname, const in_port_t try_port, const std::string& username, const std::string &password)
-{
-  if (username.empty())
+  if (HAVE_MEMCACHED_BINARY)
   {
-    return new Memcached(hostname, try_port, false,  "memcached", "memcached");
+    return new Memcached(socket_file, try_port, true);
   }
 
-  return new Memcached(hostname, try_port, false,  username, password);
+  return NULL;
 }
 
 } // namespace libtest
-

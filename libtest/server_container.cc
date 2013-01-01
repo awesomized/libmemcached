@@ -202,20 +202,14 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
     {
       if (GEARMAND_BINARY)
       {
-        if (HAVE_LIBGEARMAN)
-        {
-          server= build_gearmand("localhost", try_port);
-        }
+        server= build_gearmand("localhost", try_port);
       }
     }
     else if (server_type.compare("hostile-gearmand") == 0)
     {
       if (GEARMAND_BINARY)
       {
-        if (HAVE_LIBGEARMAN)
-        {
-          server= build_gearmand("localhost", try_port, "gearmand/hostile_gearmand");
-        }
+        server= build_gearmand("localhost", try_port, "gearmand/hostile_gearmand");
       }
     }
     else if (server_type.compare("drizzled") == 0)
@@ -245,10 +239,7 @@ bool server_startup_st::start_server(const std::string& server_type, in_port_t t
     {
       if (HAVE_MEMCACHED_BINARY)
       {
-        if (HAVE_LIBMEMCACHED)
-        {
-          server= build_memcached("localhost", try_port);
-        }
+        server= build_memcached("localhost", try_port);
       }
     }
 
@@ -342,16 +333,9 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     }
     else if (server_type.compare("memcached") == 0)
     {
-      if (MEMCACHED_BINARY)
+      if (HAVE_MEMCACHED_BINARY)
       {
-        if (HAVE_LIBMEMCACHED)
-        {
           server= build_memcached_socket("localhost", try_port);
-        }
-        else
-        {
-          Error << "Libmemcached was not found";
-        }
       }
       else
       {
