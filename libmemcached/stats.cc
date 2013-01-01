@@ -227,9 +227,21 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
   return MEMCACHED_SUCCESS;
 }
 
-char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_stat,
+char *memcached_stat_get_value(const memcached_st *, memcached_stat_st *memc_stat,
                                const char *key, memcached_return_t *error)
 {
+  memcached_return_t not_used;
+  if (error == NULL)
+  {
+    error= &not_used;
+  }
+
+  if (memc_stat == NULL)
+  {
+    *error= MEMCACHED_INVALID_ARGUMENTS;
+    return NULL;
+  }
+
   char buffer[SMALL_STRING_LEN];
   int length;
 
