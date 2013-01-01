@@ -41,21 +41,16 @@
 namespace libtest {
 
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, const char *format, ...) :
-  std::runtime_error(func_arg),
-  _line(line_arg),
-  _file(file_arg),
-  _func(func_arg)
+fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, ...) :
+  __test_result(file_arg, line_arg, func_arg)
   {
     va_list args;
-    va_start(args, format);
-    char last_error[BUFSIZ];
-    int last_error_length= vsnprintf(last_error, sizeof(last_error), format, args);
+    va_start(args, func_arg);
+    const char *format= va_arg(args, const char *);
+    int last_error_length= vsnprintf(0, 0, format, args);
+    _error_message.resize(last_error_length +1);
+    last_error_length= vsnprintf(&_error_message[0], _error_message.size(), format, args);
     va_end(args);
-
-    strncpy(_mesg, last_error, sizeof(_mesg));
-
-    snprintf(_error_message, sizeof(_error_message), "%.*s", last_error_length, last_error);
   }
 
 static bool _disabled= false;
@@ -90,8 +85,7 @@ void fatal::increment_disabled_counter()
 
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 disconnected::disconnected(const char *file_arg, int line_arg, const char *func_arg,
-                           const std::string& instance, const in_port_t port,
-                           const char *format, ...) :
+                           const std::string& instance, const in_port_t port, ...) :
   std::runtime_error(func_arg),
   _port(port),
   _line(line_arg),
@@ -99,7 +93,8 @@ disconnected::disconnected(const char *file_arg, int line_arg, const char *func_
   _func(func_arg)
 {
   va_list args;
-  va_start(args, format);
+  va_start(args, port);
+  const char *format= va_arg(args, const char *);
   char last_error[BUFSIZ];
   (void)vsnprintf(last_error, sizeof(last_error), format, args);
   va_end(args);

@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
           return EXIT_SKIP;
 
         case TEST_FAILURE:
-          std::cerr << "frame->create()" << std::endl;
+          std::cerr << "Could not call frame->create()" << std::endl;
           return EXIT_FAILURE;
         }
       }

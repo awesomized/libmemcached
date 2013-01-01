@@ -34,62 +34,28 @@
  *
  */
 
-/*
-  Structures for generic tests.
-*/
-
 #pragma once
 
-#ifndef __PRETTY_FUNCTION__
-#define __PRETTY_FUNCTION__ __func__
-#endif
+namespace libtest {
 
-#define YATL_STRINGIFY(x) #x
-#define YATL_TOSTRING(x) YATL_STRINGIFY(x)
-#define YATL_AT __FILE__ ":" YATL_TOSTRING(__LINE__)
-#define YATL_AT_PARAM __func__, AT
-#define YATL_UNIQUE __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique"
-#define YATL_UNIQUE_FUNC_NAME __FILE__ ":" YATL_TOSTRING(__LINE__) "_unique_func"
+class __failure : public __test_result
+{
+public:
+  __failure(const char *file, int line, const char *func, ...);
 
-#define LIBYATL_DEFAULT_PARAM __FILE__, __LINE__, __PRETTY_FUNCTION__
+  __failure(const __failure& other);
 
-#include <cstdio>
-#include <cstdlib>
-#include <arpa/inet.h>
+  ~__failure() throw();
 
-#include <libtest/visibility.h>
-#include <libtest/version.h>
+  const char* what() const throw()
+  {
+    return _error_message;
+  }
 
-#include <libtest/vchar.hpp>
-#include <libtest/fatal.hpp>
-#include <libtest/result.hpp>
+private:
+  char* _error_message;
+  int _error_message_size;
+};
 
-#include <libtest/has.hpp>
-#include <libtest/error.h>
-#include <libtest/strerror.h>
-#include <libtest/timer.hpp>
-#include <libtest/alarm.h>
-#include <libtest/stream.h>
-#include <libtest/comparison.hpp>
-#include <libtest/server.h>
-#include <libtest/server_container.h>
-#include <libtest/wait.h>
-#include <libtest/callbacks.h>
-#include <libtest/test.h>
-#include <libtest/dream.h>
-#include <libtest/core.h>
-#include <libtest/runner.h>
-#include <libtest/port.h>
-#include <libtest/is_local.hpp>
-#include <libtest/socket.hpp>
-#include <libtest/collection.h>
-#include <libtest/framework.h>
-#include <libtest/get.h>
-#include <libtest/cmdline.h>
-#include <libtest/string.hpp>
-#include <libtest/binaries.h>
-#include <libtest/http.hpp>
-#include <libtest/cpu.hpp>
-#include <libtest/tmpfile.hpp>
-#include <libtest/client.hpp>
-#include <libtest/thread.hpp>
+} // namespace libtest
+

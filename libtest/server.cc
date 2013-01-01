@@ -189,13 +189,10 @@ bool Server::start()
 #endif
   }
 
-  // This needs more work.
-#if 0
-  if (gdb_is_caller())
+  if (getenv("YATL_GDB_SERVER"))
   {
-    _app.use_gdb();
+    _app.use_gdb(true);
   }
-#endif
 
   if (port() == LIBTEST_FAIL_PORT)
   {
@@ -205,11 +202,11 @@ bool Server::start()
 
   if (getenv("YATL_PTRCHECK_SERVER"))
   {
-    _app.use_ptrcheck();
+    _app.use_ptrcheck(true);
   }
   else if (getenv("YATL_VALGRIND_SERVER"))
   {
-    _app.use_valgrind();
+    _app.use_valgrind(true);
   }
 
   out_of_ban_killed(false);
@@ -275,7 +272,7 @@ bool Server::start()
     uint32_t waited;
     uint32_t retry;
 
-    for (waited= 0, retry= 7; ; retry++, waited+= this_wait)
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
     {
       if (_app.check() == false)
       {
@@ -291,8 +288,6 @@ bool Server::start()
         break;
       }
 
-      Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
-
       this_wait= retry * retry / 3 + 1;
       libtest::dream(this_wait, 0);
     }
@@ -300,6 +295,8 @@ bool Server::start()
 
   if (pinged == false)
   {
+    Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
+
     // If we happen to have a pid file, lets try to kill it
     if ((pid_file().empty() == false) and (access(pid_file().c_str(), R_OK) == 0))
     {

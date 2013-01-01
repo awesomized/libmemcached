@@ -139,7 +139,7 @@ void Framework::exec()
     catch (libtest::fatal& e)
     {
       _failed++;
-      stream::cerr(e.file(), e.line(), e.func()) << e.mesg();
+      stream::cerr(e.file(), e.line(), e.func()) << e.what();
     }
     catch (libtest::disconnected& e)
     {

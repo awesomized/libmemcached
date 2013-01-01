@@ -2,7 +2,7 @@
 #
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
-# 
+#
 
 LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
 VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
@@ -45,51 +45,58 @@ noinst_HEADERS+= libtest/client.hpp
 noinst_HEADERS+= libtest/formatter.hpp
 noinst_HEADERS+= libtest/timer.hpp
 noinst_HEADERS+= libtest/alarm.h
-noinst_HEADERS+= libtest/binaries.h 
-noinst_HEADERS+= libtest/cpu.hpp 
-noinst_HEADERS+= libtest/blobslap_worker.h 
-noinst_HEADERS+= libtest/callbacks.h 
-noinst_HEADERS+= libtest/dns.hpp 
-noinst_HEADERS+= libtest/cmdline.h 
-noinst_HEADERS+= libtest/collection.h 
-noinst_HEADERS+= libtest/common.h 
-noinst_HEADERS+= libtest/comparison.hpp 
-noinst_HEADERS+= libtest/core.h 
-noinst_HEADERS+= libtest/dream.h 
-noinst_HEADERS+= libtest/error.h 
-noinst_HEADERS+= libtest/failed.h 
-noinst_HEADERS+= libtest/fatal.hpp 
-noinst_HEADERS+= libtest/framework.h 
-noinst_HEADERS+= libtest/gearmand.h 
-noinst_HEADERS+= libtest/drizzled.h 
-noinst_HEADERS+= libtest/get.h 
-noinst_HEADERS+= libtest/has.hpp 
-noinst_HEADERS+= libtest/http.hpp 
-noinst_HEADERS+= libtest/is_pid.hpp 
-noinst_HEADERS+= libtest/is_local.hpp 
-noinst_HEADERS+= libtest/killpid.h 
-noinst_HEADERS+= libtest/libtool.hpp 
-noinst_HEADERS+= libtest/memcached.h 
+noinst_HEADERS+= libtest/binaries.h
+noinst_HEADERS+= libtest/cpu.hpp
+noinst_HEADERS+= libtest/blobslap_worker.h
+noinst_HEADERS+= libtest/callbacks.h
+noinst_HEADERS+= libtest/dns.hpp
+noinst_HEADERS+= libtest/cmdline.h
+noinst_HEADERS+= libtest/collection.h
+noinst_HEADERS+= libtest/common.h
+noinst_HEADERS+= libtest/comparison.hpp
+noinst_HEADERS+= libtest/core.h
+noinst_HEADERS+= libtest/dream.h
+noinst_HEADERS+= libtest/error.h
+noinst_HEADERS+= libtest/failed.h
+noinst_HEADERS+= libtest/fatal.hpp
+noinst_HEADERS+= libtest/framework.h
+noinst_HEADERS+= libtest/gearmand.h
+noinst_HEADERS+= libtest/drizzled.h
+noinst_HEADERS+= libtest/get.h
+noinst_HEADERS+= libtest/has.hpp
+noinst_HEADERS+= libtest/http.hpp
+noinst_HEADERS+= libtest/is_pid.hpp
+noinst_HEADERS+= libtest/is_local.hpp
+noinst_HEADERS+= libtest/killpid.h
+noinst_HEADERS+= libtest/libtool.hpp
+noinst_HEADERS+= libtest/memcached.h
 noinst_HEADERS+= libtest/memcached.hpp
 noinst_HEADERS+= libtest/poll_error.hpp
-noinst_HEADERS+= libtest/port.h 
-noinst_HEADERS+= libtest/result.hpp 
-noinst_HEADERS+= libtest/runner.h 
-noinst_HEADERS+= libtest/server.h 
-noinst_HEADERS+= libtest/server_container.h 
-noinst_HEADERS+= libtest/signal.h 
-noinst_HEADERS+= libtest/socket.hpp 
-noinst_HEADERS+= libtest/stream.h 
-noinst_HEADERS+= libtest/strerror.h 
-noinst_HEADERS+= libtest/string.hpp 
-noinst_HEADERS+= libtest/test.h 
-noinst_HEADERS+= libtest/test.hpp 
+noinst_HEADERS+= libtest/port.h
+noinst_HEADERS+= libtest/result.hpp
+noinst_HEADERS+= libtest/result/base.hpp
+noinst_HEADERS+= libtest/result/fail.hpp
+noinst_HEADERS+= libtest/result/fatal.hpp
+noinst_HEADERS+= libtest/result/skip.hpp
+noinst_HEADERS+= libtest/result/success.hpp
+noinst_HEADERS+= libtest/runner.h
+noinst_HEADERS+= libtest/server.h
+noinst_HEADERS+= libtest/server_container.h
+noinst_HEADERS+= libtest/signal.h
+noinst_HEADERS+= libtest/socket.hpp
+noinst_HEADERS+= libtest/stream.h
+noinst_HEADERS+= libtest/strerror.h
+noinst_HEADERS+= libtest/string.hpp
+noinst_HEADERS+= libtest/test.h
+noinst_HEADERS+= libtest/test.hpp
 noinst_HEADERS+= libtest/thread.hpp
-noinst_HEADERS+= libtest/tmpfile.hpp 
-noinst_HEADERS+= libtest/vchar.hpp 
-noinst_HEADERS+= libtest/version.h 
-noinst_HEADERS+= libtest/visibility.h 
+noinst_HEADERS+= libtest/tmpfile.hpp
+noinst_HEADERS+= libtest/lite.h
+noinst_HEADERS+= libtest/vchar.hpp
+noinst_HEADERS+= libtest/version.h
+noinst_HEADERS+= libtest/visibility.h
 noinst_HEADERS+= libtest/wait.h
+noinst_HEADERS+= libtest/yatl.h
 
 noinst_LTLIBRARIES+= libtest/libtest.la
 
@@ -98,36 +105,36 @@ EXTRA_libtest_libtest_la_DEPENDENCIES=
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_SOURCES=
 
-libtest_libtest_la_SOURCES+= libtest/alarm.cc 
-libtest_libtest_la_SOURCES+= libtest/binaries.cc 
-libtest_libtest_la_SOURCES+= libtest/cmdline.cc 
-libtest_libtest_la_SOURCES+= libtest/collection.cc 
-libtest_libtest_la_SOURCES+= libtest/comparison.cc 
-libtest_libtest_la_SOURCES+= libtest/core.cc 
-libtest_libtest_la_SOURCES+= libtest/cpu.cc 
-libtest_libtest_la_SOURCES+= libtest/dns.cc 
-libtest_libtest_la_SOURCES+= libtest/dream.cc 
-libtest_libtest_la_SOURCES+= libtest/drizzled.cc 
-libtest_libtest_la_SOURCES+= libtest/fatal.cc 
-libtest_libtest_la_SOURCES+= libtest/formatter.cc 
-libtest_libtest_la_SOURCES+= libtest/client.cc 
-libtest_libtest_la_SOURCES+= libtest/framework.cc 
-libtest_libtest_la_SOURCES+= libtest/has.cc 
-libtest_libtest_la_SOURCES+= libtest/http.cc 
-libtest_libtest_la_SOURCES+= libtest/is_local.cc 
-libtest_libtest_la_SOURCES+= libtest/killpid.cc 
-libtest_libtest_la_SOURCES+= libtest/libtool.cc 
-libtest_libtest_la_SOURCES+= libtest/main.cc 
-libtest_libtest_la_SOURCES+= libtest/port.cc 
-libtest_libtest_la_SOURCES+= libtest/result.cc 
-libtest_libtest_la_SOURCES+= libtest/runner.cc 
-libtest_libtest_la_SOURCES+= libtest/server.cc 
-libtest_libtest_la_SOURCES+= libtest/server_container.cc 
-libtest_libtest_la_SOURCES+= libtest/signal.cc 
-libtest_libtest_la_SOURCES+= libtest/socket.cc 
-libtest_libtest_la_SOURCES+= libtest/strerror.cc 
-libtest_libtest_la_SOURCES+= libtest/timer.cc 
-libtest_libtest_la_SOURCES+= libtest/tmpfile.cc 
+libtest_libtest_la_SOURCES+= libtest/alarm.cc
+libtest_libtest_la_SOURCES+= libtest/binaries.cc
+libtest_libtest_la_SOURCES+= libtest/cmdline.cc
+libtest_libtest_la_SOURCES+= libtest/collection.cc
+libtest_libtest_la_SOURCES+= libtest/comparison.cc
+libtest_libtest_la_SOURCES+= libtest/core.cc
+libtest_libtest_la_SOURCES+= libtest/cpu.cc
+libtest_libtest_la_SOURCES+= libtest/dns.cc
+libtest_libtest_la_SOURCES+= libtest/dream.cc
+libtest_libtest_la_SOURCES+= libtest/drizzled.cc
+libtest_libtest_la_SOURCES+= libtest/fatal.cc
+libtest_libtest_la_SOURCES+= libtest/formatter.cc
+libtest_libtest_la_SOURCES+= libtest/client.cc
+libtest_libtest_la_SOURCES+= libtest/framework.cc
+libtest_libtest_la_SOURCES+= libtest/has.cc
+libtest_libtest_la_SOURCES+= libtest/http.cc
+libtest_libtest_la_SOURCES+= libtest/is_local.cc
+libtest_libtest_la_SOURCES+= libtest/killpid.cc
+libtest_libtest_la_SOURCES+= libtest/libtool.cc
+libtest_libtest_la_SOURCES+= libtest/main.cc
+libtest_libtest_la_SOURCES+= libtest/port.cc
+libtest_libtest_la_SOURCES+= libtest/result.cc
+libtest_libtest_la_SOURCES+= libtest/runner.cc
+libtest_libtest_la_SOURCES+= libtest/server.cc
+libtest_libtest_la_SOURCES+= libtest/server_container.cc
+libtest_libtest_la_SOURCES+= libtest/signal.cc
+libtest_libtest_la_SOURCES+= libtest/socket.cc
+libtest_libtest_la_SOURCES+= libtest/strerror.cc
+libtest_libtest_la_SOURCES+= libtest/timer.cc
+libtest_libtest_la_SOURCES+= libtest/tmpfile.cc
 libtest_libtest_la_SOURCES+= libtest/vchar.cc
 
 libtest_libtest_la_CXXFLAGS+= -DBUILDING_LIBTEST
@@ -140,26 +147,16 @@ libtest_libtest_la_LIBADD+= $(CURL_LIBS)
 libtest_libtest_la_LIBADD+= @RT_LIB@
 
 EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
-EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/abort
-EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/wait
+EXTRA_libtest_libtest_la_DEPENDENCIES+=libtest/abort
+EXTRA_libtest_libtest_la_DEPENDENCIES+=libtest/wait
 
 # Declare unittest so that we can append to it
 libtest_unittest_CXXFLAGS=
 libtest_unittest_LDADD=
 
 # We are either building in tree, or with
-if BUILDING_LIBMEMCACHED
+if HAVE_MEMCACHED_BINARY
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
-libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED
-
-libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED
-else
-if HAVE_LIBMEMCACHED
-libtest_libtest_la_SOURCES+= libtest/memcached.cc
-else
-libtest_libtest_la_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
-libtest_unittest_CXXFLAGS+= -DHAVE_LIBMEMCACHED=0
-endif
 endif
 
 if HAVE_LIBDRIZZLE

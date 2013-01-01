@@ -39,8 +39,13 @@
 #include <spawn.h>
 
 // http://www.gnu.org/software/automake/manual/automake.html#Using-the-TAP-test-protocol
-#define EXIT_SKIP 77
-#define EXIT_FATAL 77
+#ifndef EXIT_SKIP
+# define EXIT_SKIP 77
+#endif
+
+#ifndef EXIT_FATAL
+# define EXIT_FATAL 99
+#endif
 
 #ifndef EX_NOEXEC
 #  define EX_NOEXEC 126
@@ -162,7 +167,7 @@ public:
 
   std::string print();
 
-  void use_valgrind(bool arg= true)
+  void use_valgrind(bool arg)
   {
     _use_valgrind= arg;
   }
@@ -172,12 +177,12 @@ public:
   bool slurp();
   void murder();
 
-  void use_gdb(bool arg= true)
+  void use_gdb(bool arg)
   {
     _use_gdb= arg;
   }
 
-  void use_ptrcheck(bool arg= true)
+  void use_ptrcheck(bool arg)
   {
     _use_ptrcheck= arg;
   }

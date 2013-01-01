@@ -40,6 +40,8 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
+#include <libtest/lite.h>
+
 /**
   A structure describing the test case.
 */
@@ -55,17 +57,6 @@ do \
   if ((A)) { \
     fprintf(stderr, "\n%s:%d: Assertion failed for %s: ", __FILE__, __LINE__, __func__);\
     perror(#A); \
-    fprintf(stderr, "\n"); \
-    libtest::create_core(); \
-    assert((A)); \
-  } \
-} while (0)
-
-#define test_assert(A, B) \
-do \
-{ \
-  if ((A)) { \
-    fprintf(stderr, "\n%s:%d: Assertion failed %s, with message %s, in %s", __FILE__, __LINE__, (B), #A, __func__ );\
     fprintf(stderr, "\n"); \
     libtest::create_core(); \
     assert((A)); \
