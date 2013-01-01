@@ -155,9 +155,7 @@ libtest_unittest_CXXFLAGS=
 libtest_unittest_LDADD=
 
 # We are either building in tree, or with
-if HAVE_MEMCACHED_BINARY
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
-endif
 
 if HAVE_LIBDRIZZLE
 

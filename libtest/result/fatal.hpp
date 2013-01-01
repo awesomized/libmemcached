@@ -43,9 +43,9 @@ class fatal : public __test_result
 public:
   fatal(const char *file, int line, const char *func, ...);
 
-  ~fatal() throw()
-  {
-  }
+  fatal(const fatal&);
+
+  ~fatal() throw();
 
   const char* what() const throw()
   {
@@ -60,7 +60,8 @@ public:
   static void increment_disabled_counter();
 
 private:
-  vchar_t _error_message;
+  char* _error_message;
+  int _error_message_size;
 };
 
 } // namespace libtest

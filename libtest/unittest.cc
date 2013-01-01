@@ -143,10 +143,7 @@ static test_return_t test_throw_skip_TEST(void *)
 static test_return_t test_throw_fail_TEST(void *)
 {
   try {
-#if 0
     FAIL("test message!");
-#endif
-    throw libtest::__failure(LIBYATL_DEFAULT_PARAM, "test message!");
   }
   catch (const libtest::__failure& e)
   {
@@ -168,10 +165,9 @@ static test_return_t ASSERT_FALSE__TEST(void *)
   try {
     ASSERT_FALSE_(true, __func__);
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
-    std::string compare_message(__func__);
-    ASSERT_EQ(compare_message.compare(e.what()), -32);
+    ASSERT_STREQ(e.what(), "Assertion '!true' [ ASSERT_FALSE__TEST ]");
     return TEST_SUCCESS;
   }
   catch (...)
@@ -187,10 +183,9 @@ static test_return_t ASSERT_FALSE_TEST(void *)
   try {
     FAIL(__func__);
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
-    std::string compare_message(__func__);
-    ASSERT_EQ(0, compare_message.compare(e.what()));
+    ASSERT_STREQ(e.what(), __func__);
     return TEST_SUCCESS;
   }
   catch (...)

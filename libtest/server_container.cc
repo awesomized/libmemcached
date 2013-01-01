@@ -333,7 +333,7 @@ bool server_startup_st::start_socket_server(const std::string& server_type, cons
     }
     else if (server_type.compare("memcached") == 0)
     {
-      if (MEMCACHED_BINARY)
+      if (HAVE_MEMCACHED_BINARY)
       {
           server= build_memcached_socket("localhost", try_port);
       }

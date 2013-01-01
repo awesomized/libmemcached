@@ -41,17 +41,47 @@
 namespace libtest {
 
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
 fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, ...) :
-  __test_result(file_arg, line_arg, func_arg)
+  __test_result(file_arg, line_arg, func_arg),
+  _error_message(NULL),
+  _error_message_size(0)
+{
+  va_list args;
+  va_start(args, func_arg);
+  const char *format= va_arg(args, const char *);
+  _error_message_size= vasprintf(&_error_message, format, args);
+  assert(_error_message_size != -1);
+  if (_error_message_size > 0)
   {
-    va_list args;
-    va_start(args, func_arg);
-    const char *format= va_arg(args, const char *);
-    int last_error_length= vsnprintf(0, 0, format, args);
-    _error_message.resize(last_error_length +1);
-    last_error_length= vsnprintf(&_error_message[0], _error_message.size(), format, args);
-    va_end(args);
+    _error_message_size++;
   }
+  va_end(args);
+}
+
+fatal::fatal( const fatal& other ) :
+  __test_result(other),
+  _error_message_size(other._error_message_size)
+{
+  _error_message= (char*) malloc(_error_message_size);
+  if (_error_message)
+  {
+    memcpy(_error_message, other._error_message, _error_message_size);
+  }
+  else
+  {
+    _error_message_size= -1;
+  }
+}
+
+fatal::~fatal() throw()
+{
+  if ((_error_message_size > 0) and _error_message)
+  {
+    free(_error_message);
+    _error_message= NULL;
+  }
+}
 
 static bool _disabled= false;
 static uint32_t _counter= 0;
