@@ -138,7 +138,4 @@ maintainer-clean-local:
 	-rm -f m4/ltversion.m4
 	-rm -f m4/lt~obsolete.m4
 	-rmdir build-aux
-
-install-website: html-local
-	-rm -r -f /var/www/libmemcached/*
-	@cp -r docs/html /var/www/libmemcached
+	-rm -rf ${top_builddir}/html
