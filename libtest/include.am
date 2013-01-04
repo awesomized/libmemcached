@@ -164,20 +164,10 @@ libtest_libtest_la_CXXFLAGS+= $(libdrizzle_CFLAGS)
 
 endif
 
+libtest_libtest_la_SOURCES+= libtest/gearmand.cc
+
 if BUILDING_GEARMAN
 libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
-libtest_libtest_la_SOURCES+= libtest/gearmand.cc
-libtest_libtest_la_SOURCES+= util/instance.cc
-libtest_libtest_la_SOURCES+= util/operation.cc
-
-libtest_unittest_LDADD+= libgearman/libgearman.la
-else
-if HAVE_LIBGEARMAN
-libtest_libtest_la_SOURCES+= libtest/blobslap_worker.cc
-libtest_libtest_la_SOURCES+= libtest/gearmand.cc
-libtest_libtest_la_SOURCES+= util/instance.cc
-libtest_libtest_la_SOURCES+= util/operation.cc
-endif
 endif
 
 TMP_DIR := tmp_chroot/etc tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run tmp_chroot/var/drizzle

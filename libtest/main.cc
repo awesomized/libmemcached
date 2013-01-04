@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
     {
       { "version", no_argument, NULL, OPT_LIBYATL_VERSION },
       { "quiet", no_argument, NULL, OPT_LIBYATL_QUIET },
-      { "repeat", no_argument, NULL, OPT_LIBYATL_REPEAT },
+      { "repeat", required_argument, NULL, OPT_LIBYATL_REPEAT },
       { "collection", required_argument, NULL, OPT_LIBYATL_MATCH_COLLECTION },
       { "wildcard", required_argument, NULL, OPT_LIBYATL_MATCH_WILDCARD },
       { "massive", no_argument, NULL, OPT_LIBYATL_MASSIVE },
@@ -284,6 +284,7 @@ int main(int argc, char *argv[])
       std::auto_ptr<libtest::Framework> frame(new libtest::Framework(signal, binary_name, collection_to_run, wildcard));
 
       // Run create(), bail on error.
+      try
       {
         switch (frame->create())
         {
@@ -297,6 +298,10 @@ int main(int argc, char *argv[])
           std::cerr << "Could not call frame->create()" << std::endl;
           return EXIT_FAILURE;
         }
+      }
+      catch (libtest::__skipped e)
+      {
+        return EXIT_SKIP;
       }
 
       frame->exec();
@@ -339,6 +344,15 @@ int main(int argc, char *argv[])
 
       Outn(); // Generate a blank to break up the messages if make check/test has been run
     } while (exit_code == EXIT_SUCCESS and --opt_repeat);
+  }
+  catch (libtest::__skipped e)
+  {
+    return EXIT_SKIP;
+  }
+  catch (libtest::__failure e)
+  {
+    libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
+    exit_code= EXIT_FAILURE;
   }
   catch (libtest::fatal& e)
   {

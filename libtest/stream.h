@@ -171,6 +171,14 @@ public:
   { }
 };
 
+class make_cout : public detail::log<detail::channelln> {
+public:
+  make_cout(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channelln>(std::cout, filename, line_number, func)
+  { }
+
+};
+
 class cout : public detail::log<detail::channel> {
 public:
   cout(const char* filename, int line_number, const char* func) :

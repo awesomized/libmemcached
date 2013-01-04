@@ -97,3 +97,25 @@
 #include <libtest/dns.hpp>
 #include <libtest/formatter.hpp>
 
+struct FreeFromVector
+{
+  template <class T>
+    void operator() ( T* ptr) const
+    {
+      if (ptr)
+      {
+        free(ptr);
+        ptr= NULL;
+      }
+    }
+};
+
+struct DeleteFromVector
+{
+  template <class T>
+    void operator() ( T* ptr) const
+    {
+      delete ptr;
+      ptr= NULL;
+    }
+};

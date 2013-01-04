@@ -41,14 +41,20 @@ namespace libtest {
 class __skipped : public __test_result
 {
 public:
-  __skipped(const char *file, int line, const char *func);
+  __skipped(const char *file, int line, const char *func, ...);
+
+  __skipped(const __skipped&);
+
+  ~__skipped() throw();
 
   const char* what() const throw()
   {
-    return "SKIPPED";
+    return &_error_message[0];
   }
 
 private:
+  char* _error_message;
+  int _error_message_size;
 };
 
 } // namespace libtest

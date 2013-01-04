@@ -207,6 +207,7 @@ public:
 private:
   void create_argv(const char *args[]);
   void delete_argv();
+  void add_to_build_argv(const char*);
 
 private:
   const bool _use_libtool;

@@ -176,6 +176,22 @@ bool SimpleClient::instance_connect()
         {
           if (connect(sock_fd, address_info_next->ai_addr, address_info_next->ai_addrlen) == SOCKET_ERROR)
           {
+            switch (errno)
+            {
+            case EINTR:
+              close_socket();
+              continue;
+
+            case EINPROGRESS: // nonblocking mode - first return
+            case EALREADY: // nonblocking mode - subsequent returns
+              continue; // Jump to while() and continue on
+
+
+            case ECONNREFUSED:
+            default:
+              break;
+            }
+
             close_socket();
             _error= strerror(errno);
           }

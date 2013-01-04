@@ -88,6 +88,19 @@ void make(libtest::vchar_t& arg, size_t length)
   }
 }
 
+void append(libtest::vchar_ptr_t& arg, const char* ptr)
+{
+  if (ptr)
+  {
+    char* new_ptr= strdup(ptr);
+    if (new_ptr == NULL)
+    {
+      fatal_message("UNABLE to allocate %s(%p)", ptr, ptr);
+    }
+    arg.push_back(new_ptr);
+  }
+}
+
 } // namespace vchar
 
 void make_vector(libtest::vchar_t& arg, const char *str, size_t length)

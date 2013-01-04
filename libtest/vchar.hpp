@@ -54,6 +54,7 @@ namespace vchar {
 int compare(libtest::vchar_t& arg, const char *str, size_t length);
 void make(libtest::vchar_t& arg);
 void make(libtest::vchar_t& arg, size_t length);
+void append(libtest::vchar_ptr_t& arg, const char*);
 
 } // namespace vchar
 

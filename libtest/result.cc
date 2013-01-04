@@ -52,9 +52,45 @@ __success::__success(const char *file_arg, int line_arg, const char *func_arg):
 {
 }
 
-__skipped::__skipped(const char *file_arg, int line_arg, const char *func_arg):
-  __test_result(file_arg, line_arg, func_arg)
+__skipped::__skipped(const char *file_arg, int line_arg, const char *func_arg, ...):
+  __test_result(file_arg, line_arg, func_arg),
+  _error_message(NULL),
+  _error_message_size(0)
 {
+  va_list args;
+  va_start(args, func_arg);
+  const char *format= va_arg(args, const char *);
+  _error_message_size= vasprintf(&_error_message, format, args);
+  assert(_error_message_size != -1);
+  if (_error_message_size > 0)
+  {
+    _error_message_size++;
+  }
+  va_end(args);
+}
+
+__skipped::__skipped( const __skipped& other ) :
+  __test_result(other),
+  _error_message_size(other._error_message_size)
+{
+  _error_message= (char*) malloc(_error_message_size);
+  if (_error_message)
+  {
+    memcpy(_error_message, other._error_message, _error_message_size);
+  }
+  else
+  {
+    _error_message_size= -1;
+  }
+}
+
+__skipped::~__skipped() throw()
+{
+  if ((_error_message_size > 0) and _error_message)
+  {
+    free(_error_message);
+    _error_message= NULL;
+  }
 }
 
 __failure::__failure(const char *file_arg, int line_arg, const char *func_arg, ...) :
