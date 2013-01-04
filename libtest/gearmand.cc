@@ -39,10 +39,6 @@
 
 #include <libtest/gearmand.h>
 
-#include "util/instance.hpp"
-#include "util/operation.hpp"
-
-using namespace datadifferential;
 using namespace libtest;
 
 #include <cassert>
@@ -159,8 +155,13 @@ libtest::Server *build_gearmand(const char *hostname, in_port_t try_port, const 
 {
   if (binary == NULL)
   {
-#if defined(GEARMAND_BINARY)
-    binary= GEARMAND_BINARY;
+#if defined(HAVE_GEARMAND_BINARY)
+# if defined(GEARMAND_BINARY)
+    if (HAVE_GEARMAND_BINARY)
+    {
+      binary= GEARMAND_BINARY;
+    }
+# endif
 #endif
   }
 

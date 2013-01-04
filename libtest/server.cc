@@ -98,7 +98,7 @@ class Buffer
 {
 public:
   Buffer(char *b) : b_(b) {}
-   ~Buffer() { free(b_); }
+   ~Buffer() { if (b_) free(b_); }
   char* buf() { return b_; }
 private:
   char *b_;

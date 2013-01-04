@@ -687,8 +687,8 @@ void Application::create_argv(const char *args[])
   if (_use_libtool)
   {
     assert(libtool());
-    built_argv.push_back(strdup(libtool()));
-    built_argv.push_back(strdup("--mode=execute"));
+    vchar::append(built_argv, libtool());
+    vchar::append(built_argv, "--mode=execute");
   }
 
   if (_use_valgrind)
@@ -696,54 +696,54 @@ void Application::create_argv(const char *args[])
     /*
       valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
     */
-    built_argv.push_back(strdup("valgrind"));
-    built_argv.push_back(strdup("--error-exitcode=1"));
-    built_argv.push_back(strdup("--leak-check=yes"));
+    vchar::append(built_argv, "valgrind");
+    vchar::append(built_argv, "--error-exitcode=1");
+    vchar::append(built_argv, "--leak-check=yes");
 #if 0
-    built_argv.push_back(strdup("--show-reachable=yes"));
+    vchar::append(built_argv, "--show-reachable=yes"));
 #endif
-    built_argv.push_back(strdup("--track-fds=yes"));
+    vchar::append(built_argv, "--track-fds=yes");
 #if 0
     built_argv[x++]= strdup("--track-origin=yes");
 #endif
-    built_argv.push_back(strdup("--malloc-fill=A5"));
-    built_argv.push_back(strdup("--free-fill=DE"));
+    vchar::append(built_argv, "--malloc-fill=A5");
+    vchar::append(built_argv, "--free-fill=DE");
 
     std::string log_file= create_tmpfile("valgrind");
     libtest::vchar_t buffer;
     buffer.resize(1024);
     int length= snprintf(&buffer[0], buffer.size(), "--log-file=%s", log_file.c_str());
     fatal_assert(length > 0 and size_t(length) < buffer.size());
-    built_argv.push_back(strdup(&buffer[0]));
+    vchar::append(built_argv, &buffer[0]);
   }
   else if (_use_ptrcheck)
   {
     /*
       valgrind --error-exitcode=1 --tool=exp-ptrcheck --log-file= 
     */
-    built_argv.push_back(strdup("valgrind"));
-    built_argv.push_back(strdup("--error-exitcode=1"));
-    built_argv.push_back(strdup("--tool=exp-ptrcheck"));
+    vchar::append(built_argv, "valgrind");
+    vchar::append(built_argv, "--error-exitcode=1");
+    vchar::append(built_argv, "--tool=exp-ptrcheck");
     std::string log_file= create_tmpfile("ptrcheck");
     libtest::vchar_t buffer;
     buffer.resize(1024);
     int length= snprintf(&buffer[0], buffer.size(), "--log-file=%s", log_file.c_str());
     fatal_assert(length > 0 and size_t(length) < buffer.size());
-    built_argv.push_back(strdup(&buffer[0]));
+    vchar::append(built_argv, &buffer[0]);
   }
   else if (_use_gdb)
   {
-    built_argv.push_back(strdup("gdb"));
+    vchar::append(built_argv, "gdb");
   }
 
-  built_argv.push_back(strdup(_exectuble_with_path.c_str()));
+  vchar::append(built_argv, _exectuble_with_path.c_str());
 
   for (Options::const_iterator iter= _options.begin(); iter != _options.end(); ++iter)
   {
-    built_argv.push_back(strdup((*iter).first.c_str()));
+    vchar::append(built_argv, (*iter).first.c_str());
     if ((*iter).second.empty() == false)
     {
-      built_argv.push_back(strdup((*iter).second.c_str()));
+      vchar::append(built_argv, (*iter).second.c_str());
     }
   }
 
@@ -751,7 +751,7 @@ void Application::create_argv(const char *args[])
   {
     for (const char **ptr= args; *ptr; ++ptr)
     {
-      built_argv.push_back(strdup(*ptr));
+      vchar::append(built_argv, *ptr);
     }
   }
   built_argv.push_back(NULL);
@@ -766,7 +766,7 @@ std::string Application::arguments()
 {
   std::stringstream arg_buffer;
 
-  for (size_t x= (1 +_use_libtool) ? 2 : 0;
+  for (size_t x= _use_libtool ? 2 : 0;
        x < _argc and built_argv[x];
        ++x)
   {
@@ -776,21 +776,9 @@ std::string Application::arguments()
   return arg_buffer.str();
 }
 
-struct DeleteFromVector
-{
-  template <class T>
-    void operator() ( T* ptr) const
-    {
-      if (ptr)
-      {
-        free(ptr);
-      }
-    }
-};
-
 void Application::delete_argv()
 {
-  std::for_each(built_argv.begin(), built_argv.end(), DeleteFromVector());
+  std::for_each(built_argv.begin(), built_argv.end(), FreeFromVector());
 
   built_argv.clear();
   _argc= 0;

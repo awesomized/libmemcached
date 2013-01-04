@@ -38,8 +38,9 @@
 
 #include <libtest/common.h>
 
-#include <iostream>
+#include <algorithm>
 #include <fstream>
+#include <iostream>
   
 namespace libtest {
 
@@ -97,10 +98,8 @@ Formatter::Formatter(const std::string& frame_name, const std::string& arg)
 
 Formatter::~Formatter()
 {
-  for (TestCases::iterator iter= _testcases.begin(); iter != _testcases.end(); ++iter)
-  {
-    delete *iter;
-  }
+  std::for_each(_testcases.begin(), _testcases.end(), DeleteFromVector());
+  _testcases.clear();
 }
 
 TestCase* Formatter::current()

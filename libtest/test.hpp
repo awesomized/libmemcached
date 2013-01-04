@@ -40,8 +40,12 @@
 
 #pragma once
 
+#ifndef YATL_FULL
+# define YATL_FULL 1
+#endif
+
 #ifndef __PRETTY_FUNCTION__
-#define __PRETTY_FUNCTION__ __func__
+# define __PRETTY_FUNCTION__ __func__
 #endif
 
 #define YATL_STRINGIFY(x) #x

@@ -56,7 +56,7 @@ test_return_t Runner::run(test_callback_fn* func, void *object)
     try {
       return func(object);
     }
-    catch (libtest::__skipped)
+    catch (libtest::__skipped e)
     {
       return TEST_SKIPPED;
     }
@@ -81,13 +81,13 @@ test_return_t Runner::pre(test_callback_fn* func, void *object)
     try {
       return func(object);
     }
-    catch (libtest::__skipped)
+    catch (libtest::__skipped e)
     {
       return TEST_SKIPPED;
     }
     catch (libtest::__failure e)
     {
-      libtest::stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
+      libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
       return TEST_FAILURE;
     }
     catch (libtest::__success)
@@ -106,7 +106,7 @@ test_return_t Runner::post(test_callback_fn* func, void *object)
     try {
       return func(object);
     }
-    catch (libtest::__skipped)
+    catch (libtest::__skipped e)
     {
       return TEST_SKIPPED;
     }

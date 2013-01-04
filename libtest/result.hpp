@@ -44,7 +44,12 @@
 #include <libtest/result/success.hpp>
 
 #define _SUCCESS throw libtest::__success(LIBYATL_DEFAULT_PARAM)
-#define SKIP throw libtest::__skipped(LIBYATL_DEFAULT_PARAM)
+
+#define SKIP(...) \
+do \
+{ \
+  throw libtest::__skipped(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+} while (0)
 
 #define FAIL(...) \
 do \

@@ -142,10 +142,10 @@ in_port_t get_free_port()
   {
     ret_port= default_port;
     int sd;
-    if ((sd= socket(AF_INET, SOCK_STREAM, 0)) != -1)
+    if ((sd= socket(AF_INET, SOCK_STREAM, 0)) != SOCKET_ERROR)
     {
       int optval= 1;
-      if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) != -1)
+      if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) != SOCKET_ERROR)
       { 
         struct sockaddr_in sin;
         sin.sin_port= 0;
@@ -156,7 +156,7 @@ in_port_t get_free_port()
         int bind_ret;
         do
         {
-          if ((bind_ret= bind(sd, (struct sockaddr *)&sin, sizeof(struct sockaddr_in) )) != -1)
+          if ((bind_ret= bind(sd, (struct sockaddr *)&sin, sizeof(struct sockaddr_in) )) != SOCKET_ERROR)
           {
             socklen_t addrlen= sizeof(sin);
 
