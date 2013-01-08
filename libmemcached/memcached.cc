@@ -279,12 +279,13 @@ void memcached_servers_reset(memcached_st *self)
 {
   if (self)
   {
-    memcached_instance_list_free(memcached_instance_list(self), self->number_of_hosts);
+    libmemcached_free(self, self->ketama.continuum);
+    self->ketama.continuum= NULL;
 
+    memcached_instance_list_free(memcached_instance_list(self), self->number_of_hosts);
     memcached_instance_set(self, NULL, 0);
-    self->number_of_hosts= 0;
-    memcached_instance_free((org::libmemcached::Instance*)self->last_disconnected_server);
-    self->last_disconnected_server= NULL;
+
+    memcached_reset_last_disconnected_server(self);
   }
 }
 

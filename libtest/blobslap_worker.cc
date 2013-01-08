@@ -51,8 +51,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <libgearman/gearman.h>
-
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
@@ -160,6 +158,11 @@ bool BlobslapWorker::build(size_t argc, const char *argv[])
 
   for (size_t x= 0 ; x < argc ; x++)
   {
+    if (argv[x] == NULL)
+    {
+      break;
+    }
+
     add_option(argv[x]);
   }
 

@@ -86,11 +86,20 @@ struct memcached_pool_st
     for (int x= 0; x <= firstfree; ++x)
     {
       memcached_free(server_pool[x]);
-      server_pool[x] = NULL;
+      server_pool[x]= NULL;
     }
 
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&cond);
+    int error;
+    if ((error= pthread_mutex_destroy(&mutex)) != 0)
+    {
+      assert_vmsg(error != 0, "pthread_mutex_destroy() %s(%d)", strerror(error), error);
+    }
+
+    if ((error= pthread_cond_destroy(&cond)) != 0)
+    {
+      assert_vmsg(error != 0, "pthread_cond_destroy() %s", strerror(error));
+    }
+
     delete [] server_pool;
     if (_owns_master)
     {
@@ -139,8 +148,10 @@ static bool grow_pool(memcached_pool_st* pool)
 bool memcached_pool_st::init(uint32_t initial)
 {
   server_pool= new (std::nothrow) memcached_st *[size];
-  if (not server_pool)
+  if (server_pool == NULL)
+  {
     return false;
+  }
 
   /*
     Try to create the initial size of the pool. An allocation failure at
@@ -275,6 +286,7 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
         int unlock_error;
         if ((unlock_error= pthread_mutex_unlock(&mutex)) != 0)
         {
+          assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
         }
 
         if (thread_ret == ETIMEDOUT)
@@ -295,6 +307,7 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
       int unlock_error;
       if ((unlock_error= pthread_mutex_unlock(&mutex)) != 0)
       {
+        assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
       }
 
       return NULL;
@@ -303,6 +316,7 @@ memcached_st* memcached_pool_st::fetch(const struct timespec& relative_time, mem
 
   if ((error= pthread_mutex_unlock(&mutex)) != 0)
   {
+    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return ret;
@@ -344,6 +358,7 @@ bool memcached_pool_st::release(memcached_st *released, memcached_return_t& rc)
     /* we might have people waiting for a connection.. wake them up :-) */
     if ((error= pthread_cond_broadcast(&cond)) != 0)
     {
+      assert_vmsg(error != 0, "pthread_cond_broadcast() %s", strerror(error));
     }
   }
 
@@ -444,6 +459,7 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
   {
     if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
     {
+      assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
     }
     return rc;
   }
@@ -475,6 +491,7 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool,
 
   if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
   {
+    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return rc;
@@ -499,6 +516,7 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool,
 
   if ((error= pthread_mutex_unlock(&pool->mutex)) != 0)
   {
+    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return MEMCACHED_SUCCESS;

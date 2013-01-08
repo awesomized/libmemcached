@@ -79,6 +79,12 @@ tests_memslap_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memslap
 noinst_PROGRAMS+= tests/memslap
 
+test-memslap: tests/memslap
+	@tests/memslap
+
+gdb-memslap: tests/memslap
+	@$(GDB_COMMAND) tests/memslap
+
 tests_memdump_SOURCES= tests/memdump.cc
 tests_memdump_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
 EXTRA_tests_memdump_DEPENDENCIES= clients/memdump

@@ -38,6 +38,7 @@
 
 #include <libtest/common.h>
 
+// @todo possibly have this code fork off so if it fails nothing goes bad
 static test_return_t runner_code(libtest::Framework* frame,
                                  test_st* run, 
                                  libtest::Timer& _timer)
@@ -50,7 +51,7 @@ static test_return_t runner_code(libtest::Framework* frame,
   try 
   {
     _timer.reset();
-    return_code= frame->runner()->run(run->test_fn, frame->creators_ptr());
+    return_code= frame->runner()->main(run->test_fn, frame->creators_ptr());
   }
   // Special case where check for the testing of the exception
   // system.
@@ -92,7 +93,7 @@ Collection::Collection(Framework* frame_arg,
 
 test_return_t Collection::exec()
 {
-  if (test_success(_frame->runner()->pre(_pre, _frame->creators_ptr())))
+  if (test_success(_frame->runner()->setup(_pre, _frame->creators_ptr())))
   {
     for (test_st *run= _tests; run->name; run++)
     {
@@ -165,7 +166,7 @@ test_return_t Collection::exec()
 #endif
     }
 
-    (void) _frame->runner()->post(_post, _frame->creators_ptr());
+    (void) _frame->runner()->teardown(_post, _frame->creators_ptr());
   }
 
   if (_failed == 0 and _skipped == 0 and _success)

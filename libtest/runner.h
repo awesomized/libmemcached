@@ -45,24 +45,22 @@ namespace libtest {
 */
 class Runner {
 public:
+  test_return_t main(test_callback_fn* func, void *object);
+  test_return_t setup(test_callback_fn* func, void *object);
+  test_return_t teardown(test_callback_fn* func, void *object);
+
+  Runner();
+
+  void set_servers(libtest::server_startup_st& arg);
+
+  bool check();
+
+  virtual ~Runner() { }
+
   virtual test_return_t flush(void*);
   virtual test_return_t run(test_callback_fn* func, void *object);
   virtual test_return_t pre(test_callback_fn* func, void *object);
   virtual test_return_t post(test_callback_fn* func, void *object);
-
-  Runner();
-
-  void set_servers(libtest::server_startup_st& arg)
-  {
-    _servers= &arg;
-  }
-
-  bool check()
-  {
-    return _servers ? _servers->check() : true;
-  }
-
-  virtual ~Runner() { }
 
 private:
   libtest::server_startup_st* _servers;

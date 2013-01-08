@@ -20,7 +20,7 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "generator.h"
+#include "clients/generator.h"
 
 /* Use this for string generation */
 static const char ALPHANUMERICS[]=
@@ -33,12 +33,14 @@ static size_t get_alpha_num(void)
   return (size_t)random() % ALPHANUMERICS_SIZE;
 }
 
-static void get_random_string(char *buffer, size_t size)
+void get_random_string(char *buffer, size_t size)
 {
   char *buffer_ptr= buffer;
 
   while (--size)
+  {
     *buffer_ptr++= ALPHANUMERICS[get_alpha_num()];
+  }
   *buffer_ptr++= ALPHANUMERICS[get_alpha_num()];
 }
 

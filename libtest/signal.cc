@@ -91,6 +91,7 @@ void SignalThread::test()
   assert(magic_memory == MAGIC_MEMORY);
   if (bool(getenv("LIBTEST_IN_GDB")) == false)
   {
+    assert(sigismember(&set, SIGALRM));
     assert(sigismember(&set, SIGABRT));
     assert(sigismember(&set, SIGQUIT));
     assert(sigismember(&set, SIGINT));
@@ -151,6 +152,14 @@ static void *sig_thread(void *arg)
 
     switch (sig)
     {
+    case SIGALRM:
+      Error << "SIGALRM";
+      if (gdb_is_caller())
+      {
+        abort();
+      }
+      exit(EXIT_SKIP);
+
     case SIGVTALRM:
       Error << "SIGVTALRM was called";
       context->unblock();
@@ -194,11 +203,17 @@ SignalThread::SignalThread() :
   sigemptyset(&set);
   if (bool(getenv("LIBTEST_IN_GDB")) == false)
   {
+    sigaddset(&set, SIGALRM);
     sigaddset(&set, SIGABRT);
     sigaddset(&set, SIGQUIT);
     sigaddset(&set, SIGINT);
     sigaddset(&set, SIGVTALRM);
   }
+  else
+  {
+    Out << "Inside of GDB, disabling signal handlers";
+  }
+
   sigaddset(&set, SIGPIPE);
 
   sigaddset(&set, SIGUSR2);
