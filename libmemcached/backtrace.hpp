@@ -2,7 +2,7 @@
  * 
  *  libmcachedd client library.
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,4 +37,12 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void custom_backtrace(void);
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,4 +1,5 @@
 /* LibMemcached
+ * Copyright (C) 2013 Data Differential, http://datadifferential.com/
  * Copyright (C) 2010 Brian Aker, Trond Norbye
  * All rights reserved.
  *
@@ -8,12 +9,12 @@
  * Summary: Implementation of poll by using select
  *
  */
-#ifndef POLL_POLL_H
-#define POLL_POLL_H 1
 
-#ifdef WIN32
+#pragma once
+
+#if defined(WIN32) || defined(__MINGW32__)
+
 #include <winsock2.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,8 @@ typedef int nfds_t;
 #define POLLIN 0x0001
 #define POLLOUT 0x0004
 #define POLLERR 0x0008
+#define POLLHUP		0x010		/* Hung up.  */
+#define POLLNVAL	0x020		/* Invalid polling request.  */
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo);
 
@@ -42,4 +45,4 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo);
 }
 #endif
 
-#endif
+#endif // defined(WIN32) || defined(__MINGW32__)

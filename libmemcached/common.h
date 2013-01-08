@@ -119,15 +119,7 @@
 #ifdef HAVE_POLL_H
 # include <poll.h>
 #else
-# include "poll/poll.h"
-#endif
-
-#ifndef POLLHUP
-# define POLLHUP		0x0010
-#endif
-
-#ifndef POLLNVAL
-# define POLLNVAL	0x0020
+# include "libmemcached/poll.h"
 #endif
 
 #ifdef __cplusplus
