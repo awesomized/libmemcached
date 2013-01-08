@@ -346,52 +346,52 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t server_add(memcached_st *ptr, 
+static memcached_return_t server_add(memcached_st *memc, 
                                      const memcached_string_t& hostname,
                                      in_port_t port,
                                      uint32_t weight,
                                      memcached_connection_t type)
 {
-  assert_msg(ptr, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
+  assert_msg(memc, "Programmer mistake, somehow server_add() was passed a NULL memcached_st");
 
-  if (ptr->number_of_hosts)
+  if (memc->number_of_hosts)
   {
-    assert(memcached_instance_list(ptr));
+    assert(memcached_instance_list(memc));
   }
 
-  if (memcached_instance_list(ptr))
+  if (memcached_instance_list(memc))
   {
-    assert(ptr->number_of_hosts);
+    assert(memc->number_of_hosts);
   }
 
-  uint32_t host_list_size= ptr->number_of_hosts +1;
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
+  uint32_t host_list_size= memc->number_of_hosts +1;
+  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(memc, memcached_instance_list(memc), host_list_size, org::libmemcached::Instance);
 
   if (new_host_list == NULL)
   {
-    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    return memcached_set_error(*memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
-  memcached_instance_set(ptr, new_host_list, host_list_size);
-  assert(ptr->number_of_hosts == host_list_size);
+  memcached_instance_set(memc, new_host_list, host_list_size);
+  assert(memc->number_of_hosts == host_list_size);
 
   /* TODO: Check return type */
-  org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, memcached_server_count(ptr) -1);
+  org::libmemcached::Instance* instance= memcached_instance_fetch(memc, memcached_server_count(memc) -1);
 
-  if (__instance_create_with(ptr, instance, hostname, port, weight, type) == NULL)
+  if (__instance_create_with(memc, instance, hostname, port, weight, type) == NULL)
   {
-    return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+    return memcached_set_error(*memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
   if (weight > 1)
   {
-    if (memcached_is_consistent_distribution(ptr))
+    if (memcached_is_consistent_distribution(memc))
     {
-      memcached_set_weighted_ketama(ptr, true);
+      memcached_set_weighted_ketama(memc, true);
     }
   }
 
-  return run_distribution(ptr);
+  return run_distribution(memc);
 }
 
 

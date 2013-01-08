@@ -189,6 +189,7 @@ AM_CONDITIONAL([BUILD_CACHE],[test "x$build_cache" = "xyes"])
 
 AX_COMPILER_VENDOR
 
+AC_CHECK_TYPES([in_port_t])
 AC_CHECK_TYPES([ptrdiff_t])
 AC_HEADER_STDBOOL
 AC_TYPE_INT16_T
@@ -217,6 +218,7 @@ AC_CHECK_LIB([rt],[clock_gettime],
              [AC_SUBST([RT_LIB],[-lrt])
              AC_DEFINE([HAVE_CLOCK_GETTIME],[1],[Have clock_gettime])],
              [AC_DEFINE([HAVE_CLOCK_GETTIME],[0],[Have clock_gettime])])
+
 
 # Check for the ability to call dlopen (used in libhostile)
 AX_DLOPEN

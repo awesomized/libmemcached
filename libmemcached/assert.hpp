@@ -37,8 +37,17 @@
 
 #pragma once
 
+#ifdef _WIN32
+# include <malloc.h>
+#else
+# include <alloca.h>
+#endif
+
+#include <cstdarg>
+
 #ifdef NDEBUG
 #define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
+#define assert_vmsg(__expr, __mesg, ...) (void)(__expr); (void)(__mesg);
 #else
 
 #define assert_msg(__expr, __mesg) \
@@ -47,6 +56,21 @@ do \
   if (not (__expr)) \
   { \
     fprintf(stderr, "\n%s:%d Assertion \"%s\" failed for function \"%s\" likely for %s\n", __FILE__, __LINE__, #__expr, __func__, (#__mesg));\
+    custom_backtrace(); \
+    abort(); \
+  } \
+} while (0)
+
+#define assert_vmsg(__expr, __mesg, ...) \
+do \
+{ \
+  if (not (__expr)) \
+  { \
+    size_t ask= snprintf(0, 0, (__mesg), __VA_ARGS__); \
+    ask++; \
+    char *_error_message= (char*)alloca(sizeof(char) * ask); \
+    size_t _error_message_size= snprintf(_error_message, ask, (__mesg), __VA_ARGS__); \
+    fprintf(stderr, "\n%s:%d Assertion '%s' failed for function '%s' [ %.*s ]\n", __FILE__, __LINE__, #__expr, __func__, int(_error_message_size), _error_message);\
     custom_backtrace(); \
     abort(); \
   } \

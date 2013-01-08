@@ -44,6 +44,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include <libmemcachedutil-1.0/util.h>
-#include <libmemcached/assert.hpp>
-#include <libmemcached/backtrace.hpp>
+#include "libmemcachedutil-1.0/util.h"
+#include "libmemcached/assert.hpp"
+#include "libmemcached/backtrace.hpp"

@@ -57,10 +57,7 @@ static memcached_return_t item_counter(memcached_server_instance_st ,
   {
     uint64_t* counter= (uint64_t*)context;
     unsigned long number_value= strtoul(value, (char **)NULL, 10);
-    if (number_value == ULONG_MAX)
-    {
-      return MEMCACHED_FAILURE;
-    }
+    ASSERT_NEQ(number_value, ULONG_MAX);
     *counter= *counter +number_value;
   }
 
@@ -85,10 +82,9 @@ test_return_t memcached_stat_TEST2(memcached_st *memc)
   for (uint32_t x= 0; x < memcached_dump_TEST2_COUNT; x++)
   {
     char key[1024];
-
     int length= snprintf(key, sizeof(key), "%s%u", __func__, x);
 
-    test_true(length > 0);
+    ASSERT_TRUE(length > 0);
 
     test_compare(MEMCACHED_SUCCESS,
                  memcached_set(memc, key, length,
@@ -98,9 +94,9 @@ test_return_t memcached_stat_TEST2(memcached_st *memc)
   memcached_quit(memc);
 
   uint64_t counter= 0;
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_stat_execute(memc, NULL, item_counter, &counter));
-  test_true(counter);
+  ASSERT_EQ(MEMCACHED_SUCCESS,
+            memcached_stat_execute(memc, NULL, item_counter, &counter));
+  ASSERT_TRUE(counter);
 
   return TEST_SUCCESS;
 }

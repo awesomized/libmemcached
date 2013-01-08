@@ -295,7 +295,9 @@ bool Server::start()
 
   if (pinged == false)
   {
-    Error << "ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
+#if 0
+    Error << "Failed to ping(" << _app.pid() << ") wait: " << this_wait << " " << hostname() << ":" << port() << " run:" << _running << " " << error();
+#endif
 
     // If we happen to have a pid file, lets try to kill it
     if ((pid_file().empty() == false) and (access(pid_file().c_str(), R_OK) == 0))
@@ -480,13 +482,16 @@ bool Server::args(Application& app)
 
   for (Options::const_iterator iter= _options.begin(); iter != _options.end(); ++iter)
   {
-    if ((*iter).second.empty() == false)
+    if ((*iter).first.empty() == false)
     {
-      app.add_option((*iter).first, (*iter).second);
-    }
-    else
-    {
-      app.add_option((*iter).first);
+      if ((*iter).second.empty() == false)
+      {
+        app.add_option((*iter).first, (*iter).second);
+      }
+      else
+      {
+        app.add_option((*iter).first);
+      }
     }
   }
 

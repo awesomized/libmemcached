@@ -224,7 +224,15 @@ int main(int argc, char *argv[])
   pthread_mutex_init(&sleeper_mutex, NULL);
   pthread_cond_init(&sleep_threshhold, NULL);
 
-  scheduler(servers, &conclusion);
+  int error_code= EXIT_SUCCESS;
+  try {
+    scheduler(servers, &conclusion);
+  }
+  catch(std::exception& e)
+  {
+    std::cerr << "Died with exception: " << e.what() << std::endl;
+    error_code= EXIT_FAILURE;
+  }
 
   free(opt_servers);
 
@@ -233,7 +241,7 @@ int main(int argc, char *argv[])
   conclusions_print(&conclusion);
   memcached_server_list_free(servers);
 
-  return EXIT_SUCCESS;
+  return error_code;
 }
 
 void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
@@ -305,7 +313,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
   pthread_t *threads= new  (std::nothrow) pthread_t[opt_concurrency];
 
-  if (not threads)
+  if (threads == NULL)
   {
     exit(EXIT_FAILURE);
   }

@@ -165,7 +165,7 @@ private:
 class Barrier
 {
 public:
-  Barrier(uint32_t count): 
+  explicit Barrier(uint32_t count): 
     _threshold(count),
     _count(count),
     _generation(0)

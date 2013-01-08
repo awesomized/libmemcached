@@ -58,7 +58,7 @@ public:
 
   bool is_error() const
   {
-    return _error.size();
+    return _error.size() ? true : false;
   }
 
 private: // Methods

@@ -618,6 +618,17 @@ static test_return_t vchar_t_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t vchar_t_make_append_TEST(void *)
+{
+  libtest::vchar_t hostname;
+  libtest::vchar::make(hostname, 23);
+  libtest::vchar::append(hostname, ".com");
+  ASSERT_EQ(28, hostname.size());
+  ASSERT_EQ(0, hostname[27]);
+
+  return TEST_SUCCESS;
+}
+
 static test_return_t vchar_t_compare_neg_TEST(void *)
 {
   libtest::vchar_t response;
@@ -1086,6 +1097,7 @@ test_st dns_TESTS[] ={
 
 test_st application_tests[] ={
   {"vchar_t", 0, vchar_t_TEST },
+  {"vchar_t make() append()", 0, vchar_t_make_append_TEST },
   {"vchar_t compare()", 0, vchar_t_compare_neg_TEST },
   {"true", 0, application_true_BINARY },
   {"gbd true --fubar", 0, application_gdb_true_BINARY },

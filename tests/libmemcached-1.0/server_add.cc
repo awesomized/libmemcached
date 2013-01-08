@@ -36,7 +36,9 @@
  */
 
 #include <mem_config.h>
-#include <libtest/test.hpp>
+#include <libtest/yatl.h>
+
+#include <string>
 
 using namespace libtest;
 
@@ -44,24 +46,60 @@ using namespace libtest;
 
 #include <tests/server_add.h>
 
-test_return_t memcached_server_add_null_test(memcached_st*)
+static std::string random_hostname()
 {
-  memcached_st *memc= memcached_create(NULL);
+  libtest::vchar_t hostname;
+  libtest::vchar::make(hostname, 23);
+  libtest::vchar::append(hostname, ".com");
+
+  return std::string(&hostname[0]);
+}
+
+test_return_t memcached_server_add_null_test(memcached_st* memc)
+{
+  ASSERT_EQ(0, memcached_server_count(memc));
 
   test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, NULL, 0));
-
-  memcached_free(memc);
 
   return TEST_SUCCESS;
 }
 
-test_return_t memcached_server_add_empty_test(memcached_st*)
+test_return_t memcached_server_add_empty_test(memcached_st* memc)
 {
-  memcached_st *memc= memcached_create(NULL);
+  ASSERT_EQ(0, memcached_server_count(memc));
 
   test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "", 0));
 
-  memcached_free(memc);
+  return TEST_SUCCESS;
+}
+
+test_return_t memcached_server_many_TEST(memcached_st* memc)
+{
+  ASSERT_EQ(0, memcached_server_count(memc));
+
+  in_port_t base_port= 5555;
+  for (in_port_t x= 0; x < 100; ++x)
+  {
+    std::string hostname(random_hostname());
+    ASSERT_TRUE(hostname.size());
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, hostname.c_str(), base_port +x));
+  }
+
+  return TEST_SUCCESS;
+}
+
+test_return_t memcached_server_many_weighted_TEST(memcached_st* memc)
+{
+  SKIP_IF(true);
+  ASSERT_EQ(0, memcached_server_count(memc));
+
+  in_port_t base_port= 5555;
+  for (in_port_t x= 0; x < 100; ++x)
+  {
+    std::string hostname(random_hostname());
+    ASSERT_TRUE(hostname.size());
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add_with_weight(memc, hostname.c_str(), base_port +x, random() % 10));
+  }
 
   return TEST_SUCCESS;
 }

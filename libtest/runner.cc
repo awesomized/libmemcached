@@ -44,6 +44,117 @@ Runner::Runner() :
 {
 }
 
+test_return_t Runner::main(test_callback_fn* func, void *object)
+{
+  test_return_t ret;
+  try {
+    ret= run(func, object);
+  }
+  catch (libtest::__skipped e)
+  {
+    ret= TEST_SKIPPED;
+  }
+  catch (libtest::__failure e)
+  {
+    libtest::stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
+    ret= TEST_FAILURE;
+  }
+  catch (libtest::__success)
+  {
+    ret= TEST_SUCCESS;
+  }
+  catch (libtest::fatal& e)
+  {
+    throw;
+  }
+  catch (std::exception& e)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
+    throw;
+  }
+  catch (...)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << "Unknown exception thrown";
+    throw;
+  }
+
+  return ret;
+}
+
+test_return_t Runner::setup(test_callback_fn* func, void *object)
+{
+  test_return_t ret;
+  try {
+    ret= pre(func, object);
+  }
+  catch (libtest::__skipped e)
+  {
+    ret= TEST_SKIPPED;
+  }
+  catch (libtest::__failure e)
+  {
+    libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
+    ret= TEST_FAILURE;
+  }
+  catch (libtest::__success)
+  {
+    ret= TEST_SUCCESS;
+  }
+  catch (libtest::fatal& e)
+  {
+    throw;
+  }
+  catch (std::exception& e)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
+    throw;
+  }
+  catch (...)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << "Unknown exception thrown";
+    throw;
+  }
+
+  return ret;
+}
+
+test_return_t Runner::teardown(test_callback_fn* func, void *object)
+{
+  test_return_t ret;
+  try {
+    ret= post(func, object);
+  }
+  catch (libtest::__skipped e)
+  {
+    ret= TEST_SKIPPED;
+  }
+  catch (libtest::__failure e)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
+    ret= TEST_FAILURE;
+  }
+  catch (libtest::__success)
+  {
+    ret= TEST_SUCCESS;
+  }
+  catch (libtest::fatal& e)
+  {
+    throw;
+  }
+  catch (std::exception& e)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
+    throw;
+  }
+  catch (...)
+  {
+    libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << "Unknown exception thrown";
+    throw;
+  }
+
+  return ret;
+}
+
 test_return_t Runner::flush(void*)
 {
   return TEST_SUCCESS;
@@ -53,22 +164,7 @@ test_return_t Runner::run(test_callback_fn* func, void *object)
 {
   if (func)
   {
-    try {
-      return func(object);
-    }
-    catch (libtest::__skipped e)
-    {
-      return TEST_SKIPPED;
-    }
-    catch (libtest::__failure e)
-    {
-      libtest::stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
-      return TEST_FAILURE;
-    }
-    catch (libtest::__success)
-    {
-      return TEST_SUCCESS;
-    }
+    return func(object);
   }
 
   return TEST_SUCCESS;
@@ -78,22 +174,7 @@ test_return_t Runner::pre(test_callback_fn* func, void *object)
 {
   if (func)
   {
-    try {
-      return func(object);
-    }
-    catch (libtest::__skipped e)
-    {
-      return TEST_SKIPPED;
-    }
-    catch (libtest::__failure e)
-    {
-      libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
-      return TEST_FAILURE;
-    }
-    catch (libtest::__success)
-    {
-      return TEST_SUCCESS;
-    }
+    return func(object);
   }
 
   return TEST_SUCCESS;
@@ -103,25 +184,20 @@ test_return_t Runner::post(test_callback_fn* func, void *object)
 {
   if (func)
   {
-    try {
-      return func(object);
-    }
-    catch (libtest::__skipped e)
-    {
-      return TEST_SKIPPED;
-    }
-    catch (libtest::__failure e)
-    {
-      libtest::stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
-      return TEST_FAILURE;
-    }
-    catch (libtest::__success)
-    {
-      return TEST_SUCCESS;
-    }
+    return func(object);
   }
 
   return TEST_SUCCESS;
+}
+
+void Runner::set_servers(libtest::server_startup_st& arg)
+{
+  _servers= &arg;
+}
+
+bool Runner::check()
+{
+  return _servers ? _servers->check() : true;
 }
 
 } // namespace libtest

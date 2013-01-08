@@ -86,14 +86,7 @@ private:
     if (func)
     {
       test_true(container);
-      try {
-        ret= func(&memc);
-      }
-      catch (std::exception& e)
-      {
-        libtest::Error << e.what();
-        ret= TEST_FAILURE;
-      }
+      ret= func(&memc);
     }
 
     return ret;

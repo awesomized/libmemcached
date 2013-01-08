@@ -170,6 +170,34 @@ test_return_t pre_hash_fnv1a_32(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t memcached_servers_reset_SETUP(memcached_st *memc)
+{
+  memcached_servers_reset(memc);
+  test_compare(0U, memcached_server_count(memc));
+  return TEST_SUCCESS;
+}
+
+test_return_t memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_SETUP(memcached_st *memc)
+{
+  test_compare(TEST_SUCCESS, memcached_servers_reset_SETUP(memc));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT));
+  test_compare(memcached_behavior_get_distribution(memc), MEMCACHED_DISTRIBUTION_CONSISTENT);
+
+  return TEST_SUCCESS;
+}
+
+test_return_t memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED_SETUP(memcached_st *memc)
+{
+  test_compare(TEST_SUCCESS, memcached_servers_reset_SETUP(memc));
+  ASSERT_EQ(0U, memcached_server_count(0));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set_distribution(memc, MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED));
+  test_compare(memcached_behavior_get_distribution(memc), MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED);
+
+  return TEST_SUCCESS;
+}
+
 test_return_t pre_behavior_ketama(memcached_st *memc)
 {
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_KETAMA, 1));

@@ -766,11 +766,13 @@ std::string Application::arguments()
 {
   std::stringstream arg_buffer;
 
-  for (size_t x= _use_libtool ? 2 : 0;
-       x < _argc and built_argv[x];
-       ++x)
+  // Skip printing out the libtool reference
+  for (size_t x= _use_libtool ? 2 : 0; x < _argc; ++x)
   {
-    arg_buffer << built_argv[x] << " ";
+    if (built_argv[x])
+    {
+      arg_buffer << built_argv[x] << " ";
+    }
   }
 
   return arg_buffer.str();

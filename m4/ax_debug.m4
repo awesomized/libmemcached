@@ -43,7 +43,7 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 4
+#serial 5
 
 AC_DEFUN([AX_DEBUG],
     [AC_PREREQ([2.63])dnl
@@ -51,10 +51,12 @@ AC_DEFUN([AX_DEBUG],
       [AS_HELP_STRING([--enable-debug],
         [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],
       [ax_enable_debug=yes
-      AC_DEFINE(DEBUG,[1],[Define to 1 to enable debugging code.])],
+      AC_DEFINE([DEBUG],[1],[Define to 1 to enable debugging code.])
+      AX_CHECK_LIBRARY([MCHECK],[mcheck.h],[mcheck],[AX_APPEND_LINK_FLAGS([-lmcheck])])],
       [ax_enable_debug=no
-      AC_DEFINE(DEBUG, [ 0 ], [Define to 1 to enable debugging code.])])
+      AC_SUBST([MCHECK])
+      AC_DEFINE([DEBUG],[0],[Define to 1 to enable debugging code.])])
 
     AC_MSG_CHECKING([for debug])
     AC_MSG_RESULT([$ax_enable_debug])
-    ])
+    AM_CONDITIONAL([DEBUG],[test "x${ax_enable_debug}" = "xyes"])])

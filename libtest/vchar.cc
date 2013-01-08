@@ -37,6 +37,17 @@
 #include "libtest/yatlcon.h"
 #include <libtest/common.h>
 
+/* Use this for string generation */
+static const char ALPHANUMERICS[]=
+  "0123456789ABCDEFGHIJKLMNOPQRSTWXYZabcdefghijklmnopqrstuvwxyz";
+
+#define ALPHANUMERICS_SIZE (sizeof(ALPHANUMERICS)-1)
+
+static size_t get_alpha_num(void)
+{
+  return (size_t)random() % ALPHANUMERICS_SIZE;
+}
+
 namespace libtest {
 
 static std::string printer(const char *str, size_t length)
@@ -82,9 +93,24 @@ void make(libtest::vchar_t& arg)
 void make(libtest::vchar_t& arg, size_t length)
 {
   arg.reserve(length);
-  for (uint32_t x= 0; x < length; x++)
+  for (uint32_t x= 0; x < length; ++x)
   {
-    arg.push_back(char(x % 127));
+    arg.push_back(ALPHANUMERICS[get_alpha_num()]);
+  }
+}
+
+void chomp(libtest::vchar_t& arg)
+{
+  while(arg.size())
+  {
+    if (arg.back() == 0)
+    {
+      arg.pop_back();
+    }
+    else
+    {
+      break;
+    }
   }
 }
 
@@ -97,7 +123,25 @@ void append(libtest::vchar_ptr_t& arg, const char* ptr)
     {
       fatal_message("UNABLE to allocate %s(%p)", ptr, ptr);
     }
+
     arg.push_back(new_ptr);
+  }
+}
+
+void append(libtest::vchar_t& arg, const char* ptr)
+{
+  if (ptr)
+  {
+    size_t length= strlen(ptr);
+    ASSERT_TRUE(length);
+    arg.reserve(length);
+    do
+    {
+      arg.push_back(*ptr);
+      ++ptr;
+    } while (*ptr);
+
+    arg.push_back(0);
   }
 }
 

@@ -47,10 +47,11 @@ using namespace libtest;
 
 static test_return_t pre_sasl(memcached_st *)
 {
-  if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
-  {
-    return TEST_SKIPPED;
-  }
+  SKIP_IF(true);
+#if 0
+  SKIP_IF_(true, "currently we are not testing sasl support");
+#endif
+  SKIP_IF(LIBMEMCACHED_WITH_SASL_SUPPORT == 0);
 
   return TEST_SUCCESS;
 }

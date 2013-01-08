@@ -206,12 +206,6 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
     break;
 
   case EAI_AGAIN:
-    if (server->address_info)
-    {
-      freeaddrinfo(server->address_info);
-      server->address_info= NULL;
-      server->address_info_next= NULL;
-    }
     return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
 
   case EAI_SYSTEM:
