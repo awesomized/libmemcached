@@ -37,20 +37,21 @@
 
 #pragma once
 
-#ifdef _WIN32
-# include <malloc.h>
-#else
-# include <alloca.h>
-#endif
-
-#include <cstdarg>
-
 #ifdef NDEBUG
-#define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
-#define assert_vmsg(__expr, __mesg, ...) (void)(__expr); (void)(__mesg);
+# define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
+# define assert_vmsg(__expr, __mesg, ...) (void)(__expr); (void)(__mesg);
 #else
 
-#define assert_msg(__expr, __mesg) \
+# ifdef _WIN32
+#  include <malloc.h>
+# else
+#  include <alloca.h>
+# endif
+
+# include <cstdarg>
+# include <libmemcached/backtrace.hpp>
+
+# define assert_msg(__expr, __mesg) \
 do \
 { \
   if (not (__expr)) \
@@ -61,7 +62,7 @@ do \
   } \
 } while (0)
 
-#define assert_vmsg(__expr, __mesg, ...) \
+# define assert_vmsg(__expr, __mesg, ...) \
 do \
 { \
   if (not (__expr)) \
@@ -76,4 +77,4 @@ do \
   } \
 } while (0)
 
-#endif
+#endif // NDEBUG
