@@ -1,4 +1,5 @@
 /* LibMemcached
+ * Copyright (C) 2013 Data Differential, http://datadifferential.com/
  * Copyright (C) 2010 Brian Aker, Trond Norbye
  * All rights reserved.
  *
@@ -8,17 +9,14 @@
  * Summary: Implementation of poll by using select
  *
  */
-#include "mem_config.h"
+
+#include "libmemcached/common.h"
 
 #if defined(WIN32) || defined(__MINGW32__)
-# include <winsock2.h>
-# include <ws2tcpip.h>
-#endif
+#include "libmemcached/poll.h"
 
 #include <sys/time.h>
 #include <strings.h>
-
-#include "poll/poll.h"
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo)
 {
@@ -83,3 +81,5 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo)
 
    return ret;
 }
+
+#endif // defined(WIN32) || defined(__MINGW32__)

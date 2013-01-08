@@ -38,6 +38,7 @@ noinst_HEADERS+= libmemcached/memcached/vbucket.h
 noinst_HEADERS+= libmemcached/memory.h 
 noinst_HEADERS+= libmemcached/namespace.h 
 noinst_HEADERS+= libmemcached/options.hpp 
+noinst_HEADERS+= libmemcached/poll.h
 noinst_HEADERS+= libmemcached/response.h 
 noinst_HEADERS+= libmemcached/result.h
 noinst_HEADERS+= libmemcached/sasl.hpp 
@@ -90,6 +91,7 @@ libmemcached_libmemcached_la_SOURCES+= libmemcached/encoding_key.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/namespace.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/options.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/parse.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/poll.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/purge.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/quit.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/quit.hpp
@@ -104,9 +106,9 @@ libmemcached_libmemcached_la_SOURCES+= libmemcached/storage.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/strerror.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/string.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/touch.cc
+libmemcached_libmemcached_la_SOURCES+= libmemcached/udp.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/verbosity.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/version.cc
-libmemcached_libmemcached_la_SOURCES+= libmemcached/udp.cc
 libmemcached_libmemcached_la_SOURCES+= libmemcached/virtual_bucket.c
 
 libmemcached/options.cc: libmemcached/csl/parser.h

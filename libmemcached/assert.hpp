@@ -37,6 +37,12 @@
 
 #pragma once
 
+#ifdef __cplusplus
+# include <cassert>
+#else
+# include <assert.h>
+#endif // __cplusplus
+
 #ifdef NDEBUG
 # define assert_msg(__expr, __mesg) (void)(__expr); (void)(__mesg);
 # define assert_vmsg(__expr, __mesg, ...) (void)(__expr); (void)(__mesg);
@@ -48,7 +54,14 @@
 #  include <alloca.h>
 # endif
 
+#ifdef __cplusplus
 # include <cstdarg>
+# include <cstdio>
+#else
+# include <stdarg.h>
+# include <stdio.h>
+#endif
+
 # include <libmemcached/backtrace.hpp>
 
 # define assert_msg(__expr, __mesg) \

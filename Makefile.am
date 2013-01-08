@@ -64,7 +64,6 @@ endif
 
 include libmemcachedinternal/include.am
 include libmemcachedinternal/util/include.am
-include poll/include.am
 include rpm/include.am
 include support/include.am
 include tests/include.am
