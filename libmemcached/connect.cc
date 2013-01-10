@@ -357,6 +357,8 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 #endif
 
 
+#if defined(_WIN32)
+#else
 #if defined(SO_NOSIGPIPE)
   if (SO_NOSIGPIPE)
   {
@@ -373,7 +375,8 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 #endif
     }
   }
-#endif
+#endif // SO_NOSIGPIPE
+#endif // _WIN32
 
   if (server->root->flags.no_block)
   {

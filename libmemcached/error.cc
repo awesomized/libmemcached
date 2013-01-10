@@ -153,37 +153,37 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
   if (str and str->size and local_errno)
   {
-    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%lu) %s(%s), %.*s -> %s", 
-                               long(error->root),
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s), %.*s -> %s", 
+                               error->root,
                                memcached_strerror(&memc, rc), 
                                errmsg_ptr,
                                memcached_string_printf(*str), at);
   }
   else if (local_errno)
   {
-    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%lu) %s(%s) -> %s", 
-                               long(error->root),
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s) -> %s", 
+                               error->root,
                                memcached_strerror(&memc, rc), 
                                errmsg_ptr,
                                at);
   }
   else if (rc == MEMCACHED_PARSE_ERROR and str and str->size)
   {
-    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%lu) %.*s -> %s", 
-                               long(error->root),
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %.*s -> %s", 
+                               error->root,
                                int(str->size), str->c_str, at);
   }
   else if (str and str->size)
   {
-    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%lu) %s, %.*s -> %s", 
-                               long(error->root),
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s, %.*s -> %s", 
+                               error->root,
                                memcached_strerror(&memc, rc), 
                                int(str->size), str->c_str, at);
   }
   else
   {
-    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%lu) %s -> %s", 
-                               long(error->root),
+    error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s -> %s", 
+                               error->root,
                                memcached_strerror(&memc, rc), at);
   }
 

@@ -122,6 +122,9 @@ private:
     mach_port_deallocate(mach_task_self(), _clock_serv);
     ts.tv_sec= _mach_timespec.tv_sec;
     ts.tv_nsec= _mach_timespec.tv_nsec;
+#elif defined(_WIN32)
+    ts.tv_sec= time(NULL);
+    ts.tv_nsec= 0;
 #else
     clock_gettime(CLOCK_REALTIME, &ts);
 #endif

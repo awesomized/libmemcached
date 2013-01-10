@@ -103,7 +103,7 @@ bool server_startup_st::shutdown(uint32_t host_to_shutdown)
   {
     Server* tmp= servers[host_to_shutdown];
 
-    if (tmp and tmp->kill() == false)
+    if (tmp and tmp->murder() == false)
     { }
     else
     {
@@ -139,7 +139,7 @@ bool server_startup_st::shutdown()
   bool success= true;
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); ++iter)
   {
-    if ((*iter)->has_pid() and (*iter)->kill() == false)
+    if ((*iter)->has_pid() and (*iter)->murder() == false)
     {
       Error << "Unable to kill:" <<  *(*iter);
       success= false;

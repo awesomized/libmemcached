@@ -57,6 +57,9 @@ static memcached_return_t _vdo_udp(org::libmemcached::Instance* instance,
 
   return MEMCACHED_SUCCESS;
 #else
+  (void)instance;
+  (void)vector;
+  (void)count;
   return MEMCACHED_FAILURE;
 #endif
 }

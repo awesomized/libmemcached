@@ -124,7 +124,7 @@ Server::Server(const std::string& host_arg, const in_port_t port_arg,
 
 Server::~Server()
 {
-  kill();
+  murder();
 }
 
 bool Server::check()
@@ -148,7 +148,7 @@ bool Server::cycle()
   while (--limit and 
          is_pid_valid(_app.pid()))
   {
-    if (kill())
+    if (murder())
     {
       Log << "Killed existing server," << *this;
       dream(0, 50000);
@@ -498,7 +498,7 @@ bool Server::args(Application& app)
   return true;
 }
 
-bool Server::kill()
+bool Server::murder()
 {
   if (check_pid(_app.pid())) // If we kill it, reset
   {
