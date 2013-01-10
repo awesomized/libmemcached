@@ -347,3 +347,24 @@ void memcached_instance_next_retry(memcached_server_instance_st self, const time
     ((org::libmemcached::Instance*)self)->next_retry= absolute_time;
   }
 }
+
+namespace org {
+namespace libmemcached {
+
+  bool Instance::valid() const
+  {
+    if (fd == INVALID_SOCKET)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Instance::is_shutting_down() const
+  {
+    return options.is_shutting_down;
+  }
+
+} // namespace libmemcached
+} // namespace org

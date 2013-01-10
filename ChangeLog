@@ -1,3 +1,7 @@
+
+* Added support to do two part shutdown of socket.
+
+
 1.0.15 Mon Dec 17 07:25:44 EST 2012
 * Added support for Murmur3 (HASHKIT_HASH_MURMUR3)
 * Portability fixes.

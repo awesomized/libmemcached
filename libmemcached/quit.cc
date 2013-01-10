@@ -46,20 +46,18 @@
   will force data to be completed.
 */
 
-void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
+void memcached_quit_server(org::libmemcached::Instance* instance, bool io_death)
 {
-  if (ptr->fd != INVALID_SOCKET)
+  if (instance->valid())
   {
-    if (io_death == false and memcached_is_udp(ptr->root) == false and ptr->options.is_shutting_down == false)
+    if (io_death == false and memcached_is_udp(instance->root) == false and instance->is_shutting_down() == false)
     {
-      ptr->options.is_shutting_down= true;
-
       memcached_return_t rc;
-      if (ptr->root->flags.binary_protocol)
+      if (instance->root->flags.binary_protocol)
       {
         protocol_binary_request_quit request= {}; // = {.bytes= {0}};
 
-        initialize_binary_request(ptr, request.message.header);
+        initialize_binary_request(instance, request.message.header);
 
         request.message.header.request.opcode = PROTOCOL_BINARY_CMD_QUIT;
         request.message.header.request.datatype = PROTOCOL_BINARY_RAW_BYTES;
@@ -69,7 +67,7 @@ void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
           { request.bytes, sizeof(request.bytes) }
         };
 
-        rc= memcached_vdo(ptr, vector, 1, true);
+        rc= memcached_vdo(instance, vector, 1, true);
       }
       else
       {
@@ -78,8 +76,10 @@ void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
           { memcached_literal_param("quit\r\n") }
         };
 
-        rc= memcached_vdo(ptr, vector, 1, true);
+        rc= memcached_vdo(instance, vector, 1, true);
       }
+
+      instance->start_close_socket();
 
       /* read until socket is closed, or there is an error
        * closing the socket before all data is read
@@ -89,17 +89,17 @@ void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
        * In .40 we began to only do this if we had been doing buffered
        * requests of had replication enabled.
        */
-      if (memcached_success(rc) and (ptr->root->flags.buffer_requests or ptr->root->number_of_replicas))
+      if (memcached_success(rc) and (instance->root->flags.buffer_requests or instance->root->number_of_replicas))
       {
         if (0)
         {
           memcached_return_t rc_slurp;
-          while (memcached_continue(rc_slurp= memcached_io_slurp(ptr))) {} ;
+          while (memcached_continue(rc_slurp= memcached_io_slurp(instance))) {} ;
           WATCHPOINT_ASSERT(rc_slurp == MEMCACHED_CONNECTION_FAILURE);
         }
         else
         {
-          memcached_io_slurp(ptr);
+          memcached_io_slurp(instance);
         }
       }
 
@@ -110,47 +110,49 @@ void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death)
        * server to ensure that the server processed all of the data we
        * sent to the server.
        */
-      ptr->server_failure_counter= 0;
+      instance->server_failure_counter= 0;
     }
-    memcached_io_close(ptr);
+
   }
 
-  ptr->state= MEMCACHED_SERVER_STATE_NEW;
-  ptr->cursor_active_= 0;
-  ptr->io_bytes_sent= 0;
-  ptr->write_buffer_offset= size_t(ptr->root and memcached_is_udp(ptr->root) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
-  ptr->read_buffer_length= 0;
-  ptr->read_ptr= ptr->read_buffer;
-  ptr->options.is_shutting_down= false;
-  memcached_server_response_reset(ptr);
+  instance->close_socket();
+
+  instance->state= MEMCACHED_SERVER_STATE_NEW;
+  instance->cursor_active_= 0;
+  instance->io_bytes_sent= 0;
+  instance->write_buffer_offset= size_t(instance->root and memcached_is_udp(instance->root) ? UDP_DATAGRAM_HEADER_LENGTH : 0);
+  instance->read_buffer_length= 0;
+  instance->read_ptr= instance->read_buffer;
+  instance->options.is_shutting_down= false;
+  memcached_server_response_reset(instance);
 
   // We reset the version so that if we end up talking to a different server
   // we don't have stale server version information.
-  ptr->major_version= ptr->minor_version= ptr->micro_version= UINT8_MAX;
+  instance->major_version= instance->minor_version= instance->micro_version= UINT8_MAX;
 
   if (io_death)
   {
-    memcached_mark_server_for_timeout(ptr);
+    memcached_mark_server_for_timeout(instance);
   }
 }
 
-void send_quit(memcached_st *ptr)
+void send_quit(memcached_st *memc)
 {
-  for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
+  for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
     memcached_quit_server(instance, false);
   }
 }
 
-void memcached_quit(memcached_st *ptr)
+void memcached_quit(memcached_st *memc)
 {
   memcached_return_t rc;
-  if (memcached_failed(rc= initialize_query(ptr, true)))
+  if (memcached_failed(rc= initialize_query(memc, true)))
   {
     return;
   }
 
-  send_quit(ptr);
+  send_quit(memc);
 }

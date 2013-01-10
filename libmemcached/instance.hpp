@@ -85,6 +85,13 @@ struct Instance {
   {
   }
 
+  bool valid() const;
+
+  bool is_shutting_down() const;
+
+  void start_close_socket();
+  void close_socket();
+
   uint32_t response_count() const
   {
     return cursor_active_;

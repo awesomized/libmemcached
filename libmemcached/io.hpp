@@ -62,8 +62,6 @@ memcached_return_t memcached_io_readline(org::libmemcached::Instance* ptr,
                                          size_t size,
                                          size_t& total);
 
-void memcached_io_close(org::libmemcached::Instance* ptr);
-
 /* Read n bytes of data from the server and store them in dta */
 memcached_return_t memcached_safe_read(org::libmemcached::Instance* ptr,
                                        void *dta,
