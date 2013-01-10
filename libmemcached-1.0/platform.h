@@ -42,7 +42,11 @@
 # include <winsock2.h>
 # include <ws2tcpip.h>
 
-typedef short in_port_t;
+#ifndef HAVE_IN_PORT_T
+typedef int in_port_t;
+# define HAVE_IN_PORT_T 1
+#endif
+
 typedef SOCKET memcached_socket_t;
 
 #else

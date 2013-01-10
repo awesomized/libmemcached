@@ -24,7 +24,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 9
+#serial 10
 
 AC_DEFUN([AX_CXX_GCC_ABI_DEMANGLE],
     [AC_PREREQ([2.63])dnl
@@ -38,6 +38,9 @@ AC_DEFUN([AX_CXX_GCC_ABI_DEMANGLE],
           template<typename TYPE>
           class A {};]],
           [[A<int> instance;
+#if defined(_WIN32) 
+          return EXIT_FAILURE; 
+#endif
           int status = 0;
           char* c_name = abi::__cxa_demangle(typeid(instance).name(), 0, 0, &status);
 
@@ -52,6 +55,8 @@ AC_DEFUN([AX_CXX_GCC_ABI_DEMANGLE],
         [ax_cv_cxx_gcc_abi_demangle=no],
         [ax_cv_cxx_gcc_abi_demangle=no])
       AC_LANG_POP])
+      AC_MSG_CHECKING([checking for cxx_gcc_abi_demangle])
+  AC_MSG_RESULT(["$ax_cv_cxx_gcc_abi_demangle"])
   AS_IF([test "x$ax_cv_cxx_gcc_abi_demangle" = xyes],
       [AC_DEFINE([HAVE_GCC_ABI_DEMANGLE],[1],[define if the compiler supports GCC C++ ABI name demangling])])
   ])

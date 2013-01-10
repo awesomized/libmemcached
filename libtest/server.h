@@ -41,8 +41,10 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+
 #include <netdb.h>
 #include <netinet/in.h>
+
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -249,7 +251,7 @@ public:
 
   std::string log_and_pid();
 
-  bool kill();
+  bool murder();
   bool start();
   bool command(libtest::Application& app);
 

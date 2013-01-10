@@ -39,7 +39,7 @@ AC_DEFUN([AX_PROG_SPHINX_BUILD],
         ])
       ])
 
-    AM_CONDITIONAL(HAVE_DPKG_GENSYMBOLS,[test "x${DPKG_GENSYMBOLS}" != "x:"])
-    AM_CONDITIONAL(HAVE_SPHINX,[test "x${SPHINXBUILD}" != "x:"])
-    AM_CONDITIONAL(HAVE_RECENT_SPHINX,[test "x${ac_cv_recent_sphinx}" = "xyes"])
+    AM_CONDITIONAL([HAVE_DPKG_GENSYMBOLS],[test "x${DPKG_GENSYMBOLS}" != "x:"])
+    AM_CONDITIONAL([HAVE_SPHINX],[test "x${SPHINXBUILD}" != "x:"])
+    AM_CONDITIONAL([HAVE_RECENT_SPHINX],[test "x${ac_cv_recent_sphinx}" = "xyes"])
 ])

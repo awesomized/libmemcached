@@ -38,8 +38,9 @@
 
 #include <unistd.h>
 #include <string>
-#include <signal.h>
+#include <csignal>
 
+#include <sys/types.h>
 #include <libtest/dream.h>
 
 namespace libtest {

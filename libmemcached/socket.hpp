@@ -58,7 +58,7 @@
 #endif
 
 #ifdef __cplusplus
-static inline void memcached_close_socket(int& socket_fd)
+static inline void memcached_close_socket(memcached_socket_t& socket_fd)
 {
   closesocket(socket_fd);
   socket_fd= INVALID_SOCKET;

@@ -58,6 +58,13 @@ libmemcached_libmemcached_la_LDFLAGS=
 libmemcached_libmemcached_la_CFLAGS= -DBUILDING_LIBMEMCACHED
 libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 
+if BUILD_WIN32
+libmemcached_libmemcached_la_CFLAGS+= -DBUILDING_HASHKIT
+libmemcached_libmemcached_la_CXXFLAGS+= -DBUILDING_HASHKIT
+libmemcached_libmemcached_la_LIBADD+= -lmingw64
+libmemcached_libmemcached_la_LIBADD+= -lws2_64
+endif
+
 libmemcached_libmemcached_la_SOURCES+= libmemcached/instance.cc
 libmemcached_libmemcached_la_SOURCES+= ${libhashkit_libhashkit_la_SOURCES}
 libmemcached_libmemcached_la_SOURCES+= libmemcached/allocators.cc

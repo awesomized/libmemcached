@@ -36,7 +36,13 @@
 
 #pragma once
 
-#include <spawn.h>
+#ifdef _WIN32
+typedef int posix_spawn_file_actions_t;
+#else
+# include <spawn.h>
+#endif
+
+#include <pthread.h>
 
 // http://www.gnu.org/software/automake/manual/automake.html#Using-the-TAP-test-protocol
 #ifndef EXIT_SKIP
