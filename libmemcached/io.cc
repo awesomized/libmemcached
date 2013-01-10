@@ -703,28 +703,34 @@ bool memcached_io_writev(org::libmemcached::Instance* ptr,
   return (complete_total == total);
 }
 
-
-void memcached_io_close(org::libmemcached::Instance* ptr)
+void org::libmemcached::Instance::start_close_socket()
 {
-  if (ptr->fd == INVALID_SOCKET)
+  if (fd != INVALID_SOCKET)
   {
-    return;
+    shutdown(fd, SHUT_WR);
+    options.is_shutting_down= true;
   }
+}
 
-  /* in case of death shutdown to avoid blocking at close() */
-  if (shutdown(ptr->fd, SHUT_RDWR) == SOCKET_ERROR and get_socket_errno() != ENOTCONN)
+void org::libmemcached::Instance::close_socket()
+{
+  if (fd != INVALID_SOCKET)
   {
-    WATCHPOINT_NUMBER(ptr->fd);
-    WATCHPOINT_ERRNO(get_socket_errno());
-    WATCHPOINT_ASSERT(get_socket_errno());
-  }
+    /* in case of death shutdown to avoid blocking at close() */
+    if (shutdown(fd, SHUT_RDWR) == SOCKET_ERROR and get_socket_errno() != ENOTCONN)
+    {
+      WATCHPOINT_NUMBER(fd);
+      WATCHPOINT_ERRNO(get_socket_errno());
+      WATCHPOINT_ASSERT(get_socket_errno());
+    }
 
-  if (closesocket(ptr->fd) == SOCKET_ERROR)
-  {
-    WATCHPOINT_ERRNO(get_socket_errno());
+    if (closesocket(fd) == SOCKET_ERROR)
+    {
+      WATCHPOINT_ERRNO(get_socket_errno());
+    }
+    state= MEMCACHED_SERVER_STATE_NEW;
+    fd= INVALID_SOCKET;
   }
-  ptr->state= MEMCACHED_SERVER_STATE_NEW;
-  ptr->fd= INVALID_SOCKET;
 }
 
 org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&)
