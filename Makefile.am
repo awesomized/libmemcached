@@ -6,6 +6,7 @@ ACLOCAL_AMFLAGS = -I m4 -I libtest/m4
 SUFFIXES =
 .PHONY =
 TESTS =
+XFAIL_TESTS =
 CLEANFILES =
 DISTCLEANFILES =
 bin_PROGRAMS =
@@ -81,7 +82,9 @@ include win32/include.am
 include m4/include.am
 endif
 
+TESTS += ${bin_PROGRAMS}
 TESTS += ${check_PROGRAMS}
+XFAIL_TESTS += ${bin_PROGRAMS}
 
 merge-clean:
 	@find ./ | $(GREP) \.gcda | xargs rm -f
