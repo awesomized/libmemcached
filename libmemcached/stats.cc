@@ -514,8 +514,9 @@ static memcached_return_t ascii_stats_fetch(memcached_stat_st *memc_stat,
   return rc;
 }
 
-memcached_stat_st *memcached_stat(memcached_st *self, char *args, memcached_return_t *error)
+memcached_stat_st *memcached_stat(memcached_st *shell, char *args, memcached_return_t *error)
 {
+  Memcached* self= memcached2Memcached(shell);
   memcached_return_t unused;
   if (error == NULL)
   {
@@ -652,10 +653,11 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
   We make a copy of the keys since at some point in the not so distant future
   we will add support for "found" keys.
 */
-char ** memcached_stat_get_keys(memcached_st *memc,
+char ** memcached_stat_get_keys(memcached_st *shell,
                                 memcached_stat_st *,
                                 memcached_return_t *error)
 {
+  Memcached* memc= memcached2Memcached(shell);
   if (memc)
   {
     char **list= static_cast<char **>(libmemcached_malloc(memc, sizeof(memcached_stat_keys)));
@@ -712,8 +714,9 @@ static memcached_return_t call_stat_fn(memcached_st *memc,
   return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args,  memcached_stat_fn func, void *context)
+memcached_return_t memcached_stat_execute(memcached_st *shell, const char *args,  memcached_stat_fn func, void *context)
 {
+  Memcached* memc= memcached2Memcached(shell);
   if (memcached_fatal(memcached_version(memc)))
   {
     return memcached_last_error(memc);

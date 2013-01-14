@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 #include <libmemcached/common.h>
 
 static inline void _result_init(memcached_result_st *self,
-                                memcached_st *memc)
+                                Memcached *memc)
 {
   self->item_flags= 0;
   self->item_expiration= 0;
@@ -57,10 +57,10 @@ static inline void _result_init(memcached_result_st *self,
   self->item_key[0]= 0;
 }
 
-memcached_result_st *memcached_result_create(const memcached_st *memc,
+memcached_result_st *memcached_result_create(const memcached_st *shell,
                                              memcached_result_st *ptr)
 {
-  WATCHPOINT_ASSERT(memc);
+  const Memcached* memc= memcached2Memcached(shell);
 
   /* Saving malloc calls :) */
   if (ptr)

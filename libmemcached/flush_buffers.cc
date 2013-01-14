@@ -37,29 +37,35 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t memcached_flush_buffers(memcached_st *memc)
+memcached_return_t memcached_flush_buffers(memcached_st *shell)
 {
-  memcached_return_t ret= MEMCACHED_SUCCESS;
-
-  for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
+  Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+    memcached_return_t ret= MEMCACHED_SUCCESS;
 
-    if (instance->write_buffer_offset != 0) 
+    for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
     {
-      if (instance->fd == INVALID_SOCKET and
-          (ret= memcached_connect(instance)) != MEMCACHED_SUCCESS)
-      {
-        WATCHPOINT_ERROR(ret);
-        return ret;
-      }
+      org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
 
-      if (memcached_io_write(instance) == false)
+      if (instance->write_buffer_offset != 0) 
       {
-        ret= MEMCACHED_SOME_ERRORS;
+        if (instance->fd == INVALID_SOCKET and
+            (ret= memcached_connect(instance)) != MEMCACHED_SUCCESS)
+        {
+          WATCHPOINT_ERROR(ret);
+          return ret;
+        }
+
+        if (memcached_io_write(instance) == false)
+        {
+          ret= MEMCACHED_SOME_ERRORS;
+        }
       }
     }
+
+    return ret;
   }
 
-  return ret;
+  return MEMCACHED_INVALID_ARGUMENTS;
 }

@@ -46,16 +46,26 @@
 
 #include <pthread.h>
 
-void memcached_set_sasl_callbacks(memcached_st *ptr,
+void memcached_set_sasl_callbacks(memcached_st *shell,
                                   const sasl_callback_t *callbacks)
 {
-  ptr->sasl.callbacks= const_cast<sasl_callback_t *>(callbacks);
-  ptr->sasl.is_allocated= false;
+  Memcached* self= memcached2Memcached(shell);
+  if (self)
+  {
+    self->sasl.callbacks= const_cast<sasl_callback_t *>(callbacks);
+    self->sasl.is_allocated= false;
+  }
 }
 
-sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr)
+sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *shell)
 {
-  return ptr->sasl.callbacks;
+  Memcached* self= memcached2Memcached(shell);
+  if (self)
+  {
+    return self->sasl.callbacks;
+  }
+
+  return NULL;
 }
 
 /**
@@ -310,10 +320,11 @@ static int get_password(sasl_conn_t *conn, void *context, int id,
   return SASL_OK;
 }
 
-memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
+memcached_return_t memcached_set_sasl_auth_data(memcached_st *shell,
                                                 const char *username,
                                                 const char *password)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
     return MEMCACHED_NOT_SUPPORTED;
@@ -367,13 +378,14 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr)
+memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *shell)
 {
   if (LIBMEMCACHED_WITH_SASL_SUPPORT == 0)
   {
     return MEMCACHED_NOT_SUPPORTED;
   }
 
+  Memcached* ptr= memcached2Memcached(shell);
   if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;

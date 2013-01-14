@@ -805,7 +805,7 @@ static memcached_return_t _read_one_response(org::libmemcached::Instance* instan
 
   if (result == NULL)
   {
-    memcached_st *root= (memcached_st *)instance->root;
+    Memcached *root= (Memcached *)instance->root;
     result = &root->result;
   }
 

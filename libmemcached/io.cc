@@ -148,10 +148,10 @@ static bool process_input_buffer(org::libmemcached::Instance* instance)
    */
     memcached_callback_st cb= *instance->root->callbacks;
 
-    memcached_set_processing_input((memcached_st *)instance->root, true);
+    memcached_set_processing_input((Memcached *)instance->root, true);
 
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
-    memcached_st *root= (memcached_st *)instance->root;
+    Memcached *root= (Memcached *)instance->root;
     memcached_return_t error= memcached_response(instance, buffer, sizeof(buffer), &root->result);
 
     memcached_set_processing_input(root, false);
@@ -746,7 +746,7 @@ void org::libmemcached::Instance::close_socket()
   major_version= minor_version= micro_version= UINT8_MAX;
 }
 
-org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&)
+org::libmemcached::Instance* memcached_io_get_readable_server(Memcached *memc, memcached_return_t&)
 {
 #define MAX_SERVERS_TO_POLL 100
   struct pollfd fds[MAX_SERVERS_TO_POLL];

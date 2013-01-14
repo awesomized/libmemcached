@@ -58,7 +58,7 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      size_t number_of_keys,
                                                      bool mget_mode);
 
-char *memcached_get_by_key(memcached_st *ptr,
+char *memcached_get_by_key(memcached_st *shell,
                            const char *group_key,
                            size_t group_key_length,
                            const char *key, size_t key_length,
@@ -66,6 +66,7 @@ char *memcached_get_by_key(memcached_st *ptr,
                            uint32_t *flags,
                            memcached_return_t *error)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   memcached_return_t unused;
   if (error == NULL)
   {
@@ -385,13 +386,14 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
   return MEMCACHED_FAILURE; // Complete failure occurred
 }
 
-memcached_return_t memcached_mget_by_key(memcached_st *ptr,
+memcached_return_t memcached_mget_by_key(memcached_st *shell,
                                          const char *group_key,
                                          size_t group_key_length,
                                          const char * const *keys,
                                          const size_t *key_length,
                                          size_t number_of_keys)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   return memcached_mget_by_key_real(ptr, group_key, group_key_length, keys,
                                     key_length, number_of_keys, true);
 }
@@ -409,7 +411,7 @@ memcached_return_t memcached_mget_execute(memcached_st *ptr,
                                        context, number_of_callbacks);
 }
 
-memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
+memcached_return_t memcached_mget_execute_by_key(memcached_st *shell,
                                                  const char *group_key,
                                                  size_t group_key_length,
                                                  const char * const *keys,
@@ -419,6 +421,7 @@ memcached_return_t memcached_mget_execute_by_key(memcached_st *ptr,
                                                  void *context,
                                                  unsigned int number_of_callbacks)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(ptr, false)))
   {

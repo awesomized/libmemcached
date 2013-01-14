@@ -40,7 +40,7 @@
 */
 #include <libmemcached/common.h>
 
-static inline void _server_init(memcached_server_st *self, memcached_st *root,
+static inline void _server_init(memcached_server_st *self, Memcached *root,
                                 const memcached_string_t& hostname,
                                 in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
@@ -82,7 +82,7 @@ static inline void _server_init(memcached_server_st *self, memcached_st *root,
   self->hostname[hostname.size]= 0;
 }
 
-static memcached_server_st *_server_create(memcached_server_st *self, const memcached_st *memc)
+static memcached_server_st *_server_create(memcached_server_st *self, const Memcached *memc)
 {
   if (self == NULL)
   {
@@ -105,7 +105,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const memc
   return self;
 }
 
-memcached_server_st *__server_create_with(memcached_st *memc,
+memcached_server_st *__server_create_with(Memcached *memc,
                                           memcached_server_st* allocated_instance,
                                           const memcached_string_t& hostname,
                                           const in_port_t port,
@@ -125,7 +125,7 @@ memcached_server_st *__server_create_with(memcached_st *memc,
     return NULL;
   }
 
-  _server_init(allocated_instance, const_cast<memcached_st *>(memc), hostname, port, weight, type);
+  _server_init(allocated_instance, const_cast<Memcached *>(memc), hostname, port, weight, type);
 
   return allocated_instance;
 }

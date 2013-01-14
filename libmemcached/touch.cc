@@ -110,11 +110,12 @@ memcached_return_t memcached_touch(memcached_st *ptr,
   return memcached_touch_by_key(ptr, key, key_length, key, key_length, expiration);
 }
 
-memcached_return_t memcached_touch_by_key(memcached_st *ptr,
+memcached_return_t memcached_touch_by_key(memcached_st *shell,
                                           const char *group_key, size_t group_key_length,
                                           const char *key, size_t key_length,
                                           time_t expiration)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   LIBMEMCACHED_MEMCACHED_TOUCH_START();
 
   memcached_return_t rc;

@@ -77,13 +77,14 @@ struct memcached_allocator_t memcached_allocators_return_default(void)
   return global_default_allocator;
 }
 
-memcached_return_t memcached_set_memory_allocators(memcached_st *self,
+memcached_return_t memcached_set_memory_allocators(memcached_st *shell,
                                                    memcached_malloc_fn mem_malloc,
                                                    memcached_free_fn mem_free,
                                                    memcached_realloc_fn mem_realloc,
                                                    memcached_calloc_fn mem_calloc,
                                                    void *context)
 {
+  Memcached* self= memcached2Memcached(shell);
   if (self == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
@@ -110,39 +111,44 @@ memcached_return_t memcached_set_memory_allocators(memcached_st *self,
   return MEMCACHED_SUCCESS;
 }
 
-void *memcached_get_memory_allocators_context(const memcached_st *self)
+void *memcached_get_memory_allocators_context(const memcached_st *shell)
 {
-  return self->allocators.context;
+  const Memcached* self= memcached2Memcached(shell);
+  if (self)
+  {
+    return self->allocators.context;
+  }
+
+  return NULL;
 }
 
-void memcached_get_memory_allocators(const memcached_st *self,
+void memcached_get_memory_allocators(const memcached_st *shell,
                                      memcached_malloc_fn *mem_malloc,
                                      memcached_free_fn *mem_free,
                                      memcached_realloc_fn *mem_realloc,
                                      memcached_calloc_fn *mem_calloc)
 {
-  if (self == NULL)
+  const Memcached* self= memcached2Memcached(shell);
+  if (self)
   {
-    return;
-  }
+    if (mem_malloc)
+    {
+      *mem_malloc= self->allocators.malloc;
+    }
 
-  if (mem_malloc)
-  {
-    *mem_malloc= self->allocators.malloc;
-  }
+    if (mem_free)
+    {
+      *mem_free= self->allocators.free;
+    }
 
-  if (mem_free)
-  {
-    *mem_free= self->allocators.free;
-  }
+    if (mem_realloc)
+    {
+      *mem_realloc= self->allocators.realloc;
+    }
 
-  if (mem_realloc)
-  {
-    *mem_realloc= self->allocators.realloc;
-  }
-
-  if (mem_calloc)
-  {
-    *mem_calloc= self->allocators.calloc;
+    if (mem_calloc)
+    {
+      *mem_calloc= self->allocators.calloc;
+    }
   }
 }

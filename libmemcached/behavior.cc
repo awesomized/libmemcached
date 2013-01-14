@@ -42,7 +42,7 @@
 #include <ctime>
 #include <sys/types.h>
 
-bool memcached_is_consistent_distribution(const memcached_st* memc)
+bool memcached_is_consistent_distribution(const Memcached* memc)
 {
   switch (memc->distribution)
   {
@@ -68,10 +68,11 @@ bool memcached_is_consistent_distribution(const memcached_st* memc)
   We quit all connections so we can reset the sockets.
 */
 
-memcached_return_t memcached_behavior_set(memcached_st *ptr,
+memcached_return_t memcached_behavior_set(memcached_st *shell,
                                           const memcached_behavior_t flag,
                                           uint64_t data)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
@@ -308,9 +309,10 @@ bool _is_auto_eject_host(const memcached_st *ptr)
   return ptr->flags.auto_eject_hosts;
 }
 
-uint64_t memcached_behavior_get(memcached_st *ptr,
+uint64_t memcached_behavior_get(memcached_st *shell,
                                 const memcached_behavior_t flag)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
@@ -513,77 +515,113 @@ uint64_t memcached_behavior_get(memcached_st *ptr,
 }
 
 
-memcached_return_t memcached_behavior_set_distribution(memcached_st *ptr, memcached_server_distribution_t type)
+memcached_return_t memcached_behavior_set_distribution(memcached_st *shell, memcached_server_distribution_t type)
 {
-  switch (type)
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-  case MEMCACHED_DISTRIBUTION_MODULA:
-    break;
+    switch (type)
+    {
+    case MEMCACHED_DISTRIBUTION_MODULA:
+      break;
 
-  case MEMCACHED_DISTRIBUTION_CONSISTENT:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
-    memcached_set_weighted_ketama(ptr, false);
-    break;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT:
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+      memcached_set_weighted_ketama(ptr, false);
+      break;
 
-  case MEMCACHED_DISTRIBUTION_RANDOM:
-    break;
+    case MEMCACHED_DISTRIBUTION_RANDOM:
+      break;
 
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
-    break;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+      break;
 
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
-    memcached_set_weighted_ketama(ptr, true);
-    break;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
+      memcached_set_weighted_ketama(ptr, true);
+      break;
 
-  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
-    break;
+    case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+      break;
 
-  default:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+    default:
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                                 memcached_literal_param("Invalid memcached_server_distribution_t"));
+    }
+    ptr->distribution= type;
+
+    return run_distribution(ptr);
+  }
+
+  return MEMCACHED_INVALID_ARGUMENTS;
+}
+
+
+memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st *shell)
+{
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
+  {
+    return ptr->distribution;
+  }
+
+  return MEMCACHED_DISTRIBUTION_CONSISTENT_MAX;
+}
+
+memcached_return_t memcached_behavior_set_key_hash(memcached_st *shell, memcached_hash_t type)
+{
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
+  {
+    if (hashkit_success(hashkit_set_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+    {
+      return MEMCACHED_SUCCESS;
+    }
+
     return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                               memcached_literal_param("Invalid memcached_server_distribution_t"));
+                               memcached_literal_param("Invalid memcached_hash_t()"));
   }
-  ptr->distribution= type;
 
-  return run_distribution(ptr);
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-
-memcached_server_distribution_t memcached_behavior_get_distribution(memcached_st *ptr)
+memcached_hash_t memcached_behavior_get_key_hash(memcached_st *shell)
 {
-  return ptr->distribution;
-}
-
-memcached_return_t memcached_behavior_set_key_hash(memcached_st *ptr, memcached_hash_t type)
-{
-  if (hashkit_success(hashkit_set_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-    return MEMCACHED_SUCCESS;
+    return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
   }
 
-  return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                             memcached_literal_param("Invalid memcached_hash_t()"));
+  return MEMCACHED_HASH_MAX;
 }
 
-memcached_hash_t memcached_behavior_get_key_hash(memcached_st *ptr)
+memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *shell, memcached_hash_t type)
 {
-  return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
-}
-
-memcached_return_t memcached_behavior_set_distribution_hash(memcached_st *ptr, memcached_hash_t type)
-{
-  if (hashkit_success(hashkit_set_distribution_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-    return MEMCACHED_SUCCESS;
+    if (hashkit_success(hashkit_set_distribution_function(&ptr->hashkit, (hashkit_hash_algorithm_t)type)))
+    {
+      return MEMCACHED_SUCCESS;
+    }
+
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
+                               memcached_literal_param("Invalid memcached_hash_t()"));
   }
 
-  return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                             memcached_literal_param("Invalid memcached_hash_t()"));
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *ptr)
+memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *shell)
 {
-  return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
+  {
+    return (memcached_hash_t)hashkit_get_function(&ptr->hashkit);
+  }
+
+  return MEMCACHED_HASH_MAX;
 }
 
 const char *libmemcached_string_behavior(const memcached_behavior_t flag)
@@ -648,12 +686,13 @@ const char *libmemcached_string_distribution(const memcached_server_distribution
   }
 }
 
-memcached_return_t memcached_bucket_set(memcached_st *self,
+memcached_return_t memcached_bucket_set(memcached_st *shell,
                                         const uint32_t *host_map,
                                         const uint32_t *forward_map,
                                         const uint32_t buckets,
                                         const uint32_t replicas)
 {
+  Memcached* self= memcached2Memcached(shell);
   memcached_return_t rc;
 
   if (self == NULL)
