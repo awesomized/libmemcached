@@ -91,3 +91,5 @@
 #define memcached_set_allocated(__object, __value) ((__object)->options.is_allocated= (__value))
 
 #define memcached_set_weighted_ketama(__object, __value) ((__object)->ketama.weighted_= (__value))
+
+#define memcached2Memcached(__obj) (__obj)

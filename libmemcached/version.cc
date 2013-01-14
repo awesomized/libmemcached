@@ -41,7 +41,7 @@ const char * memcached_lib_version(void)
   return LIBMEMCACHED_VERSION_STRING;
 }
 
-static inline memcached_return_t memcached_version_textual(memcached_st *memc)
+static inline memcached_return_t memcached_version_textual(Memcached *memc)
 {
   libmemcached_io_vector_st vector[]=
   {
@@ -89,7 +89,7 @@ static inline memcached_return_t memcached_version_textual(memcached_st *memc)
   return errors_happened ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
-static inline memcached_return_t memcached_version_binary(memcached_st *memc)
+static inline memcached_return_t memcached_version_binary(Memcached *memc)
 {
   protocol_binary_request_version request= {};
 
@@ -202,8 +202,9 @@ void memcached_version_instance(org::libmemcached::Instance* instance)
   }
 }
 
-memcached_return_t memcached_version(memcached_st *memc)
+memcached_return_t memcached_version(memcached_st *shell)
 {
+  Memcached* memc= memcached2Memcached(shell);
   if (memc)
   {
     memcached_return_t rc;

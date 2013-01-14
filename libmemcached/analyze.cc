@@ -61,10 +61,11 @@ static void calc_hit_ratio(memcached_analysis_st *result,
   result->pool_hit_ratio= temp * 100;
 }
 
-memcached_analysis_st *memcached_analyze(memcached_st *memc,
+memcached_analysis_st *memcached_analyze(memcached_st *shell,
                                          memcached_stat_st *memc_stat,
                                          memcached_return_t *error)
 {
+  Memcached* memc= memcached2Memcached(shell);
   uint64_t total_items= 0, total_bytes= 0;
   uint64_t total_get_cmds= 0, total_get_hits= 0;
 

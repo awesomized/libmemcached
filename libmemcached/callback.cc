@@ -20,75 +20,82 @@
   These functions provide data and function callback support
 */
 
-memcached_return_t memcached_callback_set(memcached_st *ptr,
+memcached_return_t memcached_callback_set(memcached_st *shell,
                                           const memcached_callback_t flag,
                                           const void *data)
 {
-  switch (flag)
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-  case MEMCACHED_CALLBACK_PREFIX_KEY:
+    switch (flag)
     {
-      return memcached_set_namespace(ptr, (char*)data, data ? strlen((char*)data) : 0);
-    }
-
-  case MEMCACHED_CALLBACK_USER_DATA:
-    {
-      ptr->user_data= const_cast<void *>(data);
-      break;
-    }
-
-  case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
-    {
-      memcached_cleanup_fn func= *(memcached_cleanup_fn *)&data;
-      ptr->on_cleanup= func;
-      break;
-    }
-
-  case MEMCACHED_CALLBACK_CLONE_FUNCTION:
-    {
-      memcached_clone_fn func= *(memcached_clone_fn *)&data;
-      ptr->on_clone= func;
-      break;
-    }
-
-  case MEMCACHED_CALLBACK_GET_FAILURE:
-    {
-      memcached_trigger_key_fn func= *(memcached_trigger_key_fn *)&data;
-      ptr->get_key_failure= func;
-      break;
-    }
-
-  case MEMCACHED_CALLBACK_DELETE_TRIGGER:
-    {
-      if (data) // NULL would mean we are disabling.
+    case MEMCACHED_CALLBACK_PREFIX_KEY:
       {
-        if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS)) 
-        {
-          return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
-        }
-
-        if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_NOREPLY)) 
-        {
-          return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
-        }
+        return memcached_set_namespace(ptr, (char*)data, data ? strlen((char*)data) : 0);
       }
 
-      memcached_trigger_delete_key_fn func= *(memcached_trigger_delete_key_fn *)&data;
-      ptr->delete_trigger= func;
-      break;
+    case MEMCACHED_CALLBACK_USER_DATA:
+      {
+        ptr->user_data= const_cast<void *>(data);
+        break;
+      }
+
+    case MEMCACHED_CALLBACK_CLEANUP_FUNCTION:
+      {
+        memcached_cleanup_fn func= *(memcached_cleanup_fn *)&data;
+        ptr->on_cleanup= func;
+        break;
+      }
+
+    case MEMCACHED_CALLBACK_CLONE_FUNCTION:
+      {
+        memcached_clone_fn func= *(memcached_clone_fn *)&data;
+        ptr->on_clone= func;
+        break;
+      }
+
+    case MEMCACHED_CALLBACK_GET_FAILURE:
+      {
+        memcached_trigger_key_fn func= *(memcached_trigger_key_fn *)&data;
+        ptr->get_key_failure= func;
+        break;
+      }
+
+    case MEMCACHED_CALLBACK_DELETE_TRIGGER:
+      {
+        if (data) // NULL would mean we are disabling.
+        {
+          if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS)) 
+          {
+            return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if buffering is enabled"));
+          }
+
+          if (memcached_behavior_get(ptr, MEMCACHED_BEHAVIOR_NOREPLY)) 
+          {
+            return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Delete triggers cannot be used if MEMCACHED_BEHAVIOR_NOREPLY is set"));
+          }
+        }
+
+        memcached_trigger_delete_key_fn func= *(memcached_trigger_delete_key_fn *)&data;
+        ptr->delete_trigger= func;
+        break;
+      }
+
+    case MEMCACHED_CALLBACK_MAX:
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid callback supplied"));
     }
 
-  case MEMCACHED_CALLBACK_MAX:
-    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid callback supplied"));
+    return MEMCACHED_SUCCESS;
   }
 
-  return MEMCACHED_SUCCESS;
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-void *memcached_callback_get(memcached_st *ptr,
+void *memcached_callback_get(memcached_st *shell,
                              const memcached_callback_t flag,
                              memcached_return_t *error)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   memcached_return_t local_error;
   if (error == NULL)
   {

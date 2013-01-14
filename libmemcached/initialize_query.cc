@@ -36,7 +36,7 @@
 
 #include <libmemcached/common.h>
 
-memcached_return_t initialize_query(memcached_st *self, bool increment_query_id)
+memcached_return_t initialize_query(Memcached *self, bool increment_query_id)
 {
   if (self == NULL)
   {
@@ -64,7 +64,7 @@ memcached_return_t initialize_query(memcached_st *self, bool increment_query_id)
   return MEMCACHED_SUCCESS;
 }
 
-memcached_return_t initialize_const_query(const memcached_st *self)
+memcached_return_t initialize_const_query(const Memcached *self)
 {
   if (self == NULL)
   {

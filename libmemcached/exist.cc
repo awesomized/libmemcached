@@ -36,7 +36,7 @@
 
 #include <libmemcached/common.h>
 
-static memcached_return_t ascii_exist(memcached_st *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
+static memcached_return_t ascii_exist(Memcached *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
 {
   libmemcached_io_vector_st vector[]=
   {
@@ -74,7 +74,7 @@ static memcached_return_t ascii_exist(memcached_st *memc, org::libmemcached::Ins
   return rc;
 }
 
-static memcached_return_t binary_exist(memcached_st *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
+static memcached_return_t binary_exist(Memcached *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
 {
   protocol_binary_request_set request= {};
   size_t send_length= sizeof(request.bytes);
@@ -127,10 +127,11 @@ memcached_return_t memcached_exist(memcached_st *memc, const char *key, size_t k
   return memcached_exist_by_key(memc, key, key_length, key, key_length);
 }
 
-memcached_return_t memcached_exist_by_key(memcached_st *memc,
+memcached_return_t memcached_exist_by_key(memcached_st *shell,
                                           const char *group_key, size_t group_key_length,
                                           const char *key, size_t key_length)
 {
+  Memcached* memc= memcached2Memcached(shell);
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(memc, true)))
   {

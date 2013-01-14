@@ -50,7 +50,7 @@ struct memcached_error_t
   char message[MAX_ERROR_LENGTH];
 };
 
-static void _set(org::libmemcached::Instance& server, memcached_st& memc)
+static void _set(org::libmemcached::Instance& server, Memcached& memc)
 {
   if (server.error_messages and server.error_messages->query_id != server.root->query_id)
   {
@@ -467,8 +467,9 @@ static void _error_print(const memcached_error_t *error)
   _error_print(error->next);
 }
 
-void memcached_error_print(const memcached_st *self)
+void memcached_error_print(const memcached_st *shell)
 {
+  const Memcached* self= memcached2Memcached(shell);
   if (self == NULL)
   {
     return;
@@ -517,8 +518,9 @@ const char *memcached_error(const memcached_st *memc)
   return memcached_last_error_message(memc);
 }
 
-const char *memcached_last_error_message(const memcached_st *memc)
+const char *memcached_last_error_message(const memcached_st *shell)
 {
+  const Memcached* memc= memcached2Memcached(shell);
   if (memc)
   {
     if (memc->error_messages)
@@ -554,8 +556,9 @@ bool memcached_has_current_error(org::libmemcached::Instance& server)
   return memcached_has_current_error(*(server.root));
 }
 
-memcached_return_t memcached_last_error(const memcached_st *memc)
+memcached_return_t memcached_last_error(const memcached_st *shell)
 {
+  const Memcached* memc= memcached2Memcached(shell);
   if (memc)
   {
     if (memc->error_messages)
@@ -569,8 +572,9 @@ memcached_return_t memcached_last_error(const memcached_st *memc)
   return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-int memcached_last_error_errno(const memcached_st *memc)
+int memcached_last_error_errno(const memcached_st *shell)
 {
+  const Memcached* memc= memcached2Memcached(shell);
   if (memc == NULL)
   {
     return 0;

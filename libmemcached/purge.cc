@@ -44,7 +44,7 @@
 class Purge
 {
 public:
-  Purge(memcached_st* arg) :
+  Purge(Memcached* arg) :
     _memc(arg)
   {
     memcached_set_purging(_memc, true);
@@ -56,13 +56,13 @@ public:
   }
 
 private:
-  memcached_st* _memc;
+  Memcached* _memc;
 };
 
 class PollTimeout
 {
 public:
-  PollTimeout(memcached_st* arg) :
+  PollTimeout(Memcached* arg) :
     _timeout(arg->poll_timeout),
     _origin(arg->poll_timeout)
   {
@@ -81,7 +81,7 @@ private:
 
 bool memcached_purge(org::libmemcached::Instance* ptr)
 {
-  memcached_st *root= (memcached_st *)ptr->root;
+  Memcached *root= (Memcached *)ptr->root;
 
   if (memcached_is_purging(ptr->root) || /* already purging */
       (memcached_server_response_count(ptr) < ptr->root->io_msg_watermark &&

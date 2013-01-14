@@ -42,7 +42,7 @@
 #include <sys/time.h>
 
 /* Protoypes (static) */
-static memcached_return_t update_continuum(memcached_st *ptr);
+static memcached_return_t update_continuum(Memcached *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
 {
@@ -59,7 +59,7 @@ static int compare_servers(const void *p1, const void *p2)
   return return_value;
 }
 
-static void sort_hosts(memcached_st *ptr)
+static void sort_hosts(Memcached *ptr)
 {
   if (memcached_server_count(ptr))
   {
@@ -68,7 +68,7 @@ static void sort_hosts(memcached_st *ptr)
 }
 
 
-memcached_return_t run_distribution(memcached_st *ptr)
+memcached_return_t run_distribution(Memcached *ptr)
 {
   if (ptr->flags.use_sort_hosts)
   {
@@ -132,7 +132,7 @@ static int continuum_item_cmp(const void *t1, const void *t2)
   }
 }
 
-static memcached_return_t update_continuum(memcached_st *ptr)
+static memcached_return_t update_continuum(Memcached *ptr)
 {
   uint32_t continuum_index= 0;
   uint32_t pointer_counter= 0;
@@ -346,7 +346,7 @@ static memcached_return_t update_continuum(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t server_add(memcached_st *memc, 
+static memcached_return_t server_add(Memcached *memc, 
                                      const memcached_string_t& hostname,
                                      in_port_t port,
                                      uint32_t weight,
@@ -395,52 +395,58 @@ static memcached_return_t server_add(memcached_st *memc,
 }
 
 
-memcached_return_t memcached_server_push(memcached_st *ptr, const memcached_server_list_st list)
+memcached_return_t memcached_server_push(memcached_st *shell, const memcached_server_list_st list)
 {
   if (list == NULL)
   {
     return MEMCACHED_SUCCESS;
   }
 
-  uint32_t original_host_size= memcached_server_count(ptr);
-  uint32_t count= memcached_server_list_count(list);
-  uint32_t host_list_size= count +original_host_size;
-
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
-
-  if (new_host_list == NULL)
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-    return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
-  }
+    uint32_t original_host_size= memcached_server_count(ptr);
+    uint32_t count= memcached_server_list_count(list);
+    uint32_t host_list_size= count +original_host_size;
 
-  memcached_instance_set(ptr, new_host_list, host_list_size);
+    org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
 
-  ptr->state.is_parsing= true;
-  for (uint32_t x= 0; x < count; ++x, ++original_host_size)
-  {
-    WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
-
-    // We have extended the array, and now we will find it, and use it.
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
-    WATCHPOINT_ASSERT(instance);
-
-    memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
-    if (__instance_create_with(ptr, instance, 
-                               hostname,
-                               list[x].port, list[x].weight, list[x].type) == NULL)
+    if (new_host_list == NULL)
     {
-      ptr->state.is_parsing= false;
-      return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      return MEMCACHED_MEMORY_ALLOCATION_FAILURE;
     }
 
-    if (list[x].weight > 1)
-    {
-      memcached_set_weighted_ketama(ptr, true);
-    }
-  }
-  ptr->state.is_parsing= false;
+    memcached_instance_set(ptr, new_host_list, host_list_size);
 
-  return run_distribution(ptr);
+    ptr->state.is_parsing= true;
+    for (uint32_t x= 0; x < count; ++x, ++original_host_size)
+    {
+      WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
+
+      // We have extended the array, and now we will find it, and use it.
+      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
+      WATCHPOINT_ASSERT(instance);
+
+      memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
+      if (__instance_create_with(ptr, instance, 
+                                 hostname,
+                                 list[x].port, list[x].weight, list[x].type) == NULL)
+      {
+        ptr->state.is_parsing= false;
+        return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      }
+
+      if (list[x].weight > 1)
+      {
+        memcached_set_weighted_ketama(ptr, true);
+      }
+    }
+    ptr->state.is_parsing= false;
+
+    return run_distribution(ptr);
+  }
+
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
 memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::libmemcached::Instance* list, uint32_t number_of_hosts)
@@ -499,22 +505,23 @@ memcached_return_t memcached_server_add_unix_socket(memcached_st *ptr,
   return memcached_server_add_unix_socket_with_weight(ptr, filename, 0);
 }
 
-memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *ptr,
+memcached_return_t memcached_server_add_unix_socket_with_weight(memcached_st *shell,
                                                                 const char *filename,
                                                                 uint32_t weight)
 {
-  if (ptr == NULL)
+  Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
   {
-    return MEMCACHED_FAILURE;
+    memcached_string_t _filename= { memcached_string_make_from_cstr(filename) };
+    if (memcached_is_valid_filename(_filename) == false)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid filename for socket provided"));
+    }
+
+    return server_add(ptr, _filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
   }
 
-  memcached_string_t _filename= { memcached_string_make_from_cstr(filename) };
-  if (memcached_is_valid_filename(_filename) == false)
-  {
-    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid filename for socket provided"));
-  }
-
-  return server_add(ptr, _filename, 0, weight, MEMCACHED_CONNECTION_UNIX_SOCKET);
+  return MEMCACHED_FAILURE;
 }
 
 memcached_return_t memcached_server_add_udp(memcached_st *ptr,
@@ -524,31 +531,33 @@ memcached_return_t memcached_server_add_udp(memcached_st *ptr,
   return memcached_server_add_udp_with_weight(ptr, hostname, port, 0);
 }
 
-memcached_return_t memcached_server_add_udp_with_weight(memcached_st *ptr,
+memcached_return_t memcached_server_add_udp_with_weight(memcached_st *shell,
                                                         const char *,
                                                         in_port_t,
                                                         uint32_t)
 {
-  if (ptr == NULL)
+  Memcached* self= memcached2Memcached(shell);
+  if (self)
   {
-    return MEMCACHED_INVALID_ARGUMENTS;
+    return memcached_set_error(*self, MEMCACHED_DEPRECATED, MEMCACHED_AT);
   }
 
-  return memcached_set_error(*ptr, MEMCACHED_DEPRECATED, MEMCACHED_AT);
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-memcached_return_t memcached_server_add(memcached_st *ptr,
+memcached_return_t memcached_server_add(memcached_st *shell,
                                         const char *hostname,
                                         in_port_t port)
 {
-  return memcached_server_add_with_weight(ptr, hostname, port, 0);
+  return memcached_server_add_with_weight(shell, hostname, port, 0);
 }
 
-memcached_return_t memcached_server_add_with_weight(memcached_st *ptr,
+memcached_return_t memcached_server_add_with_weight(memcached_st *shell,
                                                     const char *hostname,
                                                     in_port_t port,
                                                     uint32_t weight)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   if (ptr == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;

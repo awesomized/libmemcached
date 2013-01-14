@@ -47,12 +47,12 @@ uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memca
   return libhashkit_digest(key, key_length, (hashkit_hash_algorithm_t)hash_algorithm);
 }
 
-static inline uint32_t generate_hash(const memcached_st *ptr, const char *key, size_t key_length)
+static inline uint32_t generate_hash(const Memcached *ptr, const char *key, size_t key_length)
 {
   return hashkit_digest(&ptr->hashkit, key, key_length);
 }
 
-static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
+static uint32_t dispatch_host(const Memcached *ptr, uint32_t hash)
 {
   switch (ptr->distribution)
   {
@@ -99,7 +99,7 @@ static uint32_t dispatch_host(const memcached_st *ptr, uint32_t hash)
 /*
   One version is public and will not modify the distribution hash, the other will.
 */
-static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const char *key, size_t key_length)
+static inline uint32_t _generate_hash_wrapper(const Memcached *ptr, const char *key, size_t key_length)
 {
   WATCHPOINT_ASSERT(memcached_server_count(ptr));
 
@@ -125,7 +125,7 @@ static inline uint32_t _generate_hash_wrapper(const memcached_st *ptr, const cha
   }
 }
 
-static inline void _regen_for_auto_eject(memcached_st *ptr)
+static inline void _regen_for_auto_eject(Memcached *ptr)
 {
   if (_is_auto_eject_host(ptr) && ptr->ketama.next_distribution_rebuild)
   {
@@ -153,22 +153,40 @@ uint32_t memcached_generate_hash_with_redistribution(memcached_st *ptr, const ch
   return dispatch_host(ptr, hash);
 }
 
-uint32_t memcached_generate_hash(const memcached_st *ptr, const char *key, size_t key_length)
+uint32_t memcached_generate_hash(const memcached_st *shell, const char *key, size_t key_length)
 {
-  return dispatch_host(ptr, _generate_hash_wrapper(ptr, key, key_length));
+  const Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
+  {
+    return dispatch_host(ptr, _generate_hash_wrapper(ptr, key, key_length));
+  }
+
+  return UINT32_MAX;
 }
 
-const hashkit_st *memcached_get_hashkit(const memcached_st *ptr)
+const hashkit_st *memcached_get_hashkit(const memcached_st *shell)
 {
-  return &ptr->hashkit;
+  const Memcached* ptr= memcached2Memcached(shell);
+  if (ptr)
+  {
+    return &ptr->hashkit;
+  }
+
+  return NULL;
 }
 
-memcached_return_t memcached_set_hashkit(memcached_st *self, hashkit_st *hashk)
+memcached_return_t memcached_set_hashkit(memcached_st *shell, hashkit_st *hashk)
 {
-  hashkit_free(&self->hashkit);
-  hashkit_clone(&self->hashkit, hashk);
+  Memcached* self= memcached2Memcached(shell);
+  if (self)
+  {
+    hashkit_free(&self->hashkit);
+    hashkit_clone(&self->hashkit, hashk);
 
-  return MEMCACHED_SUCCESS;
+    return MEMCACHED_SUCCESS;
+  }
+
+  return MEMCACHED_INVALID_ARGUMENTS;
 }
 
 const char * libmemcached_string_hash(memcached_hash_t type)

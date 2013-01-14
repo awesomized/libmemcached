@@ -36,7 +36,7 @@
 
 #include <libmemcached/common.h>
 
-static memcached_return_t memcached_flush_binary(memcached_st *ptr, 
+static memcached_return_t memcached_flush_binary(Memcached *ptr, 
                                                  time_t expiration,
                                                  const bool reply)
 {
@@ -95,7 +95,7 @@ static memcached_return_t memcached_flush_binary(memcached_st *ptr,
   return rc;
 }
 
-static memcached_return_t memcached_flush_textual(memcached_st *ptr, 
+static memcached_return_t memcached_flush_textual(Memcached *ptr, 
                                                   time_t expiration,
                                                   const bool reply)
 {
@@ -147,8 +147,9 @@ static memcached_return_t memcached_flush_textual(memcached_st *ptr,
   return rc;
 }
 
-memcached_return_t memcached_flush(memcached_st *ptr, time_t expiration)
+memcached_return_t memcached_flush(memcached_st *shell, time_t expiration)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(ptr, true)))
   {

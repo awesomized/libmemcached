@@ -151,7 +151,7 @@ memcached_return_t memcached_increment(memcached_st *memc,
 }
 
 static memcached_return_t increment_decrement_by_key(const protocol_binary_command command,
-                                                     memcached_st *memc,
+                                                     Memcached *memc,
                                                      const char *group_key, size_t group_key_length,
                                                      const char *key, size_t key_length,
                                                      uint64_t offset,
@@ -206,7 +206,7 @@ static memcached_return_t increment_decrement_by_key(const protocol_binary_comma
 }
 
 static memcached_return_t increment_decrement_with_initial_by_key(const protocol_binary_command command,
-                                                                  memcached_st *memc,
+                                                                  Memcached *memc,
                                                                   const char *group_key,
                                                                   size_t group_key_length,
                                                                   const char *key,
@@ -272,12 +272,13 @@ memcached_return_t memcached_decrement(memcached_st *memc,
 }
 
 
-memcached_return_t memcached_increment_by_key(memcached_st *memc,
+memcached_return_t memcached_increment_by_key(memcached_st *shell,
                                               const char *group_key, size_t group_key_length,
                                               const char *key, size_t key_length,
                                               uint64_t offset,
                                               uint64_t *value)
 {
+  Memcached* memc= memcached2Memcached(shell);
   LIBMEMCACHED_MEMCACHED_INCREMENT_START();
   memcached_return_t rc= increment_decrement_by_key(PROTOCOL_BINARY_CMD_INCREMENT,
                                                     memc,
@@ -290,12 +291,13 @@ memcached_return_t memcached_increment_by_key(memcached_st *memc,
   return rc;
 }
 
-memcached_return_t memcached_decrement_by_key(memcached_st *memc,
+memcached_return_t memcached_decrement_by_key(memcached_st *shell,
                                               const char *group_key, size_t group_key_length,
                                               const char *key, size_t key_length,
                                               uint64_t offset,
                                               uint64_t *value)
 {
+  Memcached* memc= memcached2Memcached(shell);
   LIBMEMCACHED_MEMCACHED_DECREMENT_START();
   memcached_return_t rc= increment_decrement_by_key(PROTOCOL_BINARY_CMD_DECREMENT,
                                                     memc,
@@ -320,7 +322,7 @@ memcached_return_t memcached_increment_with_initial(memcached_st *memc,
                                                  offset, initial, expiration, value);
 }
 
-memcached_return_t memcached_increment_with_initial_by_key(memcached_st *memc,
+memcached_return_t memcached_increment_with_initial_by_key(memcached_st *shell,
                                                            const char *group_key,
                                                            size_t group_key_length,
                                                            const char *key,
@@ -331,6 +333,7 @@ memcached_return_t memcached_increment_with_initial_by_key(memcached_st *memc,
                                                            uint64_t *value)
 {
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
+  Memcached* memc= memcached2Memcached(shell);
   memcached_return_t rc= increment_decrement_with_initial_by_key(PROTOCOL_BINARY_CMD_INCREMENT, 
                                                                  memc,
                                                                  group_key, group_key_length,
@@ -354,7 +357,7 @@ memcached_return_t memcached_decrement_with_initial(memcached_st *memc,
                                                  offset, initial, expiration, value);
 }
 
-memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *memc,
+memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *shell,
                                                            const char *group_key,
                                                            size_t group_key_length,
                                                            const char *key,
@@ -365,6 +368,7 @@ memcached_return_t memcached_decrement_with_initial_by_key(memcached_st *memc,
                                                            uint64_t *value)
 {
   LIBMEMCACHED_MEMCACHED_INCREMENT_WITH_INITIAL_START();
+  Memcached* memc= memcached2Memcached(shell);
   memcached_return_t rc= increment_decrement_with_initial_by_key(PROTOCOL_BINARY_CMD_DECREMENT, 
                                                                  memc,
                                                                  group_key, group_key_length,

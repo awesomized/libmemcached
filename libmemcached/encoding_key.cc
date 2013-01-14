@@ -38,13 +38,14 @@
 #include <libmemcached/common.h>
 #include <libmemcached/assert.hpp>
 
-static void _set_encoding_key(memcached_st& self, const char *key, size_t key_length)
+static void _set_encoding_key(Memcached& self, const char *key, size_t key_length)
 {
   hashkit_key(&self.hashkit, key, key_length);
 }
 
-memcached_return_t memcached_set_encoding_key(memcached_st* self, const char *key, size_t key_length)
+memcached_return_t memcached_set_encoding_key(memcached_st* shell, const char *key, size_t key_length)
 {
+  Memcached* self= memcached2Memcached(shell);
   if (self == NULL)
   {
     return MEMCACHED_INVALID_ARGUMENTS;

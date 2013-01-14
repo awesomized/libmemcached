@@ -44,7 +44,7 @@
 
 #include <libmemcached/common.h>
 
-static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
+static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
   /* MAX_NUMBER_OF_SLAB_CLASSES is defined to 200 in Memcached 1.4.10 */
   for (uint32_t x= 0; x < 200; x++)
@@ -137,8 +137,9 @@ static memcached_return_t ascii_dump(memcached_st *memc, memcached_dump_fn *call
   return memcached_has_current_error(*memc) ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
-memcached_return_t memcached_dump(memcached_st *ptr, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
+memcached_return_t memcached_dump(memcached_st *shell, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(ptr, true)))
   {

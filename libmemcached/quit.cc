@@ -126,7 +126,7 @@ void memcached_quit_server(org::libmemcached::Instance* instance, bool io_death)
   }
 }
 
-void send_quit(memcached_st *memc)
+void send_quit(Memcached *memc)
 {
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
@@ -136,8 +136,9 @@ void send_quit(memcached_st *memc)
   }
 }
 
-void memcached_quit(memcached_st *memc)
+void memcached_quit(memcached_st *shell)
 {
+  Memcached* memc= memcached2Memcached(shell);
   memcached_return_t rc;
   if (memcached_failed(rc= initialize_query(memc, true)))
   {

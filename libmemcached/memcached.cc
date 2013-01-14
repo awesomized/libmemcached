@@ -40,7 +40,7 @@
 #include <libmemcached/options.hpp>
 #include <libmemcached/virtual_bucket.h>
 
-static inline bool _memcached_init(memcached_st *self)
+static inline bool _memcached_init(Memcached *self)
 {
   self->state.is_purging= false;
   self->state.is_processing_input= false;
@@ -127,7 +127,7 @@ static inline bool _memcached_init(memcached_st *self)
   return true;
 }
 
-static void __memcached_free(memcached_st *ptr, bool release_st)
+static void __memcached_free(Memcached *ptr, bool release_st)
 {
   /* If we have anything open, lets close it now */
   send_quit(ptr);
@@ -170,8 +170,9 @@ static void __memcached_free(memcached_st *ptr, bool release_st)
   }
 }
 
-memcached_st *memcached_create(memcached_st *ptr)
+memcached_st *memcached_create(memcached_st *shell)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   if (ptr)
   {
     ptr->options.is_allocated= false;
@@ -252,8 +253,9 @@ memcached_st *memcached(const char *string, size_t length)
   return memc;
 }
 
-memcached_return_t memcached_reset(memcached_st *ptr)
+memcached_return_t memcached_reset(memcached_st *shell)
 {
+  Memcached* ptr= memcached2Memcached(shell);
   WATCHPOINT_ASSERT(ptr);
   if (ptr == NULL)
   {
@@ -275,8 +277,9 @@ memcached_return_t memcached_reset(memcached_st *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-void memcached_servers_reset(memcached_st *self)
+void memcached_servers_reset(memcached_st *shell)
 {
+  Memcached* self= memcached2Memcached(shell);
   if (self)
   {
     libmemcached_free(self, self->ketama.continuum);
@@ -289,8 +292,9 @@ void memcached_servers_reset(memcached_st *self)
   }
 }
 
-void memcached_reset_last_disconnected_server(memcached_st *self)
+void memcached_reset_last_disconnected_server(memcached_st *shell)
 {
+  Memcached* self= memcached2Memcached(shell);
   if (self)
   {
     memcached_instance_free((org::libmemcached::Instance*)self->last_disconnected_server);
@@ -401,27 +405,29 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   return new_clone;
 }
 
-void *memcached_get_user_data(const memcached_st *ptr)
+void *memcached_get_user_data(const memcached_st *shell)
 {
-  if (ptr == NULL)
+  const Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return NULL;
+    return memc->user_data;
   }
 
-  return ptr->user_data;
+  return NULL;
 }
 
-void *memcached_set_user_data(memcached_st *ptr, void *data)
+void *memcached_set_user_data(memcached_st *shell, void *data)
 {
-  if (ptr == NULL)
+  Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return NULL;
+    void *ret= memc->user_data;
+    memc->user_data= data;
+
+    return ret;
   }
 
-  void *ret= ptr->user_data;
-  ptr->user_data= data;
-
-  return ret;
+  return NULL;
 }
 
 memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source)
@@ -429,7 +435,7 @@ memcached_return_t memcached_push(memcached_st *destination, const memcached_st 
   return memcached_instance_push(destination, (org::libmemcached::Instance*)source->servers, source->number_of_hosts);
 }
 
-org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_t server_key)
+org::libmemcached::Instance* memcached_instance_fetch(Memcached *ptr, uint32_t server_key)
 {
   if (ptr == NULL)
   {
@@ -439,41 +445,45 @@ org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_
   return &ptr->servers[server_key];
 }
 
-memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *ptr, uint32_t server_key)
+memcached_server_instance_st memcached_server_instance_by_position(const memcached_st *shell, uint32_t server_key)
 {
-  if (ptr == NULL)
+  const Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return NULL;
+    return &memc->servers[server_key];
   }
 
-  return &ptr->servers[server_key];
+  return NULL;
 }
 
-org::libmemcached::Instance* memcached_instance_by_position(const memcached_st *ptr, uint32_t server_key)
+org::libmemcached::Instance* memcached_instance_by_position(const memcached_st *shell, uint32_t server_key)
 {
-  if (ptr == NULL)
+  const Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return NULL;
+    return &memc->servers[server_key];
   }
 
-  return &ptr->servers[server_key];
+  return NULL;
 }
 
-uint64_t memcached_query_id(const memcached_st *self)
+uint64_t memcached_query_id(const memcached_st *shell)
 {
-  if (self == NULL)
+  const Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return 0;
+    return memc->query_id;
   }
 
-  return self->query_id;
+  return 0;
 }
 
-org::libmemcached::Instance* memcached_instance_list(const memcached_st *self)
+org::libmemcached::Instance* memcached_instance_list(const memcached_st *shell)
 {
-  if (self)
+  const Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return (org::libmemcached::Instance*)self->servers;
+    return (org::libmemcached::Instance*)memc->servers;
   }
 
   return NULL;
