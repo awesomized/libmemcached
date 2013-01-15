@@ -61,8 +61,6 @@
 #endif
 #endif
 
-#define YY_EXTRA_TYPE Context*
-
 }
 
 

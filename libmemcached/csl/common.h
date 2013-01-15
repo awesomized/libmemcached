@@ -37,6 +37,16 @@
 
 #pragma once
 
+
+#ifndef YY_EXTRA_TYPE
+# define YY_EXTRA_TYPE Context*
+#endif
+
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+# define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
 #include <libmemcached/common.h>
 #include <libmemcached/csl/server.h>
 
