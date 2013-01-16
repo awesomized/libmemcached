@@ -595,11 +595,12 @@ void Application::Pipe::reset()
   _open[1]= true;
 
 #if defined(HAVE_PIPE2) && HAVE_PIPE2
+  return;
+#endif
   {
     nonblock();
     cloexec();
   }
-#endif
 }
 
 void Application::Pipe::cloexec()

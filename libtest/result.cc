@@ -38,6 +38,10 @@
 #include <libtest/common.h>
 #include <cstdarg>
 
+#ifndef __INTEL_COMPILER
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+
 namespace libtest {
 
 __test_result::__test_result(const char *file_arg, int line_arg, const char *func_arg):

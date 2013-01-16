@@ -15,6 +15,7 @@ BUILT_SOURCES+= $(dist_man_MANS)
 endif
 endif
 
+if HAVE_RECENT_SPHINX
 dist_man_MANS+= man/memaslap.1
 dist_man_MANS+= man/memcapable.1
 dist_man_MANS+= man/memcat.1
@@ -133,3 +134,4 @@ dist_man_MANS+= man/memcached_touch.3
 dist_man_MANS+= man/memcached_touch_by_key.3
 dist_man_MANS+= man/memcached_verbosity.3
 dist_man_MANS+= man/memcached_version.3
+endif
