@@ -172,38 +172,38 @@ static void __memcached_free(Memcached *ptr, bool release_st)
 
 memcached_st *memcached_create(memcached_st *shell)
 {
-  Memcached* ptr= memcached2Memcached(shell);
-  if (ptr)
+  if (shell)
   {
-    ptr->options.is_allocated= false;
+    shell->options.is_allocated= false;
   }
   else
   {
-    ptr= (memcached_st *)libmemcached_xmalloc(NULL, memcached_st);
+    shell= (memcached_st *)libmemcached_xmalloc(NULL, memcached_st);
 
-    if (ptr == NULL)
+    if (shell == NULL)
     {
       return NULL; /*  MEMCACHED_MEMORY_ALLOCATION_FAILURE */
     }
 
-    ptr->options.is_allocated= true;
+    shell->options.is_allocated= true;
   }
 
-  if (_memcached_init(ptr) == false)
+  if (_memcached_init(shell) == false)
   {
-    memcached_free(ptr);
+    memcached_free(shell);
     return NULL;
   }
 
-  if (memcached_result_create(ptr, &ptr->result) == NULL)
+  Memcached* memc= memcached2Memcached(shell);
+  if (memcached_result_create(shell, &memc->result) == NULL)
   {
-    memcached_free(ptr);
+    memcached_free(shell);
     return NULL;
   }
 
-  WATCHPOINT_ASSERT_INITIALIZED(&ptr->result);
+  WATCHPOINT_ASSERT_INITIALIZED(&memc->result);
 
-  return ptr;
+  return shell;
 }
 
 memcached_st *memcached(const char *string, size_t length)
