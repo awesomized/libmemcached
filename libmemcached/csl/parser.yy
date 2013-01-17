@@ -34,6 +34,14 @@
  *
  */
 
+%{
+
+#include <libmemcached/csl/common.h>
+
+class Context;
+
+%}
+
 %error-verbose
 %debug
 %defines
@@ -51,7 +59,6 @@
 
 %{
 
-#include <libmemcached/csl/common.h>
 #include <libmemcached/options.hpp>
 
 #include <libmemcached/csl/context.h>

@@ -43,7 +43,7 @@ uint32_t hashkit_murmur3(const char *key, size_t length, void *)
   const uint32_t seed= (0xdeadbeef * (uint32_t)length);
 
   uint32_t ret;
-  MurmurHash3_x86_32(key, length, seed, &ret);
+  MurmurHash3_x86_32(key, int(length), seed, &ret);
 
   return ret;
 }
