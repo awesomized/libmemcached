@@ -50,7 +50,7 @@ class Context;
 %defines "libmemcached/csl/parser.h"
 %lex-param { yyscan_t *scanner }
 %name-prefix="config_"
-%parse-param { Context *context }
+%parse-param { class Context *context }
 %parse-param { yyscan_t *scanner }
 %pure-parser
 %require "2.4"
