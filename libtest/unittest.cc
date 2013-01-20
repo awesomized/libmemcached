@@ -866,11 +866,8 @@ static test_return_t lookup_true_TEST(void *)
 
 static test_return_t lookup_false_TEST(void *)
 {
-  if (libtest::lookup("does_not_exist.gearman.info"))
-  {
-    Error << "Broken DNS server detected";
-    return TEST_SKIPPED;
-  }
+  SKIP_IF_(libtest::lookup("does_not_exist.gearman.info"),
+           "Broken DNS server detected");
 
   return TEST_SUCCESS;
 }

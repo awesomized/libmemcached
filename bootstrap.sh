@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# Copyright (C) 2012 Brian Aker
+# Copyright (C) 2012-2013 Brian Aker
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -414,7 +414,8 @@ function restore_BUILD ()
   OLD_CONFIGURE_ARG=
   OLD_MAKE=
   OLD_TESTS_ENVIRONMENT=
-  echo "reset happened"
+
+  export -n CC CXX
 }
 
 function push_PREFIX_ARG ()
@@ -625,7 +626,29 @@ function check_mingw ()
   return 0
 }
 
-function make_skeleton_mingw ()
+function check_clang ()
+{
+  command_exists 'clang'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+function check_clang_analyzer ()
+{
+  command_exists 'scan-build'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+function make_skeleton ()
 {
   run_configure
   ret=$?
@@ -642,8 +665,6 @@ function make_skeleton_mingw ()
         if command_exists 'wine'; then
           TESTS_ENVIRONMENT='wine'
         fi
-      elif command_exists 'wineconsole'; then
-        TESTS_ENVIRONMENT='wineconsole --backend=curses'
       fi
 
       if [[ -n "$TESTS_ENVIRONMENT" ]]; then
@@ -662,9 +683,8 @@ function make_skeleton_mingw ()
 
 function make_for_mingw ()
 {
-  check_mingw
   if ! check_mingw; then
-    die 'mingw64 tools were not found'
+    return 1
   fi
 
   # Make sure it is clean
@@ -678,10 +698,73 @@ function make_for_mingw ()
 
   CONFIGURE='mingw64-configure'
   MAKE='mingw64-make'
-  CONFIGURE_ARGS='--enable-static'
+  CONFIGURE_ARGS='--enable-static --disable-shared'
 
-  make_skeleton_mingw
+  make_skeleton
   ret=$?
+
+  restore_BUILD
+
+  return $ret
+}
+
+function make_for_clang ()
+{
+  if ! check_clang; then
+    return 1
+  fi
+
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+
+  run_autoreconf
+
+  save_BUILD
+
+  CC=clang CXX=clang++
+  export CC CXX
+
+  make_skeleton
+  ret=$?
+
+  make_target 'check'
+
+  restore_BUILD
+
+  return $ret
+}
+
+function make_for_clang_analyzer ()
+{
+  if ! check_clang; then
+    return 1
+  fi
+
+  if ! check_clang_analyzer; then
+    die 'clang-analyzer was not found'
+  fi
+
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+
+  run_autoreconf
+
+  save_BUILD
+
+  CC=clang CXX=clang++
+  export CC CXX
+  CONFIGURE_ARGS='--enable-debug'
+
+  make_skeleton
+  ret=$?
+
+  make_target 'clean' 'warn'
+
+  scan-build -o clang-html make -j4 -k
 
   restore_BUILD
 
@@ -710,6 +793,8 @@ function make_universe ()
   make_valgrind
   make_gdb
   make_rpm
+  make_for_clang
+  make_for_clang_analyzer
 
   if [ check_mingw -eq 0 ]; then
     make_for_mingw
@@ -883,9 +968,9 @@ function make_target ()
 
   if [ $ret -ne 0 ]; then
     if [ -n "$2" ]; then
-      warn "Cannot execute $MAKE $1: $ret"
+      warn "Failed to execute $MAKE $1: $ret"
     else
-      die "Cannot execute $MAKE $1: $ret"
+      die "Failed to execute $MAKE $1: $ret"
     fi
   fi
 
@@ -1333,6 +1418,10 @@ function check_make_target()
       ;;
     'make_default')
       ;;
+    'clang')
+      ;;
+    'clang-analyzer')
+      ;;
     'test-*')
       ;;
     'valgrind-*')
@@ -1417,14 +1506,31 @@ function bootstrap ()
       'make_default')
         make_default
         ;;
+      'clang')
+        if ! check_clang; then
+          die "clang was not found"
+        fi
+
+        if ! make_for_clang; then
+          die "Failed to build clang: $?"
+        fi
+        ;;
+      'clang-analyzer')
+        if ! check_clang_analyzer; then
+          die "clang-analyzer was not found"
+        fi
+        if ! check_clang; then
+          die "clang was not found"
+        fi
+
+        if ! make_for_clang_analyzer; then
+          die "Failed to build clang-analyzer: $?"
+        fi
+        ;;
       'mingw')
-        check_mingw
         if ! check_mingw; then
           die "mingw was not found"
         fi
-
-        make_for_mingw
-        check_ret=$?
 
         if ! make_for_mingw; then
           die "Failed to build mingw: $?"
