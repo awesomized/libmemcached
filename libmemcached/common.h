@@ -112,14 +112,9 @@
 #endif
 
 #include <libmemcached-1.0/memcached.h>
-#include <libmemcached/watchpoint.h>
-#include <libmemcached/is.h>
+#include "libmemcached/watchpoint.h"
+#include "libmemcached/is.h"
 typedef struct memcached_st Memcached;
-
-#ifdef __cplusplus
-# include "libmemcached/instance.hpp"
-#endif
-#include <libmemcached/server_instance.h>
 
 #ifdef HAVE_POLL_H
 # include <poll.h>
@@ -128,67 +123,57 @@ typedef struct memcached_st Memcached;
 #endif
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef memcached_return_t (*memcached_server_execute_fn)(memcached_st *ptr, memcached_server_write_instance_st server, void *context);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
-
-
-#ifdef __cplusplus
 org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_t server_key);
 #endif
 
-memcached_return_t memcached_server_execute(memcached_st *ptr,
-                                            memcached_server_execute_fn callback,
-                                            void *context);
 /* These are private not to be installed headers */
-#include <libmemcached/error.hpp>
-#include <libmemcached/memory.h>
-#include <libmemcached/io.h>
+#include "libmemcached/error.hpp"
+#include "libmemcached/memory.h"
+#include "libmemcached/io.h"
 #ifdef __cplusplus
-#include <libmemcached/string.hpp>
-#include <libmemcached/memcached/protocol_binary.h>
-#include <libmemcached/io.hpp>
-#include <libmemcached/udp.hpp>
-#include <libmemcached/do.hpp>
-#include <libmemcached/socket.hpp>
-#include <libmemcached/connect.hpp>
-#include <libmemcached/allocators.hpp>
-#include <libmemcached/hash.hpp>
-#include <libmemcached/quit.hpp>
-#include <libmemcached/instance.hpp>
-#include <libmemcached/server.hpp>
-#include <libmemcached/flag.hpp>
-#include <libmemcached/behavior.hpp>
-#include <libmemcached/sasl.hpp>
-#include <libmemcached/server_list.hpp>
-#endif
-#include <libmemcached/internal.h>
-#include <libmemcached/array.h>
-#include <libmemcached/libmemcached_probes.h>
-#include <libmemcached/byteorder.h>
-#include <libmemcached/initialize_query.h>
-#ifdef __cplusplus
-#include <libmemcached/response.h>
-#endif
-#include <libmemcached/namespace.h>
-#include <libmemcached/virtual_bucket.h>
-
-#ifdef __cplusplus
-#include <libmemcached/backtrace.hpp>
-#include <libmemcached/assert.hpp>
-#include <libmemcached/server.hpp>
-#include <libmemcached/key.hpp>
-#include <libmemcached/encoding_key.h>
-#include <libmemcached/result.h>
-#include <libmemcached/version.hpp>
+# include "libmemcached/string.hpp"
+# include "libmemcached/memcached/protocol_binary.h"
+# include "libmemcached/io.hpp"
+# include "libmemcached/udp.hpp"
+# include "libmemcached/do.hpp"
+# include "libmemcached/socket.hpp"
+# include "libmemcached/connect.hpp"
+# include "libmemcached/allocators.hpp"
+# include "libmemcached/hash.hpp"
+# include "libmemcached/quit.hpp"
+# include "libmemcached/instance.hpp"
+# include "libmemcached/server_instance.h"
+# include "libmemcached/server.hpp"
+# include "libmemcached/flag.hpp"
+# include "libmemcached/behavior.hpp"
+# include "libmemcached/sasl.hpp"
+# include "libmemcached/server_list.hpp"
 #endif
 
-#include <libmemcached/continuum.hpp>
+#include "libmemcached/internal.h"
+#include "libmemcached/array.h"
+#include "libmemcached/libmemcached_probes.h"
+#include "libmemcached/byteorder.h"
+#include "libmemcached/initialize_query.h"
+
+#ifdef __cplusplus
+# include "libmemcached/response.h"
+#endif
+
+#include "libmemcached/namespace.h"
+#include "libmemcached/virtual_bucket.h"
+
+#ifdef __cplusplus
+# include "libmemcached/backtrace.hpp"
+# include "libmemcached/assert.hpp"
+# include "libmemcached/server.hpp"
+# include "libmemcached/key.hpp"
+# include "libmemcached/encoding_key.h"
+# include "libmemcached/result.h"
+# include "libmemcached/version.hpp"
+#endif
+
+#include "libmemcached/continuum.hpp"
 
 #if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
 

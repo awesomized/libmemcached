@@ -91,6 +91,7 @@ struct Instance {
 
   void start_close_socket();
   void close_socket();
+  void reset_socket();
 
   uint32_t response_count() const
   {

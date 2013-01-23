@@ -504,15 +504,9 @@ test_return_t regression_bug_962815(memcached_st *memc)
     test_compare(0, pthread_join(pid[x], NULL));
   }
 
-  if (pool)
-  {
-    memcached_pool_destroy(pool);
-  }
+  memcached_pool_destroy(pool);
 
-  if (master)
-  {
-    memcached_free(master);
-  }
+  memcached_free(master);
 
   return TEST_SUCCESS;
 }

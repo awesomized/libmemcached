@@ -9,8 +9,7 @@
  *          to avoid a bunch of ifdefs in the rest of the code
  *
  */
-#ifndef WIN32_WRAPPERS_H
-#define WIN32_WRAPPERS_H 1
+#pragma once 
 
 #include <inttypes.h>
 
@@ -76,5 +75,3 @@
 #define waitpid(a,b,c) (-1)
 #define fnmatch(a,b,c) (-1)
 #define sleep(a) Sleep(a*1000)
-
-#endif /* WIN32_WRAPPERS_H */

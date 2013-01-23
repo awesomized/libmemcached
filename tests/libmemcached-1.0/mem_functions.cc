@@ -39,7 +39,7 @@
 #include <libtest/test.hpp>
 
 #if defined(HAVE_LIBUUID) && HAVE_LIBUUID
-#include <uuid/uuid.h>
+# include <uuid/uuid.h>
 #endif
 
 /*
@@ -47,8 +47,8 @@
 */
 
 #include <libmemcached-1.0/memcached.h>
-#include <libmemcached/is.h>
-#include <libmemcached/server_instance.h>
+#include "libmemcached/is.h"
+#include "libmemcached/server_instance.h"
 
 #include <libhashkit-1.0/hashkit.h>
 

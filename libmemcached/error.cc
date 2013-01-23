@@ -36,7 +36,9 @@
  */
 
 #include <libmemcached/common.h>
+#include <cerrno>
 #include <cstdarg>
+#include <cstdio>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -139,7 +141,7 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
   if (local_errno)
   {
-#ifdef STRERROR_R_CHAR_P
+#if defined(STRERROR_R_CHAR_P) && STRERROR_R_CHAR_P
     errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
 #elif defined(HAVE_STRERROR_R) && HAVE_STRERROR_R
     strerror_r(local_errno, errmsg, sizeof(errmsg));

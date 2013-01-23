@@ -118,8 +118,7 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server)
           }
 
           assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
-          (void)closesocket(server->fd);
-          server->fd= INVALID_SOCKET;
+          server->reset_socket();
           server->state= MEMCACHED_SERVER_STATE_NEW;
 
           return memcached_set_errno(*server, local_errno, MEMCACHED_AT);
@@ -463,7 +462,7 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
       type|= SOCK_NONBLOCK;
     }
 
-    if ((server->fd= socket(AF_UNIX, type, 0)) < 0)
+    if ((server->fd= socket(AF_UNIX, type, 0)) == -1)
     {
       return memcached_set_errno(*server, errno, NULL);
     }
@@ -474,7 +473,7 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
     servAddr.sun_family= AF_UNIX;
     strncpy(servAddr.sun_path, server->hostname, sizeof(servAddr.sun_path)); /* Copy filename */
 
-    if (connect(server->fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
+    if (connect(server->fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) == -1)
     {
       switch (errno)
       {
@@ -484,22 +483,19 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
         break;
 
       case EINTR:
-        (void)closesocket(server->fd);
-        server->fd= INVALID_SOCKET;
+        server->reset_socket();
         continue;
 
       case EISCONN: /* We were spinning waiting on connect */
         {
           assert(0); // Programmer error
-          (void)closesocket(server->fd);
-          server->fd= INVALID_SOCKET;
+          server->reset_socket();
           continue;
         }
 
       default:
         WATCHPOINT_ERRNO(errno);
-        (void)closesocket(server->fd);
-        server->fd= INVALID_SOCKET;
+        server->reset_socket();
         return memcached_set_errno(*server, errno, MEMCACHED_AT);
       }
     }
@@ -575,7 +571,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
 
     if (set_socket_options(server) == false)
     {
-      (void)closesocket(server->fd);
+      server->reset_socket();
       return MEMCACHED_CONNECTION_FAILURE;
     }
 
@@ -624,8 +620,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
 
     case EINTR: // Special case, we retry ai_addr
       WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);
-      (void)closesocket(server->fd);
-      server->fd= INVALID_SOCKET;
+      server->reset_socket();
       continue;
 
     case ECONNREFUSED:
@@ -636,8 +631,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
     }
 
     WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);
-    (void)closesocket(server->fd);
-    server->fd= INVALID_SOCKET;
+    server->reset_socket();
     server->address_info_next= server->address_info_next->ai_next;
   }
 
@@ -645,11 +639,7 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
 
   if (timeout_error_occured)
   {
-    if (server->fd != INVALID_SOCKET)
-    {
-      (void)closesocket(server->fd);
-      server->fd= INVALID_SOCKET;
-    }
+    server->reset_socket();
   }
 
   WATCHPOINT_STRING("Never got a good file descriptor");
@@ -785,8 +775,7 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
         if (memcached_failed(rc) and server->fd != INVALID_SOCKET)
         {
           WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);
-          (void)closesocket(server->fd);
-          server->fd= INVALID_SOCKET;
+          server->reset_socket();
         }
       }
     }

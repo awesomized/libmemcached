@@ -38,7 +38,24 @@
 #pragma once
 
 #ifdef __cplusplus
+namespace org { namespace libmemcached { struct Instance; } }
 typedef struct org::libmemcached::Instance* memcached_server_write_instance_st;
 #else
 typedef void* memcached_server_write_instance_st;
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef memcached_return_t (*memcached_server_execute_fn)(memcached_st *ptr, memcached_server_write_instance_st server, void *context);
+
+memcached_return_t memcached_server_execute(memcached_st *ptr,
+                                            memcached_server_execute_fn callback,
+                                            void *context);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+
