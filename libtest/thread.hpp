@@ -46,30 +46,32 @@ namespace thread
 class Mutex
 {
 public:
-  Mutex()
+  Mutex() :
+    _err(0)
   {
-    int err;
-    if ((err= pthread_mutex_init(&_mutex, NULL)))
-    {
-      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "pthread_mutex_init: %s", strerror(err));
-    }
+    _err= pthread_mutex_init(&_mutex, NULL);
   }
 
   ~Mutex()
   {
-    int err;
-    if ((err= pthread_mutex_destroy(&_mutex)))
+    if ((_err= pthread_mutex_destroy(&_mutex)))
     {
-      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "pthread_cond_destroy: %s", strerror(err));
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "pthread_cond_destroy: %s", strerror(_err));
     }
   }
 
   pthread_mutex_t* handle()
   {
+    if (_err != 0)
+    {
+      throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "pthread_mutex_init: %s", strerror(_err));
+    }
+
     return &_mutex;
   }
 
 private:
+  int _err;
   pthread_mutex_t _mutex;
 };
 

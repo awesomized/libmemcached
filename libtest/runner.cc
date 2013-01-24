@@ -50,24 +50,24 @@ test_return_t Runner::main(test_callback_fn* func, void *object)
   try {
     ret= run(func, object);
   }
-  catch (libtest::__skipped e)
+  catch (const libtest::__skipped& e)
   {
     ret= TEST_SKIPPED;
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
     libtest::stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
     ret= TEST_FAILURE;
   }
-  catch (libtest::__success)
+  catch (const libtest::__success&)
   {
     ret= TEST_SUCCESS;
   }
-  catch (libtest::fatal& e)
+  catch (const libtest::fatal&)
   {
     throw;
   }
-  catch (std::exception& e)
+  catch (const std::exception& e)
   {
     libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
     throw;
@@ -87,24 +87,24 @@ test_return_t Runner::setup(test_callback_fn* func, void *object)
   try {
     ret= pre(func, object);
   }
-  catch (libtest::__skipped e)
+  catch (const libtest::__skipped& e)
   {
     ret= TEST_SKIPPED;
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
     libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
     ret= TEST_FAILURE;
   }
-  catch (libtest::__success)
+  catch (const libtest::__success&)
   {
     ret= TEST_SUCCESS;
   }
-  catch (libtest::fatal& e)
+  catch (const libtest::fatal& e)
   {
     throw;
   }
-  catch (std::exception& e)
+  catch (const std::exception& e)
   {
     libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
     throw;
@@ -124,24 +124,24 @@ test_return_t Runner::teardown(test_callback_fn* func, void *object)
   try {
     ret= post(func, object);
   }
-  catch (libtest::__skipped e)
+  catch (const libtest::__skipped& e)
   {
     ret= TEST_SKIPPED;
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
     libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
     ret= TEST_FAILURE;
   }
-  catch (libtest::__success)
+  catch (const libtest::__success&)
   {
     ret= TEST_SUCCESS;
   }
-  catch (libtest::fatal& e)
+  catch (const libtest::fatal& e)
   {
     throw;
   }
-  catch (std::exception& e)
+  catch (const std::exception& e)
   {
     libtest::stream::make_cerr(LIBYATL_DEFAULT_PARAM) << e.what();
     throw;

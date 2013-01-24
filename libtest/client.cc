@@ -198,7 +198,7 @@ bool SimpleClient::instance_connect()
         }
         else
         {
-          fatal_message(strerror(errno));
+          FATAL(strerror(errno));
         }
         address_info_next= address_info_next->ai_next;
       }

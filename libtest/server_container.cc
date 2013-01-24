@@ -103,7 +103,7 @@ bool server_startup_st::shutdown(uint32_t host_to_shutdown)
   {
     Server* tmp= servers[host_to_shutdown];
 
-    if (tmp and tmp->murder() == false)
+    if (tmp and tmp->kill() == false)
     { }
     else
     {
@@ -139,7 +139,7 @@ bool server_startup_st::shutdown()
   bool success= true;
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); ++iter)
   {
-    if ((*iter)->has_pid() and (*iter)->murder() == false)
+    if ((*iter)->has_pid() and (*iter)->kill() == false)
     {
       Error << "Unable to kill:" <<  *(*iter);
       success= false;
@@ -176,9 +176,9 @@ bool server_startup_st::validate()
   return _magic == MAGIC_MEMORY;
 }
 
-bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, int argc, const char *argv[], const bool opt_startup_message)
+bool server_startup(server_startup_st& construct, const std::string& server_type, in_port_t try_port, const char *argv[])
 {
-  return construct.start_server(server_type, try_port, argc, argv, opt_startup_message);
+  return construct.start_server(server_type, try_port, argv);
 }
 
 libtest::Server* server_startup_st::create(const std::string& server_type, in_port_t try_port, const bool is_socket)
@@ -288,8 +288,7 @@ private:
 bool server_startup_st::_start_server(const bool is_socket,
                                       const std::string& server_type,
                                       in_port_t try_port,
-                                      int argc, const char *argv[],
-                                      const bool opt_startup_message)
+                                      const char *argv[])
 {
   try {
     ServerPtr server(create(server_type, try_port, is_socket));
@@ -309,7 +308,7 @@ bool server_startup_st::_start_server(const bool is_socket,
       return false;
     }
 
-    server->build(argc, argv);
+    server->init(argv);
 
 #if 0
     if (false)
@@ -327,7 +326,6 @@ bool server_startup_st::_start_server(const bool is_socket,
       }
       else
       {
-        if (opt_startup_message)
         {
 #if defined(DEBUG)
           if (DEBUG)
@@ -347,7 +345,7 @@ bool server_startup_st::_start_server(const bool is_socket,
       set_default_socket(server->socket().c_str());
     }
   }
-  catch (libtest::disconnected& err)
+  catch (const libtest::disconnected& err)
   {
     if (fatal::is_disabled() == false and try_port != LIBTEST_FAIL_PORT)
     {
@@ -355,12 +353,12 @@ bool server_startup_st::_start_server(const bool is_socket,
       return false;
     }
   }
-  catch (libtest::__test_result& err)
+  catch (const libtest::__test_result& err)
   {
     stream::cerr(err.file(), err.line(), err.func()) << err.what();
     return false;
   }
-  catch (std::exception& err)
+  catch (const std::exception& err)
   {
     Error << err.what();
     return false;
@@ -374,18 +372,14 @@ bool server_startup_st::_start_server(const bool is_socket,
   return true;
 }
 
-bool server_startup_st::start_server(const std::string& server_type, in_port_t try_port,
-                                     int argc, const char *argv[],
-                                     const bool opt_startup_message)
+bool server_startup_st::start_server(const std::string& server_type, in_port_t try_port, const char *argv[])
 {
-  return _start_server(false, server_type, try_port, argc, argv, opt_startup_message);
+  return _start_server(false, server_type, try_port, argv);
 }
 
-bool server_startup_st::start_socket_server(const std::string& server_type, const in_port_t try_port,
-                                            int argc, const char *argv[],
-                                            const bool opt_startup_message)
+bool server_startup_st::start_socket_server(const std::string& server_type, const in_port_t try_port, const char *argv[])
 {
-  return _start_server(true, server_type, try_port, argc, argv, opt_startup_message);
+  return _start_server(true, server_type, try_port, argv);
 }
 
 std::string server_startup_st::option_string() const

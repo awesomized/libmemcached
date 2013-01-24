@@ -57,13 +57,13 @@ static void initialize_curl_startup()
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (curl_global_init(CURL_GLOBAL_ALL))
   {
-    fatal_message("curl_global_init(CURL_GLOBAL_ALL) failed");
+    FATAL("curl_global_init(CURL_GLOBAL_ALL) failed");
   }
 #endif
 
   if (atexit(cleanup_curl))
   {
-    fatal_message("atexit() failed");
+    FATAL("atexit() failed");
   }
 }
 
@@ -73,7 +73,7 @@ static void initialize_curl(void)
   int ret;
   if ((ret= pthread_once(&start_key_once, initialize_curl_startup)) != 0)
   {
-    fatal_message(strerror(ret));
+    FATAL(strerror(ret));
   }
 }
 

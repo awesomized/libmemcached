@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -38,17 +38,54 @@
 #include <libtest/common.h>
 #include <cstdarg>
 
-#ifndef __INTEL_COMPILER
-# pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#endif
-
 namespace libtest {
 
 __test_result::__test_result(const char *file_arg, int line_arg, const char *func_arg):
   _line(line_arg),
   _file(file_arg),
-  _func(func_arg)
+  _func(func_arg),
+  _error_message(NULL),
+  _error_message_size(0)
 {
+}
+
+#ifndef __INTEL_COMPILER
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+void __test_result::init(va_list args_)
+{
+  const char *format= va_arg(args_, const char *);
+  _error_message_size= vasprintf(&_error_message, format, args_);
+  assert(_error_message_size != -1);
+  if (_error_message_size > 0)
+  {
+    _error_message_size++;
+  }
+}
+
+__test_result::~__test_result() throw()
+{
+  free(_error_message);
+}
+
+__test_result::__test_result(const __test_result& other) :
+  _line(other._line),
+  _file(other._file),
+  _func(other._func),
+  _error_message_size(other._error_message_size)
+{
+  if (_error_message_size > 0)
+  {
+    _error_message= (char*) malloc(_error_message_size);
+    if (_error_message)
+    {
+      memcpy(_error_message, other._error_message, _error_message_size);
+    }
+    else
+    {
+      _error_message_size= -1;
+    }
+  }
 }
 
 __success::__success(const char *file_arg, int line_arg, const char *func_arg):
@@ -57,85 +94,31 @@ __success::__success(const char *file_arg, int line_arg, const char *func_arg):
 }
 
 __skipped::__skipped(const char *file_arg, int line_arg, const char *func_arg, ...):
-  __test_result(file_arg, line_arg, func_arg),
-  _error_message(NULL),
-  _error_message_size(0)
+  __test_result(file_arg, line_arg, func_arg)
 {
   va_list args;
   va_start(args, func_arg);
-  const char *format= va_arg(args, const char *);
-  _error_message_size= vasprintf(&_error_message, format, args);
-  assert(_error_message_size != -1);
-  if (_error_message_size > 0)
-  {
-    _error_message_size++;
-  }
+  init(args);
   va_end(args);
 }
 
-__skipped::__skipped( const __skipped& other ) :
-  __test_result(other),
-  _error_message_size(other._error_message_size)
+__skipped::__skipped(const __skipped& other) :
+  __test_result(other)
 {
-  _error_message= (char*) malloc(_error_message_size);
-  if (_error_message)
-  {
-    memcpy(_error_message, other._error_message, _error_message_size);
-  }
-  else
-  {
-    _error_message_size= -1;
-  }
-}
-
-__skipped::~__skipped() throw()
-{
-  if ((_error_message_size > 0) and _error_message)
-  {
-    free(_error_message);
-    _error_message= NULL;
-  }
 }
 
 __failure::__failure(const char *file_arg, int line_arg, const char *func_arg, ...) :
-  __test_result(file_arg, line_arg, func_arg),
-  _error_message(NULL),
-  _error_message_size(0)
+  __test_result(file_arg, line_arg, func_arg)
 {
   va_list args;
   va_start(args, func_arg);
-  const char *format= va_arg(args, const char *);
-  _error_message_size= vasprintf(&_error_message, format, args);
-  assert(_error_message_size != -1);
-  if (_error_message_size > 0)
-  {
-    _error_message_size++;
-  }
+  init(args);
   va_end(args);
 }
 
-__failure::__failure( const __failure& other ) :
-  __test_result(other),
-  _error_message_size(other._error_message_size)
+__failure::__failure(const __failure& other) :
+  __test_result(other)
 {
-  _error_message= (char*) malloc(_error_message_size);
-  if (_error_message)
-  {
-    memcpy(_error_message, other._error_message, _error_message_size);
-  }
-  else
-  {
-    _error_message_size= -1;
-  }
-}
-
-__failure::~__failure() throw()
-{
-  if ((_error_message_size > 0) and _error_message)
-  {
-    free(_error_message);
-    _error_message= NULL;
-  }
 }
 
 

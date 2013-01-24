@@ -48,7 +48,7 @@ using namespace libtest;
 static test_return_t server_startup_single_TEST(void *obj)
 {
   server_startup_st *servers= (server_startup_st*)obj;
-  test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), 0, NULL, false));
+  test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), NULL));
   test_compare(true, servers->shutdown());
 
 
@@ -60,9 +60,9 @@ static test_return_t server_startup_multiple_TEST(void *obj)
   test_skip(true, jenkins_is_caller());
 
   server_startup_st *servers= (server_startup_st*)obj;
-  for (size_t x= 0; x < 10; x++)
+  for (size_t x= 0; x < 10; ++x)
   {
-    test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), 0, NULL, false));
+    test_compare(true, server_startup(*servers, "memcached", libtest::get_free_port(), NULL));
   }
   test_compare(true, servers->shutdown());
 

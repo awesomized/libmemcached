@@ -299,7 +299,7 @@ int main(int argc, char *argv[])
           return EXIT_FAILURE;
         }
       }
-      catch (libtest::__skipped e)
+      catch (const libtest::__skipped& e)
       {
         return EXIT_SKIP;
       }
@@ -345,26 +345,26 @@ int main(int argc, char *argv[])
       Outn(); // Generate a blank to break up the messages if make check/test has been run
     } while (exit_code == EXIT_SUCCESS and --opt_repeat);
   }
-  catch (libtest::__skipped e)
+  catch (const libtest::__skipped& e)
   {
     return EXIT_SKIP;
   }
-  catch (libtest::__failure e)
+  catch (const libtest::__failure& e)
   {
     libtest::stream::make_cout(e.file(), e.line(), e.func()) << e.what();
     exit_code= EXIT_FAILURE;
   }
-  catch (libtest::fatal& e)
+  catch (const libtest::fatal& e)
   {
     std::cerr << "FATAL:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
-  catch (libtest::disconnected& e)
+  catch (const libtest::disconnected& e)
   {
     std::cerr << "Unhandled disconnection occurred:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;
   }
-  catch (std::exception& e)
+  catch (const std::exception& e)
   {
     std::cerr << "std::exception:" << e.what() << std::endl;
     exit_code= EXIT_FAILURE;

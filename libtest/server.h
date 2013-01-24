@@ -41,10 +41,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
-
 #include <netdb.h>
 #include <netinet/in.h>
-
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -179,7 +177,8 @@ public:
 
   virtual bool ping()= 0;
 
-  virtual bool build(size_t argc, const char *argv[])= 0;
+  bool init(const char *argv[]);
+  virtual bool build()= 0;
 
   void add_option(const std::string&);
   void add_option(const std::string&, const std::string&);
@@ -251,7 +250,7 @@ public:
 
   std::string log_and_pid();
 
-  bool murder();
+  bool kill();
   bool start();
   bool command(libtest::Application& app);
 

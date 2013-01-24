@@ -64,6 +64,10 @@ public:
 
 private:
   libtest::server_startup_st* _servers;
+
+private:
+  Runner( const Runner& );
+  const Runner& operator=( const Runner& );
 };
 
 } // namespace Runner

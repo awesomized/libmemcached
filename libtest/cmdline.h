@@ -36,13 +36,7 @@
 
 #pragma once
 
-#ifdef _WIN32
-typedef int posix_spawn_file_actions_t;
-#else
-# include <spawn.h>
-#endif
-
-#include <pthread.h>
+#include <spawn.h>
 
 // http://www.gnu.org/software/automake/manual/automake.html#Using-the-TAP-test-protocol
 #ifndef EXIT_SKIP
@@ -54,11 +48,11 @@ typedef int posix_spawn_file_actions_t;
 #endif
 
 #ifndef EX_NOEXEC
-#  define EX_NOEXEC 126
+# define EX_NOEXEC 126
 #endif
 
 #ifndef EX_NOTFOUND
-#  define EX_NOTFOUND 127
+# define EX_NOTFOUND 127
 #endif
 
 namespace libtest {

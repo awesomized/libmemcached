@@ -132,7 +132,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  if (not server_startup(servers, "memcached", libtest::default_port(), 0, NULL))
+  if (not server_startup(servers, "memcached", libtest::default_port(), NULL))
   {
     error= TEST_FAILURE;
   }

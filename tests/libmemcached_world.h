@@ -77,7 +77,7 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
 
     if (servers.sasl())
     {
-      if (server_startup(servers, "memcached-sasl", port, 0, NULL) == false)
+      if (server_startup(servers, "memcached-sasl", port, NULL) == false)
       {
         error= TEST_SKIPPED;
         return NULL;
@@ -85,7 +85,7 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     }
     else
     {
-      if (server_startup(servers, "memcached", port, 0, NULL) == false)
+      if (server_startup(servers, "memcached", port, NULL) == false)
       {
         error= TEST_SKIPPED;
         return NULL;

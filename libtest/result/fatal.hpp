@@ -45,23 +45,14 @@ public:
 
   fatal(const fatal&);
 
-  ~fatal() throw();
-
-  const char* what() const throw()
-  {
-    return &_error_message[0];
-  }
-
   // The following are just for unittesting the exception class
-  static bool is_disabled();
-  static void disable();
-  static void enable();
-  static uint32_t disabled_counter();
-  static void increment_disabled_counter();
+  static bool is_disabled() throw();
+  static void disable() throw();
+  static void enable() throw();
+  static uint32_t disabled_counter() throw();
+  static void increment_disabled_counter() throw();
 
 private:
-  char* _error_message;
-  int _error_message_size;
 };
 
 } // namespace libtest

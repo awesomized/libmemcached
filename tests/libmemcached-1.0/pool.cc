@@ -243,10 +243,7 @@ struct test_pool_context_st {
 static __attribute__((noreturn)) void* connection_release(void *arg)
 {
   test_pool_context_st *resource= static_cast<test_pool_context_st *>(arg);
-  if (resource == NULL)
-  {
-    fatal_message("resource == NULL");
-  }
+  FATAL_IF(resource == NULL);
 
   // Release all of the memc we are holding 
   resource->rc= memcached_pool_release(resource->pool, resource->mmc);
@@ -396,17 +393,11 @@ static bool _running= false;
 static void set_running(const bool arg)
 {
   int error;
-  if ((error= pthread_mutex_lock(&mutex)) != 0)
-  {
-    fatal_message(strerror(error));
-  }
+  FATAL_IF_((error= pthread_mutex_lock(&mutex)) != 0, strerror(error));
 
   _running= arg;
 
-  if ((error= pthread_mutex_unlock(&mutex)) != 0)
-  {
-    fatal_message(strerror(error));
-  }
+  FATAL_IF_((error= pthread_mutex_unlock(&mutex)) != 0, strerror(error));
 }
 
 static bool running()
@@ -414,17 +405,11 @@ static bool running()
   int error;
   bool ret;
   
-  if ((error= pthread_mutex_lock(&mutex)) != 0)
-  {
-    fatal_message(strerror(error));
-  }
+  FATAL_IF_((error= pthread_mutex_lock(&mutex)) != 0, strerror(error));
 
   ret= _running;
 
-  if ((error= pthread_mutex_unlock(&mutex)) != 0)
-  {
-    fatal_message(strerror(error));
-  }
+  FATAL_IF_((error= pthread_mutex_unlock(&mutex)) != 0, strerror(error));
 
   return ret;
 }
