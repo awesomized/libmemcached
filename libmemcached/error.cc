@@ -262,12 +262,12 @@ static inline size_t append_host_to_string(org::libmemcached::Instance& self, ch
   case MEMCACHED_CONNECTION_TCP:
   case MEMCACHED_CONNECTION_UDP:
     size+= snprintf(buffer, buffer_length, " host: %s:%d",
-                    self.hostname, int(self.port()));
+                    self.hostname(), int(self.port()));
     break;
 
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     size+= snprintf(buffer, buffer_length, " socket: %s",
-                    self.hostname);
+                    self.hostname());
     break;
   }
 

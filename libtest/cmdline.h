@@ -150,6 +150,11 @@ public:
     return _stdout_buffer.size();
   }
 
+  const char* stdout_c_str() const
+  {
+    return &_stdout_buffer[0];
+  }
+
   libtest::vchar_t stderr_result() const
   {
     return _stderr_buffer;

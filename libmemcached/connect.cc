@@ -164,12 +164,7 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server)
 static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
 {
   assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
-  if (server->address_info)
-  {
-    freeaddrinfo(server->address_info);
-    server->address_info= NULL;
-    server->address_info_next= NULL;
-  }
+  server->clear_addrinfo();
 
   char str_port[MEMCACHED_NI_MAXSERV];
   int length= snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
@@ -182,9 +177,7 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
 
-#if 0
   hints.ai_family= AF_INET;
-#endif
   if (memcached_is_udp(server->root))
   {
     hints.ai_protocol= IPPROTO_UDP;
@@ -199,54 +192,35 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
   assert(server->address_info == NULL);
   assert(server->address_info_next == NULL);
   int errcode;
-  switch(errcode= getaddrinfo(server->hostname, str_port, &hints, &server->address_info))
+  assert(server->hostname());
+  switch(errcode= getaddrinfo(server->hostname(), str_port, &hints, &server->address_info))
   {
   case 0:
+    server->address_info_next= server->address_info;
+    server->state= MEMCACHED_SERVER_STATE_ADDRINFO;
     break;
 
   case EAI_AGAIN:
     return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
 
   case EAI_SYSTEM:
-    if (server->address_info)
-    {
-      freeaddrinfo(server->address_info);
-      server->address_info= NULL;
-      server->address_info_next= NULL;
-    }
+    server->clear_addrinfo();
     return memcached_set_errno(*server, errno, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_SYSTEM)"));
 
   case EAI_BADFLAGS:
-    if (server->address_info)
-    {
-      freeaddrinfo(server->address_info);
-      server->address_info= NULL;
-      server->address_info_next= NULL;
-    }
+    server->clear_addrinfo();
     return memcached_set_error(*server, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_BADFLAGS)"));
 
   case EAI_MEMORY:
-    if (server->address_info)
-    {
-      freeaddrinfo(server->address_info);
-      server->address_info= NULL;
-      server->address_info_next= NULL;
-    }
+    server->clear_addrinfo();
     return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("getaddrinfo(EAI_MEMORY)"));
 
   default:
     {
-      if (server->address_info)
-      {
-        freeaddrinfo(server->address_info);
-        server->address_info= NULL;
-        server->address_info_next= NULL;
-      }
+      server->clear_addrinfo();
       return memcached_set_error(*server, MEMCACHED_HOST_LOOKUP_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(gai_strerror(errcode)));
     }
   }
-  server->address_info_next= server->address_info;
-  server->state= MEMCACHED_SERVER_STATE_ADDRINFO;
 
   return MEMCACHED_SUCCESS;
 }
@@ -471,7 +445,7 @@ static memcached_return_t unix_socket_connect(org::libmemcached::Instance* serve
 
     memset(&servAddr, 0, sizeof (struct sockaddr_un));
     servAddr.sun_family= AF_UNIX;
-    strncpy(servAddr.sun_path, server->hostname, sizeof(servAddr.sun_path)); /* Copy filename */
+    strncpy(servAddr.sun_path, server->hostname(), sizeof(servAddr.sun_path)); /* Copy filename */
 
     if (connect(server->fd, (struct sockaddr *)&servAddr, sizeof(servAddr)) == -1)
     {
@@ -533,11 +507,8 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
     }
   }
 
-  if (server->address_info_next == NULL)
-  {
-    server->address_info_next= server->address_info;
-    server->state= MEMCACHED_SERVER_STATE_ADDRINFO;
-  }
+  assert(server->address_info_next);
+  assert(server->address_info);
 
   /* Create the socket */
   while (server->address_info_next and server->fd == INVALID_SOCKET)
@@ -754,7 +725,7 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
     return memcached_set_error(*server, MEMCACHED_INVALID_HOST_PROTOCOL, MEMCACHED_AT, memcached_literal_param("SASL is not supported for UDP connections"));
   }
 
-  if (server->hostname[0] == '/')
+  if (server->hostname()[0] == '/')
   {
     server->type= MEMCACHED_CONNECTION_UNIX_SOCKET;
   }
@@ -771,7 +742,6 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
       if (server->fd != INVALID_SOCKET and server->root->sasl.callbacks)
       {
         rc= memcached_sasl_authenticate_connection(server);
-        fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, memcached_strerror(NULL, rc));
         if (memcached_failed(rc) and server->fd != INVALID_SOCKET)
         {
           WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);
@@ -811,7 +781,7 @@ static memcached_return_t _memcached_connect(org::libmemcached::Instance* server
     if (in_timeout)
     {
       char buffer[1024];
-      int snprintf_length= snprintf(buffer, sizeof(buffer), "%s:%d", server->hostname, int(server->port()));
+      int snprintf_length= snprintf(buffer, sizeof(buffer), "%s:%d", server->hostname(), int(server->port()));
       return memcached_set_error(*server, MEMCACHED_SERVER_TEMPORARILY_DISABLED, MEMCACHED_AT, buffer, snprintf_length);
     }
   }

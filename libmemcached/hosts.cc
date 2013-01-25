@@ -49,7 +49,7 @@ static int compare_servers(const void *p1, const void *p2)
   memcached_server_instance_st a= (memcached_server_instance_st)p1;
   memcached_server_instance_st b= (memcached_server_instance_st)p2;
 
-  int return_value= strcmp(a->hostname, b->hostname);
+  int return_value= strcmp(a->_hostname, b->_hostname);
 
   if (return_value == 0)
   {
@@ -224,7 +224,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
         if (DEBUG)
         {
           printf("ketama_weighted:%s|%d|%llu|%u\n",
-                 list[host_index].hostname,
+                 list[host_index]._hostname,
                  list[host_index].port(),
                  (unsigned long long)list[host_index].weight,
                  pointer_per_server);
@@ -245,7 +245,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
         // If hostname is not available then: /ip:port-index
         sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                    "/%s:%u-%u",
-                                   list[host_index].hostname,
+                                   list[host_index]._hostname,
                                    (uint32_t)list[host_index].port(),
                                    pointer_index);
 
@@ -290,14 +290,14 @@ static memcached_return_t update_continuum(Memcached *ptr)
         {
           sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s-%u",
-                                     list[host_index].hostname,
+                                     list[host_index]._hostname,
                                      pointer_index - 1);
         }
         else
         {
           sort_host_length= snprintf(sort_host, sizeof(sort_host),
                                      "%s:%u-%u",
-                                     list[host_index].hostname,
+                                     list[host_index]._hostname,
                                      (uint32_t)list[host_index].port(),
                                      pointer_index - 1);
         }
@@ -474,13 +474,13 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
   // instance allocated.
   for (uint32_t x= 0; x < number_of_hosts; ++x, ++original_host_size)
   {
-    WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
+    WATCHPOINT_ASSERT(list[x]._hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
     org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
     WATCHPOINT_ASSERT(instance);
 
-    memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
+    memcached_string_t hostname= { memcached_string_make_from_cstr(list[x]._hostname) };
     if (__instance_create_with(ptr, instance, 
                                hostname,
                                list[x].port(), list[x].weight, list[x].type) == NULL)
