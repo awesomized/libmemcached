@@ -215,7 +215,7 @@ memcached_return_t memcached_sasl_authenticate_connection(org::libmemcached::Ins
 
   sasl_conn_t *conn;
   int ret;
-  if ((ret= sasl_client_new("memcached", server->hostname, laddr, raddr, server->root->sasl.callbacks, 0, &conn) ) != SASL_OK)
+  if ((ret= sasl_client_new("memcached", server->_hostname, laddr, raddr, server->root->sasl.callbacks, 0, &conn) ) != SASL_OK)
   {
     const char *sasl_error_msg= sasl_errstring(ret, NULL, NULL);
 

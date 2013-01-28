@@ -45,16 +45,28 @@ namespace libtest {
 
 bool lookup(const char* host)
 {
-  assert(host);
   bool success= false;
-  struct addrinfo *addrinfo= NULL;
-
-  int limit= 5;
-  while (limit--)
+  if (host)
   {
-    int ret;
-    if ((ret= getaddrinfo(host, NULL, NULL, &(addrinfo))))
+    assert(host);
+    struct addrinfo *addrinfo= NULL;
+
+    int limit= 5;
+    while (--limit and success == false)
     {
+      if (addrinfo)
+      {
+        freeaddrinfo(addrinfo);
+        addrinfo= NULL;
+      }
+
+      int ret;
+      if ((ret= getaddrinfo(host, NULL, NULL, &addrinfo)) == 0)
+      {
+        success= true;
+        break;
+      }
+
       switch (ret)
       {
       case EAI_AGAIN:
@@ -64,15 +76,15 @@ bool lookup(const char* host)
       default:
         break;
       }
-    }
-    else
-    {
-      success= true;
+
       break;
     }
-  }
 
-  freeaddrinfo(addrinfo);
+    if (addrinfo)
+    {
+      freeaddrinfo(addrinfo);
+    }
+  }
 
   return success;
 }
@@ -87,7 +99,7 @@ bool check_dns()
 
   if (lookup("does_not_exist.gearman.info")) // This should fail, if it passes,...
   {
-    return false;
+    fatal_assert("Your service provider sucks and is providing bogus DNS. You might be in an airport.");
   }
 
   return true;

@@ -196,7 +196,7 @@ const char *memcached_server_name(const memcached_server_instance_st self)
   WATCHPOINT_ASSERT(self);
   if (self)
   {
-    return self->hostname;
+    return self->_hostname;
   }
 
   return NULL;

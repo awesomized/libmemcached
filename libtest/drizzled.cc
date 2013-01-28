@@ -62,7 +62,7 @@ using namespace libtest;
 #endif
 
 #if defined(HAVE_LIBDRIZZLE) && HAVE_LIBDRIZZLE
-#include <libdrizzle-1.0/drizzle_client.h>
+# include <libdrizzle-5.1/drizzle_client.h>
 #endif
 
 using namespace libtest;
@@ -72,31 +72,25 @@ bool ping_drizzled(const in_port_t _port)
 {
   (void)(_port);
 #if defined(HAVE_LIBDRIZZLE) && HAVE_LIBDRIZZLE
+  if (HAVE_LIBDRIZZLE)
   {
-    drizzle_st *drizzle= drizzle_create(NULL);
+    drizzle_st *drizzle= drizzle_create_tcp(getenv("MYSQL_SERVER"),
+                                            getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
+                                            getenv("MYSQL_USER"),
+                                            getenv("MYSQL_PASSWORD"),
+                                            getenv("MYSQL_SCHEMA"), drizzle_options_t());
 
     if (drizzle == NULL)
     {
       return false;
     }
 
-    drizzle_con_st *con;
-
-    if ((con= drizzle_con_create(drizzle, NULL)) == NULL)
-    {
-      drizzle_free(drizzle);
-      return false;
-    }
-
-    drizzle_con_set_tcp(con, "localhost", _port);
-    drizzle_con_set_auth(con, "root", 0);
-
     bool success= false;
 
     drizzle_return_t rc;
-    if ((rc= drizzle_con_connect(con)) == DRIZZLE_RETURN_OK)
+    if ((rc= drizzle_connect(drizzle)) == DRIZZLE_RETURN_OK)
     {
-      drizzle_result_st *result= drizzle_ping(con, NULL, &rc);
+      drizzle_result_st *result= drizzle_ping(drizzle, &rc);
       success= bool(result);
       drizzle_result_free(result);
     }
@@ -108,8 +102,7 @@ bool ping_drizzled(const in_port_t _port)
       Error << drizzle_error(drizzle) << " localhost:" << _port;
     }
 
-    drizzle_con_free(con);
-    drizzle_free(drizzle);
+    drizzle_quit(drizzle);
 
     return success;
   }
@@ -189,10 +182,10 @@ public:
     }
   }
 
-  bool build(size_t argc, const char *argv[]);
+  bool build();
 };
 
-bool Drizzle::build(size_t argc, const char *argv[])
+bool Drizzle::build()
 {
   if (getuid() == 0 or geteuid() == 0)
   {
@@ -203,16 +196,6 @@ bool Drizzle::build(size_t argc, const char *argv[])
 #if 0
   add_option("--datadir=var/drizzle");
 #endif
-
-  for (size_t x= 0 ; x < argc ; x++)
-  {
-    if (argv[x] == NULL)
-    {
-      break;
-    }
-
-    add_option(argv[x]);
-  }
 
   return true;
 }

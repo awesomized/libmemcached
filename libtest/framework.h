@@ -162,8 +162,6 @@ public:
   }
 
 private:
-  Framework& operator=(const Framework&);
-
   uint32_t _total;
   uint32_t _success;
   uint32_t _skipped;
@@ -193,6 +191,10 @@ private:
   std::string _only_run;
   std::string _wildcard;
   std::string _name;
+
+private:
+  Framework( const Framework& );
+  const Framework& operator=( const Framework& );
 };
 
 } // namespace libtest

@@ -130,7 +130,7 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
       _func(func)
     { }
 
-    ~log()
+    virtual ~log()
     {
       output_policy()(arg, _out, _filename, _line_number, _func);
     }
@@ -145,6 +145,10 @@ template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = c
 
   private:
     typename output_policy::stream_buffer arg;
+
+  private:
+    log( const log& );
+    const log& operator=( const log& );
   };
 } // namespace detail
 
@@ -154,6 +158,9 @@ public:
     detail::log<detail::channelln>(std::cerr, filename, line_number, func)
   { }
 
+private:
+  make_cerr( const make_cerr& );
+  const make_cerr& operator=( const make_cerr& );
 };
 
 class cerr : public detail::log<detail::channel> {
@@ -162,6 +169,9 @@ public:
     detail::log<detail::channel>(std::cout, filename, line_number, func)
   { }
 
+private:
+  cerr( const cerr& );
+  const cerr& operator=( const cerr& );
 };
 
 class clog : public detail::log<detail::channel> {
@@ -169,6 +179,10 @@ public:
   clog(const char* filename, int line_number, const char* func) :
     detail::log<detail::channel>(std::clog, filename, line_number, func)
   { }
+
+private:
+  clog( const clog& );
+  const clog& operator=( const clog& );
 };
 
 class make_cout : public detail::log<detail::channelln> {
@@ -177,6 +191,9 @@ public:
     detail::log<detail::channelln>(std::cout, filename, line_number, func)
   { }
 
+private:
+  make_cout( const make_cout& );
+  const make_cout& operator=( const make_cout& );
 };
 
 class cout : public detail::log<detail::channel> {
@@ -184,6 +201,10 @@ public:
   cout(const char* filename, int line_number, const char* func) :
     detail::log<detail::channel>(std::cout, filename, line_number, func)
   { }
+
+private:
+  cout( const cout& );
+  const cout& operator=( const cout& );
 };
 
 

@@ -204,22 +204,22 @@ in_port_t get_free_port()
   // We handle the case where if we max out retries, we still abort.
   if (retries == 0)
   {
-    fatal_message("No port could be found, exhausted retry");
+    FATAL("No port could be found, exhausted retry");
   }
 
   if (ret_port == 0)
   {
-    fatal_message("No port could be found");
+    FATAL("No port could be found");
   }
 
   if (ret_port == default_port)
   {
-    fatal_message("No port could be found");
+    FATAL("No port could be found");
   }
 
   if (ret_port <= 1024)
   {
-    fatal_message("No port could be found, though some where available below or at 1024");
+    FATAL("No port could be found, though some where available below or at 1024");
   }
 
   all_socket_fd.last_port= ret_port;

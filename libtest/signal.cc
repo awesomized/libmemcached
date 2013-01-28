@@ -209,11 +209,6 @@ SignalThread::SignalThread() :
     sigaddset(&set, SIGINT);
     sigaddset(&set, SIGVTALRM);
   }
-  else
-  {
-    Out << "Inside of GDB, disabling signal handlers";
-  }
-
   sigaddset(&set, SIGPIPE);
 
   sigaddset(&set, SIGUSR2);

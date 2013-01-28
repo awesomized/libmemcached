@@ -212,7 +212,6 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
   if (instance->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
   {
-    instance->io_wait_count.timeouts++;
     return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
   }
 
@@ -258,7 +257,6 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
     if (active_fd == 0)
     {
-      instance->io_wait_count.timeouts++;
       return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
     }
 
@@ -712,24 +710,35 @@ void org::libmemcached::Instance::start_close_socket()
   }
 }
 
+void org::libmemcached::Instance::reset_socket()
+{
+  if (fd != INVALID_SOCKET)
+  {
+    (void)closesocket(fd);
+    fd= INVALID_SOCKET;
+  }
+}
+
 void org::libmemcached::Instance::close_socket()
 {
   if (fd != INVALID_SOCKET)
   {
+    int shutdown_options= SHUT_RD;
+    if (options.is_shutting_down == false)
+    {
+      shutdown_options= SHUT_RDWR;
+    }
+
     /* in case of death shutdown to avoid blocking at close() */
-    if (shutdown(fd, SHUT_RD) == SOCKET_ERROR and get_socket_errno() != ENOTCONN)
+    if (shutdown(fd, shutdown_options) == SOCKET_ERROR and get_socket_errno() != ENOTCONN)
     {
       WATCHPOINT_NUMBER(fd);
       WATCHPOINT_ERRNO(get_socket_errno());
       WATCHPOINT_ASSERT(get_socket_errno());
     }
 
-    if (closesocket(fd) == SOCKET_ERROR)
-    {
-      WATCHPOINT_ERRNO(get_socket_errno());
-    }
+    reset_socket();
     state= MEMCACHED_SERVER_STATE_NEW;
-    fd= INVALID_SOCKET;
   }
 
   state= MEMCACHED_SERVER_STATE_NEW;

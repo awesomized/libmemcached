@@ -121,7 +121,7 @@ void append(libtest::vchar_ptr_t& arg, const char* ptr)
     char* new_ptr= strdup(ptr);
     if (new_ptr == NULL)
     {
-      fatal_message("UNABLE to allocate %s(%p)", ptr, ptr);
+      FATAL("UNABLE to allocate %s(%p)", ptr, ptr);
     }
 
     arg.push_back(new_ptr);

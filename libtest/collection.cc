@@ -55,7 +55,7 @@ static test_return_t runner_code(libtest::Framework* frame,
   }
   // Special case where check for the testing of the exception
   // system.
-  catch (libtest::fatal &e)
+  catch (const libtest::fatal& e)
   {
     if (libtest::fatal::is_disabled())
     {
@@ -133,7 +133,7 @@ test_return_t Collection::exec()
         }
         libtest::cancel_alarm();
       }
-      catch (libtest::fatal &e)
+      catch (const libtest::fatal& e)
       {
         stream::cerr(e.file(), e.line(), e.func()) << e.what();
         _failed++;
@@ -159,7 +159,7 @@ test_return_t Collection::exec()
         break;
 
       default:
-        fatal_message("invalid return code");
+        FATAL("invalid return code");
       }
 #if 0
       @TODO add code here to allow for a collection to define a method to reset to allow tests to continue.

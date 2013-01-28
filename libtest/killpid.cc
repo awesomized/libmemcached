@@ -86,7 +86,7 @@ bool kill_pid(pid_t pid_arg)
     uint32_t waited;
     uint32_t retry;
 
-    for (waited= 0, retry= 4; ; retry++, waited+= this_wait)
+    for (waited= 0, retry= 1; ; retry++, waited+= this_wait)
     {
       int status= 0;
       if (waitpid(pid_arg, &status, WNOHANG) == 0)

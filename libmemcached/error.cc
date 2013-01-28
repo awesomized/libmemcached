@@ -36,7 +36,9 @@
  */
 
 #include <libmemcached/common.h>
+#include <cerrno>
 #include <cstdarg>
+#include <cstdio>
 
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
@@ -57,20 +59,21 @@ static void _set(org::libmemcached::Instance& server, Memcached& memc)
     memcached_error_free(server);
   }
 
-  if (memc.error_messages == NULL)
+  if (memc.error_messages)
   {
-    return;
-  }
+    if (memc.error_messages->rc == MEMCACHED_TIMEOUT)
+    {
+      server.io_wait_count.timeouts++;
+    }
 
-  memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
-  if (error == NULL) // Bad business if this happens
-  {
-    return;
+    memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
+    if (error)
+    {
+      memcpy(error, memc.error_messages, sizeof(memcached_error_t));
+      error->next= server.error_messages;
+      server.error_messages= error;
+    }
   }
-
-  memcpy(error, memc.error_messages, sizeof(memcached_error_t));
-  error->next= server.error_messages;
-  server.error_messages= error;
 }
 
 #if 0
@@ -139,7 +142,7 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 
   if (local_errno)
   {
-#ifdef STRERROR_R_CHAR_P
+#if defined(STRERROR_R_CHAR_P) && STRERROR_R_CHAR_P
     errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
 #elif defined(HAVE_STRERROR_R) && HAVE_STRERROR_R
     strerror_r(local_errno, errmsg, sizeof(errmsg));
@@ -260,12 +263,12 @@ static inline size_t append_host_to_string(org::libmemcached::Instance& self, ch
   case MEMCACHED_CONNECTION_TCP:
   case MEMCACHED_CONNECTION_UDP:
     size+= snprintf(buffer, buffer_length, " host: %s:%d",
-                    self.hostname, int(self.port()));
+                    self.hostname(), int(self.port()));
     break;
 
   case MEMCACHED_CONNECTION_UNIX_SOCKET:
     size+= snprintf(buffer, buffer_length, " socket: %s",
-                    self.hostname);
+                    self.hostname());
     break;
   }
 

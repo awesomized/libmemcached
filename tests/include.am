@@ -58,7 +58,6 @@ test-failure: tests/failure
 gdb-failure: tests/failure
 	@$(GDB_COMMAND) tests/failure
 
-
 tests_testhashkit_SOURCES= tests/hashkit_functions.cc
 tests_testhashkit_LDADD= libtest/libtest.la libhashkit/libhashkit.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/testhashkit

@@ -84,8 +84,7 @@ static inline void _server_init(org::libmemcached::Instance* self, Memcached *ro
     self->version= UINT_MAX;
   }
   self->limit_maxbytes= 0;
-  memcpy(self->hostname, hostname.c_str, hostname.size);
-  self->hostname[hostname.size]= 0;
+  self->hostname(hostname);
 }
 
 static org::libmemcached::Instance* _server_create(org::libmemcached::Instance* self, const memcached_st *memc)
@@ -167,12 +166,7 @@ void __instance_free(org::libmemcached::Instance* self)
 {
   memcached_quit_server(self, false);
 
-  if (self->address_info)
-  {
-    freeaddrinfo(self->address_info);
-    self->address_info= NULL;
-    self->address_info_next= NULL;
-  }
+  self->clear_addrinfo();
   assert(self->address_info_next == NULL);
 
   memcached_error_free(*self);
@@ -297,10 +291,10 @@ static org::libmemcached::Instance* memcached_instance_clone(org::libmemcached::
     return NULL;
   }
 
-  memcached_string_t hostname= { memcached_string_make_from_cstr(source->hostname) };
+  memcached_string_t hostname_= { memcached_string_make_from_cstr(source->hostname()) };
   return __instance_create_with(source->root,
                                 NULL,
-                                hostname,
+                                hostname_,
                                 source->port(), source->weight,
                                 source->type);
 }

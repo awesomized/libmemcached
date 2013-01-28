@@ -173,8 +173,8 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
     return NULL;
   }
 
-  const char *argv[1]= { "memslap" };
-  if (not server_startup(servers, "memcached", libtest::default_port(), 1, argv))
+  const char *argv[]= { "memslap", 0 };
+  if (server_startup(servers, "memcached", libtest::default_port(), argv) == false)
   {
     error= TEST_FAILURE;
   }

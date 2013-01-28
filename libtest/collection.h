@@ -103,6 +103,10 @@ private:
   uint32_t _total;
   libtest::Timer _timer;
   libtest::Formatter _formatter;
+
+private:
+  Collection( const Collection& );
+  const Collection& operator=( const Collection& );
 };
 
 } // namespace libtest

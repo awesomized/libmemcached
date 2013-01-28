@@ -43,19 +43,9 @@ class __failure : public __test_result
 public:
   __failure(const char *file, int line, const char *func, ...);
 
-  __failure(const __failure& other);
-
-  ~__failure() throw();
-
-  const char* what() const throw()
-  {
-    return _error_message;
-  }
+  __failure(const __failure&);
 
 private:
-  char* _error_message;
-  int _error_message_size;
 };
 
 } // namespace libtest
-

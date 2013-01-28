@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/ 
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/ 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@
 # define MEMCACHED_NI_MAXSERV 32
 #endif
 
+#include "libmemcached/string.hpp"
+
 namespace org {
 namespace libmemcached {
 
@@ -91,6 +93,7 @@ struct Instance {
 
   void start_close_socket();
   void close_socket();
+  void reset_socket();
 
   uint32_t response_count() const
   {
@@ -116,6 +119,25 @@ struct Instance {
   short revents(void)
   {
     return _revents;
+  }
+
+  const char* hostname()
+  {
+    return _hostname;
+  }
+
+  void hostname(const memcached_string_t& hostname_)
+  {
+    if (hostname_.size)
+    {
+      memcpy(_hostname, hostname_.c_str, hostname_.size);
+      _hostname[hostname_.size]= 0;
+    }
+    else
+    {
+      memcpy(_hostname, memcached_literal_param("localhost"));
+      _hostname[memcached_literal_param_size("localhost")]= 0;
+    }
   }
 
   void events(short);
@@ -153,7 +175,17 @@ struct Instance {
   struct memcached_error_t *error_messages;
   char read_buffer[MEMCACHED_MAX_BUFFER];
   char write_buffer[MEMCACHED_MAX_BUFFER];
-  char hostname[MEMCACHED_NI_MAXHOST];
+  char _hostname[MEMCACHED_NI_MAXHOST];
+
+  void clear_addrinfo()
+  {
+    if (address_info)
+    {
+      freeaddrinfo(address_info);
+      address_info= NULL;
+      address_info_next= NULL;
+    }
+  }
 };
 
 } // namespace libmemcached
@@ -161,7 +193,7 @@ struct Instance {
 
 org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
                                                     org::libmemcached::Instance* self,
-                                                    const memcached_string_t& hostname,
+                                                    const memcached_string_t& _hostname,
                                                     const in_port_t port,
                                                     uint32_t weight, 
                                                     const memcached_connection_t type);

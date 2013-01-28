@@ -13,6 +13,7 @@ MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
 PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
 PAHOLE_COMMAND= $(LIBTOOL_COMMAND) --mode=execute pahole
+VALGRIND_SUPRESSION= $(LIBTOOL_COMMAND) valgrind --leak-check=full --show-reachable=yes --error-limit=no --gen-suppressions=all --log-file=minimalraw.log
 
 export LIBTOOL_COMMAND
 export VALGRIND_COMMAND
@@ -22,6 +23,9 @@ export GDB_COMMAND
 
 valgrind:
 	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_EXEC_COMMAND)\""
+
+valgrind-supressions:
+	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_SUPRESSION)\""
 
 gdb:
 	@echo make check TESTS_ENVIRONMENT="\"$(GDB_COMMAND)\""
@@ -104,6 +108,12 @@ libtest_libtest_la_CXXFLAGS=
 EXTRA_libtest_libtest_la_DEPENDENCIES=
 libtest_libtest_la_LIBADD=
 libtest_libtest_la_SOURCES=
+if BUILDING_LIBMEMCACHED
+libtest_libtest_la_LIBADD+= libmemcached/libmemcached.la
+else
+libtest_libtest_la_CXXFLAGS+= @LIBMEMCACHED_CFLAGS@
+libtest_libtest_la_LIBADD+= @LIBMEMCACHED_LIB@
+endif
 
 libtest_libtest_la_SOURCES+= libtest/alarm.cc
 libtest_libtest_la_SOURCES+= libtest/binaries.cc
@@ -147,22 +157,19 @@ libtest_libtest_la_LIBADD+= $(CURL_LIBS)
 libtest_libtest_la_LIBADD+= @RT_LIB@
 
 EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest_tmp_dir
-EXTRA_libtest_libtest_la_DEPENDENCIES+=libtest/abort
-EXTRA_libtest_libtest_la_DEPENDENCIES+=libtest/wait
+EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/abort
+EXTRA_libtest_libtest_la_DEPENDENCIES+= libtest/wait
 
 # Declare unittest so that we can append to it
 libtest_unittest_CXXFLAGS=
 libtest_unittest_LDADD=
+libtest_libtest_la_LDFLAGS=
 
 # We are either building in tree, or with
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 
-if HAVE_LIBDRIZZLE
-
-libtest_libtest_la_LIBADD+= $(libdrizzle_LIBS)
-libtest_libtest_la_CXXFLAGS+= $(libdrizzle_CFLAGS)
-
-endif
+libtest_libtest_la_LDFLAGS+= @LIBDRIZZLE_LDFLAGS@
+libtest_libtest_la_LIBADD+= @LIBDRIZZLE_LIB@
 
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 

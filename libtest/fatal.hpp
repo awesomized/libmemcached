@@ -40,34 +40,36 @@
 
 namespace libtest {
 
-class disconnected : std::runtime_error
+class disconnected : public std::runtime_error
 {
 public:
   disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, ...);
 
   const char* what() const throw()
   {
-    return &_error_message[0];
+    return _error_message;
   }
+
+  disconnected(const disconnected&);
 
   // The following are just for unittesting the exception class
   static bool is_disabled();
   static void disable();
-
+  static void enable();
   static uint32_t disabled_counter();
   static void increment_disabled_counter();
 
-  int line()
+  int line() const
   {
     return _line;
   }
 
-  const char* file()
+  const char* file() const
   {
     return _file;
   }
 
-  const char* func()
+  const char* func() const
   {
     return _func;
   }
@@ -75,7 +77,7 @@ public:
 private:
   char _error_message[BUFSIZ];
   in_port_t _port;
-  char _instance[1024];
+  char _instance[BUFSIZ];
   int _line;
   const char*  _file;
   const char* _func;

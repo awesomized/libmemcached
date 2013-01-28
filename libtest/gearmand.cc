@@ -123,7 +123,7 @@ public:
     return true;
   }
 
-  bool build(size_t argc, const char *argv[]);
+  bool build();
 };
 
 Gearmand::Gearmand(const std::string& host_arg, in_port_t port_arg, bool libtool_, const char* binary_arg) :
@@ -132,7 +132,7 @@ Gearmand::Gearmand(const std::string& host_arg, in_port_t port_arg, bool libtool
   set_pid_file();
 }
 
-bool Gearmand::build(size_t argc, const char *argv[])
+bool Gearmand::build()
 {
   if (getuid() == 0 or geteuid() == 0)
   {
@@ -140,16 +140,6 @@ bool Gearmand::build(size_t argc, const char *argv[])
   }
 
   add_option("--listen=localhost");
-
-  for (size_t x= 0 ; x < argc ; x++)
-  {
-    if (argv[x] == NULL)
-    {
-      break;
-    }
-
-    add_option(argv[x]);
-  }
 
   return true;
 }

@@ -68,7 +68,7 @@ void set_alarm(long tv_sec, long tv_usec)
 
     if (errno != 0)
     {
-      fatal_message("Bad value for YATL_ALARM");
+      FATAL("Bad value for YATL_ALARM");
     }
     else if (tv_sec == 0)
     {

@@ -57,10 +57,26 @@ do \
   throw libtest::__failure(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
 } while (0)
 
-#define fatal_message(...) \
+#define FATAL(...) \
 do \
 { \
   throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+} while (0)
+
+#define FATAL_IF(__expression, ...) \
+do \
+{ \
+  if ((__expression)) { \
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, (#__expression)); \
+  } \
+} while (0)
+
+#define FATAL_IF_(__expression, ...) \
+do \
+{ \
+  if ((__expression)) { \
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+  } \
 } while (0)
 
 #define fatal_assert(__assert) if((__assert)) {} else { throw libtest::fatal(LIBYATL_DEFAULT_PARAM, #__assert); }

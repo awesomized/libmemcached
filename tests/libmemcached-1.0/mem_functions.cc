@@ -39,7 +39,7 @@
 #include <libtest/test.hpp>
 
 #if defined(HAVE_LIBUUID) && HAVE_LIBUUID
-#include <uuid/uuid.h>
+# include <uuid/uuid.h>
 #endif
 
 /*
@@ -47,8 +47,8 @@
 */
 
 #include <libmemcached-1.0/memcached.h>
-#include <libmemcached/is.h>
-#include <libmemcached/server_instance.h>
+#include "libmemcached/is.h"
+#include "libmemcached/server_instance.h"
 
 #include <libhashkit-1.0/hashkit.h>
 
@@ -4603,7 +4603,7 @@ test_return_t regression_bug_583031(memcached_st *)
   test_true(memc);
   test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.3.4", 11211));
 
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 1000);
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 3000);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1000);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 1000);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 1000);
@@ -4618,7 +4618,7 @@ test_return_t regression_bug_583031(memcached_st *)
   test_false(value);
   test_zero(length);
 
-  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_last_error_message(memc));
+  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_error(memc));
 
   memcached_free(memc);
 

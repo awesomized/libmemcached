@@ -115,7 +115,7 @@ memcached_string_st *memcached_string_create(Memcached *memc, memcached_string_s
     return NULL;
   }
 
-  self->options.is_initialized= true;
+  memcached_set_initialized(self, true);
 
   WATCHPOINT_ASSERT(self->string == self->end);
 
