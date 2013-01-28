@@ -212,7 +212,6 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
   if (instance->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
   {
-    instance->io_wait_count.timeouts++;
     return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
   }
 
@@ -258,7 +257,6 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
     if (active_fd == 0)
     {
-      instance->io_wait_count.timeouts++;
       return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
     }
 

@@ -57,7 +57,6 @@ static memcached_return_t memcached_mget_by_key_real(memcached_st *ptr,
                                                      const size_t *key_length,
                                                      size_t number_of_keys,
                                                      bool mget_mode);
-
 char *memcached_get_by_key(memcached_st *shell,
                            const char *group_key,
                            size_t group_key_length,

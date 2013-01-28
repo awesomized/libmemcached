@@ -59,20 +59,21 @@ static void _set(org::libmemcached::Instance& server, Memcached& memc)
     memcached_error_free(server);
   }
 
-  if (memc.error_messages == NULL)
+  if (memc.error_messages)
   {
-    return;
-  }
+    if (memc.error_messages->rc == MEMCACHED_TIMEOUT)
+    {
+      server.io_wait_count.timeouts++;
+    }
 
-  memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
-  if (error == NULL) // Bad business if this happens
-  {
-    return;
+    memcached_error_t *error= libmemcached_xmalloc(&memc, memcached_error_t);
+    if (error)
+    {
+      memcpy(error, memc.error_messages, sizeof(memcached_error_t));
+      error->next= server.error_messages;
+      server.error_messages= error;
+    }
   }
-
-  memcpy(error, memc.error_messages, sizeof(memcached_error_t));
-  error->next= server.error_messages;
-  server.error_messages= error;
 }
 
 #if 0
