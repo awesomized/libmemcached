@@ -41,13 +41,13 @@
 
 struct memcached_array_st
 {
-  struct memcached_st *root;
+  Memcached *root;
   size_t size;
   char c_str[];
 };
 
 
-memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original)
+memcached_array_st *memcached_array_clone(Memcached *memc, const memcached_array_st *original)
 {
   if (original)
   {
@@ -57,7 +57,7 @@ memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memca
   return NULL;
 }
 
-memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length)
+memcached_array_st *memcached_strcpy(Memcached *memc, const char *str, size_t str_length)
 {
   assert(memc);
   assert(str);

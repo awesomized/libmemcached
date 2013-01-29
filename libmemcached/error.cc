@@ -43,7 +43,7 @@
 #define MAX_ERROR_LENGTH 2048
 struct memcached_error_t
 {
-  memcached_st *root;
+  Memcached *root;
   uint64_t query_id;
   struct memcached_error_t *next;
   memcached_return_t rc;
@@ -80,7 +80,7 @@ static void _set(org::libmemcached::Instance& server, Memcached& memc)
 static int error_log_fd= -1;
 #endif
 
-static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t &rc, const char *at, int local_errno= 0)
+static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &rc, const char *at, int local_errno= 0)
 {
   if (memc.error_messages && memc.error_messages->query_id != memc.query_id)
   {
@@ -208,7 +208,7 @@ static void _set(memcached_st& memc, memcached_string_t *str, memcached_return_t
 #endif
 }
 
-memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
+memcached_return_t memcached_set_error(Memcached& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   memcached_string_t tmp= { str, length };
@@ -228,7 +228,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
 
-memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
+memcached_return_t memcached_set_error(Memcached& memc, memcached_return_t rc, const char *at, memcached_string_t& str)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_fatal(rc) == false)
@@ -241,7 +241,7 @@ memcached_return_t memcached_set_error(memcached_st& memc, memcached_return_t rc
   return rc;
 }
 
-memcached_return_t memcached_set_parser_error(memcached_st& memc,
+memcached_return_t memcached_set_parser_error(Memcached& memc,
                                               const char *at,
                                               const char *format, ...)
 {
@@ -337,7 +337,7 @@ memcached_return_t memcached_set_error(org::libmemcached::Instance& self, memcac
   return rc;
 }
 
-memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc, const char *at)
+memcached_return_t memcached_set_error(Memcached& self, memcached_return_t rc, const char *at)
 {
   assert_msg(rc != MEMCACHED_ERRNO, "Programmer error, MEMCACHED_ERRNO was set to be returned to client");
   if (memcached_fatal(rc) == false)
@@ -350,7 +350,7 @@ memcached_return_t memcached_set_error(memcached_st& self, memcached_return_t rc
   return rc;
 }
 
-memcached_return_t memcached_set_errno(memcached_st& self, int local_errno, const char *at, const char *str, size_t length)
+memcached_return_t memcached_set_errno(Memcached& self, int local_errno, const char *at, const char *str, size_t length)
 {
   memcached_string_t tmp= { str, length };
   return memcached_set_errno(self, local_errno, at, tmp);
@@ -362,7 +362,7 @@ memcached_return_t memcached_set_errno(org::libmemcached::Instance& self, int lo
   return memcached_set_errno(self, local_errno, at, tmp);
 }
 
-memcached_return_t memcached_set_errno(memcached_st& self, int local_errno, const char *at)
+memcached_return_t memcached_set_errno(Memcached& self, int local_errno, const char *at)
 {
   if (local_errno == 0)
   {
@@ -375,7 +375,7 @@ memcached_return_t memcached_set_errno(memcached_st& self, int local_errno, cons
   return rc;
 }
 
-memcached_return_t memcached_set_errno(memcached_st& memc, int local_errno, const char *at, memcached_string_t& str)
+memcached_return_t memcached_set_errno(Memcached& memc, int local_errno, const char *at, memcached_string_t& str)
 {
   if (local_errno == 0)
   {
@@ -470,7 +470,7 @@ static void _error_print(const memcached_error_t *error)
   _error_print(error->next);
 }
 
-void memcached_error_print(const memcached_st *shell)
+void memcached_error_print(const Memcached *shell)
 {
   const Memcached* self= memcached2Memcached(shell);
   if (self == NULL)
@@ -498,7 +498,7 @@ static void _error_free(memcached_error_t *error)
   }
 }
 
-void memcached_error_free(memcached_st& self)
+void memcached_error_free(Memcached& self)
 {
   _error_free(self.error_messages);
   self.error_messages= NULL;
@@ -542,7 +542,7 @@ const char *memcached_last_error_message(const memcached_st *shell)
   return memcached_strerror(memc, MEMCACHED_INVALID_ARGUMENTS);
 }
 
-bool memcached_has_current_error(memcached_st &memc)
+bool memcached_has_current_error(Memcached &memc)
 {
   if (memc.error_messages 
       and memc.error_messages->query_id == memc.query_id
