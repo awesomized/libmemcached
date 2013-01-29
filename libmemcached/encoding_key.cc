@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -38,19 +38,19 @@
 #include <libmemcached/common.h>
 #include <libmemcached/assert.hpp>
 
-static void _set_encoding_key(Memcached& self, const char *key, size_t key_length)
+static void _set_encoding_key(Memcached& memc, const char *key, size_t key_length)
 {
-  hashkit_key(&self.hashkit, key, key_length);
+  hashkit_key(&memc.hashkit, key, key_length);
 }
 
 memcached_return_t memcached_set_encoding_key(memcached_st* shell, const char *key, size_t key_length)
 {
-  Memcached* self= memcached2Memcached(shell);
-  if (self == NULL)
+  Memcached* memc= memcached2Memcached(shell);
+  if (memc)
   {
-    return MEMCACHED_INVALID_ARGUMENTS;
+    _set_encoding_key(*memc, key, key_length);
+    return MEMCACHED_SUCCESS;
   }
 
-  _set_encoding_key(*self, key, key_length);
-  return MEMCACHED_SUCCESS;
+  return MEMCACHED_INVALID_ARGUMENTS;
 }

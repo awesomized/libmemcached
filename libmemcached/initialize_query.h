@@ -36,6 +36,6 @@
 
 #pragma once
 
-memcached_return_t initialize_query(memcached_st *self, bool increment_query_id);
+memcached_return_t initialize_query(Memcached *self, bool increment_query_id);
 
-memcached_return_t initialize_const_query(const memcached_st *self);
+memcached_return_t initialize_const_query(const Memcached *self);

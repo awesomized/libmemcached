@@ -88,8 +88,6 @@ test_return_t test_memcached_touch(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS,
                memcached_touch(memc, test_literal_param(__func__), 60 *60));
 
-  test_skip(false ,memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
-
   rc= memcached_touch(memc, test_literal_param(__func__), 60 *60 *24 *60);
   test_compare(MEMCACHED_SUCCESS, rc);
 
@@ -140,7 +138,6 @@ test_return_t test_memcached_touch_by_key(memcached_st *memc)
                                       test_literal_param(__func__),
                                       60 *60));
 
-  test_skip(false ,memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
   test_compare(MEMCACHED_SUCCESS,
                memcached_touch_by_key(memc,
                                       test_literal_param("grouping_key"),

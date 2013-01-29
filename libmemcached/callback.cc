@@ -31,7 +31,7 @@ memcached_return_t memcached_callback_set(memcached_st *shell,
     {
     case MEMCACHED_CALLBACK_PREFIX_KEY:
       {
-        return memcached_set_namespace(ptr, (char*)data, data ? strlen((char*)data) : 0);
+        return memcached_set_namespace(*ptr, (char*)data, data ? strlen((char*)data) : 0);
       }
 
     case MEMCACHED_CALLBACK_USER_DATA:

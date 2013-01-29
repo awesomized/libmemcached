@@ -54,7 +54,6 @@ static void auto_response(org::libmemcached::Instance* instance, const bool repl
 
   if (memcached_fatal(rc))
   {
-    fprintf(stderr, "%s\n", memcached_strerror(NULL, rc));
     assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
     *value= UINT64_MAX;
   }

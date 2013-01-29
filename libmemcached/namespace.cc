@@ -35,62 +35,60 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/assert.hpp>
+#include "libmemcached/common.h"
+#include "libmemcached/assert.hpp"
 
-memcached_return_t memcached_set_namespace(memcached_st *self, const char *key, size_t key_length)
+memcached_return_t memcached_set_namespace(Memcached& memc, const char *key, size_t key_length)
 {
-  assert_msg(self, "A NULL memcached_st was used");
-
   if (key and key_length == 0)
   { 
     WATCHPOINT_ASSERT(key_length);
-    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string had value but length was 0"));
+    return memcached_set_error(memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string had value but length was 0"));
   }
   else if (key_length and key == NULL)
   {
     WATCHPOINT_ASSERT(key);
-    return memcached_set_error(*self, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string length was > 1 but namespace string was null "));
+    return memcached_set_error(memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid namespace, namespace string length was > 1 but namespace string was null "));
   }
   else if (key and key_length)
   {
-    bool orig= self->flags.verify_key;
-    self->flags.verify_key= true;
-    if (memcached_failed(memcached_key_test(*self, (const char **)&key, &key_length, 1)))
+    bool orig= memc.flags.verify_key;
+    memc.flags.verify_key= true;
+    if (memcached_failed(memcached_key_test(memc, (const char **)&key, &key_length, 1)))
     {
-      self->flags.verify_key= orig;
-      return memcached_last_error(self);
+      memc.flags.verify_key= orig;
+      return memcached_last_error(&memc);
     }
-    self->flags.verify_key= orig;
+    memc.flags.verify_key= orig;
 
     if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
     {
-      return memcached_set_error(*self, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
+      return memcached_set_error(memc, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
     }
 
-    memcached_array_free(self->_namespace);
-    self->_namespace= memcached_strcpy(self, key, key_length);
+    memcached_array_free(memc._namespace);
+    memc._namespace= memcached_strcpy(&memc, key, key_length);
 
-    if (not self->_namespace)
+    if (memc._namespace == NULL)
     {
-      return memcached_set_error(*self, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      return memcached_set_error(memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
     }
   }
   else
   {
-    memcached_array_free(self->_namespace);
-    self->_namespace= NULL;
+    memcached_array_free(memc._namespace);
+    memc._namespace= NULL;
   }
 
   return MEMCACHED_SUCCESS;
 }
 
-const char * memcached_get_namespace(memcached_st *self)
+const char * memcached_get_namespace(Memcached& memc)
 {
-  if (self->_namespace == NULL)
+  if (memc._namespace == NULL)
   {
     return NULL;
   }
 
-  return memcached_array_string(self->_namespace);
+  return memcached_array_string(memc._namespace);
 }

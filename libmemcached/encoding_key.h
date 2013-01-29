@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-  memcached_string_t memcached_encoding_key(memcached_st&);
+  memcached_string_t memcached_encoding_key(Memcached&);
 
 #ifdef __cplusplus
 }

@@ -41,25 +41,18 @@
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_array_clone(struct memcached_st *memc, const memcached_array_st *original);
+memcached_array_st *memcached_array_clone(Memcached* memc, const memcached_array_st *original);
 
-LIBMEMCACHED_LOCAL
-memcached_array_st *memcached_strcpy(struct memcached_st *memc, const char *str, size_t str_length);
+memcached_array_st *memcached_strcpy(Memcached* memc, const char *str, size_t str_length);
 
-LIBMEMCACHED_LOCAL
 void memcached_array_free(memcached_array_st *array);
 
-LIBMEMCACHED_LOCAL
 size_t memcached_array_size(memcached_array_st *array);
 
-LIBMEMCACHED_LOCAL
 const char *memcached_array_string(memcached_array_st *array);
 
-LIBMEMCACHED_LOCAL
 memcached_string_t memcached_array_to_string(memcached_array_st *array);
 
-LIBMEMCACHED_LOCAL
 bool memcached_array_is_null(memcached_array_st *array);
 
 #ifdef __cplusplus

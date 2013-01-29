@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,14 @@
 extern "C" {
 #endif
 
-LIBMEMCACHED_LOCAL
 memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
                                                    const uint32_t *host_map,
                                                    const uint32_t *forward_map,
                                                    const uint32_t buckets,
                                                    const uint32_t replicas);
 
-LIBMEMCACHED_LOCAL
 uint32_t memcached_virtual_bucket_get(const memcached_st *self, uint32_t digest);
 
-LIBMEMCACHED_LOCAL
 void memcached_virtual_bucket_free(memcached_st *self);
 
 #ifdef __cplusplus
