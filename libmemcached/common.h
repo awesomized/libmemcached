@@ -158,10 +158,10 @@ org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_
 
 #ifdef __cplusplus
 # include "libmemcached/response.h"
+# include "libmemcached/namespace.h"
+#else
+# include "libmemcached/virtual_bucket.h"
 #endif
-
-#include "libmemcached/namespace.h"
-#include "libmemcached/virtual_bucket.h"
 
 #ifdef __cplusplus
 # include "libmemcached/backtrace.hpp"

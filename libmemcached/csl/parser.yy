@@ -291,7 +291,7 @@ behaviors:
               parser_abort(context, "--NAMESPACE can only be called once");
             }
 
-            if ((context->rc= memcached_set_namespace(context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
+            if ((context->rc= memcached_set_namespace(*context->memc, $2.c_str, $2.size)) != MEMCACHED_SUCCESS)
             {
               parser_abort(context, memcached_last_error_message(context->memc));
             }

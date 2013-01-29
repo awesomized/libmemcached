@@ -55,7 +55,7 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
                                                    const uint32_t buckets,
                                                    const uint32_t replicas)
 {
-  if (! self || ! host_map || ! buckets)
+  if (self == NULL || host_map == NULL || buckets == 0U)
   {
     return MEMCACHED_INVALID_ARGUMENTS;
   }
@@ -93,37 +93,31 @@ memcached_return_t memcached_virtual_bucket_create(memcached_st *self,
 
 void memcached_virtual_bucket_free(memcached_st *self)
 {
-  if (self == NULL)
+  if (self)
   {
-    return;
+    if (self->virtual_bucket)
+    {
+      free(self->virtual_bucket);
+      self->virtual_bucket= NULL;
+    }
   }
-
-  if (self->virtual_bucket == NULL)
-  {
-    return;
-  }
-
-  free(self->virtual_bucket);
-  self->virtual_bucket= NULL;
 }
 
 uint32_t memcached_virtual_bucket_get(const memcached_st *self, uint32_t digest)
 {
-  if (self == NULL)
+  if (self)
   {
-    return 0;
+    if (self->virtual_bucket)
+    {
+      if (self->virtual_bucket)
+      {
+        uint32_t result= (uint32_t) (digest & (self->virtual_bucket->size -1));
+        return self->virtual_bucket->buckets[result].master;
+      }
+
+      return (uint32_t) (digest & (self->number_of_hosts -1));
+    }
   }
 
-  if (self->virtual_bucket == NULL)
-  {
-    return 0;
-  }
-
-  if (self->virtual_bucket)
-  {
-    uint32_t result= (uint32_t) (digest & (self->virtual_bucket->size -1));
-    return self->virtual_bucket->buckets[result].master;
-  }
-
-  return (uint32_t) (digest & (self->number_of_hosts -1));
+  return 0;
 }
