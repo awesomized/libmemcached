@@ -91,10 +91,13 @@
 
 %}
 
+%option nostdinit
 %option 8bit
+%option warn
 %option bison-bridge
 %option never-interactive
 %option case-insensitive
+%option nodefault
 %option noinput
 %option nounput
 %option noyywrap
@@ -102,7 +105,6 @@
 %option perf-report
 %option prefix="config_"
 %option reentrant
-%option warn
 
 %%
 
