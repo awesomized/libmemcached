@@ -25,7 +25,6 @@ BuildRequires: glibc-devel
 BuildRequires: glibc-headers
 BuildRequires: grep
 BuildRequires: gzip
-BuildRequires: hostname
 BuildRequires: libevent-devel
 BuildRequires: libstdc++-devel
 BuildRequires: libuuid-devel
