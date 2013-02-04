@@ -50,6 +50,7 @@ noinst_HEADERS+= libmemcached/udp.hpp
 noinst_HEADERS+= libmemcached/version.hpp 
 noinst_HEADERS+= libmemcached/virtual_bucket.h 
 noinst_HEADERS+= libmemcached/watchpoint.h
+noinst_HEADERS+= libmemcached/windows.hpp
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 EXTRA_libmemcached_libmemcached_la_DEPENDENCIES=

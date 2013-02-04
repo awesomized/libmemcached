@@ -407,7 +407,7 @@ function restore_BUILD ()
   fi
 
   if [[ -n "$OLD_PREFIX" ]]; then
-    CONFIGURE_ARG=$OLD_PREFIX
+    PREFIX_ARG=$OLD_PREFIX
   fi
 
   if [[ -n "$OLD_MAKE" ]]; then
@@ -425,53 +425,6 @@ function restore_BUILD ()
   OLD_TESTS_ENVIRONMENT=
 
   export -n CC CXX
-}
-
-function push_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    die "OLD_PREFIX_ARG was set on push, programmer error!"
-  fi
-
-  if [[ -n "$PREFIX_ARG" ]]; then
-    OLD_PREFIX_ARG=$PREFIX_ARG
-    PREFIX_ARG=
-  fi
-
-  if [[ -n "$1" ]]; then
-    PREFIX_ARG="--prefix=$1"
-  fi
-}
-
-function pop_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    PREFIX_ARG=$OLD_PREFIX_ARG
-    OLD_PREFIX_ARG=
-  else
-    PREFIX_ARG=
-  fi
-}
-
-function push_TESTS_ENVIRONMENT ()
-{
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    die "OLD_TESTS_ENVIRONMENT was set on push, programmer error!"
-  fi
-
-  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
-    OLD_TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT
-    TESTS_ENVIRONMENT=
-  fi
-}
-
-function pop_TESTS_ENVIRONMENT ()
-{
-  TESTS_ENVIRONMENT=
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    TESTS_ENVIRONMENT=$OLD_TESTS_ENVIRONMENT
-    OLD_TESTS_ENVIRONMENT=
-  fi
 }
 
 function safe_pushd ()
@@ -522,10 +475,10 @@ function make_valgrind ()
     return 1
   fi
 
+  save_BUILD
+
   # If we are required to run configure, do so now
   run_configure_if_required
-
-  push_TESTS_ENVIRONMENT
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
@@ -537,13 +490,15 @@ function make_valgrind ()
 
   make_target 'check' || return 1
 
-  pop_TESTS_ENVIRONMENT
+  restore_BUILD
 }
 
 function make_install_system ()
 {
   local INSTALL_LOCATION=$(mktemp -d /tmp/XXXXXXXXXX)
-  push_PREFIX_ARG $INSTALL_LOCATION
+
+  save_BUILD
+  PREFIX_ARG="--prefix=$INSTALL_LOCATION"
 
   if [ ! -d $INSTALL_LOCATION ] ; then
     die "ASSERT temp directory not found '$INSTALL_LOCATION'"
@@ -551,16 +506,11 @@ function make_install_system ()
 
   run_configure #install_buid_dir
 
-  push_TESTS_ENVIRONMENT
-
   make_target 'install'
 
   make_target 'installcheck'
 
   make_target 'uninstall'
-
-  pop_TESTS_ENVIRONMENT
-  pop_PREFIX_ARG
 
   rm -r -f $INSTALL_LOCATION
   make 'distclean'
@@ -569,6 +519,7 @@ function make_install_system ()
     die "ASSERT Makefile should not exist"
   fi
 
+  restore_BUILD
   safe_popd
 }
 
@@ -909,10 +860,10 @@ function make_install_html ()
 
 function make_gdb ()
 {
+  save_BUILD
+
   if command_exists 'gdb'; then
     run_configure_if_required
-
-    push_TESTS_ENVIRONMENT
 
     # Set ENV GDB_COMMAND
     if [[ -z "$GDB_COMMAND" ]]; then
@@ -933,8 +884,6 @@ function make_gdb ()
       rm 'gdb.txt'
     fi
 
-    pop_TESTS_ENVIRONMENT
-
     if [ -f '.gdb_history' ]; then
       rm '.gdb_history'
     fi
@@ -946,6 +895,8 @@ function make_gdb ()
     echo 'gdb was not present'
     return 1
   fi
+
+  restore_BUILD
 }
 
 # $1 target to compile
@@ -1477,7 +1428,7 @@ function bootstrap ()
 
   # Set ENV PREFIX in order to set --prefix for ./configure
   if [[ -n "$PREFIX" ]]; then 
-    push_PREFIX_ARG $PREFIX
+    PREFIX_ARG="--prefix=$PREFIX"
   fi
 
   # We should always have a target by this point
@@ -1738,11 +1689,13 @@ export AUTOHEADER
 export AUTOM4TE
 export AUTOMAKE
 export AUTORECONF
+export CONFIGURE_ARG
 export DEBUG
 export GNU_BUILD_FLAGS
 export LIBTOOLIZE
 export LIBTOOLIZE_OPTIONS
 export MAKE
+export PREFIX_ARG
 export TESTS_ENVIRONMENT
 export VERBOSE
 export WARNINGS
