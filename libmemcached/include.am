@@ -61,8 +61,8 @@ libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 if BUILD_WIN32
 libmemcached_libmemcached_la_CFLAGS+= -DBUILDING_HASHKIT
 libmemcached_libmemcached_la_CXXFLAGS+= -DBUILDING_HASHKIT
-libmemcached_libmemcached_la_LIBADD+= -lmingw64
-libmemcached_libmemcached_la_LIBADD+= -lws2_64
+libmemcached_libmemcached_la_LIBADD+= -lmingw32
+libmemcached_libmemcached_la_LIBADD+= -lws2_32
 endif
 
 libmemcached_libmemcached_la_SOURCES+= libmemcached/instance.cc

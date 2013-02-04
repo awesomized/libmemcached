@@ -69,7 +69,7 @@
 # include <arpa/inet.h>
 #endif
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 # include "win32/wrappers.h"
 # define get_socket_errno() WSAGetLastError()
 #else

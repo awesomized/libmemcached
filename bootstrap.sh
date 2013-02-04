@@ -296,42 +296,42 @@ function run_configure ()
   # Arguments for configure
   local BUILD_CONFIGURE_ARG= 
 
-  # Set ENV DEBUG in order to enable debugging
-  if $DEBUG; then 
-    BUILD_CONFIGURE_ARG='--enable-debug'
-  fi
-
+  # If ENV DEBUG is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert
-  if [[ -n "$ASSERT" ]]; then 
-    local ASSERT_ARG=
-    ASSERT_ARG='--enable-assert'
-    BUILD_CONFIGURE_ARG="$ASSERT_ARG $BUILD_CONFIGURE_ARG"
+  if $DEBUG; then 
+    BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
+  elif [[ -n "$VCS_CHECKOUT" ]]; then
+    BUILD_CONFIGURE_ARG+=' --enable-assert'
   fi
 
   if [[ -n "$CONFIGURE_ARG" ]]; then 
-    BUILD_CONFIGURE_ARG= "$BUILD_CONFIGURE_ARG $CONFIGURE_ARG"
+    BUILD_CONFIGURE_ARG+=" $CONFIGURE_ARG"
+  fi
+
+  if [[ -n "$PREFIX_ARG" ]]; then 
+    BUILD_CONFIGURE_ARG+=" $PREFIX_ARG"
   fi
 
   ret=1;
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     rhel-5*)
       command_exists 'gcc44' || die "Could not locate gcc44"
-      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     *)
-      $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG
+      $CONFIGURE $BUILD_CONFIGURE_ARG
       ret=$?
       ;;
   esac
 
   if [ $ret -ne 0 ]; then
-    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG"
   fi
 
   if [ ! -f 'Makefile' ]; then
@@ -365,6 +365,10 @@ function save_BUILD ()
 
   if [[ -n "$OLD_CONFIGURE_ARG" ]]; then
     die "OLD_CONFIGURE_ARG($OLD_CONFIGURE_ARG) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_PREFIX" ]]; then
+    die "OLD_PREFIX($OLD_PREFIX) was set on push, programmer error!"
   fi
 
   if [[ -n "$OLD_MAKE" ]]; then
@@ -402,6 +406,10 @@ function restore_BUILD ()
     CONFIGURE_ARG=$OLD_CONFIGURE_ARG
   fi
 
+  if [[ -n "$OLD_PREFIX" ]]; then
+    CONFIGURE_ARG=$OLD_PREFIX
+  fi
+
   if [[ -n "$OLD_MAKE" ]]; then
     MAKE=$OLD_MAKE
   fi
@@ -412,6 +420,7 @@ function restore_BUILD ()
 
   OLD_CONFIGURE=
   OLD_CONFIGURE_ARG=
+  OLD_PREFIX=
   OLD_MAKE=
   OLD_TESTS_ENVIRONMENT=
 
@@ -1142,6 +1151,8 @@ function determine_vcs ()
     VCS_CHECKOUT=svn
   elif [[ -d '.hg' ]]; then
     VCS_CHECKOUT=hg
+  else
+    VCS_CHECKOUT=
   fi
 
   if [[ -n "$VCS_CHECKOUT" ]]; then
@@ -1580,6 +1591,7 @@ function main ()
 
   local OLD_CONFIGURE=
   local OLD_CONFIGURE_ARG=
+  local OLD_PREFIX=
   local OLD_MAKE=
   local OLD_TESTS_ENVIRONMENT=
 

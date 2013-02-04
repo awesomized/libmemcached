@@ -267,7 +267,7 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
 
 static inline void set_socket_nonblocking(org::libmemcached::Instance* server)
 {
-#ifdef WIN32
+#if defined(_WIN32)
   u_long arg= 1;
   if (ioctlsocket(server->fd, FIONBIO, &arg) == SOCKET_ERROR)
   {
@@ -372,7 +372,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 
 #if defined(_WIN32)
 #else
-#if defined(SO_NOSIGPIPE)
+# if defined(SO_NOSIGPIPE)
   if (SO_NOSIGPIPE)
   {
     int set= 1;
@@ -388,7 +388,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 #endif
     }
   }
-#endif // SO_NOSIGPIPE
+# endif // SO_NOSIGPIPE
 #endif // _WIN32
 
   if (server->root->flags.no_block)
@@ -461,7 +461,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 
 static memcached_return_t unix_socket_connect(org::libmemcached::Instance* server)
 {
-#ifndef WIN32
+#ifndef _WIN32
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
 
   do {
