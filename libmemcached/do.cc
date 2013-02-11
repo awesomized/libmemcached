@@ -30,7 +30,7 @@ static memcached_return_t _vdo_udp(org::libmemcached::Instance* instance,
   vector[0].length= UDP_DATAGRAM_HEADER_LENGTH;
 
   msg.msg_iov= (struct iovec*)vector;
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+#ifdef __APPLE__
   msg.msg_iovlen= int(count);
 #else
   msg.msg_iovlen= count;
