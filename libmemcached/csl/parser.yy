@@ -53,7 +53,7 @@ class Context;
 %parse-param { class Context *context }
 %parse-param { yyscan_t *scanner }
 %pure-parser
-%require "2.4"
+%require "2.5"
 %start begin
 %verbose
 
