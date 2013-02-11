@@ -86,6 +86,8 @@ TESTS += ${bin_PROGRAMS}
 TESTS += ${check_PROGRAMS}
 XFAIL_TESTS += ${bin_PROGRAMS}
 
+if ! BUILD_WIN32
+
 merge-clean:
 	@find ./ | $(GREP) \.gcda | xargs rm -f
 	@find ./ | $(GREP) \.gcno | xargs rm -f
@@ -101,8 +103,8 @@ merge-clean:
 	@echo "Files that need to be either removed or checked in:"
 	@bzr unknowns
 
-clean-local:
-	-rm -rf docs/_build docs/doctrees
+clean-local: clean-libtest-check clean-docs-check
+
 
 lcov: lcov-clean check
 	@echo
@@ -117,10 +119,9 @@ lcov-clean: clean
 	@rm -rf lcov */lcov.out
 	@find . -name '*.gcno' | xargs rm -f
 	@find . -name '*.gcda' | xargs rm -f
+endif
 
 DISTCLEANFILES+= config/top.h
-
-clean-local: clean-libtest-check clean-docs-check
 
 maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;

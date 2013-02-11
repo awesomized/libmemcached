@@ -12,7 +12,7 @@
 
 #include "libmemcached/common.h"
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 #include "libmemcached/poll.h"
 
 #include <sys/time.h>
@@ -31,7 +31,7 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo)
   {
     if (fds[x].events & (POLLIN | POLLOUT))
     {
-#ifndef WIN32
+#ifndef _WIN32
       if (fds[x].fd > maxfd)
       {
         maxfd= fds[x].fd;
@@ -82,4 +82,4 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo)
    return ret;
 }
 
-#endif // defined(WIN32) || defined(__MINGW32__)
+#endif // defined(_WIN32)

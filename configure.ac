@@ -1,5 +1,5 @@
 # LibmemcacheD
-# Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
+# Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
 # All rights reserved.
 #
@@ -287,10 +287,12 @@ AC_DEFUN([CHECK_FOR_PTHREAD_AND_SASL],
          ])
 CHECK_FOR_PTHREAD_AND_SASL
 
-
 # backtrace(), others require shared builds
-AS_IF([test "x$enable_shared" = "xyes"],
-      [AC_DEFINE([HAVE_SHARED_ENABLED],[1],[Enable code which requires shared library support. Like backtrace().])])
+AC_DEFUN([__ENABLE_SHARED],
+         [AC_REQUIRE([AX_PLATFORM])
+         AS_IF([test "x${TARGET_WINDOWS}" = "xtrue"],[enable_shared=no])
+         AS_IF([test "x$enable_shared" = "xyes"],
+               [AC_DEFINE([HAVE_SHARED_ENABLED],[1],[Enable code which requires shared library support. Like backtrace().])])])
 AM_CONDITIONAL([SHARED_ENABLED],[test "x$enable_shared" = "xyes"])
 
 PANDORA_ENABLE_DTRACE

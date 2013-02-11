@@ -107,7 +107,7 @@
 # include <dlfcn.h>
 #endif
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 # include "libmemcached/windows.hpp"
 #endif
 

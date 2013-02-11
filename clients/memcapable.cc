@@ -124,7 +124,7 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port)
  */
 static memcached_socket_t set_noblock(void)
 {
-#ifdef WIN32
+#if defined(_WIN32)
   u_long arg = 1;
   if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR)
   {

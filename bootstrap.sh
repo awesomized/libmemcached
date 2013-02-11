@@ -296,42 +296,42 @@ function run_configure ()
   # Arguments for configure
   local BUILD_CONFIGURE_ARG= 
 
-  # Set ENV DEBUG in order to enable debugging
-  if $DEBUG; then 
-    BUILD_CONFIGURE_ARG='--enable-debug'
-  fi
-
+  # If ENV DEBUG is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert
-  if [[ -n "$ASSERT" ]]; then 
-    local ASSERT_ARG=
-    ASSERT_ARG='--enable-assert'
-    BUILD_CONFIGURE_ARG="$ASSERT_ARG $BUILD_CONFIGURE_ARG"
+  if $DEBUG; then 
+    BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
+  elif [[ -n "$VCS_CHECKOUT" ]]; then
+    BUILD_CONFIGURE_ARG+=' --enable-assert'
   fi
 
   if [[ -n "$CONFIGURE_ARG" ]]; then 
-    BUILD_CONFIGURE_ARG= "$BUILD_CONFIGURE_ARG $CONFIGURE_ARG"
+    BUILD_CONFIGURE_ARG+=" $CONFIGURE_ARG"
+  fi
+
+  if [[ -n "$PREFIX_ARG" ]]; then 
+    BUILD_CONFIGURE_ARG+=" $PREFIX_ARG"
   fi
 
   ret=1;
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     rhel-5*)
       command_exists 'gcc44' || die "Could not locate gcc44"
-      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     *)
-      $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG
+      $CONFIGURE $BUILD_CONFIGURE_ARG
       ret=$?
       ;;
   esac
 
   if [ $ret -ne 0 ]; then
-    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG"
   fi
 
   if [ ! -f 'Makefile' ]; then
@@ -365,6 +365,10 @@ function save_BUILD ()
 
   if [[ -n "$OLD_CONFIGURE_ARG" ]]; then
     die "OLD_CONFIGURE_ARG($OLD_CONFIGURE_ARG) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_PREFIX" ]]; then
+    die "OLD_PREFIX($OLD_PREFIX) was set on push, programmer error!"
   fi
 
   if [[ -n "$OLD_MAKE" ]]; then
@@ -402,6 +406,10 @@ function restore_BUILD ()
     CONFIGURE_ARG=$OLD_CONFIGURE_ARG
   fi
 
+  if [[ -n "$OLD_PREFIX" ]]; then
+    PREFIX_ARG=$OLD_PREFIX
+  fi
+
   if [[ -n "$OLD_MAKE" ]]; then
     MAKE=$OLD_MAKE
   fi
@@ -412,57 +420,11 @@ function restore_BUILD ()
 
   OLD_CONFIGURE=
   OLD_CONFIGURE_ARG=
+  OLD_PREFIX=
   OLD_MAKE=
   OLD_TESTS_ENVIRONMENT=
 
   export -n CC CXX
-}
-
-function push_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    die "OLD_PREFIX_ARG was set on push, programmer error!"
-  fi
-
-  if [[ -n "$PREFIX_ARG" ]]; then
-    OLD_PREFIX_ARG=$PREFIX_ARG
-    PREFIX_ARG=
-  fi
-
-  if [[ -n "$1" ]]; then
-    PREFIX_ARG="--prefix=$1"
-  fi
-}
-
-function pop_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    PREFIX_ARG=$OLD_PREFIX_ARG
-    OLD_PREFIX_ARG=
-  else
-    PREFIX_ARG=
-  fi
-}
-
-function push_TESTS_ENVIRONMENT ()
-{
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    die "OLD_TESTS_ENVIRONMENT was set on push, programmer error!"
-  fi
-
-  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
-    OLD_TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT
-    TESTS_ENVIRONMENT=
-  fi
-}
-
-function pop_TESTS_ENVIRONMENT ()
-{
-  TESTS_ENVIRONMENT=
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    TESTS_ENVIRONMENT=$OLD_TESTS_ENVIRONMENT
-    OLD_TESTS_ENVIRONMENT=
-  fi
 }
 
 function safe_pushd ()
@@ -513,10 +475,10 @@ function make_valgrind ()
     return 1
   fi
 
+  save_BUILD
+
   # If we are required to run configure, do so now
   run_configure_if_required
-
-  push_TESTS_ENVIRONMENT
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
@@ -528,13 +490,15 @@ function make_valgrind ()
 
   make_target 'check' || return 1
 
-  pop_TESTS_ENVIRONMENT
+  restore_BUILD
 }
 
 function make_install_system ()
 {
   local INSTALL_LOCATION=$(mktemp -d /tmp/XXXXXXXXXX)
-  push_PREFIX_ARG $INSTALL_LOCATION
+
+  save_BUILD
+  PREFIX_ARG="--prefix=$INSTALL_LOCATION"
 
   if [ ! -d $INSTALL_LOCATION ] ; then
     die "ASSERT temp directory not found '$INSTALL_LOCATION'"
@@ -542,16 +506,11 @@ function make_install_system ()
 
   run_configure #install_buid_dir
 
-  push_TESTS_ENVIRONMENT
-
   make_target 'install'
 
   make_target 'installcheck'
 
   make_target 'uninstall'
-
-  pop_TESTS_ENVIRONMENT
-  pop_PREFIX_ARG
 
   rm -r -f $INSTALL_LOCATION
   make 'distclean'
@@ -560,6 +519,7 @@ function make_install_system ()
     die "ASSERT Makefile should not exist"
   fi
 
+  restore_BUILD
   safe_popd
 }
 
@@ -900,10 +860,10 @@ function make_install_html ()
 
 function make_gdb ()
 {
+  save_BUILD
+
   if command_exists 'gdb'; then
     run_configure_if_required
-
-    push_TESTS_ENVIRONMENT
 
     # Set ENV GDB_COMMAND
     if [[ -z "$GDB_COMMAND" ]]; then
@@ -924,8 +884,6 @@ function make_gdb ()
       rm 'gdb.txt'
     fi
 
-    pop_TESTS_ENVIRONMENT
-
     if [ -f '.gdb_history' ]; then
       rm '.gdb_history'
     fi
@@ -937,6 +895,8 @@ function make_gdb ()
     echo 'gdb was not present'
     return 1
   fi
+
+  restore_BUILD
 }
 
 # $1 target to compile
@@ -1142,6 +1102,8 @@ function determine_vcs ()
     VCS_CHECKOUT=svn
   elif [[ -d '.hg' ]]; then
     VCS_CHECKOUT=hg
+  else
+    VCS_CHECKOUT=
   fi
 
   if [[ -n "$VCS_CHECKOUT" ]]; then
@@ -1466,7 +1428,7 @@ function bootstrap ()
 
   # Set ENV PREFIX in order to set --prefix for ./configure
   if [[ -n "$PREFIX" ]]; then 
-    push_PREFIX_ARG $PREFIX
+    PREFIX_ARG="--prefix=$PREFIX"
   fi
 
   # We should always have a target by this point
@@ -1580,6 +1542,7 @@ function main ()
 
   local OLD_CONFIGURE=
   local OLD_CONFIGURE_ARG=
+  local OLD_PREFIX=
   local OLD_MAKE=
   local OLD_TESTS_ENVIRONMENT=
 
@@ -1726,11 +1689,13 @@ export AUTOHEADER
 export AUTOM4TE
 export AUTOMAKE
 export AUTORECONF
+export CONFIGURE_ARG
 export DEBUG
 export GNU_BUILD_FLAGS
 export LIBTOOLIZE
 export LIBTOOLIZE_OPTIONS
 export MAKE
+export PREFIX_ARG
 export TESTS_ENVIRONMENT
 export VERBOSE
 export WARNINGS

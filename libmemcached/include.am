@@ -50,6 +50,7 @@ noinst_HEADERS+= libmemcached/udp.hpp
 noinst_HEADERS+= libmemcached/version.hpp 
 noinst_HEADERS+= libmemcached/virtual_bucket.h 
 noinst_HEADERS+= libmemcached/watchpoint.h
+noinst_HEADERS+= libmemcached/windows.hpp
 
 lib_LTLIBRARIES+= libmemcached/libmemcached.la
 EXTRA_libmemcached_libmemcached_la_DEPENDENCIES=
@@ -61,8 +62,8 @@ libmemcached_libmemcached_la_CXXFLAGS= -DBUILDING_LIBMEMCACHED
 if BUILD_WIN32
 libmemcached_libmemcached_la_CFLAGS+= -DBUILDING_HASHKIT
 libmemcached_libmemcached_la_CXXFLAGS+= -DBUILDING_HASHKIT
-libmemcached_libmemcached_la_LIBADD+= -lmingw64
-libmemcached_libmemcached_la_LIBADD+= -lws2_64
+libmemcached_libmemcached_la_LIBADD+= -lmingw32
+libmemcached_libmemcached_la_LIBADD+= -lws2_32
 endif
 
 libmemcached_libmemcached_la_SOURCES+= libmemcached/instance.cc
