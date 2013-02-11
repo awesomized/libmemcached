@@ -20,7 +20,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 4
+#serial 5
  
 AC_DEFUN([AX_LIBEVENT],
          [AC_PREREQ([2.63])dnl
@@ -28,15 +28,15 @@ AC_DEFUN([AX_LIBEVENT],
            [AX_SAVE_FLAGS
            LIBS="-levent $LIBS"
            AC_LANG_PUSH([C])
-           AC_RUN_IFELSE([AC_LANG_PROGRAM([
+           AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <event.h>
-               ],[
+               ]],[[
                struct event_base *tmp_event= event_init();
                event_base_free(tmp_event);
-               ])],
+               ]])],
              [ax_cv_libevent=yes],
              [ax_cv_libevent=no],
              [AC_MSG_WARN([test program execution failed])])
@@ -62,15 +62,15 @@ AC_DEFUN([AX_LIBEVENT2],
       [AX_SAVE_FLAGS
       LIBS="-levent $LIBS"
       AC_LANG_PUSH([C])
-      AC_RUN_IFELSE([AC_LANG_PROGRAM([
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <event2/event.h>
-          ],[
-          struct event_base *tmp_event= event_init();
-          event_base_free(tmp_event);
-          ])],
+          ]],[[
+          struct event_base *___event_base= event_base_new();  
+          event_base_free(___event_base);
+          ]])],
         [ax_cv_libevent2=yes],
         [ax_cv_libevent2=no],
         [AC_MSG_WARN([test program execution failed])])
@@ -97,16 +97,18 @@ AC_DEFUN([AX_LIBEVENT2_EVHTTP],
       [AX_SAVE_FLAGS
       LIBS="-levent $LIBS"
       AC_LANG_PUSH([C])
-      AC_RUN_IFELSE([AC_LANG_PROGRAM([
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <event2/event.h>
 #include <event2/http.h>
-          ],[
-          struct event_base *libbase= event_base_new();  
-          struct evhttp *libsrvr= evhttp_new(libbase);
-          ])],
+          ]],[[
+          struct event_base *___event_base= event_base_new();  
+          struct evhttp *___evhttp= evhttp_new(___event_base);
+          evhttp_free(___evhttp);
+          event_base_free(___event_base);
+          ]])],
         [ax_cv_libevent2_evhttp=yes],
         [ax_cv_libevent2_evhttp=no],
         [AC_MSG_WARN([test program execution failed])])
