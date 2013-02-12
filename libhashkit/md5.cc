@@ -71,6 +71,8 @@ documentation and/or software.
 #include <string.h>
 #include <sys/types.h>
 
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
 typedef const unsigned char *CONST_POINTER;

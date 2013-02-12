@@ -663,7 +663,7 @@ static memcached_return_t binary_read_one_response(org::libmemcached::Instance* 
           char touch_buffer[32]; // @todo document this number
           rc= memcached_safe_read(instance, buffer, sizeof(touch_buffer));
         }
-        return MEMCACHED_SUCCESS;
+        return memcached_set_error(*instance, rc, MEMCACHED_AT);
       }
 
     case PROTOCOL_BINARY_CMD_NOOP:
