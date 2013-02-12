@@ -212,7 +212,7 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
   if (instance->root->poll_timeout == 0) // Mimic 0 causes timeout behavior (not all platforms do this)
   {
-    return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+    return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_literal_param("poll_timeout() was set to zero"));
   }
 
   size_t loop_max= 5;
@@ -257,7 +257,7 @@ static memcached_return_t io_wait(org::libmemcached::Instance* instance,
 
     if (active_fd == 0)
     {
-      return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+      return memcached_set_error(*instance, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_literal_param("No active_fd were found"));
     }
 
     // Only an error should result in this code being called.
