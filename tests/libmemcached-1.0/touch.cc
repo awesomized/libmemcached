@@ -88,11 +88,14 @@ test_return_t test_memcached_touch(memcached_st *memc)
   rc= memcached_touch(memc, test_literal_param(__func__), 60 *60);
   ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
 
-  rc= memcached_touch(memc, test_literal_param(__func__), 60 *60 *24 *60);
-  ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
+  if (libmemcached_util_version_check(memc, 1, 2, 15))
+  {
+    rc= memcached_touch(memc, test_literal_param(__func__), 60 *60 *24 *60);
+    ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
 
-  rc= memcached_exist(memc, test_literal_param(__func__));
-  ASSERT_EQ_(MEMCACHED_NOTFOUND, rc, "%s", memcached_last_error_message(memc));
+    rc= memcached_exist(memc, test_literal_param(__func__));
+    ASSERT_EQ_(MEMCACHED_NOTFOUND, rc, "%s", memcached_last_error_message(memc));
+  }
 
   return TEST_SUCCESS;
 }
@@ -138,14 +141,17 @@ test_return_t test_memcached_touch_by_key(memcached_st *memc)
                              60 *60);
   ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
 
-  rc= memcached_touch_by_key(memc,
-                             test_literal_param("grouping_key"),
-                             test_literal_param(__func__),
-                             60 *60 *24 *60);
-  ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
+  if (libmemcached_util_version_check(memc, 1, 2, 15))
+  {
+    rc= memcached_touch_by_key(memc,
+                               test_literal_param("grouping_key"),
+                               test_literal_param(__func__),
+                               60 *60 *24 *60);
+    ASSERT_EQ_(MEMCACHED_SUCCESS, rc, "%s", memcached_last_error_message(memc));
 
-  rc= memcached_exist_by_key(memc, test_literal_param("grouping_key"),test_literal_param(__func__));
-  ASSERT_EQ_(MEMCACHED_NOTFOUND, rc, "%s", memcached_last_error_message(memc));
+    rc= memcached_exist_by_key(memc, test_literal_param("grouping_key"),test_literal_param(__func__));
+    ASSERT_EQ_(MEMCACHED_NOTFOUND, rc, "%s", memcached_last_error_message(memc));
+  }
 
   return TEST_SUCCESS;
 }
