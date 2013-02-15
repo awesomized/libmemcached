@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -502,17 +502,17 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
     }
 
-    memcached_return_t vk;
-    vk= memcached_validate_key_length(key_length[x],
-                                      ptr->flags.binary_protocol);
-    if (vk != MEMCACHED_SUCCESS)
     {
-      if (x > 0)
+      memcached_return_t vk= memcached_validate_key_length(key_length[x], ptr->flags.binary_protocol);
+      if (vk != MEMCACHED_SUCCESS)
       {
-        memcached_io_reset(instance);
-      }
+        if (x > 0)
+        {
+          memcached_io_reset(instance);
+        }
 
-      return vk;
+        return vk;
+      }
     }
 
     request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
@@ -558,15 +558,8 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
       if (instance->response_count())
       {
-        if (memcached_io_write(instance) == false)
-        {
-          memcached_instance_response_reset(instance);
-          memcached_io_reset(instance);
-          rc= MEMCACHED_SOME_ERRORS;
-        }
-
-        if (memcached_io_write(instance, request.bytes,
-                               sizeof(request.bytes), true) == -1)
+        if ((memcached_io_write(instance) == false) or
+            (memcached_io_write(instance, request.bytes, sizeof(request.bytes), true) == -1))
         {
           memcached_instance_response_reset(instance);
           memcached_io_reset(instance);
@@ -604,9 +597,11 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
     for (uint32_t x= 0; x < number_of_keys; ++x)
     {
       if (hash[x] == memcached_server_count(ptr))
+      {
         continue; /* Already successfully sent */
+      }
 
-      uint32_t server= hash[x] + replica;
+      uint32_t server= hash[x] +replica;
 
       /* In case of randomized reads */
       if (randomize_read and ((server + start) <= (hash[x] + ptr->number_of_replicas)))
