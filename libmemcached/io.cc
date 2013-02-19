@@ -40,7 +40,7 @@
 #include <libmemcached/common.h>
 
 #ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
+# include <sys/socket.h>
 #endif
 
 void initialize_binary_request(org::libmemcached::Instance* server, protocol_binary_request_header& header)
