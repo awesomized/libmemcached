@@ -100,9 +100,13 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 # Checks for programs.
+AC_PROG_AWK
+AC_PROG_SED
+AC_PROG_MKDIR_P
 AC_CHECK_PROGS([LEX],['flex'],[:])
 AC_CHECK_PROGS([YACC],['bison'],[:])
 AX_PROG_SPHINX_BUILD
+AX_PROG_MEMCACHED
 
 # Checks for libraries.
 AC_SEARCH_LIBS([getopt_long],[gnugetopt])
