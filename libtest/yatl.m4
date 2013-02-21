@@ -7,10 +7,8 @@ AC_SUBST([LIBTEST_VERSION],[1.0])
 AC_CONFIG_FILES([libtest/version.h])
 
 m4_include([libtest/m4/mysql.m4])
-m4_include([libtest/m4/memcached.m4])
 AC_DEFINE([HAVE_MEMCACHED_SASL_BINARY],[0],[If Memcached binary with sasl support is available])
 
 YATL_MYSQL
-YATL_MEMCACHED
 
 AC_CONFIG_FILES([libtest/yatlcon.h])

@@ -1750,6 +1750,54 @@ test_return_t mget_execute(memcached_st *original_memc)
   return TEST_SUCCESS;
 }
 
+test_return_t MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH_TEST(memcached_st *original_memc)
+{
+  test_skip(true, memcached_behavior_get(original_memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
+
+  memcached_st *memc= create_single_instance_memcached(original_memc, "--BINARY-PROTOCOL");
+  test_true(memc);
+
+  test_skip(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH, 8));
+
+  keys_st keys(20480);
+
+  /* First add all of the items.. */
+  char blob[1024] = {0};
+
+  for (size_t x= 0; x < keys.size(); ++x)
+  {
+    uint64_t query_id= memcached_query_id(memc);
+    memcached_return_t rc= memcached_add(memc,
+                                         keys.key_at(x), keys.length_at(x),
+                                         blob, sizeof(blob),
+                                         0, 0);
+    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    test_compare(query_id +1, memcached_query_id(memc));
+  }
+
+  /* Try to get all of them with a large multiget */
+  size_t counter= 0;
+  memcached_execute_fn callbacks[]= { &callback_counter };
+  test_compare(MEMCACHED_SUCCESS, 
+               memcached_mget_execute(memc,
+                                      keys.keys_ptr(), keys.lengths_ptr(),
+                                      keys.size(), callbacks, &counter, 1));
+
+  {
+    uint64_t query_id= memcached_query_id(memc);
+    test_compare(MEMCACHED_SUCCESS, 
+                 memcached_fetch_execute(memc, callbacks, (void *)&counter, 1));
+    test_compare(query_id, memcached_query_id(memc));
+
+    /* Verify that we got all of the items */
+    test_compare(keys.size(), counter);
+  }
+
+  memcached_free(memc);
+
+  return TEST_SUCCESS;
+}
+
 #define REGRESSION_BINARY_VS_BLOCK_COUNT  20480
 static pairs_st *global_pairs= NULL;
 
@@ -4601,7 +4649,7 @@ test_return_t regression_bug_583031(memcached_st *)
 {
   memcached_st *memc= memcached_create(NULL);
   test_true(memc);
-  test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.3.4", 11211));
+  test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.251.4", 11211));
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 3000);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1000);

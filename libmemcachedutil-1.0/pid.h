@@ -36,8 +36,8 @@
 
 #pragma once
 
-#ifndef WIN32
-#include <netdb.h>
+#ifndef _WIN32
+# include <netdb.h>
 #endif
 
 #include <sys/types.h>

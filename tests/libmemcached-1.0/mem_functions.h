@@ -108,6 +108,7 @@ test_return_t memcached_server_remove_test(memcached_st*);
 test_return_t memcached_stat_execute_test(memcached_st *memc);
 test_return_t mget_end(memcached_st *memc);
 test_return_t mget_execute(memcached_st *original_memc);
+test_return_t MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH_TEST(memcached_st *original_memc);
 test_return_t mget_result_alloc_test(memcached_st *memc);
 test_return_t mget_result_function(memcached_st *memc);
 test_return_t mget_result_test(memcached_st *memc);

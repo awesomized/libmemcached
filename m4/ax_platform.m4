@@ -49,8 +49,7 @@
         AC_DEFINE([__APPLE_CC__],[1],[Workaround for bug in FreeBSD headers])],
         [*solaris*],[AC_DEFINE([TARGET_OS_SOLARIS],[1],[Whether we are building for Solaris])],
         [*darwin*],
-        [TARGET_OSX="true"
-        AC_DEFINE([TARGET_OS_OSX],[1],[Whether we build for OSX])],
+        [TARGET_OSX="true"],
         [*linux*],
         [TARGET_LINUX="true"
         AC_DEFINE([TARGET_OS_LINUX],[1],[Whether we build for Linux])])

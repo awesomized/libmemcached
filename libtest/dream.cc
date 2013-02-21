@@ -41,7 +41,7 @@ namespace libtest {
 
 void dream(time_t tv_sec, long tv_nsec)
 {
-#ifdef WIN32
+#if defined(_WIN32)
   if (tv_sec == 0 and tv_nsec)
   {
     tv_sec++;

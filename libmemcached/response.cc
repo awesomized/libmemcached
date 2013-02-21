@@ -648,6 +648,25 @@ static memcached_return_t binary_read_one_response(org::libmemcached::Instance* 
       }
       break;
 
+    case PROTOCOL_BINARY_CMD_TOUCH:
+      {
+        rc= MEMCACHED_SUCCESS;
+        if (bodylen == 4) // The four byte read is a bug?
+        {
+          char touch_buffer[4]; // @todo document this number
+          rc= memcached_safe_read(instance, touch_buffer, sizeof(touch_buffer));
+#if 0
+          fprintf(stderr, "%s:%d %d %d %d %d %.*s(%d)\n", __FILE__, __LINE__,
+                  int(touch_buffer[0]),
+                  int(touch_buffer[1]),
+                  int(touch_buffer[2]),
+                  int(touch_buffer[3]),
+                  int(bodylen), touch_buffer, int(bodylen));
+#endif
+        }
+        return memcached_set_error(*instance, rc, MEMCACHED_AT);
+      }
+
     case PROTOCOL_BINARY_CMD_FLUSH:
     case PROTOCOL_BINARY_CMD_QUIT:
     case PROTOCOL_BINARY_CMD_SET:
@@ -656,13 +675,8 @@ static memcached_return_t binary_read_one_response(org::libmemcached::Instance* 
     case PROTOCOL_BINARY_CMD_APPEND:
     case PROTOCOL_BINARY_CMD_PREPEND:
     case PROTOCOL_BINARY_CMD_DELETE:
-    case PROTOCOL_BINARY_CMD_TOUCH:
       {
-        if (bodylen != 0)
-        {
-          char touch_buffer[32]; // @todo document this number
-          rc= memcached_safe_read(instance, buffer, sizeof(touch_buffer));
-        }
+        WATCHPOINT_ASSERT(bodylen == 0);
         return MEMCACHED_SUCCESS;
       }
 

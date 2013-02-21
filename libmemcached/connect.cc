@@ -87,7 +87,7 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server, cons
       int local_errno= get_socket_errno(); // We cache in case closesocket() modifies errno
       switch (local_errno)
       {
-#ifdef TARGET_OS_LINUX
+#ifdef __linux__
       case ERESTART:
 #endif
       case EINTR:
@@ -103,22 +103,6 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server, cons
 
       default: // This should not happen
         break;
-#if 0
-        if (fds[0].revents & POLLERR)
-        {
-          int err;
-          socklen_t len= sizeof(err);
-          if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char*)&err, &len) == 0)
-          {
-            if (err == 0)
-            {
-              // This should never happen, if it does? Punt.  
-              continue;
-            }
-            local_errno= err;
-          }
-        }
-#endif
       }
 
       assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
@@ -146,12 +130,8 @@ static memcached_return_t connect_poll(org::libmemcached::Instance* server, cons
         }
       }
 
-      return  memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+      return  memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT, memcached_literal_param("(number_of == 0)"));
     }
-
-#if 0
-    server->revents(fds[0].revents);
-#endif
 
     assert (number_of == 1);
 
@@ -267,7 +247,7 @@ static memcached_return_t set_hostinfo(org::libmemcached::Instance* server)
 
 static inline void set_socket_nonblocking(org::libmemcached::Instance* server)
 {
-#ifdef WIN32
+#if defined(_WIN32)
   u_long arg= 1;
   if (ioctlsocket(server->fd, FIONBIO, &arg) == SOCKET_ERROR)
   {
@@ -372,7 +352,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 
 #if defined(_WIN32)
 #else
-#if defined(SO_NOSIGPIPE)
+# if defined(SO_NOSIGPIPE)
   if (SO_NOSIGPIPE)
   {
     int set= 1;
@@ -388,7 +368,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 #endif
     }
   }
-#endif // SO_NOSIGPIPE
+# endif // SO_NOSIGPIPE
 #endif // _WIN32
 
   if (server->root->flags.no_block)
@@ -461,7 +441,7 @@ static bool set_socket_options(org::libmemcached::Instance* server)
 
 static memcached_return_t unix_socket_connect(org::libmemcached::Instance* server)
 {
-#ifndef WIN32
+#ifndef _WIN32
   WATCHPOINT_ASSERT(server->fd == INVALID_SOCKET);
 
   do {
@@ -663,7 +643,8 @@ static memcached_return_t network_connect(org::libmemcached::Instance* server)
 
   if (timeout_error_occured and server->state < MEMCACHED_SERVER_STATE_IN_PROGRESS)
   {
-    return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT);
+    return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT,
+                               memcached_literal_param("if (timeout_error_occured and server->state < MEMCACHED_SERVER_STATE_IN_PROGRESS)"));
   }
 
   return memcached_set_error(*server, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT); /* The last error should be from connect() */

@@ -76,7 +76,7 @@ void set_alarm(long tv_sec, long tv_usec)
     }
   }
 
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+#ifdef __APPLE__
   struct timeval it_value= { time_t(tv_sec), suseconds_t(tv_usec) };
 #else
   struct timeval it_value= { tv_sec, tv_usec };

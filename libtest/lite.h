@@ -51,7 +51,7 @@
 # include <string.h>
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32)
 # include <malloc.h>
 #else
 # include <alloca.h>

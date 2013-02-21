@@ -53,7 +53,7 @@ class Context;
 %parse-param { class Context *context }
 %parse-param { yyscan_t *scanner }
 %pure-parser
-%require "2.4"
+%require "2.5"
 %start begin
 %verbose
 
@@ -66,13 +66,14 @@ class Context;
 #include <libmemcached/csl/scanner.h>
 
 #ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wold-style-cast"
+# pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
 #ifndef __INTEL_COMPILER
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wlogical-op"
-#endif
+# ifndef __clang__
+#  pragma GCC diagnostic ignored "-Wlogical-op"
+#  pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+# endif
 #endif
 
 int conf_lex(YYSTYPE* lvalp, void* scanner);

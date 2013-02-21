@@ -184,12 +184,12 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
 void initialize_sockets(void)
 {
   /* Define the function for all platforms to avoid #ifdefs in each program */
-#if defined(WIN32) && WIN32
+#if defined(_WIN32)
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2,0), &wsaData) != 0)
   {
     fprintf(stderr, "Socket Initialization Error. Program aborted\n");
     exit(EXIT_FAILURE);
   }
-#endif
+#endif // #if defined(_WIN32)
 }

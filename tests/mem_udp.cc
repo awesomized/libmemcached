@@ -483,7 +483,7 @@ static test_return_t udp_get_test(memcached_st *memc)
   size_t vlen;
   Expected expected_ids;
   get_udp_request_ids(memc, expected_ids);
-  test_null(memcached_get(memc, test_literal_param("foo"), &vlen, (uint32_t)0, &rc));
+  test_null(memcached_get(memc, test_literal_param("foo"), &vlen, NULL, &rc));
   test_compare(MEMCACHED_NOT_SUPPORTED, rc);
 
   return post_udp_op_check(memc, expected_ids);

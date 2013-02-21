@@ -38,7 +38,7 @@
 #pragma once
 
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 # include <winsock2.h>
 # include <ws2tcpip.h>
 
@@ -59,4 +59,4 @@ typedef SOCKET memcached_socket_t;
 
 typedef int memcached_socket_t;
 
-#endif /* WIN32 */
+#endif /* _WIN32 */

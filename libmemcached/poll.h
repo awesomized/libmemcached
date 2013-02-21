@@ -12,7 +12,7 @@
 
 #pragma once
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 
 #include <winsock2.h>
 
@@ -22,7 +22,7 @@ extern "C" {
 
 typedef struct pollfd
 {
-#ifdef WIN32
+#if defined(_WIN32)
   SOCKET fd;
 #else
   int fd;
@@ -45,4 +45,4 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo);
 }
 #endif
 
-#endif // defined(WIN32) || defined(__MINGW32__)
+#endif // defined(_WIN32)
