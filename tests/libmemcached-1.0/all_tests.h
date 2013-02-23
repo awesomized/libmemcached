@@ -164,6 +164,7 @@ test_st basic_tests[] ={
   {"reset stack clone", true, (test_callback_fn*)basic_reset_stack_clone_test},
   {"reset heap clone", true, (test_callback_fn*)basic_reset_heap_clone_test},
   {"memcached_return_t", false, (test_callback_fn*)memcached_return_t_TEST },
+  {"c++ memcached_st == memcached_return_t", false, (test_callback_fn*)comparison_operator_memcached_st_and__memcached_return_t_TEST },
   {0, 0, 0}
 };
 

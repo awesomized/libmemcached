@@ -2813,6 +2813,20 @@ test_return_t user_supplied_bug21(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t comparison_operator_memcached_st_and__memcached_return_t_TEST(memcached_st *)
+{
+  test::Memc memc_;
+
+  memcached_st *memc= &memc_;
+
+  ASSERT_EQ(memc, MEMCACHED_SUCCESS);
+  test_compare(memc, MEMCACHED_SUCCESS);
+
+  ASSERT_NEQ(memc, MEMCACHED_FAILURE);
+
+  return TEST_SUCCESS;
+}
+
 test_return_t ketama_TEST(memcached_st *)
 {
   test::Memc memc("--server=10.0.1.1:11211 --server=10.0.1.2:11211");
@@ -4666,7 +4680,7 @@ test_return_t regression_bug_583031(memcached_st *)
   test_false(value);
   test_zero(length);
 
-  test_compare_got(MEMCACHED_TIMEOUT, rc, memcached_error(memc));
+  test_compare(MEMCACHED_TIMEOUT, memc);
 
   memcached_free(memc);
 

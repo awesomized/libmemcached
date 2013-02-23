@@ -39,7 +39,7 @@
 #if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED
 inline bool operator== (const memcached_st& memc, const memcached_return_t rc)
 {
-  if (memcached_last_error(const_cast<memcached_st *>(&memc)) == rc)
+  if (memcached_last_error(&memc) == rc)
   {
     return true;
   }
@@ -47,7 +47,7 @@ inline bool operator== (const memcached_st& memc, const memcached_return_t rc)
   return false;
 }
 
-inline bool operator!= (const memcached_st& memc, const memcached_return_t rc)
+inline bool operator!= (const memcached_st& memc, memcached_return_t rc)
 {
   if (memcached_last_error(const_cast<memcached_st *>(&memc)) != rc)
   {
@@ -57,9 +57,39 @@ inline bool operator!= (const memcached_st& memc, const memcached_return_t rc)
   return false;
 }
 
-inline bool operator!= (const memcached_return_t rc, const memcached_st& memc)
+inline bool operator== (memcached_st* const memc, memcached_return_t rc)
+{
+  if (memcached_last_error(memc) == rc)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+inline bool operator!= (memcached_st* const memc, memcached_return_t rc)
+{
+  if (memcached_last_error(memc) != rc)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+inline bool operator!= (memcached_return_t rc, const memcached_st& memc)
 {
   if (memcached_last_error(const_cast<memcached_st *>(&memc)) != rc)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+inline bool operator!= (memcached_return_t rc, memcached_st* const memc)
+{
+  if (memcached_last_error(memc) != rc)
   {
     return true;
   }
