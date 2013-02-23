@@ -158,7 +158,14 @@ int main(int argc, char *argv[])
         break;
 
       case OPT_LIBYATL_REPEAT:
+        errno= 0;
         opt_repeat= strtoul(optarg, (char **) NULL, 10);
+        if (errno != 0)
+        {
+          Error << "unknown value passed to --repeat: `" << optarg << "`";
+          exit(EXIT_FAILURE);
+        }
+
         break;
 
       case OPT_LIBYATL_MATCH_COLLECTION:
@@ -186,9 +193,16 @@ int main(int argc, char *argv[])
 
   srandom((unsigned int)time(NULL));
 
-  if (bool(getenv("YATL_REPEAT")) and (strtoul(getenv("YATL_REPEAT"), (char **) NULL, 10) > 1))
+  errno= 0;
+  if (bool(getenv("YATL_REPEAT")))
   {
+    errno= 0;
     opt_repeat= strtoul(getenv("YATL_REPEAT"), (char **) NULL, 10);
+    if (errno != 0)
+    {
+      Error << "ENV YATL_REPEAT passed an invalid value: `" << getenv("YATL_REPEAT") << "`";
+      exit(EXIT_FAILURE);
+    }
   }
 
   if ((bool(getenv("YATL_QUIET")) and (strcmp(getenv("YATL_QUIET"), "0") == 0)) or opt_quiet)

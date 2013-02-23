@@ -11,6 +11,7 @@
  */
 #include "mem_config.h"
 
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <getopt.h>
@@ -204,7 +205,13 @@ static void options_parse(int argc, char *argv[])
       break;
 
     case OPT_EXPIRE: /* --expire */
+      errno= 0;
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
+      if (errno != 0)
+      {
+        std::cerr << "Incorrect value passed to --expire: `" << optarg << "`" << std::cerr;
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_HASH:

@@ -87,7 +87,13 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings)
 
       ptr++;
 
+      errno= 0;
       port= (in_port_t) strtoul(ptr, (char **)NULL, 10);
+      if (errno != 0)
+      {
+        memcached_server_free(servers);
+        return NULL;
+      }
 
       ptr2= index(ptr, ' ');
       if (! ptr2)
@@ -96,14 +102,22 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings)
       if (ptr2)
       {
         ptr2++;
-        weight = (uint32_t) strtoul(ptr2, (char **)NULL, 10);
+        errno= 0;
+        weight= uint32_t(strtoul(ptr2, (char **)NULL, 10));
+        if (errno != 0)
+        {
+          memcached_server_free(servers);
+          return NULL;
+        }
       }
     }
 
     servers= memcached_server_list_append_with_weight(servers, buffer, port, weight, &rc);
 
     if (isspace(*begin_ptr))
+    {
       begin_ptr++;
+    }
   }
 
   return servers;

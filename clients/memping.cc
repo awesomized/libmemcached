@@ -11,10 +11,12 @@
  */
 #include "mem_config.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
 #include <getopt.h>
+#include <unistd.h>
+
 #include <libmemcached-1.0/memcached.h>
 #include <libmemcachedutil-1.0/util.h>
 #include "client_options.h"
@@ -139,7 +141,13 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_EXPIRE: /* --expire */
-      opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
+      errno= 0;
+      opt_expire= time_t(strtoll(optarg, (char **)NULL, 10));
+      if (errno != 0)
+      {
+        std::cerr << "Incorrect value passed to --expire: `" << optarg << "`" << std::cerr;
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_USERNAME:
