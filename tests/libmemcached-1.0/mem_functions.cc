@@ -5015,7 +5015,8 @@ test_return_t kill_HUP_TEST(memcached_st *original_memc)
                                         test_literal_param(__func__), // Keys
                                         test_literal_param(__func__), // Values
                                         0, 0);
-  test_compare(ret, MEMCACHED_CONNECTION_FAILURE);
+  test_compare(ret, memc);
+  test_compare(MEMCACHED_CONNECTION_FAILURE, memc);
 
   memcached_free(memc);
 
