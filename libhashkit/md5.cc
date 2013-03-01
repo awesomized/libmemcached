@@ -71,7 +71,13 @@ documentation and/or software.
 #include <string.h>
 #include <sys/types.h>
 
-#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+
+#if GCC_VERSION > 40600
+# pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#endif
 
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
