@@ -808,7 +808,7 @@ function make_for_continuus_integration ()
 
       make_install_system
       ;;
-    *-precise-*)
+    *-ubuntu-quantal-*)
       run_configure
 
       assert_exec_file 'configure'
