@@ -561,7 +561,12 @@ static void process_arithmetic(memcached_protocol_client_st *client,
 
   uint64_t cas;
   uint64_t result;
+  errno= 0;
   uint64_t delta= strtoull(tokens[2], NULL, 10);
+  if (errno != 0)
+  {
+    return; // Error
+  }
 
   protocol_binary_response_status rval;
   if (client->ascii_command == INCR_CMD)
@@ -667,7 +672,12 @@ static void process_flush(memcached_protocol_client_st *client,
   uint32_t timeout= 0;
   if (ntokens == 2)
   {
+    errno= 0;
     timeout= (uint32_t)strtoul(tokens[1], NULL, 10);
+    if (errno != 0)
+    {
+      return; // Error
+    }
   }
 
   protocol_binary_response_status rval;
@@ -706,9 +716,30 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
     return -1;
   }
 
+  errno= 0;
   uint32_t flags= (uint32_t)strtoul(tokens[2], NULL, 10);
+  if (errno != 0)
+  {
+    /* return error */
+    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    return -1;
+  }
+
   uint32_t timeout= (uint32_t)strtoul(tokens[3], NULL, 10);
+  if (errno != 0)
+  {
+    /* return error */
+    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    return -1;
+  }
+
   unsigned long nbytes= strtoul(tokens[4], NULL, 10);
+  if (errno != 0)
+  {
+    /* return error */
+    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    return -1;
+  }
 
   /* Do we have all data? */
   unsigned long need= nbytes + (unsigned long)((*end - start) + 1) + 2; /* \n\r\n */
@@ -743,7 +774,14 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
                                                    timeout, &result_cas);
     break;
   case CAS_CMD:
+    errno= 0;
     cas= strtoull(tokens[5], NULL, 10);
+    if (errno != 0)
+    {
+      /* return error */
+      raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+      return -1;
+    }
     /* FALLTHROUGH */
   case REPLACE_CMD:
     rval= client->root->callback->interface.v1.replace(client, key,

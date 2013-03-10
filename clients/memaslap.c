@@ -378,7 +378,13 @@ static int64_t ms_parse_size()
   char unit= optarg[strlen(optarg) - 1];
 
   optarg[strlen(optarg) - 1]= '\0';
+  errno= 0;
   ret= strtoll(optarg, (char **)NULL, 10);
+  if (errno != 0)
+  {
+    fprintf(stderr, "strtoll(optarg,..): %s\n", strerror(errno));
+    exit(1);
+  }
 
   switch (unit)
   {
@@ -434,8 +440,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_CONCURRENCY:       /* --concurrency or -c */
+      errno= 0;
       ms_setting.nconns= (uint32_t)strtoul(optarg, (char **) NULL, 10);
-      if (ms_setting.nconns <= 0)
+      if (ms_setting.nconns <= 0 || errno != 0)
       {
         fprintf(stderr, "Concurrency must be greater than 0.:-)\n");
         exit(1);
@@ -443,8 +450,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_EXECUTE_NUMBER:        /* --execute_number or -x */
+      errno= 0;
       ms_setting.exec_num= (int)strtol(optarg, (char **) NULL, 10);
-      if (ms_setting.exec_num <= 0)
+      if (ms_setting.exec_num <= 0 || errno != 0)
       {
         fprintf(stderr, "Execute number must be greater than 0.:-)\n");
         exit(1);
@@ -452,8 +460,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_THREAD_NUMBER:     /* --threads or -T */
+      errno= 0;
       ms_setting.nthreads= (uint32_t)strtoul(optarg, (char **) NULL, 10);
-      if (ms_setting.nthreads <= 0)
+      if (ms_setting.nthreads <= 0 || errno != 0)
       {
         fprintf(stderr, "Threads number must be greater than 0.:-)\n");
         exit(1);
@@ -461,8 +470,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_FIXED_LTH:         /* --fixed_size or -X */
+      errno= 0;
       ms_setting.fixed_value_size= (size_t)strtoull(optarg, (char **) NULL, 10);
-      if ((ms_setting.fixed_value_size <= 0)
+      if ((ms_setting.fixed_value_size <= 0 || errno != 0)
           || (ms_setting.fixed_value_size > MAX_VALUE_SIZE))
       {
         fprintf(stderr, "Value size must be between 0 and 1M.:-)\n");
@@ -482,8 +492,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_GETS_DIVISION:         /* --division or -d */
+      errno= 0;
       ms_setting.mult_key_num= (int)strtol(optarg, (char **) NULL, 10);
-      if (ms_setting.mult_key_num <= 0)
+      if (ms_setting.mult_key_num <= 0 || errno != 0)
       {
         fprintf(stderr, "Multi-get key number must be greater than 0.:-)\n");
         exit(1);
@@ -568,8 +579,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_SOCK_PER_CONN:         /* --conn_sock or -n */
+      errno= 0;
       ms_setting.sock_per_conn= (uint32_t)strtoul(optarg, (char **) NULL, 10);
-      if (ms_setting.sock_per_conn <= 0)
+      if (ms_setting.sock_per_conn <= 0 || errno != 0)
       {
         fprintf(stderr, "Number of socks of each concurrency "
                         "must be greater than 0.:-)\n");
@@ -605,8 +617,9 @@ static void ms_options_parse(int argc, char *argv[])
       break;
 
     case OPT_REP_WRITE_SRV:         /* --rep_write or -p */
+      errno= 0;
       ms_setting.rep_write_srv= (uint32_t)strtoul(optarg, (char **) NULL, 10);
-      if (ms_setting.rep_write_srv <= 0)
+      if (ms_setting.rep_write_srv <= 0 || errno != 0)
       {
         fprintf(stderr,
                 "Number of replication writing server must be greater "

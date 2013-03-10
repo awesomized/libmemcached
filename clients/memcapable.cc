@@ -1389,11 +1389,15 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   verify(*key != NULL);
   char *ptr= end + 1;
 
+  errno= 0;
   unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
+  errno= 0;
   *ndata = (ssize_t)strtoul(end, &end, 10); /* size */
+  verify(errno == 0);
   verify(ptr != end);
   verify(end != NULL);
   while (end and *end != '\n' and isspace(*end))
@@ -1424,11 +1428,16 @@ static enum test_return ascii_get_value(const char *key, const char *value)
   char *ptr= buffer + 6 + strlen(key) + 1;
   char *end;
 
+  errno= 0;
   unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
+
+  errno= 0;
   val= strtoul(end, &end, 10); /* size */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
@@ -1486,15 +1495,23 @@ static enum test_return ascii_gets_value(const char *key, const char *value,
   char *ptr= buffer + 6 + strlen(key) + 1;
   char *end;
 
+  errno= 0;
   unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
+
+  errno= 0;
   val= strtoul(end, &end, 10); /* size */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
+
+  errno= 0;
   *cas= strtoul(end, &end, 10); /* cas */
+  verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);

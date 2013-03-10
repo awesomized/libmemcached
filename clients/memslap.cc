@@ -39,6 +39,7 @@
 #include <mem_config.h>
 
 #include <cassert>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -49,7 +50,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -468,15 +468,33 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_SLAP_CONCURRENCY:
+      errno= 0;
       opt_concurrency= (unsigned int)strtoul(optarg, (char **)NULL, 10);
+      if (errno != 0)
+      {
+        fprintf(stderr, "Invalid value for concurrency: %s\n", optarg);
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_SLAP_EXECUTE_NUMBER:
+      errno= 0;
       opt_execute_number= (unsigned int)strtoul(optarg, (char **)NULL, 10);
+      if (errno != 0)
+      {
+        fprintf(stderr, "Invalid value for execute: %s\n", optarg);
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_SLAP_INITIAL_LOAD:
+      errno= 0;
       opt_createial_load= (unsigned int)strtoul(optarg, (char **)NULL, 10);
+      if (errno != 0)
+      {
+        fprintf(stderr, "Invalid value for initial load: %s\n", optarg);
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_QUIET:

@@ -348,7 +348,7 @@ do \
   } \
 } while (0)
 
-#define ASSERT_NEQ(__expected, __actual, ...) \
+#define ASSERT_NEQ(__expected, __actual) \
 do \
 { \
   if ((__expected) == (__actual)) { \

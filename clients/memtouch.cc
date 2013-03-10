@@ -12,11 +12,13 @@
 
 #include <mem_config.h>
 
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <getopt.h>
 #include <iostream>
 #include <unistd.h>
+
 #include <libmemcached-1.0/memcached.h>
 
 #include "utilities.h"
@@ -212,7 +214,13 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_EXPIRE:
+      errno= 0;
       expiration= time_t(strtoul(optarg, (char **)NULL, 10));
+      if (errno != 0)
+      {
+        fprintf(stderr, "Invalid value for --expire: %s\n", optarg);
+        exit(EXIT_FAILURE);
+      }
       break;
 
     case OPT_QUIET:

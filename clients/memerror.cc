@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
     char *nptr;
     unsigned long value= strtoul(argv[optind], &nptr, 10);
 
-    if ((nptr == argv[optind] and value == 0) or
+    if ((errno != 0) or
+        (nptr == argv[optind] and value == 0) or
         (value == ULONG_MAX and errno == ERANGE) or
         (value == 0 and errno == EINVAL))
     {

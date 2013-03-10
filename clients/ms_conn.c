@@ -1160,7 +1160,12 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command)
     {
       token_t tokens[MAX_TOKENS];
       ms_tokenize_command(command, tokens, MAX_TOKENS);
+      errno= 0;
       value_len= strtol(tokens[VALUELEN_TOKEN].value, NULL, 10);
+      if (errno != 0)
+      {
+        printf("<%d ERROR %s\n", c->sfd, strerror(errno));
+      }
       c->currcmd.key_prefix= *(uint64_t *)tokens[KEY_TOKEN].value;
 
       /*
