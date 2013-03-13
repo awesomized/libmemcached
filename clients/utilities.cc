@@ -144,7 +144,9 @@ void process_hash_option(memcached_st *memc, char *opt_hash)
   memcached_return_t rc;
 
   if (opt_hash == NULL)
+  {
     return;
+  }
 
   set= MEMCACHED_HASH_DEFAULT; /* Just here to solve warning */
   if (!strcasecmp(opt_hash, "CRC"))

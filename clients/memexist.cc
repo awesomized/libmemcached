@@ -36,13 +36,10 @@ static void options_parse(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {
-  memcached_st *memc;
-  memcached_server_st *servers;
-
   options_parse(argc, argv);
   initialize_sockets();
 
-  if (opt_servers == 0)
+  if (opt_servers == NULL)
   {
     char *temp;
 
@@ -50,17 +47,24 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else
+
+    if (opt_servers == NULL)
     {
       std::cerr << "No Servers provided" << std::endl;
-      return EXIT_FAILURE;
+      exit(EXIT_FAILURE);
     }
   }
 
-  memc= memcached_create(NULL);
+  memcached_server_st* servers= memcached_servers_parse(opt_servers);
+  if (servers == NULL or memcached_server_list_count(servers) == 0)
+  {
+    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  memcached_st* memc= memcached_create(NULL);
   process_hash_option(memc, opt_hash);
 
-  servers= memcached_servers_parse(opt_servers);
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL,

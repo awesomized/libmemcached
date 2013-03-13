@@ -65,6 +65,13 @@ tests_memcat_LDADD= libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memcat
 noinst_PROGRAMS+= tests/memcat
 
+tests_memping_SOURCES= tests/memping.cc
+tests_memping_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
+EXTRA_tests_memping_DEPENDENCIES= clients/memping
+tests_memping_LDADD= libtest/libtest.la $(TESTS_LDADDS)
+check_PROGRAMS+= tests/memping
+noinst_PROGRAMS+= tests/memping
+
 tests_memerror_SOURCES= tests/memerror.cc
 tests_memerror_CXXFLAGS= $(AM_CXXFLAGS) $(NO_EFF_CXX)
 EXTRA_tests_memerror_DEPENDENCIES= clients/memerror
@@ -100,6 +107,9 @@ test-memerror: tests/memerror
 
 test-memtouch: tests/memtouch
 	tests/memtouch
+
+test-memping: tests/memping
+	tests/memping
 
 valgrind-memerror: tests/memerror
 	 @$(VALGRIND_COMMAND) tests/memerror

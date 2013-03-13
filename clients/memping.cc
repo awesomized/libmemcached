@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else
+    
+    if (opt_servers == NULL)
     {
       std::cerr << "No Servers provided" << std::endl;
       exit(EXIT_FAILURE);
@@ -58,12 +59,23 @@ int main(int argc, char *argv[])
 
   int exit_code= EXIT_SUCCESS;
   memcached_server_st *servers= memcached_servers_parse(opt_servers);
+  if (servers == NULL or memcached_server_list_count(servers) == 0)
+  {
+    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    exit_code= EXIT_FAILURE;
+  }
+  else
   {
     for (uint32_t x= 0; x < memcached_server_list_count(servers); x++)
     {
       memcached_return_t instance_rc;
       const char *hostname= servers[x].hostname;
       in_port_t port= servers[x].port;
+
+      if (opt_verbose)
+      {
+        std::cout << "Trying to ping " << hostname << ":" << port << std::endl;
+      }
 
       if (libmemcached_util_ping2(hostname, port, opt_username, opt_passwd, &instance_rc) == false)
       {

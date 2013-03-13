@@ -212,14 +212,20 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else
+    
+    if (opt_servers == NULL)
     {
-      fprintf(stderr, "No Servers provided\n");
-      return EXIT_FAILURE;
+      std::cerr << "No Servers provided" << std::endl;
+      exit(EXIT_FAILURE);
     }
   }
 
   memcached_server_st *servers= memcached_servers_parse(opt_servers);
+  if (servers == NULL or memcached_server_list_count(servers) == 0)
+  {
+    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    return EXIT_FAILURE;
+  }
 
   pthread_mutex_init(&sleeper_mutex, NULL);
   pthread_cond_init(&sleep_threshhold, NULL);
