@@ -54,17 +54,23 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else
+
+    if (opt_servers == NULL)
     {
       std::cerr << "No Servers provided" << std::endl;
-      return EXIT_FAILURE;
+      exit(EXIT_FAILURE);
     }
+  }
+
+  memcached_server_st* servers= memcached_servers_parse(opt_servers);
+  if (servers == NULL or memcached_server_list_count(servers) == 0)
+  {
+    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    return EXIT_FAILURE;
   }
 
   memcached_st *memc= memcached_create(NULL);
   process_hash_option(memc, opt_hash);
-
-  memcached_server_st *servers= memcached_servers_parse(opt_servers);
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);

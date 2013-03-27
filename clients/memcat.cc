@@ -39,19 +39,17 @@ static char *opt_file;
 
 int main(int argc, char *argv[])
 {
-  memcached_st *memc;
   char *string;
   size_t string_length;
   uint32_t flags;
   memcached_return_t rc;
-  memcached_server_st *servers;
 
   int return_code= EXIT_SUCCESS;
 
   options_parse(argc, argv);
   initialize_sockets();
 
-  if (!opt_servers)
+  if (opt_servers == NULL)
   {
     char *temp;
 
@@ -59,17 +57,23 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else
+
+    if (opt_servers == NULL)
     {
       std::cerr << "No servers provied" << std::endl;
       exit(EXIT_FAILURE);
     }
   }
 
-  memc= memcached_create(NULL);
-  process_hash_option(memc, opt_hash);
+  memcached_server_st* servers= memcached_servers_parse(opt_servers);
+  if (servers == NULL or memcached_server_list_count(servers) == 0)
+  {
+    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    return EXIT_FAILURE;
+  }
 
-  servers= memcached_servers_parse(opt_servers);
+  memcached_st* memc= memcached_create(NULL);
+  process_hash_option(memc, opt_hash);
 
   memcached_server_push(memc, servers);
   memcached_server_list_free(servers);
@@ -253,7 +257,7 @@ void options_parse(int argc, char *argv[])
 
     case '?':
       /* getopt_long already printed an error message. */
-      exit(1);
+      exit(EXIT_FAILURE);
     default:
       abort();
     }
