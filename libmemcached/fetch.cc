@@ -192,7 +192,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr,
   }
 
   *error= MEMCACHED_MAXIMUM_RETURN; // We use this to see if we ever go into the loop
-  org::libmemcached::Instance *server;
+  memcached_instance_st *server;
   memcached_return_t read_ret= MEMCACHED_SUCCESS;
   while ((server= memcached_io_get_readable_server(ptr, read_ret)))
   {

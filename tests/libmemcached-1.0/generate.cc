@@ -131,7 +131,7 @@ test_return_t generate_data_with_stats(memcached_st *memc)
     /* This test was changes so that "make test" would work properlly */
     if (DEBUG)
     {
-      memcached_server_instance_st instance=
+      const memcached_instance_st * instance=
         memcached_server_instance_by_position(memc, host_index);
 
       printf("\nserver %u|%s|%u bytes: %llu\n",

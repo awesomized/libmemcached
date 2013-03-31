@@ -36,6 +36,6 @@
 
 #pragma once
 
-void memcached_quit_server(org::libmemcached::Instance* ptr, bool io_death);
+void memcached_quit_server(memcached_instance_st* ptr, bool io_death);
 
 void send_quit(memcached_st *ptr);

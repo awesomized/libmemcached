@@ -38,35 +38,35 @@
 
 #pragma once
 
-void initialize_binary_request(org::libmemcached::Instance* server, protocol_binary_request_header&);
+void initialize_binary_request(memcached_instance_st* server, protocol_binary_request_header&);
 
-bool memcached_io_write(org::libmemcached::Instance* ptr);
+bool memcached_io_write(memcached_instance_st* ptr);
 
-ssize_t memcached_io_write(org::libmemcached::Instance* ptr,
+ssize_t memcached_io_write(memcached_instance_st* ptr,
                            const void *buffer, size_t length, bool with_flush);
 
-bool memcached_io_writev(org::libmemcached::Instance* ptr,
+bool memcached_io_writev(memcached_instance_st* ptr,
                          libmemcached_io_vector_st vector[],
                          const size_t number_of, const bool with_flush);
 
-memcached_return_t memcached_io_wait_for_write(org::libmemcached::Instance* ptr);
+memcached_return_t memcached_io_wait_for_write(memcached_instance_st* ptr);
 
-void memcached_io_reset(org::libmemcached::Instance* ptr);
+void memcached_io_reset(memcached_instance_st* ptr);
 
-memcached_return_t memcached_io_read(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_io_read(memcached_instance_st* ptr,
                                      void *buffer, size_t length, ssize_t& nread);
 
 /* Read a line (terminated by '\n') into the buffer */
-memcached_return_t memcached_io_readline(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_io_readline(memcached_instance_st* ptr,
                                          char *buffer_ptr,
                                          size_t size,
                                          size_t& total);
 
 /* Read n bytes of data from the server and store them in dta */
-memcached_return_t memcached_safe_read(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_safe_read(memcached_instance_st* ptr,
                                        void *dta,
                                        const size_t size);
 
-org::libmemcached::Instance* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&);
+memcached_instance_st* memcached_io_get_readable_server(memcached_st *memc, memcached_return_t&);
 
-memcached_return_t memcached_io_slurp(org::libmemcached::Instance* ptr);
+memcached_return_t memcached_io_slurp(memcached_instance_st* ptr);

@@ -191,7 +191,7 @@ uint32_t memcached_server_count(const memcached_st *self)
   return self->number_of_hosts;
 }
 
-const char *memcached_server_name(const memcached_server_instance_st self)
+const char *memcached_server_name(const memcached_instance_st * self)
 {
   WATCHPOINT_ASSERT(self);
   if (self)
@@ -202,7 +202,7 @@ const char *memcached_server_name(const memcached_server_instance_st self)
   return NULL;
 }
 
-in_port_t memcached_server_port(const memcached_server_instance_st self)
+in_port_t memcached_server_port(const memcached_instance_st * self)
 {
   WATCHPOINT_ASSERT(self);
   if (self == NULL)
@@ -213,7 +213,7 @@ in_port_t memcached_server_port(const memcached_server_instance_st self)
   return self->port();
 }
 
-uint32_t memcached_server_response_count(const memcached_server_instance_st self)
+uint32_t memcached_server_response_count(const memcached_instance_st * self)
 {
   WATCHPOINT_ASSERT(self);
   if (self == NULL)
@@ -224,7 +224,7 @@ uint32_t memcached_server_response_count(const memcached_server_instance_st self
   return self->cursor_active_;
 }
 
-const char *memcached_server_type(const memcached_server_instance_st ptr)
+const char *memcached_server_type(const memcached_instance_st * ptr)
 {
   if (ptr)
   {
@@ -244,7 +244,7 @@ const char *memcached_server_type(const memcached_server_instance_st ptr)
   return "UNKNOWN";
 }
 
-uint8_t memcached_server_major_version(const memcached_server_instance_st instance)
+uint8_t memcached_server_major_version(const memcached_instance_st * instance)
 {
   if (instance)
   {
@@ -254,7 +254,7 @@ uint8_t memcached_server_major_version(const memcached_server_instance_st instan
   return UINT8_MAX;
 }
 
-uint8_t memcached_server_minor_version(const memcached_server_instance_st instance)
+uint8_t memcached_server_minor_version(const memcached_instance_st * instance)
 {
   if (instance)
   {
@@ -264,7 +264,7 @@ uint8_t memcached_server_minor_version(const memcached_server_instance_st instan
   return UINT8_MAX;
 }
 
-uint8_t memcached_server_micro_version(const memcached_server_instance_st instance)
+uint8_t memcached_server_micro_version(const memcached_instance_st * instance)
 {
   if (instance)
   {

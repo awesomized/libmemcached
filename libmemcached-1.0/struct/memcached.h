@@ -74,13 +74,8 @@ struct memcached_st {
     unsigned int version;
   } server_info;
   uint32_t number_of_hosts;
-#ifdef __cplusplus
-  org::libmemcached::Instance* servers;
-  org::libmemcached::Instance* last_disconnected_server;
-#else
-  void *servers;
-  void *last_disconnected_server;
-#endif
+  memcached_instance_st *servers;
+  memcached_instance_st *last_disconnected_server;
   int32_t snd_timeout;
   int32_t rcv_timeout;
   uint32_t server_failure_limit;

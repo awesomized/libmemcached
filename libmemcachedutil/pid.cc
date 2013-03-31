@@ -74,7 +74,7 @@ pid_t libmemcached_util_getpid(const char *hostname, in_port_t port, memcached_r
     }
     else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
     {
-      memcached_server_instance_st instance= memcached_server_instance_by_position(memc_ptr, 0);
+      const memcached_instance_st * instance= memcached_server_instance_by_position(memc_ptr, 0);
 
       assert_msg(instance and memcached_server_error(instance), " ");
       if (instance and memcached_server_error(instance))
@@ -139,7 +139,7 @@ pid_t libmemcached_util_getpid2(const char *hostname, in_port_t port, const char
     }
     else if (rc == MEMCACHED_SOME_ERRORS) // Generic answer, we will now find the specific reason (if one exists)
     {
-      memcached_server_instance_st instance=
+      const memcached_instance_st * instance=
         memcached_server_instance_by_position(memc_ptr, 0);
 
 #if 0

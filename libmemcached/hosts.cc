@@ -46,8 +46,8 @@ static memcached_return_t update_continuum(Memcached *ptr);
 
 static int compare_servers(const void *p1, const void *p2)
 {
-  memcached_server_instance_st a= (memcached_server_instance_st)p1;
-  memcached_server_instance_st b= (memcached_server_instance_st)p2;
+  const memcached_instance_st * a= (const memcached_instance_st *)p1;
+  const memcached_instance_st * b= (const memcached_instance_st *)p2;
 
   int return_value= strcmp(a->_hostname, b->_hostname);
 
@@ -63,7 +63,7 @@ static void sort_hosts(Memcached *ptr)
 {
   if (memcached_server_count(ptr))
   {
-    qsort(memcached_instance_list(ptr), memcached_server_count(ptr), sizeof(org::libmemcached::Instance), compare_servers);
+    qsort(memcached_instance_list(ptr), memcached_server_count(ptr), sizeof(memcached_instance_st), compare_servers);
   }
 }
 
@@ -146,7 +146,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
     return memcached_set_errno(*ptr, errno, MEMCACHED_AT);
   }
 
-  org::libmemcached::Instance* list= memcached_instance_list(ptr);
+  memcached_instance_st* list= memcached_instance_list(ptr);
 
   /* count live servers (those without a retry delay set) */
   bool is_auto_ejecting= _is_auto_eject_host(ptr);
@@ -365,7 +365,7 @@ static memcached_return_t server_add(Memcached *memc,
   }
 
   uint32_t host_list_size= memc->number_of_hosts +1;
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(memc, memcached_instance_list(memc), host_list_size, org::libmemcached::Instance);
+  memcached_instance_st* new_host_list= libmemcached_xrealloc(memc, memcached_instance_list(memc), host_list_size, memcached_instance_st);
 
   if (new_host_list == NULL)
   {
@@ -376,7 +376,7 @@ static memcached_return_t server_add(Memcached *memc,
   assert(memc->number_of_hosts == host_list_size);
 
   /* TODO: Check return type */
-  org::libmemcached::Instance* instance= memcached_instance_fetch(memc, memcached_server_count(memc) -1);
+  memcached_instance_st* instance= memcached_instance_fetch(memc, memcached_server_count(memc) -1);
 
   if (__instance_create_with(memc, instance, hostname, port, weight, type) == NULL)
   {
@@ -409,7 +409,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
     uint32_t count= memcached_server_list_count(list);
     uint32_t host_list_size= count +original_host_size;
 
-    org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
+    memcached_instance_st* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, memcached_instance_st);
 
     if (new_host_list == NULL)
     {
@@ -424,7 +424,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
       WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
 
       // We have extended the array, and now we will find it, and use it.
-      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
+      memcached_instance_st* instance= memcached_instance_fetch(ptr, original_host_size);
       WATCHPOINT_ASSERT(instance);
 
       memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
@@ -449,7 +449,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
   return MEMCACHED_INVALID_ARGUMENTS;
 }
 
-memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::libmemcached::Instance* list, uint32_t number_of_hosts)
+memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memcached_instance_st* list, uint32_t number_of_hosts)
 {
   if (list == NULL)
   {
@@ -458,7 +458,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
 
   uint32_t original_host_size= memcached_server_count(ptr);
   uint32_t host_list_size= number_of_hosts +original_host_size;
-  org::libmemcached::Instance* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, org::libmemcached::Instance);
+  memcached_instance_st* new_host_list= libmemcached_xrealloc(ptr, memcached_instance_list(ptr), host_list_size, memcached_instance_st);
 
   if (new_host_list == NULL)
   {
@@ -477,7 +477,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct org::
     WATCHPOINT_ASSERT(list[x]._hostname[0] != 0);
 
     // We have extended the array, and now we will find it, and use it.
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, original_host_size);
+    memcached_instance_st* instance= memcached_instance_fetch(ptr, original_host_size);
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x]._hostname) };

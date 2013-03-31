@@ -38,8 +38,7 @@
 #pragma once
 
 #ifdef __cplusplus
-namespace org { namespace libmemcached { struct Instance; } }
-typedef struct org::libmemcached::Instance* memcached_server_write_instance_st;
+typedef struct memcached_instance_st* memcached_server_write_instance_st;
 #else
 typedef void* memcached_server_write_instance_st;
 #endif

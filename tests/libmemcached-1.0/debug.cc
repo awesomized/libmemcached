@@ -62,7 +62,7 @@ static memcached_return_t print_keys_callback(const memcached_st *,
 }
 
 static memcached_return_t server_wrapper_for_dump_callback(const memcached_st *,
-                                                           memcached_server_instance_st server,
+                                                           const memcached_instance_st * server,
                                                            void *)
 {
   memcached_st *memc= memcached_create(NULL);

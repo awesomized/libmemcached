@@ -68,11 +68,11 @@ static inline bool memcached_is_valid_filename(const memcached_string_t& arg)
   return arg.c_str != NULL and arg.size > 0 and arg.size < MEMCACHED_NI_MAXHOST;
 }
 
-void memcached_instance_free(org::libmemcached::Instance *);
+void memcached_instance_free(memcached_instance_st *);
 
-void set_last_disconnected_host(org::libmemcached::Instance* self);
+void set_last_disconnected_host(memcached_instance_st* self);
 
-static inline void memcached_mark_server_for_timeout(org::libmemcached::Instance* server)
+static inline void memcached_mark_server_for_timeout(memcached_instance_st* server)
 {
   if (server->state != MEMCACHED_SERVER_STATE_IN_TIMEOUT)
   {

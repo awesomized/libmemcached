@@ -42,8 +42,8 @@ extern "C" {
 #endif
 
 typedef memcached_return_t (*memcached_execute_fn)(const memcached_st *ptr, memcached_result_st *result, void *context);
-typedef memcached_return_t (*memcached_server_fn)(const memcached_st *ptr, memcached_server_instance_st server, void *context);
-typedef memcached_return_t (*memcached_stat_fn)(memcached_server_instance_st server,
+typedef memcached_return_t (*memcached_server_fn)(const memcached_st *ptr, const memcached_instance_st * server, void *context);
+typedef memcached_return_t (*memcached_stat_fn)(const memcached_instance_st * server,
                                                 const char *key, size_t key_length,
                                                 const char *value, size_t value_length,
                                                 void *context);

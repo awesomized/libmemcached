@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
  *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 
 #pragma once
 
-memcached_return_t memcached_vdo(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_vdo(memcached_instance_st*,
                                  libmemcached_io_vector_st vector[],
                                  const size_t count,
                                  const bool with_flush);

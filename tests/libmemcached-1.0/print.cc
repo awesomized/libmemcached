@@ -48,13 +48,26 @@ using namespace libtest;
 #include "tests/print.h"
 
 memcached_return_t server_print_callback(const memcached_st*,
-                                         memcached_server_instance_st server,
+                                         const memcached_instance_st * server,
                                          void *context)
 {
   if (context)
   {
     std::cerr << memcached_server_name(server) << ":" << memcached_server_port(server) << std::endl;
   }
+
+  return MEMCACHED_SUCCESS;
+}
+
+memcached_return_t server_print_version_callback(const memcached_st *,
+                                                 const memcached_instance_st * server,
+                                                 void *)
+{
+  std::cerr << "Server: " << memcached_server_name(server) << ":" << memcached_server_port(server) << " " 
+    << int(memcached_server_major_version(server)) << "."
+    << int(memcached_server_minor_version(server)) << "."
+    << int(memcached_server_micro_version(server))
+    << std::endl;
 
   return MEMCACHED_SUCCESS;
 }
@@ -66,18 +79,4 @@ const char * print_version(memcached_st *memc)
   memcached_server_cursor(memc, callbacks, NULL,  1);
 
   return "print_version()";
-}
-
-
-memcached_return_t server_print_version_callback(const memcached_st *,
-                                                 memcached_server_instance_st server,
-                                                 void *)
-{
-  std::cerr << "Server: " << memcached_server_name(server) << ":" << memcached_server_port(server) << " " 
-    << int(memcached_server_major_version(server)) << "."
-    << int(memcached_server_minor_version(server)) << "."
-    << int(memcached_server_micro_version(server))
-    << std::endl;
-
-  return MEMCACHED_SUCCESS;
 }

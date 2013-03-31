@@ -55,5 +55,5 @@ struct udp_datagram_header_st
   uint16_t reserved;
 };
 
-bool memcached_io_init_udp_header(org::libmemcached::Instance*, const uint16_t thread_id);
-void increment_udp_message_id(org::libmemcached::Instance*);
+bool memcached_io_init_udp_header(memcached_instance_st*, const uint16_t thread_id);
+void increment_udp_message_id(memcached_instance_st*);

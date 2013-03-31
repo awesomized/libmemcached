@@ -52,7 +52,7 @@ static inline memcached_return_t memcached_version_textual(Memcached *memc)
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+    memcached_instance_st* instance= memcached_instance_fetch(memc, x);
 
     // Optimization, we only fetch version once.
     if (instance->major_version != UINT8_MAX)
@@ -73,7 +73,7 @@ static inline memcached_return_t memcached_version_textual(Memcached *memc)
   if (success)
   {
     // Collect the returned items
-    org::libmemcached::Instance* instance;
+    memcached_instance_st* instance;
     memcached_return_t readable_error;
     while ((instance= memcached_io_get_readable_server(memc, readable_error)))
     {
@@ -105,7 +105,7 @@ static inline memcached_return_t memcached_version_binary(Memcached *memc)
   bool errors_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(memc); x++) 
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+    memcached_instance_st* instance= memcached_instance_fetch(memc, x);
 
     initialize_binary_request(instance, request.message.header);
 
@@ -128,7 +128,7 @@ static inline memcached_return_t memcached_version_binary(Memcached *memc)
   if (success)
   {
     // Collect the returned items
-    org::libmemcached::Instance* instance;
+    memcached_instance_st* instance;
     memcached_return_t readable_error;
     while ((instance= memcached_io_get_readable_server(memc, readable_error)))
     {
@@ -145,7 +145,7 @@ static inline memcached_return_t memcached_version_binary(Memcached *memc)
   return errors_happened ? MEMCACHED_SOME_ERRORS : MEMCACHED_SUCCESS;
 }
 
-static inline void version_ascii_instance(org::libmemcached::Instance* instance)
+static inline void version_ascii_instance(memcached_instance_st* instance)
 {
   if (instance->major_version != UINT8_MAX)
   {
@@ -158,7 +158,7 @@ static inline void version_ascii_instance(org::libmemcached::Instance* instance)
   }
 }
 
-static inline void version_binary_instance(org::libmemcached::Instance* instance)
+static inline void version_binary_instance(memcached_instance_st* instance)
 {
   if (instance->major_version != UINT8_MAX)
   {
@@ -178,7 +178,7 @@ static inline void version_binary_instance(org::libmemcached::Instance* instance
   }
 }
 
-void memcached_version_instance(org::libmemcached::Instance* instance)
+void memcached_version_instance(memcached_instance_st* instance)
 {
   if (instance)
   {

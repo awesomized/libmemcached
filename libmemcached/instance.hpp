@@ -58,11 +58,8 @@
 
 #include "libmemcached/string.hpp"
 
-namespace org {
-namespace libmemcached {
-
 // @todo Complete class transformation
-struct Instance {
+struct memcached_instance_st {
   in_port_t port() const
   {
     return port_;
@@ -188,16 +185,13 @@ struct Instance {
   }
 };
 
-} // namespace libmemcached
-} // namespace org
+memcached_instance_st* __instance_create_with(memcached_st *memc,
+                                              memcached_instance_st* self,
+                                              const memcached_string_t& _hostname,
+                                              const in_port_t port,
+                                              uint32_t weight, 
+                                              const memcached_connection_t type);
 
-org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
-                                                    org::libmemcached::Instance* self,
-                                                    const memcached_string_t& _hostname,
-                                                    const in_port_t port,
-                                                    uint32_t weight, 
-                                                    const memcached_connection_t type);
+memcached_return_t memcached_instance_push(memcached_st *ptr, const memcached_instance_st*, uint32_t);
 
-memcached_return_t memcached_instance_push(memcached_st *ptr, const org::libmemcached::Instance*, uint32_t);
-
-void __instance_free(org::libmemcached::Instance *);
+void __instance_free(memcached_instance_st *);

@@ -244,7 +244,7 @@ static memcached_return_t __mget_by_key_real(memcached_st *ptr,
   */
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+    memcached_instance_st* instance= memcached_instance_fetch(ptr, x);
 
     if (instance->response_count())
     {
@@ -293,7 +293,7 @@ static memcached_return_t __mget_by_key_real(memcached_st *ptr,
       server_key= memcached_generate_hash_with_redistribution(ptr, keys[x], key_length[x]);
     }
 
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
+    memcached_instance_st* instance= memcached_instance_fetch(ptr, server_key);
 
     libmemcached_io_vector_st vector[]=
     {
@@ -354,7 +354,7 @@ static memcached_return_t __mget_by_key_real(memcached_st *ptr,
   bool success_happened= false;
   for (uint32_t x= 0; x < memcached_server_count(ptr); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+    memcached_instance_st* instance= memcached_instance_fetch(ptr, x);
 
     if (instance->response_count())
     {
@@ -480,7 +480,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       server_key= memcached_generate_hash_with_redistribution(ptr, keys[x], key_length[x]);
     }
 
-    org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server_key);
+    memcached_instance_st* instance= memcached_instance_fetch(ptr, server_key);
 
     if (instance->response_count() == 0)
     {
@@ -553,7 +553,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
     for (uint32_t x= 0; x < memcached_server_count(ptr); ++x)
     {
-      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, x);
+      memcached_instance_st* instance= memcached_instance_fetch(ptr, x);
 
       if (instance->response_count())
       {
@@ -618,7 +618,7 @@ static memcached_return_t replication_binary_mget(memcached_st *ptr,
         continue;
       }
 
-      org::libmemcached::Instance* instance= memcached_instance_fetch(ptr, server);
+      memcached_instance_st* instance= memcached_instance_fetch(ptr, server);
 
       if (instance->response_count() == 0)
       {

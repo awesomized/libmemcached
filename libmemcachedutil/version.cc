@@ -49,7 +49,7 @@ struct local_context
 };
 
 static memcached_return_t check_server_version(const memcached_st *,
-                                               memcached_server_instance_st instance,
+                                               const memcached_instance_st * instance,
                                                void *context)
 {
   /* Do Nothing */

@@ -57,10 +57,10 @@ LIBMEMCACHED_API
   int memcached_last_error_errno(const memcached_st *);
 
 LIBMEMCACHED_API
-  const char *memcached_server_error(const memcached_server_instance_st ptr);
+  const char *memcached_server_error(const memcached_instance_st * ptr);
 
 LIBMEMCACHED_API
-  memcached_return_t memcached_server_error_return(const memcached_server_instance_st ptr);
+  memcached_return_t memcached_server_error_return(const memcached_instance_st * ptr);
 
 #ifdef __cplusplus
 } // extern "C"
