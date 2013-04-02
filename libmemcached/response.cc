@@ -38,7 +38,7 @@
 #include <libmemcached/common.h>
 #include <libmemcached/string.hpp>
 
-static memcached_return_t textual_value_fetch(org::libmemcached::Instance* instance,
+static memcached_return_t textual_value_fetch(memcached_instance_st* instance,
                                               char *buffer,
                                               memcached_result_st *result)
 {
@@ -210,7 +210,7 @@ read_error:
   return MEMCACHED_PARTIAL_READ;
 }
 
-static memcached_return_t textual_read_one_response(org::libmemcached::Instance* instance,
+static memcached_return_t textual_read_one_response(memcached_instance_st* instance,
                                                     char *buffer, const size_t buffer_length,
                                                     memcached_result_st *result)
 {
@@ -493,7 +493,7 @@ static memcached_return_t textual_read_one_response(org::libmemcached::Instance*
                              buffer, total_read);
 }
 
-static memcached_return_t binary_read_one_response(org::libmemcached::Instance* instance,
+static memcached_return_t binary_read_one_response(memcached_instance_st* instance,
                                                    char *buffer, const size_t buffer_length,
                                                    memcached_result_st *result)
 {
@@ -831,7 +831,7 @@ static memcached_return_t binary_read_one_response(org::libmemcached::Instance* 
   return rc;
 }
 
-static memcached_return_t _read_one_response(org::libmemcached::Instance* instance,
+static memcached_return_t _read_one_response(memcached_instance_st* instance,
                                              char *buffer, const size_t buffer_length,
                                              memcached_result_st *result)
 {
@@ -861,7 +861,7 @@ static memcached_return_t _read_one_response(org::libmemcached::Instance* instan
   return rc;
 }
 
-memcached_return_t memcached_read_one_response(org::libmemcached::Instance* instance,
+memcached_return_t memcached_read_one_response(memcached_instance_st* instance,
                                                memcached_result_st *result)
 {
   char buffer[SMALL_STRING_LEN];
@@ -875,7 +875,7 @@ memcached_return_t memcached_read_one_response(org::libmemcached::Instance* inst
   return _read_one_response(instance, buffer, sizeof(buffer), result);
 }
 
-memcached_return_t memcached_response(org::libmemcached::Instance* instance,
+memcached_return_t memcached_response(memcached_instance_st* instance,
                                       memcached_result_st *result)
 {
   char buffer[1024];
@@ -883,7 +883,7 @@ memcached_return_t memcached_response(org::libmemcached::Instance* instance,
   return memcached_response(instance, buffer, sizeof(buffer), result);
 }
 
-memcached_return_t memcached_response(org::libmemcached::Instance* instance,
+memcached_return_t memcached_response(memcached_instance_st* instance,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result)
 {

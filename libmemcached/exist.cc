@@ -36,7 +36,7 @@
 
 #include <libmemcached/common.h>
 
-static memcached_return_t ascii_exist(Memcached *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
+static memcached_return_t ascii_exist(Memcached *memc, memcached_instance_st* instance, const char *key, size_t key_length)
 {
   libmemcached_io_vector_st vector[]=
   {
@@ -74,7 +74,7 @@ static memcached_return_t ascii_exist(Memcached *memc, org::libmemcached::Instan
   return rc;
 }
 
-static memcached_return_t binary_exist(Memcached *memc, org::libmemcached::Instance* instance, const char *key, size_t key_length)
+static memcached_return_t binary_exist(Memcached *memc, memcached_instance_st* instance, const char *key, size_t key_length)
 {
   protocol_binary_request_set request= {};
   size_t send_length= sizeof(request.bytes);
@@ -144,7 +144,7 @@ memcached_return_t memcached_exist_by_key(memcached_st *shell,
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(memc, group_key, group_key_length);
-  org::libmemcached::Instance* instance= memcached_instance_fetch(memc, server_key);
+  memcached_instance_st* instance= memcached_instance_fetch(memc, server_key);
 
   if (memcached_is_binary(memc))
   {

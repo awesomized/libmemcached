@@ -218,7 +218,7 @@ static test_return_t lp_1010899_with_args_TEST(memcached_st *original)
 {
   // Check to see everything is setup internally even when a host is specified
   // on creation.
-  memcached_server_instance_st instance= memcached_server_instance_by_position(original, 0);
+  const memcached_instance_st* instance= memcached_server_instance_by_position(original, 0);
   Memcache memc(memcached_server_name(instance), memcached_server_port(instance));
 
   test_false(memc.increment(__func__, 0, NULL));

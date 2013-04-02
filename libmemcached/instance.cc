@@ -37,7 +37,7 @@
 
 #include <libmemcached/common.h>
 
-static inline void _server_init(org::libmemcached::Instance* self, Memcached *root,
+static inline void _server_init(memcached_instance_st* self, Memcached *root,
                                 const memcached_string_t& hostname,
                                 in_port_t port,
                                 uint32_t weight, memcached_connection_t type)
@@ -87,11 +87,11 @@ static inline void _server_init(org::libmemcached::Instance* self, Memcached *ro
   self->hostname(hostname);
 }
 
-static org::libmemcached::Instance* _server_create(org::libmemcached::Instance* self, const memcached_st *memc)
+static memcached_instance_st* _server_create(memcached_instance_st* self, const memcached_st *memc)
 {
   if (self == NULL)
   {
-   self= libmemcached_xmalloc(memc, org::libmemcached::Instance);
+   self= libmemcached_xmalloc(memc, memcached_instance_st);
 
     if (self == NULL)
     {
@@ -110,7 +110,7 @@ static org::libmemcached::Instance* _server_create(org::libmemcached::Instance* 
   return self;
 }
 
-void org::libmemcached::Instance::events(short arg)
+void memcached_instance_st::events(short arg)
 {
   if ((_events | arg) == _events)
   {
@@ -120,7 +120,7 @@ void org::libmemcached::Instance::events(short arg)
   _events|= arg;
 }
 
-void org::libmemcached::Instance::revents(short arg)
+void memcached_instance_st::revents(short arg)
 {
   if (arg)
   {
@@ -131,8 +131,8 @@ void org::libmemcached::Instance::revents(short arg)
   _events&= short(~arg);
 }
 
-org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
-                                                    org::libmemcached::Instance* self,
+memcached_instance_st* __instance_create_with(memcached_st *memc,
+                                                    memcached_instance_st* self,
                                                     const memcached_string_t& hostname,
                                                     const in_port_t port,
                                                     uint32_t weight, 
@@ -162,7 +162,7 @@ org::libmemcached::Instance* __instance_create_with(memcached_st *memc,
   return self;
 }
 
-void __instance_free(org::libmemcached::Instance* self)
+void __instance_free(memcached_instance_st* self)
 {
   memcached_quit_server(self, false);
 
@@ -181,7 +181,7 @@ void __instance_free(org::libmemcached::Instance* self)
   }
 }
 
-void memcached_instance_free(org::libmemcached::Instance* self)
+void memcached_instance_free(memcached_instance_st* self)
 {
   if (self)
   {
@@ -204,7 +204,7 @@ memcached_return_t memcached_server_cursor(const memcached_st* shell,
   size_t errors= 0;
   for (uint32_t x= 0; x < memcached_instance_list_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_by_position(memc, x);
+    memcached_instance_st* instance= memcached_instance_by_position(memc, x);
 
     for (uint32_t y= 0; y < number_of_callbacks; y++)
     {
@@ -233,7 +233,7 @@ memcached_return_t memcached_server_execute(memcached_st *memc,
   bool some_errors= false;;
   for (uint32_t x= 0; x < memcached_instance_list_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+    memcached_instance_st* instance= memcached_instance_fetch(memc, x);
 
     memcached_return_t rc= (*callback)(memc, instance, context);
     if (rc == MEMCACHED_INVALID_ARGUMENTS)
@@ -250,7 +250,7 @@ memcached_return_t memcached_server_execute(memcached_st *memc,
   return MEMCACHED_SUCCESS;
 }
 
-memcached_server_instance_st memcached_server_by_key(memcached_st *shell,
+const memcached_instance_st * memcached_server_by_key(memcached_st *shell,
                                                      const char *key,
                                                      size_t key_length,
                                                      memcached_return_t *error)
@@ -283,7 +283,7 @@ memcached_server_instance_st memcached_server_by_key(memcached_st *shell,
 /*
   If we do not have a valid object to clone from, we toss an error.
 */
-static org::libmemcached::Instance* memcached_instance_clone(org::libmemcached::Instance* source)
+static memcached_instance_st* memcached_instance_clone(memcached_instance_st* source)
 {
   /* We just do a normal create if source is missing */
   if (source == NULL)
@@ -299,7 +299,7 @@ static org::libmemcached::Instance* memcached_instance_clone(org::libmemcached::
                                 source->type);
 }
 
-void set_last_disconnected_host(org::libmemcached::Instance* self)
+void set_last_disconnected_host(memcached_instance_st* self)
 {
   assert(self->root);
   if (self->root)
@@ -313,54 +313,48 @@ void set_last_disconnected_host(org::libmemcached::Instance* self)
     // const_cast
     memcached_st *root= (memcached_st *)self->root;
 
-    memcached_instance_free((org::libmemcached::Instance*)(root->last_disconnected_server));
+    memcached_instance_free((memcached_instance_st*)(root->last_disconnected_server));
 
     // We set is_parsing so that no lookup happens
     root->state.is_parsing= true;
     root->last_disconnected_server= memcached_instance_clone(self);
     root->state.is_parsing= false;
 
-    ((org::libmemcached::Instance*)memcached_server_get_last_disconnect(root))->version= self->version;
+    ((memcached_instance_st*)memcached_server_get_last_disconnect(root))->version= self->version;
   }
 }
 
-memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *shell)
+const memcached_instance_st * memcached_server_get_last_disconnect(const memcached_st *shell)
 {
   const Memcached* self= memcached2Memcached(shell);
   if (self)
   {
-    return (memcached_server_instance_st)self->last_disconnected_server;
+    return (const memcached_instance_st *)self->last_disconnected_server;
   }
 
   return 0;
 }
 
-void memcached_instance_next_retry(memcached_server_instance_st self, const time_t absolute_time)
+void memcached_instance_next_retry(const memcached_instance_st * self, const time_t absolute_time)
 {
   WATCHPOINT_ASSERT(self);
   if (self)
   {
-    ((org::libmemcached::Instance*)self)->next_retry= absolute_time;
+    ((memcached_instance_st*)self)->next_retry= absolute_time;
   }
 }
 
-namespace org {
-namespace libmemcached {
-
-  bool Instance::valid() const
+bool memcached_instance_st::valid() const
+{
+  if (fd == INVALID_SOCKET)
   {
-    if (fd == INVALID_SOCKET)
-    {
-      return false;
-    }
-
-    return true;
+    return false;
   }
 
-  bool Instance::is_shutting_down() const
-  {
-    return options.is_shutting_down;
-  }
+  return true;
+}
 
-} // namespace libmemcached
-} // namespace org
+bool memcached_instance_st::is_shutting_down() const
+{
+  return options.is_shutting_down;
+}

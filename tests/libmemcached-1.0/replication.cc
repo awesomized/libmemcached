@@ -126,7 +126,7 @@ test_return_t replication_get_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc); ++host)
   {
     memcached_st *memc_clone= memcached_clone(NULL, memc);
-    org::libmemcached::Instance* instance= (org::libmemcached::Instance*)memcached_server_instance_by_position(memc_clone, host);
+    memcached_instance_st* instance= (memcached_instance_st*)memcached_server_instance_by_position(memc_clone, host);
 
     instance->port(0);
 
@@ -188,7 +188,7 @@ test_return_t replication_mget_test(memcached_st *memc)
   for (uint32_t host= 0; host < memcached_server_count(memc_clone); host++)
   {
     memcached_st *new_clone= memcached_clone(NULL, memc);
-    memcached_server_instance_st instance= memcached_server_instance_by_position(new_clone, host);
+    const memcached_instance_st * instance= memcached_server_instance_by_position(new_clone, host);
     ((memcached_server_write_instance_st)instance)->port(0);
 
     for (int x= 'a'; x <= 'z'; ++x)

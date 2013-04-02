@@ -11,13 +11,13 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
 
-.. c:type:: memcached_server_instance_st
+.. c:type:: const memcached_instance_st *
 
 .. c:type:: memcached_server_list_st
 
 .. c:type:: memcached_server_st
 
-.. c:function:: const memcached_server_instance_st memcached_server_list (memcached_st *ptr)
+.. c:function:: const const memcached_instance_st * memcached_server_list (memcached_st *ptr)
 
 .. c:function:: void memcached_server_list_free (memcached_server_list_st list)
  
@@ -25,9 +25,9 @@ SYNOPSIS
  
 .. c:function:: uint32_t memcached_server_list_count (memcached_server_list_st list)
  
-.. c:function:: const char *memcached_server_error (memcached_server_instance_st instance)
+.. c:function:: const char *memcached_server_error (const memcached_instance_st * instance)
  
-.. c:function:: void memcached_server_error_reset (memcached_server_instance_st list)
+.. c:function:: void memcached_server_error_reset (const memcached_instance_st * list)
 .. deprecated:: 0.39
    
 .. c:function:: void memcached_servers_parse ()

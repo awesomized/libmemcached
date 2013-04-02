@@ -340,7 +340,7 @@ static memcached_st * create_single_instance_memcached(const memcached_st *origi
    * I only want to hit _one_ server so I know the number of requests I'm
    * sending in the pipeline.
    */
-  memcached_server_instance_st instance= memcached_server_instance_by_position(original_memc, 0);
+  const memcached_instance_st * instance= memcached_server_instance_by_position(original_memc, 0);
 
   char server_string[1024];
   int server_string_length;

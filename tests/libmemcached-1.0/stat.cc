@@ -48,7 +48,7 @@ using namespace libtest;
 
 #include "tests/libmemcached-1.0/stat.h"
 
-static memcached_return_t item_counter(memcached_server_instance_st ,
+static memcached_return_t item_counter(const memcached_instance_st * ,
                                        const char *key, size_t key_length,
                                        const char *value, size_t, // value_length,
                                        void *context)

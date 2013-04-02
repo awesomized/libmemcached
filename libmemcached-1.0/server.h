@@ -51,7 +51,7 @@ memcached_return_t memcached_server_cursor(const memcached_st *ptr,
                                            uint32_t number_of_callbacks);
 
 LIBMEMCACHED_API
-  memcached_server_instance_st memcached_server_by_key(memcached_st *ptr,
+  const memcached_instance_st * memcached_server_by_key(memcached_st *ptr,
                                                        const char *key,
                                                        size_t key_length,
                                                        memcached_return_t *error);
@@ -63,7 +63,7 @@ LIBMEMCACHED_API
 void memcached_server_free(memcached_server_st *ptr);
 
 LIBMEMCACHED_API
-memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);
+const memcached_instance_st * memcached_server_get_last_disconnect(const memcached_st *ptr);
 
 
 LIBMEMCACHED_API
@@ -95,28 +95,28 @@ memcached_return_t memcached_server_add_with_weight(memcached_st *ptr, const cha
   Operations on Single Servers.
 */
 LIBMEMCACHED_API
-uint32_t memcached_server_response_count(const memcached_server_instance_st self);
+uint32_t memcached_server_response_count(const memcached_instance_st * self);
 
 LIBMEMCACHED_API
-const char *memcached_server_name(const memcached_server_instance_st self);
+const char *memcached_server_name(const memcached_instance_st * self);
 
 LIBMEMCACHED_API
-in_port_t memcached_server_port(const memcached_server_instance_st self);
+in_port_t memcached_server_port(const memcached_instance_st * self);
 
 LIBMEMCACHED_API
-void memcached_instance_next_retry(memcached_server_instance_st self, const time_t absolute_time);
+void memcached_instance_next_retry(const memcached_instance_st * self, const time_t absolute_time);
 
 LIBMEMCACHED_API
-const char *memcached_server_type(const memcached_server_instance_st ptr);
+const char *memcached_server_type(const memcached_instance_st * ptr);
 
 LIBMEMCACHED_API
-uint8_t memcached_server_major_version(const memcached_server_instance_st ptr);
+uint8_t memcached_server_major_version(const memcached_instance_st * ptr);
 
 LIBMEMCACHED_API
-uint8_t memcached_server_minor_version(const memcached_server_instance_st ptr);
+uint8_t memcached_server_minor_version(const memcached_instance_st * ptr);
 
 LIBMEMCACHED_API
-uint8_t memcached_server_micro_version(const memcached_server_instance_st ptr);
+uint8_t memcached_server_micro_version(const memcached_instance_st * ptr);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -48,7 +48,7 @@
  * extracts the message number from message_id, increments it and then
  * writes the new value back into the header
  */
-void increment_udp_message_id(org::libmemcached::Instance* ptr)
+void increment_udp_message_id(memcached_instance_st* ptr)
 {
   struct udp_datagram_header_st *header= (struct udp_datagram_header_st *)ptr->write_buffer;
   uint16_t cur_req= get_udp_datagram_request_id(header);
@@ -61,7 +61,7 @@ void increment_udp_message_id(org::libmemcached::Instance* ptr)
   header->request_id= htons((uint16_t) (thread_id | msg_num));
 }
 
-bool memcached_io_init_udp_header(org::libmemcached::Instance* ptr, const uint16_t thread_id)
+bool memcached_io_init_udp_header(memcached_instance_st* ptr, const uint16_t thread_id)
 {
   if (thread_id > UDP_REQUEST_ID_MAX_THREAD_ID)
   {

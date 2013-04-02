@@ -85,7 +85,7 @@ struct scanner_variable_t {
 // Check and make sure the first host is what we expect it to be
 static test_return_t __check_host(memcached_st *memc, const scanner_string_st &hostname)
 {
-  memcached_server_instance_st instance=
+  const memcached_instance_st * instance=
     memcached_server_instance_by_position(memc, 0);
 
   test_true(instance);
@@ -617,7 +617,7 @@ test_return_t random_statement_build_test(memcached_st*)
 }
 
 static memcached_return_t dump_server_information(const memcached_st *,
-                                                  memcached_server_instance_st instance,
+                                                  const memcached_instance_st * instance,
                                                   void *)
 {
   if (strcmp(memcached_server_name(instance), "localhost")) 
@@ -667,7 +667,7 @@ struct socket_weight_t {
 };
 
 static memcached_return_t dump_socket_information(const memcached_st *,
-                                                  memcached_server_instance_st instance,
+                                                  const memcached_instance_st * instance,
                                                   void *context)
 {
   socket_weight_t *check= (socket_weight_t *)context;

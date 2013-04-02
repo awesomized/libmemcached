@@ -46,7 +46,7 @@ memcached_return_t memcached_flush_buffers(memcached_st *shell)
 
     for (uint32_t x= 0; x < memcached_server_count(memc); ++x)
     {
-      org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+      memcached_instance_st* instance= memcached_instance_fetch(memc, x);
 
       if (instance->write_buffer_offset != 0) 
       {

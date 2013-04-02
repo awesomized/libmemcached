@@ -65,7 +65,7 @@ static memcached_return_t callback_dump_counter(const memcached_st *,
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t item_counter(memcached_server_instance_st ,
+static memcached_return_t item_counter(const memcached_instance_st * ,
                                        const char *key, size_t key_length,
                                        const char *value, size_t, // value_length,
                                        void *context)

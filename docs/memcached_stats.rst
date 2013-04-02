@@ -16,7 +16,7 @@ SYNOPSIS
 
 .. c:type:: memcached_stat_st
 
-.. c:type:: memcached_return_t (*memcached_stat_fn)(memcached_server_instance_st server, const char *key, size_t key_length, const char *value, size_t value_length, void *context)
+.. c:type:: memcached_return_t (*memcached_stat_fn)(const memcached_instance_st * server, const char *key, size_t key_length, const char *value, size_t value_length, void *context)
 
 .. c:function:: memcached_stat_st *memcached_stat (memcached_st *ptr, char *args, memcached_return_t *error)
 

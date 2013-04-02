@@ -41,4 +41,4 @@
 
 #pragma once
 
-void memcached_version_instance(org::libmemcached::Instance*);
+void memcached_version_instance(memcached_instance_st*);

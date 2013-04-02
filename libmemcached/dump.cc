@@ -68,7 +68,7 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
     // Send message to all servers
     for (uint32_t server_key= 0; server_key < memcached_server_count(memc); server_key++)
     {
-      org::libmemcached::Instance* instance= memcached_instance_fetch(memc, server_key);
+      memcached_instance_st* instance= memcached_instance_fetch(memc, server_key);
 
       memcached_return_t vdo_rc;
       if (memcached_success((vdo_rc= memcached_vdo(instance, vector, 3, true))))
@@ -82,7 +82,7 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
     }
 
     // Collect the returned items
-    org::libmemcached::Instance* instance;
+    memcached_instance_st* instance;
     memcached_return_t read_ret= MEMCACHED_SUCCESS;
     while ((instance= memcached_io_get_readable_server(memc, read_ret)))
     {

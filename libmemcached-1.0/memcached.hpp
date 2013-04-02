@@ -847,7 +847,7 @@ public:
      */
     for (uint32_t x= 0; x < server_count; x++)
     {
-      memcached_server_instance_st instance= memcached_server_instance_by_position(memc_, x);
+      const memcached_instance_st * instance= memcached_server_instance_by_position(memc_, x);
       std::ostringstream strstm;
       std::string server_name(memcached_server_name(instance));
       server_name.append(":");

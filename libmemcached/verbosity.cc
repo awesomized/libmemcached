@@ -44,7 +44,7 @@ struct context_st
 };
 
 static memcached_return_t _set_verbosity(const Memcached *,
-                                         const memcached_server_instance_st server,
+                                         const memcached_instance_st * server,
                                          void *context)
 {
  libmemcached_io_vector_st *vector= (libmemcached_io_vector_st *)context;
@@ -56,7 +56,7 @@ static memcached_return_t _set_verbosity(const Memcached *,
 
   if (rc == MEMCACHED_SUCCESS)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc_ptr, 0);
+    memcached_instance_st* instance= memcached_instance_fetch(memc_ptr, 0);
 
 
     rc= memcached_vdo(instance, vector, 4, true);

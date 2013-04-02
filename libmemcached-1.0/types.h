@@ -40,8 +40,6 @@
 
 #ifdef __cplusplus
 
-namespace org { namespace libmemcached { struct Instance; } }
-
 struct memcached_st;
 struct memcached_stat_st;
 struct memcached_analysis_st;
@@ -52,7 +50,7 @@ struct memcached_error_t;
 // All of the flavors of memcache_server_st
 struct memcached_server_st;
 struct memcached_instance_st;
-typedef const org::libmemcached::Instance* memcached_server_instance_st;
+typedef struct memcached_instance_st memcached_instance_st;
 typedef struct memcached_server_st *memcached_server_list_st;
 
 struct memcached_callback_st;
@@ -73,7 +71,7 @@ typedef struct memcached_error_t memcached_error_t;
 
 // All of the flavors of memcache_server_st
 typedef struct memcached_server_st memcached_server_st;
-typedef const void *memcached_server_instance_st;
+typedef struct memcached_instance_st memcached_instance_st;
 typedef struct memcached_server_st *memcached_server_list_st;
 
 typedef struct memcached_callback_st memcached_callback_st;

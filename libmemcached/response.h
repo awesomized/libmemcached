@@ -38,12 +38,12 @@
 #pragma once
 
 /* Read a single response from the server */
-memcached_return_t memcached_read_one_response(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_read_one_response(memcached_instance_st* ptr,
                                                memcached_result_st *result);
 
-memcached_return_t memcached_response(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_response(memcached_instance_st* ptr,
                                       memcached_result_st *result);
 
-memcached_return_t memcached_response(org::libmemcached::Instance* ptr,
+memcached_return_t memcached_response(memcached_instance_st* ptr,
                                       char *buffer, size_t buffer_length,
                                       memcached_result_st *result);

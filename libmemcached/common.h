@@ -123,7 +123,7 @@ typedef struct memcached_st Memcached;
 #endif
 
 #ifdef __cplusplus
-org::libmemcached::Instance* memcached_instance_fetch(memcached_st *ptr, uint32_t server_key);
+memcached_instance_st* memcached_instance_fetch(memcached_st *ptr, uint32_t server_key);
 #endif
 
 /* These are private not to be installed headers */
@@ -198,7 +198,7 @@ extern "C" {
 memcached_return_t run_distribution(memcached_st *ptr);
 
 #ifdef __cplusplus
-static inline void memcached_server_response_increment(org::libmemcached::Instance* instance)
+static inline void memcached_server_response_increment(memcached_instance_st* instance)
 {
   instance->events(POLLIN);
   instance->cursor_active_++;
@@ -217,6 +217,6 @@ static inline void memcached_server_response_increment(org::libmemcached::Instan
 #endif
 
 #ifdef __cplusplus
-bool memcached_purge(org::libmemcached::Instance*);
-org::libmemcached::Instance* memcached_instance_by_position(const memcached_st *ptr, uint32_t server_key);
+bool memcached_purge(memcached_instance_st*);
+memcached_instance_st* memcached_instance_by_position(const memcached_st *ptr, uint32_t server_key);
 #endif

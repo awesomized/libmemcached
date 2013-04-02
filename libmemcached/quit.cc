@@ -38,7 +38,7 @@
 #include <libmemcached/common.h>
 
 namespace {
-  memcached_return_t send_quit_message(org::libmemcached::Instance* instance)
+  memcached_return_t send_quit_message(memcached_instance_st* instance)
   {
     memcached_return_t rc;
     if (instance->root->flags.binary_protocol)
@@ -70,7 +70,7 @@ namespace {
     return rc;
   }
 
-  void drain_instance(org::libmemcached::Instance* instance)
+  void drain_instance(memcached_instance_st* instance)
   {
     /* read until socket is closed, or there is an error
      * closing the socket before all data is read
@@ -105,7 +105,7 @@ namespace {
   will force data to be completed.
 */
 
-void memcached_quit_server(org::libmemcached::Instance* instance, bool io_death)
+void memcached_quit_server(memcached_instance_st* instance, bool io_death)
 {
   if (instance->valid())
   {
@@ -130,7 +130,7 @@ void send_quit(Memcached *memc)
 {
   for (uint32_t x= 0; x < memcached_server_count(memc); x++)
   {
-    org::libmemcached::Instance* instance= memcached_instance_fetch(memc, x);
+    memcached_instance_st* instance= memcached_instance_fetch(memc, x);
 
     memcached_quit_server(instance, false);
   }
