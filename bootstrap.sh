@@ -808,7 +808,7 @@ function make_for_continuus_integration ()
 
       make_install_system
       ;;
-    *-ubuntu-quantal-*)
+    *-precise-*)
       run_configure
 
       assert_exec_file 'configure'
@@ -1068,6 +1068,14 @@ function parse_command_line_options ()
         ;;
       h) # help
         echo "bootstrap.sh [options] optional_target ..."
+        echo "  -a # Just run autoreconf";
+        echo "  -p # Print ENV";
+        echo "  -c # Just run configure";
+        echo "  -m # Just run maintainer-clean";
+        echo "  -t # Make target";
+        echo "  -d # Enable debug";
+        echo "  -h # Show help";
+        echo "  -v # Be more verbose in output";
         exit
         ;;
       v) # verbose
@@ -1169,6 +1177,7 @@ function autoreconf_setup ()
 
       if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
         echo "Couldn't find user supplied libtoolize, it is required"
+        return 1
       fi
     else
       # If we are using OSX, we first check to see glibtoolize is available
@@ -1177,12 +1186,14 @@ function autoreconf_setup ()
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find glibtoolize, it is required on OSX"
+          return 1
         fi
       else
         BOOTSTRAP_LIBTOOLIZE=`type -p libtoolize`
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find libtoolize, it is required"
+          return 1
         fi
       fi
     fi
@@ -1247,6 +1258,9 @@ function print_setup ()
   echo 'BOOTSTRAP ENV' 
   echo "AUTORECONF=$AUTORECONF"
   echo "HOST_OS=$HOST_OS"
+  echo "VENDOR=$VENDOR"
+  echo "VENDOR_DISTRIBUTION=$VENDOR_DISTRIBUTION"
+  echo "VENDOR_RELEASE=$VENDOR_RELEASE"
 
   echo "getopt()"
   if $AUTORECONF_OPTION; then
@@ -1406,7 +1420,9 @@ function bootstrap ()
 
   # Set up whatever we need to do to use autoreconf later
   require_libtoolise
-  autoreconf_setup
+  if ! autoreconf_setup; then
+    return 1
+  fi
 
   if [ -z "$MAKE_TARGET" ]; then
     MAKE_TARGET="make_default"
