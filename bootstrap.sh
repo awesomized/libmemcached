@@ -151,7 +151,8 @@ function rebuild_host_os ()
   fi
 }
 
-#  Valid values are: darwin,fedora,rhel,ubuntu
+# Validate the distribution name, or toss an erro
+#  values: darwin,fedora,rhel,ubuntu,debian,opensuse
 function set_VENDOR_DISTRIBUTION ()
 {
   local dist=`echo "$1" | tr '[A-Z]' '[a-z]'`
@@ -165,8 +166,14 @@ function set_VENDOR_DISTRIBUTION ()
     rhel)
       VENDOR_DISTRIBUTION='rhel'
       ;;
+    debian)
+      VENDOR_DISTRIBUTION='debian'
+      ;;
     ubuntu)
       VENDOR_DISTRIBUTION='ubuntu'
+      ;;
+    suse)
+      VENDOR_DISTRIBUTION='opensuse'
       ;;
     opensuse)
       VENDOR_DISTRIBUTION='opensuse'
@@ -177,21 +184,46 @@ function set_VENDOR_DISTRIBUTION ()
   esac
 }
 
+# Validate a Vendor's release name/number 
 function set_VENDOR_RELEASE ()
 {
   local release=`echo "$1" | tr '[A-Z]' '[a-z]'`
   case "$VENDOR_DISTRIBUTION" in
     darwin)
-      VENDOR_RELEASE='mountain'
+      case "$VENDOR_DISTRIBUTION" in
+        10.6*)
+          VENDOR_RELEASE='snow_leopard'
+          ;;
+        10.7*)
+          VENDOR_RELEASE='mountain'
+          ;;
+        mountain)
+          VENDOR_RELEASE='mountain'
+          ;;
+        10.8*)
+          VENDOR_RELEASE='mountain_lion'
+          ;;
+        *)
+          VENDOR_RELEASE='unknown'
+          ;;
+      esac
       ;;
     fedora)
       VENDOR_RELEASE="$release"
+      if [[ "x$VENDOR_RELEASE" == '18' ]]; then
+        VENDOR_RELEASE='sphericalcow'
+      fi
       ;;
     rhel)
       VENDOR_RELEASE="$release"
       ;;
     ubuntu)
       VENDOR_RELEASE="$release"
+      if [[ "x$VENDOR_RELEASE" == 'x12.04' ]]; then
+        VENDOR_RELEASE="precise"
+      elif [[ "x$VENDOR_RELEASE" == 'x12.10' ]]; then
+        VENDOR_RELEASE="quantal"
+      fi
       ;;
     opensuse)
       VENDOR_RELEASE="$release"
@@ -206,7 +238,7 @@ function set_VENDOR_RELEASE ()
 }
 
 
-#  Valid values are: apple, redhat, centos, canonical
+#  Valid values are: apple, redhat, centos, canonical, oracle, suse
 function set_VENDOR ()
 {
   local vendor=`echo "$1" | tr '[A-Z]' '[a-z]'`
@@ -218,11 +250,29 @@ function set_VENDOR ()
     redhat)
       VENDOR='redhat'
       ;;
+    fedora)
+      VENDOR='redhat'
+      ;;
+    redhat-release-server-*)
+      VENDOR='redhat'
+      ;;
+    enterprise-release-*)
+      VENDOR='oracle'
+      ;;
     centos)
       VENDOR='centos'
       ;;
     canonical)
       VENDOR='canonical'
+      ;;
+    ubuntu)
+      VENDOR='canonical'
+      ;;
+    debian)
+      VENDOR='debian'
+      ;;
+    opensuse)
+      VENDOR='suse'
       ;;
     suse)
       VENDOR='suse'
@@ -234,6 +284,27 @@ function set_VENDOR ()
 
   set_VENDOR_DISTRIBUTION $2
   set_VENDOR_RELEASE $3
+
+  # Set which vendor/versions we trust for autoreconf
+  case $VENDOR_DISTRIBUTION in
+    fedora)
+      if [[ "x$VENDOR_RELEASE" == 'x18' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xsphericalcow' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'x19' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      fi
+      ;;
+    canonical)
+      if [[ "x$VENDOR_RELEASE" == 'xprecise' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xquantal' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      fi
+      ;;
+  esac
+
 }
 
 function determine_target_platform ()
@@ -242,14 +313,14 @@ function determine_target_platform ()
   UNAME_KERNEL=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
   UNAME_KERNEL_RELEASE=`(uname -r) 2>/dev/null` || UNAME_KERNEL_RELEASE=unknown
 
-  if [[ $(uname) == 'Darwin' ]]; then
+  if [[ -x '/usr/bin/sw_vers' ]]; then 
+    local _VERSION=`/usr/bin/sw_vers -productVersion`
+    set_VENDOR 'apple' 'darwin' $_VERSION
+  elif [[ $(uname) == 'Darwin' ]]; then
     set_VENDOR 'apple' 'darwin' 'mountain'
   elif [[ -f '/etc/fedora-release' ]]; then 
     local fedora_version=`cat /etc/fedora-release | awk ' { print $3 } '`
     set_VENDOR 'redhat' 'fedora' $fedora_version
-    if [[ "x$VENDOR_RELEASE" == 'x17' ]]; then
-      AUTORECONF_REBUILD_HOST=true
-    fi
   elif [[ -f '/etc/centos-release' ]]; then
     local centos_version=`cat /etc/centos-release | awk ' { print $7 } '`
     set_VENDOR 'centos' 'rhel' $centos_version
@@ -259,14 +330,18 @@ function determine_target_platform ()
     set_VENDOR 'suse' $suse_distribution $suse_version
   elif [[ -f '/etc/redhat-release' ]]; then
     local rhel_version=`cat /etc/redhat-release | awk ' { print $7 } '`
-    set_VENDOR 'redhat' 'rhel' $rhel_version
+    local _vendor=`rpm -qf /etc/redhat-release`
+    set_VENDOR $_vendor 'rhel' $rhel_version
+  elif [[ -f '/etc/os-release' ]]; then 
+    source '/etc/os-release'
+    set_VENDOR $ID $ID $VERSION_ID
+  elif [[ -x '/usr/bin/lsb_release' ]]; then 
+    local _ID=`/usr/bin/lsb_release -s -i`
+    local _VERSION=`/usr/bin/lsb_release -s -r`
+    set_VENDOR $_ID $_ID $_VERSION_ID
   elif [[ -f '/etc/lsb-release' ]]; then 
-    local debian_DISTRIB_ID=`cat /etc/lsb-release | grep DISTRIB_ID | awk -F= ' { print $2 } '`
-    local debian_version=`cat /etc/lsb-release | grep DISTRIB_CODENAME | awk -F= ' { print $2 } '`
-    set_VENDOR 'canonical' $debian_DISTRIB_ID $debian_version
-    if [[ "x$VENDOR_RELEASE" == 'xprecise' ]]; then
-      AUTORECONF_REBUILD_HOST=true
-    fi
+    source '/etc/lsb-release'
+    set_VENDOR 'canonical' $DISTRIB_ID $DISTRIB_CODENAME
   fi
 
   rebuild_host_os
@@ -808,7 +883,7 @@ function make_for_continuus_integration ()
 
       make_install_system
       ;;
-    *-ubuntu-quantal-*)
+    *-precise-*)
       run_configure
 
       assert_exec_file 'configure'
@@ -1003,6 +1078,7 @@ function run_autoreconf_if_required ()
   fi
 
   assert_exec_file 'configure'
+  bash -n configure
 }
 
 function run_autoreconf () 
@@ -1068,6 +1144,14 @@ function parse_command_line_options ()
         ;;
       h) # help
         echo "bootstrap.sh [options] optional_target ..."
+        echo "  -a # Just run autoreconf";
+        echo "  -p # Print ENV";
+        echo "  -c # Just run configure";
+        echo "  -m # Just run maintainer-clean";
+        echo "  -t # Make target";
+        echo "  -d # Enable debug";
+        echo "  -h # Show help";
+        echo "  -v # Be more verbose in output";
         exit
         ;;
       v) # verbose
@@ -1169,6 +1253,7 @@ function autoreconf_setup ()
 
       if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
         echo "Couldn't find user supplied libtoolize, it is required"
+        return 1
       fi
     else
       # If we are using OSX, we first check to see glibtoolize is available
@@ -1177,12 +1262,14 @@ function autoreconf_setup ()
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find glibtoolize, it is required on OSX"
+          return 1
         fi
       else
         BOOTSTRAP_LIBTOOLIZE=`type -p libtoolize`
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find libtoolize, it is required"
+          return 1
         fi
       fi
     fi
@@ -1247,6 +1334,9 @@ function print_setup ()
   echo 'BOOTSTRAP ENV' 
   echo "AUTORECONF=$AUTORECONF"
   echo "HOST_OS=$HOST_OS"
+  echo "VENDOR=$VENDOR"
+  echo "VENDOR_DISTRIBUTION=$VENDOR_DISTRIBUTION"
+  echo "VENDOR_RELEASE=$VENDOR_RELEASE"
 
   echo "getopt()"
   if $AUTORECONF_OPTION; then
@@ -1406,7 +1496,9 @@ function bootstrap ()
 
   # Set up whatever we need to do to use autoreconf later
   require_libtoolise
-  autoreconf_setup
+  if ! autoreconf_setup; then
+    return 1
+  fi
 
   if [ -z "$MAKE_TARGET" ]; then
     MAKE_TARGET="make_default"
