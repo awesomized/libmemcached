@@ -62,18 +62,18 @@ public:
       key_buffer.resize(padding +1);
       memset(&key_buffer[0], 'x', padding);
 
+#ifdef HAVE_UUID_UUID_H
       if (HAVE_UUID_UUID_H)
       {
-#if defined(HAVE_UUID_UUID_H) && HAVE_UUID_UUID_H
         uuid_t out;
         uuid_generate(out);
 
         uuid_unparse(out, &key_buffer[0]);
         _keys[x]= strdup(&key_buffer[0]);
         (_keys[x])[UUID_STRING_MAXLENGTH]= 'x';
-#endif
       }
       else // We just use a number and pad the string if UUID is not available
+#endif
       {
         char int_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH +1];
         int key_length= snprintf(int_buffer, sizeof(int_buffer), "%u", uint32_t(x));

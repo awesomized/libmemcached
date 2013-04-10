@@ -64,6 +64,7 @@ static test_return_t pre_sasl(memcached_st *)
  */
 static test_return_t sasl_auth_test(memcached_st *memc)
 {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
   if (LIBMEMCACHED_WITH_SASL_SUPPORT)
   {
     test_compare(MEMCACHED_SUCCESS, memcached_set(memc, "foo", 3, "bar", 3, (time_t)0, (uint32_t)0));
@@ -80,6 +81,9 @@ static test_return_t sasl_auth_test(memcached_st *memc)
     memcached_quit(memc);
     return TEST_SUCCESS;
   }
+#else
+  (void)memc;
+#endif
 
   return TEST_SKIPPED;
 }
