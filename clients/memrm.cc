@@ -213,7 +213,7 @@ static void options_parse(int argc, char *argv[])
       opt_expire= (time_t)strtoll(optarg, (char **)NULL, 10);
       if (errno != 0)
       {
-        std::cerr << "Incorrect value passed to --expire: `" << optarg << "`" << std::cerr;
+        std::cerr << "Incorrect value passed to --expire: `" << optarg << "`" << std::endl;
         exit(EXIT_FAILURE);
       }
       break;
