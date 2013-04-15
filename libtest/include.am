@@ -5,10 +5,12 @@
 #
 
 LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
-VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=memcheck --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+SGCHECK_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
 VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
-DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
+DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd --error-exitcode=1
+SGCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
 MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
 PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
@@ -19,10 +21,14 @@ export LIBTOOL_COMMAND
 export VALGRIND_COMMAND
 export HELGRIND_COMMAND
 export DRD_COMMAND
+export SGCHECK_COMMAND
 export GDB_COMMAND
 
 valgrind:
 	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_EXEC_COMMAND)\""
+
+sgcheck:
+	@echo make check TESTS_ENVIRONMENT="\"$(SGCHECK_EXEC_COMMAND)\""
 
 valgrind-supressions:
 	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_SUPRESSION)\""
@@ -96,6 +102,7 @@ noinst_HEADERS+= libtest/test.hpp
 noinst_HEADERS+= libtest/thread.hpp
 noinst_HEADERS+= libtest/tmpfile.hpp
 noinst_HEADERS+= libtest/lite.h
+noinst_HEADERS+= libtest/valgrind.h
 noinst_HEADERS+= libtest/vchar.hpp
 noinst_HEADERS+= libtest/version.h
 noinst_HEADERS+= libtest/visibility.h
@@ -203,6 +210,10 @@ helgrind-unittest: libtest/unittest
 
 drd-unittest: libtest/unittest
 	@$(DRD_COMMAND) libtest/unittest
+
+sgcheck-unittest: libtest/unittest
+	echo $(SGCHECK_COMMAND)
+	@$(SGCHECK_COMMAND) libtest/unittest
 
 libtest_skiptest_LDADD= libtest/libtest.la
 libtest_skiptest_SOURCES= libtest/skiptest.cc

@@ -69,6 +69,7 @@ __test_result::~__test_result() throw()
 }
 
 __test_result::__test_result(const __test_result& other) :
+  std::exception(),
   _line(other._line),
   _file(other._file),
   _func(other._func),

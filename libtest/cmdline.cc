@@ -412,7 +412,6 @@ Application::error_t Application::join()
   slurp();
   if (waited_pid == _pid and WIFEXITED(_status) == false)
   {
-
     /*
       What we are looking for here is how the exit status happened.
       - 127 means that posix_spawn() itself had an error.
@@ -437,15 +436,18 @@ Application::error_t Application::join()
     {
       if (WTERMSIG(_status) != SIGTERM and WTERMSIG(_status) != SIGHUP)
       {
+        slurp();
         _app_exit_state= Application::INVALID_POSIX_SPAWN;
         std::string error_string(print_argv(built_argv));
         error_string+= " was killed by signal ";
         error_string+= strsignal(WTERMSIG(_status));
+
         if (stdout_result_length())
         {
           error_string+= " stdout: ";
           error_string+= stdout_c_str();
         }
+
         if (stderr_result_length())
         {
           error_string+= " stderr: ";
@@ -573,6 +575,7 @@ bool Application::Pipe::read(libtest::vchar_t& arg)
 void Application::Pipe::nonblock()
 {
   int flags;
+  do 
   {
     flags= fcntl(_pipe_fd[READ], F_GETFL, 0);
   } while (flags == -1 and (errno == EINTR or errno == EAGAIN));

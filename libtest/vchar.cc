@@ -50,6 +50,11 @@ static size_t get_alpha_num(void)
 
 namespace libtest {
 
+int random_alpha_num(void)
+{
+  return ALPHANUMERICS[get_alpha_num()];
+}
+
 static std::string printer(const char *str, size_t length)
 {
   std::ostringstream buf;
