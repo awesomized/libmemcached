@@ -604,23 +604,21 @@ void Application::Pipe::reset()
   close(READ);
   close(WRITE);
 
-#if defined(HAVE_PIPE2) && HAVE_PIPE2
+#ifdef HAVE_PIPE2
   if (pipe2(_pipe_fd, O_NONBLOCK|O_CLOEXEC) == -1)
-#else
-  if (pipe(_pipe_fd) == -1)
 #endif
   {
-    FATAL(strerror(errno));
-  }
-  _open[0]= true;
-  _open[1]= true;
+    if (pipe(_pipe_fd) == -1)
+    {
+      FATAL(strerror(errno));
+    }
 
-#if defined(HAVE_PIPE2) && HAVE_PIPE2
-  {
+    // Since either pipe2() was not found/called we set the pipe directly
     nonblock();
     cloexec();
   }
-#endif
+  _open[0]= true;
+  _open[1]= true;
 }
 
 void Application::Pipe::cloexec()
