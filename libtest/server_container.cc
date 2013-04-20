@@ -215,9 +215,9 @@ libtest::Server* server_startup_st::create(const std::string& server_type, in_po
   }
   else if (server_type.compare("drizzled") == 0)
   {
-    if (DRIZZLED_BINARY)
+    if (has_drizzled())
     {
-      if (HAVE_LIBDRIZZLE)
+      if (has_libdrizzle())
       {
         server= build_drizzled("localhost", try_port);
       }
@@ -225,8 +225,9 @@ libtest::Server* server_startup_st::create(const std::string& server_type, in_po
   }
   else if (server_type.compare("blobslap_worker") == 0)
   {
-    if (GEARMAND_BINARY)
+    if (has_gearmand())
     {
+#ifdef GEARMAND_BLOBSLAP_WORKER
       if (GEARMAND_BLOBSLAP_WORKER)
       {
         if (HAVE_LIBGEARMAN)
@@ -234,11 +235,12 @@ libtest::Server* server_startup_st::create(const std::string& server_type, in_po
           server= build_blobslap_worker(try_port);
         }
       }
+#endif // GEARMAND_BLOBSLAP_WORKER
     }
   }
   else if (server_type.compare("memcached") == 0)
   {
-    if (HAVE_MEMCACHED_BINARY)
+    if (has_memcached())
     {
       server= build_memcached("localhost", try_port);
     }
@@ -327,7 +329,7 @@ bool server_startup_st::_start_server(const bool is_socket,
       else
       {
         {
-#if defined(DEBUG)
+#ifdef DEBUG
           if (DEBUG)
           {
             Outn();

@@ -2838,7 +2838,7 @@ test_return_t ketama_TEST(memcached_st *)
 
   test_compare(memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_KETAMA_HASH, MEMCACHED_HASH_MD5), MEMCACHED_SUCCESS);
 
-  test_compare(memcached_behavior_get(&memc, MEMCACHED_BEHAVIOR_KETAMA_HASH), MEMCACHED_HASH_MD5);
+  test_compare(memcached_hash_t(memcached_behavior_get(&memc, MEMCACHED_BEHAVIOR_KETAMA_HASH)), MEMCACHED_HASH_MD5);
 
   test_compare(memcached_behavior_set_distribution(&memc, MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY), MEMCACHED_SUCCESS);
 

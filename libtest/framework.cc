@@ -68,7 +68,7 @@ Framework::Framework(libtest::SignalThread& signal_,
   get_world(this);
 }
 
-void Framework::collections(collection_st* collections_)
+void Framework::collections(collection_st collections_[])
 {
   for (collection_st *next= collections_; next and next->name; next++)
   {

@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -37,6 +37,7 @@
 #include "libtest/yatlcon.h"
 #include <libtest/common.h>
 
+#include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
 
@@ -138,13 +139,16 @@ bool has_mysqld()
   return false;
 }
 
-bool has_memcached()
+static char memcached_binary_path[FILENAME_MAX];
+
+static void initialize_curl_startup()
 {
+  memcached_binary_path[0]= NULL;
+
 #if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
   if (HAVE_MEMCACHED_BINARY)
   {
     std::stringstream arg_buffer;
-
 
     char *getenv_ptr;
     if (bool((getenv_ptr= getenv("PWD"))) and strcmp(MEMCACHED_BINARY, "memcached/memcached") == 0)
@@ -156,12 +160,44 @@ bool has_memcached()
 
     if (access(arg_buffer.str().c_str(), X_OK) == 0)
     {
-      return true;
+      strncpy(memcached_binary_path, arg_buffer.str().c_str(), FILENAME_MAX);
     }
   }
 #endif
+}
+
+static pthread_once_t memcached_binary_once= PTHREAD_ONCE_INIT;
+static void initialize_memcached_binary(void)
+{
+  int ret;
+  if ((ret= pthread_once(&memcached_binary_once, initialize_curl_startup)) != 0)
+  {
+    FATAL(strerror(ret));
+  }
+}
+
+bool has_memcached()
+{
+  initialize_memcached_binary();
+
+  if (memcached_binary_path[0])
+  {
+    return true;
+  }
 
   return false;
+}
+
+const char* memcached_binary()
+{
+  initialize_memcached_binary();
+
+  if (memcached_binary_path[0])
+  {
+    return memcached_binary_path;
+  }
+
+  return NULL;
 }
 
 bool has_memcached_sasl()
@@ -177,6 +213,16 @@ bool has_memcached_sasl()
 #endif
 
   return false;
+}
+
+const char *gearmand_binary() 
+{
+  return GEARMAND_BINARY;
+}
+
+const char *drizzled_binary() 
+{
+  return DRIZZLED_BINARY;
 }
 
 } // namespace libtest
