@@ -217,6 +217,9 @@ function set_VENDOR_RELEASE ()
     rhel)
       VENDOR_RELEASE="$release"
       ;;
+    debian)
+      VENDOR_RELEASE="$release"
+      ;;
     ubuntu)
       VENDOR_RELEASE="$release"
       if [[ "x$VENDOR_RELEASE" == 'x12.04' ]]; then
@@ -1071,6 +1074,13 @@ function run_configure_if_required ()
   assert_file 'Makefile' 'configure did not produce a Makefile'
 }
 
+function run_make_maintainer_clean_if_possible () 
+{
+  if [ -f 'Makefile' ]; then
+    make_maintainer_clean
+  fi
+}
+
 function run_autoreconf_if_required () 
 {
   if [ ! -x 'configure' ]; then
@@ -1474,18 +1484,21 @@ function check_make_target()
       ;;
     'clang-analyzer')
       ;;
-    'test-*')
+    test-*)
       ;;
-    'valgrind-*')
+    valgrind-*)
       ;;
-    'gdb-*')
+    gdb-*)
       ;;
     'dist')
       ;;
     *)
-      die "Unknown MAKE_TARGET option: $1"
+      echo "Matched default"
+      return 1
       ;;
   esac
+
+  return 0
 }
 
 function bootstrap ()
@@ -1533,7 +1546,13 @@ function bootstrap ()
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
       check_make_target $target
+      ret=$?
+      if [ $ret -ne 0 ]; then
+        die "Unknown MAKE_TARGET option: $target"
+      fi
     fi
+
+    local snapshot_run=false
 
     case $target in
       'self')
@@ -1592,6 +1611,7 @@ function bootstrap ()
         ;;
       'snapshot')
         make_for_snapshot
+        snapshot_run=true
         ;;
       'rpm')
         make_rpm
@@ -1610,6 +1630,13 @@ function bootstrap ()
         make_target "$target"
         ;;
     esac
+
+    if $jenkins_build_environment; then
+      if ! $snapshot_run; then
+        run_make_maintainer_clean_if_possible
+      fi
+    fi
+
   done
 }
 
@@ -1678,7 +1705,16 @@ function main ()
   # We don't want Jenkins overriding other variables, so we NULL them.
   if [ -z "$MAKE_TARGET" ]; then
     if $jenkins_build_environment; then
-      MAKE_TARGET='jenkins'
+      if [[ -n "$label" ]]; then
+        check_make_target $label
+        if [ $? -eq 0 ]; then
+          MAKE_TARGET="$label"
+        fi
+      fi
+
+      if [ -z "$MAKE_TARGET" ]; then
+        MAKE_TARGET='jenkins'
+      fi
     fi
   fi
 

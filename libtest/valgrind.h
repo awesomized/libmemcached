@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -34,25 +34,22 @@
  *
  */
 
-#include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#pragma once
 
-namespace libtest {
-
-void dream(time_t tv_sec, long tv_nsec)
+static inline bool valgrind_is_caller(void)
 {
-#if defined(WIN32)
-  if (tv_sec == 0 and tv_nsec)
+  if (getenv("TESTS_ENVIRONMENT")  && strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
   {
-    tv_sec++;
-  }
-  sleep(tv_sec);
-#else
-  struct timespec requested;
-  requested.tv_sec= tv_sec;
-  requested.tv_nsec= tv_nsec;
-  nanosleep(&requested, NULL);
-#endif
-}
+    if (strstr(getenv("TESTS_ENVIRONMENT"), "--tool") == NULL)
+    {
+      return true;
+    }
 
+    if (strstr(getenv("TESTS_ENVIRONMENT"), "--tool=memcheck"))
+    {
+      return true;
+    }
+  }
+
+  return false;
 }

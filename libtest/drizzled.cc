@@ -74,11 +74,11 @@ bool ping_drizzled(const in_port_t _port)
 #if defined(HAVE_LIBDRIZZLE) && HAVE_LIBDRIZZLE
   if (HAVE_LIBDRIZZLE)
   {
-    drizzle_st *drizzle= drizzle_create_tcp(getenv("MYSQL_SERVER"),
-                                            getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                            getenv("MYSQL_USER"),
-                                            getenv("MYSQL_PASSWORD"),
-                                            getenv("MYSQL_SCHEMA"), drizzle_options_t());
+    drizzle_st *drizzle= drizzle_create(getenv("MYSQL_SERVER"),
+                                        getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
+                                        getenv("MYSQL_USER"),
+                                        getenv("MYSQL_PASSWORD"),
+                                        getenv("MYSQL_SCHEMA"), 0);
 
     if (drizzle == NULL)
     {

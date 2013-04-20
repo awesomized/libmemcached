@@ -2,7 +2,7 @@
  * 
  *  Libmemcached library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -62,7 +62,7 @@ public:
       key_buffer.resize(padding +1);
       memset(&key_buffer[0], 'x', padding);
 
-#ifdef HAVE_UUID_UUID_H
+#if defined(HAVE_UUID_UUID_H) && HAVE_UUID_UUID_H
       if (HAVE_UUID_UUID_H)
       {
         uuid_t out;

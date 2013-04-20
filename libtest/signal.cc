@@ -153,17 +153,13 @@ static void *sig_thread(void *arg)
     switch (sig)
     {
     case SIGALRM:
-      Error << "SIGALRM";
+    case SIGVTALRM:
+      Error << strsignal(sig);
       if (gdb_is_caller())
       {
         abort();
       }
-      exit(EXIT_SKIP);
-
-    case SIGVTALRM:
-      Error << "SIGVTALRM was called";
-      context->unblock();
-      raise(SIGVTALRM);
+      exit(EXIT_FAILURE);
 
     case SIGABRT:
     case SIGUSR2:
