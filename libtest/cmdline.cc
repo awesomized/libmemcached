@@ -481,7 +481,7 @@ Application::error_t Application::join()
   }
   else if (waited_pid == -1)
   {
-    std::string error_string
+    std::string error_string;
     if (stdout_result_length())
     {
       error_string+= " stdout: ";
