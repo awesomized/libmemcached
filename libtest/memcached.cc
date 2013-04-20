@@ -72,14 +72,14 @@ public:
             const std::string& username_arg,
             const std::string& password_arg) :
     libtest::Server(host_arg, port_arg, 
-                    MEMCACHED_BINARY, false, is_socket_arg),
+                    memcached_binary(), false, is_socket_arg),
     _username(username_arg),
     _password(password_arg)
   { }
 
   Memcached(const std::string& host_arg, const in_port_t port_arg, const bool is_socket_arg) :
     libtest::Server(host_arg, port_arg,
-                    MEMCACHED_BINARY, false, is_socket_arg)
+                    memcached_binary(), false, is_socket_arg)
   {
     set_pid_file();
   }
@@ -131,7 +131,7 @@ public:
 
   const char *executable()
   {
-    return MEMCACHED_BINARY;
+    return memcached_binary();
   }
 
   bool is_libtool()
@@ -218,7 +218,7 @@ bool Memcached::build()
 
 libtest::Server *build_memcached(const std::string& hostname, const in_port_t try_port)
 {
-  if (HAVE_MEMCACHED_BINARY)
+  if (has_memcached())
   {
     return new Memcached(hostname, try_port, false);
   }
@@ -228,7 +228,7 @@ libtest::Server *build_memcached(const std::string& hostname, const in_port_t tr
 
 libtest::Server *build_memcached_socket(const std::string& socket_file, const in_port_t try_port)
 {
-  if (HAVE_MEMCACHED_BINARY)
+  if (has_memcached())
   {
     return new Memcached(socket_file, try_port, true);
   }
