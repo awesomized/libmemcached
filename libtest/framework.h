@@ -72,7 +72,7 @@ public:
     _destroy= arg;
   }
 
-  void collections(collection_st* arg);
+  void collections(collection_st arg[]);
 
   void set_on_error(test_callback_error_fn *arg)
   {
