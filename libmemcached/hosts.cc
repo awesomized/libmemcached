@@ -591,7 +591,7 @@ memcached_return_t memcached_server_add_parsed(memcached_st *ptr,
                                                in_port_t port,
                                                uint32_t weight)
 {
-  char buffer[MEMCACHED_NI_MAXHOST];
+  char buffer[MEMCACHED_NI_MAXHOST]= { 0 };
 
   memcpy(buffer, hostname, hostname_length);
   buffer[hostname_length]= 0;
