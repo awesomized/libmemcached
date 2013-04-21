@@ -72,6 +72,7 @@ docs/text
 example/memcached_light
 example/t/memcached_light
 libhashkit-1.0/configure.h
+libhashkit/hashkitcon.h
 libmemcached-1.0/configure.h
 libmemcached-1.0/t/c_sasl_test
 libmemcached-1.0/t/c_test
@@ -90,11 +91,13 @@ libmemcached/memcached_configure.h
 libtest/.hg/
 libtest/.hgignore
 libtest/abort
+libtest/backtrace
 libtest/core-count
 libtest/skiptest
 libtest/unittest
 libtest/version.h
 libtest/wait
+libtest/yatlcon.h
 libtool
 m4/libtool.m4
 m4/libtool.m4 
@@ -142,6 +145,7 @@ tests/memdump
 tests/memerror
 tests/memexist
 tests/memflush
+tests/memping
 tests/memplus
 tests/memrm
 tests/memslap
@@ -158,5 +162,3 @@ tests/testudp
 tests/var/
 tmp_chroot
 unittests/unittests
-libhashkit/hashkitcon.h
-libtest/yatlcon.h

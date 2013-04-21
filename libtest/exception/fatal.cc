@@ -34,25 +34,86 @@
  *
  */
 
-#pragma once
+#include "libtest/yatlcon.h"
+#include <libtest/common.h>
+#include "libtest/exception.hpp"
+#include <cstdarg>
 
 namespace libtest {
 
-class fatal : public __test_result
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
+fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, ...) :
+  libtest::exception(file_arg, line_arg, func_arg)
 {
-public:
-  fatal(const char *file, int line, const char *func, ...);
+  va_list args;
+  va_start(args, func_arg);
+  init(args);
+  va_end(args);
+}
 
-  fatal(const fatal&);
+fatal::fatal( const fatal& other ) :
+  libtest::exception(other)
+{
+}
 
-  // The following are just for unittesting the exception class
-  static bool is_disabled() throw();
-  static void disable() throw();
-  static void enable() throw();
-  static uint32_t disabled_counter() throw();
-  static void increment_disabled_counter() throw();
+static bool _disabled= false;
+static uint32_t _counter= 0;
 
-private:
-};
+bool fatal::is_disabled() throw()
+{
+  return _disabled;
+}
+
+void fatal::disable() throw()
+{
+  _counter= 0;
+  _disabled= true;
+}
+
+void fatal::enable() throw()
+{
+  _counter= 0;
+  _disabled= false;
+}
+
+uint32_t fatal::disabled_counter() throw()
+{
+  return _counter;
+}
+
+void fatal::increment_disabled_counter() throw()
+{
+  _counter++;
+}
+
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+disconnected::disconnected(const char *file_arg, int line_arg, const char *func_arg,
+                           const std::string& instance, const in_port_t port, ...) :
+  libtest::exception(file_arg, line_arg, func_arg),
+  _port(port)
+{
+  va_list args;
+  va_start(args, port);
+  const char *format= va_arg(args, const char *);
+  char last_error[BUFSIZ];
+  (void)vsnprintf(last_error, sizeof(last_error), format, args);
+  va_end(args);
+
+  char buffer_error[BUFSIZ];
+  int error_length= snprintf(buffer_error, sizeof(buffer_error), "%s:%u %s", instance.c_str(), uint32_t(port), last_error);
+
+  if (error_length > 0)
+  {
+    what(size_t(error_length), buffer_error);
+  }
+}
+
+disconnected::disconnected(const disconnected& other):
+  libtest::exception(other),
+  _port(other._port)
+{
+  strncpy(_instance, other._instance, BUFSIZ);
+}
 
 } // namespace libtest

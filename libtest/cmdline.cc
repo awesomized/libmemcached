@@ -59,6 +59,7 @@ using namespace libtest;
 #include <unistd.h>
 
 #include <algorithm>
+#include <stdexcept>
 
 #ifndef __USE_GNU
 static char **environ= NULL;

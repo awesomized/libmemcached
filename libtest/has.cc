@@ -143,7 +143,7 @@ static char memcached_binary_path[FILENAME_MAX];
 
 static void initialize_curl_startup()
 {
-  memcached_binary_path[0]= NULL;
+  memcached_binary_path[0]= 0;
 
 #if defined(HAVE_MEMCACHED_BINARY) && HAVE_MEMCACHED_BINARY
   if (HAVE_MEMCACHED_BINARY)

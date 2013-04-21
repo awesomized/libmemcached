@@ -36,51 +36,52 @@
 
 #pragma once
 
-#include <stdexcept>
-
 namespace libtest {
 
-class disconnected : public std::runtime_error
+class fatal : public libtest::exception
 {
 public:
-  disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, ...);
+  fatal(const char *file, int line, const char *func, ...);
 
-  const char* what() const throw()
-  {
-    return _error_message;
-  }
-
-  disconnected(const disconnected&);
+  fatal(const fatal&);
 
   // The following are just for unittesting the exception class
-  static bool is_disabled();
-  static void disable();
-  static void enable();
-  static uint32_t disabled_counter();
-  static void increment_disabled_counter();
+  static bool is_disabled() throw();
+  static void disable() throw();
+  static void enable() throw();
+  static uint32_t disabled_counter() throw();
+  static void increment_disabled_counter() throw();
 
-  int line() const
+  test_return_t return_code() const
   {
-    return _line;
-  }
-
-  const char* file() const
-  {
-    return _file;
-  }
-
-  const char* func() const
-  {
-    return _func;
+    return TEST_SKIPPED;
   }
 
 private:
-  char _error_message[BUFSIZ];
-  in_port_t _port;
-  char _instance[BUFSIZ];
-  int _line;
-  const char*  _file;
-  const char* _func;
 };
 
 } // namespace libtest
+
+#define FATAL(...) \
+do \
+{ \
+  throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+} while (0)
+
+#define FATAL_IF(__expression, ...) \
+do \
+{ \
+  if ((__expression)) { \
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, (#__expression)); \
+  } \
+} while (0)
+
+#define FATAL_IF_(__expression, ...) \
+do \
+{ \
+  if ((__expression)) { \
+    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
+  } \
+} while (0)
+
+#define fatal_assert(__assert) if((__assert)) {} else { throw libtest::fatal(LIBYATL_DEFAULT_PARAM, #__assert); }

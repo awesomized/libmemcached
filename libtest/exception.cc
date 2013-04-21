@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -40,80 +40,69 @@
 
 namespace libtest {
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-
-fatal::fatal(const char *file_arg, int line_arg, const char *func_arg, ...) :
-  __test_result(file_arg, line_arg, func_arg)
-{
-  va_list args;
-  va_start(args, func_arg);
-  init(args);
-  va_end(args);
-}
-
-fatal::fatal( const fatal& other ) :
-  __test_result(other)
-{
-}
-
-static bool _disabled= false;
-static uint32_t _counter= 0;
-
-bool fatal::is_disabled() throw()
-{
-  return _disabled;
-}
-
-void fatal::disable() throw()
-{
-  _counter= 0;
-  _disabled= true;
-}
-
-void fatal::enable() throw()
-{
-  _counter= 0;
-  _disabled= false;
-}
-
-uint32_t fatal::disabled_counter() throw()
-{
-  return _counter;
-}
-
-void fatal::increment_disabled_counter() throw()
-{
-  _counter++;
-}
-
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-disconnected::disconnected(const char *file_arg, int line_arg, const char *func_arg,
-                           const std::string& instance, const in_port_t port, ...) :
-  std::runtime_error(func_arg),
-  _port(port),
+exception::exception(const char *file_arg, int line_arg, const char *func_arg):
+  std::exception(),
   _line(line_arg),
   _file(file_arg),
-  _func(func_arg)
+  _func(func_arg),
+  _error_message(NULL),
+  _error_message_size(0)
 {
-  va_list args;
-  va_start(args, port);
-  const char *format= va_arg(args, const char *);
-  char last_error[BUFSIZ];
-  (void)vsnprintf(last_error, sizeof(last_error), format, args);
-  va_end(args);
-
-  snprintf(_error_message, sizeof(_error_message), "%s:%u %s", instance.c_str(), uint32_t(port), last_error);
 }
 
-disconnected::disconnected(const disconnected& other):
-  std::runtime_error(other._func),
-  _port(other._port),
+#ifndef __INTEL_COMPILER
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+void exception::init(va_list args_)
+{
+  const char *format= va_arg(args_, const char *);
+  int error_message_length= vasprintf(&_error_message, format, args_);
+  assert(error_message_length != -1);
+  if (error_message_length > 0)
+  {
+    _error_message_size= error_message_length +1;
+  }
+}
+
+exception::~exception() throw()
+{
+  if (_error_message)
+  {
+    free(_error_message);
+  }
+}
+
+void exception::what(size_t length_, const char* message_)
+{
+  if (length_ > 0 and message_)
+  {
+    char *ptr= (char*) realloc(_error_message, length_ +1);
+    if (ptr)
+    {
+      _error_message= ptr;
+      memcpy(_error_message, message_, length_);
+      _error_message[length_]= 0;
+    }
+  }
+}
+
+exception::exception(const exception& other) :
+  std::exception(),
   _line(other._line),
   _file(other._file),
-  _func(other._func)
+  _func(other._func),
+  _error_message_size(0)
 {
-  strncpy(_error_message, other._error_message, BUFSIZ);
-  strncpy(_instance, other._instance, BUFSIZ);
+  if (other.length() > 0)
+  {
+    _error_message= (char*) malloc(other.length() +1);
+    if (_error_message)
+    {
+      memcpy(_error_message, other._error_message, other.length());
+      _error_message_size= other.length();
+    }
+  }
 }
 
 } // namespace libtest
+

@@ -36,10 +36,8 @@
 
 #pragma once
 
-#include <libtest/fatal.hpp>
 #include <libtest/result/base.hpp>
 #include <libtest/result/fail.hpp>
-#include <libtest/result/fatal.hpp>
 #include <libtest/result/skip.hpp>
 #include <libtest/result/success.hpp>
 
@@ -56,27 +54,3 @@ do \
 { \
   throw libtest::__failure(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
 } while (0)
-
-#define FATAL(...) \
-do \
-{ \
-  throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
-} while (0)
-
-#define FATAL_IF(__expression, ...) \
-do \
-{ \
-  if ((__expression)) { \
-    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, (#__expression)); \
-  } \
-} while (0)
-
-#define FATAL_IF_(__expression, ...) \
-do \
-{ \
-  if ((__expression)) { \
-    throw libtest::fatal(LIBYATL_DEFAULT_PARAM, __VA_ARGS__); \
-  } \
-} while (0)
-
-#define fatal_assert(__assert) if((__assert)) {} else { throw libtest::fatal(LIBYATL_DEFAULT_PARAM, #__assert); }

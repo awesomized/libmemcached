@@ -65,7 +65,10 @@
 #include <libtest/version.h>
 
 #include <libtest/vchar.hpp>
-#include <libtest/fatal.hpp>
+#include <libtest/error.h>
+#include <libtest/exception.hpp>
+#include <libtest/exception/disconnected.hpp>
+#include <libtest/exception/fatal.hpp>
 #include <libtest/result.hpp>
 
 #include <libtest/has.hpp>

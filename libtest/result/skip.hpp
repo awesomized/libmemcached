@@ -44,6 +44,11 @@ public:
   __skipped(const char *file, int line, const char *func, ...);
 
   __skipped(const __skipped&);
+
+  test_return_t return_code() const
+  {
+    return TEST_SKIPPED;
+  }
 };
 
 } // namespace libtest
