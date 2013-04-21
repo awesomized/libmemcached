@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -36,21 +36,27 @@
 
 #pragma once
 
+#include "libtest/exception.hpp"
+
 namespace libtest {
 
-class __failure : public __test_result
+class disconnected : public libtest::exception
 {
 public:
-  __failure(const char *file, int line, const char *func, ...);
+  disconnected(const char *file, int line, const char *func, const std::string&, const in_port_t port, ...);
 
-  __failure(const __failure&);
+  disconnected(const disconnected&);
 
-  test_return_t return_code() const
-  {
-    return TEST_FAILURE;
-  }
+  // The following are just for unittesting the exception class
+  static bool is_disabled();
+  static void disable();
+  static void enable();
+  static uint32_t disabled_counter();
+  static void increment_disabled_counter();
 
 private:
+  in_port_t _port;
+  char _instance[BUFSIZ];
 };
 
 } // namespace libtest
