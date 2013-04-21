@@ -97,14 +97,14 @@ static void init(CURL *curl, const std::string& url)
   (void)http_get_result_callback;
   (void)curl;
   (void)url;
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
     assert(curl);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_USERAGENT, YATL_USERAGENT);
-#endif
   }
+#endif
 }
 
 HTTP::HTTP(const std::string& url_arg) :
@@ -118,9 +118,9 @@ bool GET::execute()
 {
   (void)init;
 
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
     CURL *curl= curl_easy_init();
 
     init(curl, url());
@@ -134,17 +134,17 @@ bool GET::execute()
     curl_easy_cleanup(curl);
 
     return bool(retref == CURLE_OK);
-#endif
   }
+#endif
 
   return false;
 }
 
 bool POST::execute()
 {
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
     CURL *curl= curl_easy_init();;
 
     init(curl, url());
@@ -158,17 +158,17 @@ bool POST::execute()
     curl_easy_cleanup(curl);
 
     return bool(retref == CURLE_OK);
-#endif
   }
+#endif
 
   return false;
 }
 
 bool TRACE::execute()
 {
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
     CURL *curl= curl_easy_init();;
 
     init(curl, url());
@@ -183,17 +183,17 @@ bool TRACE::execute()
     curl_easy_cleanup(curl);
 
     return retref == CURLE_OK;
-#endif
   }
+#endif
 
   return false;
 }
 
 bool HEAD::execute()
 {
+#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-#if defined(HAVE_LIBCURL) && HAVE_LIBCURL
     CURL *curl= curl_easy_init();;
 
     init(curl, url());
@@ -207,8 +207,8 @@ bool HEAD::execute()
     curl_easy_cleanup(curl);
 
     return retref == CURLE_OK;
-#endif
   }
+#endif
 
   return false;
 }

@@ -140,6 +140,34 @@ do \
   } \
 } while (0)
 
+#define SKIP_UNLESS(__expression) \
+do \
+{ \
+  if (! (__expression)) { \
+    if (YATL_FULL) { \
+      SKIP(#__expression); \
+    } \
+    fprintf(stdout, "\n%s:%d: %s SKIP '(%s)'\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, #__expression); \
+    exit(EXIT_SKIP); \
+  } \
+} while (0)
+
+#define SKIP_UNLESS_(__expression, ...) \
+do \
+{ \
+  if (! (__expression)) { \
+    size_t ask= snprintf(0, 0, __VA_ARGS__); \
+    ask++; \
+    char *buffer= (char*)alloca(sizeof(char) * ask); \
+    snprintf(buffer, ask, __VA_ARGS__); \
+    if (YATL_FULL) { \
+      SKIP(#__expression, buffer); \
+    } \
+    fprintf(stdout, "\n%s:%d: %s SKIP '%s' [ %s ]\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, #__expression, buffer); \
+    exit(EXIT_SKIP); \
+  } \
+} while (0)
+
 #define ASSERT_TRUE(__expression) \
 do \
 { \
