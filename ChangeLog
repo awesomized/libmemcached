@@ -1,3 +1,5 @@
+1.0.18
+
 1.0.17 Tue Apr  2 14:02:01 HST 2013
 * Remove c++ namespace that was being exposed (the API should be plug compatible)..
 * Fix cases where --servers wasn't behaving the same in all clients.
