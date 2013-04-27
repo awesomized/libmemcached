@@ -50,6 +50,9 @@ LT_INIT
 LT_LANG([C++])
 LT_LIB_M
 
+AC_PROG_CC_C99
+AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
+
 AX_ASSERT
 
 AX_PLATFORM

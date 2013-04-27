@@ -6,22 +6,23 @@
 # SYNOPSIS
 #
 #   AX_UUID()
+#   AX_UUID_GENERATE_TIME()
 #   AX_UUID_GENERATE_TIME_SAFE()
 #
 # DESCRIPTION
 #
-#   Check for uuid, and uuid_generate_time_safe support.
+#   Check for uuid, uuid_generate_time, and uuid_generate_time_safe support.
 #
 # LICENSE
 #
-#   Copyright (c) 2012 Brian Aker <brian@tangent.org>
+#   Copyright (c) 2012-2013 Brian Aker <brian@tangent.org>
 #
 #   Copying and distribution of this file, with or without modification, are
 #   permitted in any medium without royalty provided the copyright notice
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 6
+#serial 7
 
 AC_DEFUN([AX_UUID],
     [AC_PREREQ([2.63])dnl
@@ -71,6 +72,31 @@ AC_DEFUN([AX_UUID],
   AC_SUBST([LIBUUID_LIB])
   AM_CONDITIONAL([HAVE_LIBUUID],[test "x$ax_libuuid" = xyes])
   ])
+
+  AC_DEFUN([AX_UUID_GENERATE_TIME],
+      [AC_PREREQ([2.63])dnl
+      AC_REQUIRE([AX_UUID])dnl
+      AC_CACHE_CHECK([for uuid_generate_time],
+        [ax_cv_uuid_generate_time],
+        [AX_SAVE_FLAGS
+        LIBS="$LIBUUID_LIB $LIBS"
+        AC_LANG_PUSH([C])
+        AC_RUN_IFELSE([
+          AC_LANG_PROGRAM([#include <uuid/uuid.h>],[
+            uuid_t out;
+            uuid_generate_time(out);
+            ])],
+          [ax_cv_uuid_generate_time=yes],
+          [ax_cv_uuid_generate_time=no],
+          [AC_MSG_WARN([test program execution failed])])
+        AC_LANG_POP
+        AX_RESTORE_FLAGS
+        ])
+
+      AS_IF([test "$ax_cv_uuid_generate_time" = yes],
+        [AC_DEFINE([HAVE_UUID_GENERATE_TIME],[1],[Define if uuid_generate_time is present in uuid/uuid.h.])],
+        [AC_DEFINE([HAVE_UUID_GENERATE_TIME],[0],[Define if uuid_generate_time is present in uuid/uuid.h.])])
+      ])
 
   AC_DEFUN([AX_UUID_GENERATE_TIME_SAFE],
       [AC_PREREQ([2.63])dnl
