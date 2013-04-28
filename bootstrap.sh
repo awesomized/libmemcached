@@ -644,22 +644,13 @@ function make_darwin_malloc ()
   MallocScribble=$old_MallocScribble
 }
 
-function snapshot_check ()
-{
-  if [ ! -f "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
-    make_for_snapshot
-  fi
-
-  if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
-    assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
-  fi
-}
-
 # This will reset our environment, and make sure built files are available.
 function make_for_snapshot ()
 {
-  # Make sure it is clean
-  make_maintainer_clean
+  # Lets make sure we have a clean environment
+  assert_no_file 'Makefile'
+  assert_no_file 'configure'
+  assert_no_directory 'autom4te.cache'
 
   run_configure
   make_target 'dist'
@@ -668,8 +659,6 @@ function make_for_snapshot ()
   # We should have a configure, but no Makefile at the end of this exercise
   assert_no_file 'Makefile'
   assert_exec_file 'configure'
-
-  snapshot_check
 }
 
 function check_mingw ()
@@ -838,7 +827,7 @@ function make_for_clang_analyzer ()
 function check_for_jenkins ()
 {
   if ! $jenkins_build_environment; then
-    echo "Not inside of jenkins"
+    echo "Not inside of jenkins, simulating environment"
 
     if [ -f 'configure' ]; then
       make_maintainer_clean
@@ -878,7 +867,13 @@ function make_for_continuus_integration ()
   # Platforms which require bootstrap should have some setup done before we hit this stage.
   # If we are building locally, skip this step, unless we are just testing locally. 
   if $BOOTSTRAP_SNAPSHOT; then
-    snapshot_check
+    if $BOOTSTRAP_SNAPSHOT; then
+      assert_file 'configure'
+    fi
+
+    if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
+      assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
+    fi
   else
     # If we didn't require a snapshot, then we should not have a configure
     assert_no_file 'configure'
@@ -1746,7 +1741,7 @@ function main ()
       fi
 
       if [ -z "$MAKE_TARGET" ]; then
-        MAKE_TARGET='check'
+        MAKE_TARGET='jenkins'
       fi
     fi
   fi
