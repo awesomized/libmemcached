@@ -890,40 +890,14 @@ function make_for_continuus_integration ()
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
+      make_target 'all'
+
       # make rpm includes "make distcheck"
       if [[ -f rpm.am ]]; then
-        make_target 'all'
         make_rpm
       elif [[ -d rpm ]]; then
-        make_target 'all'
         make_rpm
-      else
-        make_distcheck
       fi
-      ;;
-    *-precise-*)
-      run_configure
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_distcheck
-      ;;
-    *-quantal-*)
-      run_configure
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_distcheck
-      ;;
-    *-raring-*)
-      run_configure
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_distcheck
       ;;
     *)
       make_jenkins_default
