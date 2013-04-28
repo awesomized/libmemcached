@@ -234,6 +234,8 @@ function set_VENDOR_RELEASE ()
         VENDOR_RELEASE="precise"
       elif [[ "x$VENDOR_RELEASE" == 'x12.10' ]]; then
         VENDOR_RELEASE="quantal"
+      elif [[ "x$VENDOR_RELEASE" == 'x13.04' ]]; then
+        VENDOR_RELEASE="raring"
       fi
       ;;
     opensuse)
@@ -893,21 +895,16 @@ function make_for_continuus_integration ()
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_target 'all'
-
       # make rpm includes "make distcheck"
       if [[ -f rpm.am ]]; then
+        make_target 'all'
         make_rpm
       elif [[ -d rpm ]]; then
+        make_target 'all'
         make_rpm
       else
         make_distcheck
       fi
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_install_system
       ;;
     *-precise-*)
       run_configure
@@ -915,19 +912,23 @@ function make_for_continuus_integration ()
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_target 'all'
+      make_distcheck
+      ;;
+    *-quantal-*)
+      run_configure
+
+      assert_exec_file 'configure'
+      assert_file 'Makefile'
 
       make_distcheck
+      ;;
+    *-raring-*)
+      run_configure
 
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_valgrind
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_install_system
+      make_distcheck
       ;;
     *)
       make_jenkins_default

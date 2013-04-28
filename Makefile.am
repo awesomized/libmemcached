@@ -1,6 +1,7 @@
 # vim:ft=automake
 
-ACLOCAL_AMFLAGS = -I m4 -I libtest/m4
+ACLOCAL_AMFLAGS= -I m4 -I libtest/m4
+AM_YFLAGS= -d
 
 # includes append to these:
 SUFFIXES =
@@ -140,6 +141,7 @@ maintainer-clean-local:
 	-rm -f build-aux/install-sh
 	-rm -f build-aux/ltmain.sh
 	-rm -f build-aux/missing
+	-rm -f build-aux/ylwrap
 	-rm -f mem_config.in
 	-rm -f config.log
 	-rm -f config.status

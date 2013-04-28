@@ -6,7 +6,8 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.17],[http://libmemcached.org/])
+m4_include([version.m4])
+AC_INIT([libmemcached],VERSION_NUMBER,[http://libmemcached.org/])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -107,7 +108,7 @@ AC_PROG_AWK
 AC_PROG_SED
 AC_PROG_MKDIR_P
 AC_CHECK_PROGS([LEX],['flex'],[:])
-AC_CHECK_PROGS([YACC],['bison'],[:])
+AC_CHECK_PROGS([YACC],['bison --warnings=all'],[:])
 AX_PROG_SPHINX_BUILD
 AX_PROG_MEMCACHED
 
