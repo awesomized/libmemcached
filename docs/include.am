@@ -19,7 +19,6 @@ clean-docs-check:
 	-rm -rf docs/_build docs/doctrees man/.doctrees/
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
-if HAVE_SPHINX
 
 sphinx-help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -86,15 +85,9 @@ latexpdf: latex
 text: docs/conf.py
 	@PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b text $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/text
 
-if HAVE_RECENT_SPHINX
 man:
 	@PYTHONPATH=$(SPHINX_BUILDDIR)/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${top_builddir}/man
 
-else
-
-man:
-
-endif
 
 changes: docs/conf.py
 	@PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/changes
@@ -106,9 +99,3 @@ doctest: docs/conf.py
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(SPHINX_BUILDDIR)/doctest/output.txt."
-
-else
-
-man:
-
-endif

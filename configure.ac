@@ -109,7 +109,7 @@ AC_PROG_SED
 AC_PROG_MKDIR_P
 AC_CHECK_PROGS([LEX],['flex'],[:])
 AC_CHECK_PROGS([YACC],['bison --warnings=all'],[:])
-AX_PROG_SPHINX_BUILD
+AX_PROG_SPHINX_BUILD(,[AC_MSG_ERROR([sphinx-build version 1.0 or greater is required])])
 AX_PROG_MEMCACHED
 
 # Checks for libraries.
