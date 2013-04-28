@@ -188,9 +188,15 @@ function set_VENDOR_DISTRIBUTION ()
 function set_VENDOR_RELEASE ()
 {
   local release=`echo "$1" | tr '[A-Z]' '[a-z]'`
-  case "$VENDOR_DISTRIBUTION" in
+
+  if $DEBUG; then 
+    echo "VENDOR_DISTRIBUTION:$VENDOR_DISTRIBUTION"
+    echo "VENDOR_RELEASE:$release"
+  fi
+
+  case $VENDOR_DISTRIBUTION in
     darwin)
-      case "$VENDOR_DISTRIBUTION" in
+      case $release in
         10.6*)
           VENDOR_RELEASE='snow_leopard'
           ;;
@@ -200,10 +206,12 @@ function set_VENDOR_RELEASE ()
         mountain)
           VENDOR_RELEASE='mountain'
           ;;
-        10.8*)
+        10.8.*)
+          echo "mountain_lion"
           VENDOR_RELEASE='mountain_lion'
           ;;
         *)
+          echo $VENDOR_RELEASE
           VENDOR_RELEASE='unknown'
           ;;
       esac
@@ -226,6 +234,8 @@ function set_VENDOR_RELEASE ()
         VENDOR_RELEASE="precise"
       elif [[ "x$VENDOR_RELEASE" == 'x12.10' ]]; then
         VENDOR_RELEASE="quantal"
+      elif [[ "x$VENDOR_RELEASE" == 'x13.04' ]]; then
+        VENDOR_RELEASE="raring"
       fi
       ;;
     opensuse)
@@ -375,11 +385,17 @@ function run_configure ()
   local BUILD_CONFIGURE_ARG= 
 
   # If ENV DEBUG is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
-  # Set ENV ASSERT in order to enable assert
-  if $DEBUG; then 
-    BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
-  elif [[ -n "$VCS_CHECKOUT" ]]; then
-    BUILD_CONFIGURE_ARG+=' --enable-assert'
+  # Set ENV ASSERT in order to enable assert.
+  # If we are doing a valgrind run, we always compile with assert disabled
+  if $valgrind_run; then
+    BUILD_CONFIGURE_ARG+= " CXXFLAGS=-DNDEBUG "
+    BUILD_CONFIGURE_ARG+= " CFLAGS=-DNDEBUG "
+  else
+    if $DEBUG; then 
+      BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
+    elif [[ -n "$VCS_CHECKOUT" ]]; then
+      BUILD_CONFIGURE_ARG+=' --enable-assert'
+    fi
   fi
 
   if [[ -n "$CONFIGURE_ARG" ]]; then 
@@ -431,7 +447,7 @@ function setup_gdb_command () {
 function setup_valgrind_command () {
   VALGRIND_PROGRAM=`type -p valgrind`
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE"
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
@@ -531,11 +547,6 @@ function safe_popd ()
 
 function make_valgrind ()
 {
-  if [[ "$VENDOR_DISTRIBUTION" == 'darwin' ]]; then
-    make_darwin_malloc
-    return
-  fi
-
   # If the env VALGRIND_COMMAND is set then we assume it is valid
   local valgrind_was_set=false
   if [[ -z "$VALGRIND_COMMAND" ]]; then
@@ -555,8 +566,10 @@ function make_valgrind ()
 
   save_BUILD
 
+  valgrind_run=true
+
   # If we are required to run configure, do so now
-  run_configure_if_required
+  run_configure
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
@@ -566,9 +579,21 @@ function make_valgrind ()
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
   fi
 
-  make_target 'check' || return 1
+  make_target 'check'
+  ret=$?
+
+  # If we aren't going to error, we will clean up our environment
+  if [ "$ret" -eq 0 ]; then
+     make 'distclean'
+  fi
+
+  valgrind_run=false
 
   restore_BUILD
+
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
 }
 
 function make_install_system ()
@@ -870,21 +895,16 @@ function make_for_continuus_integration ()
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_target 'all'
-
       # make rpm includes "make distcheck"
       if [[ -f rpm.am ]]; then
+        make_target 'all'
         make_rpm
       elif [[ -d rpm ]]; then
+        make_target 'all'
         make_rpm
       else
         make_distcheck
       fi
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_install_system
       ;;
     *-precise-*)
       run_configure
@@ -892,19 +912,23 @@ function make_for_continuus_integration ()
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_target 'all'
+      make_distcheck
+      ;;
+    *-quantal-*)
+      run_configure
+
+      assert_exec_file 'configure'
+      assert_file 'Makefile'
 
       make_distcheck
+      ;;
+    *-raring-*)
+      run_configure
 
       assert_exec_file 'configure'
       assert_file 'Makefile'
 
-      make_valgrind
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_install_system
+      make_distcheck
       ;;
     *)
       make_jenkins_default
@@ -1102,7 +1126,7 @@ function run_autoreconf ()
     run $BOOTSTRAP_LIBTOOLIZE '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
   fi
 
-  run $AUTORECONF || die "Cannot execute $AUTORECONF"
+  run $AUTORECONF $AUTORECONF_ARGS || die "Cannot execute $AUTORECONF"
 
   eval 'bash -n configure' || die "autoreconf generated a malformed configure"
 }
@@ -1283,12 +1307,16 @@ function autoreconf_setup ()
         fi
       fi
     fi
+
     if $VERBOSE; then
       LIBTOOLIZE_OPTIONS="--verbose $BOOTSTRAP_LIBTOOLIZE_OPTIONS"
     fi
+
     if $DEBUG; then
       LIBTOOLIZE_OPTIONS="--debug $BOOTSTRAP_LIBTOOLIZE_OPTIONS"
     fi
+
+    # Here we set LIBTOOLIZE to true since we are going to invoke it via BOOTSTRAP_LIBTOOLIZE
     LIBTOOLIZE=true
   fi
 
@@ -1326,7 +1354,7 @@ function autoreconf_setup ()
     fi
 
     if [[ -n "$GNU_BUILD_FLAGS" ]]; then
-      AUTORECONF="$AUTORECONF $GNU_BUILD_FLAGS"
+      AUTORECONF_ARGS="$GNU_BUILD_FLAGS"
     fi
   fi
 
@@ -1553,6 +1581,7 @@ function bootstrap ()
     fi
 
     local snapshot_run=false
+    local valgrind_run=false
 
     case $target in
       'self')
@@ -1616,7 +1645,11 @@ function bootstrap ()
       'rpm')
         make_rpm
         ;;
+      'darwin_malloc')
+        make_darwin_malloc
+        ;;
       'valgrind')
+        make_maintainer_clean 
         make_valgrind
         ;;
       'universe')
