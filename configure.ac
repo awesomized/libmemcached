@@ -104,13 +104,19 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 # Checks for programs.
-AC_PROG_AWK
-AC_PROG_SED
-AC_PROG_MKDIR_P
+AC_CHECK_PROGS([DPKG_GENSYMBOLS],[dpkg-gensymbols])
 AC_CHECK_PROGS([LEX],['flex'],[:])
+AC_CHECK_PROGS([PERL],[perl])
+AC_CHECK_PROGS([VALGRIND],['valgrind'])
+AC_CHECK_PROGS([WINE],['wine'])
 AC_CHECK_PROGS([YACC],['bison --warnings=all'],[:])
-AX_PROG_SPHINX_BUILD(,[AC_MSG_ERROR([sphinx-build version 1.0 or greater is required])])
+AC_PROG_AWK
+AC_PROG_MKDIR_P
+AC_PROG_SED
 AX_PROG_MEMCACHED
+AX_PROG_SPHINX_BUILD(,[AC_MSG_ERROR([sphinx-build version 1.0 or greater is required])])
+AX_WITH_PROG([LCOV],[lcov])
+AX_WITH_PROG([LCOV_GENHTML],[genhtml])
 
 # Checks for libraries.
 AC_SEARCH_LIBS([getopt_long],[gnugetopt])

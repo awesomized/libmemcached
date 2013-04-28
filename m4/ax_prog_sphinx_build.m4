@@ -22,22 +22,18 @@
 #serial 3
 
 AC_DEFUN([AX_PROG_SPHINX_BUILD],
-    [AC_PREREQ([2.63])dnl
-    AC_CHECK_PROGS([SPHINXBUILD], [sphinx-build], [:])
-    AS_IF([test "x${SPHINXBUILD}" != "x:"],[
-      AC_CACHE_CHECK([if sphinx is new enough],[ac_cv_recent_sphinx],[
-
-        ${SPHINXBUILD} -Q -C -b man -d conftest.d . . >/dev/null 2>&1
-        AS_IF([test $? -eq 0],[ac_cv_recent_sphinx=yes],
-          [ac_cv_recent_sphinx=no])
+    [AX_WITH_PROG([SPHINXBUILD],[sphinx-build],[:])
+    AS_IF([test x"SPHINXBUILD" = x":"],
+      [SPHINXBUILD=],
+      [AS_IF([test -x "$SPHINXBUILD"],
+        [$SPHINXBUILD -Q -C -b man -d conftest.d . . >/dev/null 2>&1
+        AS_IF([test $? -eq 0], ,[SPHINXBUILD=])
         rm -rf conftest.d
         ])
       ])
 
-    AM_CONDITIONAL([HAVE_SPHINX],[test "x${SPHINXBUILD}" != "x:"])
-    AM_CONDITIONAL([HAVE_RECENT_SPHINX],[test "x${ac_cv_recent_sphinx}" = "xyes"])
-
-    AS_IF([test "x${ac_cv_recent_sphinx}" = "xyes"],
-        [ifelse([$2], , :, [$2])],
-        [ifelse([$3], , :, [$3])])
-])
+    AS_IF([test -n "${SPHINXBUILD}"],
+      [AC_SUBST([SPHINXBUILD])
+      ifelse([$1], , :, [$1])],
+      [ifelse([$2], , :, [$2])])
+    ])
