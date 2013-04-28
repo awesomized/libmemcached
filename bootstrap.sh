@@ -579,6 +579,7 @@ function make_valgrind ()
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
   fi
 
+  make_target 'all'
   make_target 'check'
   ret=$?
 

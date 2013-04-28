@@ -5,11 +5,8 @@
 if HAVE_RECENT_SPHINX
 if IS_VCS_CHECKOUT
 
-dist-hook: man
-
 # Build rule for documentation
 $(dist_man_MANS): man
-
 BUILT_SOURCES+= $(dist_man_MANS)
 
 endif
