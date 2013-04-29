@@ -117,6 +117,7 @@ AX_PROG_MEMCACHED
 AX_PROG_SPHINX_BUILD(,[AC_MSG_WARN([sphinx-build version 1.0 or greater is required to build man pages])])
 AX_WITH_PROG([LCOV],[lcov])
 AX_WITH_PROG([LCOV_GENHTML],[genhtml])
+AC_DEFINE([HAVE_MEMCACHED_SASL_BINARY],[0],[If Memcached binary with sasl support is available])
 
 # Checks for libraries.
 AC_SEARCH_LIBS([getopt_long],[gnugetopt])

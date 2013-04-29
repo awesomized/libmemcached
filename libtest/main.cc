@@ -297,7 +297,6 @@ int main(int argc, char *argv[])
       std::auto_ptr<libtest::Framework> frame(new libtest::Framework(signal, binary_name, collection_to_run, wildcard));
 
       // Run create(), bail on error.
-      try
       {
         switch (frame->create())
         {
@@ -305,16 +304,13 @@ int main(int argc, char *argv[])
           break;
 
         case TEST_SKIPPED:
-          return EXIT_SKIP;
+          SKIP("SKIP was returned from framework create()");
+          break;
 
         case TEST_FAILURE:
           std::cerr << "Could not call frame->create()" << std::endl;
           return EXIT_FAILURE;
         }
-      }
-      catch (const libtest::__skipped& e)
-      {
-        return EXIT_SKIP;
       }
 
       frame->exec();

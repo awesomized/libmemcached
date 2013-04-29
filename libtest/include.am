@@ -9,7 +9,7 @@ VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=memcheck --error-exitc
 SGCHECK_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
 VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
-DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd --error-exitcode=1
+DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd --free-is-write=yes --error-exitcode=1
 SGCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
 MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
 GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x libtest/run.gdb
@@ -220,6 +220,18 @@ libtest_skiptest_LDADD= libtest/libtest.la
 libtest_skiptest_SOURCES= libtest/skiptest.cc
 check_PROGRAMS+= libtest/skiptest
 noinst_PROGRAMS+= libtest/skiptest
+
+test-skiptest: libtest/skiptest
+	@libtest/skiptest
+
+valgrind-skiptest: libtest/skiptest
+	@$(VALGRIND_COMMAND) libtest/skiptest
+
+helgrind-skiptest: libtest/skiptest
+	@$(HELGRIND_COMMAND) libtest/skiptest
+
+drd-skiptest: libtest/skiptest
+	@$(DRD_COMMAND) libtest/skiptest
 
 libtest_wait_SOURCES=
 libtest_wait_SOURCES+= libtest/wait.cc
