@@ -26,7 +26,12 @@ AC_DEFUN([AX_PROG_SPHINX_BUILD],
     AS_IF([test x"SPHINXBUILD" = x":"],
       [SPHINXBUILD=],
       [AS_IF([test -x "$SPHINXBUILD"],
-        [$SPHINXBUILD -Q -C -b man -d conftest.d . . >/dev/null 2>&1
+        [AC_MSG_CHECKING([Checking to see if $SPHINXBUILD is recent])
+        junk=`$SPHINXBUILD &> version_file`
+        ax_sphinx_build_version=`head -1 version_file`
+        rm version_file
+        AC_MSG_RESULT([$SPHINXBUILD is version "$ax_sphinx_build_version"])
+        $SPHINXBUILD -Q -C -b man -d conftest.d . . >/dev/null 2>&1
         AS_IF([test $? -eq 0], ,[SPHINXBUILD=])
         rm -rf conftest.d
         ])

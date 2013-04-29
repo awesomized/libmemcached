@@ -62,7 +62,7 @@ struct aes_key_t {
 
 aes_key_t* aes_create_key(const char *key, const size_t key_length)
 {
-  aes_key_t* _aes_key= (aes_key_t*)calloc(1, sizeof(aes_key_t));
+  aes_key_t* _aes_key= (aes_key_t*)(calloc(1, sizeof(aes_key_t)));
   if (_aes_key)
   {
     uint8_t rkey[AES_KEY_LENGTH/8];
@@ -79,7 +79,7 @@ aes_key_t* aes_create_key(const char *key, const size_t key_length)
       {
         ptr= rkey;  /*  Just loop over tmp_key until we used all key */
       }
-      *ptr^= (uint8_t) *sptr;
+      *ptr^= (uint8_t)(*sptr);
     }
 
     _aes_key->decode_key.nr= rijndaelKeySetupDec(_aes_key->decode_key.rk, rkey, AES_KEY_LENGTH);
@@ -96,7 +96,7 @@ aes_key_t* aes_clone_key(aes_key_t *_aes_key)
     return NULL;
   }
 
-  aes_key_t* _aes_clone_key= (aes_key_t*)calloc(1, sizeof(aes_key_t));
+  aes_key_t* _aes_clone_key= (aes_key_t*)(calloc(1, sizeof(aes_key_t)));
   if (_aes_clone_key)
   {
     memcpy(_aes_clone_key, _aes_key, sizeof(aes_key_t));
@@ -122,8 +122,8 @@ hashkit_string_st* aes_encrypt(aes_key_t *_aes_key,
 
     for (size_t x= num_blocks; x > 0; x--)   /* Encode complete blocks */
     { 
-      rijndaelEncrypt(_aes_key->encode_key.rk, _aes_key->encode_key.nr, (const uint8_t*) source,
-                      (uint8_t*) dest);
+      rijndaelEncrypt(_aes_key->encode_key.rk, _aes_key->encode_key.nr, (const uint8_t*)(source),
+                      (uint8_t*) (dest));
       source+= AES_BLOCK_SIZE;
       dest+= AES_BLOCK_SIZE;
     }
@@ -132,7 +132,7 @@ hashkit_string_st* aes_encrypt(aes_key_t *_aes_key,
     char pad_len= AES_BLOCK_SIZE - (source_length - AES_BLOCK_SIZE*num_blocks);
     memcpy(block, source, 16 -pad_len);
     memset(block + AES_BLOCK_SIZE -pad_len, pad_len, pad_len);
-    rijndaelEncrypt(_aes_key->encode_key.rk, _aes_key->encode_key.nr, block, (uint8_t*) dest);
+    rijndaelEncrypt(_aes_key->encode_key.rk, _aes_key->encode_key.nr, block, (uint8_t*) (dest));
     hashkit_string_set_length(destination, AES_BLOCK_SIZE*(num_blocks + 1));
   }
 
@@ -160,15 +160,15 @@ hashkit_string_st* aes_decrypt(aes_key_t *_aes_key,
 
     for (size_t x = num_blocks-1; x > 0; x--)
     {
-      rijndaelDecrypt(_aes_key->decode_key.rk, _aes_key->decode_key.nr, (const uint8_t*) source, (uint8_t*) dest);
+      rijndaelDecrypt(_aes_key->decode_key.rk, _aes_key->decode_key.nr, (const uint8_t*) (source), (uint8_t*)(dest));
       source+= AES_BLOCK_SIZE;
       dest+= AES_BLOCK_SIZE;
     }
 
     uint8_t block[AES_BLOCK_SIZE];
-    rijndaelDecrypt(_aes_key->decode_key.rk, _aes_key->decode_key.nr, (const uint8_t*) source, block);
+    rijndaelDecrypt(_aes_key->decode_key.rk, _aes_key->decode_key.nr, (const uint8_t*)(source), block);
     /* Use last char in the block as size */
-    unsigned int pad_len= (unsigned int) (unsigned char) block[AES_BLOCK_SIZE-1];
+    unsigned int pad_len= (unsigned int) (unsigned char)(block[AES_BLOCK_SIZE-1]);
     if (pad_len > AES_BLOCK_SIZE)
     {
       hashkit_string_free(destination);

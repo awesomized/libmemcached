@@ -114,7 +114,7 @@ AC_PROG_AWK
 AC_PROG_MKDIR_P
 AC_PROG_SED
 AX_PROG_MEMCACHED
-AX_PROG_SPHINX_BUILD(,[AC_MSG_ERROR([sphinx-build version 1.0 or greater is required])])
+AX_PROG_SPHINX_BUILD(,[AC_MSG_WARN([sphinx-build version 1.0 or greater is required to build man pages])])
 AX_WITH_PROG([LCOV],[lcov])
 AX_WITH_PROG([LCOV_GENHTML],[genhtml])
 

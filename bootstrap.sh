@@ -654,7 +654,7 @@ function make_for_snapshot ()
   assert_no_directory 'autom4te.cache'
 
   run_configure
-  make_target 'dist'
+  make_target 'all'
   make_target 'distclean'
 
   # We should have a configure, but no Makefile at the end of this exercise
@@ -857,6 +857,13 @@ function make_universe ()
   make_install_system
 }
 
+function check_snapshot ()
+{
+  if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
+    assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
+  fi
+}
+
 function make_for_continuus_integration ()
 {
   # Setup the environment if we are local
@@ -872,9 +879,7 @@ function make_for_continuus_integration ()
       assert_file 'configure'
     fi
 
-    if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
-      assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
-    fi
+    check_snapshot
   else
     # If we didn't require a snapshot, then we should not have a configure
     assert_no_file 'configure'
@@ -1611,6 +1616,7 @@ function bootstrap ()
       'snapshot')
         make_for_snapshot
         snapshot_run=true
+        check_snapshot
         ;;
       'rpm')
         make_rpm
