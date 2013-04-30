@@ -6,7 +6,8 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libmemcached],[1.0.17],[http://libmemcached.org/])
+m4_include([version.m4])
+AC_INIT([libmemcached],VERSION_NUMBER,[http://libmemcached.org/])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -49,6 +50,9 @@ LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
 LT_LIB_M
+
+AC_PROG_CC_C99
+AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
 
 AX_ASSERT
 
@@ -100,13 +104,20 @@ PROTOCOL_BINARY_TEST
 ENABLE_DEPRECATED
 
 # Checks for programs.
-AC_PROG_AWK
-AC_PROG_SED
-AC_PROG_MKDIR_P
+AC_CHECK_PROGS([DPKG_GENSYMBOLS],[dpkg-gensymbols])
 AC_CHECK_PROGS([LEX],['flex'],[:])
-AC_CHECK_PROGS([YACC],['bison'],[:])
-AX_PROG_SPHINX_BUILD
+AC_CHECK_PROGS([PERL],[perl])
+AC_CHECK_PROGS([VALGRIND],['valgrind'])
+AC_CHECK_PROGS([WINE],['wine'])
+AC_CHECK_PROGS([YACC],['bison --warnings=all'],[:])
+AC_PROG_AWK
+AC_PROG_MKDIR_P
+AC_PROG_SED
 AX_PROG_MEMCACHED
+AX_PROG_SPHINX_BUILD(,[AC_MSG_WARN([sphinx-build version 1.0 or greater is required to build man pages])])
+AX_WITH_PROG([LCOV],[lcov])
+AX_WITH_PROG([LCOV_GENHTML],[genhtml])
+AC_DEFINE([HAVE_MEMCACHED_SASL_BINARY],[0],[If Memcached binary with sasl support is available])
 
 # Checks for libraries.
 AC_SEARCH_LIBS([getopt_long],[gnugetopt])

@@ -98,6 +98,9 @@ valgrind-memcapable: tests/memcapable
 pahole-mem: tests/testapp
 	@$(PAHOLE_COMMAND)  tests/testapp
 
+pahole-hash: tests/testhashkit
+	@$(PAHOLE_COMMAND)  tests/testhashkit
+
 gdb-mem: tests/libmemcached-1.0/testapp
 	@$(GDB_COMMAND)  tests/libmemcached-1.0/testapp
 
@@ -148,3 +151,9 @@ helgrind-hash: tests/testhashkit
 
 helgrind-hashplus: tests/hash_plus
 	@$(HELGRIND_COMMAND) tests/hash_plus
+
+drd-mem: tests/libmemcached-1.0/testapp 
+	@$(DRD_COMMAND) tests/libmemcached-1.0/testapp
+
+drd-cycle: tests/cycle
+	@$(DRD_COMMAND) tests/cycle
