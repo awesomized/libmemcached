@@ -388,8 +388,7 @@ function run_configure ()
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
   if $valgrind_run; then
-    BUILD_CONFIGURE_ARG+= " CXXFLAGS=-DNDEBUG "
-    BUILD_CONFIGURE_ARG+= " CFLAGS=-DNDEBUG "
+    BUILD_CONFIGURE_ARG+= '--enable-assert=no'
   else
     if $DEBUG; then 
       BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
@@ -447,7 +446,7 @@ function setup_gdb_command () {
 function setup_valgrind_command () {
   VALGRIND_PROGRAM=`type -p valgrind`
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\" --gen-suppressions=yes --log-file=\"valgrind-%p.txt\""
   fi
 }
 
@@ -573,7 +572,7 @@ function make_valgrind ()
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
-  if [[ -f 'libtool' ]]; then
+  if [[ -x 'libtool' ]]; then
     TESTS_ENVIRONMENT="./libtool --mode=execute $VALGRIND_COMMAND"
   else
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
@@ -1714,6 +1713,12 @@ function main ()
   # We don't want Jenkins overriding other variables, so we NULL them.
   if [ -z "$MAKE_TARGET" ]; then
     if $jenkins_build_environment; then
+      if [[ -n "$label" ]]; then
+        check_make_target $label
+        if [ $? -eq 0 ]; then
+          MAKE_TARGET="$label"
+        fi
+      fi
       if [[ -n "$LABEL" ]]; then
         check_make_target $LABEL
         if [ $? -eq 0 ]; then
