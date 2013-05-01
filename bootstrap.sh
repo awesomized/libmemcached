@@ -889,21 +889,6 @@ function make_for_continuus_integration ()
   assert_no_file 'Makefile' 'Programmer error, Makefile existed where build state should have been clean'
 
   case $HOST_OS in
-    *-fedora-*)
-      run_configure
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_target 'all'
-
-      # make rpm includes "make distcheck"
-      if [[ -f rpm.am ]]; then
-        make_rpm
-      elif [[ -d rpm ]]; then
-        make_rpm
-      fi
-      ;;
     *)
       make_jenkins_default
       ;;
