@@ -74,7 +74,7 @@ static test_return_t ascii_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
-  const char *args[]= { "-p", buffer, " -a ", 0 };
+  const char *args[]= { "-p", buffer, "-a", 0 };
 
   test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
 
@@ -85,7 +85,7 @@ static test_return_t binary_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
-  const char *args[]= { "-p", buffer, " -b ", 0 };
+  const char *args[]= { "-p", buffer, "-b", 0 };
 
   test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
 
@@ -107,16 +107,9 @@ collection_st collection[] ={
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
-  if (libtest::has_memcached() == false)
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
+  SKIP_UNLESS(libtest::has_memcached())
 
-  if (server_startup(servers, "memcached", libtest::default_port(), NULL) == false)
-  {
-    error= TEST_SKIPPED;
-  }
+  SKIP_UNLESS(server_startup(servers, "memcached", libtest::default_port(), NULL))
 
   return &servers;
 }
