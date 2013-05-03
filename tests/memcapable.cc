@@ -47,14 +47,16 @@
 using namespace libtest;
 
 #ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
 static std::string executable;
 
 static test_return_t quiet_test(void *)
 {
-  const char *args[]= { "-q", 0 };
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "%d", int(get_free_port()));
+  const char *args[]= { "-p", buffer, "-q", 0 };
 
   test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
 
@@ -105,7 +107,7 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-static void *world_create(server_startup_st& servers, test_return_t& error)
+static void *world_create(server_startup_st& servers, test_return_t&)
 {
   SKIP_UNLESS(libtest::has_memcached());
 

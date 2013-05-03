@@ -46,10 +46,14 @@ namespace libtest {
 bool lookup(const char* host)
 {
   bool success= false;
-  if (host)
+  assert(host and host[0]);
+  if (host and host[0])
   {
-    assert(host);
     struct addrinfo *addrinfo= NULL;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_socktype= SOCK_STREAM;
+    hints.ai_protocol= IPPROTO_TCP;
 
     int limit= 5;
     while (--limit and success == false)
@@ -61,7 +65,7 @@ bool lookup(const char* host)
       }
 
       int ret;
-      if ((ret= getaddrinfo(host, NULL, NULL, &addrinfo)) == 0)
+      if ((ret= getaddrinfo(host, "echo", &hints, &addrinfo)) == 0)
       {
         success= true;
         break;
@@ -92,6 +96,11 @@ bool lookup(const char* host)
 
 bool check_dns()
 {
+  if (valgrind_is_caller())
+  {
+    return false;
+  }
+
   if (lookup("exist.gearman.info") == false)
   {
     return false;

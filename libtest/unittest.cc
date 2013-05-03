@@ -960,6 +960,12 @@ static test_return_t default_port_TEST(void *)
   return TEST_SUCCESS;
 }
 
+static test_return_t check_for_VALGRIND(void *)
+{
+  test_skip_valgrind();
+  return TEST_SUCCESS;
+}
+
 static test_return_t check_for_gearman(void *)
 {
   test_skip(true, HAVE_LIBGEARMAN);
@@ -1206,7 +1212,7 @@ collection_st collection[] ={
   {"fatal", disable_fatal_exception, enable_fatal_exception, fatal_message_TESTS },
   {"number_of_cpus()", 0, 0, number_of_cpus_TESTS },
   {"create_tmpfile()", 0, 0, create_tmpfile_TESTS },
-  {"dns", 0, 0, dns_TESTS },
+  {"dns", check_for_VALGRIND, 0, dns_TESTS },
   {"libtest::Timer", 0, 0, timer_TESTS },
   {0, 0, 0, 0}
 };
