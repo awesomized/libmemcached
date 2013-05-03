@@ -51,6 +51,9 @@ static test_return_t runner_code(libtest::Framework* frame,
   try 
   {
     _timer.reset();
+    assert(frame);
+    assert(frame->runner());
+    assert(run->test_fn);
     return_code= frame->runner()->main(run->test_fn, frame->creators_ptr());
   }
   // Special case where check for the testing of the exception

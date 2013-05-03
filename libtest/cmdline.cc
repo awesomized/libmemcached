@@ -409,7 +409,7 @@ bool Application::slurp()
 
 Application::error_t Application::join()
 {
-  pid_t waited_pid= waitpid(_pid, &_status, 0);
+  pid_t waited_pid= waitpid(_pid, &_status, WUNTRACED);
   slurp();
   if (waited_pid == _pid and WIFEXITED(_status) == false)
   {

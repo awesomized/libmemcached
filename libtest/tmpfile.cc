@@ -40,7 +40,7 @@
 
 namespace libtest {
 
-std::string create_tmpfile(const std::string& name)
+std::string create_tmpfile(const std::string& name, int& fd)
 {
   libtest::vchar_t file_buffer;
   file_buffer.resize(FILENAME_MAX);
@@ -49,15 +49,22 @@ std::string create_tmpfile(const std::string& name)
   int length= snprintf(&file_buffer[0], file_buffer.size(), "var/tmp/%s.XXXXXX", name.c_str());
   fatal_assert(length > 0);
 
-  int fd;
   if ((fd= mkstemp(&file_buffer[0])) == -1)
   {
     throw libtest::fatal(LIBYATL_DEFAULT_PARAM, "mkstemp() failed on %s with %s", &file_buffer[0], strerror(errno));
   }
-  close(fd);
-  unlink(&file_buffer[0]);
 
   return &file_buffer[0];
+}
+
+std::string create_tmpfile(const std::string& name)
+{
+  int fd;
+  std::string ret_file= create_tmpfile(name, fd);
+  close(fd);
+  unlink(ret_file.c_str());
+
+  return ret_file.c_str();
 }
 
 } // namespace libtest

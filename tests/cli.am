@@ -99,6 +99,12 @@ tests_memdump_LDADD=  libtest/libtest.la $(TESTS_LDADDS)
 check_PROGRAMS+= tests/memdump
 noinst_PROGRAMS+= tests/memdump
 
+test-memcp: tests/memcp
+	tests/memcp
+
+gdb-memcp: tests/memcp
+	@$(GDB_COMMAND) tests/memcp
+
 test-memstat: tests/memstat
 	tests/memstat
 

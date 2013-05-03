@@ -47,14 +47,16 @@
 using namespace libtest;
 
 #ifndef __INTEL_COMPILER
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
 static std::string executable;
 
 static test_return_t quiet_test(void *)
 {
-  const char *args[]= { "-q", 0 };
+  char buffer[1024];
+  snprintf(buffer, sizeof(buffer), "%d", int(get_free_port()));
+  const char *args[]= { "-p", buffer, "-q", 0 };
 
   test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
 
@@ -74,7 +76,7 @@ static test_return_t ascii_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
-  const char *args[]= { "-p", buffer, " -a ", 0 };
+  const char *args[]= { "-p", buffer, "-a", 0 };
 
   test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
 
@@ -85,7 +87,7 @@ static test_return_t binary_test(void *)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "%d", int(default_port()));
-  const char *args[]= { "-p", buffer, " -b ", 0 };
+  const char *args[]= { "-p", buffer, "-b", 0 };
 
   test_true(exec_cmdline(executable, args, true) <= EXIT_FAILURE);
 
@@ -105,18 +107,11 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-static void *world_create(server_startup_st& servers, test_return_t& error)
+static void *world_create(server_startup_st& servers, test_return_t&)
 {
-  if (libtest::has_memcached() == false)
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
+  SKIP_UNLESS(libtest::has_memcached());
 
-  if (server_startup(servers, "memcached", libtest::default_port(), NULL) == false)
-  {
-    error= TEST_SKIPPED;
-  }
+  SKIP_UNLESS(server_startup(servers, "memcached", libtest::default_port(), NULL));
 
   return &servers;
 }

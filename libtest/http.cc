@@ -194,7 +194,7 @@ bool HEAD::execute()
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL
   if (HAVE_LIBCURL)
   {
-    CURL *curl= curl_easy_init();;
+    CURL *curl= curl_easy_init();
 
     init(curl, url());
 

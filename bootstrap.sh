@@ -388,8 +388,7 @@ function run_configure ()
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
   if $valgrind_run; then
-    BUILD_CONFIGURE_ARG+= " CXXFLAGS=-DNDEBUG "
-    BUILD_CONFIGURE_ARG+= " CFLAGS=-DNDEBUG "
+    BUILD_CONFIGURE_ARG+= '--enable-assert=no'
   else
     if $DEBUG; then 
       BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
@@ -573,7 +572,7 @@ function make_valgrind ()
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
-  if [[ -f 'libtool' ]]; then
+  if [[ -x 'libtool' ]]; then
     TESTS_ENVIRONMENT="./libtool --mode=execute $VALGRIND_COMMAND"
   else
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
@@ -890,21 +889,6 @@ function make_for_continuus_integration ()
   assert_no_file 'Makefile' 'Programmer error, Makefile existed where build state should have been clean'
 
   case $HOST_OS in
-    *-fedora-*)
-      run_configure
-
-      assert_exec_file 'configure'
-      assert_file 'Makefile'
-
-      make_target 'all'
-
-      # make rpm includes "make distcheck"
-      if [[ -f rpm.am ]]; then
-        make_rpm
-      elif [[ -d rpm ]]; then
-        make_rpm
-      fi
-      ;;
     *)
       make_jenkins_default
       ;;
@@ -1718,6 +1702,12 @@ function main ()
         check_make_target $label
         if [ $? -eq 0 ]; then
           MAKE_TARGET="$label"
+        fi
+      fi
+      if [[ -n "$LABEL" ]]; then
+        check_make_target $LABEL
+        if [ $? -eq 0 ]; then
+          MAKE_TARGET="$LABEL"
         fi
       fi
 

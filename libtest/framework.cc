@@ -107,47 +107,50 @@ void Framework::exec()
        iter != _collection.end() and (_signal.is_shutdown() == false);
        ++iter)
   {
-    if (_only_run.empty() == false and
-        fnmatch(_only_run.c_str(), (*iter)->name(), 0))
+    if (*iter)
     {
-      continue;
-    }
-
-    _total++;
-
-    try {
-      switch ((*iter)->exec())
+      if (_only_run.empty() == false and
+          fnmatch(_only_run.c_str(), (*iter)->name(), 0))
       {
-      case TEST_FAILURE:
-        _failed++;
-        break;
-
-      case TEST_SKIPPED:
-        _skipped++;
-        break;
-
-        // exec() can return SUCCESS, but that doesn't mean that some tests did
-        // not fail or get skipped.
-      case TEST_SUCCESS:
-        _success++;
-        break;
+        continue;
       }
-    }
-    catch (const libtest::fatal& e)
-    {
-      _failed++;
-      stream::cerr(e.file(), e.line(), e.func()) << e.what();
-    }
-    catch (const libtest::disconnected& e)
-    {
-      _failed++;
-      Error << "Unhandled disconnection occurred:" << e.what();
-      throw;
-    }
-    catch (...)
-    {
-      _failed++;
-      throw;
+
+      _total++;
+
+      try {
+        switch ((*iter)->exec())
+        {
+          case TEST_FAILURE:
+            _failed++;
+            break;
+
+          case TEST_SKIPPED:
+            _skipped++;
+            break;
+
+            // exec() can return SUCCESS, but that doesn't mean that some tests did
+            // not fail or get skipped.
+          case TEST_SUCCESS:
+            _success++;
+            break;
+        }
+      }
+      catch (const libtest::fatal& e)
+      {
+        _failed++;
+        stream::cerr(e.file(), e.line(), e.func()) << e.what();
+      }
+      catch (const libtest::disconnected& e)
+      {
+        _failed++;
+        Error << "Unhandled disconnection occurred:" << e.what();
+        throw;
+      }
+      catch (...)
+      {
+        _failed++;
+        throw;
+      }
     }
   }
 

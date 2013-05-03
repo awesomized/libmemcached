@@ -110,9 +110,13 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port)
   if (error != 0)
   {
     if (error != EAI_SYSTEM)
+    {
       fprintf(stderr, "getaddrinfo(): %s\n", gai_strerror(error));
+    }
     else
+    {
       perror("getaddrinfo()");
+    }
   }
 
   return ai;
@@ -182,8 +186,9 @@ static memcached_socket_t connect_server(const char *hostname, const char *port)
       }
     }
     else
-      fprintf(stderr, "Failed to create socket: %s\n",
-              strerror(get_socket_errno()));
+    {
+      fprintf(stderr, "Failed to create socket: %s\n", strerror(get_socket_errno()));
+    }
 
     freeaddrinfo(ai);
   }
@@ -249,7 +254,7 @@ static enum test_return ensure(bool val, const char *expression, const char *fil
   {
     if (verbose)
     {
-      fprintf(stderr, "\n%s:%d: %s", file, line, expression);
+      fprintf(stdout, "\n%s:%d: %s", file, line, expression);
     }
 
     if (do_core)
@@ -334,7 +339,7 @@ static enum test_return retry_read(void *buf, size_t len)
     ssize_t nr= timeout_io_op(sock, POLLIN, ((char*) buf) + offset, len - offset);
     switch (nr) {
     case -1 :
-       fprintf(stderr, "Errno: %d %s\n", get_socket_errno(), strerror(errno));
+      fprintf(stderr, "Errno: %d %s\n", get_socket_errno(), strerror(errno));
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
 
@@ -2074,8 +2079,8 @@ int main(int argc, char **argv)
   struct test_type_st tests= { true, true };
   int total= 0;
   int failed= 0;
-  const char *hostname= "localhost";
-  const char *port= "11211";
+  const char *hostname= NULL;
+  const char *port= MEMCACHED_DEFAULT_PORT_STRING;
   int cmd;
   bool prompt= false;
   const char *testname= NULL;
@@ -2143,6 +2148,12 @@ int main(int argc, char **argv)
     }
   }
 
+  if (hostname)
+  {
+    fprintf(stderr, "No hostname was provided.\n");
+    return EXIT_FAILURE;
+  }
+
   initialize_sockets();
   sock= connect_server(hostname, port);
   if (sock == INVALID_SOCKET)
@@ -2197,12 +2208,24 @@ int main(int argc, char **argv)
       reconnect= true;
       ++failed;
       if (verbose)
+      {
         fprintf(stderr, "\n");
+      }
     }
     else if (ret == TEST_PASS_RECONNECT)
+    {
       reconnect= true;
+    }
 
-    fprintf(stderr, "%s\n", status_msg[ret]);
+    if (ret == TEST_FAIL)
+    {
+      fprintf(stderr, "%s\n", status_msg[ret]);
+    }
+    else
+    {
+      fprintf(stdout, "%s\n", status_msg[ret]);
+    }
+
     if (reconnect)
     {
       closesocket(sock);

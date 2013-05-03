@@ -85,6 +85,13 @@ int main(int argc, char *argv[])
 {
 
   options_parse(argc, argv);
+
+  if (optind >= argc)
+  {
+    fprintf(stderr, "Expected argument after options\n");
+    exit(EXIT_FAILURE);
+  }
+
   initialize_sockets();
 
   memcached_st *memc= memcached_create(NULL);
@@ -129,10 +136,12 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
+#if 0
     else if (argc >= 1 and argv[--argc])
     {
-      opt_servers= strdup(argv[--argc]);
+      opt_servers= strdup(argv[argc]);
     }
+#endif
 
     if (opt_servers == NULL)
     {
@@ -185,7 +194,13 @@ int main(int argc, char *argv[])
     }
 
     struct stat sbuf;
-    (void)fstat(fd, &sbuf);
+    if (fstat(fd, &sbuf) == -1)
+    {
+      std::cerr << "memcp " << argv[optind] << " " << strerror(errno) << std::endl;
+      optind++;
+      exit_code= EXIT_FAILURE;
+      continue;
+    }
 
     char *ptr= rindex(argv[optind], '/');
     if (ptr)
@@ -206,27 +221,33 @@ int main(int argc, char *argv[])
 	     ptr, opt_flags, (unsigned long)opt_expires);
     }
 
-    char *file_buffer_ptr;
-    if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
+    // The file may be empty
+    char *file_buffer_ptr= NULL;
+    if (sbuf.st_size > 0)
     {
-      std::cerr << "Error allocating file buffer(" << strerror(errno) << ")" << std::endl;
-      close(fd);
-      exit(EXIT_FAILURE);
-    }
+      if ((file_buffer_ptr= (char *)malloc(sizeof(char) * (size_t)sbuf.st_size)) == NULL)
+      {
+        std::cerr << "Error allocating file buffer(" << strerror(errno) << ")" << std::endl;
+        close(fd);
+        exit(EXIT_FAILURE);
+      }
 
-    ssize_t read_length;
-    if ((read_length= ::read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
-    {
-      std::cerr << "Error while reading file " << file_buffer_ptr << " (" << strerror(errno) << ")" << std::endl;
-      close(fd);
-      exit(EXIT_FAILURE);
-    }
+      ssize_t read_length;
+      if ((read_length= ::read(fd, file_buffer_ptr, (size_t)sbuf.st_size)) == -1)
+      {
+        std::cerr << "Error while reading file " << file_buffer_ptr << " (" << strerror(errno) << ")" << std::endl;
+        close(fd);
+        free(file_buffer_ptr);
+        exit(EXIT_FAILURE);
+      }
 
-    if (read_length != sbuf.st_size)
-    {
-      std::cerr << "Failure while reading file. Read length was not equal to stat() length" << std::endl;
-      close(fd);
-      exit(EXIT_FAILURE);
+      if (read_length != sbuf.st_size)
+      {
+        std::cerr << "Failure while reading file. Read length was not equal to stat() length" << std::endl;
+        close(fd);
+        free(file_buffer_ptr);
+        exit(EXIT_FAILURE);
+      }
     }
 
     memcached_return_t rc;
@@ -252,7 +273,6 @@ int main(int argc, char *argv[])
     if (memcached_failed(rc))
     {
       std::cerr << "Error occrrured during memcached_set(): " << memcached_last_error_message(memc) << std::endl;
-      ::close(fd);
       exit_code= EXIT_FAILURE;
     }
 

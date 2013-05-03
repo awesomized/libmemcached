@@ -19,6 +19,7 @@ noinst_PROGRAMS =
 include_HEADERS =
 nobase_include_HEADERS =
 check_PROGRAMS =
+check_LTLIBRARIES=
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST=
