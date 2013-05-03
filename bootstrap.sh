@@ -446,7 +446,7 @@ function setup_gdb_command () {
 function setup_valgrind_command () {
   VALGRIND_PROGRAM=`type -p valgrind`
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\" --gen-suppressions=yes --log-file=\"valgrind-%p.txt\""
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
