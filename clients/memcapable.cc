@@ -186,8 +186,9 @@ static memcached_socket_t connect_server(const char *hostname, const char *port)
       }
     }
     else
-      fprintf(stderr, "Failed to create socket: %s\n",
-              strerror(get_socket_errno()));
+    {
+      fprintf(stderr, "Failed to create socket: %s\n", strerror(get_socket_errno()));
+    }
 
     freeaddrinfo(ai);
   }
@@ -2078,8 +2079,8 @@ int main(int argc, char **argv)
   struct test_type_st tests= { true, true };
   int total= 0;
   int failed= 0;
-  const char *hostname= "localhost";
-  const char *port= "11211";
+  const char *hostname= NULL;
+  const char *port= MEMCACHED_DEFAULT_PORT_STRING;
   int cmd;
   bool prompt= false;
   const char *testname= NULL;
@@ -2145,6 +2146,12 @@ int main(int argc, char **argv)
               argv[0]);
       return EXIT_SUCCESS;
     }
+  }
+
+  if (hostname)
+  {
+    fprintf(stderr, "No hostname was provided.\n");
+    return EXIT_FAILURE;
   }
 
   initialize_sockets();
