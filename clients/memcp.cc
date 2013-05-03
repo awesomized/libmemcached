@@ -85,6 +85,13 @@ int main(int argc, char *argv[])
 {
 
   options_parse(argc, argv);
+
+  if (optind >= argc)
+  {
+    fprintf(stderr, "Expected argument after options\n");
+    exit(EXIT_FAILURE);
+  }
+
   initialize_sockets();
 
   memcached_st *memc= memcached_create(NULL);
@@ -129,10 +136,12 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
+#if 0
     else if (argc >= 1 and argv[--argc])
     {
       opt_servers= strdup(argv[argc]);
     }
+#endif
 
     if (opt_servers == NULL)
     {
