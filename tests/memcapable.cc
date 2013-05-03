@@ -107,9 +107,9 @@ collection_st collection[] ={
 
 static void *world_create(server_startup_st& servers, test_return_t& error)
 {
-  SKIP_UNLESS(libtest::has_memcached())
+  SKIP_UNLESS(libtest::has_memcached());
 
-  SKIP_UNLESS(server_startup(servers, "memcached", libtest::default_port(), NULL))
+  SKIP_UNLESS(server_startup(servers, "memcached", libtest::default_port(), NULL));
 
   return &servers;
 }
