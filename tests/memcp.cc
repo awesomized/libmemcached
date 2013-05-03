@@ -44,6 +44,8 @@
 #include <libtest/test.hpp>
 #include <libmemcached-1.0/memcached.h>
 
+#include <sys/stat.h>
+
 using namespace libtest;
 
 #ifndef __INTEL_COMPILER
@@ -63,11 +65,20 @@ static test_return_t help_test(void *)
 
 static test_return_t server_test(void *)
 {
+  int fd;
+  std::string tmp_file= create_tmpfile("memcp", fd);
+  ASSERT_TRUE(tmp_file.c_str());
+  struct stat buf;
+  ASSERT_EQ(fstat(fd, &buf), 0);
+  ASSERT_EQ(buf.st_size, 0);
+
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
-  const char *args[]= { buffer, 0 };
+  const char *args[]= { buffer, tmp_file.c_str(), 0 };
 
   test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
+  close(fd);
+  unlink(tmp_file.c_str());
 
   return TEST_SUCCESS;
 }

@@ -40,6 +40,7 @@
 
 namespace libtest {
 
+std::string create_tmpfile(const std::string&, int&);
 std::string create_tmpfile(const std::string&);
 
 } // namespace libtest
