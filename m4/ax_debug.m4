@@ -53,6 +53,8 @@ AC_DEFUN([AX_DEBUG],
       [ax_enable_debug=yes
       AC_DEFINE([DEBUG],[1],[Define to 1 to enable debugging code.])
       AX_CHECK_LIBRARY([MCHECK],[mcheck.h],[mcheck],[AX_APPEND_LINK_FLAGS([-lmcheck])])],
+      AX_ADD_AM_MACRO([AM_YFLAGS+= --debug dnl Setting bison debugging
+      ])
       [ax_enable_debug=no
       AC_SUBST([MCHECK])
       AC_DEFINE([DEBUG],[0],[Define to 1 to enable debugging code.])])

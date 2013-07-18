@@ -42,8 +42,8 @@ namespace libtest {
 
 void create_core(void)
 {
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-  if (TARGET_OS_OSX)
+#if defined(__APPLE__) && __APPLE__
+  if (__APPLE__)
   {
     return;
   }
