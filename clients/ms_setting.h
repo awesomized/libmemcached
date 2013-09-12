@@ -47,7 +47,7 @@ typedef struct token_s
 #define MAX_TOKENS    10
 
 /* server information */
-typedef struct mcd_sever
+typedef struct mcd_server
 {
   char srv_host_name[MCD_HOST_LENGTH];              /* host name of server */
   int srv_port;                                     /* server port */

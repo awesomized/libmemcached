@@ -24,7 +24,7 @@
 #include "utilities.h"
 
 #define PROGRAM_NAME "memtouch"
-#define PROGRAM_DESCRIPTION "Update the expiration value of an alreasy existing value in the sever"
+#define PROGRAM_DESCRIPTION "Update the expiration value of an already existing value in the server"
 
 
 /* Prototypes */
