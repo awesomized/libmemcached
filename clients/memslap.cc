@@ -66,6 +66,8 @@
 #define DEFAULT_EXECUTE_NUMBER 10000
 #define DEFAULT_CONCURRENCY 1
 
+#define VALUE_BYTES 4096
+
 #define PROGRAM_NAME "memslap"
 #define PROGRAM_DESCRIPTION "Generates a load against a memcached custer of servers."
 
@@ -336,7 +338,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion)
 
     if (opt_test == SET_TEST)
     {
-      context->execute_pairs= pairs_generate(opt_execute_number, 400);
+      context->execute_pairs= pairs_generate(opt_execute_number, VALUE_BYTES);
       context->execute_number= opt_execute_number;
     }
 
@@ -432,7 +434,7 @@ void options_parse(int argc, char *argv[])
       break;
 
     case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = OPT_DEBUG;
+      opt_verbose= OPT_DEBUG;
       break;
 
     case OPT_VERSION: /* --version or -V */
@@ -566,7 +568,7 @@ pairs_st *load_create_data(memcached_st *memc, unsigned int number_of,
   /* We always used non-blocking IO for load since it is faster */
   memcached_behavior_set(memc_clone, MEMCACHED_BEHAVIOR_NO_BLOCK, 0);
 
-  pairs_st *pairs= pairs_generate(number_of, 400);
+  pairs_st *pairs= pairs_generate(number_of, VALUE_BYTES);
   *actual_loaded= execute_set(memc_clone, pairs, number_of);
 
   memcached_free(memc_clone);

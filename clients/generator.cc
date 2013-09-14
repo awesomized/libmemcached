@@ -22,6 +22,8 @@
 
 #include "clients/generator.h"
 
+#define KEY_BYTES 20
+
 /* Use this for string generation */
 static const char ALPHANUMERICS[]=
   "0123456789ABCDEFGHIJKLMNOPQRSTWXYZabcdefghijklmnopqrstuvwxyz";
@@ -75,13 +77,13 @@ pairs_st *pairs_generate(uint64_t number_of, size_t value_length)
 
   for (uint64_t x= 0; x < number_of; x++)
   {
-    pairs[x].key= (char *)calloc(100, sizeof(char));
+    pairs[x].key= (char *)calloc(KEY_BYTES, sizeof(char));
 
     if (pairs[x].key == NULL)
       goto error;
 
-    get_random_string(pairs[x].key, 100);
-    pairs[x].key_length= 100;
+    get_random_string(pairs[x].key, KEY_BYTES);
+    pairs[x].key_length= KEY_BYTES;
 
     if (value_length)
     {
