@@ -181,6 +181,13 @@ static test_return_t mget_test(memcached_st *original)
   vector<char> return_value;
 
   /* We need to empty the server before we continue the test */
+  bool flush_res= memc.flush();
+  if (flush_res == false)
+  {
+    std::string error_string;
+    ASSERT_TRUE(memc.error(error_string));
+    Error << error_string;
+  }
   test_true(memc.flush());
 
   test_true(memc.mget(keys));

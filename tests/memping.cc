@@ -64,7 +64,7 @@ static test_return_t help_test(void *)
 static test_return_t ping_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
   const char *args[]= { buffer, 0 };
 
   test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
@@ -75,7 +75,7 @@ static test_return_t ping_TEST(void *)
 static test_return_t NOT_FOUND_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=nonexist.libmemcached.org:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=nonexist.libmemcached.org:%d", int(default_port()));
   const char *args[]= { buffer, 0 };
 
   test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));

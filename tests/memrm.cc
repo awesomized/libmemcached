@@ -84,6 +84,8 @@ static test_return_t rm_test(void *)
   test_null(memcached_get(memc, test_literal_param("foo"), 0, 0, &rc));
   test_compare(MEMCACHED_SUCCESS, rc);
 
+  char memrm_buffer[1024];
+  snprintf(memrm_buffer, sizeof(memrm_buffer), "--servers=localhost:%d", int(default_port()));
   const char *args[]= { buffer, "foo", 0 };
   test_compare(EXIT_SUCCESS, exec_cmdline(executable, args, true));
 
@@ -121,7 +123,7 @@ static test_return_t NOT_FOUND_TEST(void *)
 static test_return_t multiple_NOT_FOUND_TEST(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
   const char *args[]= { buffer, "protocols", "foo", "mine", "bar", "dog", "cat", "foo", "mine",
     "eye", "for", "the", "to", "not", "know", "what", "I", "should", "be", "doing", 0 };
 

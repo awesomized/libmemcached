@@ -618,9 +618,9 @@ static test_return_t application_doesnotexist_BINARY(void *)
   true_app.will_fail();
 
   const char *args[]= { "--fubar", 0 };
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+#if defined(__APPLE__) && __APPLE__
   ASSERT_EQ(Application::INVALID_POSIX_SPAWN, true_app.run(args));
-#elif defined(TARGET_OS_FREEBSD) && TARGET_OS_FREEBSD
+#elif defined(__FreeBSD__) && __FreeBSD__
   ASSERT_EQ(Application::INVALID_POSIX_SPAWN, true_app.run(args));
 #else
   ASSERT_EQ(Application::SUCCESS, true_app.run(args));
@@ -818,8 +818,8 @@ static test_return_t wait_services_appliction_TEST(void *)
 static test_return_t gdb_wait_services_appliction_TEST(void *)
 {
   test_skip(true, false);
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-  test_skip(0, TARGET_OS_OSX);
+#if defined(__APPLE__) && __APPLE__
+  test_skip(0, __APPLE__);
 #endif
 
   test_skip(0, access("/etc/services", R_OK ));
@@ -842,8 +842,8 @@ static test_return_t gdb_abort_services_appliction_TEST(void *)
   test_skip(0, access("libtest/abort", X_OK ));
   test_skip(true, false);
 
-#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
-  test_skip(0, TARGET_OS_OSX);
+#if defined(__APPLE__) && __APPLE__
+  test_skip(0, __APPLE__);
 #endif
 
   libtest::Application abort_app("libtest/abort", true);

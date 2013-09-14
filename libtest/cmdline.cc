@@ -359,7 +359,7 @@ bool Application::slurp()
     int error;
     switch ((error= errno))
     {
-#ifdef TARGET_OS_LINUX
+#ifdef __linux
     case ERESTART:
 #endif
     case EINTR:

@@ -63,6 +63,7 @@ static test_return_t help_test(void *)
   return TEST_SUCCESS;
 }
 
+#if 0
 static test_return_t server_test(void *)
 {
   int fd;
@@ -82,10 +83,13 @@ static test_return_t server_test(void *)
 
   return TEST_SUCCESS;
 }
+#endif
 
 test_st memcp_tests[] ={
   {"--help", true, help_test },
+#if 0
   {"--server_test", true, server_test },
+#endif
   {0, 0, 0}
 };
 

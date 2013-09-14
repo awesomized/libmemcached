@@ -65,9 +65,9 @@ static test_return_t help_test(void *)
 static test_return_t touch_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
 
-  memcached_st *memc= memcached(buffer, strlen(buffer));
+  memcached_st *memc= memcached(buffer, length);
   test_true(memc);
 
   test_compare(MEMCACHED_SUCCESS,
@@ -89,15 +89,15 @@ static test_return_t touch_test(void *)
 static test_return_t NOT_FOUND_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
-  memcached_st *memc= memcached(buffer, strlen(buffer));
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  memcached_st *memc= memcached(buffer, length);
   test_true(memc);
 
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc, 0));
 
   test_compare(MEMCACHED_NOTFOUND, memcached_exist(memc, test_literal_param("foo")));
 
-  snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
+  length= snprintf(buffer, sizeof(buffer), "--servers=localhost:%d", int(default_port()));
   const char *args[]= { "--expire=30", buffer, "foo", 0 };
   test_compare(EXIT_FAILURE, exec_cmdline(executable, args, true));
 
@@ -111,8 +111,8 @@ static test_return_t NOT_FOUND_test(void *)
 static test_return_t check_version(void*)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
-  memcached_st *memc= memcached(buffer, strlen(buffer));
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  memcached_st *memc= memcached(buffer, length);
   test_true(memc);
   
   test_return_t result= TEST_SUCCESS;

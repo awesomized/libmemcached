@@ -64,10 +64,10 @@ static test_return_t help_test(void *)
 static test_return_t exist_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
   const char *args[]= { buffer, "foo", 0 };
 
-  memcached_st *memc= memcached(buffer, strlen(buffer));
+  memcached_st *memc= memcached(buffer, length);
   test_true(memc);
 
   test_compare(MEMCACHED_SUCCESS,
@@ -90,11 +90,11 @@ static test_return_t exist_test(void *)
 static test_return_t NOT_FOUND_test(void *)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
   const char *args[]= { buffer, "foo", 0 };
 
-  memcached_st *memc= memcached(buffer, strlen(buffer));
-  test_true(memc);
+  memcached_st *memc= memcached(buffer, length);
+  ASSERT_TRUE(memc);
 
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc, 0));
 
@@ -115,9 +115,9 @@ static test_return_t NOT_FOUND_test(void *)
 static test_return_t check_version(void*)
 {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
-  memcached_st *memc= memcached(buffer, strlen(buffer));
-  test_true(memc);
+  int length= snprintf(buffer, sizeof(buffer), "--server=localhost:%d", int(default_port()));
+  memcached_st *memc= memcached(buffer, length);
+  ASSERT_TRUE(memc);
   
   test_return_t result= TEST_SUCCESS;
   if (libmemcached_util_version_check(memc, 1, 4, 8) == false)
