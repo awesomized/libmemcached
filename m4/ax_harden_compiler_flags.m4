@@ -53,7 +53,7 @@
 # -Wdeclaration-after-statement is counter to C99
 # _APPEND_COMPILE_FLAGS_ERROR([-pedantic])
 
-#serial 12
+#serial 13
 
 AC_DEFUN([_SET_SANITIZE_FLAGS],
          [AS_IF([test "x$MINGW" != xyes],[
@@ -124,7 +124,7 @@ AC_DEFUN([_AX_HARDEN_SANITIZE],
                               [thread],[
                               ax_harden_sanitize='thread'],
                               [address],[
-                              ax_harden_sanitize='with_sanitize'],
+                              ax_harden_sanitize='address'],
                               [ax_harden_sanitize='rest'])
                      ],
                      [AS_IF([test "x$ax_enable_debug" = xyes],[ax_harden_sanitize='rest'])])
@@ -227,7 +227,7 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
 
           AS_IF([test "x$ax_enable_debug" = xno],
             [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-              [AS_IF([test "x${target_os}" != "xmingw"],
+              [AS_IF([test "x${host_os}" != "xmingw"],
                 [AS_IF([test "x$ac_c_gcc_recent" = xyes],
                   [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
                   #_APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
@@ -331,7 +331,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
 
           AS_IF([test "x$ax_enable_debug" = xno],
           [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-            [AS_IF([test "x${target_os}" != "xmingw"],
+            [AS_IF([test "x${host_os}" != "xmingw"],
               [AS_IF([test "x$ac_c_gcc_recent" = xyes],
                 [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
                 #_APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
@@ -350,6 +350,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
 # _HARDEN_CC_COMPILER_FLAGS, _HARDEN_CXX_COMPILER_FLAGS
   AC_DEFUN([AX_HARDEN_COMPILER_FLAGS],
            [AC_PREREQ([2.63])dnl
+           AC_REQUIRE([AC_CANONICAL_HOST])
            AC_REQUIRE([AX_COMPILER_VERSION])
            AC_REQUIRE([AX_ASSERT])
            _WARNINGS_AS_ERRORS

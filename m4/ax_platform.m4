@@ -28,7 +28,7 @@
       AC_DEFINE_UNQUOTED([HOST_OS],["$host_os"], [OS of Build System])
       AC_DEFINE_UNQUOTED([HOST_CPU],["$host_cpu"], [CPU of Build System])
 
-      AS_CASE([$target_os],
+      AS_CASE([$host_os],
         [*mingw*],
         [HOST_WINDOWS="true"
         AC_DEFINE([HOST_OS_WINDOWS], [1], [Whether we are building for Windows])
