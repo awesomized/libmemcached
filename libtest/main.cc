@@ -2,7 +2,7 @@
  *
  *  Data Differential YATL (i.e. libtest)  library
  *
- *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
+ *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -43,6 +43,9 @@
 #include <ctime>
 #include <fnmatch.h>
 #include <iostream>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include <fstream>
 #include <memory>
 #include <sys/stat.h>
