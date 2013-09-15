@@ -1294,24 +1294,39 @@ test_return_t increment_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t increment_with_initial_test(memcached_st *memc)
+static test_return_t __increment_with_initial_test(memcached_st *memc, uint64_t initial)
 {
-  test_skip(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
-
   uint64_t new_number;
-  uint64_t initial= 0;
 
   test_compare(MEMCACHED_SUCCESS, memcached_flush_buffers(memc));
 
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_increment_with_initial(memc, test_literal_param("number"), 1, initial, 0, &new_number));
-  test_compare(new_number, initial);
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+  {
+    test_compare(MEMCACHED_SUCCESS, 
+                 memcached_increment_with_initial(memc, test_literal_param("number"), 1, initial, 0, &new_number));
+    test_compare(new_number, initial);
 
-  test_compare(MEMCACHED_SUCCESS, 
-               memcached_increment_with_initial(memc, test_literal_param("number"), 1, initial, 0, &new_number));
-  test_compare(new_number, (initial +1));
+    test_compare(MEMCACHED_SUCCESS, 
+                 memcached_increment_with_initial(memc, test_literal_param("number"), 1, initial, 0, &new_number));
+    test_compare(new_number, (initial +1));
+  }
+  else
+  {
+    test_compare(MEMCACHED_INVALID_ARGUMENTS, 
+                 memcached_increment_with_initial(memc, test_literal_param("number"), 1, initial, 0, &new_number));
+  }
 
   return TEST_SUCCESS;
+}
+
+test_return_t increment_with_initial_test(memcached_st *memc)
+{
+  return __increment_with_initial_test(memc, 0);
+}
+
+test_return_t increment_with_initial_999_test(memcached_st *memc)
+{
+  return __increment_with_initial_test(memc, 999);
 }
 
 test_return_t decrement_test(memcached_st *memc)
@@ -1341,11 +1356,9 @@ test_return_t decrement_test(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t decrement_with_initial_test(memcached_st *memc)
+static test_return_t __decrement_with_initial_test(memcached_st *memc, uint64_t initial)
 {
   test_skip(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
-
-  uint64_t initial= 3;
 
   test_compare(MEMCACHED_SUCCESS, memcached_flush_buffers(memc));
 
@@ -1365,6 +1378,16 @@ test_return_t decrement_with_initial_test(memcached_st *memc)
   test_compare(new_number, (initial - 1));
 
   return TEST_SUCCESS;
+}
+
+test_return_t decrement_with_initial_test(memcached_st *memc)
+{
+  return __decrement_with_initial_test(memc, 3);
+}
+
+test_return_t decrement_with_initial_999_test(memcached_st *memc)
+{
+  return __decrement_with_initial_test(memc, 999);
 }
 
 test_return_t increment_by_key_test(memcached_st *memc)
@@ -1398,24 +1421,32 @@ test_return_t increment_by_key_test(memcached_st *memc)
 
 test_return_t increment_with_initial_by_key_test(memcached_st *memc)
 {
-  test_skip(true, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
-
   uint64_t new_number;
   const char *master_key= "foo";
   const char *key= "number";
   uint64_t initial= 0;
 
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
-                                                       key, strlen(key),
-                                                       1, initial, 0, &new_number));
-  test_compare(new_number, initial);
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+  {
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                         key, strlen(key),
+                                                         1, initial, 0, &new_number));
+    test_compare(new_number, initial);
 
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
-                                                       key, strlen(key),
-                                                       1, initial, 0, &new_number));
-  test_compare(new_number, (initial +1));
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                         key, strlen(key),
+                                                         1, initial, 0, &new_number));
+    test_compare(new_number, (initial +1));
+  }
+  else
+  {
+    test_compare(MEMCACHED_INVALID_ARGUMENTS,
+                 memcached_increment_with_initial_by_key(memc, master_key, strlen(master_key),
+                                                         key, strlen(key),
+                                                         1, initial, 0, &new_number));
+  }
 
   return TEST_SUCCESS;
 }
@@ -1456,19 +1487,30 @@ test_return_t decrement_with_initial_by_key_test(memcached_st *memc)
   uint64_t new_number;
   uint64_t initial= 3;
 
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_decrement_with_initial_by_key(memc,
-                                                       test_literal_param("foo"),
-                                                       test_literal_param("number"),
-                                                       1, initial, 0, &new_number));
-  test_compare(new_number, initial);
+  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL))
+  {
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_decrement_with_initial_by_key(memc,
+                                                         test_literal_param("foo"),
+                                                         test_literal_param("number"),
+                                                         1, initial, 0, &new_number));
+    test_compare(new_number, initial);
 
-  test_compare(MEMCACHED_SUCCESS,
-               memcached_decrement_with_initial_by_key(memc,
-                                                       test_literal_param("foo"),
-                                                       test_literal_param("number"),
-                                                       1, initial, 0, &new_number));
-  test_compare(new_number, (initial - 1));
+    test_compare(MEMCACHED_SUCCESS,
+                 memcached_decrement_with_initial_by_key(memc,
+                                                         test_literal_param("foo"),
+                                                         test_literal_param("number"),
+                                                         1, initial, 0, &new_number));
+    test_compare(new_number, (initial - 1));
+  }
+  else
+  {
+    test_compare(MEMCACHED_INVALID_ARGUMENTS,
+                 memcached_decrement_with_initial_by_key(memc,
+                                                         test_literal_param("foo"),
+                                                         test_literal_param("number"),
+                                                         1, initial, 0, &new_number));
+  }
 
   return TEST_SUCCESS;
 }
