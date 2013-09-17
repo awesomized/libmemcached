@@ -49,7 +49,8 @@ bool memcached_io_writev(memcached_instance_st* ptr,
                          libmemcached_io_vector_st vector[],
                          const size_t number_of, const bool with_flush);
 
-memcached_return_t memcached_io_wait_for_write(memcached_instance_st* ptr);
+memcached_return_t memcached_io_wait_for_write(memcached_instance_st*);
+memcached_return_t memcached_io_wait_for_read(memcached_instance_st*);
 
 void memcached_io_reset(memcached_instance_st* ptr);
 

@@ -41,27 +41,3 @@ memcached_return_t memcached_key_test(memcached_st& memc,
                                       const size_t *key_length,
                                       size_t number_of_keys);
 
-static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool binary)
-{
-  if (key_length == 0)
-  {
-    return MEMCACHED_BAD_KEY_PROVIDED;
-  }
-
-  if (binary)
-  {
-    if (key_length > 0xffff)
-    {
-      return MEMCACHED_BAD_KEY_PROVIDED;
-    }
-  }
-  else
-  {
-    if (key_length >= MEMCACHED_MAX_KEY)
-    {
-      return MEMCACHED_BAD_KEY_PROVIDED;
-    }
-  }
-
-  return MEMCACHED_SUCCESS;
-}

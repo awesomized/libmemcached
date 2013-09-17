@@ -114,7 +114,6 @@ char *memcached_get_by_key(memcached_st *shell,
   {
     *error= MEMCACHED_NOTFOUND;
   }
-
   if (value == NULL)
   {
     if (ptr->get_key_failure and *error == MEMCACHED_NOTFOUND)
@@ -221,12 +220,14 @@ static memcached_return_t __mget_by_key_real(memcached_st *ptr,
 
   if (number_of_keys == 0)
   {
-    return memcached_set_error(*ptr, MEMCACHED_NOTFOUND, MEMCACHED_AT, memcached_literal_param("number_of_keys was zero"));
+    return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Numbers of keys provided was zero"));
   }
 
-  if (memcached_failed(memcached_key_test(*ptr, keys, key_length, number_of_keys)))
+  if (memcached_failed((rc= memcached_key_test(*ptr, keys, key_length, number_of_keys))))
   {
-    return memcached_last_error(ptr);
+    assert(memcached_last_error(ptr) == rc);
+
+    return rc;
   }
 
   bool is_group_key_set= false;
@@ -463,6 +464,11 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
 
   bool flush= (number_of_keys == 1);
 
+  if (memcached_failed(rc= memcached_key_test(*ptr, keys, key_length, number_of_keys)))
+  {
+    return rc;
+  }
+
   /*
     If a server fails we warn about errors and start all over with sending keys
     to the server.
@@ -502,10 +508,13 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
       request.message.header.request.opcode= PROTOCOL_BINARY_CMD_GETK;
     }
 
+#if 0
     {
       memcached_return_t vk= memcached_validate_key_length(key_length[x], ptr->flags.binary_protocol);
-      if (vk != MEMCACHED_SUCCESS)
+      if (memcached_failed(rc= memcached_key_test(*memc, (const char **)&key, &key_length, 1)))
       {
+        memcached_set_error(ptr, vk, MEMCACHED_AT, memcached_literal_param("Key was too long."));
+
         if (x > 0)
         {
           memcached_io_reset(instance);
@@ -514,6 +523,7 @@ static memcached_return_t simple_binary_mget(memcached_st *ptr,
         return vk;
       }
     }
+#endif
 
     request.message.header.request.keylen= htons((uint16_t)(key_length[x] + memcached_array_size(ptr->_namespace)));
     request.message.header.request.datatype= PROTOCOL_BINARY_RAW_BYTES;
