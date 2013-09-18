@@ -111,19 +111,11 @@ collection_st collection[] ={
   {0, 0, 0, 0}
 };
 
-static void *world_create(server_startup_st& servers, test_return_t& error)
+static void *world_create(server_startup_st& servers, test_return_t&)
 {
-  if (libtest::has_memcached() == false)
-  {
-    error= TEST_SKIPPED;
-    return NULL;
-  }
+  SKIP_UNLESS(libtest::has_memcached());
 
-  if (server_startup(servers, "memcached", libtest::default_port(), NULL) == false)
-  {
-    error= TEST_FAILURE;
-    return NULL;
-  }
+  ASSERT_TRUE(server_startup(servers, "memcached", libtest::default_port(), NULL));
 
   return &servers;
 }

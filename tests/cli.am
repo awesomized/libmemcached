@@ -122,3 +122,12 @@ valgrind-memerror: tests/memerror
 
 valgrind-memtouch: tests/memtouch
 	 @$(VALGRIND_COMMAND) tests/memtouch
+
+test-memdump: tests/memdump
+	tests/memdump
+
+gdb-memdump: tests/memdump
+	@$(GDB_COMMAND) tests/memdump
+
+valgrind-memdump: tests/memdump
+	 @$(VALGRIND_COMMAND) tests/memdump
