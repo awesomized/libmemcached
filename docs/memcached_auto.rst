@@ -53,7 +53,8 @@ MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
 expiration values, the operation will succeed by seeding the value for that
 key with a initial value to expire with the provided expiration time. The
 flags will be set to zero.The value is then returned via the uint32_t
-value pointer you pass to it.
+value pointer you pass to it. memcached_increment_with_initial is only available 
+when using the binary protocol.
 
 memcached_decrement_with_initial takes a key and keylength and decrements
 the value by the offset passed to it. If the object specified by key does
@@ -62,7 +63,8 @@ MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
 expiration values, the operation will succeed by seeding the value for that
 key with a initial value to expire with the provided expiration time. The
 flags will be set to zero.The value is then returned via the uint32_t
-value pointer you pass to it.
+value pointer you pass to it. memcached_decrement_with_initial is only available
+when using the binary protocol.
 
 :c:func:`memcached_increment_by_key`, :c:func:`memcached_decrement_by_key`,
 :c:func:`memcached_increment_with_initial_by_key`, and
