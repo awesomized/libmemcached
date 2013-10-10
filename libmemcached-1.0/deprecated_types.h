@@ -57,4 +57,5 @@ typedef memcached_server_fn memcached_server_function;
 typedef memcached_trigger_key_fn memcached_trigger_key;
 typedef memcached_trigger_delete_key_fn memcached_trigger_delete_key;
 typedef memcached_dump_fn memcached_dump_func;
+typedef memcached_instance_st *memcached_server_instance_st;
 
