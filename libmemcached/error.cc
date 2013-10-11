@@ -90,7 +90,7 @@ static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &r
     memcached_error_free(memc);
   }
 
-  if (memcached_fatal(rc))
+  if (memcached_fatal(rc) or rc == MEMCACHED_CLIENT_ERROR)
   {
     // For memory allocation we use our error since it is a bit more specific
     if (local_errno == ENOMEM and rc == MEMCACHED_ERRNO)
@@ -145,13 +145,28 @@ static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &r
     error->rc= rc;
     error->local_errno= local_errno;
 
-    const char *errmsg_ptr;
-    char errmsg[MAX_ERROR_LENGTH];
-    errmsg[0]= 0;
-    errmsg_ptr= errmsg;
-
-    if (local_errno)
+    // MEMCACHED_CLIENT_ERROR is a special case because it is an error coming from the server
+    if (rc == MEMCACHED_CLIENT_ERROR)
     {
+      assert(str);
+      assert(str->size);
+      if (str and str->size)
+      {
+        assert(error->local_errno == 0);
+        error->local_errno= 0;
+
+        error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %.*s", 
+                                   error->root,
+                                   int(str->size), str->c_str);
+      }
+    }
+    else if (local_errno)
+    {
+      const char *errmsg_ptr;
+      char errmsg[MAX_ERROR_LENGTH];
+      errmsg[0]= 0;
+      errmsg_ptr= errmsg;
+
 #if defined(STRERROR_R_CHAR_P) && STRERROR_R_CHAR_P
       errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
 #elif defined(HAVE_STRERROR_R) && HAVE_STRERROR_R
@@ -161,24 +176,23 @@ static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &r
       snprintf(errmsg, sizeof(errmsg), "%s", strerror(local_errno));
       errmsg_ptr= errmsg;
 #endif
-    }
 
-
-    if (str and str->size and local_errno)
-    {
-      error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s), %.*s -> %s", 
-                                 error->root,
-                                 memcached_strerror(&memc, rc), 
-                                 errmsg_ptr,
-                                 memcached_string_printf(*str), at);
-    }
-    else if (local_errno)
-    {
-      error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s) -> %s", 
-                                 error->root,
-                                 memcached_strerror(&memc, rc), 
-                                 errmsg_ptr,
-                                 at);
+      if (str and str->size and local_errno)
+      {
+        error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s), %.*s -> %s", 
+                                   error->root,
+                                   memcached_strerror(&memc, rc), 
+                                   errmsg_ptr,
+                                   memcached_string_printf(*str), at);
+      }
+      else
+      {
+        error->size= (int)snprintf(error->message, MAX_ERROR_LENGTH, "(%p) %s(%s) -> %s", 
+                                   error->root,
+                                   memcached_strerror(&memc, rc), 
+                                   errmsg_ptr,
+                                   at);
+      }
     }
     else if (rc == MEMCACHED_PARSE_ERROR and str and str->size)
     {
@@ -312,8 +326,8 @@ memcached_return_t memcached_set_error(memcached_instance_st& self, memcached_re
   {
     _set(*self.root, &error_host, rc, at);
     _set(self, (*self.root));
-    assert(self.root->error_messages);
     assert(self.error_messages);
+    assert(self.root->error_messages);
     assert(self.error_messages->rc == self.root->error_messages->rc);
   }
 
