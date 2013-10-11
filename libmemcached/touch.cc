@@ -124,9 +124,9 @@ memcached_return_t memcached_touch_by_key(memcached_st *shell,
     return rc;
   }
 
-  if (memcached_failed(rc= memcached_validate_key_length(key_length, ptr->flags.binary_protocol)))
+  if (memcached_failed(rc= memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
   {
-    return rc;
+    return memcached_set_error(*ptr, rc, MEMCACHED_AT);
   }
 
   uint32_t server_key= memcached_generate_hash_with_redistribution(ptr, group_key, group_key_length);

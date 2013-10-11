@@ -412,6 +412,11 @@ memcached_return_t memcached_io_wait_for_write(memcached_instance_st* instance)
   return io_wait(instance, MEM_WRITE);
 }
 
+memcached_return_t memcached_io_wait_for_read(memcached_instance_st* instance)
+{
+  return io_wait(instance, MEM_READ);
+}
+
 static memcached_return_t _io_fill(memcached_instance_st* instance)
 {
   ssize_t data_read;

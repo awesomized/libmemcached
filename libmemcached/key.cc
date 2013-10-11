@@ -37,47 +37,71 @@
 
 #include <libmemcached/common.h>
 
+static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool)
+{
+  if (key_length == 0)
+  {
+    return MEMCACHED_BAD_KEY_PROVIDED;
+  }
+
+  // No one ever reimplemented MEMCACHED to use keys longer then the original ascii length
+#if 0
+  if (binary)
+  {
+    if (key_length > 0xffff)
+    {
+      return MEMCACHED_BAD_KEY_PROVIDED;
+    }
+  }
+  else
+#endif
+  {
+    if (key_length >= MEMCACHED_MAX_KEY)
+    {
+      return MEMCACHED_BAD_KEY_PROVIDED;
+    }
+  }
+
+  return MEMCACHED_SUCCESS;
+}
+
 memcached_return_t memcached_key_test(memcached_st &memc,
                                       const char * const *keys,
                                       const size_t *key_length,
                                       size_t number_of_keys)
 {
+  if (number_of_keys == 0)
+  {
+    return memcached_set_error(memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Numbers of keys provided was zero"));
+  }
+
   if (keys == NULL or key_length == NULL)
   {
     return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("Key was NULL or length of key was zero."));
   }
 
+  const bool is_binary= memcached_flag(memc, MEMCACHED_FLAG_BINARY_PROTOCOL);
+
   // If we don't need to verify the key, or we are using the binary protoocol,
   // we just check the size of the key
-  if (memc.flags.verify_key == false or memc.flags.binary_protocol == true)
+  for (size_t x= 0; x < number_of_keys; ++x)
   {
-    for (size_t x= 0; x < number_of_keys; x++)
-    {
-      // We should set binary key, but the memcached server is broken for
-      // longer keys at the moment.
-      memcached_return_t rc= memcached_validate_key_length(*(key_length +x), false /* memc.flags.binary_protocol */);
-      if (memcached_failed(rc))
-      {
-        return memcached_set_error(memc, rc, MEMCACHED_AT, memcached_literal_param("Key provided was too long."));
-      }
-    }
-
-    return MEMCACHED_SUCCESS;
-  }
-
-  for (size_t x= 0; x < number_of_keys; x++)
-  {
-    memcached_return_t rc= memcached_validate_key_length(*(key_length + x), false);
+    // We should set binary key, but the memcached server is broken for
+    // longer keys at the moment.
+    memcached_return_t rc= memcached_validate_key_length(*(key_length +x), false /* memc.flags.binary_protocol */);
     if (memcached_failed(rc))
     {
       return memcached_set_error(memc, rc, MEMCACHED_AT, memcached_literal_param("Key provided was too long."));
     }
- 
-    for (size_t y= 0; y < *(key_length + x); y++)
+
+    if (memc.flags.verify_key and is_binary == false)
     {
-      if ((isgraph(keys[x][y])) == 0)
+      for (size_t y= 0; y < *(key_length +x); ++y)
       {
-        return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("Key provided had invalid character."));
+        if ((isgraph(keys[x][y])) == 0)
+        {
+          return memcached_set_error(memc, MEMCACHED_BAD_KEY_PROVIDED, MEMCACHED_AT, memcached_literal_param("Key provided had invalid character."));
+        }
       }
     }
   }

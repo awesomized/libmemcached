@@ -346,7 +346,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
   return MEMCACHED_SUCCESS;
 }
 
-char *memcached_stat_get_value(const memcached_st *, memcached_stat_st *memc_stat,
+char *memcached_stat_get_value(const memcached_st* shell, memcached_stat_st *memc_stat,
                                const char *key, memcached_return_t *error)
 {
   memcached_return_t not_used;
@@ -456,13 +456,15 @@ char *memcached_stat_get_value(const memcached_st *, memcached_stat_st *memc_sta
   }
   else
   {
-    *error= MEMCACHED_NOTFOUND;
+    Memcached* memc= (Memcached*)memcached2Memcached(shell);
+    *error= memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT, memcached_literal_param("Invalid key provided"));
     return NULL;
   }
 
   if (length >= SMALL_STRING_LEN || length < 0)
   {
-    *error= MEMCACHED_FAILURE;
+    Memcached* memc= (Memcached*)memcached2Memcached(shell);
+    *error= memcached_set_error(*memc, MEMCACHED_FAILURE, MEMCACHED_AT, memcached_literal_param("Internal failure occured with buffer, please report this bug."));
     return NULL;
   }
 
@@ -658,8 +660,7 @@ memcached_stat_st *memcached_stat(memcached_st *shell, char *args, memcached_ret
   if (args)
   {
     args_length= strlen(args);
-    rc= memcached_validate_key_length(args_length, self->flags.binary_protocol);
-    if (memcached_failed(rc))
+    if (memcached_failed(rc= memcached_key_test(*self, (const char **)&args, &args_length, 1)))
     {
       *error= memcached_set_error(*self, rc, MEMCACHED_AT);
       return NULL;
@@ -746,7 +747,7 @@ memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char 
     if (args)
     {
       args_length= strlen(args);
-      rc= memcached_validate_key_length(args_length, memc.flags.binary_protocol);
+      rc= memcached_key_test(*memc_ptr, (const char **)&args, &args_length, 1);
     }
 
     if (memcached_success(rc))

@@ -500,6 +500,8 @@ static memcached_return_t binary_read_one_response(memcached_instance_st* instan
   memcached_return_t rc;
   protocol_binary_response_header header;
 
+  assert(memcached_is_binary(instance->root));
+
   if ((rc= memcached_safe_read(instance, &header.bytes, sizeof(header.bytes))) != MEMCACHED_SUCCESS)
   {
     WATCHPOINT_ERROR(rc);
@@ -892,10 +894,17 @@ memcached_return_t memcached_response(memcached_instance_st* instance,
     return memcached_set_error(*instance, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT);
   }
 
-  /* We may have old commands in the buffer not set, first purge */
+  /* We may have old commands in the buffer not sent, first purge */
   if ((instance->root->flags.no_block) and (memcached_is_processing_input(instance->root) == false))
   {
     (void)memcached_io_write(instance);
+  }
+
+  /*  Before going into loop wait to see if we have any IO waiting for us */
+  if (0)
+  {
+    memcached_return_t read_rc= memcached_io_wait_for_read(instance);
+    fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, memcached_strerror(NULL, read_rc));
   }
 
   /*

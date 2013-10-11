@@ -87,11 +87,13 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
 static bool world_destroy(void *object)
 {
   libmemcached_test_container_st *container= (libmemcached_test_container_st *)object;
+#if 0
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
   if (LIBMEMCACHED_WITH_SASL_SUPPORT)
   {
     sasl_done();
   }
+#endif
 #endif
 
   delete container;
