@@ -43,7 +43,7 @@
 #endif
 
 #ifdef __cplusplus
-#  include <tr1/cinttypes>
+#  include <cinttypes>
 #  include <cstddef>
 #  include <cstdlib>
 #else

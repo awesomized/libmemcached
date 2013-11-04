@@ -40,7 +40,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 2
+#serial 3
 
 
 AC_DEFUN([AX_CXX_CSTDINT], [
@@ -53,16 +53,22 @@ AC_DEFUN([AX_CXX_CSTDINT], [
       CXXFLAGS="${CXX_STANDARD} ${CXXFLAGS}"
 
       AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([#include <cstdint>], [ uint32_t t ])],
+        AC_LANG_PROGRAM([#include <cstdint>], [
+        uint32_t t 
+        ])],
         [ac_cxx_cstdint_cstdint="<cstdint>"])
 
-      AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([#include <tr1/cstdint>], [ uint32_t t ])],
-        [ac_cxx_cstdint_tr1_cstdint="<tr1/cstdint>"])
+      AS_IF([test -z "$ac_cxx_cstdint_cstdint"],[
+            AC_COMPILE_IFELSE([
+                              AC_LANG_PROGRAM([#include <tr1/cstdint>], [ uint32_t t ])],
+                              [ac_cxx_cstdint_tr1_cstdint="<tr1/cstdint>"])
 
-      AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([#include <boost/cstdint.hpp>], [ uint32_t t ])],
-        [ac_cxx_cstdint_boost_cstdint_hpp="<boost/cstdint.hpp>"])
+            AS_IF([test -z "$ac_cxx_cstdint_tr1_cstdint"],[
+                  AC_COMPILE_IFELSE([
+                                    AC_LANG_PROGRAM([#include <boost/cstdint.hpp>], [ uint32_t t ])],
+                                    [ac_cxx_cstdint_boost_cstdint_hpp="<boost/cstdint.hpp>"])
+                  ])
+            ])
 
       AC_LANG_POP
       AX_RESTORE_FLAGS

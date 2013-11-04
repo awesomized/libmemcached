@@ -177,7 +177,7 @@ static bool process_input_buffer(memcached_instance_st* instance)
 }
 
 static memcached_return_t io_wait(memcached_instance_st* instance,
-                                  const memc_read_or_write read_or_write)
+                                  const short events)
 {
   /*
    ** We are going to block on write, but at least on Solaris we might block
@@ -187,7 +187,7 @@ static memcached_return_t io_wait(memcached_instance_st* instance,
    ** The test is moved down in the purge function to avoid duplication of
    ** the test.
  */
-  if (read_or_write == MEM_WRITE)
+  if (events & POLLOUT)
   {
     if (memcached_purge(instance) == false)
     {
@@ -197,12 +197,11 @@ static memcached_return_t io_wait(memcached_instance_st* instance,
 
   struct pollfd fds;
   fds.fd= instance->fd;
-  fds.events= POLLIN;
+  fds.events= events;
   fds.revents= 0;
 
-  if (read_or_write == MEM_WRITE) /* write */
+  if (fds.events & POLLOUT) /* write */
   {
-    fds.events= POLLOUT;
     instance->io_wait_count.write++;
   }
   else
@@ -371,7 +370,7 @@ static bool io_flush(memcached_instance_st* instance,
             continue;
           }
 
-          memcached_return_t rc= io_wait(instance, MEM_WRITE);
+          memcached_return_t rc= io_wait(instance, POLLOUT);
           if (memcached_success(rc))
           {
             continue;
@@ -409,12 +408,12 @@ static bool io_flush(memcached_instance_st* instance,
 
 memcached_return_t memcached_io_wait_for_write(memcached_instance_st* instance)
 {
-  return io_wait(instance, MEM_WRITE);
+  return io_wait(instance, POLLOUT);
 }
 
 memcached_return_t memcached_io_wait_for_read(memcached_instance_st* instance)
 {
-  return io_wait(instance, MEM_READ);
+  return io_wait(instance, POLLIN);
 }
 
 static memcached_return_t _io_fill(memcached_instance_st* instance)
@@ -440,7 +439,7 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
 #endif
         {
           memcached_return_t io_wait_ret;
-          if (memcached_success(io_wait_ret= io_wait(instance, MEM_READ)))
+          if (memcached_success(io_wait_ret= io_wait(instance, POLLIN)))
           {
             continue;
           }
@@ -576,7 +575,7 @@ memcached_return_t memcached_io_slurp(memcached_instance_st* instance)
 #ifdef __linux
       case ERESTART:
 #endif
-        if (memcached_success(io_wait(instance, MEM_READ)))
+        if (memcached_success(io_wait(instance, POLLIN)))
         {
           continue;
         }

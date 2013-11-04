@@ -20,31 +20,27 @@
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)
 {
-  unsigned int x;
-  unsigned int pairs_sent;
-
-  for (x= 0, pairs_sent= 0; x < number_of; x++)
+  uint32_t count= 0;
+  for (; count < number_of; ++count)
   {
-    memcached_return_t rc= memcached_set(memc, pairs[x].key, pairs[x].key_length,
-                                         pairs[x].value, pairs[x].value_length,
+    memcached_return_t rc= memcached_set(memc, pairs[count].key, pairs[count].key_length,
+                                         pairs[count].value, pairs[count].value_length,
                                          0, 0);
     if (memcached_failed(rc))
     {
-      fprintf(stderr, "%s:%d Failure on insert (%s) of %.*s\n",
-              __FILE__, __LINE__,
+      fprintf(stderr, "%s:%d Failure on %u insert (%s) of %.*s\n",
+              __FILE__, __LINE__, count,
               memcached_last_error_message(memc),
-              (unsigned int)pairs[x].key_length, pairs[x].key);
+              (unsigned int)pairs[count].key_length, pairs[count].key);
       
       // We will try to reconnect and see if that fixes the issue
       memcached_quit(memc);
-    }
-    else
-    {
-      pairs_sent++;
+
+      return count;
     }
   }
 
-  return pairs_sent;
+  return count;
 }
 
 /*
