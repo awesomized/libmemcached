@@ -79,7 +79,10 @@ namespace {
          iter != built_argv.end();
          ++iter)
     {
-      arg_buffer << *iter << " ";
+      if (*iter)
+      {
+        arg_buffer << *iter << " ";
+      }
     }
 
     return arg_buffer.str();

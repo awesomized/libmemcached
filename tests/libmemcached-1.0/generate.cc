@@ -48,7 +48,14 @@
 #include "clients/generator.h"
 #include "clients/execute.h"
 
-#define GLOBAL_COUNT 10000
+#include "tests/memc.hpp"
+
+#ifdef __APPLE__
+# define GLOBAL_COUNT 3000
+#else
+# define GLOBAL_COUNT 10000
+#endif
+
 #define GLOBAL2_COUNT 100
 
 using namespace libtest;
@@ -69,9 +76,8 @@ test_return_t cleanup_pairs(memcached_st*)
 static test_return_t generate_pairs(memcached_st *)
 {
   global_pairs= pairs_generate(GLOBAL_COUNT, 400);
-  global_count= GLOBAL_COUNT;
 
-  for (size_t x= 0; x < global_count; x++)
+  for (size_t x= 0; x < GLOBAL_COUNT; ++x)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
@@ -83,18 +89,17 @@ static test_return_t generate_pairs(memcached_st *)
 test_return_t generate_large_pairs(memcached_st *memc)
 {
   global_pairs= pairs_generate(GLOBAL2_COUNT, MEMCACHED_MAX_BUFFER+10);
-  global_count= GLOBAL2_COUNT;
 
-  for (size_t x= 0; x < global_count; x++)
+  for (size_t x= 0; x < GLOBAL2_COUNT; x++)
   {
     global_keys[x]= global_pairs[x].key;
     global_keys_length[x]=  global_pairs[x].key_length;
   }
 
   memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true);
-  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
+  global_count= execute_set(memc, global_pairs, (unsigned int)GLOBAL2_COUNT);
 
-  test_true(check_execute > (global_count / 2));
+  ASSERT_TRUE(global_count > (GLOBAL2_COUNT / 2));
 
   return TEST_SUCCESS;
 }
@@ -103,12 +108,12 @@ test_return_t generate_data(memcached_st *memc)
 {
   test_compare(TEST_SUCCESS, generate_pairs(memc));
 
-  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
+  global_count= execute_set(memc, global_pairs, (unsigned int)GLOBAL_COUNT);
 
   /* Possible false, positive, memcached may have ejected key/value based on
    * memory needs. */
 
-  test_true(check_execute > (global_count / 2));
+  ASSERT_TRUE(global_count > (GLOBAL2_COUNT / 2));
 
   return TEST_SUCCESS;
 }
@@ -117,9 +122,9 @@ test_return_t generate_data_with_stats(memcached_st *memc)
 {
   test_compare(TEST_SUCCESS, generate_pairs(memc));
 
-  unsigned int check_execute= execute_set(memc, global_pairs, (unsigned int)global_count);
+  global_count= execute_set(memc, global_pairs, (unsigned int)GLOBAL2_COUNT);
 
-  test_compare(check_execute, global_count);
+  ASSERT_EQ(global_count, GLOBAL2_COUNT);
 
   // @todo hosts used size stats
   memcached_return_t rc;
@@ -169,7 +174,7 @@ test_return_t get_read_count(memcached_st *memc)
     uint32_t flags;
     uint32_t count;
 
-    for (size_t x= count= 0; x < global_count; x++)
+    for (size_t x= count= 0; x < global_count; ++x)
     {
       memcached_return_t rc;
       return_value= memcached_get(memc_clone, global_keys[x], global_keys_length[x],
@@ -192,13 +197,14 @@ test_return_t get_read_count(memcached_st *memc)
 
 test_return_t get_read(memcached_st *memc)
 {
+  test::Memc clone(memc);
   size_t keys_returned= 0;
-  for (size_t x= 0; x < global_count; x++)
+  for (size_t x= 0; x < global_count; ++x)
   {
     size_t return_value_length;
     uint32_t flags;
     memcached_return_t rc;
-    char *return_value= memcached_get(memc, global_keys[x], global_keys_length[x],
+    char *return_value= memcached_get(&clone, global_keys[x], global_keys_length[x],
                                       &return_value_length, &flags, &rc);
     /*
       test_true(return_value);
@@ -338,10 +344,11 @@ test_return_t delete_generate(memcached_st *memc)
       total++;
     }
   }
+
   /*
     Possible false, positive, memcached may have ejected key/value based on memory needs.
   */
-  test_true(total > (global_count / 2));
+  ASSERT_TRUE(total);
 
   return TEST_SUCCESS;
 }
@@ -359,10 +366,7 @@ test_return_t delete_buffer_generate(memcached_st *memc)
     }
   }
 
-  /*
-     Possible false, positive, memcached may have ejected key/value based on memory needs.
-  */
-  test_true(total > (global_count / 2));
+  ASSERT_TRUE(total);
 
   return TEST_SUCCESS;
 }

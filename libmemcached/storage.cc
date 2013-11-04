@@ -378,7 +378,6 @@ static inline memcached_return_t memcached_send(memcached_st *shell,
   WATCHPOINT_SET(instance->io_wait_count.read= 0);
   WATCHPOINT_SET(instance->io_wait_count.write= 0);
 
-
   bool flush= true;
   if (memcached_is_buffering(instance->root) and verb == SET_OP)
   {

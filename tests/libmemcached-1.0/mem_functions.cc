@@ -1766,7 +1766,7 @@ test_return_t mget_execute(memcached_st *original_memc)
                                          keys.key_at(x), keys.length_at(x),
                                          blob, sizeof(blob),
                                          0, 0);
-    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    ASSERT_TRUE_(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, "Returned %s", memcached_strerror(NULL, rc));
     test_compare(query_id +1, memcached_query_id(memc));
   }
 
@@ -2497,14 +2497,15 @@ test_return_t user_supplied_bug10(memcached_st *memc)
 */
 test_return_t user_supplied_bug11(memcached_st *memc)
 {
-  memcached_st *mclone= memcached_clone(NULL, memc);
+  (void)memc;
+#ifndef __APPLE__
+  test::Memc mclone(memc);
 
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, true);
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
-  memcached_behavior_set(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, size_t(-1));
+  memcached_behavior_set(&mclone, MEMCACHED_BEHAVIOR_NO_BLOCK, true);
+  memcached_behavior_set(&mclone, MEMCACHED_BEHAVIOR_TCP_NODELAY, true);
+  memcached_behavior_set(&mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, size_t(-1));
 
-  test_compare(-1, int32_t(memcached_behavior_get(mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT)));
-
+  test_compare(-1, int32_t(memcached_behavior_get(&mclone, MEMCACHED_BEHAVIOR_POLL_TIMEOUT)));
 
   libtest::vchar_t value;
   value.reserve(512);
@@ -2515,11 +2516,11 @@ test_return_t user_supplied_bug11(memcached_st *memc)
 
   for (unsigned int x= 1; x <= 100000; ++x)
   {
-    memcached_return_t rc= memcached_set(mclone, test_literal_param("foo"), &value[0], value.size(), 0, 0);
+    memcached_return_t rc= memcached_set(&mclone, test_literal_param("foo"), &value[0], value.size(), 0, 0);
     (void)rc;
   }
 
-  memcached_free(mclone);
+#endif
 
   return TEST_SUCCESS;
 }
@@ -2621,7 +2622,7 @@ test_return_t user_supplied_bug14(memcached_st *memc)
     memcached_return_t rc= memcached_set(memc, test_literal_param("foo"),
                                          &value[0], current_length,
                                          (time_t)0, (uint32_t)0);
-    test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
+    ASSERT_TRUE_(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED, "Instead got %s", memcached_strerror(NULL, rc));
 
     size_t string_length;
     uint32_t flags;

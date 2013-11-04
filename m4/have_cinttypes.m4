@@ -40,7 +40,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 2
+#serial 3
 
 AC_DEFUN([AX_CXX_CINTTYPES], [
     AC_REQUIRE([AC_PROG_CXX])
@@ -59,18 +59,22 @@ AC_DEFUN([AX_CXX_CINTTYPES], [
         [ac_cxx_cinttypes_cinttypes="<cinttypes>"])
 
 # Look for tr1/cinttypes
-      AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([#include <tr1/cinttypes>], [
-          uint32_t foo= UINT32_C(1);
-          ])],
-        [ac_cxx_cinttypes_tr1_cinttypes="<tr1/cinttypes>"])
+      AS_IF([test -z "$ac_cxx_cinttypes_cinttypes"],[
+            AC_COMPILE_IFELSE([
+                              AC_LANG_PROGRAM([#include <tr1/cinttypes>], [
+                                              uint32_t foo= UINT32_C(1);
+                                              ])],
+                              [ac_cxx_cinttypes_tr1_cinttypes="<tr1/cinttypes>"])
 
 # Look for boost/cinttypes.hpp
-      AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([#include <boost/cinttypes.hpp>], [
-          uint32_t foo= UINT32_C(1); 
-          ])],
-        [ac_cxx_cinttypes_boost_cinttypes_hpp="<boost/cinttypes.hpp>"])
+            AS_IF([test -z "$ac_cxx_cinttypes_tr1_cinttypes"],[
+                  AC_COMPILE_IFELSE([
+                                    AC_LANG_PROGRAM([#include <boost/cinttypes.hpp>], [
+                                                    uint32_t foo= UINT32_C(1); 
+                                                    ])],
+                                    [ac_cxx_cinttypes_boost_cinttypes_hpp="<boost/cinttypes.hpp>"])
+                  ])
+            ])
 
       AC_LANG_POP
       AX_RESTORE_FLAGS
