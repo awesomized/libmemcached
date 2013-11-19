@@ -213,6 +213,24 @@ in_port_t memcached_server_port(const memcached_instance_st * self)
   return self->port();
 }
 
+in_port_t memcached_server_srcport(const memcached_instance_st * self)
+{
+  WATCHPOINT_ASSERT(self);
+  if (self == NULL || self->fd == INVALID_SOCKET || (self->type != MEMCACHED_CONNECTION_TCP && self->type != MEMCACHED_CONNECTION_UDP))
+  {
+    return 0;
+  }
+
+  struct sockaddr_in sin;
+  socklen_t addrlen= sizeof(sin);
+  if (getsockname(self->fd, (struct sockaddr*)&sin, &addrlen) != -1)
+  {
+    return ntohs(sin.sin_port);
+  }
+
+  return -1;
+}
+
 uint32_t memcached_server_response_count(const memcached_instance_st * self)
 {
   WATCHPOINT_ASSERT(self);
