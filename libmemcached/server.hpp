@@ -76,7 +76,13 @@ static inline void memcached_mark_server_for_timeout(memcached_instance_st* serv
 {
   if (server->state != MEMCACHED_SERVER_STATE_IN_TIMEOUT)
   {
-    if (server->root->retry_timeout != 0)
+    if (server->server_timeout_counter_query_id != server->root->query_id)
+    {
+      server->server_timeout_counter++;
+      server->server_timeout_counter_query_id= server->root->query_id;
+    }
+
+    if (server->server_timeout_counter >= server->root->server_timeout_limit)
     {
       struct timeval next_time;
       if (gettimeofday(&next_time, NULL) == 0)
@@ -89,12 +95,12 @@ static inline void memcached_mark_server_for_timeout(memcached_instance_st* serv
       }
 
       server->state= MEMCACHED_SERVER_STATE_IN_TIMEOUT;
+      if (server->server_failure_counter_query_id != server->root->query_id)
+      {
+        server->server_failure_counter++;
+        server->server_failure_counter_query_id= server->root->query_id;
+      }
+      set_last_disconnected_host(server);
     }
-    if (server->server_failure_counter_query_id != server->root->query_id)
-    {
-      server->server_failure_counter++;
-      server->server_failure_counter_query_id= server->root->query_id;
-    }
-    set_last_disconnected_host(server);
   }
 }

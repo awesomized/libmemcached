@@ -93,6 +93,7 @@ namespace {
      * sent to the server.
      */
     instance->server_failure_counter= 0;
+    instance->server_timeout_counter= 0;
   }
 }
 

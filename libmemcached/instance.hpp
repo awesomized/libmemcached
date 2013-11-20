@@ -73,6 +73,7 @@ struct memcached_instance_st {
   void mark_server_as_clean()
   {
     server_failure_counter= 0;
+    server_timeout_counter= 0;
     next_retry= 0;
   }
 
@@ -147,6 +148,8 @@ struct memcached_instance_st {
   uint32_t request_id;
   uint32_t server_failure_counter;
   uint64_t server_failure_counter_query_id;
+  uint32_t server_timeout_counter;
+  uint32_t server_timeout_counter_query_id;
   uint32_t weight;
   uint32_t version;
   enum memcached_server_state_t state;

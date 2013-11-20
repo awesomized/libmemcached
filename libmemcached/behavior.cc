@@ -116,6 +116,10 @@ memcached_return_t memcached_behavior_set(memcached_st *shell,
     ptr->server_failure_limit= uint32_t(data);
     break;
 
+  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT:
+    ptr->server_timeout_limit= uint32_t(data);
+    break;
+
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     send_quit(ptr); // We need t shutdown all of the connections to make sure we do the correct protocol
     if (data)
@@ -373,6 +377,9 @@ uint64_t memcached_behavior_get(memcached_st *shell,
   case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
+
+  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT:
+    return ptr->server_timeout_limit;
 
   case MEMCACHED_BEHAVIOR_SORT_HOSTS:
     return ptr->flags.use_sort_hosts;
