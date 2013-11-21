@@ -404,6 +404,10 @@ run_configure ()
   # Arguments for configure
   local BUILD_CONFIGURE_ARG='' 
 
+  if $jenkins_build_environment; then
+    BUILD_CONFIGURE_ARG="--disable-silent-rules "
+  fi
+
   # If debug is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
