@@ -170,8 +170,10 @@ libtest_libtest_la_LDFLAGS=
 # We are either building in tree, or with
 libtest_libtest_la_SOURCES+= libtest/memcached.cc
 
+if HAVE_LIBDRIZZLE
 libtest_libtest_la_LDFLAGS+= @LIBDRIZZLE_LDFLAGS@
 libtest_libtest_la_LIBADD+= @LIBDRIZZLE_LIB@
+endif
 
 libtest_libtest_la_SOURCES+= libtest/gearmand.cc
 
@@ -244,7 +246,7 @@ libtest_backtrace_SOURCES=
 libtest_backtrace_LDADD=
 libtest_backtrace_SOURCES+= libtest/backtrace_test.cc
 libtest_backtrace_SOURCES+= libmemcached/backtrace.cc
-libtest_backtrace_LDADD+= @DL_LIB@
+libtest_backtrace_LDADD+= @lt_cv_dlopen_libs@
 noinst_PROGRAMS+= libtest/backtrace
 test-backtrace: libtest/backtrace
 	@libtest/backtrace

@@ -47,9 +47,12 @@ AX_HEX_VERSION([LIBHASHKIT],[1.0.0])
 m4_include([libhashkit/include.m4])
 
 LT_PREREQ([2.2])
-LT_INIT
+LT_INIT([dlopen])
 LT_LANG([C++])
 LT_LIB_M
+
+AC_SUBST([lt_cv_dlopen_libs])
+
 
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
@@ -253,9 +256,6 @@ AC_CHECK_LIB([rt],[clock_gettime],
              AC_DEFINE([HAVE_CLOCK_GETTIME],[1],[Have clock_gettime])],
              [AC_DEFINE([HAVE_CLOCK_GETTIME],[0],[Have clock_gettime])])
 
-
-# Check for the ability to call dlopen (used in libhostile)
-AX_DLOPEN
 
 AC_CHECK_HEADERS([atomic.h])
 AS_IF([test "x$ac_cv_header_atomic_h" = "xyes"],

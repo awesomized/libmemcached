@@ -125,13 +125,13 @@ libmemcached_libmemcached_la_SOURCES+= libmemcached/virtual_bucket.c
 libmemcached/options.cc: libmemcached/csl/parser.h
 
 libmemcached_libmemcached_la_LDFLAGS+= -version-info ${MEMCACHED_LIBRARY_VERSION}
-libmemcached_libmemcached_la_LIBADD+= @DL_LIB@
+libmemcached_libmemcached_la_LIBADD+= @lt_cv_dlopen_libs@
 
 if HAVE_SASL
 libmemcached_libmemcached_la_CFLAGS+= @PTHREAD_CFLAGS@
 libmemcached_libmemcached_la_CXXFLAGS+= @PTHREAD_CFLAGS@
 libmemcached_libmemcached_la_LIBADD+= @PTHREAD_LIBS@
-libmemcached_libmemcached_la_LIBADD+= @LIBSASL_LIB@
+libmemcached_libmemcached_la_LIBADD+= @SASL_LIB@
 endif
 
 if HAVE_DTRACE
