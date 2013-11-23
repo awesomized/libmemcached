@@ -4843,7 +4843,7 @@ test_return_t regression_bug_490520(memcached_st *original_memc)
 
 test_return_t regression_bug_1251482(memcached_st*)
 {
-  test::Memc memc("--server=localhost:0");
+  test::Memc memc("--server=localhost:5");
 
   memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 0);
 
