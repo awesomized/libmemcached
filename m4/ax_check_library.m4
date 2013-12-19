@@ -87,9 +87,6 @@ AC_DEFUN([AX_CHECK_LIBRARY],
 
     AS_IF([test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"],
         [AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
-        AC_SUBST($1[_CPPFLAGS])
-        AC_SUBST($1[_LDFLAGS])
-        AC_SUBST($1[_LIB],[-l]$3)
         ifelse([$4], , :, [$4])],
         [ifelse([$5], , :, [$5])])
     ])

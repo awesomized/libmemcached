@@ -230,11 +230,6 @@ memcached_return_t memcached_behavior_set(memcached_st *shell,
     break;
 
   case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
-    if (data == 0)
-    {
-      return memcached_set_error(*ptr, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
-                                        memcached_literal_param("MEMCACHED_BEHAVIOR_RETRY_TIMEOUT requires a value greater then zero."));
-    }
     ptr->retry_timeout= int32_t(data);
     break;
 

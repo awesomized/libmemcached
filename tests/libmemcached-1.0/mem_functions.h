@@ -187,3 +187,4 @@ test_return_t regression_1009493_TEST(memcached_st*);
 test_return_t regression_1048945_TEST(memcached_st*);
 test_return_t regression_1067242_TEST(memcached_st*);
 test_return_t comparison_operator_memcached_st_and__memcached_return_t_TEST(memcached_st*);
+test_return_t regression_bug_1251482(memcached_st*);
