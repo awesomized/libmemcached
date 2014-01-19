@@ -540,7 +540,7 @@ static test_return_t memcached_sasl_test(void *object)
   server_startup_st *servers= (server_startup_st*)object;
   test_true(servers);
 
-  test_skip(false, bool(getenv("TESTS_ENVIRONMENT")));
+  test_skip(false, bool(getenv("LOG_COMPILER")));
 
   if (MEMCACHED_SASL_BINARY)
   {

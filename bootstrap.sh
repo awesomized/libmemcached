@@ -38,7 +38,7 @@
 #   LIBTOOLIZE
 #   MAKE
 #   PREFIX
-#   TESTS_ENVIRONMENT
+#   LOG_COMPILER
 #   VERBOSE
 #   WARNINGS
 #
@@ -490,8 +490,8 @@ save_BUILD ()
     die "OLD_MAKE($OLD_MAKE) was set on push, programmer error!"
   fi
 
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    die "OLD_TESTS_ENVIRONMENT($OLD_TESTS_ENVIRONMENT) was set on push, programmer error!"
+  if [[ -n "$OLD_LOG_COMPILER" ]]; then
+    die "OLD_LOG_COMPILER($OLD_LOG_COMPILER) was set on push, programmer error!"
   fi
 
   if [[ -n "$CONFIGURE" ]]; then
@@ -506,8 +506,8 @@ save_BUILD ()
     OLD_MAKE=$MAKE
   fi
 
-  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
-    OLD_TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT
+  if [[ -n "$LOG_COMPILER" ]]; then
+    OLD_LOG_COMPILER=$LOG_COMPILER
   fi
 }
 
@@ -529,15 +529,15 @@ restore_BUILD ()
     MAKE=$OLD_MAKE
   fi
 
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    TESTS_ENVIRONMENT=$OLD_TESTS_ENVIRONMENT
+  if [[ -n "$OLD_LOG_COMPILER" ]]; then
+    LOG_COMPILER=$OLD_LOG_COMPILER
   fi
 
   OLD_CONFIGURE=
   OLD_CONFIGURE_ARG=
   OLD_PREFIX=
   OLD_MAKE=
-  OLD_TESTS_ENVIRONMENT=
+  OLD_LOG_COMPILER=
 
   export -n CC CXX
 }
@@ -571,9 +571,9 @@ make_valgrind ()
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
   if [[ -x 'libtool' ]]; then
-    TESTS_ENVIRONMENT="./libtool --mode=execute $VALGRIND_COMMAND"
+    LOG_COMPILER="./libtool --mode=execute $VALGRIND_COMMAND"
   else
-    TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
+    LOG_COMPILER="$VALGRIND_COMMAND"
   fi
 
   make_target 'all'
@@ -707,11 +707,11 @@ make_skeleton ()
     else
       if [[ -n "$DISPLAY" ]]; then
         if command_exists 'wine'; then
-          TESTS_ENVIRONMENT='wine'
+          LOG_COMPILER='wine'
         fi
       fi
 
-      if [[ -n "$TESTS_ENVIRONMENT" ]]; then
+      if [[ -n "$LOG_COMPILER" ]]; then
         make_target 'check' 'warn' || warn "$MAKE check failed"
         ret=$?
       fi
@@ -939,9 +939,9 @@ make_gdb ()
     # If we don't have a configure, then most likely we will be missing libtool
     assert_file 'configure'
     if [[ -f 'libtool' ]]; then
-      TESTS_ENVIRONMENT="./libtool --mode=execute $GDB_COMMAND"
+      LOG_COMPILER="./libtool --mode=execute $GDB_COMMAND"
     else
-      TESTS_ENVIRONMENT="$GDB_COMMAND"
+      LOG_COMPILER="$GDB_COMMAND"
     fi
 
     make_target 'check'
@@ -978,9 +978,9 @@ make_target ()
     run_configure
   fi
 
-  if [ -n "$TESTS_ENVIRONMENT" ]; then
+  if [ -n "$LOG_COMPILER" ]; then
     if $verbose; then
-      echo "TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT"
+      echo "LOG_COMPILER=$LOG_COMPILER"
     fi
   fi
 
@@ -1398,8 +1398,8 @@ print_setup ()
     echo "PREFIX=$PREFIX"
   fi
 
-  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
-    echo "TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT"
+  if [[ -n "$LOG_COMPILER" ]]; then
+    echo "LOG_COMPILER=$LOG_COMPILER"
   fi
 
   if [[ -n "$VCS_CHECKOUT" ]]; then
@@ -1539,8 +1539,8 @@ execute_job ()
     fi
   fi
 
-  # Use OLD_TESTS_ENVIRONMENT for tracking the state of the variable
-  local OLD_TESTS_ENVIRONMENT=
+  # Use OLD_LOG_COMPILER for tracking the state of the variable
+  local OLD_LOG_COMPILER=
 
   # Set ENV PREFIX in order to set --prefix for ./configure
   if [[ -n "$PREFIX" ]]; then 
@@ -1692,7 +1692,7 @@ main ()
   local OLD_CONFIGURE_ARG=
   local OLD_PREFIX=
   local OLD_MAKE=
-  local OLD_TESTS_ENVIRONMENT=
+  local OLD_LOG_COMPILER=
 
   # If we call autoreconf on the platform or not
   local AUTORECONF_REBUILD_HOST=false
@@ -1886,7 +1886,7 @@ bootstrap ()
   export LIBTOOLIZE_OPTIONS
   export MAKE
   export PREFIX_ARG
-  export TESTS_ENVIRONMENT
+  export LOG_COMPILER
   export VERBOSE
   export WARNINGS
 

@@ -38,14 +38,14 @@
 
 static inline bool valgrind_is_caller(void)
 {
-  if (getenv("TESTS_ENVIRONMENT")  && strstr(getenv("TESTS_ENVIRONMENT"), "valgrind"))
+  if (getenv("LOG_COMPILER")  && strstr(getenv("LOG_COMPILER"), "valgrind"))
   {
-    if (strstr(getenv("TESTS_ENVIRONMENT"), "--tool") == NULL)
+    if (strstr(getenv("LOG_COMPILER"), "--tool") == NULL)
     {
       return true;
     }
 
-    if (strstr(getenv("TESTS_ENVIRONMENT"), "--tool=memcheck"))
+    if (strstr(getenv("LOG_COMPILER"), "--tool=memcheck"))
     {
       return true;
     }
