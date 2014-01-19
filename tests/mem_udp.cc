@@ -145,7 +145,7 @@ static test_return_t init_udp(memcached_st *memc)
 
 static test_return_t init_udp_valgrind(memcached_st *memc)
 {
-  if (getenv("TESTS_ENVIRONMENT"))
+  if (getenv("LOG_COMPILER"))
   {
     return TEST_SKIPPED; 
   }
@@ -157,7 +157,7 @@ static test_return_t init_udp_valgrind(memcached_st *memc)
 
 static test_return_t binary_init_udp(memcached_st *memc)
 {
-  if (getenv("TESTS_ENVIRONMENT"))
+  if (getenv("LOG_COMPILER"))
   {
     return TEST_SKIPPED; 
   }
@@ -269,7 +269,7 @@ static test_return_t set_udp_behavior_test(memcached_st *memc)
 static test_return_t udp_set_test(memcached_st *memc)
 {
   // Assume we are running under valgrind, and bail 
-  if (getenv("TESTS_ENVIRONMENT"))
+  if (getenv("LOG_COMPILER"))
   {
     return TEST_SUCCESS; 
   }

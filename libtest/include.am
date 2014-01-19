@@ -7,7 +7,7 @@
 LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
 VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=memcheck --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
 SGCHECK_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
-VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
+VALGRIND_COMMAND= LOG_COMPILER="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd --free-is-write=yes --error-exitcode=1
 SGCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-sgcheck --error-exitcode=1
@@ -25,22 +25,22 @@ export SGCHECK_COMMAND
 export GDB_COMMAND
 
 valgrind:
-	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_EXEC_COMMAND)\""
+	@echo make check LOG_COMPILER="\"$(VALGRIND_EXEC_COMMAND)\""
 
 sgcheck:
-	@echo make check TESTS_ENVIRONMENT="\"$(SGCHECK_EXEC_COMMAND)\""
+	@echo make check LOG_COMPILER="\"$(SGCHECK_EXEC_COMMAND)\""
 
 valgrind-supressions:
-	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_SUPRESSION)\""
+	@echo make check LOG_COMPILER="\"$(VALGRIND_SUPRESSION)\""
 
 gdb:
-	@echo make check TESTS_ENVIRONMENT="\"$(GDB_COMMAND)\""
+	@echo make check LOG_COMPILER="\"$(GDB_COMMAND)\""
 
 helgrind:
-	@echo make check TESTS_ENVIRONMENT="\"$(HELGRIND_COMMAND)\""
+	@echo make check LOG_COMPILER="\"$(HELGRIND_COMMAND)\""
 
 drd:
-	@echo make check TESTS_ENVIRONMENT="\"$(DRD_COMMAND)\""
+	@echo make check LOG_COMPILER="\"$(DRD_COMMAND)\""
 
 EXTRA_DIST+= libtest/run.gdb
 EXTRA_DIST+= libtest/version.h

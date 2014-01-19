@@ -50,7 +50,7 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
     SKIP_UNLESS(libtest::has_libmemcached_sasl());
 
     // Assume we are running under valgrind, and bail
-    if (getenv("TESTS_ENVIRONMENT"))
+    if (getenv("LOG_COMPILER"))
     {
       error= TEST_SKIPPED;
       return NULL;
