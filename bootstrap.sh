@@ -404,10 +404,6 @@ run_configure ()
   # Arguments for configure
   local BUILD_CONFIGURE_ARG='' 
 
-  if $jenkins_build_environment; then
-    BUILD_CONFIGURE_ARG="--disable-silent-rules "
-  fi
-
   # If debug is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
@@ -1390,8 +1386,8 @@ print_setup ()
     echo "MAKE=$MAKE"
   fi
 
-  if [[ -n "$MAKE_TARGET" ]]; then
-    echo "MAKE_TARGET=$MAKE_TARGET"
+  if [[ -n "$BOOTSTRAP_TARGET" ]]; then
+    echo "BOOTSTRAP_TARGET=$BOOTSTRAP_TARGET"
   fi
 
   if [[ -n "$PREFIX" ]]; then
@@ -1515,7 +1511,7 @@ check_make_target()
 execute_job ()
 {
   # We should always have a target by this point
-  assert MAKE_TARGET
+  assert BOOTSTRAP_TARGET
 
   determine_target_platform
 
@@ -1551,17 +1547,17 @@ execute_job ()
     make_maintainer_clean
   fi
 
-  local MAKE_TARGET_ARRAY
-  MAKE_TARGET_ARRAY=( $MAKE_TARGET )
+  local BOOTSTRAP_TARGET_ARRAY
+  BOOTSTRAP_TARGET_ARRAY=( $BOOTSTRAP_TARGET )
 
-  for target in "${MAKE_TARGET_ARRAY[@]}"
+  for target in "${BOOTSTRAP_TARGET_ARRAY[@]}"
   do
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
       check_make_target $target
       ret=$?
       if [ $ret -ne 0 ]; then
-        die "Unknown MAKE_TARGET option: $target"
+        die "Unknown BOOTSTRAP_TARGET option: $target"
       fi
     fi
 
@@ -1667,7 +1663,7 @@ main ()
   declare -x VCS_CHECKOUT=
 
   # Variables we control globally
-  local -a MAKE_TARGET=
+  local -a BOOTSTRAP_TARGET=
   local CONFIGURE=
   local use_libtool=false
   local verbose=false
@@ -1730,47 +1726,36 @@ main ()
   local OPT_TARGET=
   parse_command_line_options "$@"
 
-  nassert MAKE_TARGET
+  nassert BOOTSTRAP_TARGET
 
   if [ -n "$OPT_TARGET" ]; then
-    MAKE_TARGET="$OPT_TARGET"
+    BOOTSTRAP_TARGET="$OPT_TARGET"
   fi
 
   # If we are running under Jenkins we predetermine what tests we will run against
-  # This MAKE_TARGET can be overridden by parse_command_line_options based MAKE_TARGET changes.
+  # This BOOTSTRAP_TARGET can be overridden by parse_command_line_options based BOOTSTRAP_TARGET changes.
   # We don't want Jenkins overriding other variables, so we NULL them.
-  if [ -z "$MAKE_TARGET" ]; then
+  if [ -z "$BOOTSTRAP_TARGET" ]; then
     if $jenkins_build_environment; then
       if [[ -n "$JENKINS_TARGET" ]]; then
-        MAKE_TARGET="$JENKINS_TARGET"
+        check_make_target $JENKINS_TARGET
+        if [ $? -eq 0 ]; then
+          BOOTSTRAP_TARGET="$JENKINS_TARGET"
+        else
+          die "label not found: $label"
+        fi
       else
-        if [[ -n "$label" ]]; then
-          check_make_target $label
-          if [ $? -eq 0 ]; then
-            MAKE_TARGET="$label"
-          fi
-        fi
-
-        if [[ -n "$LABEL" ]]; then
-          check_make_target $LABEL
-          if [ $? -eq 0 ]; then
-            MAKE_TARGET="$LABEL"
-          fi
-        fi
-
-        if [ -z "$MAKE_TARGET" ]; then
-          MAKE_TARGET='jenkins'
-        fi
+          BOOTSTRAP_TARGET='jenkins'
       fi
     fi
   fi
 
-  if [ -z "$MAKE_TARGET" ]; then
-    MAKE_TARGET="make_default"
+  if [ -z "$BOOTSTRAP_TARGET" ]; then
+    BOOTSTRAP_TARGET="make_default"
   fi
 
   # We should always have a target by this point
-  assert MAKE_TARGET
+  assert BOOTSTRAP_TARGET
 
   execute_job
   local ret=$?
