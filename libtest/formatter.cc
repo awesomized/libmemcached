@@ -44,6 +44,54 @@
   
 namespace libtest {
 
+std::string& escape4XML(std::string const& arg, std::string& escaped_string)
+{
+  escaped_string.clear();
+
+  escaped_string+= '"';
+  for (std::string::const_iterator x= arg.begin(), end= arg.end(); x != end; ++x)
+  {
+    unsigned char c= *x;
+    if (' ' <= c and c <= '~' and c != '\\' and c != '"' and c != '>' and c != '<')
+    {
+      escaped_string+= c;
+    }
+    else if (c == '>')
+    {
+      escaped_string+= '&';
+      escaped_string+= 'g';
+      escaped_string+= 't';
+      escaped_string+= ';';
+    }
+    else if (c == '<')
+    {
+      escaped_string+= '&';
+      escaped_string+= 'l';
+      escaped_string+= 't';
+      escaped_string+= ';';
+    }
+    else 
+    {
+      escaped_string+= '\\';
+      switch (c) {
+        case '"':  escaped_string+= '"';  break;
+        case '\\': escaped_string+= '\\'; break;
+        case '\t': escaped_string+='t';  break;
+        case '\r': escaped_string+='r';  break;
+        case '\n': escaped_string+='n';  break;
+        default:
+                   char const* const hexdig= "0123456789ABCDEF";
+                   escaped_string+= 'x';
+                   escaped_string+= hexdig[c >> 4];
+                   escaped_string+= hexdig[c & 0xF];
+      }
+    }
+  }
+  escaped_string+= '"';
+
+  return escaped_string;
+}
+
 class TestCase {
 public:
   TestCase(const std::string& arg):
@@ -110,7 +158,10 @@ TestCase* Formatter::current()
 void Formatter::skipped()
 {
   current()->result(TEST_SKIPPED);
-  Out << name() << "." << current()->name() <<  "\t\t\t\t\t" << "[ " << test_strerror(current()->result()) << " ]";
+  Out << name() << "." 
+      << current()->name()
+      <<  "\t\t\t\t\t" 
+      << "[ " << test_strerror(current()->result()) << " ]";
 
   reset();
 }
@@ -120,7 +171,9 @@ void Formatter::failed()
   assert(current());
   current()->result(TEST_FAILURE);
 
-  Out << name() << "." << current()->name() <<  "\t\t\t\t\t" << "[ " << test_strerror(current()->result()) << " ]";
+  Out << name()
+    << "." << current()->name() <<  "\t\t\t\t\t" 
+    << "[ " << test_strerror(current()->result()) << " ]";
 
   reset();
 }
@@ -129,6 +182,7 @@ void Formatter::success(const libtest::Timer& timer_)
 {
   assert(current());
   current()->result(TEST_SUCCESS, timer_);
+  std::string escaped_string;
 
   Out << name() << "."
     << current()->name()
@@ -141,20 +195,27 @@ void Formatter::success(const libtest::Timer& timer_)
 
 void Formatter::xml(libtest::Framework& framework_, std::ofstream& output)
 {
-  output << "<testsuites name=\"" << framework_.name() << "\">" << std::endl;
+  std::string escaped_string;
+
+  output << "<testsuites name=" 
+    << escape4XML(framework_.name(), escaped_string) << ">" << std::endl;
+
   for (Suites::iterator framework_iter= framework_.suites().begin();
        framework_iter != framework_.suites().end();
        ++framework_iter)
   {
-    output << "\t<testsuite name=\"" << (*framework_iter)->name() << "\"  classname=\"\" package=\"\">" << std::endl;
+    output << "\t<testsuite name=" 
+      << escape4XML((*framework_iter)->name(), escaped_string)
+      << "  classname=\"\" package=\"\">" 
+      << std::endl;
 
     for (TestCases::iterator case_iter= (*framework_iter)->formatter()->testcases().begin();
          case_iter != (*framework_iter)->formatter()->testcases().end();
          ++case_iter)
     {
-      output << "\t\t<testcase name=\"" 
-        << (*case_iter)->name() 
-        << "\" time=\"" 
+      output << "\t\t<testcase name=" 
+        << escape4XML((*case_iter)->name(), escaped_string)
+        << " time=\"" 
         << (*case_iter)->timer().elapsed_milliseconds() 
         << "\">" 
         << std::endl;
