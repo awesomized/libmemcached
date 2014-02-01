@@ -7,17 +7,21 @@
 # the COPYING file in this directory for full text.
 
 m4_include([version.m4])
+AC_PREREQ([2.61])
 AC_INIT([libmemcached],VERSION_NUMBER,[http://libmemcached.org/])
+
+# Setup the compilers early on
+AC_PROG_CC([cc gcc clang])
+AC_PROG_CXX([c++ g++ clang++])
+
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CANONICAL_TARGET
+AC_CANONICAL_HOST
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
 AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
-
-AC_PREREQ([2.61])
 
 AC_CONFIG_HEADERS([mem_config.h:mem_config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_SUBST([AUTOHEADER_FILE],[mem_config.h])
@@ -68,7 +72,6 @@ CHECK_CXX0X
 AX_ASSERT
 
 AX_PLATFORM
-
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_DEFUN([LIBMEMCACHED_PROTOCOL],
