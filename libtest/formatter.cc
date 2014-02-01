@@ -52,39 +52,41 @@ std::string& escape4XML(std::string const& arg, std::string& escaped_string)
   for (std::string::const_iterator x= arg.begin(), end= arg.end(); x != end; ++x)
   {
     unsigned char c= *x;
-    if (' ' <= c and c <= '~' and c != '\\' and c != '"' and c != '>' and c != '<')
+    if (c == '&')
     {
-      escaped_string+= c;
+      escaped_string+= "&amp;";
     }
     else if (c == '>')
     {
-      escaped_string+= '&';
-      escaped_string+= 'g';
-      escaped_string+= 't';
-      escaped_string+= ';';
+      escaped_string+= "&gt;";
     }
     else if (c == '<')
     {
-      escaped_string+= '&';
-      escaped_string+= 'l';
-      escaped_string+= 't';
-      escaped_string+= ';';
+      escaped_string+= "&lt;";
+    }
+    else if (c == '\'')
+    {
+      escaped_string+= "&apos;";  break;
+    }
+    else if (c == '"')
+    {
+      escaped_string+= "&quot;";
+    }
+    else if (c == ' ')
+    {
+      escaped_string+= ' ';
+    }
+    else if (isalnum(c))
+    {
+      escaped_string+= c;
     }
     else 
     {
-      escaped_string+= '\\';
-      switch (c) {
-        case '"':  escaped_string+= '"';  break;
-        case '\\': escaped_string+= '\\'; break;
-        case '\t': escaped_string+='t';  break;
-        case '\r': escaped_string+='r';  break;
-        case '\n': escaped_string+='n';  break;
-        default:
-                   char const* const hexdig= "0123456789ABCDEF";
-                   escaped_string+= 'x';
-                   escaped_string+= hexdig[c >> 4];
-                   escaped_string+= hexdig[c & 0xF];
-      }
+      char const* const hexdig= "0123456789ABCDEF";
+      escaped_string+= "&#x";
+      escaped_string+= hexdig[c >> 4];
+      escaped_string+= hexdig[c & 0xF];
+      escaped_string+= ';';
     }
   }
   escaped_string+= '"';
