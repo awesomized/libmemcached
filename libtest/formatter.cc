@@ -219,8 +219,7 @@ void Formatter::xml(libtest::Framework& framework_, std::ofstream& output)
         << escape4XML((*case_iter)->name(), escaped_string)
         << " time=\"" 
         << (*case_iter)->timer().elapsed_milliseconds() 
-        << "\"" 
-        << std::endl;
+        << "\""; 
 
       switch ((*case_iter)->result())
       {
