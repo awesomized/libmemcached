@@ -97,10 +97,12 @@ clients_memaslap_LDADD=
 clients_memaslap_LDADD+= @LIBEVENT_LIB@
 clients_memaslap_LDADD+= $(CLIENTS_LDADDS)
 
+clients_memcapable_CXXFLAGS= @PTHREAD_CFLAGS@
 clients_memcapable_SOURCES=
 clients_memcapable_SOURCES+= clients/memcapable.cc
 clients_memcapable_SOURCES+= libmemcached/byteorder.cc
 clients_memcapable_LDADD= $(CLIENTS_LDADDS)
+clients_memcapable_LDADD+= @PTHREAD_LIBS@
 
 test-start-server:
 	clients/memflush --servers=localhost
