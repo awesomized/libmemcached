@@ -206,8 +206,10 @@ void Formatter::xml(libtest::Framework& framework_, std::ofstream& output)
   {
     output << "\t<testsuite name=" 
       << escape4XML((*framework_iter)->name(), escaped_string)
-      << "  classname=\"\" package=\"\">" 
-      << std::endl;
+#if 0
+      << "  classname=\"\" package=\"\"" 
+#endif
+      << ">" << std::endl;
 
     for (TestCases::iterator case_iter= (*framework_iter)->formatter()->testcases().begin();
          case_iter != (*framework_iter)->formatter()->testcases().end();
@@ -217,23 +219,27 @@ void Formatter::xml(libtest::Framework& framework_, std::ofstream& output)
         << escape4XML((*case_iter)->name(), escaped_string)
         << " time=\"" 
         << (*case_iter)->timer().elapsed_milliseconds() 
-        << "\">" 
+        << "\"" 
         << std::endl;
 
       switch ((*case_iter)->result())
       {
         case TEST_SKIPPED:
+        output << ">" << std::endl;
         output << "\t\t <skipped/>" << std::endl;
+        output << "\t\t</testcase>" << std::endl;
         break;
 
         case TEST_FAILURE:
+        output << ">" << std::endl;
         output << "\t\t <failure message=\"\" type=\"\"/>"<< std::endl;
+        output << "\t\t</testcase>" << std::endl;
         break;
 
         case TEST_SUCCESS:
+        output << "/>" << std::endl;
         break;
       }
-      output << "\t\t</testcase>" << std::endl;
     }
     output << "\t</testsuite>" << std::endl;
   }
