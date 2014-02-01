@@ -120,8 +120,15 @@ void memcached_quit_server(memcached_instance_st* instance, bool io_death)
 
   instance->close_socket();
 
-  if (io_death)
+  if (io_death and memcached_is_udp(instance->root))
   {
+    /*
+       If using UDP, we should stop using the server briefly on every IO
+       failure. If using TCP, it may be that the connection went down a
+       short while ago (e.g. the server failed) and we've only just
+       noticed, so we should only set the retry timeout on a connect
+       failure (which doesn't call this method).
+       */
     memcached_mark_server_for_timeout(instance);
   }
 }
