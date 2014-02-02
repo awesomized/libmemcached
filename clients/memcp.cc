@@ -68,13 +68,13 @@ static long strtol_wrapper(const char *nptr, int base, bool *error)
       or (errno != 0 && val == 0))
   {
     *error= true;
-    return EXIT_SUCCESS;
+    return 0;
   }
 
   if (endptr == nptr)
   {
     *error= true;
-    return EXIT_SUCCESS;
+    return 0;
   }
 
   *error= false;
@@ -385,10 +385,10 @@ static void options_parse(int argc, char *argv[])
     case OPT_EXPIRE: /* --expire */
       {
         bool strtol_error;
-        opt_expires= (time_t)strtol_wrapper(optarg, 16, &strtol_error);
+        opt_expires= (time_t)strtol_wrapper(optarg, 10, &strtol_error);
         if (strtol_error == true)
         {
-          fprintf(stderr, "Bad value passed via --flag\n");
+          fprintf(stderr, "Bad value passed via --expire\n");
           exit(1);
         }
       }
