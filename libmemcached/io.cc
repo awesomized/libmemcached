@@ -342,6 +342,7 @@ static bool io_flush(memcached_instance_st* instance,
     }
 
     ssize_t sent_length= ::send(instance->fd, local_write_ptr, write_length, flags);
+    int local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
 
     if (sent_length == SOCKET_ERROR)
     {
@@ -381,14 +382,14 @@ static bool io_flush(memcached_instance_st* instance,
           }
 
           memcached_quit_server(instance, true);
-          error= memcached_set_errno(*instance, get_socket_errno(), MEMCACHED_AT);
+          error= memcached_set_errno(*instance, local_errno, MEMCACHED_AT);
           return false;
         }
       case ENOTCONN:
       case EPIPE:
       default:
         memcached_quit_server(instance, true);
-        error= memcached_set_errno(*instance, get_socket_errno(), MEMCACHED_AT);
+        error= memcached_set_errno(*instance, local_errno, MEMCACHED_AT);
         WATCHPOINT_ASSERT(instance->fd == INVALID_SOCKET);
         return false;
       }
@@ -422,6 +423,8 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
   do
   {
     data_read= ::recv(instance->fd, instance->read_buffer, MEMCACHED_MAX_BUFFER, MSG_NOSIGNAL);
+    int local_errno= get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
+
     if (data_read == SOCKET_ERROR)
     {
       switch (get_socket_errno())
@@ -460,7 +463,7 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
       case ECONNREFUSED:
       default:
         memcached_quit_server(instance, true);
-        memcached_set_errno(*instance, get_socket_errno(), MEMCACHED_AT);
+        memcached_set_errno(*instance, local_errno, MEMCACHED_AT);
         break;
       }
 

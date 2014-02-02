@@ -104,6 +104,9 @@ LIBMEMCACHED_API
 in_port_t memcached_server_port(const memcached_instance_st * self);
 
 LIBMEMCACHED_API
+in_port_t memcached_server_srcport(const memcached_instance_st * self);
+
+LIBMEMCACHED_API
 void memcached_instance_next_retry(const memcached_instance_st * self, const time_t absolute_time);
 
 LIBMEMCACHED_API
