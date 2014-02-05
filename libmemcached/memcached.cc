@@ -87,6 +87,7 @@ static inline bool _memcached_init(Memcached *self)
   self->snd_timeout= 0;
   self->rcv_timeout= 0;
   self->server_failure_limit= MEMCACHED_SERVER_FAILURE_LIMIT;
+  self->server_timeout_limit= MEMCACHED_SERVER_TIMEOUT_LIMIT;
   self->query_id= 1; // 0 is considered invalid
 
   /* TODO, Document why we picked these defaults */
@@ -362,6 +363,7 @@ memcached_st *memcached_clone(memcached_st *clone, const memcached_st *source)
   new_clone->get_key_failure= source->get_key_failure;
   new_clone->delete_trigger= source->delete_trigger;
   new_clone->server_failure_limit= source->server_failure_limit;
+  new_clone->server_timeout_limit= source->server_timeout_limit;
   new_clone->io_msg_watermark= source->io_msg_watermark;
   new_clone->io_bytes_watermark= source->io_bytes_watermark;
   new_clone->io_key_prefetch= source->io_key_prefetch;

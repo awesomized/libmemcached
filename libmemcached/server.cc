@@ -54,6 +54,8 @@ static inline void _server_init(memcached_server_st *self, Memcached *root,
   self->request_id= 0;
   self->server_failure_counter= 0;
   self->server_failure_counter_query_id= 0;
+  self->server_timeout_counter= 0;
+  self->server_timeout_counter_query_id= 0;
   self->weight= weight ? weight : 1; // 1 is the default weight value
   self->io_wait_count.read= 0;
   self->io_wait_count.write= 0;

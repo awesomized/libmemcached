@@ -412,6 +412,7 @@ test_return_t clone_test(memcached_st *memc)
     test_true(memc_clone->retry_timeout == memc->retry_timeout);
     test_true(memc_clone->send_size == memc->send_size);
     test_true(memc_clone->server_failure_limit == memc->server_failure_limit);
+    test_true(memc_clone->server_timeout_limit == memc->server_timeout_limit);
     test_true(memc_clone->snd_timeout == memc->snd_timeout);
     test_true(memc_clone->user_data == memc->user_data);
 
