@@ -1098,7 +1098,11 @@ run_autoreconf ()
 
   if $use_libtool; then
     assert $BOOTSTRAP_LIBTOOLIZE
-    run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
+    if $jenkins_build_environment; then
+      run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
+    else
+      run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
+    fi
   fi
 
   run "$AUTORECONF" "$AUTORECONF_ARGS" || die "Cannot execute $AUTORECONF"
@@ -1239,7 +1243,11 @@ autoreconf_setup ()
   fi
 
   if [[ -z "$GNU_BUILD_FLAGS" ]]; then
-    GNU_BUILD_FLAGS="--install --force"
+    if $jenkins_build_environment; then
+      GNU_BUILD_FLAGS="--install"
+    else
+      GNU_BUILD_FLAGS="--install --force"
+    fi
   fi
 
   if $verbose; then
@@ -1557,7 +1565,8 @@ execute_job ()
       check_make_target $target
       ret=$?
       if [ $ret -ne 0 ]; then
-        die "Unknown BOOTSTRAP_TARGET option: $target"
+        warn "Unknown BOOTSTRAP_TARGET option: $target"
+        target="jenkins"
       fi
     fi
 
@@ -1730,24 +1739,6 @@ main ()
 
   if [ -n "$OPT_TARGET" ]; then
     BOOTSTRAP_TARGET="$OPT_TARGET"
-  fi
-
-  # If we are running under Jenkins we predetermine what tests we will run against
-  # This BOOTSTRAP_TARGET can be overridden by parse_command_line_options based BOOTSTRAP_TARGET changes.
-  # We don't want Jenkins overriding other variables, so we NULL them.
-  if [ -z "$BOOTSTRAP_TARGET" ]; then
-    if $jenkins_build_environment; then
-      if [[ -n "$JENKINS_TARGET" ]]; then
-        check_make_target $JENKINS_TARGET
-        if [ $? -eq 0 ]; then
-          BOOTSTRAP_TARGET="$JENKINS_TARGET"
-        else
-          die "label not found: $label"
-        fi
-      else
-          BOOTSTRAP_TARGET='jenkins'
-      fi
-    fi
   fi
 
   if [ -z "$BOOTSTRAP_TARGET" ]; then
