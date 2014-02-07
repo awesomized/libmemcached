@@ -1,5 +1,6 @@
 # vim:ft=automake
 
+.PHONY: rpm-build
 rpm-build: support/$(PACKAGE).spec distcheck
 	@rm -f *.rpm
 	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm
@@ -19,18 +20,23 @@ rpm-build: support/$(PACKAGE).spec distcheck
 	-cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-debuginfo-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
 
+.PHONY: rpm-sign
 rpm-sign: rpm-build
 	@rpm --addsign *.rpm
 	@rpm --checksig *.rpm
 
+.PHONY: clean-rpm
 clean-rpm:
 	@rm -f *.tar.gz
 	@rm -f *.src.rpm
 	@rm -f *.rpm
 
+.PHONY: rpm
 rpm: clean-rpm support/$(PACKAGE).spec rpm-build
 
+.PHONY: release
 release: rpm rpm-sign
 
+.PHONY: auto-rpmbuild
 auto-rpmbuild:
 	@auto-br-rpmbuild -ba support/libmemcached.spec
