@@ -25,10 +25,11 @@ $(DIST_ARCHIVES): $(DISTFILES)
 	$(MAKE) $(AM_MAKEFLAGS) dist-gzip
 
 $(RPM_SOURCE): | $(RPM_BUILDDIR) $(DIST_ARCHIVES)
-	@rm -f $(BUILD_RPMS) $(BUILD_SRPMS) $(BUILD_RPM_DIR)
 	@cp $(DIST_ARCHIVES) $(RPM_SOURCE)
 
 $(RPM_BUILD_TARGET): $(RPM_SOURCE) support/@PACKAGE@.spec
+	-@rm -f $(BUILD_RPMS) $(BUILD_SRPMS)
+	-@rm -rf $(BUILD_RPM_DIR)
 	@@RPMBUILD@ -ba $(top_srcdir)/support/@PACKAGE@.spec
 	@cp $(BUILD_RPMS) $(BUILD_SRPMS) .
 
@@ -39,7 +40,8 @@ rpm-sign: $(RPM_BUILD_TARGET)
 
 .PHONY: clean-rpm
 clean-rpm:
-	-@rm -f $(BUILD_RPMS) $(BUILD_SRPMS) $(BUILD_RPM_SOURCE) $(BUILD_RPM_DIR) $(RPM_DIST)
+	-@rm -f $(BUILD_RPMS) $(BUILD_SRPMS) $(BUILD_RPM_SOURCE) $(RPM_DIST)
+	-@rm -rf $(BUILD_RPM_DIR)
 
 rpm: $(RPM_BUILD_TARGET)
 dist-rpm: $(RPM_BUILD_TARGET)
