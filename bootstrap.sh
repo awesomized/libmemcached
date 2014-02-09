@@ -1015,7 +1015,7 @@ make_rpm ()
 
       if $jenkins_build_environment; then
         mkdir artifacts
-        mv *gz *rpm artifacts
+        mv *.tar.gz *.rpm artifacts
 
         make_target 'maintainer-clean'
         mv artifacts/* .
