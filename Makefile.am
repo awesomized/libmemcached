@@ -74,7 +74,7 @@ endif
 
 include libmemcachedinternal/include.am
 include libmemcachedinternal/util/include.am
-include rpm/include.am
+include rpm/include.mk
 include support/include.am
 include tests/include.am
 include util/include.am
@@ -96,7 +96,6 @@ merge-clean:
 	@find ./ | $(GREP) \.moved | xargs rm -r -f
 	@find ./ | $(GREP) \\.orig | xargs rm -f
 	@find ./ | $(GREP) \.rej | xargs rm -f
-	@rm -f *\.rpm
 	@find ./ | $(GREP) \.THIS | xargs rm -f
 	@find ./ | $(GREP) \.OTHER | xargs rm -f
 	@find ./ | $(GREP) \.BASE | xargs rm -f
@@ -126,7 +125,6 @@ DISTCLEANFILES+= config/top.h
 
 maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
-	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f man/*.1
 	-rm -f man/*.3
 	-rm -f man/*.8
@@ -154,3 +152,4 @@ maintainer-clean-local:
 	-rm -f m4/test-driver
 	-rmdir build-aux
 	-rm -rf ${top_builddir}/html
+	-rm -f $(DIST_ARCHIVES)
