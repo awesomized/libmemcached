@@ -104,7 +104,7 @@ merge-clean:
 	@echo "Files that need to be either removed or checked in:"
 	@bzr unknowns
 
-clean-local: clean-libtest-check clean-docs-check
+clean-local: clean-libtest-check clean-docs-check clean-rpm
 
 
 lcov: lcov-clean check
@@ -126,7 +126,6 @@ DISTCLEANFILES+= config/top.h
 
 maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
-	-rm -f @PACKAGE@-*.rpm
 	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f man/*.1
 	-rm -f man/*.3
@@ -141,6 +140,7 @@ maintainer-clean-local:
 	-rm -f build-aux/install-sh
 	-rm -f build-aux/ltmain.sh
 	-rm -f build-aux/missing
+	-rm -f build-aux/test-driver
 	-rm -f build-aux/ylwrap
 	-rm -f mem_config.in
 	-rm -f config.log
@@ -154,4 +154,3 @@ maintainer-clean-local:
 	-rm -f m4/test-driver
 	-rmdir build-aux
 	-rm -rf ${top_builddir}/html
-	-rm -f bootstrap
