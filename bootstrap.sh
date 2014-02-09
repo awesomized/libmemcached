@@ -1014,7 +1014,10 @@ make_rpm ()
       mkdir -p ~/rpmbuild/RPMS/{i386,i486,i586,i686,noarch,athlon}
 
       run_configure_if_required
-      make_target 'rpm'
+      make_target 'dist-rpm'
+
+      mkdir artifacts
+      cp *gz *rpm artifacts
 
       if $jenkins_build_environment; then
         make_target 'clean'
