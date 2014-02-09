@@ -1,5 +1,6 @@
-1.0.18
+1.0.18 Sun Feb  9 01:49:56 PST 2014
 * MEMCACHED_BEHAVIOR_RETRY_TIMEOUT can now be set to zero.
+* Numerous bug fixes.
 
 1.0.17 Tue Apr  2 14:02:01 HST 2013
 * Remove c++ namespace that was being exposed (the API should be plug compatible)..
