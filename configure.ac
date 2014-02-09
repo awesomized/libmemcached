@@ -1,3 +1,5 @@
+# configure.ac -*- autoconf -*- vim: filetype=config
+#
 # LibmemcacheD
 # Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
