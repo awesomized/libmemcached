@@ -1,3 +1,5 @@
+# configure.ac -*- autoconf -*- vim: filetype=config
+#
 # LibmemcacheD
 # Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
 # Copyright (C) 2006-2010 Brian Aker, Monty Taylor, Trond Norbye
@@ -7,6 +9,7 @@
 # the COPYING file in this directory for full text.
 
 m4_include([version.m4])
+
 AC_PREREQ([2.61])
 AC_INIT([libmemcached],VERSION_NUMBER,[http://libmemcached.org/])
 
@@ -47,6 +50,7 @@ AC_SUBST([MEMCACHED_LIBRARY_VERSION])
 
 AX_HEX_VERSION([LIBMEMCACHED],[$VERSION])
 AX_HEX_VERSION([LIBHASHKIT],[1.0.0])
+AC_SUBST([RPM_RELEASE],[1])
 
 m4_include([libhashkit/include.m4])
 
@@ -120,6 +124,9 @@ AC_CHECK_PROGS([PERL],[perl])
 AC_CHECK_PROGS([VALGRIND],['valgrind'])
 AC_CHECK_PROGS([WINE],['wine'])
 AC_CHECK_PROGS([YACC],['bison --warnings=all'],[:])
+AC_CHECK_PROGS([RPMBUILD],[rpmbuild --nocheck])
+AC_CHECK_PROGS([RPMDEV_SETUPTREE],[rpmdev-setuptree])
+AC_CHECK_PROGS([RPM],[rpm])
 AC_PROG_AWK
 AC_PROG_MKDIR_P
 AC_PROG_SED

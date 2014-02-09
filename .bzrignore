@@ -32,6 +32,7 @@ Makefile.in
 TAGS
 aclocal.m4
 aminclude.am
+artifacts
 autom4te.cache
 autoscan.log
 build-aux/
