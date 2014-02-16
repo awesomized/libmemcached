@@ -2,11 +2,11 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-# Build rule for documentation
-$(dist_man_MANS): $(top_srcdir)/configure.ac
-	$(MAKE) $(AM_MAKEFLAGS) man
+RST_FILES= $(shell find $(top_builddir)/docs/source -type f -name '*.rst')
 
-.NOTPARALLEL: $(dist_man_MANS)
+# Build rule for documentation
+$(dist_man_MANS): $(RST_FILES)
+	@cp docs/build/$@ $@
 
 dist_man_MANS+= man/memaslap.1
 dist_man_MANS+= man/memcapable.1

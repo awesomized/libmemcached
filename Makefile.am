@@ -26,6 +26,10 @@ EXTRA_DIST=
 dist_man_MANS=
 MAINTAINERCLEANFILES=
 
+if IS_VCS_CHECKOUT
+SUBDIRS= docs
+endif
+
 #includes additional rules from aminclude.am
 @INC_AMINCLUDE@
 
@@ -57,7 +61,7 @@ endif
 include libmemcachedutil-1.0/include.am
 
 include clients/include.am
-include docs/include.am
+
 include man/include.am
 
 if BUILD_LIBMEMCACHED_PROTOCOL
@@ -103,7 +107,7 @@ merge-clean:
 	@echo "Files that need to be either removed or checked in:"
 	@bzr unknowns
 
-clean-local: clean-libtest-check clean-docs-check clean-rpm
+clean-local: clean-libtest-check clean-rpm
 
 
 lcov: lcov-clean check
@@ -125,10 +129,7 @@ DISTCLEANFILES+= config/top.h
 
 maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
-	-rm -f man/*.1
-	-rm -f man/*.3
-	-rm -f man/*.8
-	-rm -rf man/.doctrees/
+	-$(RM) $(dist_man_MANS)
 	-rm -f Makefile.in
 	-rm -f aclocal.m4
 	-rm -f build-aux/compile

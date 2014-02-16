@@ -335,7 +335,7 @@ AX_HARDEN_COMPILER_FLAGS
 AX_AM_JOBSERVER([yes])
 
 AC_CONFIG_FILES([Makefile
-                 docs/conf.py
+                 docs/source/conf.py
                  libmemcached-1.0/configure.h
                  support/libmemcached.pc
                  support/libmemcached.spec
