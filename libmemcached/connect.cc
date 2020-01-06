@@ -294,7 +294,7 @@ static bool set_socket_options(memcached_instance_st* server)
   // If SOCK_CLOEXEC exists then we don't need to call the following
   if (SOCK_CLOEXEC == 0)
   {
-    if (FD_CLOEXEC)
+    if (FD_CLOEXEC != 0)
     {
       int flags;
       do
@@ -447,12 +447,12 @@ static memcached_return_t unix_socket_connect(memcached_instance_st* server)
 
   do {
     int type= SOCK_STREAM;
-    if (SOCK_CLOEXEC)
+    if (SOCK_CLOEXEC != 0)
     {
       type|= SOCK_CLOEXEC;
     }
 
-    if (SOCK_NONBLOCK)
+    if (SOCK_NONBLOCK != 0)
     {
       type|= SOCK_NONBLOCK;
     }
@@ -542,12 +542,12 @@ static memcached_return_t network_connect(memcached_instance_st* server)
     }
 
     int type= server->address_info_next->ai_socktype;
-    if (SOCK_CLOEXEC)
+    if (SOCK_CLOEXEC != 0)
     {
       type|= SOCK_CLOEXEC;
     }
 
-    if (SOCK_NONBLOCK)
+    if (SOCK_NONBLOCK != 0)
     {
       type|= SOCK_NONBLOCK;
     }
