@@ -44,6 +44,8 @@
 #include <sasl/sasl.h>
 #endif
 
+#define CAST_SASL_CB(cb) reinterpret_cast<int(*)()>(reinterpret_cast<intptr_t>(cb))
+
 #include <pthread.h>
 
 void memcached_set_sasl_callbacks(memcached_st *shell,
@@ -362,13 +364,13 @@ memcached_return_t memcached_set_sasl_auth_data(memcached_st *shell,
   secret->data[password_length]= 0;
 
   callbacks[0].id= SASL_CB_USER;
-  callbacks[0].proc= (int (*)())get_username;
+  callbacks[0].proc= CAST_SASL_CB(get_username);
   callbacks[0].context= strncpy(name, username, username_length +1);
   callbacks[1].id= SASL_CB_AUTHNAME;
-  callbacks[1].proc= (int (*)())get_username;
+  callbacks[1].proc= CAST_SASL_CB(get_username);
   callbacks[1].context= name;
   callbacks[2].id= SASL_CB_PASS;
-  callbacks[2].proc= (int (*)())get_password;
+  callbacks[2].proc= CAST_SASL_CB(get_password);
   callbacks[2].context= secret;
   callbacks[3].id= SASL_CB_LIST_END;
 
@@ -428,11 +430,11 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const  memcached_st
 
   /* Hopefully we are using our own callback mechanisms.. */
   if (source->sasl.callbacks[0].id == SASL_CB_USER &&
-      source->sasl.callbacks[0].proc ==  (int (*)())get_username &&
+      source->sasl.callbacks[0].proc ==  CAST_SASL_CB(get_username) &&
       source->sasl.callbacks[1].id == SASL_CB_AUTHNAME &&
-      source->sasl.callbacks[1].proc ==  (int (*)())get_username &&
+      source->sasl.callbacks[1].proc ==  CAST_SASL_CB(get_username) &&
       source->sasl.callbacks[2].id == SASL_CB_PASS &&
-      source->sasl.callbacks[2].proc ==  (int (*)())get_password &&
+      source->sasl.callbacks[2].proc ==  CAST_SASL_CB(get_password) &&
       source->sasl.callbacks[3].id == SASL_CB_LIST_END)
   {
     sasl_secret_t *secret= (sasl_secret_t *)source->sasl.callbacks[2].context;
