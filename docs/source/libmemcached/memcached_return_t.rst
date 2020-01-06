@@ -123,10 +123,11 @@ Libmemcached return types:
 :c:type:`MEMCACHED_PARSE_USER_ERROR`
 
 :c:type:`MEMCACHED_DEPRECATED`
+
+:c:type:`MEMCACHED_UNIX_SOCKET_PATH_TOO_BIG`
    
 --------
 SEE ALSO
 --------
 
 :manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_client_error` or :manpage:`memcached_worker_error`
-

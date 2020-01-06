@@ -496,7 +496,7 @@ test_return_t memcached_return_t_TEST(memcached_st *memc)
                         4159057246U, 3425930182U, 2593724503U,  1868899624U,
                         1769812374U, 2302537950U, 1110330676U, 3365377466U, 
                         1336171666U, 3021258493U, 2334992265U, 3861994737U, 
-                        3582734124U, 3365377466U };
+                        3582734124U, 3889811103, 3365377466U };
 
   // You have updated the memcache_error messages but not updated docs/tests.
   for (int rc= int(MEMCACHED_SUCCESS); rc < int(MEMCACHED_MAXIMUM_RETURN); ++rc)
@@ -512,7 +512,7 @@ test_return_t memcached_return_t_TEST(memcached_st *memc)
     }
     test_compare(values[rc], hash_val);
   }
-  test_compare(49, int(MEMCACHED_MAXIMUM_RETURN));
+  test_compare(50, int(MEMCACHED_MAXIMUM_RETURN));
 
   return TEST_SUCCESS;
 }
