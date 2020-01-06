@@ -347,7 +347,12 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     const char **ptr;
     uint32_t *list;
 
-    test_skip(true, libhashkit_has_algorithm(static_cast<hashkit_hash_algorithm_t>(algo)));
+    if (HASHKIT_HASH_CUSTOM == algo) {
+      continue;
+    }
+    if (!libhashkit_has_algorithm(static_cast<hashkit_hash_algorithm_t>(algo))) {
+      continue;
+    }
 
     hashkit_return_t rc= hashkit_set_function(hashk, static_cast<hashkit_hash_algorithm_t>(algo));
 
@@ -473,7 +478,7 @@ static test_return_t hashkit_get_function_test(hashkit_st *hashk)
   for (int algo= int(HASHKIT_HASH_DEFAULT); algo < int(HASHKIT_HASH_MAX); algo++)
   {
 
-    if (HASHKIT_HASH_CUSTOM)
+    if (HASHKIT_HASH_CUSTOM == algo)
     {
       continue;
     }
