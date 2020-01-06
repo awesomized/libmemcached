@@ -114,7 +114,7 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
       { 
         // All items have been returned
       }
-      else if (response_rc == MEMCACHED_SERVER_ERROR or response_rc == MEMCACHED_CLIENT_ERROR or response_rc == MEMCACHED_ERROR)
+      else if (response_rc == MEMCACHED_SERVER_ERROR)
       {
         /* If we try to request stats cachedump for a slab class that is too big
          * the server will return an incorrect error message:
