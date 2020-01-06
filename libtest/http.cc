@@ -87,7 +87,7 @@ static size_t http_get_result_callback(void *ptr, size_t size, size_t nmemb, voi
   vchar_t *_body= (vchar_t*)data;
 
   _body->resize(size * nmemb);
-  memcpy(&_body[0], ptr, _body->size());
+  memcpy(&(*_body)[0], ptr, _body->size());
 
   return _body->size();
 }
