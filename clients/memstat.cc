@@ -426,7 +426,7 @@ static void options_parse(int argc, char *argv[])
       break;
 
     case OPT_ANALYZE: /* --analyze or -a */
-      opt_analyze= OPT_ANALYZE;
+      opt_analyze= true;
       analyze_mode= (optarg) ? strdup(optarg) : NULL;
       break;
 
