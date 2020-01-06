@@ -96,8 +96,8 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 
   switch(length)
   {
-  case 3: h ^= ((uint32_t)data[2]) << 16;
-  case 2: h ^= ((uint32_t)data[1]) << 8;
+  case 3: h ^= ((uint32_t)data[2]) << 16;   /* fall through */
+  case 2: h ^= ((uint32_t)data[1]) << 8;    /* fall through */
   case 1: h ^= data[0];
           h *= m;
   default: break;

@@ -273,9 +273,11 @@ static memcached_return_t io_wait(memcached_instance_st* instance,
     case EFAULT:
     case ENOMEM:
       memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
+      break;
 
     case EINVAL:
       memcached_set_error(*instance, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_literal_param("RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
+      break;
 
     default:
       memcached_set_errno(*instance, local_errno, MEMCACHED_AT, memcached_literal_param("poll"));
@@ -458,6 +460,7 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
         WATCHPOINT_ASSERT(0);
       case EBADF:
         assert_msg(instance->fd != INVALID_SOCKET, "Programmer error, invalid socket");
+        /* fall through */
       case EINVAL:
       case EFAULT:
       case ECONNREFUSED:
@@ -592,6 +595,7 @@ memcached_return_t memcached_io_slurp(memcached_instance_st* instance)
         assert(0);
       case EBADF:
         assert_msg(instance->fd != INVALID_SOCKET, "Invalid socket state");
+        /* fall through */
       case EINVAL:
       case EFAULT:
       case ECONNREFUSED:
