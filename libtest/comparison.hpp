@@ -91,7 +91,7 @@ bool _compare(const char *file, int line, const char *func, const T1_comparable&
 }
 
 template <class T1_comparable, class T2_comparable>
-bool _compare_strcmp(const char *file, int line, const char *func, const T1_comparable& __expected, const T2_comparable& __actual)
+bool _compare_strcmp(const char *file, int line, const char *func, const T1_comparable *__expected, const T2_comparable *__actual)
 {
   if (__expected == NULL)
   {
