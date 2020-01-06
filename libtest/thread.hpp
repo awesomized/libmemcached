@@ -38,6 +38,10 @@
 
 #include <pthread.h>
 
+#if __cplusplus < 201103L
+# define noexcept(a)
+#endif
+
 namespace libtest
 {
 namespace thread
@@ -52,7 +56,7 @@ public:
     _err= pthread_mutex_init(&_mutex, NULL);
   }
 
-  ~Mutex()
+  ~Mutex() noexcept(false)
   {
     if ((_err= pthread_mutex_destroy(&_mutex)))
     {
@@ -84,7 +88,7 @@ public:
     init();
   }
 
-  ~ScopedLock()
+  ~ScopedLock() noexcept(false)
   {
     int err;
     if ((err= pthread_mutex_unlock(_mutex.handle())))
@@ -124,7 +128,7 @@ public:
     }
   }
 
-  ~Condition()
+  ~Condition() noexcept(false)
   {
     int err;
     if ((err= pthread_cond_destroy(&_cond)))

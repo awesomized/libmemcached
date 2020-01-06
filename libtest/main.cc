@@ -60,6 +60,12 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
+#if __cplusplus >= 201103L
+# define UNIQUE_PTR std::unique_ptr
+#else
+# define UNIQUE_PTR std::auto_ptr
+#endif
+
 using namespace libtest;
 
 static void stats_print(libtest::Framework *frame)
@@ -297,7 +303,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
       }
 
-      std::auto_ptr<libtest::Framework> frame(new libtest::Framework(signal, binary_name, collection_to_run, wildcard));
+      UNIQUE_PTR<libtest::Framework> frame(new libtest::Framework(signal, binary_name, collection_to_run, wildcard));
 
       // Run create(), bail on error.
       {
