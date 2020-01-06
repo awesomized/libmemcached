@@ -396,6 +396,10 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
       list= murmur_values;
       break;
 
+    case HASHKIT_HASH_MURMUR3:
+      list= murmur3_values;
+      break;
+
     case HASHKIT_HASH_JENKINS:
       list= jenkins_values;
       break;
@@ -418,7 +422,7 @@ static test_return_t hashkit_set_function_test(hashkit_st *hashk)
     }
     else
     {
-      return TEST_FAILURE;
+      test_fail("Unknown algorithm");
     }
   }
 
