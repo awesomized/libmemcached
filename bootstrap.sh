@@ -191,6 +191,9 @@ set_VENDOR_DISTRIBUTION ()
     opensuse)
       VENDOR_DISTRIBUTION='opensuse'
       ;;
+    arch)
+      VENDOR_DISTRIBUTION='arch'
+      ;;
     *)
       die "attempt to set an invalid VENDOR_DISTRIBUTION=$dist"
       ;;
@@ -262,11 +265,14 @@ set_VENDOR_RELEASE ()
     opensuse)
       VENDOR_RELEASE="$release"
       ;;
+    arch)
+      VENDOR_RELEASE=""
+      ;;
     unknown)
       die "attempt to set VENDOR_RELEASE without setting VENDOR_DISTRIBUTION"
       ;;
     *)
-      die "attempt to set with an invalid VENDOR_DISTRIBUTION=$VENDOR_DISTRIBUTION"
+      die "attempt to set VENDOR_RELEASE with an invalid VENDOR_DISTRIBUTION=$VENDOR_DISTRIBUTION"
       ;;
   esac
 }
@@ -311,8 +317,11 @@ set_VENDOR ()
     suse)
       VENDOR='suse'
       ;;
+    arch)
+      VENDOR='arch'
+      ;;
     *)
-      die "An attempt was made to set an invalid VENDOR=$_vendor"
+      die "An attempt was made to set an invalid VENDOR=$vendor"
       ;;
   esac
 
@@ -372,7 +381,7 @@ determine_target_platform ()
   elif [[ -x '/usr/bin/lsb_release' ]]; then 
     local _ID="$(/usr/bin/lsb_release -s -i)"
     local _VERSION="$(/usr/bin/lsb_release -s -r)"
-    set_VENDOR $_ID $_ID $_VERSION_ID
+    set_VENDOR $_ID $_ID $_VERSION
   elif [[ -f '/etc/lsb-release' ]]; then 
     source '/etc/lsb-release'
     set_VENDOR 'canonical' $DISTRIB_ID $DISTRIB_CODENAME
