@@ -41,7 +41,9 @@
 
 #pragma GCC diagnostic ignored "-Wundef"
 
-#if defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
+#if defined(HAVE_LINUX_SYSCTL_H) && HAVE_LINUX_SYSCTL_H
+#include <linux/sysctl.h>
+#elif defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
 #include <sys/sysctl.h>
 #endif
 
