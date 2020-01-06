@@ -4166,7 +4166,7 @@ test_return_t regression_bug_442914(memcached_st *original_memc)
 
   for (uint32_t x= 0; x < 250; ++x)
   {
-    char key[250];
+    char key[251];
     size_t len= (size_t)snprintf(key, sizeof(key), "%0250u", x);
     memcached_return_t rc= memcached_delete(memc, key, len, 0);
     char error_buffer[2048]= { 0 };
@@ -4176,7 +4176,7 @@ test_return_t regression_bug_442914(memcached_st *original_memc)
 
   // Delete, and then delete again to look for not found
   {
-    char key[250];
+    char key[251];
     size_t len= snprintf(key, sizeof(key), "%037u", 251U);
     memcached_return_t rc= memcached_delete(memc, key, len, 0);
     test_true(rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED);
