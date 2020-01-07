@@ -466,7 +466,7 @@ test_return_t libmemcached_string_behavior_test(memcached_st *)
   {
     test_true(libmemcached_string_behavior(memcached_behavior_t(x)));
   }
-  test_compare(37, int(MEMCACHED_BEHAVIOR_MAX));
+  test_compare(38, int(MEMCACHED_BEHAVIOR_MAX));
 
   return TEST_SUCCESS;
 }
