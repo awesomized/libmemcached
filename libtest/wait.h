@@ -74,7 +74,7 @@ public:
       }
 
       this_wait= retry * retry / 3 + 1;
-      libtest::dream(this_wait, 0);
+      libtest::dream(0, this_wait * 10000000);
     }
   }
 
@@ -98,7 +98,7 @@ public:
       }
 
       this_wait= retry * retry / 3 + 1;
-      libtest::dream(this_wait, 0);
+      libtest::dream(0, this_wait * 10000000);
     }
   }
 
