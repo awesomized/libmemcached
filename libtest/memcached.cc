@@ -156,7 +156,8 @@ public:
   {
     char buffer[30];
     snprintf(buffer, sizeof(buffer), "%d", int(arg));
-    app.add_option("-p", buffer); 
+    app.add_option("-p", buffer);
+    app.add_option("-U", buffer);
   }
 
   bool has_port_option() const
