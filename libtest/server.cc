@@ -130,8 +130,7 @@ Server::~Server()
 bool Server::check()
 {
   _app.slurp();
-  _app.check();
-  return true;
+  return _app.check();
 }
 
 bool Server::validate()
@@ -197,14 +196,6 @@ bool Server::has_pid() const
 
 bool Server::start()
 {
-  // If we find that we already have a pid then kill it.
-  if (has_pid() == true)
-  {
-#if 0
-    fatal_message("has_pid() failed, programer error");
-#endif
-  }
-
   if (getenv("YATL_GDB_SERVER"))
   {
     _app.use_gdb(true);

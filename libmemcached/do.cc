@@ -93,10 +93,10 @@ memcached_return_t memcached_vdo(memcached_instance_st* instance,
   bool sent_success= memcached_io_writev(instance, vector, count, with_flush);
   if (sent_success == false)
   {
-    assert(memcached_last_error(instance->root) == MEMCACHED_SUCCESS);
+    //assert(memcached_last_error(instance->root) == MEMCACHED_SUCCESS);
     if (memcached_last_error(instance->root) == MEMCACHED_SUCCESS)
     {
-      assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
+      //assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
       return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
     }
     else

@@ -63,33 +63,26 @@ libtest::Framework *global_framework= NULL;
 
 static test_return_t shutdown_servers(memcached_st *memc)
 {
-  return TEST_SKIPPED;
-
-  test_skip_valgrind();
-
   test_compare(memcached_server_count(memc), 1U);
 
   // Disable a single server, just the first
-  global_framework->servers().shutdown(0);
+  test_true(global_framework->servers().shutdown(0));
 
   return TEST_SUCCESS;
 }
 
 static test_return_t add_shutdown_servers(memcached_st *memc)
 {
-  return TEST_SKIPPED;
-
-  test_skip_valgrind();
-
   while (memcached_server_count(memc) < 2)
   {
-    const char *argv[1]= { "add_shutdown_server" };
-    test_true(global_framework->servers().start_socket_server("memcached", libtest::default_port(), argv));
-    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", libtest::default_port()));
+    const char *argv[2]= { "add_shutdown_server", NULL };
+    in_port_t port = libtest::default_port();
+    test_true(global_framework->servers().start_socket_server("memcached", port, argv));
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", port));
   }
 
   // Disable a single server, just the first
-  global_framework->servers().shutdown(0);
+  test_true(global_framework->servers().shutdown(0));
 
   return TEST_SUCCESS;
 }
@@ -105,6 +98,8 @@ static test_return_t restart_servers(memcached_st *)
 #include "libmemcached/instance.hpp"
 static test_return_t cull_TEST(memcached_st *memc)
 {
+  shutdown_servers(memc);
+
   uint32_t count= memcached_server_count(memc);
 
   // Do not do this in your code, it is not supported.
@@ -114,11 +109,13 @@ static test_return_t cull_TEST(memcached_st *memc)
   uint32_t new_count= memcached_server_count(memc);
   test_compare(count, new_count);
 
-  return TEST_SUCCESS;
+  return restart_servers(memc);
 }
 
 static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_TEST(memcached_st *memc)
 {
+  shutdown_servers(memc);
+
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 30));
   test_compare_got(MEMCACHED_CONNECTION_FAILURE,
                    memcached_set(memc,
@@ -134,12 +131,12 @@ static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_TEST(memcached_st *me
   test_compare(MEMCACHED_SERVER_TEMPORARILY_DISABLED,
                memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0)));
 
-  return TEST_SUCCESS;
+  return restart_servers(memc);
 }
 
 static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_to_success_TEST(memcached_st *memc)
 {
-  return TEST_SKIPPED;
+  shutdown_servers(memc);
 
   test_compare_got(MEMCACHED_CONNECTION_FAILURE,
                    memcached_set(memc,
@@ -157,10 +154,10 @@ static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_to_success_TEST(memca
 
   global_framework->servers().restart();
 
-  int limit= 5;
+  int limit= 10;
   memcached_return_t ret;
   do {
-    libtest::dream(3, 0);
+    libtest::dream(1, 0);
     ret= memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0));
   } while (ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED and --limit);
 
@@ -168,14 +165,15 @@ static test_return_t MEMCACHED_SERVER_TEMPORARILY_DISABLED_to_success_TEST(memca
 
   test_compare_got(MEMCACHED_SUCCESS, ret, memcached_last_error_message(memc));
 
-  return TEST_SUCCESS;
+  return restart_servers(memc);
 }
 
 static test_return_t MEMCACHED_SERVER_MARKED_DEAD_TEST(memcached_st *memc)
 {
-  return TEST_SKIPPED;
+  add_shutdown_servers(memc);
 
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 30));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 2));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1));
   test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, true));
 
   memcached_return_t ret;
@@ -186,9 +184,9 @@ static test_return_t MEMCACHED_SERVER_MARKED_DEAD_TEST(memcached_st *memc)
   } while (ret == MEMCACHED_SUCCESS or ret == MEMCACHED_CONNECTION_FAILURE);
   test_compare(MEMCACHED_SERVER_TEMPORARILY_DISABLED, ret);
 
-  int limit= 5;
+  int limit= 10;
   do {
-    libtest::dream(3, 0);
+    libtest::dream(1, 0);
     ret= memcached_set(memc, test_literal_param("foo"), NULL, 0, time_t(0), uint32_t(0));
   } while ((ret == MEMCACHED_SERVER_TEMPORARILY_DISABLED or ret == MEMCACHED_SUCCESS) and --limit);
 
@@ -196,7 +194,7 @@ static test_return_t MEMCACHED_SERVER_MARKED_DEAD_TEST(memcached_st *memc)
 
   test_compare_got(MEMCACHED_SERVER_MARKED_DEAD, ret, memcached_last_error_message(memc));
 
-  return TEST_SUCCESS;
+  return restart_servers(memc);
 }
 
 test_st cull_TESTS[] ={
@@ -216,9 +214,9 @@ test_st server_permanently_disabled_TESTS[] ={
 };
 
 collection_st collection[] ={
-  { "cull", (test_callback_fn*)shutdown_servers, (test_callback_fn*)restart_servers, cull_TESTS },
-  { "server failed", (test_callback_fn*)shutdown_servers, (test_callback_fn*)restart_servers, server_temporarily_disabled_TESTS },
-  { "server eject", (test_callback_fn*)add_shutdown_servers, (test_callback_fn*)restart_servers, server_permanently_disabled_TESTS },
+  { "cull", NULL, NULL, cull_TESTS },
+  { "server failed", NULL, NULL, server_temporarily_disabled_TESTS },
+  { "server eject", NULL, NULL, server_permanently_disabled_TESTS },
   { 0, 0, 0, 0 }
 };
 

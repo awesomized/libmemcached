@@ -153,7 +153,12 @@ void server_startup_st::restart()
 {
   for (std::vector<Server *>::iterator iter= servers.begin(); iter != servers.end(); ++iter)
   {
-    (*iter)->start();
+    Server *server = *iter;
+
+    if (server->check()) {
+      server->kill();
+    }
+    server->start();
   }
 }
 
