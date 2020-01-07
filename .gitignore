@@ -1,8 +1,10 @@
+*~
 *.log
 *.trs
 *.exe
 *.gz
 *.lo
+*.o
 *.orig
 *.output
 *.pop
@@ -22,10 +24,9 @@
 *TAGS
 *patch
 .deps
-.hg/
-.hgignore
-.hgsub
-.hgsubstate
+.cproject
+.project
+.settings/
 INSTALL
 Makefile
 Makefile.in
@@ -50,6 +51,7 @@ clients/memrm
 clients/memslap
 clients/memstat
 clients/memtouch
+config.cache
 config.log
 config.status
 config/compile
@@ -65,8 +67,9 @@ configure
 configure.scan
 docs/*.[13]
 docs/*.html
+docs/build
 docs/changes
-docs/conf.py
+docs/source/conf.py
 docs/doctest/
 docs/doctrees/
 docs/html/
